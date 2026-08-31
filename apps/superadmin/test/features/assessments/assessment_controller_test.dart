@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/assessments/assessment.dart';
 import 'package:coelo_superadmin/features/assessments/assessment_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -82,6 +84,104 @@ void main() {
     expect(repository.publicationReason, 'Liberação aprovada.');
     expect(() => controller.schedulePublication(publishAt, ' '), throwsArgumentError);
   });
+
+  test('keeps the newest gradebook when loads complete out of order', () async {
+    final repository = _DeferredAssessmentRepository();
+    final controller = AssessmentController(repository);
+    addTearDown(controller.dispose);
+
+    final loadA = controller.loadGradebook('book-a');
+    final loadB = controller.loadGradebook('book-b');
+    repository.completeLoad('book-b', _book('book-b', 'Aluno B'));
+    await loadB;
+    repository.completeLoad('book-a', _book('book-a', 'Aluno A'));
+    await loadA;
+
+    expect(controller.gradebook?.id, 'book-b');
+    expect(controller.selectedStudent?.name, 'Aluno B');
+  });
+
+  test('dispose clears loaded PII and ignores a pending command completion', () async {
+    final repository = _DeferredAssessmentRepository();
+    final controller = AssessmentController(repository);
+    final load = controller.loadGradebook('book-a');
+    repository.completeLoad('book-a', _book('book-a', 'Aluno A'));
+    await load;
+    var notifications = 0;
+    controller.addListener(() => notifications += 1);
+
+    final save = controller.saveDraft();
+    expect(controller.saving, isTrue);
+    controller.dispose();
+    final notificationsAtDispose = notifications;
+
+    expect(controller.gradebook, isNull);
+    expect(controller.selectedStudent, isNull);
+    expect(controller.recoveredDraft, isFalse);
+    expect(controller.saving, isFalse);
+    expect(controller.step, 0);
+
+    repository.completeSave(_book('book-a', 'Aluno A').copyWith(version: 2));
+    await save;
+    expect(notifications, notificationsAtDispose);
+    expect(controller.gradebook, isNull);
+  });
+
+  test('shares one in-flight command across save and submit', () async {
+    final repository = _DeferredAssessmentRepository();
+    final controller = AssessmentController(repository);
+    addTearDown(controller.dispose);
+    final load = controller.loadGradebook('book-a');
+    repository.completeLoad('book-a', _book('book-a', 'Aluno A'));
+    await load;
+
+    final save = controller.saveDraft();
+    final submit = controller.submit();
+
+    expect(repository.saveCalls, 1);
+    expect(repository.submitCalls, 0);
+    repository.completeSave(_book('book-a', 'Aluno A').copyWith(version: 2));
+    await Future.wait([save, submit]);
+  });
+}
+
+AssessmentGradebook _book(String id, String studentName) => AssessmentGradebook(
+  id: id,
+  version: 1,
+  status: AssessmentGradebookStatus.draft,
+  context: const AssessmentContext.sample(),
+  students: [
+    AssessmentStudentEntry(id: 'student-$id', childContextId: 'child-$id', name: studentName),
+  ],
+);
+
+final class _DeferredAssessmentRepository implements AssessmentRepository {
+  final _loads = <String, Completer<AssessmentGradebook?>>{};
+  final _save = Completer<AssessmentGradebook>();
+  int saveCalls = 0;
+  int submitCalls = 0;
+
+  void completeLoad(String id, AssessmentGradebook value) => _loads[id]!.complete(value);
+  void completeSave(AssessmentGradebook value) => _save.complete(value);
+
+  @override
+  Future<AssessmentGradebook?> fetchGradebook(String id) =>
+      (_loads[id] ??= Completer<AssessmentGradebook?>()).future;
+
+  @override
+  Future<AssessmentGradebook> saveGradebook(AssessmentGradebook value, {String? reason}) {
+    saveCalls += 1;
+    return _save.future;
+  }
+
+  @override
+  Future<AssessmentGradebook> submitGradebook(AssessmentGradebook value) async {
+    submitCalls += 1;
+    return value;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 final class _AssessmentRepositoryStub implements AssessmentRepository {

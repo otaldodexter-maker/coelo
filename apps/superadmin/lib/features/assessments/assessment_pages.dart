@@ -42,7 +42,7 @@ final class AssessmentEntryPage extends StatefulWidget {
 }
 
 final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
-  late final AssessmentController _controller;
+  late AssessmentController _controller;
   late final SuperadminActivityController _activities;
   AssessmentContextOptions? _options;
   Object? _contextError;
@@ -53,6 +53,7 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
   AssessmentStudentState? _studentStateFilter;
   bool _batch = true;
   double _footerHeight = 0;
+  int _pageGeneration = 0;
 
   @override
   void initState() {
@@ -63,7 +64,22 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
   }
 
   @override
+  void didUpdateWidget(covariant AssessmentEntryPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.repository, widget.repository) &&
+        oldWidget.gradebookId == widget.gradebookId) {
+      return;
+    }
+    _pageGeneration++;
+    _controller.dispose();
+    _controller = AssessmentController(widget.repository);
+    _clearLocalState();
+    unawaited(_load());
+  }
+
+  @override
   void dispose() {
+    _pageGeneration++;
     _controller.dispose();
     _activities.dispose();
     _studentSearch.dispose();
@@ -71,11 +87,15 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
   }
 
   Future<void> _load() async {
-    if (widget.gradebookId case final id?) {
-      await _controller.loadGradebook(id);
-      if (!mounted) return;
-      if (_controller.recoveredDraft) {
-        _controller.goToStep(1);
+    final generation = ++_pageGeneration;
+    final controller = _controller;
+    final repository = widget.repository;
+    final gradebookId = widget.gradebookId;
+    if (gradebookId case final id?) {
+      await controller.loadGradebook(id);
+      if (!_isCurrent(generation, controller, repository, gradebookId)) return;
+      if (controller.recoveredDraft) {
+        controller.goToStep(1);
       }
       return;
     }
@@ -83,10 +103,8 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
       setState(() => _contextError = null);
     }
     try {
-      final options = await widget.repository.fetchContextOptions();
-      if (!mounted) {
-        return;
-      }
+      final options = await repository.fetchContextOptions();
+      if (!_isCurrent(generation, controller, repository, gradebookId)) return;
       setState(() {
         _contextError = null;
         _options = options;
@@ -95,11 +113,11 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
             options.periods.where((item) => item.isOpen).firstOrNull ?? options.periods.firstOrNull;
       });
     } on AssessmentUnauthorizedException {
-      if (mounted) {
+      if (_isCurrent(generation, controller, repository, gradebookId)) {
         setState(() => _contextError = const AssessmentUnauthorizedException());
       }
     } on Exception catch (error) {
-      if (mounted) {
+      if (_isCurrent(generation, controller, repository, gradebookId)) {
         setState(() => _contextError = error);
       }
     }
@@ -110,13 +128,16 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
     if (selected == null || period == null) {
       return;
     }
-    final config = await widget.repository.fetchConfiguration(
+    final generation = _pageGeneration;
+    final controller = _controller;
+    final repository = widget.repository;
+    final gradebookId = widget.gradebookId;
+    final config = await repository.fetchConfiguration(
       selected.activityId,
       unitId: selected.unitId,
     );
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
+    if (!_isCurrent(generation, controller, repository, gradebookId)) return;
     if (config == null) {
       setState(() => _configurationMissing = true);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -129,7 +150,7 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
       return;
     }
     setState(() => _configurationMissing = false);
-    await _controller.start(
+    await controller.start(
       AssessmentContext(
         activityGroupLinkId: selected.activityGroupLinkId,
         institutionId: selected.institutionId,
@@ -145,9 +166,9 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
       ),
       config,
     );
-    if (!mounted) return;
-    if (_controller.gradebook != null) {
-      _controller.goToStep(1);
+    if (!_isCurrent(generation, controller, repository, gradebookId)) return;
+    if (controller.gradebook != null) {
+      controller.goToStep(1);
     }
   }
 
@@ -160,14 +181,19 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
   }
 
   Future<void> _primary(bool compact) async {
+    final generation = _pageGeneration;
+    final controller = _controller;
+    final repository = widget.repository;
+    final gradebookId = widget.gradebookId;
     try {
-      if (_controller.gradebook == null) {
+      if (controller.gradebook == null) {
         await _start();
         return;
       }
-      if (_controller.step == 3) {
-        final saved = await _controller.submit();
-        if (mounted) {
+      if (controller.step == 3) {
+        final saved = await controller.submit();
+        if (!mounted) return;
+        if (_isCurrent(generation, controller, repository, gradebookId)) {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(const SnackBar(content: Text('Período enviado para fechamento.')));
@@ -175,15 +201,41 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
         }
         return;
       }
-      if (compact && _controller.step == 1) {
-        await _controller.saveDraft();
-        if (mounted) _controller.nextStudent();
+      if (compact && controller.step == 1) {
+        await controller.saveDraft();
+        if (_isCurrent(generation, controller, repository, gradebookId)) {
+          controller.nextStudent();
+        }
         return;
       }
-      _controller.nextStep();
+      controller.nextStep();
     } on Exception {
       // The controller exposes conflict, authorization, offline and failure states.
     }
+  }
+
+  bool _isCurrent(
+    int generation,
+    AssessmentController controller,
+    AssessmentRepository repository,
+    String? gradebookId,
+  ) =>
+      mounted &&
+      generation == _pageGeneration &&
+      identical(controller, _controller) &&
+      identical(repository, widget.repository) &&
+      gradebookId == widget.gradebookId;
+
+  void _clearLocalState() {
+    _options = null;
+    _contextError = null;
+    _selectedContext = null;
+    _selectedPeriod = null;
+    _configurationMissing = false;
+    _studentSearch.clear();
+    _studentStateFilter = null;
+    _batch = true;
+    _footerHeight = 0;
   }
 
   @override
@@ -452,6 +504,7 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
                 width: controlWidth,
                 height: CoeloSize.touchMin,
                 child: CoeloSearchField(
+                  key: const Key('assessment-student-search'),
                   controller: _studentSearch,
                   semanticLabel: 'Buscar aluno',
                   hintText: 'Buscar aluno',

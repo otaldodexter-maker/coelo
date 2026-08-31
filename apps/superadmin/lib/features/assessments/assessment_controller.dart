@@ -47,6 +47,8 @@ final class AssessmentController extends ChangeNotifier {
   int _step = 0, _selectedStudentIndex = 0;
   bool _recoveredDraft = false, _saving = false;
   bool _disposed = false;
+  int _loadGeneration = 0, _commandGeneration = 0;
+  Future<AssessmentGradebook>? _commandInFlight;
   AssessmentState get state => _state;
   int get step => _step;
   int get selectedStudentIndex => _selectedStudentIndex;
@@ -63,9 +65,10 @@ final class AssessmentController extends ChangeNotifier {
   }
 
   Future<void> loadGradebook(String id) async {
-    _emit(const AssessmentLoading());
+    final generation = _beginLoad();
     try {
       final value = await repository.fetchGradebook(id);
+      if (!_isCurrentLoad(generation)) return;
       if (value == null) {
         _emit(const AssessmentEmpty());
         return;
@@ -73,30 +76,38 @@ final class AssessmentController extends ChangeNotifier {
       _recoveredDraft = value.status == AssessmentGradebookStatus.draft;
       _emit(AssessmentReady(value));
     } on AssessmentUnauthorizedException {
+      if (!_isCurrentLoad(generation)) return;
       _emit(const AssessmentUnauthorized());
     } on AssessmentOfflineException {
+      if (!_isCurrentLoad(generation)) return;
       _emit(const AssessmentOffline());
     } on Exception catch (error) {
+      if (!_isCurrentLoad(generation)) return;
       _emit(AssessmentFailure(error));
     }
   }
 
   Future<void> start(AssessmentContext context, AssessmentConfiguration configuration) async {
-    _emit(const AssessmentLoading());
+    final generation = _beginLoad();
     try {
       final value = await repository.createOrResumeGradebook(context, configuration);
+      if (!_isCurrentLoad(generation)) return;
       _recoveredDraft = value.version > 1;
       _emit(AssessmentReady(value));
     } on AssessmentUnauthorizedException {
+      if (!_isCurrentLoad(generation)) return;
       _emit(const AssessmentUnauthorized());
     } on AssessmentOfflineException {
+      if (!_isCurrentLoad(generation)) return;
       _emit(const AssessmentOffline());
     } on Exception catch (error) {
+      if (!_isCurrentLoad(generation)) return;
       _emit(AssessmentFailure(error));
     }
   }
 
   void goToStep(int value) {
+    if (_disposed) return;
     if (value >= 0 && value < 4) {
       _step = value;
       _notify();
@@ -104,6 +115,7 @@ final class AssessmentController extends ChangeNotifier {
   }
 
   void nextStep() {
+    if (_disposed) return;
     if (_step < 3) {
       _step++;
       _notify();
@@ -111,6 +123,7 @@ final class AssessmentController extends ChangeNotifier {
   }
 
   void previousStep() {
+    if (_disposed) return;
     if (_step > 0) {
       _step--;
       _notify();
@@ -118,6 +131,7 @@ final class AssessmentController extends ChangeNotifier {
   }
 
   void nextStudent() {
+    if (_disposed) return;
     final count = gradebook?.students.length ?? 0;
     if (_selectedStudentIndex < count - 1) {
       _selectedStudentIndex++;
@@ -126,6 +140,7 @@ final class AssessmentController extends ChangeNotifier {
   }
 
   void previousStudent() {
+    if (_disposed) return;
     if (_selectedStudentIndex > 0) {
       _selectedStudentIndex--;
       _notify();
@@ -133,6 +148,7 @@ final class AssessmentController extends ChangeNotifier {
   }
 
   void updateStudent(AssessmentStudentEntry value) {
+    if (_disposed) return;
     final book = gradebook;
     if (book == null) return;
     final students = [...book.students];
@@ -157,34 +173,76 @@ final class AssessmentController extends ChangeNotifier {
 
   Future<AssessmentGradebook> _run(
     Future<AssessmentGradebook> Function(AssessmentGradebook) operation,
+  ) {
+    if (_disposed) throw StateError('Controller descartado.');
+    if (_commandInFlight case final current?) return current;
+    late final Future<AssessmentGradebook> future;
+    future = _execute(operation).whenComplete(() {
+      if (identical(_commandInFlight, future)) _commandInFlight = null;
+    });
+    _commandInFlight = future;
+    return future;
+  }
+
+  Future<AssessmentGradebook> _execute(
+    Future<AssessmentGradebook> Function(AssessmentGradebook) operation,
   ) async {
     final book = gradebook;
     if (book == null) throw StateError('Diário não carregado.');
+    final generation = ++_commandGeneration;
     _saving = true;
     _notify();
     try {
       final saved = await operation(book);
+      if (!_isCurrentCommand(generation)) return saved;
       _emit(AssessmentReady(saved));
       return saved;
     } on AssessmentVersionConflictException {
+      if (!_isCurrentCommand(generation)) rethrow;
       _emit(const AssessmentConflict());
       rethrow;
     } on AssessmentUnauthorizedException {
+      if (!_isCurrentCommand(generation)) rethrow;
       _emit(const AssessmentUnauthorized());
       rethrow;
     } on AssessmentOfflineException {
+      if (!_isCurrentCommand(generation)) rethrow;
       _emit(AssessmentOffline(book));
       rethrow;
     } on Exception catch (error) {
+      if (!_isCurrentCommand(generation)) rethrow;
       _emit(AssessmentFailure(error));
       rethrow;
     } finally {
-      _saving = false;
-      _notify();
+      if (_isCurrentCommand(generation)) {
+        _saving = false;
+        _notify();
+      }
     }
   }
 
+  int _beginLoad() {
+    final generation = ++_loadGeneration;
+    _commandGeneration++;
+    _commandInFlight = null;
+    _clearSensitiveState();
+    _emit(const AssessmentLoading());
+    return generation;
+  }
+
+  bool _isCurrentLoad(int generation) => !_disposed && generation == _loadGeneration;
+  bool _isCurrentCommand(int generation) => !_disposed && generation == _commandGeneration;
+
+  void _clearSensitiveState() {
+    _state = const AssessmentInitial();
+    _step = 0;
+    _selectedStudentIndex = 0;
+    _recoveredDraft = false;
+    _saving = false;
+  }
+
   void _emit(AssessmentState value) {
+    if (_disposed) return;
     _state = value;
     _notify();
   }
@@ -196,6 +254,10 @@ final class AssessmentController extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    _loadGeneration++;
+    _commandGeneration++;
+    _commandInFlight = null;
+    _clearSensitiveState();
     super.dispose();
   }
 }
