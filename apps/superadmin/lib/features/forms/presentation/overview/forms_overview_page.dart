@@ -321,7 +321,6 @@ final class _OperationCard extends StatelessWidget {
     padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
     child: CoeloAdminInteractiveCard(
       semanticLabel: '$title, $detail${trailing == null ? '' : ', $trailing'}',
-      onPressed: () {},
       child: Padding(
         padding: const EdgeInsets.all(CoeloSpacing.space4),
         child: Row(
@@ -338,7 +337,6 @@ final class _OperationCard extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded),
           ],
         ),
       ),

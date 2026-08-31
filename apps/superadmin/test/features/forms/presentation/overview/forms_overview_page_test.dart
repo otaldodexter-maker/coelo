@@ -64,6 +64,28 @@ void main() {
     expect(find.text('Fixture local · sem persistência remota'), findsOneWidget);
   });
 
+  testWidgets('ações do resumo navegam somente quando callbacks são fornecidos', (tester) async {
+    var monitorOpened = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: FormsOverviewPage.development(
+            formId: 'form-fixture',
+            onMonitor: () => monitorOpened = true,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Editar')).onPressed,
+      isNull,
+    );
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Monitorar'));
+    expect(monitorOpened, isTrue);
+  });
+
   testWidgets('uses responsive insets and canonical card gaps', (tester) async {
     for (final (size, expectedInset) in [
       (const Size(375, 800), CoeloSpacing.space4),
