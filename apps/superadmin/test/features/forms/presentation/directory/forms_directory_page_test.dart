@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
+import 'package:coelo_superadmin/features/forms/data/development_forms_api.dart';
 import 'package:coelo_superadmin/features/forms/presentation/directory/forms_directory_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -10,6 +11,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('seeded development directory searches and paginates real fixtures', (tester) async {
+    FormDirectoryItem? opened;
+    final api = DevelopmentFormsApi.seeded();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: FormsDirectoryPage(api: api, onOpen: (item) => opened = item),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CoeloAdminPagination), findsOneWidget);
+    await tester.tap(find.text('Pesquisa anual das famílias').first);
+    expect(opened?.id, 'form-family-annual-survey');
+
+    await tester.enterText(find.byKey(const Key('forms-directory-search')), 'transporte');
+    await tester.pump(const Duration(milliseconds: 351));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Enquete rápida sobre transporte'), findsWidgets);
+    expect(find.text('Pesquisa anual das famílias'), findsNothing);
+  });
+
   testWidgets('starts table-first with the canonical create banner and row metrics', (
     tester,
   ) async {
