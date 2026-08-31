@@ -14,7 +14,7 @@ void main() {
   void collect(CoeloNavigationNode node) {
     if (node.id != 'home' &&
         node.routeName != null &&
-        node.isAvailable(CoeloNavigationEnvironment.development)) {
+        node.isAvailable(CoeloNavigationEnvironment.development, canAccess: (_) => true)) {
       parentDestinations.add((node.label, node.id));
     }
     for (final child in node.children) {
@@ -41,8 +41,8 @@ void main() {
         .toList();
     expect(menuItems, parentDestinations.map((item) => item.$1).toList());
 
-    final settings = find.widgetWithText(MenuItemButton, 'Publicar no Agora');
-    await tester.scrollUntilVisible(settings, 300, scrollable: find.byType(Scrollable).last);
+    final settings = find.widgetWithText(MenuItemButton, 'Publicar no Agora', skipOffstage: false);
+    await Scrollable.ensureVisible(tester.element(settings), duration: Duration.zero);
     await tester.pumpAndSettle();
     expect(settings.hitTestable(), findsOneWidget);
     await tester.tap(settings.hitTestable());
@@ -61,12 +61,14 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(MenuItemButton), findsWidgets, reason: 'open menu at width $width');
 
-      await tester.scrollUntilVisible(
-        find.widgetWithText(MenuItemButton, 'Publicar no Agora'),
-        300,
-        scrollable: find.byType(Scrollable).last,
+      final publishNow = find.widgetWithText(
+        MenuItemButton,
+        'Publicar no Agora',
+        skipOffstage: false,
       );
+      await Scrollable.ensureVisible(tester.element(publishNow), duration: Duration.zero);
       await tester.pumpAndSettle();
+      expect(publishNow.hitTestable(), findsOneWidget, reason: 'scroll menu at width $width');
       expect(tester.takeException(), isNull, reason: 'viewport width $width');
 
       await tester.sendKeyEvent(LogicalKeyboardKey.escape);

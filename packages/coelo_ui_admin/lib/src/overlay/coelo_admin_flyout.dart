@@ -113,6 +113,10 @@ final class _CoeloAdminFlyoutState<T> extends State<CoeloAdminFlyout<T>> {
       0.0,
       mediaQuery.size.width - safeLeft - safeRight - (CoeloSpacing.space2 * 2),
     );
+    final availablePanelHeight = math.max(
+      0.0,
+      mediaQuery.size.height - safeTop - safeBottom - (CoeloSpacing.space2 * 2),
+    );
     final panelWidth = math.min(desiredPanelWidth, availablePanelWidth);
     final effectiveItemWidth = math.max(0.0, panelWidth - panelPadding);
     final overlayPadding = EdgeInsets.fromLTRB(
@@ -147,7 +151,7 @@ final class _CoeloAdminFlyoutState<T> extends State<CoeloAdminFlyout<T>> {
           elevation: const WidgetStatePropertyAll(CoeloElevation.level2),
           padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
           minimumSize: WidgetStatePropertyAll(Size(panelWidth, 0)),
-          maximumSize: WidgetStatePropertyAll(Size(panelWidth, double.infinity)),
+          maximumSize: WidgetStatePropertyAll(Size(panelWidth, availablePanelHeight)),
           shape: WidgetStatePropertyAll(
             RoundedRectangleBorder(
               borderRadius: radius,

@@ -64,7 +64,7 @@ List<_PreviewDestinationData> _previewDestinations() {
   void collect(CoeloNavigationNode node) {
     if (node.id != 'home' &&
         node.routeName != null &&
-        node.isAvailable(CoeloNavigationEnvironment.development)) {
+        node.isAvailable(CoeloNavigationEnvironment.development, canAccess: (_) => true)) {
       nodes.add(node);
     }
     for (final child in node.children) {

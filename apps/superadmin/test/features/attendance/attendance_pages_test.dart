@@ -59,7 +59,10 @@ void main() {
       '${selected.month.toString().padLeft(2, '0')}-'
       '${selected.day.toString().padLeft(2, '0')}',
     );
-    await tester.tap(find.byKey(selectedKey));
+    final selectedDay = find.byKey(selectedKey);
+    await tester.ensureVisible(selectedDay);
+    await tester.pump();
+    await tester.tap(selectedDay);
     await tester.ensureVisible(find.byKey(const ValueKey('coelo-date-range-apply')));
     await tester.pump();
     await tester.tap(find.byKey(const ValueKey('coelo-date-range-apply')));
