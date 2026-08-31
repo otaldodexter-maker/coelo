@@ -3800,3 +3800,65 @@ da simples soma das 207 ações.
 - **Gate de conhecimento:** `no-op`; a fonte canonica nova e a spec 049 draft.
   Nenhum comportamento implantado ou integrado foi projetado em
   `docs/knowledge`.
+
+### Checkpoint seguro 51 - abertura da fundacao cross-app e drift datado
+
+- **Progresso obrigatorio:** projeto estrito `done` 0,00% (0/229), restante
+  100,00% (229/229); Flutter local no baseline anterior 40,58% (84/207), sem
+  recalcular a frente visual ativa; Flutter `verified` 0,00% (0/207);
+  Supabase local no baseline aceito 8,11% (3/37 familias), Supabase `done`
+  0,00% (0/37); integracao E2E 0,00% (0/202); backlog Supabase estrito
+  `done` 0,00% (0/228), restante 100,00% (228/228). O gate operacional do
+  Dia 1 concluiu 80,00% (4/5): worktree, inventario remoto, manifesto/mirror e
+  plano persistente; falta o primeiro RED SQL executavel.
+- **Objetivo e paths:** a branch `codex/supabase-cross-app-foundation` nasceu
+  limpa de `dev` em `c9b7114b`, na worktree isolada
+  `.worktrees/supabase-cross-app-foundation`. O recorte reserva somente banco,
+  testes SQL, fontes canonicas e rastreadores autorizados. A worktree visual e
+  seus arquivos dirty permaneceram intocados; nenhuma alteracao ocorreu em
+  `apps/**` ou `packages/coelo_ui_*`.
+- **Inventario local e drift:** 112 migrations canonicas e 112 mirrors foram
+  regenerados/verificados com nomes e conteudo identicos. O manifesto datado
+  classifica 112 locais e 103 registros remotos: 50 nomes/versoes exatos,
+  oito versoes com nomes divergentes nos dois lados (16 linhas `unresolved`),
+  54 `local-only` e 45 `remote-only`. Hash SHA-256 local e dependencias
+  aproximadas foram registrados; o plugin nao fornece hash remoto, portanto
+  nenhum nome igual ou parecido foi promovido a equivalencia textual sem
+  prova.
+- **Remoto read-only:** `coelo` (`evvbomzejfijozbtgvpt`) esta saudavel, mas
+  permanece `blocked-environment` por falta de classificacao documental entre
+  desenvolvimento, homologacao e producao. O catalogo vivo corrigiu o
+  baseline para 180 tabelas `public`, 3 `audit` e 35 `app_private`; as 180
+  publicas tem RLS, 87 tem FORCE RLS, e `audit.profile_about_commands` nao tem
+  RLS. Ha 223 funcoes publicas, 205 `SECURITY DEFINER`, 174 executaveis por
+  `authenticated` e 156 que combinam ambos. Edge Functions permanecem 10;
+  `form-operations` e `circular-media` continuam `verify_jwt=false` apenas
+  classificadas. Advisors seguem 207 de seguranca (50/156/1) e 505 de
+  desempenho (128/377). Nenhuma mutacao remota foi feita ou proposta.
+- **Migration/teste e RED/GREEN:** a fundacao aprovada continua materializada
+  em `20260827233000_superadmin_internal_auth_context.sql`, com pgTAP
+  `superadmin_internal_auth_context_test.sql`; nenhuma migration foi criada ou
+  editada. O primeiro RED de comportamento nao pode ser executado porque o
+  Docker Desktop falha ao iniciar ao remover o reparse point travado
+  `dockerInference`. O unico GREEN fresco e estrutural: Prepare/Verify do
+  mirror 112/112. Os 29/29 Auth e demais regressoes sao evidencia historica,
+  nao foram reclassificados como prova desta execucao.
+- **Diagnostico e seguranca local:** CLI Supabase 2.116.0, Docker CLI 29.7.2 e
+  Docker Desktop 4.86.0 foram registrados. Tentativas distintas de remover o
+  socket e iniciar o servico falharam por acesso do sistema; o loop foi
+  encerrado. A ferramenta Docker exibiu fluxo de reset, mas nenhum reset de
+  fabrica foi autorizado ou comandado. O PowerShell 5.1 exigiu importar
+  explicitamente o modulo inbox `Microsoft.PowerShell.Utility` para restaurar
+  `Get-FileHash`; isso resolveu apenas o verificador de mirrors.
+- **Estado, tempo e ETA:** checkpoint documental/read-only, nao
+  `local-green` fresco, `remote-green`, deployable, E2E ou `done`. Tempo medido
+  desta abertura: aproximadamente 20 minutos ate 09:54 -03:00. O orcamento
+  restante permanece dentro dos quatro dias focados, mas a ETA executavel
+  depende de reinicio/reparo do Docker antes dos Dias 2-4.
+- **Primeiro gate incompleto e proximo comando seguro:** restaurar o daemon
+  Docker sem reset destrutivo e executar
+  `& packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 -TargetVersion 20260827233000`.
+  Ate isso ocorrer, nao ha autorizacao para usar o remoto como substituto.
+- **Gate de conhecimento:** `no-op`; manifesto, plano e OQ-041 registram
+  execucao/proveniencia e bloqueio, sem comportamento duravel novo para
+  projetar em `docs/knowledge`.

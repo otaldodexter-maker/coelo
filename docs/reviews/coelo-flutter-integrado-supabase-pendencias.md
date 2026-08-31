@@ -1145,3 +1145,23 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 - O proximo gate integrado so começa depois de spec aprovada, backend
   local-green consolidado e autorizacao do Eng Integrador. A implementacao
   Supabase continua registrada exclusivamente no rastreador backend.
+
+### Checkpoint integrado 51 - fundacao cross-app aberta sem promocao
+
+- A nova worktree backend foi criada a partir de `dev` em `c9b7114b`; a
+  worktree visual ativa permaneceu integralmente intocada. Nenhum arquivo em
+  `apps/**`, pacote visual, repository Flutter, rota ou estado de tela mudou.
+- O Dia 1 backend produziu inventario remoto SELECT-only, manifesto de drift
+  112 locais versus 103 registros remotos, mirror 112/112 e plano TDD. O
+  remoto continua `blocked-environment`; nao houve migration, DDL/DML, Auth,
+  Edge, deploy ou configuracao remota.
+- O primeiro replay/RED SQL fresco esta bloqueado pelo daemon Docker local.
+  Evidencias historicas `local-green` nao foram promovidas a prova desta
+  execucao e o remoto nao sera usado como substituto.
+- Progresso integrado permanece E2E 0,00% (0/202), com Flutter `verified`
+  0,00% (0/207). A divergencia historica de prosa que menciona 207 provas E2E
+  nao altera silenciosamente o denominador aprovado 202; qualquer mudanca
+  requer reconciliacao canonica. Nenhuma acao Flutter ou E2E foi promovida.
+- A consolidacao final permanece condicionada ao checkpoint seguro da frente
+  visual e aos gates locais backend. Ate la, nao ha merge, push, remocao de
+  worktree/branch nem avanco de `dev`.
