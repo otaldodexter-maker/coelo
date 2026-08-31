@@ -83,17 +83,17 @@ where role_permission.role_id=role_record.id
 select set_config('request.jwt.claims',jsonb_build_object('sub','8a100000-0000-4000-8000-000000000101','session_id','8a100000-0000-4000-8000-000000000201','aal','aal2','role','authenticated')::text,true);
 select set_config('app_private.activity_v2_internal_marker',jsonb_build_object(
  'internal_identity_id','8a100000-0000-4000-8000-000000000301','internal_auth_link_id','8a100000-0000-4000-8000-000000000401','internal_membership_id','8a100000-0000-4000-8000-000000000501',
- 'auth_user_id','8a100000-0000-4000-8000-000000000101','session_id','8a100000-0000-4000-8000-000000000201','permission_code','activities.manage','action_code','manage')::text,true);
+ 'auth_user_id','8a100000-0000-4000-8000-000000000101','session_id','8a100000-0000-4000-8000-000000000201','permission_code','activities.manage','action_code','manage','correlation_id',gen_random_uuid())::text,true);
 insert into public.activity_definitions(id,institution_id,name,description,handle_stem,origin_scope_kind,created_by_person_id,status,management_version) values
  ('8a100000-0000-4000-8000-000000000701','8a100000-0000-4000-8000-000000000010','Robótica A','Somente tenant A','robotica-a-v2','institution',null,'draft',1),
  ('8a100000-0000-4000-8000-000000000702','8a100000-0000-4000-8000-000000000020','Robótica B','Somente tenant B','robotica-b-v2','institution',null,'draft',1);
 select set_config('app_private.activity_v2_internal_marker',jsonb_build_object(
- 'internal_identity_id','8a100000-0000-4000-8000-000000000301','internal_auth_link_id','8a100000-0000-4000-8000-000000000401','internal_membership_id','8a100000-0000-4000-8000-000000000501','auth_user_id','8a100000-0000-4000-8000-000000000101','session_id','8a100000-0000-4000-8000-000000000201','permission_code','activities.link_units','action_code','link_units')::text,true);
+ 'internal_identity_id','8a100000-0000-4000-8000-000000000301','internal_auth_link_id','8a100000-0000-4000-8000-000000000401','internal_membership_id','8a100000-0000-4000-8000-000000000501','auth_user_id','8a100000-0000-4000-8000-000000000101','session_id','8a100000-0000-4000-8000-000000000201','permission_code','activities.link_units','action_code','link_units','correlation_id',gen_random_uuid())::text,true);
 insert into public.activity_unit_links(id,activity_id,institution_id,unit_id,linked_by_person_id) values
  ('8a100000-0000-4000-8000-000000000711','8a100000-0000-4000-8000-000000000701','8a100000-0000-4000-8000-000000000010','8a100000-0000-4000-8000-000000000011',null),
  ('8a100000-0000-4000-8000-000000000721','8a100000-0000-4000-8000-000000000702','8a100000-0000-4000-8000-000000000020','8a100000-0000-4000-8000-000000000021',null);
 select set_config('app_private.activity_v2_internal_marker',jsonb_build_object(
- 'internal_identity_id','8a100000-0000-4000-8000-000000000301','internal_auth_link_id','8a100000-0000-4000-8000-000000000401','internal_membership_id','8a100000-0000-4000-8000-000000000501','auth_user_id','8a100000-0000-4000-8000-000000000101','session_id','8a100000-0000-4000-8000-000000000201','permission_code','activities.link_groups','action_code','link_groups')::text,true);
+ 'internal_identity_id','8a100000-0000-4000-8000-000000000301','internal_auth_link_id','8a100000-0000-4000-8000-000000000401','internal_membership_id','8a100000-0000-4000-8000-000000000501','auth_user_id','8a100000-0000-4000-8000-000000000101','session_id','8a100000-0000-4000-8000-000000000201','permission_code','activities.link_groups','action_code','link_groups','correlation_id',gen_random_uuid())::text,true);
 insert into public.activity_group_links(id,activity_id,institution_id,unit_id,group_id,linked_by_person_id,participation_mode) values
  ('8a100000-0000-4000-8000-000000000712','8a100000-0000-4000-8000-000000000701','8a100000-0000-4000-8000-000000000010','8a100000-0000-4000-8000-000000000011','8a100000-0000-4000-8000-000000000013',null,'all'),
  ('8a100000-0000-4000-8000-000000000722','8a100000-0000-4000-8000-000000000702','8a100000-0000-4000-8000-000000000020','8a100000-0000-4000-8000-000000000021','8a100000-0000-4000-8000-000000000022',null,'all');

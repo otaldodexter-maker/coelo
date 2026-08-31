@@ -114,7 +114,7 @@ select 'invalid_create',public.superadmin_activity_create_v2(gen_random_uuid(),'
 -- Build the explicit publish preconditions without invoking the other Task-3
 -- snapshots: this file owns only the five core command contracts.
 select set_config('app_private.activity_v2_internal_marker',jsonb_build_object(
- 'internal_identity_id','8b100000-0000-4000-8000-000000000301','internal_auth_link_id','8b100000-0000-4000-8000-000000000401','internal_membership_id','8b100000-0000-4000-8000-000000000501','auth_user_id','8b100000-0000-4000-8000-000000000101','session_id','8b100000-0000-4000-8000-000000000201','permission_code','activities.assign_people','action_code','assign_people')::text,true);
+ 'internal_identity_id','8b100000-0000-4000-8000-000000000301','internal_auth_link_id','8b100000-0000-4000-8000-000000000401','internal_membership_id','8b100000-0000-4000-8000-000000000501','auth_user_id','8b100000-0000-4000-8000-000000000101','session_id','8b100000-0000-4000-8000-000000000201','permission_code','activities.assign_people','action_code','assign_people','correlation_id',gen_random_uuid())::text,true);
 insert into public.activity_group_assignments(id,activity_group_link_id,institution_id,person_id,membership_id,assignment_role,assigned_by_person_id)
 select '8b100000-0000-4000-8000-000000000901',link.id,'8b100000-0000-4000-8000-000000000010','8b100000-0000-4000-8000-000000000602','8b100000-0000-4000-8000-000000000611','instructor',null
 from public.activity_group_links link where link.activity_id=(select (body#>>'{data,activity_id}')::uuid from command_results where label='create') and link.group_id='8b100000-0000-4000-8000-000000000013';
@@ -122,7 +122,7 @@ insert into public.activity_admin_assignments(id,activity_id,institution_id,pers
 select '8b100000-0000-4000-8000-000000000902',(body#>>'{data,activity_id}')::uuid,'8b100000-0000-4000-8000-000000000010','8b100000-0000-4000-8000-000000000603','8b100000-0000-4000-8000-000000000612',null
 from command_results where label='create';
 select set_config('app_private.activity_v2_internal_marker',jsonb_build_object(
- 'internal_identity_id','8b100000-0000-4000-8000-000000000301','internal_auth_link_id','8b100000-0000-4000-8000-000000000401','internal_membership_id','8b100000-0000-4000-8000-000000000501','auth_user_id','8b100000-0000-4000-8000-000000000101','session_id','8b100000-0000-4000-8000-000000000201','permission_code','activities.manage_permissions','action_code','manage_permissions')::text,true);
+ 'internal_identity_id','8b100000-0000-4000-8000-000000000301','internal_auth_link_id','8b100000-0000-4000-8000-000000000401','internal_membership_id','8b100000-0000-4000-8000-000000000501','auth_user_id','8b100000-0000-4000-8000-000000000101','session_id','8b100000-0000-4000-8000-000000000201','permission_code','activities.manage_permissions','action_code','manage_permissions','correlation_id',gen_random_uuid())::text,true);
 insert into public.activity_capability_policies(activity_id,institution_id,capability_id,policy_mode,changed_by_person_id)
 select (select (body#>>'{data,activity_id}')::uuid from command_results where label='create'),'8b100000-0000-4000-8000-000000000010',capability.id,'required',null
 from public.activity_capabilities capability where capability.code in('chat','now','happens','moments','attendance');
