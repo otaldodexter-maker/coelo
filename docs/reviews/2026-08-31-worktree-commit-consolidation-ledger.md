@@ -113,3 +113,18 @@ Resultado: 41 linhas, todas prefixadas por `-`. Pelo contrato de `git cherry`, c
 O próximo passo é avançar `dev` por `--ff-only`, repetir as provas contra
 `dev`, remover somente essas worktrees/branches temporárias e confirmar uma
 única checkout `dev` limpa. Não fazer push.
+
+## Lote visual tardio após o fast-forward
+
+Uma última atualização documental apareceu na worktree visual durante a prova
+de limpeza. Ela foi preservada como `9179a9aa`, validada pelos dois gates de
+conhecimento e integrada em `dev` como `865bc5cc`. A spec canônica e a projeção
+`principal-happens-feed.md` são blob-idênticas entre origem e destino; o
+rastreador em `dev` é um superset append-only porque já continha o checkpoint
+da regressão consolidada. A colisão de número foi reconciliada de `16.78` para
+`16.79`, sem alterar o contrato aprovado.
+
+Por isso `9179a9aa` é classificado como **substituído por conteúdo integrado e
+superset**, não como commit órfão. O estado continua sem promoção: aprovação do
+contrato visual do Acontece não equivale a implementação, golden aceito,
+Flutter `verified` ou E2E.

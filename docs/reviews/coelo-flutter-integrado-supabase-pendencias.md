@@ -1230,3 +1230,10 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   `done` 0,00% (0/37) e remoto `blocked-environment`, read-only.
 - Esta consolidação não prova clique → backend remoto → reload, não altera
   denominadores e não promove tela, ação integrada, `remote-green` ou `done`.
+
+### Checkpoint integrado 57 - contrato visual tardio preservado
+
+- O contrato aprovado do feed Acontece foi integrado depois do fast-forward
+  como documentação, spec canônica e projeção de conhecimento validadas.
+- Não houve implementação produtiva, backend, remoto, reload ou E2E. Flutter
+  `verified` permanece 0,00% (0/207) e E2E 0,00% (0/202).

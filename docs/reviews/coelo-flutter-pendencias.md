@@ -2811,7 +2811,7 @@ E2E ou conclusão estrita sem suas próprias evidências.
 | Conhecimento | `no-op`: o ajuste implementa contratos visuais já aprovados, sem regra durável nova. |
 | Próximo comando exato | Recalcular `rtk git cherry dev codex/flutter-ui-10h`; na worktree final, aplicar em ordem somente as linhas `+`, resolver documentos de forma append-only e repetir os gates backend/Flutter. |
 
-## 16.78. V5.24 — estrutura do Acontece aprovada visualmente — 2026-08-31
+## 16.79. V5.24 — estrutura do Acontece aprovada visualmente — 2026-08-31
 
 | Campo | Estado |
 |---|---|
