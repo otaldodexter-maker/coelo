@@ -8,7 +8,9 @@ param(
 
   [string[]]$TestPath = @(),
 
-  [switch]$RunLint
+  [switch]$RunLint,
+
+  [switch]$RunAuthLifecycle
 )
 
 $ErrorActionPreference = 'Stop'
@@ -21,12 +23,13 @@ $canonicalTestsRoot = [IO.Path]::GetFullPath((Join-Path $packageRoot 'supabase\t
 $foundationManifestPath = Join-Path $packageRoot 'replay\foundation-migrations.sha256'
 $targetMigration = @(Get-ChildItem -LiteralPath (Join-Path $packageRoot 'migrations') -File -Filter "$TargetVersion`_*.sql")
 $tempRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath())
-$projectId = 'coelo_safe_' + [guid]::NewGuid().ToString('N')
+$projectId = 'coelo_safe_' + [guid]::NewGuid().ToString('N').Substring(0, 29)
 $projectRoot = Join-Path $tempRoot $projectId
 $supabaseRoot = Join-Path $projectRoot 'supabase'
 $migrationRoot = Join-Path $supabaseRoot 'migrations'
 $configPath = Join-Path $supabaseRoot 'config.toml'
 $databaseOnlyExcludes = 'gotrue,realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor'
+$authLifecycleExcludes = 'realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor'
 $allocatedPorts = [Collections.Generic.HashSet[int]]::new()
 $cliPackage = 'supabase@2.116.0'
 $mutex = $null
@@ -166,7 +169,13 @@ try {
   }
 
   $startAttempted = $true
-  & npx.cmd --yes $cliPackage start --workdir $projectRoot --exclude $databaseOnlyExcludes *> $null
+  $excludedServices = if ($RunAuthLifecycle) {
+    $authLifecycleExcludes
+  }
+  else {
+    $databaseOnlyExcludes
+  }
+  & npx.cmd --yes $cliPackage start --workdir $projectRoot --exclude $excludedServices *> $null
   if ($LASTEXITCODE -ne 0) { throw "supabase start failed with exit code $LASTEXITCODE" }
 
   & (Join-Path $scriptRoot 'Prepare-SafeMigrationReplay.ps1') `
@@ -177,6 +186,11 @@ try {
   if ($resolvedTestPaths.Count -gt 0) {
     & npx.cmd --yes $cliPackage test db --local @resolvedTestPaths --workdir $projectRoot
     if ($LASTEXITCODE -ne 0) { throw "safe local pgTAP failed with exit code $LASTEXITCODE" }
+  }
+  if ($RunAuthLifecycle) {
+    & (Join-Path $scriptRoot 'Test-LocalAuthLifecycle.ps1') `
+      -ProjectRoot $projectRoot `
+      -ProjectId $projectId
   }
   if ($RunLint) {
     & npx.cmd --yes $cliPackage db lint --local --level warning --fail-on error --workdir $projectRoot
