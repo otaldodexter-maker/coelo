@@ -31,9 +31,10 @@ final class DevelopmentFormsApi implements FormsApi {
     final normalizedSearch = query.search?.trim().toLowerCase();
     final filtered = _items
         .where((item) {
+          final visual = developmentFormVisualMetadata(item.id);
           if (normalizedSearch != null &&
               normalizedSearch.isNotEmpty &&
-              ![item.title, item.contextLabel, item.audienceLabel].whereType<String>().any(
+              ![item.title, visual?.contextLabel, visual?.audienceLabel].whereType<String>().any(
                 (value) => value.toLowerCase().contains(normalizedSearch),
               )) {
             return false;
@@ -87,6 +88,104 @@ final class DevelopmentFormsApi implements FormsApi {
 
   static String _encodeCursor(int offset) => base64Url.encode(utf8.encode('$_cursorPrefix$offset'));
 
+  @override
+  Future<FormDefinition> duplicate(FormCommand<FormIdPayload> command) async {
+    final source = _item(command.payload.formId, command.expectedVersion);
+    final id = 'form-dev-copy-${_items.length + 1}';
+    final copy = FormDirectoryItem(
+      id: id,
+      title: '${source.title} (cópia)',
+      kind: source.kind,
+      status: FormStatus.draft,
+      operationalStatus: FormOperationalStatus.draft,
+      identityMode: source.identityMode,
+      updatedAt: DateTime(2026, 8, 31, 12),
+      managementVersion: 1,
+    );
+    _items.insert(0, copy);
+    return _definition(copy);
+  }
+
+  @override
+  Future<FormDefinition> copyOrMove(FormCommand<FormCopyOrMovePayload> command) async {
+    final source = _item(command.payload.formId, command.expectedVersion);
+    if (command.payload.mode == FormCopyOrMoveMode.move) {
+      _items.removeWhere((item) => item.id == source.id);
+      return _definition(source, institutionId: command.payload.targetInstitutionId);
+    }
+    final copied = await duplicate(
+      FormCommand(
+        requestId: command.requestId,
+        expectedVersion: command.expectedVersion,
+        payload: FormIdPayload(source.id),
+      ),
+    );
+    return FormDefinition(
+      id: copied.id,
+      institutionId: command.payload.targetInstitutionId,
+      kind: copied.kind,
+      identityMode: copied.identityMode,
+      responseUnit: copied.responseUnit,
+      title: copied.title,
+      sections: copied.sections,
+      status: copied.status,
+      managementVersion: copied.managementVersion,
+    );
+  }
+
+  @override
+  Future<void> archiveOrDelete(FormCommand<FormArchiveOrDeletePayload> command) async {
+    final source = _item(command.payload.formId, command.expectedVersion);
+    final index = _items.indexWhere((item) => item.id == source.id);
+    if (command.payload.action == FormArchiveOrDeleteAction.delete) {
+      _items.removeAt(index);
+      return;
+    }
+    _items[index] = FormDirectoryItem(
+      id: source.id,
+      title: source.title,
+      kind: source.kind,
+      status: FormStatus.archived,
+      operationalStatus: FormOperationalStatus.archived,
+      identityMode: source.identityMode,
+      updatedAt: DateTime(2026, 8, 31, 12),
+      managementVersion: source.managementVersion + 1,
+    );
+  }
+
+  FormDirectoryItem _item(String id, int expectedVersion) {
+    final matches = _items.where((item) => item.id == id);
+    if (matches.isEmpty) {
+      throw const FormApiException(
+        FormApiFailureKind.validation,
+        'Formulário local não encontrado.',
+      );
+    }
+    final item = matches.single;
+    if (item.managementVersion != expectedVersion) {
+      throw const FormApiException(
+        FormApiFailureKind.conflict,
+        'A fixture local foi alterada. Recarregue e tente novamente.',
+      );
+    }
+    return item;
+  }
+
+  static FormDefinition _definition(
+    FormDirectoryItem item, {
+    String institutionId = DevelopmentFormsApi.institutionId,
+  }) => FormDefinition(
+    id: item.id,
+    institutionId: institutionId,
+    kind: item.kind,
+    identityMode: item.identityMode,
+    responseUnit: FormResponseUnit.person,
+    title: item.title,
+    sections: const [],
+    status: item.status,
+    managementVersion: item.managementVersion,
+  );
+
   static List<FormDirectoryItem> _seedItems() {
     const titles = [
       'Pesquisa anual das famílias',
@@ -127,21 +226,6 @@ final class DevelopmentFormsApi implements FormsApi {
       FormOperationalStatus.closed,
       FormOperationalStatus.archived,
     ];
-    const contexts = [
-      'Instituição Horizonte',
-      'Unidade Centro',
-      'Turma Ipê Amarelo',
-      'Atividade Período Integral',
-      'Unidade Jardim',
-    ];
-    const audiences = [
-      'Todas as famílias',
-      'Responsáveis da Unidade Centro',
-      'Turma Ipê Amarelo',
-      'Perfil Responsável',
-      'Pessoas selecionadas',
-    ];
-
     return List.generate(titles.length, (index) {
       final operationalStatus = operationalStatuses[index % operationalStatuses.length];
       final status = switch (operationalStatus) {
@@ -158,11 +242,6 @@ final class DevelopmentFormsApi implements FormsApi {
         status: status,
         operationalStatus: operationalStatus,
         identityMode: index.isEven ? FormIdentityMode.identified : FormIdentityMode.anonymous,
-        contextLabel: contexts[index % contexts.length],
-        audienceLabel: audiences[index % audiences.length],
-        responseCount: status == FormStatus.draft ? 0 : 6 + (index * 3),
-        scheduleCount: operationalStatus == FormOperationalStatus.draft ? 0 : 1 + (index % 3),
-        createdAt: DateTime(2026, 6, 1).add(Duration(days: index)),
         updatedAt: DateTime(2026, 8, 30).subtract(Duration(days: index)),
         managementVersion: 1 + (index % 4),
       );
@@ -171,4 +250,54 @@ final class DevelopmentFormsApi implements FormsApi {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class DevelopmentFormVisualMetadata {
+  const DevelopmentFormVisualMetadata({
+    required this.contextLabel,
+    required this.audienceLabel,
+    required this.responseCount,
+    required this.scheduleCount,
+    required this.createdAt,
+  });
+
+  final String contextLabel;
+  final String audienceLabel;
+  final int responseCount;
+  final int scheduleCount;
+  final DateTime createdAt;
+}
+
+DevelopmentFormVisualMetadata? developmentFormVisualMetadata(String formId) {
+  final items = DevelopmentFormsApi._seedItems();
+  final index = items.indexWhere((item) => item.id == formId);
+  if (index < 0) return null;
+  const contexts = [
+    'Instituição Horizonte',
+    'Unidade Centro',
+    'Turma Ipê Amarelo',
+    'Atividade Período Integral',
+    'Unidade Jardim',
+  ];
+  const audiences = [
+    'Todas as famílias',
+    'Responsáveis da Unidade Centro',
+    'Turma Ipê Amarelo',
+    'Perfil Responsável',
+    'Pessoas selecionadas',
+  ];
+  final item = items[index];
+  return DevelopmentFormVisualMetadata(
+    contextLabel: contexts[index % contexts.length],
+    audienceLabel: audiences[index % audiences.length],
+    responseCount: item.status == FormStatus.draft ? 0 : 6 + (index * 3),
+    scheduleCount: item.operationalStatus == FormOperationalStatus.draft ? 0 : 1 + (index % 3),
+    createdAt: DateTime(2026, 6, 1).add(Duration(days: index)),
+  );
+}
+
+String developmentFormTitle(String? formId, {String fallback = 'Formulário local'}) {
+  if (formId == null) return fallback;
+  final item = DevelopmentFormsApi._seedItems().where((value) => value.id == formId);
+  return item.isEmpty ? fallback : item.single.title;
 }

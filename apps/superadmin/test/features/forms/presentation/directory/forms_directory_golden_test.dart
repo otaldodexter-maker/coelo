@@ -4,6 +4,7 @@ import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_superadmin/features/forms/data/development_forms_api.dart';
 import 'package:coelo_superadmin/features/forms/presentation/directory/forms_directory_page.dart';
 import 'package:coelo_superadmin/features/forms/presentation/directory/forms_schedule_dialog.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -155,6 +156,7 @@ Widget _goldenApp(
         canManage: true,
         canManageLifecycle: true,
         canTransferCrossInstitution: true,
+        visualMetadata: _visualMetadata,
         onCreate: () {},
         onOpen: (_) {},
         onEdit: (_) {},
@@ -214,6 +216,8 @@ final class _StateFormsApi implements FormsApi {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
+
+final _visualMetadata = <String, DevelopmentFormVisualMetadata>{};
 
 final _items = [
   _item(
@@ -287,21 +291,26 @@ FormDirectoryItem _item(
   int responses,
   int schedules,
   int day,
-) => FormDirectoryItem(
-  id: 'form-$id',
-  title: title,
-  kind: FormKind.form,
-  status: FormStatus.published,
-  operationalStatus: operationalStatus,
-  identityMode: FormIdentityMode.identified,
-  contextLabel: context,
-  audienceLabel: audience,
-  responseCount: responses,
-  scheduleCount: schedules,
-  createdAt: DateTime(2026, 8, day),
-  updatedAt: DateTime(2026, 8, 28),
-  managementVersion: 2,
-);
+) {
+  final formId = 'form-$id';
+  _visualMetadata[formId] = DevelopmentFormVisualMetadata(
+    contextLabel: context,
+    audienceLabel: audience,
+    responseCount: responses,
+    scheduleCount: schedules,
+    createdAt: DateTime(2026, 8, day),
+  );
+  return FormDirectoryItem(
+    id: formId,
+    title: title,
+    kind: FormKind.form,
+    status: FormStatus.published,
+    operationalStatus: operationalStatus,
+    identityMode: FormIdentityMode.identified,
+    updatedAt: DateTime(2026, 8, 28),
+    managementVersion: 2,
+  );
+}
 
 Future<void> _loadGoldenFonts() async {
   final nunitoSans = FontLoader('Nunito Sans')

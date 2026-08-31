@@ -33,6 +33,19 @@ void main() {
       isNull,
     );
     expect(tester.takeException(), isNull);
+    expect(
+      tester.widgetList<ExcludeFocus>(find.byType(ExcludeFocus)).where((value) => value.excluding),
+      hasLength(2),
+    );
+  });
+
+  testWidgets('development editor uses the selected form fixture', (tester) async {
+    await tester.pumpWidget(_app(const FormsEditorPage.development(formId: 'form-dev-02')));
+
+    final titleField = tester
+        .widgetList<TextFormField>(find.byType(TextFormField))
+        .firstWhere((field) => field.controller != null);
+    expect(titleField.controller!.text, 'Enquete rápida sobre transporte');
   });
 
   testWidgets('keeps preview hidden until requested and owns the canonical footer', (tester) async {
@@ -187,7 +200,7 @@ void main() {
   });
 
   for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
-    for (final scale in [1.0, 2.0]) {
+    for (final scale in [1.0, 1.5, 2.0]) {
       testWidgets('editor preserves actions and scroll at $width with ${scale}x text', (
         tester,
       ) async {

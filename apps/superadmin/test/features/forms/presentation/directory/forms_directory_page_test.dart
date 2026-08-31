@@ -51,6 +51,15 @@ void main() {
           body: FormsDirectoryPage(
             api: api,
             canManage: true,
+            visualMetadata: {
+              _item.id: DevelopmentFormVisualMetadata(
+                contextLabel: 'Unidade Centro',
+                audienceLabel: 'Famílias',
+                responseCount: 18,
+                scheduleCount: 2,
+                createdAt: DateTime(2026, 8, 1),
+              ),
+            },
             onCreate: () => createCount++,
             onOpen: (value) => opened = value,
           ),
@@ -297,7 +306,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
 
-    for (final scale in [1.0, 2.0]) {
+    for (final scale in [1.0, 1.5, 2.0]) {
       for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
         tester.view.physicalSize = Size(width, 1400);
         await tester.pumpWidget(
@@ -338,11 +347,6 @@ final _item = FormDirectoryItem(
   status: FormStatus.published,
   operationalStatus: FormOperationalStatus.scheduled,
   identityMode: FormIdentityMode.identified,
-  contextLabel: 'Unidade Centro',
-  audienceLabel: 'Famílias',
-  responseCount: 18,
-  scheduleCount: 2,
-  createdAt: DateTime(2026, 8, 1),
   updatedAt: DateTime(2026, 8, 13),
   managementVersion: 2,
 );

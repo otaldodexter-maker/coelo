@@ -54,11 +54,20 @@ void main() {
     expect(find.textContaining('https://'), findsNothing);
   });
 
-  testWidgets('estado de autosave percorre marcadores visuais aprovados', (tester) async {
-    await _pump(tester, const FormResponsePage.development());
-
-    for (final label in const ['Alterado', 'Salvando', 'Salvo', 'Conflito', 'Falha']) {
+  testWidgets('fixtures de autosave expõem conflito e falha sem estados contraditórios', (
+    tester,
+  ) async {
+    for (final (state, label) in const [
+      (FormResponseAutosaveState.conflict, 'Conflito'),
+      (FormResponseAutosaveState.failure, 'Falha'),
+    ]) {
+      await _pump(
+        tester,
+        FormResponsePage.development(key: ValueKey(label), initialAutosaveState: state),
+      );
       expect(find.text(label), findsOneWidget, reason: label);
+      expect(find.text('Salvando'), findsNothing);
+      expect(find.text('Salvo'), findsNothing);
     }
   });
 }

@@ -1,19 +1,29 @@
+import 'dart:async';
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+
+import '../../data/development_forms_api.dart';
+
+enum FormResponseAutosaveState { initial, changed, saving, saved, conflict, failure }
 
 final class FormResponsePage extends StatefulWidget {
   const FormResponsePage({super.key})
     : development = false,
       anonymous = false,
       secretLost = false,
-      failSubmission = false;
+      failSubmission = false,
+      initialAutosaveState = FormResponseAutosaveState.initial,
+      formId = null;
 
   const FormResponsePage.development({
     this.anonymous = false,
     this.secretLost = false,
     this.failSubmission = false,
+    this.initialAutosaveState = FormResponseAutosaveState.initial,
+    this.formId,
     super.key,
   }) : development = true;
 
@@ -21,6 +31,8 @@ final class FormResponsePage extends StatefulWidget {
   final bool anonymous;
   final bool secretLost;
   final bool failSubmission;
+  final FormResponseAutosaveState initialAutosaveState;
+  final String? formId;
 
   @override
   State<FormResponsePage> createState() => _FormResponsePageState();
@@ -31,11 +43,38 @@ final class _FormResponsePageState extends State<FormResponsePage> {
   bool _review = false;
   bool _submitted = false;
   bool _failed = false;
+  bool _uploadCanceled = false;
+  late FormResponseAutosaveState _autosaveState = widget.initialAutosaveState;
+  Timer? _savingTimer;
+  Timer? _savedTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _answer.addListener(_handleAnswerChanged);
+  }
 
   @override
   void dispose() {
+    _savingTimer?.cancel();
+    _savedTimer?.cancel();
+    _answer.removeListener(_handleAnswerChanged);
     _answer.dispose();
     super.dispose();
+  }
+
+  void _handleAnswerChanged() {
+    if (!widget.development) return;
+    _savingTimer?.cancel();
+    _savedTimer?.cancel();
+    setState(() => _autosaveState = FormResponseAutosaveState.changed);
+    _savingTimer = Timer(const Duration(milliseconds: 300), () {
+      if (!mounted) return;
+      setState(() => _autosaveState = FormResponseAutosaveState.saving);
+      _savedTimer = Timer(const Duration(milliseconds: 300), () {
+        if (mounted) setState(() => _autosaveState = FormResponseAutosaveState.saved);
+      });
+    });
   }
 
   @override
@@ -51,7 +90,9 @@ final class _FormResponsePageState extends State<FormResponsePage> {
             padding: EdgeInsets.fromLTRB(inset, CoeloSpacing.space5, inset, CoeloSpacing.space8),
             children: [
               Text(
-                widget.development ? 'Pesquisa das famílias' : 'Formulário sem dados disponíveis',
+                widget.development
+                    ? developmentFormTitle(widget.formId, fallback: 'Pesquisa das famílias')
+                    : 'Formulário sem dados disponíveis',
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(height: CoeloSpacing.space1),
@@ -119,9 +160,13 @@ final class _FormResponsePageState extends State<FormResponsePage> {
         ),
       ),
       const SizedBox(height: CoeloSpacing.space3),
-      _AutosaveStates(available: widget.development),
+      _AutosaveStates(available: widget.development, state: _autosaveState),
       const SizedBox(height: CoeloSpacing.space5),
-      _ResponseUploads(available: widget.development),
+      _ResponseUploads(
+        available: widget.development,
+        canceled: _uploadCanceled,
+        onCancel: () => setState(() => _uploadCanceled = true),
+      ),
       const SizedBox(height: CoeloSpacing.space5),
       Align(
         alignment: Alignment.centerRight,
@@ -186,9 +231,10 @@ final class _FormResponsePageState extends State<FormResponsePage> {
 }
 
 final class _AutosaveStates extends StatelessWidget {
-  const _AutosaveStates({required this.available});
+  const _AutosaveStates({required this.available, required this.state});
 
   final bool available;
+  final FormResponseAutosaveState state;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -196,27 +242,21 @@ final class _AutosaveStates extends StatelessWidget {
     children: [
       Text('Estados da sincronização local', style: Theme.of(context).textTheme.titleSmall),
       const SizedBox(height: CoeloSpacing.space2),
-      Wrap(
-        spacing: CoeloSpacing.space2,
-        runSpacing: CoeloSpacing.space2,
-        children: available
-            ? const [
-                Chip(label: Text('Alterado')),
-                Chip(label: Text('Salvando')),
-                Chip(label: Text('Salvo')),
-                Chip(label: Text('Conflito')),
-                Chip(label: Text('Falha')),
-              ]
-            : const [Chip(label: Text('Sincronização indisponível'))],
+      Semantics(
+        liveRegion: true,
+        label: available ? 'Sincronização local: ${_autosaveLabel(state)}' : null,
+        child: Chip(label: Text(available ? _autosaveLabel(state) : 'Sincronização indisponível')),
       ),
     ],
   );
 }
 
 final class _ResponseUploads extends StatelessWidget {
-  const _ResponseUploads({required this.available});
+  const _ResponseUploads({required this.available, required this.canceled, required this.onCancel});
 
   final bool available;
+  final bool canceled;
+  final VoidCallback onCancel;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -224,19 +264,27 @@ final class _ResponseUploads extends StatelessWidget {
     children: [
       Text('Anexos protegidos', style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: CoeloSpacing.space2),
-      LinearProgressIndicator(
-        key: Key('form-response-upload-progress'),
-        value: available ? .58 : 0,
-        semanticsLabel: available ? 'Upload protegido em andamento' : 'Upload indisponível',
-        semanticsValue: available ? '58' : '0',
-      ),
-      Align(
-        alignment: Alignment.centerLeft,
-        child: TextButton(
-          onPressed: available ? () {} : null,
-          child: const Text('Cancelar upload'),
+      if (canceled)
+        const CoeloStatePanel(
+          icon: Icons.cancel_outlined,
+          title: 'Upload cancelado',
+          message: 'A resposta local permanece disponível para revisão.',
+        )
+      else ...[
+        LinearProgressIndicator(
+          key: Key('form-response-upload-progress'),
+          value: available ? .58 : 0,
+          semanticsLabel: available ? 'Upload protegido em andamento' : 'Upload indisponível',
+          semanticsValue: available ? '58' : '0',
         ),
-      ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton(
+            onPressed: available ? onCancel : null,
+            child: const Text('Cancelar upload'),
+          ),
+        ),
+      ],
       if (available)
         const ListTile(
           leading: Icon(Icons.error_outline_rounded),
@@ -251,3 +299,12 @@ final class _ResponseUploads extends StatelessWidget {
     ],
   );
 }
+
+String _autosaveLabel(FormResponseAutosaveState state) => switch (state) {
+  FormResponseAutosaveState.initial => 'Inicial',
+  FormResponseAutosaveState.changed => 'Alterado',
+  FormResponseAutosaveState.saving => 'Salvando',
+  FormResponseAutosaveState.saved => 'Salvo',
+  FormResponseAutosaveState.conflict => 'Conflito',
+  FormResponseAutosaveState.failure => 'Falha',
+};

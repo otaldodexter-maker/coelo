@@ -88,5 +88,55 @@ void main() {
         ),
       );
     });
+
+    test('mutates duplicate, archive and delete only in the local fixture', () async {
+      final api = DevelopmentFormsApi.seeded();
+      final original = (await api.listDirectory(const FormDirectoryQuery(limit: 100))).items.first;
+
+      final duplicate = await api.duplicate(
+        FormCommand(
+          requestId: '11111111-1111-4111-8111-111111111111',
+          expectedVersion: original.managementVersion,
+          payload: FormIdPayload(original.id),
+        ),
+      );
+      expect(duplicate.title, '${original.title} (cópia)');
+      var items = (await api.listDirectory(const FormDirectoryQuery(limit: 100))).items;
+      expect(items.any((item) => item.id == duplicate.id), isTrue);
+
+      await api.archiveOrDelete(
+        FormCommand(
+          requestId: '22222222-2222-4222-8222-222222222222',
+          expectedVersion: duplicate.managementVersion,
+          payload: FormArchiveOrDeletePayload(
+            formId: duplicate.id,
+            action: FormArchiveOrDeleteAction.archive,
+          ),
+        ),
+      );
+      items = (await api.listDirectory(const FormDirectoryQuery(limit: 100))).items;
+      expect(
+        items.firstWhere((item) => item.id == duplicate.id).operationalStatus,
+        FormOperationalStatus.archived,
+      );
+
+      await api.archiveOrDelete(
+        FormCommand(
+          requestId: '33333333-3333-4333-8333-333333333333',
+          expectedVersion: duplicate.managementVersion + 1,
+          payload: FormArchiveOrDeletePayload(
+            formId: duplicate.id,
+            action: FormArchiveOrDeleteAction.delete,
+          ),
+        ),
+      );
+      items = (await api.listDirectory(const FormDirectoryQuery(limit: 100))).items;
+      expect(items.any((item) => item.id == duplicate.id), isFalse);
+    });
+
+    test('resolves deterministic titles by selected form id', () {
+      expect(developmentFormTitle('form-dev-02'), 'Enquete rápida sobre transporte');
+      expect(developmentFormTitle('unknown'), 'Formulário local');
+    });
   });
 }
