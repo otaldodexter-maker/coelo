@@ -419,7 +419,7 @@ final class _FilesContent extends StatelessWidget {
                 key: Key('forms-upload-progress'),
                 value: .64,
                 semanticsLabel: 'Progresso do upload',
-                semanticsValue: '64 por cento',
+                semanticsValue: '64',
               ),
             ],
           ),
