@@ -2405,6 +2405,400 @@ os GREENs locais.
 | Próximo item exato | RED público do seletor em `packages/coelo_ui_core/test`. |
 | Conhecimento capturado | `no-op`: decisão visual pertence à fonte canônica da skill/spec. |
 
+## 16.53. V3.18 Cardápio/modelo — implementação GREEN, aceite visual pendente — 2026-08-28
+
+**Entrega atual V3:** 85,71% (6/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`; implementação GREEN, goldens reais aguardam aceite humano. |
+| Arquivos alterados | Core time picker/date-time; Cardápio; Medicação; catálogo; testes comportamentais e dois PNGs golden; spec/tracker. |
+| Correções realizadas | API pública isolada de hora; diálogo surface `HH:mm`; teclado/Escape/foco/erro/disabled; Cardápio usa início/fim após nome e detalhes multilinha; Medicação remove picker Material. |
+| Testes e resultados | Core 8/8; Cardápio/Medicação 17/17; catálogo 1/1; analyzers focados e validador visual verdes; goldens comparados sem diferença após geração autorizada. |
+| Regressões encontradas | Primeira imagem usou fonte Ahem e foi rejeitada; loader de Nunito Sans/Material Icons corrigiu a evidência. Analyzer encontrou import redundante e helper `_timeLabel` órfão; ambos removidos e gates repetidos verdes. |
+| Inspeções | Golden light/375 e dark/1440 reais; teste 200% reempilha ações. 768/1024 e matriz final ainda pendentes. |
+| Bloqueios | Aprovação humana dos PNGs reais; depois concluir matriz e promover padrão a `implemented`. Assessments segue intocado. |
+| Tempo realmente usado | 0 h 12 min desde aprovação; 2 h 36 min acumulados, às 14:52 BRT. |
+| Estimativa restante | 7 h 24 min da janela; 30–60 min para fechar V3.18. |
+| Próximo item exato | Owner aprovar/reprovar os dois goldens reais exibidos. |
+| Conhecimento capturado | `no-op`: implementação do padrão já documentado na fonte canônica. |
+
+## 16.54. V3.18 Cardápio/modelo — aceite dos goldens reais — 2026-08-28
+
+**Entrega atual V3:** 85,71% (6/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`; aceite visual dos goldens reais confirmado pelo Owner. |
+| Decisão | Promover `pattern.coelo-time-picker` a `implemented`; este aceite não será solicitado novamente. |
+| Bloqueios | Apenas gates técnicos finais de V3.18; backend/Supabase e Assessments seguem fora. |
+| Próximo item exato | Matriz 768/1024 + catálogo completo + gates finais; depois V4.19. |
+
+## 16.55. Programa visual — gate humano por entregável — 2026-08-28
+
+**Entrega atual V3:** 85,71% (6/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Mudança solicitada | Antes de qualquer entregável visual restante: parar, mostrar imagem e caminho absoluto, explicar escopo e aguardar aprovação explícita antes do código. |
+| Estado atual | V3.18 já aprovado em contrato e goldens; somente gates técnicos podem continuar sem novo aceite. |
+| Regressão | Catálogo completo expôs `publicFile` incompatível com o inventário de componentes implementados; índice corrigido para o barrel do package, preservando a referência pública da skill. |
+| Próximo aceite | Imagens completas de V4.19 Diretório de Formulários, antes de qualquer RED/produção desse item. |
+| Conhecimento capturado | Regra processual registrada na spec e tracker; `docs/knowledge` permanece `no-op`. |
+
+## 16.56. V4/V5 — pacote visual de alta fidelidade aguardando aprovação — 2026-08-28 15:58 BRT
+
+**Entrega atual V3:** 85,71% (6/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`; pausa obrigatória para aceite visual antecipado de V4/V5. |
+| Evidência rejeitada | Grades/HTML anteriores eram wireframes coloridos; Owner rejeitou. Foram invalidados e não concedem aceite a nenhum item. |
+| Evidência substituta | Capturas individuais Flutter reais, com fonte legível, nos viewports administrativos 1440×1000 e Principal 430/520×900/1000. Propostas não implementadas usam captura Flutter como base e são identificadas como composição de alta fidelidade. |
+| Formulários | Proposta 19 reproduz o card de criação de Instituições e não adiciona botão superior. Proposta 20 preserva wizard/rodapé canônicos e detalha o builder de seções, perguntas, opções, mídia, obrigatoriedade e ramificação. Patch temporário de captura revertido; zero diff real em Forms/router. |
+| Telas e rotas | `/dev/forms`, `/dev/forms/new`, `/dev/imports`, `/dev/imports/new`, `/dev/notices`, `/dev/principal-happens`, `/dev/principal-for-you`, `/dev/principal-now`, `/dev/principal-moments`, `/dev/principal-profile` e três composers Principal. Circulares usa goldens Flutter reais do componente ainda sem rota pública própria. |
+| Arquivos alterados | Somente spec/tracker para registrar o gate; imagens e scripts ficam fora do repositório em `.codex/visualizations/.../01a048b4-b90b-70c0-94f7-f7e43bcf5a6e`. Nenhum arquivo Assessments tocado. |
+| Testes e resultados | `flutter build web --debug --no-web-resources-cdn` GREEN; rotas capturadas do build local; patches temporários de Forms revertidos com blobs iguais ao índice Git; `git diff --check` sem erro novo. |
+| Inspeções | Todas as imagens revisadas em resolução original; texto legível, shell/tokens/fontes reais e ausência de cortes nas evidências escolhidas. `actual-31b-now-composer-520.png` substitui a captura 430 com corte. |
+| Bloqueios | Aceite ou ajustes do Owner por número; nenhum código V4/V5 começa antes do `okay` final. |
+| Tempo realmente usado | 3 h 41 min acumulados às 15:58 BRT. |
+| Estimativa restante | 6 h 19 min da janela inicial; o programa V1–V5 continuará por checkpoint seguro quando a janela acabar. |
+| Próximo item exato | Exibir imagens individuais; registrar aprovações/ajustes; aguardar `okay`; então fechar V3.18 e iniciar V4.19 RED→GREEN. |
+| Conhecimento capturado | `no-op` até aprovação humana. |
+
+## 16.57. V4/V5 — revisão humana das propostas e contratos corrigidos — 2026-08-28
+
+**Entrega atual V3:** 85,71% (6/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Item | Decisão do Owner e próximo ajuste |
+|---|---|
+| 19 Formulários | Direção aprovada parcialmente. Refazer em tabela canônica de Instituições, com criar no topo da tabela, status, contexto, visitas/respostas, agendamentos e menu por linha para editar, ativar/inativar, duplicar, copiar contexto e administrar agendamentos. Preservar shell + contêiner direito. |
+| 20A/20B Editor | Refazer seguindo anexos 8–26 e a anatomia modular de Rotina diária: seções, catálogo pesquisável de tipos, duplicação/cópia, ordenação, mídia, obrigatoriedade, escolhas, ramificação e preview. Pergunta Data aceita `livre`, `a partir de`, `até` e `intervalo permitido`. Preservar shell + contêiner direito. |
+| 21 Importações | Diretório simples em tabela, como Instituições, com criar/importar no topo. Wizard dentro do shell + contêiner direito e catálogo visível de instituições, unidades, pessoas, turmas/grupos, atividades e demais entidades pertinentes, ainda que a execução permaneça `Indisponível nesta etapa`. |
+| 22 Comunicações | Proposta rejeitada. Refazer pela anatomia responsiva do anexo 27: busca, filtros aplicados, categorias com contagem, tabela/lista, paginação e prévia rica lateral. |
+| 23 Circulares | Card de Perfil aprovado com pedido de refinamento visual. Composer atual é boa base, mas deve depender primeiro do builder de Formulários e reutilizar seções/perguntas modulares. |
+| 24 Acontece | Refazer. Agora fica no topo como carrossel horizontal sem `Ver tudo`; primeiro card retangular publica Agora. Abaixo, título discreto Acontece e feed conjunto de publicações Acontece + Circulares. Cabeçalho Principal usa marca Coelo + chevron para menu e avatar; sem hambúrguer. Rodapé móvel: Home, Para você, Momentos, ação central `+`, Pesquisar; Mensagens permanece flutuante; Perfil não entra no rodapé. |
+| 25/29 Agora e Momentos | Refazer viewers para ocupar a tela inteira; preservar ações e navegação Coelo. |
+| 26 Galeria | Contrato visual aprovado pelo Owner. Não solicitar novamente o mesmo aceite; implementação/golden real ainda serão necessários antes do status final `accepted`. |
+| 27/31 Composers | Refazer pela anatomia dos anexos 34/36, mantendo no web shell, contêiner direito e espaçamento Coelo. O mesmo contrato adapta Acontece, Momentos e Agora aos respectivos contextos. |
+| 28 Para você | Refazer conforme anatomia responsiva do anexo 35, sem copiar identidade externa. |
+| 30 Perfil | Refazer cabeçalho conforme contrato Principal; avatar não pode ser cortado e a capa deve ocupar toda a largura disponível. |
+
+Arquivos de referência do Owner: `codex-clipboard-8c61aca7...png` a
+`codex-clipboard-6a2b8db4...png` (anexos 1–36). Servem somente para anatomia,
+proporção e comportamento; identidade permanece Nunito Sans, `#D63C00`,
+`#3F4549`, tokens semânticos, light/dark e componentes Coelo.
+
+Status: `in-progress`, sem código V4/V5 autorizado ainda. Próximo item exato:
+refazer as imagens de aprovação 19, 20, 21, 22, 23A, 24, 25, 27, 28, 29,
+30 e 31; não refazer 26. `docs/knowledge` permanece `no-op` até o aceite das
+novas propostas.
+
+## 16.58. V4/V5 — pacote visual revisado após feedback — 2026-08-28
+
+| Campo | Estado |
+|---|---|
+| Objetivo | Materializar o feedback do Owner em pranchas Coelo legíveis, separadas e de alta fidelidade antes de qualquer implementação V4/V5. |
+| Incluído | 19 diretório e agendamento; 20 overview do builder e catálogo; 21A diretório e 21B wizard; 22 diretório responsivo/preview; 24 Acontece; 25 Agora fullscreen; 27 composer; 28 Para você; 29 Momentos fullscreen; 30 Perfil; 31A/31B composers. |
+| Circulares | 23A e 23B preservam os goldens já considerados praticamente aprovados; 23A recebe polimento no ciclo produtivo e 23B fica explicitamente dependente do builder modular de Formulários. |
+| Item 26 | Mantido `visual-contract-approved`; não foi redesenhado nem reapresentado como pendência. Ainda não conta como `accepted` do programa. |
+| Evidências | `revised-forms-list.png`, `revised-forms-directory.png`, `revised-forms-editor-overview.png`, `revised-forms-editor.png`, `revised-imports-directory.png`, `revised-import-wizard.png`, `revised-communications.png`, `revised-happens.png`, `revised-now.png`, `revised-composer.png`, `revised-for-you.png`, `revised-moments.png`, `revised-profile.png`, `revised-moment-composer.png` e `revised-now-composer.png`, fora do repositório em `.codex/visualizations/.../01a048b4-b90b-70c0-94f7-f7e43bcf5a6e`. |
+| Inspeção | Pranchas renderizadas em 1440×900 ou 430×900 com Nunito Sans, shell/tokens Coelo, texto legível, contêiner canônico e fotografias das fixtures locais. |
+| Código de produção | Nenhum arquivo Flutter/Supabase de V4/V5 alterado; protótipo visual permanece fora do repositório. Arquivos Assessment protegidos não foram tocados. |
+| Gate | Aguardar aprovações/ajustes por item e o `okay` final do Owner antes de fechar V3.18 e iniciar V4.19 RED→GREEN. |
+| Conhecimento capturado | `no-op`: decisões estão sincronizadas na spec canônica, mas nenhuma projeção em `docs/knowledge` será criada antes do aceite final. |
+
+## 16.59. V4/V5 — segunda rodada rejeitada por baixa fidelidade — 2026-08-28
+
+| Campo | Estado |
+|---|---|
+| Avaliação do Owner | A ideia e a anatomia ficaram boas, porém as imagens continuam com aparência de `wireframe colorido` e não dão confiança de fidelidade ao resultado Flutter. |
+| Consequência | Nenhuma prancha de 19–25 ou 27–31 recebe aceite visual. O contador do programa permanece 0/31 `accepted`; somente o contrato já aprovado do item 26 continua registrado separadamente. |
+| Causa | As pranchas foram compostas em HTML com aproximações de componentes, ícones, densidade, estados e mídia, em vez de serem renderizadas pelos componentes Flutter canônicos do Coelo. |
+| Evidência descartada | Todos os arquivos `revised-*.png` da seção 16.58 ficam classificados como rascunhos estruturais rejeitados e não podem orientar golden ou implementação. |
+| Método corrigido | Gerar a próxima evidência a partir de Flutter real: shell atual, tokens, Nunito Sans, `CoeloAdminListingToolbar`, `CoeloAdminResizableTable`, `CoeloAdminPagination`, `CoeloAdminFlyout`, campos e fixtures reais. Superfície ainda ausente usa harness visual isolado, sem backend, rota produtiva ou promoção funcional. |
+| Redução de risco | Produzir primeiro um piloto fiel do item 19. Somente após calibrar essa qualidade com o Owner, repetir o método nos demais itens. |
+| Código de produção | Continua sem autorização para V4/V5. Nenhum aceite visual ou estrutural autoriza integração, backend ou declaração de conclusão. |
+| Conhecimento capturado | `no-op`: rejeição e método ficam na spec/tracker de trabalho; não há conhecimento aprovado para `docs/knowledge`. |
+
+## 16.60. V4.19 — piloto de fidelidade renderizado pelo Flutter real — 2026-08-28
+
+| Campo | Estado |
+|---|---|
+| Objetivo | Calibrar o nível de fidelidade visual antes de reconstruir todo o pacote V4/V5. |
+| Baseline | Golden `institution_directory_table_light_1440.png` e implementação real de Instituições. |
+| Componentes reais | `SuperadminShell`, `CoeloAdminListingToolbar`, `CoeloSearchField`, `CoeloAdminMultiSelectField`, `CoeloAdminSingleSelectField`, `CoeloAdminCreateAction.banner`, `CoeloAdminResizableTable`, `CoeloAdminPagination`, `CoeloAdminFlyout`, `CoeloAdminDialogShell`, `CoeloAdminToggleField` e `CoeloFormTextField`. |
+| Estados capturados | Diretório padrão, flyout de ações aberto e edição de agendamento. |
+| Evidências | `pilot-19-flutter-directory.png`, `pilot-19-flutter-actions.png` e `pilot-19-flutter-schedule.png`, fora do repositório em `.codex/visualizations/.../01a048b4-b90b-70c0-94f7-f7e43bcf5a6e`. |
+| Teste | Harness isolado executado com `flutter test test/visual_pilot_19_test.dart`: 1/1 GREEN; harness removido imediatamente após as capturas. |
+| Produção | Nenhum arquivo produtivo V4/V5 alterado; nenhuma rota, backend, fixture produtiva ou contrato público criado. |
+| Gate | Aguardar avaliação do Owner sobre a fidelidade deste piloto. Não replicar aos demais itens antes dessa calibração. |
+| Conhecimento capturado | `no-op`: o piloto ainda não foi aprovado. |
+
+## 16.61. V4.19 — contrato visual aprovado com correções obrigatórias — 2026-08-28
+
+| Campo | Estado |
+|---|---|
+| Decisão do Owner | Piloto considerado aprovado para orientar a implementação. |
+| Status correto | `visual-contract-approved`; não é `accepted`, `local-green`, integração ou conclusão do entregável. Programa visual permanece 0/31 `accepted`. |
+| Tabela | Reproduzir 100% o alinhamento das fontes, baseline tipográfica, altura e padding de células da tabela de Instituições; a aproximação do piloto não é aceita como delta permanente. |
+| Paginação | Usar literalmente o posicionamento, alinhamento e espaçamento da paginação da tela de Instituições; a paginação deslocada para a direita no piloto não é aceita como delta permanente. |
+| Toolbar | Corrigir alinhamento, largura e espaçamento de busca, filtros e ações pela implementação responsiva literal de Instituições. |
+| Flyout | Preservar largura útil/painel canônicos, mas afastar a superfície da borda direita pela safe area/gap tokenizado; contorno usa `outlineVariant` suave e não pode aparentar preto ou pesado. |
+| Agendamento | Eliminar o espaço branco excedente; altura da superfície acompanha o conteúdo, preservando `CoeloAdminDialogShell`, ações 50/50 e comportamento responsivo. |
+| Evidência de aceite futuro | Golden Flutter real do diretório, flyout e agendamento, comparado à baseline de Instituições e aprovado visualmente pelo Owner. |
+| Próximo item visual | V4.20 Editor de Formulários, pelo mesmo método Flutter real; nenhum RED/produção V4 começa antes do `okay` final do pacote. |
+| Conhecimento capturado | `no-op`: contrato já está na spec canônica; projeção em `docs/knowledge` aguarda o aceite final do conjunto. |
+
+## 16.62. V4.20 — proposta visual Flutter real aguardando avaliação — 2026-08-28
+
+| Campo | Estado |
+|---|---|
+| Escopo visual | Editor modular de Formulários dentro do `SuperadminShell`, com rail de seções, canvas de perguntas, preview contínuo, catálogo pesquisável, validação de Data e ramificação por resposta. |
+| Estados capturados | Visão geral; catálogo com os onze tipos mínimos; Data em modo `Intervalo permitido` junto de Sim/Não com pergunta Foto aninhada no caminho `Sim`. |
+| Componentes reais | `SuperadminShell`, `CoeloFormTextField`, `CoeloAdminSingleSelectField`, `CoeloAdminToggleField`, `CoeloAdminInteractiveCard`, `CoeloAdminCreateAction` e `CoeloSearchField`, além de tokens oficiais. |
+| Evidências | `pilot-20-flutter-overview.png`, `pilot-20-flutter-types.png` e `pilot-20-flutter-date-branch.png`, fora do repositório em `.codex/visualizations/.../01a048b4-b90b-70c0-94f7-f7e43bcf5a6e`. |
+| Teste | Harness isolado executado com `flutter test test/visual_pilot_20_test.dart`: 1/1 GREEN; harness removido imediatamente após as capturas. |
+| Produção | Nenhum arquivo produtivo V4/V5 alterado; nenhuma rota, backend, fixture produtiva ou contrato público criado. |
+| Status correto | Proposta visual aguardando avaliação; não é `visual-contract-approved`, `accepted`, `local-green`, integração ou conclusão. Programa visual permanece 0/31 `accepted`. |
+| Gate | Aguardar avaliação do Owner. Não iniciar RED/produção V4 antes do `okay` final do pacote visual. |
+| Conhecimento capturado | `no-op`: nenhuma decisão durável nova foi aprovada nesta etapa. |
+
+## 16.63. V4.20 — contrato visual aprovado com correções obrigatórias — 2026-08-28
+
+| Campo | Estado |
+|---|---|
+| Decisão do Owner | Proposta considerada aprovada para orientar a implementação, condicionada aos ajustes abaixo. |
+| Status correto | `visual-contract-approved`; não é `accepted`, `local-green`, integração ou conclusão. Programa visual permanece 0/31 `accepted`. |
+| Preview | Nasce oculto e só ocupa espaço quando o usuário solicitar a prévia. |
+| Catálogo | Tipos aparecem em categorias verticais explícitas — `Texto e números`, `Escolhas`, `Mídias` e demais grupos pertinentes — uma abaixo da outra, com rolagem própria. |
+| Superfície | Conteiner principal usa `colorScheme.surface`; cinza estrutural/global é proibido. |
+| Ações | Remover Salvar e Preview do cabeçalho; reutilizar o rodapé canônico de Criar/Editar Instituição, com a hierarquia oficial. |
+| Seções | Preservar rail e organização aprovados, refinando o marcador ativo; não usar círculo laranja com número preto. |
+| Evidência de aceite futuro | Goldens Flutter reais com preview fechado por padrão, catálogo rolável categorizado, superfície neutra, seção refinada e `SuperadminFormActionFooter`, aprovados visualmente pelo Owner. |
+| Próximo item visual | V4.21 Importações, pelo mesmo método Flutter real; nenhum RED/produção V4 começa antes do `okay` final do pacote. |
+| Conhecimento capturado | `no-op`: o contrato foi consolidado na spec canônica; projeção em `docs/knowledge` aguarda o aceite final do conjunto. |
+
+## 16.64. V4.21 — proposta visual Flutter real aguardando avaliação — 2026-08-28
+
+| Campo | Estado |
+|---|---|
+| Escopo visual | Diretório de Importações e wizard administrativo dentro do `SuperadminShell`, seguindo Instituições e Criar/Editar Instituição. |
+| Estados capturados | Histórico tabular com criação e paginação; seleção de entidade e contexto; mapeamento de colunas com indisponibilidade remota explícita. |
+| Entidades visíveis | Instituições, Unidades, Pessoas, Grupos e turmas, Atividades, Planos de medicação, Cardápios e Formulários, em grid responsivo. |
+| Componentes reais | `SuperadminShell`, `CoeloAdminListingToolbar`, `CoeloSearchField`, `CoeloAdminSingleSelectField`, `CoeloAdminCreateAction`, `CoeloAdminResizableTable`, `CoeloAdminPagination`, `SuperadminListingPaginationFooter`, `SuperadminFormFrame`, `SuperadminFormStepNavigation`, `SuperadminFormActionFooter` e `CoeloAdminInteractiveCard`. |
+| Evidências | `pilot-21-flutter-directory.png`, `pilot-21-flutter-entity.png` e `pilot-21-flutter-mapping.png`, fora do repositório em `.codex/visualizations/.../01a048b4-b90b-70c0-94f7-f7e43bcf5a6e`. |
+| Teste | Harness isolado executado com `flutter test test/visual_pilot_21_test.dart`: 1/1 GREEN após ajuste responsivo; harness removido imediatamente após as capturas. |
+| Produção | Nenhum arquivo produtivo V4/V5 alterado; nenhuma rota, backend, fixture produtiva ou contrato público criado. |
+| Status correto | Proposta visual aguardando avaliação; não é `visual-contract-approved`, `accepted`, `local-green`, integração ou conclusão. Programa visual permanece 0/31 `accepted`. |
+| Gate | Aguardar avaliação do Owner. Não iniciar RED/produção V4 antes do `okay` final do pacote visual. |
+| Conhecimento capturado | `no-op`: a proposta preserva conhecimento já registrado em `superadmin-operational-prototypes` e `superadmin-institution-form`; nenhuma regra nova foi aprovada. |
+
+## 16.65. V4.21 — contrato visual aprovado com correção obrigatória — 2026-08-28
+
+| Campo | Estado |
+|---|---|
+| Decisão do Owner | Proposta considerada aprovada para orientar a implementação. |
+| Status correto | `visual-contract-approved`; não é `accepted`, `local-green`, integração ou conclusão. Programa visual permanece 0/31 `accepted`. |
+| Tabela | Reutilizar literalmente a tabela de Instituições: alinhamento horizontal e vertical do cabeçalho e das células, baseline tipográfica, alturas e paddings internos. A aproximação apresentada no piloto não é aceita como delta permanente. |
+| Evidência de aceite futuro | Golden Flutter real do diretório comparado diretamente ao golden canônico de Instituições, além dos estados do wizard, e aprovado visualmente pelo Owner. |
+| Próximo item visual | V4.22 Comunicações, pelo mesmo método Flutter real; nenhum RED/produção V4 começa antes do `okay` final do pacote. |
+| Conhecimento capturado | `no-op`: a baseline literal de Instituições já é conhecimento canônico em `superadmin-operational-prototypes`; nenhuma projeção adicional é necessária. |
+
+## 16.66. V4.22 — proposta visual Flutter real aguardando avaliação — 2026-08-28
+
+| Campo | Estado |
+|---|---|
+| Escopo visual | Diretório responsivo de Comunicações do app dentro do `SuperadminShell`, com filtros aplicados, categorias, listagem e prévia rica do item selecionado. |
+| Estados capturados | Mobile em cards; tablet em tabela; desktop em tabela com painel lateral de prévia e resumo. |
+| Toolbar e categorias | Busca, Status, Período, Mais filtros, chips removíveis e ação Limpar filtros; abas lineares com contagem para Todos, Avisos, Conteúdos, Destaques e Para você. |
+| Componentes reais | `SuperadminShell`, `CoeloAdminListingToolbar`, `CoeloSearchField`, `CoeloAdminSingleSelectField`, `SuperadminUnderlineTabs`, `CoeloAdminInteractiveCard`, `CoeloAdminResizableTable`, `CoeloAdminPagination`, `SuperadminListingPaginationFooter`, `CommunicationTypeBadge` e `NoticePopupPreview`. |
+| Evidências | `pilot-22-flutter-mobile.png`, `pilot-22-flutter-tablet.png` e `pilot-22-flutter-desktop.png`, fora do repositório em `.codex/visualizations/.../01a048b4-b90b-70c0-94f7-f7e43bcf5a6e`. |
+| Teste | Harness isolado executado com `flutter test test/visual_pilot_22_test.dart`: 1/1 GREEN após correções responsivas e de contraste da prévia; harness removido imediatamente após as capturas. |
+| Produção | Nenhum arquivo produtivo V4/V5 alterado; nenhuma rota, backend, fixture produtiva ou contrato público criado. |
+| Status correto | Proposta visual aguardando avaliação; não é `visual-contract-approved`, `accepted`, `local-green`, integração ou conclusão. Programa visual permanece 0/31 `accepted`. |
+| Gate | Aguardar avaliação do Owner. Não iniciar RED/produção V4 antes do `okay` final do pacote visual. |
+| Conhecimento capturado | `no-op`: a proposta aplica o conhecimento já registrado em `superadmin-notices-mvp`; nenhuma regra durável nova foi aprovada. |
+
+## 16.67. V4.22 — proposta rejeitada e checkpoint seguro — 2026-08-28
+
+| Campo | Estado |
+|---|---|
+| Decisão do Owner | As três evidências `pilot-22-flutter-*` foram rejeitadas: a tabela ficou fora do padrão e a composição não reproduziu a anatomia da referência enviada, ainda que a identidade final deva permanecer Coelo. |
+| Status correto | `rejected` e `paused`; não é `visual-contract-approved`, `accepted`, `local-green`, integração ou conclusão. Programa visual permanece 0/31 `accepted`. |
+| Baseline obrigatória | Instituições deve ser reutilizada literalmente para toolbar, filtros, toggle, cards, tabela, alinhamentos, tipografia, alturas, paddings, estados, gaps e paginação. Aproximação local não é aceita. |
+| Modos de visualização | Comunicações deve oferecer explicitamente `Cards` e `Tabela` pelo toggle segmentado canônico de Instituições. O breakpoint pode escolher o modo inicial mais adequado, mas não pode remover a escolha do usuário. |
+| Referência anexada | `codex-clipboard-ed247b47-ba55-4574-aba2-0336ac85ed3a.png` orienta anatomia informacional/responsiva — categorias, filtros aplicados, densidade da tabela e preview lateral no desktop — traduzida aos componentes e tokens Coelo. |
+| Evidência descartada | `pilot-22-flutter-mobile.png`, `pilot-22-flutter-tablet.png` e `pilot-22-flutter-desktop.png` não podem orientar implementação, golden ou aceite futuro. |
+| Regra de retomada | Não ajustar, implementar nem enviar nova imagem espontaneamente. Aguardar o Owner pedir os ajustes; somente depois de a tela estar ajustada, enviar a nova evidência para aprovação. Não avançar ao próximo item visual enquanto este checkpoint estiver pausado. |
+| Produção | Nenhum arquivo produtivo V4/V5 foi alterado; o harness já estava removido. Assessments permaneceu intocado. |
+| Próximo item exato | Aguardar solicitação explícita do Owner para retomar os ajustes do item 22. |
+| Conhecimento capturado | Contrato durável consolidado primeiro na spec canônica de Comunicações e projetado em `docs/knowledge/team/superadmin-notices-mvp.md`. |
+
+## 16.68. V4.22 — proposta visual corrigida aguardando avaliação — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Retomada autorizada | O Owner solicitou continuar do checkpoint, mantendo o rito de aprovação tela a tela antes de qualquer implementação. |
+| Baseline literal | Estrutura visual de Instituições: toolbar responsiva, toggle segmentado Cards/Tabela, criação na primeira posição, tabela com cabeçalho de 56 px, linhas de 64 px e paginação inferior canônica. |
+| Estados capturados | Mobile em Cards; tablet em Tabela; desktop em Tabela com item selecionado, prévia compacta e resumo. A alternância Cards/Tabela foi exercitada no harness. |
+| Anatomia aplicada | Categorias lineares, filtros aplicados fora do mobile, densidade administrativa e preview lateral somente quando há largura útil, conforme a referência funcional enviada e a identidade Coelo. |
+| Evidências | `pilot-22-v2-mobile-cards.png`, `pilot-22-v2-tablet-table.png` e `pilot-22-v2-desktop-table-preview.png`, fora do repositório em `.codex/visualizations/.../01a048b4-b90b-70c0-94f7-f7e43bcf5a6e`. As evidências anteriores continuam rejeitadas. |
+| Teste | Harness isolado executado com `flutter test test/visual_pilot_22_v2_test.dart --reporter compact`: 1/1 GREEN, sem overflow; harness removido após captura e inspeção. |
+| Produção | Nenhum arquivo produtivo V4/V5 alterado; nenhuma rota, backend, fixture produtiva ou contrato público criado. Assessments permaneceu intocado. |
+| Status correto | Proposta visual aguardando avaliação; não é `visual-contract-approved`, `accepted`, `local-green`, integração ou conclusão. Programa visual permanece 0/31 `accepted`. |
+| Gate | Aguardar avaliação do Owner sobre o Item 22. Não avançar ao Item 23 nem iniciar implementação antes do aceite explícito aplicável. |
+| Conhecimento capturado | `no-op`: a proposta aplica o contrato durável já registrado; nenhuma nova regra de produto foi aprovada nesta etapa. |
+
+## 16.69. V4.22 — terceira proposta visual aguardando avaliação — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Ajuste solicitado | O Owner removeu a alternativa Cards/Tabela e pediu maior fidelidade à anatomia da referência, preservando a identidade Coelo e o rito de aprovação tela a tela. |
+| Baseline literal | Tabela e status seguem o ritmo visual canônico de Instituições. A referência enviada orienta somente a composição responsiva: lista compacta automática no mobile, tabela no tablet e tabela dominante com preview auxiliar no desktop. |
+| Anatomia aplicada | Busca e filtros mantêm alinhamento comum; categorias permanecem em abas lineares; o preview desktop deixou de ser um grande contêiner único e passou a combinar cabeçalho, simulação compacta e resumo independentes. Não existe controle de modo Cards/Tabela. |
+| Status na tabela | Estados usam `CoeloStatusChip`, alinhados como célula tabular e sem o indicador expansível de cards/diretórios. |
+| Evidências | `pilot-22-v3-mobile-list.png`, `pilot-22-v3-tablet-table.png` e `pilot-22-v3-desktop-preview.png`, fora do repositório em `.codex/visualizations/.../01a048b4-b90b-70c0-94f7-f7e43bcf5a6e`. As propostas anteriores continuam rejeitadas. |
+| Teste | Harness visual isolado executado com `flutter test test/visual_pilot_22_v3_test.dart --reporter compact`: 3/3 GREEN, cobrindo 375, 768 e 1440 px. |
+| Produção | Nenhum arquivo produtivo V4/V5 alterado por esta proposta; nenhuma rota, backend, fixture produtiva ou contrato público criado. Assessments permaneceu intocado. |
+| Status correto | Proposta visual aguardando avaliação; não é `visual-contract-approved`, `accepted`, `local-green`, integração ou conclusão. Programa visual permanece 0/31 `accepted`. |
+| Gate | Aguardar avaliação do Owner sobre o Item 22. Não avançar ao Item 23 nem iniciar implementação antes do aceite explícito aplicável. |
+| Conhecimento capturado | A decisão durável de remover o seletor Cards/Tabela foi consolidada primeiro na spec canônica de Comunicações e projetada em `docs/knowledge/team/superadmin-notices-mvp.md`; validações de conhecimento passaram. |
+
+## 16.70. V4.22 — contrato visual aprovado com ajustes obrigatórios — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Decisão do Owner | A terceira proposta ficou suficientemente próxima para avançar ao próximo item sem quarta imagem. O aceite visual inclui os ajustes descritos pelo Owner como bloqueantes da implementação. |
+| Criação | Não existe botão laranja isolado no topo. Mobile usa o tile de criação de Instituições; tablet/desktop usam a faixa de criação canônica acima da tabela, seguida do respiro tokenizado. |
+| Tabela e filtros | Busca, filtros, distribuição, gaps, tipografia, células, linhas, status e paginação reproduzem Instituições. A coluna Tipo usa badges uniformes, com caixas e alinhamento consistentes. |
+| Preview desktop | Fica dentro de um contêiner auxiliar único e funcional, respeitando hierarquia, paddings, raios e espaçamentos Coelo. |
+| Responsividade | Sem toggle Cards/Tabela: cards compactos automáticos no mobile; tabela no tablet e desktop. |
+| Produção | Nenhuma implementação produtiva autorizada nesta etapa. O contrato foi consolidado na spec canônica e na projeção de conhecimento para execução futura. |
+| Status correto | `visual-contract-approved` com ajustes obrigatórios; ainda não é `accepted`, `local-green`, integração ou conclusão. |
+| Próximo gate | Prosseguir somente com a proposta visual do Item 23 — Circulares. Não iniciar implementação do programa antes do `okay` final aplicável. |
+
+## 16.71. V4.23 — diretório de Circulares aguardando avaliação — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Recorte visual | Primeira tela do Item 23: diretório operacional de Circulares. Composer e projeções no Perfil/Acontece permanecem para validações visuais seguintes do mesmo item. |
+| Baseline | Instituições para toolbar, filtros, tabs, criação, cards, tabela, status e paginação. A spec 037 fornece estados e conteúdo de domínio. |
+| Responsividade | Mobile usa tile de criação seguido por cards compactos; tablet e desktop usam faixa de criação seguida pela tabela canônica. Não há botão laranja isolado nem alternância manual de visualização. |
+| Estados apresentados | Todas, Rascunhos, Agendadas, Publicadas e Encerradas; células incluem público/contexto, autoria, publicação, conteúdo e respostas conforme a largura útil. |
+| Evidências | `pilot-23-circulars-mobile.png`, `pilot-23-circulars-tablet.png` e `pilot-23-circulars-desktop.png`, fora do repositório em `.codex/visualizations/.../01a048b4-b90b-70c0-94f7-f7e43bcf5a6e`. |
+| Teste | Harness visual isolado executado em 375, 768 e 1440 px: 3/3 GREEN e sem exceção de layout. |
+| Produção | Nenhum arquivo produtivo de Circulares foi alterado por esta proposta; o harness temporário foi removido após captura. |
+| Status correto | Proposta visual aguardando avaliação; não é `visual-contract-approved`, `accepted`, `local-green`, integração ou conclusão. |
+| Gate | Aguardar avaliação do Owner sobre o diretório do Item 23 antes de desenhar o composer ou alterar produção. |
+| Conhecimento capturado | `no-op`: a proposta aplica a spec 037 e os contratos visuais existentes; nenhuma nova regra durável foi aprovada nesta etapa. |
+
+## 16.72. V4.23 — diretório de Circulares aprovado visualmente — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Decisão do Owner | Diretório aprovado sem ajustes adicionais. |
+| Contrato congelado | Mobile com tile e cards compactos; tablet/desktop com faixa de criação e tabela; sem botão laranja isolado e sem alternância manual. Toolbar, tabs, status e paginação seguem Instituições. |
+| Fonte canônica | Decisão registrada em `specs/037-principal-circulars.md` e projetada em `docs/knowledge/team/principal-circulars.md`. |
+| Produção | Nenhuma implementação produtiva autorizada ou realizada por este aceite. |
+| Status correto | `visual-contract-approved`; ainda não é `accepted`, `local-green`, integração ou conclusão. |
+| Próximo gate | Avaliar o composer Criar/Editar Circular como próxima tela do Item 23. |
+
+## 16.73. V4.23 — proposta administrativa de composer superada antes da avaliação — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Recorte visual | Direção de Criar/Editar Circular baseada no frame de Criar/Editar Instituição. |
+| Correção do Owner | Antes da entrega, o Owner definiu Publicar Circular como parte dos composers do Principal, ao lado de Acontece, Agora e Momentos. |
+| Resultado | Proposta superada e não apresentada para aprovação; suas imagens não constituem evidência válida nem baseline. |
+| Produção | Nenhum arquivo produtivo foi alterado. |
+| Status correto | `superseded-before-review`; não é contrato visual, aceite, integração ou conclusão. |
+
+## 16.74. V4.23 — Publicar Circular com contrato visual aprovado — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Recorte visual | Publicar Circular com título, texto, mídia, perguntas, público/contexto, agendamento, rascunho e preview. |
+| Baseline | Composers do Principal — Publicar no Acontece, Agora e Momentos — com tokens, fonte, raios e espaçamentos do Design System Coelo. |
+| Responsividade | Mobile em fluxo vertical; tablet com editor linear; desktop com shell e rail separados, contêiner direito arredondado, editor central e preview lateral. Rodapé reproduz Criar/Editar Instituição: Cancelar à esquerda; Salvar rascunho/Publicar à direita; compacto com primária primeiro. |
+| Evidências | `pilot-23-circulars-publish-mobile-approved.png`, `pilot-23-circulars-publish-tablet-approved.png` e `pilot-23-circulars-publish-desktop-approved.png`, fora do repositório em `.codex/visualizations/.../01a048b4-b90b-70c0-94f7-f7e43bcf5a6e`. |
+| Teste | Harness visual isolado, usando o `SuperadminFormActionFooter` real, executado em 375, 768 e 1440 px: 3/3 GREEN. |
+| Produção | Nenhum arquivo produtivo alterado; harness temporário removido após as capturas. |
+| Status correto | `visual-contract-approved`; não é `accepted`, implementação, integração ou conclusão. |
+| Gate | Pode avançar para a próxima superfície visual. Implementação continua bloqueada até o `okay` final do conjunto de telas. |
+| Conhecimento capturado | Fonte canônica e projeção registram o composer Principal, a geometria externa canônica e o rodapé responsivo de Criar/Editar Instituição. |
+
+## 16.75. Principal — padrão visual comum para todos os fluxos Publicar — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Decisão do Owner | O padrão aprovado de Publicar Circular faz sentido e passa a orientar Publicar no Acontece, Publicar no Agora e Publicar em Momentos. |
+| Contrato comum | Shell, contêiner direito, insets, preview lateral quando as constraints comportarem e rodapé responsivo de Criar/Editar Instituição. |
+| Variação permitida | Mídia, campos, ferramentas, texto, audiência, agendamento, validações e CTA adaptam-se ao domínio de cada publicação. |
+| Fronteira | A aprovação visual comum não compartilha domínio, repository, ownership, storage ou autorização entre os módulos. |
+| Status correto | `visual-contract-approved`; nenhuma implementação produtiva foi iniciada e nenhum item foi promovido a `accepted`. |
+| Gate | Aplicar o padrão nas próximas propostas visuais; implementação continua bloqueada até o `okay` final do conjunto. |
+| Conhecimento capturado | Fontes canônicas e projeções de Acontece, Agora, Momentos e Circulares foram sincronizadas. |
+
+## 16.76. V4.23 — Circular no Perfil e projeção no Acontece aprovadas — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Recorte visual | Descoberta de Circulares na aba do Perfil e projeção da mesma Circular no feed Acontece, sem duplicar o agregado canônico. |
+| Decisão do Owner | Proposta aprovada sem necessidade de nova imagem, com uma correção obrigatória para web. |
+| Mobile e tablet | Mobile preserva Perfil com lista compacta de Circulares; tablet apresenta a Circular como publicação editorial completa no Acontece. |
+| Correção web | A prévia no Acontece não permanece em coluna lateral nem comprime a tela. Ela nasce oculta e abre em popup contextual somente por ação explícita. |
+| Contrato do popup | Superfície neutra, barreira, corpo rolável, fechamento acessível e retorno de foco conforme `pattern.overlay-surfaces`. |
+| Fronteira | O ajuste é da consulta da Circular no Perfil web; não remove o preview lateral já aprovado dos composers de publicação. |
+| Evidência | `pilot-23c-circular-delivery.png`, fora do repositório em `.codex/visualizations/.../01a048b4-b90b-70c0-94f7-f7e43bcf5a6e`, acrescida da correção textual aprovada pelo Owner. |
+| Produção | Nenhum código produtivo alterado; nenhuma nova imagem solicitada ou gerada para a correção. |
+| Status correto | `visual-contract-approved`; ainda não é `accepted`, implementação, integração ou conclusão. |
+| Próximo gate | Prosseguir para a próxima superfície visual; implementação continua bloqueada até o `okay` final do conjunto. |
+| Conhecimento capturado | `specs/037-principal-circulars.md` e `docs/knowledge/team/principal-circulars.md` registram a prévia web sob demanda em popup. |
+
+## 16.77. Checkpoint técnico para consolidação das worktrees — 2026-08-31
+
+**Progresso geral conhecido — Concluído localmente:** 40,58% (84/207 ações).
+**Progresso geral conhecido — Restante local:** 59,42% (123/207 ações).
+**Flutter `verified`:** 0,00% (0/207). **Programa visual `accepted`:**
+0,00% (0/31). **Integração E2E:** 0,00% (0/202). **Projeto estrito:**
+0,00% (0/229). A base continua sendo os `action_id` e gates deste rastreador;
+o fechamento de uma fundação visual compartilhada não promove ações de produto,
+E2E ou conclusão estrita sem suas próprias evidências.
+
+| Campo | Estado factual |
+|---|---|
+| Objetivo | Converter o lote dirty da worktree visual em commits pequenos, testados e alcançáveis antes da consolidação final local. |
+| V3.18 | `pattern.coelo-time-picker` implementado no `coelo_ui_core`, consumido por Cardápio, Medicação e `CoeloDateTimeField`, com catálogo e goldens aprovados. O gate técnico da entrega ficou GREEN; isso não altera o programa visual `accepted` nem qualquer ação E2E. |
+| Assessments concorrente | O delta já existente e protegido foi preservado em commit próprio `bc6f8d00`, com isolamento de loads/comandos assíncronos, limpeza de estado sensível e troca segura de repository/gradebook. O analyzer exigiu duas guardas `mounted` explícitas; elas foram acrescentadas antes do commit. As cinco ações de Assessments permanecem `audited`, sem promoção de tela ou integração. |
+| Commits | `bc6f8d00` Assessments; `083bacc1` seletor de hora e consumidores; `7b2afa92` fontes canônicas visuais; `3b310668` projeção de conhecimento. Este checkpoint será o commit documental final da branch visual. |
+| Testes | Core data/hora 10/10; catálogo 9/9; Superadmin focado 28/28; analyzers de `coelo_ui_core`, Catálogo e Superadmin sem issues; validador administrativo exit 0; conhecimento validado pelos dois scripts; `git diff --check` sem erro. |
+| Responsividade e acessibilidade | Seletor coberto em 375/768/1024/1440, light/dark, texto a 200%, reduced motion, teclado, Escape, erro, disabled e retorno de foco. Assessments coberto em 375/768/1024/1440 e texto a 100%/200% no teste focado, sem promover aceite visual. |
+| Conhecimento | Fontes canônicas foram commitadas antes da projeção; os dois gates da memória Coelo passaram. Nenhuma PII, fixture real ou segredo foi introduzido. |
+| Tempo usado | O tempo adicional desta retomada não é calculável com confiabilidade a partir do ledger disponível; o checkpoint anterior preserva 3 h 41 min acumulados. Nenhuma duração foi inferida por percentual. |
+| Primeiro gate incompleto | Integração dos commits exclusivos da branch visual com a fundação backend na worktree `codex/final-consolidation`, seguida das regressões combinadas. |
+| Próximo comando exato | Recalcular `rtk git cherry dev codex/flutter-ui-10h`; na worktree final, aplicar em ordem somente as linhas `+`, resolver documentos de forma append-only e repetir os gates backend/Flutter. |
+
 ## 17. Histórico
 
 | Data | Mudança |
