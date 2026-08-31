@@ -3,7 +3,7 @@ create extension if not exists pgtap with schema extensions;
 select plan(24);
 select has_function('public','superadmin_activity_set_participants_v2',array['uuid','uuid','bigint','jsonb'],'participant snapshot exists');
 select has_function('public','superadmin_activity_set_professionals_v2',array['uuid','uuid','bigint','jsonb'],'professional snapshot exists');
-select ok(not has_function_privilege('authenticated','public.superadmin_activity_set_participants_v2(uuid,uuid,bigint,jsonb)','execute'),'Task3 exposes no intermediate authenticated grant');
+select ok(has_function_privilege('authenticated','public.superadmin_activity_set_participants_v2(uuid,uuid,bigint,jsonb)','execute'),'final nominal participant gateway is executable by authenticated');
 select ok(not has_function_privilege('service_role','public.superadmin_activity_set_professionals_v2(uuid,uuid,bigint,jsonb)','execute'),'service role cannot call professional gateway');
 
 insert into public.institution_types(id,code,name,status) values('73000000-0000-4000-8000-000000000009','activity-v2-rel','Activity v2 relationship','active');

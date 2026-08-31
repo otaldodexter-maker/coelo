@@ -10,7 +10,9 @@ param(
 
   [switch]$RunLint,
 
-  [switch]$RunAuthLifecycle
+  [switch]$RunAuthLifecycle,
+
+  [switch]$RunActivityV2Concurrency
 )
 
 $ErrorActionPreference = 'Stop'
@@ -189,6 +191,11 @@ try {
   }
   if ($RunAuthLifecycle) {
     & (Join-Path $scriptRoot 'Test-LocalAuthLifecycle.ps1') `
+      -ProjectRoot $projectRoot `
+      -ProjectId $projectId
+  }
+  if ($RunActivityV2Concurrency) {
+    & (Join-Path $scriptRoot 'Test-ActivityV2Concurrency.ps1') `
       -ProjectRoot $projectRoot `
       -ProjectId $projectId
   }
