@@ -36,3 +36,12 @@ escopo, metadados, auditoria e retencao em ambos os casos.
 As specs antigas que descreviam Atividades no Superadmin como somente leitura
 ficam substituidas por esta decisao. Criar/editar jamais pode ser apresentado se
 o backend nao oferecer o comando autorizado correspondente.
+
+## Complemento cross-app aprovado em 2026-08-31
+
+Entidades e invariantes de Activities sao compartilhadas, mas gateways de ator
+nao sao. O Superadmin interno usa RPCs nominais baseadas na identidade e sessao
+internas; o Admin people-based preserva seu gateway proprio; o Principal nao
+recebe endpoint ou grant novo sem contrato familiar posterior. Reutilizacao de
+dominio nunca autoriza misturar realms, fabricar pessoa para identidade interna
+ou compartilhar uma RPC privilegiada entre aplicativos.

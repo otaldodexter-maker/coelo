@@ -1,7 +1,7 @@
 ---
 title: "Activities cross-app backend v2"
 source: "AGENTS.md; decisions/0014-contextual-activities-and-delegated-unit-creation.md; decisions/0019-superadmin-internal-identity.md; decisions/0022-superadmin-activities-and-identity-storage.md; specs/014-atividade-contextual.md; specs/039-superadmin-internal-auth-session-context.md; docs/superpowers/specs/2026-07-29-superadmin-activity-inspection-design.md; docs/superpowers/specs/2026-08-04-superadmin-activity-form-wizard-design.md; contrato aprovado pelo Owner Coelo em 2026-08-31"
-status: "design-review-required"
+status: "approved-for-implementation"
 generated_at: "2026-08-31"
 ---
 
