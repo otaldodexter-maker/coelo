@@ -65,14 +65,17 @@ final class _ChildRequest {
   final _RequestAnswer? answer;
 
   _ChildRequest answered({required String label, required String actor}) {
-    final nextCount = policy == _GuardianPolicy.allRequired ? guardianCount : 1;
+    final nextCount = policy == _GuardianPolicy.allRequired
+        ? (responseCount + 1).clamp(0, guardianCount)
+        : 1;
+    final completed = policy == _GuardianPolicy.oneIsEnough || nextCount >= guardianCount;
     return _ChildRequest(
       id: id,
       title: title,
       childContext: childContext,
       kind: kind,
       policy: policy,
-      status: _RequestStatus.answered,
+      status: completed ? _RequestStatus.answered : _RequestStatus.pending,
       responseCount: nextCount,
       guardianCount: guardianCount,
       answer: _RequestAnswer(label: label, actor: actor, answeredAt: DateTime(2026, 8, 31, 17, 10)),
@@ -112,7 +115,9 @@ final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
         _GuardianPolicy.oneIsEnough =>
           'Resposta registrada para ${_childName(item.childContext)}. Os demais responsáveis foram avisados e não precisam responder.',
         _GuardianPolicy.allRequired =>
-          'Todos os responsáveis responderam por ${_childName(item.childContext)}.',
+          _items[index].status == _RequestStatus.answered
+              ? 'Todos os responsáveis responderam por ${_childName(item.childContext)}.'
+              : 'Resposta registrada. Ainda falta ${_items[index].guardianCount - _items[index].responseCount} responsável por ${_childName(item.childContext)}.',
       };
     });
   }
@@ -334,6 +339,10 @@ final class _RequestActions extends StatelessWidget {
           OutlinedButton(
             onPressed: () => onAnswer('Não participará'),
             child: const Text('Não participará'),
+          ),
+          OutlinedButton(
+            onPressed: () => onAnswer('Talvez participe'),
+            child: const Text('Talvez'),
           ),
           FilledButton(
             key: Key('agenda-request-rsvp-${item.id}'),

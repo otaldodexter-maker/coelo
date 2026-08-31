@@ -62,6 +62,7 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
   late AgendaResponseMode _responseMode;
   late GuardianResponsePolicy _guardianPolicy;
   late Set<String> _reminders;
+  String? _feedback;
   int _step = 0;
 
   AgendaItem? get _existing =>
@@ -70,7 +71,6 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
   @override
   void initState() {
     super.initState();
-    final seed = _existing ?? widget.store.items.first;
     _title = TextEditingController(text: _existing?.title ?? 'Novo evento');
     _location = TextEditingController(text: _existing?.location ?? '');
     _details = TextEditingController(text: _existing?.description ?? '');
@@ -79,12 +79,14 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
     );
     _type = _existing?.type ?? AgendaItemType.event;
     _priority = _existing?.priority ?? AgendaPriority.normal;
-    _start = _existing?.startsAt ?? seed.startsAt.add(const Duration(days: 2));
+    _start = _existing?.startsAt ?? widget.store.referenceDate.add(const Duration(days: 2));
     _end = _existing?.endsAt ?? _start.add(const Duration(hours: 1));
     _allDay = _existing?.allDay ?? false;
     _timeZoneId = _existing?.timeZoneId ?? 'America/Sao_Paulo';
     _context = _contextFor(_existing?.audience);
-    _audience = {'Responsáveis'};
+    _audience = _existing?.audienceLabels.isNotEmpty == true
+        ? {..._existing!.audienceLabels}
+        : {'Responsáveis'};
     _recurrence = _recurrenceLabel(_existing?.recurrence);
     if (_existing?.recurrence?.occurrenceCount != null) {
       _recurrenceEnd = 'Após uma quantidade';
@@ -92,7 +94,9 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
     _recurrenceUntil = _existing?.recurrence?.until ?? _start.add(const Duration(days: 30));
     _responseMode = _existing?.responseMode ?? AgendaResponseMode.none;
     _guardianPolicy = _existing?.guardianResponsePolicy ?? GuardianResponsePolicy.oneIsEnough;
-    _reminders = {'Na publicação', '24 horas antes'};
+    _reminders = _existing?.reminders.isNotEmpty == true
+        ? {..._existing!.reminders}
+        : {'Na publicação', '24 horas antes'};
   }
 
   @override
@@ -105,8 +109,16 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
   }
 
   void _save(AgendaItemStatus requestedStatus) {
-    if (!widget.actionsAvailable || _title.text.trim().isEmpty || _audience.isEmpty) return;
-    final seed = _existing ?? widget.store.items.first;
+    if (!widget.actionsAvailable) return;
+    if (_title.text.trim().isEmpty || _audience.isEmpty) {
+      setState(() {
+        _feedback = _title.text.trim().isEmpty
+            ? 'Informe o título do evento antes de continuar.'
+            : 'Selecione pelo menos uma audiência.';
+      });
+      return;
+    }
+    final institutionId = _existing?.audience.institutionId ?? 'inst-horizonte';
     final id = widget.eventId ?? 'local-agenda-${widget.store.items.length + 1}';
     final start = _allDay ? DateTime(_start.year, _start.month, _start.day) : _start;
     var end = _allDay ? DateTime(_end.year, _end.month, _end.day) : _end;
@@ -116,30 +128,45 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
     final status = requestedStatus == AgendaItemStatus.published && !widget.canPublish
         ? AgendaItemStatus.draft
         : requestedStatus;
-    widget.store.upsertItem(
-      AgendaItem(
-        id: id,
-        title: _title.text.trim(),
-        type: _type,
-        audience: _resolvedAudience(seed.audience.institutionId),
-        priority: _priority,
-        status: status,
-        origin: _existing?.origin ?? AgendaItemOrigin.fixture,
-        startsAt: start,
-        endsAt: end,
-        location: _location.text.trim(),
-        description: _details.text.trim(),
-        recurrence: _buildRecurrence(),
-        allDay: _allDay,
-        requiresRsvp: _responseMode == AgendaResponseMode.rsvp,
-        authorizationReference: _existing?.authorizationReference,
-        timeZoneId: _timeZoneId,
-        responseMode: _responseMode,
-        guardianResponsePolicy: _guardianPolicy,
-        history: _existing?.history ?? const [],
-      ),
+    final item = AgendaItem(
+      id: id,
+      title: _title.text.trim(),
+      type: _type,
+      audience: _resolvedAudience(institutionId),
+      priority: _priority,
+      status: status,
+      origin: _existing?.origin ?? AgendaItemOrigin.fixture,
+      startsAt: start,
+      endsAt: end,
+      location: _location.text.trim(),
+      description: _details.text.trim(),
+      recurrence: _buildRecurrence(),
+      allDay: _allDay,
+      requiresRsvp: _responseMode == AgendaResponseMode.rsvp,
+      authorizationReference: _existing?.authorizationReference,
+      timeZoneId: _timeZoneId,
+      responseMode: _responseMode,
+      guardianResponsePolicy: _guardianPolicy,
+      audienceLabels: Set.unmodifiable(_audience),
+      reminders: Set.unmodifiable(_reminders),
+      history: _existing?.history ?? const [],
     );
-    widget.onSaved(id);
+    final result = widget.store.saveItem(item, actorContextId: institutionId);
+    if (result == AgendaMutationResult.success) {
+      widget.onSaved(id);
+      return;
+    }
+    setState(() {
+      _feedback = switch (result) {
+        AgendaMutationResult.reservationConflict =>
+          'Existe uma reserva conflitante neste local e horário. Ajuste o período ou solicite a substituição autorizada.',
+        AgendaMutationResult.notAuthorized => 'Seu perfil não permite substituir este conflito.',
+        AgendaMutationResult.reasonRequired => 'Informe o motivo para substituir o conflito.',
+        AgendaMutationResult.invalidLifecycle => 'Este evento não pode ser alterado neste estado.',
+        AgendaMutationResult.notFound => 'O evento não está mais disponível.',
+        AgendaMutationResult.success => null,
+      };
+    });
   }
 
   AgendaAudience _resolvedAudience(String institutionId) => switch (_context) {
@@ -204,6 +231,17 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
             widget.eventId == null ? 'Criar evento' : 'Editar evento',
             style: Theme.of(context).textTheme.headlineMedium,
           ),
+          if (_feedback != null) ...[
+            const SizedBox(height: CoeloSpacing.space2),
+            Semantics(
+              liveRegion: true,
+              child: Text(
+                _feedback!,
+                key: const Key('agenda-event-form-feedback'),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+            ),
+          ],
           const SizedBox(height: CoeloSpacing.space4),
           _content(),
         ],

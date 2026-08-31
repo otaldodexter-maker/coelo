@@ -43,7 +43,12 @@ final class AgendaModuleShell extends StatelessWidget {
     title: 'Agenda institucional',
     subtitle: 'Acompanhe o calendário, eventos e respostas por contexto.',
     logout: logout,
-    currentDestination: 'agenda',
+    currentDestination: switch (selectedArea) {
+      AgendaModuleArea.calendar || AgendaModuleArea.events => 'agenda',
+      AgendaModuleArea.requests => 'agenda-requests',
+      AgendaModuleArea.approvals => 'agenda-approvals',
+      AgendaModuleArea.permissions => 'agenda-permissions',
+    },
     actions: actions,
     compactActions: compactActions,
     onDestinationSelected: onDestinationSelected,

@@ -24,6 +24,7 @@ final class AgendaCalendarPage extends StatefulWidget {
     required this.onAreaSelected,
     required this.onCreateItem,
     this.onDestinationSelected,
+    this.onOpenItem,
     super.key,
   }) : unavailable = false;
 
@@ -32,6 +33,7 @@ final class AgendaCalendarPage extends StatefulWidget {
     required this.onAreaSelected,
     required this.onCreateItem,
     this.onDestinationSelected,
+    this.onOpenItem,
     super.key,
   }) : store = null,
        unavailable = true;
@@ -42,6 +44,7 @@ final class AgendaCalendarPage extends StatefulWidget {
   final ValueChanged<AgendaModuleArea> onAreaSelected;
   final VoidCallback onCreateItem;
   final ValueChanged<String>? onDestinationSelected;
+  final ValueChanged<String>? onOpenItem;
 
   @override
   State<AgendaCalendarPage> createState() => _AgendaCalendarPageState();
@@ -119,6 +122,7 @@ final class _AgendaCalendarPageState extends State<AgendaCalendarPage> {
               _selectedDay = null;
               _expandedDay = false;
             }),
+            onOpenItem: widget.onOpenItem,
           ),
         );
       }
@@ -130,7 +134,7 @@ final class _AgendaCalendarPageState extends State<AgendaCalendarPage> {
               selectedDay: _selectedDay,
               onDaySelected: (day) => setState(() => _selectedDay = day),
             )
-          : _AgendaTimeline(occurrences: occurrences);
+          : _AgendaTimeline(occurrences: occurrences, onOpenItem: widget.onOpenItem);
 
       return Padding(
         padding: EdgeInsets.fromLTRB(inset, 0, inset, CoeloSpacing.space4),
@@ -146,6 +150,7 @@ final class _AgendaCalendarPageState extends State<AgendaCalendarPage> {
                   fullscreen: false,
                   onExpand: () => setState(() => _expandedDay = true),
                   onClose: () => setState(() => _selectedDay = null),
+                  onOpenItem: widget.onOpenItem,
                 ),
           detailVisible: !mobile && _selectedDay != null,
         ),
@@ -483,9 +488,10 @@ final class _AgendaDayCell extends StatelessWidget {
 }
 
 final class _AgendaTimeline extends StatelessWidget {
-  const _AgendaTimeline({required this.occurrences});
+  const _AgendaTimeline({required this.occurrences, this.onOpenItem});
 
   final List<AgendaOccurrence> occurrences;
+  final ValueChanged<String>? onOpenItem;
 
   @override
   Widget build(BuildContext context) {
@@ -502,7 +508,7 @@ final class _AgendaTimeline extends StatelessWidget {
       child: Column(
         children: [
           for (final occurrence in occurrences) ...[
-            _AgendaTimelineEntry(occurrence: occurrence),
+            _AgendaTimelineEntry(occurrence: occurrence, onOpenItem: onOpenItem),
             const SizedBox(height: CoeloSpacing.space2),
           ],
         ],
@@ -512,9 +518,10 @@ final class _AgendaTimeline extends StatelessWidget {
 }
 
 final class _AgendaTimelineEntry extends StatelessWidget {
-  const _AgendaTimelineEntry({required this.occurrence});
+  const _AgendaTimelineEntry({required this.occurrence, this.onOpenItem});
 
   final AgendaOccurrence occurrence;
+  final ValueChanged<String>? onOpenItem;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -539,7 +546,7 @@ final class _AgendaTimelineEntry extends StatelessWidget {
           Expanded(
             child: CoeloAdminInteractiveCard(
               semanticLabel: '${occurrence.item.title}, ${_timeRange(occurrence)}',
-              onPressed: () {},
+              onPressed: onOpenItem == null ? null : () => onOpenItem!(occurrence.item.id),
               child: Padding(
                 padding: const EdgeInsets.all(CoeloSpacing.space3),
                 child: compact ? _compactContent(context) : _wideContent(context),
@@ -657,6 +664,7 @@ final class _AgendaDayDetail extends StatelessWidget {
     required this.fullscreen,
     required this.onClose,
     this.onExpand,
+    this.onOpenItem,
   });
 
   final DateTime day;
@@ -664,6 +672,7 @@ final class _AgendaDayDetail extends StatelessWidget {
   final bool fullscreen;
   final VoidCallback onClose;
   final VoidCallback? onExpand;
+  final ValueChanged<String>? onOpenItem;
 
   @override
   Widget build(BuildContext context) => Material(
@@ -711,7 +720,9 @@ final class _AgendaDayDetail extends StatelessWidget {
                           Expanded(
                             child: CoeloAdminInteractiveCard(
                               semanticLabel: occurrence.item.title,
-                              onPressed: () {},
+                              onPressed: onOpenItem == null
+                                  ? null
+                                  : () => onOpenItem!(occurrence.item.id),
                               child: Padding(
                                 padding: const EdgeInsets.all(CoeloSpacing.space3),
                                 child: Column(

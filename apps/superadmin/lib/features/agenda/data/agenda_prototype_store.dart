@@ -3,6 +3,13 @@ import 'package:flutter/foundation.dart';
 import '../domain/agenda_models.dart';
 
 final class AgendaPrototypeStore extends ChangeNotifier {
+  AgendaPrototypeStore.empty({DateTime Function()? clock}) : _clock = clock ?? DateTime.now {
+    _contexts = const [];
+    _items = const [];
+    _requests = const [];
+    _birthdays = const [];
+  }
+
   AgendaPrototypeStore.seeded({DateTime Function()? clock}) : _clock = clock ?? DateTime.now {
     _contexts = _seedContexts();
     _items = _seedItems();
@@ -224,7 +231,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
           );
         }
         occurrenceIndex++;
-        occurrence = _nextOccurrence(occurrence, recurrence);
+        occurrence = _occurrenceAt(item.startsAt, recurrence, occurrenceIndex);
       }
     }
     return List.unmodifiable(result..sort(AgendaOccurrence.compareChronologically));
@@ -365,14 +372,14 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     return iterator.moveNext() ? iterator.current : null;
   }
 
-  static DateTime _nextOccurrence(DateTime value, AgendaRecurrence recurrence) {
+  static DateTime _occurrenceAt(DateTime value, AgendaRecurrence recurrence, int occurrenceIndex) {
     switch (recurrence.frequency) {
       case AgendaRecurrenceFrequency.daily:
-        return value.add(Duration(days: recurrence.interval));
+        return value.add(Duration(days: recurrence.interval * occurrenceIndex));
       case AgendaRecurrenceFrequency.weekly:
-        return value.add(Duration(days: 7 * recurrence.interval));
+        return value.add(Duration(days: 7 * recurrence.interval * occurrenceIndex));
       case AgendaRecurrenceFrequency.monthly:
-        final targetMonth = value.month + recurrence.interval;
+        final targetMonth = value.month + (recurrence.interval * occurrenceIndex);
         final lastDay = DateTime(value.year, targetMonth + 1, 0).day;
         return DateTime(
           value.year,

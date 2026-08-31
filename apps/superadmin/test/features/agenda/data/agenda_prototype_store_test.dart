@@ -182,6 +182,27 @@ void main() {
     ]);
   });
 
+  test('recorrência mensal preserva o dia-base após mês curto', () {
+    final store = AgendaPrototypeStore.empty(clock: () => now);
+    store.upsertItem(
+      AgendaItem.fixture(
+        id: 'monthly-end-of-month',
+        title: 'Fechamento mensal',
+        audience: const AgendaAudience(institutionId: 'inst-horizonte'),
+        startsAt: DateTime(2026, 1, 31, 9),
+        endsAt: DateTime(2026, 1, 31, 10),
+        recurrence: const AgendaRecurrence.monthly(occurrenceCount: 3),
+      ),
+    );
+
+    expect(
+      store
+          .occurrencesBetween(DateTime(2026), DateTime(2026, 4, 2))
+          .map((occurrence) => occurrence.startsAt),
+      [DateTime(2026, 1, 31, 9), DateTime(2026, 2, 28, 9), DateTime(2026, 3, 31, 9)],
+    );
+  });
+
   test('edição recorrente registra escopo ocorrência, futuras ou série', () {
     final store = AgendaPrototypeStore.seeded(clock: () => now);
     for (final scope in AgendaOccurrenceEditScope.values) {

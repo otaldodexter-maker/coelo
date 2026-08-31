@@ -190,6 +190,8 @@ final class AgendaItem {
     this.timeZoneId = 'America/Sao_Paulo',
     this.responseMode = AgendaResponseMode.none,
     this.guardianResponsePolicy = GuardianResponsePolicy.oneIsEnough,
+    this.audienceLabels = const {},
+    this.reminders = const {},
     this.history = const [],
   });
   factory AgendaItem.fixture({
@@ -211,6 +213,8 @@ final class AgendaItem {
     String timeZoneId = 'America/Sao_Paulo',
     AgendaResponseMode responseMode = AgendaResponseMode.none,
     GuardianResponsePolicy guardianResponsePolicy = GuardianResponsePolicy.oneIsEnough,
+    Set<String> audienceLabels = const {},
+    Set<String> reminders = const {},
     List<AgendaHistoryEntry> history = const [],
   }) => AgendaItem(
     id: id,
@@ -231,6 +235,8 @@ final class AgendaItem {
     timeZoneId: timeZoneId,
     responseMode: responseMode,
     guardianResponsePolicy: guardianResponsePolicy,
+    audienceLabels: Set.unmodifiable(audienceLabels),
+    reminders: Set.unmodifiable(reminders),
     history: List.unmodifiable(history),
   );
   final String id, title, location, description;
@@ -246,6 +252,8 @@ final class AgendaItem {
   final String timeZoneId;
   final AgendaResponseMode responseMode;
   final GuardianResponsePolicy guardianResponsePolicy;
+  final Set<String> audienceLabels;
+  final Set<String> reminders;
   final List<AgendaHistoryEntry> history;
   Duration get duration => endsAt.difference(startsAt);
   AgendaVisualProminence get prominence => deriveAgendaProminence(audience: audience, type: type);
@@ -268,6 +276,8 @@ final class AgendaItem {
     String? timeZoneId,
     AgendaResponseMode? responseMode,
     GuardianResponsePolicy? guardianResponsePolicy,
+    Set<String>? audienceLabels,
+    Set<String>? reminders,
     List<AgendaHistoryEntry>? history,
   }) => AgendaItem(
     id: id ?? this.id,
@@ -288,6 +298,8 @@ final class AgendaItem {
     timeZoneId: timeZoneId ?? this.timeZoneId,
     responseMode: responseMode ?? this.responseMode,
     guardianResponsePolicy: guardianResponsePolicy ?? this.guardianResponsePolicy,
+    audienceLabels: audienceLabels ?? this.audienceLabels,
+    reminders: reminders ?? this.reminders,
     history: history ?? this.history,
   );
 }
