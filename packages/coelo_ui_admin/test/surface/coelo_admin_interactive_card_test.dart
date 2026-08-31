@@ -80,6 +80,22 @@ void main() {
     await tester.tap(find.byType(CoeloAdminInteractiveCard));
     expect(presses, 1);
   });
+
+  testWidgets('keeps a read-only card non-interactive on hover', (tester) async {
+    await _pumpCard(tester, enabled: false);
+
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer();
+    await mouse.moveTo(tester.getCenter(find.byType(CoeloAdminInteractiveCard)));
+    await tester.pumpAndSettle();
+
+    final surface = tester.widget<AnimatedContainer>(
+      find.byKey(const Key('interactive-card-surface')),
+    );
+    final decoration = surface.decoration! as BoxDecoration;
+    expect((decoration.border! as Border).top.width, 1);
+    expect((decoration.border! as Border).top.color, CoeloTheme.light.colorScheme.outlineVariant);
+  });
 }
 
 Future<void> _pumpCard(
@@ -87,6 +103,7 @@ Future<void> _pumpCard(
   bool disableAnimations = false,
   String? semanticLabel,
   VoidCallback? onPressed,
+  bool enabled = true,
 }) {
   return tester.pumpWidget(
     MaterialApp(
@@ -100,7 +117,7 @@ Future<void> _pumpCard(
                 width: 320,
                 child: CoeloAdminInteractiveCard(
                   semanticLabel: semanticLabel,
-                  onPressed: onPressed ?? () {},
+                  onPressed: enabled ? onPressed ?? () {} : null,
                   surfaceKey: const Key('interactive-card-surface'),
                   child: const Padding(padding: EdgeInsets.all(16), child: Text('Instituição')),
                 ),

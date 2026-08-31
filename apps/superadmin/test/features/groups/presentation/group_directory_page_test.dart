@@ -323,6 +323,103 @@ void main() {
       expect(find.text(scenario.expected), findsOneWidget);
     });
   }
+
+  testWidgets('hides every operational control after authorization is denied', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupDirectoryPage(
+          repository: _ScenarioRepository.unauthorized(),
+          logout: () async => const LogoutResult.success(),
+          onCreate: () {},
+          onEdit: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Acesso não autorizado'), findsOneWidget);
+    expect(find.byKey(const Key('group-filter-toolbar')), findsNothing);
+    expect(find.byKey(const Key('group-status-tabs')), findsNothing);
+    expect(find.byKey(const Key('group-files')), findsNothing);
+    expect(find.byKey(const Key('group-view-cards')), findsNothing);
+    expect(find.byKey(const Key('group-view-table')), findsNothing);
+    expect(find.text('Criar turma'), findsNothing);
+  });
+
+  testWidgets('keeps retry and authorized creation available after a load failure', (tester) async {
+    var createCalls = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupDirectoryPage(
+          repository: _ScenarioRepository.failure(),
+          logout: () async => const LogoutResult.success(),
+          onCreate: () => createCalls++,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Tentar novamente'), findsOneWidget);
+    expect(find.text('Criar turma'), findsOneWidget);
+    await tester.tap(find.text('Criar turma'));
+    expect(createCalls, 1);
+  });
+
+  testWidgets('clears both query and visible search text from no results', (tester) async {
+    final institutions = FakeInstitutionDirectoryRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupDirectoryPage(
+          repository: FakeGroupDirectoryRepository(institutions),
+          logout: () async => const LogoutResult.success(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final search = find.descendant(
+      of: find.byKey(const Key('group-filter-toolbar')),
+      matching: find.byType(TextField),
+    );
+    await tester.enterText(search, 'sem correspondência');
+    await tester.pump(const Duration(milliseconds: 350));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nenhuma turma encontrada'), findsOneWidget);
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Limpar filtros'));
+    await tester.pumpAndSettle();
+    expect(tester.widget<TextField>(search).controller!.text, isEmpty);
+    expect(find.text('Turma 1'), findsWidgets);
+  });
+
+  testWidgets('read-only cards preserve their detailed semantics', (tester) async {
+    final semantics = tester.ensureSemantics();
+    final institutions = FakeInstitutionDirectoryRepository();
+    final groups = FakeGroupDirectoryRepository(institutions);
+    final firstGroup = groups.records.first;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupDirectoryPage(
+          repository: groups,
+          logout: () async => const LogoutResult.success(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.bySemanticsLabel(RegExp('Unidade.*${RegExp.escape(firstGroup.unitName)}')),
+      findsWidgets,
+    );
+    expect(
+      find.bySemanticsLabel(RegExp('Instituição.*${RegExp.escape(firstGroup.institutionName)}')),
+      findsWidgets,
+    );
+    semantics.dispose();
+  });
 }
 
 enum _Scenario { empty, failure, unauthorized }

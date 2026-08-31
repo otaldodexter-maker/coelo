@@ -82,8 +82,8 @@ final class _CoeloAdminInteractiveCardState extends State<CoeloAdminInteractiveC
     );
 
     return MouseRegion(
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
+      onEnter: widget.onPressed == null ? null : (_) => setState(() => _hovered = true),
+      onExit: widget.onPressed == null ? null : (_) => setState(() => _hovered = false),
       cursor: widget.onPressed == null ? MouseCursor.defer : SystemMouseCursors.click,
       child: widget.semanticLabel == null
           ? surface

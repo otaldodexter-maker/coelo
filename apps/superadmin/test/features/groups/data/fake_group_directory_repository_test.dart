@@ -105,4 +105,50 @@ void main() {
       throwsArgumentError,
     );
   });
+
+  test('persists preview members, professionals, and invites across reloads', () async {
+    final repository = FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository());
+    final record = repository.records.first;
+
+    await repository.saveComposition(
+      GroupDirectorySaveRequest(
+        requestId: 'preview-members-save',
+        record: record,
+        people: const [
+          GroupDirectoryPersonBinding(
+            id: 'person-student',
+            name: 'Ana Estudante',
+            identifier: '@ana',
+            role: 'student',
+          ),
+        ],
+        professionals: const [
+          GroupDirectoryPersonBinding(
+            id: 'person-teacher',
+            name: 'Bia Professora',
+            identifier: '@bia',
+            role: 'professional',
+            profile: 'Professora',
+          ),
+        ],
+        invites: const [
+          GroupDirectoryInviteBinding(
+            id: 'invite-guardian',
+            identifier: '@responsavel',
+            role: 'guardian',
+            profile: 'Responsável',
+            status: 'Pendente',
+          ),
+        ],
+      ),
+    );
+
+    final reloaded = await repository.findById(record.id);
+    expect(reloaded, isNotNull);
+    expect(
+      reloaded!.effectiveAccess.map((access) => access.personId),
+      containsAll(<String>['person-student', 'person-teacher']),
+    );
+    expect(reloaded.invites.single.identifier, '@responsavel');
+  });
 }

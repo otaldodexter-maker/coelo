@@ -92,7 +92,7 @@ void main() {
     expect(production.calls, isEmpty);
   });
 
-  testWidgets('production routes preserve and call the injected repository', (tester) async {
+  testWidgets('production list uses its repository while mutations fail closed', (tester) async {
     final session = SuperadminSession()..signIn();
     final repository = _TrackingGroupDirectoryRepository();
     final router = createSuperadminRouter(
@@ -119,16 +119,16 @@ void main() {
     repository.calls.clear();
     router.go(SuperadminRoutes.groupCreate);
     await tester.pumpAndSettle();
-    final create = tester.widget<GroupFormPage>(find.byType(GroupFormPage));
-    expect(create.repository, same(repository));
-    expect(repository.calls, contains('fetchFormContext'));
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
+    expect(find.byType(GroupFormPage), findsNothing);
+    expect(repository.calls, isEmpty);
 
     repository.calls.clear();
     router.go('/groups/${repository.firstId}/edit');
     await tester.pumpAndSettle();
-    final edit = tester.widget<GroupFormPage>(find.byType(GroupFormPage));
-    expect(edit.repository, same(repository));
-    expect(repository.calls, containsAll(['findById:${repository.firstId}', 'fetchFormContext']));
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
+    expect(find.byType(GroupFormPage), findsNothing);
+    expect(repository.calls, isEmpty);
   });
 }
 

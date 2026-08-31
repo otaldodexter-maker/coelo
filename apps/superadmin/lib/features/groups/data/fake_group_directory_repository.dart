@@ -88,7 +88,28 @@ final class FakeGroupDirectoryRepository implements GroupDirectoryRepository {
 
   @override
   Future<GroupDirectorySaveResult> saveComposition(GroupDirectorySaveRequest request) async {
-    await upsert(request.record);
+    final inheritedAccess = request.record.effectiveAccess
+        .where((access) => access.inherited)
+        .toList(growable: false);
+    final localBindings = [...request.people, ...request.professionals];
+    await upsert(
+      request.record.copyWith(
+        effectiveAccess: [
+          ...inheritedAccess,
+          for (final binding in localBindings)
+            GroupEffectiveAccess(
+              personId: binding.id,
+              displayName: binding.name,
+              origin: 'group',
+              inherited: false,
+              profileId: 'preview-${binding.profile ?? binding.role}',
+              profileCode: binding.role,
+              profileName: binding.profile ?? binding.role,
+            ),
+        ],
+        invites: request.invites,
+      ),
+    );
     return GroupDirectorySaveResult(
       requestId: request.requestId,
       steps: [

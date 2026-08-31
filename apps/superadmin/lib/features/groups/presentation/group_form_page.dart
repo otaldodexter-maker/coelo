@@ -840,15 +840,12 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   ];
 
   List<Widget> _prototypeFields() => [
-    SwitchListTile.adaptive(
+    CoeloAdminToggleField(
       key: const Key('group-inherit-appearance'),
-      contentPadding: EdgeInsets.zero,
-      title: const Text('Herdar aparência da Unidade'),
-      subtitle: Text(
-        _inheritAppearance
-            ? 'Origem efetiva: ${_appearanceOriginLabel(_original?.appearanceOrigin ?? 'unit')}'
-            : 'Personalização local da Turma',
-      ),
+      label: 'Herdar aparência da Unidade',
+      description: _inheritAppearance
+          ? 'Origem efetiva: ${_appearanceOriginLabel(_original?.appearanceOrigin ?? 'unit')}'
+          : 'Personalização local da Turma',
       value: _inheritAppearance,
       onChanged: (value) => setState(() {
         _inheritAppearance = value;
@@ -861,21 +858,19 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         }
       }),
     ),
-    SwitchListTile.adaptive(
+    CoeloAdminToggleField(
       key: const Key('group-inherit-access'),
-      contentPadding: EdgeInsets.zero,
-      title: const Text('Herdar acessos da Instituição e Unidade'),
-      subtitle: const Text('A remoção local não revoga acessos válidos de escopos superiores.'),
+      label: 'Herdar acessos da Instituição e Unidade',
+      description: 'A remoção local não revoga acessos válidos de escopos superiores.',
       value: _inheritAccess,
       onChanged: (value) => setState(() {
         _inheritAccess = value;
         _dirty = true;
       }),
     ),
-    SwitchListTile.adaptive(
+    CoeloAdminToggleField(
       key: const Key('group-inherit-activities'),
-      contentPadding: EdgeInsets.zero,
-      title: const Text('Herdar atividades disponíveis da Unidade'),
+      label: 'Herdar atividades disponíveis da Unidade',
       value: _inheritActivities,
       onChanged: (value) => setState(() {
         _inheritActivities = value;

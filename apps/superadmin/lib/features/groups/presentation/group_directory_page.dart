@@ -216,6 +216,20 @@ final class _GroupDirectoryContentState extends State<_GroupDirectoryContent> {
         return AnimatedBuilder(
           animation: widget.viewModel,
           builder: (context, _) {
+            if (widget.viewModel.state == GroupDirectoryLoadState.unauthorized) {
+              _measureFooter(false);
+              return ListView(
+                key: const Key('group-directory-scroll'),
+                padding: EdgeInsets.all(padding),
+                children: const [
+                  CoeloStatePanel(
+                    title: 'Acesso não autorizado',
+                    message: 'Você não tem permissão para ver as turmas.',
+                    icon: Icons.lock_outline_rounded,
+                  ),
+                ],
+              );
+            }
             final showFooter = widget.viewModel.state == GroupDirectoryLoadState.success;
             _measureFooter(showFooter);
             final statusCategory = groupDirectoryStatusCategoryFrom(
@@ -252,6 +266,10 @@ final class _GroupDirectoryContentState extends State<_GroupDirectoryContent> {
                       display: widget.display,
                       onCreate: widget.onCreate,
                       onEdit: widget.onEdit,
+                      onClearFilters: () {
+                        widget.searchController.clear();
+                        widget.viewModel.clearFilters();
+                      },
                     ),
                   ],
                 ),
@@ -470,22 +488,42 @@ final class _GroupResults extends StatelessWidget {
     required this.display,
     required this.onCreate,
     required this.onEdit,
+    required this.onClearFilters,
   });
 
   final GroupDirectoryViewModel viewModel;
   final GroupDirectoryDisplay display;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onEdit;
+  final VoidCallback onClearFilters;
 
   @override
   Widget build(BuildContext context) {
     if (viewModel.state == GroupDirectoryLoadState.failure) {
-      return CoeloStatePanel(
-        title: 'Não foi possível carregar as turmas',
-        message: 'Tente novamente.',
-        icon: Icons.cloud_off_outlined,
-        actionLabel: 'Tentar novamente',
-        onAction: viewModel.retry,
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (onCreate != null) ...[
+            if (display == GroupDirectoryDisplay.cards)
+              _GroupCards(items: const [], onCreate: onCreate, onEdit: onEdit)
+            else
+              SuperadminDirectoryCreateBanner(
+                label: 'Criar turma',
+                description: 'Adicionar nova turma ao sistema.',
+                onPressed: onCreate!,
+                bannerKey: const Key('group-create-banner'),
+                surfaceKey: const Key('group-create-banner-surface'),
+              ),
+            const SizedBox(height: CoeloSpacing.space4),
+          ],
+          CoeloStatePanel(
+            title: 'Não foi possível carregar as turmas',
+            message: 'Tente novamente.',
+            icon: Icons.cloud_off_outlined,
+            actionLabel: 'Tentar novamente',
+            onAction: viewModel.retry,
+          ),
+        ],
       );
     }
     if (viewModel.state == GroupDirectoryLoadState.unauthorized) {
@@ -507,7 +545,7 @@ final class _GroupResults extends StatelessWidget {
             : empty
             ? 'Criar turma'
             : 'Limpar filtros',
-        onAction: empty ? onCreate : viewModel.clearFilters,
+        onAction: empty ? onCreate : onClearFilters,
       );
     }
     return Column(
@@ -624,7 +662,7 @@ final class _GroupCard extends StatelessWidget {
       surfaceKey: Key('group-card-surface-${item.id}'),
       minHeight: 336,
       onPressed: onPressed,
-      semanticLabel: 'Editar turma ${item.name}',
+      semanticLabel: onPressed == null ? null : 'Editar turma ${item.name}',
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: CoeloSpacing.space6,

@@ -7,6 +7,7 @@ import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_act
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -235,10 +236,7 @@ void main() {
     expect(find.text('Ativo'), findsOneWidget);
     await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma Girassol');
     await tester.tap(
-      find.descendant(
-        of: find.byKey(const Key('group-type-field')),
-        matching: find.text('Turma'),
-      ),
+      find.descendant(of: find.byKey(const Key('group-type-field')), matching: find.text('Turma')),
     );
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(MenuItemButton, 'Outros'));
@@ -252,9 +250,10 @@ void main() {
     expect(find.byKey(const Key('group-secondary-color-field')), findsNothing);
     expect(find.byKey(const Key('group-activity-links')), findsOneWidget);
     expect(
-      tester.widget<SwitchListTile>(find.byKey(const Key('group-inherit-appearance'))).value,
+      tester.widget<CoeloAdminToggleField>(find.byKey(const Key('group-inherit-appearance'))).value,
       isTrue,
     );
+    expect(find.byType(SwitchListTile), findsNothing);
     await tester.tap(find.byKey(const Key('group-inherit-appearance')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('group-primary-color-field')), findsOneWidget);
