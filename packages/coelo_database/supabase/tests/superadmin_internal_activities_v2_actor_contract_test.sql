@@ -17,7 +17,7 @@ select ok(not exists(select 1 from information_schema.columns
   'public Activity tables do not expose internal identity ids');
 select results_eq($$select count(*)::bigint from information_schema.columns
  where table_schema='public' and column_name like '%_by_actor_kind'
-   and is_generated='ALWAYS'$$, array[9::bigint], 'nine generated actor kinds');
+   and is_generated='ALWAYS'$$, array[10::bigint], 'ten generated actor kinds');
 select results_eq($$select count(*)::bigint from information_schema.columns
  where table_schema='public' and (table_name,column_name) in
  (('activity_definitions','created_by_person_id'),
@@ -35,7 +35,7 @@ select has_function('app_private','guard_activity_v2_actor_provenance',array[]::
 select has_function('app_private','require_activity_v2_internal_marker',array[]::text[]);
 select results_eq($$select count(*)::bigint from pg_trigger t join pg_proc p on p.oid=t.tgfoid
  where not t.tgisinternal and p.proname='guard_activity_v2_actor_provenance'$$,
- array[9::bigint], 'guard attached to every dual actor table');
+ array[10::bigint], 'guard attached to every dual actor table');
 select has_index('public','activity_assignment_capability_actions',
  'activity_assignment_capability_actions_changed_by_person_idx','assignment action people index');
 select has_index('public','activity_admin_assignments',
