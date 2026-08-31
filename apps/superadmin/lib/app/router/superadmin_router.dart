@@ -1414,7 +1414,7 @@ GoRouter createSuperadminRouter({
               context,
               AgendaModuleArea.events,
               AgendaEventDetailPage(
-                store: agendaPrototypeStore,
+                store: unavailableAgendaStore,
                 eventId: state.pathParameters['eventId']!,
                 unavailable: true,
                 onBack: () => context.goNamed(SuperadminRoutes.agendaName),

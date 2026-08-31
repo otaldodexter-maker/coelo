@@ -148,6 +148,83 @@ void main() {
     expect(saved, isEmpty);
   });
 
+  testWidgets('quantidade de recorrência exige inteiro positivo antes de salvar', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1200, 1400);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final prototype = store();
+    final saved = <String>[];
+    await tester.pumpWidget(_app(store: prototype, onSaved: saved.add));
+    await _continue(tester);
+    tester
+        .widget<CoeloAdminSingleSelectField<String>>(
+          find.byKey(const Key('agenda-event-recurrence')),
+        )
+        .onChanged('Diária');
+    await tester.pump();
+    tester
+        .widget<CoeloAdminSingleSelectField<String>>(
+          find.byKey(const Key('agenda-event-recurrence-end')),
+        )
+        .onChanged('Após uma quantidade');
+    await tester.pump();
+    tester
+            .widget<CoeloFormTextField>(find.byKey(const Key('agenda-event-occurrence-count')))
+            .controller
+            .text =
+        '0';
+    await _continue(tester);
+    await _continue(tester);
+
+    await tester.tap(find.byKey(const Key('agenda-wizard-save-draft')));
+    await tester.pump();
+
+    expect(find.text('Informe uma quantidade de ocorrências maior que zero.'), findsOneWidget);
+    expect(saved, isEmpty);
+  });
+
+  testWidgets('override autorizado de reserva exige motivo e registra histórico', (tester) async {
+    final prototype = store();
+    final saved = <String>[];
+    await tester.pumpWidget(_app(store: prototype, onSaved: saved.add));
+    tester
+        .widget<CoeloAdminSingleSelectField<AgendaItemType>>(
+          find.byKey(const Key('agenda-event-type')),
+        )
+        .onChanged(AgendaItemType.resourceReservation);
+    await tester.pump();
+    await _continue(tester);
+    tester
+        .widget<CoeloDateTimeField>(find.byKey(const Key('agenda-event-start')))
+        .onChanged(DateTime(2026, 8, 5, 11));
+    tester
+        .widget<CoeloDateTimeField>(find.byKey(const Key('agenda-event-end')))
+        .onChanged(DateTime(2026, 8, 5, 12));
+    await tester.enterText(
+      find.widgetWithText(CoeloFormTextField, 'Local (opcional)'),
+      'Auditório',
+    );
+    await _continue(tester);
+    await _continue(tester);
+
+    await tester.tap(find.byKey(const Key('agenda-wizard-publish')));
+    await tester.pumpAndSettle();
+    expect(find.text('Substituir conflito de reserva?'), findsOneWidget);
+    await tester.enterText(
+      find.byKey(const Key('agenda-reservation-override-reason')),
+      'Prioridade institucional',
+    );
+    await tester.tap(find.byKey(const Key('agenda-reservation-override-confirm')));
+    await tester.pumpAndSettle();
+
+    expect(saved, hasLength(1));
+    expect(
+      prototype.itemById(saved.single)!.history.last.action,
+      AgendaHistoryAction.reservationConflictOverridden,
+    );
+  });
+
   testWidgets('edição carrega valores aprovados e preserva o id', (tester) async {
     final prototype = store();
     final original = prototype.itemById('event-parents')!;
@@ -185,6 +262,36 @@ void main() {
     await tester.tap(find.byKey(const Key('agenda-wizard-save-draft')));
     await tester.pump();
     expect(saved, [original.id]);
+  });
+
+  testWidgets('edição recorrente aplica o escopo selecionado ao histórico', (tester) async {
+    final prototype = store();
+    final recurring = prototype.itemById('routine-ballet')!;
+    final saved = <String>[];
+    await tester.pumpWidget(_app(store: prototype, eventId: recurring.id, onSaved: saved.add));
+    await _continue(tester);
+
+    final scope = tester.widget<CoeloAdminSingleSelectField<AgendaOccurrenceEditScope>>(
+      find.byKey(const Key('agenda-event-occurrence-edit-scope')),
+    );
+    scope.onChanged(AgendaOccurrenceEditScope.thisAndFollowing);
+    await tester.pump();
+    tester
+        .widget<CoeloAdminSingleSelectField<String>>(
+          find.byKey(const Key('agenda-event-recurrence')),
+        )
+        .onChanged('Não se repete');
+    await tester.pump();
+    await _continue(tester);
+    await _continue(tester);
+    await tester.tap(find.byKey(const Key('agenda-wizard-save-draft')));
+    await tester.pump();
+
+    expect(saved, [recurring.id]);
+    expect(
+      prototype.itemById(recurring.id)!.history.last.occurrenceEditScope,
+      AgendaOccurrenceEditScope.thisAndFollowing,
+    );
   });
 }
 

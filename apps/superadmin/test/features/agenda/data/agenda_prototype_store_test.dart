@@ -27,6 +27,68 @@ void main() {
     expect(store.publicationRequests.single.status, AgendaPublicationRequestStatus.pending);
   });
 
+  test('nova tentativa após recusa recebe identidade própria e pode ser decidida', () {
+    final store = AgendaPrototypeStore.empty(clock: () => DateTime(2026, 8, 31, 18));
+    final draft = AgendaItem.fixture(
+      id: 'draft-repeat',
+      title: 'Planejamento revisado',
+      audience: const AgendaAudience(institutionId: 'inst-horizonte'),
+      startsAt: DateTime(2026, 9, 1, 8),
+      endsAt: DateTime(2026, 9, 1, 9),
+      status: AgendaItemStatus.draft,
+    );
+    store.upsertItem(draft);
+
+    store.requestPublication(draft.id, requestedBy: 'Carolina');
+    final firstId = store.publicationRequests.single.id;
+    store.decidePublicationRequest(
+      requestId: firstId,
+      approve: false,
+      decidedBy: 'Helena',
+      reason: 'Revisar período',
+    );
+    store.requestPublication(draft.id, requestedBy: 'Carolina');
+
+    expect(store.publicationRequests.map((request) => request.id).toSet(), hasLength(2));
+    final pending = store.publicationRequests.singleWhere(
+      (request) => request.status == AgendaPublicationRequestStatus.pending,
+    );
+    expect(
+      store.decidePublicationRequest(
+        requestId: pending.id,
+        approve: true,
+        decidedBy: 'Helena',
+        reason: 'Revisão concluída',
+      ),
+      AgendaMutationResult.success,
+    );
+    expect(store.itemById(draft.id)!.status, AgendaItemStatus.published);
+  });
+
+  test('excluir rascunho remove sua solicitação pendente', () {
+    final requestedAt = DateTime(2026, 8, 3, 9);
+    final store = AgendaPrototypeStore.empty(clock: () => requestedAt);
+    final draft = AgendaItem.fixture(
+      id: 'draft-with-request',
+      title: 'Rascunho solicitado',
+      audience: const AgendaAudience(institutionId: 'inst-horizonte'),
+      startsAt: requestedAt,
+      endsAt: requestedAt.add(const Duration(hours: 1)),
+      status: AgendaItemStatus.draft,
+    );
+    store.upsertItem(draft);
+    store.requestPublication(draft.id, requestedBy: 'Carolina');
+
+    expect(store.deleteDraft(draft.id), AgendaMutationResult.success);
+    expect(
+      store.publicationRequests.where(
+        (request) =>
+            request.itemId == draft.id && request.status == AgendaPublicationRequestStatus.pending,
+      ),
+      isEmpty,
+    );
+  });
+
   final now = DateTime(2026, 8, 3, 9);
   test('expõe exatamente as sete capacidades efetivas da Agenda', () {
     expect(AgendaCapability.values, [
@@ -317,6 +379,37 @@ void main() {
     final saved = store.itemById(conflicting.id)!;
     expect(saved.history.last.action, AgendaHistoryAction.reservationConflictOverridden);
     expect(saved.history.last.reason, 'Prioridade institucional');
+  });
+
+  test('reserva cancelada libera horário e restauração revalida conflito', () {
+    final store = AgendaPrototypeStore.seeded(clock: () => now);
+    expect(
+      store.cancelItem('reserve-auditorium', actorName: 'Helena'),
+      AgendaMutationResult.success,
+    );
+    final replacement = AgendaItem.fixture(
+      id: 'reserve-replacement',
+      title: 'Reserva substituta',
+      type: AgendaItemType.resourceReservation,
+      audience: const AgendaAudience(institutionId: 'inst-horizonte'),
+      startsAt: DateTime(2026, 8, 5, 11),
+      endsAt: DateTime(2026, 8, 5, 12),
+      location: 'Auditório',
+    );
+
+    expect(
+      store.saveItem(replacement, actorContextId: 'inst-horizonte'),
+      AgendaMutationResult.success,
+    );
+    expect(
+      store.restoreItem(
+        'reserve-auditorium',
+        actorName: 'Helena',
+        actorContextId: 'inst-horizonte',
+      ),
+      AgendaMutationResult.reservationConflict,
+    );
+    expect(store.itemById('reserve-auditorium')!.status, AgendaItemStatus.canceled);
   });
 
   test('fixture de aniversário expõe somente primeiro nome e contexto autorizado', () {
