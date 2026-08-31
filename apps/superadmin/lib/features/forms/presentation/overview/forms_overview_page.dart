@@ -23,16 +23,18 @@ final class FormsOverviewPage extends StatefulWidget {
     super.key,
   });
 
-  const FormsOverviewPage.development({required this.formId, super.key})
-    : api = null,
-      onEdit = null,
-      onTest = null,
-      onMonitor = null,
-      onResponses = null,
-      onFiles = null,
-      canManageLifecycle = true,
-      canTransferCrossInstitution = false,
-      development = true;
+  const FormsOverviewPage.development({
+    required this.formId,
+    this.onEdit,
+    this.onTest,
+    this.onMonitor,
+    this.onResponses,
+    this.onFiles,
+    super.key,
+  }) : api = null,
+       canManageLifecycle = true,
+       canTransferCrossInstitution = false,
+       development = true;
 
   final FormsApi? api;
   final String formId;
@@ -156,6 +158,14 @@ final class _FormsOverviewPageState extends State<FormsOverviewPage> {
                 Text('Versão de gestão ${overview.definition.managementVersion}'),
               ],
             ),
+            const SizedBox(height: CoeloSpacing.space3),
+            _OverviewActions(
+              onEdit: widget.onEdit,
+              onTest: widget.onTest,
+              onMonitor: widget.onMonitor,
+              onResponses: widget.onResponses,
+              onFiles: widget.onFiles,
+            ),
             const SizedBox(height: CoeloSpacing.space6),
             LayoutBuilder(
               builder: (context, constraints) {
@@ -206,6 +216,55 @@ final class _FormsOverviewPageState extends State<FormsOverviewPage> {
         ),
       ),
     ),
+  );
+}
+
+final class _OverviewActions extends StatelessWidget {
+  const _OverviewActions({
+    this.onEdit,
+    this.onTest,
+    this.onMonitor,
+    this.onResponses,
+    this.onFiles,
+  });
+
+  final VoidCallback? onEdit;
+  final VoidCallback? onTest;
+  final VoidCallback? onMonitor;
+  final VoidCallback? onResponses;
+  final VoidCallback? onFiles;
+
+  @override
+  Widget build(BuildContext context) => Wrap(
+    spacing: CoeloSpacing.space2,
+    runSpacing: CoeloSpacing.space2,
+    children: [
+      OutlinedButton.icon(
+        onPressed: onEdit,
+        icon: const Icon(Icons.edit_outlined),
+        label: const Text('Editar'),
+      ),
+      OutlinedButton.icon(
+        onPressed: onTest,
+        icon: const Icon(Icons.science_outlined),
+        label: const Text('Testar'),
+      ),
+      OutlinedButton.icon(
+        onPressed: onMonitor,
+        icon: const Icon(Icons.monitor_heart_outlined),
+        label: const Text('Monitorar'),
+      ),
+      OutlinedButton.icon(
+        onPressed: onResponses,
+        icon: const Icon(Icons.fact_check_outlined),
+        label: const Text('Respostas'),
+      ),
+      OutlinedButton.icon(
+        onPressed: onFiles,
+        icon: const Icon(Icons.folder_outlined),
+        label: const Text('Arquivos'),
+      ),
+    ],
   );
 }
 

@@ -79,6 +79,7 @@ import '../../features/chat/presentation/screens/superadmin_chat_page.dart';
 import '../../features/circulars/presentation/circular_directory_page.dart';
 import '../../features/errors/presentation/screens/superadmin_error_screen.dart';
 import '../../features/forms/presentation/editor/forms_editor_page.dart';
+import '../../features/forms/data/development_forms_api.dart';
 import '../../features/groups/data/fake_group_directory_repository.dart';
 import '../../features/groups/domain/group_directory.dart' hide GroupDirectoryPage;
 import '../../features/groups/presentation/group_directory_page.dart';
@@ -253,6 +254,7 @@ GoRouter createSuperadminRouter({
   const developmentImportRepository = UnavailableImportRepository();
   final agendaPrototypeStore = AgendaPrototypeStore.seeded();
   final unavailableAgendaStore = AgendaPrototypeStore.empty();
+  final developmentFormsApi = DevelopmentFormsApi.seeded();
   final developmentAccountController = AccountController(
     repository: InMemoryAccountProfileRepository(),
     activities: accountActivities,
@@ -445,7 +447,7 @@ GoRouter createSuperadminRouter({
   void openAgendaArea(BuildContext context, AgendaModuleArea area, {required bool development}) {
     context.goNamed(switch ((area, development)) {
       (AgendaModuleArea.calendar, true) => SuperadminRoutes.devAgendaName,
-      (AgendaModuleArea.events, true) => SuperadminRoutes.devAgendaEventsName,
+      (AgendaModuleArea.events, true) => SuperadminRoutes.devAgendaName,
       (AgendaModuleArea.requests, true) => SuperadminRoutes.devAgendaRequestsName,
       (AgendaModuleArea.approvals, true) => SuperadminRoutes.devAgendaApprovalsName,
       (AgendaModuleArea.permissions, true) => SuperadminRoutes.devAgendaPermissionsName,
@@ -462,6 +464,7 @@ GoRouter createSuperadminRouter({
     AgendaModuleArea area,
     Widget child, {
     bool development = true,
+    String? currentDestination,
   }) => AgendaModuleShell(
     logout: development ? _previewLogout : logout,
     selectedArea: area,
@@ -469,6 +472,7 @@ GoRouter createSuperadminRouter({
     onDestinationSelected: development
         ? (destination) => _navigateFromDevelopmentShell(context, destination)
         : (destination) => _navigateFromPersistentShell(context, destination),
+    currentDestination: currentDestination,
     child: child,
   );
 
@@ -1292,8 +1296,33 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.formOverview,
             name: SuperadminRoutes.formOverviewName,
-            builder: (context, state) =>
-                FormsOverviewPage(api: formsApi, formId: state.pathParameters['formId']!),
+            builder: (context, state) {
+              final formId = state.pathParameters['formId']!;
+              return FormsOverviewPage(
+                api: formsApi,
+                formId: formId,
+                onEdit: () => context.goNamed(
+                  SuperadminRoutes.formEditName,
+                  pathParameters: {'formId': formId},
+                ),
+                onTest: () => context.goNamed(
+                  SuperadminRoutes.formTestName,
+                  pathParameters: {'formId': formId},
+                ),
+                onMonitor: () => context.goNamed(
+                  SuperadminRoutes.formMonitorName,
+                  pathParameters: {'formId': formId},
+                ),
+                onResponses: () => context.goNamed(
+                  SuperadminRoutes.formResponsesName,
+                  pathParameters: {'formId': formId},
+                ),
+                onFiles: () => context.goNamed(
+                  SuperadminRoutes.formFilesName,
+                  pathParameters: {'formId': formId},
+                ),
+              );
+            },
           ),
           GoRoute(
             path: SuperadminRoutes.formEdit,
@@ -1359,6 +1388,7 @@ GoRouter createSuperadminRouter({
                 onSaved: (_) {},
               ),
               development: false,
+              currentDestination: 'agenda-create',
             ),
           ),
           GoRoute(
@@ -3125,10 +3155,29 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devForms,
             name: SuperadminRoutes.devFormsName,
             builder: (context, state) => FormsDirectoryPage(
-              api: null,
+              api: developmentFormsApi,
+              canManage: true,
+              onCreate: () => context.goNamed(SuperadminRoutes.devFormCreateName),
               onOpen: (form) => context.goNamed(
                 SuperadminRoutes.devFormOverviewName,
                 pathParameters: {'formId': form.id},
+              ),
+              onEdit: (form) => context.goNamed(
+                SuperadminRoutes.devFormEditName,
+                pathParameters: {'formId': form.id},
+              ),
+              onManageSchedules: (form) => showFormsScheduleDialog(
+                context: context,
+                initialValue: FormsScheduleDraft(
+                  active: true,
+                  name: 'Agendamento de ${form.title}',
+                  startsAt: DateTime(2026, 8, 31, 8),
+                  endsAt: DateTime(2026, 8, 31, 18),
+                  frequency: FormsScheduleFrequency.once,
+                  weekdays: const {},
+                  audienceLabel: form.audienceLabel ?? 'Público da distribuição',
+                ),
+                onSave: (_) async {},
               ),
             ),
           ),
@@ -3140,8 +3189,32 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.devFormOverview,
             name: SuperadminRoutes.devFormOverviewName,
-            builder: (context, state) =>
-                FormsOverviewPage.development(formId: state.pathParameters['formId']!),
+            builder: (context, state) {
+              final formId = state.pathParameters['formId']!;
+              return FormsOverviewPage.development(
+                formId: formId,
+                onEdit: () => context.goNamed(
+                  SuperadminRoutes.devFormEditName,
+                  pathParameters: {'formId': formId},
+                ),
+                onTest: () => context.goNamed(
+                  SuperadminRoutes.devFormTestName,
+                  pathParameters: {'formId': formId},
+                ),
+                onMonitor: () => context.goNamed(
+                  SuperadminRoutes.devFormMonitorName,
+                  pathParameters: {'formId': formId},
+                ),
+                onResponses: () => context.goNamed(
+                  SuperadminRoutes.devFormResponsesName,
+                  pathParameters: {'formId': formId},
+                ),
+                onFiles: () => context.goNamed(
+                  SuperadminRoutes.devFormFilesName,
+                  pathParameters: {'formId': formId},
+                ),
+              );
+            },
           ),
           GoRoute(
             path: SuperadminRoutes.devFormEdit,
@@ -3672,12 +3745,13 @@ GoRouter createSuperadminRouter({
               AgendaModuleArea.events,
               AgendaEventFormPage(
                 store: agendaPrototypeStore,
-                onCancel: () => context.goNamed(SuperadminRoutes.devAgendaEventsName),
+                onCancel: () => context.goNamed(SuperadminRoutes.devAgendaName),
                 onSaved: (id) => context.goNamed(
                   SuperadminRoutes.devAgendaEventDetailName,
                   pathParameters: {'eventId': id},
                 ),
               ),
+              currentDestination: 'agenda-create',
             ),
           ),
           GoRoute(
@@ -3714,7 +3788,7 @@ GoRouter createSuperadminRouter({
                 AgendaEventDetailPage(
                   store: agendaPrototypeStore,
                   eventId: eventId,
-                  onBack: () => context.goNamed(SuperadminRoutes.devAgendaEventsName),
+                  onBack: () => context.goNamed(SuperadminRoutes.devAgendaName),
                   onEdit: () => context.goNamed(
                     SuperadminRoutes.devAgendaEventEditName,
                     pathParameters: {'eventId': eventId},

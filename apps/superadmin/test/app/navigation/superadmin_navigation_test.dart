@@ -51,7 +51,6 @@ void main() {
       'meal-plan-model-create',
       'form-create',
       'import-create',
-      'event-create',
       'invite-create',
       'notice-create',
     ]) {
@@ -107,8 +106,9 @@ void main() {
       'Formulários',
       'Importações',
       'Agenda',
-      'Eventos',
+      'Criar evento',
       'Solicitações',
+      'Aprovações',
       'Permissões',
       'Comunicação',
       'Conversas',
@@ -134,7 +134,7 @@ void main() {
     final labels = coeloSuperadminNavigation.expand(flatten).toSet();
     expect(labels.where((label) => label.contains('Menu')), isEmpty);
     expect(labels.where((label) => label.startsWith('Editar')), isEmpty);
-    expect(labels.where((label) => label.startsWith('Criar ')), isEmpty);
+    expect(labels.where((label) => label.startsWith('Criar ')), ['Criar evento']);
     expect(labels.where((label) => label.contains('Detalhe')), isEmpty);
     expect(labels.where((label) => RegExp(r'\b(403|404|500|503)\b').hasMatch(label)), isEmpty);
     expect(labels, isNot(contains('Configurações')));
@@ -143,7 +143,10 @@ void main() {
   });
 
   test('searches accents, case and retained actions with breadcrumbs', () {
-    expect(searchCoeloNavigation('CRIAR', canAccess: (_) => true), isEmpty);
+    expect(
+      searchCoeloNavigation('CRIAR', canAccess: (_) => true).map((result) => result.node.label),
+      ['Criar evento'],
+    );
     expect(
       searchCoeloNavigation('cardapio').map((result) => result.node.label),
       contains('Cardápios'),
