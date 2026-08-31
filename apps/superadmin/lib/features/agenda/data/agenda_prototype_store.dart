@@ -37,9 +37,11 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     final item = itemById(itemId);
     if (item == null) return AgendaMutationResult.notFound;
     if (item.status != AgendaItemStatus.draft) return AgendaMutationResult.invalidLifecycle;
-    final id = 'publication-$itemId';
+    final attempts = _publicationRequests.where((request) => request.itemId == itemId).length;
+    final id = 'publication-$itemId-${attempts + 1}';
     if (_publicationRequests.any(
-      (request) => request.id == id && request.status == AgendaPublicationRequestStatus.pending,
+      (request) =>
+          request.itemId == itemId && request.status == AgendaPublicationRequestStatus.pending,
     )) {
       return AgendaMutationResult.success;
     }
@@ -114,7 +116,13 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     return AgendaMutationResult.success;
   }
 
-  AgendaMutationResult restoreItem(String id, {required String actorName}) {
+  AgendaMutationResult restoreItem(
+    String id, {
+    required String actorName,
+    String? actorContextId,
+    bool overrideConflict = false,
+    String? reason,
+  }) {
     final item = itemById(id);
     if (item == null) return AgendaMutationResult.notFound;
     if (item.status != AgendaItemStatus.canceled) return AgendaMutationResult.invalidLifecycle;
@@ -122,21 +130,47 @@ final class AgendaPrototypeStore extends ChangeNotifier {
         .where((entry) => entry.action == AgendaHistoryAction.canceled)
         .firstOrNull
         ?.previousStatus;
-    upsertItem(
-      item.copyWith(
-        status: previous == AgendaItemStatus.scheduled
-            ? AgendaItemStatus.scheduled
-            : AgendaItemStatus.published,
-        history: [
-          ...item.history,
-          AgendaHistoryEntry(
-            action: AgendaHistoryAction.restored,
-            actorName: actorName,
-            occurredAt: _clock(),
-          ),
-        ],
-      ),
+    final restored = item.copyWith(
+      status: previous == AgendaItemStatus.scheduled
+          ? AgendaItemStatus.scheduled
+          : AgendaItemStatus.published,
+      history: [
+        ...item.history,
+        AgendaHistoryEntry(
+          action: AgendaHistoryAction.restored,
+          actorName: actorName,
+          occurredAt: _clock(),
+        ),
+      ],
     );
+    if (_hasReservationConflict(restored)) {
+      if (!overrideConflict) return AgendaMutationResult.reservationConflict;
+      if (actorContextId == null ||
+          !resolveCapability(
+            actorContextId,
+            AgendaCapability.overrideReservationConflict,
+          ).isAllowed) {
+        return AgendaMutationResult.notAuthorized;
+      }
+      if (reason == null || reason.trim().isEmpty) {
+        return AgendaMutationResult.reasonRequired;
+      }
+      upsertItem(
+        restored.copyWith(
+          history: [
+            ...restored.history,
+            AgendaHistoryEntry(
+              action: AgendaHistoryAction.reservationConflictOverridden,
+              actorName: actorName,
+              occurredAt: _clock(),
+              reason: reason.trim(),
+            ),
+          ],
+        ),
+      );
+      return AgendaMutationResult.success;
+    }
+    upsertItem(restored);
     return AgendaMutationResult.success;
   }
 
@@ -147,6 +181,12 @@ final class AgendaPrototypeStore extends ChangeNotifier {
       return AgendaMutationResult.invalidLifecycle;
     }
     _items = [..._items]..removeAt(index);
+    _publicationRequests = _publicationRequests
+        .where(
+          (request) =>
+              request.itemId != id || request.status != AgendaPublicationRequestStatus.pending,
+        )
+        .toList(growable: false);
     notifyListeners();
     return AgendaMutationResult.success;
   }
@@ -159,7 +199,6 @@ final class AgendaPrototypeStore extends ChangeNotifier {
   }) {
     final item = itemById(itemId);
     if (item == null) return AgendaMutationResult.notFound;
-    if (item.recurrence == null) return AgendaMutationResult.invalidLifecycle;
     upsertItem(
       item.copyWith(
         history: [
@@ -184,18 +223,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     bool overrideConflict = false,
     String? reason,
   }) {
-    final hasReservationConflict =
-        item.type == AgendaItemType.resourceReservation &&
-        item.location.trim().isNotEmpty &&
-        _items.any(
-          (other) =>
-              other.id != item.id &&
-              other.type == AgendaItemType.resourceReservation &&
-              other.audience.institutionId == item.audience.institutionId &&
-              other.location.trim().toLowerCase() == item.location.trim().toLowerCase() &&
-              item.startsAt.isBefore(other.endsAt) &&
-              item.endsAt.isAfter(other.startsAt),
-        );
+    final hasReservationConflict = _hasReservationConflict(item);
     if (!hasReservationConflict) {
       upsertItem(item);
       return AgendaMutationResult.success;
@@ -223,6 +251,21 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     );
     return AgendaMutationResult.success;
   }
+
+  bool _hasReservationConflict(AgendaItem item) =>
+      item.type == AgendaItemType.resourceReservation &&
+      item.status != AgendaItemStatus.canceled &&
+      item.location.trim().isNotEmpty &&
+      _items.any(
+        (other) =>
+            other.id != item.id &&
+            other.type == AgendaItemType.resourceReservation &&
+            other.status != AgendaItemStatus.canceled &&
+            other.audience.institutionId == item.audience.institutionId &&
+            other.location.trim().toLowerCase() == item.location.trim().toLowerCase() &&
+            item.startsAt.isBefore(other.endsAt) &&
+            item.endsAt.isAfter(other.startsAt),
+      );
 
   List<AgendaBirthday> birthdaysForContext(String contextId) {
     final context = _context(contextId);

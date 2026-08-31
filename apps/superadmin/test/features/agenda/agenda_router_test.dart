@@ -6,6 +6,7 @@ import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/features/agenda/presentation/agenda_event_form_page.dart';
+import 'package:coelo_superadmin/features/agenda/presentation/agenda_events_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -92,6 +93,13 @@ void main() {
         );
       } else {
         expect(find.textContaining('indispon'), findsWidgets, reason: location);
+      }
+      if (location == '/agenda/events/event-parents') {
+        expect(
+          tester.widget<AgendaEventDetailPage>(find.byType(AgendaEventDetailPage)).store.items,
+          isEmpty,
+          reason: 'a rota produtiva não pode receber fixtures /dev',
+        );
       }
       expect(tester.takeException(), isNull, reason: location);
     }

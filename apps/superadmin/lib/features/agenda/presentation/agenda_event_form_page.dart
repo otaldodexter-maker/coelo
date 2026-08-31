@@ -61,6 +61,7 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
   late DateTime _recurrenceUntil;
   late AgendaResponseMode _responseMode;
   late GuardianResponsePolicy _guardianPolicy;
+  AgendaOccurrenceEditScope _occurrenceEditScope = AgendaOccurrenceEditScope.series;
   late Set<String> _reminders;
   String? _feedback;
   int _step = 0;
@@ -108,7 +109,7 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
     super.dispose();
   }
 
-  void _save(AgendaItemStatus requestedStatus) {
+  Future<void> _save(AgendaItemStatus requestedStatus) async {
     if (!widget.actionsAvailable) return;
     if (_title.text.trim().isEmpty || _audience.isEmpty) {
       setState(() {
@@ -118,7 +119,16 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
       });
       return;
     }
-    final institutionId = _existing?.audience.institutionId ?? 'inst-horizonte';
+    if (_recurrence != 'Não se repete' &&
+        _recurrenceEnd == 'Após uma quantidade' &&
+        ((int.tryParse(_occurrenceCount.text.trim()) ?? 0) <= 0)) {
+      setState(() {
+        _feedback = 'Informe uma quantidade de ocorrências maior que zero.';
+      });
+      return;
+    }
+    final existing = _existing;
+    final institutionId = existing?.audience.institutionId ?? 'inst-horizonte';
     final id = widget.eventId ?? 'local-agenda-${widget.store.items.length + 1}';
     final start = _allDay ? DateTime(_start.year, _start.month, _start.day) : _start;
     var end = _allDay ? DateTime(_end.year, _end.month, _end.day) : _end;
@@ -135,7 +145,7 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
       audience: _resolvedAudience(institutionId),
       priority: _priority,
       status: status,
-      origin: _existing?.origin ?? AgendaItemOrigin.fixture,
+      origin: existing?.origin ?? AgendaItemOrigin.fixture,
       startsAt: start,
       endsAt: end,
       location: _location.text.trim(),
@@ -143,16 +153,38 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
       recurrence: _buildRecurrence(),
       allDay: _allDay,
       requiresRsvp: _responseMode == AgendaResponseMode.rsvp,
-      authorizationReference: _existing?.authorizationReference,
+      authorizationReference: existing?.authorizationReference,
       timeZoneId: _timeZoneId,
       responseMode: _responseMode,
       guardianResponsePolicy: _guardianPolicy,
       audienceLabels: Set.unmodifiable(_audience),
       reminders: Set.unmodifiable(_reminders),
-      history: _existing?.history ?? const [],
+      history: existing?.history ?? const [],
     );
-    final result = widget.store.saveItem(item, actorContextId: institutionId);
+    var result = widget.store.saveItem(item, actorContextId: institutionId);
+    if (result == AgendaMutationResult.reservationConflict &&
+        widget.store
+            .resolveCapability(institutionId, AgendaCapability.overrideReservationConflict)
+            .isAllowed) {
+      final reason = await _requestConflictOverride();
+      if (!mounted || reason == null) return;
+      result = widget.store.saveItem(
+        item,
+        actorContextId: institutionId,
+        actorName: 'Owner Coelo',
+        overrideConflict: true,
+        reason: reason,
+      );
+    }
     if (result == AgendaMutationResult.success) {
+      if (existing?.recurrence != null) {
+        widget.store.recordOccurrenceEdit(
+          itemId: id,
+          occurrenceStartsAt: existing!.startsAt,
+          scope: _occurrenceEditScope,
+          actorName: 'Owner Coelo',
+        );
+      }
       if (requestedStatus == AgendaItemStatus.published && !widget.canPublish) {
         widget.store.requestPublication(
           id,
@@ -173,6 +205,13 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
         AgendaMutationResult.success => null,
       };
     });
+  }
+
+  Future<String?> _requestConflictOverride() async {
+    return showDialog<String>(
+      context: context,
+      builder: (_) => const _ReservationConflictOverrideDialog(),
+    );
   }
 
   AgendaAudience _resolvedAudience(String institutionId) => switch (_context) {
@@ -422,15 +461,27 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
         )
       else
         CoeloFormTextField(
+          key: const Key('agenda-event-occurrence-count'),
           controller: _occurrenceCount,
           labelText: 'Quantidade de ocorrências',
           prefixIcon: Icons.numbers_rounded,
           keyboardType: TextInputType.number,
         ),
-      const _Fact(
-        label: 'Edição da série',
-        value: 'Editar uma ocorrência, esta e próximas ou toda a série',
-      ),
+      if (_existing?.recurrence != null)
+        CoeloAdminSingleSelectField<AgendaOccurrenceEditScope>(
+          key: const Key('agenda-event-occurrence-edit-scope'),
+          label: 'Aplicar alteração em',
+          value: _occurrenceEditScope,
+          options: AgendaOccurrenceEditScope.values,
+          optionLabel: _occurrenceEditScopeLabel,
+          onChanged: (value) => setState(() => _occurrenceEditScope = value),
+          prefixIcon: Icons.edit_calendar_outlined,
+        )
+      else
+        const _Fact(
+          label: 'Edição da série',
+          value: 'Editar uma ocorrência, esta e próximas ou toda a série',
+        ),
     ],
   ];
 
@@ -503,6 +554,52 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
   ];
 }
 
+final class _ReservationConflictOverrideDialog extends StatefulWidget {
+  const _ReservationConflictOverrideDialog();
+
+  @override
+  State<_ReservationConflictOverrideDialog> createState() =>
+      _ReservationConflictOverrideDialogState();
+}
+
+final class _ReservationConflictOverrideDialogState
+    extends State<_ReservationConflictOverrideDialog> {
+  final _reason = TextEditingController();
+
+  @override
+  void dispose() {
+    _reason.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminDialogShell(
+    dialogKey: const Key('agenda-reservation-override-dialog'),
+    title: 'Substituir conflito de reserva?',
+    closeTooltip: 'Fechar substituição de conflito',
+    body: CoeloFormTextField(
+      key: const Key('agenda-reservation-override-reason'),
+      controller: _reason,
+      labelText: 'Motivo da substituição',
+      hintText: 'Obrigatório para o histórico da reserva.',
+      prefixIcon: Icons.notes_rounded,
+      maxLines: 2,
+    ),
+    secondaryAction: OutlinedButton(
+      onPressed: () => Navigator.of(context).pop(),
+      child: const Text('Manter horários'),
+    ),
+    primaryAction: FilledButton(
+      key: const Key('agenda-reservation-override-confirm'),
+      onPressed: () {
+        final value = _reason.text.trim();
+        if (value.isNotEmpty) Navigator.of(context).pop(value);
+      },
+      child: const Text('Substituir reserva'),
+    ),
+  );
+}
+
 final class _Group extends StatelessWidget {
   const _Group({required this.title, required this.children});
   final String title;
@@ -566,6 +663,12 @@ String _responseLabel(AgendaResponseMode value) => switch (value) {
   AgendaResponseMode.rsvp => 'RSVP · Sim, Não ou Talvez',
   AgendaResponseMode.acknowledgement => 'Ciência',
   AgendaResponseMode.authorization => 'Autorização · Autorizo ou Não autorizo',
+};
+
+String _occurrenceEditScopeLabel(AgendaOccurrenceEditScope value) => switch (value) {
+  AgendaOccurrenceEditScope.occurrence => 'Somente esta ocorrência',
+  AgendaOccurrenceEditScope.thisAndFollowing => 'Esta e as próximas',
+  AgendaOccurrenceEditScope.series => 'Toda a série',
 };
 
 String _shortDate(DateTime value) =>
