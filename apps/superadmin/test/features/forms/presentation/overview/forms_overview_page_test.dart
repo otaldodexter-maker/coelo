@@ -64,6 +64,18 @@ void main() {
     expect(find.text('Fixture local · sem persistência remota'), findsOneWidget);
   });
 
+  testWidgets('fixture local preserva o formulário selecionado', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(body: FormsOverviewPage.development(formId: 'form-dev-02')),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Enquete rápida sobre transporte'), findsOneWidget);
+    expect(find.text('Pesquisa das famílias'), findsNothing);
+  });
+
   testWidgets('ações do resumo navegam somente quando callbacks são fornecidos', (tester) async {
     var monitorOpened = false;
     await tester.pumpWidget(

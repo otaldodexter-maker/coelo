@@ -10,6 +10,7 @@ import 'package:flutter/widget_previews.dart';
 
 import '../../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../data/development_forms_api.dart';
 import 'forms_lifecycle_actions.dart';
 
 enum FormsDirectoryDisplay { table, cards }
@@ -27,6 +28,7 @@ final class FormsDirectoryPage extends StatefulWidget {
     this.onEdit,
     this.onManageSchedules,
     this.onLifecycleCompleted,
+    this.visualMetadata = const {},
     super.key,
   });
 
@@ -39,6 +41,7 @@ final class FormsDirectoryPage extends StatefulWidget {
   final ValueChanged<FormDirectoryItem>? onEdit;
   final ValueChanged<FormDirectoryItem>? onManageSchedules;
   final VoidCallback? onLifecycleCompleted;
+  final Map<String, DevelopmentFormVisualMetadata> visualMetadata;
 
   @override
   State<FormsDirectoryPage> createState() => _FormsDirectoryPageState();
@@ -311,8 +314,11 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
       page: _page!,
       display: _display,
       canManage: widget.canManage,
-      canManageLifecycle: widget.canManageLifecycle,
-      canTransferCrossInstitution: widget.canTransferCrossInstitution,
+      canManageLifecycle:
+          widget.canManageLifecycle || (widget.canManage && widget.api is DevelopmentFormsApi),
+      canTransferCrossInstitution:
+          widget.canTransferCrossInstitution ||
+          (widget.canManage && widget.api is DevelopmentFormsApi),
       api: widget.api,
       pageNumber: _pageIndex + 1,
       onPrevious: _pageIndex > 0 ? _previous : null,
@@ -323,6 +329,7 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
       onEdit: widget.onEdit,
       onManageSchedules: widget.onManageSchedules,
       onLifecycleCompleted: _resetAndLoad,
+      visualMetadata: widget.visualMetadata,
     ),
   };
 
@@ -361,6 +368,7 @@ final class FormsDirectoryResults extends StatelessWidget {
     this.onManageSchedules,
     this.onLifecycleCompleted,
     this.includePagination = true,
+    this.visualMetadata = const {},
     super.key,
   });
 
@@ -379,6 +387,10 @@ final class FormsDirectoryResults extends StatelessWidget {
   final ValueChanged<FormDirectoryItem>? onManageSchedules;
   final VoidCallback? onLifecycleCompleted;
   final bool includePagination;
+  final Map<String, DevelopmentFormVisualMetadata> visualMetadata;
+
+  DevelopmentFormVisualMetadata? _visualMetadata(FormDirectoryItem item) =>
+      visualMetadata[item.id] ?? developmentFormVisualMetadata(item.id);
 
   @override
   Widget build(BuildContext context) => Column(
@@ -506,7 +518,7 @@ final class FormsDirectoryResults extends StatelessWidget {
         initialWidth: 160,
         minWidth: 150,
         maxWidth: 280,
-        cellBuilder: (_, item) => Text(item.contextLabel ?? '—'),
+        cellBuilder: (_, item) => Text(_visualMetadata(item)?.contextLabel ?? '—'),
       ),
       CoeloAdminTableColumn(
         id: 'audience',
@@ -514,7 +526,7 @@ final class FormsDirectoryResults extends StatelessWidget {
         initialWidth: 140,
         minWidth: 140,
         maxWidth: 240,
-        cellBuilder: (_, item) => Text(item.audienceLabel ?? '—'),
+        cellBuilder: (_, item) => Text(_visualMetadata(item)?.audienceLabel ?? '—'),
       ),
       CoeloAdminTableColumn(
         id: 'responses',
@@ -522,7 +534,7 @@ final class FormsDirectoryResults extends StatelessWidget {
         initialWidth: 104,
         minWidth: 104,
         maxWidth: 160,
-        cellBuilder: (_, item) => Text(item.responseCount?.toString() ?? '—'),
+        cellBuilder: (_, item) => Text(_visualMetadata(item)?.responseCount.toString() ?? '—'),
       ),
       CoeloAdminTableColumn(
         id: 'schedules',
@@ -530,7 +542,7 @@ final class FormsDirectoryResults extends StatelessWidget {
         initialWidth: 130,
         minWidth: 130,
         maxWidth: 190,
-        cellBuilder: (_, item) => Text(item.scheduleCount?.toString() ?? '—'),
+        cellBuilder: (_, item) => Text(_visualMetadata(item)?.scheduleCount.toString() ?? '—'),
       ),
       CoeloAdminTableColumn(
         id: 'created',
@@ -538,7 +550,10 @@ final class FormsDirectoryResults extends StatelessWidget {
         initialWidth: 128,
         minWidth: 128,
         maxWidth: 190,
-        cellBuilder: (_, item) => Text(item.createdAt == null ? '—' : _shortDate(item.createdAt!)),
+        cellBuilder: (_, item) {
+          final createdAt = _visualMetadata(item)?.createdAt;
+          return Text(createdAt == null ? '—' : _shortDate(createdAt));
+        },
       ),
       if (canManageLifecycle || onManageSchedules != null)
         CoeloAdminTableColumn(
@@ -671,11 +686,6 @@ final _previewForms = [
     status: FormStatus.published,
     operationalStatus: FormOperationalStatus.scheduled,
     identityMode: FormIdentityMode.identified,
-    contextLabel: 'Todas as unidades',
-    audienceLabel: 'Professores',
-    responseCount: 42,
-    scheduleCount: 1,
-    createdAt: DateTime(2026, 8, 8),
     updatedAt: DateTime(2026, 8, 13),
     managementVersion: 4,
   ),
@@ -686,11 +696,6 @@ final _previewForms = [
     status: FormStatus.draft,
     operationalStatus: FormOperationalStatus.draft,
     identityMode: FormIdentityMode.anonymous,
-    contextLabel: 'Unidade Centro',
-    audienceLabel: 'Famílias',
-    responseCount: 18,
-    scheduleCount: 2,
-    createdAt: DateTime(2026, 8, 12),
     updatedAt: DateTime(2026, 8, 12),
     managementVersion: 2,
   ),

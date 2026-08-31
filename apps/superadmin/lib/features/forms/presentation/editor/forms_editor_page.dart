@@ -6,16 +6,18 @@ import 'package:flutter/material.dart';
 
 import '../../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../../shared/presentation/widgets/superadmin_form_frame.dart';
+import '../../data/development_forms_api.dart';
 
 /// Production remains fail-closed until the composition root owns an
 /// authoritative mutation capability. The development constructor exercises
 /// the complete visual editor without claiming remote persistence.
 final class FormsEditorPage extends StatefulWidget {
-  const FormsEditorPage({super.key}) : development = false;
+  const FormsEditorPage({super.key}) : development = false, formId = null;
 
-  const FormsEditorPage.development({super.key}) : development = true;
+  const FormsEditorPage.development({this.formId, super.key}) : development = true;
 
   final bool development;
+  final String? formId;
 
   @override
   State<FormsEditorPage> createState() => _FormsEditorPageState();
@@ -39,7 +41,11 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   @override
   void initState() {
     super.initState();
-    _title = TextEditingController(text: widget.development ? '01 - ANHEMBI - FOTOS' : '');
+    _title = TextEditingController(
+      text: widget.development
+          ? developmentFormTitle(widget.formId, fallback: '01 - ANHEMBI - FOTOS')
+          : '',
+    );
     _context = TextEditingController(text: widget.development ? 'Todas as unidades' : '');
     _recurring = widget.development;
     _sections.addAll(widget.development ? _fixtureSections() : _neutralSections());
@@ -111,8 +117,11 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     );
   }
 
-  Widget _locked(Widget child) =>
-      widget.development ? child : IgnorePointer(child: Opacity(opacity: 0.64, child: child));
+  Widget _locked(Widget child) => widget.development
+      ? child
+      : ExcludeFocus(
+          child: IgnorePointer(child: Opacity(opacity: 0.64, child: child)),
+        );
 
   Widget _sectionNavigation(BuildContext context, BoxConstraints constraints) {
     final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;

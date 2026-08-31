@@ -4,6 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('development preview preserves the selected form context', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: FormsTestPage.development(formId: 'form-dev-02')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Enquete rápida sobre transporte'), findsOneWidget);
+  });
   Widget app(Widget child, {TextScaler textScaler = TextScaler.noScaling}) => MaterialApp(
     theme: CoeloTheme.light,
     home: MediaQuery(

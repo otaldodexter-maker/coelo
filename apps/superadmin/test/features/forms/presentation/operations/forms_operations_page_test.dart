@@ -23,6 +23,25 @@ void main() {
     expect(find.text('Anônimas'), findsOneWidget);
     expect(find.byKey(const Key('forms-cursor-next')), findsOneWidget);
     expect(find.textContaining('storage_path'), findsNothing);
+
+    await tester.tap(find.widgetWithText(FilterChip, 'Anônimas'));
+    await tester.pump();
+    expect(tester.widget<FilterChip>(find.widgetWithText(FilterChip, 'Anônimas')).selected, isTrue);
+    expect(find.text('Marina Souza'), findsNothing);
+    expect(find.text('Resposta anônima'), findsWidgets);
+
+    await tester.tap(find.byKey(const Key('forms-cursor-next')));
+    await tester.pump();
+    expect(find.text('Página 2'), findsOneWidget);
+  });
+
+  testWidgets('monitor faz drill-down local sem anunciar card inerte', (tester) async {
+    await _pump(tester, const FormsOperationsPage.monitor(development: true));
+
+    await tester.tap(find.text('Unidade Centro'));
+    await tester.pump();
+
+    expect(find.text('Detalhamento: Unidade Centro'), findsOneWidget);
   });
 
   testWidgets('detalhe anônimo não inventa identidade e alerta segredo perdido', (tester) async {
@@ -83,6 +102,67 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Excluir arquivo'));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('forms-file-absent-after-reload')), findsOneWidget);
+  });
+
+  testWidgets('expiração e exclusão sobrevivem à reconstrução com o mesmo store local', (
+    tester,
+  ) async {
+    final store = FormsFilesDevelopmentStore();
+    await _pump(tester, FormsOperationsPage.files(development: true, developmentStore: store));
+
+    await tester.tap(find.text('Expirar acesso'));
+    await tester.pump();
+    expect(find.text('Acesso temporário expirado'), findsOneWidget);
+
+    await tester.tap(find.text('Excluir arquivo'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Excluir arquivo'));
+    await tester.pumpAndSettle();
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: FormsOperationsPage.files(development: true, developmentStore: store),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('forms-file-absent-after-reload')), findsOneWidget);
+    expect(store.accessExpired, isTrue);
+  });
+
+  testWidgets('upload, acesso temporário e exportação alteram a fixture local', (tester) async {
+    await _pump(tester, const FormsOperationsPage.files(development: true));
+
+    await tester.tap(find.widgetWithText(TextButton, 'Cancelar'));
+    await tester.pump();
+    expect(find.text('Upload cancelado'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Abrir temporariamente'));
+    await tester.pump();
+    expect(find.text('Acesso temporário solicitado'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(OutlinedButton, 'CSV'));
+    await tester.pump();
+    expect(find.text('Exportação CSV adicionada à fila local'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Baixar exportação job-103'));
+    await tester.pump();
+    expect(find.text('Download local preparado para job-103'), findsOneWidget);
+  });
+
+  testWidgets('retry do erro restaura o conteúdo local', (tester) async {
+    await _pump(
+      tester,
+      const FormsOperationsPage.responses(development: true, state: FormsOperationsState.error),
+    );
+
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pump();
+
+    expect(find.byKey(const Key('forms-operations-state-error')), findsNothing);
+    expect(find.text('Identificadas'), findsOneWidget);
   });
 
   testWidgets('fixtures expõem estados operacionais sem sucesso produtivo falso', (tester) async {
