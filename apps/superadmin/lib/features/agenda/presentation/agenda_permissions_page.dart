@@ -28,14 +28,14 @@ final class AgendaPermissionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => switch (_access) {
-    _AgendaPermissionsAccess.unavailable => const _PermissionsState(
+    _AgendaPermissionsAccess.unavailable => const _BlockedPermissionsContent(
       key: Key('agenda-permissions-unavailable'),
       icon: Icons.cloud_off_outlined,
       title: 'Permissões indisponíveis',
       message:
           'A composição está pronta, mas a leitura produtiva permanece bloqueada até existir integração autorizada.',
     ),
-    _AgendaPermissionsAccess.unauthorized => const _PermissionsState(
+    _AgendaPermissionsAccess.unauthorized => const _BlockedPermissionsContent(
       key: Key('agenda-permissions-unauthorized'),
       icon: Icons.lock_outline_rounded,
       title: 'Acesso não autorizado',
@@ -46,6 +46,46 @@ final class AgendaPermissionsPage extends StatelessWidget {
       builder: (context, _) => _PermissionsContent(store: _store),
     ),
   };
+}
+
+final class _BlockedPermissionsContent extends StatelessWidget {
+  const _BlockedPermissionsContent({
+    required super.key,
+    required this.icon,
+    required this.title,
+    required this.message,
+  });
+
+  final IconData icon;
+  final String title, message;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final padding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+          ? CoeloSpacing.space10
+          : constraints.maxWidth < CoeloBreakpoints.medium.minWidth
+          ? CoeloSpacing.space4
+          : CoeloSpacing.space6;
+      return ListView(
+        padding: EdgeInsets.all(padding),
+        children: [
+          Text('Permissões da Agenda', style: Theme.of(context).textTheme.headlineMedium),
+          const SizedBox(height: CoeloSpacing.space1),
+          const Text(
+            'Consulta somente leitura: a fonte de verdade é Perfis e Permissões. A Agenda apenas mostra a capacidade efetiva e sua origem.',
+          ),
+          const SizedBox(height: CoeloSpacing.space6),
+          _PermissionsState(
+            key: const Key('agenda-permissions-unavailable-content'),
+            icon: icon,
+            title: title,
+            message: message,
+          ),
+        ],
+      );
+    },
+  );
 }
 
 final class _PermissionsState extends StatelessWidget {

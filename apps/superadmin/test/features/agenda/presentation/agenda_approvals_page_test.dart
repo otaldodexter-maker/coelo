@@ -68,6 +68,9 @@ void main() {
 
     expect(find.byKey(const Key('agenda-approvals-unavailable')), findsOneWidget);
     expect(find.text('Aprovações indisponíveis'), findsOneWidget);
+    expect(find.text('Aprovações de publicação'), findsOneWidget);
+    expect(find.textContaining('Revise itens enviados'), findsOneWidget);
+    expect(find.byKey(const Key('agenda-approvals-unavailable-content')), findsOneWidget);
     expect(find.text('Festival de esportes'), findsNothing);
     expect(find.byKey(const Key('agenda-approval-confirm-approve')), findsNothing);
   });

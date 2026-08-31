@@ -79,6 +79,9 @@ void main() {
     await tester.pumpWidget(_app(const AgendaPermissionsPage.unavailable()));
     expect(find.byKey(const Key('agenda-permissions-unavailable')), findsOneWidget);
     expect(find.text('Permissões indisponíveis'), findsOneWidget);
+    expect(find.text('Permissões da Agenda'), findsOneWidget);
+    expect(find.textContaining('fonte de verdade é Perfis e Permissões'), findsOneWidget);
+    expect(find.byKey(const Key('agenda-permissions-unavailable-content')), findsOneWidget);
     expect(find.text('Centro Horizonte'), findsNothing);
 
     await tester.pumpWidget(_app(const AgendaPermissionsPage.unauthorized()));

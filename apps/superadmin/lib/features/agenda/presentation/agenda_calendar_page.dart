@@ -184,40 +184,56 @@ final class _AgendaCalendarPageState extends State<AgendaCalendarPage> {
   }
 }
 
-final class _AgendaUnavailable extends StatelessWidget {
+final class _AgendaUnavailable extends StatefulWidget {
   const _AgendaUnavailable();
 
   @override
-  Widget build(BuildContext context) => Padding(
-    key: const Key('agenda-production-unavailable'),
-    padding: const EdgeInsets.all(CoeloSpacing.space6),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const _UnavailableViewHeader(),
-        const SizedBox(height: CoeloSpacing.space6),
-        CoeloStatePanel(
-          icon: Icons.event_busy_outlined,
-          title: 'Agenda indisponível',
-          message:
-              'A composição está pronta, mas a leitura e as ações produtivas permanecem bloqueadas até existir integração autorizada.',
-        ),
-      ],
-    ),
-  );
+  State<_AgendaUnavailable> createState() => _AgendaUnavailableState();
 }
 
-final class _UnavailableViewHeader extends StatelessWidget {
-  const _UnavailableViewHeader();
+final class _AgendaUnavailableState extends State<_AgendaUnavailable> {
+  final _search = TextEditingController();
 
   @override
-  Widget build(BuildContext context) => Wrap(
-    spacing: CoeloSpacing.space2,
-    runSpacing: CoeloSpacing.space2,
-    children: [
-      for (final value in AgendaInstitutionalView.values)
-        OutlinedButton(onPressed: null, child: Text(value.label)),
-    ],
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+          ? CoeloSpacing.space10
+          : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+          ? CoeloSpacing.space6
+          : CoeloSpacing.space4;
+      return Padding(
+        key: const Key('agenda-production-unavailable'),
+        padding: EdgeInsets.fromLTRB(inset, 0, inset, CoeloSpacing.space4),
+        child: CoeloAdminWorkspaceLayout(
+          toolbar: _AgendaToolbar(
+            month: DateTime(2026, 8),
+            view: AgendaInstitutionalView.calendar,
+            contextValue: 'Todos os contextos',
+            search: _search,
+            onSearchChanged: (_) {},
+            onContextChanged: (_) {},
+            onViewChanged: (_) {},
+            onToday: () {},
+            onPrevious: () {},
+            onNext: () {},
+            enabled: false,
+          ),
+          body: const CoeloStatePanel(
+            icon: Icons.event_busy_outlined,
+            title: 'Agenda indisponível',
+            message:
+                'A composição está pronta, mas a leitura e as ações produtivas permanecem bloqueadas até existir integração autorizada.',
+          ),
+        ),
+      );
+    },
   );
 }
 
@@ -233,6 +249,7 @@ final class _AgendaToolbar extends StatelessWidget {
     required this.onToday,
     required this.onPrevious,
     required this.onNext,
+    this.enabled = true,
   });
 
   final DateTime month;
@@ -243,6 +260,7 @@ final class _AgendaToolbar extends StatelessWidget {
   final ValueChanged<String> onContextChanged;
   final ValueChanged<AgendaInstitutionalView> onViewChanged;
   final VoidCallback onToday, onPrevious, onNext;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -258,15 +276,15 @@ final class _AgendaToolbar extends StatelessWidget {
           Wrap(
             spacing: CoeloSpacing.space1,
             children: [
-              TextButton(onPressed: onToday, child: const Text('Hoje')),
+              TextButton(onPressed: enabled ? onToday : null, child: const Text('Hoje')),
               IconButton(
                 tooltip: 'Mês anterior',
-                onPressed: onPrevious,
+                onPressed: enabled ? onPrevious : null,
                 icon: const Icon(Icons.chevron_left_rounded),
               ),
               IconButton(
                 tooltip: 'Próximo mês',
-                onPressed: onNext,
+                onPressed: enabled ? onNext : null,
                 icon: const Icon(Icons.chevron_right_rounded),
               ),
             ],
@@ -282,6 +300,7 @@ final class _AgendaToolbar extends StatelessWidget {
             semanticLabel: 'Buscar eventos da Agenda',
             hintText: 'Buscar eventos',
             onChanged: onSearchChanged,
+            enabled: enabled,
           ),
         ),
         filters: [
@@ -299,11 +318,12 @@ final class _AgendaToolbar extends StatelessWidget {
               ],
               optionLabel: (value) => value,
               onChanged: onContextChanged,
+              enabled: enabled,
               prefixIcon: Icons.account_tree_outlined,
             ),
           ),
         ],
-        actions: [_AgendaViewToggle(selected: view, onSelected: onViewChanged)],
+        actions: [_AgendaViewToggle(selected: view, onSelected: onViewChanged, enabled: enabled)],
       ),
       const SizedBox(height: CoeloSpacing.space3),
     ],
@@ -311,10 +331,11 @@ final class _AgendaToolbar extends StatelessWidget {
 }
 
 final class _AgendaViewToggle extends StatelessWidget {
-  const _AgendaViewToggle({required this.selected, required this.onSelected});
+  const _AgendaViewToggle({required this.selected, required this.onSelected, this.enabled = true});
 
   final AgendaInstitutionalView selected;
   final ValueChanged<AgendaInstitutionalView> onSelected;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) => Semantics(
@@ -327,7 +348,7 @@ final class _AgendaViewToggle extends StatelessWidget {
         for (final value in AgendaInstitutionalView.values)
           OutlinedButton(
             key: Key('agenda-view-${value.name}'),
-            onPressed: () => onSelected(value),
+            onPressed: enabled ? () => onSelected(value) : null,
             style: OutlinedButton.styleFrom(
               foregroundColor: selected == value
                   ? Theme.of(context).colorScheme.primary

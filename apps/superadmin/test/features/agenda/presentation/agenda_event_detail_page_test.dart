@@ -193,7 +193,27 @@ void main() {
       ),
     );
     expect(find.text('Agenda indisponível'), findsOneWidget);
-    expect(find.byKey(const Key('agenda-event-detail')), findsNothing);
+    expect(find.byKey(const Key('agenda-event-detail')), findsOneWidget);
+    expect(find.text('Descrição'), findsOneWidget);
+    expect(find.text('Contexto e audiência'), findsOneWidget);
+    expect(find.text('Agenda e respostas'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('agenda-event-edit-unavailable')),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('agenda-event-detail')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    expect(
+      tester
+          .widget<OutlinedButton>(find.byKey(const Key('agenda-event-edit-unavailable')))
+          .onPressed,
+      isNull,
+    );
+    expect(find.text('Reunião de responsáveis'), findsNothing);
   });
 
   testWidgets('diretório oferece lifecycle contextual com confirmação', (tester) async {
