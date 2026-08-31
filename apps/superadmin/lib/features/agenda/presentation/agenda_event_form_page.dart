@@ -15,25 +15,53 @@ final class AgendaEventFormPage extends StatefulWidget {
     required this.onCancel,
     required this.onSaved,
     this.eventId,
+    this.canPublish = true,
+    this.actionsAvailable = true,
     super.key,
   });
+
   final AgendaPrototypeStore store;
   final String? eventId;
   final VoidCallback onCancel;
   final ValueChanged<String> onSaved;
+  final bool canPublish;
+  final bool actionsAvailable;
 
   @override
   State<AgendaEventFormPage> createState() => _AgendaEventFormPageState();
 }
 
 final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
+  static const _contexts = ['Instituição', 'Unidade', 'Turma', 'Atividade', 'Pessoa'];
+  static const _audiences = ['Responsáveis', 'Equipe', 'Perfis específicos', 'Pessoas'];
+  static const _timeZones = ['America/Sao_Paulo', 'America/Manaus', 'UTC'];
+  static const _recurrences = ['Não se repete', 'Diária', 'Semanal', 'Mensal'];
+  static const _recurrenceEnds = ['Em uma data', 'Após uma quantidade'];
+  static const _reminderOptions = [
+    'Na publicação',
+    '24 horas antes',
+    '1 hora antes',
+    'Personalizado',
+  ];
+
   late final TextEditingController _title;
   late final TextEditingController _location;
   late final TextEditingController _details;
+  late final TextEditingController _occurrenceCount;
   late AgendaItemType _type;
   late AgendaPriority _priority;
   late DateTime _start;
   late DateTime _end;
+  late bool _allDay;
+  late String _timeZoneId;
+  late String _context;
+  late Set<String> _audience;
+  late String _recurrence;
+  String _recurrenceEnd = 'Em uma data';
+  late DateTime _recurrenceUntil;
+  late AgendaResponseMode _responseMode;
+  late GuardianResponsePolicy _guardianPolicy;
+  late Set<String> _reminders;
   int _step = 0;
 
   AgendaItem? get _existing =>
@@ -43,13 +71,28 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
   void initState() {
     super.initState();
     final seed = _existing ?? widget.store.items.first;
-    _title = TextEditingController(text: _existing?.title ?? 'Novo item da agenda');
-    _location = TextEditingController(text: _existing?.location ?? 'Unidade Centro');
-    _details = TextEditingController(text: _existing?.description ?? 'Detalhes para a família.');
+    _title = TextEditingController(text: _existing?.title ?? 'Novo evento');
+    _location = TextEditingController(text: _existing?.location ?? '');
+    _details = TextEditingController(text: _existing?.description ?? '');
+    _occurrenceCount = TextEditingController(
+      text: '${_existing?.recurrence?.occurrenceCount ?? 8}',
+    );
     _type = _existing?.type ?? AgendaItemType.event;
     _priority = _existing?.priority ?? AgendaPriority.normal;
     _start = _existing?.startsAt ?? seed.startsAt.add(const Duration(days: 2));
     _end = _existing?.endsAt ?? _start.add(const Duration(hours: 1));
+    _allDay = _existing?.allDay ?? false;
+    _timeZoneId = _existing?.timeZoneId ?? 'America/Sao_Paulo';
+    _context = _contextFor(_existing?.audience);
+    _audience = {'Responsáveis'};
+    _recurrence = _recurrenceLabel(_existing?.recurrence);
+    if (_existing?.recurrence?.occurrenceCount != null) {
+      _recurrenceEnd = 'Após uma quantidade';
+    }
+    _recurrenceUntil = _existing?.recurrence?.until ?? _start.add(const Duration(days: 30));
+    _responseMode = _existing?.responseMode ?? AgendaResponseMode.none;
+    _guardianPolicy = _existing?.guardianResponsePolicy ?? GuardianResponsePolicy.oneIsEnough;
+    _reminders = {'Na publicação', '24 horas antes'};
   }
 
   @override
@@ -57,43 +100,89 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
     _title.dispose();
     _location.dispose();
     _details.dispose();
+    _occurrenceCount.dispose();
     super.dispose();
   }
 
-  void _save(AgendaItemStatus status) {
-    if (_title.text.trim().isEmpty) return;
+  void _save(AgendaItemStatus requestedStatus) {
+    if (!widget.actionsAvailable || _title.text.trim().isEmpty || _audience.isEmpty) return;
     final seed = _existing ?? widget.store.items.first;
-    final id = widget.eventId ?? 'local-${DateTime.now().microsecondsSinceEpoch}';
+    final id = widget.eventId ?? 'local-agenda-${widget.store.items.length + 1}';
+    final start = _allDay ? DateTime(_start.year, _start.month, _start.day) : _start;
+    var end = _allDay ? DateTime(_end.year, _end.month, _end.day) : _end;
+    if (!end.isAfter(start)) {
+      end = start.add(_allDay ? const Duration(days: 1) : const Duration(hours: 1));
+    }
+    final status = requestedStatus == AgendaItemStatus.published && !widget.canPublish
+        ? AgendaItemStatus.draft
+        : requestedStatus;
     widget.store.upsertItem(
-      seed.copyWith(
+      AgendaItem(
         id: id,
         title: _title.text.trim(),
         type: _type,
+        audience: _resolvedAudience(seed.audience.institutionId),
         priority: _priority,
         status: status,
-        startsAt: _start,
-        endsAt: _end,
+        origin: _existing?.origin ?? AgendaItemOrigin.fixture,
+        startsAt: start,
+        endsAt: end,
         location: _location.text.trim(),
         description: _details.text.trim(),
+        recurrence: _buildRecurrence(),
+        allDay: _allDay,
+        requiresRsvp: _responseMode == AgendaResponseMode.rsvp,
+        authorizationReference: _existing?.authorizationReference,
+        timeZoneId: _timeZoneId,
+        responseMode: _responseMode,
+        guardianResponsePolicy: _guardianPolicy,
+        history: _existing?.history ?? const [],
       ),
     );
     widget.onSaved(id);
   }
 
+  AgendaAudience _resolvedAudience(String institutionId) => switch (_context) {
+    'Unidade' => AgendaAudience(institutionId: institutionId, unitIds: const {'unit-cambui'}),
+    'Turma' => AgendaAudience(institutionId: institutionId, groupIds: const {'group-girassol'}),
+    'Atividade' => AgendaAudience(
+      institutionId: institutionId,
+      activityIds: const {'activity-ballet'},
+    ),
+    'Pessoa' => AgendaAudience(institutionId: institutionId, personIds: const {'child-lia'}),
+    _ => AgendaAudience(institutionId: institutionId),
+  };
+
+  AgendaRecurrence? _buildRecurrence() {
+    if (_recurrence == 'Não se repete') return null;
+    final count = int.tryParse(_occurrenceCount.text.trim());
+    final byCount = _recurrenceEnd == 'Após uma quantidade';
+    return switch (_recurrence) {
+      'Diária' => AgendaRecurrence.daily(
+        until: byCount ? null : _recurrenceUntil,
+        occurrenceCount: byCount ? (count ?? 1) : null,
+      ),
+      'Mensal' => AgendaRecurrence.monthly(
+        until: byCount ? null : _recurrenceUntil,
+        occurrenceCount: byCount ? (count ?? 1) : null,
+      ),
+      _ => AgendaRecurrence.weekly(
+        until: byCount ? null : _recurrenceUntil,
+        occurrenceCount: byCount ? (count ?? 1) : null,
+      ),
+    };
+  }
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final nav = SuperadminFormStepNavigation(
+    builder: (context, constraints) => SuperadminFormFrame(
+      viewportWidth: constraints.maxWidth,
+      navigation: SuperadminFormStepNavigation(
         steps: [
           for (var index = 0; index < 4; index++)
             SuperadminFormStep(
               key: Key('agenda-form-step-$index'),
-              label: const [
-                'Tipo e contexto',
-                'Data e local',
-                'Público e regras',
-                'Revisão',
-              ][index],
+              label: const ['Dados básicos', 'Período', 'Respostas e avisos', 'Revisão'][index],
               status: index == _step
                   ? SuperadminFormStepStatus.current
                   : index < _step
@@ -106,122 +195,275 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
         onStepSelected: (value) {
           if (value <= _step) setState(() => _step = value);
         },
-      );
-      return SuperadminFormFrame(
-        viewportWidth: constraints.maxWidth,
-        navigation: nav,
-        scrollKey: const Key('agenda-event-form-scroll'),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              widget.eventId == null ? 'Criar item' : 'Editar item',
-              style: Theme.of(context).textTheme.headlineMedium,
+      ),
+      scrollKey: const Key('agenda-event-form-scroll'),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            widget.eventId == null ? 'Criar evento' : 'Editar evento',
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+          _content(),
+        ],
+      ),
+      footer: SuperadminFormActionFooter(
+        tertiaryAction: TextButton(onPressed: widget.onCancel, child: const Text('Cancelar')),
+        continuationActions: [
+          if (_step > 0)
+            OutlinedButton(
+              key: const Key('agenda-wizard-previous'),
+              onPressed: () => setState(() => _step--),
+              child: const Text('Anterior'),
             ),
-            const SizedBox(height: CoeloSpacing.space4),
-            _content(),
+          if (_step < 3)
+            OutlinedButton(
+              key: const Key('agenda-wizard-continue'),
+              onPressed: () => setState(() => _step++),
+              child: const Text('Continuar'),
+            )
+          else ...[
+            OutlinedButton(
+              key: const Key('agenda-wizard-save-draft'),
+              onPressed: widget.actionsAvailable ? () => _save(AgendaItemStatus.draft) : null,
+              child: const Text('Salvar rascunho'),
+            ),
+            FilledButton(
+              key: const Key('agenda-wizard-publish'),
+              onPressed: widget.actionsAvailable ? () => _save(AgendaItemStatus.published) : null,
+              child: Text(widget.canPublish ? 'Publicar' : 'Solicitar publicação'),
+            ),
           ],
-        ),
-        footer: SuperadminFormActionFooter(
-          tertiaryAction: TextButton(onPressed: widget.onCancel, child: const Text('Cancelar')),
-          continuationActions: [
-            if (_step > 0)
-              OutlinedButton(
-                key: const Key('agenda-wizard-previous'),
-                onPressed: () => setState(() => _step--),
-                child: const Text('Anterior'),
-              ),
-            if (_step < 3)
-              OutlinedButton(
-                key: const Key('agenda-wizard-continue'),
-                onPressed: () => setState(() => _step++),
-                child: const Text('Continuar'),
-              )
-            else ...[
-              OutlinedButton(
-                key: const Key('agenda-wizard-save-draft'),
-                onPressed: () => _save(AgendaItemStatus.draft),
-                child: const Text('Salvar rascunho'),
-              ),
-              FilledButton(
-                key: const Key('agenda-wizard-publish'),
-                onPressed: () => _save(AgendaItemStatus.published),
-                child: const Text('Publicar'),
-              ),
-            ],
-          ],
-        ),
-      );
-    },
+        ],
+      ),
+    ),
   );
 
   Widget _content() => _Group(
-    title: const [
-      '1. Tipo e contexto',
-      '2. Data e local',
-      '3. Público e regras',
-      '4. Revisão',
-    ][_step],
+    title: const ['1. Dados básicos', '2. Período', '3. Respostas e avisos', '4. Revisão'][_step],
     children: switch (_step) {
-      0 => [
-        CoeloFormTextField(
-          controller: _title,
-          labelText: 'Título',
-          prefixIcon: Icons.title_rounded,
-        ),
-        CoeloAdminSingleSelectField<AgendaItemType>(
-          label: 'Tipo',
-          value: _type,
-          options: AgendaItemType.values,
-          optionLabel: (v) => v.label,
-          onChanged: (v) => setState(() => _type = v),
-        ),
-        const _Fact(label: 'Contexto', value: 'Instituição Horizonte → Unidade Centro'),
-      ],
-      1 => [
-        _Fact(label: 'Início', value: _date(_start)),
-        _Fact(label: 'Fim', value: _date(_end)),
-        _Fact(label: 'Duração calculada', value: '${_end.difference(_start).inMinutes} minutos'),
-        CoeloFormTextField(
-          controller: _location,
-          labelText: 'Local',
-          prefixIcon: Icons.place_outlined,
-        ),
-        const _Fact(label: 'Conflito', value: 'Há 1 item simultâneo neste período.'),
-      ],
-      2 => [
-        CoeloAdminSingleSelectField<AgendaPriority>(
-          label: 'Prioridade',
-          value: _priority,
-          options: AgendaPriority.values,
-          optionLabel: (v) => _label(v.name),
-          onChanged: (v) => setState(() => _priority = v),
-        ),
-        const _Fact(label: 'Audiência resolvida', value: 'Responsáveis e equipe da Unidade Centro'),
-        CoeloFormTextField(
-          controller: _details,
-          labelText: 'Descrição',
-          prefixIcon: Icons.notes_rounded,
-          maxLines: 4,
-        ),
-      ],
-      _ => [
-        _Fact(label: 'Item', value: '${_title.text} · ${_type.label}'),
-        _Fact(label: 'Período', value: '${_date(_start)} — ${_date(_end)}'),
-        _Fact(label: 'Quem verá', value: 'Responsáveis e equipe da Unidade Centro'),
-        const _Fact(
-          label: 'Notificações',
-          value: 'Serão enviadas conforme as preferências e permissões da audiência.',
-        ),
-      ],
+      0 => _basicFields(),
+      1 => _periodFields(),
+      2 => _responseFields(),
+      _ => _reviewFields(),
     },
   );
+
+  List<Widget> _basicFields() => [
+    CoeloFormTextField(controller: _title, labelText: 'Título', prefixIcon: Icons.title_rounded),
+    CoeloAdminSingleSelectField<AgendaItemType>(
+      key: const Key('agenda-event-type'),
+      label: 'Tipo',
+      value: _type,
+      options: AgendaItemType.values,
+      optionLabel: (value) => value.label,
+      onChanged: (value) => setState(() => _type = value),
+    ),
+    CoeloAdminSingleSelectField<String>(
+      key: const Key('agenda-event-context'),
+      label: 'Contexto principal',
+      value: _context,
+      options: _contexts,
+      optionLabel: (value) => value,
+      onChanged: (value) => setState(() => _context = value),
+      prefixIcon: Icons.account_tree_outlined,
+    ),
+    CoeloAdminMultiSelectField<String>(
+      key: const Key('agenda-event-audience'),
+      label: 'Audiência',
+      options: _audiences,
+      selectedValues: _audience,
+      optionLabel: (value) => value,
+      onChanged: (value) => setState(() => _audience = value),
+      prefixIcon: Icons.groups_outlined,
+    ),
+    CoeloFormTextField(
+      controller: _details,
+      labelText: 'Descrição (opcional)',
+      prefixIcon: Icons.notes_rounded,
+      maxLines: 4,
+    ),
+  ];
+
+  List<Widget> _periodFields() => [
+    SwitchListTile(
+      key: const Key('agenda-event-all-day'),
+      value: _allDay,
+      onChanged: (value) => setState(() => _allDay = value),
+      title: const Text('Dia inteiro'),
+      subtitle: const Text('Eventos de dia inteiro não exibem horário.'),
+      contentPadding: EdgeInsets.zero,
+    ),
+    if (_allDay)
+      CoeloDateRangeField(
+        key: const Key('agenda-event-all-day-range'),
+        value: DateTimeRange(start: _start, end: _end),
+        firstDate: DateTime(2025),
+        lastDate: DateTime(2030, 12, 31),
+        labelText: 'Período',
+        onChanged: (value) {
+          if (value != null) {
+            setState(() {
+              _start = value.start;
+              _end = value.end;
+            });
+          }
+        },
+      )
+    else ...[
+      CoeloDateTimeField(
+        key: const Key('agenda-event-start'),
+        value: _start,
+        firstDate: DateTime(2025),
+        lastDate: DateTime(2030, 12, 31),
+        labelText: 'Início',
+        onChanged: (value) {
+          if (value != null) setState(() => _start = value);
+        },
+      ),
+      CoeloDateTimeField(
+        key: const Key('agenda-event-end'),
+        value: _end,
+        firstDate: DateTime(2025),
+        lastDate: DateTime(2030, 12, 31),
+        labelText: 'Fim',
+        onChanged: (value) {
+          if (value != null) setState(() => _end = value);
+        },
+      ),
+    ],
+    CoeloAdminSingleSelectField<String>(
+      key: const Key('agenda-event-timezone'),
+      label: 'Fuso horário IANA',
+      value: _timeZoneId,
+      options: _timeZones,
+      optionLabel: (value) => value,
+      onChanged: (value) => setState(() => _timeZoneId = value),
+      prefixIcon: Icons.public_outlined,
+    ),
+    CoeloFormTextField(
+      controller: _location,
+      labelText: 'Local (opcional)',
+      prefixIcon: Icons.place_outlined,
+    ),
+    CoeloAdminSingleSelectField<String>(
+      key: const Key('agenda-event-recurrence'),
+      label: 'Recorrência',
+      value: _recurrence,
+      options: _recurrences,
+      optionLabel: (value) => value,
+      onChanged: (value) => setState(() => _recurrence = value),
+      prefixIcon: Icons.repeat_rounded,
+    ),
+    if (_recurrence != 'Não se repete') ...[
+      CoeloAdminSingleSelectField<String>(
+        key: const Key('agenda-event-recurrence-end'),
+        label: 'Término da recorrência',
+        value: _recurrenceEnd,
+        options: _recurrenceEnds,
+        optionLabel: (value) => value,
+        onChanged: (value) => setState(() => _recurrenceEnd = value),
+      ),
+      if (_recurrenceEnd == 'Em uma data')
+        CoeloDateRangeField(
+          value: DateTimeRange(start: _recurrenceUntil, end: _recurrenceUntil),
+          firstDate: _start,
+          lastDate: DateTime(2035, 12, 31),
+          selectionMode: CoeloDateSelectionMode.single,
+          labelText: 'Repetir até',
+          onChanged: (value) {
+            if (value != null) setState(() => _recurrenceUntil = value.start);
+          },
+        )
+      else
+        CoeloFormTextField(
+          controller: _occurrenceCount,
+          labelText: 'Quantidade de ocorrências',
+          prefixIcon: Icons.numbers_rounded,
+          keyboardType: TextInputType.number,
+        ),
+      const _Fact(
+        label: 'Edição da série',
+        value: 'Editar uma ocorrência, esta e próximas ou toda a série',
+      ),
+    ],
+  ];
+
+  List<Widget> _responseFields() => [
+    CoeloAdminSingleSelectField<AgendaPriority>(
+      label: 'Prioridade',
+      value: _priority,
+      options: AgendaPriority.values,
+      optionLabel: (value) => _label(value.name),
+      onChanged: (value) => setState(() => _priority = value),
+    ),
+    CoeloAdminSingleSelectField<AgendaResponseMode>(
+      key: const Key('agenda-event-response-mode'),
+      label: 'Modo de resposta',
+      value: _responseMode,
+      options: AgendaResponseMode.values,
+      optionLabel: _responseLabel,
+      onChanged: (value) => setState(() => _responseMode = value),
+      prefixIcon: Icons.how_to_reg_outlined,
+    ),
+    if (_responseMode != AgendaResponseMode.none)
+      CoeloAdminSingleSelectField<GuardianResponsePolicy>(
+        key: const Key('agenda-event-guardian-policy'),
+        label: 'Política de responsáveis',
+        value: _guardianPolicy,
+        options: GuardianResponsePolicy.values,
+        optionLabel: (value) => value == GuardianResponsePolicy.oneIsEnough
+            ? 'Um responsável basta'
+            : 'Todos devem responder',
+        onChanged: (value) => setState(() => _guardianPolicy = value),
+        prefixIcon: Icons.family_restroom_outlined,
+      ),
+    CoeloAdminMultiSelectField<String>(
+      key: const Key('agenda-event-reminders'),
+      label: 'Lembretes',
+      options: _reminderOptions,
+      selectedValues: _reminders,
+      optionLabel: (value) => value,
+      onChanged: (value) => setState(() => _reminders = value),
+      prefixIcon: Icons.notifications_active_outlined,
+    ),
+    const _Fact(label: 'Canais', value: 'Os lembretes usam sininho e push; e-mail é opcional.'),
+  ];
+
+  List<Widget> _reviewFields() => [
+    _Fact(label: 'Evento', value: '${_title.text} · ${_type.label}'),
+    _Fact(label: 'Contexto e audiência', value: '$_context · ${_audience.join(', ')}'),
+    _Fact(
+      label: 'Período',
+      value: _allDay
+          ? '${_shortDate(_start)} — ${_shortDate(_end)} · dia inteiro'
+          : '${_date(_start)} — ${_date(_end)} · $_timeZoneId',
+    ),
+    _Fact(label: 'Recorrência', value: _recurrence),
+    _Fact(label: 'Resposta', value: _responseLabel(_responseMode)),
+    _Fact(label: 'Lembretes', value: _reminders.join(', ')),
+    if (!widget.canPublish)
+      const _Fact(
+        label: 'Publicação',
+        value: 'Sem capability de publicação: será salvo como rascunho e enviado para aprovação.',
+      ),
+    if (!widget.actionsAvailable)
+      const CoeloStatePanel(
+        key: Key('agenda-event-actions-unavailable'),
+        icon: Icons.cloud_off_outlined,
+        title: 'Integração indisponível',
+        message:
+            'A composição está disponível, mas salvar e publicar permanecem bloqueados nesta rota.',
+      ),
+  ];
 }
 
 final class _Group extends StatelessWidget {
   const _Group({required this.title, required this.children});
   final String title;
   final List<Widget> children;
+
   @override
   Widget build(BuildContext context) => Center(
     child: ConstrainedBox(
@@ -231,9 +473,9 @@ final class _Group extends StatelessWidget {
         children: [
           Text(title, style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: CoeloSpacing.space5),
-          for (var i = 0; i < children.length; i++) ...[
-            children[i],
-            if (i < children.length - 1) const SizedBox(height: CoeloSpacing.space4),
+          for (var index = 0; index < children.length; index++) ...[
+            children[index],
+            if (index < children.length - 1) const SizedBox(height: CoeloSpacing.space4),
           ],
           const SizedBox(height: CoeloSpacing.space6),
         ],
@@ -244,8 +486,8 @@ final class _Group extends StatelessWidget {
 
 final class _Fact extends StatelessWidget {
   const _Fact({required this.label, required this.value});
-  final String label;
-  final String value;
+  final String label, value;
+
   @override
   Widget build(BuildContext context) => Semantics(
     label: '$label: $value',
@@ -259,7 +501,34 @@ final class _Fact extends StatelessWidget {
   );
 }
 
-String _date(DateTime v) =>
-    '${v.day.toString().padLeft(2, '0')}/${v.month.toString().padLeft(2, '0')}/${v.year} ${v.hour.toString().padLeft(2, '0')}:${v.minute.toString().padLeft(2, '0')}';
+String _contextFor(AgendaAudience? audience) {
+  if (audience == null) return 'Instituição';
+  if (audience.personIds.isNotEmpty) return 'Pessoa';
+  if (audience.activityIds.isNotEmpty) return 'Atividade';
+  if (audience.groupIds.isNotEmpty) return 'Turma';
+  if (audience.unitIds.isNotEmpty) return 'Unidade';
+  return 'Instituição';
+}
+
+String _recurrenceLabel(AgendaRecurrence? recurrence) => switch (recurrence?.frequency) {
+  AgendaRecurrenceFrequency.daily => 'Diária',
+  AgendaRecurrenceFrequency.weekly => 'Semanal',
+  AgendaRecurrenceFrequency.monthly => 'Mensal',
+  null => 'Não se repete',
+};
+
+String _responseLabel(AgendaResponseMode value) => switch (value) {
+  AgendaResponseMode.none => 'Nenhuma resposta',
+  AgendaResponseMode.rsvp => 'RSVP · Sim, Não ou Talvez',
+  AgendaResponseMode.acknowledgement => 'Ciência',
+  AgendaResponseMode.authorization => 'Autorização · Autorizo ou Não autorizo',
+};
+
+String _shortDate(DateTime value) =>
+    '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
+
+String _date(DateTime value) =>
+    '${_shortDate(value)} ${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
+
 String _label(String value) =>
-    '${value[0].toUpperCase()}${value.substring(1).replaceAllMapped(RegExp(r'([A-Z])'), (m) => ' ${m.group(1)!.toLowerCase()}')}';
+    '${value[0].toUpperCase()}${value.substring(1).replaceAllMapped(RegExp(r'([A-Z])'), (match) => ' ${match.group(1)!.toLowerCase()}')}';
