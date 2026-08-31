@@ -7,13 +7,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('is a static unavailable surface without a production capability', (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: FormsEditorPage()));
+  testWidgets('production preserves the editor hierarchy with neutral disabled controls', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_app(const FormsEditorPage()));
 
-    expect(find.text('Editor de formulários indisponível'), findsOneWidget);
-    expect(find.textContaining('temporariamente indisponível'), findsOneWidget);
-    expect(find.byType(TextField), findsNothing);
-    expect(find.byType(FilledButton), findsNothing);
+    expect(find.byType(SuperadminFormFrame), findsOneWidget);
+    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(find.byKey(const Key('forms-editor-unavailable')), findsOneWidget);
+    final titleField = tester
+        .widgetList<TextFormField>(find.byType(TextFormField))
+        .firstWhere((field) => field.controller != null);
+    expect(titleField.controller!.text, isEmpty);
+    expect(titleField.enabled, isFalse);
+    expect(find.text('01 - ANHEMBI - FOTOS'), findsNothing);
+    expect(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'), findsOneWidget);
+    expect(
+      tester
+          .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'))
+          .onPressed,
+      isNull,
+    );
+    expect(
+      tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Salvar formulário')).onPressed,
+      isNull,
+    );
     expect(tester.takeException(), isNull);
   });
 
@@ -158,10 +176,12 @@ void main() {
     expect(find.textContaining('nenhuma persistência remota'), findsOneWidget);
   });
 
-  testWidgets('production does not expose local publication affordances', (tester) async {
+  testWidgets('production exposes publication context without enabling its local flow', (
+    tester,
+  ) async {
     await tester.pumpWidget(_app(const FormsEditorPage()));
 
-    expect(find.text('Publicar ou agendar'), findsNothing);
+    expect(find.text('Publicar ou agendar'), findsOneWidget);
     expect(find.text('Publicar agora'), findsNothing);
     expect(find.textContaining('Publicação concluída'), findsNothing);
   });

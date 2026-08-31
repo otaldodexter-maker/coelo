@@ -2,29 +2,11 @@ import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_superadmin/features/forms/presentation/directory/forms_directory_page.dart';
-import 'package:coelo_superadmin/features/forms/presentation/editor/forms_editor_page.dart';
 import 'package:coelo_superadmin/features/forms/presentation/overview/forms_overview_page.dart';
-import 'package:coelo_superadmin/features/forms/presentation/response/form_response_page.dart';
-import 'package:coelo_superadmin/features/forms/presentation/response/forms_test_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  for (final surface in <String, Widget>{
-    'editor': const FormsEditorPage(),
-    'response': const FormResponsePage(),
-    'test': const FormsTestPage(),
-  }.entries) {
-    testWidgets('${surface.key} is a static unavailable surface', (tester) async {
-      await tester.pumpWidget(MaterialApp(home: surface.value));
-
-      expect(find.textContaining('indisponível'), findsWidgets);
-      expect(find.byType(TextField), findsNothing);
-      expect(find.byType(FilledButton), findsNothing);
-      expect(tester.takeException(), isNull);
-    });
-  }
-
   testWidgets('directory exposes only the explicitly authorized callback surface', (tester) async {
     final api = _ReadOnlyFormsApi();
     var createRequested = false;

@@ -57,30 +57,42 @@ final class FormsOperationsPage extends StatelessWidget {
           children: [
             _Header(surface: surface),
             const SizedBox(height: CoeloSpacing.space4),
-            if (!development || state == FormsOperationsState.unavailable)
+            if (!development) ...[
               const CoeloStatePanel(
                 key: Key('forms-operations-unavailable'),
                 icon: Icons.lock_outline_rounded,
                 title: 'Operação indisponível',
                 message:
                     'A composição visual está pronta, mas leitura, persistência e autorização produtivas permanecem bloqueadas.',
+              ),
+              const SizedBox(height: CoeloSpacing.space4),
+              _surfaceContent(available: false),
+            ] else if (state == FormsOperationsState.unavailable)
+              const CoeloStatePanel(
+                key: Key('forms-operations-unavailable'),
+                icon: Icons.lock_outline_rounded,
+                title: 'Operação indisponível',
+                message: 'A fixture local está indisponível para este estado de demonstração.',
               )
             else if (state != FormsOperationsState.content)
               _OperationsStatePanel(state: state)
             else
-              switch (surface) {
-                FormsOperationsSurface.monitor => const _MonitorContent(),
-                FormsOperationsSurface.responses => const _ResponsesContent(),
-                FormsOperationsSurface.responseDetail => _ResponseDetailContent(
-                  anonymous: anonymous,
-                ),
-                FormsOperationsSurface.files => const _FilesContent(),
-              },
+              _surfaceContent(available: true),
           ],
         );
       },
     ),
   );
+
+  Widget _surfaceContent({required bool available}) => switch (surface) {
+    FormsOperationsSurface.monitor => _MonitorContent(available: available),
+    FormsOperationsSurface.responses => _ResponsesContent(available: available),
+    FormsOperationsSurface.responseDetail => _ResponseDetailContent(
+      anonymous: available && anonymous,
+      available: available,
+    ),
+    FormsOperationsSurface.files => _FilesContent(available: available),
+  };
 }
 
 final class _OperationsStatePanel extends StatelessWidget {
@@ -172,7 +184,9 @@ final class _Header extends StatelessWidget {
 }
 
 final class _MonitorContent extends StatelessWidget {
-  const _MonitorContent();
+  const _MonitorContent({required this.available});
+
+  final bool available;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -181,11 +195,31 @@ final class _MonitorContent extends StatelessWidget {
       Wrap(
         spacing: CoeloSpacing.space3,
         runSpacing: CoeloSpacing.space3,
-        children: const [
-          _Metric(label: 'Elegíveis', value: '128', icon: Icons.groups_outlined),
-          _Metric(label: 'Responderam', value: '89', icon: Icons.task_alt_rounded),
-          _Metric(label: 'Não responderam', value: '37', icon: Icons.schedule_rounded),
-          _Metric(label: 'Perdeu elegibilidade', value: '2', icon: Icons.person_off_outlined),
+        children: [
+          _Metric(
+            label: 'Elegíveis',
+            value: available ? '128' : '—',
+            icon: Icons.groups_outlined,
+            available: available,
+          ),
+          _Metric(
+            label: 'Responderam',
+            value: available ? '89' : '—',
+            icon: Icons.task_alt_rounded,
+            available: available,
+          ),
+          _Metric(
+            label: 'Não responderam',
+            value: available ? '37' : '—',
+            icon: Icons.schedule_rounded,
+            available: available,
+          ),
+          _Metric(
+            label: 'Perdeu elegibilidade',
+            value: available ? '2' : '—',
+            icon: Icons.person_off_outlined,
+            available: available,
+          ),
         ],
       ),
       const SizedBox(height: CoeloSpacing.space5),
@@ -193,12 +227,41 @@ final class _MonitorContent extends StatelessWidget {
         key: const Key('forms-monitor-hierarchy'),
         label: 'Hierarquia de monitoramento',
         child: Column(
-          children: const [
-            _HierarchyRow(label: 'Colégio Horizonte', detail: '89 de 128 responderam', level: 0),
-            _HierarchyRow(label: 'Unidade Centro', detail: '61 de 84 responderam', level: 1),
-            _HierarchyRow(label: '7º ano A', detail: '24 de 31 responderam', level: 2),
-            _HierarchyRow(label: 'Famílias', detail: '18 de 23 responderam', level: 3),
-          ],
+          children: available
+              ? const [
+                  _HierarchyRow(
+                    label: 'Colégio Horizonte',
+                    detail: '89 de 128 responderam',
+                    level: 0,
+                    available: true,
+                  ),
+                  _HierarchyRow(
+                    label: 'Unidade Centro',
+                    detail: '61 de 84 responderam',
+                    level: 1,
+                    available: true,
+                  ),
+                  _HierarchyRow(
+                    label: '7º ano A',
+                    detail: '24 de 31 responderam',
+                    level: 2,
+                    available: true,
+                  ),
+                  _HierarchyRow(
+                    label: 'Famílias',
+                    detail: '18 de 23 responderam',
+                    level: 3,
+                    available: true,
+                  ),
+                ]
+              : const [
+                  _HierarchyRow(
+                    label: 'Contexto indisponível',
+                    detail: 'Dados autorizados não carregados',
+                    level: 0,
+                    available: false,
+                  ),
+                ],
         ),
       ),
     ],
@@ -206,16 +269,22 @@ final class _MonitorContent extends StatelessWidget {
 }
 
 final class _Metric extends StatelessWidget {
-  const _Metric({required this.label, required this.value, required this.icon});
+  const _Metric({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.available,
+  });
   final String label, value;
   final IconData icon;
+  final bool available;
 
   @override
   Widget build(BuildContext context) => SizedBox(
     width: 220,
     child: CoeloAdminInteractiveCard(
       semanticLabel: '$label: $value',
-      onPressed: () {},
+      onPressed: available ? () {} : null,
       child: Padding(
         padding: const EdgeInsets.all(CoeloSpacing.space4),
         child: Row(
@@ -239,16 +308,22 @@ final class _Metric extends StatelessWidget {
 }
 
 final class _HierarchyRow extends StatelessWidget {
-  const _HierarchyRow({required this.label, required this.detail, required this.level});
+  const _HierarchyRow({
+    required this.label,
+    required this.detail,
+    required this.level,
+    required this.available,
+  });
   final String label, detail;
   final int level;
+  final bool available;
 
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
     child: CoeloAdminInteractiveCard(
       semanticLabel: '$label, $detail',
-      onPressed: () {},
+      onPressed: available ? () {} : null,
       child: Padding(
         padding: EdgeInsets.fromLTRB(
           CoeloSpacing.space4 + level * CoeloSpacing.space4,
@@ -271,7 +346,9 @@ final class _HierarchyRow extends StatelessWidget {
 }
 
 final class _ResponsesContent extends StatelessWidget {
-  const _ResponsesContent();
+  const _ResponsesContent({required this.available});
+
+  final bool available;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -281,21 +358,32 @@ final class _ResponsesContent extends StatelessWidget {
         spacing: CoeloSpacing.space2,
         runSpacing: CoeloSpacing.space2,
         children: [
-          FilterChip(label: const Text('Identificadas'), selected: true, onSelected: (_) {}),
-          FilterChip(label: const Text('Anônimas'), selected: false, onSelected: (_) {}),
+          FilterChip(
+            label: const Text('Identificadas'),
+            selected: available,
+            onSelected: available ? (_) {} : null,
+          ),
+          FilterChip(
+            label: const Text('Anônimas'),
+            selected: false,
+            onSelected: available ? (_) {} : null,
+          ),
         ],
       ),
       const SizedBox(height: CoeloSpacing.space4),
-      for (final item in const [
-        ('Marina Souza', 'Enviada em 30 ago 2026 · 14:32'),
-        ('Carlos Oliveira', 'Enviada em 30 ago 2026 · 13:48'),
-        ('Resposta anônima', 'Enviada em 29 ago 2026 · 18:05'),
-      ])
+      for (final item
+          in available
+              ? const [
+                  ('Marina Souza', 'Enviada em 30 ago 2026 · 14:32'),
+                  ('Carlos Oliveira', 'Enviada em 30 ago 2026 · 13:48'),
+                  ('Resposta anônima', 'Enviada em 29 ago 2026 · 18:05'),
+                ]
+              : const [('Nenhuma resposta autorizada carregada', 'Conteúdo indisponível')])
         Padding(
           padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
           child: CoeloAdminInteractiveCard(
             semanticLabel: '${item.$1}, ${item.$2}',
-            onPressed: () {},
+            onPressed: available ? () {} : null,
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: CoeloSpacing.space4,
@@ -320,7 +408,7 @@ final class _ResponsesContent extends StatelessWidget {
           OutlinedButton(onPressed: null, child: const Text('Anterior')),
           OutlinedButton(
             key: const Key('forms-cursor-next'),
-            onPressed: () {},
+            onPressed: available ? () {} : null,
             child: const Text('Próxima página'),
           ),
         ],
@@ -330,27 +418,34 @@ final class _ResponsesContent extends StatelessWidget {
 }
 
 final class _ResponseDetailContent extends StatelessWidget {
-  const _ResponseDetailContent({required this.anonymous});
+  const _ResponseDetailContent({required this.anonymous, required this.available});
   final bool anonymous;
+  final bool available;
 
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       CoeloAdminInteractiveCard(
-        semanticLabel: anonymous ? 'Resposta anônima' : 'Resposta de Marina Souza',
+        semanticLabel: available
+            ? (anonymous ? 'Resposta anônima' : 'Resposta de Marina Souza')
+            : 'Resposta indisponível',
         child: Padding(
           padding: const EdgeInsets.all(CoeloSpacing.space5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                anonymous ? 'Resposta anônima' : 'Resposta de Marina Souza',
+                available
+                    ? (anonymous ? 'Resposta anônima' : 'Resposta de Marina Souza')
+                    : 'Resposta indisponível',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: CoeloSpacing.space2),
               Text(
-                anonymous
+                !available
+                    ? 'Conteúdo autorizado não carregado.'
+                    : anonymous
                     ? 'A identidade e a edição não podem ser recuperadas quando o segredo anônimo é perdido.'
                     : 'Identificada · enviada em 30 ago 2026 às 14:32',
               ),
@@ -359,11 +454,14 @@ final class _ResponseDetailContent extends StatelessWidget {
         ),
       ),
       const SizedBox(height: CoeloSpacing.space4),
-      const _Answer(question: 'Como você avalia a comunicação?', answer: 'Muito boa'),
-      const _Answer(
-        question: 'O que podemos melhorar?',
-        answer: 'Manter os lembretes com antecedência.',
-      ),
+      if (available) ...[
+        const _Answer(question: 'Como você avalia a comunicação?', answer: 'Muito boa'),
+        const _Answer(
+          question: 'O que podemos melhorar?',
+          answer: 'Manter os lembretes com antecedência.',
+        ),
+      ] else
+        const _Answer(question: 'Conteúdo protegido', answer: 'Não carregado'),
     ],
   );
 }
@@ -393,7 +491,9 @@ final class _Answer extends StatelessWidget {
 }
 
 final class _FilesContent extends StatefulWidget {
-  const _FilesContent();
+  const _FilesContent({required this.available});
+
+  final bool available;
 
   @override
   State<_FilesContent> createState() => _FilesContentState();
@@ -440,23 +540,32 @@ final class _FilesContentState extends State<_FilesContent> {
                 children: [
                   const Icon(Icons.upload_file_outlined),
                   const SizedBox(width: CoeloSpacing.space3),
-                  const Expanded(child: Text('comprovante-familia.pdf')),
-                  TextButton(onPressed: () {}, child: const Text('Cancelar')),
+                  Expanded(
+                    child: Text(
+                      widget.available
+                          ? 'comprovante-familia.pdf'
+                          : 'Nenhum arquivo autorizado carregado',
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: widget.available ? () {} : null,
+                    child: const Text('Cancelar'),
+                  ),
                 ],
               ),
               const SizedBox(height: CoeloSpacing.space2),
-              const LinearProgressIndicator(
+              LinearProgressIndicator(
                 key: Key('forms-upload-progress'),
-                value: .64,
-                semanticsLabel: 'Progresso do upload',
-                semanticsValue: '64',
+                value: widget.available ? .64 : 0,
+                semanticsLabel: widget.available ? 'Progresso do upload' : 'Upload indisponível',
+                semanticsValue: widget.available ? '64' : '0',
               ),
             ],
           ),
         ),
       ),
       const SizedBox(height: CoeloSpacing.space4),
-      if (_assetPresent)
+      if (widget.available && _assetPresent)
         CoeloAdminInteractiveCard(
           semanticLabel: 'Arquivo protegido autorização passeio',
           child: Padding(
@@ -498,7 +607,7 @@ final class _FilesContentState extends State<_FilesContent> {
             ),
           ),
         )
-      else
+      else if (widget.available)
         const CoeloStatePanel(
           key: Key('forms-file-absent-after-reload'),
           icon: Icons.delete_outline_rounded,
@@ -511,36 +620,45 @@ final class _FilesContentState extends State<_FilesContent> {
         runSpacing: CoeloSpacing.space2,
         children: [
           FilledButton.icon(
-            onPressed: () {},
+            onPressed: widget.available ? () {} : null,
             icon: const Icon(Icons.download_outlined),
             label: const Text('Exportar'),
           ),
-          OutlinedButton(onPressed: () {}, child: const Text('CSV')),
-          OutlinedButton(onPressed: () {}, child: const Text('XLSX')),
-          OutlinedButton(onPressed: () {}, child: const Text('ZIP')),
+          OutlinedButton(onPressed: widget.available ? () {} : null, child: const Text('CSV')),
+          OutlinedButton(onPressed: widget.available ? () {} : null, child: const Text('XLSX')),
+          OutlinedButton(onPressed: widget.available ? () {} : null, child: const Text('ZIP')),
         ],
       ),
       const SizedBox(height: CoeloSpacing.space4),
-      for (final job in const [
-        ('job-101', 'Aguardando', 0.0),
-        ('job-102', 'Processando', .46),
-        ('job-103', 'Concluído', 1.0),
-        ('job-104', 'Dividido', 1.0),
-        ('job-105', 'Expirado', 1.0),
-        ('job-106', 'Falhou', .72),
-      ])
+      for (final job
+          in widget.available
+              ? const [
+                  ('job-101', 'Aguardando', 0.0),
+                  ('job-102', 'Processando', .46),
+                  ('job-103', 'Concluído', 1.0),
+                  ('job-104', 'Dividido', 1.0),
+                  ('job-105', 'Expirado', 1.0),
+                  ('job-106', 'Falhou', .72),
+                ]
+              : const [('—', 'Indisponível', 0.0)])
         Padding(
           padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
-          child: _JobRow(id: job.$1, status: job.$2, progress: job.$3),
+          child: _JobRow(id: job.$1, status: job.$2, progress: job.$3, available: widget.available),
         ),
     ],
   );
 }
 
 final class _JobRow extends StatelessWidget {
-  const _JobRow({required this.id, required this.status, required this.progress});
+  const _JobRow({
+    required this.id,
+    required this.status,
+    required this.progress,
+    required this.available,
+  });
   final String id, status;
   final double progress;
+  final bool available;
 
   @override
   Widget build(BuildContext context) => CoeloAdminInteractiveCard(
@@ -565,7 +683,7 @@ final class _JobRow extends StatelessWidget {
           if (status == 'Concluído' || status == 'Dividido')
             IconButton(
               tooltip: 'Baixar exportação $id',
-              onPressed: () {},
+              onPressed: available ? () {} : null,
               icon: const Icon(Icons.download_rounded),
             ),
         ],

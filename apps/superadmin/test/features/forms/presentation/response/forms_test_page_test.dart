@@ -12,13 +12,21 @@ void main() {
     ),
   );
 
-  testWidgets('is a static unavailable surface without API or success state', (tester) async {
+  testWidgets('production preserves the test hierarchy with neutral disabled controls', (
+    tester,
+  ) async {
     await tester.pumpWidget(app(const FormsTestPage()));
 
-    expect(find.text('Teste de formulário indisponível'), findsOneWidget);
-    expect(find.textContaining('temporariamente indisponível'), findsOneWidget);
-    expect(find.byType(TextField), findsNothing);
-    expect(find.byType(FilledButton), findsNothing);
+    expect(find.byKey(const Key('forms-test-unavailable')), findsOneWidget);
+    expect(find.byKey(const Key('forms-test-preview')), findsOneWidget);
+    expect(find.text('Formulário sem dados disponíveis'), findsOneWidget);
+    expect(find.text('Pesquisa das famílias'), findsNothing);
+    expect(find.byKey(const Key('forms-test-comment')), findsOneWidget);
+    expect(
+      tester.widget<TextFormField>(find.byKey(const Key('forms-test-comment'))).enabled,
+      isFalse,
+    );
+    expect(tester.widget<FilledButton>(find.byKey(const Key('forms-test-next'))).onPressed, isNull);
     expect(tester.takeException(), isNull);
   });
 
