@@ -245,6 +245,7 @@ GoRouter createSuperadminRouter({
   final importedRepository = importRepository;
   const developmentImportRepository = UnavailableImportRepository();
   final agendaPrototypeStore = AgendaPrototypeStore.seeded();
+  final unavailableAgendaStore = AgendaPrototypeStore.empty();
   final developmentAccountController = AccountController(
     repository: InMemoryAccountProfileRepository(),
     activities: accountActivities,
@@ -1312,7 +1313,7 @@ GoRouter createSuperadminRouter({
               context,
               AgendaModuleArea.events,
               AgendaEventFormPage(
-                store: agendaPrototypeStore,
+                store: unavailableAgendaStore,
                 actionsAvailable: false,
                 onCancel: () => context.goNamed(SuperadminRoutes.agendaName),
                 onSaved: (_) {},
@@ -1327,7 +1328,7 @@ GoRouter createSuperadminRouter({
               context,
               AgendaModuleArea.events,
               AgendaEventFormPage(
-                store: agendaPrototypeStore,
+                store: unavailableAgendaStore,
                 eventId: state.pathParameters['eventId'],
                 actionsAvailable: false,
                 onCancel: () => context.goNamed(SuperadminRoutes.agendaName),
@@ -3540,6 +3541,10 @@ GoRouter createSuperadminRouter({
               logout: _previewLogout,
               onAreaSelected: (area) => openAgendaArea(context, area, development: true),
               onCreateItem: () => context.goNamed(SuperadminRoutes.devAgendaEventCreateName),
+              onOpenItem: (id) => context.goNamed(
+                SuperadminRoutes.devAgendaEventDetailName,
+                pathParameters: {'eventId': id},
+              ),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
             ),
@@ -3972,16 +3977,19 @@ String _destinationForLocation(String location) {
     return 'audit';
   }
   if (location.startsWith('/agenda/events/new')) {
-    return 'event-create';
+    return 'agenda-create';
   }
   if (location.startsWith('/agenda/events')) {
-    return 'events';
+    return 'agenda';
   }
   if (location.startsWith('/agenda/requests')) {
-    return 'requests';
+    return 'agenda-requests';
+  }
+  if (location.startsWith('/agenda/approvals')) {
+    return 'agenda-approvals';
   }
   if (location.startsWith('/agenda/permissions')) {
-    return 'permissions';
+    return 'agenda-permissions';
   }
   if (location.startsWith('/agenda')) {
     return 'agenda';

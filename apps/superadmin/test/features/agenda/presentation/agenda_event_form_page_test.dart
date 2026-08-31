@@ -110,7 +110,7 @@ void main() {
   });
 
   testWidgets('produção sem integração mantém composição e ações fail-closed', (tester) async {
-    final prototype = store();
+    final prototype = AgendaPrototypeStore.empty();
     final initialCount = prototype.items.length;
     final saved = <String>[];
     await tester.pumpWidget(_app(store: prototype, actionsAvailable: false, onSaved: saved.add));
@@ -127,6 +127,21 @@ void main() {
       isNull,
     );
     expect(prototype.items, hasLength(initialCount));
+    expect(saved, isEmpty);
+  });
+
+  testWidgets('validação obrigatória anuncia erro e preserva o formulário', (tester) async {
+    final prototype = store();
+    final saved = <String>[];
+    await tester.pumpWidget(_app(store: prototype, onSaved: saved.add));
+    await tester.enterText(find.byType(CoeloFormTextField).first, '');
+    await _goToReview(tester);
+
+    await tester.tap(find.byKey(const Key('agenda-wizard-save-draft')));
+    await tester.pump();
+
+    expect(find.byKey(const Key('agenda-event-form-feedback')), findsOneWidget);
+    expect(find.text('Informe o título do evento antes de continuar.'), findsOneWidget);
     expect(saved, isEmpty);
   });
 
