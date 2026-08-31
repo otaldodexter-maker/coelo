@@ -3,7 +3,7 @@ title: "Coelo PRD Superadmin Oficial v1"
 source_file: "Coelo PRD Superadmin Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo PRD Superadmin Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/PRD/Coelo PRD Superadmin Oficial v1.docx"
-supplemental_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md"
+supplemental_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md; decisions/0028-superadmin-agenda-product-surface.md; specs/006-comunicacao-agenda.md"
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
@@ -439,6 +439,16 @@ além de contagens minimizadas de profissionais e participantes. Criar e editar
 continuam no Admin, protegidos pelas capacidades institucionais
 `activities.create` e `activities.manage`; a interface do Superadmin não
 contorna RLS nem expõe nomes de crianças nesse diagnóstico.
+
+# 22. Aditivo 2026-08-31 — Agenda institucional produtiva
+
+A Agenda institucional passa a integrar o escopo produtivo de
+`apps/superadmin`, como exceção explícita à separação operacional anterior.
+Seu contrato é `specs/006-comunicacao-agenda.md` e sua justificativa normativa
+está na ADR 0028.
+
+Esta mudança não transfere ao cliente regras de autorização nem aprova backend.
+Até existir integração aprovada, a UI produtiva permanece fail-closed.
 
 # Fontes e referências
 

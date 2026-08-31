@@ -368,6 +368,8 @@ D13 · Agenda Supporting · MVP
 | Entidades principais | agenda_events, agenda_recurrences, agenda_audiences, agenda_responses, reminders. |
 | Dependências | Tenancy, Contexto/Autorização, Família e Notificações. |
 | Eventos publicados | agenda_event_created, agenda_event_published, agenda_response_recorded, agenda_event_cancelled. |
+| Superfície vigente | `apps/superadmin` exclusivamente, conforme ADR 0028. |
+| Integração com Formulários | Pode referenciar um Formulário por link/CTA, mas não controla seus agendamentos, ocorrências ou lembretes. |
 
 D14 · Autorizações Supporting · MVP simples
 
@@ -378,6 +380,7 @@ D14 · Autorizações Supporting · MVP simples
 | Entidades principais | authorization_requests, authorization_versions, authorization_recipients, authorization_decisions, revocations. |
 | Dependências | Agenda quando ligada a evento; Família, Contexto/Autorização, Notificações e Auditoria. |
 | Eventos publicados | authorization_requested, authorization_approved, authorization_denied, authorization_revoked, authorization_expired. |
+| Composição na Agenda | Agenda pode apresentar autorização simples vinculada ao evento; decisão formal, evidência, revogação e auditoria permanecem owned por Autorizações. |
 
 D15 · Mídia Supporting · MVP
 

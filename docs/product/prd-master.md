@@ -3,7 +3,7 @@ title: "Coelo PRD Master v1"
 source_file: "Coelo PRD Master v1.docx"
 source_copy: "docs/source/originals/docx/Coelo PRD Master v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/PRD/Coelo PRD Master v1.docx"
-supplemental_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md"
+supplemental_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md; decisions/0028-superadmin-agenda-product-surface.md; specs/006-comunicacao-agenda.md"
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
@@ -964,6 +964,16 @@ Atividades pertencem à instituição, podem nascer locais em uma unidade e ser 
 Assiduidade passa a ser domínio próprio. Avisos familiares podem antecipar ausência, presença esperada, atraso ou saída; profissionais autorizados transformam a pendência em registro oficial. O produto deve oferecer visão por criança, turma, unidade e instituição.
 
 Transferências entre unidades exigem solicitação e aceite do destino. Ao terminar o vínculo institucional, o acesso operacional é removido; conversas históricas podem permanecer somente leitura conforme política de retenção.
+
+# 48.2 Aditivo 2026-08-31 — Agenda institucional no Superadmin
+
+Por decisão explícita do Owner registrada na ADR 0028, a Agenda produtiva do
+recorte atual existe somente em `apps/superadmin`. As referências anteriores à
+Agenda em Admin e App/Principal ficam preservadas como visão histórica ou
+futura e não autorizam implementação produtiva nessas aplicações.
+
+O contrato vigente é `specs/006-comunicacao-agenda.md`. A expansão para outra
+aplicação exige nova decisão aprovada.
 
 # 49. Fontes e referências pesquisadas
 

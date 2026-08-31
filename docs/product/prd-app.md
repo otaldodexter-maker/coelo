@@ -3,7 +3,7 @@ title: "Coelo PRD App Oficial v1"
 source_file: "Coelo PRD App Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo PRD App Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/PRD/Coelo PRD App Oficial v1.docx"
-supplemental_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md"
+supplemental_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md; decisions/0028-superadmin-agenda-product-surface.md; specs/006-comunicacao-agenda.md"
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
@@ -513,6 +513,16 @@ Encerrado o vínculo da criança com a instituição, os módulos deixam de apar
 e o histórico de conversa, se elegível sob uma política de retenção futura, é
 consultado separadamente e somente leitura. Ele não restaura o contexto
 operacional, participantes, novas mensagens, Realtime ou outros módulos.
+
+# 28. Aditivo 2026-08-31 — Agenda fora do Principal produtivo
+
+No recorte atual, `apps/principal` não possui Agenda produtiva. As menções
+anteriores à consulta, RSVP ou autorização pela Agenda ficam preservadas como
+histórico ou possibilidade futura e não autorizam uma superfície produtiva
+nesta aplicação.
+
+A Agenda vigente existe exclusivamente em `apps/superadmin`, conforme ADR 0028
+e `specs/006-comunicacao-agenda.md`. Uma expansão futura exige nova decisão.
 
 # Fontes e referências
 
