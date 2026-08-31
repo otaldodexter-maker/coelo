@@ -77,3 +77,9 @@ Resultado: 41 linhas, todas prefixadas por `-`. Pelo contrato de `git cherry`, c
 3. Na consolidação final, recalcular `git cherry dev codex/flutter-ui-10h` e integrar apenas linhas `+` e commits finais exclusivos.
 4. Avançar `dev` somente após backend e visual verdes, `git diff --check`, scans e status limpos.
 5. Remover worktrees/branches apenas quando todos os commits estiverem alcançáveis ou comprovadamente patch-equivalentes em `dev`. Não fazer push.
+
+## Evento após a prova
+
+- O commit documental `a1cc69f6` persistiu este ledger e o inventário do Dia 1.
+- `git cherry dev codex/supabase-backend-priority` foi repetido e manteve 41/41 linhas `-`.
+- A worktree limpa `.worktrees/supabase-backend-priority` foi removida; a branch `codex/supabase-backend-priority` foi preservada para a auditoria final. Nenhum commit ou branch foi apagado.

@@ -1165,3 +1165,6 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 - A consolidacao final permanece condicionada ao checkpoint seguro da frente
   visual e aos gates locais backend. Ate la, nao ha merge, push, remocao de
   worktree/branch nem avanco de `dev`.
+- Excecao já comprovada: a worktree backend legada limpa foi removida depois
+  de o ledger `a1cc69f6` registrar 41/41 patches equivalentes em `dev`; a
+  branch e os commits foram preservados. A worktree visual nao foi tocada.

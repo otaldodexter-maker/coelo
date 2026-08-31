@@ -3862,3 +3862,7 @@ da simples soma das 207 ações.
 - **Gate de conhecimento:** `no-op`; manifesto, plano e OQ-041 registram
   execucao/proveniencia e bloqueio, sem comportamento duravel novo para
   projetar em `docs/knowledge`.
+- **Consolidacao segura apos o checkpoint:** o ledger commitado em `a1cc69f6`
+  comprovou novamente os 41/41 patches da branch backend legada como
+  equivalentes em `dev`. A worktree antiga, limpa, foi removida; sua branch e
+  todos os commits foram preservados para a auditoria final.
