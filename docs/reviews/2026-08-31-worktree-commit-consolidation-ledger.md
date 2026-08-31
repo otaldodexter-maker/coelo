@@ -143,3 +143,12 @@ exclusivo do clone é patch-equivalente e já está integrado. O arquivo dirty
 antiga: contém caminhos absolutos do clone e diagnósticos obsoletos; não é fonte
 canônica nem alteração correta a incorporar. Sua não integração é deliberada e
 não descarta código ou decisão de produto.
+
+## Handoff visual final
+
+A tarefa visual ainda estava concluindo o Item 25 quando as worktrees foram
+removidas. O checkpoint documental foi preservado, validado e commitado em
+`dev` como `efe03e3c`. O protótipo temporário do Item 27 ficou somente em
+`.codex-tmp` durante o turno ativo e foi removido pela própria tarefa ao
+encerrar; não havia decisão aprovada ou fonte canônica nova a integrar. O
+workspace voltou a ficar limpo antes deste fechamento.

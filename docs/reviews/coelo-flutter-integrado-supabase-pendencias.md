@@ -1237,3 +1237,12 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   como documentação, spec canônica e projeção de conhecimento validadas.
 - Não houve implementação produtiva, backend, remoto, reload ou E2E. Flutter
   `verified` permanece 0,00% (0/207) e E2E 0,00% (0/202).
+
+### Checkpoint integrado 58 - viewer aprovado sem integração
+
+- O contrato visual fullscreen do Agora foi preservado em spec, rastreador e
+  conhecimento, com validadores verdes. O protótipo seguinte não aprovado foi
+  apenas temporário e não entrou em Git.
+- Não houve implementação produtiva, backend, remoto ou E2E. Flutter
+  `verified` permanece 0,00% (0/207), E2E 0,00% (0/202) e Supabase `done`
+  permanece 0,00% (0/37).
