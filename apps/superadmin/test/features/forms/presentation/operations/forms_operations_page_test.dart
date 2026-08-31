@@ -63,6 +63,21 @@ void main() {
     expect(find.widgetWithText(FilledButton, 'Exportar'), findsNothing);
   });
 
+  testWidgets('arquivo protegido expira e exclusão exige confirmação negativa', (tester) async {
+    await _pump(tester, const FormsOperationsPage.files(development: true));
+
+    await tester.tap(find.text('Expirar acesso'));
+    await tester.pump();
+    expect(find.text('Acesso temporário expirado'), findsOneWidget);
+
+    await tester.tap(find.text('Excluir arquivo'));
+    await tester.pumpAndSettle();
+    expect(find.text('Excluir arquivo protegido?'), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilledButton, 'Excluir arquivo'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('forms-file-absent-after-reload')), findsOneWidget);
+  });
+
   testWidgets('fixtures expõem estados operacionais sem sucesso produtivo falso', (tester) async {
     for (final state in FormsOperationsState.values.where(
       (value) => value != FormsOperationsState.content,
