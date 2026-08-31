@@ -121,6 +121,10 @@ versão do manifesto, impedindo teardown com o bridge de replay ainda ativo.
 negativa. `-TestPath` aceita somente arquivos `.sql`, sem reparse point, abaixo
 de `supabase/tests` e executa pgTAP antes do teardown:
 
+Os SHA-256 do manifesto usam o texto UTF-8 normalizado para CRLF. Assim, um
+checkout Git com LF ou CRLF produz a mesma prova, enquanto qualquer mudança no
+SQL continua alterando o hash e bloqueando o replay.
+
 ```powershell
 & packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
   -TargetVersion 20260831134407 `

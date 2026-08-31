@@ -5,6 +5,19 @@ $ErrorActionPreference = 'Stop'
 $packageRoot = Split-Path -Parent $PSScriptRoot
 $manifestPath = Join-Path $packageRoot 'replay\foundation-migrations.sha256'
 $canonicalRoot = Join-Path $packageRoot 'migrations'
+
+function Get-NormalizedTextSha256([string]$Path) {
+  $content = [IO.File]::ReadAllText($Path).
+    Replace("`r`n", "`n").Replace("`r", "`n").Replace("`n", "`r`n")
+  $bytes = [Text.UTF8Encoding]::new($false).GetBytes($content)
+  $sha256 = [Security.Cryptography.SHA256]::Create()
+  try {
+    return (($sha256.ComputeHash($bytes) | ForEach-Object { $_.ToString('x2') }) -join '')
+  }
+  finally {
+    $sha256.Dispose()
+  }
+}
 $excludedMigrations = @(
   '20260811225000_activity_professional_search.sql',
   '20260811235900_activity_template_catalog_expansion.sql',
@@ -43,7 +56,7 @@ foreach ($entry in $entries) {
   if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
     throw "foundation replay migration is missing: $($entry.Name)"
   }
-  $actualHash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+  $actualHash = Get-NormalizedTextSha256 $path
   if ($actualHash -cne $entry.Hash) {
     throw "foundation replay migration hash mismatch: $($entry.Name)"
   }

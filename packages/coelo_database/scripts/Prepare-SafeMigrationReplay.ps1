@@ -15,6 +15,19 @@ $preflightRoot = Join-Path $packageRoot 'replay'
 $foundationManifestPath = Join-Path $preflightRoot 'foundation-migrations.sha256'
 $destinationRoot = [IO.Path]::GetFullPath($DestinationMigrationsRoot)
 
+function Get-NormalizedTextSha256([string]$Path) {
+  $content = [IO.File]::ReadAllText($Path).
+    Replace("`r`n", "`n").Replace("`r", "`n").Replace("`n", "`r`n")
+  $bytes = [Text.UTF8Encoding]::new($false).GetBytes($content)
+  $sha256 = [Security.Cryptography.SHA256]::Create()
+  try {
+    return (($sha256.ComputeHash($bytes) | ForEach-Object { $_.ToString('x2') }) -join '')
+  }
+  finally {
+    $sha256.Dispose()
+  }
+}
+
 function Assert-NormalDirectory([string]$Path, [string]$Label) {
   $item = Get-Item -LiteralPath $Path -Force -ErrorAction Stop
   if (-not $item.PSIsContainer) { throw "$Label is not a directory: $Path" }
@@ -71,7 +84,7 @@ if ($FoundationOnly) {
       throw "foundation replay migration is missing: $($_.Name)"
     }
     $migration = $canonicalByName[$_.Name]
-    $actualHash = (Get-FileHash -LiteralPath $migration.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+    $actualHash = Get-NormalizedTextSha256 $migration.FullName
     if ($actualHash -cne $_.Hash) {
       throw "foundation replay migration hash mismatch: $($_.Name)"
     }
