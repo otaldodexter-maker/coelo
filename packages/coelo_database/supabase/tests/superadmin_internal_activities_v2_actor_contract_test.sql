@@ -1,7 +1,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(26);
+select plan(31);
 
 select has_column('public','activity_definitions','created_by_actor_kind','definition actor kind');
 select has_column('public','activity_unit_links','linked_by_actor_kind','unit link actor kind');
@@ -61,24 +61,32 @@ select ok(not exists(select 1 from public.activity_definitions
  where created_by_person_id is not null and created_by_actor_kind<>'person'),
  'legacy rows derive person provenance');
 
--- These behavioral fixtures deliberately use no additional TAP assertions: the
--- fixed 26-assertion public contract above remains exact, while each DO block
--- raises if the trigger stops enforcing its actor branch. The surrounding
--- rollback restores the private helper replacements and all synthetic rows.
 insert into public.people(id,person_type,first_name,last_name,display_name)
 values
  ('7a100000-0000-4000-8000-000000000001','adult','Actor','People','Actor People'),
  ('7a100000-0000-4000-8000-000000000002','adult','Other','People','Other People');
 insert into public.institutions(id,public_name,slug)
 values ('7a100000-0000-4000-8000-000000000003','Actor contract','actor-contract-v2');
+insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,
+  raw_app_meta_data,raw_user_meta_data)
+values
+ ('7a100000-0000-4000-8000-000000000021','authenticated','authenticated','actor-a@invalid.test',now(),now(),now(),'{}','{}'),
+ ('7a100000-0000-4000-8000-000000000022','authenticated','authenticated','actor-b@invalid.test',now(),now(),now(),'{}','{}'),
+ ('7a100000-0000-4000-8000-000000000023','authenticated','authenticated','internal@invalid.test',now(),now(),now(),'{}','{}');
+insert into public.person_auth_links(person_id,auth_user_id,status) values
+ ('7a100000-0000-4000-8000-000000000001','7a100000-0000-4000-8000-000000000021','active'),
+ ('7a100000-0000-4000-8000-000000000002','7a100000-0000-4000-8000-000000000022','active');
+insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after)
+values('7a100000-0000-4000-8000-000000000024','7a100000-0000-4000-8000-000000000023',now(),now(),'aal2',now()+interval '1 hour');
+insert into app_private.superadmin_internal_identities(id)
+values('7a100000-0000-4000-8000-000000000025');
+insert into app_private.superadmin_internal_auth_links(id,internal_identity_id,auth_user_id)
+values('7a100000-0000-4000-8000-000000000026','7a100000-0000-4000-8000-000000000025','7a100000-0000-4000-8000-000000000023');
+insert into app_private.superadmin_internal_memberships(id,internal_identity_id,platform_role_id,scope_kind)
+select '7a100000-0000-4000-8000-000000000027','7a100000-0000-4000-8000-000000000025',id,'platform'
+from public.platform_roles where code='owner';
 
-create or replace function app_private.current_person_id()
-returns uuid language sql stable security definer set search_path = '' as $$
-  select current_setting('test.activity_v2_person_id',true)::uuid
-$$;
-select set_config('test.activity_v2_person_id','7a100000-0000-4000-8000-000000000001',true);
-
--- A people writer remains valid when its row actor is the resolved person.
+select set_config('request.jwt.claims',jsonb_build_object('sub','7a100000-0000-4000-8000-000000000021','aal','aal2','role','authenticated')::text,true);
 insert into public.activity_definitions(
  id,institution_id,name,handle_stem,origin_scope_kind,created_by_person_id
 ) values (
@@ -87,47 +95,29 @@ insert into public.activity_definitions(
  '7a100000-0000-4000-8000-000000000001'
 );
 
--- An internal command reaches the NULL branch only through the private marker.
-create or replace function app_private.require_activity_v2_internal_marker()
-returns void language plpgsql security definer set search_path = '' as $$ begin end $$;
-insert into public.activity_definitions(
- id,institution_id,name,handle_stem,origin_scope_kind,created_by_person_id
-) values (
- '7a100000-0000-4000-8000-000000000011',
- '7a100000-0000-4000-8000-000000000003','Internal provenance','internal-provenance','institution',null
-);
-
--- A forged NULL path and an impersonated people actor must both fail closed.
-create or replace function app_private.require_activity_v2_internal_marker()
-returns void language plpgsql security definer set search_path = '' as $$
-begin
-  raise insufficient_privilege using message='forged activity internal marker';
-end $$;
-do $$
-begin
-  begin
-    insert into public.activity_definitions(
-      id,institution_id,name,handle_stem,origin_scope_kind,created_by_person_id
-    ) values (
-      '7a100000-0000-4000-8000-000000000012',
-      '7a100000-0000-4000-8000-000000000003','Forged null actor','forged-null-actor','institution',null
-    );
-    raise exception 'forged NULL activity actor was accepted';
-  exception when insufficient_privilege then null;
-  end;
-
-  begin
-    insert into public.activity_definitions(
-      id,institution_id,name,handle_stem,origin_scope_kind,created_by_person_id
-    ) values (
-      '7a100000-0000-4000-8000-000000000013',
-      '7a100000-0000-4000-8000-000000000003','Mismatched people actor','mismatched-people-actor','institution',
-      '7a100000-0000-4000-8000-000000000002'
-    );
-    raise exception 'mismatched activity person actor was accepted';
-  exception when insufficient_privilege then null;
-  end;
-end $$;
+select set_config('request.jwt.claims',jsonb_build_object('sub','7a100000-0000-4000-8000-000000000023','session_id','7a100000-0000-4000-8000-000000000024','aal','aal2','role','authenticated')::text,true);
+select set_config('app_private.activity_v2_internal_marker',jsonb_build_object(
+ 'internal_identity_id','7a100000-0000-4000-8000-000000000025','internal_auth_link_id','7a100000-0000-4000-8000-000000000026',
+ 'internal_membership_id','7a100000-0000-4000-8000-000000000027','auth_user_id','7a100000-0000-4000-8000-000000000023',
+ 'session_id','7a100000-0000-4000-8000-000000000024','permission_code','activities.manage','action_code','manage')::text,true);
+select lives_ok($$insert into public.activity_definitions(id,institution_id,name,handle_stem,origin_scope_kind,created_by_person_id)
+ values('7a100000-0000-4000-8000-000000000011','7a100000-0000-4000-8000-000000000003','Internal provenance','internal-provenance','institution',null)$$,
+ 'real internal marker accepts an allowlisted action');
+select lives_ok($$update public.activity_definitions set description='internal edit' where id='7a100000-0000-4000-8000-000000000010'$$,
+ 'internal actor updates legacy people provenance without rewriting it');
+select set_config('request.jwt.claims',jsonb_build_object('sub','7a100000-0000-4000-8000-000000000022','aal','aal2','role','authenticated')::text,true);
+select lives_ok($$update public.activity_definitions set description='admin edit' where id='7a100000-0000-4000-8000-000000000010'$$,
+ 'different Admin updates a row without reattributing history');
+select throws_ok($$update public.activity_definitions set created_by_person_id='7a100000-0000-4000-8000-000000000002' where id='7a100000-0000-4000-8000-000000000010'$$,
+ '42501','activity actor provenance immutable','rewriting historical authorship is denied');
+select set_config('request.jwt.claims',jsonb_build_object('sub','7a100000-0000-4000-8000-000000000023','session_id','7a100000-0000-4000-8000-000000000024','aal','aal2','role','authenticated')::text,true);
+select set_config('app_private.activity_v2_internal_marker',jsonb_build_object(
+ 'internal_identity_id','7a100000-0000-4000-8000-000000000025','internal_auth_link_id','7a100000-0000-4000-8000-000000000026',
+ 'internal_membership_id','7a100000-0000-4000-8000-000000000027','auth_user_id','7a100000-0000-4000-8000-000000000023',
+ 'session_id','7a100000-0000-4000-8000-000000000024','permission_code','platform.read','action_code','manage')::text,true);
+select throws_ok($$insert into public.activity_definitions(id,institution_id,name,handle_stem,origin_scope_kind,created_by_person_id)
+ values('7a100000-0000-4000-8000-000000000012','7a100000-0000-4000-8000-000000000003','Forged marker','forged-marker','institution',null)$$,
+ '42501','activity internal marker denied','forged marker permission is denied');
 
 select * from finish();
 rollback;
