@@ -70,7 +70,7 @@ select ok(coalesce((
     where helpers.oid is null
       or helpers.owner_name<>'postgres'
       or helpers.prosecdef
-      or coalesce(array_to_string(helpers.proconfig,','),'') not like '%search_path=%'
+      or helpers.proconfig<>array['search_path=""']::text[]
       or has_function_privilege('public',helpers.oid,'execute')
       or has_function_privilege('anon',helpers.oid,'execute')
       or has_function_privilege('authenticated',helpers.oid,'execute')
@@ -97,8 +97,10 @@ select ok(coalesce((select exists(select 1 from pg_constraint constraint_record
     to_regclass('app_private.superadmin_internal_activity_command_receipts')
     and pg_get_constraintdef(constraint_record.oid) like '%octet_length(request_hash) = 32%')),false),
   'receipts require a 32-byte request hash');
-select ok(coalesce((
-  with allowed(command_kind) as (values
+select lives_ok($contract$
+do $verify$
+begin
+  if not (with allowed(command_kind) as (values
     ('activity.create'),('activity.update'),('activity.publish'),('activity.set_units'),
     ('activity.set_groups'),('activity.set_participants'),('activity.set_professionals'),
     ('activity.set_permissions')
@@ -111,11 +113,33 @@ select ok(coalesce((
     ) as matched
     where constraint_record.conrelid=
       to_regclass('app_private.superadmin_internal_activity_command_receipts')
-  )
-  select (select array_agg(command_kind order by command_kind) from constrained)=
+  ) select (select array_agg(command_kind order by command_kind) from constrained)=
     (select array_agg(command_kind order by command_kind) from allowed)
-    and (select count(*) from constrained)=8
-),false), 'receipts allow exactly the eight approved Activity mutation kinds');
+    and (select count(*) from constrained)=8) then
+    raise exception 'receipt command-kind allowlist is not the exact approved set';
+  end if;
+
+  begin
+    insert into app_private.superadmin_internal_activity_command_receipts(
+      request_id,internal_identity_id,institution_id,activity_id,command_kind,
+      request_hash,correlation_id,result_counts
+    ) values (
+      '7a200000-0000-4000-8000-000000000011',
+      '7a200000-0000-4000-8000-000000000012',
+      '7a200000-0000-4000-8000-000000000013',
+      '7a200000-0000-4000-8000-000000000014','activity.evil',
+      decode(repeat('00',32),'hex'),
+      '7a200000-0000-4000-8000-000000000015','{}'::jsonb
+    );
+    raise exception 'unapproved receipt command kind was accepted';
+  exception when check_violation then
+    if SQLERRM not like '%command_kind_check%' then
+      raise;
+    end if;
+  end;
+end
+$verify$;
+$contract$, 'receipts enforce the exact eight approved mutation kinds and reject activity.evil');
 select ok(coalesce((select exists(select 1 from pg_constraint constraint_record
   where constraint_record.conrelid=to_regclass('public.activity_admin_capability_actions')
     and constraint_record.contype='u'
