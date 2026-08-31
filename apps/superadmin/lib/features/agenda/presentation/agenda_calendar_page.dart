@@ -517,89 +517,135 @@ final class _AgendaTimelineEntry extends StatelessWidget {
   final AgendaOccurrence occurrence;
 
   @override
-  Widget build(BuildContext context) => Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      SizedBox(
-        width: 72,
-        child: Column(
-          children: [
-            Text(_weekday(occurrence.startsAt), style: Theme.of(context).textTheme.labelSmall),
-            Text('${occurrence.startsAt.day}', style: Theme.of(context).textTheme.headlineMedium),
-            Text(_shortMonth(occurrence.startsAt.month)),
-          ],
-        ),
-      ),
-      Expanded(
-        child: CoeloAdminInteractiveCard(
-          semanticLabel: '${occurrence.item.title}, ${_timeRange(occurrence)}',
-          onPressed: () {},
-          child: Padding(
-            padding: const EdgeInsets.all(CoeloSpacing.space3),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final compact = constraints.maxWidth < 600;
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: compact ? 48 : 72,
+            child: Column(
               children: [
-                Container(
-                  width: 96,
-                  height: 84,
-                  decoration: BoxDecoration(
-                    color: _eventColor(Theme.of(context).colorScheme, occurrence.item.prominence),
-                    borderRadius: BorderRadius.circular(CoeloRadius.md),
-                  ),
-                  child: Icon(_eventIcon(occurrence.item.type), size: 36),
+                Text(_weekday(occurrence.startsAt), style: Theme.of(context).textTheme.labelSmall),
+                Text(
+                  '${occurrence.startsAt.day}',
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
-                const SizedBox(width: CoeloSpacing.space3),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _timeRange(occurrence),
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                      Text(occurrence.item.title, style: Theme.of(context).textTheme.titleMedium),
-                      Text(
-                        occurrence.item.description,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (occurrence.item.location.isNotEmpty)
-                        Text(
-                          occurrence.item.location,
-                          style: Theme.of(context).textTheme.labelMedium,
-                        ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: CoeloSpacing.space2),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    CoeloStatusChip(
-                      label: _prominenceLabel(occurrence.item.prominence),
-                      backgroundColor: _eventColor(
-                        Theme.of(context).colorScheme,
-                        occurrence.item.prominence,
-                      ),
-                      foregroundColor: Theme.of(context).colorScheme.onSurface,
-                    ),
-                    const SizedBox(height: CoeloSpacing.space2),
-                    Text(_statusLabel(occurrence.item.status)),
-                    IconButton(
-                      tooltip: 'Mais ações de ${occurrence.item.title}',
-                      onPressed: () {},
-                      icon: const Icon(Icons.more_horiz_rounded),
-                    ),
-                  ],
-                ),
+                Text(_shortMonth(occurrence.startsAt.month)),
               ],
             ),
           ),
-        ),
+          Expanded(
+            child: CoeloAdminInteractiveCard(
+              semanticLabel: '${occurrence.item.title}, ${_timeRange(occurrence)}',
+              onPressed: () {},
+              child: Padding(
+                padding: const EdgeInsets.all(CoeloSpacing.space3),
+                child: compact ? _compactContent(context) : _wideContent(context),
+              ),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+
+  Widget _compactContent(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _illustration(context, 64, 64),
+          const SizedBox(width: CoeloSpacing.space2),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _timeLabel(context),
+                Text(occurrence.item.title, style: Theme.of(context).textTheme.titleMedium),
+              ],
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: CoeloSpacing.space2),
+      Text(occurrence.item.description, maxLines: 2, overflow: TextOverflow.ellipsis),
+      const SizedBox(height: CoeloSpacing.space2),
+      Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: CoeloSpacing.space2,
+        runSpacing: CoeloSpacing.space1,
+        children: [
+          if (occurrence.item.location.isNotEmpty) Text(occurrence.item.location),
+          _prominenceChip(context),
+          Text(_statusLabel(occurrence.item.status)),
+          IconButton(
+            tooltip: 'Mais ações de ${occurrence.item.title}',
+            onPressed: () {},
+            icon: const Icon(Icons.more_horiz_rounded),
+          ),
+        ],
       ),
     ],
+  );
+
+  Widget _wideContent(BuildContext context) => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      _illustration(context, 96, 84),
+      const SizedBox(width: CoeloSpacing.space3),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _timeLabel(context),
+            Text(occurrence.item.title, style: Theme.of(context).textTheme.titleMedium),
+            Text(occurrence.item.description, maxLines: 2, overflow: TextOverflow.ellipsis),
+            if (occurrence.item.location.isNotEmpty)
+              Text(occurrence.item.location, style: Theme.of(context).textTheme.labelMedium),
+          ],
+        ),
+      ),
+      const SizedBox(width: CoeloSpacing.space2),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          _prominenceChip(context),
+          const SizedBox(height: CoeloSpacing.space2),
+          Text(_statusLabel(occurrence.item.status)),
+          IconButton(
+            tooltip: 'Mais ações de ${occurrence.item.title}',
+            onPressed: () {},
+            icon: const Icon(Icons.more_horiz_rounded),
+          ),
+        ],
+      ),
+    ],
+  );
+
+  Widget _illustration(BuildContext context, double width, double height) => Container(
+    width: width,
+    height: height,
+    decoration: BoxDecoration(
+      color: _eventColor(Theme.of(context).colorScheme, occurrence.item.prominence),
+      borderRadius: BorderRadius.circular(CoeloRadius.md),
+    ),
+    child: Icon(_eventIcon(occurrence.item.type), size: 32),
+  );
+
+  Widget _timeLabel(BuildContext context) => Text(
+    _timeRange(occurrence),
+    style: Theme.of(
+      context,
+    ).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
+  );
+
+  Widget _prominenceChip(BuildContext context) => CoeloStatusChip(
+    label: _prominenceLabel(occurrence.item.prominence),
+    backgroundColor: _eventColor(Theme.of(context).colorScheme, occurrence.item.prominence),
+    foregroundColor: Theme.of(context).colorScheme.onSurface,
   );
 }
 

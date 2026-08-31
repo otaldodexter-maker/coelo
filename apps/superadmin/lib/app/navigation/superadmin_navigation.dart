@@ -151,10 +151,11 @@ final coeloSuperadminNavigation = <CoeloNavigationNode>[
     _screen('forms', 'Formulários', Icons.dynamic_form_outlined, const []),
     _screen('import', 'Importações', Icons.upload_file_outlined, const []),
     _screen('agenda', 'Agenda', Icons.calendar_month_outlined, [
-      _screen('events', 'Eventos', Icons.event_outlined, const []),
-      _leaf('requests', 'Solicitações', Icons.inbox_outlined),
-      _leaf('permissions', 'Permissões', Icons.rule_outlined),
-    ], availability: _developmentOnly),
+      _leaf('agenda-create', 'Criar evento', Icons.add_circle_outline_rounded),
+      _leaf('agenda-requests', 'Solicitações', Icons.inbox_outlined),
+      _leaf('agenda-approvals', 'Aprovações', Icons.approval_outlined),
+      _leaf('agenda-permissions', 'Permissões', Icons.rule_outlined),
+    ]),
   ]),
   _screen('communication', 'Comunicação', Icons.forum_outlined, [
     _leaf('conversations', 'Conversas', Icons.chat_bubble_outline),
