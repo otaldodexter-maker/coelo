@@ -3170,6 +3170,7 @@ Esta onda registra somente os 24 `action_id` acima. Formulários, Respostas, Arq
 
 | Data | Mudança |
 |---|---|
+| 2026-08-31 | `OPERATIONS-WAVE` pós-rebase sobre `21e0ed09`: rastreador reconciliado manualmente preservando V4.19–V5.31 e os blocos operacionais; Turmas 51/51 e `coelo_ui_admin` 110/110 verdes, analyzers/validador/conhecimento/diff check aprovados. O golden de reporte de bug foi alinhado ao shell compacto aprovado e inspecionado; o diff de Formulários desta branch permanece vazio. |
 | 2026-08-31 | Gate final V4.19–V5.31: 688/688 testes focados, 110/110 `coelo_ui_admin`, 14/14 `coelo_api`, analyzers e validador visual verdes; cinco goldens finais atualizados seletivamente após inspeção. A regressão externa de Conversas e os limites de app Principal/backend/E2E foram preservados sem promoção indevida. |
 | 2026-08-31 | Revisões independentes V4/V5 corrigiram criação/unauthorized/estados e evidências V4.19–22, Escape/foco/1-de-1 em V4.23 e dock/retorno/conflito/vídeo/200% em V5.24–31. Commits focados: `057aad8f`, `08c7e31c`, `c4c984e1`, `50bf7b0c`; backend/E2E e app Principal executável não promovidos. |
 | 2026-08-31 | Família Publicar V5.27/V5.31 fechada visualmente no Flutter local: contexto produtivo explícito, mídia persistida sem distorção, crop/capa Agora com round-trip, frame/cabeçalho Principal compartilhados, 159 testes da família e 36 goldens verdes/inspecionados; remoto, backend e E2E não promovidos. |
