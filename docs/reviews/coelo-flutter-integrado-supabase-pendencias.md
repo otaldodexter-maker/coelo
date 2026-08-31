@@ -1171,10 +1171,10 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 
 ### Checkpoint integrado 52 - backend focado replay-green sem promocao E2E
 
-- Docker local foi reparado e o perfil de replay da fundação instalou 58
-  migrations canônicas + dois preflights até `20260831130726`, com teardown
+- Docker local foi reparado e o perfil fechado de replay da fundação instalou
+  50 migrations canônicas revisadas + dois preflights até `20260831130726`, com teardown
   sem recursos residuais.
-- Nove arquivos pgTAP/259 asserts passaram para Auth, instituição, unidade,
+- Nove arquivos pgTAP/264 asserts passaram para Auth, instituição, unidade,
   grupo, pessoa, ACL e reconciliação de labels. O replay integral permanece
   RED em cadeias intermediárias fora do recorte; o lint global também mantém
   erros históricos classificados.
@@ -1186,3 +1186,12 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   final e checkpoint seguro da frente visual. Zero push e zero remoto mutável.
 - Reconsulta oficial read-only confirmou remoto e Advisors inalterados; a
   frente visual continua ativa, portanto nenhum cherry-pick/merge foi iniciado.
+
+### Checkpoint integrado 53 - replay fechado sem promocao Flutter/E2E
+
+- O review backend foi fechado com manifesto de 50 migrations/hash, alvo final
+  obrigatório e validator fail-closed; nove arquivos pgTAP passaram 264/264.
+- Flutter `verified` continua 0,00% (0/207), E2E continua 0,00% (0/202) e
+  nenhum arquivo visual foi alterado. A frente visual permanece isolada.
+- O lint histórico continua RED e o remoto segue read-only. Portanto o backend
+  focado permanece `local-green`, sem promover `done` ou integração.

@@ -3890,19 +3890,24 @@ da simples soma das 207 ações.
   `20260831130726_reconcile_permission_labels_after_replay.sql`. Um bridge
   exclusivo de replay, imediatamente após `20260811215451`, fornece defaults
   sentinels e a coluna histórica `updated_at`; a migration atual normaliza os
-  labels e remove os seis defaults. O perfil explícito `FoundationOnly`
-  seleciona 58 migrations canônicas da base/fundação e dois preflights; o
+  labels e remove os seis defaults. O perfil `FoundationOnly`, fechado por
+  manifesto de nomes e SHA-256, seleciona exatamente 50 migrations canônicas
+  revisadas e dois preflights; oito migrations de produto foram negadas e
+  migrations futuras não entram automaticamente. O
   replay integral continua um gate RED separado em OQ-042.
 - **GREEN e regressões:** replay focado instalou até `20260831130726`; nove
-  arquivos pgTAP passaram com 259 asserts. Incluem defaults/labels 4/4,
+  arquivos pgTAP passaram inicialmente com 259 asserts e, após review
+  adversarial, com 264 asserts. Incluem contrato fail-closed de drift,
+  defaults/labels 9/9,
   default ACL, Auth 29/29, instituição detalhe/lista/edit, unidade, grupo e
   pessoa, cobrindo sessão, AAL, lifecycle, capability/grant, tenant A/B,
   sibling, cross-app, persistência/reload e auditoria. Cada execução terminou
   com zero container, volume, rede ou diretório temporário do replay.
 - **Lint:** `supabase db lint --local --level warning --fail-on error`
   permaneceu RED por erros históricos já materializados em Activity,
-  Import/Export, Access Profiles e Chat, além de warnings. A migration do
-  delta não cria função; nenhum achado foi atribuído silenciosamente a ela.
+  Import/Export e Access Profiles, além de warnings históricos de auditoria e
+  domínio. O validator privado criado pelo delta não recebeu achado; nenhum
+  erro foi atribuído silenciosamente a ele.
   O fechamento desses erros exige pacotes de proveniência próprios e mantém o
   Dia 3 incompleto.
 - **Mirror/segredos/remoto:** canônico/mirror 113/113 verificado; `git diff
@@ -3922,3 +3927,28 @@ da simples soma das 207 ações.
 - **Gate de conhecimento:** `no-op`; a mudança é infraestrutura de replay e
   reconciliação de schema, documentada nas fontes técnicas e OQ-042, sem novo
   comportamento de produto para `docs/knowledge`.
+
+### Checkpoint seguro 53 - review adversarial fechado no replay da fundacao
+
+- **Progresso:** os estados gerais permanecem: projeto estrito `done` 0,00%
+  (0/229), Supabase estrito `done` 0,00% (0/228), Supabase `done` 0,00%
+  (0/37), Flutter `verified` 0,00% (0/207) e E2E 0,00% (0/202). Gates do
+  macrotema: 50,00% (2/4), restante 50,00% (2/4).
+- **RED de review:** o filtro aberto admitia oito migrations de produto e
+  qualquer migration futura; alvos parciais podiam encerrar antes da limpeza
+  do bridge; defaults inesperados poderiam ser removidos sem preflight.
+- **GREEN:** `foundation-migrations.sha256` fixa 50 nomes/hashes; o teste do
+  perfil prova oito exclusões e todos os hashes. `FoundationOnly` aceita apenas
+  o alvo final `20260831130726`, antes de iniciar Docker. O validator privado
+  falha com SQLSTATE `55000` em owner, tipo, nullability ou default inesperado,
+  tem EXECUTE revogado e é testado com drift sintético revertido por rollback.
+- **Regressão:** nove arquivos pgTAP passaram 264/264; rejeições de alvo parcial,
+  caminho fora da raiz e extensão não SQL ocorreram antes do Docker. O lint
+  repetiu os erros históricos classificados e não apontou o validator novo.
+  Todos os caminhos terminaram com zero container, volume e rede residual.
+- **Estado local/remoto:** somente local; nenhum arquivo `apps/**` ou UI foi
+  tocado. Remoto permanece `blocked-environment`, read-only, sem `remote-green`.
+  Gate de conhecimento: `no-op`.
+- **Próximo passo:** commit focado, nova revisão e então TDD dos erros de lint
+  de Access Profiles que pertencem ao gate de capacidades/RLS. Activity e
+  Import/Export continuam em pacotes de proveniência fora deste recorte.

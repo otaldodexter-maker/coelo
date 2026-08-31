@@ -1,7 +1,7 @@
 ---
 title: "Execução da fundação Supabase cross-app"
 source: "Prompt aprovado pelo Owner Coelo em 2026-08-31; decisions/0019-superadmin-internal-identity.md; specs/039-superadmin-internal-auth-session-context.md; inventário read-only de 2026-08-31"
-status: "in-progress-local-green-foundation"
+status: "in-progress-gates-2-of-4"
 generated_at: "2026-08-31"
 ---
 
@@ -31,15 +31,15 @@ A migration canônica `20260827233000_superadmin_internal_auth_context.sql` e se
 
 ## Estado executável atual
 
-O Docker Desktop 4.86.0 foi reparado sem apagar imagens ou volumes: os diretórios de runtime com sockets AF_UNIX corrompidos foram movidos para backups e o daemon 29.7.2 voltou a responder. O replay integral reproduz dois drifts fora do recorte (`platform_permissions` sem labels/defaults e Import/Export removido). O perfil explícito `-FoundationOnly` aplica 58 migrations canônicas da base/fundação e dois preflights de replay, sem mascarar o RED integral.
+O Docker Desktop 4.86.0 foi reparado sem apagar imagens ou volumes: os diretórios de runtime com sockets AF_UNIX corrompidos foram movidos para backups e o daemon 29.7.2 voltou a responder. O replay integral reproduz dois drifts fora do recorte (`platform_permissions` sem labels/defaults e Import/Export removido). O perfil `-FoundationOnly` é fechado por manifesto SHA-256: aplica exatamente 50 migrations canônicas revisadas e dois preflights de replay, sem admitir migrations futuras ou mascarar o RED integral.
 
-A migration forward-only `20260831130726_reconcile_permission_labels_after_replay.sql`, criada pelo CLI 2.116.0, normaliza os sentinels temporários e remove os seis defaults. Replay focado, nove arquivos pgTAP e 259 asserts passaram; Auth, instituições, unidade, grupo e pessoa estão verdes. O lint global continua RED por erros históricos em domínios anteriores, classificados separadamente do delta.
+A migration forward-only `20260831130726_reconcile_permission_labels_after_replay.sql`, criada pelo CLI 2.116.0, valida owner/tipos/nullability/defaults antes de normalizar os sentinels temporários e remover os seis defaults. Replay focado, nove arquivos pgTAP e 264 asserts passaram; Auth, instituições, unidade, grupo e pessoa estão verdes. O lint global continua RED por erros históricos em domínios anteriores, classificados separadamente do delta; o validator novo não recebeu achado.
 
 ## Evidência read-only de 2026-08-31
 
 - Canônico/mirror: 113/113 após `Prepare` e `Verify` com SHA-256 por arquivo.
 - Ledger remoto: 103; última `20260821200000_profile_about_remote_context_compatibility`.
-- Manifesto: 50 pares exatos; 8 nomes lógicos em versões divergentes por lado; 54 locais sem nome remoto e 45 remotos sem nome local.
+- Manifesto: 50 coincidências de versão/nome no ledger, sem prova de conteúdo remoto; 8 nomes lógicos em versões divergentes por lado; 54 locais sem nome remoto e 45 remotos sem nome local.
 - Remoto: 180 tabelas públicas com RLS habilitada; 87 com FORCE RLS; 3 tabelas audit, sendo `audit.profile_about_commands` sem RLS.
 - Funções públicas: 223; 205 SECURITY DEFINER; 156 SECURITY DEFINER executáveis por `authenticated`.
 - Advisors: segurança 207 (50/156/1); desempenho 505 (128/377).
