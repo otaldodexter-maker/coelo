@@ -175,16 +175,16 @@ try {
   else {
     $databaseOnlyExcludes
   }
-  & npx.cmd --yes $cliPackage start --workdir $projectRoot --exclude $excludedServices *> $null
+  & npx.cmd --yes $cliPackage --agent no start --workdir $projectRoot --exclude $excludedServices *> $null
   if ($LASTEXITCODE -ne 0) { throw "supabase start failed with exit code $LASTEXITCODE" }
 
   & (Join-Path $scriptRoot 'Prepare-SafeMigrationReplay.ps1') `
     -DestinationMigrationsRoot $migrationRoot `
     -FoundationOnly:$FoundationOnly
-  & npx.cmd --yes $cliPackage db reset --local --no-seed --version $TargetVersion --workdir $projectRoot --yes
+  & npx.cmd --yes $cliPackage --agent no db reset --local --no-seed --version $TargetVersion --workdir $projectRoot --yes
   if ($LASTEXITCODE -ne 0) { throw "safe local db reset failed with exit code $LASTEXITCODE" }
   if ($resolvedTestPaths.Count -gt 0) {
-    & npx.cmd --yes $cliPackage test db --local @resolvedTestPaths --workdir $projectRoot
+    & npx.cmd --yes $cliPackage --agent no test db --local @resolvedTestPaths --workdir $projectRoot
     if ($LASTEXITCODE -ne 0) { throw "safe local pgTAP failed with exit code $LASTEXITCODE" }
   }
   if ($RunAuthLifecycle) {
@@ -193,7 +193,7 @@ try {
       -ProjectId $projectId
   }
   if ($RunLint) {
-    & npx.cmd --yes $cliPackage db lint --local --level warning --fail-on error --workdir $projectRoot
+    & npx.cmd --yes $cliPackage --agent no db lint --local --level warning --fail-on error --workdir $projectRoot
     if ($LASTEXITCODE -ne 0) { throw "safe local database lint failed with exit code $LASTEXITCODE" }
   }
 }
@@ -203,7 +203,7 @@ catch {
 finally {
   try {
     if ($startAttempted) {
-      & npx.cmd --yes $cliPackage stop --workdir $projectRoot --no-backup --yes *> $null
+      & npx.cmd --yes $cliPackage --agent no stop --workdir $projectRoot --no-backup --yes *> $null
       if ($LASTEXITCODE -ne 0) {
         $cleanupFailures.Add([InvalidOperationException]::new('supabase stop failed'))
       }
