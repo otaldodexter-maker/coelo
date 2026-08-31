@@ -1254,3 +1254,19 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 - A branch/worktree temporária do handoff foi removida após prova de
   ancestralidade. Não houve código produtivo, backend, remoto ou E2E; os
   percentuais `verified` e `done` permanecem inalterados.
+
+### Checkpoint integrado 60 - regressão backend retomada sem promoção
+
+- A nova worktree backend partiu limpa de `dev` em `e0404638`. O mirror passou
+  114/114 e o replay descartável aplicou 51 migrations + dois preflights até
+  `20260831134407`; dez arquivos pgTAP/278 asserts passaram novamente.
+- O lint preserva quatro erros históricos classificados em importação/arquivo,
+  fora do recorte desta fundação. Nenhuma migration corretiva especulativa foi
+  criada e o teardown Docker terminou sem recurso residual.
+- O remoto foi reconsultado somente via plugin oficial/SELECT e permanece
+  `blocked-environment`: ledger 103, Edge 10 e Advisors 207/505. Não houve
+  mutation, deploy, Auth, configuração ou push.
+- Flutter `verified` permanece 0,00% (0/207), E2E permanece 0,00% (0/202),
+  Supabase `done` permanece 0,00% (0/37) e projeto estrito permanece 0,00%
+  (0/229). Backend `local-green` não promove tela, ação integrada,
+  `remote-green` ou `done`.

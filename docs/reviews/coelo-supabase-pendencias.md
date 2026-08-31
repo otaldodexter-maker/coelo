@@ -4033,3 +4033,33 @@ da simples soma das 207 ações.
   `blocked-environment`, read-only, ledger 103 e sem `remote-green` ou `done`.
   Gate de conhecimento `no-op`. Próximo comando seguro remoto continua sendo
   apenas inventário SELECT; qualquer mutação exige autorização nominal.
+
+### Checkpoint seguro 57 - retomada, Docker e regressão fresca
+
+- **Progresso:** macrotema local permanece 100,00% (4/4), restante 0,00%
+  (0/4). Projeto estrito `done` permanece 0,00% (0/229), backlog Supabase
+  estrito `done` 0,00% (0/228) e famílias Supabase `done` 0,00% (0/37).
+- **Worktree/Docker:** branch `codex/supabase-foundation-continuation` criada
+  limpa de `dev` em `e0404638`. O primeiro replay evidenciou mirror ainda não
+  preparado; após `Prepare` e `Verify` nativos, 114/114 hashes passaram. Docker
+  executou o perfil isolado e terminou sem container, volume ou rede residual.
+- **GREEN fresco:** replay de 51 migrations canônicas + dois preflights até
+  `20260831134407`; Auth 29/29 e regressão completa dez arquivos/278 asserts,
+  todos verdes. Nenhuma fixture, PII ou segredo foi persistido.
+- **Lint visível:** os testes passaram antes de o lint encerrar em RED pelos
+  quatro erros históricos já classificados: `42702` em imports Activity/Groups,
+  `42804` no import de Access Profiles e `42703` no file job. Importação,
+  exportação e arquivos continuam explicitamente fora do recorte; não houve
+  migration corretiva sem contrato.
+- **Remoto read-only:** plugin oficial confirmou projeto `ACTIVE_HEALTHY`, 103
+  migrations, 10 Edge Functions, segurança 207 (50/156/1) e desempenho 505
+  (128/377). Inventário SELECT confirmou 180 tabelas `public` com RLS, três em
+  `audit` e `audit.profile_about_commands` ainda sem RLS. O ambiente permanece
+  `blocked-environment`; nenhuma DDL/DML/Auth/Edge/configuração remota ocorreu.
+- **Estado/tempo:** checkpoint medido nesta retomada de 12:55 a 13:08 BRT,
+  aproximadamente 13 minutos. Fundação continua `local-green`; `remote-green`
+  e `done` não foram promovidos. Gate de conhecimento `no-op`.
+- **Próximo passo seguro:** preservar o recorte concluído e classificar a
+  autoridade do ambiente remoto por evidência documental. Qualquer correção do
+  lint histórico exige pacote próprio; qualquer mutação remota exige autorização
+  nominal com migrations, hashes, objetos, risco e estratégia forward-only.

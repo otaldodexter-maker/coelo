@@ -73,3 +73,26 @@ remota. O lint global continua vermelho apenas pelos erros históricos já
 classificados de Activity/Import-Export, fora do núcleo contratado. O gate de
 conhecimento foi `no-op`: nenhuma regra durável de produto nova nasceu deste
 fechamento técnico.
+
+## Retomada verificada de 2026-08-31 13:08 BRT
+
+A execução foi retomada em worktree limpa
+`codex/supabase-foundation-continuation`, criada de `dev` em `e0404638`. O
+mirror precisou do passo documentado `Prepare` antes de `Verify`; ambos
+confirmaram 114/114 arquivos. O wrapper RTK de PowerShell não disponibilizou
+`Get-FileHash`, portanto o sync foi executado pelo cmdlet PowerShell nativo,
+exceção registrada conforme `RTK.md`.
+
+O replay descartável voltou a aplicar 51 migrations canônicas e dois
+preflights até `20260831134407`. A prova focal Auth passou 29/29 e a regressão
+completa passou dez arquivos pgTAP/278 asserts, com teardown sem container,
+volume ou rede residual. O lint executou depois dos testes e repetiu quatro
+erros históricos: dois `42702` em importação de Activity/Groups, um `42804` em
+importação de Access Profiles e um `42703` no fluxo de file job. Esses objetos
+continuam fora do recorte sem autorização para importar/exportar/arquivos; não
+houve tentativa de corrigi-los por acidente.
+
+O inventário oficial read-only confirmou projeto saudável, ledger 103, dez
+Edge Functions, Advisors 207/505, 180 tabelas públicas com RLS e três tabelas
+`audit`, uma sem RLS. O remoto continua sem classificação documental de
+desenvolvimento/homologação/produção e não recebeu qualquer mutação.
