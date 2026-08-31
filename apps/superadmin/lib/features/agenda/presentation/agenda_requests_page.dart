@@ -1,5 +1,6 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../data/agenda_prototype_store.dart';
@@ -421,35 +422,33 @@ final class _UnavailableRequests extends StatelessWidget {
   const _UnavailableRequests();
 
   @override
-  Widget build(BuildContext context) => Center(
-    key: const Key('agenda-requests-unavailable'),
-    child: ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 520),
-      child: Padding(
-        padding: const EdgeInsets.all(CoeloSpacing.space6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.lock_clock_outlined,
-              size: CoeloSize.iconLg,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(height: CoeloSpacing.space3),
-            Text(
-              'Solicitações indisponíveis',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: CoeloSpacing.space2),
-            const Text(
-              'A fonte autorizada de RSVP, ciência e autorização ainda não está disponível. Nenhum retorno foi consultado ou registrado.',
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    ),
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final padding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+          ? CoeloSpacing.space10
+          : constraints.maxWidth < CoeloBreakpoints.medium.minWidth
+          ? CoeloSpacing.space4
+          : CoeloSpacing.space6;
+      return ListView(
+        key: const Key('agenda-requests-unavailable'),
+        padding: EdgeInsets.all(padding),
+        children: [
+          Text('Solicitações e retornos', style: Theme.of(context).textTheme.headlineMedium),
+          const SizedBox(height: CoeloSpacing.space1),
+          const Text(
+            'Acompanhe RSVP, ciência e autorização por criança, conforme a política de responsáveis.',
+          ),
+          const SizedBox(height: CoeloSpacing.space5),
+          CoeloStatePanel(
+            key: const Key('agenda-requests-unavailable-content'),
+            icon: Icons.lock_clock_outlined,
+            title: 'Solicitações indisponíveis',
+            message:
+                'A fonte autorizada de RSVP, ciência e autorização ainda não está disponível. Nenhum retorno foi consultado ou registrado.',
+          ),
+        ],
+      );
+    },
   );
 }
 

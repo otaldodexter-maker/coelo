@@ -83,6 +83,24 @@ void main() {
 
     expect(find.byKey(const Key('agenda-production-unavailable')), findsOneWidget);
     expect(find.text('Agenda indisponível'), findsOneWidget);
+    expect(find.text('Calendário'), findsOneWidget);
+    expect(find.text('Lista'), findsOneWidget);
+    expect(find.byType(CoeloAdminWorkspaceLayout), findsOneWidget);
+    expect(
+      tester
+          .widget<TextField>(
+            find.descendant(
+              of: find.byKey(const Key('agenda-production-unavailable')),
+              matching: find.byType(TextField),
+            ),
+          )
+          .enabled,
+      isFalse,
+    );
+    expect(
+      tester.widget<OutlinedButton>(find.byKey(const Key('agenda-view-list'))).onPressed,
+      isNull,
+    );
     expect(find.text('Permanência na escola'), findsNothing);
   });
 }

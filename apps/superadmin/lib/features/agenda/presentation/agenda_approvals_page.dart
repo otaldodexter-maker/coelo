@@ -410,35 +410,33 @@ final class _UnavailableApprovals extends StatelessWidget {
   const _UnavailableApprovals();
 
   @override
-  Widget build(BuildContext context) => Center(
-    key: const Key('agenda-approvals-unavailable'),
-    child: ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 520),
-      child: Padding(
-        padding: const EdgeInsets.all(CoeloSpacing.space6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.lock_clock_outlined,
-              size: CoeloSize.iconLg,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(height: CoeloSpacing.space3),
-            Text(
-              'Aprovações indisponíveis',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: CoeloSpacing.space2),
-            const Text(
-              'A fonte autorizada para consultar e decidir publicações ainda não está disponível. Nenhuma decisão foi registrada.',
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    ),
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final padding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+          ? CoeloSpacing.space10
+          : constraints.maxWidth < CoeloBreakpoints.medium.minWidth
+          ? CoeloSpacing.space4
+          : CoeloSpacing.space6;
+      return ListView(
+        key: const Key('agenda-approvals-unavailable'),
+        padding: EdgeInsets.all(padding),
+        children: [
+          Text('Aprovações de publicação', style: Theme.of(context).textTheme.headlineMedium),
+          const SizedBox(height: CoeloSpacing.space1),
+          const Text(
+            'Revise itens enviados por pessoas sem permissão de publicação e registre a decisão.',
+          ),
+          const SizedBox(height: CoeloSpacing.space5),
+          const CoeloStatePanel(
+            key: Key('agenda-approvals-unavailable-content'),
+            icon: Icons.lock_clock_outlined,
+            title: 'Aprovações indisponíveis',
+            message:
+                'A fonte autorizada para consultar e decidir publicações ainda não está disponível. Nenhuma decisão foi registrada.',
+          ),
+        ],
+      );
+    },
   );
 }
 

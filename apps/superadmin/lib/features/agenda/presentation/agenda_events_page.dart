@@ -630,13 +630,53 @@ final class _AgendaEventDetailPageState extends State<AgendaEventDetailPage> {
   @override
   Widget build(BuildContext context) {
     if (widget.unavailable) {
-      return CoeloStatePanel(
-        key: const Key('agenda-event-unavailable'),
-        title: 'Agenda indisponível',
-        message: 'Não foi possível carregar este item agora. Nenhuma alteração foi aplicada.',
-        icon: Icons.cloud_off_outlined,
-        actionLabel: 'Voltar aos eventos',
-        onAction: widget.onBack,
+      return ListView(
+        key: const Key('agenda-event-detail'),
+        padding: const EdgeInsets.all(CoeloSpacing.space6),
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: widget.onBack,
+              icon: const Icon(Icons.arrow_back_rounded),
+              label: const Text('Eventos'),
+            ),
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          Text('Detalhes do evento', style: Theme.of(context).textTheme.headlineMedium),
+          const SizedBox(height: CoeloSpacing.space6),
+          const CoeloStatePanel(
+            key: Key('agenda-event-unavailable'),
+            title: 'Agenda indisponível',
+            message: 'Não foi possível carregar este item agora. Nenhuma alteração foi aplicada.',
+            icon: Icons.cloud_off_outlined,
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+          const _AgendaDetailSection(
+            title: 'Descrição',
+            child: Text('Conteúdo indisponível até existir uma fonte autorizada.'),
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+          const _AgendaDetailSection(
+            title: 'Contexto e audiência',
+            child: Text('Contexto e audiência não foram consultados.'),
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+          const _AgendaDetailSection(
+            title: 'Agenda e respostas',
+            child: Text('Período, recorrência e respostas não foram consultados.'),
+          ),
+          const SizedBox(height: CoeloSpacing.space6),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              key: const Key('agenda-event-edit-unavailable'),
+              onPressed: null,
+              icon: const Icon(Icons.edit_outlined),
+              label: const Text('Editar item'),
+            ),
+          ),
+        ],
       );
     }
     return AnimatedBuilder(

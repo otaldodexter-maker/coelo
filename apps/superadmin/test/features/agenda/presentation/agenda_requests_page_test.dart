@@ -68,6 +68,9 @@ void main() {
 
     expect(find.byKey(const Key('agenda-requests-unavailable')), findsOneWidget);
     expect(find.text('Solicitações indisponíveis'), findsOneWidget);
+    expect(find.text('Solicitações e retornos'), findsOneWidget);
+    expect(find.textContaining('Acompanhe RSVP'), findsOneWidget);
+    expect(find.byKey(const Key('agenda-requests-unavailable-content')), findsOneWidget);
     expect(find.text('Lia · Turma Girassol'), findsNothing);
     expect(find.byKey(const Key('agenda-request-authorize-authorization-lia')), findsNothing);
   });
