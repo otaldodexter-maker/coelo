@@ -18,6 +18,7 @@ $repositoryRoot = Split-Path -Parent (Split-Path -Parent $packageRoot)
 $repositoryFull = [IO.Path]::GetFullPath($repositoryRoot)
 $canonicalConfig = Join-Path $packageRoot 'supabase\config.toml'
 $canonicalTestsRoot = [IO.Path]::GetFullPath((Join-Path $packageRoot 'supabase\tests'))
+$foundationManifestPath = Join-Path $packageRoot 'replay\foundation-migrations.sha256'
 $targetMigration = @(Get-ChildItem -LiteralPath (Join-Path $packageRoot 'migrations') -File -Filter "$TargetVersion`_*.sql")
 $tempRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath())
 $projectId = 'coelo_safe_' + [guid]::NewGuid().ToString('N')
@@ -77,10 +78,23 @@ function Get-DockerResources([string]$Identity) {
 if ($targetMigration.Count -ne 1) {
   throw "target version must identify exactly one canonical migration: $TargetVersion"
 }
-if ($FoundationOnly -and
-    $targetMigration[0].Name -ge '20260812002000_' -and
-    $targetMigration[0].Name -lt '20260827214000_') {
-  throw "target version is outside the foundation replay profile: $TargetVersion"
+if ($FoundationOnly) {
+  if (-not (Test-Path -LiteralPath $foundationManifestPath -PathType Leaf)) {
+    throw 'foundation replay manifest is missing'
+  }
+  Assert-NoReparseAncestors $foundationManifestPath
+  $foundationEntries = @(
+    Get-Content -LiteralPath $foundationManifestPath |
+      Where-Object { $_.Trim() -and -not $_.TrimStart().StartsWith('#') }
+  )
+  if ($foundationEntries.Count -eq 0 -or
+      $foundationEntries[-1] -notmatch '^(\d{14})_[a-z0-9_]+\.sql\|[0-9a-f]{64}$') {
+    throw 'foundation replay manifest has no valid final migration'
+  }
+  $requiredTargetVersion = $Matches[1]
+  if ($TargetVersion -ne $requiredTargetVersion) {
+    throw "foundation replay requires final target $requiredTargetVersion; received $TargetVersion"
+  }
 }
 if (-not (Test-Path -LiteralPath $canonicalConfig -PathType Leaf)) {
   throw 'canonical Supabase config is missing'
@@ -90,9 +104,11 @@ $resolvedTestPaths = @($TestPath | ForEach-Object {
   if (-not $resolved.StartsWith(
       $canonicalTestsRoot.TrimEnd('\') + '\',
       [StringComparison]::OrdinalIgnoreCase
-    ) -or -not (Test-Path -LiteralPath $resolved -PathType Leaf)) {
+    ) -or -not (Test-Path -LiteralPath $resolved -PathType Leaf) -or
+    [IO.Path]::GetExtension($resolved) -ine '.sql') {
     throw "test path must be a file below canonical Supabase tests: $resolved"
   }
+  Assert-NoReparseAncestors $resolved
   $resolved
 })
 Assert-NoReparseAncestors $tempRoot

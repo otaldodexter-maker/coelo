@@ -112,11 +112,14 @@ Supabase CLI 2.116.0 validado neste historico. Exemplo:
 ```
 
 Quando o objetivo for somente a fundacao interna aprovada, use
-`-FoundationOnly`. Esse perfil inclui a base ate `20260812001975` e os
-hardenings/Auth/RPCs internos a partir de `20260827214000`; migrations
-intermediarias de produtos fora do recorte permanecem no replay integral e nao
-sao mascaradas. `-TestPath` aceita somente arquivos abaixo de
-`supabase/tests` e executa pgTAP antes do teardown:
+`-FoundationOnly`. Esse perfil usa o manifesto fechado e verificado por hash
+`replay/foundation-migrations.sha256`: 50 migrations canônicas aprovadas e dois
+preflights locais. Migrations de Activity/Chat/Import/Notice fora do recorte e
+qualquer migration futura não entram automaticamente. O alvo deve ser a última
+versão do manifesto, impedindo teardown com o bridge de replay ainda ativo.
+`Test-FoundationReplayProfile.ps1` valida contagem, limites, hashes e a lista
+negativa. `-TestPath` aceita somente arquivos `.sql`, sem reparse point, abaixo
+de `supabase/tests` e executa pgTAP antes do teardown:
 
 ```powershell
 & packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `

@@ -12,6 +12,7 @@ $packageRoot = Split-Path -Parent $PSScriptRoot
 $repositoryRoot = Split-Path -Parent (Split-Path -Parent $packageRoot)
 $canonicalRoot = Join-Path $packageRoot 'migrations'
 $preflightRoot = Join-Path $packageRoot 'replay'
+$foundationManifestPath = Join-Path $preflightRoot 'foundation-migrations.sha256'
 $destinationRoot = [IO.Path]::GetFullPath($DestinationMigrationsRoot)
 
 function Assert-NormalDirectory([string]$Path, [string]$Label) {
@@ -38,10 +39,48 @@ if (@(Get-ChildItem -LiteralPath $destinationFull -Force).Count -ne 0) {
 
 $canonical = @(Get-ChildItem -LiteralPath $canonicalFull -File -Filter '*.sql' | Sort-Object Name)
 $preflight = @(Get-ChildItem -LiteralPath $preflightFull -File -Filter '*.sql' | Sort-Object Name)
+$foundationManifestHash = $null
 if ($FoundationOnly) {
-  $canonical = @($canonical | Where-Object {
-    $_.Name -lt '20260812002000_' -or $_.Name -ge '20260827214000_'
+  if (-not (Test-Path -LiteralPath $foundationManifestPath -PathType Leaf)) {
+    throw 'foundation replay manifest is missing'
+  }
+  $manifestItem = Get-Item -LiteralPath $foundationManifestPath -Force
+  if (($manifestItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+    throw 'foundation replay manifest cannot be a reparse point'
+  }
+  $manifestEntries = @(
+    Get-Content -LiteralPath $foundationManifestPath |
+      Where-Object { $_.Trim() -and -not $_.TrimStart().StartsWith('#') } |
+      ForEach-Object {
+        if ($_ -notmatch '^((\d{14})_[a-z0-9_]+\.sql)\|([0-9a-f]{64})$') {
+          throw "invalid foundation replay manifest entry: $_"
+        }
+        [pscustomobject]@{ Name = $Matches[1]; Version = $Matches[2]; Hash = $Matches[3] }
+      }
+  )
+  if ($manifestEntries.Count -eq 0 -or
+      @($manifestEntries.Name | Sort-Object -Unique).Count -ne $manifestEntries.Count -or
+      @($manifestEntries.Version | Sort-Object -Unique).Count -ne $manifestEntries.Count -or
+      @(Compare-Object @($manifestEntries.Name) @($manifestEntries.Name | Sort-Object) -SyncWindow 0).Count -ne 0) {
+    throw 'foundation replay manifest must be non-empty, unique, and strictly ordered'
+  }
+  $canonicalByName = @{}
+  foreach ($migration in $canonical) { $canonicalByName[$migration.Name] = $migration }
+  $canonical = @($manifestEntries | ForEach-Object {
+    if (-not $canonicalByName.ContainsKey($_.Name)) {
+      throw "foundation replay migration is missing: $($_.Name)"
+    }
+    $migration = $canonicalByName[$_.Name]
+    $actualHash = (Get-FileHash -LiteralPath $migration.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ($actualHash -cne $_.Hash) {
+      throw "foundation replay migration hash mismatch: $($_.Name)"
+    }
+    $migration
   })
+  if ($canonical.Count -ne $manifestEntries.Count) {
+    throw 'foundation replay manifest count mismatch'
+  }
+  $foundationManifestHash = (Get-FileHash -LiteralPath $foundationManifestPath -Algorithm SHA256).Hash
 }
 if ($canonical.Count -eq 0 -or
     $preflight.Count -ne 2 -or
@@ -70,7 +109,7 @@ $labelBridgeIndex = [Array]::IndexOf(@($combined.Name), $preflight[1].Name)
 if ($labelBridgeIndex -lt 1 -or
     $combined[$labelBridgeIndex - 1].Name -ne '20260811215451_access_profile_management_v2.sql' -or
     $labelBridgeIndex + 1 -ge $combined.Count -or
-    $combined[$labelBridgeIndex + 1].Name -ne '20260811225000_activity_professional_search.sql') {
+    $combined[$labelBridgeIndex + 1].Name -ne '20260812000847_audit_production.sql') {
   throw 'label replay bridge must immediately follow access-profile management v2'
 }
 
@@ -93,4 +132,5 @@ $preflightHashes = @($preflight | ForEach-Object {
   "$(($_.BaseName))=$((Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash)"
 }) -join ','
 $profile = if ($FoundationOnly) { 'foundation' } else { 'full' }
-"Prepared $($generated.Count) safe replay migrations ($($canonical.Count) canonical + $($preflight.Count) preflight); profile=$profile; preflight_sha256=$preflightHashes."
+$manifestEvidence = if ($FoundationOnly) { "; manifest_sha256=$foundationManifestHash" } else { '' }
+"Prepared $($generated.Count) safe replay migrations ($($canonical.Count) canonical + $($preflight.Count) preflight); profile=$profile$manifestEvidence; preflight_sha256=$preflightHashes."
