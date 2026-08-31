@@ -25,10 +25,26 @@ final class InMemoryImportRepository implements ImportRepository {
     context: context,
     file: file,
     strategy: strategy,
-    mapping: const <String, String>{},
-    previewRows: const <ImportPreviewRow>[],
-    conflicts: const <ImportConflict>[],
-    result: const ImportResult(),
+    mapping: const <String, String>{
+      'codigo_unidade': 'Código da unidade',
+      'nome': 'Nome da unidade',
+      'codigo_instituicao': 'Instituição',
+      'cidade': 'Cidade',
+    },
+    previewRows: List.generate(
+      8,
+      (index) => ImportPreviewRow(
+        row: index + 1,
+        values: <String, String>{
+          'nome': 'Unidade ${index + 1}',
+          'codigo': 'UNI-${(index + 1).toString().padLeft(3, '0')}',
+        },
+      ),
+    ),
+    conflicts: const <ImportConflict>[
+      ImportConflict(row: 6, field: 'codigo_unidade', reason: 'Código já cadastrado.'),
+    ],
+    result: const ImportResult(created: 7, ignored: 1),
     status: ImportJobStatus.draft,
     progress: 0,
     actor: 'test',
