@@ -1196,3 +1196,13 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   nenhum arquivo visual foi alterado. A frente visual permanece isolada.
 - O lint histórico continua RED e o remoto segue read-only. Portanto o backend
   focado permanece `local-green`, sem promover `done` ou integração.
+
+### Checkpoint integrado 54 - capacidades backend sem promocao E2E
+
+- O núcleo local de capacidades fechou os erros de catálogo, domínio ambíguo e
+  unicidade de override. Replay com dez arquivos/270 asserts passou e o Dia 3
+  do macrotema backend ficou local-green.
+- Flutter `verified` permanece 0,00% (0/207) e E2E permanece 0,00% (0/202).
+  Nenhuma tela, repository, rota ou worktree visual foi alterada.
+- Importação/arquivo, lint histórico e remoto continuam fora ou bloqueados;
+  não há promoção de `done`, `remote-green` ou integração.

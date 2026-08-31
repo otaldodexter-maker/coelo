@@ -3955,3 +3955,34 @@ da simples soma das 207 ações.
 - **Próximo passo:** commit focado, nova revisão e então TDD dos erros de lint
   de Access Profiles que pertencem ao gate de capacidades/RLS. Activity e
   Import/Export continuam em pacotes de proveniência fora deste recorte.
+
+### Checkpoint seguro 54 - nucleo de capacidades e RLS local-green
+
+- **Progresso:** gates do macrotema concluídos 75,00% (3/4), restante 25,00%
+  (1/4). Projeto estrito `done` 0,00% (0/229), Supabase estrito `done` 0,00%
+  (0/228) e Supabase `done` 0,00% (0/37) permanecem inalterados.
+- **RED:** o pgTAP novo falhou 4/5 no baseline: faltava unicidade canônica de
+  override, o domínio Principal era ambíguo e o catálogo aninhava agregações.
+  O lint confirmava SQLSTATE `42803`, `42702` e `42P10` no núcleo de Access
+  Profiles.
+- **GREEN:** migration CLI `20260831134407_harden_access_profile_capability_core`
+  faz preflight fail-closed, rejeita duplicatas ativas e cria unicidade sem
+  `effect`, impedindo allow+deny ativos simultâneos. Os helpers privados foram
+  corrigidos, mantêm owner `postgres`, `search_path=''` e EXECUTE cliente
+  revogado. O teste focal passou 5/5.
+- **Regressão/lint:** replay fechado de 51 migrations canônicas + dois
+  preflights passou dez arquivos/270 asserts e terminou sem recursos residuais.
+  Os três erros de lint do núcleo desapareceram. Restam erros históricos de
+  Activity/Import-Export e `superadmin_access_profile_import_stage`, fluxo de
+  arquivo/importação explicitamente fora deste pacote; warnings foram mantidos
+  classificados, não ocultados.
+- **Mirror:** o primeiro cleanup expôs que 17 mirrors legados são rastreados
+  apesar do ignore global; as deleções locais foram restauradas do HEAD antes
+  de qualquer commit. O sync agora preserva arquivos rastreados, exige hash
+  idêntico ao canônico e remove somente staging ignorado. Prepare/Verify passou
+  114/114 e o Clean terminou com 17/17 rastreados, zero dirty.
+- **Estado:** Dia 3 fechado localmente; remoto continua `blocked-environment` e
+  read-only. Flutter/UI não foi tocado. Gate de conhecimento `no-op`.
+- **Próximo passo:** executar fechamento do Dia 4: mirror/hash, secret scan,
+  documentação final, revisão do novo delta e ledger de consolidação; aguardar
+  checkpoint visual antes de avançar `dev`.

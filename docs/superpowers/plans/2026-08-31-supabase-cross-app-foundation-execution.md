@@ -1,7 +1,7 @@
 ---
 title: "Execução da fundação Supabase cross-app"
 source: "Prompt aprovado pelo Owner Coelo em 2026-08-31; decisions/0019-superadmin-internal-identity.md; specs/039-superadmin-internal-auth-session-context.md; inventário read-only de 2026-08-31"
-status: "in-progress-gates-2-of-4"
+status: "in-progress-gates-3-of-4"
 generated_at: "2026-08-31"
 ---
 
@@ -31,13 +31,13 @@ A migration canônica `20260827233000_superadmin_internal_auth_context.sql` e se
 
 ## Estado executável atual
 
-O Docker Desktop 4.86.0 foi reparado sem apagar imagens ou volumes: os diretórios de runtime com sockets AF_UNIX corrompidos foram movidos para backups e o daemon 29.7.2 voltou a responder. O replay integral reproduz dois drifts fora do recorte (`platform_permissions` sem labels/defaults e Import/Export removido). O perfil `-FoundationOnly` é fechado por manifesto SHA-256: aplica exatamente 50 migrations canônicas revisadas e dois preflights de replay, sem admitir migrations futuras ou mascarar o RED integral.
+O Docker Desktop 4.86.0 foi reparado sem apagar imagens ou volumes: os diretórios de runtime com sockets AF_UNIX corrompidos foram movidos para backups e o daemon 29.7.2 voltou a responder. O replay integral reproduz dois drifts fora do recorte (`platform_permissions` sem labels/defaults e Import/Export removido). O perfil `-FoundationOnly` é fechado por manifesto SHA-256: aplica exatamente 51 migrations canônicas revisadas e dois preflights de replay, sem admitir migrations futuras ou mascarar o RED integral.
 
-A migration forward-only `20260831130726_reconcile_permission_labels_after_replay.sql`, criada pelo CLI 2.116.0, executa preflight catalogal antes de qualquer DDL e valida owner/tipos/nullability/defaults antes de normalizar os sentinels temporários e remover os seis defaults. Replay focado, nove arquivos pgTAP e 265 asserts passaram; Auth, instituições, unidade, grupo e pessoa estão verdes. O lint global continua RED por erros históricos em domínios anteriores, classificados separadamente do delta; o validator novo não recebeu achado.
+As migrations forward-only `20260831130726_reconcile_permission_labels_after_replay.sql` e `20260831134407_harden_access_profile_capability_core.sql`, criadas pelo CLI 2.116.0, fecham o replay e o núcleo de capacidades. O segundo delta impede allow+deny ativos simultâneos por capability/escopo, qualifica o domínio Principal e reduz overrides antes da agregação JSON. Replay focado, dez arquivos pgTAP e 270 asserts passaram; Auth, instituições, unidade, grupo, pessoa e o núcleo de Access Profiles estão verdes. O lint global continua RED somente por erros históricos de Activity/Import-Export e pelo import de Access Profiles, todos fora do núcleo contratado; nenhum achado ficou sem classificação.
 
 ## Evidência read-only de 2026-08-31
 
-- Canônico/mirror: 113/113 após `Prepare` e `Verify` com SHA-256 por arquivo.
+- Canônico/mirror temporário: 114/114 após `Prepare` e `Verify` com SHA-256 por arquivo; o cleanup preserva os 17 mirrors legados rastreados e remove somente staging ignorado.
 - Ledger remoto: 103; última `20260821200000_profile_about_remote_context_compatibility`.
 - Manifesto: 50 coincidências de versão/nome no ledger, sem prova de conteúdo remoto; 8 nomes lógicos em versões divergentes por lado; 54 locais sem nome remoto e 45 remotos sem nome local.
 - Remoto: 180 tabelas públicas com RLS habilitada; 87 com FORCE RLS; 3 tabelas audit, sendo `audit.profile_about_commands` sem RLS.
@@ -51,7 +51,7 @@ Repetir o gate focado com pgTAP e lint visível:
 
 ```powershell
 & packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
-  -TargetVersion 20260831130726 -FoundationOnly `
+  -TargetVersion 20260831134407 -FoundationOnly `
   -TestPath packages/coelo_database/supabase/tests/superadmin_internal_auth_context_test.sql `
   -RunLint
 ```
