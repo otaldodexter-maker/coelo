@@ -1168,3 +1168,19 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 - Excecao já comprovada: a worktree backend legada limpa foi removida depois
   de o ledger `a1cc69f6` registrar 41/41 patches equivalentes em `dev`; a
   branch e os commits foram preservados. A worktree visual nao foi tocada.
+
+### Checkpoint integrado 52 - backend focado replay-green sem promocao E2E
+
+- Docker local foi reparado e o perfil de replay da fundação instalou 58
+  migrations canônicas + dois preflights até `20260831130726`, com teardown
+  sem recursos residuais.
+- Nove arquivos pgTAP/259 asserts passaram para Auth, instituição, unidade,
+  grupo, pessoa, ACL e reconciliação de labels. O replay integral permanece
+  RED em cadeias intermediárias fora do recorte; o lint global também mantém
+  erros históricos classificados.
+- Nenhum arquivo Flutter/UI, repository, rota, teste visual ou estado de tela
+  foi alterado. A worktree visual ativa continuou intocada.
+- Flutter `verified` permanece 0,00% (0/207) e E2E permanece 0,00% (0/202).
+  Backend local focado não promove ação integrada, `remote-green` ou `done`.
+- Consolidação em `dev` continua aguardando commit/review backend, regressão
+  final e checkpoint seguro da frente visual. Zero push e zero remoto mutável.

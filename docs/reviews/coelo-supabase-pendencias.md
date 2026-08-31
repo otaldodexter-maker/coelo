@@ -3866,3 +3866,54 @@ da simples soma das 207 ações.
   comprovou novamente os 41/41 patches da branch backend legada como
   equivalentes em `dev`. A worktree antiga, limpa, foi removida; sua branch e
   todos os commits foram preservados para a auditoria final.
+
+### Checkpoint seguro 52 - Docker reparado e fundacao replay-green
+
+- **Progresso:** projeto estrito `done` 0,00% (0/229); Supabase estrito
+  `done` 0,00% (0/228); Supabase `done` 0,00% (0/37); Flutter e E2E
+  permanecem inalterados. Dos quatro gates do macrotema, Dia 1 e Dia 2 estão
+  fechados localmente: 50,00% (2/4), restante 50,00% (2/4). Dia 3 aguarda
+  classificação/fechamento do lint histórico e Dia 4 aguarda regressão final,
+  documentação e consolidação.
+- **Docker:** o daemon foi recuperado sem apagar imagens/volumes. As pastas de
+  runtime com sockets AF_UNIX corrompidos `dockerInference` e
+  `docker-secrets-engine/engine.sock` foram movidas para backups reversíveis;
+  Docker 29.7.2 voltou a responder. O próprio diálogo Docker registrou reset
+  de aplicação durante uma falha anterior; nenhum comando desta tarefa pediu
+  reset de fábrica. Imagens/volumes estavam vazios antes e depois.
+- **REDs:** o replay integral reproduziu, em ordem, SQLSTATE `23502` por labels
+  obrigatórios sem default, `42703` por `platform_role_permissions.updated_at`
+  ausente, `42P01` por attestation de Unit Import removida e `42883` por
+  funções Unit Import ausentes. Os dois últimos pertencem a Import/Export fora
+  do recorte e não foram ocultados por stubs ou restauração de endpoints.
+- **Correção mínima:** criado pelo CLI 2.116.0
+  `20260831130726_reconcile_permission_labels_after_replay.sql`. Um bridge
+  exclusivo de replay, imediatamente após `20260811215451`, fornece defaults
+  sentinels e a coluna histórica `updated_at`; a migration atual normaliza os
+  labels e remove os seis defaults. O perfil explícito `FoundationOnly`
+  seleciona 58 migrations canônicas da base/fundação e dois preflights; o
+  replay integral continua um gate RED separado em OQ-042.
+- **GREEN e regressões:** replay focado instalou até `20260831130726`; nove
+  arquivos pgTAP passaram com 259 asserts. Incluem defaults/labels 4/4,
+  default ACL, Auth 29/29, instituição detalhe/lista/edit, unidade, grupo e
+  pessoa, cobrindo sessão, AAL, lifecycle, capability/grant, tenant A/B,
+  sibling, cross-app, persistência/reload e auditoria. Cada execução terminou
+  com zero container, volume, rede ou diretório temporário do replay.
+- **Lint:** `supabase db lint --local --level warning --fail-on error`
+  permaneceu RED por erros históricos já materializados em Activity,
+  Import/Export, Access Profiles e Chat, além de warnings. A migration do
+  delta não cria função; nenhum achado foi atribuído silenciosamente a ela.
+  O fechamento desses erros exige pacotes de proveniência próprios e mantém o
+  Dia 3 incompleto.
+- **Mirror/segredos/remoto:** canônico/mirror 113/113 verificado; `git diff
+  --check` limpo e scan de JWT/service key zerado. Zero mutação remota; `coelo`
+  continua `blocked-environment`, sem `remote-green`.
+- **Tempo/ETA:** aproximadamente 1 h medida desde a abertura até este GREEN.
+  Restam até três dias do orçamento para matriz/lint do recorte, regressão,
+  rastreadores e consolidação, condicionados ao checkpoint visual.
+- **Próximo passo:** revisar e commit-ar o pacote replay/labels, classificar os
+  achados de lint relevantes à fundação e repetir pgTAP+lint. Flutter, UI,
+  Import/Export funcional, mídia, Edge e remoto continuam fora.
+- **Gate de conhecimento:** `no-op`; a mudança é infraestrutura de replay e
+  reconciliação de schema, documentada nas fontes técnicas e OQ-042, sem novo
+  comportamento de produto para `docs/knowledge`.
