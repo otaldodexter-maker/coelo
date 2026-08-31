@@ -123,3 +123,26 @@ AF_UNIX inválido. O replay terminou com zero recurso `coelo_safe_*` residual.
 O remoto continua read-only, `blocked-environment`, sem `remote-green` ou
 `done`; OQ-032 permanece aberta para a escolha canônica antes de qualquer
 mutação remota.
+
+## Continuação executada — Supabase Auth full-stack
+
+O wrapper descartável ganhou o modo `-RunAuthLifecycle`, mantendo GoTrue,
+PostgREST e Kong somente durante a prova. O primeiro RED revelou que o nome do
+projeto Docker de 43 caracteres era truncado pelo Compose; a identidade foi
+limitada a 40 caracteres para que criação, acesso e verificação de resíduos
+usem o mesmo nome. O segundo RED confirmou corretamente que memberships
+internas são append-only; a fixture passou a permanecer apenas no volume
+efêmero, destruído pelo teardown.
+
+O GREEN executou cadastro sintético, bootstrap do contexto interno, logout,
+login por senha, novo bootstrap, refresh, bootstrap com token renovado, logout,
+recusa do refresh e envelope `SAI_SESSION_INVALID` para o JWT revogado. Nenhum
+token ou senha foi impresso e o wrapper confirmou zero container, volume, rede
+ou diretório residual. A prova é `local-green`; o remoto não foi alterado.
+
+O RED focal de Activities passou 62/70 e falhou em oito pontos. Parte pertence
+a migrations de catálogo local-only excluídas intencionalmente do perfil; a
+lacuna estrutural é que os comandos legados continuam people-based e não
+aceitam a identidade interna da ADR 0019. O conflito foi registrado como
+OQ-043; não houve adaptação silenciosa, pessoa sintética ou trabalho em
+importação, exportação, arquivo, mídia ou Flutter.

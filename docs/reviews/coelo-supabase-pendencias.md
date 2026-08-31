@@ -4115,3 +4115,34 @@ da simples soma das 207 ações.
 - **Tempo restante local:** 30–60 minutos após a liberação limpa de `dev` para
   integrar, repetir gates, atualizar o ledger e remover somente a worktree e a
   branch backend. Remoto e OQ-032 continuam separados e sem ETA autorizado.
+
+### Checkpoint seguro 60 - Auth real verde e Activities interno bloqueado
+
+- **Progresso:** fundação Auth local permanece 100,00% (4/4 gates), restante
+  0,00% (0/4). Projeto estrito `done` permanece 0,00% (0/229), backlog
+  Supabase estrito `done` 0,00% (0/228) e famílias Supabase `done` 0,00%
+  (0/37), pois não houve prova remota autorizada nem promoção de tela.
+- **RED Auth:** o primeiro ciclo full-stack não encontrou o Postgres porque o
+  Compose truncou a identidade Docker de 43 para 40 caracteres. Após corrigir
+  a identidade na origem, o segundo ciclo chegou ao cleanup e confirmou a
+  proteção append-only de membership; a fixture passou a ser limpa pela
+  destruição integral do volume efêmero.
+- **GREEN Auth:** GoTrue/PostgREST/Kong reais passaram cadastro sintético,
+  bootstrap interno, logout, login por senha, refresh, novo bootstrap, logout,
+  refresh recusado e `SAI_SESSION_INVALID` para o JWT revogado. O wrapper
+  terminou em exit 0 com zero container, volume, rede ou staging residual e
+  sem imprimir senha ou token.
+- **RED Activities:** `activity_management_end_to_end_test.sql` passou 62/70.
+  As oito falhas mostram que o teste integral mistura catálogo local-only e
+  recursos de arquivo/import/export, além de envelopes people-based. O domínio
+  legado tem RPCs reais no remoto read-only, mas não usa
+  `require_superadmin_internal_context` e grava autoria em `people`.
+- **Bloqueio canônico:** OQ-043 registra a necessidade de contrato v2 para ator
+  interno nos comandos operacionais, coexistente com Admin people-based. Não
+  foi criada pessoa sintética, migration especulativa ou adaptação de Flutter.
+- **Estado remoto:** projeto continua `blocked-environment`, somente leitura;
+  nenhuma configuração Auth, migration, DDL, DML ou função foi alterada.
+- **Próximo passo seguro:** aprovar o contrato de ator interno v2; enquanto isso,
+  revalidar apenas famílias legadas separadamente e nunca chamá-las de CRUD do
+  Superadmin interno. Gate de conhecimento: `no-op`, pois o comportamento de
+  produto não mudou; apenas a prova técnica e o conflito foram persistidos.
