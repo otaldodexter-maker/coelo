@@ -146,3 +146,26 @@ da spec 039 e seu upsert de contato não participa do protocolo
 Gate de conhecimento: `no-op`. Esta spec e OQ-032 são as fontes canônicas da
 divergência; nenhum comportamento implantado novo foi projetado em
 `docs/knowledge`.
+
+## Evidência executável de proveniência — 2026-08-31
+
+O inventário remoto SELECT-only confirmou o contrato físico divergente sem
+consultar linhas de negócio: `public.units.unit_type_id uuid not null` referencia
+`public.unit_types(id)` e possui `units_unit_type_id_idx`; não existe
+`units.institution_type_id` nesse ambiente. O perfil local aprovado continua com
+`units.institution_type_id uuid not null`, FK para `institution_types(id)` e
+`units_institution_type_id_idx`.
+
+A migration forward-only local
+`20260831164937_assert_unit_hierarchy_contract.sql` adiciona somente o guard
+privado `app_private.assert_unit_hierarchy_contract()`. Ele é `SECURITY INVOKER`,
+usa `search_path=''`, não pode ser executado por `anon`, `authenticated` ou
+`service_role` e falha com SQLSTATE `55000` quando os contratos forem misturados.
+O guard não renomeia colunas, não migra dados, não cria compatibilidade, não
+altera policy/grant de tabelas e não resolve OQ-032 silenciosamente.
+
+O RED comprovou a ausência do guard no replay anterior. O GREEN aplicou 52
+migrations canônicas e dois preflights até `20260831164937`; a regressão passou
+11 arquivos pgTAP/284 asserts. O remoto permaneceu sem mutação e continua
+`blocked-environment`; esta prova reduz o risco de aplicação acidental, mas não
+remove nenhum dos seis gates para retomar o Design A.

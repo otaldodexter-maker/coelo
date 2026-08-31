@@ -4063,3 +4063,39 @@ da simples soma das 207 ações.
   autoridade do ambiente remoto por evidência documental. Qualquer correção do
   lint histórico exige pacote próprio; qualquer mutação remota exige autorização
   nominal com migrations, hashes, objetos, risco e estratégia forward-only.
+
+### Checkpoint seguro 58 - guard de proveniência e Docker restaurado
+
+- **Progresso:** macrotema local permanece 100,00% (4/4), restante 0,00%
+  (0/4). Projeto estrito `done` permanece 0,00% (0/229), backlog Supabase
+  estrito `done` 0,00% (0/228) e famílias Supabase `done` 0,00% (0/37).
+- **RED:** replay das 51 migrations anteriores chegou ao pgTAP novo, que falhou
+  pela ausência de `app_private.assert_unit_hierarchy_contract()`. A primeira
+  implementação também falhou corretamente antes do commit porque comparava a
+  renderização textual da FK; o diagnóstico foi alterado para identidade
+  catalogal de tabela/coluna e alvo.
+- **GREEN:** migration CLI
+  `20260831164937_assert_unit_hierarchy_contract.sql`, SHA-256 normalizado
+  `34b22ee247857f56ac5c80d55694544a60c42fe3c373089ab37749aba47d6ca5`,
+  cria guard privado invoker, `search_path=''` e sem EXECUTE cliente. O teste
+  focal passou 6/6; replay e regressão passaram 52 migrations + dois preflights,
+  11 arquivos pgTAP e 284 asserts. Mirror `Prepare`/`Verify`: 115/115.
+- **Proveniência remota read-only:** `units.unit_type_id not null` referencia
+  `unit_types(id)` e diverge do contrato local aprovado
+  `institution_type_id -> institution_types`. O guard falharia antes de uma
+  aplicação incompatível, mas não resolve OQ-032 e nenhuma mutação remota foi
+  feita.
+- **Docker:** o reset concluído na interface foi seguido da desativação de
+  Docker AI, componente que recriava o socket AF_UNIX inválido. Engine 29.7.2
+  voltou saudável; o wrapper terminou sem container, volume ou rede
+  `coelo_safe_*` residual.
+- **Lint/fora do pacote:** os 284 asserts passaram antes de o lint repetir dois
+  `42702` em imports Activity/Groups, um `42804` no import de Access Profiles e
+  um `42703` no file job. Importação, exportação, arquivos e mídia existentes
+  foram preservados integralmente; não foram apagados, revertidos, desativados
+  ou corrigidos neste lote.
+- **Estado e próximo passo:** fundação permanece `local-green`; remoto continua
+  `blocked-environment`, read-only, sem `remote-green` ou `done`. Primeiro gate
+  incompleto é a decisão canônica OQ-032 e a classificação documental do
+  ambiente remoto. Gate de conhecimento: `no-op`, pois não nasceu regra durável
+  de produto nem comportamento implantado novo.
