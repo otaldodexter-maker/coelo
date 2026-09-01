@@ -320,6 +320,12 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
   worktree limpa; 13/13 referências preservadas no manifesto. Nenhum arquivo em
   `apps/admin`, `apps/site` ou `apps/principal`. Revisões independentes Flutter
   e banco estão em andamento antes de qualquer cherry-pick.
+- **P1 do review Supabase:** as RPCs candidatas de Modelos usam
+  `current_person_id()`/`has_platform_permission()`, dependentes de pessoa e
+  membership legada. ADR 0019/spec 039 exigem contexto interno Superadmin por
+  sessão/realm, ator interno auditável e gateways nominais. Os commits de banco
+  ficam bloqueados até correção e negativos cross-app; não integrar como
+  closure produtiva.
 
 ### Estruturas — checkpoint `c249db2f`
 

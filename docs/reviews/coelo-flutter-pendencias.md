@@ -12,6 +12,41 @@ visual_program_accepted_count: 0
 
 # Pendências Coelo — Flutter por tela e ação
 
+## 0. Etapa 2 — resumo recuperável do que foi feito e do que falta
+
+Esta seção é o ponto de retomada obrigatório da **Etapa 2** para a skill
+`coelo-flutter-review`. Ela deve ser atualizada a cada handoff, regressão,
+integração ou mudança de ETA. O histórico detalhado e as matrizes por
+`action_id` permanecem abaixo.
+
+**Estado geral Flutter em 2026-09-01:** 105/207 ações `local-green` (50,72%),
+0/207 `verified`. Portanto 102/207 ações (49,28%) ainda não atingiram sequer o
+estado local exigido e nenhuma ação foi certificada como Flutter produtivo.
+
+| Frente/conversa | Telas e subtelas feitas na Etapa 2 | O que falta exatamente no Flutter | Passo atual, Git e ETA |
+| --- | --- | --- | --- |
+| Comunicação — `01a05db6-b171-7a80-9e07-592e2e08dbe9` | Chat: diretório, busca, abrir conversa, leitura e envio local; ordem pós-envio e launcher corrigidos. Convites: diretório, detalhe e formulário `/dev` com escopo coerente. Avisos: diretório, cards/tabela, paginação e criar/editar locais. | Chat editar/anexar/receipts/revogar; paginação total; Convites e Avisos produtivos; regressão visual conjunta após demais merges. Circulares não pertence a esta frente. | Código seletivamente integrado no `dev` até `f516be71`; 301/301 testes pós-merge e analyzer verdes. Flutter local desta fatia concluído; ETA produtiva depende do backend. |
+| Operações — `01a05d88-3187-79a3-9443-218a0c5cb8ae` | Planos, Cardápios/Modelos, Formulários/Respostas/editor/agendamento, Importações e Agenda/calendário/lista/criar/editar/solicitações/aprovações/permissões estão locais em `/dev`. | Integrar seletivamente a branch; reexecutar regressão conjunta; ligar repositories produtivos. Mapa/geocodificação real e import/export reais continuam abertos. | Branch limpa `codex/finalizacao-telas-operacoes` em `84759675`; 344/344 e analyzer verdes. ETA de integração local: 2–4 h após review de conflitos; produção não calculável antes do backend. |
+| Acessos e Saúde/Cuidado — `01a05d66-fdec-7f31-a4c3-fe7f7654e51b` | Pessoas; Segurança da criança; Usuários internos; Perfis e permissões/Modelos; Perfis de cuidado; Planos de medicação: diretórios, filtros, paginação e wizards locais. | Review independente e integração seletiva; corrigir 59 comparações de golden somente após aprovação visual; três cenários antigos de Convites; importar/exportar reais; geocodificação; dois testes produtivos legados; ações produtivas permanecem fail-closed. | Branch limpa `codex/accessos-ponta-a-ponta` em `6e56d3e4`; 152/152 críticos, Acessos 259/259 e Saúde 127/127. Reviews em andamento; ETA de integração será recalculada após os verdicts. |
+| Auth — `01a05d37-a36d-7610-b9dc-f8259243ffcd` | Login, logout, recuperação e reset; recovery confinada à rota correta; guard de sessão/contexto interno; negativos de Home/Instituições/`/dev`. | Integração está retida: o Catalog legado precisa negar recovery antes de consultar acesso, mas `apps/catalog` está fora do recorte. MFA continua fail-closed e fora do pacote. Goldens históricos de Login permanecem divergentes. | Branch limpa `codex/auth-first-local-green` em `a2c6eaab`; 66/66 Superadmin e 23/23 `coelo_auth`. ETA depende de autorização explícita para o ajuste mínimo no Catalog. |
+| Estruturas — `01a05d2b-d4e4-7a90-95a6-e9a401ab5836` | Cabeçalho mobile global; Instituições, Unidades, Turmas, Atividades/Modelos e Avaliações locais; 18 referências preservadas. | Integração seletiva deve excluir hunks duplicados de Chat; revalidar shell com todas as rotas. Avaliações produtivas continuam fail-closed e modelos por Unidade ainda não possuem replay. | Branch limpa `codex/estruturas-superadmin` em `c249db2f`. ETA de integração local: 2–4 h de resolução/reteste; backend separado. |
+| Coelo (Principal) — `01a05dce-96ed-7ca3-b3eb-e4701473510b` | Rotas do menu isoladas sem tocar `apps/principal`; `momentos.view` fullscreen com retorno/foco e estados inválido/loading/failure/unauthorized/empty. | Circulares diretório/arquivos está em execução; depois revisar Acontece, Para Você, Agora, Perfil e subtelas de publicar. Chat deve apenas consumir o núcleo de Comunicação. Validação visual manual/golden conjunta permanece aberta. | Branch `codex/finalizar-telas-coelo-principal` em `14ff3d50`; Momentos 38/38 e review aprovado. Circulares local: ETA informada 25–35 min. |
+
+### Primeiro próximo passo Flutter da Etapa 2
+
+1. Receber os dois verdicts independentes de Acessos/Saúde e corrigir qualquer
+   achado antes do cherry-pick.
+2. Fechar Circulares na frente Coelo (Principal), integrando apenas o trabalho
+   válido e excluindo `393fc7ff`.
+3. Integrar seletivamente Estruturas, Operações, Coelo (Principal) e
+   Acessos/Saúde, sempre com regressão pós-merge e sem duplicar Chat/cabeçalho.
+4. Auth permanece bloqueado até decisão explícita sobre `apps/catalog`.
+
+**Tempo usado:** não calculável com precisão porque as seis conversas não
+registraram duração homogênea. **ETA Flutter local restante:** não calculável
+até os reviews e integrações seletivas; as estimativas por frente acima são as
+fatias atualmente recuperáveis.
+
 ## 1. Finalidade e leitura obrigatória
 
 Este é o rastreador vivo das pendências de **Flutter e Dart** do Coelo. Ele deve
@@ -3373,7 +3408,7 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
 | Segurança — diretório/detalhe/criar/editar/revisar | 164 registros sintéticos ligados a 180 crianças; cards/tabela/wizard e golden Safety verdes. | Flutter local; `child-safety.suspend` não promovido. | Suspensão/revogação, lifecycle sensível, remoto e E2E. |
 | Usuários internos — diretório/criar/editar | Lista e wizard quatro etapas locais; produção exibe indisponibilidade segura em vez de 404. | Flutter `/dev`; ações produtivas continuam `blocked-decision`. | Auth/Convites, RPCs, MFA, import/export e 23 goldens. |
 | Perfis e permissões — Perfis/Modelos por app | Central única e edição direta locais; Principal permanece read-only quando não é modelo. | Flutter local em revisão. | OQ-044, produção, 20 goldens e prova integrada. |
-| Modelos de perfil — listar/criar/editar/importar/exportar/duplicar | Adapter/composição candidata e UI local; toolbar ainda mantém duplicar/importar/exportar indisponíveis onde não há fluxo. | Flutter local parcial. | Review independente, replay backend e fechamento das ações indisponíveis. |
+| Modelos de perfil — listar/criar/editar/importar/exportar/duplicar | Adapter/composição candidata e UI local; toolbar ainda mantém duplicar/importar/exportar indisponíveis onde não há fluxo. | Flutter local parcial; integração produtiva bloqueada por P1 de identidade backend. | Trocar o principal people-based das RPCs por contexto interno nominal de sessão/realm; depois review, replay e fechamento das ações indisponíveis. |
 | Perfis de cuidado — lista/criar/editar | 147 perfis sintéticos entre 180 crianças e wizard responsivo. | `local-green` `/dev`; produção fail-closed. | OQ-003/OQ-040, backend/RLS, import/export e goldens. |
 | Planos de medicação — lista/criar/editar | 32 planos sintéticos e CRUD local coberto. | Flutter `/dev`; produção fail-closed. | Base legal, autorização, backend/RLS, import/export e E2E. |
 

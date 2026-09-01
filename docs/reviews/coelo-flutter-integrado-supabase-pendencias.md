@@ -13,12 +13,47 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "29F233A8F7BCD647B9A647518B72454EDCAA336D8FC9D637EC204348851B174A"
-supabase_tracker_sha256: "E93FE291F8266CA560AF1CB4E6207470492CF17FB48B84373EC6F1E2C57F13BC"
+flutter_tracker_sha256: "C059F842DE9EE9816B2AC783EDCC3F77B615D0C3C85A50573DDE4139B92A66B1"
+supabase_tracker_sha256: "040A0BC91FAA54D49B399D980274BE21AC5F62A621C70AED2BF9E69B66CCC146"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
 # Pendências Coelo — Flutter integrado ao Supabase
+
+## 0. Etapa 2 — controlador recuperável de conclusão ponta a ponta
+
+Esta é a resposta canônica para “o que foi feito, onde parou e o que falta na
+Etapa 2” sob a skill `coelo-flutter-supabase-review`. As seções posteriores
+preservam todas as ações e evidências históricas.
+
+**Progresso estrito em 2026-09-01:** 0/229 unidades `done` (0,00%); 229/229
+restantes (100,00%). Flutter possui 105/207 ações `local-green`, Supabase possui
+3/37 famílias `local-green`, mas 0/202 ações estão `ready-for-e2e` e 0/202 foram
+`verified-e2e`.
+
+| Frente | Último passo realmente concluído | Passo atual | Falta para ponta a ponta | Git/ETA |
+| --- | --- | --- | --- | --- |
+| Comunicação | Código seletivo de Chat/Convites/Avisos integrado no `dev`; 301/301 testes pós-merge. | Flutter local concluído na fatia; backend bloqueado. | RPCs, RLS, anexos/eventos, Convites produtivos, tenant A/B, revogação, persistência/reload, auditoria e E2E. | `dev` até `f516be71`; ETA E2E não calculável antes do ambiente/contratos. |
+| Operações | Cinco áreas Flutter `/dev` passaram 344/344 e branch está limpa. | Aguardando review e integração seletiva; backend no primeiro gate de drift. | Repository produtivo + schema/RLS/RPC por tela + 40 provas E2E. | `84759675`; integração local estimada 2–4 h após review; E2E sem ETA antes do replay. |
+| Acessos e Saúde/Cuidado | Handoff limpo com 152/152 críticos; Acessos 259/259; Saúde 127/127. | Reviews independentes em andamento; banco já abriu P1 de principal people-based incompatível com usuário interno. | Corrigir contexto Auth/session/realm/audit das RPCs, negativos e demais achados; só depois integrar/replay. Mutações produtivas, dados sensíveis, remoto/E2E continuam abertas. | `6e56d3e4`; ETA recalculada após verdicts e correção do P1. |
+| Auth | Recovery bypass corrigido e contratos locais passaram 66/66 + 23/23; backend local Auth passou 29/29. | Bloqueado pelo gate Catalog fora do recorte e pelo ledger remoto. | Autorizar/corrigir Catalog, integrar, replay compatível, deploy/redirect/SMTP e E2E; MFA permanece fora/fail-closed. | `a2c6eaab`; backend 1–2 d + E2E 0,5–1 d após ambiente; Catalog sem ETA sem autorização. |
+| Estruturas | UI/cabeçalho local e worktree limpa; Avaliações permanecem honestamente fail-closed. | Aguardando integração seletiva sem hunks Chat. | Gateways internos de Unidades/Turmas, 11 RPCs Avaliações, replay de modelos por Unidade, remoto e E2E. | `c249db2f`; integração 2–4 h; backend 8–16 h após decisões. |
+| Coelo (Principal) | `momentos.view` aprovado localmente: 38/38, estados/retorno/foco. | Circulares diretório/arquivos em execução. | Fechar Circulares e revisar Acontece/Para Você/Agora/Perfil/publicadores; integrar; depois contratos Postgres/R2, autorização, remoto e E2E. | `14ff3d50`; Circulares local 25–35 min; E2E sem ETA antes das decisões. |
+
+### Ordem de retomada vinculante da Etapa 2
+
+1. Receber reviews de Acessos/Saúde, corrigir achados e atualizar estes três MDs.
+2. Fechar Circulares e continuar a sequência do menu Coelo (Principal).
+3. Integrar seletivamente branches limpas, com testes pós-merge; preservar
+   Comunicação como dona do Chat e Estruturas como dona do cabeçalho.
+4. Resolver autorização Catalog para Auth.
+5. Reconciliar ledger/replay e escolher a primeira vertical E2E autorizada.
+6. Somente remover worktrees após equivalência, regressão, rastreadores e
+   evidências estarem conferidos.
+
+**Tempo usado na Etapa 2:** não calculável ainda porque não há duração homogênea
+das seis conversas. **ETA geral:** não calculável antes dos reviews, decisões e
+classificação do ambiente. Cada frente possui a melhor ETA recuperável na tabela.
 
 ## 1. Papel deste documento
 
@@ -1505,6 +1540,10 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 - Revisões independentes Flutter e banco estão em andamento. Contagens ficam
   inalteradas: Flutter 105/207 `local-green`, Supabase 3/37 famílias
   `local-green`, E2E 0/202 e estrito 0/229.
+- O review de banco encontrou P1: as RPCs de Modelos usam principal
+  people-based, incompatível com o contexto interno nominal de ADR 0019/spec
+  039. Sem revalidação de sessão/realm e auditoria do ator interno, o pacote não
+  pode ser integrado nem levado a replay como solução produtiva.
 
 ## Checkpoint integrado 68 — Operações Flutter local, backend 0/40 E2E
 

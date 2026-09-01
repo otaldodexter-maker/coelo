@@ -10,6 +10,48 @@ family_count: 37
 
 # Pendências Coelo — Supabase
 
+## 0. Etapa 2 — resumo recuperável do backend e banco
+
+Esta seção é o ponto de retomada obrigatório da **Etapa 2** para a skill
+`coelo-supabase`. “Feito” aqui distingue análise estática, ambiente local e
+remoto. Fixture Flutter, migration escrita ou RLS apenas habilitada nunca contam
+como backend concluído.
+
+**Estado geral Supabase em 2026-09-01:** 3/37 famílias `local-green` (8,11%),
+0/37 `done`. Restam 34/37 famílias (91,89%) sem gate local completo e todas as
+37 famílias ainda carecem de conclusão Supabase integral.
+
+| Frente | Feito na Etapa 2 | Falta no Supabase/backend | Primeiro próximo passo e ETA |
+| --- | --- | --- | --- |
+| Comunicação — Chat, Convites e Avisos | Adapters Chat/Avisos têm testes locais; inventário remoto foi somente leitura. Circulares possui RPCs/RLS remotos históricos. | Remoto não contém as RPCs públicas esperadas de Chat/Avisos, `chat_attachment_metadata` ou `notice_events`. Convites não possui repository/RPC produtivo aprovado. Faltam RLS/negativos, tenant A/B, vínculo revogado, auditoria, persistência e reload. | Classificar ambiente e aprovar pacote nominal; depois contratos/RPCs e replay. ETA não calculável antes da OQ-041 e decisões de Convites. |
+| Operações — Planos, Cardápios, Forms, Importações e Agenda | Auditoria read-only e inventário de contratos existentes; nenhuma mutação remota. | 0/40 E2E. Ledger/schema possuem drift; Planos e Agenda carecem de backend completo; Forms está desconectado; Importações cobre apenas Unidades; Cardápios têm alertas SECURITY DEFINER e não estão compostos produtivamente. | Reconciliar ledger/replay antes de qualquer DDL; depois ACL/RLS comuns, Forms, Importações, Cardápios, Planos e Agenda. ETA remota não confiável antes do replay. |
+| Acessos e Saúde/Cuidado | Modelos de perfil têm duas migrations candidatas, 4 tabelas FORCE RLS, 10 RPCs, 18 capabilities e planos pgTAP 35+10 apenas estáticos. | Sem Docker/replay/Advisors; nenhuma prova local real, remota ou E2E. Pessoas/Segurança/Usuários internos/Cuidado/Medicação continuam fail-closed, audited ou blocked-decision. OQ-044 bloqueia composição; OQ-003/OQ-040 bloqueiam cuidado sensível. | Concluir review das migrations, replay descartável, pgTAP, Advisors e negativos. Remoto somente após OQ-041. ETA técnica local 4–8 h se Docker e contratos forem liberados. |
+| Auth | Lifecycle local real de login/logout/recovery/reset e pgTAP 29/29; migration/guard local corrigidos. | Produção `not-deployed`; ledger remoto diverge, redirect/SMTP e E2E ausentes. MFA permanece fail-closed. | Criar replay transacional compatível e pacote forward-only revisado. ETA informada: 1–2 dias + 0,5–1 dia para E2E após ambiente/autorização. |
+| Estruturas | Adapters candidatos e migration de modelos por Unidade escrita; 31 asserts existem estaticamente. | RPCs legados de Unidades/Turmas são people-based e não autorizam ator interno; 11 RPCs de Avaliações não existem; sem Docker/replay/remoto/E2E. | Decidir OQ-043, criar contratos nominais, replay dos 31 asserts e backend Avaliações. ETA técnica 8–16 h após desbloqueios. |
+| Coelo (Principal) | Nenhuma mutação backend na Etapa 2; inventário preservou que conteúdo operacional usa R2 e metadados/permissões ficam no Postgres. | Acontece/Agora/Momentos/Perfil/Circulares/publicadores carecem de contratos aprovados, ator, audiência, RLS/R2, retenção, remoção, auditoria, remoto e E2E. | Fechar decisões de mídia/publicação/retorno e selecionar primeira vertical. ETA por família após decisão: tipicamente 3–5 dias + E2E. |
+
+### Primeiro próximo passo Supabase da Etapa 2
+
+1. Não aplicar a cauda de migrations no remoto.
+2. Classificar o ambiente da OQ-041 e reconciliar ledger/schema em replay local.
+3. Revisar e testar as migrations de Modelos de perfil e Estruturas.
+4. Escolher uma ação vertical cujo Flutter e contrato backend estejam aprovados;
+   só então provar permitido, negado, revogado, tenant A/B, persistência, reload
+   e auditoria.
+
+**Bloqueio P1 descoberto no review:** as RPCs candidatas de Modelos autorizam
+por `app_private.current_person_id()` e `has_platform_permission()`, dependentes
+de `people`, `person_auth_links` e `platform_memberships`. Isso conflita com ADR
+0019/spec 039: Usuário Interno Superadmin exige contexto interno nominal,
+revalidação de `auth.sessions/session_id`, realm e ator/auditoria internos. No
+estado atual, a conta interna legítima pode ser negada e um principal legado
+people-based pode ser aceito; a leitura também não aplica corretamente a regra
+Owner=AAL2. Os commits DB não são integráveis como produção antes da correção,
+auditoria interna e negativos cross-app/cross-realm.
+
+**Tempo usado:** não calculável com precisão. **ETA geral Supabase:** não
+calculável antes de OQ-041, OQ-043, OQ-044, OQ-003/OQ-040 e replay compatível.
+
 ## 1. Finalidade e leitura obrigatória
 
 Este é o rastreador operacional vivo do backend Supabase do Coelo: Auth,
@@ -4407,3 +4449,7 @@ da simples soma das 207 ações.
 - Primeiro gate seguro: concluir review das migrations, executar replay limpo e
   pgTAP em ambiente descartável, Advisors e negativos; remoto continua
   bloqueado pela OQ-041 e Modelos também pela OQ-044.
+- Review independente abriu P1: o principal de autorização das RPCs é
+  people-based, incompatível com o usuário interno nominal exigido por ADR
+  0019/spec 039. Corrigir contexto/sessão/realm/ator/auditoria e negativos antes
+  de qualquer integração dos commits `e7520192`/`5b3c01a3`.
