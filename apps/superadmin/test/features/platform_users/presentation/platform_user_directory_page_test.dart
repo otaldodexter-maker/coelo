@@ -48,6 +48,13 @@ void main() {
     expect(find.text('Arquivos'), findsOneWidget);
     expect(find.textContaining('MFA'), findsNothing);
 
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    for (final label in const ['Importar', 'Exportar CSV', 'Exportar XLSX']) {
+      final action = tester.widget<MenuItemButton>(find.widgetWithText(MenuItemButton, label));
+      expect(action.onPressed, isNull, reason: '$label deve permanecer visível e indisponível');
+    }
+
     final first = repository.records.first;
     await tester.tap(find.byKey(Key('platform-user-card-${first.id}')));
     expect(editedId, first.id);
