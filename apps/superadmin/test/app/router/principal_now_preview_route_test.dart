@@ -142,9 +142,15 @@ void main() {
     expect(find.byType(PrincipalMomentsPreviewPage), findsOneWidget);
     expect(
       tester.widget<PrincipalMomentsPreviewPage>(find.byType(PrincipalMomentsPreviewPage)).embedded,
-      isTrue,
+      isFalse,
     );
-    expect(find.byKey(const Key('superadmin-persistent-shell')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-persistent-shell')).hitTestable(), findsNothing);
+    expect(find.byKey(const Key('superadmin-sidebar')).hitTestable(), findsNothing);
+    expect(find.byKey(const Key('principal-global-dock')), findsNothing);
+    expect(
+      tester.getRect(find.byKey(const Key('principal-moments-page-view'))),
+      Offset.zero & const Size(768, 1024),
+    );
     expect(find.byType(Dialog), findsNothing);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
@@ -226,7 +232,9 @@ void main() {
     }
   });
 
-  testWidgets('a direct Momentos link returns to Acontece through the host shell', (tester) async {
+  testWidgets('a direct Momentos link returns to Acontece through the fullscreen fallback', (
+    tester,
+  ) async {
     final session = SuperadminSession();
     final router = createSuperadminRouter(
       session: session,
@@ -243,12 +251,13 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('superadmin-mobile-menu')));
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byKey(const Key('superadmin-navigation-search')), 'Acontece');
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('superadmin-navigation-principal-happens')));
-    await tester.pumpAndSettle();
+    expect(find.byType(PrincipalMomentsPreviewPage), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-persistent-shell')), findsNothing);
+    expect(find.byKey(const Key('superadmin-sidebar')), findsNothing);
+    expect(find.byKey(const Key('principal-global-dock')), findsNothing);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await _pumpUntilAbsent(tester, find.byType(PrincipalMomentsPreviewPage));
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalHappens);
   });

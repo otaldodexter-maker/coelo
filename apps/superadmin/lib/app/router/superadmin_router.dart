@@ -584,6 +584,16 @@ GoRouter createSuperadminRouter({
         ),
       ),
       GoRoute(
+        path: SuperadminRoutes.devPrincipalMoments,
+        name: SuperadminRoutes.devPrincipalMomentsName,
+        builder: (context, state) => PrincipalMomentsPreviewPage(
+          embedded: false,
+          onOpenHappens: () => _closePrincipalViewer(context),
+          onOpenProfile: () => context.goNamed(SuperadminRoutes.devPrincipalProfileName),
+          onCreateMoment: () => context.goNamed(SuperadminRoutes.devPrincipalMomentsPublishName),
+        ),
+      ),
+      GoRoute(
         path: SuperadminRoutes.devPrincipalHappens,
         name: SuperadminRoutes.devPrincipalHappensName,
         builder: (context, state) => PrincipalHappensPreviewPage.demo(
@@ -3645,23 +3655,6 @@ GoRouter createSuperadminRouter({
               ),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
-            ),
-          ),
-          GoRoute(
-            path: SuperadminRoutes.devPrincipalMoments,
-            name: SuperadminRoutes.devPrincipalMomentsName,
-            builder: (context, state) => operationalPage(
-              context,
-              title: 'Momentos',
-              subtitle: 'Prévia da experiência do app Principal.',
-              destination: 'principal-moments',
-              child: PrincipalMomentsPreviewPage(
-                embedded: true,
-                onOpenHappens: () => _closePrincipalViewer(context),
-                onOpenProfile: () => context.goNamed(SuperadminRoutes.devPrincipalProfileName),
-                onCreateMoment: () =>
-                    context.goNamed(SuperadminRoutes.devPrincipalMomentsPublishName),
-              ),
             ),
           ),
           GoRoute(

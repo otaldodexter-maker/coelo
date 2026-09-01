@@ -74,17 +74,20 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('preserves the media aspect ratio instead of stretching it', (tester) async {
-    await pumpMoments(tester, size: const Size(1024, 1000));
+  testWidgets('fills the viewport with cover media at every supported width', (tester) async {
+    for (final size in [const Size(375, 900), const Size(768, 1024), const Size(1440, 1000)]) {
+      await pumpMoments(tester, size: size);
 
-    final frame = tester.getRect(find.byKey(const Key('principal-moments-page-view')));
-    expect(frame.width / frame.height, closeTo((1672 / 5) / 941, .01));
-    final media = tester.widget<Image>(find.byType(Image).first);
-    expect(media.fit, BoxFit.cover);
-    expect(media.alignment, Alignment.topCenter);
-    final renderedSize = tester.getSize(find.byType(Image).first);
-    expect(renderedSize.width / renderedSize.height, closeTo(1672 / 941, .001));
-    expect(PrincipalMomentsPreviewData.demo.moments.first.caption, endsWith('.'));
+      expect(
+        tester.getRect(find.byKey(const Key('principal-moments-page-view'))),
+        Offset.zero & size,
+      );
+      final media = tester.widget<Image>(find.byType(Image).first);
+      expect(media.fit, BoxFit.cover);
+      expect(media.alignment, Alignment.topCenter);
+      expect(PrincipalMomentsPreviewData.demo.moments.first.caption, endsWith('.'));
+      expect(tester.takeException(), isNull, reason: '$size');
+    }
   });
 
   testWidgets('returns to the Acontece origin from the visible back action', (tester) async {
@@ -116,19 +119,6 @@ void main() {
     await tester.pump();
 
     expect(invoked, ['happens']);
-  });
-
-  testWidgets('opens the Momentos publication contract from the desktop CTA', (tester) async {
-    var publicationOpened = false;
-    await pumpMoments(
-      tester,
-      size: const Size(1440, 1000),
-      onCreateMoment: () => publicationOpened = true,
-    );
-
-    await tester.tap(find.byKey(const Key('principal-moments-create')));
-
-    expect(publicationOpened, isTrue);
   });
 
   testWidgets('pages vertically through moments', (tester) async {
@@ -171,19 +161,18 @@ void main() {
     expect(find.byKey(const Key('principal-moments-desktop-nav')), findsNothing);
   });
 
-  testWidgets('expands into the desktop media and contextual aside', (tester) async {
+  testWidgets('keeps the desktop viewer immersive without a contextual aside', (tester) async {
     await pumpMoments(tester, size: const Size(1440, 1000));
 
     expect(find.byKey(const Key('principal-moments-mobile-nav')), findsNothing);
     expect(find.byKey(const Key('principal-global-dock')), findsNothing);
     expect(find.byKey(const Key('principal-moments-desktop-nav')), findsNothing);
-    expect(find.byKey(const Key('principal-moments-desktop-aside')), findsOneWidget);
-    expect(find.text('Em alta na escola'), findsOneWidget);
-    expect(find.text('Compartilhe momentos que inspiram'), findsOneWidget);
+    expect(find.byKey(const Key('principal-moments-desktop-aside')), findsNothing);
+    expect(find.byKey(const Key('principal-moments-create')), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('embedded web preview omits its own application chrome', (tester) async {
+  testWidgets('embedded web preview remains an immersive viewer', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
@@ -194,7 +183,7 @@ void main() {
     expect(find.byType(AppBar), findsNothing);
     expect(find.byKey(const Key('principal-moments-desktop-nav')), findsNothing);
     expect(find.byKey(const Key('principal-moments-mobile-nav')), findsNothing);
-    expect(find.byKey(const Key('principal-moments-desktop-aside')), findsOneWidget);
+    expect(find.byKey(const Key('principal-moments-desktop-aside')), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
@@ -342,10 +331,10 @@ void main() {
     );
 
     expect(find.text('Em alta na escola'), findsNothing);
-    expect(find.byKey(const Key('principal-moments-create')), findsOneWidget);
+    expect(find.byKey(const Key('principal-moments-create')), findsNothing);
   });
 
-  for (final width in [600.0, 839.0, 840.0, 1024.0]) {
+  for (final width in [375.0, 768.0, 1440.0]) {
     testWidgets('has no overflow at ${width.toInt()} px with enlarged text', (tester) async {
       await pumpMoments(tester, size: Size(width, 1000), textScale: 2);
 
