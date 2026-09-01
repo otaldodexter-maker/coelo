@@ -4384,3 +4384,26 @@ da simples soma das 207 ações.
 - Advisors: 207 alertas de segurança e 128 avisos de FKs sem índice exigem
   triagem, nunca correção cega. Primeiro passo é reconciliar drift/replay; ETA
   remota não é confiável antes disso.
+
+## Checkpoint 2026-09-01 — Modelos de perfil, pacote somente `static-green`
+
+- As migrations candidatas `e7520192` e `5b3c01a3` adicionam quatro tabelas,
+  dez RPCs e 18 capabilities para Modelos de perfil nos contextos Superadmin,
+  Admin e Principal. O escopo de aplicação continua somente o Superadmin; isso
+  não autoriza mudanças nos três outros aplicativos.
+- O handoff declara FORCE RLS com zero policies (deny-by-default), CRUD direto
+  revogado de `public`/`anon`/`authenticated`, gateways somente para
+  `authenticated`, helpers privados, AAL2 nas escritas, auditoria, versão e
+  idempotência. Esses pontos estão sob revisão independente.
+- Evidência atual é estritamente estática: planos pgTAP de 35 + 10 asserts e
+  testes do adapter/repository Flutter. Docker não executou; não houve replay,
+  Advisors pós-DDL, ledger compatível, tenant A/B, sessão revogada, remoto nem
+  E2E. Portanto o estado não ultrapassa `in-progress/static-green` e nenhuma
+  família Supabase é promovida.
+- Pessoas, Segurança da criança, Usuários internos, Perfis de cuidado e Planos
+  de medicação continuam nos estados backend anteriores (`fail-closed`,
+  `audited` ou `blocked-decision`). Fixtures `/dev` não constituem dados nem
+  persistência Supabase.
+- Primeiro gate seguro: concluir review das migrations, executar replay limpo e
+  pgTAP em ambiente descartável, Advisors e negativos; remoto continua
+  bloqueado pela OQ-041 e Modelos também pela OQ-044.

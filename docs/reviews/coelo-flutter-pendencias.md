@@ -3358,3 +3358,24 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
   não muda (105/207), pois o ID já estava contabilizado. Review independente,
   composição produtiva, backend/remoto e E2E continuam abertos; nenhum golden
   novo foi produzido ou alegado.
+
+## Checkpoint 2026-09-01 — Acessos e Saúde/Cuidado, handoff `6e56d3e4`
+
+| Tela/subtela | Passo realmente concluído | Estado máximo | Pendência explícita |
+| --- | --- | --- | --- |
+| Pessoas — diretório/filtros/paginação | Dataset vinculado e diretório `/dev` deduplicado com 462 pessoas. | Flutter local em revisão; matriz não promovida neste checkpoint. | Identidade produtiva, reload, import/export, 10 goldens e 2 expectativas legadas. |
+| Pessoas — criar/editar/vínculos/mapa | Wizard local com vínculos de instituição/unidade/turma/criança e mapa aproximado. | `/dev` local; mutações produtivas fail-closed. | Geocodificação/endereço real, autorização, persistência e E2E. |
+| Segurança — diretório/detalhe/criar/editar/revisar | 164 registros sintéticos ligados a 180 crianças; cards/tabela/wizard e golden Safety verdes. | Flutter local; `child-safety.suspend` não promovido. | Suspensão/revogação, lifecycle sensível, remoto e E2E. |
+| Usuários internos — diretório/criar/editar | Lista e wizard quatro etapas locais; produção exibe indisponibilidade segura em vez de 404. | Flutter `/dev`; ações produtivas continuam `blocked-decision`. | Auth/Convites, RPCs, MFA, import/export e 23 goldens. |
+| Perfis e permissões — Perfis/Modelos por app | Central única e edição direta locais; Principal permanece read-only quando não é modelo. | Flutter local em revisão. | OQ-044, produção, 20 goldens e prova integrada. |
+| Modelos de perfil — listar/criar/editar/importar/exportar/duplicar | Adapter/composição candidata e UI local; toolbar ainda mantém duplicar/importar/exportar indisponíveis onde não há fluxo. | Flutter local parcial. | Review independente, replay backend e fechamento das ações indisponíveis. |
+| Perfis de cuidado — lista/criar/editar | 147 perfis sintéticos entre 180 crianças e wizard responsivo. | `local-green` `/dev`; produção fail-closed. | OQ-003/OQ-040, backend/RLS, import/export e goldens. |
+| Planos de medicação — lista/criar/editar | 32 planos sintéticos e CRUD local coberto. | Flutter `/dev`; produção fail-closed. | Base legal, autorização, backend/RLS, import/export e E2E. |
+
+- Evidência do handoff: 152/152 testes críticos, gate funcional Acessos 259/259,
+  Saúde 127/127 e analyzer global sem issues. A worktree está limpa.
+- A dívida visual não foi ocultada: 59 comparações de golden divergem e três
+  cenários antigos de Convites usam fixtures/keys obsoletas. Nenhum baseline foi
+  aprovado em massa.
+- Este checkpoint preserva o handoff sem aumentar a contagem 105/207 enquanto
+  as revisões independentes e a integração seletiva não terminarem.

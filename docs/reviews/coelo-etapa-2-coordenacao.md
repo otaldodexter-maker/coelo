@@ -78,7 +78,7 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
 | --- | --- | --- | --- |
 | Comunicação | `codex/finalizar-tela-comunicacao` | `1b7fd395` | Integração seletiva materializada em `dev` até `f516be71`; 301/301 testes pós-merge e analyzer global verdes. A branch permanece preservada porque contém históricos excluídos de Circulares e propostas documentais já reconciliadas. |
 | Operações | `codex/finalizacao-telas-operacoes` | `84759675` | Worktree limpa; Flutter `/dev` das cinco áreas passou 344/344, mas backend permanece 0/40 E2E e bloqueado por drift/schema. |
-| Acessos e Saúde | `codex/accessos-ponta-a-ponta` | `796ad8ea` | Em andamento; fixtures compartilhadas e Perfis/Modelos estão commitados; backend permanece sem promoção remota/E2E. |
+| Acessos e Saúde | `codex/accessos-ponta-a-ponta` | `6e56d3e4` | Handoff final recebido; worktree limpa. Sete rotas `/dev`, 152/152 testes críticos e analyzer global verdes; models backend apenas `static-green`, remoto/E2E ausentes. Revisão independente em andamento antes da integração. |
 | Auth | `codex/auth-first-local-green` | `36ae7c86` | Worktree limpa no snapshot; produção permanece condicionada aos gates registrados pela frente. |
 | Estruturas | `codex/estruturas-superadmin` | `49a52f6e` | Rastreadores e artefatos de migration/modelo por unidade continuam preservados fora do commit final; `.artifacts` permanece fora de Git. |
 | Coelo (Principal) | `codex/finalizar-telas-coelo-principal` | `e1cf1be3` | Worktree limpa; `momentos.view` fullscreen passou 28/28 testes e analyzer focado, com review independente ainda em andamento. Nenhum delta em `apps/principal` ou backend. |
@@ -284,6 +284,37 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
   375 px, claro/escuro e texto 200%.
 - Evidência informada: 10/10 testes e um golden inspecionado/atualizado. Estado
   máximo proposto é Flutter `local-green`; backend/remoto/E2E não mudam.
+
+### Acessos e Saúde/Cuidado — handoff `6e56d3e4`
+
+- **Pessoas:** diretório/cards/tabela/filtros/paginação e wizard criar/editar/
+  vínculos/mapa estão entregues somente em `/dev`; produção preserva leitura
+  existente e mutações fail-closed. Importar/exportar, geocodificação real,
+  dois testes legados produtivos e dez goldens permanecem abertos.
+- **Segurança da criança:** diretório, detalhe, criar, editar e revisar estão
+  Flutter local; 164 registros sintéticos coerentes e um golden focado verde.
+  Lifecycle sensível, suspensão/revogação, remoto e E2E continuam pendentes.
+- **Usuários internos:** diretório e wizard de quatro etapas estão locais;
+  rotas produtivas agora falham fechadas em vez de 404. Ponte Auth/Convites,
+  RPCs produtivas, import/export e 23 goldens permanecem abertos.
+- **Perfis e permissões:** Perfis/Modelos foram unificados visualmente com abas
+  Superadmin/Admin/Principal somente dentro do Superadmin; Principal continua
+  read-only quando aplicável. OQ-044 bloqueia herança/composição transversal.
+- **Modelos de perfil:** adapter Flutter e composição candidata existem. As
+  migrations `e7520192` e `5b3c01a3` propõem quatro tabelas FORCE RLS, dez RPCs
+  e 18 capabilities; evidência é somente revisão estática com planos 35+10
+  asserts, sem replay Docker, Advisors, remoto ou E2E.
+- **Perfis de cuidado e Planos de medicação:** diretórios/wizards e CRUD fake
+  estão Flutter local. Produção permanece fail-closed por OQ-003/OQ-040 e por
+  ausência de backend/RLS comprovado.
+- **Gates:** 152/152 testes críticos e analyzer completo foram informados
+  verdes; gate funcional Acessos 259/259 e Saúde 127/127. A dívida visual
+  permanece explícita: 59 comparações divergentes fora do golden Safety e três
+  cenários antigos de Convites; nenhuma atualização em massa foi autorizada.
+- **Git/evidência:** branch `codex/accessos-ponta-a-ponta`, HEAD `6e56d3e4`,
+  worktree limpa; 13/13 referências preservadas no manifesto. Nenhum arquivo em
+  `apps/admin`, `apps/site` ou `apps/principal`. Revisões independentes Flutter
+  e banco estão em andamento antes de qualquer cherry-pick.
 
 ### Estruturas — checkpoint `c249db2f`
 

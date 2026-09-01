@@ -13,8 +13,8 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "2ADA9816DF9518E085E41E1319ED762697F3908D91581919776B188AFC8ADDD6"
-supabase_tracker_sha256: "24CA9D3B06CBB3092DAE109CA3924F6A9E1447B8BB57145614FA58A82FBD0E36"
+flutter_tracker_sha256: "B555C8F643432411FA4A517BE9A16DF8C8976171C36D6D6644E4DA2E23BEC60C"
+supabase_tracker_sha256: "E93FE291F8266CA560AF1CB4E6207470492CF17FB48B84373EC6F1E2C57F13BC"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
@@ -1486,6 +1486,22 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   autorização, R2, remoto, persistência/reload, auditoria ou E2E.
 - O review independente ainda está em andamento. `ready-for-e2e` permanece
   0/202, `verified-e2e` 0/202 e estrito 0/229.
+
+## Checkpoint integrado 71 — Acessos/Saúde preservado, ainda sem integração
+
+- Handoff `6e56d3e4` entrega localmente sete rotas de Pessoas, Segurança da
+  criança, Usuários internos, Perfis/Modelos, Perfis de cuidado e Medicação.
+  Evidências informadas: 152/152 testes críticos, Acessos 259/259, Saúde
+  127/127 e analyzer global verde; worktree limpa e 13 referências manifestadas.
+- A evidência continua Flutter `/dev`. Produção permanece fail-closed ou
+  bloqueada para mutações sensíveis; 59 comparações visuais e três cenários
+  antigos de Convites continuam abertos e nenhuma promoção em massa ocorreu.
+- O pacote backend de Modelos de perfil possui somente revisão estática de duas
+  migrations e planos 35+10 asserts. Sem Docker/replay/Advisors/remoto/E2E, ele
+  não é `local-green` Supabase e não torna nenhuma ação `ready-for-e2e`.
+- Revisões independentes Flutter e banco estão em andamento. Contagens ficam
+  inalteradas: Flutter 105/207 `local-green`, Supabase 3/37 famílias
+  `local-green`, E2E 0/202 e estrito 0/229.
 
 ## Checkpoint integrado 68 — Operações Flutter local, backend 0/40 E2E
 
