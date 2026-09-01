@@ -295,7 +295,7 @@ void main() {
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await mouse.addPointer(location: Offset.zero);
     addTearDown(mouse.removePointer);
-    await mouse.moveTo(tester.getCenter(find.text('Cardápio semanal - Educação Infantil')));
+    await mouse.moveTo(tester.getCenter(find.text('Modelo semanal equilibrado')));
     await tester.pumpAndSettle();
 
     await expectLater(
