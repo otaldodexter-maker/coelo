@@ -12,7 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('model and Forms production routes stay fail-closed', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final accessRepository = _TripwireAccessProfileRepository();
     final formsApi = _TripwireFormsApi();
     final router = createSuperadminRouter(

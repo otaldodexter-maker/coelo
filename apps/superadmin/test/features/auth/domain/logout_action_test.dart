@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('signs out through the gateway and clears the local session', () async {
     final auth = _FakeCoeloAuthGateway();
-    final session = SuperadminSession(isAuthenticated: true);
+    final session = SuperadminSession()..signInForTesting();
     addTearDown(session.dispose);
     final logout = createCoeloAuthLogoutAction(auth: auth, session: session);
 
@@ -20,7 +20,7 @@ void main() {
 
   test('keeps the session state and returns a safe message when logout fails', () async {
     final auth = _FakeCoeloAuthGateway(signOutException: Exception('network details'));
-    final session = SuperadminSession(isAuthenticated: true);
+    final session = SuperadminSession()..signInForTesting();
     addTearDown(session.dispose);
     final logout = createCoeloAuthLogoutAction(auth: auth, session: session);
 
@@ -40,15 +40,22 @@ final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
   bool didSignOut = false;
 
   @override
-  Stream<bool> get authStateChanges => const Stream<bool>.empty();
+  Stream<CoeloAuthSessionState> get authStateChanges => const Stream<CoeloAuthSessionState>.empty();
 
   @override
-  bool get isAuthenticated => false;
+  CoeloAuthSessionState get currentSessionState => const CoeloAuthSessionState.signedOut();
 
   @override
-  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({required String email}) async {
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
+    required String email,
+    required Uri redirectTo,
+  }) async {
     return const CoeloAuthPasswordRecoveryResult.success();
   }
+
+  @override
+  Future<CoeloAuthPasswordUpdateResult> updatePassword({required String password}) async =>
+      const CoeloAuthPasswordUpdateResult.success();
 
   @override
   Future<CoeloAuthSignInResult> signInWithPassword({

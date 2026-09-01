@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -5,15 +7,20 @@ import 'conditional_supabase_local_storage.dart';
 import 'coelo_auth_gateway.dart';
 
 abstract interface class CoeloSupabaseAuthApi {
-  Stream<bool> get authStateChanges;
-  bool get isAuthenticated;
+  Stream<CoeloAuthSessionState> get authStateChanges;
+  CoeloAuthSessionState get currentSessionState;
 
   Future<bool> signInWithPassword({
     required String email,
     required String password,
   });
 
-  Future<void> requestPasswordRecovery({required String email});
+  Future<void> requestPasswordRecovery({
+    required String email,
+    required Uri redirectTo,
+  });
+
+  Future<void> updatePassword({required String password});
 
   Future<void> signOut();
 }
@@ -22,8 +29,12 @@ final class SupabaseCoeloAuthGateway implements CoeloAuthGateway {
   SupabaseCoeloAuthGateway(
     SupabaseClient client, {
     required CoeloAuthSessionPersistence sessionPersistence,
+    String? initialRecoveryAccessToken,
   }) : this.test(
-         _SupabaseAuthApi(client),
+         _SupabaseAuthApi(
+           client,
+           initialRecoveryAccessToken: initialRecoveryAccessToken,
+         ),
          sessionPersistence: sessionPersistence,
        );
 
@@ -37,10 +48,12 @@ final class SupabaseCoeloAuthGateway implements CoeloAuthGateway {
   final CoeloAuthSessionPersistence _sessionPersistence;
 
   @override
-  Stream<bool> get authStateChanges => _api.authStateChanges;
+  Stream<CoeloAuthSessionState> get authStateChanges => _api.authStateChanges;
 
   @override
-  bool get isAuthenticated => _api.isAuthenticated;
+  CoeloAuthSessionState get currentSessionState => _api.currentSessionState;
+
+  bool get isAuthenticated => currentSessionState.isAuthenticated;
 
   @override
   Future<CoeloAuthSignInResult> signInWithPassword({
@@ -74,9 +87,10 @@ final class SupabaseCoeloAuthGateway implements CoeloAuthGateway {
   @override
   Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
     required String email,
+    required Uri redirectTo,
   }) async {
     try {
-      await _api.requestPasswordRecovery(email: email);
+      await _api.requestPasswordRecovery(email: email, redirectTo: redirectTo);
       return const CoeloAuthPasswordRecoveryResult.success();
     } on AuthException {
       return const CoeloAuthPasswordRecoveryResult.failure(
@@ -90,22 +104,72 @@ final class SupabaseCoeloAuthGateway implements CoeloAuthGateway {
   }
 
   @override
+  Future<CoeloAuthPasswordUpdateResult> updatePassword({
+    required String password,
+  }) async {
+    if (!_api.currentSessionState.isPasswordRecovery) {
+      return const CoeloAuthPasswordUpdateResult.failure(
+        CoeloAuthPasswordUpdateResult.genericFailureMessage,
+      );
+    }
+    try {
+      await _api.updatePassword(password: password);
+      await _api.signOut();
+      return const CoeloAuthPasswordUpdateResult.success();
+    } on AuthException {
+      return const CoeloAuthPasswordUpdateResult.failure(
+        CoeloAuthPasswordUpdateResult.genericFailureMessage,
+      );
+    } on Exception {
+      return const CoeloAuthPasswordUpdateResult.failure(
+        CoeloAuthPasswordUpdateResult.genericFailureMessage,
+      );
+    }
+  }
+
+  @override
   Future<void> signOut() {
     return _api.signOut();
   }
 }
 
 final class _SupabaseAuthApi implements CoeloSupabaseAuthApi {
-  _SupabaseAuthApi(this._client);
+  _SupabaseAuthApi(this._client, {required this.initialRecoveryAccessToken});
 
   final SupabaseClient _client;
+  final String? initialRecoveryAccessToken;
 
   @override
-  Stream<bool> get authStateChanges =>
-      _client.auth.onAuthStateChange.map((data) => data.session != null);
+  Stream<CoeloAuthSessionState> get authStateChanges =>
+      _client.auth.onAuthStateChange.map((data) {
+        if (data.session == null) {
+          return const CoeloAuthSessionState.signedOut();
+        }
+        if (data.event == AuthChangeEvent.passwordRecovery) {
+          return CoeloAuthSessionState.passwordRecovery(
+            sessionId: _validatedSessionId(data.session!),
+          );
+        }
+        return CoeloAuthSessionState.authenticated(
+          sessionId: _validatedSessionId(data.session!),
+        );
+      });
 
   @override
-  bool get isAuthenticated => _client.auth.currentSession != null;
+  CoeloAuthSessionState get currentSessionState {
+    final session = _client.auth.currentSession;
+    if (session == null) {
+      return const CoeloAuthSessionState.signedOut();
+    }
+    return initialRecoveryAccessToken != null &&
+            session.accessToken == initialRecoveryAccessToken
+        ? CoeloAuthSessionState.passwordRecovery(
+            sessionId: _validatedSessionId(session),
+          )
+        : CoeloAuthSessionState.authenticated(
+            sessionId: _validatedSessionId(session),
+          );
+  }
 
   @override
   Future<bool> signInWithPassword({
@@ -120,12 +184,51 @@ final class _SupabaseAuthApi implements CoeloSupabaseAuthApi {
   }
 
   @override
-  Future<void> requestPasswordRecovery({required String email}) {
-    return _client.auth.resetPasswordForEmail(email);
+  Future<void> requestPasswordRecovery({
+    required String email,
+    required Uri redirectTo,
+  }) {
+    return _client.auth.resetPasswordForEmail(
+      email,
+      redirectTo: redirectTo.toString(),
+    );
+  }
+
+  @override
+  Future<void> updatePassword({required String password}) async {
+    await _client.auth.updateUser(UserAttributes(password: password));
   }
 
   @override
   Future<void> signOut() {
     return _client.auth.signOut();
+  }
+}
+
+final _uuidPattern = RegExp(
+  r'^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$',
+  caseSensitive: false,
+);
+
+String? _validatedSessionId(Session session) {
+  return coeloAuthSessionIdFromAccessToken(session.accessToken);
+}
+
+@visibleForTesting
+String? coeloAuthSessionIdFromAccessToken(String accessToken) {
+  try {
+    final segments = accessToken.split('.');
+    if (segments.length != 3) return null;
+    final payload = jsonDecode(
+      utf8.decode(base64Url.decode(base64Url.normalize(segments[1]))),
+    );
+    final sessionId = payload is Map<String, dynamic>
+        ? payload['session_id']
+        : null;
+    return sessionId is String && _uuidPattern.hasMatch(sessionId)
+        ? sessionId
+        : null;
+  } on FormatException {
+    return null;
   }
 }

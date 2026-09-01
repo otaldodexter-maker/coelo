@@ -66,7 +66,7 @@ void main() {
   });
 
   testWidgets('opens local attendance routes', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final repository = DevelopmentAttendanceRepository.content();
     final router = createSuperadminRouter(
       session: session,
@@ -111,7 +111,7 @@ void main() {
   });
 
   testWidgets('development attendance routes never use the production repository', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final repository = _TrackingAttendanceRepository();
     final router = createSuperadminRouter(
       session: session,
@@ -144,7 +144,7 @@ void main() {
   });
 
   testWidgets('production attendance reads data and blocks mutation routes', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final repository = _TrackingAttendanceRepository();
     final router = createSuperadminRouter(
       session: session,

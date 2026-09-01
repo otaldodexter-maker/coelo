@@ -56,7 +56,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
 
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,

@@ -48,7 +48,7 @@ final class _CatalogAccessGate extends StatefulWidget {
 final class _CatalogAccessGateState extends State<_CatalogAccessGate> with WidgetsBindingObserver {
   static const _accessRevalidationInterval = Duration(minutes: 5);
 
-  StreamSubscription<bool>? _authSubscription;
+  StreamSubscription<CoeloAuthSessionState>? _authSubscription;
   Timer? _revalidationTimer;
   CatalogAccessResult? _result;
   var _requestVersion = 0;

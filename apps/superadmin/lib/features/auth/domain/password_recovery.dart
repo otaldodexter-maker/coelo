@@ -13,9 +13,12 @@ final class PasswordRecoveryResult {
   final String? message;
 }
 
-PasswordRecoveryAction createCoeloAuthPasswordRecoveryAction({required CoeloAuthGateway auth}) {
+PasswordRecoveryAction createCoeloAuthPasswordRecoveryAction({
+  required CoeloAuthGateway auth,
+  required Uri redirectTo,
+}) {
   return (email) async {
-    final result = await auth.requestPasswordRecovery(email: email);
+    final result = await auth.requestPasswordRecovery(email: email, redirectTo: redirectTo);
     if (result.isSuccess) {
       return const PasswordRecoveryResult.success();
     }

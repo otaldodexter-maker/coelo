@@ -1,3 +1,5 @@
+import 'package:coelo_auth/coelo_auth.dart';
+
 typedef ResetPasswordAction = Future<ResetPasswordResult> Function(String password);
 
 final class ResetPasswordResult {
@@ -9,6 +11,18 @@ final class ResetPasswordResult {
 
   final bool isSuccess;
   final String? message;
+}
+
+ResetPasswordAction createCoeloAuthResetPasswordAction({required CoeloAuthGateway auth}) {
+  return (password) async {
+    final result = await auth.updatePassword(password: password);
+    if (result.isSuccess) {
+      return const ResetPasswordResult.success();
+    }
+    return ResetPasswordResult.failure(
+      result.message ?? CoeloAuthPasswordUpdateResult.genericFailureMessage,
+    );
+  };
 }
 
 Future<ResetPasswordResult> unavailableResetPassword(String password) {

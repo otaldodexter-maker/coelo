@@ -29,7 +29,7 @@ void main() {
   testWidgets('opens production catalog when authenticated and local preview without a session', (
     tester,
   ) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = _router(session);
     addTearDown(router.dispose);
     addTearDown(session.dispose);
@@ -75,7 +75,7 @@ void main() {
   ) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = _router(session);
     addTearDown(router.dispose);
     addTearDown(session.dispose);

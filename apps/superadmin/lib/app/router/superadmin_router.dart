@@ -561,6 +561,9 @@ GoRouter createSuperadminRouter({
       if (!session.isAuthenticated) {
         return isOnPublicAuthRoute ? null : SuperadminRoutes.login;
       }
+      if (isOnResetPassword && session.isPasswordRecovery) {
+        return null;
+      }
       if (isOnPublicAuthRoute) {
         return SuperadminRoutes.home;
       }
@@ -662,6 +665,9 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.resetPasswordName,
             builder: (context, state) => SuperadminResetPasswordScreen(
               resetPassword: resetPassword,
+              initialLinkState: session.isPasswordRecovery
+                  ? RecoveryLinkState.valid
+                  : RecoveryLinkState.invalid,
               onBackToLogin: () => context.goNamed(SuperadminRoutes.loginName),
               onThemeModeChanged: onThemeModeChanged,
             ),

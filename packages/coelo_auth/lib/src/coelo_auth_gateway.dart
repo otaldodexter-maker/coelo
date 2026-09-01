@@ -1,6 +1,6 @@
 abstract interface class CoeloAuthGateway {
-  bool get isAuthenticated;
-  Stream<bool> get authStateChanges;
+  CoeloAuthSessionState get currentSessionState;
+  Stream<CoeloAuthSessionState> get authStateChanges;
 
   Future<CoeloAuthSignInResult> signInWithPassword({
     required String email,
@@ -10,9 +10,43 @@ abstract interface class CoeloAuthGateway {
 
   Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
     required String email,
+    required Uri redirectTo,
+  });
+
+  Future<CoeloAuthPasswordUpdateResult> updatePassword({
+    required String password,
   });
 
   Future<void> signOut();
+}
+
+enum CoeloAuthSessionKind { signedOut, authenticated, passwordRecovery }
+
+final class CoeloAuthSessionState {
+  const CoeloAuthSessionState.signedOut()
+    : kind = CoeloAuthSessionKind.signedOut,
+      sessionId = null;
+
+  const CoeloAuthSessionState.authenticated({this.sessionId})
+    : kind = CoeloAuthSessionKind.authenticated;
+
+  const CoeloAuthSessionState.passwordRecovery({this.sessionId})
+    : kind = CoeloAuthSessionKind.passwordRecovery;
+
+  final CoeloAuthSessionKind kind;
+  final String? sessionId;
+
+  bool get isAuthenticated => kind != CoeloAuthSessionKind.signedOut;
+  bool get isPasswordRecovery => kind == CoeloAuthSessionKind.passwordRecovery;
+
+  @override
+  bool operator ==(Object other) =>
+      other is CoeloAuthSessionState &&
+      other.kind == kind &&
+      other.sessionId == sessionId;
+
+  @override
+  int get hashCode => Object.hash(kind, sessionId);
 }
 
 final class CoeloAuthSignInResult {
@@ -48,6 +82,24 @@ final class CoeloAuthPasswordRecoveryResult {
   final String? message;
 }
 
+final class CoeloAuthPasswordUpdateResult {
+  const CoeloAuthPasswordUpdateResult._({
+    required this.isSuccess,
+    this.message,
+  });
+
+  const CoeloAuthPasswordUpdateResult.success() : this._(isSuccess: true);
+
+  const CoeloAuthPasswordUpdateResult.failure(String message)
+    : this._(isSuccess: false, message: message);
+
+  static const genericFailureMessage =
+      'Não foi possível redefinir a senha. Solicite um novo link e tente novamente.';
+
+  final bool isSuccess;
+  final String? message;
+}
+
 final class UnavailableCoeloAuthGateway implements CoeloAuthGateway {
   const UnavailableCoeloAuthGateway({this.message = defaultMessage});
 
@@ -57,10 +109,14 @@ final class UnavailableCoeloAuthGateway implements CoeloAuthGateway {
   final String message;
 
   @override
-  Stream<bool> get authStateChanges => const Stream<bool>.empty();
+  Stream<CoeloAuthSessionState> get authStateChanges =>
+      const Stream<CoeloAuthSessionState>.empty();
 
   @override
-  bool get isAuthenticated => false;
+  CoeloAuthSessionState get currentSessionState =>
+      const CoeloAuthSessionState.signedOut();
+
+  bool get isAuthenticated => currentSessionState.isAuthenticated;
 
   @override
   Future<CoeloAuthSignInResult> signInWithPassword({
@@ -74,8 +130,16 @@ final class UnavailableCoeloAuthGateway implements CoeloAuthGateway {
   @override
   Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
     required String email,
+    required Uri redirectTo,
   }) {
     return Future.value(CoeloAuthPasswordRecoveryResult.failure(message));
+  }
+
+  @override
+  Future<CoeloAuthPasswordUpdateResult> updatePassword({
+    required String password,
+  }) {
+    return Future.value(CoeloAuthPasswordUpdateResult.failure(message));
   }
 
   @override

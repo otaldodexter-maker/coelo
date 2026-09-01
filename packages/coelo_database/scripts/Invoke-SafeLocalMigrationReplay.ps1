@@ -6,6 +6,8 @@ param(
 
   [switch]$FoundationOnly,
 
+  [switch]$AuthOnly,
+
   [string[]]$TestPath = @(),
 
   [switch]$RunLint,
@@ -31,7 +33,7 @@ $supabaseRoot = Join-Path $projectRoot 'supabase'
 $migrationRoot = Join-Path $supabaseRoot 'migrations'
 $configPath = Join-Path $supabaseRoot 'config.toml'
 $databaseOnlyExcludes = 'gotrue,realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor'
-$authLifecycleExcludes = 'realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor'
+$authLifecycleExcludes = 'realtime,storage-api,imgproxy,postgres-meta,studio,edge-runtime,logflare,vector,supavisor'
 $allocatedPorts = [Collections.Generic.HashSet[int]]::new()
 $cliPackage = 'supabase@2.116.0'
 $mutex = $null
@@ -83,6 +85,9 @@ function Get-DockerResources([string]$Identity) {
 if ($targetMigration.Count -ne 1) {
   throw "target version must identify exactly one canonical migration: $TargetVersion"
 }
+if ($FoundationOnly -and $AuthOnly) {
+  throw 'foundation-only and Auth-only replay profiles are mutually exclusive'
+}
 if ($FoundationOnly) {
   if (-not (Test-Path -LiteralPath $foundationManifestPath -PathType Leaf)) {
     throw 'foundation replay manifest is missing'
@@ -100,6 +105,12 @@ if ($FoundationOnly) {
   if ($TargetVersion -ne $requiredTargetVersion) {
     throw "foundation replay requires final target $requiredTargetVersion; received $TargetVersion"
   }
+}
+if ($AuthOnly -and $TargetVersion -ne '20260901124500') {
+  throw "Auth-only replay requires target 20260901124500; received $TargetVersion"
+}
+if ($RunAuthLifecycle -and -not $AuthOnly) {
+  throw 'Auth lifecycle requires the constrained Auth-only replay profile'
 }
 if (-not (Test-Path -LiteralPath $canonicalConfig -PathType Leaf)) {
   throw 'canonical Supabase config is missing'
@@ -177,12 +188,32 @@ try {
   else {
     $databaseOnlyExcludes
   }
-  & npx.cmd --yes $cliPackage --agent no start --workdir $projectRoot --exclude $excludedServices *> $null
-  if ($LASTEXITCODE -ne 0) { throw "supabase start failed with exit code $LASTEXITCODE" }
+  $startExitCode = 1
+  for ($startAttempt = 1; $startAttempt -le 2; $startAttempt++) {
+    $previousErrorActionPreference = $ErrorActionPreference
+    try {
+      # Native Supabase progress is written to stderr. Redirecting it while the
+      # script is fail-fast must not turn ordinary progress into a terminating
+      # PowerShell error, and the output contains local credentials.
+      $ErrorActionPreference = 'Continue'
+      & npx.cmd --yes $cliPackage --agent no start --workdir $projectRoot `
+        --exclude $excludedServices *> $null
+      $startExitCode = $LASTEXITCODE
+    }
+    finally {
+      $ErrorActionPreference = $previousErrorActionPreference
+    }
+    if ($startExitCode -eq 0) { break }
+    if ($startAttempt -lt 2) { Start-Sleep -Seconds 5 }
+  }
+  if ($startExitCode -ne 0) {
+    throw "supabase start failed after 2 attempts with exit code $startExitCode"
+  }
 
   & (Join-Path $scriptRoot 'Prepare-SafeMigrationReplay.ps1') `
     -DestinationMigrationsRoot $migrationRoot `
-    -FoundationOnly:$FoundationOnly
+    -FoundationOnly:$FoundationOnly `
+    -AuthOnly:$AuthOnly
   & npx.cmd --yes $cliPackage --agent no db reset --local --no-seed --version $TargetVersion --workdir $projectRoot --yes
   if ($LASTEXITCODE -ne 0) { throw "safe local db reset failed with exit code $LASTEXITCODE" }
   if ($resolvedTestPaths.Count -gt 0) {
@@ -210,8 +241,16 @@ catch {
 finally {
   try {
     if ($startAttempted) {
-      & npx.cmd --yes $cliPackage --agent no stop --workdir $projectRoot --no-backup --yes *> $null
-      if ($LASTEXITCODE -ne 0) {
+      $previousErrorActionPreference = $ErrorActionPreference
+      try {
+        $ErrorActionPreference = 'Continue'
+        & npx.cmd --yes $cliPackage --agent no stop --workdir $projectRoot --no-backup --yes *> $null
+        $stopExitCode = $LASTEXITCODE
+      }
+      finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+      }
+      if ($stopExitCode -ne 0) {
         $cleanupFailures.Add([InvalidOperationException]::new('supabase stop failed'))
       }
     }

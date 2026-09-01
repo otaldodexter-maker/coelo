@@ -61,7 +61,7 @@ void main() {
   testWidgets('opens all production and development assessment routes', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
@@ -131,7 +131,7 @@ void main() {
   testWidgets('renders the unavailable dependency state without crashing', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,

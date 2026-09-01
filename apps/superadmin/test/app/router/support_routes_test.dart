@@ -29,7 +29,7 @@ void main() {
   testWidgets('fails closed when authenticated support has no production backend', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = _router(session);
     addTearDown(router.dispose);
     addTearDown(session.dispose);
@@ -75,7 +75,7 @@ void main() {
   testWidgets('keeps reports and navigation in one injected support session', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final supportController = SupportPrototypeController(initialTickets: const <SupportTicket>[]);
     final router = _router(session, supportController: supportController);
     addTearDown(router.dispose);

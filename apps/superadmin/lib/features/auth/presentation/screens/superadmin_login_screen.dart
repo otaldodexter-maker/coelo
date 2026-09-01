@@ -72,7 +72,6 @@ class _SuperadminLoginScreenState extends State<SuperadminLoginScreen> {
     }
 
     TextInput.finishAutofillContext();
-    widget.session.signIn();
   }
 
   @override

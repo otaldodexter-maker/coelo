@@ -15,7 +15,7 @@ void main() {
   testWidgets('development students use local examples while manage routes stay fail-closed', (
     tester,
   ) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final repository = _TripwireStudentTrackingRepository();
     final router = createSuperadminRouter(
       session: session,
@@ -61,7 +61,7 @@ void main() {
   });
 
   testWidgets('release guard keeps development students unreachable', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final repository = _TripwireStudentTrackingRepository();
     final router = createSuperadminRouter(
       session: session,

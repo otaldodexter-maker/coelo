@@ -36,7 +36,7 @@ void main() {
   testWidgets('production routes preserve composition and remain fail-closed with zero API calls', (
     tester,
   ) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final api = _TripwireFormsApi();
     final router = createSuperadminRouter(
       session: session,
@@ -73,7 +73,7 @@ void main() {
   });
 
   testWidgets('development operation routes expose deterministic Flutter fixtures', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final api = _TripwireFormsApi();
     final router = createSuperadminRouter(
       session: session,
@@ -99,7 +99,7 @@ void main() {
   });
 
   testWidgets('development create and edit routes open the isolated local editor', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final api = _TripwireFormsApi();
     final router = createSuperadminRouter(
       session: session,
@@ -130,7 +130,7 @@ void main() {
   testWidgets('development create route keeps the canonical wizard inside one responsive shell', (
     tester,
   ) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final api = _TripwireFormsApi();
     final router = createSuperadminRouter(
       session: session,
@@ -183,7 +183,7 @@ void main() {
   });
 
   testWidgets('development directory and overview never read the production API', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final api = _TripwireFormsApi();
     final router = createSuperadminRouter(
       session: session,
@@ -215,7 +215,7 @@ void main() {
   });
 
   testWidgets('development Forms routes remain guarded when preview is disabled', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final api = _TripwireFormsApi();
     final router = createSuperadminRouter(
       session: session,
@@ -242,7 +242,7 @@ void main() {
   ) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,

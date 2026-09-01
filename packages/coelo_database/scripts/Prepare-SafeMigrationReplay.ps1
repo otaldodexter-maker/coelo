@@ -4,7 +4,9 @@ param(
   [ValidateNotNullOrEmpty()]
   [string]$DestinationMigrationsRoot,
 
-  [switch]$FoundationOnly
+  [switch]$FoundationOnly,
+
+  [switch]$AuthOnly
 )
 
 $ErrorActionPreference = 'Stop'
@@ -14,6 +16,10 @@ $canonicalRoot = Join-Path $packageRoot 'migrations'
 $preflightRoot = Join-Path $packageRoot 'replay'
 $foundationManifestPath = Join-Path $preflightRoot 'foundation-migrations.sha256'
 $destinationRoot = [IO.Path]::GetFullPath($DestinationMigrationsRoot)
+
+if ($FoundationOnly -and $AuthOnly) {
+  throw 'foundation-only and Auth-only replay profiles are mutually exclusive'
+}
 
 function Get-NormalizedTextSha256([string]$Path) {
   $content = [IO.File]::ReadAllText($Path).
@@ -25,6 +31,18 @@ function Get-NormalizedTextSha256([string]$Path) {
   }
   finally {
     $sha256.Dispose()
+  }
+}
+
+function Get-FileSha256([string]$Path) {
+  $stream = [IO.File]::OpenRead($Path)
+  $sha256 = [Security.Cryptography.SHA256]::Create()
+  try {
+    return (($sha256.ComputeHash($stream) | ForEach-Object { $_.ToString('X2') }) -join '')
+  }
+  finally {
+    $sha256.Dispose()
+    $stream.Dispose()
   }
 }
 
@@ -53,7 +71,7 @@ if (@(Get-ChildItem -LiteralPath $destinationFull -Force).Count -ne 0) {
 $canonical = @(Get-ChildItem -LiteralPath $canonicalFull -File -Filter '*.sql' | Sort-Object Name)
 $preflight = @(Get-ChildItem -LiteralPath $preflightFull -File -Filter '*.sql' | Sort-Object Name)
 $foundationManifestHash = $null
-if ($FoundationOnly) {
+if ($FoundationOnly -or $AuthOnly) {
   if (-not (Test-Path -LiteralPath $foundationManifestPath -PathType Leaf)) {
     throw 'foundation replay manifest is missing'
   }
@@ -93,7 +111,14 @@ if ($FoundationOnly) {
   if ($canonical.Count -ne $manifestEntries.Count) {
     throw 'foundation replay manifest count mismatch'
   }
-  $foundationManifestHash = (Get-FileHash -LiteralPath $foundationManifestPath -Algorithm SHA256).Hash
+  if ($AuthOnly) {
+    $canonical = @($canonical | Where-Object {
+      $version = $_.Name.Substring(0, 14)
+      $version -le '20260812001975' -or
+        $version -in @('20260827214000', '20260827233000', '20260901124500')
+    })
+  }
+  $foundationManifestHash = Get-FileSha256 $foundationManifestPath
 }
 if ($canonical.Count -eq 0 -or
     $preflight.Count -ne 2 -or
@@ -119,11 +144,14 @@ if ($preflightIndex -lt 0 -or
   throw 'safe replay preflight must be immediately before the historical Groups migration'
 }
 $labelBridgeIndex = [Array]::IndexOf(@($combined.Name), $preflight[1].Name)
+$auditProductionIndex = [Array]::IndexOf(
+  @($combined.Name),
+  '20260812000847_audit_production.sql'
+)
 if ($labelBridgeIndex -lt 1 -or
     $combined[$labelBridgeIndex - 1].Name -ne '20260811215451_access_profile_management_v2.sql' -or
-    $labelBridgeIndex + 1 -ge $combined.Count -or
-    $combined[$labelBridgeIndex + 1].Name -ne '20260812000847_audit_production.sql') {
-  throw 'label replay bridge must immediately follow access-profile management v2'
+    $auditProductionIndex -le $labelBridgeIndex) {
+  throw 'label replay bridge must immediately follow access-profile management v2 and precede audit production'
 }
 
 foreach ($source in @($canonical) + @($preflight)) {
@@ -142,8 +170,21 @@ if ($generated.Count -ne ($canonical.Count + $preflight.Count)) {
 }
 
 $preflightHashes = @($preflight | ForEach-Object {
-  "$(($_.BaseName))=$((Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash)"
+  "$(($_.BaseName))=$(Get-FileSha256 $_.FullName)"
 }) -join ','
-$profile = if ($FoundationOnly) { 'foundation' } else { 'full' }
-$manifestEvidence = if ($FoundationOnly) { "; manifest_sha256=$foundationManifestHash" } else { '' }
+$profile = if ($FoundationOnly) {
+  'foundation'
+}
+elseif ($AuthOnly) {
+  'auth'
+}
+else {
+  'full'
+}
+$manifestEvidence = if ($FoundationOnly -or $AuthOnly) {
+  "; manifest_sha256=$foundationManifestHash"
+}
+else {
+  ''
+}
 "Prepared $($generated.Count) safe replay migrations ($($canonical.Count) canonical + $($preflight.Count) preflight); profile=$profile$manifestEvidence; preflight_sha256=$preflightHashes."

@@ -15,6 +15,7 @@ Future<void> main() async {
       login: authScope.login,
       logout: authScope.logout,
       requestPasswordRecovery: authScope.requestPasswordRecovery,
+      resetPassword: authScope.resetPassword,
       auditRepository: authScope.auditRepository,
       medicationPlanRepository: authScope.medicationPlanRepository,
       institutionDirectoryRepository: authScope.institutionDirectoryRepository,

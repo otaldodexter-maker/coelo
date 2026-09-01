@@ -5,11 +5,15 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('forwards the email to Coelo auth and maps success', () async {
     final auth = _FakeCoeloAuthGateway();
-    final action = createCoeloAuthPasswordRecoveryAction(auth: auth);
+    final action = createCoeloAuthPasswordRecoveryAction(
+      auth: auth,
+      redirectTo: Uri.parse('http://127.0.0.1:8766/reset-password'),
+    );
 
     final result = await action('owner@coelo.me');
 
     expect(auth.lastRecoveryEmail, 'owner@coelo.me');
+    expect(auth.lastRecoveryRedirect?.path, '/reset-password');
     expect(result.isSuccess, isTrue);
     expect(result.message, isNull);
   });
@@ -20,7 +24,10 @@ void main() {
         CoeloAuthPasswordRecoveryResult.genericFailureMessage,
       ),
     );
-    final action = createCoeloAuthPasswordRecoveryAction(auth: auth);
+    final action = createCoeloAuthPasswordRecoveryAction(
+      auth: auth,
+      redirectTo: Uri.parse('http://127.0.0.1:8766/reset-password'),
+    );
 
     final result = await action('owner@coelo.me');
 
@@ -34,18 +41,27 @@ final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
 
   final CoeloAuthPasswordRecoveryResult recoveryResult;
   String? lastRecoveryEmail;
+  Uri? lastRecoveryRedirect;
 
   @override
-  Stream<bool> get authStateChanges => const Stream<bool>.empty();
+  Stream<CoeloAuthSessionState> get authStateChanges => const Stream<CoeloAuthSessionState>.empty();
 
   @override
-  bool get isAuthenticated => false;
+  CoeloAuthSessionState get currentSessionState => const CoeloAuthSessionState.signedOut();
 
   @override
-  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({required String email}) async {
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
+    required String email,
+    required Uri redirectTo,
+  }) async {
     lastRecoveryEmail = email;
+    lastRecoveryRedirect = redirectTo;
     return recoveryResult;
   }
+
+  @override
+  Future<CoeloAuthPasswordUpdateResult> updatePassword({required String password}) async =>
+      const CoeloAuthPasswordUpdateResult.success();
 
   @override
   Future<CoeloAuthSignInResult> signInWithPassword({

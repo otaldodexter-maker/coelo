@@ -14,7 +14,7 @@ void main() {
   testWidgets('production composition isolates its repository while dev uses preview data', (
     tester,
   ) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final repository = _ProductionInstitutionRepository();
     final router = createSuperadminRouter(
       session: session,
@@ -78,7 +78,7 @@ void main() {
   });
 
   testWidgets('redirects an authenticated session to the protected home', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: (_) async => const LoginResult.success(),
