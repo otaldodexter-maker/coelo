@@ -39,7 +39,7 @@ void main() {
     expect(find.byType(PrincipalProfilePreviewPage), findsOneWidget);
     expect(
       tester.widget<PrincipalProfilePreviewPage>(find.byType(PrincipalProfilePreviewPage)).embedded,
-      isTrue,
+      isFalse,
     );
     await tester.ensureVisible(find.byKey(const Key('principal-profile-open-agenda')));
     await tester.tap(find.byKey(const Key('principal-profile-open-agenda')));
@@ -48,7 +48,7 @@ void main() {
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devAgenda);
   });
 
-  testWidgets('keeps Perfil embedded in one responsive shell at 200 percent text', (tester) async {
+  testWidgets('keeps Perfil in its Principal surface at 200 percent text', (tester) async {
     final session = SuperadminSession();
     final router = createSuperadminRouter(
       session: session,
@@ -81,30 +81,18 @@ void main() {
       final page = tester.widget<PrincipalProfilePreviewPage>(
         find.byType(PrincipalProfilePreviewPage),
       );
-      expect(page.embedded, isTrue, reason: '$width');
-      expect(find.byKey(const Key('superadmin-persistent-shell')), findsOneWidget);
-      final content = find.byKey(const Key('superadmin-content-transition'));
-      expect(content, findsOneWidget);
-      expect(
-        find.descendant(of: content, matching: find.byType(PrincipalProfilePreviewPage)),
-        findsOneWidget,
-      );
+      expect(page.embedded, isFalse, reason: '$width');
+      expect(find.byKey(const Key('superadmin-persistent-shell')), findsNothing);
+      expect(find.byKey(const Key('principal-global-dock')), findsOneWidget);
       for (final key in [
         'principal-profile-logo',
-        'principal-profile-bug',
+        'principal-profile-report-problem',
         'principal-profile-notifications',
         'principal-profile-context-avatar',
       ]) {
-        expect(find.byKey(ValueKey(key)), findsNothing, reason: '$width');
+        expect(find.byKey(ValueKey(key)), findsOneWidget, reason: '$width');
       }
       expect(tester.takeException(), isNull, reason: '$width');
-
-      if (width == 1440) {
-        final sidebar = find.byKey(const Key('superadmin-sidebar'));
-        expect(sidebar, findsOneWidget);
-        expect(find.byKey(const Key('superadmin-floating-content')), findsOneWidget);
-        expect(tester.getTopLeft(content).dx, greaterThan(tester.getTopRight(sidebar).dx));
-      }
     }
   });
 }

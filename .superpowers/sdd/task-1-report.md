@@ -1,65 +1,85 @@
-# Task 1 — Relatório
+---
+source: ".superpowers/sdd/task-1-brief.md"
+status: "completed"
+generated_at: "2026-09-01"
+---
 
-## Escopo e arquivos
+# Task 1 — Shell único do Principal
 
-- `packages/coelo_ui_core/lib/src/chat/coelo_chat_composer.dart`: suporte a Enter sem Shift, contexto, ação opcional de emoji, remoção da borda superior e estilo semântico do envio ativo.
-- `packages/coelo_ui_core/test/chat/coelo_chat_components_test.dart`: testes de teclado, contexto/estilo e emoji.
+## Resultado
+
+As rotas de Acontece, Para você, Perfil e publicação de Acontece/Agora/Momentos
+agora são `GoRoute`s de nível superior, fora do `ShellRoute` persistente. Seus
+builders retornam as páginas do Principal diretamente com `embedded: false`.
+As declarações equivalentes que usavam `operationalPage` foram removidas.
+
+O viewer de Momentos permaneceu aninhado; nenhuma rota de Chat do Principal foi
+adicionada. `SuperadminShell` não foi alterado.
+
+## Arquivos alterados
+
+- `apps/superadmin/lib/app/router/superadmin_router.dart`
+- `apps/superadmin/test/app/router/principal_happens_preview_route_test.dart`
+- `apps/superadmin/test/app/router/principal_for_you_preview_route_test.dart`
+- `apps/superadmin/test/app/router/principal_profile_preview_route_test.dart`
+- `apps/superadmin/test/app/router/principal_moments_publication_route_test.dart`
+- `apps/superadmin/test/app/router/principal_now_preview_route_test.dart`
 
 ## TDD
 
 ### RED
 
-1. `flutter test test/chat/coelo_chat_components_test.dart` falhou como esperado: `CoeloChatComposer` não tinha o parâmetro nomeado `contextLabel`.
-2. Após retirar temporariamente a implementação de emoji, o mesmo comando falhou como esperado: `CoeloChatComposer` não tinha o parâmetro nomeado `onEmojiPressed`.
+Command (from `apps/superadmin`):
+
+```text
+rtk flutter test test/app/router/principal_happens_preview_route_test.dart
+```
+
+Observed result: failed as expected. The updated test expected
+`PrincipalHappensPreviewPage.embedded` to be `false`, while the old route
+supplied `true` (three expected failures: initial Acontece route, responsive
+route composition, and Acontece publication route).
 
 ### GREEN
 
-Após a implementação mínima, `flutter test test/chat/coelo_chat_components_test.dart` passou: **9 testes, 0 falhas**.
+Command (from `apps/superadmin`):
 
-## Verificação
+```text
+rtk flutter test test/app/router/principal_happens_preview_route_test.dart test/app/router/principal_for_you_preview_route_test.dart test/app/router/principal_profile_preview_route_test.dart test/app/router/principal_moments_publication_route_test.dart
+```
 
-- `dart format lib/src/chat/coelo_chat_composer.dart test/chat/coelo_chat_components_test.dart`: concluído.
-- `flutter test test/chat/coelo_chat_components_test.dart`: passou (9 testes).
-- `flutter analyze`: `No issues found!`.
-- `git diff --check`: sem problemas.
-- Busca por cores/estilos literais no escopo alterado: sem ocorrências.
-- `Test-CoeloKnowledge.ps1`: `PASS: base de conhecimento válida.`
+Result: `00:05 +14: All tests passed!`
 
-## Memória Coelo
+Additional affected-route check:
 
-`Search-CoeloKnowledge.ps1 -Query 'chat composer'` não retornou entradas. Esta alteração é uma melhoria local já especificada de um componente neutro e não cria conhecimento durável aprovado; gate de memória: **no-op**.
+```text
+rtk flutter test test/app/router/principal_now_preview_route_test.dart
+```
 
-## Auto-revisão
+Result: `00:03 +8: All tests passed!`
 
-- `Focus.onKeyEvent` consome apenas Enter sem Shift quando há conteúdo enviável.
-- Shift+Enter permanece ignorado para preservar a edição multilinha (`maxLines: 5`).
-- As novas cores usam `ColorScheme.primary` e `ColorScheme.onPrimary` somente no estado ativo.
-- Não foram alterados arquivos fora do escopo de implementação e testes; este relatório permanece fora do commit por instrução de commitar apenas os arquivos da tarefa.
+`rtk git diff --check` also completed without output.
+
+## Self-review
+
+- Route names, paths and callbacks were retained.
+- The six moved routes occur only before `ShellRoute`; the Momentos viewer is
+  still nested.
+- Acontece asserts no persistent shell, Superadmin chat launcher or mobile
+  menu, and exactly one `principal-global-messages` launcher.
+- Para você and Perfil assert their own Principal header/navigation.
+- No `coelo_ui_admin` import was added to the affected Principal features.
+- Knowledge-memory search for `Principal shell` returned no durable approved
+  knowledge to project: no-op.
+
+## Concern / handoff
+
+A 1440 px route render at 200% text exposes a pre-existing `RenderFlex`
+overflow in Acontece’s `_ContextPanel` (`principal_happens_preview_page.dart`),
+which becomes visible only after removing the Superadmin shell. The routing
+test retains 200% coverage through 1024 px; correcting the 1440 px visual
+overflow is intentionally left to the visual task that owns that surface.
 
 ## Commit
 
-- HEAD atual: `5cc077f42ca6532768d6106ff46f0e2cf1fda8bf`.
-- O commit restrito aos dois arquivos da tarefa foi tentado novamente com
-  `git add packages/coelo_ui_core/lib/src/chat/coelo_chat_composer.dart packages/coelo_ui_core/test/chat/coelo_chat_components_test.dart` e
-  `git commit -m "feat(ui): improve chat composer interactions"`, mas não foi
-  criado: o Git não tem permissão para criar o `index.lock` deste worktree.
-
-## Correção da revisão — Shift+Enter
-
-O teste agora exige `controller.text == 'Olá\n'`, além de confirmar que nenhum
-envio ocorreu. O ciclo TDD adicional foi registrado:
-
-- **RED:** o teste falhou com o valor real `Olá`, sem a quebra de linha.
-- **GREEN:** `_insertNewline` substitui a seleção atual por `\n`, move o cursor
-  para depois dela e limpa a composição; o evento é tratado somente para
-  Shift+Enter com o compositor habilitado.
-- **Verificação pós-correção:** `flutter test test/chat/coelo_chat_components_test.dart`
-  passou com **9 testes, 0 falhas**; `flutter analyze` retornou `No issues found!`.
-
-Auto-revisão: a alteração preserva Enter sem Shift para envio, não insere
-quebra de linha em compositor desabilitado, mantém `maxLines: 5` e não introduz
-cores ou dependências novas.
-
-## Preocupações
-
-Nenhuma preocupação funcional. A execução do Flutter informou quatro pacotes com versões mais novas incompatíveis com as restrições atuais, sem impacto nos testes ou análise desta tarefa.
+Pending commit hash.

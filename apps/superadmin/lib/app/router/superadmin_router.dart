@@ -584,6 +584,68 @@ GoRouter createSuperadminRouter({
         ),
       ),
       GoRoute(
+        path: SuperadminRoutes.devPrincipalHappens,
+        name: SuperadminRoutes.devPrincipalHappensName,
+        builder: (context, state) => PrincipalHappensPreviewPage.demo(
+          embedded: false,
+          onOpenForYou: () => context.goNamed(SuperadminRoutes.devPrincipalForYouName),
+          onOpenMoments: () => context.pushNamed(SuperadminRoutes.devPrincipalMomentsName),
+          onOpenProfile: () => context.goNamed(SuperadminRoutes.devPrincipalProfileName),
+          onOpenAgenda: () => context.goNamed(SuperadminRoutes.devAgendaName),
+          onOpenNow: () => context.pushNamed(SuperadminRoutes.devPrincipalNowName),
+          onPublishNow: () => context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName),
+          onCreatePost: () => context.goNamed(SuperadminRoutes.devPrincipalHappensPublishName),
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.devPrincipalForYou,
+        name: SuperadminRoutes.devPrincipalForYouName,
+        builder: (context, state) => PrincipalForYouPreviewPage(
+          embedded: false,
+          onOpenHappens: () => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
+          onOpenNow: () => context.pushNamed(SuperadminRoutes.devPrincipalNowName),
+          onOpenMoments: () => context.pushNamed(SuperadminRoutes.devPrincipalMomentsName),
+          onOpenAgenda: () => context.goNamed(SuperadminRoutes.devAgendaName),
+          onOpenProfile: () => context.goNamed(SuperadminRoutes.devPrincipalProfileName),
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.devPrincipalHappensPublish,
+        name: SuperadminRoutes.devPrincipalHappensPublishName,
+        builder: (context, state) => PrincipalHappensPublicationPage.demo(
+          embedded: false,
+          repository: InMemoryHappensPublicationRepository(),
+          onClose: () => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
+          onCompleted: (_) => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.devPrincipalMomentsPublish,
+        name: SuperadminRoutes.devPrincipalMomentsPublishName,
+        builder: (context, state) => PrincipalMomentsPublicationPage.demo(
+          embedded: false,
+          onClose: () => context.goNamed(SuperadminRoutes.devPrincipalMomentsName),
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.devPrincipalNowPublication,
+        name: SuperadminRoutes.devPrincipalNowPublicationName,
+        builder: (context, state) => PrincipalNowPublicationPage.demo(
+          embedded: false,
+          repository: InMemoryNowPublicationRepository(),
+          onClose: () => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
+          onCompleted: (_) => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.devPrincipalProfile,
+        name: SuperadminRoutes.devPrincipalProfileName,
+        builder: (context, state) => PrincipalProfilePreviewPage(
+          embedded: false,
+          onOpenAgenda: () => context.goNamed(SuperadminRoutes.devAgendaName),
+        ),
+      ),
+      GoRoute(
         path: SuperadminRoutes.circularDetail,
         name: SuperadminRoutes.circularDetailName,
         builder: (context, state) => PrincipalCircularDetailPage(
@@ -3582,62 +3644,6 @@ GoRouter createSuperadminRouter({
             ),
           ),
           GoRoute(
-            path: SuperadminRoutes.devPrincipalHappens,
-            name: SuperadminRoutes.devPrincipalHappensName,
-            builder: (context, state) => operationalPage(
-              context,
-              title: 'Acontece',
-              subtitle: 'Prévia da experiência do app Principal.',
-              destination: 'principal-happens',
-              child: PrincipalHappensPreviewPage.demo(
-                embedded: true,
-                onOpenForYou: () => context.goNamed(SuperadminRoutes.devPrincipalForYouName),
-                onOpenMoments: () => context.pushNamed(SuperadminRoutes.devPrincipalMomentsName),
-                onOpenProfile: () => context.goNamed(SuperadminRoutes.devPrincipalProfileName),
-                onOpenAgenda: () => context.goNamed(SuperadminRoutes.devAgendaName),
-                onOpenNow: () => context.pushNamed(SuperadminRoutes.devPrincipalNowName),
-                onPublishNow: () =>
-                    context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName),
-                onCreatePost: () =>
-                    context.goNamed(SuperadminRoutes.devPrincipalHappensPublishName),
-              ),
-            ),
-          ),
-          GoRoute(
-            path: SuperadminRoutes.devPrincipalForYou,
-            name: SuperadminRoutes.devPrincipalForYouName,
-            builder: (context, state) => operationalPage(
-              context,
-              title: 'Para você',
-              subtitle: 'Prévia da experiência do app Principal.',
-              destination: 'principal-for-you',
-              child: PrincipalForYouPreviewPage(
-                embedded: true,
-                onOpenHappens: () => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
-                onOpenNow: () => context.pushNamed(SuperadminRoutes.devPrincipalNowName),
-                onOpenMoments: () => context.pushNamed(SuperadminRoutes.devPrincipalMomentsName),
-                onOpenAgenda: () => context.goNamed(SuperadminRoutes.devAgendaName),
-                onOpenProfile: () => context.goNamed(SuperadminRoutes.devPrincipalProfileName),
-              ),
-            ),
-          ),
-          GoRoute(
-            path: SuperadminRoutes.devPrincipalHappensPublish,
-            name: SuperadminRoutes.devPrincipalHappensPublishName,
-            builder: (context, state) => operationalPage(
-              context,
-              title: 'Publicar no Acontece',
-              subtitle: 'Prepare o conteúdo e revise o público antes de publicar.',
-              destination: 'principal-happens-publish',
-              child: PrincipalHappensPublicationPage.demo(
-                embedded: true,
-                repository: InMemoryHappensPublicationRepository(),
-                onClose: () => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
-                onCompleted: (_) => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
-              ),
-            ),
-          ),
-          GoRoute(
             path: SuperadminRoutes.devPrincipalMoments,
             name: SuperadminRoutes.devPrincipalMomentsName,
             builder: (context, state) => operationalPage(
@@ -3651,49 +3657,6 @@ GoRouter createSuperadminRouter({
                 onOpenProfile: () => context.goNamed(SuperadminRoutes.devPrincipalProfileName),
                 onCreateMoment: () =>
                     context.goNamed(SuperadminRoutes.devPrincipalMomentsPublishName),
-              ),
-            ),
-          ),
-          GoRoute(
-            path: SuperadminRoutes.devPrincipalMomentsPublish,
-            name: SuperadminRoutes.devPrincipalMomentsPublishName,
-            builder: (context, state) => operationalPage(
-              context,
-              title: 'Publicar momento',
-              subtitle: 'Prepare a mídia e revise o público antes de publicar.',
-              destination: 'principal-moments-publish',
-              child: PrincipalMomentsPublicationPage.demo(
-                onClose: () => context.goNamed(SuperadminRoutes.devPrincipalMomentsName),
-              ),
-            ),
-          ),
-          GoRoute(
-            path: SuperadminRoutes.devPrincipalNowPublication,
-            name: SuperadminRoutes.devPrincipalNowPublicationName,
-            builder: (context, state) => operationalPage(
-              context,
-              title: 'Publicar no Agora',
-              subtitle: 'Prepare a sequência e revise o público antes de publicar.',
-              destination: 'principal-now-publish',
-              child: PrincipalNowPublicationPage.demo(
-                embedded: true,
-                repository: InMemoryNowPublicationRepository(),
-                onClose: () => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
-                onCompleted: (_) => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
-              ),
-            ),
-          ),
-          GoRoute(
-            path: SuperadminRoutes.devPrincipalProfile,
-            name: SuperadminRoutes.devPrincipalProfileName,
-            builder: (context, state) => operationalPage(
-              context,
-              title: 'Perfil',
-              subtitle: 'Prévia da experiência do app Principal.',
-              destination: 'principal-profile',
-              child: PrincipalProfilePreviewPage(
-                embedded: true,
-                onOpenAgenda: () => context.goNamed(SuperadminRoutes.devAgendaName),
               ),
             ),
           ),

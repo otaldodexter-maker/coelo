@@ -17,7 +17,7 @@ void main() {
     expect(SuperadminRoutes.devPrincipalMomentsPublishName, 'dev-principal-moments-publish');
   });
 
-  testWidgets('embeds the canonical Momentos form in one shell at 200 percent text', (
+  testWidgets('renders the canonical Momentos form in its Principal surface at 200 percent text', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -50,20 +50,22 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final shell = find.byKey(const Key('superadmin-persistent-shell'));
-      expect(shell, findsOneWidget, reason: 'width $width');
       expect(
-        find.descendant(of: shell, matching: find.byType(PrincipalMomentsPublicationPage)),
-        findsOneWidget,
+        find.byKey(const Key('superadmin-persistent-shell')),
+        findsNothing,
         reason: 'width $width',
       );
+      final page = tester.widget<PrincipalMomentsPublicationPage>(
+        find.byType(PrincipalMomentsPublicationPage),
+      );
+      expect(page.embedded, isFalse, reason: 'width $width');
       for (final formComponent in [
         PrincipalPublicationFrame,
         PrincipalPublicationStepNavigation,
         PrincipalPublicationActionFooter,
       ]) {
         expect(
-          find.descendant(of: shell, matching: find.byType(formComponent)),
+          find.byType(formComponent),
           findsOneWidget,
           reason: '$formComponent at width $width',
         );

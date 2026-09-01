@@ -275,8 +275,9 @@ void main() {
     expect(find.byType(PrincipalNowPublicationPage), findsOneWidget);
     expect(
       tester.widget<PrincipalNowPublicationPage>(find.byType(PrincipalNowPublicationPage)).embedded,
-      isTrue,
+      isFalse,
     );
+    expect(find.byKey(const Key('superadmin-persistent-shell')), findsNothing);
     expect(find.byType(PrincipalNowPreviewPage), findsNothing);
     expect(
       router.routeInformationProvider.value.uri.path,
