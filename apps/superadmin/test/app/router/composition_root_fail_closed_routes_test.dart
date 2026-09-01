@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('model and media production routes stay statically unavailable', (tester) async {
+  testWidgets('model and Forms production routes stay fail-closed', (tester) async {
     final session = SuperadminSession()..signIn();
     final accessRepository = _TripwireAccessProfileRepository();
     final formsApi = _TripwireFormsApi();
@@ -35,13 +35,10 @@ void main() {
       '/profile-models/platform/model-1',
       '/profile-models/platform/model-1/edit',
       '/profile-models/platform/model-1/duplicate',
-      '/forms/form-1/files',
-      '/forms/media/asset-1',
     ]) {
       router.go(path);
       await tester.pumpAndSettle();
 
-      expect(router.routeInformationProvider.value.uri.path, path, reason: path);
       expect(find.byType(SuperadminErrorScreen), findsOneWidget, reason: path);
       expect(
         tester.widget<SuperadminErrorScreen>(find.byType(SuperadminErrorScreen)).kind,
@@ -56,6 +53,16 @@ void main() {
       expect(accessRepository.calls, 0, reason: path);
       expect(formsApi.calls, 0, reason: path);
     }
+
+    router.go('/forms/form-1/files');
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('forms-operations-unavailable')), findsOneWidget);
+    expect(formsApi.calls, 0);
+
+    router.go('/forms/media/asset-1');
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('forms-media-unavailable')), findsOneWidget);
+    expect(formsApi.calls, 0);
   });
 }
 

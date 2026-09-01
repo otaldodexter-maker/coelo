@@ -151,6 +151,7 @@ import '../../features/forms/presentation/directory/forms_directory_page.dart';
 import '../../features/forms/presentation/directory/forms_schedule_dialog.dart';
 import '../../features/forms/presentation/overview/forms_overview_page.dart';
 import '../../features/forms/presentation/operations/forms_operations_page.dart';
+import '../../features/forms/presentation/operations/forms_media_page.dart';
 import '../../features/forms/presentation/response/form_response_page.dart';
 import '../../features/forms/presentation/response/forms_test_page.dart';
 import '../../features/support/presentation/screens/support_page.dart';
@@ -255,6 +256,7 @@ GoRouter createSuperadminRouter({
   final agendaPrototypeStore = AgendaPrototypeStore.seeded();
   final unavailableAgendaStore = AgendaPrototypeStore.empty();
   final developmentFormsApi = DevelopmentFormsApi.seeded();
+  final developmentFormsFilesStore = FormsFilesDevelopmentStore();
   final developmentAccountController = AccountController(
     repository: InMemoryAccountProfileRepository(),
     activities: accountActivities,
@@ -1281,7 +1283,7 @@ GoRouter createSuperadminRouter({
                   endsAt: DateTime.now(),
                   frequency: FormsScheduleFrequency.once,
                   weekdays: const {},
-                  audienceLabel: form.audienceLabel ?? 'Público da distribuição',
+                  audienceLabel: 'Público da distribuição',
                 ),
                 unavailableReason:
                     'A integração de agendamentos não está disponível neste ambiente.',
@@ -1362,7 +1364,10 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.formMedia,
             name: SuperadminRoutes.formMediaName,
-            builder: (context, state) => const FormsOperationsPage.files(),
+            builder: (context, state) => FormsMediaPage(
+              assetId: state.pathParameters['assetId']!,
+              onBack: () => context.goNamed(SuperadminRoutes.formsName),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.agenda,
@@ -3175,7 +3180,9 @@ GoRouter createSuperadminRouter({
                   endsAt: DateTime(2026, 8, 31, 18),
                   frequency: FormsScheduleFrequency.once,
                   weekdays: const {},
-                  audienceLabel: form.audienceLabel ?? 'Público da distribuição',
+                  audienceLabel:
+                      developmentFormVisualMetadata(form.id)?.audienceLabel ??
+                      'Público da distribuição',
                 ),
                 onSave: (_) async {},
               ),
@@ -3219,12 +3226,14 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.devFormEdit,
             name: SuperadminRoutes.devFormEditName,
-            builder: (context, state) => const FormsEditorPage.development(),
+            builder: (context, state) =>
+                FormsEditorPage.development(formId: state.pathParameters['formId']),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormTest,
             name: SuperadminRoutes.devFormTestName,
-            builder: (context, state) => const FormsTestPage.development(),
+            builder: (context, state) =>
+                FormsTestPage.development(formId: state.pathParameters['formId']),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormMonitor,
@@ -3234,7 +3243,8 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.devFormRespond,
             name: SuperadminRoutes.devFormRespondName,
-            builder: (context, state) => const FormResponsePage.development(),
+            builder: (context, state) =>
+                FormResponsePage.development(formId: state.pathParameters['formId']),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormResponses,
@@ -3252,12 +3262,18 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.devFormFiles,
             name: SuperadminRoutes.devFormFilesName,
-            builder: (context, state) => const FormsOperationsPage.files(development: true),
+            builder: (context, state) => FormsOperationsPage.files(
+              development: true,
+              developmentStore: developmentFormsFilesStore,
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormMedia,
             name: SuperadminRoutes.devFormMediaName,
-            builder: (context, state) => const FormsOperationsPage.files(development: true),
+            builder: (context, state) => FormsMediaPage.development(
+              assetId: state.pathParameters['assetId']!,
+              onBack: () => context.goNamed(SuperadminRoutes.devFormsName),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.invites,
