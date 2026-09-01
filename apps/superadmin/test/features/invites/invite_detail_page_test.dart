@@ -10,6 +10,30 @@ import 'package:flutter_test/flutter_test.dart';
 import 'invite_test_repository.dart';
 
 void main() {
+  testWidgets('groups identity, actions and detail sections with responsive hierarchy', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = TestInviteRepository();
+    await tester.pumpWidget(
+      _app(
+        InviteDetailPage(
+          repository: repository,
+          inviteId: repository.invites.single.id,
+          allowCommands: true,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('invite-detail-header')), findsOneWidget);
+    expect(find.byKey(const Key('invite-detail-data-section')), findsOneWidget);
+    expect(find.byKey(const Key('invite-detail-timeline-section')), findsOneWidget);
+    final header = tester.widget<Flex>(find.byKey(const Key('invite-detail-header')));
+    expect(header.direction, Axis.horizontal);
+  });
+
   testWidgets('expired invitation presents resend as the primary action and shows new link', (
     tester,
   ) async {

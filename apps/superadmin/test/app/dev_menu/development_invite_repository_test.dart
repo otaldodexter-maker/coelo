@@ -5,6 +5,28 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   final now = DateTime.utc(2026, 8, 24, 12);
 
+  test('starts with a coherent linked invite directory for pagination', () async {
+    final repository = DevelopmentInviteRepository(now: () => now);
+    final page = await repository.fetchPage(InviteDirectoryQuery(pageSize: 20));
+    final options = await repository.fetchOptions(const InviteOptionsQuery());
+
+    expect(page.totalCount, greaterThanOrEqualTo(12));
+    expect(page.items.map((invite) => invite.scope.institutionId).toSet().length, greaterThan(1));
+    expect(page.items.map((invite) => invite.status).toSet(), containsAll(InviteStatus.values));
+    expect(page.items.every((invite) => invite.timeline.isNotEmpty), isTrue);
+    expect(page.items.every((invite) => invite.profile.label != invite.profile.id), isTrue);
+    expect(
+      page.items.every(
+        (invite) => options.profiles.any(
+          (profile) =>
+              profile.id == invite.profile.id &&
+              profile.institutionId == invite.scope.institutionId,
+        ),
+      ),
+      isTrue,
+    );
+  });
+
   test('issue preserves command data and replays without duplicating', () async {
     final repository = DevelopmentInviteRepository(now: () => now);
     final command = InviteIssueCommand(
@@ -110,11 +132,11 @@ void main() {
       InviteDirectoryQuery(pageSize: 20, sortAscending: true),
     );
 
-    expect(first.totalCount, 10);
+    expect(first.totalCount, 21);
     expect(first.items, hasLength(8));
-    expect(second.items, hasLength(2));
+    expect(second.items, hasLength(8));
     expect(first.items.first.createdAt.isAfter(first.items.last.createdAt), isTrue);
-    expect(ascending.items.first.id, 'dev-invite-1');
+    expect(ascending.items.first.id, 'dev-invite-8');
   });
 
   test('exposes controlled empty unauthorized and failure states', () async {

@@ -13,6 +13,25 @@ import 'package:flutter_test/flutter_test.dart';
 import 'invite_test_repository.dart';
 
 void main() {
+  testWidgets('offers import and export file actions with explicit unavailable feedback', (
+    tester,
+  ) async {
+    final repository = TestInviteRepository();
+    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository)));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CoeloAdminFileActions), findsOneWidget);
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    expect(find.text('Importar'), findsOneWidget);
+    expect(find.text('Exportar CSV'), findsOneWidget);
+    expect(find.text('Exportar XLSX'), findsOneWidget);
+
+    await tester.tap(find.text('Importar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Importação de convites ainda não está disponível.'), findsOneWidget);
+  });
+
   testWidgets('loads cards first and can switch to the aligned canonical table', (tester) async {
     final repository = TestInviteRepository();
     await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository, onCreate: () {})));

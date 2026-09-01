@@ -42,11 +42,11 @@ void main() {
   testWidgets('matches invitation flyout and revoke confirmation references', (tester) async {
     await _pumpGolden(
       tester,
-      InviteDirectoryPage(repository: _repository(), onOpen: (_) {}),
+      InviteDirectoryPage(repository: _repository(), onOpen: (_) {}, allowCommands: true),
       size: const Size(1440, 900),
     );
 
-    await tester.tap(find.byKey(const Key('invite-actions-invite-1')));
+    await tester.tap(find.byKey(const Key('invite-actions-11111111-1111-4111-8111-111111111111')));
     await tester.pumpAndSettle();
     await expectLater(
       find.byKey(const Key('invite-golden-root')),
@@ -68,12 +68,19 @@ void main() {
       size: const Size(1440, 900),
     );
 
+    await tester.tap(find.byKey(const Key('invite-view-table')));
+    await tester.pumpAndSettle();
+
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     addTearDown(mouse.removePointer);
     await mouse.addPointer();
     await mouse.moveTo(
       tester.getCenter(
-        find.byKey(const Key('coelo-admin-table-row-background-invite-row-invite-1')),
+        find.byKey(
+          const Key(
+            'coelo-admin-table-row-background-invite-row-11111111-1111-4111-8111-111111111111',
+          ),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -109,7 +116,11 @@ void main() {
   testWidgets('matches invitation detail references', (tester) async {
     await _pumpGolden(
       tester,
-      InviteDetailPage(repository: _repository(), inviteId: 'invite-1'),
+      InviteDetailPage(
+        repository: _repository(),
+        inviteId: '11111111-1111-4111-8111-111111111111',
+        allowCommands: true,
+      ),
       size: const Size(375, 900),
     );
     await expectLater(
@@ -119,7 +130,11 @@ void main() {
 
     await _pumpGolden(
       tester,
-      InviteDetailPage(repository: _repository(), inviteId: 'invite-1'),
+      InviteDetailPage(
+        repository: _repository(),
+        inviteId: '11111111-1111-4111-8111-111111111111',
+        allowCommands: true,
+      ),
       size: const Size(1440, 900),
       brightness: Brightness.dark,
     );

@@ -3,6 +3,7 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../../app/shell/superadmin_notice.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../domain/platform_invite.dart';
 import 'invite_presentation_support.dart';
@@ -104,10 +105,50 @@ final class InviteDirectoryToolbar extends StatelessWidget {
             onCardsSelected: () => onDisplayChanged(InviteDirectoryDisplay.cards),
             onTableViewSelected: (_) => onDisplayChanged(InviteDirectoryDisplay.table),
           ),
+          _InviteFileActions(compact: compact),
         ],
       );
     },
   );
+}
+
+final class _InviteFileActions extends StatelessWidget {
+  const _InviteFileActions({required this.compact});
+
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminFileActions(
+    compact: compact,
+    actions: [
+      CoeloAdminFileAction(
+        key: const Key('invite-files-import'),
+        label: 'Importar',
+        icon: Icons.upload_file_outlined,
+        onPressed: () => _unavailable(context, 'Importação'),
+      ),
+      CoeloAdminFileAction(
+        key: const Key('invite-files-export-csv'),
+        label: 'Exportar CSV',
+        icon: Icons.table_rows_outlined,
+        onPressed: () => _unavailable(context, 'Exportação'),
+      ),
+      CoeloAdminFileAction(
+        key: const Key('invite-files-export-xlsx'),
+        label: 'Exportar XLSX',
+        icon: Icons.grid_on_outlined,
+        onPressed: () => _unavailable(context, 'Exportação'),
+      ),
+    ],
+  );
+
+  void _unavailable(BuildContext context, String operation) {
+    showSuperadminNotice(
+      context,
+      '$operation de convites ainda não está disponível.',
+      icon: Icons.info_outline_rounded,
+    );
+  }
 }
 
 final class InviteDirectoryCards extends StatelessWidget {
