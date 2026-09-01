@@ -159,6 +159,10 @@ final class _CircularDirectoryPageState extends State<CircularDirectoryPage> {
               SuperadminListingPaginationFooter(
                 horizontalPadding: inset,
                 semanticKey: const Key('circular-directory-pagination'),
+                compactCurrentPage: safePage,
+                compactTotalPages: pageCount,
+                compactOnPrevious: safePage > 1 ? () => setState(() => _page--) : null,
+                compactOnNext: safePage < pageCount ? () => setState(() => _page++) : null,
                 child: CoeloAdminPagination(
                   currentPage: safePage,
                   totalPages: pageCount,

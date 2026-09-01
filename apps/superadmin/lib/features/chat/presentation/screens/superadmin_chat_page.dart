@@ -7,6 +7,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../app/shell/superadmin_shell.dart';
+import '../../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../domain/chat_repository.dart';
 import '../widgets/superadmin_chat_attachment_tile.dart';
@@ -58,6 +59,10 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   int _inboxRequestGeneration = 0;
   int _threadRequestGeneration = 0;
   int _sendRequestGeneration = 0;
+  int _inboxPage = 1;
+  static const int _inboxPageSize = 8;
+  ChatCursor? _inboxCursor;
+  final List<ChatCursor?> _inboxCursorHistory = [];
   late ChatRepository _repository;
   ChatInboxState _inboxState = const ChatInboxState.loading();
   ChatConversationSummary? _selected;
@@ -89,6 +94,9 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     _threadError = null;
     _sending = false;
     _pendingSend = null;
+    _inboxPage = 1;
+    _inboxCursor = null;
+    _inboxCursorHistory.clear();
     _inboxState = const ChatInboxState.loading();
     _loadInbox();
   }
@@ -108,13 +116,20 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   // the composition root; `/dev` continues to inject its deterministic repo.
   ChatRepository _configuredRepository() => const UnavailableChatRepository();
 
-  Future<void> _loadInbox() async {
+  Future<void> _loadInbox({bool reset = false}) async {
+    if (reset) {
+      _inboxPage = 1;
+      _inboxCursor = null;
+      _inboxCursorHistory.clear();
+    }
     final requestGeneration = ++_inboxRequestGeneration;
     final requestedRepository = _repository;
     final search = _search.text;
     setState(() => _inboxState = const ChatInboxState.loading());
     try {
-      final page = await requestedRepository.fetchInbox(ChatInboxQuery(search: search));
+      final page = await requestedRepository.fetchInbox(
+        ChatInboxQuery(search: search, cursor: _inboxCursor, pageSize: _inboxPageSize),
+      );
       if (!mounted ||
           requestGeneration != _inboxRequestGeneration ||
           !identical(requestedRepository, _repository)) {
@@ -259,7 +274,23 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
 
   void _scheduleInboxSearch() {
     _searchDebounce?.cancel();
-    _searchDebounce = Timer(const Duration(milliseconds: 300), _loadInbox);
+    _searchDebounce = Timer(const Duration(milliseconds: 300), () => _loadInbox(reset: true));
+  }
+
+  void _nextInboxPage(ChatInboxPage page) {
+    final cursor = page.nextCursor;
+    if (cursor == null) return;
+    _inboxCursorHistory.add(_inboxCursor);
+    _inboxCursor = cursor;
+    _inboxPage++;
+    _loadInbox();
+  }
+
+  void _previousInboxPage() {
+    if (_inboxPage <= 1 || _inboxCursorHistory.isEmpty) return;
+    _inboxCursor = _inboxCursorHistory.removeLast();
+    _inboxPage--;
+    _loadInbox();
   }
 
   @override
@@ -358,7 +389,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         actionLabel: 'Limpar busca',
         onAction: () {
           _search.clear();
-          _loadInbox();
+          _loadInbox(reset: true);
         },
       ),
       ChatInboxLoadState.unauthorized => CoeloStatePanel(
@@ -404,6 +435,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
 
   Widget _inbox(ChatInboxPage page, {required bool compact}) {
     final colors = Theme.of(context).colorScheme;
+    final totalPages = math.max(1, (page.totalCount / _inboxPageSize).ceil());
     return Column(
       children: [
         Padding(
@@ -476,6 +508,24 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                 ),
               );
             },
+          ),
+        ),
+        SuperadminListingPaginationFooter(
+          horizontalPadding: CoeloSpacing.space3,
+          semanticKey: const Key('superadmin-chat-pagination'),
+          compactCurrentPage: _inboxPage,
+          compactTotalPages: totalPages,
+          compactOnPrevious: _inboxPage > 1 ? _previousInboxPage : null,
+          compactOnNext: page.nextCursor != null ? () => _nextInboxPage(page) : null,
+          child: CoeloAdminPagination(
+            currentPage: _inboxPage,
+            totalPages: totalPages,
+            pageSize: _inboxPageSize,
+            pageSizeOptions: const [8, 20, 50, 100],
+            onPrevious: _inboxPage > 1 ? _previousInboxPage : null,
+            onNext: page.nextCursor != null ? () => _nextInboxPage(page) : null,
+            onPageSelected: null,
+            onPageSizeChanged: null,
           ),
         ),
       ],

@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/chat/domain/chat_repository.dart';
 import 'package:coelo_superadmin/features/chat/presentation/screens/superadmin_chat_page.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -67,6 +69,40 @@ void main() {
 
     expect(find.byKey(const Key('superadmin-chat-search')), findsOneWidget);
     expect(tester.widget(find.byKey(const Key('superadmin-chat-search'))), isA<CoeloSearchField>());
+  });
+
+  testWidgets('paginates the conversation directory with the Institutions footer', (tester) async {
+    _viewport(tester, 1440);
+    final repository = _PaginatedChatRepository();
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+
+    final footer = tester.widget<SuperadminListingPaginationFooter>(
+      find.byType(SuperadminListingPaginationFooter),
+    );
+    var pagination = footer.child as CoeloAdminPagination;
+    expect(pagination.currentPage, 1);
+    expect(pagination.totalPages, 2);
+    expect(pagination.pageSize, 8);
+    expect(pagination.pageSizeOptions, const [8, 20, 50, 100]);
+    expect(footer.compactCurrentPage, 1);
+    expect(footer.compactTotalPages, 2);
+
+    footer.compactOnNext?.call();
+    await tester.pumpAndSettle();
+
+    final secondFooter = tester.widget<SuperadminListingPaginationFooter>(
+      find.byType(SuperadminListingPaginationFooter),
+    );
+    pagination = secondFooter.child as CoeloAdminPagination;
+    expect(pagination.currentPage, 2);
+    expect(repository.inboxQueries, hasLength(2));
+    expect(repository.inboxQueries.last.cursor, _PaginatedChatRepository.nextCursor);
+    expect(find.text('Conversa da segunda página'), findsWidgets);
+
+    secondFooter.compactOnPrevious?.call();
+    await tester.pumpAndSettle();
+    expect(repository.inboxQueries.last.cursor, isNull);
   });
 
   testWidgets('uses the compact directory inset around the chat workspace', (tester) async {
@@ -454,6 +490,38 @@ final class _ControlledSearchRepository implements ChatRepository {
 
   @override
   Future<ChatMessage> sendMessage(ChatSendMessageCommand command) => _fallback.sendMessage(command);
+}
+
+final class _PaginatedChatRepository implements ChatRepository {
+  static final nextCursor = ChatCursor(DateTime.utc(2026, 8, 20), 'conversation-8');
+  final List<ChatInboxQuery> inboxQueries = [];
+
+  @override
+  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async {
+    inboxQueries.add(query);
+    final secondPage = query.cursor != null;
+    return ChatInboxPage(
+      totalUnread: 0,
+      totalCount: 12,
+      hasMore: !secondPage,
+      nextCursor: secondPage ? null : nextCursor,
+      items: [
+        _conversation(
+          secondPage ? 'conversation-9' : 'conversation-1',
+          secondPage ? 'Conversa da segunda página' : 'Conversa da primeira página',
+        ),
+      ],
+    );
+  }
+
+  @override
+  Future<ChatThreadPage> fetchThread(ChatThreadQuery query) async => _threadPage('Mensagem');
+
+  @override
+  Future<void> markRead({required String conversationId, required String upToMessageId}) async {}
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 final class _ControlledThreadSearchRepository implements ChatRepository {

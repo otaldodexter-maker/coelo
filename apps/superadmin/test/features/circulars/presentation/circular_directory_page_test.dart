@@ -1,5 +1,6 @@
 import 'package:coelo_superadmin/features/circulars/presentation/circular_directory_page.dart';
 import 'package:coelo_superadmin/features/principal_circulars/domain/circular.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -98,9 +99,16 @@ void main() {
     );
 
     await _pump(tester, size: const Size(375, 900), items: manyItems);
-    var pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
+    final compactFooter = tester.widget<SuperadminListingPaginationFooter>(
+      find.byType(SuperadminListingPaginationFooter),
+    );
+    var pagination = compactFooter.child as CoeloAdminPagination;
     expect(pagination.pageSize, 11);
     expect(pagination.pageSizeOptions, const [11, 20, 50, 100]);
+    expect(compactFooter.compactCurrentPage, 1);
+    expect(compactFooter.compactTotalPages, 3);
+    expect(compactFooter.compactOnPrevious, isNull);
+    expect(compactFooter.compactOnNext, isNotNull);
 
     await _pump(tester, size: const Size(768, 900), items: manyItems);
     pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
