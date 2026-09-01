@@ -206,9 +206,10 @@ void main() {
       expect(router.routeInformationProvider.value.uri.path, path, reason: path);
       expect(api.calls, 0, reason: path);
       if (path.endsWith('form-1')) {
-        expect(find.text('Fixture local · sem persistência remota'), findsOneWidget);
+        expect(find.byKey(const Key('forms-overview-content')), findsOneWidget);
       } else {
-        expect(find.textContaining('não est'), findsWidgets, reason: path);
+        expect(find.byKey(const Key('forms-directory-content-scroll')), findsOneWidget);
+        expect(find.byKey(const Key('forms-directory-create')), findsWidgets);
       }
     }
   });
@@ -323,8 +324,6 @@ final class _DirectoryFormsApi implements FormsApi {
             status: FormStatus.published,
             operationalStatus: FormOperationalStatus.scheduled,
             identityMode: FormIdentityMode.identified,
-            audienceLabel: 'Famílias',
-            scheduleCount: 1,
             updatedAt: DateTime(2026, 8, 31),
             managementVersion: 1,
           ),

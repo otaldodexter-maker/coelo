@@ -41,6 +41,7 @@ void main() {
       'const FormsOperationsPage.responses()',
       'const FormsOperationsPage.responseDetail()',
       'const FormsOperationsPage.files()',
+      'FormsMediaPage(',
     ]) {
       expect(router, contains(surface), reason: surface);
     }
@@ -59,6 +60,8 @@ void main() {
       expect(router, contains('SuperadminRoutes.$routeName'), reason: routeName);
     }
     expect(router, contains('const FormsOperationsPage.files()'));
-    expect(router, contains('const FormsOperationsPage.files(development: true)'));
+    expect(router, contains('developmentStore: developmentFormsFilesStore'));
+    expect(router, contains('FormsMediaPage('));
+    expect(router, contains('FormsMediaPage.development('));
   });
 }
