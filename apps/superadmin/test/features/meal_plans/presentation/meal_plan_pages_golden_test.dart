@@ -555,12 +555,17 @@ final class FakeMealPlanRepository implements MealPlanRepository {
   }
 
   @override
-  Future<MealPlanPage> fetchTemplatePage(MealPlanListFilter filter) async => MealPlanPage(
-    items: templates.map((template) => template.toDirectoryItem()).toList(),
-    total: templates.length,
-    limit: filter.pageSize,
-    offset: filter.offset,
-  );
+  Future<MealPlanPage> fetchTemplatePage(MealPlanListFilter filter) async {
+    lastPageFilter = filter;
+    final loader = pageLoader;
+    if (loader != null) return loader(filter);
+    return MealPlanPage(
+      items: templates.map((template) => template.toDirectoryItem()).toList(),
+      total: totalOverride ?? templates.length,
+      limit: filter.pageSize,
+      offset: filter.offset,
+    );
+  }
 
   @override
   Future<MealPlan> getById(String id) async => mealPlans.firstWhere((item) => item.id == id);

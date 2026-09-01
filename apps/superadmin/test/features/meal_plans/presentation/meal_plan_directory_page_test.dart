@@ -147,7 +147,7 @@ void main() {
         final card = tester.widget<CoeloAdminInteractiveCard>(
           find.byKey(Key('meal-plan-card-${item.id}')),
         );
-        expect(card.minHeight, 216);
+        expect(card.minHeight, CoeloSize.touchMin * 5);
         expect(
           find.descendant(
             of: find.byKey(Key('meal-plan-card-${item.id}')),

@@ -42,6 +42,8 @@ final class MealPlanDirectoryPage extends StatefulWidget {
 }
 
 final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
+  static const _cardMinHeight = CoeloSize.touchMin * 5;
+
   final _search = TextEditingController();
   final _institution = TextEditingController();
   final _unit = TextEditingController();
@@ -358,7 +360,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
           child: SizedBox(
             width: math.min(constraints.maxWidth, 420),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 216),
+              constraints: const BoxConstraints(minHeight: _cardMinHeight),
               child: _createAction(),
             ),
           ),
@@ -408,9 +410,10 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
         runSpacing: CoeloSpacing.space6,
         children: [
           SizedBox(
+            key: const Key('meal-plan-directory-create-card'),
             width: width,
             child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 216),
+              constraints: const BoxConstraints(minHeight: _cardMinHeight),
               child: _createAction(),
             ),
           ),
@@ -419,6 +422,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
               width: width,
               child: _MealPlanCard(
                 item: item,
+                minHeight: _cardMinHeight,
                 scopeLabel: _scopeLabel(item.scopeLevel, item.scopeId),
                 sourceLabel: _sourceLabel(item.sourceType),
                 onOpen: _canEdit(item) ? () => _runAction(_DirectoryAction.edit, item) : null,
@@ -877,6 +881,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
 final class _MealPlanCard extends StatelessWidget {
   const _MealPlanCard({
     required this.item,
+    required this.minHeight,
     required this.scopeLabel,
     required this.sourceLabel,
     required this.onOpen,
@@ -885,6 +890,7 @@ final class _MealPlanCard extends StatelessWidget {
   });
 
   final MealPlan item;
+  final double minHeight;
   final String scopeLabel;
   final String sourceLabel;
   final VoidCallback? onOpen;
@@ -896,7 +902,7 @@ final class _MealPlanCard extends StatelessWidget {
     key: Key('meal-plan-card-${item.id}'),
     surfaceKey: Key('meal-plan-card-surface-${item.id}'),
     onPressed: onOpen,
-    minHeight: 216,
+    minHeight: minHeight,
     child: Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: CoeloSpacing.space6,

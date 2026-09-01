@@ -46,7 +46,7 @@ final class MealPlanWizardPage extends StatefulWidget {
 final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
   static const _planSteps = <String>[
     'Identificação',
-    'Abrangência',
+    'Vínculos contextuais',
     'Período e recorrência',
     'Cardápio',
     'Revisão e publicação',
@@ -322,17 +322,69 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
   Widget _scope() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      const Text(
-        'Selecione um ou mais contextos. Pessoas novas nesses contextos entram apenas nas ocorrências futuras.',
+      _sectionHeading(
+        title: 'Vínculos contextuais',
+        description:
+            'Defina os contextos na ordem Instituição, Unidade e Turma ou Atividade. Pessoas futuras vinculadas a esses contextos entram apenas nas ocorrências futuras.',
       ),
       const SizedBox(height: CoeloSpacing.space4),
-      _choiceGroup('Instituições', _audienceOptions.institutions, _institutions),
-      _choiceGroup('Unidades', _filteredUnits, _units),
-      _choiceGroup('Turmas', _filteredGroups, _groups),
-      _choiceGroup('Atividades', _filteredActivities, _activities),
-      _choiceGroup('Pessoas incluídas', _filteredPeople, _people),
-      _choiceGroup('Pessoas excluídas', _filteredPeople, _excludedPeople, exclusion: true),
-      const SizedBox(height: CoeloSpacing.space2),
+      _responsivePair(
+        _contextField(
+          label: 'Instituições',
+          options: _audienceOptions.institutions,
+          selected: _institutions,
+          prefixIcon: Icons.account_balance_outlined,
+          onChanged: (values) => _setContextSelection(_institutions, values),
+        ),
+        _contextField(
+          label: 'Unidades',
+          options: _filteredUnits,
+          selected: _units,
+          prefixIcon: Icons.apartment_outlined,
+          onChanged: (values) => _setContextSelection(_units, values),
+        ),
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      _responsivePair(
+        _contextField(
+          label: 'Turmas',
+          options: _filteredGroups,
+          selected: _groups,
+          prefixIcon: Icons.groups_outlined,
+          onChanged: (values) => _setContextSelection(_groups, values),
+        ),
+        _contextField(
+          label: 'Atividades',
+          options: _filteredActivities,
+          selected: _activities,
+          prefixIcon: Icons.local_activity_outlined,
+          onChanged: (values) => _setContextSelection(_activities, values),
+        ),
+      ),
+      const SizedBox(height: CoeloSpacing.space5),
+      _sectionHeading(
+        title: 'Inclusões e exclusões',
+        description:
+            'Refine o público individual sem perder os vínculos contextuais definidos acima.',
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      _responsivePair(
+        _contextField(
+          label: 'Pessoas incluídas',
+          options: _filteredPeople,
+          selected: _people,
+          prefixIcon: Icons.person_add_alt_1_outlined,
+          onChanged: _setIncludedPeople,
+        ),
+        _contextField(
+          label: 'Pessoas excluídas',
+          options: _filteredPeople,
+          selected: _excludedPeople,
+          prefixIcon: Icons.person_remove_outlined,
+          onChanged: _setExcludedPeople,
+        ),
+      ),
+      const SizedBox(height: CoeloSpacing.space3),
       Text(
         'Responsáveis não são público individual elegível. Exclusões explícitas prevalecem sobre inclusões dinâmicas.',
         style: Theme.of(context).textTheme.bodySmall,
@@ -350,13 +402,25 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
 
   List<MealPlanAudienceOption> get _filteredGroups => _audienceOptions.groups
       .where((value) {
-        return _units.isEmpty || value.unitId == null || _units.contains(value.unitId);
+        final institutionMatches =
+            _institutions.isEmpty ||
+            value.institutionId == null ||
+            _institutions.contains(value.institutionId);
+        final unitMatches = _units.isEmpty || value.unitId == null || _units.contains(value.unitId);
+        return institutionMatches && unitMatches;
       })
       .toList(growable: false);
 
   List<MealPlanAudienceOption> get _filteredActivities => _audienceOptions.activities
       .where((value) {
-        return _groups.isEmpty || value.groupId == null || _groups.contains(value.groupId);
+        final institutionMatches =
+            _institutions.isEmpty ||
+            value.institutionId == null ||
+            _institutions.contains(value.institutionId);
+        final unitMatches = _units.isEmpty || value.unitId == null || _units.contains(value.unitId);
+        final groupMatches =
+            _groups.isEmpty || value.groupId == null || _groups.contains(value.groupId);
+        return institutionMatches && unitMatches && groupMatches;
       })
       .toList(growable: false);
 
@@ -366,70 +430,109 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
             _audience == MealPlanAudienceSegment.all ||
             value.audienceSegment == null ||
             value.audienceSegment == _audience;
+        final institutionMatches =
+            _institutions.isEmpty ||
+            value.institutionId == null ||
+            _institutions.contains(value.institutionId);
         final groupMatches =
             _groups.isEmpty || value.groupId == null || _groups.contains(value.groupId);
         final unitMatches = _units.isEmpty || value.unitId == null || _units.contains(value.unitId);
-        return segmentMatches && groupMatches && unitMatches;
+        return segmentMatches && institutionMatches && groupMatches && unitMatches;
       })
       .toList(growable: false);
 
-  Widget _choiceGroup(
-    String label,
-    List<MealPlanAudienceOption> options,
-    Set<String> selected, {
-    bool exclusion = false,
-  }) => Padding(
-    padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(label, style: Theme.of(context).textTheme.titleSmall),
-        const SizedBox(height: CoeloSpacing.space2),
-        if (options.isEmpty)
-          Text(
-            'Nenhuma opção disponível neste contexto.',
-            style: Theme.of(context).textTheme.bodySmall,
-          )
-        else
-          Wrap(
-            spacing: CoeloSpacing.space2,
-            runSpacing: CoeloSpacing.space2,
-            children: [
-              for (final option in options)
-                FilterChip(
-                  label: Text(option.label),
-                  selected: selected.contains(option.id),
-                  avatar: Icon(exclusion ? Icons.person_remove_outlined : Icons.add_circle_outline),
-                  onSelected: (enabled) => setState(() {
-                    enabled ? selected.add(option.id) : selected.remove(option.id);
-                    if (exclusion && enabled) _people.remove(option.id);
-                    if (!exclusion && enabled) _excludedPeople.remove(option.id);
-                  }),
-                ),
-            ],
-          ),
-      ],
-    ),
+  Widget _contextField({
+    required String label,
+    required List<MealPlanAudienceOption> options,
+    required Set<String> selected,
+    required IconData prefixIcon,
+    required ValueChanged<Set<String>> onChanged,
+  }) {
+    final optionById = {for (final option in options) option.id: option};
+    return CoeloAdminMultiSelectField<String>(
+      label: label,
+      options: optionById.keys.toList(growable: false),
+      selectedValues: selected,
+      optionLabel: (id) => optionById[id]?.label ?? 'Vínculo indisponível',
+      onChanged: onChanged,
+      prefixIcon: prefixIcon,
+      searchable: options.length > 6,
+      emptyLabel: options.isEmpty ? 'Nenhuma opção disponível' : 'Selecionar',
+    );
+  }
+
+  Widget _sectionHeading({required String title, required String description}) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(title, style: Theme.of(context).textTheme.titleMedium),
+      const SizedBox(height: CoeloSpacing.space1),
+      Text(description, style: Theme.of(context).textTheme.bodyMedium),
+    ],
   );
+
+  void _setContextSelection(Set<String> target, Set<String> values) {
+    setState(() {
+      target
+        ..clear()
+        ..addAll(values);
+      _reconcileContextSelections();
+    });
+  }
+
+  void _setIncludedPeople(Set<String> values) {
+    setState(() {
+      _people
+        ..clear()
+        ..addAll(values);
+      _excludedPeople.removeAll(_people);
+    });
+  }
+
+  void _setExcludedPeople(Set<String> values) {
+    setState(() {
+      _excludedPeople
+        ..clear()
+        ..addAll(values);
+      _people.removeAll(_excludedPeople);
+    });
+  }
+
+  void _reconcileContextSelections() {
+    _retainAvailable(_units, _filteredUnits);
+    _retainAvailable(_groups, _filteredGroups);
+    _retainAvailable(_activities, _filteredActivities);
+    _retainAvailable(_people, _filteredPeople);
+    _retainAvailable(_excludedPeople, _filteredPeople);
+    _people.removeAll(_excludedPeople);
+  }
+
+  void _retainAvailable(Set<String> selected, List<MealPlanAudienceOption> options) =>
+      selected.removeWhere((id) => !options.any((option) => option.id == id));
 
   Widget _schedule() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      CoeloDateRangeField(
-        value: _period,
-        onChanged: (value) => setState(() => _period = value),
-        firstDate: DateTime(2020),
-        lastDate: DateTime(2100),
-        labelText: 'Período do cardápio',
+      _sectionHeading(
+        title: 'Vigência e recorrência',
+        description: 'Defina quando o cardápio vale e como suas ocorrências se repetem.',
       ),
       const SizedBox(height: CoeloSpacing.space4),
-      CoeloAdminSingleSelectField<MealPlanRecurrenceKind>(
-        label: 'Recorrência',
-        value: _recurrence,
-        options: MealPlanRecurrenceKind.values,
-        optionLabel: _recurrenceLabel,
-        onChanged: (value) => setState(() => _recurrence = value),
-        prefixIcon: Icons.repeat_outlined,
+      _responsivePair(
+        CoeloDateRangeField(
+          value: _period,
+          onChanged: (value) => setState(() => _period = value),
+          firstDate: DateTime(2020),
+          lastDate: DateTime(2100),
+          labelText: 'Período do cardápio',
+        ),
+        CoeloAdminSingleSelectField<MealPlanRecurrenceKind>(
+          label: 'Recorrência',
+          value: _recurrence,
+          options: MealPlanRecurrenceKind.values,
+          optionLabel: _recurrenceLabel,
+          onChanged: (value) => setState(() => _recurrence = value),
+          prefixIcon: Icons.repeat_outlined,
+        ),
       ),
       if (_recurrence == MealPlanRecurrenceKind.weekly ||
           _recurrence == MealPlanRecurrenceKind.biweekly ||
@@ -459,16 +562,28 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
         labelText: 'Datas excluídas (DD/MM/AAAA, separadas por vírgula)',
         prefixIcon: Icons.event_busy_outlined,
       ),
+      const SizedBox(height: CoeloSpacing.space5),
+      _sectionHeading(
+        title: 'Publicação',
+        description: 'Escolha quando o cardápio fica visível e sua prioridade em caso de conflito.',
+      ),
       const SizedBox(height: CoeloSpacing.space4),
-      CoeloAdminSingleSelectField<MealPlanVisibilityMode>(
-        label: 'Quando o cardápio começa a aparecer?',
-        value: _visibility,
-        options: MealPlanVisibilityMode.values,
-        optionLabel: (value) => value == MealPlanVisibilityMode.immediate
-            ? 'Imediatamente após publicar'
-            : 'Em uma data programada',
-        onChanged: (value) => setState(() => _visibility = value),
-        prefixIcon: Icons.visibility_outlined,
+      _responsivePair(
+        CoeloAdminSingleSelectField<MealPlanVisibilityMode>(
+          label: 'Início da exibição',
+          value: _visibility,
+          options: MealPlanVisibilityMode.values,
+          optionLabel: (value) => value == MealPlanVisibilityMode.immediate
+              ? 'Imediatamente após publicar'
+              : 'Em uma data programada',
+          onChanged: (value) => setState(() => _visibility = value),
+          prefixIcon: Icons.visibility_outlined,
+        ),
+        CoeloFormTextField(
+          controller: _priority,
+          labelText: 'Prioridade explícita',
+          prefixIcon: Icons.low_priority_outlined,
+        ),
       ),
       if (_visibility == MealPlanVisibilityMode.scheduled) ...[
         const SizedBox(height: CoeloSpacing.space4),
@@ -485,12 +600,6 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
           labelText: 'Data de início da exibição',
         ),
       ],
-      const SizedBox(height: CoeloSpacing.space4),
-      CoeloFormTextField(
-        controller: _priority,
-        labelText: 'Prioridade explícita',
-        prefixIcon: Icons.low_priority_outlined,
-      ),
     ],
   );
 
@@ -737,7 +846,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
 
   Widget _responsivePair(Widget first, Widget second) => LayoutBuilder(
     builder: (context, constraints) {
-      if (constraints.maxWidth < 620) {
+      if (constraints.maxWidth < CoeloBreakpoints.medium.minWidth) {
         return Column(
           children: [
             first,
@@ -756,18 +865,18 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
     },
   );
 
-  Widget _weekdayPicker(Set<int> selected) => Wrap(
-    spacing: CoeloSpacing.space2,
-    runSpacing: CoeloSpacing.space2,
-    children: [
-      for (var index = 0; index < _weekdays.length; index++)
-        FilterChip(
-          label: Text(_weekdays[index]),
-          selected: selected.contains(index + 1),
-          onSelected: (enabled) =>
-              setState(() => enabled ? selected.add(index + 1) : selected.remove(index + 1)),
-        ),
-    ],
+  Widget _weekdayPicker(Set<int> selected) => CoeloAdminMultiSelectField<int>(
+    label: 'Dias da semana',
+    options: List<int>.generate(_weekdays.length, (index) => index + 1),
+    selectedValues: selected,
+    optionLabel: (day) => _weekdays[day - 1],
+    onChanged: (values) => setState(() {
+      selected
+        ..clear()
+        ..addAll(values);
+    }),
+    prefixIcon: Icons.calendar_view_week_outlined,
+    searchable: false,
   );
 
   Widget _review() => Column(
@@ -777,7 +886,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
       _summary('Tipo', _variant == MealPlanPlanVariant.simple ? 'Simples' : 'Completo'),
       _summary('Público', _audienceLabel(_audience)),
       if (!widget.isTemplate) ...[
-        _summary('Abrangência', _scopeSummary),
+        _summary('Vínculos contextuais', _scopeSummary),
         _summary(
           'Período',
           _period == null ? 'Não informado' : '${_date(_period!.start)} a ${_date(_period!.end)}',
