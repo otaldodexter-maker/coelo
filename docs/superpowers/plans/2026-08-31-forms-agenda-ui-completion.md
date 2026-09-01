@@ -1,7 +1,7 @@
 ---
 title: "Forms and Agenda Flutter UI completion plan"
 source: "docs/superpowers/specs/2026-08-13-superadmin-forms-end-to-end-design.md; specs/006-comunicacao-agenda.md; decisions/0025-forms-private-storage-and-multipart-exports.md; decisions/0028-superadmin-agenda-product-surface.md"
-status: in-progress
+status: local-green
 generated_at: "2026-08-31"
 ---
 
@@ -31,21 +31,30 @@ generated_at: "2026-08-31"
   `9020be56`, `ff75b1c2`, `c5de6b4b`, `cda7cd0f`, `7f04a8af`, `1ce0a23d`,
   `02619c70`, `56dedf84`, `dac6405b`, `2f616367`, `81264bbb`, `48de2f18`,
   `e0529081`, `6a06619e`, `54f311cb`, `9d4ab0d6`, `877d9cb5`, `2f98e6c8`,
-  `4a9e851c`, `3d92f1d9`, `e697ac17`, `df2efdcd`, `118edba5` e `83a73890`.
-- O estado continua `in-progress`: wiring de mídia, correção do contrato visual,
-  testes de rota e goldens ainda possuem resíduos não commitados na worktree.
+  `4a9e851c`, `3d92f1d9`, `e697ac17`, `df2efdcd`, `118edba5`, `83a73890`,
+  `449760d5`, `cf4e9481`, `2621fd7a`, `0e616523`, `a21b3992`, `de2fda82`,
+  `a2f0f02b` e `ba7c8d3b`.
+- O recorte está `local-green` visual/Flutter: wiring local, rotas isoladas,
+  comportamento funcional, responsividade e goldens fecharam seus gates focados.
 - `forms.monitor`, `forms.respond`, `forms.responses`, `forms.response-detail`,
   `forms.export`, `forms.upload`, `forms.resolve-file`, `forms.download`,
-  `forms.expire-file` e `forms.delete-file` ficam `in-progress` enquanto os
-  fixes funcionais locais e seus gates ainda estão em andamento.
-- O total local sustentado neste checkpoint é 90/207 (43,48%). O valor
-  100/207 (48,31%) somente será válido depois que essas dez ações passarem
-  pelos testes funcionais e gates correspondentes.
-- O handoff `c5de6b4b` também contém mudanças em `SupabaseFormsApi` e no contrato
-  de `packages/coelo_api`; elas não estão autorizadas por este recorte e devem
-  ser extraídas ou receber aprovação explícita antes da integração final.
+  `forms.expire-file` e `forms.delete-file` foram promovidos a `local-green`
+  após os fixes funcionais locais e a repetição dos gates correspondentes.
+- O total local sustentado no fechamento é 100/207 (48,31%); no recorte,
+  22/22 action_ids estão `local-green` visual/Flutter.
+- O handoff `c5de6b4b` continha mudanças em `SupabaseFormsApi` e no contrato de
+  `packages/coelo_api`; `a21b3992` as reverteu/isolou, preservando o limite sem
+  promover qualquer contrato backend novo.
 - Estado máximo permanece `local-green` Flutter/visual. Supabase, backend,
   autorização real, remoto e E2E permanecem bloqueados/fora de escopo.
+- Gate focado do recorte: 237/237 testes passaram; analyzer, contratos visuais,
+  índice Coelo UI e conhecimento passaram. Existem 113 goldens únicos no recorte
+  (42 Agenda + 71 Forms); 101 foram trabalhados após o handoff, sendo 84 novos e
+  17 herdados atualizados, com inspeção visual representativa de cada superfície.
+- A suíte Flutter global foi interrompida após 1.265 passes e 76 falhas somente
+  em famílias fora do recorte/goldens de shell. Esses resíduos não foram
+  corrigidos por ownership e não rebaixam o gate focado, mas impedem alegar
+  repositório globalmente verde.
 
 ## Fase 1 — Agenda independente
 
@@ -68,12 +77,12 @@ generated_at: "2026-08-31"
 
 1. Concluído: base e handoff V4.19/V4.20 identificados; o commit incorporado é
    `c5de6b4b`.
-2. Concluído parcialmente: arquivos de Forms, overlays e shell foram auditados;
-   os testes focados foram repetidos ao longo dos commits da frente.
-3. Pendente para o consolidador: separar os hunks de Supabase/API fora do recorte
-   e reconciliar apenas os resíduos explicitamente listados no checkpoint final.
-4. Pendente: repetir a suíte combinada, analyzer, goldens inspecionados e gates
-   globais no estado já limpo/commitado.
+2. Concluído: arquivos de Forms, overlays e shell foram auditados; os testes
+   focados foram repetidos no estado consolidado.
+3. Concluído: `a21b3992` reverteu/isolou os hunks Supabase/API fora do recorte.
+4. Concluído no recorte: 237/237, analyzer, goldens inspecionados e gates
+   visual/index/knowledge verdes. A suíte global conserva 76 falhas externas ao
+   ownership desta frente e não é declarada verde.
 
 ## Fase 3 — Formulários
 

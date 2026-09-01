@@ -1,6 +1,6 @@
 ---
 title: "Pendências Coelo — Flutter por tela e ação"
-source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git base f1aeacf67c218e7e889005ab98391f3d63096f11; codex/forms-agenda-ui-completion through 83a73890"
+source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git base f1aeacf67c218e7e889005ab98391f3d63096f11; codex/forms-agenda-ui-completion through ba7c8d3b"
 status: "open"
 generated_at: "2026-08-26"
 updated_at: "2026-08-31"
@@ -347,16 +347,16 @@ duplicada. A soma preliminar por família continua na tabela anterior.
 | 18.4 | Formulário / Editar | `forms.edit` | Editor modular cobre autosave, seções, perguntas, mídia e estados responsivos; produção preserva moldura neutra bloqueada. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Persistência, autorização e E2E pendentes. |
 | 18.5 | Formulário / Publicar | `forms.publish` | Publicar agora/agendar funciona somente no `/dev`, com data/hora canônica e feedback sem persistência remota; produção não oferece sucesso falso. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Capability, command e reload produtivos pendentes. |
 | 18.6 | Formulário / Testar | `forms.test` | Fluxo local identificado/anônimo cobre validação, revisão, retorno e reinício; produção preserva composição fail-closed. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Autorização e E2E produtivos pendentes. |
-| 19.1 | Respostas / Monitor | `forms.monitor` | Hierarquia, elegíveis, responderam, pendentes e perda de elegibilidade têm composição responsiva; o drill-down local ainda usa callback vazio. | `in-progress` | B | I | A | C | Completa visual/Flutter | 1–2 h local + backend bloqueado | Implementar drill-down local e testar navegação/estado antes de promover. |
-| 19.2 | Responder Formulário | `forms.respond` | Retomada, revisão e anonimato estão representados; autosave real e cancelamento do upload local estão em correção e gates ainda não fecharam. | `in-progress` | B | I | A | C | Completa visual/Flutter | fix local em andamento + backend bloqueado | Repetir testes de preservação/falha e gates antes de restaurar `local-green`. |
-| 19.3 | Respostas / Lista | `forms.responses` | Lista identificada/anônima e estados operacionais estão representados no `/dev`; o avanço por cursor ainda não altera a coleção local. | `in-progress` | B | I | A | C | Completa visual/Flutter | 1–2 h local + backend bloqueado | Implementar paginação local real e testar ida/volta antes de promover. |
-| 19.4 | Resposta / Detalhe | `forms.response-detail` | Detalhe identificado/anônimo e segredo perdido estão representados; seleção/cursor e mídia local estão em correção e gates ainda não fecharam. | `in-progress` | B | I | A | C | Completa visual/Flutter | fix local em andamento + backend bloqueado | Repetir fluxo selecionado, mídia e estados antes de promover. |
-| 19.5 | Respostas / Exportar | `forms.export` | CSV/XLSX/ZIP e estados de jobs estão renderizados, mas solicitar e baixar ainda usam callbacks locais vazios. | `in-progress` | B | I | A | C | Completa visual/Flutter | 1–2 h local + backend bloqueado | Implementar job/download local determinístico e testar falha/retry antes de promover. |
-| 20.1 | Arquivos de Formulários / Upload | `forms.upload` | Progresso, falha e indisponibilidade estão renderizados; cancelar ainda usa callback vazio e não preserva um estado local verificável. | `in-progress` | B | I | A | C | Completa visual/Flutter | 1–2 h local + backend bloqueado | Implementar cancelamento/falha local e teste de preservação antes de promover. |
-| 20.2 | Arquivos de Formulários / Resolver | `forms.resolve-file` | A rota dedicada e estados seguros existem, mas wiring por `assetId`/`formId` e feedback local estão em correção e gates ainda não fecharam. | `in-progress` | B | I | A | C | Completa visual/Flutter | fix local em andamento + backend bloqueado | Repetir rota direta, not-found e unavailable antes de promover. |
-| 20.3 | Arquivos de Formulários / Baixar | `forms.download` | Nenhum endereço permanente é renderizado; preparação/download local e seus feedbacks estão em correção. | `in-progress` | B | I | A | C | Completa visual/Flutter | fix local em andamento + backend bloqueado | Testar permitido/expirado/falha após o GREEN funcional. |
-| 20.4 | Arquivos de Formulários / Expirar | `forms.expire-file` | Estado expirado está representado; feedback e preservação local estão em correção e ainda sem gates finais. | `in-progress` | B | I | A | C | Completa visual/Flutter | fix local em andamento + backend bloqueado | Testar expirar/cancelar/falhar e reconstrução antes de promover. |
-| 20.5 | Arquivos de Formulários / Excluir | `forms.delete-file` | Confirmação negativa remove o card no estado atual, mas uma reconstrução reinicializa a fixture e o teste existente não executa reload real. | `in-progress` | B | I | A | C | Completa visual/Flutter | 1–2 h local + backend bloqueado | Persistir a exclusão no store dev e testar reconstrução/reload antes de promover. |
+| 19.1 | Respostas / Monitor | `forms.monitor` | Hierarquia, elegíveis, responderam, pendentes e perda de elegibilidade têm composição responsiva e drill-down local funcional. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Navegação/estado local testados; fonte autorizada, reload remoto e E2E pendentes. |
+| 19.2 | Responder Formulário | `forms.respond` | Retomada, revisão, anonimato, autosave e cancelamento de upload funcionam na fixture local sem persistência remota. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Preservação/falha e golden revalidados; autorização, Storage e E2E pendentes. |
+| 19.3 | Respostas / Lista | `forms.responses` | Lista identificada/anônima, filtro e paginação por cursor alteram a coleção local determinística. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Ida/volta e estados locais testados; cursor autoritativo remoto pendente. |
+| 19.4 | Resposta / Detalhe | `forms.response-detail` | Seleção abre detalhe identificado/anônimo, segredo perdido e mídia protegida sem expor caminho permanente. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Fluxo selecionado e estados seguros testados; autorização/E2E pendentes. |
+| 19.5 | Respostas / Exportar | `forms.export` | CSV, XLSX e ZIP possuem jobs locais determinísticos, fila, conclusão, falha, retry e feedback de download. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Worker, arquivo autorizado, expiração remota e E2E pendentes. |
+| 20.1 | Arquivos de Formulários / Upload | `forms.upload` | Progresso, cancelamento, falha e indisponibilidade preservam estado verificável na fixture local. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Storage, autorização, retomada remota e E2E pendentes. |
+| 20.2 | Arquivos de Formulários / Resolver | `forms.resolve-file` | Rota por `assetId`/`formId`, not-found, unavailable e acesso temporário funcionam localmente sem URL permanente. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Resolução autorizada/assinada e E2E pendentes. |
+| 20.3 | Arquivos de Formulários / Baixar | `forms.download` | Preparação e feedback de download local cobrem permitido, expirado e falha sem renderizar endereço permanente. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Download autorizado real, expiração e E2E pendentes. |
+| 20.4 | Arquivos de Formulários / Expirar | `forms.expire-file` | Expirar, cancelar e falhar atualizam o store local injetável e sobrevivem à reconstrução coberta pelo teste. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Comando autoritativo, auditoria remota e E2E pendentes. |
+| 20.5 | Arquivos de Formulários / Excluir | `forms.delete-file` | Confirmação negativa, falha e exclusão persistem no store local após reconstrução/reload simulado. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Exclusão autoritativa, auditoria, retenção e E2E pendentes. |
 
 ### 5.3 Principal, cuidado e operações de plataforma
 
@@ -1089,8 +1089,8 @@ backend, ambiente remoto e inspeção humana de cada PNG.
 | 16 | `chat` — Conversas, conversa, mensagens, edição, anexos, recibos/revogação | `chat.list` `audited`; `chat.open` `audited`; `chat.send` `audited`; `chat.edit` `audited`; `chat.attach` `audited`; `chat.receipts` `audited`; `chat.revoke` `audited` | Revisar grupos/mídia, shell/chat PNGs, erros, foco, semântica e lifecycle; 16 h. |
 | 17 | `notices` — Lista, criar, editar, agendar, publicar, arquivar | `notices.list` `audited`; `notices.create` `audited`; `notices.edit` `audited`; `notices.schedule` `audited`; `notices.publish` `audited`; `notices.archive` `audited` | Somente composição de rota conhecida; executar revisão funcional/visual completa e erros/reload; 10 h. |
 | 18 | `forms_authoring` — Lista, criar, overview, editar, publicar, testar | todos os 6 action_ids `local-green` visual/Flutter | `/dev` funcional e produção com composição equivalente fail-closed; persistência, capability e E2E pendentes. |
-| 19 | `forms_responses` — Monitor, responder, respostas, detalhe, exportar | todos os 5 action_ids `in-progress` | Fixes funcionais locais de drill-down, autosave/upload, cursor/seleção e exportação estão em andamento; fonte autorizada, worker e E2E pendentes. |
-| 20 | `forms_files` — Upload, resolver, baixar, expirar, excluir | todos os 5 action_ids `in-progress` | Fixes de cancelamento, mídia por rota, feedback, expiração e persistência da exclusão estão em andamento; Storage/backend/E2E pendentes. |
+| 19 | `forms_responses` — Monitor, responder, respostas, detalhe, exportar | todos os 5 action_ids `local-green` visual/Flutter | Drill-down, autosave/upload, cursor/seleção e jobs de exportação funcionam nas fixtures locais; fonte autorizada, worker e E2E pendentes. |
+| 20 | `forms_files` — Upload, resolver, baixar, expirar, excluir | todos os 5 action_ids `local-green` visual/Flutter | Cancelamento, mídia por rota, feedback, expiração e persistência da exclusão funcionam no store local; Storage/backend/E2E pendentes. |
 | 21 | `acontece` — Feed, criar/publicar, remover | `acontece.feed` `local-green`; `acontece.create` `blocked-decision`; `acontece.publish` `blocked-decision`; `acontece.remove` `blocked-decision` | Preview enquadrado está verde; produção, mídia R2, publicação/remover e goldens exigem contrato/E2E; 10 h. |
 | 22 | `agora` — Viewer, criar/publicar, expirar | `agora.view` `local-green`; `agora.create` `blocked-decision`; `agora.publish` `blocked-decision`; `agora.expire` `blocked-decision` | Viewer/foco coberto no lote; provar entrada por card/deep link e lifecycle real sem alterar baseline; 8 h. |
 | 23 | `momentos` — Viewer, criar/publicar, remover | `momentos.view` `local-green`; `momentos.create` `blocked-decision`; `momentos.publish` `blocked-decision`; `momentos.remove` `blocked-decision` | `Esc`/foco cobertos; publicação/remover, origem real, R2 e goldens continuam abertos; 8 h. |
@@ -1167,8 +1167,8 @@ crosswalk; esta atividade não inventa RPC, tabela, policy ou operação backend
 | `chat` | todos os 7 action_ids `audited` | `not-reviewed` |
 | `notices` | todos os 6 action_ids `audited` | `not-reviewed` |
 | `forms_authoring` | todos os 6 action_ids `local-green` visual/Flutter | `blocked-supabase` |
-| `forms_responses` | todos os 5 action_ids `in-progress` | `blocked-supabase` |
-| `forms_files` | todos os 5 action_ids `in-progress` | `blocked-supabase` |
+| `forms_responses` | todos os 5 action_ids `local-green` visual/Flutter | `blocked-supabase` |
+| `forms_files` | todos os 5 action_ids `local-green` visual/Flutter | `blocked-supabase` |
 | `acontece` | feed `local-green`; create/publish/remove `blocked-decision` | `blocked-decision` |
 | `agora` | view `local-green`; create/publish/expire `blocked-decision` | `blocked-decision` |
 | `momentos` | view `local-green`; create/publish/remove `blocked-decision` | `blocked-decision` |
@@ -2884,10 +2884,36 @@ funcional proporcional.
 | Revisão independente | P0=0. P1 documentais corrigidos neste checkpoint; P1 funcionais e de integração permanecem explicitamente abertos nas linhas `in-progress` acima. |
 | Tempo | Não calculável com confiabilidade a partir do ledger disponível; nenhuma duração foi inferida pelo percentual. |
 
+## 16.83. Formulários e Agenda — fechamento `local-green` — 2026-08-31
+
+**Flutter local — `local-green`:** 48,31% (100/207 ações).
+**Restante local:** 51,69% (107/207 ações).
+**Flutter `verified`:** 0,00% (0/207).
+**Integração E2E:** 0,00% (0/202).
+
+**Recorte Formulários + Agenda:** 100,00% (22/22 ações `local-green`
+visual/Flutter). Esta promoção não concede `verified`, `done`, `remote-green` ou
+`verified-e2e`.
+
+| Campo | Evidência de fechamento |
+|---|---|
+| Base e HEAD auditado | Base `f1aeacf67c218e7e889005ab98391f3d63096f11`; branch `codex/forms-agenda-ui-completion`; código/testes auditados até `ba7c8d3b`, imediatamente após `a2f0f02b`. |
+| Commits posteriores ao checkpoint 16.82 | `449760d5`, `cf4e9481`, `2621fd7a`, `0e616523`, `a21b3992`, `de2fda82`, `a2f0f02b` e `ba7c8d3b`, nessa ordem. |
+| Forms respostas | `forms.monitor`, `forms.respond`, `forms.responses`, `forms.response-detail` e `forms.export` promovidos após drill-down, autosave/upload, cursor/seleção e jobs locais funcionais. |
+| Forms arquivos | `forms.upload`, `forms.resolve-file`, `forms.download`, `forms.expire-file` e `forms.delete-file` promovidos após cancelamento, acesso temporário, feedback e store local persistente em reconstrução. |
+| Gate focado | 237/237 testes do recorte passaram. `flutter analyze` passou sem issues; validador visual administrativo, índice Coelo UI e gates de conhecimento passaram. |
+| Texto ampliado | Matrizes 100%/150%/200% passaram para Agenda Management, Forms Directory e Forms Editor; o recorte preserva 375/768/1024/1440 sem overflow nos testes correspondentes. |
+| Goldens exatos | 113 PNGs únicos do recorte em `HEAD`: 42 de Agenda e 71 de Forms. Após o handoff `c5de6b4b`, 101 foram trabalhados: 84 novos e 17 herdados atualizados. As 42 superfícies adicionais e 12 referências operacionais/autosave foram repetidas sem `--update-goldens`; houve inspeção visual representativa de cada superfície em light/dark e 375/768/1440. |
+| Suíte Flutter global | A execução foi interrompida após 1.265 passes e 76 falhas exclusivamente em famílias fora deste recorte e goldens de shell. Esses resíduos não foram corrigidos por ownership; o repositório global não é declarado verde. |
+| Produção e integração | Rotas normais preservam a mesma composição fail-closed. Supabase, Postgres, Auth, RLS, RPC, migrations, Edge Functions, Storage, deploy, remoto, autorização produtiva e E2E seguem bloqueados/fora de escopo. |
+| Handoff V4.19/V4.20 | `c5de6b4b` permanece o handoff visual. Seus hunks de `SupabaseFormsApi` e `packages/coelo_api` foram revertidos/isolados por `a21b3992`; nenhum contrato backend novo integra o fechamento. |
+| Estado máximo | `local-green` visual/Flutter. O recorte focado está GREEN; falhas globais externas e integração produtiva permanecem explicitamente abertas. |
+
 ## 17. Histórico
 
 | Data | Mudança |
 |---|---|
+| 2026-08-31 | Formulários e Agenda fecharam 22/22 `local-green` visual/Flutter e elevaram o total a 100/207 (48,31%): gate focado 237/237, analyzer/visual/index/knowledge verdes e 113 goldens únicos rastreados. Suíte global interrompida após 1.265 passes/76 falhas externas ao recorte, sem promoção de backend/E2E. |
 | 2026-08-31 | Formulários e Agenda registrados em checkpoint próprio: 90/207 `local-green` (43,48%), 12/22 ações do recorte verdes localmente e dez `in-progress`; backend/Supabase/E2E permanecem sem promoção. Handoff, resíduos, gates e P1 funcionais foram explicitados sem reescrever checkpoints anteriores. |
 | 2026-08-28 | Registrado o programa visual aprovado de 31 entregáveis em cinco ondas. Separadas as métricas de programa visual, Flutter local, Flutter verified e integração E2E; `0/207 E2E` deixa de representar o progresso Flutter. Nenhum código/backend foi alterado. |
 | 2026-08-26 | `groups.import`/`groups.export`: removidos do formulário os dois botões e SnackBars que simulavam sucesso sem arquivo, gateway ou job. RED→GREEN focado 1/1 e suíte `group_form_page_test.dart` 8/8; analyzer focado e global sem erros/warnings. Estado máximo `audited`/fail-closed; fluxos reais de import/export, autorização, Storage, remoto e E2E continuam pendentes. |
