@@ -20,7 +20,7 @@ mock ou rota `/dev` para conclusão Flutter, Supabase ou ponta a ponta.
 ## Progresso estrito de referência
 
 - Projeto estrito `done`: 0/229 unidades.
-- Flutter `local-green`: 102/207 ações; Flutter `verified`: 0/207.
+- Flutter `local-green`: 105/207 ações; Flutter `verified`: 0/207.
 - Supabase `local-green`: 3/37 famílias; Supabase `done`: 0/37.
 - Integração E2E: 0/202 ações.
 - Tempo total usado e ETA geral: não calculáveis até os checkpoints finais das
@@ -76,7 +76,7 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
 
 | Frente | Branch | HEAD | Estado observado |
 | --- | --- | --- | --- |
-| Comunicação | `codex/finalizar-tela-comunicacao` | `64a92497` | Em andamento; Chat, Avisos e Convites possuem checkpoints commitados; correção responsiva de Convites e proposta dos três rastreadores continuam na worktree. |
+| Comunicação | `codex/finalizar-tela-comunicacao` | `1b7fd395` | Integração seletiva materializada em `dev` até `f516be71`; 301/301 testes pós-merge e analyzer global verdes. A branch permanece preservada porque contém históricos excluídos de Circulares e propostas documentais já reconciliadas. |
 | Operações | `codex/finalizacao-telas-operacoes` | `84759675` | Worktree limpa; Flutter `/dev` das cinco áreas passou 344/344, mas backend permanece 0/40 E2E e bloqueado por drift/schema. |
 | Acessos e Saúde | `codex/accessos-ponta-a-ponta` | `796ad8ea` | Em andamento; fixtures compartilhadas e Perfis/Modelos estão commitados; backend permanece sem promoção remota/E2E. |
 | Auth | `codex/auth-first-local-green` | `36ae7c86` | Worktree limpa no snapshot; produção permanece condicionada aos gates registrados pela frente. |
@@ -154,6 +154,34 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
   pós-envio `78ac0ae8`, goldens `c2396f2a`/`2401282e` e escopo Convites
   `b0dd30a5` + `57b746a5`. Rastreadores promovem somente
   `chat.list/open/send` a Flutter `local-green`; integração continua bloqueada.
+
+### Comunicação — integração seletiva em `dev` até `f516be71`
+
+- **Chat / lista (`chat.list`):** último passo concluído foi integrar busca,
+  fixtures e ordenação newest-first; launcher duplicado foi removido. Estado
+  Flutter `local-green`; backend/remoto/E2E continuam bloqueados.
+- **Chat / conversa aberta (`chat.open`):** último passo concluído foi validar
+  2+ mensagens, leitura e sequência visual. Estado Flutter `local-green`;
+  persistência/reload remoto não comprovados.
+- **Chat / envio (`chat.send`):** último passo concluído foi corrigir a ordem
+  pós-envio e validar o fluxo local. Estado Flutter `local-green`; autorização,
+  auditoria e E2E remotos não comprovados.
+- **Chat / editar, anexar, receipts e revogar:** somente auditados/fail-closed;
+  primeiro próximo passo é fechar contrato RPC, mídia, capability e negativos.
+- **Convites / diretório, detalhe e formulário:** fixtures `/dev` agora respeitam
+  instituição/unidade/turma/busca/limite e rejeitam combinações cross-scope;
+  goldens locais passaram. CRUD produtivo, RLS, remoto e E2E seguem abertos.
+- **Comunicações/Avisos / diretório e criar-editar:** integração preservou o
+  estado Flutter local já registrado; RPCs de gestão e `notice_events` ausentes
+  impedem qualquer promoção integrada.
+- **Evidência pós-merge:** 301/301 testes focados passaram no `dev`, incluindo
+  Chat, Convites, Avisos, rotas, navegação e shell; `flutter analyze` terminou
+  sem issues e `git diff --check` ficou verde. Os commits `393fc7ff` (WIP de
+  Circulares), `d22a9b3d` (ownership Coelo Principal) e os diffs documentais já
+  reconciliados não foram incorporados por esta seleção.
+- **Próximo passo:** backend/RLS/remoto somente após classificação e autorização
+  nominal do ambiente. ETA ponta a ponta permanece não calculável enquanto
+  esses gates externos estiverem abertos.
 
 ### Estruturas — `560ce79c`
 

@@ -13,7 +13,7 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "2EAFF36A29682C57C2269789CAE93924C7F9788C103331956F37E3A5793B3163"
+flutter_tracker_sha256: "C68BE7627AF10029E8F9E3AB19ACADEB68B67EE8C41CE329AE6E0B760EF0D953"
 supabase_tracker_sha256: "24CA9D3B06CBB3092DAE109CA3924F6A9E1447B8BB57145614FA58A82FBD0E36"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
@@ -1457,6 +1457,24 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   declarado coerente/completo nesse gate.
 - Circulares possui RPCs/RLS remotos, mas sem adapter final, ator, tenant A/B,
   persistência/reload ou E2E; não avança para `ready-for-e2e`.
+
+## Checkpoint integrado 69 — Comunicação seletivamente integrada, backend aberto
+
+- `chat.list`, `chat.open` e `chat.send` foram materializados em `dev` até
+  `f516be71` após correções de launcher, ordenação multi-message/pós-envio e
+  escopo cross-institution de Convites. O gate pós-merge passou 301/301 testes
+  e analyzer global sem issues.
+- Por subtela, lista/abertura/envio estão somente Flutter `local-green`;
+  editar/anexar/receipts/revogar permanecem `audited`/fail-closed. Convites
+  diretório/detalhe/formulário têm coerência `/dev`, mas CRUD produtivo segue
+  indisponível. Avisos diretório/criar/editar preservam somente evidência local.
+- O passo integrado atual continua no backend: as RPCs esperadas de Chat/Avisos,
+  metadados de anexo e eventos não estão comprovados no remoto. Faltam
+  permitido/negado, sessão e vínculo revogados, tenant A/B, persistência,
+  reload, auditoria e E2E.
+- Nenhum estado integrado foi promovido: `ready-for-e2e` 0/202,
+  `verified-e2e` 0/202 e estrito 0/229. ETA ponta a ponta permanece dependente
+  de classificação e autorização nominal do ambiente.
 
 ## Checkpoint integrado 68 — Operações Flutter local, backend 0/40 E2E
 

@@ -3324,3 +3324,21 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
 - `chat.list/open/send` passam a Flutter `local-green`, levando o total a
   105/207. `chat.edit/attach/receipts/revoke` ficam `audited`; paginação total
   aguarda contrato RPC. Backend/remoto/E2E não foram promovidos.
+
+## Checkpoint 2026-09-01 — Comunicação integrada seletivamente no `dev`
+
+| Tela/subtela/ação | Passo realmente concluído | Estado e evidência | Primeiro passo pendente |
+| --- | --- | --- | --- |
+| Chat — lista — `chat.list` | Busca/fixtures integradas, launcher duplicado removido e ordenação newest-first corrigida. | Flutter `local-green`; lote pós-merge incluído em 301/301 testes verdes. | Paginação total e repository produtivo dependem do contrato RPC. |
+| Chat — conversa — `chat.open` | Fluxo com 2+ mensagens, abertura/leitura e sequência visual revalidado. | Flutter `local-green`; goldens Chat integrados e verdes. | Provar autorização, persistência e reload remotos. |
+| Chat — composer — `chat.send` | Ordem pós-envio corrigida e envio local revalidado. | Flutter `local-green`; regressão pós-merge verde. | Provar comando produtivo, auditoria, vínculo revogado e tenant A/B. |
+| Chat — editar/anexar/receipts/revogar | Contratos e ausências auditados; nenhuma simulação produtiva adicionada. | `audited`/fail-closed. | Definir RPCs, capability, mídia privada, negativos e E2E. |
+| Convites — diretório/detalhe/formulário | `/dev` passou a filtrar instituição/unidade/turma/busca/limite e rejeitar destinatário/profile cross-scope; goldens foram fechados. | Flutter local validado dentro do lote 301/301; produção continua indisponível. | Implementar e provar CRUD/RLS remoto e E2E. |
+| Comunicações/Avisos — diretório/criar/editar | Código local previamente aprovado foi integrado sem regressão. | Flutter local preservado; analyzer global sem issues. | RPCs de gestão, `notice_events`, autorizado/negado, reload e E2E. |
+
+- Consolidação seletiva em `dev` termina no commit `f516be71`; `flutter analyze`
+  global não encontrou issues e `git diff --check` passou.
+- `393fc7ff` (WIP Circulares), `d22a9b3d` (ownership Coelo Principal) e commits
+  documentais já reconciliados foram deliberadamente excluídos. A worktree de
+  Comunicação permanece preservada até a consolidação das frentes dependentes.
+- Contagem permanece 105/207 Flutter `local-green` e 0/207 `verified`.
