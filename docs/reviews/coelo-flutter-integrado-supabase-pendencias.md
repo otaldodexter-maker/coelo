@@ -52,6 +52,9 @@ funcionam juntos no ambiente correto. Nenhum deles substitui os demais.
   analyzer focado. O remoto read-only não apresentou tabelas nominais de Agenda;
   portanto criar/editar/solicitar/aprovar continuam `blocked-supabase`, sem
   promoção de `ready-for-e2e` ou `verified-e2e`.
+- A regressão ampliada preservou 93/93 testes funcionais da Agenda. Vinte
+  comparações de imagem seguem abertas e exigem inspeção antes de qualquer nova
+  baseline; esse RED visual não altera o bloqueio Supabase nem promove E2E.
 
 ### Contrato de abertura da atividade
 

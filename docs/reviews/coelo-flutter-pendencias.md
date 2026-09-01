@@ -47,6 +47,10 @@ Ele não comprova Supabase nem conclusão ponta a ponta. Para isso, ler também:
   tipar perguntas contextuais persistidas no modelo local e removeu a promessa
   prematura de canais de lembrete. Evidência local: 11 testes focados
   executados; todos passaram, e o analyzer focado não encontrou issues.
+- Regressão ampliada da Agenda: 93 testes funcionais executados; todos os 93
+  passaram após alinhar as URLs legadas de Permissões ao redirecionamento para
+  Perfis. Vinte comparações visuais continuam RED por mudanças intencionais nas
+  superfícies; nenhum golden foi atualizado sem inspeção/aprovação.
 - Continuam abertas: wizard e vínculos de Cardápios, periodicidade compartilhada,
   separação Criar/Respostas de Formulários, UI responsiva final da Agenda,
   mini-mapa, code review final e gates visuais globais.
