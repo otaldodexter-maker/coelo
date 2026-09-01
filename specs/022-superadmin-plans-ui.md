@@ -1,6 +1,6 @@
 ---
 source: "Plano aprovado pelo Owner Coelo em 2026-08-05; docs/product/prd-superadmin.md; docs/data/data-model.md; decisions/0016-unit-type-and-plan-inheritance.md; specs/018-profiles-permissions-superadmin.md"
-status: "approved-for-local-prototype"
+status: "approved"
 generated_at: "2026-08-05"
 ---
 
@@ -25,7 +25,8 @@ produtivo.
 ## Fora de escopo
 
 - Preço, moeda, cobrança, pagamento ou assinatura automática.
-- Supabase, migrations, RLS, policies, RPCs e promoção para rota produtiva.
+- Cobrança automática e integrações financeiras. A promoção produtiva manual é
+  regida por `specs/051-superadmin-plans-production.md`.
 - Enforcement de limites no cliente.
 - Limite de responsáveis por criança.
 - Processamento real de importação ou exportação de arquivos; as opções devem

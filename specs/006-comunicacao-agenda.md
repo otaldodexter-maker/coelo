@@ -1,7 +1,7 @@
 ---
 title: "Agenda institucional do Superadmin"
 source: "decisions/0028-superadmin-agenda-product-surface.md; docs/product/prd-master.md; docs/product/prd-superadmin.md; docs/architecture/domain-map.md; docs/design/design-system.md; docs/design/references/superadmin-agenda-approved-2026-08-31.png; decisões explícitas do Owner em 2026-08-31 e na conversa Codex 01a05d88-3187-79a3-9443-218a0c5cb8ae em 2026-09-01"
-status: "approved-for-flutter-ui"
+status: "approved"
 generated_at: "2026-09-01"
 ---
 
@@ -14,9 +14,10 @@ determinísticas de `/dev` para a Agenda institucional produtiva em
 `apps/superadmin`. Ele substitui o escopo anterior em `apps/admin` e
 `apps/principal` no recorte vigente.
 
-Backend e integração produtiva permanecem fora de escopo. Rotas normais devem
-usar a mesma composição visual de `/dev` e permanecer fail-closed quando a ação
-depender de persistência ou autorização remota.
+O backend produtivo foi autorizado posteriormente pela ADR 0029 e é regido por
+`specs/050-superadmin-agenda-backend.md`. Rotas normais usam a mesma composição
+visual de `/dev` e permanecem fail-closed até a integração correspondente ter
+evidência remota de autorização, isolamento e persistência.
 
 ## Navegação e composição
 
@@ -112,8 +113,8 @@ ownership do domínio D14.
   preenchidas ou removidas antes de salvar ou publicar.
 - Perguntas não devem solicitar dados sensíveis ou conteúdo incompatível com o
   melhor interesse da criança.
-- Persistência, respostas, retenção e autorização dessas perguntas dependem do
-  contrato backend futuro e permanecem fora deste recorte local de UI.
+- Persistência, respostas, retenção e autorização dessas perguntas seguem o
+  contrato limitado e minimizado de `specs/050-superadmin-agenda-backend.md`.
 
 ## Publicação e aprovação
 
@@ -184,7 +185,8 @@ tenant, contexto e recurso.
 - `/dev` usa fixtures determinísticas e mutações locais para exercitar estados.
 - Produção não apresenta sucesso falso; callbacks ausentes ou integrações não
   aprovadas resultam em fail-closed explícito.
-- Esta entrega não introduz Supabase nem contratos backend.
+- A entrega Flutter original não introduzia Supabase; a integração posterior é
+  autorizada e limitada pela ADR 0029 e pela spec 050.
 
 ## Action IDs
 
@@ -195,7 +197,8 @@ tenant, contexto e recurso.
 - `agenda.request`: Solicitações e Aprovações.
 - `agenda.permissions`: visualização das capacidades efetivas.
 
-O estado máximo desta entrega é `local-green` visual/Flutter.
+O estado máximo do recorte Flutter original é `local-green`; a conclusão
+integrada exige os gates remotos da spec 050.
 
 ## Critérios de aceite e testes
 
@@ -213,9 +216,8 @@ O estado máximo desta entrega é `local-green` visual/Flutter.
 
 ## Fora de escopo
 
-- Supabase, Postgres, Auth, RLS, RPCs e migrations.
-- Edge Functions, Storage, deploy e projeto remoto.
-- `packages/coelo_database` e contratos backend novos.
+- Storage/R2 e anexos da Agenda até contrato específico.
+- Edge Functions de entrega de notificações por canal.
 - Entrega real de notificações.
 - Persistência e autorização remotas.
 
