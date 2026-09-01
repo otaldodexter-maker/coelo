@@ -1,10 +1,10 @@
 ---
 title: "Circulares privadas no Principal"
 knowledge_id: "principal-circulars"
-source: "specs/037-principal-circulars.md"
+source: "specs/050-principal-ui-ux-closure.md"
 status: "validated"
 generated_at: "2026-08-21"
-updated_at: "2026-08-31"
+updated_at: "2026-09-01"
 audience: "team"
 surfaces: [principal, perfil, acontece, supabase, authorization]
 visibility: "internal"
@@ -27,6 +27,10 @@ Uma Circular publicada aparece na aba `Circulares` do Perfil e como projeção n
 Acontece, sem duplicar o conteúdo canônico. Revisões publicadas são imutáveis;
 uma correção preserva o histórico, mantém a posição original no feed e exige
 novas respostas.
+
+A entrada de Circulares pertence à área Coelo (Principal), e não à seção
+Comunicação do Superadmin. A mudança de navegação não altera as regras privadas
+de autoria, audiência, versionamento ou resposta.
 
 No web, a prévia da projeção no Acontece fica oculta por padrão e abre em popup
 somente por ação explícita. Ela não reserva uma coluna lateral permanente nem
