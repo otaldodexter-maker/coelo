@@ -1269,8 +1269,6 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.formsName,
             builder: (context, state) => FormsDirectoryPage(
               api: formsApi,
-              canManage: true,
-              onCreate: () => context.goNamed(SuperadminRoutes.formCreateName),
               onOpen: (form) => context.goNamed(
                 SuperadminRoutes.formOverviewName,
                 pathParameters: {'formId': form.id},

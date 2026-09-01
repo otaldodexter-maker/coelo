@@ -1,5 +1,5 @@
 ---
-source: "Anexos enviados pelo usuário na conversa Finalização de Telas Operações"
+source: "Anexos enviados pelo usuário na conversa Codex 01a05d88-3187-79a3-9443-218a0c5cb8ae (Finalização de Telas Operações)"
 status: evidence
 generated_at: 2026-09-01
 scope: "Superadmin > Operação"
@@ -34,7 +34,7 @@ original permite rastrear a origem em `C:/Users/adrie/AppData/Local/Temp`.
 | 19 | `19-agenda-solicitacoes-atual.png` | `codex-clipboard-bf01416e-679a-4ecf-9db4-03876d7e7483.png` | Solicitações; estado anterior da tabela. | `658124634fbb0cc058921b7ebd8413d8fa3f07b8b9cfbf3375677ff80c599f74` |
 | 20 | `20-agenda-aprovacoes-atual.png` | `codex-clipboard-9152f7ec-4a9c-414f-b761-005283e1635f.png` | Aprovações; estado anterior da tabela. | `2a37b703c0bd78203ea31645cbfd84922e6b219c19e809e269d251c75b71de37` |
 | 21 | `21-agenda-permissoes-atual.png` | `codex-clipboard-9dc63cc2-2e14-4afe-bd55-feed500ff91b.png` | Permissões; evidência para centralizar em Perfis e Permissões. | `79d434cdcd8070d49595972d53d7e9e6d995fd48dbe786fe58c539fda9e6db3b` |
-| 22 | `22-agenda-lista-atual.png` | `codex-clipboard-1145d61c-42fc-4b8e-84d6-93d10bf359b2.png` | Agenda em lista; base aprovada com ajustes de alinhamento. | `2b273688af0a97ee33cf9b5dbde1eb0579cfcb22370df71ce7ee3181404a1a00` |
+| 22 | `22-agenda-lista-atual.png` | `codex-clipboard-1145d61c-42fc-4b8e-84d6-93d10bf359b2.png` | Agenda em lista; base indicada pelo usuário para ajustes de alinhamento. | `2b273688af0a97ee33cf9b5dbde1eb0579cfcb22370df71ce7ee3181404a1a00` |
 | 23 | `23-agenda-card-lista-detalhe.png` | `codex-clipboard-5ea4af4a-ba25-41be-8d4f-d87180bc50e1.png` | Detalhe do card de evento na lista. | `c0fb76f8a2a71c6219f614d85aa6dbf179b6f96e6c4341be468a036d73a5680c` |
 | 24 | `24-agenda-item-mobile-referencia.png` | `codex-clipboard-c02a0ac4-f999-4c19-b0fd-5457222af73e.png` | Referência minimalista de item de Agenda no mobile. | `d7bd5e450c03e8367a59f65773f2fc1af2fe456887694b4aef28a8989d830dc6` |
 | 25 | `25-agenda-calendario-mobile-atual.png` | `codex-clipboard-01aa97bc-c07b-4ce0-8b0f-b8e09a673ea5.png` | Agenda mobile; estado anterior do calendário. | `1841ff4b7f86e980845644d5aea16eddbbdca8f52841d4966b95ab52cd1eee41` |

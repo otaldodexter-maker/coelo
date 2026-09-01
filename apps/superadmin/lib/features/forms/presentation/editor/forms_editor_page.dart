@@ -781,15 +781,40 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     if (mounted && _feedback != null) setState(() => _feedback = null);
   }
 
-  void _saveDraftLocally() =>
-      setState(() => _feedback = 'Rascunho mantido somente nesta sessão; nenhum dado foi enviado.');
+  void _saveDraftLocally() => setState(() {
+    final issue = _scheduleIssue;
+    _feedback = issue == null
+        ? 'Rascunho mantido somente nesta sessão ($_scheduleSummary); nenhum dado foi enviado.'
+        : 'Rascunho mantido somente nesta sessão, com agendamento incompleto: $issue Nenhum dado foi enviado.';
+  });
+
+  String? get _scheduleIssue {
+    if (!_recurring) return null;
+    if (_firstOccurrenceAt == null) return 'Informe a primeira ocorrência.';
+    if (_periodicity == _FormsEditorPeriodicity.weekly && _weekdays.isEmpty) {
+      return 'Selecione pelo menos um dia da semana.';
+    }
+    return null;
+  }
+
+  String get _scheduleSummary {
+    if (!_recurring) return 'sem recorrência';
+    final occurrence = _firstOccurrenceAt;
+    if (occurrence == null) return 'recorrência sem primeira ocorrência';
+    final days = _periodicity == _FormsEditorPeriodicity.weekly
+        ? ' em ${(_weekdays.toList()..sort()).map(_weekdayLabel).join(', ')}'
+        : '';
+    return '${_periodicityLabel(_periodicity)}$days, a partir de ${_publishDateTime(occurrence)}';
+  }
 
   void _validateLocally() {
     final issues = const FormDefinitionValidator().validate(_localDefinition());
+    final scheduleIssue = _scheduleIssue;
     setState(
-      () => _feedback = issues.isEmpty
-          ? 'Validação local concluída; a gravação remota continua indisponível.'
-          : 'Revise o título, a ordem e os campos obrigatórios antes de salvar.',
+      () => _feedback = issues.isNotEmpty
+          ? 'Revise o título, a ordem e os campos obrigatórios antes de salvar.'
+          : scheduleIssue ??
+                'Validação local concluída ($_scheduleSummary); a gravação remota continua indisponível.',
     );
   }
 
@@ -853,6 +878,11 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       setState(
         () => _feedback = 'Revise o título, a ordem e os campos obrigatórios antes de publicar.',
       );
+      return;
+    }
+    final scheduleIssue = _scheduleIssue;
+    if (scheduleIssue != null) {
+      setState(() => _feedback = scheduleIssue);
       return;
     }
     final intent = await showDialog<_FormsPublishIntent>(

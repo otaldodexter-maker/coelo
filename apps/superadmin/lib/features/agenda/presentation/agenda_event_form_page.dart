@@ -65,6 +65,7 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
   AgendaOccurrenceEditScope _occurrenceEditScope = AgendaOccurrenceEditScope.series;
   late Set<String> _reminders;
   late final List<_AgendaQuestionDraft> _questions;
+  var _nextQuestionId = 1;
   String? _feedback;
   int _step = 0;
 
@@ -104,6 +105,10 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
       for (final question in _existing?.questions ?? const <AgendaQuestion>[])
         _AgendaQuestionDraft.fromQuestion(question),
     ];
+    for (final question in _questions) {
+      final suffix = int.tryParse(question.id.split('-').last) ?? 0;
+      if (suffix >= _nextQuestionId) _nextQuestionId = suffix + 1;
+    }
   }
 
   @override
@@ -133,6 +138,12 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
         ((int.tryParse(_occurrenceCount.text.trim()) ?? 0) <= 0)) {
       setState(() {
         _feedback = 'Informe uma quantidade de ocorrências maior que zero.';
+      });
+      return;
+    }
+    if (_questions.any((question) => question.title.text.trim().isEmpty)) {
+      setState(() {
+        _feedback = 'Preencha o título de todas as perguntas ou remova as perguntas vazias.';
       });
       return;
     }
@@ -434,7 +445,7 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
       prefixIcon: Icons.place_outlined,
       onChanged: (_) => setState(() {}),
     ),
-    _LocationMapPreview(location: _location.text.trim()),
+    _LocationPreview(location: _location.text.trim()),
     CoeloAdminSingleSelectField<String>(
       key: const Key('agenda-event-recurrence'),
       label: 'Recorrência',
@@ -570,7 +581,7 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
   Widget _questionBuilder() => _AgendaQuestionsEditor(
     questions: _questions,
     onAdd: () => setState(() {
-      _questions.add(_AgendaQuestionDraft(id: 'question-${_questions.length + 1}'));
+      _questions.add(_AgendaQuestionDraft(id: 'question-${_nextQuestionId++}'));
     }),
     onRemove: (index) => setState(() {
       _questions.removeAt(index).dispose();
@@ -590,11 +601,7 @@ final class _AgendaQuestionDraft {
   final TextEditingController title;
   AgendaQuestionType type = AgendaQuestionType.shortText;
 
-  AgendaQuestion toQuestion() => AgendaQuestion(
-    id: id,
-    title: title.text.trim().isEmpty ? 'Pergunta sem título' : title.text.trim(),
-    type: type,
-  );
+  AgendaQuestion toQuestion() => AgendaQuestion(id: id, title: title.text.trim(), type: type);
 
   void dispose() => title.dispose();
 }
@@ -626,7 +633,7 @@ final class _AgendaQuestionsEditor extends StatelessWidget {
           Text('Perguntas do evento', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: CoeloSpacing.space1),
           Text(
-            'Inclua confirmações ou informações necessárias para participar.',
+            'Inclua confirmações ou informações necessárias para participar. Não solicite dados sensíveis.',
             style: Theme.of(context).textTheme.bodySmall,
           ),
           for (var index = 0; index < questions.length; index++) ...[
@@ -677,15 +684,17 @@ final class _AgendaQuestionsEditor extends StatelessWidget {
   );
 }
 
-final class _LocationMapPreview extends StatelessWidget {
-  const _LocationMapPreview({required this.location});
+final class _LocationPreview extends StatelessWidget {
+  const _LocationPreview({required this.location});
 
   final String location;
 
   @override
   Widget build(BuildContext context) => Semantics(
     container: true,
-    label: location.isEmpty ? 'Mapa do local aguardando endereço' : 'Mapa do local $location',
+    label: location.isEmpty
+        ? 'Prévia de localização aguardando endereço'
+        : 'Prévia de localização para $location',
     child: DecoratedBox(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerLow,
@@ -708,7 +717,9 @@ final class _LocationMapPreview extends StatelessWidget {
               right: CoeloSpacing.space3,
               bottom: CoeloSpacing.space2,
               child: Text(
-                location.isEmpty ? 'Informe o local para posicionar o mapa.' : location,
+                location.isEmpty
+                    ? 'Informe o local para preparar a visualização.'
+                    : 'Local informado: $location',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,

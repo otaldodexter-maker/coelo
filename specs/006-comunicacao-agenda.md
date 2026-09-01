@@ -1,8 +1,8 @@
 ---
 title: "Agenda institucional do Superadmin"
-source: "decisions/0028-superadmin-agenda-product-surface.md; docs/product/prd-master.md; docs/product/prd-superadmin.md; docs/architecture/domain-map.md; docs/design/design-system.md; docs/design/references/superadmin-agenda-approved-2026-08-31.png; decisão explícita do Owner em 2026-08-31"
+source: "decisions/0028-superadmin-agenda-product-surface.md; docs/product/prd-master.md; docs/product/prd-superadmin.md; docs/architecture/domain-map.md; docs/design/design-system.md; docs/design/references/superadmin-agenda-approved-2026-08-31.png; decisões explícitas do Owner em 2026-08-31 e na conversa Codex 01a05d88-3187-79a3-9443-218a0c5cb8ae em 2026-09-01"
 status: "approved-for-flutter-ui"
-generated_at: "2026-08-31"
+generated_at: "2026-09-01"
 ---
 
 # Agenda institucional do Superadmin
@@ -103,6 +103,17 @@ demais recebem aviso no sininho e visualizam a resposta registrada.
 
 A Agenda compõe a experiência, mas não transforma autorização simples em
 ownership do domínio D14.
+
+## Perguntas do evento
+
+- O criador pode incluir perguntas opcionais junto à descrição do evento.
+- O catálogo fechado desta etapa contém resposta curta e Sim ou Não.
+- Toda pergunta adicionada exige título não vazio; perguntas vazias devem ser
+  preenchidas ou removidas antes de salvar ou publicar.
+- Perguntas não devem solicitar dados sensíveis ou conteúdo incompatível com o
+  melhor interesse da criança.
+- Persistência, respostas, retenção e autorização dessas perguntas dependem do
+  contrato backend futuro e permanecem fora deste recorte local de UI.
 
 ## Publicação e aprovação
 

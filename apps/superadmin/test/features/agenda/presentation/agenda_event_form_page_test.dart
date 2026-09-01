@@ -74,6 +74,7 @@ void main() {
     final saved = <String>[];
     await tester.pumpWidget(_app(store: prototype, onSaved: saved.add));
 
+    expect(find.textContaining('Não solicite dados sensíveis'), findsOneWidget);
     await tester.ensureVisible(find.byKey(const Key('agenda-event-add-question')));
     await tester.tap(find.byKey(const Key('agenda-event-add-question')));
     await tester.pump();
@@ -95,6 +96,47 @@ void main() {
     final question = prototype.itemById(saved.single)!.questions.single;
     expect(question.title, 'A criança participará do passeio?');
     expect(question.type, AgendaQuestionType.yesNo);
+  });
+
+  testWidgets('pergunta vazia bloqueia salvamento e remoção não reutiliza identificador', (
+    tester,
+  ) async {
+    final prototype = store();
+    final saved = <String>[];
+    await tester.pumpWidget(_app(store: prototype, onSaved: saved.add));
+
+    await tester.ensureVisible(find.byKey(const Key('agenda-event-add-question')));
+    await tester.tap(find.byKey(const Key('agenda-event-add-question')));
+    await tester.pump();
+    await _goToReview(tester);
+    await tester.tap(find.byKey(const Key('agenda-wizard-save-draft')));
+    await tester.pump();
+
+    expect(
+      find.text('Preencha o título de todas as perguntas ou remova as perguntas vazias.'),
+      findsOneWidget,
+    );
+    expect(saved, isEmpty);
+
+    for (var index = 0; index < 3; index++) {
+      await tester.tap(find.byKey(const Key('agenda-wizard-previous')));
+      await tester.pump();
+    }
+    await tester.ensureVisible(find.byTooltip('Remover pergunta 1'));
+    await tester.tap(find.byTooltip('Remover pergunta 1'));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('agenda-event-add-question')));
+    await tester.pump();
+    await tester.enterText(
+      find.byKey(const Key('agenda-event-question-0')),
+      'A família precisa de apoio de acessibilidade?',
+    );
+    await _goToReview(tester);
+    await tester.tap(find.byKey(const Key('agenda-wizard-save-draft')));
+    await tester.pump();
+
+    expect(saved, hasLength(1));
+    expect(prototype.itemById(saved.single)!.questions.single.id, 'question-2');
   });
 
   testWidgets('respostas, política de responsáveis e lembretes seguem o contrato', (tester) async {

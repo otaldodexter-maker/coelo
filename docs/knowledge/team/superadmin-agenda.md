@@ -3,7 +3,7 @@ title: Agenda institucional do Superadmin
 knowledge_id: superadmin-agenda
 source: specs/006-comunicacao-agenda.md
 status: validated
-generated_at: 2026-08-31
+generated_at: 2026-09-01
 audience: team
 surfaces: [superadmin, agenda, events, permissions, notifications]
 visibility: internal
@@ -40,6 +40,11 @@ Cada evento escolhe nenhum retorno, RSVP, ciência ou autorização. O criador
 define se uma resposta por criança basta — opção padrão — ou se todos os
 responsáveis devem responder. Solicitações reúne esses retornos; Aprovações
 reúne pedidos de publicação de quem pode criar, mas não publicar.
+
+O evento pode incluir perguntas opcionais de resposta curta ou Sim/Não junto à
+descrição. Toda pergunta adicionada exige título e não deve solicitar dados
+sensíveis. Persistência, respostas, retenção e autorização permanecem
+dependentes de contrato backend futuro.
 
 Na criação, o autor escolhe quando lembrar (publicação, 24 horas antes, 1 hora
 antes ou horário personalizado). A seleção de canais não integra o formulário

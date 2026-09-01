@@ -202,8 +202,9 @@ void main() {
 
     await tester.tap(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'));
     await tester.pumpAndSettle();
-    final dynamic publishMode = tester.widget(find.byKey(const Key('forms-editor-publish-mode')));
-    publishMode.onChanged(publishMode.options.last);
+    await tester.tap(find.byKey(const Key('forms-editor-publish-mode')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Agendar publicação'));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('forms-editor-publish-scheduled-at')), findsOneWidget);
     expect(
@@ -220,6 +221,38 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('12/09/2026 às 08:30'), findsOneWidget);
     expect(find.textContaining('nenhuma persistência remota'), findsOneWidget);
+  });
+
+  testWidgets('recorrência incompleta bloqueia publicação e permanece explícita no rascunho', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_app(const FormsEditorPage.development()));
+
+    await tester.ensureVisible(find.byKey(const Key('forms-editor-weekdays')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('forms-editor-weekdays')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(TextButton, 'Limpar'));
+    await tester.pump();
+    await tester.tap(find.widgetWithText(FilledButton, 'Aplicar'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'));
+    await tester.pump();
+    expect(find.text('Selecione pelo menos um dia da semana.'), findsOneWidget);
+    expect(find.text('Publicar formulário'), findsNothing);
+
+    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Salvar formulário'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Salvar formulário'));
+    await tester.pump();
+    expect(find.text('Selecione pelo menos um dia da semana.'), findsOneWidget);
+
+    await tester.ensureVisible(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+    await tester.pump();
+    expect(find.textContaining('agendamento incompleto'), findsOneWidget);
+    expect(find.textContaining('Nenhum dado foi enviado'), findsOneWidget);
   });
 
   testWidgets('production exposes publication context without enabling its local flow', (

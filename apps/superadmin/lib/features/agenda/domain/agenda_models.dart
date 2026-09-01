@@ -68,16 +68,10 @@ enum GuardianResponsePolicy { oneIsEnough, allMustRespond }
 enum AgendaQuestionType { shortText, yesNo }
 
 final class AgendaQuestion {
-  const AgendaQuestion({
-    required this.id,
-    required this.title,
-    required this.type,
-    this.options = const [],
-  });
+  const AgendaQuestion({required this.id, required this.title, required this.type});
 
   final String id, title;
   final AgendaQuestionType type;
-  final List<String> options;
 }
 
 enum AgendaPublicationRequestStatus { pending, approved, rejected }
