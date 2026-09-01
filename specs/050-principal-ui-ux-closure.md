@@ -28,6 +28,12 @@ O criterio de parada e o fim do tempo aprovado ou a conclusao dos criterios de
 aceite, o que ocorrer primeiro. Pendencias restantes nao podem ser ocultadas ou
 declaradas concluidas.
 
+Em 2026-09-01 o usuario reforcou que o teto nao reduz o criterio funcional:
+`/dev` e apenas demonstracao fake. Conclusao ponta a ponta exige localhost em
+rota sem `/dev`, composicao autenticada com Supabase, RLS/ownership no servidor,
+persistencia e releitura da mutacao. O trabalho visual ja concluido permanece
+classificado somente como Flutter local ate atravessar esse gate.
+
 ## Escopo
 
 - Acontece, Para Voce, Momentos, Agora e Perfil.
@@ -169,6 +175,13 @@ conteudo de midia em logs de cliente.
 - Launchers do Principal abrem Chat funcional; abertura, envio, retorno, reload
   e negacao possuem evidencia sem duplicar repository/backend de Comunicacao.
 - Rotas `/dev` continuam deterministicas; rotas reais nao exibem fixtures.
+- Cada superficie possui rota real sem `/dev`; abrir a rota real usa contexto
+  autorizado e repository produtivo, nunca `.demo`, InMemory ou fallback fake.
+- Publicar Acontece, Agora e Momentos persiste no backend e reaparece apos
+  reload; Circulares exercita o CRUD suportado; Chat consome o backend central.
+- Pelo menos um caso permitido, negado, revogado e cross-tenant adulterado e
+  comprovado no backend para os fluxos sensiveis tocados.
+- `local-green`, schema local ou backend remoto parcial nao contam como E2E.
 - Operacoes remotas tocadas falham fechadas e respeitam RLS, tenant, audiencia
   e ownership.
 - Rastreadores Flutter, Supabase e integrado registram evidencia, bloqueios e

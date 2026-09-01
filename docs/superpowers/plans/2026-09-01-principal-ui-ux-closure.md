@@ -14,6 +14,9 @@
 - Nunito Sans, laranja semantico `#D63C00`, grafite `#3F4549` e tokens Coelo.
 - Larguras-alvo: 375, 768 e 1440 px.
 - `/dev` usa fixtures; rotas reais permanecem fail-closed e nunca fazem fallback para fixtures.
+- `/dev` nunca satisfaz o gate de conclusao. A rota real sem `/dev` deve usar
+  contexto autenticado, repository Supabase, persistencia/reload e evidencia
+  permitida/negada; caso contrario permanece aberta.
 - Nenhuma importacao de `coelo_ui_admin` nas composicoes Principal.
 - Nenhuma alteracao em `apps/admin`, `apps/site` ou `apps/principal`.
 - Nenhuma alteracao em `SuperadminShell`; o cabecalho global pertence a Estruturas.
