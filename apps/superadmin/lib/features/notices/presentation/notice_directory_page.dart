@@ -6,6 +6,7 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../../app/shell/superadmin_notice.dart';
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../domain/notice_repository.dart';
@@ -295,7 +296,36 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
           ),
         ),
       ],
-      actions: const [],
+      actions: [
+        CoeloAdminFileActions(
+          compact: compact,
+          actions: [
+            CoeloAdminFileAction(
+              label: 'Importar',
+              icon: Icons.upload_file_outlined,
+              onPressed: () => _showUnavailableFileAction('importação'),
+            ),
+            CoeloAdminFileAction(
+              label: 'Exportar CSV',
+              icon: Icons.table_rows_outlined,
+              onPressed: () => _showUnavailableFileAction('exportação'),
+            ),
+            CoeloAdminFileAction(
+              label: 'Exportar XLSX',
+              icon: Icons.grid_on_outlined,
+              onPressed: () => _showUnavailableFileAction('exportação'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  void _showUnavailableFileAction(String operation) {
+    showSuperadminNotice(
+      context,
+      'A $operation de comunicações ainda não está disponível.',
+      icon: Icons.info_outline_rounded,
     );
   }
 

@@ -219,6 +219,20 @@ void main() {
     expect(inset.padding, const EdgeInsets.all(CoeloSpacing.space10));
   });
 
+  testWidgets('exposes honest unavailable import and export actions', (tester) async {
+    await _pumpDirectory(tester, repository: _repository(), size: const Size(1440, 900));
+
+    final fileActions = tester.widget<CoeloAdminFileActions>(find.byType(CoeloAdminFileActions));
+    fileActions.actions.first.onPressed();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('A importação de comunicações ainda não está disponível.'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    expect(find.text('Importar'), findsOneWidget);
+    expect(find.text('Exportar CSV'), findsOneWidget);
+  });
+
   testWidgets('uses cards on compact width and the canonical table on medium width', (
     tester,
   ) async {
