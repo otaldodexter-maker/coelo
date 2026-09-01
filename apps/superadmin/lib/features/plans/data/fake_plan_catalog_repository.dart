@@ -1,8 +1,9 @@
 import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/prototype/superadmin_prototype_store.dart';
 import '../domain/plan_catalog.dart';
+import '../domain/plan_catalog_repository.dart';
 
-final class FakePlanCatalogRepository {
+final class FakePlanCatalogRepository implements PlanCatalogRepository {
   FakePlanCatalogRepository({
     required this.store,
     this.state = PlanDataState.ready,
@@ -14,6 +15,79 @@ final class FakePlanCatalogRepository {
   final List<PlanCatalog> _plans;
 
   List<PlanCatalog> get plans => List.unmodifiable(_plans);
+
+  @override
+  Future<PlanPage> list(PlanQuery query) async {
+    if (state == PlanDataState.loading) {
+      await Future<void>.delayed(const Duration(seconds: 1));
+    }
+    _throwForState();
+    return queryPage(query);
+  }
+
+  @override
+  Future<PlanDetails> get(String planId) async {
+    if (state == PlanDataState.loading) {
+      await Future<void>.delayed(const Duration(seconds: 1));
+    }
+    _throwForState();
+    final plan = findById(planId);
+    if (plan == null) {
+      throw const PlanRepositoryException(
+        PlanRepositoryFailureKind.validation,
+        'Plano não encontrado.',
+      );
+    }
+    return PlanDetails(plan: plan, linkedInstitutions: linkedInstitutions(planId));
+  }
+
+  @override
+  Future<PlanDetails> save(PlanSaveCommand command) async {
+    _throwForState();
+    final current = command.expectedRevision == null ? null : findById(command.draft.id);
+    if (command.expectedRevision != null && current == null) {
+      throw const PlanRepositoryException(
+        PlanRepositoryFailureKind.validation,
+        'Plano não encontrado.',
+      );
+    }
+    try {
+      if (current == null) {
+        create(
+          PlanDraft(
+            id: command.draft.id.isEmpty ? command.draft.code : command.draft.id,
+            name: command.draft.name,
+            code: command.draft.code,
+            description: command.draft.description,
+            status: command.draft.status,
+            features: command.draft.features,
+            limits: command.draft.limits,
+          ),
+          reason: command.reason,
+        );
+      } else {
+        update(
+          command.draft
+              .toPlan(usedByInstitutionCount: current.usedByInstitutionCount)
+              .copyWith(revision: command.expectedRevision),
+          reason: command.reason,
+        );
+      }
+    } on PlanConflictException {
+      throw const PlanRepositoryException(
+        PlanRepositoryFailureKind.conflict,
+        'O plano mudou desde que esta edição começou.',
+      );
+    } on ArgumentError catch (error) {
+      throw PlanRepositoryException(
+        PlanRepositoryFailureKind.validation,
+        error.message?.toString() ?? 'Dados inválidos.',
+      );
+    } on StateError catch (error) {
+      throw PlanRepositoryException(PlanRepositoryFailureKind.validation, error.message.toString());
+    }
+    return get(command.draft.id.isEmpty ? command.draft.code : command.draft.id);
+  }
 
   PlanCatalog? findById(String id) => _plans.where((plan) => plan.id == id).firstOrNull;
 
@@ -100,6 +174,28 @@ final class FakePlanCatalogRepository {
 
   List<PlanLinkedInstitution> linkedInstitutions(String planId) =>
       List.unmodifiable(_linkedInstitutions[planId] ?? const []);
+
+  void _throwForState() {
+    switch (state) {
+      case PlanDataState.ready:
+        return;
+      case PlanDataState.loading:
+        throw const PlanRepositoryException(
+          PlanRepositoryFailureKind.unavailable,
+          'O catálogo ainda está carregando.',
+        );
+      case PlanDataState.error:
+        throw const PlanRepositoryException(
+          PlanRepositoryFailureKind.unavailable,
+          'Não foi possível carregar os planos.',
+        );
+      case PlanDataState.unauthorized:
+        throw const PlanRepositoryException(
+          PlanRepositoryFailureKind.unauthorized,
+          'Acesso não autorizado.',
+        );
+    }
+  }
 
   void _validateReason(String reason) {
     if (reason.trim().isEmpty) throw ArgumentError.value(reason, 'reason', 'Informe o motivo.');

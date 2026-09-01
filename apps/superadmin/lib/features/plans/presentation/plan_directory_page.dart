@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -7,8 +9,8 @@ import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.da
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
 import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
-import '../data/fake_plan_catalog_repository.dart';
 import '../domain/plan_catalog.dart';
+import '../domain/plan_catalog_repository.dart';
 
 enum _PlanStatusFilter { all, active, archived }
 
@@ -17,7 +19,7 @@ enum _PlanAction { edit, archive, restore }
 final class PlanDirectoryPage extends StatefulWidget {
   const PlanDirectoryPage({required this.repository, this.onCreate, this.onEdit, super.key});
 
-  final FakePlanCatalogRepository repository;
+  final PlanCatalogRepository repository;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onEdit;
 
@@ -31,6 +33,24 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
   _PlanStatusFilter _status = _PlanStatusFilter.all;
   int _page = 1;
   int _pageSize = 11;
+  int _loadVersion = 0;
+  PlanDataState _dataState = PlanDataState.loading;
+  PlanPage? _loadedPage;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_load());
+  }
+
+  @override
+  void didUpdateWidget(covariant PlanDirectoryPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.repository != widget.repository) {
+      _loadedPage = null;
+      unawaited(_load());
+    }
+  }
 
   @override
   void dispose() {
@@ -44,16 +64,47 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
     _PlanStatusFilter.archived => PlanStatus.archived,
   };
 
-  void _resetQuery(VoidCallback change) => setState(() {
-    change();
-    _page = 1;
-  });
+  void _resetQuery(VoidCallback change) {
+    setState(() {
+      change();
+      _page = 1;
+    });
+    unawaited(_load());
+  }
+
+  void _changePage(int value) {
+    setState(() => _page = value);
+    unawaited(_load());
+  }
+
+  PlanQuery get _query =>
+      PlanQuery(search: _search.text, status: _selectedStatus, page: _page, pageSize: _pageSize);
+
+  Future<void> _load() async {
+    final repository = widget.repository;
+    final loadVersion = ++_loadVersion;
+    setState(() => _dataState = PlanDataState.loading);
+    try {
+      final page = await repository.list(_query);
+      if (!mounted || repository != widget.repository || loadVersion != _loadVersion) return;
+      setState(() {
+        _loadedPage = page;
+        _dataState = PlanDataState.ready;
+      });
+    } on PlanRepositoryException catch (error) {
+      if (!mounted || repository != widget.repository || loadVersion != _loadVersion) return;
+      setState(() {
+        _dataState = error.kind == PlanRepositoryFailureKind.unauthorized
+            ? PlanDataState.unauthorized
+            : PlanDataState.error;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final page = widget.repository.queryPage(
-      PlanQuery(search: _search.text, status: _selectedStatus, page: _page, pageSize: _pageSize),
-    );
+    final page =
+        _loadedPage ?? PlanPage(items: const [], totalItems: 0, page: _page, pageSize: _pageSize);
     return Padding(
       padding: const EdgeInsets.all(CoeloSpacing.space6),
       child: Column(
@@ -105,7 +156,7 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
           ),
           const SizedBox(height: CoeloSpacing.space4),
           Expanded(child: _body(page)),
-          if (widget.repository.state == PlanDataState.ready && page.totalItems > 0) ...[
+          if (_dataState == PlanDataState.ready && page.totalItems > 0) ...[
             const SizedBox(height: CoeloSpacing.space3),
             SuperadminListingPaginationFooter(
               horizontalPadding: 0,
@@ -117,13 +168,10 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
                 pageSizeOptions: _view == PlanDirectoryView.cards
                     ? const [11, 20, 50, 100]
                     : const [8, 20, 50, 100],
-                onPageSizeChanged: (value) => setState(() {
-                  _pageSize = value;
-                  _page = 1;
-                }),
-                onPrevious: _page > 1 ? () => setState(() => _page -= 1) : null,
-                onNext: _page < page.totalPages ? () => setState(() => _page += 1) : null,
-                onPageSelected: (value) => setState(() => _page = value),
+                onPageSizeChanged: (value) => _resetQuery(() => _pageSize = value),
+                onPrevious: _page > 1 ? () => _changePage(_page - 1) : null,
+                onNext: _page < page.totalPages ? () => _changePage(_page + 1) : null,
+                onPageSelected: _changePage,
               ),
             ),
           ],
@@ -132,7 +180,7 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
     );
   }
 
-  Widget _body(PlanPage page) => switch (widget.repository.state) {
+  Widget _body(PlanPage page) => switch (_dataState) {
     PlanDataState.loading => const CoeloStatePanel(
       title: 'Carregando planos',
       message: 'Aguarde enquanto preparamos o catálogo.',
@@ -143,7 +191,7 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
       message: 'Tente novamente sem perder a consulta atual.',
       icon: Icons.cloud_off_outlined,
       actionLabel: 'Tentar novamente',
-      onAction: () => setState(() {}),
+      onAction: () => unawaited(_load()),
     ),
     PlanDataState.unauthorized => const CoeloStatePanel(
       title: 'Acesso não autorizado',
@@ -352,12 +400,27 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
       ),
     );
     if (confirmed == true) {
-      if (archive) {
-        widget.repository.archive(plan.id, reason: reason.text);
-      } else {
-        widget.repository.restore(plan.id, reason: reason.text);
+      try {
+        await widget.repository.save(
+          PlanSaveCommand(
+            requestId: newPlanRequestId(),
+            expectedRevision: plan.revision,
+            reason: reason.text,
+            draft: PlanDraft(
+              id: plan.id,
+              name: plan.name,
+              code: plan.code,
+              description: plan.description,
+              status: archive ? PlanStatus.archived : PlanStatus.active,
+              features: plan.features,
+              limits: plan.limits,
+            ),
+          ),
+        );
+        if (mounted) await _load();
+      } on PlanRepositoryException catch (_) {
+        if (mounted) setState(() => _dataState = PlanDataState.error);
       }
-      if (mounted) setState(() {});
     }
     reason.dispose();
   }

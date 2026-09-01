@@ -367,6 +367,48 @@ void main() {
     expect(find.text('Acesso não autorizado'), findsOneWidget);
   });
 
+  testWidgets('edit shows explicit loading, error and unauthorized states', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      _app(
+        PlanFormPage(
+          key: const ValueKey('loading-plan-form'),
+          repository: _repository(state: PlanDataState.loading),
+          planId: 'coelo-essential',
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    await tester.pump(const Duration(seconds: 1));
+
+    await tester.pumpWidget(
+      _app(
+        PlanFormPage(
+          key: const ValueKey('error-plan-form'),
+          repository: _repository(state: PlanDataState.error),
+          planId: 'coelo-essential',
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Não foi possível carregar o plano'), findsOneWidget);
+
+    await tester.pumpWidget(
+      _app(
+        PlanFormPage(
+          key: const ValueKey('unauthorized-plan-form'),
+          repository: _repository(state: PlanDataState.unauthorized),
+          planId: 'coelo-essential',
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Acesso não autorizado'), findsOneWidget);
+  });
+
   testWidgets('create completes review with an audit reason and saves once', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));

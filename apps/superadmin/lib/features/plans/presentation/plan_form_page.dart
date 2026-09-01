@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -6,8 +8,8 @@ import 'package:flutter/services.dart';
 
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
-import '../data/fake_plan_catalog_repository.dart';
 import '../domain/plan_catalog.dart';
+import '../domain/plan_catalog_repository.dart';
 import 'widgets/plan_capability_matrix.dart';
 
 final class PlanFormPage extends StatefulWidget {
@@ -19,7 +21,7 @@ final class PlanFormPage extends StatefulWidget {
     super.key,
   });
 
-  final FakePlanCatalogRepository repository;
+  final PlanCatalogRepository repository;
   final String? planId;
   final VoidCallback? onSaved;
   final VoidCallback? onCancel;
@@ -39,7 +41,9 @@ final class _PlanFormPageState extends State<PlanFormPage> {
   late final TextEditingController _media;
   late final TextEditingController _reason;
   final _capabilitySearch = TextEditingController();
-  late final PlanCatalog? _original;
+  PlanCatalog? _original;
+  List<PlanLinkedInstitution> _linked = const [];
+  PlanDataState _loadState = PlanDataState.loading;
   late Set<PlanFeature> _features;
   late PlanStatus _status;
   int _step = 0;
@@ -66,18 +70,50 @@ final class _PlanFormPageState extends State<PlanFormPage> {
   @override
   void initState() {
     super.initState();
-    _original = widget.planId == null ? null : widget.repository.findById(widget.planId!);
-    final plan = _original;
-    _name = TextEditingController(text: plan?.name ?? '');
-    _code = TextEditingController(text: plan?.code ?? '');
-    _description = TextEditingController(text: plan?.description ?? '');
-    _units = TextEditingController(text: '${plan?.limits.units ?? 1}');
-    _memberships = TextEditingController(text: '${plan?.limits.memberships ?? 100}');
-    _storage = TextEditingController(text: '${plan?.limits.storageGb ?? 10}');
-    _media = TextEditingController(text: '${plan?.limits.mediaGb ?? 2}');
+    _name = TextEditingController();
+    _code = TextEditingController();
+    _description = TextEditingController();
+    _units = TextEditingController(text: '1');
+    _memberships = TextEditingController(text: '100');
+    _storage = TextEditingController(text: '10');
+    _media = TextEditingController(text: '2');
     _reason = TextEditingController();
-    _features = {...?plan?.features};
-    _status = plan?.status ?? PlanStatus.active;
+    _features = {};
+    _status = PlanStatus.active;
+    if (widget.planId == null) {
+      _loadState = PlanDataState.ready;
+    } else {
+      unawaited(_loadPlan());
+    }
+  }
+
+  Future<void> _loadPlan() async {
+    setState(() => _loadState = PlanDataState.loading);
+    try {
+      final details = await widget.repository.get(widget.planId!);
+      if (!mounted) return;
+      setState(() {
+        _original = details.plan;
+        _linked = details.linkedInstitutions;
+        _name.text = details.plan.name;
+        _code.text = details.plan.code;
+        _description.text = details.plan.description;
+        _units.text = '${details.plan.limits.units}';
+        _memberships.text = '${details.plan.limits.memberships}';
+        _storage.text = '${details.plan.limits.storageGb}';
+        _media.text = '${details.plan.limits.mediaGb}';
+        _features = {...details.plan.features};
+        _status = details.plan.status;
+        _loadState = PlanDataState.ready;
+      });
+    } on PlanRepositoryException catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _loadState = error.kind == PlanRepositoryFailureKind.unauthorized
+            ? PlanDataState.unauthorized
+            : PlanDataState.error;
+      });
+    }
   }
 
   @override
@@ -95,102 +131,125 @@ final class _PlanFormPageState extends State<PlanFormPage> {
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-      final navigation = SuperadminFormStepNavigation(
-        steps: [
-          for (var index = 0; index < _stepLabels.length; index++)
-            SuperadminFormStep(
-              label: _stepLabels[index],
-              status:
-                  index == 1 && _capabilityError ||
-                      index == _reviewStep && index == _step && _auditReasonError
-                  ? SuperadminFormStepStatus.error
-                  : index == _step
-                  ? SuperadminFormStepStatus.current
-                  : index < _step
-                  ? SuperadminFormStepStatus.complete
-                  : SuperadminFormStepStatus.incomplete,
-              enabled: index <= _furthestStep,
-            ),
-        ],
-        currentIndex: _step,
-        onStepSelected: (value) => setState(() => _step = value),
-      );
-      final content = Expanded(
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 880),
-            child: Column(
-              key: const Key('plan-form-content-column'),
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
-                    child: _stepContent(),
-                  ),
-                ),
-                const SizedBox(height: CoeloSpacing.space3),
-                SuperadminFormActionFooter(
-                  tertiaryAction: TextButton(
-                    onPressed: _saving ? null : widget.onCancel,
-                    child: const Text('Cancelar'),
-                  ),
-                  continuationActions: [
-                    if (_step > 0)
-                      OutlinedButton(
-                        onPressed: _saving ? null : () => setState(() => _step -= 1),
-                        child: const Text('Voltar'),
-                      ),
-                    FilledButton(
-                      onPressed: _saving ? null : (_step == _reviewStep ? _save : _continue),
-                      child: Text(
-                        _saving
-                            ? 'Salvando…'
-                            : _step == _reviewStep
-                            ? 'Salvar plano'
-                            : 'Continuar',
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
+  Widget build(BuildContext context) {
+    if (widget.planId != null && _loadState != PlanDataState.ready) {
       return Padding(
         padding: const EdgeInsets.all(CoeloSpacing.space6),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: compact
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        navigation,
-                        const SizedBox(height: CoeloSpacing.space4),
-                        content,
-                      ],
-                    )
-                  : Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        navigation,
-                        const SizedBox(width: CoeloSpacing.space6),
-                        content,
-                      ],
-                    ),
-            ),
-          ],
+        child: CoeloStatePanel(
+          title: _loadState == PlanDataState.unauthorized
+              ? 'Acesso não autorizado'
+              : _loadState == PlanDataState.error
+              ? 'Não foi possível carregar o plano'
+              : 'Carregando plano',
+          message: _loadState == PlanDataState.unauthorized
+              ? 'Você não possui autorização para consultar este plano.'
+              : _loadState == PlanDataState.error
+              ? 'Tente novamente sem perder a navegação atual.'
+              : 'Aguarde enquanto preparamos a edição.',
+          icon: _loadState == PlanDataState.loading ? null : Icons.cloud_off_outlined,
+          loading: _loadState == PlanDataState.loading,
+          actionLabel: _loadState == PlanDataState.error ? 'Tentar novamente' : null,
+          onAction: _loadState == PlanDataState.error ? () => unawaited(_loadPlan()) : null,
         ),
       );
-    },
-  );
+    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+        final navigation = SuperadminFormStepNavigation(
+          steps: [
+            for (var index = 0; index < _stepLabels.length; index++)
+              SuperadminFormStep(
+                label: _stepLabels[index],
+                status:
+                    index == 1 && _capabilityError ||
+                        index == _reviewStep && index == _step && _auditReasonError
+                    ? SuperadminFormStepStatus.error
+                    : index == _step
+                    ? SuperadminFormStepStatus.current
+                    : index < _step
+                    ? SuperadminFormStepStatus.complete
+                    : SuperadminFormStepStatus.incomplete,
+                enabled: index <= _furthestStep,
+              ),
+          ],
+          currentIndex: _step,
+          onStepSelected: (value) => setState(() => _step = value),
+        );
+        final content = Expanded(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 880),
+              child: Column(
+                key: const Key('plan-form-content-column'),
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
+                      child: _stepContent(),
+                    ),
+                  ),
+                  const SizedBox(height: CoeloSpacing.space3),
+                  SuperadminFormActionFooter(
+                    tertiaryAction: TextButton(
+                      onPressed: _saving ? null : widget.onCancel,
+                      child: const Text('Cancelar'),
+                    ),
+                    continuationActions: [
+                      if (_step > 0)
+                        OutlinedButton(
+                          onPressed: _saving ? null : () => setState(() => _step -= 1),
+                          child: const Text('Voltar'),
+                        ),
+                      FilledButton(
+                        onPressed: _saving ? null : (_step == _reviewStep ? _save : _continue),
+                        child: Text(
+                          _saving
+                              ? 'Salvando…'
+                              : _step == _reviewStep
+                              ? 'Salvar plano'
+                              : 'Continuar',
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+        return Padding(
+          padding: const EdgeInsets.all(CoeloSpacing.space6),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: compact
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          navigation,
+                          const SizedBox(height: CoeloSpacing.space4),
+                          content,
+                        ],
+                      )
+                    : Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          navigation,
+                          const SizedBox(width: CoeloSpacing.space6),
+                          content,
+                        ],
+                      ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   Widget _stepContent() {
     if (_step == 0) return _identity();
@@ -318,7 +377,7 @@ final class _PlanFormPageState extends State<PlanFormPage> {
       );
 
   Widget _linkedInstitutions() {
-    final linked = widget.repository.linkedInstitutions(_original!.id);
+    final linked = _linked;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -467,21 +526,13 @@ final class _PlanFormPageState extends State<PlanFormPage> {
         storageGb: int.parse(_storage.text),
         mediaGb: int.parse(_media.text),
       );
-      if (_original case final original?) {
-        widget.repository.update(
-          original.copyWith(
-            name: _name.text.trim(),
-            description: _description.text.trim(),
-            status: _status,
-            features: Set.unmodifiable(_features),
-            limits: limits,
-          ),
+      final saved = await widget.repository.save(
+        PlanSaveCommand(
+          requestId: newPlanRequestId(),
+          expectedRevision: _original?.revision,
           reason: _reason.text,
-        );
-      } else {
-        widget.repository.create(
-          PlanDraft(
-            id: _code.text.trim(),
+          draft: PlanDraft(
+            id: _original?.id ?? '',
             name: _name.text.trim(),
             code: _code.text.trim(),
             description: _description.text.trim(),
@@ -489,16 +540,17 @@ final class _PlanFormPageState extends State<PlanFormPage> {
             features: Set.unmodifiable(_features),
             limits: limits,
           ),
-          reason: _reason.text,
-        );
-      }
+        ),
+      );
+      _original = saved.plan;
+      _linked = saved.linkedInstitutions;
       widget.onSaved?.call();
-    } on PlanConflictException {
+    } on PlanRepositoryException catch (error) {
       setState(() {
-        _conflictMessage = 'O plano mudou desde que esta edição começou. Seu draft foi preservado.';
+        _conflictMessage = error.kind == PlanRepositoryFailureKind.conflict
+            ? 'O plano mudou desde que esta edição começou. Seu draft foi preservado.'
+            : error.message;
       });
-    } on StateError catch (error) {
-      setState(() => _conflictMessage = error.message.toString());
     } finally {
       if (mounted) setState(() => _saving = false);
     }
