@@ -1,5 +1,189 @@
 import '../../features/people/domain/person_directory.dart';
 import '../../features/institutions/data/fake_institution_directory_repository.dart';
+import 'development_access_health_fixture_catalog.dart';
+
+List<PersonDirectoryItem> _buildSamplePeople(DevelopmentAccessHealthFixtureCatalog catalog) {
+  final institutionsById = {for (final item in demoInstitutionRecords) item.id: item};
+  final guardianIds = catalog.guardians.map((item) => item.id).toSet();
+  final teamById = {for (final item in catalog.teamMembers) item.id: item};
+
+  PersonMembership membership({
+    required String personId,
+    required String institutionId,
+    required String role,
+    DevelopmentChildFixture? child,
+  }) {
+    final institution = institutionsById[institutionId]!;
+    final unit = child == null
+        ? institution.units.first
+        : institution.units.firstWhere(
+            (item) => item.id == child.unitId,
+            orElse: () => institution.units.first,
+          );
+    final group = child == null
+        ? unit.groups.first
+        : unit.groups.firstWhere(
+            (item) => item.id == child.groupId,
+            orElse: () => unit.groups.first,
+          );
+    return PersonMembership(
+      id: 'membership-$personId-$role-$institutionId',
+      institutionId: institution.id,
+      institutionName: institution.publicName,
+      unitId: unit.id,
+      unitName: unit.name,
+      groupId: group.id,
+      groupName: group.name,
+      role: role,
+    );
+  }
+
+  final children = <PersonDirectoryItem>[
+    for (var index = 0; index < catalog.children.length; index++)
+      () {
+        final child = catalog.children[index];
+        final names = _personNameParts(child.name);
+        final institution = institutionsById[child.institutionId]!;
+        return PersonDirectoryItem(
+          id: child.id,
+          firstName: names.$1,
+          lastName: names.$2,
+          displayName: child.name,
+          legalName: child.name,
+          type: PersonType.child,
+          status: PersonStatus.active,
+          memberships: [
+            membership(
+              personId: child.id,
+              institutionId: child.institutionId,
+              role: 'student',
+              child: child,
+            ),
+          ],
+          guardianLinksSummary: '${child.guardianIds.length} responsáveis vinculados',
+          linkedGuardiansCount: child.guardianIds.length,
+          stateCode: institution.state,
+          municipalityId: _municipalityId(institution.city),
+          neighborhoodId: _neighborhoodId(institution.district),
+          updatedAt: DateTime.utc(2026, 7, 29, 12).add(Duration(seconds: index)),
+        );
+      }(),
+  ];
+
+  final adults = <PersonDirectoryItem>[
+    for (var index = 0; index < catalog.guardians.length; index++)
+      () {
+        final adult = catalog.guardians[index];
+        final names = _personNameParts(adult.name);
+        final linkedChildren = catalog.children
+            .where((child) => child.guardianIds.contains(adult.id))
+            .toList(growable: false);
+        final isDualProfile = adult.profileCodes.contains('institution_collaborator');
+        final contextualInstitutionIds = {
+          ...adult.institutionIds,
+          ...linkedChildren.map((child) => child.institutionId),
+        };
+        final memberships = <PersonMembership>[
+          for (final institutionId in contextualInstitutionIds)
+            membership(
+              personId: adult.id,
+              institutionId: institutionId,
+              role: 'guardian',
+              child: linkedChildren
+                  .where((child) => child.institutionId == institutionId)
+                  .firstOrNull,
+            ),
+          if (isDualProfile)
+            membership(
+              personId: adult.id,
+              institutionId: teamById[adult.id]?.institutionIds.first ?? adult.institutionIds.first,
+              role: 'educator',
+              child: linkedChildren.firstOrNull,
+            ),
+        ];
+        final institution = institutionsById[adult.institutionIds.first]!;
+        return PersonDirectoryItem(
+          id: adult.id,
+          firstName: names.$1,
+          lastName: names.$2,
+          displayName: adult.name,
+          legalName: adult.name,
+          type: PersonType.adult,
+          status: index % 17 == 0 ? PersonStatus.draft : PersonStatus.active,
+          authLink: index % 6 == 0 ? AuthLinkStatus.pending : AuthLinkStatus.linked,
+          maskedContact: _maskedEmail(adult.email),
+          memberships: memberships,
+          childContexts: [
+            for (final child in linkedChildren)
+              PersonChildContext(
+                id: child.id,
+                institutionId: child.institutionId,
+                institutionName: child.institutionName,
+                unitId: child.unitId,
+                unitName: child.unitName,
+                groupId: child.groupId,
+                groupName: child.groupName,
+              ),
+          ],
+          linkedChildrenCount: linkedChildren.length,
+          accompaniedStudentsCount: isDualProfile ? 8 + index % 9 : 0,
+          linkedGuardiansCount: isDualProfile ? 6 + index % 5 : 0,
+          stateCode: institution.state,
+          municipalityId: _municipalityId(institution.city),
+          neighborhoodId: _neighborhoodId(institution.district),
+          updatedAt: DateTime.utc(2026, 7, 29, 13).add(Duration(seconds: index)),
+        );
+      }(),
+    for (var index = 0; index < catalog.teamMembers.length; index++)
+      if (!guardianIds.contains(catalog.teamMembers[index].id))
+        () {
+          final adult = catalog.teamMembers[index];
+          final names = _personNameParts(adult.name);
+          final institution = institutionsById[adult.institutionIds.first]!;
+          return PersonDirectoryItem(
+            id: adult.id,
+            firstName: names.$1,
+            lastName: names.$2,
+            displayName: adult.name,
+            legalName: adult.name,
+            type: PersonType.adult,
+            status: PersonStatus.active,
+            authLink: AuthLinkStatus.linked,
+            maskedContact: _maskedEmail(adult.email),
+            memberships: [
+              membership(
+                personId: adult.id,
+                institutionId: adult.institutionIds.first,
+                role: 'educator',
+              ),
+            ],
+            accompaniedStudentsCount: 10 + index % 8,
+            linkedGuardiansCount: 6 + index % 5,
+            stateCode: institution.state,
+            municipalityId: _municipalityId(institution.city),
+            neighborhoodId: _neighborhoodId(institution.district),
+            updatedAt: DateTime.utc(2026, 7, 29, 14).add(Duration(seconds: index)),
+          );
+        }(),
+  ];
+
+  return List.unmodifiable([...children, ...adults]);
+}
+
+(String, String) _personNameParts(String name) {
+  final parts = name.trim().split(RegExp(r'\s+'));
+  return (parts.first, parts.skip(1).join(' '));
+}
+
+String _municipalityId(String city) => 'municipality-${city.toLowerCase().replaceAll(' ', '-')}';
+String _neighborhoodId(String district) =>
+    'neighborhood-${district.toLowerCase().replaceAll(' ', '-')}';
+
+String _maskedEmail(String email) {
+  final at = email.indexOf('@');
+  if (at <= 1) return '***';
+  return '${email[0]}***${email.substring(at)}';
+}
 
 /// Deterministic repository used only by the authenticated development preview.
 final class DevelopmentPersonDirectoryRepository implements PersonDirectoryRepository {
@@ -15,117 +199,7 @@ final class DevelopmentPersonDirectoryRepository implements PersonDirectoryRepos
   final bool unauthorized;
   final List<PersonDirectoryItem> people;
 
-  static final samplePeople = List<PersonDirectoryItem>.generate(400, (index) {
-    final institution = demoInstitutionRecords[index % demoInstitutionRecords.length];
-    final unit = institution.units[index % institution.units.length];
-    final group = unit.groups[index % unit.groups.length];
-    final secondaryInstitution =
-        demoInstitutionRecords[(index + 3) % demoInstitutionRecords.length];
-    final secondaryUnit =
-        secondaryInstitution.units[(index + 1) % secondaryInstitution.units.length];
-    final secondaryGroup = secondaryUnit.groups[(index + 2) % secondaryUnit.groups.length];
-    final type = index % 37 == 0
-        ? PersonType.service
-        : index % 5 < 2
-        ? PersonType.child
-        : PersonType.adult;
-    final dualProfile = type == PersonType.adult && index % 7 == 0;
-    final primaryRole = type == PersonType.child
-        ? 'student'
-        : type == PersonType.service
-        ? 'integration'
-        : dualProfile
-        ? 'guardian'
-        : index.isEven
-        ? 'educator'
-        : 'guardian';
-    return PersonDirectoryItem(
-      id: 'person-$index',
-      firstName: type == PersonType.service ? null : 'Pessoa',
-      lastName: type == PersonType.service ? null : '${index + 1}',
-      displayName: switch (type) {
-        PersonType.adult =>
-          index.isEven ? 'Educador Coelo ${index + 1}' : 'Responsável Coelo ${index + 1}',
-        PersonType.child => 'Criança Coelo ${index + 1}',
-        PersonType.service => 'Serviço Coelo ${index + 1}',
-      },
-      legalName: type == PersonType.service ? null : 'Pessoa Coelo ${index + 1}',
-      type: type,
-      status: index % 4 == 0 ? PersonStatus.draft : PersonStatus.active,
-      authLink: type == PersonType.adult && index.isEven
-          ? AuthLinkStatus.linked
-          : AuthLinkStatus.unlinked,
-      maskedContact: type == PersonType.child
-          ? null
-          : index.isEven
-          ? 'p***${index + 1}@exemplo.test'
-          : '(11) 9****-${(1000 + index).toString().padLeft(4, '0')}',
-      stateCode: index.isEven ? 'SP' : 'RJ',
-      municipalityId: index.isEven ? 'municipality-sp' : 'municipality-rj',
-      neighborhoodId: index.isEven ? 'neighborhood-centro' : 'neighborhood-jardim',
-      memberships: [
-        PersonMembership(
-          id: 'membership-$index-a',
-          institutionId: institution.id,
-          institutionName: institution.publicName,
-          unitId: unit.id,
-          unitName: unit.name,
-          groupId: group.id,
-          groupName: group.name,
-          activityId: 'activity-${index % 30 + 1}',
-          activityName: index.isEven ? 'Música' : 'Robótica',
-          role: primaryRole,
-        ),
-        PersonMembership(
-          id: 'membership-$index-b',
-          institutionId: secondaryInstitution.id,
-          institutionName: secondaryInstitution.publicName,
-          unitId: secondaryUnit.id,
-          unitName: secondaryUnit.name,
-          groupId: secondaryGroup.id,
-          groupName: secondaryGroup.name,
-          activityId: 'activity-${(index + 11) % 30 + 1}',
-          activityName: index.isEven ? 'Teatro' : 'Leitura',
-          role: type == PersonType.service
-              ? 'integration'
-              : dualProfile
-              ? 'educator'
-              : 'member',
-        ),
-      ],
-      childContexts: type == PersonType.adult && (primaryRole == 'guardian' || dualProfile)
-          ? [
-              for (var childIndex = 0; childIndex < index % 3 + 1; childIndex++)
-                PersonChildContext(
-                  id: 'child-context-$index-$childIndex',
-                  institutionId: institution.id,
-                  institutionName: institution.publicName,
-                  unitId: unit.id,
-                  unitName: unit.name,
-                  groupId: unit.groups[(index + childIndex) % unit.groups.length].id,
-                  groupName: unit.groups[(index + childIndex) % unit.groups.length].name,
-                ),
-            ]
-          : const [],
-      platformMembershipSummary: type == PersonType.service ? 'Serviço interno' : null,
-      guardianLinksSummary: type == PersonType.child
-          ? '${2 + index % 2} responsáveis vinculados'
-          : null,
-      linkedChildrenCount: type == PersonType.adult && primaryRole == 'guardian'
-          ? index % 3 + 1
-          : 0,
-      accompaniedStudentsCount:
-          type == PersonType.adult && (primaryRole == 'educator' || dualProfile)
-          ? 8 + index % 9
-          : 0,
-      linkedGuardiansCount: type == PersonType.child
-          ? 2
-          : type == PersonType.adult && (primaryRole == 'educator' || dualProfile)
-          ? 6 + index % 5
-          : 0,
-      updatedAt: DateTime.utc(2026, 7, 29, 12, 0, index),
-    );
-  });
+  static final samplePeople = _buildSamplePeople(DevelopmentAccessHealthFixtureCatalog.standard());
 
   void _guard() {
     if (unauthorized) throw const PersonDirectoryUnauthorizedException();
