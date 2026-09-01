@@ -13,7 +13,6 @@ import '../dev_menu/development_assessment_repository.dart';
 import '../dev_menu/development_activity_fixture_repository.dart';
 import '../dev_menu/development_access_health_fixture_catalog.dart';
 import '../dev_menu/development_attendance_repository.dart';
-import '../dev_menu/development_circular_reader_repository.dart';
 import '../dev_menu/development_invite_repository.dart';
 import '../dev_menu/development_routine_repository.dart';
 import '../dev_menu/development_student_tracking_repository.dart';
@@ -81,8 +80,14 @@ import '../../features/daily_routine/daily_routine.dart';
 import '../../features/daily_routine/daily_routine_pages.dart';
 import '../../features/catalog/presentation/catalog_host_page.dart';
 import '../../features/chat/data/development_chat_repository.dart';
+import '../../features/chat/domain/chat_repository.dart';
 import '../../features/chat/presentation/screens/superadmin_chat_page.dart';
+import '../../features/circulars/data/development_circular_repository.dart';
+import '../../features/circulars/domain/superadmin_circular_repository.dart';
 import '../../features/circulars/presentation/circular_directory_page.dart';
+import '../../features/circulars/presentation/development_circular_composer_host.dart';
+import '../../features/circulars/presentation/production_circular_hosts.dart';
+import '../../features/circulars/presentation/superadmin_circular_detail_page.dart';
 import '../../features/errors/presentation/screens/superadmin_error_screen.dart';
 import '../../features/forms/presentation/editor/forms_editor_page.dart';
 import '../../features/forms/data/development_forms_api.dart';
@@ -122,11 +127,6 @@ import '../../features/notices/domain/notice_repository.dart'
 import '../../features/notices/data/development_notice_repository.dart';
 import '../../features/notices/presentation/notice_directory_page.dart';
 import '../../features/notices/presentation/notice_form_page.dart';
-import '../../features/principal_circulars/application/circular_composer_controller.dart';
-import '../../features/principal_circulars/domain/circular.dart';
-import '../../features/principal_circulars/domain/circular_repository.dart';
-import '../../features/principal_circulars/presentation/principal_circular_composer_page.dart';
-import '../../features/principal_circulars/presentation/principal_circular_detail_page.dart';
 import '../../features/plans/data/fake_plan_catalog_repository.dart';
 import '../../features/plans/domain/plan_catalog_repository.dart';
 import '../../features/plans/presentation/plan_directory_page.dart';
@@ -231,6 +231,8 @@ GoRouter createSuperadminRouter({
   ImportRepository importRepository = const UnavailableImportRepository(),
   PlanCatalogRepository planCatalogRepository = const UnavailablePlanCatalogRepository(),
   AgendaRepository? agendaRepository,
+  ChatRepository chatRepository = const UnavailableChatRepository(),
+  SuperadminCircularRepository circularRepository = const UnavailableSuperadminCircularRepository(),
   InviteRepository inviteRepository = const UnavailableInviteRepository(),
   NoticeRepository noticeRepository = const UnavailableNoticeRepository(),
   AttendanceRepository attendanceRepository = const UnavailableAttendanceRepository(),
@@ -316,6 +318,9 @@ GoRouter createSuperadminRouter({
   DevelopmentInviteRepository? cachedInvitePreviewRepository;
   DevelopmentInviteRepository invitePreviewRepository() =>
       cachedInvitePreviewRepository ??= DevelopmentInviteRepository();
+  DevelopmentCircularRepository? cachedCircularPreviewRepository;
+  DevelopmentCircularRepository circularPreviewRepository() =>
+      cachedCircularPreviewRepository ??= DevelopmentCircularRepository();
   const productionActivityAboutRepository = UnavailableActivityProfileAboutRepository();
   final developmentActivityStore = DevActivitySessionStore.content();
   final developmentActivityDirectoryRepository = DevActivityDirectoryRepository(
@@ -492,7 +497,19 @@ GoRouter createSuperadminRouter({
     );
   }
 
-  bool hasAuthoritativeMutationCapability() => false;
+  bool hasAuthoritativeMutationCapability([String location = '']) {
+    if (location.startsWith('/invites')) {
+      return inviteRepository is! UnavailableInviteRepository;
+    }
+    if (location.startsWith('/notices')) {
+      return noticeRepository is! UnavailableNoticeRepository;
+    }
+    if (location.startsWith('/circulars')) {
+      return circularRepository is! UnavailableSuperadminCircularRepository;
+    }
+    return false;
+  }
+
   bool hasAssessmentMutationCapability() => enableAssessmentMutations;
   bool hasStructureMutationCapability() => enableStructureMutations;
   void openAgendaArea(BuildContext context, AgendaModuleArea area, {required bool development}) {
@@ -623,7 +640,7 @@ GoRouter createSuperadminRouter({
               ? hasAssessmentMutationCapability()
               : _isStructureMutationLocation(location)
               ? hasStructureMutationCapability()
-              : hasAuthoritativeMutationCapability())) {
+              : hasAuthoritativeMutationCapability(location))) {
         return _productionMutationUnavailablePath;
       }
       return null;
@@ -640,30 +657,6 @@ GoRouter createSuperadminRouter({
           onClose: () => _closePrincipalViewer(context),
           onOpenHappens: () => _closePrincipalViewer(context),
           onCreate: () => context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName),
-        ),
-      ),
-      GoRoute(
-        path: SuperadminRoutes.circularDetail,
-        name: SuperadminRoutes.circularDetailName,
-        builder: (context, state) => PrincipalCircularDetailPage(
-          circularId: state.pathParameters['circularId']!,
-          repository: const UnavailableCircularRepository(),
-          responseRepository: const UnavailableCircularResponseRepository(),
-          onReturn: () =>
-              _returnFromCircularReader(context, fallbackRouteName: SuperadminRoutes.circularsName),
-        ),
-      ),
-      GoRoute(
-        path: SuperadminRoutes.devCircularDetail,
-        name: SuperadminRoutes.devCircularDetailName,
-        builder: (context, state) => PrincipalCircularDetailPage(
-          circularId: state.pathParameters['circularId']!,
-          repository: const DevelopmentCircularReaderRepository(),
-          responseRepository: const UnavailableCircularResponseRepository(),
-          onReturn: () => _returnFromCircularReader(
-            context,
-            fallbackRouteName: SuperadminRoutes.devCircularsName,
-          ),
         ),
       ),
       ShellRoute(
@@ -2075,6 +2068,7 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.conversationsName,
             builder: (context, state) => SuperadminChatPage(
               logout: logout,
+              chatRepository: chatRepository,
               onBack: () {
                 final origin = state.uri.queryParameters['from'];
                 context.goNamed(switch (origin) {
@@ -3741,9 +3735,12 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.invitesName,
             builder: (context, state) => InviteDirectoryPage(
               repository: inviteRepository,
+              allowCommands: inviteRepository is! UnavailableInviteRepository,
               logout: logout,
               onDestinationSelected: (value) => _navigateFromPersistentShell(context, value),
-              onCreate: null,
+              onCreate: inviteRepository is UnavailableInviteRepository
+                  ? null
+                  : () => context.goNamed(SuperadminRoutes.inviteCreateName),
               onOpen: (id) => context.goNamed(
                 SuperadminRoutes.inviteDetailName,
                 pathParameters: {'inviteId': id},
@@ -3753,7 +3750,8 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.inviteCreate,
             name: SuperadminRoutes.inviteCreateName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) =>
+                !hasAuthoritativeMutationCapability(SuperadminRoutes.inviteCreate)
                 ? blockedProductionMutationPage(context)
                 : InviteFormPage(
                     repository: inviteRepository,
@@ -3820,16 +3818,24 @@ GoRouter createSuperadminRouter({
               destination: 'notices',
               child: NoticeDirectoryPage(
                 repository: noticeRepository,
-                onCreate: null,
-                onEdit: null,
-                canManageLifecycle: false,
+                onCreate: noticeRepository is UnavailableNoticeRepository
+                    ? null
+                    : () => context.goNamed(SuperadminRoutes.noticeCreateName),
+                onEdit: noticeRepository is UnavailableNoticeRepository
+                    ? null
+                    : (id) => context.goNamed(
+                        SuperadminRoutes.noticeEditName,
+                        pathParameters: {'noticeId': id},
+                      ),
+                canManageLifecycle: noticeRepository is! UnavailableNoticeRepository,
               ),
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.noticeCreate,
             name: SuperadminRoutes.noticeCreateName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) =>
+                !hasAuthoritativeMutationCapability(SuperadminRoutes.noticeCreate)
                 ? blockedProductionMutationPage(context)
                 : productionOperationalPage(
                     context,
@@ -3846,7 +3852,8 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.noticeEdit,
             name: SuperadminRoutes.noticeEditName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) =>
+                !hasAuthoritativeMutationCapability(SuperadminRoutes.noticeEdit)
                 ? blockedProductionMutationPage(context)
                 : productionOperationalPage(
                     context,
@@ -3915,48 +3922,158 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.circulars,
             name: SuperadminRoutes.circularsName,
-            builder: (context, state) => CircularDirectoryPage(
-              items: const [],
-              viewState: CircularDirectoryViewState.forbidden,
-              onOpen: (id) => context.pushNamed(
-                SuperadminRoutes.circularDetailName,
-                pathParameters: {'circularId': id},
+            builder: (context, state) => productionOperationalPage(
+              context,
+              title: 'Circulares',
+              subtitle: 'Crie, publique e acompanhe Circulares institucionais.',
+              destination: 'circulars',
+              child: ProductionCircularDirectoryHost(
+                repository: circularRepository,
+                onCreate: () => context.goNamed(SuperadminRoutes.circularCreateName),
+                onOpen: (id) => context.pushNamed(
+                  SuperadminRoutes.circularDetailName,
+                  pathParameters: {'circularId': id},
+                ),
               ),
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.circularCreate,
             name: SuperadminRoutes.circularCreateName,
-            builder: (context, state) => blockedProductionMutationPage(context),
+            builder: (context, state) => productionOperationalPage(
+              context,
+              title: 'Publicar Circular',
+              subtitle: 'Prepare o conteúdo, o público e a publicação.',
+              destination: 'circular-create',
+              child: ProductionCircularComposerHost(
+                repository: circularRepository,
+                institutionRepository: institutionDirectoryRepository,
+                onCancel: () => context.goNamed(SuperadminRoutes.circularsName),
+                onDone: () => context.goNamed(SuperadminRoutes.circularsName),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.circularDetail,
+            name: SuperadminRoutes.circularDetailName,
+            builder: (context, state) => productionOperationalPage(
+              context,
+              title: 'Circular',
+              subtitle: 'Consulte conteúdo, contexto e respostas da Circular.',
+              destination: 'circulars',
+              child: SuperadminCircularDetailPage(
+                circularId: state.pathParameters['circularId']!,
+                repository: circularRepository,
+                onBack: () => _returnFromCircularReader(
+                  context,
+                  fallbackRouteName: SuperadminRoutes.circularsName,
+                ),
+                onEdit: () => context.goNamed(
+                  SuperadminRoutes.circularEditName,
+                  pathParameters: {'circularId': state.pathParameters['circularId']!},
+                ),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.circularEdit,
+            name: SuperadminRoutes.circularEditName,
+            builder: (context, state) {
+              final circularId = state.pathParameters['circularId']!;
+              return productionOperationalPage(
+                context,
+                title: 'Editar Circular',
+                subtitle: 'Atualize o conteúdo e publique uma nova revisão.',
+                destination: 'circular-create',
+                child: ProductionCircularComposerHost(
+                  repository: circularRepository,
+                  institutionRepository: institutionDirectoryRepository,
+                  circularId: circularId,
+                  onCancel: () => context.goNamed(
+                    SuperadminRoutes.circularDetailName,
+                    pathParameters: {'circularId': circularId},
+                  ),
+                  onDone: () => context.goNamed(
+                    SuperadminRoutes.circularDetailName,
+                    pathParameters: {'circularId': circularId},
+                  ),
+                ),
+              );
+            },
           ),
           GoRoute(
             path: SuperadminRoutes.devCirculars,
             name: SuperadminRoutes.devCircularsName,
-            builder: (context, state) => operationalPage(
-              context,
-              title: 'Circulares',
-              subtitle: 'Prévia local do diretório aprovado de Circulares.',
-              destination: 'circulars',
-              child: CircularDirectoryPage(
-                items: _developmentCircularDirectoryItems,
-                onCreate: () => context.goNamed(SuperadminRoutes.devCircularCreateName),
-                onOpen: (id) {
-                  final item = _developmentCircularDirectoryItems.firstWhere(
-                    (candidate) => candidate.id == id,
-                  );
-                  if (item.status == CircularStatus.published) {
-                    context.pushNamed(
+            builder: (context, state) {
+              final repository = circularPreviewRepository();
+              return operationalPage(
+                context,
+                title: 'Circulares',
+                subtitle: 'Crie, publique e acompanhe Circulares institucionais.',
+                destination: 'circulars',
+                child: ListenableBuilder(
+                  listenable: repository,
+                  builder: (context, _) => CircularDirectoryPage(
+                    items: repository.items,
+                    onCreate: () => context.goNamed(SuperadminRoutes.devCircularCreateName),
+                    onOpen: (id) => context.pushNamed(
                       SuperadminRoutes.devCircularDetailName,
                       pathParameters: {'circularId': id},
-                    );
-                    return;
-                  }
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Somente Circulares publicadas podem ser lidas.')),
-                  );
-                },
-              ),
-            ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devCircularDetail,
+            name: SuperadminRoutes.devCircularDetailName,
+            builder: (context, state) {
+              final circularId = state.pathParameters['circularId']!;
+              return operationalPage(
+                context,
+                title: 'Circular',
+                subtitle: 'Consulte conteúdo, contexto e respostas da Circular.',
+                destination: 'circulars',
+                child: SuperadminCircularDetailPage(
+                  circularId: circularId,
+                  repository: circularPreviewRepository(),
+                  onBack: () => _returnFromCircularReader(
+                    context,
+                    fallbackRouteName: SuperadminRoutes.devCircularsName,
+                  ),
+                  onEdit: () => context.goNamed(
+                    SuperadminRoutes.devCircularEditName,
+                    pathParameters: {'circularId': circularId},
+                  ),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devCircularEdit,
+            name: SuperadminRoutes.devCircularEditName,
+            builder: (context, state) {
+              final circularId = state.pathParameters['circularId']!;
+              return operationalPage(
+                context,
+                title: 'Editar Circular',
+                subtitle: 'Atualize o conteúdo e publique uma nova revisão.',
+                destination: 'circular-create',
+                child: DevelopmentCircularComposerHost(
+                  repository: circularPreviewRepository(),
+                  circularId: circularId,
+                  onCancel: () => context.goNamed(
+                    SuperadminRoutes.devCircularDetailName,
+                    pathParameters: {'circularId': circularId},
+                  ),
+                  onDone: () => context.goNamed(
+                    SuperadminRoutes.devCircularDetailName,
+                    pathParameters: {'circularId': circularId},
+                  ),
+                ),
+              );
+            },
           ),
           GoRoute(
             path: SuperadminRoutes.devCircularCreate,
@@ -3964,19 +4081,12 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => operationalPage(
               context,
               title: 'Publicar Circular',
-              subtitle: 'Prévia local; persistência e publicação permanecem indisponíveis.',
+              subtitle: 'Prepare o conteúdo, o público e a publicação.',
               destination: 'circular-create',
-              child: PrincipalCircularComposerPage(
-                controller: CircularComposerController(
-                  repository: const UnavailableCircularRepository(),
-                  scope: const CircularScope(institutionId: 'development-preview'),
-                ),
+              child: DevelopmentCircularComposerHost(
+                repository: circularPreviewRepository(),
                 onCancel: () => context.goNamed(SuperadminRoutes.devCircularsName),
-                onPickFiles: () async {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Arquivos indisponíveis nesta prévia local.')),
-                  );
-                },
+                onDone: () => context.goNamed(SuperadminRoutes.devCircularsName),
               ),
             ),
           ),
@@ -4978,45 +5088,6 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.devPrincipalProfileName);
   }
 }
-
-final _developmentCircularDirectoryItems = <CircularDirectoryItem>[
-  CircularDirectoryItem(
-    id: 'circular-published',
-    title: 'Renovação de matrícula',
-    excerpt: 'Confirme a renovação para o próximo ano.',
-    authorName: 'Ana Souza',
-    contextLabel: 'Ensino Fundamental',
-    status: CircularStatus.published,
-    effectiveAt: DateTime.utc(2026, 8, 21),
-    attachmentCount: 2,
-    questionCount: 1,
-    responseCount: 84,
-  ),
-  CircularDirectoryItem(
-    id: 'circular-scheduled',
-    title: 'Reunião de responsáveis',
-    excerpt: 'Agenda e orientações para o encontro.',
-    authorName: 'Bruno Lima',
-    contextLabel: 'Educação Infantil',
-    status: CircularStatus.scheduled,
-    effectiveAt: DateTime.utc(2026, 9, 2),
-    attachmentCount: 1,
-    questionCount: 0,
-    responseCount: 0,
-  ),
-  CircularDirectoryItem(
-    id: 'circular-draft',
-    title: 'Circular em elaboração',
-    excerpt: 'Conteúdo ainda não publicado.',
-    authorName: 'Carla Melo',
-    contextLabel: 'Ensino Médio',
-    status: CircularStatus.draft,
-    effectiveAt: DateTime.utc(2026, 8, 30),
-    attachmentCount: 0,
-    questionCount: 2,
-    responseCount: 0,
-  ),
-];
 
 RoutineEntryKind _routineEntryKind(String? value) {
   for (final kind in RoutineEntryKind.values) {

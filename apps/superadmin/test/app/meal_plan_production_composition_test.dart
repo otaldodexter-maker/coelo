@@ -11,7 +11,7 @@ import 'package:go_router/go_router.dart';
 
 void main() {
   testWidgets('app forwards meal plan adapters to the production router', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final repository = DevelopmentMealPlanRepository();
     addTearDown(session.dispose);
 

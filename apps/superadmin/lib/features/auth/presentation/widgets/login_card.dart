@@ -18,7 +18,8 @@ class LoginCard extends StatelessWidget {
       color: colors.surface,
       surfaceTintColor: visual?.loginCardSurfaceTint ?? (isLight ? colors.surface : null),
       elevation: CoeloElevation.level1,
-      shadowColor: visual?.loginCardShadow ?? (isLight ? colors.shadow.withValues(alpha: 0.08) : null),
+      shadowColor:
+          visual?.loginCardShadow ?? (isLight ? colors.shadow.withValues(alpha: 0.08) : null),
       shape: visual == null && !isLight
           ? null
           : RoundedRectangleBorder(

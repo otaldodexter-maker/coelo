@@ -38,9 +38,7 @@ void main() {
     expect(routerSource, contains('repository: const DevelopmentPersonIdentityRepository()'));
   });
 
-  testWidgets('production blocks identity lookup while dev stays isolated', (
-    tester,
-  ) async {
+  testWidgets('production blocks identity lookup while dev stays isolated', (tester) async {
     final session = SuperadminSession()..signInForTesting();
     final repository = _TrackingUnavailablePersonIdentityRepository();
     final router = _router(session, repository: repository, allowDevelopmentPreview: true);
@@ -51,10 +49,7 @@ void main() {
     router.go(SuperadminRoutes.personCreate);
     await tester.pumpAndSettle();
 
-    expect(
-      find.byKey(const Key('production-mutation-capability-unavailable')),
-      findsOneWidget,
-    );
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
     expect(find.byType(PersonIdentityLookupGate), findsNothing);
     expect(repository.calls, 0);
 

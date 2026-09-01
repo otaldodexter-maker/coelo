@@ -102,9 +102,13 @@ if ($FoundationOnly -or $AuthOnly) {
       @(Compare-Object @($manifestEntries.Name) @($manifestEntries.Name | Sort-Object) -SyncWindow 0).Count -ne 0) {
     throw 'foundation replay manifest must be non-empty, unique, and strictly ordered'
   }
-  $foundationBoundaryVersion = @(
-    $manifestEntries | Where-Object { $_.Version -ne '20260901200206' }
-  )[-1].Version
+  $foundationBoundaryEntries = @(
+    $manifestEntries | Where-Object { $_.Version -eq '20260901124500' }
+  )
+  if ($foundationBoundaryEntries.Count -ne 1) {
+    throw 'foundation replay manifest must contain the reviewed extension boundary'
+  }
+  $foundationBoundaryVersion = $foundationBoundaryEntries[0].Version
   $canonicalByName = @{}
   foreach ($migration in $canonical) { $canonicalByName[$migration.Name] = $migration }
   $canonical = @($manifestEntries | ForEach-Object {

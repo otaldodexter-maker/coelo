@@ -13,6 +13,8 @@ import '../features/auth/domain/login_request.dart';
 import '../features/auth/domain/logout_action.dart';
 import '../features/auth/domain/password_recovery.dart';
 import '../features/auth/domain/reset_password_action.dart';
+import '../features/chat/domain/chat_repository.dart';
+import '../features/circulars/domain/superadmin_circular_repository.dart';
 import '../features/attendance/attendance.dart';
 import '../features/attendance/data/supabase_attendance_repository.dart';
 import '../features/account/data/user_preferences_repository.dart';
@@ -102,6 +104,8 @@ class SuperadminApp extends StatefulWidget {
     this.mealPlanRepository = const UnavailableMealPlanRepository(),
     this.mealPlanImageRepository = const UnavailableMealPlanImageRepository(),
     this.authorizedMealPlanTenantId,
+    this.chatRepository = const UnavailableChatRepository(),
+    this.circularRepository = const UnavailableSuperadminCircularRepository(),
     this.inviteRepository = const UnavailableInviteRepository(),
     this.noticeRepository = const UnavailableNoticeRepository(),
     this.attendanceRepository = const UnavailableAttendanceRepository(),
@@ -138,6 +142,8 @@ class SuperadminApp extends StatefulWidget {
   final MealPlanRepository mealPlanRepository;
   final MealPlanImageRepository mealPlanImageRepository;
   final String? authorizedMealPlanTenantId;
+  final ChatRepository chatRepository;
+  final SuperadminCircularRepository circularRepository;
   final InviteRepository inviteRepository;
   final NoticeRepository noticeRepository;
   final AttendanceRepository attendanceRepository;
@@ -194,6 +200,8 @@ class _SuperadminAppState extends State<SuperadminApp> {
       mealPlanRepository: widget.mealPlanRepository,
       mealPlanImageRepository: widget.mealPlanImageRepository,
       authorizedMealPlanTenantId: widget.authorizedMealPlanTenantId,
+      chatRepository: widget.chatRepository,
+      circularRepository: widget.circularRepository,
       inviteRepository: widget.inviteRepository,
       noticeRepository: widget.noticeRepository,
       attendanceRepository: widget.attendanceRepository,

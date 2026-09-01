@@ -232,6 +232,10 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
               SuperadminListingPaginationFooter(
                 horizontalPadding: contentPadding,
                 semanticKey: const Key('notice-directory-pagination'),
+                compactCurrentPage: _page,
+                compactTotalPages: totalPages,
+                compactOnPrevious: _page > 1 ? _previousPage : null,
+                compactOnNext: _nextCursorId != null ? _nextPage : null,
                 child: CoeloAdminPagination(
                   currentPage: _page,
                   totalPages: totalPages,

@@ -44,4 +44,11 @@ O diretório usa toolbar, arquivos, tabs lineares, ação de criação, tabela r
 
 Fixtures `/dev` terão nomes, datas, quantidades e vínculos plausíveis entre instituições, unidades, grupos, autores, públicos, mensagens, convites, avisos e circulares. Em produção, IDs e filtros continuam não confiáveis: o cliente usa apenas repositories/RPCs autorizados; tabelas expostas permanecem deny-by-default; políticas conferem ator, tenant e escopo; comandos sensíveis preservam auditoria e idempotência.
 
+Para Avisos, o localhost sem `/dev` usa a identidade interna da ADR 0019/spec
+039. Owner em AAL2 executa o CRUD textual e as transições; Conteúdo e Operações
+globais recebem apenas leitura. O ciclo canônico é `draft`, `scheduled`,
+`active`, `paused`, `expired`, `inactive`, com `published -> active`,
+`archived -> inactive` e os dois estados finais terminais. Mídia falha fechada
+até o gateway R2 sem bloquear conteúdo textual.
+
 O pedido de mapa aplica-se apenas a formulários deste recorte que possuam endereço ou coordenadas persistidas. Nenhum dos formulários de Comunicação atuais cadastra localização física, portanto este pacote não inventa um campo geográfico nem um mapa decorativo.

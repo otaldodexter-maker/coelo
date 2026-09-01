@@ -6,6 +6,7 @@ import 'package:coelo_superadmin/features/notices/domain/notice_repository.dart'
 import 'package:coelo_superadmin/features/notices/domain/platform_notice.dart';
 import 'package:coelo_superadmin/features/notices/presentation/notice_directory_page.dart';
 import 'package:coelo_superadmin/features/notices/presentation/notice_form_page.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import 'package:coelo_superadmin/features/notices/presentation/notice_popup_preview.dart';
 import 'package:coelo_superadmin/features/notices/presentation/notice_preview_dialog.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -223,7 +224,7 @@ void main() {
     await _pumpDirectory(tester, repository: _repository(), size: const Size(1440, 900));
 
     final fileActions = tester.widget<CoeloAdminFileActions>(find.byType(CoeloAdminFileActions));
-    fileActions.actions.first.onPressed();
+    fileActions.actions.first.onPressed!();
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('A importação de comunicações ainda não está disponível.'), findsOneWidget);
 
@@ -386,9 +387,16 @@ void main() {
   testWidgets('uses the literal Institutions page sizes for cards and table', (tester) async {
     final compactRepository = _repository(extraNotices: 25);
     await _pumpDirectory(tester, repository: compactRepository, size: const Size(375, 900));
-    var pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
+    final compactFooter = tester.widget<SuperadminListingPaginationFooter>(
+      find.byType(SuperadminListingPaginationFooter),
+    );
+    var pagination = compactFooter.child as CoeloAdminPagination;
     expect(pagination.pageSize, 11);
     expect(pagination.pageSizeOptions, const [11, 20, 50, 100]);
+    expect(compactFooter.compactCurrentPage, 1);
+    expect(compactFooter.compactTotalPages, greaterThan(1));
+    expect(compactFooter.compactOnPrevious, isNull);
+    expect(compactFooter.compactOnNext, isNotNull);
 
     final tableRepository = _repository(extraNotices: 25);
     await _pumpDirectory(tester, repository: tableRepository, size: const Size(768, 900));
@@ -421,7 +429,10 @@ void main() {
     await tester.pump();
 
     expect(tester.takeException(), isNull);
-    final pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
+    final footer = tester.widget<SuperadminListingPaginationFooter>(
+      find.byType(SuperadminListingPaginationFooter),
+    );
+    final pagination = footer.child as CoeloAdminPagination;
     expect(pagination.pageSize, 11);
     expect(pagination.pageSizeOptions, const [11, 20, 50, 100]);
   });

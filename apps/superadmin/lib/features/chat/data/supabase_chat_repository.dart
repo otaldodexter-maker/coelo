@@ -5,7 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/chat_repository.dart';
 
-/// Supabase adapter for the typed, security-invoker chat RPC surface.
+/// Supabase adapter for the internal-identity, RPC-only chat gateway.
 ///
 /// It never queries a chat table directly. Conversation ids from the client are
 /// passed only to RPCs that recompute the caller's authorised scope.
@@ -17,7 +17,7 @@ final class SupabaseChatRepository implements ChatRepository {
   @override
   Future<int> fetchUnreadTotal() async {
     try {
-      final row = _singleRow(_rows(await _client.rpc<Object?>('chat_unread_total')));
+      final row = _data(await _client.rpc<Object?>('superadmin_chat_unread_total_v2'));
       return _int(row['total_unread']);
     } catch (error) {
       throw _mapError(error);
@@ -27,9 +27,9 @@ final class SupabaseChatRepository implements ChatRepository {
   @override
   Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async {
     try {
-      final rows = _rows(
+      final data = _data(
         await _client.rpc<Object?>(
-          'chat_inbox_page',
+          'superadmin_chat_inbox_v2',
           params: {
             'p_cursor_activity_at': _timestamp(query.cursor?.timestamp),
             'p_cursor_conversation_id': query.cursor?.id,
@@ -39,13 +39,13 @@ final class SupabaseChatRepository implements ChatRepository {
           },
         ),
       );
+      final rows = _rows(data['items']);
       return ChatInboxPage(
         items: rows.map(_conversation).toList(growable: false),
-        nextCursor: _inboxCursor(rows),
-        // The typed RPC returns the authoritative unread count for each row.
-        // Summing this page never invents data; a global count would require a
-        // separately contracted RPC rather than a direct table query.
-        totalUnread: rows.fold(0, (total, row) => total + _int(row['unread_count'])),
+        nextCursor: _cursor(data['next_cursor']),
+        totalUnread: _int(data['total_unread']),
+        totalCount: _int(data['total']),
+        hasMore: _bool(data['has_more']),
       );
     } catch (error) {
       throw _mapError(error);
@@ -55,12 +55,15 @@ final class SupabaseChatRepository implements ChatRepository {
   @override
   Future<ChatThreadPage> fetchThread(ChatThreadQuery query) async {
     try {
-      final rows = await _threadRows(query);
+      final data = await _threadData(query);
+      final rows = _rows(data['items']);
       return ChatThreadPage(
         items: rows
             .map((row) => _message(row, conversationId: query.conversationId))
             .toList(growable: false),
-        nextCursor: _threadCursor(rows),
+        nextCursor: _cursor(data['next_cursor']),
+        totalCount: _int(data['total']),
+        hasMore: _bool(data['has_more']),
       );
     } catch (error) {
       throw _mapError(error);
@@ -70,25 +73,17 @@ final class SupabaseChatRepository implements ChatRepository {
   @override
   Future<ChatMessage> sendMessage(ChatSendMessageCommand command) async {
     try {
-      final response = _singleRow(
-        _rows(
-          await _client.rpc<Object?>(
-            'chat_send_message',
-            params: {
-              'p_conversation_id': command.conversationId,
-              'p_body_text': command.body.trim(),
-              'p_idempotency_key': command.idempotencyKey,
-              'p_child_context_ids': command.childContextIds,
-            },
-          ),
+      final response = _data(
+        await _client.rpc<Object?>(
+          'superadmin_chat_send_message_v2',
+          params: {
+            'p_conversation_id': command.conversationId,
+            'p_body_text': command.body.trim(),
+            'p_request_id': command.idempotencyKey,
+          },
         ),
       );
-      final messageId = _string(response, 'message_id');
-      final message = await _findMessage(
-        conversationId: command.conversationId,
-        messageId: messageId,
-      );
-      return _message(message, conversationId: command.conversationId);
+      return _message(response, conversationId: command.conversationId);
     } catch (error) {
       throw _mapError(error);
     }
@@ -98,7 +93,7 @@ final class SupabaseChatRepository implements ChatRepository {
   Future<void> markRead({required String conversationId, required String upToMessageId}) async {
     try {
       await _client.rpc<Object?>(
-        'chat_mark_read',
+        'superadmin_chat_mark_read_v2',
         params: {'p_conversation_id': conversationId, 'p_through_message_id': upToMessageId},
       );
     } catch (error) {
@@ -109,18 +104,15 @@ final class SupabaseChatRepository implements ChatRepository {
   @override
   Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId}) async {
     try {
-      final rows = _rows(
+      final payload = _data(
         await _client.rpc<Object?>(
-          'chat_realtime_refresh',
+          'superadmin_chat_realtime_refresh_v2',
           params: {'p_conversation_id': conversationId},
         ),
       );
-      // A missing row is intentionally indistinguishable from an unauthorised
-      // or deleted conversation so no presence information leaks over Realtime.
-      final payload = _singleRow(rows, missing: const ChatUnauthorizedException());
       return ChatRealtimeRefresh(
         conversationId: _string(payload, 'conversation_id'),
-        latestMessageId: null,
+        latestMessageId: payload['latest_message_id'] as String?,
         unreadCount: _int(payload['unread_count']),
         occurredAt: _date(payload, 'latest_message_at'),
       );
@@ -129,9 +121,9 @@ final class SupabaseChatRepository implements ChatRepository {
     }
   }
 
-  Future<List<Map<String, dynamic>>> _threadRows(ChatThreadQuery query) async => _rows(
+  Future<Map<String, dynamic>> _threadData(ChatThreadQuery query) async => _data(
     await _client.rpc<Object?>(
-      'chat_thread_page',
+      'superadmin_chat_thread_v2',
       params: {
         'p_conversation_id': query.conversationId,
         'p_cursor_created_at': _timestamp(query.cursor?.timestamp),
@@ -140,23 +132,6 @@ final class SupabaseChatRepository implements ChatRepository {
       },
     ),
   );
-
-  Future<Map<String, dynamic>> _findMessage({
-    required String conversationId,
-    required String messageId,
-  }) async {
-    ChatCursor? cursor;
-    do {
-      final rows = await _threadRows(
-        ChatThreadQuery(conversationId: conversationId, cursor: cursor, pageSize: 100),
-      );
-      for (final row in rows) {
-        if (_string(row, 'message_id') == messageId) return row;
-      }
-      cursor = _threadCursor(rows);
-    } while (cursor != null);
-    throw const ChatUnauthorizedException();
-  }
 }
 
 ChatConversationSummary _conversation(Map<String, dynamic> json) => ChatConversationSummary(
@@ -166,7 +141,7 @@ ChatConversationSummary _conversation(Map<String, dynamic> json) => ChatConversa
   contextLabel: json['scope_kind'] as String? ?? '',
   kind: json['conversation_type'] as String? ?? '',
   unreadCount: _int(json['unread_count']),
-  updatedAt: _date(json, 'next_cursor_activity_at'),
+  updatedAt: _date(json, 'activity_at'),
   isReadOnly: _bool(json['is_read_only']),
 );
 
@@ -192,19 +167,11 @@ ChatAttachment _attachment(Map<String, dynamic> json) => ChatAttachment(
   downloadUrl: null,
 );
 
-ChatCursor? _inboxCursor(List<Map<String, dynamic>> rows) {
-  if (rows.isEmpty) return null;
-  final row = rows.last;
-  return ChatCursor(
-    _date(row, 'next_cursor_activity_at'),
-    _string(row, 'next_cursor_conversation_id'),
-  );
-}
-
-ChatCursor? _threadCursor(List<Map<String, dynamic>> rows) {
-  if (rows.isEmpty) return null;
-  final row = rows.last;
-  return ChatCursor(_date(row, 'next_cursor_created_at'), _string(row, 'next_cursor_message_id'));
+ChatCursor? _cursor(Object? value) {
+  if (value == null) return null;
+  if (value is! Map<Object?, Object?>) throw const ChatFailureException();
+  final cursor = Map<String, dynamic>.from(value);
+  return ChatCursor(_date(cursor, 'timestamp'), _string(cursor, 'id'));
 }
 
 String? _timestamp(DateTime? value) => value?.toUtc().toIso8601String();
@@ -221,12 +188,31 @@ Exception _mapError(Object error) {
   return ChatFailureException(error);
 }
 
-Map<String, dynamic> _singleRow(
-  List<Map<String, dynamic>> rows, {
-  Exception missing = const ChatFailureException(),
-}) {
-  if (rows.length == 1) return rows.single;
-  throw missing;
+Map<String, dynamic> _data(Object? value) {
+  if (value is! Map<Object?, Object?>) throw const ChatFailureException();
+  final envelope = Map<String, dynamic>.from(value);
+  if (envelope['ok'] == true && envelope['data'] is Map<Object?, Object?>) {
+    return Map<String, dynamic>.from(envelope['data'] as Map<Object?, Object?>);
+  }
+  final error = envelope['error'];
+  if (error is Map<Object?, Object?>) {
+    final code = error['code'];
+    if (code is String &&
+        const {
+          'SAI_AUTH_REQUIRED',
+          'SAI_SESSION_INVALID',
+          'SAI_INTERNAL_CONTEXT_DENIED',
+          'SAI_MEMBERSHIP_SUSPENDED',
+          'SAI_MEMBERSHIP_REVOKED',
+          'SAI_PERMISSION_DENIED',
+          'SAI_MFA_REQUIRED',
+          'CHAT_NOT_FOUND',
+          'CHAT_READ_ONLY',
+        }.contains(code)) {
+      throw const ChatUnauthorizedException();
+    }
+  }
+  throw const ChatFailureException();
 }
 
 List<Map<String, dynamic>> _rows(Object? value) => value is List<dynamic>

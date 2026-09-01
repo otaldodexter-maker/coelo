@@ -15,7 +15,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('production meal plan directory uses the injected repository', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final repository = DevelopmentMealPlanRepository();
     final router = createSuperadminRouter(
       session: session,
@@ -43,7 +43,7 @@ void main() {
   testWidgets('production meal plan creation receives the authorized tenant context', (
     tester,
   ) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
@@ -68,7 +68,7 @@ void main() {
   testWidgets('production meal plan mutation fails closed without an authorized tenant', (
     tester,
   ) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
@@ -93,7 +93,7 @@ void main() {
   testWidgets('production meal plan wizard routes preserve their target identifiers', (
     tester,
   ) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,

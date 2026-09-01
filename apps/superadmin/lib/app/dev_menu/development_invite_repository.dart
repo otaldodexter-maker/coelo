@@ -158,7 +158,10 @@ final class DevelopmentInviteRepository implements InviteRepository {
             ),
       channels: Set.unmodifiable(command.channels),
       status: InviteStatus.pending,
-      issuer: const InviteIssuer(personId: 'dev-owner', label: 'Owner Coelo'),
+      issuer: const InviteIssuer(
+        kind: InviteIssuerKind.superadminInternal,
+        label: 'Usuário interno',
+      ),
       createdAt: occurredAt,
       expiresAt: occurredAt.add(Duration(hours: command.expiresInHours)),
       emailDeliveryStatus: command.channels.contains(InviteChannel.email)
@@ -539,8 +542,14 @@ const _sementesCoordinationProfile = InviteProfileReference(
   id: 'sementes-coordination-profile',
   label: 'Coordenação',
 );
-const _ownerIssuer = InviteIssuer(personId: 'owner-coelo', label: 'Owner Coelo');
-const _pedagogicalIssuer = InviteIssuer(personId: 'coordinator-marina', label: 'Marina Ferreira');
+const _ownerIssuer = InviteIssuer(
+  kind: InviteIssuerKind.superadminInternal,
+  label: 'Usuário interno',
+);
+const _pedagogicalIssuer = InviteIssuer(
+  kind: InviteIssuerKind.legacyPerson,
+  label: 'Emissor institucional',
+);
 
 const _options = InviteFormOptions(
   scopes: [

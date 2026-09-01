@@ -264,10 +264,7 @@ final class _InviteCard extends StatelessWidget {
               style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
             ),
             const SizedBox(height: CoeloSpacing.space3),
-            Text(
-              invite.channels.map((value) => value.label).join(' + '),
-              style: theme.textTheme.labelMedium,
-            ),
+            Text(invite.channelLabel, style: theme.textTheme.labelMedium),
             const SizedBox(height: CoeloSpacing.space4),
             const Divider(),
             Row(
@@ -386,8 +383,7 @@ final class InviteDirectoryTable extends StatelessWidget {
           id: 'channels',
           label: 'Canais',
           width: 160,
-          builder: (context, invite) =>
-              _cell(Text(invite.channels.map((value) => value.label).join(' + '))),
+          builder: (context, invite) => _cell(Text(invite.channelLabel)),
         ),
         _column(
           id: 'status',

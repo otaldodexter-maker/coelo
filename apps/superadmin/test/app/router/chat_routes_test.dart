@@ -4,6 +4,7 @@ import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
+import 'package:coelo_superadmin/features/chat/data/development_chat_repository.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,6 +21,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       onThemeModeChanged: (_) {},
     );
     addTearDown(router.dispose);
@@ -55,6 +57,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       onThemeModeChanged: (_) {},
     );
     addTearDown(router.dispose);
@@ -86,6 +89,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       onThemeModeChanged: (_) {},
     );
     addTearDown(router.dispose);
@@ -140,6 +144,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       onThemeModeChanged: (_) {},
     );
     addTearDown(router.dispose);
@@ -189,6 +194,7 @@ void main() {
         login: (_) async => const LoginResult.success(),
         logout: unavailableSuperadminLogout,
         requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+        allowDevelopmentPreview: true,
         onThemeModeChanged: (_) {},
       );
       addTearDown(router.dispose);
@@ -230,5 +236,26 @@ void main() {
     expect(find.text('Nao foi possivel carregar'), findsOneWidget);
     expect(find.byTooltip('Voltar'), findsOneWidget);
     expect(find.byTooltip('Abrir menu de desenvolvimento'), findsNothing);
+  });
+
+  testWidgets('protected conversations use the injected production repository', (tester) async {
+    final session = SuperadminSession()..signInForTesting();
+    final router = createSuperadminRouter(
+      session: session,
+      login: (_) async => const LoginResult.success(),
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      chatRepository: DevelopmentChatRepository(),
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.conversations);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Turma Girassol'), findsWidgets);
+    expect(find.text('Nao foi possivel carregar'), findsNothing);
   });
 }

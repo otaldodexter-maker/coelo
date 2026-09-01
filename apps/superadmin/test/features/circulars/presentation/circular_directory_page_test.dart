@@ -1,5 +1,6 @@
 import 'package:coelo_superadmin/features/circulars/presentation/circular_directory_page.dart';
 import 'package:coelo_superadmin/features/principal_circulars/domain/circular.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,33 @@ void main() {
     );
     expect(table.headerHeight, 56);
     expect(table.rowHeight, 64);
+  });
+
+  testWidgets('keeps import and export available from the canonical file menu', (tester) async {
+    var imported = false;
+    var exported = false;
+    await _pump(
+      tester,
+      size: const Size(1440, 900),
+      onImport: () => imported = true,
+      onExport: () => exported = true,
+    );
+
+    expect(find.byType(CoeloAdminFileActions), findsOneWidget);
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    expect(find.text('Importar circulares'), findsOneWidget);
+    expect(find.text('Exportar circulares'), findsOneWidget);
+
+    await tester.tap(find.text('Importar circulares'));
+    await tester.pumpAndSettle();
+    expect(imported, isTrue);
+
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Exportar circulares'));
+    await tester.pumpAndSettle();
+    expect(exported, isTrue);
   });
 
   testWidgets('filters by approved tabs and search without inventing persistence', (tester) async {
@@ -71,9 +99,16 @@ void main() {
     );
 
     await _pump(tester, size: const Size(375, 900), items: manyItems);
-    var pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
+    final compactFooter = tester.widget<SuperadminListingPaginationFooter>(
+      find.byType(SuperadminListingPaginationFooter),
+    );
+    var pagination = compactFooter.child as CoeloAdminPagination;
     expect(pagination.pageSize, 11);
     expect(pagination.pageSizeOptions, const [11, 20, 50, 100]);
+    expect(compactFooter.compactCurrentPage, 1);
+    expect(compactFooter.compactTotalPages, 3);
+    expect(compactFooter.compactOnPrevious, isNull);
+    expect(compactFooter.compactOnNext, isNotNull);
 
     await _pump(tester, size: const Size(768, 900), items: manyItems);
     pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
@@ -87,6 +122,8 @@ Future<void> _pump(
   Size size = const Size(1440, 900),
   VoidCallback? onCreate,
   VoidCallback? onRetry,
+  VoidCallback? onImport,
+  VoidCallback? onExport,
   CircularDirectoryViewState viewState = CircularDirectoryViewState.content,
   List<CircularDirectoryItem>? items,
 }) async {
@@ -102,6 +139,8 @@ Future<void> _pump(
           viewState: viewState,
           onCreate: onCreate,
           onRetry: onRetry,
+          onImport: onImport,
+          onExport: onExport,
           onOpen: (_) {},
         ),
       ),

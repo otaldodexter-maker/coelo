@@ -3,6 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/auth/domain/coelo_auth_login_action.dart';
+import '../../features/chat/data/supabase_chat_repository.dart';
+import '../../features/chat/domain/chat_repository.dart';
+import '../../features/circulars/data/supabase_superadmin_circular_repository.dart';
+import '../../features/circulars/domain/superadmin_circular_repository.dart';
 import '../../features/attendance/attendance.dart';
 import '../../features/attendance/data/supabase_attendance_repository.dart';
 import '../../features/audit/data/supabase_audit_repository.dart';
@@ -19,6 +23,7 @@ import '../../features/agenda/data/supabase_agenda_repository.dart';
 import '../../features/agenda/domain/agenda_repository.dart';
 import '../../features/plans/data/supabase_plan_catalog_repository.dart';
 import '../../features/plans/domain/plan_catalog_repository.dart';
+import '../../features/invites/data/supabase_invite_repository.dart';
 import '../../features/invites/domain/platform_invite.dart';
 import '../../features/notices/data/supabase_notice_repository.dart';
 import '../../features/notices/domain/notice_repository.dart';
@@ -96,6 +101,8 @@ final class SuperadminAuthScope {
     required this.importRepository,
     this.planCatalogRepository = const UnavailablePlanCatalogRepository(),
     this.agendaRepository,
+    required this.chatRepository,
+    required this.circularRepository,
     required this.inviteRepository,
     required this.noticeRepository,
     required this.attendanceRepository,
@@ -132,6 +139,8 @@ final class SuperadminAuthScope {
   final ImportRepository importRepository;
   final PlanCatalogRepository planCatalogRepository;
   final AgendaRepository? agendaRepository;
+  final ChatRepository chatRepository;
+  final SuperadminCircularRepository circularRepository;
   final InviteRepository inviteRepository;
   final NoticeRepository noticeRepository;
   final AttendanceRepository attendanceRepository;
@@ -232,7 +241,9 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       importRepository: SupabaseImportRepository(client),
       planCatalogRepository: SupabasePlanCatalogRepository(client),
       agendaRepository: SupabaseAgendaRepository(client),
-      inviteRepository: const UnavailableInviteRepository(),
+      chatRepository: SupabaseChatRepository(client),
+      circularRepository: SupabaseSuperadminCircularRepository(client),
+      inviteRepository: SupabaseInviteRepository(client),
       noticeRepository: SupabaseNoticeRepository(client),
       attendanceRepository: SupabaseAttendanceRepository(client),
       studentTrackingRepository: const UnavailableStudentTrackingRepository(),
@@ -290,6 +301,8 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthLifecycleGateway auth) {
     importRepository: const UnavailableImportRepository(),
     planCatalogRepository: const UnavailablePlanCatalogRepository(),
     agendaRepository: null,
+    chatRepository: const UnavailableChatRepository(),
+    circularRepository: const UnavailableSuperadminCircularRepository(),
     inviteRepository: const UnavailableInviteRepository(),
     noticeRepository: const UnavailableNoticeRepository(),
     attendanceRepository: const UnavailableAttendanceRepository(),

@@ -5,11 +5,10 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../app/shell/superadmin_shell.dart';
+import '../../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../../auth/domain/logout_action.dart';
-import '../../data/supabase_chat_repository.dart';
 import '../../domain/chat_repository.dart';
 import '../widgets/superadmin_chat_attachment_tile.dart';
 import '../widgets/superadmin_chat_composer.dart';
@@ -60,8 +59,10 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   int _inboxRequestGeneration = 0;
   int _threadRequestGeneration = 0;
   int _sendRequestGeneration = 0;
-  final List<ChatCursor?> _inboxCursors = [null];
-  int _inboxPage = 0;
+  int _inboxPage = 1;
+  static const int _inboxPageSize = 8;
+  ChatCursor? _inboxCursor;
+  final List<ChatCursor?> _inboxCursorHistory = [];
   late ChatRepository _repository;
   ChatInboxState _inboxState = const ChatInboxState.loading();
   ChatConversationSummary? _selected;
@@ -93,10 +94,9 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     _threadError = null;
     _sending = false;
     _pendingSend = null;
-    _inboxCursors
-      ..clear()
-      ..add(null);
-    _inboxPage = 0;
+    _inboxPage = 1;
+    _inboxCursor = null;
+    _inboxCursorHistory.clear();
     _inboxState = const ChatInboxState.loading();
     _loadInbox();
   }
@@ -109,20 +109,18 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     super.dispose();
   }
 
-  ChatRepository _configuredRepository() {
-    try {
-      return SupabaseChatRepository(Supabase.instance.client);
-    } catch (_) {
-      return const _UnavailableChatRepository();
-    }
-  }
+  // Superadmin uses the isolated internal identity realm (ADR 0019). The
+  // existing Supabase Chat RPCs resolve people/current_person_id and therefore
+  // cannot be selected implicitly for this surface. Production remains
+  // fail-closed until an internal-identity gateway is approved and injected by
+  // the composition root; `/dev` continues to inject its deterministic repo.
+  ChatRepository _configuredRepository() => const UnavailableChatRepository();
 
-  Future<void> _loadInbox({bool resetPagination = false}) async {
-    if (resetPagination) {
-      _inboxCursors
-        ..clear()
-        ..add(null);
-      _inboxPage = 0;
+  Future<void> _loadInbox({bool reset = false}) async {
+    if (reset) {
+      _inboxPage = 1;
+      _inboxCursor = null;
+      _inboxCursorHistory.clear();
     }
     final requestGeneration = ++_inboxRequestGeneration;
     final requestedRepository = _repository;
@@ -130,7 +128,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     setState(() => _inboxState = const ChatInboxState.loading());
     try {
       final page = await requestedRepository.fetchInbox(
-        ChatInboxQuery(search: search, cursor: _inboxCursors[_inboxPage]),
+        ChatInboxQuery(search: search, cursor: _inboxCursor, pageSize: _inboxPageSize),
       );
       if (!mounted ||
           requestGeneration != _inboxRequestGeneration ||
@@ -276,10 +274,23 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
 
   void _scheduleInboxSearch() {
     _searchDebounce?.cancel();
-    _searchDebounce = Timer(
-      const Duration(milliseconds: 300),
-      () => _loadInbox(resetPagination: true),
-    );
+    _searchDebounce = Timer(const Duration(milliseconds: 300), () => _loadInbox(reset: true));
+  }
+
+  void _nextInboxPage(ChatInboxPage page) {
+    final cursor = page.nextCursor;
+    if (cursor == null) return;
+    _inboxCursorHistory.add(_inboxCursor);
+    _inboxCursor = cursor;
+    _inboxPage++;
+    _loadInbox();
+  }
+
+  void _previousInboxPage() {
+    if (_inboxPage <= 1 || _inboxCursorHistory.isEmpty) return;
+    _inboxCursor = _inboxCursorHistory.removeLast();
+    _inboxPage--;
+    _loadInbox();
   }
 
   @override
@@ -378,7 +389,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         actionLabel: 'Limpar busca',
         onAction: () {
           _search.clear();
-          _loadInbox(resetPagination: true);
+          _loadInbox(reset: true);
         },
       ),
       ChatInboxLoadState.unauthorized => CoeloStatePanel(
@@ -424,6 +435,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
 
   Widget _inbox(ChatInboxPage page, {required bool compact}) {
     final colors = Theme.of(context).colorScheme;
+    final totalPages = math.max(1, (page.totalCount / _inboxPageSize).ceil());
     return Column(
       children: [
         Padding(
@@ -498,26 +510,23 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
             },
           ),
         ),
-        _ChatInboxPagination(
-          page: _inboxPage + 1,
-          onPrevious: _inboxPage == 0
-              ? null
-              : () {
-                  setState(() => _inboxPage--);
-                  _loadInbox();
-                },
-          onNext: page.nextCursor == null
-              ? null
-              : () {
-                  final nextCursor = page.nextCursor!;
-                  if (_inboxCursors.length == _inboxPage + 1) {
-                    _inboxCursors.add(nextCursor);
-                  } else {
-                    _inboxCursors[_inboxPage + 1] = nextCursor;
-                  }
-                  setState(() => _inboxPage++);
-                  _loadInbox();
-                },
+        SuperadminListingPaginationFooter(
+          horizontalPadding: CoeloSpacing.space3,
+          semanticKey: const Key('superadmin-chat-pagination'),
+          compactCurrentPage: _inboxPage,
+          compactTotalPages: totalPages,
+          compactOnPrevious: _inboxPage > 1 ? _previousInboxPage : null,
+          compactOnNext: page.nextCursor != null ? () => _nextInboxPage(page) : null,
+          child: CoeloAdminPagination(
+            currentPage: _inboxPage,
+            totalPages: totalPages,
+            pageSize: _inboxPageSize,
+            pageSizeOptions: const [8, 20, 50, 100],
+            onPrevious: _inboxPage > 1 ? _previousInboxPage : null,
+            onNext: page.nextCursor != null ? () => _nextInboxPage(page) : null,
+            onPageSelected: null,
+            onPageSizeChanged: null,
+          ),
         ),
       ],
     );
@@ -644,65 +653,6 @@ final class _MessageBubble extends StatelessWidget {
       ),
     );
   }
-}
-
-final class _ChatInboxPagination extends StatelessWidget {
-  const _ChatInboxPagination({required this.page, this.onPrevious, this.onNext});
-
-  final int page;
-  final VoidCallback? onPrevious;
-  final VoidCallback? onNext;
-
-  @override
-  Widget build(BuildContext context) => Semantics(
-    label: 'Paginação das conversas. Página $page.',
-    child: DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              tooltip: 'Página anterior',
-              onPressed: onPrevious,
-              icon: const Icon(Icons.chevron_left_rounded),
-            ),
-            Text('Página $page', style: Theme.of(context).textTheme.labelLarge),
-            IconButton(
-              tooltip: 'Próxima página',
-              onPressed: onNext,
-              icon: const Icon(Icons.chevron_right_rounded),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
-
-final class _UnavailableChatRepository implements ChatRepository {
-  const _UnavailableChatRepository();
-  @override
-  Future<int> fetchUnreadTotal() async => 0;
-
-  @override
-  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) =>
-      Future<ChatInboxPage>.error(const ChatFailureException());
-  @override
-  Future<ChatThreadPage> fetchThread(ChatThreadQuery query) =>
-      Future<ChatThreadPage>.error(const ChatFailureException());
-  @override
-  Future<ChatMessage> sendMessage(ChatSendMessageCommand command) =>
-      Future<ChatMessage>.error(const ChatFailureException());
-  @override
-  Future<void> markRead({required String conversationId, required String upToMessageId}) =>
-      Future<void>.error(const ChatFailureException());
-  @override
-  Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId}) =>
-      Future<ChatRealtimeRefresh>.error(const ChatFailureException());
 }
 
 String _initials(String value) => value

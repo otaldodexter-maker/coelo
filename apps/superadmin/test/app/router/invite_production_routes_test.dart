@@ -67,13 +67,11 @@ void main() {
     }
   });
 
-  test('composition roots contain no fake, Supabase or development invite repository', () {
+  test('composition root constructs Supabase invite repository only in auth scope', () {
     final productionRoots = '$authScope\n$app\n$mainSource';
     for (final forbidden in const [
       'FakeInviteRepository',
       'fake_invite_repository.dart',
-      'SupabaseInviteRepository',
-      'supabase_invite_repository.dart',
       'DevelopmentInviteRepository',
       'development_invite_repository.dart',
     ]) {
@@ -81,8 +79,8 @@ void main() {
     }
     expect(router, isNot(contains('FakeInviteRepository')));
     expect(router, isNot(contains('fake_invite_repository.dart')));
-    expect(router, isNot(contains('SupabaseInviteRepository')));
-    expect(router, isNot(contains('supabase_invite_repository.dart')));
+    expect(authScope, contains('SupabaseInviteRepository(client)'));
+    expect(authScope, contains('supabase_invite_repository.dart'));
   });
 
   test('persistent shell invitation navigation targets production', () {

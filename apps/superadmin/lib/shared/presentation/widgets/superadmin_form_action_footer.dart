@@ -10,6 +10,7 @@ final class SuperadminFormActionFooter extends StatefulWidget {
     required this.continuationActions,
     this.onHeightChanged,
     this.surfaceKey,
+    this.inlineMinimumWidth,
     super.key,
   }) : assert(continuationActions.length > 0);
 
@@ -17,6 +18,7 @@ final class SuperadminFormActionFooter extends StatefulWidget {
   final List<Widget> continuationActions;
   final ValueChanged<double>? onHeightChanged;
   final Key? surfaceKey;
+  final double? inlineMinimumWidth;
 
   @override
   State<SuperadminFormActionFooter> createState() => _SuperadminFormActionFooterState();
@@ -50,7 +52,9 @@ final class _SuperadminFormActionFooterState extends State<SuperadminFormActionF
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final textScale = MediaQuery.textScalerOf(context).scale(1);
-                final inlineMinimumWidth = CoeloBreakpoints.medium.minWidth + CoeloSpacing.space16;
+                final inlineMinimumWidth =
+                    widget.inlineMinimumWidth ??
+                    CoeloBreakpoints.medium.minWidth + CoeloSpacing.space16;
                 if (constraints.maxWidth < inlineMinimumWidth || textScale > 1.3) {
                   final compactActions = [
                     ...widget.continuationActions.reversed,

@@ -61,6 +61,8 @@ final class CircularDirectoryPage extends StatefulWidget {
     required this.items,
     required this.onOpen,
     this.onCreate,
+    this.onImport,
+    this.onExport,
     this.onRetry,
     this.viewState = CircularDirectoryViewState.content,
     super.key,
@@ -69,6 +71,8 @@ final class CircularDirectoryPage extends StatefulWidget {
   final List<CircularDirectoryItem> items;
   final ValueChanged<String> onOpen;
   final VoidCallback? onCreate;
+  final VoidCallback? onImport;
+  final VoidCallback? onExport;
   final VoidCallback? onRetry;
   final CircularDirectoryViewState viewState;
 
@@ -155,6 +159,10 @@ final class _CircularDirectoryPageState extends State<CircularDirectoryPage> {
               SuperadminListingPaginationFooter(
                 horizontalPadding: inset,
                 semanticKey: const Key('circular-directory-pagination'),
+                compactCurrentPage: safePage,
+                compactTotalPages: pageCount,
+                compactOnPrevious: safePage > 1 ? () => setState(() => _page--) : null,
+                compactOnNext: safePage < pageCount ? () => setState(() => _page++) : null,
                 child: CoeloAdminPagination(
                   currentPage: safePage,
                   totalPages: pageCount,
@@ -177,6 +185,18 @@ final class _CircularDirectoryPageState extends State<CircularDirectoryPage> {
 
   Widget _toolbar(bool compact) {
     final contexts = {'Todos', ...widget.items.map((item) => item.contextLabel)}.toList();
+    final contextFilter = CoeloAdminSingleSelectField<String>(
+      value: _context,
+      label: 'Contexto',
+      options: contexts,
+      optionLabel: (value) => value,
+      prefixIcon: Icons.apartment_outlined,
+      onChanged: (value) => setState(() {
+        _context = value;
+        _page = 1;
+      }),
+    );
+    final fileActions = _fileActions(compact: compact);
     return CoeloAdminListingToolbar(
       search: SizedBox(
         width: compact ? double.infinity : CoeloSpacing.space20 * 4,
@@ -189,23 +209,43 @@ final class _CircularDirectoryPageState extends State<CircularDirectoryPage> {
         ),
       ),
       filters: [
-        SizedBox(
-          width: compact ? double.infinity : 240,
-          child: CoeloAdminSingleSelectField<String>(
-            value: _context,
-            label: 'Contexto',
-            options: contexts,
-            optionLabel: (value) => value,
-            prefixIcon: Icons.apartment_outlined,
-            onChanged: (value) => setState(() {
-              _context = value;
-              _page = 1;
-            }),
-          ),
-        ),
+        if (compact)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: contextFilter),
+              const SizedBox(width: CoeloSpacing.space2),
+              fileActions,
+            ],
+          )
+        else
+          SizedBox(width: 240, child: contextFilter),
       ],
-      actions: const [],
+      actions: compact ? const [] : [fileActions],
     );
+  }
+
+  Widget _fileActions({required bool compact}) => CoeloAdminFileActions(
+    compact: compact,
+    actions: [
+      CoeloAdminFileAction(
+        label: 'Importar circulares',
+        icon: Icons.upload_file_outlined,
+        onPressed: widget.onImport ?? () => _showFileActionUnavailable('Importação'),
+      ),
+      CoeloAdminFileAction(
+        label: 'Exportar circulares',
+        icon: Icons.download_outlined,
+        onPressed: widget.onExport ?? () => _showFileActionUnavailable('Exportação'),
+      ),
+    ],
+  );
+
+  void _showFileActionUnavailable(String action) {
+    final messenger = ScaffoldMessenger.of(context);
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text('$action de Circulares ainda não está disponível.')));
   }
 
   Widget _body({

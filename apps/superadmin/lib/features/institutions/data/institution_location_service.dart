@@ -97,9 +97,7 @@ final class InstitutionLocationService {
               .toList()
             ..sort();
       if (decoded.isNotEmpty && municipalities.isEmpty) {
-        throw const InstitutionLocationException(
-          InstitutionLocationErrorType.network,
-        );
+        throw const InstitutionLocationException(InstitutionLocationErrorType.network);
       }
       return municipalities;
     } on InstitutionLocationException {

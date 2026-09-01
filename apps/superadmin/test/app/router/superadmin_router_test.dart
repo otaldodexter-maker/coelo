@@ -583,7 +583,7 @@ void main() {
   testWidgets('opens authenticated structure mutations when the backend is configured', (
     tester,
   ) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
@@ -606,7 +606,7 @@ void main() {
   });
 
   testWidgets('opens assessment flows when their backend is configured', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,

@@ -150,7 +150,10 @@ final class SupportFilterToolbar extends StatelessWidget {
                 groupedView: SupportDisplayMode.table,
                 selectedTableView: displayMode,
                 tableViews: const [
-                  SuperadminDirectoryTableViewOption(value: SupportDisplayMode.table, label: 'Tabela'),
+                  SuperadminDirectoryTableViewOption(
+                    value: SupportDisplayMode.table,
+                    label: 'Tabela',
+                  ),
                 ],
                 onCardsSelected: () => onDisplayModeChanged(SupportDisplayMode.kanban),
                 onTableViewSelected: onDisplayModeChanged,

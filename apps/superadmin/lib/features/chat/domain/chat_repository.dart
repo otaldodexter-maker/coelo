@@ -67,11 +67,19 @@ final class ChatConversationSummary {
 }
 
 final class ChatInboxPage {
-  const ChatInboxPage({required this.items, required this.totalUnread, this.nextCursor});
+  const ChatInboxPage({
+    required this.items,
+    required this.totalUnread,
+    this.nextCursor,
+    this.totalCount = 0,
+    this.hasMore = false,
+  });
 
   final List<ChatConversationSummary> items;
   final ChatCursor? nextCursor;
   final int totalUnread;
+  final int totalCount;
+  final bool hasMore;
 }
 
 /// State that lets the UI remain actionable when a real inbox has no rows.
@@ -148,12 +156,19 @@ final class ChatMessage {
 }
 
 final class ChatThreadPage {
-  const ChatThreadPage({required this.items, this.nextCursor});
+  const ChatThreadPage({
+    required this.items,
+    this.nextCursor,
+    this.totalCount = 0,
+    this.hasMore = false,
+  });
 
   /// Messages are ordered newest-first, matching the keyset-paginated RPC.
   /// Presentation may render this list in reverse without reordering the data.
   final List<ChatMessage> items;
   final ChatCursor? nextCursor;
+  final int totalCount;
+  final bool hasMore;
 }
 
 final class ChatSendMessageCommand {
@@ -196,6 +211,33 @@ abstract interface class ChatRepository {
   Future<ChatMessage> sendMessage(ChatSendMessageCommand command);
   Future<void> markRead({required String conversationId, required String upToMessageId});
   Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId});
+}
+
+final class UnavailableChatRepository implements ChatRepository {
+  const UnavailableChatRepository();
+
+  @override
+  Future<int> fetchUnreadTotal() async => 0;
+
+  @override
+  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) =>
+      Future<ChatInboxPage>.error(const ChatFailureException());
+
+  @override
+  Future<ChatThreadPage> fetchThread(ChatThreadQuery query) =>
+      Future<ChatThreadPage>.error(const ChatFailureException());
+
+  @override
+  Future<ChatMessage> sendMessage(ChatSendMessageCommand command) =>
+      Future<ChatMessage>.error(const ChatFailureException());
+
+  @override
+  Future<void> markRead({required String conversationId, required String upToMessageId}) =>
+      Future<void>.error(const ChatFailureException());
+
+  @override
+  Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId}) =>
+      Future<ChatRealtimeRefresh>.error(const ChatFailureException());
 }
 
 final class ChatUnauthorizedException implements Exception {

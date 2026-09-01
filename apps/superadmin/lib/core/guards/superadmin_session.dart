@@ -106,8 +106,7 @@ final class SuperadminSession extends ChangeNotifier {
     }
     final isAuthenticated =
         state.kind == CoeloAuthSessionKind.authenticated && _authContext != null;
-    if (_isAuthenticated == isAuthenticated &&
-        _isPasswordRecovery == state.isPasswordRecovery) {
+    if (_isAuthenticated == isAuthenticated && _isPasswordRecovery == state.isPasswordRecovery) {
       return;
     }
     _isAuthenticated = isAuthenticated;

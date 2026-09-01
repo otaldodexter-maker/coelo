@@ -84,5 +84,4 @@ void main() {
     expect(segmentedButton.style?.foregroundColor?.resolve({WidgetState.hovered}), colors.primary);
     expect(segmentedButton.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
   });
-
 }
