@@ -162,19 +162,18 @@ void main() {
     await tester.enterText(field('Dose'), '5');
     await tester.enterText(field('Unidade'), 'ml');
     await tester.pump();
-    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    final formScroll = find
+        .descendant(
+          of: find.byKey(const Key('health-medication-form-scroll')),
+          matching: find.byType(Scrollable),
+        )
+        .first;
+    final continueButton = find.widgetWithText(FilledButton, 'Continuar');
+    await tester.scrollUntilVisible(continueButton, 200, scrollable: formScroll);
+    await tester.tap(continueButton);
     await tester.pumpAndSettle();
     final dateField = find.text('Selecionar data').first;
-    await tester.scrollUntilVisible(
-      dateField,
-      200,
-      scrollable: find
-          .descendant(
-            of: find.byKey(const Key('health-medication-form-scroll')),
-            matching: find.byType(Scrollable),
-          )
-          .first,
-    );
+    await tester.scrollUntilVisible(dateField, 200, scrollable: formScroll);
     await tester.ensureVisible(dateField);
     await tester.pumpAndSettle();
     await tester.tap(dateField);

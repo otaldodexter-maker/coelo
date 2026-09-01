@@ -32,4 +32,39 @@ Describe 'Invoke-SafeLocalMigrationReplay Supabase CLI agent mode' {
       $elements[$agentIndex + 1] | Should Be 'no'
     }
   }
+
+  It 'forwards the reviewed additional migration allowlist to replay preparation' {
+    $prepareCall = @(
+      $scriptAst.FindAll({
+        param($node)
+        $node -is [System.Management.Automation.Language.CommandAst] -and
+          $node.CommandElements.Count -gt 0 -and
+          $node.CommandElements[0].Extent.Text -match 'Prepare-SafeMigrationReplay\.ps1'
+      }, $true)
+    )
+
+    $prepareCall.Count | Should Be 1
+    $elements = @($prepareCall[0].CommandElements | ForEach-Object { $_.Extent.Text })
+    ($elements -contains '-AdditionalMigration') | Should Be $true
+    ($elements -contains '$AdditionalMigration') | Should Be $true
+  }
+
+  It 'keeps generated replay ownership, reparse and residual-resource cleanup gates' {
+    $text = [IO.File]::ReadAllText($scriptPath)
+    $text | Should Match 'Assert-NoReparseTree \$projectRoot'
+    $text | Should Match '\.coelo-safe-replay'
+    $text | Should Match 'Get-DockerResources \$projectId'
+    $text | Should Match 'project directory remains after cleanup'
+  }
+
+  It 'validates additions before start without exposing migrations to automatic startup replay' {
+    $text = [IO.File]::ReadAllText($scriptPath)
+    $text | Should Match '\$validatedMigrationRoot'
+    $text | Should Match '-DestinationMigrationsRoot \$validatedMigrationRoot'
+    $text | Should Match 'Copy-Item -LiteralPath \$validatedMigration\.FullName -Destination \$migrationRoot'
+    $text.IndexOf('-DestinationMigrationsRoot $validatedMigrationRoot') |
+      Should BeLessThan $text.IndexOf('$startAttempted = $true')
+    $text.IndexOf('Copy-Item -LiteralPath $validatedMigration.FullName -Destination $migrationRoot') |
+      Should BeGreaterThan $text.IndexOf('supabase start failed with exit code')
+  }
 }

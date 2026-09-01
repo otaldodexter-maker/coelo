@@ -15,12 +15,15 @@ import '../../support/domain/support_ticket.dart';
 import '../domain/access_profile.dart';
 import 'access_profile_view_model.dart';
 
+enum AccessProfileDirectoryKind { profiles, templates }
+
 final class AccessProfileDirectoryPage extends StatefulWidget {
   const AccessProfileDirectoryPage({
     required this.repository,
     required this.logout,
     this.onCreate,
     this.onOpen,
+    this.onDuplicate,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     this.onConversationsOpen,
@@ -28,6 +31,8 @@ final class AccessProfileDirectoryPage extends StatefulWidget {
     this.subtitle = 'Gerencie perfis do Superadmin e Admin e consulte capacidades do Principal.',
     this.currentDestination = 'profiles',
     this.createActionLabel = 'Criar perfil',
+    this.directoryKind = AccessProfileDirectoryKind.profiles,
+    this.onDirectoryKindSelected,
     super.key,
   });
 
@@ -35,6 +40,7 @@ final class AccessProfileDirectoryPage extends StatefulWidget {
   final LogoutAction logout;
   final ValueChanged<AccessProfileDomain>? onCreate;
   final void Function(AccessProfileDomain domain, String profileId)? onOpen;
+  final void Function(AccessProfileDomain domain, String profileId)? onDuplicate;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final VoidCallback? onConversationsOpen;
@@ -42,6 +48,8 @@ final class AccessProfileDirectoryPage extends StatefulWidget {
   final String subtitle;
   final String currentDestination;
   final String createActionLabel;
+  final AccessProfileDirectoryKind directoryKind;
+  final ValueChanged<AccessProfileDirectoryKind>? onDirectoryKindSelected;
 
   @override
   State<AccessProfileDirectoryPage> createState() => _AccessProfileDirectoryPageState();
@@ -56,7 +64,10 @@ final class _AccessProfileDirectoryPageState extends State<AccessProfileDirector
   @override
   void initState() {
     super.initState();
-    _viewModel = AccessProfileViewModel(widget.repository);
+    _viewModel = AccessProfileViewModel(
+      widget.repository,
+      principalCapabilitiesOnly: widget.directoryKind == AccessProfileDirectoryKind.profiles,
+    );
     _searchController = TextEditingController();
     _activityController = SuperadminActivityController();
     _scheduleLoad(_viewModel);
@@ -65,9 +76,15 @@ final class _AccessProfileDirectoryPageState extends State<AccessProfileDirector
   @override
   void didUpdateWidget(covariant AccessProfileDirectoryPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (identical(oldWidget.repository, widget.repository)) return;
+    if (identical(oldWidget.repository, widget.repository) &&
+        oldWidget.directoryKind == widget.directoryKind) {
+      return;
+    }
     _viewModel.dispose();
-    _viewModel = AccessProfileViewModel(widget.repository);
+    _viewModel = AccessProfileViewModel(
+      widget.repository,
+      principalCapabilitiesOnly: widget.directoryKind == AccessProfileDirectoryKind.profiles,
+    );
     _searchController.clear();
     _footerHeight = 0;
     _scheduleLoad(_viewModel);
@@ -105,7 +122,10 @@ final class _AccessProfileDirectoryPageState extends State<AccessProfileDirector
       searchController: _searchController,
       onCreate: widget.onCreate,
       onOpen: widget.onOpen,
+      onDuplicate: widget.onDuplicate,
       createActionLabel: widget.createActionLabel,
+      directoryKind: widget.directoryKind,
+      onDirectoryKindSelected: widget.onDirectoryKindSelected,
       onFooterHeightChanged: (height) {
         if ((_footerHeight - height).abs() < .5) return;
         setState(() => _footerHeight = height);
@@ -120,16 +140,22 @@ final class _AccessProfileDirectoryContent extends StatefulWidget {
     required this.searchController,
     required this.onCreate,
     required this.onOpen,
+    required this.onDuplicate,
     required this.onFooterHeightChanged,
     required this.createActionLabel,
+    required this.directoryKind,
+    required this.onDirectoryKindSelected,
   });
 
   final AccessProfileViewModel viewModel;
   final TextEditingController searchController;
   final ValueChanged<AccessProfileDomain>? onCreate;
   final void Function(AccessProfileDomain domain, String profileId)? onOpen;
+  final void Function(AccessProfileDomain domain, String profileId)? onDuplicate;
   final ValueChanged<double> onFooterHeightChanged;
   final String createActionLabel;
+  final AccessProfileDirectoryKind directoryKind;
+  final ValueChanged<AccessProfileDirectoryKind>? onDirectoryKindSelected;
 
   @override
   State<_AccessProfileDirectoryContent> createState() => _AccessProfileDirectoryContentState();
@@ -182,9 +208,7 @@ final class _AccessProfileDirectoryContentState extends State<_AccessProfileDire
             );
           }
           final query = widget.viewModel.query;
-          final showPagination =
-              query.domain != AccessProfileDomain.principal &&
-              widget.viewModel.state == AccessProfileLoadState.success;
+          final showPagination = widget.viewModel.state == AccessProfileLoadState.success;
           _measureFooter(showPagination);
           final footerInset = showPagination ? _footerHeight + CoeloSpacing.space4 : 0.0;
           return Stack(
@@ -199,6 +223,22 @@ final class _AccessProfileDirectoryContentState extends State<_AccessProfileDire
                   horizontalPadding + footerInset,
                 ),
                 children: [
+                  SuperadminUnderlineTabs<AccessProfileDirectoryKind>(
+                    key: const Key('access-profile-kind-selector'),
+                    tabs: const [
+                      SuperadminUnderlineTab(
+                        value: AccessProfileDirectoryKind.profiles,
+                        label: 'Perfis',
+                      ),
+                      SuperadminUnderlineTab(
+                        value: AccessProfileDirectoryKind.templates,
+                        label: 'Modelos',
+                      ),
+                    ],
+                    selected: widget.directoryKind,
+                    onSelected: widget.onDirectoryKindSelected ?? (_) {},
+                  ),
+                  const SizedBox(height: CoeloSpacing.space4),
                   _AccessProfileToolbar(
                     viewModel: widget.viewModel,
                     searchController: widget.searchController,
@@ -218,7 +258,7 @@ final class _AccessProfileDirectoryContentState extends State<_AccessProfileDire
                   if (widget.viewModel.page.isDemo ||
                       (query.domain == AccessProfileDomain.principal && widget.viewModel.isDemo))
                     const SizedBox(height: CoeloSpacing.space4),
-                  if (query.domain != AccessProfileDomain.principal) ...[
+                  if (!widget.viewModel.usesPrincipalCapabilities) ...[
                     Text(
                       'Perfil define teto; atribuição define contexto efetivo',
                       style: Theme.of(context).textTheme.bodySmall,
@@ -230,6 +270,9 @@ final class _AccessProfileDirectoryContentState extends State<_AccessProfileDire
                     compact: constraints.maxWidth < CoeloBreakpoints.medium.minWidth,
                     onCreate: widget.onCreate == null ? null : () => widget.onCreate!(query.domain),
                     onOpen: widget.onOpen == null ? null : (id) => widget.onOpen!(query.domain, id),
+                    onDuplicate: widget.onDuplicate == null
+                        ? null
+                        : (id) => widget.onDuplicate!(query.domain, id),
                     createActionLabel: widget.createActionLabel,
                   ),
                 ],
@@ -291,7 +334,7 @@ final class _AccessProfileToolbar extends StatelessWidget {
     builder: (context, constraints) {
       final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
       final query = viewModel.query;
-      if (query.domain == AccessProfileDomain.principal) {
+      if (viewModel.usesPrincipalCapabilities) {
         return CoeloAdminListingToolbar(
           search: SizedBox(
             width: compact ? constraints.maxWidth : 300,
@@ -304,17 +347,22 @@ final class _AccessProfileToolbar extends StatelessWidget {
             ),
           ),
           filters: const [],
-          actions: const [],
+          actions: [_AccessProfileFileActions(compact: compact)],
         );
       }
       final filterWidth = compact ? constraints.maxWidth : 176.0;
-      final validScopes = query.domain == AccessProfileDomain.platform
-          ? const [AccessProfileScope.platform, AccessProfileScope.institution]
-          : const [
-              AccessProfileScope.institution,
-              AccessProfileScope.unit,
-              AccessProfileScope.group,
-            ];
+      final validScopes = switch (query.domain) {
+        AccessProfileDomain.platform => const [
+          AccessProfileScope.platform,
+          AccessProfileScope.institution,
+        ],
+        AccessProfileDomain.institution => const [
+          AccessProfileScope.institution,
+          AccessProfileScope.unit,
+          AccessProfileScope.group,
+        ],
+        AccessProfileDomain.principal => const [AccessProfileScope.group],
+      };
       return CoeloAdminListingToolbar(
         key: const Key('access-profile-toolbar'),
         search: SizedBox(
@@ -365,9 +413,41 @@ final class _AccessProfileToolbar extends StatelessWidget {
               onTableViewSelected: viewModel.setTableView,
             ),
           ),
+          _AccessProfileFileActions(compact: compact),
         ],
       );
     },
+  );
+}
+
+final class _AccessProfileFileActions extends StatelessWidget {
+  const _AccessProfileFileActions({required this.compact});
+
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminFileActions(
+    compact: compact,
+    actions: [
+      CoeloAdminFileAction(
+        key: const Key('access-profile-files-import'),
+        label: 'Importar',
+        icon: Icons.upload_file_outlined,
+        onPressed: null,
+      ),
+      CoeloAdminFileAction(
+        key: const Key('access-profile-files-export-csv'),
+        label: 'Exportar CSV',
+        icon: Icons.table_rows_outlined,
+        onPressed: null,
+      ),
+      CoeloAdminFileAction(
+        key: const Key('access-profile-files-export-xlsx'),
+        label: 'Exportar XLSX',
+        icon: Icons.grid_on_outlined,
+        onPressed: null,
+      ),
+    ],
   );
 }
 
@@ -406,6 +486,7 @@ final class _AccessProfileResults extends StatelessWidget {
     required this.compact,
     required this.onCreate,
     required this.onOpen,
+    required this.onDuplicate,
     required this.createActionLabel,
   });
 
@@ -413,6 +494,7 @@ final class _AccessProfileResults extends StatelessWidget {
   final bool compact;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onOpen;
+  final ValueChanged<String>? onDuplicate;
   final String createActionLabel;
 
   @override
@@ -428,17 +510,17 @@ final class _AccessProfileResults extends StatelessWidget {
         );
       case AccessProfileLoadState.empty:
         result = CoeloStatePanel(
-          title: viewModel.query.domain == AccessProfileDomain.principal
+          title: viewModel.usesPrincipalCapabilities
               ? 'Nenhuma capacidade disponível'
               : 'Nenhum perfil cadastrado',
-          message: viewModel.query.domain == AccessProfileDomain.principal
+          message: viewModel.usesPrincipalCapabilities
               ? 'O catálogo contextual não retornou capacidades.'
               : 'Crie o primeiro perfil para começar.',
           icon: Icons.manage_accounts_outlined,
-          actionLabel: viewModel.query.domain == AccessProfileDomain.principal || onCreate == null
+          actionLabel: viewModel.usesPrincipalCapabilities || onCreate == null
               ? null
               : createActionLabel,
-          onAction: viewModel.query.domain == AccessProfileDomain.principal ? null : onCreate,
+          onAction: viewModel.usesPrincipalCapabilities ? null : onCreate,
         );
       case AccessProfileLoadState.noResults:
         result = CoeloStatePanel(
@@ -471,13 +553,14 @@ final class _AccessProfileResults extends StatelessWidget {
           onAction: viewModel.load,
         );
       case AccessProfileLoadState.success:
-        if (viewModel.query.domain == AccessProfileDomain.principal) {
-          result = _PrincipalCapabilities(capabilities: viewModel.visibleCapabilities);
+        if (viewModel.usesPrincipalCapabilities) {
+          result = _PrincipalCapabilities(capabilities: viewModel.pagedCapabilities);
         } else if (viewModel.query.layout == AccessProfileLayout.cards) {
           result = _AccessProfileCards(
             items: viewModel.page.items,
             onCreate: onCreate,
             onOpen: onOpen,
+            onDuplicate: onDuplicate,
             createActionLabel: createActionLabel,
           );
         } else {
@@ -486,6 +569,7 @@ final class _AccessProfileResults extends StatelessWidget {
             tableView: viewModel.tableView,
             onCreate: onCreate,
             onOpen: onOpen,
+            onDuplicate: onDuplicate,
             createActionLabel: createActionLabel,
           );
         }
@@ -508,12 +592,14 @@ final class _AccessProfileCards extends StatelessWidget {
     required this.items,
     required this.onCreate,
     required this.onOpen,
+    required this.onDuplicate,
     required this.createActionLabel,
   });
 
   final List<AccessProfile> items;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onOpen;
+  final ValueChanged<String>? onDuplicate;
   final String createActionLabel;
 
   @override
@@ -532,7 +618,11 @@ final class _AccessProfileCards extends StatelessWidget {
             ),
           ),
         for (final item in items)
-          _AccessProfileCard(item: item, onPressed: onOpen == null ? null : () => onOpen!(item.id)),
+          _AccessProfileCard(
+            item: item,
+            onPressed: onOpen == null ? null : () => onOpen!(item.id),
+            onDuplicate: onDuplicate == null ? null : () => onDuplicate!(item.id),
+          ),
       ];
       return Column(
         key: const Key('access-profile-card-grid'),
@@ -562,10 +652,15 @@ final class _AccessProfileCards extends StatelessWidget {
 }
 
 final class _AccessProfileCard extends StatelessWidget {
-  const _AccessProfileCard({required this.item, required this.onPressed});
+  const _AccessProfileCard({
+    required this.item,
+    required this.onPressed,
+    required this.onDuplicate,
+  });
 
   final AccessProfile item;
   final VoidCallback? onPressed;
+  final VoidCallback? onDuplicate;
 
   @override
   Widget build(BuildContext context) {
@@ -615,6 +710,13 @@ final class _AccessProfileCard extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (onDuplicate != null)
+                  IconButton(
+                    key: Key('access-profile-duplicate-${item.id}'),
+                    tooltip: 'Duplicar modelo',
+                    onPressed: onDuplicate,
+                    icon: const Icon(Icons.copy_all_outlined),
+                  ),
                 _ProfileExpandableStatus(status: item.status, itemId: item.id),
               ],
             ),
@@ -689,6 +791,7 @@ final class _AccessProfileTable extends StatelessWidget {
     required this.tableView,
     required this.onCreate,
     required this.onOpen,
+    required this.onDuplicate,
     required this.createActionLabel,
   });
 
@@ -696,6 +799,7 @@ final class _AccessProfileTable extends StatelessWidget {
   final AccessProfileTableView tableView;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onOpen;
+  final ValueChanged<String>? onDuplicate;
   final String createActionLabel;
 
   @override
@@ -733,64 +837,80 @@ final class _AccessProfileTable extends StatelessWidget {
             ],
           ),
         ),
-        columns: tableView == AccessProfileTableView.grouped
-            ? [
-                CoeloAdminTableColumn(
-                  id: 'description',
-                  label: 'Descrição',
-                  initialWidth: 340,
-                  minWidth: 220,
-                  maxWidth: 520,
-                  cellBuilder: (context, item) =>
-                      Text(item.description, maxLines: 1, overflow: TextOverflow.ellipsis),
-                ),
-                CoeloAdminTableColumn(
-                  id: 'scope',
-                  label: 'Escopo máximo',
-                  initialWidth: 180,
-                  minWidth: 140,
-                  maxWidth: 240,
-                  cellBuilder: (context, item) => Text(item.maxScope.label),
-                ),
-                CoeloAdminTableColumn(
-                  id: 'status',
-                  label: 'Status',
-                  initialWidth: 150,
-                  minWidth: 120,
-                  maxWidth: 200,
-                  cellBuilder: (context, item) => _ProfileStatusChip(status: item.status),
-                ),
-                CoeloAdminTableColumn(
-                  id: 'memberships',
-                  label: 'Vínculos',
-                  initialWidth: 120,
-                  minWidth: 96,
-                  maxWidth: 180,
-                  cellBuilder: (context, item) => Text('${item.membershipCount}'),
-                ),
-                CoeloAdminTableColumn(
-                  id: 'type',
-                  label: 'Tipo',
-                  initialWidth: 150,
-                  minWidth: 120,
-                  maxWidth: 200,
-                  cellBuilder: (context, item) => Text(
-                    item.isSystem ? 'Predefinido' : 'Personalizado',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+        columns: [
+          ...(tableView == AccessProfileTableView.grouped
+              ? [
+                  CoeloAdminTableColumn(
+                    id: 'description',
+                    label: 'Descrição',
+                    initialWidth: 340,
+                    minWidth: 220,
+                    maxWidth: 520,
+                    cellBuilder: (context, item) =>
+                        Text(item.description, maxLines: 1, overflow: TextOverflow.ellipsis),
                   ),
-                ),
-              ]
-            : [
-                _assignmentColumn(
-                  'institution',
-                  'Instituição',
-                  AccessAssignmentContext.institution,
-                ),
-                _assignmentColumn('unit', 'Unidade', AccessAssignmentContext.unit),
-                _assignmentColumn('group', 'Turma', AccessAssignmentContext.group),
-                _assignmentColumn('activity', 'Atividade', AccessAssignmentContext.activity),
-              ],
+                  CoeloAdminTableColumn(
+                    id: 'scope',
+                    label: 'Escopo máximo',
+                    initialWidth: 180,
+                    minWidth: 140,
+                    maxWidth: 240,
+                    cellBuilder: (context, item) => Text(item.maxScope.label),
+                  ),
+                  CoeloAdminTableColumn(
+                    id: 'status',
+                    label: 'Status',
+                    initialWidth: 150,
+                    minWidth: 120,
+                    maxWidth: 200,
+                    cellBuilder: (context, item) => _ProfileStatusChip(status: item.status),
+                  ),
+                  CoeloAdminTableColumn(
+                    id: 'memberships',
+                    label: 'Vínculos',
+                    initialWidth: 120,
+                    minWidth: 96,
+                    maxWidth: 180,
+                    cellBuilder: (context, item) => Text('${item.membershipCount}'),
+                  ),
+                  CoeloAdminTableColumn(
+                    id: 'type',
+                    label: 'Tipo',
+                    initialWidth: 150,
+                    minWidth: 120,
+                    maxWidth: 200,
+                    cellBuilder: (context, item) => Text(
+                      item.isSystem ? 'Predefinido' : 'Personalizado',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ]
+              : [
+                  _assignmentColumn(
+                    'institution',
+                    'Instituição',
+                    AccessAssignmentContext.institution,
+                  ),
+                  _assignmentColumn('unit', 'Unidade', AccessAssignmentContext.unit),
+                  _assignmentColumn('group', 'Turma', AccessAssignmentContext.group),
+                  _assignmentColumn('activity', 'Atividade', AccessAssignmentContext.activity),
+                ]),
+          if (onDuplicate != null)
+            CoeloAdminTableColumn(
+              id: 'actions',
+              label: 'Ações',
+              initialWidth: 96,
+              minWidth: 80,
+              maxWidth: 120,
+              cellBuilder: (context, item) => IconButton(
+                key: Key('access-profile-table-duplicate-${item.id}'),
+                tooltip: 'Duplicar modelo',
+                onPressed: () => onDuplicate!(item.id),
+                icon: const Icon(Icons.copy_all_outlined),
+              ),
+            ),
+        ],
         headerHeight: 56,
         rowHeight: 64,
         onRowPressed: onOpen == null ? null : (item) => onOpen!(item.id),
@@ -916,20 +1036,21 @@ final class _AccessProfilePagination extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final page = viewModel.page;
-    final totalPages = math.max(1, (page.totalCount / viewModel.query.pageSize).ceil());
+    final totalPages = math.max(1, (viewModel.resultCount / viewModel.query.pageSize).ceil());
     final options = viewModel.query.layout == AccessProfileLayout.cards
         ? const [11, 20, 50, 100]
         : const [8, 20, 50, 100];
     return CoeloAdminPagination(
-      currentPage: page.page + 1,
+      currentPage: viewModel.query.page + 1,
       totalPages: totalPages,
       pageSize: viewModel.query.pageSize,
       pageSizeOptions: options,
       onPageSelected: (value) => viewModel.goToPage(value - 1),
       onPageSizeChanged: viewModel.setPageSize,
-      onPrevious: page.hasPrevious ? () => viewModel.goToPage(page.page - 1) : null,
-      onNext: page.hasNext ? () => viewModel.goToPage(page.page + 1) : null,
+      onPrevious: viewModel.hasPreviousPage
+          ? () => viewModel.goToPage(viewModel.query.page - 1)
+          : null,
+      onNext: viewModel.hasNextPage ? () => viewModel.goToPage(viewModel.query.page + 1) : null,
     );
   }
 }

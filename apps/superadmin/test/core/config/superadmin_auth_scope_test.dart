@@ -137,7 +137,7 @@ void main() {
     expect(scope.activityDirectoryRepository, isA<UnavailableActivityDirectoryRepository>());
     expect(scope.activityCommandRepository, isA<UnavailableActivityCommandRepository>());
     expect(scope.personIdentityRepository, isA<UnavailablePersonIdentityRepository>());
-    expect(scope.accessProfileRepository, isA<UnavailableAccessProfileRepository>());
+    expect(scope.accessProfileRepository, isA<SupabaseAccessProfileRepository>());
     expect(scope.inviteRepository, isA<UnavailableInviteRepository>());
     expect(scope.attendanceRepository, isA<SupabaseAttendanceRepository>());
     expect(scope.studentTrackingRepository, isA<UnavailableStudentTrackingRepository>());

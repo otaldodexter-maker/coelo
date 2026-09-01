@@ -43,7 +43,7 @@ void main() {
     expect(body['p_expected_version'], 7);
   });
 
-  test('revocation maps to the archived database lifecycle', () async {
+  test('suspension maps to the suspended database lifecycle', () async {
     late Request captured;
     final client = _client((request) async {
       captured = request;
@@ -52,18 +52,18 @@ void main() {
     addTearDown(client.dispose);
     final repository = SupabaseChildSafetyRepository(client);
 
-    await repository.removeAuthorization(
-      const RemovePickupAuthorizationCommand(
+    await repository.suspendAuthorization(
+      const SuspendPickupAuthorizationCommand(
         requestId: 'request-1',
         childId: 'child-1',
         authorizationId: 'authorization-1',
-        reason: 'Vínculo revogado',
+        reason: 'Documento precisa ser revisto',
         expectedVersion: 4,
       ),
     );
 
     final body = jsonDecode(captured.body) as Map<String, dynamic>;
-    expect(body['p_lifecycle_status'], 'archived');
+    expect(body['p_lifecycle_status'], 'suspended');
     expect(body, isNot(contains('p_lifecycle')));
   });
 

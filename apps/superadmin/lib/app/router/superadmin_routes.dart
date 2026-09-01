@@ -141,6 +141,12 @@ abstract final class SuperadminRoutes {
   static const safetyCreateName = 'safety-create';
   static const safetyEdit = '/safety/children/:childId/authorizations/:authorizationId/edit';
   static const safetyEditName = 'safety-edit';
+  static const internalUsers = '/internal-users';
+  static const internalUsersName = 'internal-users';
+  static const internalUserCreate = '/internal-users/new';
+  static const internalUserCreateName = 'internal-user-create';
+  static const internalUserEdit = '/internal-users/:internalUserId/edit';
+  static const internalUserEditName = 'internal-user-edit';
   static const profiles = '/profiles';
   static const profilesName = 'profiles';
   static const profileModels = '/profile-models';
@@ -253,6 +259,8 @@ abstract final class SuperadminRoutes {
   static const devProfileModelDetailName = 'dev-profile-model-detail';
   static const devProfileModelEdit = '/dev/profile-models/:domain/:modelId/edit';
   static const devProfileModelEditName = 'dev-profile-model-edit';
+  static const devProfileModelDuplicate = '/dev/profile-models/:domain/:modelId/duplicate';
+  static const devProfileModelDuplicateName = 'dev-profile-model-duplicate';
   static const devHealthCareProfiles = '/dev/health-care/profiles';
   static const devHealthCareProfilesName = 'dev-health-care-profiles';
   static const devHealthCareProfileCreate = '/dev/health-care/profiles/new';

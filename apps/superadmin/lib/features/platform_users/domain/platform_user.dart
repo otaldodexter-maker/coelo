@@ -316,6 +316,7 @@ final class PlatformUserRecord {
     required this.credential,
     required this.memberships,
     required this.invitation,
+    this.version = 1,
     this.history = const [],
   }) : assert(memberships.length > 0);
 
@@ -323,6 +324,7 @@ final class PlatformUserRecord {
   final SuperadminCredentialSnapshot credential;
   final List<InternalAccessMembership> memberships;
   final InternalInvitation invitation;
+  final int version;
   final List<InternalUserHistoryEvent> history;
 
   String get id => identity.id;
@@ -348,12 +350,14 @@ final class PlatformUserRecord {
     SuperadminCredentialSnapshot? credential,
     List<InternalAccessMembership>? memberships,
     InternalInvitation? invitation,
+    int? version,
     List<InternalUserHistoryEvent>? history,
   }) => PlatformUserRecord(
     identity: identity ?? this.identity,
     credential: credential ?? this.credential,
     memberships: memberships ?? this.memberships,
     invitation: invitation ?? this.invitation,
+    version: version ?? this.version,
     history: history ?? this.history,
   );
 }
@@ -419,6 +423,7 @@ final class PlatformUserCreateResult {
 }
 
 abstract interface class PlatformUserRepository {
+  bool get isDemo => false;
   List<PlatformAccessProfile> get profiles;
   List<PlatformUserRecord> get records;
   PlatformUserRecord? findById(String id);
@@ -431,6 +436,12 @@ abstract interface class PlatformUserRepository {
   Future<PlatformUserRecord> reactivate(String id);
   Future<PlatformUserRecord> revoke(String id);
   Future<PlatformUserRecord> createReplacementMembership(String id);
+}
+
+/// Optional production loader used by deep links before the directory cache exists.
+abstract interface class PlatformUserRemoteLoader {
+  Future<List<PlatformAccessProfile>> fetchProfiles();
+  Future<PlatformUserRecord?> fetchById(String id);
 }
 
 final class PlatformUserConflictException implements Exception {

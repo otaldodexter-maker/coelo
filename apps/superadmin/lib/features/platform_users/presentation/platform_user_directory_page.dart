@@ -11,6 +11,7 @@ import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.da
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/platform_user.dart';
+import 'platform_user_file_actions.dart';
 
 final class PlatformUserDirectoryPage extends StatefulWidget {
   const PlatformUserDirectoryPage({
@@ -385,6 +386,7 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
             onTableViewSelected: _changeTableView,
           ),
         ),
+        PlatformUserFileActions(compact: compact),
       ],
     );
   }

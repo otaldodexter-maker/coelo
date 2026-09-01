@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/coelo_compact_address_map.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
@@ -628,6 +629,29 @@ final class _PersonFormPageState extends State<PersonFormPage> {
           prefixIcon: Icons.map_outlined,
         ),
       ]),
+      const SizedBox(height: CoeloSpacing.space4),
+      Builder(
+        builder: (context) {
+          final coordinates = coeloApproximateAddressCoordinates(
+            city: _controllers['city']!.text,
+            state: _controllers['state']!.text,
+          );
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Referência aproximada do município',
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
+              const SizedBox(height: CoeloSpacing.space2),
+              CoeloCompactAddressMap(
+                latitude: coordinates?.latitude ?? double.nan,
+                longitude: coordinates?.longitude ?? double.nan,
+              ),
+            ],
+          );
+        },
+      ),
     ],
   );
 

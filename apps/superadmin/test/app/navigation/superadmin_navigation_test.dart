@@ -96,7 +96,6 @@ void main() {
       'Segurança da criança',
       'Usuários internos',
       'Perfis e permissões',
-      'Modelos de perfil',
       'Saúde e Cuidado',
       'Perfis de cuidado',
       'Planos de medicação',

@@ -3,7 +3,8 @@ import '../domain/access_profile.dart';
 /// Fixtures determinísticas para dev, catálogo e testes.
 ///
 /// Nunca deve ser conectada ao caminho de produção ou usada para autorização.
-final class FakeAccessProfileRepository implements AccessProfileRepository {
+final class FakeAccessProfileRepository
+    implements AccessProfileRepository, AccessProfileDuplicator {
   FakeAccessProfileRepository({
     List<AccessProfile> profiles = demoAccessProfiles,
     List<PrincipalCapability> capabilities = demoPrincipalCapabilities,
@@ -118,6 +119,32 @@ final class FakeAccessProfileRepository implements AccessProfileRepository {
       throw const AccessProfileException('Selecione um perfil para realocar os vínculos.');
     }
     _profiles.removeWhere((profile) => profile.id == profileId);
+  }
+
+  @override
+  Future<AccessProfile> duplicate({
+    required String requestId,
+    required String sourceProfileId,
+    required AccessProfileDomain domain,
+    required String name,
+    required String reason,
+  }) async {
+    final source = await fetchDetail(domain, sourceProfileId);
+    final duplicate = source.copyWith(
+      id: 'demo-profile-${_profiles.length + 1}',
+      code: '${source.code}.copy.${_profiles.length + 1}',
+      name: name.trim(),
+      status: AccessProfileStatus.inactive,
+      version: 1,
+      membershipCount: 0,
+      isSystem: false,
+      links: const [],
+      auditEvents: const [],
+      auditAvailable: false,
+      localAssignments: const [],
+    );
+    _profiles.add(duplicate);
+    return duplicate;
   }
 }
 

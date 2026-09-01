@@ -133,7 +133,6 @@ final coeloSuperadminNavigation = <CoeloNavigationNode>[
       availability: _developmentOnly,
     ),
     _screen('profiles', 'Perfis e permissões', Icons.admin_panel_settings_outlined, const []),
-    _screen('profile-models', 'Modelos de perfil', Icons.view_list_outlined, const []),
   ]),
   _screen('health-care', 'Saúde e Cuidado', Icons.health_and_safety_outlined, [
     _screen('health-care-profiles', 'Perfis de cuidado', Icons.child_care_outlined, const []),

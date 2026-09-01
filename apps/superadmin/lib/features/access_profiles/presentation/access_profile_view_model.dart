@@ -14,9 +14,10 @@ enum AccessProfileLoadState {
 }
 
 final class AccessProfileViewModel extends ChangeNotifier {
-  AccessProfileViewModel(this._repository);
+  AccessProfileViewModel(this._repository, {this.principalCapabilitiesOnly = true});
 
   final AccessProfileRepository _repository;
+  final bool principalCapabilitiesOnly;
 
   AccessProfileQuery query = const AccessProfileQuery();
   AccessProfileTableView tableView = AccessProfileTableView.grouped;
@@ -29,6 +30,8 @@ final class AccessProfileViewModel extends ChangeNotifier {
   bool _disposed = false;
 
   bool get isDemo => _repository.isDemo;
+  bool get usesPrincipalCapabilities =>
+      principalCapabilitiesOnly && query.domain == AccessProfileDomain.principal;
 
   List<PrincipalCapability> get visibleCapabilities {
     final normalizedSearch = query.search.trim().toLowerCase();
@@ -43,9 +46,22 @@ final class AccessProfileViewModel extends ChangeNotifier {
         .toList(growable: false);
   }
 
+  List<PrincipalCapability> get pagedCapabilities {
+    final visible = visibleCapabilities;
+    final start = query.page * query.pageSize;
+    if (start >= visible.length) return const [];
+    return visible.skip(start).take(query.pageSize).toList(growable: false);
+  }
+
+  int get resultCount => usesPrincipalCapabilities ? visibleCapabilities.length : page.totalCount;
+  bool get hasPreviousPage => usesPrincipalCapabilities ? query.page > 0 : page.hasPrevious;
+  bool get hasNextPage => usesPrincipalCapabilities
+      ? (query.page + 1) * query.pageSize < visibleCapabilities.length
+      : page.hasNext;
+
   Future<void> load() async {
     final requestGeneration = ++_requestGeneration;
-    if (query.domain == AccessProfileDomain.principal) {
+    if (usesPrincipalCapabilities) {
       page = const AccessProfilePage.empty();
     } else {
       capabilities = const [];
@@ -54,7 +70,7 @@ final class AccessProfileViewModel extends ChangeNotifier {
     errorMessage = null;
     notifyListeners();
     try {
-      if (query.domain == AccessProfileDomain.principal) {
+      if (usesPrincipalCapabilities) {
         final loadedCapabilities = await _repository.fetchPrincipalCapabilities();
         if (!_isCurrent(requestGeneration)) return;
         capabilities = loadedCapabilities;
@@ -107,7 +123,7 @@ final class AccessProfileViewModel extends ChangeNotifier {
 
   Future<void> setSearch(String value) async {
     query = query.copyWith(search: value, resetPage: true);
-    if (query.domain == AccessProfileDomain.principal) {
+    if (usesPrincipalCapabilities) {
       state = visibleCapabilities.isEmpty
           ? AccessProfileLoadState.noResults
           : AccessProfileLoadState.success;
@@ -147,7 +163,7 @@ final class AccessProfileViewModel extends ChangeNotifier {
   }
 
   Future<void> goToPage(int value) async {
-    query = query.copyWith(page: value);
+    query = query.copyWith(page: value < 0 ? 0 : value);
     await load();
   }
 

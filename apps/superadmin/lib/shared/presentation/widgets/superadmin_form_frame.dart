@@ -35,20 +35,26 @@ final class SuperadminFormFrame extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (!showRail) ...[navigation, const SizedBox(height: CoeloSpacing.space4)],
               Expanded(
                 child: SingleChildScrollView(
                   key: scrollKey,
                   padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: bodyMaxWidth),
-                      child: body,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (!showRail) ...[navigation, const SizedBox(height: CoeloSpacing.space4)],
+                      Center(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: bodyMaxWidth),
+                          child: body,
+                        ),
+                      ),
+                      if (!showRail) ...[const SizedBox(height: CoeloSpacing.space6), footer],
+                    ],
                   ),
                 ),
               ),
-              footer,
+              if (showRail) footer,
             ],
           ),
         );

@@ -13,6 +13,13 @@ import 'package:go_router/go_router.dart';
 import '../../../support/people/fake_person_directory_repository.dart';
 
 void main() {
+  testWidgets('person identity step includes the compact address map state', (tester) async {
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('coelo-address-map-unavailable')), findsOneWidget);
+  });
+
   testWidgets('form keeps a local address section out of the persisted identity contract', (
     tester,
   ) async {
@@ -244,7 +251,9 @@ void main() {
     await tester.enterText(find.byKey(const Key('person-last-name-field')), 'Lima');
     await tester.enterText(find.byKey(const Key('person-display-name-field')), 'Ana Lima');
     await tester.enterText(find.byKey(const Key('person-legal-name-field')), 'Ana Lima');
-    await tester.tap(find.byKey(const Key('person-form-continue')));
+    final continueButton = find.byKey(const Key('person-form-continue'));
+    await tester.ensureVisible(continueButton);
+    await tester.tap(continueButton);
     await tester.pump(const Duration(seconds: 1));
     expect(find.textContaining('Vínculos contextuais', skipOffstage: false), findsWidgets);
   });

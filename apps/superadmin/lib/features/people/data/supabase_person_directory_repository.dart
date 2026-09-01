@@ -61,13 +61,30 @@ final class SupabasePersonDirectoryRepository implements PersonDirectoryReposito
   @override
   Future<PersonDirectoryItem> fetchDetail(String personId) async {
     try {
-      final response = await _client.rpc<Map<String, dynamic>>(
-        'superadmin_people_detail',
+      final response = await _client.rpc<Object?>(
+        'superadmin_person_detail_v2',
         params: {'p_person_id': personId},
       );
-      return PersonDirectoryItem.fromJson(Map<String, dynamic>.from(response as Map));
+      if (response is! Map) throw const PersonDirectoryUnavailableException();
+      final envelope = Map<String, dynamic>.from(response);
+      if (envelope['ok'] != true) {
+        final error = envelope['error'] is Map
+            ? Map<String, dynamic>.from(envelope['error'] as Map)
+            : const <String, dynamic>{};
+        final code = error['code'];
+        throw _mapInternalError(code is String ? code : null);
+      }
+      final data = envelope['data'];
+      if (data is! Map) throw const PersonDirectoryUnavailableException();
+      return PersonDirectoryItem.fromJson(Map<String, dynamic>.from(data));
     } on PostgrestException catch (error) {
       throw _mapError(error);
+    } on PersonDirectoryUnauthorizedException {
+      rethrow;
+    } on PersonDirectoryUnavailableException {
+      rethrow;
+    } on Object {
+      throw const PersonDirectoryUnavailableException();
     }
   }
 
@@ -97,6 +114,14 @@ final class SupabasePersonDirectoryRepository implements PersonDirectoryReposito
     }
   }
 }
+
+Exception _mapInternalError(String? code) => switch (code) {
+  'SAI_PERMISSION_DENIED' ||
+  'SAI_INTERNAL_CONTEXT_DENIED' ||
+  'SAI_SESSION_INVALID' ||
+  'SAI_MFA_REQUIRED' => const PersonDirectoryUnauthorizedException(),
+  _ => const PersonDirectoryUnavailableException(),
+};
 
 List<PersonFilterOption> _options(Object? raw) {
   final rows = raw as List<dynamic>? ?? const [];

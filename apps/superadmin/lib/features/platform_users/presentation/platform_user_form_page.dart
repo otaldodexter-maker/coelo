@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
+import '../../../shared/presentation/widgets/coelo_compact_address_map.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../institutions/presentation/widgets/institution_logo_picker.dart';
@@ -74,44 +75,91 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   List<int>? _avatarBytes;
   DateTime? _birthDateValue;
   bool _saving = false;
+  bool _loading = false;
+  Object? _loadError;
+  PlatformUserRecord? _loadedRecord;
   bool _dirty = false;
   double _footerHeight = 0;
 
   bool get _editing => widget.internalUserId != null;
-  PlatformUserRecord? get _record =>
-      widget.internalUserId == null ? null : widget.repository.findById(widget.internalUserId!);
+  PlatformUserRecord? get _record => widget.internalUserId == null
+      ? null
+      : _loadedRecord ?? widget.repository.findById(widget.internalUserId!);
 
   @override
   void initState() {
     super.initState();
-    _profile = widget.repository.profiles.firstWhere((item) => item.id == 'operations');
+    _profile = widget.repository.profiles.firstWhere(
+      (item) => item.id == 'operations',
+      orElse: () => PlatformAccessProfiles.byId('operations'),
+    );
     final record = _record;
     if (record != null) {
-      _firstName.text = record.firstName;
-      _lastName.text = record.lastName;
-      _displayName.text = record.identity.displayName;
-      _birthDateValue = record.identity.birthDate;
-      _cpf.text = _formatCpfInput(record.identity.cpf);
-      _email.text = record.email;
-      _mobile.text = record.identity.mobile;
-      _additionalPhone.text = record.identity.additionalPhone;
-      _jobTitle.text = record.identity.jobTitle;
-      _department.text = record.identity.department;
-      _internalFunction.text = record.identity.internalFunction;
-      _notes.text = record.identity.professionalNotes;
-      _postalCode.text = record.identity.postalCode;
-      _street.text = record.identity.street;
-      _number.text = record.identity.number;
-      _complement.text = record.identity.complement;
-      _neighborhood.text = record.identity.neighborhood;
-      _city.text = record.identity.city;
-      _state.text = record.identity.state;
-      _country.text = record.identity.country;
-      _avatarBytes = record.identity.avatarBytes;
-      _profile = record.profile;
-      _scope = record.scope;
-      _scopeIds = record.membership.scopeIds.toSet();
+      _populate(record);
     }
+    if (_editing) {
+      final repository = widget.repository;
+      if (repository is PlatformUserRemoteLoader) {
+        _loading = true;
+        _loadRemote(repository as PlatformUserRemoteLoader);
+      }
+    }
+  }
+
+  Future<void> _loadRemote(PlatformUserRemoteLoader loader) async {
+    try {
+      await loader.fetchProfiles();
+      final record = await loader.fetchById(widget.internalUserId!);
+      if (!mounted) return;
+      if (record == null) {
+        setState(() {
+          _loading = false;
+          _loadError = const PlatformUserRuleException(
+            'not-found',
+            'Usuário interno não encontrado.',
+          );
+        });
+        return;
+      }
+      _populate(record);
+      setState(() {
+        _loadedRecord = record;
+        _loading = false;
+      });
+    } on Object catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _loadError = error;
+      });
+    }
+  }
+
+  void _populate(PlatformUserRecord record) {
+    _firstName.text = record.firstName;
+    _lastName.text = record.lastName;
+    _displayName.text = record.identity.displayName;
+    _birthDateValue = record.identity.birthDate;
+    _cpf.text = _formatCpfInput(record.identity.cpf);
+    _email.text = record.email;
+    _mobile.text = record.identity.mobile;
+    _additionalPhone.text = record.identity.additionalPhone;
+    _jobTitle.text = record.identity.jobTitle;
+    _department.text = record.identity.department;
+    _internalFunction.text = record.identity.internalFunction;
+    _notes.text = record.identity.professionalNotes;
+    _postalCode.text = record.identity.postalCode;
+    _street.text = record.identity.street;
+    _number.text = record.identity.number;
+    _complement.text = record.identity.complement;
+    _neighborhood.text = record.identity.neighborhood;
+    _city.text = record.identity.city;
+    _state.text = record.identity.state;
+    _country.text = record.identity.country;
+    _avatarBytes = record.identity.avatarBytes;
+    _profile = record.profile;
+    _scope = record.scope;
+    _scopeIds = record.membership.scopeIds.toSet();
   }
 
   @override
@@ -140,7 +188,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   }
 
   void _changed([Object? _]) {
-    if (!_dirty) setState(() => _dirty = true);
+    setState(() => _dirty = true);
   }
 
   bool _validateIdentity() {
@@ -243,7 +291,24 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   @override
   Widget build(BuildContext context) {
     final title = _editing ? 'Editar usuário interno' : 'Criar usuário interno';
-    if (widget.capability != PlatformUserCapability.owner || (_editing && _record == null)) {
+    if (_loading) {
+      return SuperadminShell(
+        logout: widget.logout,
+        title: title,
+        subtitle: 'Carregando o cadastro interno protegido.',
+        currentDestination: 'internal-users',
+        child: const Padding(
+          padding: EdgeInsets.all(CoeloSpacing.space6),
+          child: CoeloStatePanel(
+            title: 'Carregando usuário interno',
+            message: 'Aguarde enquanto o acesso é revalidado.',
+            loading: true,
+          ),
+        ),
+      );
+    }
+    if (widget.capability != PlatformUserCapability.owner ||
+        (_editing && (_record == null || _loadError != null))) {
       return SuperadminShell(
         logout: widget.logout,
         title: title,
@@ -477,6 +542,29 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
         _field(_mobile, 'Celular', Icons.phone_android_outlined, keyboardType: TextInputType.phone),
       ]),
       const SizedBox(height: CoeloSpacing.space4),
+      Builder(
+        builder: (context) {
+          final coordinates = coeloApproximateAddressCoordinates(
+            city: _city.text,
+            state: _state.text,
+          );
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Referência aproximada do município',
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
+              const SizedBox(height: CoeloSpacing.space2),
+              CoeloCompactAddressMap(
+                latitude: coordinates?.latitude ?? double.nan,
+                longitude: coordinates?.longitude ?? double.nan,
+              ),
+            ],
+          );
+        },
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
       _responsiveFields([
         _field(
           _additionalPhone,
@@ -613,6 +701,29 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
         ],
         if (_scope == PlatformUserScope.limited) ...[
           const SizedBox(height: CoeloSpacing.space4),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              key: const Key('platform-user-scopes-select-all'),
+              onPressed: () {
+                setState(() {
+                  _scopeIds = _scopeIds.length == institutionIds.length
+                      ? <String>{}
+                      : institutionIds.toSet();
+                  _dirty = true;
+                });
+              },
+              icon: Icon(
+                _scopeIds.length == institutionIds.length
+                    ? Icons.deselect_outlined
+                    : Icons.select_all_outlined,
+              ),
+              label: Text(
+                _scopeIds.length == institutionIds.length ? 'Limpar seleção' : 'Selecionar todas',
+              ),
+            ),
+          ),
+          const SizedBox(height: CoeloSpacing.space2),
           CoeloAdminMultiSelectField<String>(
             key: const Key('platform-user-scopes'),
             label: 'Instituições permitidas',

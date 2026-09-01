@@ -70,6 +70,27 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text('Nenhuma instituição encontrada'), findsOneWidget);
   });
+
+  testWidgets('scrolls long feedback inside a short 200 percent viewport', (tester) async {
+    await tester.pumpWidget(
+      const _TestApp(
+        textScaler: TextScaler.linear(2),
+        child: SizedBox(
+          width: 375,
+          height: 391,
+          child: CoeloStatePanel(
+            title: 'Carregando opções',
+            message: 'Buscando contextos, perfis e Pessoas autorizadas.',
+            icon: Icons.hourglass_top_rounded,
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(SingleChildScrollView), findsOneWidget);
+    expect(find.text('Carregando opções'), findsOneWidget);
+  });
 }
 
 class _TestApp extends StatelessWidget {

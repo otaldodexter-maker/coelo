@@ -1,19 +1,85 @@
+import '../../../../app/dev_menu/development_access_health_fixture_catalog.dart';
 import '../../domain/medication_plan_repository.dart';
 
 final class DevMedicationPlanRepository implements MedicationPlanRepository {
-  DevMedicationPlanRepository({List<MedicationPlanDetail> plans = const []})
-    : _seed = List.unmodifiable(plans),
-      _plans = List.of(plans);
+  DevMedicationPlanRepository({
+    List<MedicationPlanDetail> plans = const [],
+    Map<String, MedicationPlanSaveCommand> commandsByPlanId = const {},
+  }) : _seed = List.unmodifiable(plans),
+       _plans = List.of(plans),
+       _seedCommandsByPlanId = Map.unmodifiable(commandsByPlanId),
+       _commandsByPlanId = Map.of(commandsByPlanId);
+
+  factory DevMedicationPlanRepository.content({DevelopmentAccessHealthFixtureCatalog? catalog}) {
+    final fixtures = catalog ?? DevelopmentAccessHealthFixtureCatalog.standard();
+    final childrenById = {for (final child in fixtures.children) child.id: child};
+    final commands = <String, MedicationPlanSaveCommand>{};
+    final plans = <MedicationPlanDetail>[];
+    for (final (index, fixture) in fixtures.medicationPlans.indexed) {
+      final child = childrenById[fixture.childId]!;
+      final medication = _medicationData(fixture.medicationName);
+      final validFrom = DateTime(2026, 1 + index % 10, 1 + index % 20);
+      final schedule = MedicationScheduleDraft(
+        timeOfDay: '${(7 + index % 4).toString().padLeft(2, '0')}:${index.isEven ? '30' : '00'}',
+        weekdays: const {1, 2, 3, 4, 5},
+        timezone: 'America/Sao_Paulo',
+      );
+      final command = MedicationPlanSaveCommand(
+        requestId: 'seed-${fixture.id}',
+        planId: fixture.id,
+        childPersonId: fixture.childId,
+        expectedVersion: 1,
+        medicationName: fixture.medicationName,
+        doseAmount: medication.$1,
+        doseUnit: medication.$2,
+        administrationRoute: medication.$3,
+        validFrom: validFrom,
+        validUntil: DateTime(2027, 12, 31),
+        reason: 'Plano demonstrativo vinculado à criança.',
+        scopeKind: 'institution',
+        timezone: 'America/Sao_Paulo',
+        schedules: [schedule],
+        institutionId: child.institutionId,
+        unitId: child.unitId,
+        groupId: child.groupId,
+        childContextId: child.groupId,
+      );
+      commands[fixture.id] = command;
+      plans.add(
+        MedicationPlanDetail(
+          id: fixture.id,
+          childPersonId: fixture.childId,
+          status: switch (fixture.status) {
+            'awaiting_approval' => MedicationPlanStatus.draft,
+            'suspended' => MedicationPlanStatus.suspended,
+            _ => MedicationPlanStatus.active,
+          },
+          currentVersion: 1,
+          medicationName: fixture.medicationName,
+          doseAmount: medication.$1,
+          doseUnit: medication.$2,
+          administrationRoute: medication.$3,
+          validFrom: validFrom,
+          validUntil: DateTime(2027, 12, 31),
+          timezone: 'America/Sao_Paulo',
+          schedules: [schedule],
+          instructions: 'Administrar conforme orientação registrada no plano.',
+        ),
+      );
+    }
+    return DevMedicationPlanRepository(plans: plans, commandsByPlanId: commands);
+  }
 
   final List<MedicationPlanDetail> _seed;
+  final Map<String, MedicationPlanSaveCommand> _seedCommandsByPlanId;
   List<MedicationPlanDetail> _plans;
   final Map<String, _MedicationPlanReplay> _replays = {};
-  final Map<String, MedicationPlanSaveCommand> _commandsByPlanId = {};
+  Map<String, MedicationPlanSaveCommand> _commandsByPlanId;
 
   void resetSession() {
     _plans = List.of(_seed);
     _replays.clear();
-    _commandsByPlanId.clear();
+    _commandsByPlanId = Map.of(_seedCommandsByPlanId);
   }
 
   MedicationPlanSaveCommand? latestCommandFor(String planId) => _commandsByPlanId[planId];
@@ -145,3 +211,12 @@ bool _sameSchedules(List<MedicationScheduleDraft> left, List<MedicationScheduleD
 extension on Iterable<MedicationPlanDetail> {
   MedicationPlanDetail? get firstOrNull => isEmpty ? null : first;
 }
+
+(num, String, String) _medicationData(String name) => switch (name) {
+  'Budesonida' => (1, 'jato', 'Inalatória'),
+  'Loratadina' => (5, 'ml', 'Oral'),
+  'Insulina' => (4, 'UI', 'Subcutânea'),
+  'Levetiracetam' => (5, 'ml', 'Oral'),
+  'Salbutamol' => (2, 'jatos', 'Inalatória'),
+  _ => (1, 'dose', 'Conforme prescrição'),
+};

@@ -163,4 +163,150 @@ void main() {
       throwsA(isA<PersonDirectoryReadOnlyException>()),
     );
   });
+
+  test('detail and reload use the internal v2 envelope without extra PII', () async {
+    final requests = <Request>[];
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        requests.add(request);
+        return Response(
+          jsonEncode({
+            'ok': true,
+            'data': {
+              'id': 'person-1',
+              'first_name': 'Ana',
+              'last_name': 'Lima',
+              'display_name': 'Ana Lima',
+              'legal_name': null,
+              'type': 'adult',
+              'status': 'active',
+              'auth_link': 'linked',
+              'memberships': <Object>[],
+              'child_contexts': <Object>[],
+              'updated_at': '2026-09-01T18:00:00Z',
+            },
+            'error': null,
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabasePersonDirectoryRepository(client);
+
+    final first = await repository.fetchDetail('person-1');
+    final reloaded = await repository.fetchDetail('person-1');
+
+    expect(first.displayName, 'Ana Lima');
+    expect(reloaded.authLink, AuthLinkStatus.linked);
+    expect(requests, hasLength(2));
+    expect(
+      requests,
+      everyElement(
+        predicate<Request>((item) {
+          final body = jsonDecode(item.body) as Map<String, dynamic>;
+          return item.url.path.endsWith('/rpc/superadmin_person_detail_v2') &&
+              body['p_person_id'] == 'person-1';
+        }),
+      ),
+    );
+  });
+
+  test('detail v2 maps non-enumerating and invalid-session envelopes fail closed', () async {
+    var code = 'SAI_PERMISSION_DENIED';
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => Response(
+          jsonEncode({
+            'ok': false,
+            'data': null,
+            'error': {
+              'code': code,
+              'message': 'Acesso negado.',
+              'correlation_id': 'correlation-1',
+              'http_status': 403,
+            },
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabasePersonDirectoryRepository(client);
+
+    await expectLater(
+      repository.fetchDetail('cross-tenant-id'),
+      throwsA(isA<PersonDirectoryUnauthorizedException>()),
+    );
+    code = 'SAI_SESSION_INVALID';
+    await expectLater(
+      repository.fetchDetail('person-1'),
+      throwsA(isA<PersonDirectoryUnauthorizedException>()),
+    );
+  });
+
+  test('detail v2 rejects malformed or internal-error envelopes as unavailable', () async {
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => Response(
+          jsonEncode({
+            'ok': false,
+            'data': null,
+            'error': {'code': 'SAI_INTERNAL_ERROR'},
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabasePersonDirectoryRepository(client).fetchDetail('person-1'),
+      throwsA(isA<PersonDirectoryUnavailableException>()),
+    );
+  });
+
+  test('detail v2 normalizes non-map envelopes and non-string error codes', () async {
+    Object payload = <Object>[];
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => Response(
+          jsonEncode(payload),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabasePersonDirectoryRepository(client);
+
+    await expectLater(
+      repository.fetchDetail('person-1'),
+      throwsA(isA<PersonDirectoryUnavailableException>()),
+    );
+    payload = {
+      'ok': false,
+      'data': null,
+      'error': {'code': 403},
+    };
+    await expectLater(
+      repository.fetchDetail('person-1'),
+      throwsA(isA<PersonDirectoryUnavailableException>()),
+    );
+  });
 }

@@ -56,11 +56,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Acesso ao Superadmin'), findsWidgets);
+    expect(find.byKey(const Key('platform-user-scopes-select-all')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('platform-user-scopes-select-all')));
+    await tester.pump();
     final scope = tester.widget<CoeloAdminMultiSelectField<String>>(
       find.byType(CoeloAdminMultiSelectField<String>),
     );
-    scope.onChanged(const {'institution-1'});
-    await tester.pump();
+    expect(scope.selectedValues, hasLength(3));
     await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
 
@@ -128,6 +130,8 @@ void main() {
     expect(find.byType(CoeloDateRangeField), findsOneWidget);
     await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('coelo-address-map-marker')), findsOneWidget);
 
     final email = tester.widget<TextFormField>(find.byKey(const Key('platform-user-email')));
     expect(email.enabled, isFalse);

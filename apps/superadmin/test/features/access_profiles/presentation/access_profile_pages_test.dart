@@ -5,10 +5,12 @@ import 'package:coelo_superadmin/features/access_profiles/data/supabase_access_p
 import 'package:coelo_superadmin/features/access_profiles/domain/access_profile.dart';
 import 'package:coelo_superadmin/features/access_profiles/presentation/access_profile_detail_page.dart';
 import 'package:coelo_superadmin/features/access_profiles/presentation/access_profile_directory_page.dart';
+import 'package:coelo_superadmin/features/access_profiles/presentation/access_profile_duplicate_page.dart';
 import 'package:coelo_superadmin/features/access_profiles/presentation/access_profile_form_page.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -144,6 +146,7 @@ void main() {
   testWidgets('real create and open callbacks fire exactly once', (tester) async {
     var createCalls = 0;
     var openCalls = 0;
+    var duplicateCalls = 0;
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
@@ -152,18 +155,149 @@ void main() {
           logout: unavailableSuperadminLogout,
           onCreate: (_) => createCalls += 1,
           onOpen: (_, _) => openCalls += 1,
+          onDuplicate: (_, _) => duplicateCalls += 1,
         ),
       ),
     );
     await tester.pumpAndSettle();
 
+    expect(find.byKey(const Key('access-profile-kind-selector')), findsOneWidget);
+    expect(find.byType(CoeloAdminFileActions), findsOneWidget);
+
     tester.widget<CoeloAdminCreateAction>(find.byType(CoeloAdminCreateAction)).onPressed!();
     tester
         .widget<CoeloAdminInteractiveCard>(find.byType(CoeloAdminInteractiveCard).first)
         .onPressed!();
+    tester
+        .widget<IconButton>(
+          find
+              .byWidgetPredicate(
+                (widget) => widget.key?.toString().contains('access-profile-duplicate-') ?? false,
+              )
+              .first,
+        )
+        .onPressed!();
 
     expect(createCalls, 1);
     expect(openCalls, 1);
+    expect(duplicateCalls, 1);
+  });
+
+  testWidgets('duplicate model starts inactive without carrying assignments', (tester) async {
+    final repository = FakeAccessProfileRepository();
+    AccessProfile? duplicated;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AccessProfileDuplicatePage(
+          repository: repository,
+          duplicator: repository,
+          logout: unavailableSuperadminLogout,
+          domain: AccessProfileDomain.platform,
+          sourceProfileId: 'demo-owner',
+          onCancel: () {},
+          onDuplicated: (profile) => duplicated = profile,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nova cópia'), findsOneWidget);
+    await tester.enterText(
+      find.widgetWithText(CoeloFormTextField, 'Nome do novo modelo'),
+      'Owner regional revisado',
+    );
+    await tester.enterText(
+      find.widgetWithText(CoeloFormTextField, 'Motivo da duplicação'),
+      'Base independente para revisão regional.',
+    );
+    await tester.ensureVisible(find.byKey(const Key('access-profile-duplicate-submit')));
+    await tester.tap(find.byKey(const Key('access-profile-duplicate-submit')));
+    await tester.pumpAndSettle();
+
+    expect(duplicated?.name, 'Owner regional revisado');
+    expect(duplicated?.status, AccessProfileStatus.inactive);
+    expect(duplicated?.membershipCount, 0);
+    expect(duplicated?.isSystem, isFalse);
+  });
+
+  testWidgets('permission matrix selects by app, module and screen', (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AccessProfileFormPage(
+          repository: FakeAccessProfileRepository(),
+          logout: unavailableSuperadminLogout,
+          domain: AccessProfileDomain.platform,
+          profileId: 'demo-owner',
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('access-profile-continue')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('permission-app-select-all')), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget.key?.toString().contains('permission-module-select-all-') ?? false,
+      ),
+      findsWidgets,
+    );
+    final screenAction = find.byWidgetPredicate(
+      (widget) =>
+          widget is IconButton &&
+          widget.onPressed != null &&
+          (widget.key?.toString().contains('permission-screen-select-all-') ?? false),
+    );
+    expect(screenAction, findsWidgets);
+
+    final initiallyAllSelected = find.text('Limpar app').evaluate().isNotEmpty;
+    await tester.ensureVisible(find.byKey(const Key('permission-app-select-all')));
+    await tester.tap(find.byKey(const Key('permission-app-select-all')));
+    await tester.pump();
+    expect(
+      find.text(initiallyAllSelected ? 'Selecionar todo o app' : 'Limpar app'),
+      findsOneWidget,
+    );
+    if (!initiallyAllSelected) {
+      await tester.tap(find.byKey(const Key('permission-app-select-all')));
+      await tester.pump();
+    }
+    await tester.ensureVisible(screenAction.first);
+    await tester.tap(screenAction.first);
+    await tester.pump();
+    expect(
+      (tester.widget<IconButton>(screenAction.first).icon as Icon).icon,
+      Icons.deselect_rounded,
+    );
+  });
+
+  testWidgets('directory switches between profiles and models in one access area', (tester) async {
+    AccessProfileDirectoryKind? selected;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AccessProfileDirectoryPage(
+          repository: FakeAccessProfileRepository(),
+          logout: unavailableSuperadminLogout,
+          directoryKind: AccessProfileDirectoryKind.templates,
+          onDirectoryKindSelected: (value) => selected = value,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Perfis'), findsOneWidget);
+    expect(find.text('Modelos'), findsOneWidget);
+    await tester.tap(find.text('Perfis'));
+    expect(selected, AccessProfileDirectoryKind.profiles);
   });
 
   testWidgets('cards and table remain stable across the responsive matrix', (tester) async {
@@ -185,16 +319,80 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        expect(find.byKey(const Key('access-profile-card-grid')), findsOneWidget);
+        if (find.byKey(const Key('access-profile-card-grid')).evaluate().isEmpty) {
+          await tester.scrollUntilVisible(
+            find.byKey(const Key('access-profile-card-grid')),
+            240,
+            scrollable: find
+                .descendant(
+                  of: find.byKey(const Key('access-profiles-scroll')),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+          );
+        }
+        expect(
+          find.byKey(const Key('access-profile-card-grid')),
+          findsOneWidget,
+          reason: 'cards at $width / $scale',
+        );
         expect(tester.takeException(), isNull, reason: width.toString());
 
+        if (find.byKey(const Key('access-profile-view-table')).evaluate().isEmpty) {
+          await tester.scrollUntilVisible(
+            find.byKey(const Key('access-profile-view-table')),
+            -240,
+            scrollable: find
+                .descendant(
+                  of: find.byKey(const Key('access-profiles-scroll')),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+          );
+        }
         await tester.tap(find.byKey(const Key('access-profile-view-table')));
         await tester.pumpAndSettle();
+        if (find.byKey(const Key('access-profile-table')).evaluate().isEmpty) {
+          await tester.scrollUntilVisible(
+            find.byKey(const Key('access-profile-table')),
+            240,
+            scrollable: find
+                .descendant(
+                  of: find.byKey(const Key('access-profiles-scroll')),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+          );
+        }
         expect(find.byKey(const Key('access-profile-table')), findsOneWidget);
         expect(tester.takeException(), isNull, reason: width.toString());
 
+        if (find.byKey(const Key('access-profile-view-cards')).evaluate().isEmpty) {
+          await tester.scrollUntilVisible(
+            find.byKey(const Key('access-profile-view-cards')),
+            -240,
+            scrollable: find
+                .descendant(
+                  of: find.byKey(const Key('access-profiles-scroll')),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+          );
+        }
         await tester.tap(find.byKey(const Key('access-profile-view-cards')));
         await tester.pumpAndSettle();
+        if (find.byKey(const Key('access-profile-card-grid')).evaluate().isEmpty) {
+          await tester.scrollUntilVisible(
+            find.byKey(const Key('access-profile-card-grid')),
+            240,
+            scrollable: find
+                .descendant(
+                  of: find.byKey(const Key('access-profiles-scroll')),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+          );
+        }
         expect(find.byKey(const Key('access-profile-card-grid')), findsOneWidget);
         expect(tester.takeException(), isNull, reason: width.toString());
       }

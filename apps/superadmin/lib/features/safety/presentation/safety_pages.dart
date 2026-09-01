@@ -154,6 +154,16 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
                         CoeloAdminFileActions(
                           actions: [
                             CoeloAdminFileAction(
+                              key: const Key('safety-import-file'),
+                              label: 'Importar',
+                              icon: Icons.upload_file_outlined,
+                              onPressed: () => showSuperadminNotice(
+                                context,
+                                'Indisponível nesta etapa',
+                                icon: Icons.info_outline_rounded,
+                              ),
+                            ),
+                            CoeloAdminFileAction(
                               key: const Key('safety-export-csv'),
                               label: 'Exportar CSV',
                               icon: Icons.download_outlined,
@@ -256,30 +266,46 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
                   : box.maxWidth >= 720
                   ? 2
                   : 1;
-              final width = (box.maxWidth - CoeloSpacing.space6 * (columns - 1)) / columns;
-              return Wrap(
-                spacing: CoeloSpacing.space6,
-                runSpacing: CoeloSpacing.space6,
+              final cards = <Widget>[
+                if (c.canCreate && widget.onCreate != null)
+                  ConstrainedBox(
+                    key: const Key('safety-create-card'),
+                    constraints: const BoxConstraints(minHeight: 220),
+                    child: CoeloAdminCreateAction(
+                      label: 'Criar segurança',
+                      icon: Icons.add_moderator_outlined,
+                      onPressed: widget.onCreate,
+                    ),
+                  ),
+                for (final record in c.records)
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 220),
+                    child: SafetyChildDirectoryCard(
+                      record: record,
+                      onPressed: () => widget.onOpenChild(record.childId),
+                    ),
+                  ),
+              ];
+              return Column(
                 children: [
-                  if (c.canCreate && widget.onCreate != null)
-                    SizedBox(
-                      key: const Key('safety-create-card'),
-                      width: width,
-                      height: 220,
-                      child: CoeloAdminCreateAction(
-                        label: 'Criar segurança',
-                        icon: Icons.add_moderator_outlined,
-                        onPressed: widget.onCreate,
+                  for (var start = 0; start < cards.length; start += columns) ...[
+                    IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (var column = 0; column < columns; column++) ...[
+                            Expanded(
+                              child: start + column < cards.length
+                                  ? cards[start + column]
+                                  : const SizedBox.shrink(),
+                            ),
+                            if (column + 1 < columns) const SizedBox(width: CoeloSpacing.space6),
+                          ],
+                        ],
                       ),
                     ),
-                  for (final record in c.records)
-                    SizedBox(
-                      width: width,
-                      child: SafetyChildDirectoryCard(
-                        record: record,
-                        onPressed: () => widget.onOpenChild(record.childId),
-                      ),
-                    ),
+                    if (start + columns < cards.length) const SizedBox(height: CoeloSpacing.space6),
+                  ],
                 ],
               );
             },
@@ -470,7 +496,9 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
   void _controllerChanged() {
     if (!mounted || dataVersion == widget.controller.dataVersion) return;
     dataVersion = widget.controller.dataVersion;
-    setState(() => record = widget.controller.fetchChild(widget.childId));
+    setState(() {
+      record = widget.controller.fetchChild(widget.childId);
+    });
   }
 
   @override
@@ -527,7 +555,6 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
               : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
               ? CoeloSpacing.space6
               : CoeloSpacing.space4;
-          final compactHeader = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
           final identity = Row(
             children: [
               IconButton(
@@ -551,39 +578,22 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
               ),
             ],
           );
-          final createButton = !widget.controller.canCreate || widget.onCreate == null
-              ? null
-              : FilledButton.icon(
-                  key: const Key('safety-add-authorized-person'),
-                  onPressed: widget.onCreate,
-                  icon: const Icon(Icons.person_add_alt_1_outlined),
-                  label: const Text('Cadastrar pessoa'),
-                );
           return ListView(
             padding: EdgeInsets.all(inset),
             children: [
-              if (compactHeader)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    identity,
-                    if (createButton != null) ...[
-                      const SizedBox(height: CoeloSpacing.space3),
-                      Align(alignment: Alignment.centerRight, child: createButton),
-                    ],
-                  ],
-                )
-              else
-                Row(
-                  children: [
-                    Expanded(child: identity),
-                    ...switch (createButton) {
-                      null => const <Widget>[],
-                      final button => <Widget>[button],
-                    },
-                  ],
-                ),
+              identity,
               const SizedBox(height: CoeloSpacing.space6),
+              if (widget.controller.canCreate && widget.onCreate != null) ...[
+                CoeloAdminCreateAction(
+                  key: const Key('safety-create-authorization-banner'),
+                  label: 'Criar autorização',
+                  description: 'Cadastre uma pessoa autorizada para esta criança.',
+                  icon: Icons.person_add_alt_1_outlined,
+                  variant: CoeloAdminCreateActionVariant.banner,
+                  onPressed: widget.onCreate,
+                ),
+                const SizedBox(height: CoeloSpacing.space4),
+              ],
               if (child.pendingCount > 0) ...[
                 _PendingNotice(count: child.pendingCount),
                 const SizedBox(height: CoeloSpacing.space4),
@@ -594,7 +604,7 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
                   message: 'A retirada permanece bloqueada até uma autorização ser aprovada.',
                   icon: Icons.gpp_bad_outlined,
                   actionLabel: widget.controller.canCreate && widget.onCreate != null
-                      ? 'Cadastrar pessoa'
+                      ? 'Criar autorização'
                       : null,
                   onAction: widget.controller.canCreate ? widget.onCreate : null,
                 )
@@ -1250,6 +1260,10 @@ Future<void> _manage(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _Status(status: authorization.status),
+        if (authorization.status == PickupAuthorizationStatus.approved) ...[
+          const SizedBox(height: CoeloSpacing.space2),
+          Text('Situação: ${authorization.lifecycleStatus.label}'),
+        ],
         const SizedBox(height: CoeloSpacing.space4),
         AuthorizationValiditySummary(authorization: authorization),
         if (authorization.status == PickupAuthorizationStatus.pending) ...[
@@ -1284,9 +1298,23 @@ Future<void> _manage(
             label: const Text('Rejeitar'),
           ),
         ],
+        if (authorization.status == PickupAuthorizationStatus.approved &&
+            authorization.lifecycleStatus == PickupAuthorizationLifecycleStatus.active) ...[
+          const SizedBox(height: CoeloSpacing.space4),
+          OutlinedButton.icon(
+            key: const Key('safety-suspend-authorization'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+              side: BorderSide(color: Theme.of(context).colorScheme.error),
+            ),
+            onPressed: () => _confirmSuspend(dialogContext, controller, record, authorization),
+            icon: const Icon(Icons.pause_circle_outline_rounded),
+            label: const Text('Suspender autorização'),
+          ),
+        ],
       ],
     ),
-    secondaryAction: onEdit == null
+    secondaryAction: onEdit == null || authorization.status != PickupAuthorizationStatus.pending
         ? null
         : OutlinedButton(
             onPressed: () {
@@ -1301,6 +1329,51 @@ Future<void> _manage(
     ),
   ),
 );
+
+Future<void> _confirmSuspend(
+  BuildContext context,
+  ChildSafetyController controller,
+  ChildSafetyRecord record,
+  PickupAuthorization authorization,
+) async {
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (confirmationContext) => CoeloAdminDialogShell(
+      title: 'Suspender autorização?',
+      body: Text('${authorization.name} ficará impedido(a) de retirar a criança até nova revisão.'),
+      secondaryAction: OutlinedButton(
+        key: const Key('safety-cancel-suspension'),
+        onPressed: () => Navigator.of(confirmationContext).pop(false),
+        child: const Text('Cancelar'),
+      ),
+      primaryAction: FilledButton(
+        key: const Key('safety-confirm-suspension'),
+        onPressed: () => Navigator.of(confirmationContext).pop(true),
+        child: const Text('Suspender'),
+      ),
+    ),
+  );
+  if (confirmed != true || !context.mounted) return;
+  final succeeded = await controller.suspendAuthorization(
+    SuspendPickupAuthorizationCommand(
+      requestId: _uuid(),
+      childId: record.childId,
+      authorizationId: authorization.id,
+      reason: 'Autorização suspensa para revisão da unidade',
+      expectedVersion: authorization.version,
+    ),
+  );
+  if (!context.mounted) return;
+  if (succeeded) {
+    Navigator.of(context).pop();
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(controller.errorMessage ?? 'Não foi possível suspender a autorização.'),
+      ),
+    );
+  }
+}
 
 Future<void> _transition(
   BuildContext context,

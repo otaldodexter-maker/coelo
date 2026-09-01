@@ -1,10 +1,22 @@
+import '../../../app/dev_menu/development_access_health_fixture_catalog.dart';
+import '../../institutions/data/fake_institution_directory_repository.dart';
 import '../domain/platform_user.dart';
 
 final class FakePlatformUserRepository implements PlatformUserRepository {
   FakePlatformUserRepository({List<PlatformUserRecord>? seed})
-    : _records = seed == null ? _seedRecords() : List.of(seed);
+    : _records = seed == null
+          ? _seedRecords(DevelopmentAccessHealthFixtureCatalog.standard())
+          : List.of(seed);
+
+  factory FakePlatformUserRepository.content({DevelopmentAccessHealthFixtureCatalog? catalog}) =>
+      FakePlatformUserRepository(
+        seed: _seedRecords(catalog ?? DevelopmentAccessHealthFixtureCatalog.standard()),
+      );
 
   final List<PlatformUserRecord> _records;
+
+  @override
+  bool get isDemo => true;
 
   @override
   List<PlatformAccessProfile> get profiles => PlatformAccessProfiles.values;
@@ -20,10 +32,14 @@ final class FakePlatformUserRepository implements PlatformUserRepository {
       final matchesSearch =
           search.isEmpty ||
           [
+            record.fullName,
             record.firstName,
             record.lastName,
+            record.email,
             record.maskedEmail,
+            record.identity.cpf,
             record.maskedMobile,
+            record.identity.mobile,
             record.maskedCpf,
             record.identity.jobTitle,
           ].any((value) => value.toLowerCase().contains(search));
@@ -439,78 +455,96 @@ final class FakePlatformUserRepository implements PlatformUserRepository {
         avatarBytes: value.avatarBytes,
       );
 
-  static List<PlatformUserRecord> _seedRecords() => List.generate(24, (index) {
-    final id = 'platform-user-${index + 1}';
-    final profile = PlatformAccessProfiles.values[index == 0 ? 0 : 1 + index % 5];
-    final status = index == 0
-        ? PlatformMembershipStatus.active
-        : PlatformMembershipStatus.values[index % 4];
-    final scope = profile.allowsGlobal && index % 3 == 0
-        ? PlatformUserScope.platform
-        : PlatformUserScope.limited;
-    final at = DateTime(2026, 7, 1 + index % 20);
-    final identity = InternalUserIdentity(
-      id: id,
-      firstName: const ['Ana', 'Bruno', 'Clara', 'Diego', 'Elisa', 'Fábio'][index % 6],
-      lastName: const ['Lima', 'Coelho', 'Rocha', 'Melo'][index % 4],
-      cpf: _cpfFor(index + 1),
-      professionalEmail: 'equipe${index + 1}@coelo.me',
-      mobile: '+55 (11) 90000-${(1000 + index).toString()}',
-      jobTitle: const ['Analista', 'Especialista', 'Coordenador', 'Assistente'][index % 4],
-      department: const ['Operações', 'Suporte', 'Conteúdo', 'Privacidade'][index % 4],
-      postalCode: '01001-000',
-      street: 'Praça da Sé',
-      number: '${100 + index}',
-      neighborhood: 'Sé',
-      city: 'São Paulo',
-      state: 'SP',
-    );
-    final invitationStatus = status == PlatformMembershipStatus.invited
-        ? (index ~/ 4).isEven
-              ? PlatformInvitationStatus.pending
-              : PlatformInvitationStatus.expired
-        : status == PlatformMembershipStatus.revoked
-        ? PlatformInvitationStatus.revoked
-        : PlatformInvitationStatus.accepted;
-    return PlatformUserRecord(
-      identity: identity,
-      credential: SuperadminCredentialSnapshot(
-        status: status == PlatformMembershipStatus.active
-            ? SuperadminCredentialStatus.active
-            : status == PlatformMembershipStatus.suspended
-            ? index % 8 == 2
-                  ? SuperadminCredentialStatus.blocked
-                  : SuperadminCredentialStatus.recoveryPending
-            : SuperadminCredentialStatus.noAccess,
-      ),
-      memberships: [
-        InternalAccessMembership(
-          id: 'membership-$id-1',
-          profile: profile,
-          status: status,
-          scope: scope,
-          scopeIds: scope == PlatformUserScope.limited
-              ? ['institution-${index % 3 + 1}']
-              : const [],
-          scopeNames: scope == PlatformUserScope.limited
-              ? ['Instituição ${index % 3 + 1}']
-              : const [],
-          startedAt: at,
-          endedAt: status == PlatformMembershipStatus.revoked
-              ? at.add(const Duration(days: 30))
-              : null,
+  static List<PlatformUserRecord> _seedRecords(DevelopmentAccessHealthFixtureCatalog catalog) {
+    final institutions = {
+      for (final institution in demoInstitutionRecords) institution.id: institution,
+    };
+    return List.generate(catalog.teamMembers.length, (index) {
+      final adult = catalog.teamMembers[index];
+      final id = adult.id;
+      final institution = institutions[adult.institutionIds.first]!;
+      final unit = institution.units[index % institution.units.length];
+      final profile = PlatformAccessProfiles.values[index == 0 ? 0 : 1 + index % 5];
+      final status = index == 0
+          ? PlatformMembershipStatus.active
+          : index % 17 == 3
+          ? PlatformMembershipStatus.revoked
+          : index % 13 == 2
+          ? PlatformMembershipStatus.suspended
+          : index % 10 == 1
+          ? PlatformMembershipStatus.invited
+          : PlatformMembershipStatus.active;
+      final scope = index == 0 ? PlatformUserScope.platform : PlatformUserScope.limited;
+      final at = DateTime(2026, 7, 1 + index % 20);
+      final name = adult.name.trim().split(RegExp(r'\s+'));
+      final identity = InternalUserIdentity(
+        id: id,
+        firstName: name.first,
+        lastName: name.skip(1).join(' '),
+        cpf: _cpfFor(index + 1),
+        professionalEmail: adult.email,
+        mobile: adult.mobilePhone,
+        jobTitle: const [
+          'Coordenador pedagógico',
+          'Especialista de atendimento',
+          'Analista de operações',
+          'Assistente institucional',
+        ][index % 4],
+        department: const ['Pedagógico', 'Atendimento', 'Operações', 'Cuidado'][index % 4],
+        internalFunction: unit.name,
+        professionalNotes: 'Atuação vinculada a ${institution.publicName}, ${unit.name}.',
+        postalCode: institution.postalCode.isEmpty ? '00000-000' : institution.postalCode,
+        street: institution.street.isEmpty ? 'Endereço institucional' : institution.street,
+        number: institution.addressNumber.isEmpty ? 'S/N' : institution.addressNumber,
+        complement: institution.complement,
+        neighborhood: institution.district.isEmpty ? 'Centro' : institution.district,
+        city: institution.city,
+        state: institution.state,
+        country: institution.country,
+      );
+      final invitationStatus = status == PlatformMembershipStatus.invited
+          ? (index ~/ 4).isEven
+                ? PlatformInvitationStatus.pending
+                : PlatformInvitationStatus.expired
+          : status == PlatformMembershipStatus.revoked
+          ? PlatformInvitationStatus.revoked
+          : PlatformInvitationStatus.accepted;
+      return PlatformUserRecord(
+        identity: identity,
+        credential: SuperadminCredentialSnapshot(
+          status: status == PlatformMembershipStatus.active
+              ? SuperadminCredentialStatus.active
+              : status == PlatformMembershipStatus.suspended
+              ? index % 8 == 2
+                    ? SuperadminCredentialStatus.blocked
+                    : SuperadminCredentialStatus.recoveryPending
+              : SuperadminCredentialStatus.noAccess,
         ),
-      ],
-      invitation: InternalInvitation(
-        id: 'invitation-$id-1',
-        email: identity.professionalEmail,
-        status: invitationStatus,
-        attempts: 1,
-        updatedAt: at,
-      ),
-      history: [_event(at, 'Registro criado', 'Identidade exclusiva do Superadmin.')],
-    );
-  });
+        memberships: [
+          InternalAccessMembership(
+            id: 'membership-$id-1',
+            profile: profile,
+            status: status,
+            scope: scope,
+            scopeIds: scope == PlatformUserScope.limited ? adult.institutionIds : const [],
+            scopeNames: scope == PlatformUserScope.limited ? [institution.publicName] : const [],
+            startedAt: at,
+            endedAt: status == PlatformMembershipStatus.revoked
+                ? at.add(const Duration(days: 30))
+                : null,
+          ),
+        ],
+        invitation: InternalInvitation(
+          id: 'invitation-$id-1',
+          email: identity.professionalEmail,
+          status: invitationStatus,
+          attempts: 1,
+          updatedAt: at,
+        ),
+        history: [_event(at, 'Registro criado', 'Identidade exclusiva do Superadmin.')],
+      );
+    });
+  }
 
   static String _cpfFor(int seed) {
     var digits = (100000000 + seed * 7919).toString().substring(0, 9);

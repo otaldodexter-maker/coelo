@@ -1,3 +1,4 @@
+import '../../../../app/dev_menu/development_access_health_fixture_catalog.dart';
 import '../../domain/health_care.dart';
 import '../../domain/health_care_repository.dart';
 import '../../domain/medication_plan_repository.dart';
@@ -7,18 +8,39 @@ final class DevMedicationPlanHealthCareRepository implements HealthCareRepositor
   DevMedicationPlanHealthCareRepository({
     required this.medicationPlans,
     required Map<String, String> childLabels,
+    Map<String, HealthCareContextLink> childLinks = const {},
   }) : _childLabels = Map.unmodifiable(childLabels),
+       _childLinks = Map.unmodifiable(childLinks),
        _actor = HealthCareActor(
          id: 'dev-medication-plan-directory',
          profile: HealthCareAccessProfile.owner,
-         institutionId: _institutionId,
          authorizedChildIds: childLabels.keys.toSet(),
        );
+
+  factory DevMedicationPlanHealthCareRepository.content({
+    required DevMedicationPlanRepository medicationPlans,
+    DevelopmentAccessHealthFixtureCatalog? catalog,
+  }) {
+    final fixtures = catalog ?? DevelopmentAccessHealthFixtureCatalog.standard();
+    return DevMedicationPlanHealthCareRepository(
+      medicationPlans: medicationPlans,
+      childLabels: {for (final child in fixtures.children) child.id: child.name},
+      childLinks: {
+        for (final child in fixtures.children)
+          child.id: HealthCareContextLink(
+            institutionId: child.institutionId,
+            unitId: child.unitId,
+            groupOrActivityId: child.groupId,
+          ),
+      },
+    );
+  }
 
   static const _institutionId = 'dev-medication-plan-institution';
 
   final DevMedicationPlanRepository medicationPlans;
   final Map<String, String> _childLabels;
+  final Map<String, HealthCareContextLink> _childLinks;
   final HealthCareActor _actor;
 
   @override
@@ -65,7 +87,9 @@ final class DevMedicationPlanHealthCareRepository implements HealthCareRepositor
             personId: entry.key,
             displayName: entry.value,
             operationalStatus: HealthCareOperationalStatus.active,
-            links: const [HealthCareContextLink(institutionId: _institutionId)],
+            links: [
+              _childLinks[entry.key] ?? const HealthCareContextLink(institutionId: _institutionId),
+            ],
             medications: [
               for (final detail in details)
                 if (detail.childPersonId == entry.key) _medication(detail),

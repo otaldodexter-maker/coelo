@@ -8,6 +8,8 @@ param(
 
   [switch]$AuthOnly,
 
+  [string[]]$AdditionalMigration = @(),
+
   [string[]]$TestPath = @(),
 
   [switch]$RunLint,
@@ -31,6 +33,7 @@ $projectId = 'coelo_safe_' + [guid]::NewGuid().ToString('N').Substring(0, 29)
 $projectRoot = Join-Path $tempRoot $projectId
 $supabaseRoot = Join-Path $projectRoot 'supabase'
 $migrationRoot = Join-Path $supabaseRoot 'migrations'
+$validatedMigrationRoot = Join-Path $projectRoot 'validated-migrations'
 $configPath = Join-Path $supabaseRoot 'config.toml'
 $databaseOnlyExcludes = 'gotrue,realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor'
 $authLifecycleExcludes = 'realtime,storage-api,imgproxy,postgres-meta,studio,edge-runtime,logflare,vector,supavisor'
@@ -88,6 +91,9 @@ if ($targetMigration.Count -ne 1) {
 if ($FoundationOnly -and $AuthOnly) {
   throw 'foundation-only and Auth-only replay profiles are mutually exclusive'
 }
+if ($AdditionalMigration.Count -gt 0 -and -not $FoundationOnly) {
+  throw 'additional migrations require FoundationOnly'
+}
 if ($FoundationOnly) {
   if (-not (Test-Path -LiteralPath $foundationManifestPath -PathType Leaf)) {
     throw 'foundation replay manifest is missing'
@@ -102,6 +108,22 @@ if ($FoundationOnly) {
     throw 'foundation replay manifest has no valid final migration'
   }
   $requiredTargetVersion = $Matches[1]
+  if ($AdditionalMigration.Count -gt 0) {
+    $additionalVersions = @($AdditionalMigration | ForEach-Object {
+      if ($_ -notmatch '^((\d{14})_[a-z0-9_]+\.sql)\|[0-9a-f]{64}$') {
+        throw "invalid additional migration entry: $_"
+      }
+      $Matches[2]
+    })
+    if (@($additionalVersions | Sort-Object -Unique).Count -ne $additionalVersions.Count -or
+        @(Compare-Object @($additionalVersions) @($additionalVersions | Sort-Object) -SyncWindow 0).Count -ne 0) {
+      throw 'additional migrations must be unique and strictly ordered'
+    }
+    if (@($additionalVersions | Where-Object { $_ -le $requiredTargetVersion }).Count -ne 0) {
+      throw 'additional migrations must be newer than the foundation manifest boundary'
+    }
+    $requiredTargetVersion = $additionalVersions[-1]
+  }
   if ($TargetVersion -ne $requiredTargetVersion) {
     throw "foundation replay requires final target $requiredTargetVersion; received $TargetVersion"
   }
@@ -163,7 +185,9 @@ try {
   [IO.File]::WriteAllText((Join-Path $projectRoot '.coelo-safe-replay'), $projectId, [Text.UTF8Encoding]::new($false))
   New-Item -ItemType Directory -Path $supabaseRoot | Out-Null
   New-Item -ItemType Directory -Path $migrationRoot | Out-Null
+  New-Item -ItemType Directory -Path $validatedMigrationRoot | Out-Null
   Assert-NoReparseAncestors $migrationRoot
+  Assert-NoReparseAncestors $validatedMigrationRoot
 
   $portPattern = [regex]'(?m)^(\s*(?:port|shadow_port|smtp_port|pop3_port)\s*=\s*)\d+'
   $projectPattern = [regex]'(?m)^\s*project_id\s*=\s*"[^"]+"\s*$'
@@ -173,6 +197,24 @@ try {
   }
   $config = $projectPattern.Replace($config, "project_id = `"$projectId`"")
   $config = $portPattern.Replace($config, { param($match) $match.Groups[1].Value + (Get-FreeTcpPort) })
+  # This disposable project never starts the Edge Runtime. Keeping function
+  # tables makes the CLI validate handlers that are irrelevant to database
+  # replay and may not exist in a database-only checkout.
+  $databaseConfigLines = [Collections.Generic.List[string]]::new()
+  $skipFunctionTable = $false
+  foreach ($line in ($config -split "`r?`n")) {
+    if ($line -match '^\s*\[functions\.[^]]+\]\s*$') {
+      $skipFunctionTable = $true
+      continue
+    }
+    if ($skipFunctionTable -and $line -match '^\s*\[') {
+      $skipFunctionTable = $false
+    }
+    if (-not $skipFunctionTable) {
+      $databaseConfigLines.Add($line)
+    }
+  }
+  $config = $databaseConfigLines -join [Environment]::NewLine
   [IO.File]::WriteAllText($configPath, $config, [Text.UTF8Encoding]::new($false))
   $writtenConfig = [IO.File]::ReadAllText($configPath)
   $expectedProjectLine = "project_id = `"$projectId`""
@@ -180,6 +222,15 @@ try {
       $projectPattern.Match($writtenConfig).Value.Trim() -ne $expectedProjectLine) {
     throw 'generated config did not preserve the isolated project_id'
   }
+  if ($writtenConfig -match '(?m)^\s*\[functions\.') {
+    throw 'database-only replay config retained an Edge Function table'
+  }
+
+  & (Join-Path $scriptRoot 'Prepare-SafeMigrationReplay.ps1') `
+    -DestinationMigrationsRoot $validatedMigrationRoot `
+    -FoundationOnly:$FoundationOnly `
+    -AuthOnly:$AuthOnly `
+    -AdditionalMigration $AdditionalMigration
 
   $startAttempted = $true
   $excludedServices = if ($RunAuthLifecycle) {
@@ -210,10 +261,13 @@ try {
     throw "supabase start failed after 2 attempts with exit code $startExitCode"
   }
 
-  & (Join-Path $scriptRoot 'Prepare-SafeMigrationReplay.ps1') `
-    -DestinationMigrationsRoot $migrationRoot `
-    -FoundationOnly:$FoundationOnly `
-    -AuthOnly:$AuthOnly
+  foreach ($validatedMigration in Get-ChildItem -LiteralPath $validatedMigrationRoot -File -Filter '*.sql') {
+    if (($validatedMigration.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+      throw "validated migration cannot be a reparse point: $($validatedMigration.FullName)"
+    }
+    Copy-Item -LiteralPath $validatedMigration.FullName -Destination $migrationRoot
+  }
+
   & npx.cmd --yes $cliPackage --agent no db reset --local --no-seed --version $TargetVersion --workdir $projectRoot --yes
   if ($LASTEXITCODE -ne 0) { throw "safe local db reset failed with exit code $LASTEXITCODE" }
   if ($resolvedTestPaths.Count -gt 0) {

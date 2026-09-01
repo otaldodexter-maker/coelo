@@ -30,7 +30,7 @@ void main() {
     for (final entry in <String, String>{
       SuperadminRoutes.devInternalUsers: SuperadminRoutes.devInternalUsers,
       SuperadminRoutes.devInternalUserCreate: SuperadminRoutes.devInternalUserCreate,
-      '/dev/internal-users/platform-user-1/edit': '/dev/internal-users/platform-user-1/edit',
+      '/dev/internal-users/dev-guardian-0001/edit': '/dev/internal-users/dev-guardian-0001/edit',
     }.entries) {
       router.go(entry.key);
       await tester.pumpAndSettle();
@@ -38,19 +38,19 @@ void main() {
       expect(find.textContaining('Usuário interno não encontrado'), findsNothing);
     }
 
-    router.go('/dev/internal-users/platform-user-1');
+    router.go('/dev/internal-users/dev-guardian-0001');
     await tester.pumpAndSettle();
-    expect(router.routeInformationProvider.value.uri.path, '/dev/internal-users/platform-user-1');
+    expect(router.routeInformationProvider.value.uri.path, '/dev/internal-users/dev-guardian-0001');
     expect(find.text('404'), findsOneWidget);
 
-    router.go('/dev/internal-users/platform-user-1/edit');
+    router.go('/dev/internal-users/dev-guardian-0001/edit');
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancelar'));
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devInternalUsers);
   });
 
-  testWidgets('does not expose a production internal-users route or fake repository', (
+  testWidgets('production internal-user routes fail closed without the fake repository', (
     tester,
   ) async {
     final session = SuperadminSession()..signInForTesting();
@@ -68,7 +68,16 @@ void main() {
     router.go('/internal-users');
     await tester.pumpAndSettle();
 
-    expect(find.text('404'), findsOneWidget);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.internalUsers);
+    expect(find.text('503'), findsOneWidget);
     expect(find.text('Usuários internos'), findsNothing);
+
+    router.go(SuperadminRoutes.internalUserCreate);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
+
+    router.go('/internal-users/unknown/edit');
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
   });
 }

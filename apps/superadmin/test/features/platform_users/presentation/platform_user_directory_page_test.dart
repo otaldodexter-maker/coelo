@@ -12,11 +12,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('renders canonical cards and opens view instead of edit', (tester) async {
+  testWidgets('renders canonical cards, files and opens edit directly', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final repository = FakePlatformUserRepository();
-    String? openedId;
+    String? editedId;
 
     await tester.pumpWidget(
       MaterialApp(
@@ -26,7 +26,7 @@ void main() {
           capability: PlatformUserCapability.owner,
           logout: () async => const LogoutResult.success(),
           onCreate: () {},
-          onView: (id) => openedId = id,
+          onView: (id) => editedId = id,
         ),
       ),
     );
@@ -45,12 +45,19 @@ void main() {
     );
     expect(find.byKey(const Key('platform-user-role-filter')), findsOneWidget);
     expect(find.byKey(const Key('platform-user-status-filter')), findsOneWidget);
-    expect(find.text('Arquivos'), findsNothing);
+    expect(find.text('Arquivos'), findsOneWidget);
     expect(find.textContaining('MFA'), findsNothing);
+
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    for (final label in const ['Importar', 'Exportar CSV', 'Exportar XLSX']) {
+      final action = tester.widget<MenuItemButton>(find.widgetWithText(MenuItemButton, label));
+      expect(action.onPressed, isNull, reason: '$label deve permanecer visível e indisponível');
+    }
 
     final first = repository.records.first;
     await tester.tap(find.byKey(Key('platform-user-card-${first.id}')));
-    expect(openedId, first.id);
+    expect(editedId, first.id);
   });
 
   testWidgets('uses one canonical grouped table', (tester) async {
@@ -140,7 +147,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(CoeloAdminCreateAction), findsNothing);
-    expect(find.byKey(const Key('coelo-admin-files-action')), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
     expect(find.byKey(const Key('platform-user-card-grid')), findsOneWidget);
   });
 

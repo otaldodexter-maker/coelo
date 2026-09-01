@@ -11,6 +11,7 @@ import '../../core/config/superadmin_auth_scope.dart' show UnavailableMealPlanIm
 import '../../core/platform/open_download.dart';
 import '../dev_menu/development_assessment_repository.dart';
 import '../dev_menu/development_activity_fixture_repository.dart';
+import '../dev_menu/development_access_health_fixture_catalog.dart';
 import '../dev_menu/development_attendance_repository.dart';
 import '../dev_menu/development_circular_reader_repository.dart';
 import '../dev_menu/development_invite_repository.dart';
@@ -49,10 +50,13 @@ import '../../features/account/presentation/screens/settings_page.dart';
 import '../../features/account/presentation/user_preferences_controller.dart';
 import '../../features/imports/domain/import_job.dart';
 import '../../features/access_profiles/data/fake_access_profile_repository.dart';
+import '../../features/access_profiles/data/access_profile_model_repository_adapter.dart';
 import '../../features/access_profiles/data/supabase_access_profile_repository.dart';
 import '../../features/access_profiles/domain/access_profile.dart';
+import '../../features/access_profiles/domain/access_profile_model.dart';
 import '../../features/access_profiles/presentation/access_profile_detail_page.dart';
 import '../../features/access_profiles/presentation/access_profile_directory_page.dart';
+import '../../features/access_profiles/presentation/access_profile_duplicate_page.dart';
 import '../../features/access_profiles/presentation/access_profile_form_page.dart';
 import '../../features/agenda/data/agenda_prototype_store.dart';
 import '../../features/agenda/presentation/agenda_calendar_page.dart';
@@ -238,10 +242,11 @@ GoRouter createSuperadminRouter({
   bool allowDevelopmentPreview = SuperadminAppConfig.allowDevelopmentPreview,
   required ValueChanged<ThemeMode> onThemeModeChanged,
 }) {
+  final accessHealthFixtures = DevelopmentAccessHealthFixtureCatalog.standard();
   final resolvedChildSafetyController =
       childSafetyController ?? ChildSafetyController(const UnavailableChildSafetyRepository());
   final developmentChildSafetyController = ChildSafetyController(
-    DevChildSafetyRepository.content(),
+    DevChildSafetyRepository.content(catalog: accessHealthFixtures),
   );
   final productionSupportController = supportController;
   final developmentSupportController = _createDevelopmentSupportController();
@@ -297,6 +302,10 @@ GoRouter createSuperadminRouter({
   FakeAccessProfileRepository? cachedAccessProfileModelPreviewRepository;
   FakeAccessProfileRepository accessProfileModelPreviewRepository() =>
       cachedAccessProfileModelPreviewRepository ??= FakeAccessProfileRepository();
+  final productionAccessProfileModelScreens =
+      accessProfileRepository is AccessProfileModelRepository
+      ? AccessProfileModelRepositoryAdapter(accessProfileRepository as AccessProfileModelRepository)
+      : null;
   DevelopmentInviteRepository? cachedInvitePreviewRepository;
   DevelopmentInviteRepository invitePreviewRepository() =>
       cachedInvitePreviewRepository ??= DevelopmentInviteRepository();
@@ -311,21 +320,22 @@ GoRouter createSuperadminRouter({
   final developmentActivityAboutRepository = DevelopmentActivityProfileAboutRepository();
   const blockedCareProfilesRepository = UnavailableHealthCareRepository();
   DevHealthCareRepository? cachedCareProfilesPreviewRepository;
-  DevHealthCareRepository careProfilesPreviewRepository() =>
-      cachedCareProfilesPreviewRepository ??= DevHealthCareRepository.content();
+  DevHealthCareRepository careProfilesPreviewRepository() => cachedCareProfilesPreviewRepository ??=
+      DevHealthCareRepository.content(catalog: accessHealthFixtures);
   final medicationPlansPreviewRepository =
-      developmentMedicationPlanRepository ?? DevMedicationPlanRepository();
-  const developmentCareProfileChildren = <HealthCareProfileChildOption>[
-    HealthCareProfileChildOption(id: 'child-demo-a', label: 'Criança Demo A'),
-    HealthCareProfileChildOption(id: 'child-demo-b', label: 'Criança Demo B'),
+      developmentMedicationPlanRepository ??
+      DevMedicationPlanRepository.content(catalog: accessHealthFixtures);
+  final developmentCareProfileChildren = <HealthCareProfileChildOption>[
+    for (final child in accessHealthFixtures.children)
+      HealthCareProfileChildOption(id: child.id, label: child.name),
   ];
-  const developmentMedicationChildren = <HealthCareFormChoice>[
-    HealthCareFormChoice(id: 'child-demo-a', label: 'Criança Demo A'),
-    HealthCareFormChoice(id: 'child-demo-b', label: 'Criança Demo B'),
+  final developmentMedicationChildren = <HealthCareFormChoice>[
+    for (final child in accessHealthFixtures.children)
+      HealthCareFormChoice(id: child.id, label: child.name),
   ];
-  final medicationPlanDirectoryPreviewRepository = DevMedicationPlanHealthCareRepository(
+  final medicationPlanDirectoryPreviewRepository = DevMedicationPlanHealthCareRepository.content(
     medicationPlans: medicationPlansPreviewRepository,
-    childLabels: {for (final child in developmentMedicationChildren) child.id: child.label},
+    catalog: accessHealthFixtures,
   );
   final medicationPlanLoadFutures = <String, Future<MedicationPlanDetail>>{};
 
@@ -386,8 +396,8 @@ GoRouter createSuperadminRouter({
 
   final peoplePreviewRepository = DevelopmentPersonDirectoryRepository();
   FakePlatformUserRepository? platformUserPreviewRepository;
-  FakePlatformUserRepository previewPlatformUsers() =>
-      platformUserPreviewRepository ??= FakePlatformUserRepository();
+  FakePlatformUserRepository previewPlatformUsers() => platformUserPreviewRepository ??=
+      FakePlatformUserRepository.content(catalog: accessHealthFixtures);
   String? successMessage(Object? extra) {
     return switch (extra) {
       InstitutionFormSaveResult.created => 'Instituição criada com sucesso.',
@@ -1607,6 +1617,21 @@ GoRouter createSuperadminRouter({
             ),
           ),
           GoRoute(
+            path: SuperadminRoutes.internalUsers,
+            name: SuperadminRoutes.internalUsersName,
+            builder: (context, state) => _unavailableCompositionRootRoute(context),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.internalUserCreate,
+            name: SuperadminRoutes.internalUserCreateName,
+            builder: (context, state) => blockedProductionMutationPage(context),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.internalUserEdit,
+            name: SuperadminRoutes.internalUserEditName,
+            builder: (context, state) => blockedProductionMutationPage(context),
+          ),
+          GoRoute(
             path: SuperadminRoutes.personCreate,
             name: SuperadminRoutes.personCreateName,
             builder: (context, state) {
@@ -1676,27 +1701,112 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.profiles,
             name: SuperadminRoutes.profilesName,
-            builder: (context, state) => _unavailableCompositionRootRoute(context),
+            builder: (context, state) => AccessProfileDirectoryPage(
+              repository: accessProfileRepository,
+              logout: logout,
+              onCreate: (domain) => context.goNamed(
+                SuperadminRoutes.profileCreateName,
+                pathParameters: {'domain': domain.databaseValue},
+              ),
+              onOpen: (domain, profileId) => context.goNamed(
+                SuperadminRoutes.profileEditName,
+                pathParameters: {'domain': domain.databaseValue, 'profileId': profileId},
+              ),
+              directoryKind: AccessProfileDirectoryKind.profiles,
+              onDirectoryKindSelected: (kind) {
+                if (kind == AccessProfileDirectoryKind.templates) {
+                  context.goNamed(SuperadminRoutes.profileModelsName);
+                }
+              },
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.profileModels,
             name: SuperadminRoutes.profileModelsName,
-            builder: (context, state) => _unavailableCompositionRootRoute(context),
+            builder: (context, state) => productionAccessProfileModelScreens == null
+                ? _unavailableCompositionRootRoute(context)
+                : AccessProfileDirectoryPage(
+                    repository: productionAccessProfileModelScreens,
+                    logout: logout,
+                    title: 'Perfis e permissões',
+                    subtitle: 'Gerencie perfis e modelos de acesso em uma única central.',
+                    currentDestination: 'profiles',
+                    createActionLabel: 'Criar modelo de perfil',
+                    directoryKind: AccessProfileDirectoryKind.templates,
+                    onDirectoryKindSelected: (kind) {
+                      if (kind == AccessProfileDirectoryKind.profiles) {
+                        context.goNamed(SuperadminRoutes.profilesName);
+                      }
+                    },
+                    onCreate: (domain) => context.goNamed(
+                      SuperadminRoutes.profileModelCreateName,
+                      pathParameters: {'domain': domain.databaseValue},
+                    ),
+                    onOpen: (domain, modelId) => context.goNamed(
+                      SuperadminRoutes.profileModelEditName,
+                      pathParameters: {'domain': domain.databaseValue, 'modelId': modelId},
+                    ),
+                    onDestinationSelected: (destination) =>
+                        _navigateFromPersistentShell(context, destination),
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.profileModelCreate,
             name: SuperadminRoutes.profileModelCreateName,
-            builder: (context, state) => _unavailableCompositionRootRoute(context),
+            builder: (context, state) => productionAccessProfileModelScreens == null
+                ? _unavailableCompositionRootRoute(context)
+                : AccessProfileFormPage(
+                    repository: productionAccessProfileModelScreens,
+                    logout: logout,
+                    domain: _accessProfileDomain(state.pathParameters['domain']),
+                    entityLabel: 'modelo de perfil',
+                    currentDestination: 'profiles',
+                    onCancel: () => context.goNamed(SuperadminRoutes.profileModelsName),
+                    onSaved: (_) => context.goNamed(SuperadminRoutes.profileModelsName),
+                    onDestinationSelected: (destination) =>
+                        _navigateFromPersistentShell(context, destination),
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.profileModelDetail,
             name: SuperadminRoutes.profileModelDetailName,
-            builder: (context, state) => _unavailableCompositionRootRoute(context),
+            builder: (context, state) => productionAccessProfileModelScreens == null
+                ? _unavailableCompositionRootRoute(context)
+                : AccessProfileDetailPage(
+                    repository: productionAccessProfileModelScreens,
+                    logout: logout,
+                    domain: _accessProfileDomain(state.pathParameters['domain']),
+                    profileId: state.pathParameters['modelId']!,
+                    currentDestination: 'profiles',
+                    onBack: () => context.goNamed(SuperadminRoutes.profileModelsName),
+                    onEdit: () => context.goNamed(
+                      SuperadminRoutes.profileModelEditName,
+                      pathParameters: state.pathParameters,
+                    ),
+                    onDeleted: () => context.goNamed(SuperadminRoutes.profileModelsName),
+                    onDestinationSelected: (destination) =>
+                        _navigateFromPersistentShell(context, destination),
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.profileModelEdit,
             name: SuperadminRoutes.profileModelEditName,
-            builder: (context, state) => _unavailableCompositionRootRoute(context),
+            builder: (context, state) => productionAccessProfileModelScreens == null
+                ? _unavailableCompositionRootRoute(context)
+                : AccessProfileFormPage(
+                    repository: productionAccessProfileModelScreens,
+                    logout: logout,
+                    domain: _accessProfileDomain(state.pathParameters['domain']),
+                    profileId: state.pathParameters['modelId'],
+                    entityLabel: 'modelo de perfil',
+                    currentDestination: 'profiles',
+                    onCancel: () => context.goNamed(SuperadminRoutes.profileModelsName),
+                    onSaved: (_) => context.goNamed(SuperadminRoutes.profileModelsName),
+                    onDestinationSelected: (destination) =>
+                        _navigateFromPersistentShell(context, destination),
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.profileModelDuplicate,
@@ -1706,17 +1816,47 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.profileCreate,
             name: SuperadminRoutes.profileCreateName,
-            builder: (context, state) => _unavailableCompositionRootRoute(context),
+            builder: (context, state) => AccessProfileFormPage(
+              repository: accessProfileRepository,
+              logout: logout,
+              domain: _accessProfileDomain(state.pathParameters['domain']),
+              onCancel: () => context.goNamed(SuperadminRoutes.profilesName),
+              onSaved: (_) => context.goNamed(SuperadminRoutes.profilesName),
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.profileDetail,
             name: SuperadminRoutes.profileDetailName,
-            builder: (context, state) => _unavailableCompositionRootRoute(context),
+            builder: (context, state) => AccessProfileDetailPage(
+              repository: accessProfileRepository,
+              logout: logout,
+              domain: _accessProfileDomain(state.pathParameters['domain']),
+              profileId: state.pathParameters['profileId']!,
+              onBack: () => context.goNamed(SuperadminRoutes.profilesName),
+              onEdit: () => context.goNamed(
+                SuperadminRoutes.profileEditName,
+                pathParameters: state.pathParameters,
+              ),
+              onDeleted: () => context.goNamed(SuperadminRoutes.profilesName),
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.profileEdit,
             name: SuperadminRoutes.profileEditName,
-            builder: (context, state) => _unavailableCompositionRootRoute(context),
+            builder: (context, state) => AccessProfileFormPage(
+              repository: accessProfileRepository,
+              logout: logout,
+              domain: _accessProfileDomain(state.pathParameters['domain']),
+              profileId: state.pathParameters['profileId'],
+              onCancel: () => context.goNamed(SuperadminRoutes.profilesName),
+              onSaved: (_) => context.goNamed(SuperadminRoutes.profilesName),
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.governanceCatalog,
@@ -2481,9 +2621,15 @@ GoRouter createSuperadminRouter({
                 pathParameters: {'domain': domain.databaseValue},
               ),
               onOpen: (domain, profileId) => context.goNamed(
-                SuperadminRoutes.devProfileDetailName,
+                SuperadminRoutes.devProfileEditName,
                 pathParameters: {'domain': domain.databaseValue, 'profileId': profileId},
               ),
+              directoryKind: AccessProfileDirectoryKind.profiles,
+              onDirectoryKindSelected: (kind) {
+                if (kind == AccessProfileDirectoryKind.templates) {
+                  context.goNamed(SuperadminRoutes.devProfileModelsName);
+                }
+              },
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
             ),
@@ -2496,10 +2642,7 @@ GoRouter createSuperadminRouter({
               logout: _previewLogout,
               domain: _accessProfileDomain(state.pathParameters['domain']),
               onCancel: () => context.goNamed(SuperadminRoutes.devProfilesName),
-              onSaved: (profile) => context.goNamed(
-                SuperadminRoutes.devProfileDetailName,
-                pathParameters: {'domain': profile.domain.databaseValue, 'profileId': profile.id},
-              ),
+              onSaved: (_) => context.goNamed(SuperadminRoutes.devProfilesName),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
             ),
@@ -2530,14 +2673,8 @@ GoRouter createSuperadminRouter({
               logout: _previewLogout,
               domain: _accessProfileDomain(state.pathParameters['domain']),
               profileId: state.pathParameters['profileId'],
-              onCancel: () => context.goNamed(
-                SuperadminRoutes.devProfileDetailName,
-                pathParameters: state.pathParameters,
-              ),
-              onSaved: (profile) => context.goNamed(
-                SuperadminRoutes.devProfileDetailName,
-                pathParameters: {'domain': profile.domain.databaseValue, 'profileId': profile.id},
-              ),
+              onCancel: () => context.goNamed(SuperadminRoutes.devProfilesName),
+              onSaved: (_) => context.goNamed(SuperadminRoutes.devProfilesName),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
             ),
@@ -2548,16 +2685,26 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => AccessProfileDirectoryPage(
               repository: accessProfileModelPreviewRepository(),
               logout: _previewLogout,
-              title: 'Modelos de perfil',
-              subtitle: 'Crie e revise modelos locais de permissões antes de aplicá-los.',
-              currentDestination: 'profile-models',
+              title: 'Perfis e permissões',
+              subtitle: 'Gerencie perfis e modelos de acesso em uma única central.',
+              currentDestination: 'profiles',
               createActionLabel: 'Criar modelo de perfil',
+              directoryKind: AccessProfileDirectoryKind.templates,
+              onDirectoryKindSelected: (kind) {
+                if (kind == AccessProfileDirectoryKind.profiles) {
+                  context.goNamed(SuperadminRoutes.devProfilesName);
+                }
+              },
               onCreate: (domain) => context.goNamed(
                 SuperadminRoutes.devProfileModelCreateName,
                 pathParameters: {'domain': domain.databaseValue},
               ),
               onOpen: (domain, modelId) => context.goNamed(
-                SuperadminRoutes.devProfileModelDetailName,
+                SuperadminRoutes.devProfileModelEditName,
+                pathParameters: {'domain': domain.databaseValue, 'modelId': modelId},
+              ),
+              onDuplicate: (domain, modelId) => context.goNamed(
+                SuperadminRoutes.devProfileModelDuplicateName,
                 pathParameters: {'domain': domain.databaseValue, 'modelId': modelId},
               ),
               onDestinationSelected: (destination) =>
@@ -2572,12 +2719,9 @@ GoRouter createSuperadminRouter({
               logout: _previewLogout,
               domain: _accessProfileDomain(state.pathParameters['domain']),
               entityLabel: 'modelo de perfil',
-              currentDestination: 'profile-models',
+              currentDestination: 'profiles',
               onCancel: () => context.goNamed(SuperadminRoutes.devProfileModelsName),
-              onSaved: (profile) => context.goNamed(
-                SuperadminRoutes.devProfileModelDetailName,
-                pathParameters: {'domain': profile.domain.databaseValue, 'modelId': profile.id},
-              ),
+              onSaved: (_) => context.goNamed(SuperadminRoutes.devProfileModelsName),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
             ),
@@ -2590,7 +2734,7 @@ GoRouter createSuperadminRouter({
               logout: _previewLogout,
               domain: _accessProfileDomain(state.pathParameters['domain']),
               profileId: state.pathParameters['modelId']!,
-              currentDestination: 'profile-models',
+              currentDestination: 'profiles',
               onBack: () => context.goNamed(SuperadminRoutes.devProfileModelsName),
               onEdit: () => context.goNamed(
                 SuperadminRoutes.devProfileModelEditName,
@@ -2610,13 +2754,25 @@ GoRouter createSuperadminRouter({
               domain: _accessProfileDomain(state.pathParameters['domain']),
               profileId: state.pathParameters['modelId'],
               entityLabel: 'modelo de perfil',
-              currentDestination: 'profile-models',
-              onCancel: () => context.goNamed(
-                SuperadminRoutes.devProfileModelDetailName,
-                pathParameters: state.pathParameters,
-              ),
-              onSaved: (profile) => context.goNamed(
-                SuperadminRoutes.devProfileModelDetailName,
+              currentDestination: 'profiles',
+              onCancel: () => context.goNamed(SuperadminRoutes.devProfileModelsName),
+              onSaved: (_) => context.goNamed(SuperadminRoutes.devProfileModelsName),
+              onDestinationSelected: (destination) =>
+                  _navigateFromDevelopmentShell(context, destination),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devProfileModelDuplicate,
+            name: SuperadminRoutes.devProfileModelDuplicateName,
+            builder: (context, state) => AccessProfileDuplicatePage(
+              repository: accessProfileModelPreviewRepository(),
+              duplicator: accessProfileModelPreviewRepository(),
+              logout: _previewLogout,
+              domain: _accessProfileDomain(state.pathParameters['domain']),
+              sourceProfileId: state.pathParameters['modelId']!,
+              onCancel: () => context.goNamed(SuperadminRoutes.devProfileModelsName),
+              onDuplicated: (profile) => context.goNamed(
+                SuperadminRoutes.devProfileModelEditName,
                 pathParameters: {'domain': profile.domain.databaseValue, 'modelId': profile.id},
               ),
               onDestinationSelected: (destination) =>
@@ -2912,6 +3068,10 @@ GoRouter createSuperadminRouter({
               logout: _previewLogout,
               successMessage: state.extra as String?,
               onCreate: () => context.goNamed(SuperadminRoutes.devInternalUserCreateName),
+              onView: (internalUserId) => context.goNamed(
+                SuperadminRoutes.devInternalUserEditName,
+                pathParameters: {'internalUserId': internalUserId},
+              ),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
             ),
@@ -3948,6 +4108,10 @@ void _navigateFromAccount(
     case 'profile-models':
     case 'profile-model-create':
       context.goNamed(SuperadminRoutes.profileModelsName);
+    case 'internal-users':
+      context.goNamed(SuperadminRoutes.internalUsersName);
+    case 'internal-user-create':
+      context.goNamed(SuperadminRoutes.internalUserCreateName);
     case 'health-care-profiles':
       context.goNamed(SuperadminRoutes.healthCareProfilesName);
     case 'health-medication-plans':
@@ -4029,6 +4193,9 @@ bool _usesPersistentShell(String location) {
 bool _isProductionMutationLocation(String location) {
   if (location.startsWith('/dev/')) return false;
   if (location.startsWith('/forms') || location.startsWith('/agenda')) return false;
+  // Access-profile RPCs revalidate actor, scope, MFA and version server-side.
+  // The client route may render the request form without becoming an authorization boundary.
+  if (location.startsWith('/profiles') || location.startsWith('/profile-models')) return false;
   if (location.endsWith('/new') ||
       location.contains('/new/') ||
       location.endsWith('/edit') ||
@@ -4293,6 +4460,10 @@ void _navigateFromPersistentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.safetyName);
     case 'profiles':
       context.goNamed(SuperadminRoutes.profilesName);
+    case 'internal-users':
+      context.goNamed(SuperadminRoutes.internalUsersName);
+    case 'internal-user-create':
+      context.goNamed(SuperadminRoutes.internalUserCreateName);
     case 'profile-create':
       context.goNamed(SuperadminRoutes.profilesName);
     case 'profile-models':
