@@ -1342,7 +1342,8 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.formMonitor,
             name: SuperadminRoutes.formMonitorName,
-            builder: (context, state) => const FormsOperationsPage.monitor(),
+            builder: (context, state) =>
+                FormsOperationsPage.monitor(api: formsApi, formId: state.pathParameters['formId']),
           ),
           GoRoute(
             path: SuperadminRoutes.formRespond,
@@ -1352,17 +1353,24 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.formResponses,
             name: SuperadminRoutes.formResponsesName,
-            builder: (context, state) => const FormsOperationsPage.responses(),
+            builder: (context, state) => FormsOperationsPage.responses(
+              api: formsApi,
+              formId: state.pathParameters['formId'],
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.formResponseDetail,
             name: SuperadminRoutes.formResponseDetailName,
-            builder: (context, state) => const FormsOperationsPage.responseDetail(),
+            builder: (context, state) => FormsOperationsPage.responseDetail(
+              api: formsApi,
+              responseId: state.pathParameters['responseId'],
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.formFiles,
             name: SuperadminRoutes.formFilesName,
-            builder: (context, state) => const FormsOperationsPage.files(),
+            builder: (context, state) =>
+                FormsOperationsPage.files(api: formsApi, formId: state.pathParameters['formId']),
           ),
           GoRoute(
             path: SuperadminRoutes.formMedia,
