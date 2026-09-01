@@ -40,11 +40,11 @@ $entries = @(
     }
 )
 
-if ($entries.Count -ne 58) {
-  throw "foundation replay profile must contain exactly 58 canonical migrations; found $($entries.Count)"
+if ($entries.Count -ne 59) {
+  throw "foundation replay profile must contain exactly 59 canonical migrations; found $($entries.Count)"
 }
 if ($entries[0].Name -ne '20260623191021_superadmin_foundation_v1.sql' -or
-    $entries[-1].Name -ne '20260831231645_activities_v2_rls_grants.sql') {
+    $entries[-1].Name -ne '20260831234307_activities_v2_final_review_hardening.sql') {
   throw 'foundation replay profile boundaries changed without review'
 }
 if (@($entries.Name | Where-Object { $_ -in $excludedMigrations }).Count -ne 0) {
@@ -62,4 +62,4 @@ foreach ($entry in $entries) {
   }
 }
 
-"Foundation replay profile PASS: 58 reviewed canonical migrations; eight product migrations denied; all SHA-256 values match."
+"Foundation replay profile PASS: 59 reviewed canonical migrations; eight product migrations denied; all SHA-256 values match."

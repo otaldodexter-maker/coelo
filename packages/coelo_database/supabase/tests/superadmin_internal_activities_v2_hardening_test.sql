@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(17);
+select plan(25);
 
 -- This is deliberately an independent fixture.  It uses the spec-039 internal
 -- Auth realm, rather than a people/profile shortcut, so every denial exercises
@@ -33,6 +33,14 @@ insert into public.institution_memberships(id,person_id,institution_id,role_code
  ('74000000-0000-4000-8000-000000000041','74000000-0000-4000-8000-000000000031','74000000-0000-4000-8000-000000000010','teacher','active','institution',null),
  ('74000000-0000-4000-8000-000000000042','74000000-0000-4000-8000-000000000032','74000000-0000-4000-8000-000000000010','teacher','active','institution',null),
  ('74000000-0000-4000-8000-000000000043','74000000-0000-4000-8000-000000000033','74000000-0000-4000-8000-000000000010','staff','active','institution',null);
+insert into public.people(id,person_type,first_name,last_name,display_name,status)
+select ('75000000-0000-4000-8000-'||lpad(g::text,12,'0'))::uuid,'adult','Limit',g::text,'Limit '||g,'active'
+from generate_series(1,501) g;
+insert into public.institution_memberships(id,person_id,institution_id,role_code,status,scope_kind,revoked_at)
+select ('76000000-0000-4000-8000-'||lpad(g::text,12,'0'))::uuid,
+       ('75000000-0000-4000-8000-'||lpad(g::text,12,'0'))::uuid,
+       '74000000-0000-4000-8000-000000000010','staff','active','institution',null
+from generate_series(1,501) g;
 insert into public.child_contexts(id,child_person_id,institution_id,status) values
  ('74000000-0000-4000-8000-000000000051','74000000-0000-4000-8000-000000000034','74000000-0000-4000-8000-000000000010','active');
 insert into public.child_unit_links(id,child_context_id,unit_id,status,accepted_by,accepted_at) values
@@ -175,6 +183,33 @@ select ok((select bool_and((body->>'ok')::boolean=false and body#>>'{error,code}
  and not exists(select 1 from app_private.superadmin_internal_activity_command_receipts where request_id='74000000-0000-4000-8000-000000000282'),
  'strict payloads fail closed and unknown institution probes return sanitized envelopes without receipts');
 
+insert into hardening_results select 'malformed_directory',public.superadmin_activity_directory_v2(jsonb_build_object('institution_id','not-a-uuid'),10,0,'name',true);
+insert into hardening_results select 'malformed_participant',public.superadmin_activity_set_participants_v2('74000000-0000-4000-8000-000000000292',(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create'),8,jsonb_build_array(jsonb_build_object('group_id','not-a-uuid','child_group_link_id','also-not-a-uuid','belongs',true)));
+insert into hardening_results select 'malformed_professional',public.superadmin_activity_set_professionals_v2('74000000-0000-4000-8000-000000000293',(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create'),8,jsonb_build_array(jsonb_build_object('membership_id','not-a-uuid','role','instructor','group_id','also-not-a-uuid')));
+insert into hardening_results select 'malformed_professional_group',public.superadmin_activity_set_professionals_v2('74000000-0000-4000-8000-000000000297',(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create'),8,jsonb_build_array(jsonb_build_object('membership_id','74000000-0000-4000-8000-000000000042','role','instructor','group_id','also-not-a-uuid')));
+with codes as(select value#>>'{}' code from jsonb_array_elements('["chat","now","happens","moments","attendance"]'))
+insert into hardening_results select 'malformed_permissions',public.superadmin_activity_set_permissions_v2('74000000-0000-4000-8000-000000000294',(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create'),8,(select jsonb_object_agg(code,null) from codes),jsonb_build_array(jsonb_build_object('group_id','not-a-uuid','capabilities',(select jsonb_object_agg(code,null) from codes))),'[]');
+select ok((select count(*)=5 and bool_and((body->>'ok')::boolean=false and body#>>'{error,code}'='ACTIVITY_INVALID_INPUT') from hardening_results where label like 'malformed_%'),
+ 'malformed UUIDs in directory and relationship snapshots return the stable input envelope');
+select ok(not exists(select 1 from app_private.superadmin_internal_activity_command_receipts where request_id in('74000000-0000-4000-8000-000000000292','74000000-0000-4000-8000-000000000293','74000000-0000-4000-8000-000000000294','74000000-0000-4000-8000-000000000297'))
+ and not exists(select 1 from audit.audit_logs where correlation_id in(select (body#>>'{error,correlation_id}')::uuid from hardening_results where label like 'malformed_%') and outcome='success')
+ and (select management_version=8 from public.activity_definitions where id=(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create')),
+ 'malformed UUIDs create no receipt, success audit, or aggregate mutation');
+
+reset role;
+select ok(app_private.activity_v2_validate_professionals('74000000-0000-4000-8000-000000000010',
+ (select jsonb_agg(jsonb_build_object('membership_id','76000000-0000-4000-8000-'||lpad(g::text,12,'0'),'role','activity_admin','group_id',null)) from generate_series(1,500) g))
+ and not app_private.activity_v2_validate_professionals('74000000-0000-4000-8000-000000000010',
+ (select jsonb_agg(jsonb_build_object('membership_id','76000000-0000-4000-8000-'||lpad(g::text,12,'0'),'role','activity_admin','group_id',null)) from generate_series(1,501) g)),
+ 'professional assignment validator accepts 500 and rejects 501 behaviorally');
+with codes as(select value#>>'{}' code from jsonb_array_elements('["chat","now","happens","moments","attendance"]')),
+payloads as(select n,(select jsonb_agg(jsonb_build_object('membership_id','77000000-0000-4000-8000-'||lpad(g::text,12,'0'),'role','activity_admin','group_id',null,'actions',(select jsonb_object_agg(code,'both') from codes))) from generate_series(1,n) g) payload from (values(500),(501)) sizes(n))
+insert into hardening_results
+select 'actions_'||n,public.superadmin_activity_set_permissions_v2(case n when 500 then '74000000-0000-4000-8000-000000000295'::uuid else '74000000-0000-4000-8000-000000000296'::uuid end,(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create'),8,(select jsonb_object_agg(code,null) from codes),'[]',payload) from payloads;
+select ok((select body#>>'{error,code}'='ACTIVITY_INVALID_REFERENCE' from hardening_results where label='actions_500')
+ and (select body#>>'{error,code}'='ACTIVITY_INVALID_INPUT' from hardening_results where label='actions_501'),
+ 'professional action snapshot accepts 500 through input validation and rejects 501');
+
 -- Non-Owner AAL1 is allowed only when the active capability does not require
 -- MFA; Owner remains AAL2-only regardless of the capability setting.
 select set_config('request.jwt.claims',jsonb_build_object('sub','74000000-0000-4000-8000-000000000082','session_id','74000000-0000-4000-8000-000000000093','aal','aal1','role','authenticated')::text,true);
@@ -296,6 +331,47 @@ delete from public.activity_capability_policies where activity_id=(select (body#
 set local session_replication_role='origin';
 select is((select body#>>'{error,code}' from hardening_results where label='publish_policy_setting_conflict'),'ACTIVITY_INVALID_STATE',
  'publish rejects a required policy contradicted by a disabled group setting');
+
+set local session_replication_role='replica';
+insert into public.activity_capability_policies(activity_id,institution_id,capability_id,policy_mode,changed_by_person_id)
+select (select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create'),'74000000-0000-4000-8000-000000000010',id,'required',null from public.activity_capabilities where code='chat';
+update public.activity_assignment_capability_actions set can_view=false,can_edit=false where assignment_id in(select assignment.id from public.activity_group_assignments assignment join public.activity_group_links link on link.id=assignment.activity_group_link_id where link.activity_id=(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create') and assignment.status='active') and capability_id=(select id from public.activity_capabilities where code='chat');
+set local session_replication_role='origin';
+insert into hardening_results select 'publish_required_action_none',public.superadmin_activity_publish_v2('74000000-0000-4000-8000-000000000290',(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create'),9);
+set local session_replication_role='replica';
+delete from public.activity_capability_policies where activity_id=(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create');
+update public.activity_assignment_capability_actions set can_view=true,can_edit=true where assignment_id in(select assignment.id from public.activity_group_assignments assignment join public.activity_group_links link on link.id=assignment.activity_group_link_id where link.activity_id=(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create') and assignment.status='active') and capability_id=(select id from public.activity_capabilities where code='chat');
+update public.activity_definitions set status='draft',management_version=9 where id=(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create');
+delete from app_private.superadmin_internal_activity_command_receipts where request_id='74000000-0000-4000-8000-000000000290';
+set local session_replication_role='origin';
+select is((select body#>>'{error,code}' from hardening_results where label='publish_required_action_none'),'ACTIVITY_INVALID_STATE',
+ 'publish rejects a persisted required policy contradicted by an instructor none action');
+
+set local session_replication_role='replica';
+insert into public.activity_capability_policies(activity_id,institution_id,capability_id,policy_mode,changed_by_person_id)
+select (select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create'),'74000000-0000-4000-8000-000000000010',id,'required',null from public.activity_capabilities where code='chat';
+update public.activity_admin_capability_actions set can_view=false,can_edit=false where activity_admin_assignment_id in(select assignment.id from public.activity_admin_assignments assignment where assignment.activity_id=(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create') and assignment.status='active') and capability_id=(select id from public.activity_capabilities where code='chat');
+set local session_replication_role='origin';
+insert into hardening_results select 'publish_required_admin_none',public.superadmin_activity_publish_v2('74000000-0000-4000-8000-000000000298',(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create'),9);
+set local session_replication_role='replica';
+delete from public.activity_capability_policies where activity_id=(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create');
+update public.activity_admin_capability_actions set can_view=true,can_edit=true where activity_admin_assignment_id in(select assignment.id from public.activity_admin_assignments assignment where assignment.activity_id=(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create') and assignment.status='active') and capability_id=(select id from public.activity_capabilities where code='chat');
+update public.activity_definitions set status='draft',management_version=9 where id=(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create');
+delete from app_private.superadmin_internal_activity_command_receipts where request_id='74000000-0000-4000-8000-000000000298';
+set local session_replication_role='origin';
+select is((select body#>>'{error,code}' from hardening_results where label='publish_required_admin_none'),'ACTIVITY_INVALID_STATE',
+ 'publish rejects a persisted required policy contradicted by an activity-admin none action');
+
+set local session_replication_role='replica';
+update public.activity_definitions set name=repeat('x',121) where id=(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create');
+set local session_replication_role='origin';
+insert into hardening_results select 'publish_invalid_name',public.superadmin_activity_publish_v2('74000000-0000-4000-8000-000000000291',(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create'),9);
+set local session_replication_role='replica';
+update public.activity_definitions set name='Activity hardening',status='draft',management_version=9 where id=(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create');
+delete from app_private.superadmin_internal_activity_command_receipts where request_id='74000000-0000-4000-8000-000000000291';
+set local session_replication_role='origin';
+select is((select body#>>'{error,code}' from hardening_results where label='publish_invalid_name'),'ACTIVITY_INVALID_STATE','publish revalidates the 120-character name limit');
+select throws_ok($$update public.activity_definitions set name=' ' where id=(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create')$$,'23514','new row for relation "activity_definitions" violates check constraint "activity_definitions_name_not_blank"','blank names remain rejected by the table constraint');
 update public.activity_definitions set status='active' where id=(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create');
 insert into hardening_results select 'publish_non_draft',public.superadmin_activity_publish_v2(gen_random_uuid(),(select (body#>>'{data,activity_id}')::uuid from hardening_results where label='create'),9);
 select is((select body#>>'{error,code}' from hardening_results where label='publish_non_draft'),'ACTIVITY_INVALID_STATE','non-draft cannot be published again');
