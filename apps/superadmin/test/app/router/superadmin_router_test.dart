@@ -157,6 +157,7 @@ void main() {
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
       institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
+      allowDevelopmentPreview: true,
       onThemeModeChanged: (_) {},
     );
     addTearDown(router.dispose);

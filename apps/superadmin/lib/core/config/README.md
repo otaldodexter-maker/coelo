@@ -24,7 +24,7 @@ Variaveis client-safe atuais:
 
 ## Pre-visualizacao local
 
-Quando `COELO_APP_ENV=local` (valor padrao), as rotas `/dev/...` ficam
+Quando `COELO_APP_ENV=local` e informado explicitamente, as rotas `/dev/...` ficam
 disponiveis para navegar pelas telas fake de UI/UX sem autenticar no Supabase.
 Em qualquer outro ambiente, essas rotas permanecem protegidas e redirecionam
 para o login.
@@ -36,14 +36,17 @@ O bootstrap de autenticacao usa somente:
 - `COELO_SUPABASE_URL`;
 - `COELO_SUPABASE_PUBLISHABLE_KEY`.
 
-Exemplo local:
+O valor padrao de `COELO_APP_ENV` e `staging`, portanto `/dev/...` permanece
+desabilitado mesmo em debug. Exemplo para executar o app local contra o
+Supabase hospedado sem imprimir a chave publica:
 
 ```powershell
 flutter run -d web-server `
   --web-hostname 127.0.0.1 `
   --web-port 8765 `
-  --dart-define=COELO_SUPABASE_URL=https://project.supabase.co `
-  --dart-define=COELO_SUPABASE_PUBLISHABLE_KEY=sb_publishable_xxx
+  --dart-define=COELO_APP_ENV=staging `
+  "--dart-define=COELO_SUPABASE_URL=$env:COELO_SUPABASE_URL" `
+  "--dart-define=COELO_SUPABASE_PUBLISHABLE_KEY=$env:COELO_SUPABASE_PUBLISHABLE_KEY"
 ```
 
 Sem os dois defines, o app inicia normalmente com um gateway indisponivel e
