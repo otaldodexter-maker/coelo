@@ -116,6 +116,11 @@ void main() {
     expect(router.routeInformationProvider.value.uri.queryParameters['from'], 'principal');
     expect(find.text('Turma Girassol'), findsWidgets);
     expect(find.text('Coordenação Pedagógica'), findsWidgets);
+    expect(
+      find.byKey(const Key('superadmin-chat-launcher-surface')),
+      findsNothing,
+      reason: 'O Chat aberto por Coelo (Principal) já é a superfície de conversas.',
+    );
 
     await tester.tap(find.byTooltip('Voltar'));
     await tester.pumpAndSettle();

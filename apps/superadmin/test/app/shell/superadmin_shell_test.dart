@@ -398,6 +398,18 @@ void main() {
     expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
   });
 
+  testWidgets('hides the global launcher on the Coelo Principal chat destination', (tester) async {
+    final shell = SuperadminShell(
+      logout: () async => const LogoutResult.success(),
+      currentDestination: 'principal-chat',
+      onDestinationSelected: (_) {},
+      child: const SizedBox.expand(),
+    );
+    await tester.pumpWidget(MaterialApp(theme: CoeloTheme.light, home: shell));
+
+    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
+  });
+
   testWidgets('starts Home with Structure collapsed and opens the active section contextually', (
     tester,
   ) async {
