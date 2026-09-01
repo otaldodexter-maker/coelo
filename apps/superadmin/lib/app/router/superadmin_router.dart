@@ -3572,17 +3572,21 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.devConversations,
             name: SuperadminRoutes.devConversationsName,
-            builder: (context, state) => SuperadminChatPage(
-              logout: _previewLogout,
-              chatRepository: developmentChatRepository,
-              onBack: () => context.goNamed(
-                state.uri.queryParameters['from'] == 'home'
-                    ? SuperadminRoutes.devHomeName
-                    : SuperadminRoutes.devInstitutionsName,
-              ),
-              onDestinationSelected: (destination) =>
-                  _navigateFromDevelopmentShell(context, destination),
-            ),
+            builder: (context, state) {
+              final origin = state.uri.queryParameters['from'];
+              return SuperadminChatPage(
+                logout: _previewLogout,
+                chatRepository: developmentChatRepository,
+                currentDestination: origin == 'principal' ? 'principal-chat' : 'conversations',
+                onBack: () => context.goNamed(switch (origin) {
+                  'home' => SuperadminRoutes.devHomeName,
+                  'principal' => SuperadminRoutes.devPrincipalHappensName,
+                  _ => SuperadminRoutes.devInstitutionsName,
+                }),
+                onDestinationSelected: (destination) =>
+                    _navigateFromDevelopmentShell(context, destination),
+              );
+            },
           ),
           GoRoute(
             path: SuperadminRoutes.devPrincipalHappens,
@@ -4470,6 +4474,11 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.devPrincipalNowName);
     case 'principal-now-publish':
       context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName);
+    case 'principal-chat':
+      context.goNamed(
+        SuperadminRoutes.devConversationsName,
+        queryParameters: const {'from': 'principal'},
+      );
     case 'principal-profile':
       context.goNamed(SuperadminRoutes.devPrincipalProfileName);
   }

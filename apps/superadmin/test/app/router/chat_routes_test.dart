@@ -73,6 +73,55 @@ void main() {
     expect(launcher, findsNothing);
   });
 
+  testWidgets('Coelo Principal Chat reuses the dev conversations route and repository', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 1200);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final session = SuperadminSession();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.devPrincipalHappens);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    final navigationScroll = find.descendant(
+      of: find.byKey(const Key('superadmin-navigation-scroll')),
+      matching: find.byType(Scrollable),
+    );
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('superadmin-navigation-section-principal')),
+      240,
+      scrollable: navigationScroll,
+    );
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('superadmin-navigation-principal-chat')),
+      120,
+      scrollable: navigationScroll,
+    );
+    await tester.tap(find.byKey(const Key('superadmin-navigation-principal-chat')));
+    await tester.pumpAndSettle();
+
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devConversations);
+    expect(router.routeInformationProvider.value.uri.queryParameters['from'], 'principal');
+    expect(find.text('Turma Girassol'), findsWidgets);
+    expect(find.text('Coordenação Pedagógica'), findsWidgets);
+
+    await tester.tap(find.byTooltip('Voltar'));
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalHappens);
+  });
+
   testWidgets('sidebar item opens conversations without replacing the development shell', (
     tester,
   ) async {

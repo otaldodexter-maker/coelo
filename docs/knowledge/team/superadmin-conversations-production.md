@@ -17,6 +17,13 @@ recibos de leitura e refresh passam por RPCs que recalculam pessoa, membership,
 capability e escopo efetivo. UUID, rota, cursor e filtro são sempre não
 confiáveis.
 
+A opção Chat de `Coelo (Principal)` dentro do Superadmin é somente uma segunda
+entrada para a mesma página e o mesmo `ChatRepository` de Comunicação >
+Conversas. Ela não cria domínio, cache ou backend paralelo e não depende dos
+aplicativos `apps/principal`, `apps/admin` ou `apps/site`. No `/dev`, as duas
+entradas compartilham a mesma instância determinística da sessão; em produção,
+as duas usam o mesmo adapter RPC autorizado.
+
 O launcher é fixo na safe area, anuncia a contagem real de não lidas e abre o
 estado compacto apenas com conteúdo autorizado. Em larguras reduzidas usa um
 círculo; em larguras maiores, uma cápsula laranja estável. Não há arraste livre

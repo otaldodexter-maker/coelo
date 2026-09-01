@@ -181,6 +181,7 @@ final coeloSuperadminNavigation = <CoeloNavigationNode>[
     _screen('principal-now', 'Agora', Icons.auto_awesome_motion_outlined, [
       _leaf('principal-now-publish', 'Publicar no Agora', Icons.add_circle_outline_rounded),
     ]),
+    _leaf('principal-chat', 'Chat', Icons.chat_bubble_outline),
     _leaf('principal-profile', 'Perfil', Icons.account_circle_outlined),
   ], availability: _developmentOnly),
 ];
