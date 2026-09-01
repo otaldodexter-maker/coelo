@@ -49,19 +49,33 @@ referências e devem ser recalculadas depois do inventário.
 
 ## Progresso percentual obrigatório
 
+### Limites das três medições
+
+- Flutter `verified`: chegou ao fim do que o cliente Flutter pode fazer; não
+  exige Supabase real.
+- Supabase `done`: chegou ao fim do que o backend pode fazer; não exige Flutter.
+- Integração `verified-e2e`: a tela Flutter chamou o Supabase real, atravessou
+  autorização e persistência e confirmou resposta, reload e efeitos ponta a
+  ponta. Este é o único dos três indicadores que exige a cadeia completa.
+
+Preserve os dois primeiros resultados quando a fronteira entre as camadas ainda
+estiver aberta. Não use a ausência de E2E para transformar progresso Flutter ou
+Supabase em zero; reporte a integração separadamente.
+
 Depois de ler os três rastreadores obrigatórios, a primeira resposta ao usuário
 deve começar pelo progresso geral de todas as pendências Flutter, Supabase e
 integradas conhecidas, antes da pergunta de orçamento, dos níveis e do recorte.
 Essa prioridade também vale quando a skill for chamada apenas para revisão,
 estimativa ou continuação.
 
-Calcule o geral sobre a união dos `action_id` e gates de conceito dos três
-rastreadores, sem contar a mesma unidade mais de uma vez e incluindo itens fora
-do recorte atual. Na abertura e em todo checkpoint, pausa ou encerramento,
-apresente primeiro esse geral e depois o progresso do recorte contratado, sem
-misturar os dois. Informe a base do cálculo. Uma unidade só conta como concluída
-quando possui as evidências Flutter, Supabase e integradas exigidas para o estado
-declarado; trabalho parcial permanece no restante.
+Calcule a conclusão integrada exclusivamente sobre os `action_id` do rastreador
+integrado. `ready-for-e2e` mede ações cujos lados Flutter e Supabase já foram
+concluídos separadamente; `verified-e2e` mede a conclusão ponta a ponta. Não some
+unidades Flutter, Supabase e integradas em um denominador único. Informe
+`verified` Flutter e `done` Supabase separadamente como contexto, incluindo
+itens fora do recorte atual. Na abertura e em todo checkpoint, pausa ou
+encerramento, apresente primeiro o geral e depois o progresso do recorte
+contratado, sem misturar os dois.
 
 Use sempre este formato, com duas casas decimais e soma igual a `100,00%`:
 

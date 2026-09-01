@@ -50,6 +50,23 @@ Básica. As faixas não são promessa: ajuste-as após o inventário.
 
 ## Progresso percentual obrigatório
 
+### Limite de conclusão Flutter
+
+Meça Flutter até o fim das responsabilidades do cliente: rota normal e
+composição do cliente, UI, estados de loading/empty/error/unauthorized,
+validação, navegação, foco, responsividade, acessibilidade, arquitetura,
+contratos no limite do repository e regressão. Uma ação pode ser `verified` no
+rastreador Flutter sem Supabase real, RLS, persistência remota ou E2E, desde que
+tudo o que pertence ao cliente esteja comprovado e a dependência externa
+permaneça registrada somente no rastreador integrado. Doubles fiéis ao contrato
+podem provar o cliente em teste; fake ou fixture no runtime normal não conclui a
+ação.
+
+`local-green` significa que uma fatia passou localmente, mas ainda falta algum
+gate Flutter. `verified` significa que a ação chegou ao fim da camada Flutter.
+Não rebaixe uma ação Flutter completa por falta de backend e não promova uma
+fatia parcial apenas porque testes isolados passaram.
+
 Depois de ler o rastreador obrigatório, a primeira resposta ao usuário deve
 começar pelo progresso geral de todas as pendências Flutter conhecidas, antes
 da pergunta de orçamento, dos níveis e do recorte. Essa prioridade também vale

@@ -21,15 +21,20 @@ como backend concluído.
 0/37 `done`. Restam 34/37 famílias (91,89%) sem gate local completo e todas as
 37 famílias ainda carecem de conclusão Supabase integral.
 
+**Geral conhecido:** 0/228 unidades exclusivamente backend `done` (0,00%): 207
+`action_id` e 21 gates gerais Supabase; o gate geral de `/dev` Flutter foi
+excluído. **Etapa 2:** 0/37 famílias `done` (0,00%). O subpacote remoto de
+fundação Auth é `remote-green`, mas não fecha ainda uma ação ou família Auth.
+
 | Percentual Supabase da Etapa 2 | Concluído | Restante | Interpretação |
 | --- | ---: | ---: | --- |
 | Progresso técnico local por família | 8,11% (3/37) | 91,89% (34/37) | Prova local suficiente somente em três famílias. |
-| Certificação Supabase final `done` | 0,00% (0/37) | 100,00% (37/37) | Mede somente o gate final remoto; não representa o volume de trabalho executado. |
+| Conclusão do lado Supabase `done` | 0,00% (0/37) | 100,00% (37/37) | Encerra a família backend inteira sem exigir Flutter; nenhuma família atingiu todos os gates Supabase. |
 
 > **Leitura correta:** o avanço Supabase já comprovado como pacote local completo
 > é **8,11%**. Há outras famílias em implementação ou revisão estática que ainda
-> não entram nesse numerador. O `done` em 0,00% é certificação final, não
-> “trabalho realizado”.
+> não entram nesse numerador. O `done` em 0,00% decorre de gates do próprio
+> backend ainda abertos, não da ausência de Flutter ou E2E.
 
 ### Telas, subtelas e ações Supabase
 

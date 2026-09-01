@@ -63,6 +63,20 @@ primeira ocorrência relevante.
 
 ## Progresso percentual obrigatório
 
+### Limite de conclusão Supabase
+
+Meça Supabase até o fim das responsabilidades do backend: schema, migrations,
+RPC/Edge/query, Auth e sessão aplicáveis, RLS, grants, isolamento entre tenants,
+validação, persistência, reload por um cliente de teste, auditoria, efeitos
+laterais, testes e cleanup. Uma família pode ser `done` no rastreador Supabase
+sem Flutter integrado, desde que todo o contrato backend esteja comprovado.
+
+`local-green` significa backend comprovado apenas no ambiente local. `done`
+encerra somente o lado Supabase: da entrada não confiável no endpoint até
+autorização, persistência, auditoria, resposta estável e regressão no backend
+remoto autorizado. A ausência de Flutter não bloqueia `done`; a ligação
+Flutter↔Supabase pertence ao rastreador integrado.
+
 Depois de ler o rastreador obrigatório, a primeira resposta ao usuário deve
 começar pelo progresso geral de todas as pendências Supabase conhecidas, antes
 da pergunta de orçamento, dos níveis e do recorte. Essa prioridade também vale
@@ -196,12 +210,14 @@ ADR vigente. Uma integração não substitui a outra silenciosamente.
 - `blocked-decision`: depende de decisão formal;
 - `local-green`: somente artefatos/testes locais verdes;
 - `remote-green`: backend remoto e negativas comprovados;
-- `done`: todos os gates Supabase do recorte comprovados e registrados;
+- `done`: todos os gates da camada Supabase do recorte comprovados e registrados,
+  sem exigir Flutter ou E2E;
 - `regressed`: evidência anterior deixou de valer.
 
 Não chame `local-green`, RLS apenas habilitada, função existente, migration local
 ou mock de `done`. Para tela ponta a ponta, `done` Supabase é necessário, mas não
-suficiente: o rastreador integrado também deve estar verde.
+suficiente: o rastreador integrado também deve estar verde. A falta dessa
+integração não reabre uma família já concluída dentro do limite Supabase.
 
 ## Erros comuns e sinais de parada
 
