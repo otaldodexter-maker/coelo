@@ -106,3 +106,5 @@ constraints, preserving both accessible controls at 1440 px / 200% text.
 ## Commit
 
 `a6c48751 feat(superadmin): isolate principal preview routes`
+
+`714d9b86 fix(superadmin): complete principal shell isolation`
