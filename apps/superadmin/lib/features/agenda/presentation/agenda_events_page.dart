@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import '../data/agenda_prototype_store.dart';
 import '../domain/agenda_models.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
+import 'agenda_reservation_conflict_dialog.dart';
 
 enum _AgendaEventsDisplay { cards, table }
 
@@ -242,11 +243,16 @@ final class _AgendaEventsPageState extends State<AgendaEventsPage> {
   Future<void> _confirmLifecycle(AgendaItem item, _AgendaLifecycleAction action) async {
     final confirmed = await _showAgendaLifecycleConfirmation(context, item, action);
     if (confirmed != true || !mounted) return;
-    final result = switch (action) {
-      _AgendaLifecycleAction.cancel => widget.store.cancelItem(item.id, actorName: 'Owner Coelo'),
-      _AgendaLifecycleAction.restore => widget.store.restoreItem(item.id, actorName: 'Owner Coelo'),
-      _AgendaLifecycleAction.deleteDraft => widget.store.deleteDraft(item.id),
-    };
+    final result = action == _AgendaLifecycleAction.restore
+        ? await _restoreWithConflictOverride(context, widget.store, item, actorName: 'Owner Coelo')
+        : switch (action) {
+            _AgendaLifecycleAction.cancel => widget.store.cancelItem(
+              item.id,
+              actorName: 'Owner Coelo',
+            ),
+            _AgendaLifecycleAction.deleteDraft => widget.store.deleteDraft(item.id),
+            _AgendaLifecycleAction.restore => throw StateError('restore handled above'),
+          };
     if (!mounted) return;
     ScaffoldMessenger.of(
       context,
@@ -832,11 +838,16 @@ final class _AgendaEventDetailPageState extends State<AgendaEventDetailPage> {
     final confirmed = await _showAgendaLifecycleConfirmation(context, item, action);
     if (confirmed != true || !mounted) return;
 
-    final result = switch (action) {
-      _AgendaLifecycleAction.cancel => widget.store.cancelItem(item.id, actorName: _actorName),
-      _AgendaLifecycleAction.restore => widget.store.restoreItem(item.id, actorName: _actorName),
-      _AgendaLifecycleAction.deleteDraft => widget.store.deleteDraft(item.id),
-    };
+    final result = action == _AgendaLifecycleAction.restore
+        ? await _restoreWithConflictOverride(context, widget.store, item, actorName: _actorName)
+        : switch (action) {
+            _AgendaLifecycleAction.cancel => widget.store.cancelItem(
+              item.id,
+              actorName: _actorName,
+            ),
+            _AgendaLifecycleAction.deleteDraft => widget.store.deleteDraft(item.id),
+            _AgendaLifecycleAction.restore => throw StateError('restore handled above'),
+          };
     if (!mounted) return;
     ScaffoldMessenger.of(
       context,
@@ -875,6 +886,32 @@ final class _AgendaEventDetailPageState extends State<AgendaEventDetailPage> {
 }
 
 enum _AgendaLifecycleAction { cancel, restore, deleteDraft }
+
+Future<AgendaMutationResult> _restoreWithConflictOverride(
+  BuildContext context,
+  AgendaPrototypeStore store,
+  AgendaItem item, {
+  required String actorName,
+}) async {
+  final actorContextId = item.audience.institutionId;
+  var result = store.restoreItem(item.id, actorName: actorName, actorContextId: actorContextId);
+  if (result != AgendaMutationResult.reservationConflict ||
+      !store
+          .resolveCapability(actorContextId, AgendaCapability.overrideReservationConflict)
+          .isAllowed) {
+    return result;
+  }
+  final reason = await showAgendaReservationConflictOverrideDialog(context);
+  if (!context.mounted || reason == null) return AgendaMutationResult.reservationConflict;
+  result = store.restoreItem(
+    item.id,
+    actorName: actorName,
+    actorContextId: actorContextId,
+    overrideConflict: true,
+    reason: reason,
+  );
+  return result;
+}
 
 Future<bool?> _showAgendaLifecycleConfirmation(
   BuildContext context,

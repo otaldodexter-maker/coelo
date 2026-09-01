@@ -8,6 +8,7 @@ import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../data/agenda_prototype_store.dart';
 import '../domain/agenda_models.dart';
+import 'agenda_reservation_conflict_dialog.dart';
 
 final class AgendaEventFormPage extends StatefulWidget {
   const AgendaEventFormPage({
@@ -166,7 +167,7 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
         widget.store
             .resolveCapability(institutionId, AgendaCapability.overrideReservationConflict)
             .isAllowed) {
-      final reason = await _requestConflictOverride();
+      final reason = await showAgendaReservationConflictOverrideDialog(context);
       if (!mounted || reason == null) return;
       result = widget.store.saveItem(
         item,
@@ -205,13 +206,6 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
         AgendaMutationResult.success => null,
       };
     });
-  }
-
-  Future<String?> _requestConflictOverride() async {
-    return showDialog<String>(
-      context: context,
-      builder: (_) => const _ReservationConflictOverrideDialog(),
-    );
   }
 
   AgendaAudience _resolvedAudience(String institutionId) => switch (_context) {
@@ -552,52 +546,6 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
             'A composição está disponível, mas salvar e publicar permanecem bloqueados nesta rota.',
       ),
   ];
-}
-
-final class _ReservationConflictOverrideDialog extends StatefulWidget {
-  const _ReservationConflictOverrideDialog();
-
-  @override
-  State<_ReservationConflictOverrideDialog> createState() =>
-      _ReservationConflictOverrideDialogState();
-}
-
-final class _ReservationConflictOverrideDialogState
-    extends State<_ReservationConflictOverrideDialog> {
-  final _reason = TextEditingController();
-
-  @override
-  void dispose() {
-    _reason.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => CoeloAdminDialogShell(
-    dialogKey: const Key('agenda-reservation-override-dialog'),
-    title: 'Substituir conflito de reserva?',
-    closeTooltip: 'Fechar substituição de conflito',
-    body: CoeloFormTextField(
-      key: const Key('agenda-reservation-override-reason'),
-      controller: _reason,
-      labelText: 'Motivo da substituição',
-      hintText: 'Obrigatório para o histórico da reserva.',
-      prefixIcon: Icons.notes_rounded,
-      maxLines: 2,
-    ),
-    secondaryAction: OutlinedButton(
-      onPressed: () => Navigator.of(context).pop(),
-      child: const Text('Manter horários'),
-    ),
-    primaryAction: FilledButton(
-      key: const Key('agenda-reservation-override-confirm'),
-      onPressed: () {
-        final value = _reason.text.trim();
-        if (value.isNotEmpty) Navigator.of(context).pop(value);
-      },
-      child: const Text('Substituir reserva'),
-    ),
-  );
 }
 
 final class _Group extends StatelessWidget {
