@@ -14,6 +14,7 @@
 - Testes focados e proporcionais; não regenerar a suíte completa de goldens.
 - Importar/Exportar pode permanecer visual e desabilitado onde não houver contrato.
 - Produção nunca usa fixtures como fallback.
+- Toda busca visível consulta fixtures em `/dev` e repositories autorizados em produção.
 - Handles aceitam `^[a-z0-9]+(?:-[a-z0-9]+)*$`.
 
 ---

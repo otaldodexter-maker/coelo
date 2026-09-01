@@ -1336,6 +1336,33 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   por ação. O rastreador Supabase permanece inalterado porque não houve
   correção, migration ou evidência backend nova nesta onda visual.
 
+### Checkpoint integrado 64 - Estruturas e Conversas sem promoção indevida
+
+- **Camadas de progresso:** Flutter geral preservado em 102/207
+  `local-green` (49,28%); Supabase local em 3/37 famílias (8,11%); `verified`
+  Flutter, Supabase remoto `done` e E2E permanecem métricas estritas separadas.
+  Portanto 0% E2E não descreve o progresso geral já realizado.
+- **Resultado local:** `/dev` usa 5 instituições, 1–4 unidades por instituição,
+  até 28 turmas, 30 atividades, 12 modelos e conversas determinísticas. Buscas
+  visíveis filtram os dados locais; paginação e Arquivos aparecem nas
+  superfícies do recorte; mapas, shell compacto, cards, modelos e avaliações
+  foram corrigidos. Analyzer focado terminou sem issues e as regressões
+  proporcionais ficaram verdes.
+- **Caminhos produtivos compostos:** Instituições, Atividades e Avaliações usam
+  adapters Supabase; Conversas usa Supabase quando inicializado. Nenhuma dessas
+  telas usa fake como fallback de erro produtivo.
+- **Primeiro gate incompleto:** diretórios CRUD de Unidades e Turmas ainda são
+  `Unavailable` em produção. O comando de modelos não representa escopo de
+  Unidade. Sem esses contratos e sem ambiente remoto mutável autorizado, o
+  recorte não é `ready-for-e2e` e não deve ser declarado ponta a ponta.
+- **Evidência exigida para promoção:** adapter nominal, autorização/RLS,
+  capability/MFA, negativos, cross-tenant, revogação, idempotência, persistência
+  e reload no remoto classificado, seguidos por UI real em localhost sem dados
+  `/dev`.
+- **Gate de conhecimento:** escala e isolamento do dataset atualizados primeiro
+  na fonte canônica e depois na projeção interna. Nenhum segredo ou dado pessoal
+  foi registrado.
+
 ### Checkpoint integrado 63 - matriz final pós-consolidação sem promoção E2E
 
 - **Progresso geral:** projeto estrito `done` 0,00% (0/229), restante 100,00%

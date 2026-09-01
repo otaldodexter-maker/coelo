@@ -4256,6 +4256,37 @@ da simples soma das 207 ações.
   gateways nominais por realm e o limite local-only, sem PII nem log de
   atividade.
 
+### Checkpoint seguro 64 - auditoria de composição de Estruturas
+
+- **Recorte:** revisão somente leitura da composição Supabase usada pelas telas
+  Instituições, Unidades, Turmas, Atividades, Avaliações e Conversas. Nenhuma
+  migration, DDL/DML, Auth, Edge Function, Storage ou configuração remota foi
+  alterada.
+- **Composição confirmada:** Instituições usa repository Supabase; Atividades
+  agora injeta directory e command repositories Supabase; Avaliações já usa o
+  repository Supabase; Conversas instancia o adapter Supabase somente quando o
+  cliente está inicializado. Falha produtiva não cai em fixtures `/dev`.
+- **Lacunas confirmadas:** o diretório/formulário produtivo de Unidades ainda
+  recebe `UnavailableUnitDirectoryRepository`; o gateway real existente cobre
+  comandos especializados, não listagem e `upsert`. Turmas ainda recebe
+  `UnavailableGroupDirectoryRepository`; existem RPCs legadas seguras de
+  list/get/save/export com RLS/capability/MFA, mas falta adapter Flutter e um
+  contrato completo de opções/contexto. Modelos aceitam somente escopo
+  `platform`/`institution`, sem comando unitário aprovado.
+- **RLS e CRUD:** nada foi promovido a `done`. As migrations existentes mantêm
+  RLS deny-by-default e comandos privilegiados, mas o caminho Flutter → gateway
+  → RPC → persistência → reload não está completo para Unidades/Turmas nem foi
+  provado no remoto. Não foi criado acesso direto a tabelas para mascarar essa
+  lacuna.
+- **Progresso correto:** Supabase local continua 3/37 famílias `local-green`
+  (8,11%). `done` remoto estrito permanece 0/37; esse zero não representa o
+  progresso geral do produto ou do Flutter.
+- **Próximo gate exato:** aprovar e implementar adapters nominais de
+  `units.list/get/save/options` e `groups.list/get/save/options`, provar
+  permitido/negado, MFA quando aplicável, sessão/vínculo revogado, tenant A/B,
+  replay, reload e auditoria; depois aplicar somente em ambiente remoto
+  classificado e nominalmente autorizado.
+
 ### Checkpoint seguro 63 - reconciliação documental pós-consolidação
 
 - **Progresso geral:** projeto estrito `done` 0,00% (0/229), restante 100,00%

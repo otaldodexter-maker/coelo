@@ -27,6 +27,9 @@ implementação das telas nem fallback de fixtures em produção.
   ações sem contrato funcional permanecem desabilitadas e explicadas.
 - Todos os resultados pagináveis exibem paginação no rodapé, inclusive estados
   vazios quando houver mais de uma página lógica.
+- Toda busca exibida funciona em `/dev` sobre as fixtures determinísticas do
+  domínio correspondente; produção consulta apenas repositories autorizados e
+  nunca usa dados fake como fallback.
 - `/dev` contém de 2 a 5 instituições, cada uma com 1 a 6 unidades, cada unidade
   com 1 a 28 turmas, 12 modelos e 30 atividades; existem turmas com e sem
   atividades.
