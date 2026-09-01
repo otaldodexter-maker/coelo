@@ -31,6 +31,10 @@ Ele não substitui os rastreadores Flutter ou integrado. Um item pode ficar
 - A próxima fatia Supabase deve inventariar os objetos existentes por ação,
   reconciliar o ledger e então implementar RLS deny-by-default, grants mínimos,
   idempotência, auditoria e negativos cross-tenant antes de habilitar CRUD real.
+- O inventário remoto read-only confirmou tabelas com RLS para Planos,
+  Cardápios, Formulários e Importações. Nenhuma tabela nominal de Agenda,
+  Eventos, Solicitações ou Aprovações apareceu em `public`; a lacuna segue em
+  auditoria e bloqueia CRUD produtivo da Agenda até migration/policies próprias.
 
 Ele não substitui Product Vision, PRDs, ADRs ou specs aprovadas. Em conflito, a
 fonte canônica de maior prioridade prevalece e a divergência deve ser registrada

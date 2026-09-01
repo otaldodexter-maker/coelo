@@ -65,6 +65,21 @@ enum AgendaResponseMode { none, rsvp, acknowledgement, authorization }
 
 enum GuardianResponsePolicy { oneIsEnough, allMustRespond }
 
+enum AgendaQuestionType { shortText, yesNo, singleChoice }
+
+final class AgendaQuestion {
+  const AgendaQuestion({
+    required this.id,
+    required this.title,
+    required this.type,
+    this.options = const [],
+  });
+
+  final String id, title;
+  final AgendaQuestionType type;
+  final List<String> options;
+}
+
 enum AgendaPublicationRequestStatus { pending, approved, rejected }
 
 final class AgendaPublicationRequest {
@@ -233,6 +248,7 @@ final class AgendaItem {
     this.guardianResponsePolicy = GuardianResponsePolicy.oneIsEnough,
     this.audienceLabels = const {},
     this.reminders = const {},
+    this.questions = const [],
     this.history = const [],
   });
   factory AgendaItem.fixture({
@@ -256,6 +272,7 @@ final class AgendaItem {
     GuardianResponsePolicy guardianResponsePolicy = GuardianResponsePolicy.oneIsEnough,
     Set<String> audienceLabels = const {},
     Set<String> reminders = const {},
+    List<AgendaQuestion> questions = const [],
     List<AgendaHistoryEntry> history = const [],
   }) => AgendaItem(
     id: id,
@@ -278,6 +295,7 @@ final class AgendaItem {
     guardianResponsePolicy: guardianResponsePolicy,
     audienceLabels: Set.unmodifiable(audienceLabels),
     reminders: Set.unmodifiable(reminders),
+    questions: List.unmodifiable(questions),
     history: List.unmodifiable(history),
   );
   final String id, title, location, description;
@@ -295,6 +313,7 @@ final class AgendaItem {
   final GuardianResponsePolicy guardianResponsePolicy;
   final Set<String> audienceLabels;
   final Set<String> reminders;
+  final List<AgendaQuestion> questions;
   final List<AgendaHistoryEntry> history;
   Duration get duration => endsAt.difference(startsAt);
   AgendaVisualProminence get prominence => deriveAgendaProminence(audience: audience, type: type);
@@ -319,6 +338,7 @@ final class AgendaItem {
     GuardianResponsePolicy? guardianResponsePolicy,
     Set<String>? audienceLabels,
     Set<String>? reminders,
+    List<AgendaQuestion>? questions,
     List<AgendaHistoryEntry>? history,
   }) => AgendaItem(
     id: id ?? this.id,
@@ -341,6 +361,7 @@ final class AgendaItem {
     guardianResponsePolicy: guardianResponsePolicy ?? this.guardianResponsePolicy,
     audienceLabels: audienceLabels ?? this.audienceLabels,
     reminders: reminders ?? this.reminders,
+    questions: questions ?? this.questions,
     history: history ?? this.history,
   );
 }

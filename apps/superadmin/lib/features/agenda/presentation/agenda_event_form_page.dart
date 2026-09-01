@@ -64,6 +64,7 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
   late GuardianResponsePolicy _guardianPolicy;
   AgendaOccurrenceEditScope _occurrenceEditScope = AgendaOccurrenceEditScope.series;
   late Set<String> _reminders;
+  late final List<_AgendaQuestionDraft> _questions;
   String? _feedback;
   int _step = 0;
 
@@ -99,6 +100,10 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
     _reminders = _existing?.reminders.isNotEmpty == true
         ? {..._existing!.reminders}
         : {'Na publicação', '24 horas antes'};
+    _questions = [
+      for (final question in _existing?.questions ?? const <AgendaQuestion>[])
+        _AgendaQuestionDraft.fromQuestion(question),
+    ];
   }
 
   @override
@@ -107,6 +112,9 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
     _location.dispose();
     _details.dispose();
     _occurrenceCount.dispose();
+    for (final question in _questions) {
+      question.dispose();
+    }
     super.dispose();
   }
 
@@ -160,6 +168,7 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
       guardianResponsePolicy: _guardianPolicy,
       audienceLabels: Set.unmodifiable(_audience),
       reminders: Set.unmodifiable(_reminders),
+      questions: [for (final question in _questions) question.toQuestion()],
       history: existing?.history ?? const [],
     );
     var result = widget.store.saveItem(item, actorContextId: institutionId);
@@ -248,7 +257,7 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
           for (var index = 0; index < 4; index++)
             SuperadminFormStep(
               key: Key('agenda-form-step-$index'),
-              label: const ['Dados básicos', 'Período', 'Respostas e avisos', 'Revisão'][index],
+              label: const ['Dados básicos', 'Período', 'Respostas', 'Revisão'][index],
               status: index == _step
                   ? SuperadminFormStepStatus.current
                   : index < _step
@@ -318,7 +327,7 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
   );
 
   Widget _content() => _Group(
-    title: const ['1. Dados básicos', '2. Período', '3. Respostas e avisos', '4. Revisão'][_step],
+    title: const ['1. Dados básicos', '2. Período', '3. Respostas', '4. Revisão'][_step],
     children: switch (_step) {
       0 => _basicFields(),
       1 => _periodFields(),
@@ -361,16 +370,16 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
       prefixIcon: Icons.notes_rounded,
       maxLines: 4,
     ),
+    _questionBuilder(),
   ];
 
   List<Widget> _periodFields() => [
-    SwitchListTile(
+    CoeloAdminToggleField(
       key: const Key('agenda-event-all-day'),
       value: _allDay,
       onChanged: (value) => setState(() => _allDay = value),
-      title: const Text('Dia inteiro'),
-      subtitle: const Text('Eventos de dia inteiro não exibem horário.'),
-      contentPadding: EdgeInsets.zero,
+      label: 'Dia inteiro',
+      description: 'Eventos de dia inteiro não exibem horário.',
     ),
     if (_allDay)
       CoeloDateRangeField(
@@ -423,7 +432,9 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
       controller: _location,
       labelText: 'Local (opcional)',
       prefixIcon: Icons.place_outlined,
+      onChanged: (_) => setState(() {}),
     ),
+    _LocationMapPreview(location: _location.text.trim()),
     CoeloAdminSingleSelectField<String>(
       key: const Key('agenda-event-recurrence'),
       label: 'Recorrência',
@@ -517,7 +528,10 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
       onChanged: (value) => setState(() => _reminders = value),
       prefixIcon: Icons.notifications_active_outlined,
     ),
-    const _Fact(label: 'Canais', value: 'Os lembretes usam sininho e push; e-mail é opcional.'),
+    const _Fact(
+      label: 'Entrega',
+      value: 'Defina apenas quando lembrar; os canais serão configurados pela plataforma.',
+    ),
   ];
 
   List<Widget> _reviewFields() => [
@@ -531,6 +545,12 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
     ),
     _Fact(label: 'Recorrência', value: _recurrence),
     _Fact(label: 'Resposta', value: _responseLabel(_responseMode)),
+    _Fact(
+      label: 'Perguntas',
+      value: _questions.isEmpty
+          ? 'Nenhuma pergunta adicional'
+          : '${_questions.length} adicionada(s)',
+    ),
     _Fact(label: 'Lembretes', value: _reminders.join(', ')),
     if (!widget.canPublish)
       const _Fact(
@@ -546,6 +566,159 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
             'A composição está disponível, mas salvar e publicar permanecem bloqueados nesta rota.',
       ),
   ];
+
+  Widget _questionBuilder() => _AgendaQuestionsEditor(
+    questions: _questions,
+    onAdd: () => setState(() {
+      _questions.add(_AgendaQuestionDraft(id: 'question-${_questions.length + 1}'));
+    }),
+    onRemove: (index) => setState(() {
+      _questions.removeAt(index).dispose();
+    }),
+    onChanged: () => setState(() {}),
+  );
+}
+
+final class _AgendaQuestionDraft {
+  _AgendaQuestionDraft({required this.id, String title = ''})
+    : title = TextEditingController(text: title);
+
+  factory _AgendaQuestionDraft.fromQuestion(AgendaQuestion question) =>
+      _AgendaQuestionDraft(id: question.id, title: question.title)..type = question.type;
+
+  final String id;
+  final TextEditingController title;
+  AgendaQuestionType type = AgendaQuestionType.shortText;
+
+  AgendaQuestion toQuestion() => AgendaQuestion(
+    id: id,
+    title: title.text.trim().isEmpty ? 'Pergunta sem título' : title.text.trim(),
+    type: type,
+  );
+
+  void dispose() => title.dispose();
+}
+
+final class _AgendaQuestionsEditor extends StatelessWidget {
+  const _AgendaQuestionsEditor({
+    required this.questions,
+    required this.onAdd,
+    required this.onRemove,
+    required this.onChanged,
+  });
+
+  final List<_AgendaQuestionDraft> questions;
+  final VoidCallback onAdd, onChanged;
+  final ValueChanged<int> onRemove;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
+      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      borderRadius: BorderRadius.circular(CoeloRadius.lg),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('Perguntas do evento', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: CoeloSpacing.space1),
+          Text(
+            'Inclua confirmações ou informações necessárias para participar.',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          for (var index = 0; index < questions.length; index++) ...[
+            const SizedBox(height: CoeloSpacing.space4),
+            CoeloFormTextField(
+              key: Key('agenda-event-question-$index'),
+              controller: questions[index].title,
+              labelText: 'Pergunta ${index + 1}',
+              prefixIcon: Icons.help_outline_rounded,
+              onChanged: (_) => onChanged(),
+            ),
+            const SizedBox(height: CoeloSpacing.space2),
+            Row(
+              children: [
+                Expanded(
+                  child: CoeloAdminSingleSelectField<AgendaQuestionType>(
+                    key: Key('agenda-event-question-type-$index'),
+                    label: 'Tipo de resposta',
+                    value: questions[index].type,
+                    options: AgendaQuestionType.values,
+                    optionLabel: _questionTypeLabel,
+                    onChanged: (value) {
+                      questions[index].type = value;
+                      onChanged();
+                    },
+                  ),
+                ),
+                const SizedBox(width: CoeloSpacing.space2),
+                IconButton(
+                  tooltip: 'Remover pergunta ${index + 1}',
+                  onPressed: () => onRemove(index),
+                  color: Theme.of(context).colorScheme.error,
+                  icon: const Icon(Icons.delete_outline_rounded),
+                ),
+              ],
+            ),
+          ],
+          const SizedBox(height: CoeloSpacing.space3),
+          OutlinedButton.icon(
+            key: const Key('agenda-event-add-question'),
+            onPressed: onAdd,
+            icon: const Icon(Icons.add_rounded),
+            label: const Text('Adicionar pergunta'),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+final class _LocationMapPreview extends StatelessWidget {
+  const _LocationMapPreview({required this.location});
+
+  final String location;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    container: true,
+    label: location.isEmpty ? 'Mapa do local aguardando endereço' : 'Mapa do local $location',
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+      ),
+      child: SizedBox(
+        key: const Key('agenda-event-location-map'),
+        height: 148,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Icon(
+              location.isEmpty ? Icons.map_outlined : Icons.location_pin,
+              size: CoeloSize.iconLg,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            Positioned(
+              left: CoeloSpacing.space3,
+              right: CoeloSpacing.space3,
+              bottom: CoeloSpacing.space2,
+              child: Text(
+                location.isEmpty ? 'Informe o local para posicionar o mapa.' : location,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 final class _Group extends StatelessWidget {
@@ -611,6 +784,12 @@ String _responseLabel(AgendaResponseMode value) => switch (value) {
   AgendaResponseMode.rsvp => 'RSVP · Sim, Não ou Talvez',
   AgendaResponseMode.acknowledgement => 'Ciência',
   AgendaResponseMode.authorization => 'Autorização · Autorizo ou Não autorizo',
+};
+
+String _questionTypeLabel(AgendaQuestionType value) => switch (value) {
+  AgendaQuestionType.shortText => 'Resposta curta',
+  AgendaQuestionType.yesNo => 'Sim ou não',
+  AgendaQuestionType.singleChoice => 'Escolha única',
 };
 
 String _occurrenceEditScopeLabel(AgendaOccurrenceEditScope value) => switch (value) {

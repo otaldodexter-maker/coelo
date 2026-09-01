@@ -42,6 +42,11 @@ Ele não comprova Supabase nem conclusão ponta a ponta. Para isso, ler também:
 - `agenda.request/approvals`: `in-progress`; arquivos e paginação foram
   adicionados às duas superfícies. A entrada Agenda/Permissões foi removida e
   as URLs legadas redirecionam para `profiles`, que segue como fonte de verdade.
+- `agenda.create/edit`: `in-progress`; o wizard passou a usar toggle canônico
+  para dia inteiro, exibe mini-mapa associado ao local, permite adicionar e
+  tipar perguntas contextuais persistidas no modelo local e removeu a promessa
+  prematura de canais de lembrete. Evidência local: 11 testes focados
+  executados; todos passaram, e o analyzer focado não encontrou issues.
 - Continuam abertas: wizard e vínculos de Cardápios, periodicidade compartilhada,
   separação Criar/Respostas de Formulários, UI responsiva final da Agenda,
   mini-mapa, code review final e gates visuais globais.

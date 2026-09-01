@@ -47,6 +47,11 @@ funcionam juntos no ambiente correto. Nenhum deles substitui os demais.
   por teste de widget, fixture `/dev`, menu indisponível ou redirecionamento.
 - Próximo gate: inventário Supabase nominal por `action_id`, seguido de uma
   primeira vertical CRUD/RLS pequena e reprodutível.
+- Agenda/Criar avançou somente no Flutter local: mini-mapa, perguntas do evento,
+  toggle canônico e lembretes sem canais prematuros passaram em 11 testes e
+  analyzer focado. O remoto read-only não apresentou tabelas nominais de Agenda;
+  portanto criar/editar/solicitar/aprovar continuam `blocked-supabase`, sem
+  promoção de `ready-for-e2e` ou `verified-e2e`.
 
 ### Contrato de abertura da atividade
 
