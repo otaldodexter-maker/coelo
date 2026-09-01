@@ -218,12 +218,7 @@ Map<String, Object?> _draftPayload(NoticeDraft draft) => {
 
 PlatformNotice _notice(Map<String, dynamic> value) {
   final selection = NoticeAudienceSelection.fromJson(_map(value['audience']));
-  final status = _enum(
-    NoticeStatus.values,
-    _string(value['status']),
-    fallback: NoticeStatus.draft,
-    aliases: {'expired': NoticeStatus.ended, 'inactive': NoticeStatus.cancelled},
-  );
+  final status = _noticeStatus(value['status']);
   return PlatformNotice(
     type: communicationTypeFromStorage(value['type'] ?? value['notice_type']),
     id: _string(value['id']),
@@ -323,6 +318,16 @@ NoticeRecurrence _recurrence(Object? value) => switch (_string(value)) {
   'monthly' => NoticeRecurrence.monthly,
   'interval' => NoticeRecurrence.interval,
   _ => NoticeRecurrence.oneTime,
+};
+
+NoticeStatus _noticeStatus(Object? value) => switch (_string(value)) {
+  'draft' => NoticeStatus.draft,
+  'scheduled' => NoticeStatus.scheduled,
+  'active' => NoticeStatus.active,
+  'paused' => NoticeStatus.paused,
+  'expired' => NoticeStatus.ended,
+  'inactive' => NoticeStatus.cancelled,
+  _ => throw const NoticeUnexpectedException(),
 };
 
 T _enum<T extends Enum>(

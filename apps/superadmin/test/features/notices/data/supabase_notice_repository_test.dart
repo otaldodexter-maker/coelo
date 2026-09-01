@@ -116,6 +116,21 @@ void main() {
     }
   });
 
+  test('fails closed for unresolved legacy notice statuses', () async {
+    for (final status in ['published', 'archived', 'unknown']) {
+      final client = _client(
+        (request) async => _json(request, {..._noticeJson(), 'status': status}),
+      );
+
+      await expectLater(
+        SupabaseNoticeRepository(client).getById('id'),
+        throwsA(isA<NoticeUnexpectedException>()),
+        reason: status,
+      );
+      client.dispose();
+    }
+  });
+
   test('maps forbidden responses without exposing server details', () async {
     final client = _client(
       (request) async => Response(
