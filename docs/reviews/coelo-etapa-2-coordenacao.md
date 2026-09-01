@@ -81,7 +81,7 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
 | Acessos e Saúde | `codex/accessos-ponta-a-ponta` | `6e56d3e4` | Handoff final recebido; worktree limpa. Sete rotas `/dev`, 152/152 testes críticos e analyzer global verdes; models backend apenas `static-green`, remoto/E2E ausentes. Revisão independente em andamento antes da integração. |
 | Auth | `codex/auth-first-local-green` | `36ae7c86` | Worktree limpa no snapshot; produção permanece condicionada aos gates registrados pela frente. |
 | Estruturas | `codex/estruturas-superadmin` | `49a52f6e` | Rastreadores e artefatos de migration/modelo por unidade continuam preservados fora do commit final; `.artifacts` permanece fora de Git. |
-| Coelo (Principal) | `codex/finalizar-telas-coelo-principal` | `e1cf1be3` | Worktree limpa; `momentos.view` fullscreen passou 28/28 testes e analyzer focado, com review independente ainda em andamento. Nenhum delta em `apps/principal` ou backend. |
+| Coelo (Principal) | `codex/finalizar-telas-coelo-principal` | `14ff3d50` | Worktree limpa; `momentos.view` fullscreen aprovado em review independente após `008c14c2`, com 38/38 testes e analyzer focado. Circulares é o próximo recorte; backend/E2E seguem abertos. |
 
 ## Evidências e referências
 
@@ -276,6 +276,11 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
 - **Próximo passo:** concluir review; depois revalidar `circulars.view` a partir
   de `d22a9b3d`, sem incorporar o WIP `393fc7ff`. ETA informada: 10–15 min para
   o review de Momentos e 25–35 min para o recorte local de Circulares.
+- **Fechamento posterior:** `008c14c2` adicionou saídas seguras também nos
+  estados configuração inválida, loading, failure, unauthorized e empty; review
+  independente aprovado sem achados. Gate final local: 38/38 testes, analyzer
+  focal e diff-check verdes; bookkeeping em `14ff3d50`. O próximo passo agora é
+  `circulars.view`/`circulars.file-actions`, ETA local 25–35 min.
 
 ### Segurança da criança — `b943a5fe`
 

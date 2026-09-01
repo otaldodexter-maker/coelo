@@ -13,7 +13,7 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "B555C8F643432411FA4A517BE9A16DF8C8976171C36D6D6644E4DA2E23BEC60C"
+flutter_tracker_sha256: "29F233A8F7BCD647B9A647518B72454EDCAA336D8FC9D637EC204348851B174A"
 supabase_tracker_sha256: "E93FE291F8266CA560AF1CB4E6207470492CF17FB48B84373EC6F1E2C57F13BC"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
@@ -1484,8 +1484,11 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 - A evidência é exclusivamente Flutter local e não muda o estado integrado:
   Supabase continua `blocked-decision`, não houve repository produtivo,
   autorização, R2, remoto, persistência/reload, auditoria ou E2E.
-- O review independente ainda está em andamento. `ready-for-e2e` permanece
-  0/202, `verified-e2e` 0/202 e estrito 0/229.
+- O review independente foi aprovado após `008c14c2`, que adicionou saídas
+  seguras aos estados inválido/loading/failure/unauthorized/empty; 38/38 testes
+  e analyzer focal passaram. Isso encerra o recorte funcional Flutter local,
+  mas não altera backend ou integração: `ready-for-e2e` permanece 0/202,
+  `verified-e2e` 0/202 e estrito 0/229.
 
 ## Checkpoint integrado 71 — Acessos/Saúde preservado, ainda sem integração
 

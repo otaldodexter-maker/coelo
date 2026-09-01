@@ -3358,6 +3358,11 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
   não muda (105/207), pois o ID já estava contabilizado. Review independente,
   composição produtiva, backend/remoto e E2E continuam abertos; nenhum golden
   novo foi produzido ou alegado.
+- **Review fechado:** `008c14c2` cobriu fechar/retornar também em configuração
+  inválida, loading, failure, unauthorized e empty; o review independente foi
+  aprovado sem achados. Gate final `momentos.view`: 38/38 testes, analyzer focal
+  e diff-check verdes, bookkeeping `14ff3d50`. Flutter local está verificado no
+  recorte funcional; validação visual manual/golden integrada continua aberta.
 
 ## Checkpoint 2026-09-01 — Acessos e Saúde/Cuidado, handoff `6e56d3e4`
 
