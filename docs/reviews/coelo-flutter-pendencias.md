@@ -3245,3 +3245,26 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
 | 2026-08-26 | Criação do rastreador Flutter separado do backend e da prova integrada. |
 | 2026-08-26 | Consolidação retomável em HEAD `447ac02c`: 37 famílias, estados por ação, commits/gates, resíduos, ETA e handoff integrado. |
 | 2026-08-26 | Organização decisória: tabela geral cumulativa, definição B/I/A/C, matriz de 201 ações com nível aconselhado/estimativa/evidência, decomposição explícita das 12 ações de Instituições, dependências integradas fora de escopo e inventário do worktree concorrente; nenhum código ou backend alterado. |
+
+## Checkpoint 2026-09-01 — Comunicação / Etapa 2
+
+- `chat.list`, `chat.open` e `chat.send`: evidência Flutter `/dev` avançou para
+  `local-green` no recorte atual. A rota `/dev/conversations` injeta
+  `DevelopmentChatRepository` determinístico com cinco conversas e threads
+  vinculadas, em vez de tentar o Supabase sem sessão; busca, abertura,
+  marcação de leitura, envio e idempotência pertencem ao contrato local.
+  Evidências: commit `5663042f`; `chat_routes_test.dart` e
+  `superadmin_chat_page_data_test.dart`, 8/8 verdes. Produção, membership
+  revogada, tenant A/B, reload remoto e E2E não foram promovidos.
+- `chat.edit`, `chat.attach`, `chat.receipts` e `chat.revoke`: permanecem
+  `audited`; esta correção não implementou nem comprovou essas ações.
+- `notices.list`: permanece `local-green`, agora com regressão responsiva
+  corrigida. O tamanho da página e suas opções passam a usar a largura útil do
+  diretório, eliminando a asserção `pageSizeOptions.contains(pageSize)` e o
+  overflow do breakpoint estreito. Evidências: commit
+  `fix(notices): align pagination with content width` e
+  `notice_directory_page_test.dart`, 21/21 verdes. CRUD produtivo, reload
+  remoto e E2E continuam fora da evidência.
+- Referências visuais: nove anexos e manifesto preservados em
+  `docs/superpowers/specs/assets/2026-09-01-superadmin-communication/`, commit
+  `f6d44af9`.

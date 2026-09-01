@@ -1397,3 +1397,21 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 - **Gate de conhecimento:** `no-op`. Esta reconciliação corrige estados,
   contagens e proveniência documental; não cria comportamento, permissão,
   domínio ou UX novos.
+
+## Checkpoint 2026-09-01 — Comunicação / Etapa 2
+
+- **Flutter local:** `chat.list`, `chat.open` e `chat.send` possuem nova
+  evidência `/dev` local-green no commit `5663042f`; `notices.list` mantém
+  local-green com o crash responsivo corrigido e 21/21 testes do diretório.
+- **Adapter local:** Chat e Avisos executaram 10/10 testes de repositories
+  Supabase, sem mutation remota e sem acesso direto privilegiado.
+- **Estado integrado inalterado:** nenhuma ação deste checkpoint foi promovida
+  para `ready-for-e2e` ou `verified-e2e`. Permanecem pendentes RLS/autorização
+  remota, permitido/negado, sessão ou vínculo revogado, tenant A/B,
+  persistência, reload e auditoria. Fixtures `/dev`, rota aberta e testes
+  isolados não substituem essas provas.
+- **Rastreabilidade:** anexos preservados em
+  `docs/superpowers/specs/assets/2026-09-01-superadmin-communication/`; commits
+  de referência `f6d44af9` e `5663042f`. Convites, formulários de Avisos e
+  Circulares continuam em execução paralela e serão registrados em novo
+  checkpoint antes da consolidação.

@@ -4295,3 +4295,22 @@ da simples soma das 207 ações.
 - **Gate de conhecimento:** `no-op`. A atualização corrige estado operacional e
   proveniência Git; não cria regra durável nova de produto, domínio, permissão
   ou UX.
+
+## Checkpoint 2026-09-01 — Comunicação / Etapa 2
+
+- **Escopo revalidado:** adapters Flutter de Chat e Avisos continuam usando
+  somente as RPCs autorizadas existentes; não houve acesso direto novo a
+  tabelas, migration, DDL/DML, Auth, Edge Function ou configuração remota.
+- **Evidência local:** `supabase_chat_repository_test.dart` e
+  `supabase_notice_repository_test.dart` executaram 10/10 testes verdes,
+  cobrindo cursores tipados, comandos com `request_id`/versão esperada e
+  mapeamento seguro de respostas proibidas. Isso preserva o máximo
+  `local-green` do adapter e não prova RLS remoto.
+- **Sem promoção:** Convites e Circulares ainda exigem reconciliação específica
+  nesta frente. O projeto remoto permanece `blocked-environment` até a
+  classificação documental e a prova permitida/negada, vínculo revogado,
+  tenant A/B, persistência, reload e auditoria. Nenhuma ação de Comunicação foi
+  marcada `done` ou `remote-green`.
+- **Mudança Flutter isolada:** o repository `/dev` de Conversas do commit
+  `5663042f` não participa da composição produtiva e não altera o estado do
+  backend.
