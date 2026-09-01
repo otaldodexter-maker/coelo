@@ -15,6 +15,7 @@ import 'package:coelo_superadmin/features/daily_routine/domain/routine_contract.
 import 'package:coelo_superadmin/features/health_care/domain/medication_plan_repository.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_directory.dart';
 import 'package:coelo_superadmin/features/invites/domain/platform_invite.dart';
+import 'package:coelo_superadmin/features/notices/data/supabase_notice_repository.dart';
 import 'package:coelo_superadmin/features/notices/domain/notice_repository.dart';
 import 'package:coelo_superadmin/features/people/data/supabase_person_directory_repository.dart';
 import 'package:coelo_superadmin/features/people/domain/person_identity.dart';
@@ -99,7 +100,7 @@ void main() {
     expect(scope.accessProfileRepository, isA<UnavailableAccessProfileRepository>());
     expect(scope.chatRepository, isA<SupabaseChatRepository>());
     expect(scope.inviteRepository, isA<UnavailableInviteRepository>());
-    expect(scope.noticeRepository, isA<UnavailableNoticeRepository>());
+    expect(scope.noticeRepository, isA<SupabaseNoticeRepository>());
     expect(scope.attendanceRepository, isA<SupabaseAttendanceRepository>());
     expect(scope.studentTrackingRepository, isA<UnavailableStudentTrackingRepository>());
     expect(scope.routineRepository, isA<UnavailableRoutineRepository>());
