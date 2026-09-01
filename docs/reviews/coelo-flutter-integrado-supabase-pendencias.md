@@ -1,9 +1,9 @@
 ---
 title: "Pendências Coelo — Flutter integrado ao Supabase"
-source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; Git HEAD 4937389e2d60e5266faed6d2449cb7c47523d9a4"
+source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; Git HEAD f3a3e50498b40f56e9a480a1e9fab506de9f0c08"
 status: "open"
 generated_at: "2026-08-26"
-updated_at: "2026-08-28"
+updated_at: "2026-09-01"
 action_count: 202
 flutter_action_count: 207
 family_count: 37
@@ -1302,3 +1302,33 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   com ambiente classificado e mutação remota autorizada, executar a prova E2E.
   A ETA integrada permanece não calculável enquanto esses gates estiverem
   abertos.
+
+### Checkpoint integrado 62 - V4.19–V5.31 visual local sem promoção E2E
+
+- As 14 unidades V4.19–V5.31 fecharam o recorte Flutter visual local no host de
+  preview autorizado. O gate consolidado executou 688 testes focados; todos os
+  688 passaram. `coelo_ui_admin` passou 110/110, `coelo_api` passou 14/14 e os
+  analyzers, o validador visual e os gates de conhecimento ficaram verdes.
+- A evidência atual amplia somente o lado Flutter de `forms.list`, `forms.edit`,
+  `imports.list`, `imports.create`, `notices.list`, `acontece.feed`,
+  `agora.view`, `momentos.view`, `principal.for-you` e
+  `principal.profile-view`. Circulares e Galeria não possuem `action_id`
+  integrado próprio. Os IDs de criar/publicar/remover continuam nos estados
+  bloqueados já registrados e nenhum ID foi promovido a `verified`.
+- Nenhum repository produtivo, RPC/query/Edge, policy RLS, grant, migration,
+  Supabase Storage, Cloudflare R2, Auth, dado remoto ou reload após persistência
+  foi implementado ou provado por esse pacote. O app `apps/principal` continua
+  sem materialização executável comprovada neste recorte.
+- Portanto Flutter `verified` permanece 0,00% (0/207), E2E permanece 0,00%
+  (0/202), Supabase `done` permanece 0,00% (0/37) e o projeto estrito permanece
+  0,00% (0/229). Goldens, mocks, fixtures e rotas `/dev` não foram tratados como
+  evidência de integração.
+- Próximo gate integrado por ação: materializar o app/repository produtivo,
+  rastrear Flutter → estado → gateway → RPC/query/Edge → autorização/RLS →
+  banco ou Storage/R2 → resposta da UI, e então provar permitido, negado,
+  sessão/vínculo revogado, cross-tenant, persistência, reload, auditoria e
+  efeitos laterais no ambiente remoto autorizado.
+- A ETA integrada permanece `não calculável ainda`: faltam contratos/cutovers
+  produtivos, ambiente remoto mutável autorizado e inventário de dependências
+  por ação. O rastreador Supabase permanece inalterado porque não houve
+  correção, migration ou evidência backend nova nesta onda visual.
