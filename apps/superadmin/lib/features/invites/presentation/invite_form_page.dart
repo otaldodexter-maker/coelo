@@ -238,13 +238,7 @@ final class _InviteFormPageState extends State<InviteFormPage> {
         key: const Key('invite-form-page-surface'),
         color: Theme.of(context).colorScheme.surface,
         child: switch (_optionsState) {
-          _OptionsState.loading => const Center(
-            child: CoeloStatePanel(
-              title: 'Carregando opções',
-              message: 'Buscando contextos, perfis e Pessoas autorizadas.',
-              icon: Icons.hourglass_top_rounded,
-            ),
-          ),
+          _OptionsState.loading => const Center(child: CircularProgressIndicator()),
           _OptionsState.failure => Center(
             child: CoeloStatePanel(
               title: 'Opções indisponíveis',
