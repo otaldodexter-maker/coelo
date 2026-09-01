@@ -90,14 +90,15 @@ void main() {
       ),
     );
     store.requestPublication('draft-week', requestedBy: 'Carolina Mendes');
+    final decisionKey = Key('agenda-approval-decide-${store.publicationRequests.single.id}');
 
     await _pumpPage(tester, const Size(1440, 1000), store: store);
 
     expect(find.text('Planejamento da semana'), findsWidgets);
     expect(find.text('Carolina Mendes'), findsWidgets);
-    expect(find.byKey(const Key('agenda-approval-decide-publication-draft-week')), findsOneWidget);
+    expect(find.byKey(decisionKey), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('agenda-approval-decide-publication-draft-week')));
+    await tester.tap(find.byKey(decisionKey));
     await tester.pumpAndSettle();
     await tester.enterText(
       find.byKey(const Key('agenda-approval-reason')),
