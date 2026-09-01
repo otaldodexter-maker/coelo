@@ -13,8 +13,8 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "25D09B3923BD6830BA4B096D414BFFEE425B55DF80D9A510B2059187F6FCF025"
-supabase_tracker_sha256: "49BBB8CB27F4FDBA26C77CB4F2091835F47D844CE92B70E404DD10839F8BD63F"
+flutter_tracker_sha256: "3FFA5842CBF5B6A38CB2467302B692105E7D454614BBD65C79C109D21B56A51E"
+supabase_tracker_sha256: "572B88B154DE219781789EF8232810C95B1543A14C337E9F484EED2838D85350"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
@@ -44,8 +44,10 @@ restantes (100,00%). Flutter possui 105/207 ações `local-green`, Supabase poss
 | Auth — login/recover/reset/logout | Local-green; Catalog recovery fail-closed corrigido/revisado em `5e8d2655`. | Auth-only local-green; remoto not-deployed. | Integrar, ledger/replay, 17 migrations, redirect/SMTP/hosting/identity e E2E. | Gate local sem P1 conhecido. |
 | Chat — list/open/send/edit/attach/receipts/revoke | Três primeiras locais; quatro auditadas. | RPC/RLS em desenvolvimento; remoto ausente. | Cutover produtivo, autorização, tenant A/B, revogação, mídia, reload/audit/E2E. | Backend+adapter em execução. |
 | Convites — list/detail/create/resend/revoke | `/dev` local-green. | Produção Unavailable; migration histórica rejeitada; OQ-039 sem decisão. | Aprovar realm/Owner+AAL2/issuer interno, implementar RPC-only, token/outbox, RLS, reload/audit/E2E. | `blocked-decision`; 10/10 auditoria. |
-| Avisos — list/create/edit/schedule/publish/archive | Lista local; adapter produtivo falha fechado em status remoto não resolvido (`c5085746`, 5/5). | Worker 2/2; lifecycle/OQ-038 e replay ainda bloqueados. | Autorização, tenant A/B, receipts/events, persistência/reload/audit/E2E e remoto OQ-041. | Sem promoção; replay aguarda mutex. |
-| Instituições/Unidades/Turmas | UI local/fail-closed. | Gateways internos v2 em desenvolvimento. | Realm interno, CRUD/RLS, negatives, reload e E2E. | Dois blocos locais paralelos. |
+| Avisos — list/create/edit/schedule/publish/archive | Lista local; `c5085746` fail-closed; Notices 96/96 e adapter 5/5. | Worker 2/2 e SQL estático auditado; replay Docker travou sem resíduos. | OQ-038/OQ-041/Storage×R2, tenant A/B, persistência/reload/audit/E2E. | Sem promoção integrada. |
+| Instituições — list/options/detail/edit | `d864f19a` compõe seis gateways v2; Flutter 6/6. | pgTAP 20 asserts somente declarado/static-reviewed. | Replay, sessão/realm/capability, tenant A/B, reload e E2E. | Composição local; sem promoção. |
+| Instituições — create/status | UI fail-closed. | Gateway ausente. | Contrato, backend/RLS/audit, cutover/reload/E2E. | Pendente. |
+| Unidades/Turmas — CRUD/status | UI local/fail-closed. | Gateways internos bloqueados por decisões/drift. | OQ/specs, backend nominal, replay, cutover e E2E. | Pendente. |
 | Atividades/Modelos | UI local. | Migration/unit scope apenas estática. | Replay, adapter produtivo, autorizado/negado/reload e E2E. | Aguardando replay. |
 | Avaliações | UI local/fail-closed. | Doze RPCs/tabelas ausentes; pacote em desenvolvimento. | Schema/RLS/RPC, concorrência, audit, cutover, reload e E2E. | Backend local em execução. |
 | Planos/Cardápios/Importações/Agenda | UI `/dev` local-green. | Drift e lacunas por domínio. | Integrar Flutter, reconciliar ledger, implementar/compor backend e provar ações E2E. | Inventário de drift em execução. |
@@ -75,6 +77,14 @@ restantes (100,00%). Flutter possui 105/207 ações `local-green`, Supabase poss
 | Responsividade/visual | Várias matrizes locais; Momentos e Comunicação com gates verdes. | Dívida golden de Acessos e regressão visual depois de todos os merges. |
 | Mídia/arquivos | Separação Storage/R2 documentada; placeholders honestos. | Upload/download real, autorização, expiração, retenção, remoção e cleanup. |
 | Consolidação Git | Comunicação integrada; demais branches preservadas. | Reviews/correções, cherry-pick, regressão, hashes dos MDs e só então limpar worktrees. |
+
+### Instituições v2 — composição local sem replay
+
+- Seis gateways internos de list/options/detail/edit foram compostos no Flutter;
+  6/6 testes verdes. PgTAP de 20 asserts não executou porque Docker não responde.
+- Create/status, Unidades e Turmas continuam fail-closed/bloqueados. Remoto tem
+  hardening de EXECUTE ainda ausente e recebeu zero mutações.
+- Nenhuma ação avança para `ready-for-e2e`.
 
 ### Ordem de retomada vinculante da Etapa 2
 
@@ -1550,8 +1560,9 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 
 ### Avisos/Convites — hardening sem promoção integrada
 
-- Avisos `c5085746` corrige mascaramento de status; testes Flutter/worker verdes,
-  mas sem replay/OQ-038/remoto/E2E.
+- Avisos `c5085746` corrige mascaramento de status; 96/96 Flutter, adapter 5/5,
+  worker 2/2 e SQL estático auditado. Replay Docker travou sem resíduos; segue
+  sem OQ-038/remoto/E2E.
 - Convites continua produção unavailable. Migration histórica foi rejeitada por
   realm/issuer/backfill; OQ-039 precisa aprovar o pacote interno antes do backend.
 - Nenhuma ação avança para `ready-for-e2e`.

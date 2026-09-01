@@ -382,8 +382,9 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
   `superadmin_person_detail_v2`; 16/16 testes e analyzer focado verdes. Promoção
   retida até replay pgTAP; Docker instalado, daemon indisponível; remoto sem
   mutação. Lista/criar/editar continuam no legado people-based/fail-closed.
-- **Avisos/status:** `c5085746` falha fechado em status remoto não resolvido;
-  Flutter 5/5 e worker 2/2 verdes. Replay aguarda mutex; OQ-038/OQ-041 bloqueiam.
+- **Avisos/status:** `c5085746` fail-closed; Notices 96/96, adapter 5/5 e worker
+  2/2 verdes. SQL existente auditado estaticamente; replay Docker travou e foi
+  interrompido sem resíduos. OQ-038/OQ-041/Storage×R2 bloqueiam.
 - **Convites/contrato:** produção Unavailable preservada; auditoria 10/10.
   Migration histórica rejeitada por realm people-based, issuer person e
   backfill especulativo. OQ-039 aguarda decisão Owner+AAL2/issuer interno.
@@ -393,6 +394,10 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
 - **Formulários/leitura:** `236f12cd` conectou monitor, respostas, detalhe e jobs
   de arquivo às APIs produtivas; rotas 7/7. Commands criar/editar/publicar/
   testar/responder continuam fail-closed; sem sessão remota/E2E.
+- **Instituições v2:** `bd611d02`/`d864f19a` compõem seis gateways internos de
+  list/options/detail/edit; Flutter 6/6. PgTAP 20 asserts somente estático por
+  Docker indisponível. Create/status, Unidades e Turmas permanecem fail-closed;
+  remoto read-only revelou EXECUTE privado antigo ainda não hardenizado.
 
 - Automação horária ativa: `etapa-2-acompanhamento-hor-rio`.
 - Cada frente deve enviar checkpoint diretamente ao Coordenador pelo menos uma

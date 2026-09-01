@@ -42,8 +42,9 @@ estado local exigido e nenhuma ação foi certificada como Flutter produtivo.
 | Chat — Editar/anexar/recibos/revogar | `chat.edit`, `chat.attach`, `chat.receipts`, `chat.revoke` | Contratos inventariados e ausência produtiva mantida honesta. | Implementar fluxos, mídia, estados negativos, foco e testes. | `audited` |
 | Convites — Lista/detalhe/criar/reenviar/revogar | `invites.list`, `invites.detail`, `invites.create`, `invites.resend`, `invites.revoke` | Diretório, detalhe, wizard e escopo de fixtures corrigidos; goldens locais verdes. | Repository produtivo, confirmação/erros reais, lifecycle e regressão pós-merge. | `local-green` `/dev` |
 | Avisos — Diretório | `notices.list` | Cards/tabela, filtros, preview, paginação, responsividade e goldens locais. | Repository produtivo e reload. | `local-green` |
-| Avisos — Criar/editar/agendar/publicar/arquivar | `notices.create`, `notices.edit`, `notices.schedule`, `notices.publish`, `notices.archive` | Frame/wizard local parcial; `c5085746` faz adapter falhar fechado em status publicado/arquivado/desconhecido; 5/5 Flutter. | OQ-038, commands/lifecycle, dirty state, timezone, duplo envio, replay e reload. | `audited`/fail-closed |
-| Instituições — Diretório/detalhe/criar/editar/arquivos | `institutions.*` | UI `/dev`, busca, cards/tabela, formulários e cabeçalho mobile locais. | Composição produtiva, regressão conjunta, import/export real e E2E. | local/fail-closed |
+| Avisos — Criar/editar/agendar/publicar/arquivar | `notices.create`, `notices.edit`, `notices.schedule`, `notices.publish`, `notices.archive` | Frame/wizard local parcial; `c5085746` falha fechado em status publicado/arquivado/desconhecido; gate Notices 96/96, adapter 5/5 e analyzer verdes. | OQ-038, commands/lifecycle, dirty state, timezone, duplo envio, replay Docker e reload. | `audited`/fail-closed |
+| Instituições — Diretório/busca/filtros/paginação/detalhe/editar | `institutions.list`, `institutions.search_filter`, `institutions.read`, `institutions.edit` | `d864f19a` usa gateways internos v2 para diretório/opções/detalhe/edit core; paginação 500→lotes 100, idempotência/reload autoritativo; 6/6. | Integrar/retestar; replay pgTAP, regressão, remoto e E2E. | composição local; promoção retida |
+| Instituições — Criar/status/arquivos | `institutions.create` e ações correlatas | UI local/fail-closed. | Gateway interno aprovado para create/status, import/export real e todos os estados. | fail-closed |
 | Unidades — Diretório/detalhe/criar/editar/arquivos | `units.*` | UI `/dev` e adapter candidato. | Gateway interno nominal; ações produtivas e reload. | local/fail-closed |
 | Turmas — Diretório/detalhe/criar/editar/membros/arquivos | `groups.*` | UI `/dev`, paginação, métricas e edição local. | Gateway interno nominal, membros produtivos, import/export e reload. | local/fail-closed |
 | Atividades/Modelos — Diretórios/criar/editar/duplicar | `activities.*`, `activity_templates.*` | UI local, validações temporais e duplicação candidata. | Integrar/retestar; replay do escopo por Unidade e composição produtiva. | local/static-review |
@@ -79,6 +80,17 @@ estado local exigido e nenhuma ação foi certificada como Flutter produtivo.
 | Componentes compartilhados | `SuperadminFormFrame` e `CoeloStatePanel` receberam correções candidatas. | Regressão conjunta Auth/Comunicação/Estruturas/Acessos antes de integrar. |
 | Mapa/localização | Prévia municipal local criada. | Remover dependência direta de tiles OSM até provider/cache/privacidade aprovados. |
 | Referências visuais | Manifestos preservam Comunicação, Operações, Estruturas, Acessos/Saúde, Principal e Coordenador. | Manter SHA/origem/tela e pedir reenvio de qualquer anexo não recuperável. |
+
+### Instituições — gateways internos v2 — `bd611d02`/`d864f19a`
+
+- Diretório/busca/filtros/paginação usam `superadmin_institution_directory_v2`;
+  opções usam `filter_options_v2`; detalhe usa `detail_v2`; edição core usa
+  `edit_core_v2` com envelope estrito, idempotência e reload autoritativo.
+- Evidência Flutter 6/6. `institutions.create` e status permanecem fail-closed
+  porque não existe gateway interno aprovado; nenhum RPC legacy foi reutilizado.
+- pgTAP novo declara 20 asserts para seis gateways/contexto interno e ausência
+  explícita de endpoints não aprovados; Docker não respondeu, então somente
+  `static-reviewed`.
 
 ### Primeiro próximo passo Flutter da Etapa 2
 
@@ -3432,8 +3444,10 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
 
 - O adapter produtivo não converte mais `published`, `archived` ou status
   desconhecido em draft; falha fechado até a OQ-038.
-- Evidência: Flutter 5/5, analyzer dos dois arquivos e worker Deno 2/2 verdes.
-  Replay pgTAP aguarda mutex; OQ-038/OQ-041 bloqueiam lifecycle/remoto.
+- Evidência ampliada: Notices Flutter 96/96, adapter 5/5, analyzer dos dois
+  arquivos e worker Deno 2/2 verdes. Replay pgTAP não concluiu porque Docker CLI
+  travou; foi interrompido sem resíduos `coelo_safe_*`.
+- OQ-038, OQ-041 e Storage×R2 bloqueiam lifecycle/remoto.
 - Nenhum contador Flutter, Supabase ou integrado foi promovido.
 
 ### Auth/Catalog — recovery fail-closed — `5e8d2655`

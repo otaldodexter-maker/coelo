@@ -33,8 +33,11 @@ como backend concluído.
 | Auth — login/logout/recovery/reset | Lifecycle descartável e pgTAP 29/29; Catalog recovery fail-closed corrigido/revisado em `5e8d2655`. | Integrar; 17 migrations intermediárias, clone/squash forward-only, DNS/hosting/SMTP/identity e E2E. | `local-green`/`not-deployed` |
 | Chat — listar/abrir/enviar/editar/anexar/receipts/revogar | Adapters locais inventariados/testados; pacote RPC/RLS em execução. | RPCs ausentes no remoto, metadata de anexos, RLS/capability, tenant A/B, revogação, auditoria e reload. | `blocked-supabase` |
 | Convites — listar/detalhe/criar/reenviar/revogar | Produção permanece corretamente `UnavailableInviteRepository`; auditoria 10/10. Migration histórica foi rejeitada por realm people-based/backfill especulativo/issuer person. | Decidir OQ-039: capabilities Owner+AAL2, issuer interno separado sem backfill, evolução aditiva, legado read-only e Superadmin RPC-only; depois token/outbox/RLS/audit/E2E. | `blocked-decision` |
-| Avisos — lista/criar/editar/agendar/publicar/arquivar | Adapter produtivo composto; `c5085746` falha fechado em status publicado/arquivado/desconhecido; worker 2/2. | OQ-038/lifecycle, replay pgTAP aguardando mutex, RPCs/events, autorização, tenant A/B, persistência/reload e remoto OQ-041. | `blocked-supabase` |
-| Instituições/Unidades/Turmas — CRUD interno | Gateways v2 em execução; inventário remoto confirma migrations ausentes. | Remover autorização people-based, sessão/realm interno, RLS, audit, replay e E2E. | `fail-closed` |
+| Avisos — lista/criar/editar/agendar/publicar/arquivar | Adapter produtivo composto; `c5085746` fail-closed; worker 2/2. SQL `20260827222500` auditado estaticamente: ACL revogada, FORCE RLS e RPCs SECURITY DEFINER com capability/AAL/grants específicos. | Replay pgTAP travou no Docker sem resíduos; OQ-038, OQ-041, Storage×R2, tenant A/B, persistência/reload e remoto. | `blocked-supabase` |
+| Instituições — list/options/detail/edit | Seis gateways internos v2 protegidos por pgTAP declarado de 20 asserts; Flutter composto em `d864f19a`. Remoto read-only confirma ausência de grants CRUD diretos de tabela. | Docker/replay/pgTAP real, hardening de EXECUTE privado remoto, Advisors, tenant A/B, reload e E2E. | `static-reviewed`; não local-green |
+| Instituições — create/status | Ausência explícita preservada; nenhum RPC legacy usado. | Contrato/gateway interno, capability, RLS/audit, replay e E2E. | `fail-closed` |
+| Unidades — list/options/create/edit/status | Drift `institution_type_id` local × `unit_type_id` remoto inventariado. | OQ-032/spec044, gateway interno nominal, replay/remoto/E2E. | `blocked-decision`/fail-closed |
+| Turmas — list/options/create/edit/status | RPCs legacy recusadas para ator interno. | OQ-031/OQ-043/spec045, gateway interno nominal, replay/remoto/E2E. | `blocked-decision`/fail-closed |
 | Atividades/Modelos por Unidade | Migration candidata e 31 asserts apenas escritos. | Replay/pgTAP real, gateway nominal, remoto e E2E. | `static-review` |
 | Avaliações — configurar/lançar/diário/fechar/reabrir | Schema/RPC/RLS em execução local. | Doze RPCs/tabelas ausentes, replay, concorrência, audit, remoto e E2E. | `fail-closed` |
 | Planos | Auditoria read-only. | Schema/CRUD/RPC/RLS completos, composition root e E2E. | `blocked-supabase` |
@@ -64,6 +67,19 @@ como backend concluído.
 | Auditoria/idempotência | Alguns wrappers têm versão, soft-delete, receipt e advisory lock. | Motivo obrigatório, ator interno, append/negativos, replay divergente e cobertura de todas as ações. |
 | Mídia/Storage/R2 | Separação ADR 0022 preservada. | Storage privado para identidade; R2 para conteúdo; autorização, URL curta, retenção e cleanup. |
 | Advisors/performance | Alertas inventariados. | Rodar Advisors pós-DDL autorizado, revisar SECURITY DEFINER e índices sem correção global cega. |
+
+### Estruturas — Instituições v2 e hardening remoto
+
+- Commits `bd611d02`/`d864f19a`: pgTAP declarado de 20 asserts para seis
+  gateways internos e composição Flutter list/options/detail/edit.
+- Docker não responde: plan/count e diff-check verdes são apenas evidência
+  estática. Sem promoção local-green/remota.
+- Remoto read-only não concede CRUD de tabelas `app_private` a anon/
+  authenticated/PUBLIC, mas funções privadas antigas ainda têm EXECUTE para
+  authenticated e algumas PUBLIC; hardening existe somente na cadeia local não
+  aplicada. OQ-041 bloqueia deploy.
+- Create/status Instituição, CRUD Unidade e CRUD Turma continuam bloqueados pelas
+  decisões/specs registradas e não serão mascarados por RPC legacy.
 
 ### Primeiro próximo passo Supabase da Etapa 2
 
@@ -4462,9 +4478,12 @@ da simples soma das 207 ações.
 
 ### Avisos — hardening de status — `c5085746`
 
-- Adapter produtivo falha fechado em status remoto não resolvido; Flutter 5/5,
-  analyzer e worker Deno 2/2 verdes. Replay pgTAP não executado por mutex;
-  OQ-038/OQ-041 permanecem bloqueios. Sem promoção.
+- Adapter produtivo falha fechado em status remoto não resolvido; Notices
+  96/96, adapter 5/5, analyzer e worker Deno 2/2 verdes.
+- Migration `20260827222500` passou auditoria estática de ACL/FORCE RLS/
+  SECURITY DEFINER/capability/AAL/grants, mas replay pgTAP travou no Docker e foi
+  interrompido sem resíduos. OQ-038/OQ-041/Storage×R2 permanecem bloqueios. Sem
+  promoção a backend local-green, remoto ou done.
 
 ### Convites — contrato produtivo continua bloqueado por decisão
 
