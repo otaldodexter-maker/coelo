@@ -75,6 +75,7 @@ import '../../features/attendance/attendance_pages.dart';
 import '../../features/daily_routine/daily_routine.dart';
 import '../../features/daily_routine/daily_routine_pages.dart';
 import '../../features/catalog/presentation/catalog_host_page.dart';
+import '../../features/chat/data/development_chat_repository.dart';
 import '../../features/chat/presentation/screens/superadmin_chat_page.dart';
 import '../../features/circulars/presentation/circular_directory_page.dart';
 import '../../features/errors/presentation/screens/superadmin_error_screen.dart';
@@ -249,6 +250,7 @@ GoRouter createSuperadminRouter({
   final operationalStore = SuperadminPrototypeStore(activityController: operationalActivities);
   final developmentAssessmentRepository = DevelopmentAssessmentRepository();
   final developmentNoticeRepository = DevelopmentNoticeRepository();
+  final developmentChatRepository = DevelopmentChatRepository();
   final developmentMealPlanRepository = DevelopmentMealPlanRepository();
   final planRepository = FakePlanCatalogRepository(store: operationalStore);
   final importedRepository = importRepository;
@@ -3572,6 +3574,7 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.devConversationsName,
             builder: (context, state) => SuperadminChatPage(
               logout: _previewLogout,
+              chatRepository: developmentChatRepository,
               onBack: () => context.goNamed(
                 state.uri.queryParameters['from'] == 'home'
                     ? SuperadminRoutes.devHomeName
