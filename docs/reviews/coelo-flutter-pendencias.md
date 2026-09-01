@@ -3342,3 +3342,19 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
   documentais já reconciliados foram deliberadamente excluídos. A worktree de
   Comunicação permanece preservada até a consolidação das frentes dependentes.
 - Contagem permanece 105/207 Flutter `local-green` e 0/207 `verified`.
+
+## Checkpoint 2026-09-01 — Coelo (Principal), `momentos.view` fullscreen
+
+- **Tela/subtela:** Momentos, viewer imersivo ready, navegação vertical,
+  controles, fechar/Escape, retorno contextual e restauração de foco.
+- **Passo concluído:** `e1cf1be3` removeu o shell persistente e o aside do viewer,
+  adotou rota top-level/fullscreen, mídia vertical cobrindo o viewport e fallback
+  seguro para deep links.
+- **Evidência:** verificação independente passou 28/28 testes focados e analyzer
+  dos quatro arquivos afetados sem issues; worktree e `git diff --check` limpos.
+- **Referência:** `docs/reviews/evidence/etapa-2/coelo-principal-superadmin/momentos-responsive-reference.png`,
+  preservada em `8f89d6d6` e inventariada em `cb6fa272`.
+- **Estado:** `momentos.view` permanece Flutter `local-green`; a contagem geral
+  não muda (105/207), pois o ID já estava contabilizado. Review independente,
+  composição produtiva, backend/remoto e E2E continuam abertos; nenhum golden
+  novo foi produzido ou alegado.

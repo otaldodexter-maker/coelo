@@ -13,7 +13,7 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "C68BE7627AF10029E8F9E3AB19ACADEB68B67EE8C41CE329AE6E0B760EF0D953"
+flutter_tracker_sha256: "2ADA9816DF9518E085E41E1319ED762697F3908D91581919776B188AFC8ADDD6"
 supabase_tracker_sha256: "24CA9D3B06CBB3092DAE109CA3924F6A9E1447B8BB57145614FA58A82FBD0E36"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
@@ -1475,6 +1475,17 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 - Nenhum estado integrado foi promovido: `ready-for-e2e` 0/202,
   `verified-e2e` 0/202 e estrito 0/229. ETA ponta a ponta permanece dependente
   de classificação e autorização nominal do ambiente.
+
+## Checkpoint integrado 70 — Momentos fullscreen local, integração inalterada
+
+- `momentos.view` recebeu em `e1cf1be3` o viewer top-level fullscreen sem shell,
+  com retorno contextual, Escape, foco e fallback de deep link. A verificação
+  independente passou 28/28 testes focados e analyzer sem issues.
+- A evidência é exclusivamente Flutter local e não muda o estado integrado:
+  Supabase continua `blocked-decision`, não houve repository produtivo,
+  autorização, R2, remoto, persistência/reload, auditoria ou E2E.
+- O review independente ainda está em andamento. `ready-for-e2e` permanece
+  0/202, `verified-e2e` 0/202 e estrito 0/229.
 
 ## Checkpoint integrado 68 — Operações Flutter local, backend 0/40 E2E
 

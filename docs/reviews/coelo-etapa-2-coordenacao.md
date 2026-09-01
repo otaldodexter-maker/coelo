@@ -81,7 +81,7 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
 | Acessos e Saúde | `codex/accessos-ponta-a-ponta` | `796ad8ea` | Em andamento; fixtures compartilhadas e Perfis/Modelos estão commitados; backend permanece sem promoção remota/E2E. |
 | Auth | `codex/auth-first-local-green` | `36ae7c86` | Worktree limpa no snapshot; produção permanece condicionada aos gates registrados pela frente. |
 | Estruturas | `codex/estruturas-superadmin` | `49a52f6e` | Rastreadores e artefatos de migration/modelo por unidade continuam preservados fora do commit final; `.artifacts` permanece fora de Git. |
-| Coelo (Principal) | `codex/finalizar-telas-coelo-principal` | `0fee7a46` | Worktree limpa; spec, plano e conhecimento vinculam o recorte ao menu Superadmin e ao consumo do Chat compartilhado, sem tocar `apps/principal`. |
+| Coelo (Principal) | `codex/finalizar-telas-coelo-principal` | `e1cf1be3` | Worktree limpa; `momentos.view` fullscreen passou 28/28 testes e analyzer focado, com review independente ainda em andamento. Nenhum delta em `apps/principal` ou backend. |
 
 ## Evidências e referências
 
@@ -260,6 +260,22 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
   evidência de viewport, retorno e foco.
 - Circulares preserva referências em `f6d44af9`; `d22a9b3d` é candidato a
   integração/revalidação e `393fc7ff` é WIP não integrável sem wiring/teste.
+
+### Coelo (Principal) — Momentos `e1cf1be3`
+
+- **Tela/subtela/action_id:** Momentos, viewer imersivo ready/navegação/
+  fechar/Escape/restauração de foco, `momentos.view`.
+- **Passo concluído:** viewer movido para rota top-level fullscreen, shell global
+  suspenso, retorno contextual e fallback de deep link preservados.
+- **Evidência independente:** 28/28 testes focados passaram; analyzer dos quatro
+  arquivos afetados não encontrou issues; diff-check e worktree estão limpos.
+- **Estado:** Flutter `local-green` preservado, ainda sob review independente;
+  nenhum backend, remoto ou E2E foi executado. A referência está em
+  `docs/reviews/evidence/etapa-2/coelo-principal-superadmin/momentos-responsive-reference.png`
+  e possui SHA-256 no manifesto.
+- **Próximo passo:** concluir review; depois revalidar `circulars.view` a partir
+  de `d22a9b3d`, sem incorporar o WIP `393fc7ff`. ETA informada: 10–15 min para
+  o review de Momentos e 25–35 min para o recorte local de Circulares.
 
 ### Segurança da criança — `b943a5fe`
 
