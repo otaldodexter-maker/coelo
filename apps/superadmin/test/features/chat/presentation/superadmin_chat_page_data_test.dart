@@ -66,11 +66,20 @@ void main() {
       thread: ChatThreadPage(
         items: [
           ChatMessage(
+            id: 'message-2',
+            conversationId: 'conversation-1',
+            body: 'Mensagem recente',
+            authorName: 'Marina',
+            sentAt: DateTime.utc(2026, 8, 11, 11),
+            isMine: false,
+            kind: 'text',
+          ),
+          ChatMessage(
             id: 'message-1',
             conversationId: 'conversation-1',
-            body: 'OlÃ¡',
+            body: 'Mensagem antiga',
             authorName: 'Marina',
-            sentAt: DateTime.utc(2026, 8, 11),
+            sentAt: DateTime.utc(2026, 8, 11, 10),
             isMine: false,
             kind: 'text',
             attachments: const [
@@ -95,9 +104,15 @@ void main() {
     expect(find.text('Turma Girassol'), findsWidgets);
     expect(find.textContaining('Unidade CambuÃ­'), findsOneWidget);
     expect(find.textContaining('Grupo'), findsOneWidget);
-    expect(find.text('OlÃ¡'), findsWidgets);
+    expect(find.text('Mensagem antiga'), findsOneWidget);
+    expect(find.text('Mensagem recente'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Mensagem antiga')).dy,
+      lessThan(tester.getTopLeft(find.text('Mensagem recente')).dy),
+    );
     expect(find.byKey(const Key('superadmin-chat-attachment-attachment-1')), findsOneWidget);
-    expect(find.text('00:00'), findsOneWidget);
+    expect(find.text('10:00'), findsOneWidget);
+    expect(find.text('11:00'), findsOneWidget);
     expect(repository.markedConversationIds, ['conversation-1']);
 
     await tester.enterText(find.byKey(const Key('superadmin-chat-composer-field')), 'Tudo bem?');
@@ -107,6 +122,10 @@ void main() {
 
     expect(repository.sent.single.body, 'Tudo bem?');
     expect(find.text('Tudo bem?'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Mensagem recente')).dy,
+      lessThan(tester.getTopLeft(find.text('Tudo bem?')).dy),
+    );
   });
   testWidgets('uses a safe unavailable state when Supabase is not initialized', (tester) async {
     await tester.pumpWidget(
