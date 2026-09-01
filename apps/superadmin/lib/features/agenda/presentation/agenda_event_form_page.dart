@@ -789,7 +789,6 @@ String _responseLabel(AgendaResponseMode value) => switch (value) {
 String _questionTypeLabel(AgendaQuestionType value) => switch (value) {
   AgendaQuestionType.shortText => 'Resposta curta',
   AgendaQuestionType.yesNo => 'Sim ou não',
-  AgendaQuestionType.singleChoice => 'Escolha única',
 };
 
 String _occurrenceEditScopeLabel(AgendaOccurrenceEditScope value) => switch (value) {

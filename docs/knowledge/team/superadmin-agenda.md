@@ -41,6 +41,11 @@ define se uma resposta por criança basta — opção padrão — ou se todos os
 responsáveis devem responder. Solicitações reúne esses retornos; Aprovações
 reúne pedidos de publicação de quem pode criar, mas não publicar.
 
+Na criação, o autor escolhe quando lembrar (publicação, 24 horas antes, 1 hora
+antes ou horário personalizado). A seleção de canais não integra o formulário
+nesta etapa; a estratégia de entrega fica sob responsabilidade da plataforma
+até contrato posterior aprovado.
+
 Perfis e Permissões é a fonte das capacidades de criar, editar próprios, editar
 todos, publicar, cancelar/restaurar, gerenciar respostas e sobrescrever conflito
 de reserva. A Agenda apenas apresenta o acesso efetivo; backend futuro deverá

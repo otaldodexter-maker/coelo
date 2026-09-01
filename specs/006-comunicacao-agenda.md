@@ -114,7 +114,9 @@ ownership do domínio D14.
 ## Lembretes e notificações
 
 - Opções: na publicação, 24 horas antes, 1 hora antes e horário customizado.
-- Canais: sininho e push; e-mail é opcional.
+- Nesta etapa, o criador define somente quando lembrar. A seleção de canais não
+  aparece no formulário; a estratégia de entrega permanece responsabilidade da
+  plataforma até contrato posterior aprovado.
 - Mudança relevante, cancelamento e restauração notificam automaticamente.
 - O autor pode acrescentar mensagem opcional.
 - Fixtures de `/dev` não representam entrega remota real.

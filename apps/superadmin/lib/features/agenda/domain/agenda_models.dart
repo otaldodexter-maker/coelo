@@ -65,7 +65,7 @@ enum AgendaResponseMode { none, rsvp, acknowledgement, authorization }
 
 enum GuardianResponsePolicy { oneIsEnough, allMustRespond }
 
-enum AgendaQuestionType { shortText, yesNo, singleChoice }
+enum AgendaQuestionType { shortText, yesNo }
 
 final class AgendaQuestion {
   const AgendaQuestion({
