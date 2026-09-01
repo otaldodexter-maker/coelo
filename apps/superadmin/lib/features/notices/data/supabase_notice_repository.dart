@@ -13,23 +13,25 @@ final class SupabaseNoticeRepository implements NoticeRepository {
   Future<NoticePage> fetchPage(NoticeDirectoryQuery query) async {
     try {
       final response = _map(
-        await _client.rpc(
-          'list_notices_for_superadmin',
-          params: {
-            'p_search': _nullable(query.search),
-            'p_types': query.types.isEmpty
-                ? null
-                : query.types.map((value) => value.storageValue).toList(growable: false),
-            'p_statuses': query.statuses.isEmpty
-                ? null
-                : query.statuses.map(_statusValue).toList(growable: false),
-            'p_priorities': query.priorities.isEmpty
-                ? null
-                : query.priorities.map((value) => value.name).toList(growable: false),
-            'p_cursor_occurred_at': query.cursorOccurredAt?.toUtc().toIso8601String(),
-            'p_cursor_id': query.cursorId,
-            'p_limit': query.pageSize.clamp(1, 100),
-          },
+        _unwrap(
+          await _client.rpc(
+            'superadmin_notice_directory_v2',
+            params: {
+              'p_search': _nullable(query.search),
+              'p_types': query.types.isEmpty
+                  ? null
+                  : query.types.map((value) => value.storageValue).toList(growable: false),
+              'p_statuses': query.statuses.isEmpty
+                  ? null
+                  : query.statuses.map(_statusValue).toList(growable: false),
+              'p_priorities': query.priorities.isEmpty
+                  ? null
+                  : query.priorities.map((value) => value.name).toList(growable: false),
+              'p_cursor_occurred_at': query.cursorOccurredAt?.toUtc().toIso8601String(),
+              'p_cursor_id': query.cursorId,
+              'p_limit': query.pageSize.clamp(1, 100),
+            },
+          ),
         ),
       );
       return NoticePage(
@@ -55,16 +57,18 @@ final class SupabaseNoticeRepository implements NoticeRepository {
   }) async {
     try {
       final response = _map(
-        await _client.rpc(
-          'list_notice_audience_options_for_superadmin',
-          params: {
-            'p_dimension': dimension.name,
-            'p_search': _nullable(search),
-            'p_parent_ids': parentIds.isEmpty ? null : parentIds,
-            'p_cursor_label': _nullable(cursorLabel),
-            'p_cursor_id': _nullable(cursorId),
-            'p_limit': pageSize.clamp(1, 100),
-          },
+        _unwrap(
+          await _client.rpc(
+            'superadmin_notice_audience_options_v2',
+            params: {
+              'p_dimension': dimension.name,
+              'p_search': _nullable(search),
+              'p_parent_ids': parentIds.isEmpty ? null : parentIds,
+              'p_cursor_label': _nullable(cursorLabel),
+              'p_cursor_id': _nullable(cursorId),
+              'p_limit': pageSize.clamp(1, 100),
+            },
+          ),
         ),
       );
       return NoticeAudienceOptionsPage(
@@ -92,7 +96,11 @@ final class SupabaseNoticeRepository implements NoticeRepository {
   Future<PlatformNotice> getById(String noticeId) async {
     try {
       return _notice(
-        _map(await _client.rpc('get_notice_for_superadmin', params: {'p_notice_id': noticeId})),
+        _map(
+          _unwrap(
+            await _client.rpc('superadmin_notice_detail_v2', params: {'p_notice_id': noticeId}),
+          ),
+        ),
       );
     } on PostgrestException catch (error) {
       throw _error(error);
@@ -111,14 +119,16 @@ final class SupabaseNoticeRepository implements NoticeRepository {
     try {
       return _notice(
         _map(
-          await _client.rpc(
-            'save_notice_draft_for_superadmin',
-            params: {
-              'p_request_id': requestId,
-              'p_notice_id': noticeId,
-              'p_expected_version': expectedVersion,
-              'p_payload': _draftPayload(draft),
-            },
+          _unwrap(
+            await _client.rpc(
+              'superadmin_notice_save_draft_v2',
+              params: {
+                'p_request_id': requestId,
+                'p_notice_id': noticeId,
+                'p_expected_version': expectedVersion,
+                'p_payload': _draftPayload(draft),
+              },
+            ),
           ),
         ),
       );
@@ -141,13 +151,15 @@ final class SupabaseNoticeRepository implements NoticeRepository {
     try {
       return _notice(
         _map(
-          await _client.rpc(
-            'publish_notice_for_superadmin',
-            params: {
-              'p_request_id': requestId,
-              'p_notice_id': notice.id,
-              'p_expected_version': expectedVersion,
-            },
+          _unwrap(
+            await _client.rpc(
+              'superadmin_notice_publish_v2',
+              params: {
+                'p_request_id': requestId,
+                'p_notice_id': notice.id,
+                'p_expected_version': expectedVersion,
+              },
+            ),
           ),
         ),
       );
@@ -169,15 +181,17 @@ final class SupabaseNoticeRepository implements NoticeRepository {
     try {
       return _notice(
         _map(
-          await _client.rpc(
-            'change_notice_status_for_superadmin',
-            params: {
-              'p_request_id': requestId,
-              'p_notice_id': noticeId,
-              'p_expected_version': expectedVersion,
-              'p_status': _statusValue(status),
-              'p_reason': _nullable(reason),
-            },
+          _unwrap(
+            await _client.rpc(
+              'superadmin_notice_change_status_v2',
+              params: {
+                'p_request_id': requestId,
+                'p_notice_id': noticeId,
+                'p_expected_version': expectedVersion,
+                'p_status': _statusValue(status),
+                'p_reason': _nullable(reason),
+              },
+            ),
           ),
         ),
       );
@@ -327,7 +341,38 @@ NoticeStatus _noticeStatus(Object? value) => switch (_string(value)) {
   'paused' => NoticeStatus.paused,
   'expired' => NoticeStatus.ended,
   'inactive' => NoticeStatus.cancelled,
+  'published' => NoticeStatus.active,
+  'archived' => NoticeStatus.cancelled,
   _ => throw const NoticeUnexpectedException(),
+};
+
+Object? _unwrap(Object? raw) {
+  final envelope = _map(raw);
+  if (envelope['ok'] == true && envelope.containsKey('data')) {
+    return envelope['data'];
+  }
+  if (envelope['ok'] == false) {
+    final error = _map(envelope['error']);
+    throw _domainError(_string(error['code']));
+  }
+  throw const NoticeUnexpectedException();
+}
+
+Exception _domainError(String code) => switch (code) {
+  'SAI_AUTH_REQUIRED' ||
+  'SAI_SESSION_INVALID' ||
+  'SAI_INTERNAL_CONTEXT_DENIED' ||
+  'SAI_MEMBERSHIP_SUSPENDED' ||
+  'SAI_MEMBERSHIP_REVOKED' ||
+  'SAI_PERMISSION_DENIED' ||
+  'SAI_MFA_REQUIRED' => const NoticeUnauthorizedException(),
+  'NOTICE_NOT_FOUND' => const NoticeNotFoundException(),
+  'NOTICE_CONFLICT' => const NoticeConflictException(),
+  'NOTICE_INVALID_INPUT' ||
+  'NOTICE_INVALID_TRANSITION' ||
+  'NOTICE_TERMINAL' => const NoticeValidationException(),
+  'NOTICE_MEDIA_BLOCKED' => const NoticeMediaDecisionRequiredException(),
+  _ => const NoticeUnexpectedException(),
 };
 
 T _enum<T extends Enum>(

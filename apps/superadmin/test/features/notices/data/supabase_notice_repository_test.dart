@@ -29,7 +29,7 @@ void main() {
       ),
     );
 
-    expect(captured!.url.path, endsWith('/rpc/list_notices_for_superadmin'));
+    expect(captured!.url.path, endsWith('/rpc/superadmin_notice_directory_v2'));
     final body = jsonDecode(captured!.body) as Map<String, dynamic>;
     expect(body['p_search'], 'Rotina');
     expect(body['p_limit'], 24);
@@ -81,7 +81,7 @@ void main() {
       expectedVersion: 7,
     );
 
-    expect(captured!.url.path, endsWith('/rpc/save_notice_draft_for_superadmin'));
+    expect(captured!.url.path, endsWith('/rpc/superadmin_notice_save_draft_v2'));
     final body = jsonDecode(captured!.body) as Map<String, dynamic>;
     expect(body['p_request_id'], '10000000-0000-4000-8000-000000000001');
     expect(body['p_expected_version'], 7);
@@ -116,19 +116,52 @@ void main() {
     }
   });
 
-  test('fails closed for unresolved legacy notice statuses', () async {
-    for (final status in ['published', 'archived', 'unknown']) {
+  test('maps the approved legacy status cutover and rejects unknown values', () async {
+    for (final entry in {
+      'published': NoticeStatus.active,
+      'archived': NoticeStatus.cancelled,
+    }.entries) {
       final client = _client(
-        (request) async => _json(request, {..._noticeJson(), 'status': status}),
+        (request) async => _json(request, {..._noticeJson(), 'status': entry.key}),
       );
-
-      await expectLater(
-        SupabaseNoticeRepository(client).getById('id'),
-        throwsA(isA<NoticeUnexpectedException>()),
-        reason: status,
-      );
+      expect((await SupabaseNoticeRepository(client).getById('id')).status, entry.value);
       client.dispose();
     }
+
+    final client = _client(
+      (request) async => _json(request, {..._noticeJson(), 'status': 'unknown'}),
+    );
+    await expectLater(
+      SupabaseNoticeRepository(client).getById('id'),
+      throwsA(isA<NoticeUnexpectedException>()),
+    );
+    client.dispose();
+  });
+
+  test('maps stable internal gateway envelopes without exposing details', () async {
+    final client = _client(
+      (request) async => Response(
+        jsonEncode({
+          'ok': false,
+          'data': null,
+          'error': {
+            'code': 'SAI_MFA_REQUIRED',
+            'message': 'Confirme o segundo fator.',
+            'correlation_id': '10000000-0000-4000-8000-000000000001',
+            'http_status': 403,
+          },
+        }),
+        200,
+        headers: {'content-type': 'application/json'},
+        request: request,
+      ),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseNoticeRepository(client).getById('id'),
+      throwsA(isA<NoticeUnauthorizedException>()),
+    );
   });
 
   test('maps forbidden responses without exposing server details', () async {
@@ -156,7 +189,7 @@ SupabaseClient _client(Future<Response> Function(Request request) handler) => Su
 );
 
 Response _json(Request request, Object value) => Response(
-  jsonEncode(value),
+  jsonEncode({'ok': true, 'data': value, 'error': null}),
   200,
   headers: {'content-type': 'application/json'},
   request: request,

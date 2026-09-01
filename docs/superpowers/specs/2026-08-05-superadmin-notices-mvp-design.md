@@ -164,6 +164,23 @@ não pertencem ao domínio de Avisos.
 - Rascunho, agendado, ativo ou pausado pode ser inativado manualmente.
 - Expirado e inativo são terminais no MVP; duplicar cria novo rascunho.
 
+### Decisão de cutover interno — 2026-09-01
+
+O vocabulário canônico e exclusivo para novas escritas é `draft`, `scheduled`,
+`active`, `paused`, `expired` e `inactive`. O cutover forward-only converte
+linhas legadas `published` para `active` e `archived` para `inactive`; esses
+dois labels legados podem permanecer fisicamente no enum PostgreSQL, mas não
+podem ser gravados nem devolvidos pelas RPCs v2. `expired` e `inactive` são
+terminais.
+
+No localhost produtivo do Superadmin, Avisos usa exclusivamente a identidade
+interna da ADR 0019/spec 039 e wrappers RPC v2 com envelope estável. Leitura é
+permitida a Owner, Conteúdo e Operações com vínculo global; criação, edição,
+publicação e transições são exclusivas de Owner e exigem AAL2. Vínculos com
+escopo institucional, identidades exclusivas de Admin/Principal e acesso direto
+às tabelas falham fechados. O texto persiste e publica normalmente; mídia
+continua bloqueada até existir um gateway Cloudflare R2 aprovado.
+
 ## Eventos, logs e notificações
 
 Produção registra no backend resumos minimizados para salvar, publicar, pausar,
