@@ -34,6 +34,13 @@ Future<void> main() async {
       attendancePermissions: authScope.attendancePermissions,
       routineRepository: authScope.routineRepository,
       childSafetyRepository: authScope.childSafetyRepository,
+      principalRuntimeContextRepository: authScope.principalRuntimeContextRepository,
+      principalHappensFeedRepository: authScope.principalHappensFeedRepository,
+      principalMixedFeedRepository: authScope.principalMixedFeedRepository,
+      happensPublicationRepository: authScope.happensPublicationRepository,
+      principalNowFeedRepository: authScope.principalNowFeedRepository,
+      momentsPublicationRepository: authScope.momentsPublicationRepository,
+      nowPublicationRepository: authScope.nowPublicationRepository,
     ),
   );
 }

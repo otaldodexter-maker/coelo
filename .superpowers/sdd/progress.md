@@ -7,6 +7,7 @@ Task 1: complete in `a6c48751` + `714d9b86`; independent re-review approved; 23/
 Task 2: complete in `e1cf1be3` + `008c14c2`; independent re-review approved; 38/38 focused tests and focused analysis green.
 Task 3: complete in `ebc0ac29` + `cb6763ed` + `52735a18`; independent review approved; 21/21 focused tests and focused analysis green; WIP `393fc7ff` excluded.
 Task 4: Flutter local `/dev` complete in `b9c75c7e` + `3fd605b8`; 132/132 focused tests, analyzer and visual validator green. Backend/real routes/E2E explicitly open.
+Task 5: in progress; real Acontece/Agora routes and Supabase dependency composition exist locally, authenticated runtime-context RPC/migration and negative pgTAP were added. Dart gates green; SQL replay, remote deploy and E2E remain open.
 Evidence gate: 12/12 user references preserved in `8f89d6d6` and inventoried in `cb6fa272`.
 
 # Historical progress preserved from the shared ledger

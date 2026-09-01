@@ -36,15 +36,21 @@ import '../../features/account/data/user_preferences_repository.dart';
 import '../../features/account/presentation/account_controller.dart';
 import '../../features/account/presentation/screens/profile_page.dart';
 import '../../features/principal_happens/presentation/principal_happens_preview_page.dart';
+import '../../features/principal_happens/domain/principal_happens_feed_repository.dart';
+import '../../features/principal_happens/domain/principal_happens_preview_data.dart';
 import '../../features/principal_for_you/presentation/principal_for_you_preview_page.dart';
 import '../../features/principal_happens_publication/domain/happens_publication.dart';
 import '../../features/principal_happens_publication/presentation/principal_happens_publication_page.dart';
 import '../../features/principal_moments/presentation/principal_moments_preview_page.dart';
+import '../../features/principal_moments_publication/domain/moments_publication.dart';
 import '../../features/principal_moments_publication/presentation/principal_moments_publication_page.dart';
+import '../../features/principal_now/domain/principal_now_feed_repository.dart';
 import '../../features/principal_now/presentation/principal_now_preview_page.dart';
 import '../../features/principal_now_publication/domain/now_publication.dart';
 import '../../features/principal_now_publication/presentation/principal_now_publication_page.dart';
 import '../../features/principal_profile/presentation/principal_profile_preview_page.dart';
+import '../../features/principal_shared/domain/principal_runtime_context.dart';
+import '../../features/principal_shared/presentation/principal_runtime_context_route.dart';
 import '../../features/account/presentation/screens/settings_page.dart';
 import '../../features/account/presentation/user_preferences_controller.dart';
 import '../../features/imports/domain/import_job.dart';
@@ -119,6 +125,7 @@ import '../../features/notices/presentation/notice_form_page.dart';
 import '../../features/principal_circulars/application/circular_composer_controller.dart';
 import '../../features/principal_circulars/domain/circular.dart';
 import '../../features/principal_circulars/domain/circular_repository.dart';
+import '../../features/principal_circulars/domain/principal_happens_mixed_feed.dart';
 import '../../features/principal_circulars/presentation/principal_circular_composer_page.dart';
 import '../../features/principal_circulars/presentation/principal_circular_detail_page.dart';
 import '../../features/plans/data/fake_plan_catalog_repository.dart';
@@ -232,6 +239,13 @@ GoRouter createSuperadminRouter({
   MealPlanRepository mealPlanRepository = const UnavailableMealPlanRepository(),
   MealPlanImageRepository mealPlanImageRepository = const UnavailableMealPlanImageRepository(),
   FormsApi? formsApi,
+  PrincipalRuntimeContextRepository principalRuntimeContextRepository =
+      const UnavailablePrincipalRuntimeContextRepository(),
+  PrincipalHappensFeedRepository? principalHappensFeedRepository,
+  PrincipalMixedFeedRepository? principalMixedFeedRepository,
+  HappensPublicationRepository? happensPublicationRepository,
+  PrincipalNowFeedRepository? principalNowFeedRepository,
+  MomentsPublicationRepository? momentsPublicationRepository,
   NowPublicationRepository? nowPublicationRepository,
   ChildSafetyController? childSafetyController,
   bool allowDevelopmentPreview = SuperadminAppConfig.allowDevelopmentPreview,
@@ -573,6 +587,125 @@ GoRouter createSuperadminRouter({
       GoRoute(
         path: _productionMutationUnavailablePath,
         builder: (context, state) => blockedProductionMutationPage(context),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.principalHappens,
+        name: SuperadminRoutes.principalHappensName,
+        builder: (context, state) => PrincipalRuntimeContextRoute(
+          repository: principalRuntimeContextRepository,
+          builder: (context, runtimeContext) {
+            final repository = principalHappensFeedRepository;
+            if (repository == null) return _unavailableCompositionRootRoute(context);
+            return PrincipalHappensPreviewPage(
+              feedRepository: repository,
+              feedScope: PrincipalHappensFeedScope(
+                institutionId: runtimeContext.institutionId,
+                unitId: runtimeContext.unitId,
+                groupId: runtimeContext.groupId,
+              ),
+              data: PrincipalHappensPreviewData.empty,
+              embedded: false,
+              onCreatePost: () => context.goNamed(SuperadminRoutes.principalHappensPublishName),
+              onOpenNow: () => context.pushNamed(SuperadminRoutes.principalNowName),
+              onPublishNow: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
+              onOpenMessages: () => context.goNamed(SuperadminRoutes.conversationsName),
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.principalHappensPublish,
+        name: SuperadminRoutes.principalHappensPublishName,
+        builder: (context, state) => PrincipalRuntimeContextRoute(
+          repository: principalRuntimeContextRepository,
+          builder: (context, runtimeContext) {
+            final repository = happensPublicationRepository;
+            final unitId = runtimeContext.unitId;
+            final unitName = runtimeContext.unitName;
+            final groupId = runtimeContext.groupId;
+            final groupName = runtimeContext.groupName;
+            if (repository == null ||
+                unitId == null ||
+                unitName == null ||
+                groupId == null ||
+                groupName == null) {
+              return _unavailableCompositionRootRoute(context);
+            }
+            return PrincipalHappensPublicationPage(
+              repository: repository,
+              publicationContext: HappensPublicationContext(
+                institutionId: runtimeContext.institutionId,
+                institutionName: runtimeContext.institutionName,
+                unitId: unitId,
+                unitName: unitName,
+                groupId: groupId,
+                groupName: groupName,
+              ),
+              embedded: false,
+              onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
+              onCompleted: (_) => context.goNamed(SuperadminRoutes.principalHappensName),
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.principalNow,
+        name: SuperadminRoutes.principalNowName,
+        builder: (context, state) => PrincipalRuntimeContextRoute(
+          repository: principalRuntimeContextRepository,
+          builder: (context, runtimeContext) {
+            final repository = principalNowFeedRepository;
+            if (repository == null) return _unavailableCompositionRootRoute(context);
+            return PrincipalNowPreviewPage.authorized(
+              feedRepository: repository,
+              feedScope: PrincipalNowFeedScope(
+                institutionId: runtimeContext.institutionId,
+                unitId: runtimeContext.unitId,
+                groupId: runtimeContext.groupId,
+              ),
+              onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
+              onOpenHappens: () => context.goNamed(SuperadminRoutes.principalHappensName),
+              onCreate: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.principalNowPublication,
+        name: SuperadminRoutes.principalNowPublicationName,
+        builder: (context, state) => PrincipalRuntimeContextRoute(
+          repository: principalRuntimeContextRepository,
+          builder: (context, runtimeContext) {
+            final repository = nowPublicationRepository;
+            final unitId = runtimeContext.unitId;
+            final unitName = runtimeContext.unitName;
+            final groupId = runtimeContext.groupId;
+            final groupName = runtimeContext.groupName;
+            if (repository == null ||
+                unitId == null ||
+                unitName == null ||
+                groupId == null ||
+                groupName == null) {
+              return _unavailableCompositionRootRoute(context);
+            }
+            return PrincipalNowPublicationPage(
+              repository: repository,
+              publicationContext: NowPublicationContext(
+                tenantId: runtimeContext.institutionId,
+                institutionId: runtimeContext.institutionId,
+                unitId: unitId,
+                groupId: groupId,
+                institutionName: runtimeContext.institutionName,
+                unitName: unitName,
+                groupName: groupName,
+                allowedAudiences: NowAudience.values.toSet(),
+              ),
+              embedded: false,
+              onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
+              onCompleted: (_) => context.goNamed(SuperadminRoutes.principalNowName),
+            );
+          },
+        ),
       ),
       GoRoute(
         path: SuperadminRoutes.devPrincipalNow,
@@ -3924,6 +4057,14 @@ void _navigateFromAccount(
       context.goNamed(SuperadminRoutes.profileName);
     case 'settings':
       context.goNamed(SuperadminRoutes.settingsName);
+    case 'principal-happens':
+      context.goNamed(SuperadminRoutes.principalHappensName);
+    case 'principal-happens-publish':
+      context.goNamed(SuperadminRoutes.principalHappensPublishName);
+    case 'principal-now':
+      context.goNamed(SuperadminRoutes.principalNowName);
+    case 'principal-now-publish':
+      context.goNamed(SuperadminRoutes.principalNowPublicationName);
     case 'institution-create':
       context.goNamed(SuperadminRoutes.institutionCreateName);
     case 'unit-create':

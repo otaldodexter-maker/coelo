@@ -16,6 +16,16 @@ final class PrincipalHappensPreviewData {
   final List<PrincipalNoticePreviewItem> notices;
   final List<PrincipalBirthdayPreviewItem> birthdays;
 
+  /// Production-safe baseline while each section loads from its own backend.
+  /// Real routes must never inherit the visual preview fixtures.
+  static const empty = PrincipalHappensPreviewData(
+    nowItems: [],
+    posts: [],
+    events: [],
+    notices: [],
+    birthdays: [],
+  );
+
   static const demo = PrincipalHappensPreviewData(
     nowItems: [
       PrincipalNowPreviewItem('Beatriz L.', '7º min', 0, .74),
