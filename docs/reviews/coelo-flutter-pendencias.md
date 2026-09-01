@@ -26,6 +26,30 @@ Ele não comprova Supabase nem conclusão ponta a ponta. Para isso, ler também:
 - `docs/reviews/coelo-flutter-integrado-supabase-pendencias.md` para o fluxo real
   entre cliente e backend.
 
+### Passagem em andamento — Operações — 2026-09-01
+
+- `meal_plans.list/models`: `in-progress`; Modelos passou a preceder Cardápios,
+  arquivos indisponíveis são explícitos, paginação canônica foi preservada e o
+  `/dev` ganhou 12 cardápios, 5 modelos e vínculos coerentes. Evidência local:
+  16 testes focados executados; todos passaram.
+- `plans.list`, `forms_authoring.list`, `imports.hub` e `agenda.list`:
+  `in-progress`; menu compartilhado de importar/CSV/XLSX inserido sem callback
+  enganoso. Planos e Eventos usam o rodapé canônico de paginação.
+- `forms_authoring.edit`: `in-progress`; bloco informativo ganhou detalhes,
+  campos numéricos ganharam mínimo/máximo e seções, perguntas e opções passaram
+  a ser reordenáveis, preservando setas acessíveis. Evidência local: 20 testes
+  do editor executados; todos passaram.
+- `agenda.request/approvals`: `in-progress`; arquivos e paginação foram
+  adicionados às duas superfícies. A entrada Agenda/Permissões foi removida e
+  as URLs legadas redirecionam para `profiles`, que segue como fonte de verdade.
+- Continuam abertas: wizard e vínculos de Cardápios, periodicidade compartilhada,
+  separação Criar/Respostas de Formulários, UI responsiva final da Agenda,
+  mini-mapa, code review final e gates visuais globais.
+- Gate do checkpoint: 115 testes focados executados; todos passaram. O
+  validador administrativo passou sem ampliar a allowlist, o analyzer focado do
+  editor não encontrou issues e `git diff --check` deve permanecer obrigatório
+  antes do commit.
+
 ### Contrato de abertura da atividade
 
 Antes de corrigir, listar as pendências conhecidas e registrar o recorte:

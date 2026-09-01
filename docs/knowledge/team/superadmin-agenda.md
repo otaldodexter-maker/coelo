@@ -46,6 +46,9 @@ todos, publicar, cancelar/restaurar, gerenciar respostas e sobrescrever conflito
 de reserva. A Agenda apenas apresenta o acesso efetivo; backend futuro deverá
 revalidar ator, tenant, contexto e recurso.
 
+Por isso, a Agenda não possui uma tela própria de permissões. Seu submenu termina
+em Aprovações e URLs antigas de permissões levam a Perfis e Permissões.
+
 Formulários não aparecem nem são editados na Agenda. Um evento pode conter CTA
 para abrir um Formulário no fluxo próprio, e pendências de Forms permanecem no
 sininho. Autorizações formais continuam owned pelo domínio D14.

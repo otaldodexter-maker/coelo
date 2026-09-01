@@ -35,6 +35,19 @@ Nessa situação, a leitura dos três arquivos é obrigatória e nesta ordem:
 Os dois primeiros dizem se cada lado está pronto. Este comprova que os lados
 funcionam juntos no ambiente correto. Nenhum deles substitui os demais.
 
+### Passagem em andamento — Operações — 2026-09-01
+
+- Recorte ativo: Planos, Cardápios, Formulários, Importações, Agenda/Criar,
+  Solicitações e Aprovações; Permissões da Agenda foi consolidada em Perfis e
+  permissões por decisão direta de produto.
+- Flutter avançou localmente em diretórios, fixtures e editor de Formulários,
+  mas nenhuma ação executou `clique -> Supabase autorizado -> persistência ->
+  reload -> auditoria -> negativo cross-tenant`.
+- `verified_e2e_count` e `strict_done_count` permanecem em zero. Não há promoção
+  por teste de widget, fixture `/dev`, menu indisponível ou redirecionamento.
+- Próximo gate: inventário Supabase nominal por `action_id`, seguido de uma
+  primeira vertical CRUD/RLS pequena e reprodutível.
+
 ### Contrato de abertura da atividade
 
 Toda revisão, auditoria ou correção começa listando as pendências conhecidas e

@@ -19,6 +19,19 @@ segurança de dados e contratos backend exigidos por cada tela e ação.
 Ele não substitui os rastreadores Flutter ou integrado. Um item pode ficar
 `done` aqui e continuar pendente na interface ou no fluxo ponta a ponta.
 
+### Passagem em andamento — Operações — 2026-09-01
+
+- O projeto remoto `coelo` (`evvbomzejfijozbtgvpt`) foi identificado como
+  `ACTIVE_HEALTHY`; a passagem consultou somente documentação oficial e
+  inventário read-only.
+- Nenhuma migration, policy, grant, RPC, Edge Function ou dado remoto foi
+  alterado nesta fatia. Logo, Planos, Cardápios, Formulários, Importações e
+  Agenda continuam abertos no backend e não recebem `local-green`,
+  `remote-green` ou `done`.
+- A próxima fatia Supabase deve inventariar os objetos existentes por ação,
+  reconciliar o ledger e então implementar RLS deny-by-default, grants mínimos,
+  idempotência, auditoria e negativos cross-tenant antes de habilitar CRUD real.
+
 Ele não substitui Product Vision, PRDs, ADRs ou specs aprovadas. Em conflito, a
 fonte canônica de maior prioridade prevalece e a divergência deve ser registrada
 em `docs/open-questions.md`.

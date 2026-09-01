@@ -109,7 +109,6 @@ void main() {
       'Criar evento',
       'Solicitações',
       'Aprovações',
-      'Permissões',
       'Comunicação',
       'Conversas',
       'Convites',

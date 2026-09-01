@@ -60,7 +60,6 @@ import '../../features/agenda/presentation/agenda_approvals_page.dart';
 import '../../features/agenda/presentation/agenda_event_form_page.dart';
 import '../../features/agenda/presentation/agenda_events_page.dart';
 import '../../features/agenda/presentation/agenda_module_shell.dart';
-import '../../features/agenda/presentation/agenda_permissions_page.dart';
 import '../../features/agenda/presentation/agenda_requests_page.dart';
 import '../../features/auth/domain/login_request.dart';
 import '../../features/auth/domain/logout_action.dart';
@@ -1451,12 +1450,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.agendaPermissions,
             name: SuperadminRoutes.agendaPermissionsName,
-            builder: (context, state) => agendaAreaShell(
-              context,
-              AgendaModuleArea.permissions,
-              const AgendaPermissionsPage.unavailable(),
-              development: false,
-            ),
+            redirect: (context, state) => SuperadminRoutes.profiles,
           ),
           GoRoute(
             path: SuperadminRoutes.healthCareProfiles,
@@ -3834,11 +3828,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.devAgendaPermissions,
             name: SuperadminRoutes.devAgendaPermissionsName,
-            builder: (context, state) => agendaAreaShell(
-              context,
-              AgendaModuleArea.permissions,
-              AgendaPermissionsPage(store: agendaPrototypeStore),
-            ),
+            redirect: (context, state) => SuperadminRoutes.devProfiles,
           ),
           GoRoute(
             path: SuperadminRoutes.devError,
@@ -4188,7 +4178,7 @@ String _destinationForLocation(String location) {
     return 'agenda-approvals';
   }
   if (location.startsWith('/agenda/permissions')) {
-    return 'agenda-permissions';
+    return 'profiles';
   }
   if (location.startsWith('/agenda')) {
     return 'agenda';

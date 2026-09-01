@@ -3,6 +3,8 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
 import '../data/agenda_prototype_store.dart';
 import '../domain/agenda_models.dart';
 
@@ -161,6 +163,11 @@ final class _AgendaApprovalsPageState extends State<AgendaApprovalsPage> {
           const Text(
             'Revise itens enviados por pessoas sem permissão de publicação e registre a decisão.',
           ),
+          const SizedBox(height: CoeloSpacing.space2),
+          const Align(
+            alignment: Alignment.centerRight,
+            child: SuperadminPlaceholderFileActions(resourceLabel: 'aprovações da agenda'),
+          ),
           const SizedBox(height: CoeloSpacing.space3),
           const _LocalFixtureNotice(),
           const SizedBox(height: CoeloSpacing.space5),
@@ -171,6 +178,18 @@ final class _AgendaApprovalsPageState extends State<AgendaApprovalsPage> {
               height: _items.length <= 3 ? 500 : 80 + _items.length * 140,
               child: _ApprovalTable(items: _items, onDecide: _openDecision),
             ),
+          const SizedBox(height: CoeloSpacing.space4),
+          SuperadminListingPaginationFooter(
+            horizontalPadding: 0,
+            child: const CoeloAdminPagination(
+              currentPage: 1,
+              totalPages: 1,
+              onPrevious: null,
+              onNext: null,
+              pageSize: 8,
+              pageSizeOptions: [8, 20, 50, 100],
+            ),
+          ),
         ],
       );
     },

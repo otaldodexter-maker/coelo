@@ -3,6 +3,8 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
 import '../data/agenda_prototype_store.dart';
 
 enum _RequestKind { rsvp, acknowledgement, authorization }
@@ -144,6 +146,11 @@ final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
             const Text(
               'Acompanhe RSVP, ciência e autorização por criança, conforme a política de responsáveis.',
             ),
+            const SizedBox(height: CoeloSpacing.space2),
+            const Align(
+              alignment: Alignment.centerRight,
+              child: SuperadminPlaceholderFileActions(resourceLabel: 'solicitações da agenda'),
+            ),
             const SizedBox(height: CoeloSpacing.space3),
             const _LocalFixtureNotice(),
             if (_notice != null) ...[
@@ -161,6 +168,18 @@ final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
                 height: 700,
                 child: _RequestTable(items: _items, onAnswer: _answer),
               ),
+            const SizedBox(height: CoeloSpacing.space4),
+            SuperadminListingPaginationFooter(
+              horizontalPadding: 0,
+              child: const CoeloAdminPagination(
+                currentPage: 1,
+                totalPages: 1,
+                onPrevious: null,
+                onNext: null,
+                pageSize: 8,
+                pageSizeOptions: [8, 20, 50, 100],
+              ),
+            ),
           ],
         );
       },

@@ -131,6 +131,10 @@ A fonte das capacidades é Perfis e Permissões:
 - gerenciar respostas/autorizações;
 - sobrescrever conflito de reserva.
 
+Não existe uma tela autônoma de Permissões dentro da Agenda. O submenu Agenda
+contém Criar evento, Solicitações e Aprovações; links legados de permissões
+redirecionam para Perfis e Permissões, onde a regra é administrada.
+
 A Agenda somente apresenta a capability efetiva. Ocultar ou desabilitar um
 controle não constitui autorização; o backend futuro deverá revalidar ator,
 tenant, contexto e recurso.
