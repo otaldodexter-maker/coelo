@@ -1,6 +1,6 @@
 begin;
 
-select plan(23);
+select plan(24);
 
 select has_function('public', 'superadmin_chat_inbox_v2',
   array['timestamp with time zone','uuid','integer','text','boolean']);
@@ -16,6 +16,7 @@ select has_table('app_private', 'superadmin_internal_chat_receipts');
 select has_table('app_private', 'superadmin_internal_chat_command_receipts');
 select col_is_null('public', 'messages', 'author_person_id');
 select col_not_null('public', 'messages', 'author_kind');
+select has_trigger('public','messages','messages_internal_author_guard');
 
 select is(
   (select requires_mfa from public.platform_permissions where code='chat.internal.read'),

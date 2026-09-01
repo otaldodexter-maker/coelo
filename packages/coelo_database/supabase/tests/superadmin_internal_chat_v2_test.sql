@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(20);
+select plan(21);
 
 select has_function('public','superadmin_chat_inbox_v2',
  array['timestamp with time zone','uuid','integer','text','boolean']);
@@ -95,6 +95,12 @@ select is((select count(*) from public.messages where body_text='Aviso da equipe
 select ok((select author_person_id is null and author_kind='superadmin_internal'
  and author_internal_identity_id='9c100000-0000-4000-8000-000000000301'
  from public.messages where body_text='Aviso da equipe Coelo'),'message preserves internal actor provenance without people alias');
+select throws_ok($$insert into public.messages(conversation_id,author_person_id,body_text,
+ message_type,author_kind,author_internal_identity_id,author_internal_membership_id)
+ values('9c100000-0000-4000-8000-000000000701',null,'Ator inconsistente','text',
+ 'superadmin_internal','9c100000-0000-4000-8000-000000000301',
+ '9c100000-0000-4000-8000-000000000502')$$,
+ '23503',null,'database rejects mismatched internal identity and membership provenance');
 select ok((select body#>>'{data,updated_count}'='1' from chat_results where label='owner_read'),
  'mark read persists the internal receipt');
 select is((select body#>>'{data,total_unread}' from chat_results where label='owner_unread'),'1',

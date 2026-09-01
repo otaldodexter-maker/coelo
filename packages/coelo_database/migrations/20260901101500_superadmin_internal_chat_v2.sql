@@ -57,6 +57,24 @@ create index messages_internal_author_idx
   on public.messages(author_internal_identity_id,created_at desc)
   where author_internal_identity_id is not null;
 
+create function app_private.guard_chat_message_internal_author()
+returns trigger language plpgsql security definer set search_path='' as $$
+begin
+ if new.author_kind='superadmin_internal' and not exists(
+  select 1 from app_private.superadmin_internal_memberships membership
+  where membership.id=new.author_internal_membership_id
+    and membership.internal_identity_id=new.author_internal_identity_id
+ ) then
+  raise foreign_key_violation using message='inconsistent internal chat author';
+ end if;
+ return new;
+end $$;
+create trigger messages_internal_author_guard
+before insert or update of author_kind,author_internal_identity_id,author_internal_membership_id
+on public.messages for each row execute function app_private.guard_chat_message_internal_author();
+revoke all on function app_private.guard_chat_message_internal_author()
+ from public,anon,authenticated,service_role;
+
 create table app_private.superadmin_internal_chat_receipts(
   message_id uuid not null references public.messages(id) on delete cascade,
   internal_identity_id uuid not null
@@ -481,6 +499,7 @@ end $$;
 do $$declare p regprocedure; begin foreach p in array array[
  'app_private.superadmin_chat_success(jsonb)'::regprocedure,
  'app_private.superadmin_chat_error(text,uuid)'::regprocedure,
+ 'app_private.guard_chat_message_internal_author()'::regprocedure,
  'public.superadmin_chat_inbox_v2(timestamptz,uuid,integer,text,boolean)'::regprocedure,
  'public.superadmin_chat_unread_total_v2()'::regprocedure,
  'public.superadmin_chat_thread_v2(uuid,timestamptz,uuid,integer)'::regprocedure,
