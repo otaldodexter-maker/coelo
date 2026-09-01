@@ -21,14 +21,49 @@ como backend concluído.
 0/37 `done`. Restam 34/37 famílias (91,89%) sem gate local completo e todas as
 37 famílias ainda carecem de conclusão Supabase integral.
 
-| Frente | Feito na Etapa 2 | Falta no Supabase/backend | Primeiro próximo passo e ETA |
+| Percentual Supabase da Etapa 2 | Concluído | Restante | Interpretação |
+| --- | ---: | ---: | --- |
+| Progresso técnico local por família | 8,11% (3/37) | 91,89% (34/37) | Prova local suficiente somente em três famílias. |
+| Conclusão Supabase `done` | 0,00% (0/37) | 100,00% (37/37) | Nenhuma família fechou remoto, negativos, audit e cleanup. |
+
+### Telas, subtelas e ações Supabase
+
+| Tela / ação backend | Feito na Etapa 2 | Pendente / primeiro próximo passo | Estado |
 | --- | --- | --- | --- |
-| Comunicação — Chat, Convites e Avisos | Adapters Chat/Avisos têm testes locais; inventário remoto foi somente leitura. Circulares possui RPCs/RLS remotos históricos. | Remoto não contém as RPCs públicas esperadas de Chat/Avisos, `chat_attachment_metadata` ou `notice_events`. Convites não possui repository/RPC produtivo aprovado. Faltam RLS/negativos, tenant A/B, vínculo revogado, auditoria, persistência e reload. | Em execução: Chat RPC/RLS+cutover; Avisos lifecycle/audience/jobs/receipts; Convites auditoria OQ-039. Remoto continua read-only. ETA técnica será registrada por checkpoint; espera externa separada. |
-| Operações — Planos, Cardápios, Forms, Importações e Agenda | Auditoria read-only e inventário de contratos existentes; nenhuma mutação remota. | 0/40 E2E. Ledger/schema possuem drift; Planos e Agenda carecem de backend completo; Forms está desconectado; Importações cobre apenas Unidades; Cardápios têm alertas SECURITY DEFINER e não estão compostos produtivamente. | Em execução: inventário exato de drift e matriz produtiva. Depois ledger/replay → ACL/Auth → Planos → Cardápios → Forms → Importações → Agenda. ETA remota ainda não confiável. |
-| Acessos e Saúde/Cuidado | Modelos de perfil têm duas migrations candidatas que operam sobre 4 tabelas herdadas com FORCE RLS, adicionam 10 RPCs e 18 capabilities e trazem planos pgTAP 35+10 apenas declarados. | P0: realm people-based incompatível com usuário interno; também há lookup antes de autorização, anti-escalation cross-app incompleta, motivo opcional e replay anterior RED. Sem Docker/Advisors/remoto/E2E. Demais domínios continuam fail-closed/audited/blocked-decision. | Reescrever contratos no contexto interno nominal, corrigir ordem dos gates/anti-escalation/auditoria, depois replay descartável, pgTAP, Advisors e negativos. ETA deve ser recalculada após o redesenho. |
-| Auth | Lifecycle local real de login/logout/recovery/reset e pgTAP 29/29; migration/guard local corrigidos. | Produção `not-deployed`; ledger remoto diverge, redirect/SMTP e E2E ausentes. MFA permanece fail-closed; Catalog ainda tem consulta de acesso durante recovery. | Em execução: delta mínimo fail-closed Catalog (ETA 30–60 min informada). Depois inventário/replay transacional; remoto segue read-only. |
-| Estruturas | Adapters candidatos e migration de modelos por Unidade escrita; 31 asserts existem estaticamente. Inventário remoto read-only confirmou ledger até `20260821200000`. | RPCs legados de Unidades/Turmas são people-based e não autorizam ator interno; 12 RPCs e tabelas de Avaliações não existem; migrations v2 estão ausentes; sem replay/remoto/E2E. | Em execução local: gateways internos v2 e schema/RPC/RLS Avaliações. Classificar 34 avisos RLS de `app_private` por exposição/grants antes de agir. ETA após commits/replay. |
-| Coelo (Principal) | Nenhuma mutação backend na Etapa 2; inventário preservou que conteúdo operacional usa R2 e metadados/permissões ficam no Postgres. | Acontece/Agora/Momentos/Perfil/Circulares/publicadores carecem de contratos aprovados, ator, audiência, RLS/R2, retenção, remoção, auditoria, remoto e E2E. | Fechar decisões de mídia/publicação/retorno e selecionar primeira vertical. ETA por família após decisão: tipicamente 3–5 dias + E2E. |
+| Auth — login/logout/recovery/reset | Lifecycle descartável e pgTAP 29/29; Catalog recovery fail-closed corrigido/revisado em `5e8d2655`. | Integrar; 17 migrations intermediárias, clone/squash forward-only, DNS/hosting/SMTP/identity e E2E. | `local-green`/`not-deployed` |
+| Chat — listar/abrir/enviar/editar/anexar/receipts/revogar | Adapters locais inventariados/testados; pacote RPC/RLS em execução. | RPCs ausentes no remoto, metadata de anexos, RLS/capability, tenant A/B, revogação, auditoria e reload. | `blocked-supabase` |
+| Convites — listar/detalhe/criar/reenviar/revogar | Produção permanece corretamente `UnavailableInviteRepository`; auditoria 10/10. Migration histórica foi rejeitada por realm people-based/backfill especulativo/issuer person. | Decidir OQ-039: capabilities Owner+AAL2, issuer interno separado sem backfill, evolução aditiva, legado read-only e Superadmin RPC-only; depois token/outbox/RLS/audit/E2E. | `blocked-decision` |
+| Avisos — lista/criar/editar/agendar/publicar/arquivar | Adapter produtivo composto; `c5085746` falha fechado em status publicado/arquivado/desconhecido; worker 2/2. | OQ-038/lifecycle, replay pgTAP aguardando mutex, RPCs/events, autorização, tenant A/B, persistência/reload e remoto OQ-041. | `blocked-supabase` |
+| Instituições/Unidades/Turmas — CRUD interno | Gateways v2 em execução; inventário remoto confirma migrations ausentes. | Remover autorização people-based, sessão/realm interno, RLS, audit, replay e E2E. | `fail-closed` |
+| Atividades/Modelos por Unidade | Migration candidata e 31 asserts apenas escritos. | Replay/pgTAP real, gateway nominal, remoto e E2E. | `static-review` |
+| Avaliações — configurar/lançar/diário/fechar/reabrir | Schema/RPC/RLS em execução local. | Doze RPCs/tabelas ausentes, replay, concorrência, audit, remoto e E2E. | `fail-closed` |
+| Planos | Auditoria read-only. | Schema/CRUD/RPC/RLS completos, composition root e E2E. | `blocked-supabase` |
+| Cardápios/Modelos | Schema/RPCs locais históricos inventariados. | Reconciliar drift, SECURITY DEFINER, composição produtiva, cleanup e E2E. | `blocked-supabase` |
+| Formulários — monitor/respostas/detalhe/arquivos | Projeções/RPCs de leitura compostas no Flutter em `236f12cd`: monitor, listagem, detalhe e jobs de arquivo. | Sessão/remoto autorizado, RLS/negativos, reload e E2E. | backend-read composto; não `remote-green` |
+| Formulários — criar/editar/publicar/testar/responder | Backend/DTO de comando incompletos. | Contexto `institution_id` autorizado, versão/request ID, occurrence/participation, segredo anônimo, RLS/audit e E2E. | `fail-closed` |
+| Importações | Backend cobre apenas Unidades. | RPC/Edge/jobs genéricos, idempotência, arquivos, audit e E2E. | `blocked-supabase` |
+| Agenda — eventos/solicitações/aprovações | Nenhum backend produtivo comprovado. | Schema, RLS, RPCs, perguntas/respostas, notificações, mapa/privacy e E2E. | `blocked-supabase` |
+| Pessoas — detalhe/vínculos/reload | `superadmin_person_detail_v2` foi composto no Flutter em `d4a87af8`; contrato/envelope e falhas foram testados no cliente. | Replay pgTAP fresco, daemon Docker, negativos de sessão/permissão/MFA, remoto, persistência/reload real e E2E. | composição local; backend não promovido |
+| Pessoas — lista/criar/editar | Contratos legados inventariados. | Spec/gateway interno nominal de escrita, mutações/vínculos, RLS/audit, negativos, reload e E2E. | `fail-closed` |
+| Segurança da criança — lifecycle | Repository/RPC histórico inventariado. | AAL2/capability, ownership, suspend/revoke, evidência privada, audit e tenant A/B. | `audited` |
+| Usuários internos — listar/convidar/editar/suspender/MFA | Rotas Flutter falham fechadas. | Identidade interna, Auth/Convites, RPCs, sessão/realm, MFA e auditoria. | `blocked-decision` |
+| Perfis e permissões | RPCs antigos usam realm people-based. | Gateway interno nominal, atribuição/deleção, anti-escalation, OQ-044, replay e E2E. | P0/bloqueado |
+| Modelos de perfil | Dez wrappers/18 capabilities escritos sobre quatro tabelas herdadas; FORCE RLS/ACL revisados estaticamente. | P0 realm; autorização antes de lookup; anti-escalation cross-app; motivo obrigatório; replay/pgTAP/Advisors. | `static-reviewed` |
+| Perfis de cuidado | Fixtures Flutter somente. | OQ-003/OQ-040, schema/RLS/CRUD, dados sensíveis, audit e E2E. | `fail-closed` |
+| Medicação | Fixtures Flutter somente. | Base legal, prescrição/dose/evidência/retenção, RLS/CRUD/audit e E2E. | `blocked-decision` |
+| Acontece/Agora/Momentos/Perfil/publicadores | Nenhuma mutação backend. | Contratos, audiência, metadata Postgres, mídia R2, retenção/remoção, audit e E2E. | `blocked-decision` |
+| Circulares | RPCs/RLS remotos históricos observados read-only. | Adapter final, ator/capability, tenant A/B, persistência/reload e E2E. | `audited` |
+
+### Macroajustes Supabase da Etapa 2
+
+| Macroajuste | Feito | Pendente |
+| --- | --- | --- |
+| RLS e grants | FORCE RLS/ACL de alguns pacotes revisados; inventário apontou 34 avisos em `app_private`. | Classificar exposição/grants, negar por padrão, testar IDOR/BOLA e cross-tenant; sem correção cega. |
+| Auth/realm interno | Lifecycle Auth local e contrato de sessão existem. | Eliminar gateways people-based para Superadmin; revalidar `session_id`, realm, membership e ator interno. |
+| Migrations/ledger | Remoto read-only termina em `20260821200000`; drift catalogado. | Replay integral compatível; não aplicar cauda em lote; OQ-041 antes de remoto. |
+| Auditoria/idempotência | Alguns wrappers têm versão, soft-delete, receipt e advisory lock. | Motivo obrigatório, ator interno, append/negativos, replay divergente e cobertura de todas as ações. |
+| Mídia/Storage/R2 | Separação ADR 0022 preservada. | Storage privado para identidade; R2 para conteúdo; autorização, URL curta, retenção e cleanup. |
+| Advisors/performance | Alertas inventariados. | Rodar Advisors pós-DDL autorizado, revisar SECURITY DEFINER e índices sem correção global cega. |
 
 ### Primeiro próximo passo Supabase da Etapa 2
 
@@ -4424,6 +4459,23 @@ da simples soma das 207 ações.
 - Chat/Avisos permanecem `blocked-supabase`; Circulares não avança para remoto.
   Nenhuma mutação foi executada e qualquer pacote continua condicionado à
   classificação/autorização nominal do ambiente.
+
+### Avisos — hardening de status — `c5085746`
+
+- Adapter produtivo falha fechado em status remoto não resolvido; Flutter 5/5,
+  analyzer e worker Deno 2/2 verdes. Replay pgTAP não executado por mutex;
+  OQ-038/OQ-041 permanecem bloqueios. Sem promoção.
+
+### Convites — contrato produtivo continua bloqueado por decisão
+
+- Produção usa corretamente `UnavailableInviteRepository`; auditoria focada
+  10/10. Não existe adapter Supabase/RPC canônico.
+- Migration histórica `20260811233609` não deve ser restaurada: usa realm
+  people-based, backfill especulativo e issuer person.
+- Pacote proposto à OQ-039: `platform.invites.read/manage` inicialmente somente
+  Owner+AAL2; issuer interno separado/nullable/sem backfill; evolução aditiva de
+  `public.invitations`; emissor minimizado; legado read-only e Superadmin
+  RPC-only. Aguardar decisão explícita; estado `blocked-decision`.
 
 ## Checkpoint 2026-09-01 — Operações backend, 0/40 E2E
 

@@ -13,8 +13,8 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "ABE95BBEF3B53984811A150B543E5595D98A81F13F638B64CD2AF43AC57BA14B"
-supabase_tracker_sha256: "8DD851758DB0BFEBC860410B8FD199B8731A6684F166AC45DD7ED41E6FAF97D4"
+flutter_tracker_sha256: "25D09B3923BD6830BA4B096D414BFFEE425B55DF80D9A510B2059187F6FCF025"
+supabase_tracker_sha256: "49BBB8CB27F4FDBA26C77CB4F2091835F47D844CE92B70E404DD10839F8BD63F"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
@@ -31,14 +31,50 @@ restantes (100,00%). Flutter possui 105/207 ações `local-green`, Supabase poss
 3/37 famílias `local-green`, mas 0/202 ações estão `ready-for-e2e` e 0/202 foram
 `verified-e2e`.
 
-| Frente | Último passo realmente concluído | Passo atual | Falta para ponta a ponta | Git/ETA |
+| Percentual integrado da Etapa 2 | Concluído | Restante | Interpretação |
+| --- | ---: | ---: | --- |
+| Ações prontas para começar E2E | 0,00% (0/202) | 100,00% (202/202) | Nenhuma ação reúne Flutter e backend prontos. |
+| Ações `verified-e2e` | 0,00% (0/202) | 100,00% (202/202) | Nenhum fluxo foi comprovado ponta a ponta. |
+| Conclusão estrita Flutter + 22 gates Supabase | 0,00% (0/229) | 100,00% (229/229) | Percentual oficial de conclusão real da Etapa 2. |
+
+### Telas, subtelas e ações ponta a ponta
+
+| Tela / ações | Flutter | Supabase | Falta para `verified-e2e` | Passo atual |
 | --- | --- | --- | --- | --- |
-| Comunicação | Código seletivo de Chat/Convites/Avisos integrado no `dev`; 301/301 testes pós-merge. | Três linhas backend ativas: Chat; Avisos; auditoria Convites. Remoto permanece read-only. | RPCs, RLS, anexos/eventos, Convites produtivos, tenant A/B, revogação, persistência/reload, auditoria e E2E. | `dev` até `f516be71`; novos commits/evidências aguardados; ETA E2E não calculável antes do ambiente. |
-| Operações | Cinco áreas Flutter `/dev` passaram 344/344 e branch está limpa. | Inventário de drift/matriz produtiva em execução. | Repository produtivo + schema/RLS/RPC por tela + 40 provas E2E. | `84759675`; primeiro checkpoint será o inventário; E2E sem ETA antes do replay. |
-| Acessos e Saúde/Cuidado | Handoff limpo e testes funcionais locais; reviews concluídos sem alterar a branch. | Banco bloqueado por P0 realm/Auth; Flutter bloqueado por 13 goldens RED, action_ids omitidos, detalhe/filtragem/paginação/mapa/fixture incorretos. | Corrigir P0/P1/P2, integrar primeiro fatias não controversas e revalidar componentes compartilhados; depois replay. Remoto/E2E continuam abertos. | `6e56d3e4`; ETA não calculável até correções e novo review. |
-| Auth | Recovery bypass corrigido e contratos locais passaram 66/66 + 23/23; backend local Auth passou 29/29. | Frente executa delta mínimo fail-closed Catalog após autorização reportada; ledger remoto continua bloqueado. | Validar commit Catalog, integrar, replay compatível, deploy/redirect/SMTP e E2E; MFA permanece fora/fail-closed. | `a2c6eaab`; Catalog ETA 30–60 min informada; remoto 1–2 d + E2E 0,5–1 d após ambiente. |
-| Estruturas | UI/cabeçalho local e worktree limpa; Avaliações permanecem honestamente fail-closed. | Gateways internos v2 e backend Avaliações em execução local; remoto read-only confirmou ledger antigo e ausência das migrations/RPCs. | Gateways internos de Unidades/Turmas, 12 RPCs Avaliações, replay de modelos por Unidade, classificação RLS `app_private`, remoto e E2E. | Base `c249db2f`; próximo ETA após commits/replay; nenhuma mutação remota antes da OQ-041. |
-| Coelo (Principal) | `momentos.view` aprovado localmente: 38/38, estados/retorno/foco. | Circulares diretório/arquivos em execução. | Fechar Circulares e revisar Acontece/Para Você/Agora/Perfil/publicadores; integrar; depois contratos Postgres/R2, autorização, remoto e E2E. | `14ff3d50`; Circulares local 25–35 min; E2E sem ETA antes das decisões. |
+| Auth — login/recover/reset/logout | Local-green; Catalog recovery fail-closed corrigido/revisado em `5e8d2655`. | Auth-only local-green; remoto not-deployed. | Integrar, ledger/replay, 17 migrations, redirect/SMTP/hosting/identity e E2E. | Gate local sem P1 conhecido. |
+| Chat — list/open/send/edit/attach/receipts/revoke | Três primeiras locais; quatro auditadas. | RPC/RLS em desenvolvimento; remoto ausente. | Cutover produtivo, autorização, tenant A/B, revogação, mídia, reload/audit/E2E. | Backend+adapter em execução. |
+| Convites — list/detail/create/resend/revoke | `/dev` local-green. | Produção Unavailable; migration histórica rejeitada; OQ-039 sem decisão. | Aprovar realm/Owner+AAL2/issuer interno, implementar RPC-only, token/outbox, RLS, reload/audit/E2E. | `blocked-decision`; 10/10 auditoria. |
+| Avisos — list/create/edit/schedule/publish/archive | Lista local; adapter produtivo falha fechado em status remoto não resolvido (`c5085746`, 5/5). | Worker 2/2; lifecycle/OQ-038 e replay ainda bloqueados. | Autorização, tenant A/B, receipts/events, persistência/reload/audit/E2E e remoto OQ-041. | Sem promoção; replay aguarda mutex. |
+| Instituições/Unidades/Turmas | UI local/fail-closed. | Gateways internos v2 em desenvolvimento. | Realm interno, CRUD/RLS, negatives, reload e E2E. | Dois blocos locais paralelos. |
+| Atividades/Modelos | UI local. | Migration/unit scope apenas estática. | Replay, adapter produtivo, autorizado/negado/reload e E2E. | Aguardando replay. |
+| Avaliações | UI local/fail-closed. | Doze RPCs/tabelas ausentes; pacote em desenvolvimento. | Schema/RLS/RPC, concorrência, audit, cutover, reload e E2E. | Backend local em execução. |
+| Planos/Cardápios/Importações/Agenda | UI `/dev` local-green. | Drift e lacunas por domínio. | Integrar Flutter, reconciliar ledger, implementar/compor backend e provar ações E2E. | Inventário de drift em execução. |
+| Formulários — monitor/respostas/detalhe/arquivos | `236f12cd` conecta quatro leituras produtivas; 7/7 rotas. | RPC/projeção existente, sem sessão remota comprovada. | Integrar; RLS/negativos, reload, arquivos e E2E. | Backend-read composto localmente. |
+| Formulários — criar/editar/publicar/testar/responder | UI/editor local; produção fail-closed. | DTO/contexto/versionamento incompletos. | Contrato autorizado, commands/RLS/audit, persistência/reload e E2E. | Pendente. |
+| Pessoas — detalhe/vínculos/reload | `d4a87af8` compõe `superadmin_person_detail_v2`; 16/16 clientes verdes. | RPC contratual sem replay fresco/remoto. | Corrigir fixture/mapa/goldens; replay, sessão/permissão/MFA, persistência/reload e E2E. | Composição local; promoção retida. |
+| Pessoas — lista/criar/editar | UI `/dev` local; produção no legado people-based. | Gateway interno de escrita não aprovado. | Spec, CRUD/RLS/audit, negativos, reload e E2E. | Fail-closed/bloqueado. |
+| Segurança da criança | Quatro ações locais; suspend auditada. | Backend sensível somente auditado. | Suspend/revoke, AAL2/capability, evidência privada, audit/reload/E2E. | Primeira fatia seletiva candidata. |
+| Usuários internos | UI `/dev`; produção fail-closed. | Identidade/RPC/MFA bloqueados. | Realm, Auth/Convites, lifecycle, audit, reload e E2E. | Aguardando decisões/correções. |
+| Perfis e permissões | UI parcial; detalhe/goldens abertos. | P0 realm people-based. | Redesenho interno, anti-escalation, atribuir/excluir, replay/cutover/E2E. | Integração retida. |
+| Modelos de perfil | UI/adapter parciais. | Static-reviewed com P0/P1; pgTAP não executado. | Corrigir realm/gates/audit/filtro/paginação, replay, remoto e E2E. | Integração retida. |
+| Perfis de cuidado/Medicação | UI fake local. | Fail-closed/blocked-decision. | Decisões, backend sensível, RLS/audit, persistência/reload/E2E. | Aguardando decisões e pacote próprio. |
+| Acontece/Para Você/Agora/Perfil/publicadores | Rotas/histórico local; revisão ainda aberta. | Backend/R2 bloqueado por decisões. | Fechar Flutter, contratos, audience/R2/RLS/audit e E2E. | Fila após Circulares. |
+| Momentos — view/create/publish/remove | View local-green 38/38; demais bloqueadas. | Todos bloqueados por decisão. | Integrar view; contratos/metadata/R2/audience/removal/reload/E2E. | View fechado localmente. |
+| Circulares — view/menu/arquivos | `circulars.view` local-green: hierarquia/diretório/ações locais passaram 21/21; criar só preserva nó existente. | RPCs/RLS históricos, sem adapter final; arquivos sem prova remota. | Integrar Flutter; ator/capability, callbacks reais, cutover, tenant A/B, reload/audit/E2E. | Recorte Flutter local fechado; backend inalterado. |
+| Circulares — criar/editar/detalhe/publicar | Apenas hierarquia existente, sem fluxo completo. | Contratos remotos parciais. | Fechar UI/estados, adapter, autorização, persistência/reload e E2E. | Pendente. |
+
+### Macroajustes integrados da Etapa 2
+
+| Macroajuste | Estado atual | Gate pendente |
+| --- | --- | --- |
+| Cabeçalho/shell/navegação | Implementações locais compartilhadas; Chat tem ownership único. | Cherry-picks seletivos e regressão conjunta em todas as rotas. |
+| Auth/realm/autorização | Auth local; P0 detectado em Perfis/Modelos. | Contexto interno nominal, sessão viva, realm/capability, negações antes de lookup. |
+| RLS/grants/cross-tenant | Alguns pacotes revisados estaticamente. | Replay, RLS deny-by-default, grants mínimos, tenant A/B e ID adulterado por ação. |
+| Migrations/ledger/remoto | Inventário read-only até `20260821200000`; remoto sem mutação. | OQ-041, replay compatível e pacote nominal; nunca aplicar cauda em lote. |
+| Persistência/reload/auditoria | Quase toda evidência atual é fixture/local. | Escrever, recarregar/nova sessão, negar revogado, auditar ator/efeitos e provar E2E. |
+| Responsividade/visual | Várias matrizes locais; Momentos e Comunicação com gates verdes. | Dívida golden de Acessos e regressão visual depois de todos os merges. |
+| Mídia/arquivos | Separação Storage/R2 documentada; placeholders honestos. | Upload/download real, autorização, expiração, retenção, remoção e cleanup. |
+| Consolidação Git | Comunicação integrada; demais branches preservadas. | Reviews/correções, cherry-pick, regressão, hashes dos MDs e só então limpar worktrees. |
 
 ### Ordem de retomada vinculante da Etapa 2
 
@@ -53,7 +89,7 @@ restantes (100,00%). Flutter possui 105/207 ações `local-green`, Supabase poss
    evidências estarem conferidos.
 
 **Tempo usado na Etapa 2:** não calculável ainda porque não há duração homogênea
-das seis conversas. **ETA geral:** não calculável antes dos reviews, decisões e
+das frentes. **ETA geral:** não calculável antes dos reviews, decisões e
 classificação do ambiente. Cada frente possui a melhor ETA recuperável na tabela.
 
 ## 1. Papel deste documento
@@ -1512,6 +1548,14 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   `verified-e2e` 0/202 e estrito 0/229. ETA ponta a ponta permanece dependente
   de classificação e autorização nominal do ambiente.
 
+### Avisos/Convites — hardening sem promoção integrada
+
+- Avisos `c5085746` corrige mascaramento de status; testes Flutter/worker verdes,
+  mas sem replay/OQ-038/remoto/E2E.
+- Convites continua produção unavailable. Migration histórica foi rejeitada por
+  realm/issuer/backfill; OQ-039 precisa aprovar o pacote interno antes do backend.
+- Nenhuma ação avança para `ready-for-e2e`.
+
 ## Checkpoint integrado 70 — Momentos fullscreen local, integração inalterada
 
 - `momentos.view` recebeu em `e1cf1be3` o viewer top-level fullscreen sem shell,
@@ -1525,6 +1569,16 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   e analyzer focal passaram. Isso encerra o recorte funcional Flutter local,
   mas não altera backend ou integração: `ready-for-e2e` permanece 0/202,
   `verified-e2e` 0/202 e estrito 0/229.
+
+## Checkpoint integrado 72 — Circulares local, backend inalterado
+
+- `circulars.view` fechou somente navegação/diretório/ações de arquivo Flutter
+  local: 21/21 testes e review aprovados; `393fc7ff` foi excluído.
+- `circulars.create` conserva apenas hierarquia e não é concluído. Criar/editar/
+  detalhe/publicar permanecem pendentes.
+- RPCs/RLS históricos não receberam adapter final nem prova de ator, tenant A/B,
+  import/export, persistência, reload ou E2E. Nenhuma promoção integrada:
+  `ready-for-e2e` 0/202, `verified-e2e` 0/202 e estrito 0/229.
 
 ## Checkpoint integrado 71 — Acessos/Saúde preservado, ainda sem integração
 

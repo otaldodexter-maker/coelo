@@ -23,14 +23,62 @@ integração ou mudança de ETA. O histórico detalhado e as matrizes por
 0/207 `verified`. Portanto 102/207 ações (49,28%) ainda não atingiram sequer o
 estado local exigido e nenhuma ação foi certificada como Flutter produtivo.
 
-| Frente/conversa | Telas e subtelas feitas na Etapa 2 | O que falta exatamente no Flutter | Passo atual, Git e ETA |
-| --- | --- | --- | --- |
-| Comunicação — `01a05db6-b171-7a80-9e07-592e2e08dbe9` | Chat: diretório, busca, abrir conversa, leitura e envio local; ordem pós-envio e launcher corrigidos. Convites: diretório, detalhe e formulário `/dev` com escopo coerente. Avisos: diretório, cards/tabela, paginação e criar/editar locais. | Chat editar/anexar/receipts/revogar; paginação total; Convites e Avisos produtivos; regressão visual conjunta após demais merges. Circulares não pertence a esta frente. | Código seletivamente integrado no `dev` até `f516be71`; 301/301 testes pós-merge e analyzer verdes. Flutter local desta fatia concluído; ETA produtiva depende do backend. |
-| Operações — `01a05d88-3187-79a3-9443-218a0c5cb8ae` | Planos, Cardápios/Modelos, Formulários/Respostas/editor/agendamento, Importações e Agenda/calendário/lista/criar/editar/solicitações/aprovações/permissões estão locais em `/dev`. | Integrar seletivamente a branch; reexecutar regressão conjunta; ligar repositories produtivos. Mapa/geocodificação real e import/export reais continuam abertos. | Branch limpa `codex/finalizacao-telas-operacoes` em `84759675`; 344/344 e analyzer verdes. ETA de integração local: 2–4 h após review de conflitos; produção não calculável antes do backend. |
-| Acessos e Saúde/Cuidado — `01a05d66-fdec-7f31-a4c3-fe7f7654e51b` | Pessoas; Segurança da criança; Usuários internos; Perfis e permissões/Modelos; Perfis de cuidado; Planos de medicação: diretórios, filtros, paginação e wizards locais. | Reviews bloquearam promoção: 13 suítes golden RED; action_ids omitidos; detalhe Perfis/Modelos só por deep link; filtro multi-escopo/totalCount incorretos; mapa OSM sem provider; fixture compartilhada perde escopo. Import/export, produção e E2E seguem abertos. | Branch limpa `codex/accessos-ponta-a-ponta` em `6e56d3e4`; 100/100 funcionais do review passaram, mas visual falhou. ETA não calculável até corrigir achados. |
-| Auth — `01a05d37-a36d-7610-b9dc-f8259243ffcd` | Login, logout, recuperação e reset; recovery confinada à rota correta; guard de sessão/contexto interno; negativos de Home/Instituições/`/dev`. | Catalog legado ainda consulta access gateway durante recovery; MFA continua fail-closed e fora do pacote. Goldens históricos de Login permanecem divergentes. | Branch `a2c6eaab`; 66/66 Superadmin e 23/23 `coelo_auth`. Frente reportou autorização recebida para o delta mínimo Catalog e está executando; ETA 30–60 min, ainda sem commit/prova. |
-| Estruturas — `01a05d2b-d4e4-7a90-95a6-e9a401ab5836` | Cabeçalho mobile global; Instituições, Unidades, Turmas, Atividades/Modelos e Avaliações locais; 18 referências preservadas. | Integração seletiva deve excluir hunks duplicados de Chat; revalidar shell com todas as rotas. Avaliações produtivas continuam fail-closed e modelos por Unidade ainda não possuem replay. | Branch `c249db2f`; em execução gateways v2 e backend Avaliações local. Inventário corrigiu 11→12 RPCs. Próximo ETA após commits/replay. |
-| Coelo (Principal) — `01a05dce-96ed-7ca3-b3eb-e4701473510b` | Rotas do menu isoladas sem tocar `apps/principal`; `momentos.view` fullscreen com retorno/foco e estados inválido/loading/failure/unauthorized/empty. | Circulares diretório/arquivos está em execução; depois revisar Acontece, Para Você, Agora, Perfil e subtelas de publicar. Chat deve apenas consumir o núcleo de Comunicação. Validação visual manual/golden conjunta permanece aberta. | Branch `codex/finalizar-telas-coelo-principal` em `14ff3d50`; Momentos 38/38 e review aprovado. Circulares local: ETA informada 25–35 min. |
+| Percentual Flutter da Etapa 2 | Concluído | Restante | Interpretação |
+| --- | ---: | ---: | --- |
+| Progresso técnico local | 50,72% (105/207) | 49,28% (102/207) | Passou localmente; não significa produção. |
+| Conclusão Flutter `verified` | 0,00% (0/207) | 100,00% (207/207) | Nenhuma ação possui todos os gates Flutter produtivos. |
+
+### Telas, subtelas e ações Flutter
+
+| Tela / subtela | `action_id` | Feito na Etapa 2 | Pendente / passo seguinte | Estado |
+| --- | --- | --- | --- | --- |
+| Auth — Login | `auth.login` | Formulário, erro neutro, sessão/contexto e guards locais; Catalog fail-closed corrigido em `5e8d2655`. | Integrar branch; três goldens Login e E2E remoto. | `local-green` |
+| Auth — Recuperar senha | `auth.recover` | Recovery confinada ao reset; Home, Instituições e `/dev` negados. | Link/redirect/SMTP produtivos e E2E. | `local-green` |
+| Auth — Redefinir senha | `auth.reset` | Sessão recovery distinta, revogação/limpeza e retorno fail-closed. | Token remoto expirado/reutilizado, auto-refresh e E2E. | `local-green` |
+| Auth — Sair | `auth.logout` | Logout e limpeza local cobertos. | Revogação/deep link/voltar no ambiente remoto. | `local-green` |
+| Chat — Diretório/busca/paginação | `chat.list` | Cinco conversas `/dev`, busca, cursor, leitura e launcher sem duplicação integrados. | `total/has_more`, loading/empty/error produtivos e reload remoto. | `local-green` |
+| Chat — Conversa aberta | `chat.open` | Ordem multi-message e retorno pelo menu Coelo (Principal) corrigidos. | Membership revogada, link adulterado, persistência e reload remoto. | `local-green` |
+| Chat — Composer/envio | `chat.send` | Ordem pós-envio/idempotência local corrigidas. | Falha/retry, autorização, auditoria e persistência remota. | `local-green` |
+| Chat — Editar/anexar/recibos/revogar | `chat.edit`, `chat.attach`, `chat.receipts`, `chat.revoke` | Contratos inventariados e ausência produtiva mantida honesta. | Implementar fluxos, mídia, estados negativos, foco e testes. | `audited` |
+| Convites — Lista/detalhe/criar/reenviar/revogar | `invites.list`, `invites.detail`, `invites.create`, `invites.resend`, `invites.revoke` | Diretório, detalhe, wizard e escopo de fixtures corrigidos; goldens locais verdes. | Repository produtivo, confirmação/erros reais, lifecycle e regressão pós-merge. | `local-green` `/dev` |
+| Avisos — Diretório | `notices.list` | Cards/tabela, filtros, preview, paginação, responsividade e goldens locais. | Repository produtivo e reload. | `local-green` |
+| Avisos — Criar/editar/agendar/publicar/arquivar | `notices.create`, `notices.edit`, `notices.schedule`, `notices.publish`, `notices.archive` | Frame/wizard local parcial; `c5085746` faz adapter falhar fechado em status publicado/arquivado/desconhecido; 5/5 Flutter. | OQ-038, commands/lifecycle, dirty state, timezone, duplo envio, replay e reload. | `audited`/fail-closed |
+| Instituições — Diretório/detalhe/criar/editar/arquivos | `institutions.*` | UI `/dev`, busca, cards/tabela, formulários e cabeçalho mobile locais. | Composição produtiva, regressão conjunta, import/export real e E2E. | local/fail-closed |
+| Unidades — Diretório/detalhe/criar/editar/arquivos | `units.*` | UI `/dev` e adapter candidato. | Gateway interno nominal; ações produtivas e reload. | local/fail-closed |
+| Turmas — Diretório/detalhe/criar/editar/membros/arquivos | `groups.*` | UI `/dev`, paginação, métricas e edição local. | Gateway interno nominal, membros produtivos, import/export e reload. | local/fail-closed |
+| Atividades/Modelos — Diretórios/criar/editar/duplicar | `activities.*`, `activity_templates.*` | UI local, validações temporais e duplicação candidata. | Integrar/retestar; replay do escopo por Unidade e composição produtiva. | local/static-review |
+| Avaliações — Configurar/lançar/diário/fechar/reabrir | `assessments.*`, `activities.assessment` | UI `/dev` e rotas locais. | Doze RPCs ausentes, estados produtivos, conflitos/reload e regressão. | local/fail-closed |
+| Planos | `plans.*` | Diretório, filtros, paginação e CRUD fake locais. | Review/integrar branch; import/export e repository produtivo. | `local-green` `/dev` |
+| Cardápios/Modelos | `meal-plans.*` | Diretório, vínculos, período, recorrência, revisão/publicação fake. | Integrar; conflitos, upload/publicação e repository produtivos. | `local-green` `/dev` |
+| Formulários — Diretório/editor/criar/editar/publicar/testar/responder | `forms.list`, `forms.create`, `forms.edit`, `forms.publish`, `forms.test`, `forms.respond` | Diretório/editor/agendamento locais. | Commands seguem fail-closed: trocar `local-preview` por `institution_id` autorizado, versão/request ID, occurrence/participation e segredo anônimo. | local/fail-closed |
+| Formulários — Monitor/respostas/detalhe/arquivos | `forms.monitor`, `forms.responses`, `forms.response-detail`, `forms.files` | `236f12cd` remove conteúdo estático e conecta rotas produtivas a `getMonitor`, `listResponses`, `getResponseDetail` e `listFileJobs`; 7/7. | Integrar branch; sessão real, estados remotos, reload e E2E. | backend-read composto localmente |
+| Importações | `imports.*` | Hub, paginação e wizard local com indisponibilidade honesta. | Entidades restantes, jobs/arquivos reais e integração produtiva. | `local-green` `/dev` |
+| Agenda — Calendário/lista/detalhe/criar/editar | `agenda.view`, `agenda.detail`, `agenda.create`, `agenda.edit` | Calendário/lista/wizard, recorrência, perguntas e localização visual locais. | Integrar; mapa/geocodificação real, persistência e estados produtivos. | `local-green` `/dev` |
+| Agenda — Solicitações/aprovações/permissões | `agenda.request`, `agenda.permissions` | Fluxos locais; Permissões redirecionada para Perfis. | Elegibilidade, autorização produtiva, notificações e reload. | `local-green` `/dev` |
+| Pessoas — Lista/criar/editar | `people.list`, `people.create`, `people.edit` | Diretório e wizard locais com dataset vinculado. | Produção continua no legado people-based; dois testes produtivos, dez goldens, mapa/provider e fixture que perde escopo. | `create/edit` locais; `list` audited |
+| Pessoas — Vínculos/detalhe/reload | `people.links`, `people.reload` | Commit `d4a87af8` compõe detalhe produtivo com `superadmin_person_detail_v2`, envelope estrito e mapeamento fail-closed; 16/16 testes. | Replay pgTAP fresco, daemon Docker, permitido/negado/MFA/sessão, remoto, persistência e E2E. | composição local; promoção retida |
+| Segurança da criança — Lista/criança/criar/editar/suspender | `child-safety.list`, `child-safety.child`, `child-safety.create`, `child-safety.edit`, `child-safety.suspend` | Quatro primeiras ações locais; cards/tabela/wizard e um golden verdes. | `suspend`, lifecycle/revogação, regressão e integração seletiva. | 4 locais; 1 `audited` |
+| Usuários internos — Lista/criar/editar/suspender/MFA | `internal-users.list`, `internal-users.create`, `internal-users.edit`, `internal-users.suspend`, `internal-users.mfa` | Diretório/wizard `/dev`; produção falha fechada em vez de 404. | Decisões de realm, Auth/Convites, suspend/MFA, 23 goldens e import/export. | `blocked-decision` |
+| Perfis e permissões — Lista/criar/detalhe/editar/atribuir/excluir | `access-profiles.list`, `access-profiles.create`, `access-profiles.detail`, `access-profiles.edit`, `access-profiles.assign`, `access-profiles.delete` | Central visual e wizard local. | Detalhe só por deep link, realm produtivo incorreto, OQ-044, atribuir/excluir e goldens. | parcial/bloqueado |
+| Modelos de perfil — Lista/filtro/criar/detalhe/editar/duplicar | `access-models.list`, `access-models.filter`, `access-models.create`, `access-models.detail`, `access-models.edit`, `access-models.duplicate` | UI/adapter candidatos. | Multi-escopo, `totalCount`, detalhe, duplicar/import/export, P0 backend e goldens. | parcial/bloqueado |
+| Perfis de cuidado — Lista/criar/detalhe/editar | `health-care.list`, `health-care.create`, `health-care.detail`, `health-care.edit` | Diretório e wizard `/dev` responsivos. | Produção, import/export, goldens e decisões de cuidado. | local/fail-closed |
+| Medicação — Lista/criar/detalhe/editar/evidência | `medication.list`, `medication.create`, `medication.detail`, `medication.edit`, `medication.evidence` | Diretório/wizard e CRUD fake locais. | Todos os cinco IDs permanecem bloqueados para produção por decisão e segurança. | `blocked-decision` |
+| Acontece/Para Você/Agora/Perfil | `acontece.*`, `principal.for-you`, `agora.*`, `account.profile` | Rotas do menu isoladas; trabalho visual histórico preservado. | Revisão tela/subtela, publicadores, regressão conjunta e integração seletiva. | em revisão futura |
+| Momentos — Viewer | `momentos.view` | Fullscreen sem shell, retorno/foco e estados inválido/loading/failure/unauthorized/empty; 38/38. | Golden/manual conjunta e integração da branch. | `local-green` |
+| Momentos — Criar/publicar/remover | `momentos.create`, `momentos.publish`, `momentos.remove` | Contratos/UX históricos inventariados. | Decisões, implementação produtiva e todos os estados. | `blocked-decision` |
+| Circulares — Diretório/menu/arquivos | `circulars.view` | Hierarquia movida para o menu correto, diretório e ações Importar/Exportar locais; 21/21, review aprovado; WIP `393fc7ff` excluído. | Integrar branch; callbacks produtivos, backend/RLS e E2E dos arquivos. | `local-green` Flutter |
+| Circulares — Criar/editar/detalhe/publicar | `circulars.create` e ações correlatas | Apenas o nó/hierarquia de criação existente foi preservado. | Fluxos criar/editar/detalhe/publicar, estados, goldens, persistência e reload. | `audited`/pendente |
+
+### Macroajustes Flutter da Etapa 2
+
+| Macroajuste | Feito | Pendente |
+| --- | --- | --- |
+| Cabeçalho mobile e shell | Implementação compartilhada no `SuperadminShell`; matrizes locais de largura/tema/texto. | Integração seletiva sem hunks Chat e regressão de todas as rotas após merges. |
+| Navegação e ownership | Chat centralizado; Coelo (Principal) definido como menu do Superadmin; apps externos preservados. | Resolver conflitos lógicos de router/navigation durante cherry-picks. |
+| Responsividade e acessibilidade | Diversas telas cobrem 375–1440 e texto 200%; Momentos cobre foco/Escape. | Treze suítes golden de Acessos RED; validação manual e aprovação deliberada. |
+| Componentes compartilhados | `SuperadminFormFrame` e `CoeloStatePanel` receberam correções candidatas. | Regressão conjunta Auth/Comunicação/Estruturas/Acessos antes de integrar. |
+| Mapa/localização | Prévia municipal local criada. | Remover dependência direta de tiles OSM até provider/cache/privacidade aprovados. |
+| Referências visuais | Manifestos preservam Comunicação, Operações, Estruturas, Acessos/Saúde, Principal e Coordenador. | Manter SHA/origem/tela e pedir reenvio de qualquer anexo não recuperável. |
 
 ### Primeiro próximo passo Flutter da Etapa 2
 
@@ -41,9 +89,10 @@ estado local exigido e nenhuma ação foi certificada como Flutter produtivo.
    válido e excluindo `393fc7ff`.
 3. Integrar seletivamente Estruturas, Operações, Coelo (Principal) e
    Acessos/Saúde, sempre com regressão pós-merge e sem duplicar Chat/cabeçalho.
-4. Auth permanece bloqueado até decisão explícita sobre `apps/catalog`.
+4. Auth/Catalog foi corrigido localmente em `5e8d2655`; falta integrar e tratar
+   ledger/infra/E2E remoto.
 
-**Tempo usado:** não calculável com precisão porque as seis conversas não
+**Tempo usado:** não calculável com precisão porque as frentes não
 registraram duração homogênea. **ETA Flutter local restante:** não calculável
 até os reviews e integrações seletivas; as estimativas por frente acima são as
 fatias atualmente recuperáveis.
@@ -3379,6 +3428,33 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
   Comunicação permanece preservada até a consolidação das frentes dependentes.
 - Contagem permanece 105/207 Flutter `local-green` e 0/207 `verified`.
 
+### Avisos — status remoto não resolvido fail-closed — `c5085746`
+
+- O adapter produtivo não converte mais `published`, `archived` ou status
+  desconhecido em draft; falha fechado até a OQ-038.
+- Evidência: Flutter 5/5, analyzer dos dois arquivos e worker Deno 2/2 verdes.
+  Replay pgTAP aguarda mutex; OQ-038/OQ-041 bloqueiam lifecycle/remoto.
+- Nenhum contador Flutter, Supabase ou integrado foi promovido.
+
+### Auth/Catalog — recovery fail-closed — `5e8d2655`
+
+- Recovery/ausência de sessão normal não chama `CatalogAccessGateway`, não lê
+  membership e não monta Home; após RPC, Auth é revalidada antes de publicar
+  allowed. Review independente sem P0/P1; corrida P2 corrigida.
+- Evidência: dois testes novos, `coelo_auth` 23/23, Superadmin Auth/router
+  129/129 e analyzers verdes. Catalog full 138 passou e conserva uma RED textual
+  histórica idêntica ao `dev`; nenhum delta visual.
+- Estado local Auth não muda; falta integrar e executar remoto/E2E.
+
+### Formulários — leituras produtivas compostas — `236f12cd`
+
+- `forms.monitor`, `forms.responses`, `forms.response-detail` e `forms.files`
+  chamam APIs produtivas com IDs reais e estados erro/negado; conteúdo estático
+  foi removido. Gate de rotas fail-closed 7/7 e analyzer focado verdes.
+- `forms.create/edit/publish/test/respond` continuam fail-closed por contexto,
+  versão/request ID e contratos de occurrence/participation/anônimo.
+- Sem sessão remota/E2E, nenhuma ação foi promovida no contador.
+
 ## Checkpoint 2026-09-01 — Coelo (Principal), `momentos.view` fullscreen
 
 - **Tela/subtela:** Momentos, viewer imersivo ready, navegação vertical,
@@ -3400,6 +3476,21 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
   e diff-check verdes, bookkeeping `14ff3d50`. Flutter local está verificado no
   recorte funcional; validação visual manual/golden integrada continua aberta.
 
+## Checkpoint 2026-09-01 — Circulares, menu/diretório/arquivos local
+
+- `circulars.view`: menu movido para a hierarquia correta, diretório e ações
+  Importar/Exportar preservados; 21/21 testes, analyzer focal, diff-check e
+  review independente verdes.
+- Commits preservados: `ebc0ac29` (referências/manifesto equivalentes a
+  `f6d44af9`), `cb6763ed` (ações de arquivo equivalentes a `d22a9b3d`) e
+  `52735a18` (hierarquia). `393fc7ff` está ausente e não é ancestral.
+- `circulars.create` não é promovido: apenas o nó já existente foi mantido.
+  Criar/editar/detalhe/publicar, callbacks reais de arquivo, backend/RLS,
+  persistência/reload, remoto e E2E continuam abertos.
+- Próximo recorte Flutter: Acontece, card `Publicar agora` com hover/foco/
+  pressionar/abrir publicação, seguido por Perfil sem seguidores públicos;
+  ETA local informada 35–50 min.
+
 ## Checkpoint 2026-09-01 — Acessos e Saúde/Cuidado, handoff `6e56d3e4`
 
 | Tela/subtela | Passo realmente concluído | Estado máximo | Pendência explícita |
@@ -3420,6 +3511,18 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
   aprovado em massa.
 - Este checkpoint preserva o handoff sem aumentar a contagem 105/207 enquanto
   as revisões independentes e a integração seletiva não terminarem.
+
+### Pessoas — detalhe/reload interno v2 — `d4a87af8`
+
+- `people.links`/`people.reload`: o formulário produtivo chama
+  `superadmin_person_detail_v2`, decodifica envelope estrito e converte sessão,
+  permissão e MFA em unauthorized; payload inválido falha fechado.
+- Evidência Flutter: 16/16 testes e analyzer focado verdes, diff limpo.
+- Estado máximo atual: composição Flutter→RPC contratual local, sem promoção no
+  contador. Falta replay pgTAP fresco; Docker está instalado, mas daemon sem
+  privilégio permanece indisponível. Remoto recebeu zero mutações e não há E2E.
+- `people.list/create/edit` continuam no legado people-based por ausência de spec
+  interna aprovada de escrita; não confundir detalhe/reload com CRUD concluído.
 
 ### Review independente do handoff — promoção bloqueada
 

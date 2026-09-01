@@ -374,6 +374,25 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
   ausência das 12 RPCs/tabelas de Avaliações. Os 34 avisos de RLS em
   `app_private` serão primeiro classificados por exposição/grants, sem correção
   cega; remoto continua sem mutação por OQ-041.
+- **Coelo (Principal):** Circulares menu/diretório/arquivos fechou localmente em
+  `ebc0ac29`/`cb6763ed`/`52735a18`, 21/21 e review aprovado; `393fc7ff` excluído.
+  Criar/editar/detalhe/publicar e backend continuam pendentes. Próximo passo é
+  Acontece/Publicar agora e Perfil sem seguidores públicos, ETA 35–50 min.
+- **Pessoas/detalhe-reload:** `d4a87af8` compôs
+  `superadmin_person_detail_v2`; 16/16 testes e analyzer focado verdes. Promoção
+  retida até replay pgTAP; Docker instalado, daemon indisponível; remoto sem
+  mutação. Lista/criar/editar continuam no legado people-based/fail-closed.
+- **Avisos/status:** `c5085746` falha fechado em status remoto não resolvido;
+  Flutter 5/5 e worker 2/2 verdes. Replay aguarda mutex; OQ-038/OQ-041 bloqueiam.
+- **Convites/contrato:** produção Unavailable preservada; auditoria 10/10.
+  Migration histórica rejeitada por realm people-based, issuer person e
+  backfill especulativo. OQ-039 aguarda decisão Owner+AAL2/issuer interno.
+- **Auth/Catalog:** `5e8d2655` concluiu recovery fail-closed; review sem P0/P1,
+  corrida P2 corrigida, `coelo_auth` 23/23 e Auth/router 129/129. Falta integrar;
+  remoto bloqueado por 17 migrations/infra/identity.
+- **Formulários/leitura:** `236f12cd` conectou monitor, respostas, detalhe e jobs
+  de arquivo às APIs produtivas; rotas 7/7. Commands criar/editar/publicar/
+  testar/responder continuam fail-closed; sem sessão remota/E2E.
 
 - Automação horária ativa: `etapa-2-acompanhamento-hor-rio`.
 - Cada frente deve enviar checkpoint diretamente ao Coordenador pelo menos uma
