@@ -3246,3 +3246,19 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
 | 2026-08-26 | Consolidação retomável em HEAD `447ac02c`: 37 famílias, estados por ação, commits/gates, resíduos, ETA e handoff integrado. |
 | 2026-08-26 | Organização decisória: tabela geral cumulativa, definição B/I/A/C, matriz de 201 ações com nível aconselhado/estimativa/evidência, decomposição explícita das 12 ações de Instituições, dependências integradas fora de escopo e inventário do worktree concorrente; nenhum código ou backend alterado. |
 | 2026-09-01 | Etapa 2/Auth: review independente de `36ae7c86` bloqueou integração porque uma sessão password-recovery era considerada autenticada e podia alcançar Home/rotas protegidas sem `authContext`; `auth.recover` e `auth.reset` foram rebaixadas para `in-progress`, total Flutter ajustado para 100/207. Correção e testes negativos recovery→Home/rota protegida são o primeiro gate (ETA local 1–2 h). Login/logout permanecem `local-green`; MFA permanece aberto/fail-closed; remoto/E2E não foram promovidos. O delta em `apps/catalog` também viola o recorte exclusivo Superadmin e deve preservar compatibilidade ou ser removido antes da integração. |
+
+## Checkpoint 2026-09-01 — Comunicações/Avisos e limite da Etapa 2
+
+- `notices.list` mantém o teto `local-green`. O commit `ee8d3aff` adiciona as
+  ações canônicas Importar/Exportar com indisponibilidade honesta, 20 fixtures
+  `/dev` coerentes e paginação real em múltiplas páginas. Evidências locais:
+  37/37 testes, analyzer focado e validador visual verdes; 13 goldens foram
+  comparados e atualizados.
+- Criar/Editar Aviso já reutiliza frame, navegação de etapas e rodapé canônicos;
+  os testes responsivos, desktop e texto a 200% permaneceram verdes no pacote
+  acima. Isso não comprova persistência produtiva, autorização ou reload.
+- O recorte foi corrigido para somente `apps/superadmin` e pacotes/backend
+  indispensáveis. `Coelo (Principal)` é uma superfície do menu do Superadmin;
+  `apps/principal`, `apps/admin` e `apps/site` ficam fora da Etapa 2.
+- Supabase remoto, RLS, tenant A/B e E2E continuam sem promoção. `verified`
+  permanece 0/207.

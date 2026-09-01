@@ -1414,3 +1414,17 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 - **Escopo:** o delta de Auth toca `apps/catalog`, fora do recorte exclusivo
   Superadmin. Compatibilidade deverá ser preservada ou essa ampliação removida
   antes de integrar. Nenhum commit/worktree foi descartado.
+
+## Checkpoint 2026-09-01 — Comunicações/Avisos sem promoção integrada
+
+- O lote `ee8d3aff` fecha o diretório e os formulários de Comunicações/Avisos
+  apenas no plano Flutter local: 37/37 testes, analyzer e validador visual
+  verdes, 20 fixtures `/dev` e 13 goldens revisados.
+- O primeiro gate integrado continua no backend: RPCs públicas de gestão de
+  Avisos e `notice_events` não apareceram no remoto read-only; ambiente ainda
+  não classificado impede aplicar o pacote local. Não há prova permitido,
+  negado, vínculo revogado, tenant A/B, persistência, reload ou auditoria.
+- O estado permanece `blocked-supabase`, E2E 0/202 e projeto estrito 0/229.
+  A superfície `Coelo (Principal)` citada nesta etapa pertence ao
+  `apps/superadmin`; os aplicativos `apps/principal`, `apps/admin` e `apps/site`
+  estão fora do recorte.

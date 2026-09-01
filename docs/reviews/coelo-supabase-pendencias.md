@@ -4315,3 +4315,18 @@ da simples soma das 207 ações.
   Superadmin. Deve preservar compatibilidade ou remover essa ampliação antes de
   unificar. Supabase geral permanece 3/37 famílias `local-green`, 0/37 `done`;
   remoto/E2E não foram promovidos.
+
+## Checkpoint 2026-09-01 — Comunicações/Avisos após fechamento visual local
+
+- O commit Flutter `ee8d3aff` não altera banco, Auth, Storage, Edge Functions,
+  migrations ou composição produtiva. As 20 fixtures pertencem exclusivamente
+  a `/dev`.
+- A divergência remota permanece: as RPCs públicas de gestão de Avisos e
+  `notice_events` esperadas pelo contrato local não foram encontradas na leitura
+  do projeto. Portanto Avisos continua `blocked-supabase`; nenhuma ação foi
+  promovida a `remote-green` ou `done`.
+- O escopo da Etapa 2 está restrito ao Superadmin e backend indispensável; não
+  autoriza materializar `apps/principal`, `apps/admin` ou `apps/site`.
+- Próximo gate seguro: classificar formalmente o ambiente e aprovar nominalmente
+  o pacote de migrations antes de qualquer mutação remota. Até lá, somente
+  inventário read-only.
