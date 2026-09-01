@@ -12,7 +12,7 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "BD9F743A921EB09B65D9204FFD00D539C3CFA84F10DAB9430062EB5223ABC7A0"
+flutter_tracker_sha256: "08776D3A2953C14D3EA20A8ECC8B35245BF27EBF8B6B5140A01AC1DF492FDB7A"
 supabase_tracker_sha256: "4ECE2FA734993E164057469C92C1CE3A4CEED64CD0095C3098E852F5F80FA764"
 ---
 
@@ -34,7 +34,7 @@ de branch está superada somente no aspecto Git.
 | Pessoas/Acessos/Saúde | Telas, adapters, detalhe de Pessoa e migrations candidatas. | Corrigir P0 de realm antes de lookup, pgTAP vermelho, decisões sensíveis; depois permitido/negado/revogado e reload. |
 | Estruturas/Avaliações | Telas, gateways e migrations no mesmo código. | Resolver hierarquia, replay e gates de autorização; escolher uma ação e provar tenant A/B, persistência e reload. |
 | Operações | Planos, Cardápios, Formulários, Importações e Agenda compostos. | Fechar commands/jobs/backend por ação e executar o primeiro fluxo clique → Supabase → persistência → nova leitura. |
-| Comunicação | Chat é canônico; Avisos, Convites e Circulares estão compostos sem rotas duplicadas. | Replay/pgTAP, auth scope, mídia/outbox/Realtime, tenant A/B, revogação e reload; então rodar E2E. |
+| Comunicação | Chat é canônico; o botão “Mensagens” do Coelo (Principal) abre a mesma rota em prévia e produção, preservando o retorno; Avisos, Convites e Circulares estão compostos sem rotas duplicadas. | Replay/pgTAP, auth scope, mídia/outbox/Realtime, tenant A/B, revogação e reload; então rodar E2E. |
 | Menu Coelo (Principal) | Para Você, Acontece, Agora, Momentos e Perfil estão dentro do Superadmin. | Fechar backend/audiência/R2/publicadores e comprovar cada rota real ponta a ponta. |
 | Macro — cabeçalho, shell e migrations | Cabeçalho compartilhado e capabilities combinadas; manifesto único ordenado. | Regressão visual final e replay integral antes do primeiro deploy amplo. |
 
