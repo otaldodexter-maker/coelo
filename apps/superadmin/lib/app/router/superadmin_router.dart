@@ -572,10 +572,10 @@ GoRouter createSuperadminRouter({
         return SuperadminRoutes.home;
       }
       if (_isProductionMutationLocation(location) &&
-          !(_isStructureMutationLocation(location)
-              ? hasStructureMutationCapability()
-              : _isAssessmentMutationLocation(location)
+          !(_isAssessmentMutationLocation(location)
               ? hasAssessmentMutationCapability()
+              : _isStructureMutationLocation(location)
+              ? hasStructureMutationCapability()
               : hasAuthoritativeMutationCapability())) {
         return _productionMutationUnavailablePath;
       }
@@ -850,101 +850,105 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.unitCreate,
             name: SuperadminRoutes.unitCreateName,
-            builder: (context, state) => UnitFormPage(
-              repository: unitRepository,
-              logout: logout,
-              onCreateGroup: (institutionId, unitId) => context.goNamed(
-                SuperadminRoutes.groupCreateName,
-                queryParameters: {
-                  'institutionId': institutionId,
-                  'unitId': ?unitId,
-                  'returnTo': state.uri.toString(),
-                },
-              ),
-              onEditGroup: (id) => context.goNamed(
-                SuperadminRoutes.groupEditName,
-                pathParameters: {'groupId': id},
-                queryParameters: {'returnTo': state.uri.toString()},
-              ),
-              onCreateActivity: (institutionId, unitId) => context.goNamed(
-                SuperadminRoutes.activityCreateName,
-                queryParameters: {
-                  'institutionId': institutionId,
-                  'unitId': ?unitId,
-                  'returnTo': state.uri.toString(),
-                },
-              ),
-              onEditActivity: (id) => context.goNamed(
-                SuperadminRoutes.activityEditName,
-                pathParameters: {'activityId': id},
-                queryParameters: {'returnTo': state.uri.toString()},
-              ),
-              onCancel: () => context.goNamed(SuperadminRoutes.unitsName),
-              onSaved: (result) => context.goNamed(SuperadminRoutes.unitsName, extra: result),
-              onDestinationSelected: (destination) {
-                if (destination == 'home') {
-                  context.goNamed(SuperadminRoutes.homeName);
-                } else if (destination == 'institutions') {
-                  context.goNamed(SuperadminRoutes.institutionsName);
-                } else if (destination == 'units') {
-                  context.goNamed(SuperadminRoutes.unitsName);
-                } else if (destination == 'groups') {
-                  context.goNamed(SuperadminRoutes.groupsName);
-                } else if (destination == 'people') {
-                  context.goNamed(SuperadminRoutes.peopleName);
-                }
-              },
-            ),
+            builder: (context, state) => !hasStructureMutationCapability()
+                ? blockedProductionMutationPage(context)
+                : UnitFormPage(
+                    repository: unitRepository,
+                    logout: logout,
+                    onCreateGroup: (institutionId, unitId) => context.goNamed(
+                      SuperadminRoutes.groupCreateName,
+                      queryParameters: {
+                        'institutionId': institutionId,
+                        'unitId': ?unitId,
+                        'returnTo': state.uri.toString(),
+                      },
+                    ),
+                    onEditGroup: (id) => context.goNamed(
+                      SuperadminRoutes.groupEditName,
+                      pathParameters: {'groupId': id},
+                      queryParameters: {'returnTo': state.uri.toString()},
+                    ),
+                    onCreateActivity: (institutionId, unitId) => context.goNamed(
+                      SuperadminRoutes.activityCreateName,
+                      queryParameters: {
+                        'institutionId': institutionId,
+                        'unitId': ?unitId,
+                        'returnTo': state.uri.toString(),
+                      },
+                    ),
+                    onEditActivity: (id) => context.goNamed(
+                      SuperadminRoutes.activityEditName,
+                      pathParameters: {'activityId': id},
+                      queryParameters: {'returnTo': state.uri.toString()},
+                    ),
+                    onCancel: () => context.goNamed(SuperadminRoutes.unitsName),
+                    onSaved: (result) => context.goNamed(SuperadminRoutes.unitsName, extra: result),
+                    onDestinationSelected: (destination) {
+                      if (destination == 'home') {
+                        context.goNamed(SuperadminRoutes.homeName);
+                      } else if (destination == 'institutions') {
+                        context.goNamed(SuperadminRoutes.institutionsName);
+                      } else if (destination == 'units') {
+                        context.goNamed(SuperadminRoutes.unitsName);
+                      } else if (destination == 'groups') {
+                        context.goNamed(SuperadminRoutes.groupsName);
+                      } else if (destination == 'people') {
+                        context.goNamed(SuperadminRoutes.peopleName);
+                      }
+                    },
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.unitEdit,
             name: SuperadminRoutes.unitEditName,
-            builder: (context, state) => UnitFormPage(
-              repository: unitRepository,
-              unitId: state.pathParameters['unitId'],
-              logout: logout,
-              onCreateGroup: (institutionId, unitId) => context.goNamed(
-                SuperadminRoutes.groupCreateName,
-                queryParameters: {
-                  'institutionId': institutionId,
-                  'unitId': ?unitId,
-                  'returnTo': state.uri.toString(),
-                },
-              ),
-              onEditGroup: (id) => context.goNamed(
-                SuperadminRoutes.groupEditName,
-                pathParameters: {'groupId': id},
-                queryParameters: {'returnTo': state.uri.toString()},
-              ),
-              onCreateActivity: (institutionId, unitId) => context.goNamed(
-                SuperadminRoutes.activityCreateName,
-                queryParameters: {
-                  'institutionId': institutionId,
-                  'unitId': ?unitId,
-                  'returnTo': state.uri.toString(),
-                },
-              ),
-              onEditActivity: (id) => context.goNamed(
-                SuperadminRoutes.activityEditName,
-                pathParameters: {'activityId': id},
-                queryParameters: {'returnTo': state.uri.toString()},
-              ),
-              onCancel: () => context.goNamed(SuperadminRoutes.unitsName),
-              onSaved: (result) => context.goNamed(SuperadminRoutes.unitsName, extra: result),
-              onDestinationSelected: (destination) {
-                if (destination == 'home') {
-                  context.goNamed(SuperadminRoutes.homeName);
-                } else if (destination == 'institutions') {
-                  context.goNamed(SuperadminRoutes.institutionsName);
-                } else if (destination == 'units') {
-                  context.goNamed(SuperadminRoutes.unitsName);
-                } else if (destination == 'groups') {
-                  context.goNamed(SuperadminRoutes.groupsName);
-                } else if (destination == 'people') {
-                  context.goNamed(SuperadminRoutes.peopleName);
-                }
-              },
-            ),
+            builder: (context, state) => !hasStructureMutationCapability()
+                ? blockedProductionMutationPage(context)
+                : UnitFormPage(
+                    repository: unitRepository,
+                    unitId: state.pathParameters['unitId'],
+                    logout: logout,
+                    onCreateGroup: (institutionId, unitId) => context.goNamed(
+                      SuperadminRoutes.groupCreateName,
+                      queryParameters: {
+                        'institutionId': institutionId,
+                        'unitId': ?unitId,
+                        'returnTo': state.uri.toString(),
+                      },
+                    ),
+                    onEditGroup: (id) => context.goNamed(
+                      SuperadminRoutes.groupEditName,
+                      pathParameters: {'groupId': id},
+                      queryParameters: {'returnTo': state.uri.toString()},
+                    ),
+                    onCreateActivity: (institutionId, unitId) => context.goNamed(
+                      SuperadminRoutes.activityCreateName,
+                      queryParameters: {
+                        'institutionId': institutionId,
+                        'unitId': ?unitId,
+                        'returnTo': state.uri.toString(),
+                      },
+                    ),
+                    onEditActivity: (id) => context.goNamed(
+                      SuperadminRoutes.activityEditName,
+                      pathParameters: {'activityId': id},
+                      queryParameters: {'returnTo': state.uri.toString()},
+                    ),
+                    onCancel: () => context.goNamed(SuperadminRoutes.unitsName),
+                    onSaved: (result) => context.goNamed(SuperadminRoutes.unitsName, extra: result),
+                    onDestinationSelected: (destination) {
+                      if (destination == 'home') {
+                        context.goNamed(SuperadminRoutes.homeName);
+                      } else if (destination == 'institutions') {
+                        context.goNamed(SuperadminRoutes.institutionsName);
+                      } else if (destination == 'units') {
+                        context.goNamed(SuperadminRoutes.unitsName);
+                      } else if (destination == 'groups') {
+                        context.goNamed(SuperadminRoutes.groupsName);
+                      } else if (destination == 'people') {
+                        context.goNamed(SuperadminRoutes.peopleName);
+                      }
+                    },
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.groups,
@@ -970,33 +974,37 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.groupCreate,
             name: SuperadminRoutes.groupCreateName,
-            builder: (context, state) => GroupFormPage(
-              repository: groupRepository,
-              initialInstitutionId: state.uri.queryParameters['institutionId'],
-              initialUnitId: state.uri.queryParameters['unitId'],
-              logout: logout,
-              onCancel: () => _returnToOr(context, state, SuperadminRoutes.groupsName),
-              onSaved: (result) =>
-                  _returnToOr(context, state, SuperadminRoutes.groupsName, extra: result),
-              onBugReportSubmitted: productionSupportController?.submitReport,
-              onDestinationSelected: (destination) =>
-                  _navigateFromPersistentShell(context, destination),
-            ),
+            builder: (context, state) => !hasStructureMutationCapability()
+                ? blockedProductionMutationPage(context)
+                : GroupFormPage(
+                    repository: groupRepository,
+                    initialInstitutionId: state.uri.queryParameters['institutionId'],
+                    initialUnitId: state.uri.queryParameters['unitId'],
+                    logout: logout,
+                    onCancel: () => _returnToOr(context, state, SuperadminRoutes.groupsName),
+                    onSaved: (result) =>
+                        _returnToOr(context, state, SuperadminRoutes.groupsName, extra: result),
+                    onBugReportSubmitted: productionSupportController?.submitReport,
+                    onDestinationSelected: (destination) =>
+                        _navigateFromPersistentShell(context, destination),
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.groupEdit,
             name: SuperadminRoutes.groupEditName,
-            builder: (context, state) => GroupFormPage(
-              repository: groupRepository,
-              groupId: state.pathParameters['groupId'],
-              logout: logout,
-              onCancel: () => _returnToOr(context, state, SuperadminRoutes.groupsName),
-              onSaved: (result) =>
-                  _returnToOr(context, state, SuperadminRoutes.groupsName, extra: result),
-              onBugReportSubmitted: productionSupportController?.submitReport,
-              onDestinationSelected: (destination) =>
-                  _navigateFromPersistentShell(context, destination),
-            ),
+            builder: (context, state) => !hasStructureMutationCapability()
+                ? blockedProductionMutationPage(context)
+                : GroupFormPage(
+                    repository: groupRepository,
+                    groupId: state.pathParameters['groupId'],
+                    logout: logout,
+                    onCancel: () => _returnToOr(context, state, SuperadminRoutes.groupsName),
+                    onSaved: (result) =>
+                        _returnToOr(context, state, SuperadminRoutes.groupsName, extra: result),
+                    onBugReportSubmitted: productionSupportController?.submitReport,
+                    onDestinationSelected: (destination) =>
+                        _navigateFromPersistentShell(context, destination),
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.activities,

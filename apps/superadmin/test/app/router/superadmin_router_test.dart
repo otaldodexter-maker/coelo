@@ -345,5 +345,14 @@ void main() {
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.assessmentEntry);
     expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsNothing);
+
+    router.go('/activities/activity-1/assessment-settings?institutionId=institution-1');
+    await tester.pumpAndSettle();
+
+    expect(
+      router.routeInformationProvider.value.uri.path,
+      '/activities/activity-1/assessment-settings',
+    );
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsNothing);
   });
 }
