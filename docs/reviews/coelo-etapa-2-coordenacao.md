@@ -100,10 +100,11 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
   `docs/reviews/evidence/etapa-2/acessos-saude/manifest.md`.
 - Operações preservou 30/30 PNGs no commit `86e55dc7`, manifestados em
   `docs/reviews/evidence/etapa-2/operacoes/manifest.md`.
-- Coelo (Principal) informou 12 anexos ainda não recuperados do histórico.
-  A frente deve tentar os caminhos originais e listar item a item; enquanto não
-  houver arquivo/hash/commit, este é bloqueio documental e o usuário poderá
-  precisar reenviar os itens exatos.
+- Coelo (Principal) recuperou 12/12 anexos do histórico local no commit
+  `8f89d6d6` e os inventariou com tela/uso/dimensões/SHA-256 no commit
+  `cb6fa272`, em
+  `docs/reviews/evidence/etapa-2/coelo-principal-superadmin/`. Não há referência
+  ausente nem vídeo informado nessa frente.
 
 ## Handoffs recebidos
 

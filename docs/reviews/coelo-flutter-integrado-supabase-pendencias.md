@@ -13,8 +13,8 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "8D839AC20722D7865D9ADE96D999259EA20343B5A892EBE58B0E9DCC87B42BA6"
-supabase_tracker_sha256: "6A94ED85DDABF7A66FDC5022953E56010E191AD87878CA670F84DFE833BA19C1"
+flutter_tracker_sha256: "3A2FBE5528520181009DA940322B1C34BC755AE34A80ED1904DA6F6F0F629E17"
+supabase_tracker_sha256: "0DA68C8556C864548D27365978406626859695D9983EB8ED7130CF6FCD4A673D"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
@@ -1428,3 +1428,18 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   A superfície `Coelo (Principal)` citada nesta etapa pertence ao
   `apps/superadmin`; os aplicativos `apps/principal`, `apps/admin` e `apps/site`
   estão fora do recorte.
+
+### Checkpoint integrado 66 — Estruturas locais sem promoção remota
+
+- Shell mobile, Instituições, Unidades, Turmas, Atividades e Avaliações foram
+  decompostos por tela/subtela/action_id. Flutter permanece 102/207
+  `local-green`; Supabase 3/37 famílias `local-green`; E2E 0/202 e estrito 0/229.
+- Unidades/Turmas têm adapters candidatos, porém os RPCs people-based não podem
+  ser usados pelo ator interno; produção segue `Unavailable` por OQ-043.
+- Modelos por Unidade têm migration e 31 asserts somente estáticos. Sem replay,
+  remoto autorizado, tenant A/B, revogação, persistência e reload, não há
+  promoção integrada.
+- Avaliações têm UI `/dev`, mas nenhum dos 11 RPCs requeridos existe nas
+  migrations; `7e702447` mantém cinco superfícies produtivas fail-closed.
+- Primeiro gate: contratos backend nominais, replay/pgTAP e OQ-041; ETA técnica
+  8–16 h após desbloqueios, sem incluir espera externa.

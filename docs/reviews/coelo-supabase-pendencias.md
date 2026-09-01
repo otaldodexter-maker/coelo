@@ -4330,3 +4330,23 @@ da simples soma das 207 ações.
 - Próximo gate seguro: classificar formalmente o ambiente e aprovar nominalmente
   o pacote de migrations antes de qualquer mutação remota. Até lá, somente
   inventário read-only.
+
+### Checkpoint seguro 68 — Estruturas locais, modelos por Unidade e Avaliações fail-closed
+
+- **Unidades/Turmas:** adapters Flutter candidatos usam RPCs legados
+  people-based. OQ-043 não os autoriza para o ator interno; composição produtiva
+  permanece `fail-closed` até gateway nominal por realm, negativos e tenant A/B.
+- **Modelos por Unidade:** `20260901165125_activity_template_unit_scope.sql`
+  adiciona `unit_id`, hierarquia instituição/unidade, FK composta, índice, RLS,
+  capability, AAL2, idempotência e auditoria. O teste contém 31 asserts
+  estáticos; sem Docker/replay, estado é `in-progress/static-review`, nunca
+  `local-green`.
+- **Avaliações:** o adapter referencia 11 RPCs `superadmin_assessment_*` que não
+  existem nas migrations canônicas. Não há CRUD produtivo; rotas permanecem
+  fail-closed até backend v2 interno completo.
+- **Ambiente:** remoto `evvbomzejfijozbtgvpt` recebeu zero mutações e continua
+  condicionado à OQ-041. Supabase permanece 3/37 famílias `local-green`, 0/37
+  `done`; replay, pgTAP, Advisors pós-DDL e E2E continuam pendentes.
+- **Primeiro passo:** contratos nominais de Unidades/Turmas e Avaliações,
+  Docker/replay dos 31 asserts e só então pacote remoto nominal. ETA técnica
+  após desbloqueios: 8–16 h, sem contar espera externa.
