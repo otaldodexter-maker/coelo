@@ -63,7 +63,10 @@ final class _AccessProfileDirectoryPageState extends State<AccessProfileDirector
   @override
   void initState() {
     super.initState();
-    _viewModel = AccessProfileViewModel(widget.repository);
+    _viewModel = AccessProfileViewModel(
+      widget.repository,
+      principalCapabilitiesOnly: widget.directoryKind == AccessProfileDirectoryKind.profiles,
+    );
     _searchController = TextEditingController();
     _activityController = SuperadminActivityController();
     _scheduleLoad(_viewModel);
@@ -72,9 +75,15 @@ final class _AccessProfileDirectoryPageState extends State<AccessProfileDirector
   @override
   void didUpdateWidget(covariant AccessProfileDirectoryPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (identical(oldWidget.repository, widget.repository)) return;
+    if (identical(oldWidget.repository, widget.repository) &&
+        oldWidget.directoryKind == widget.directoryKind) {
+      return;
+    }
     _viewModel.dispose();
-    _viewModel = AccessProfileViewModel(widget.repository);
+    _viewModel = AccessProfileViewModel(
+      widget.repository,
+      principalCapabilitiesOnly: widget.directoryKind == AccessProfileDirectoryKind.profiles,
+    );
     _searchController.clear();
     _footerHeight = 0;
     _scheduleLoad(_viewModel);
@@ -196,7 +205,7 @@ final class _AccessProfileDirectoryContentState extends State<_AccessProfileDire
           }
           final query = widget.viewModel.query;
           final showPagination =
-              query.domain != AccessProfileDomain.principal &&
+              !widget.viewModel.usesPrincipalCapabilities &&
               widget.viewModel.state == AccessProfileLoadState.success;
           _measureFooter(showPagination);
           final footerInset = showPagination ? _footerHeight + CoeloSpacing.space4 : 0.0;
@@ -247,7 +256,7 @@ final class _AccessProfileDirectoryContentState extends State<_AccessProfileDire
                   if (widget.viewModel.page.isDemo ||
                       (query.domain == AccessProfileDomain.principal && widget.viewModel.isDemo))
                     const SizedBox(height: CoeloSpacing.space4),
-                  if (query.domain != AccessProfileDomain.principal) ...[
+                  if (!widget.viewModel.usesPrincipalCapabilities) ...[
                     Text(
                       'Perfil define teto; atribuição define contexto efetivo',
                       style: Theme.of(context).textTheme.bodySmall,
@@ -320,7 +329,7 @@ final class _AccessProfileToolbar extends StatelessWidget {
     builder: (context, constraints) {
       final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
       final query = viewModel.query;
-      if (query.domain == AccessProfileDomain.principal) {
+      if (viewModel.usesPrincipalCapabilities) {
         return CoeloAdminListingToolbar(
           search: SizedBox(
             width: compact ? constraints.maxWidth : 300,
@@ -337,13 +346,18 @@ final class _AccessProfileToolbar extends StatelessWidget {
         );
       }
       final filterWidth = compact ? constraints.maxWidth : 176.0;
-      final validScopes = query.domain == AccessProfileDomain.platform
-          ? const [AccessProfileScope.platform, AccessProfileScope.institution]
-          : const [
-              AccessProfileScope.institution,
-              AccessProfileScope.unit,
-              AccessProfileScope.group,
-            ];
+      final validScopes = switch (query.domain) {
+        AccessProfileDomain.platform => const [
+          AccessProfileScope.platform,
+          AccessProfileScope.institution,
+        ],
+        AccessProfileDomain.institution => const [
+          AccessProfileScope.institution,
+          AccessProfileScope.unit,
+          AccessProfileScope.group,
+        ],
+        AccessProfileDomain.principal => const [AccessProfileScope.group],
+      };
       return CoeloAdminListingToolbar(
         key: const Key('access-profile-toolbar'),
         search: SizedBox(
@@ -492,17 +506,17 @@ final class _AccessProfileResults extends StatelessWidget {
         );
       case AccessProfileLoadState.empty:
         result = CoeloStatePanel(
-          title: viewModel.query.domain == AccessProfileDomain.principal
+          title: viewModel.usesPrincipalCapabilities
               ? 'Nenhuma capacidade disponível'
               : 'Nenhum perfil cadastrado',
-          message: viewModel.query.domain == AccessProfileDomain.principal
+          message: viewModel.usesPrincipalCapabilities
               ? 'O catálogo contextual não retornou capacidades.'
               : 'Crie o primeiro perfil para começar.',
           icon: Icons.manage_accounts_outlined,
-          actionLabel: viewModel.query.domain == AccessProfileDomain.principal || onCreate == null
+          actionLabel: viewModel.usesPrincipalCapabilities || onCreate == null
               ? null
               : createActionLabel,
-          onAction: viewModel.query.domain == AccessProfileDomain.principal ? null : onCreate,
+          onAction: viewModel.usesPrincipalCapabilities ? null : onCreate,
         );
       case AccessProfileLoadState.noResults:
         result = CoeloStatePanel(
@@ -535,7 +549,7 @@ final class _AccessProfileResults extends StatelessWidget {
           onAction: viewModel.load,
         );
       case AccessProfileLoadState.success:
-        if (viewModel.query.domain == AccessProfileDomain.principal) {
+        if (viewModel.usesPrincipalCapabilities) {
           result = _PrincipalCapabilities(capabilities: viewModel.visibleCapabilities);
         } else if (viewModel.query.layout == AccessProfileLayout.cards) {
           result = _AccessProfileCards(

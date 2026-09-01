@@ -25,6 +25,15 @@ void main() {
     expect(source.lastQuery?.scope, 'unit');
   });
 
+  test('forwards Principal model queries instead of replacing them with capabilities', () async {
+    final source = _ModelRepository();
+    final adapter = AccessProfileModelRepositoryAdapter(source);
+
+    await adapter.fetchProfiles(const AccessProfileQuery(domain: AccessProfileDomain.principal));
+
+    expect(source.lastQuery?.domain, AccessProfileDomain.principal);
+  });
+
   test('detail combines model effects with the permission catalog', () async {
     final adapter = AccessProfileModelRepositoryAdapter(_ModelRepository());
 

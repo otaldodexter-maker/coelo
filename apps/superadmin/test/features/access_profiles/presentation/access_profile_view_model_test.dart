@@ -76,6 +76,19 @@ void main() {
     expect(viewModel.capabilities, isNotEmpty);
   });
 
+  test('loads Principal models as profiles when the directory is Models', () async {
+    final repository = _ImmediateRepository();
+    final viewModel = AccessProfileViewModel(repository, principalCapabilitiesOnly: false);
+    addTearDown(viewModel.dispose);
+
+    await viewModel.setDomain(AccessProfileDomain.principal);
+
+    expect(viewModel.usesPrincipalCapabilities, isFalse);
+    expect(viewModel.page.items.single, _principalModel);
+    expect(repository.profileCalls, 1);
+    expect(repository.capabilityCalls, 0);
+  });
+
   test('unauthorized and dispose clear every sensitive snapshot without notifying', () async {
     final repository = _ImmediateRepository();
     final viewModel = AccessProfileViewModel(repository);
@@ -102,6 +115,8 @@ void main() {
 
 final class _ImmediateRepository implements AccessProfileRepository {
   bool unauthorized = false;
+  var profileCalls = 0;
+  var capabilityCalls = 0;
 
   @override
   bool get isDemo => false;
@@ -109,19 +124,28 @@ final class _ImmediateRepository implements AccessProfileRepository {
   @override
   Future<AccessProfilePage> fetchProfiles(AccessProfileQuery query) async {
     if (unauthorized) throw const AccessProfileUnauthorizedException();
-    return const AccessProfilePage(items: [_platformProfile], totalCount: 1, page: 1, pageSize: 11);
+    profileCalls += 1;
+    return AccessProfilePage(
+      items: [query.domain == AccessProfileDomain.principal ? _principalModel : _platformProfile],
+      totalCount: 1,
+      page: 1,
+      pageSize: 11,
+    );
   }
 
   @override
-  Future<List<PrincipalCapability>> fetchPrincipalCapabilities() async => const [
-    PrincipalCapability(
-      id: 'messages',
-      code: 'messages.read',
-      name: 'Ver comunicados',
-      description: 'Consulta autorizada.',
-      contextCount: 1,
-    ),
-  ];
+  Future<List<PrincipalCapability>> fetchPrincipalCapabilities() async {
+    capabilityCalls += 1;
+    return const [
+      PrincipalCapability(
+        id: 'messages',
+        code: 'messages.read',
+        name: 'Ver comunicados',
+        description: 'Consulta autorizada.',
+        contextCount: 1,
+      ),
+    ];
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -191,6 +215,18 @@ const _institutionProfile = AccessProfile(
   description: '',
   status: AccessProfileStatus.active,
   maxScope: AccessProfileScope.institution,
+  version: 1,
+  membershipCount: 0,
+);
+
+const _principalModel = AccessProfile(
+  id: 'principal-model',
+  domain: AccessProfileDomain.principal,
+  code: 'principal-model',
+  name: 'Responsável padrão',
+  description: '',
+  status: AccessProfileStatus.active,
+  maxScope: AccessProfileScope.group,
   version: 1,
   membershipCount: 0,
 );

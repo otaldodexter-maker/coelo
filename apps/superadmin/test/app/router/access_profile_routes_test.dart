@@ -3,6 +3,7 @@ import 'package:coelo_superadmin/app/router/superadmin_routes.dart';
 import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/access_profiles/domain/access_profile.dart';
+import 'package:coelo_superadmin/features/access_profiles/domain/access_profile_model.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
@@ -91,10 +92,39 @@ void main() {
       }
     });
   }
+
+  testWidgets('production model directory composes the injected Supabase-capable contract', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final session = SuperadminSession()..signIn();
+    final repository = _TrackingAccessProfileRepository();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      accessProfileRepository: repository,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+
+    router.go(SuperadminRoutes.profileModels);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Modelo Owner'), findsOneWidget);
+    expect(find.text('503'), findsNothing);
+    expect(repository.modelCalls, 1);
+  });
 }
 
-final class _TrackingAccessProfileRepository implements AccessProfileRepository {
+final class _TrackingAccessProfileRepository
+    implements AccessProfileRepository, AccessProfileModelRepository {
   var calls = 0;
+  var modelCalls = 0;
 
   @override
   bool get isDemo => false;
@@ -134,4 +164,26 @@ final class _TrackingAccessProfileRepository implements AccessProfileRepository 
     required String reason,
     required AccessProfile draft,
   }) async => _unexpectedCall();
+
+  @override
+  Future<AccessProfileModelPage> fetchModels(AccessProfileModelQuery query) async {
+    modelCalls += 1;
+    return const AccessProfileModelPage(items: [_platformModel]);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
+
+const _platformModel = AccessProfileModel(
+  id: 'model-owner',
+  domain: AccessProfileDomain.platform,
+  code: 'model-owner',
+  name: 'Modelo Owner',
+  description: 'Modelo de acesso total à plataforma.',
+  status: AccessProfileStatus.active,
+  maxScopeKind: 'platform',
+  version: 1,
+  isSystem: true,
+  capabilities: [],
+);

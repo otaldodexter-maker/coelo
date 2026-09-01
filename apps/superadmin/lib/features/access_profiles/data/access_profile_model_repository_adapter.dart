@@ -13,9 +13,6 @@ final class AccessProfileModelRepositoryAdapter implements AccessProfileReposito
 
   @override
   Future<AccessProfilePage> fetchProfiles(AccessProfileQuery query) async {
-    if (query.domain == AccessProfileDomain.principal) {
-      return const AccessProfilePage.empty();
-    }
     var afterName = null as String?;
     var afterId = null as String?;
     var currentPage = const AccessProfileModelPage(items: []);
