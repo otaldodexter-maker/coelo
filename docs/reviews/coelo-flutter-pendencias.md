@@ -328,9 +328,9 @@ duplicada. A soma preliminar por família continua na tabela anterior.
 | 15.4 | Agenda / Editar | `agenda.edit` | Edição visual/local cobre o lifecycle aprovado sem declarar command remoto; produção permanece fail-closed. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Editar/validar/conflito local testados; autoridade, persistência, reload remoto e E2E pendentes. |
 | 15.5 | Agenda / Solicitar | `agenda.request` | Solicitação possui comportamento visual/local comprovado; nenhuma entrega, autoridade ou persistência remota foi simulada. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Solicitar/cancelar/falhar local testados; capability, efeitos remotos e E2E pendentes. |
 | 15.6 | Agenda / Permissões | `agenda.permissions` | Superfície de permissões foi revalidada localmente; o frontend não concede capacidade e produção permanece indisponível sem backend autoritativo. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Permitido/negado e matriz local testados; modelo autoritativo, RLS, cross-tenant, remoto e E2E pendentes. |
-| 16.1 | Chat / Conversas | `chat.list` | Wiring, paginação, erros e PNGs precisam revisão. | `audited` | B | I | A | C | Avançada | 2 h | Loading/empty/error, paginação, 375–1440 e 200%. |
-| 16.2 | Chat / Abrir conversa | `chat.open` | Membership revogada e acesso direto não comprovados. | `audited` | B | I | A | C | Avançada | 2 h | Abrir/link direto/not-found/revogada e foco. |
-| 16.3 | Chat / Enviar mensagem | `chat.send` | Duplo envio, erro e recuperação abertos. | `audited` | B | I | A | C | Avançada | 2.5 h | Enviar/falhar/retry, teclado, 200% e sem duplicação. |
+| 16.1 | Chat / Conversas | `chat.list` | Cinco conversas `/dev`, busca, cursor, mark-read, launcher Principal sem duplicação e 14 goldens passaram; paginação total aguarda `total/has_more` no RPC. | `local-green` | B | I | A | C | Avançada | local executado; backend separado | Loading/empty/error, 375–1440/200%; não inventar Página X/Y sem contrato remoto. |
+| 16.2 | Chat / Abrir conversa | `chat.open` | Thread `/dev` usa ordem oldest→newest na tela a partir do contrato newest-first; teste cobre 2+ mensagens e retorno pelo menu Principal. | `local-green` | B | I | A | C | Avançada | local executado; remoto separado | Abrir/voltar/foco e ordem local verdes; membership revogada, link adulterado e reload remoto continuam abertos. |
+| 16.3 | Chat / Enviar mensagem | `chat.send` | Envio idempotente local insere a nova mensagem na posição coerente; teste pós-envio impede dupla inversão. | `local-green` | B | I | A | C | Avançada | local executado; remoto separado | Enviar/ordem/sem duplicação local; falha/retry, autorização, persistência e E2E remoto ainda pendentes. |
 | 16.4 | Chat / Editar mensagem | `chat.edit` | Janela, confirmação e erro não comprovados. | `audited` | B | I | A | C | Avançada | 2 h | Editar/cancelar/falhar e estado atualizado. |
 | 16.5 | Chat / Anexar arquivo | `chat.attach` | Mídia, upload e falha parcial continuam abertos. | `audited` | B | I | A | C | Avançada | 3 h | Escolher/validar/enviar/cancelar/falhar e foco. |
 | 16.6 | Chat / Recibos | `chat.receipts` | Leitura/entrega e semântica não revalidadas. | `audited` | B | I | A | C | Avançada | 2 h | Estados textualizados, teclado e sem depender só de cor. |
@@ -1086,7 +1086,7 @@ backend, ambiente remoto e inspeção humana de cada PNG.
 | 13 | `attendance` — Dashboard, nova chamada, presença, correção, conclusão, export | `attendance.dashboard` `local-green`; `attendance.create` `local-green`; `attendance.mark` `local-green`; `attendance.correct` `local-green`; `attendance.finish` `local-green`; `attendance.export` `audited` | Onda operacional revalidou 55 testes funcionais e dois goldens Windows; export, backend, tenant A/B, remoto e E2E continuam separados. |
 | 14 | `daily_routine` — Lista, criar, editar, aplicar, publicar | `daily-routine.list` `local-green`; `daily-routine.create` `local-green`; `daily-routine.edit` `local-green`; `daily-routine.apply` `local-green`; `daily-routine.publish` `local-green` | Onda operacional fechou a evidência visual/local com 48 testes verdes, 4 skips justificados e 9 goldens inspecionados; produção/backend/E2E continuam abertos. |
 | 15 | `agenda` — Calendário, criar, detalhe, editar, solicitações/permissões | todos os 6 `action_id` `local-green` visual/Flutter | Handoff final registrou Agenda 112/112 e a família Forms/Agenda 238/238, 14/14 rotas/navegação e 113 goldens únicos; produção permanece fail-closed, sem backend, autorização remota ou E2E. |
-| 16 | `chat` — Conversas, conversa, mensagens, edição, anexos, recibos/revogação | `chat.list` `audited`; `chat.open` `audited`; `chat.send` `audited`; `chat.edit` `audited`; `chat.attach` `audited`; `chat.receipts` `audited`; `chat.revoke` `audited` | Revisar grupos/mídia, shell/chat PNGs, erros, foco, semântica e lifecycle; 16 h. |
+| 16 | `chat` — Conversas, conversa, mensagens, edição, anexos, recibos/revogação | `chat.list`/`open`/`send` `local-green`; `chat.edit`/`attach`/`receipts`/`revoke` `audited` | Launcher, ordem multi-message/pós-envio e 14 goldens fechados. Paginação total depende do RPC; edição, mídia, recibos, revogação, remoto e E2E continuam abertos; 10–16 h + backend. |
 | 17 | `notices` — Lista, criar, editar, agendar, publicar, arquivar | `notices.list` `local-green` com V4.22; `notices.create` `audited`; `notices.edit` `audited`; `notices.schedule` `audited`; `notices.publish` `audited`; `notices.archive` `audited` | V4.22 fecha o diretório Flutter visual local; criação/edição/lifecycle produtivos, autorização, reload remoto e E2E continuam abertos. |
 | 18 | `forms_authoring` — Lista, criar, overview, editar, publicar, testar | todos os 6 action_ids `local-green` visual/Flutter | `/dev` funcional e produção com composição equivalente fail-closed; persistência, capability e E2E pendentes. |
 | 19 | `forms_responses` — Monitor, responder, respostas, detalhe, exportar | todos os 5 action_ids `local-green` visual/Flutter | Fluxos locais e estados seguros concluídos; fonte autorizada, worker, Storage e E2E pendentes. |
@@ -1650,10 +1650,10 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 
 **Programa visual — Aceito visualmente:** 0,00% (0/31 entregáveis).
 
-**Flutter local — `local-green`:** 49,28% (102/207 ações). Esse número registra
-evidência local e não significa que 102 ações estejam concluídas ponta a ponta.
+**Flutter local — `local-green`:** 50,72% (105/207 ações). Esse número registra
+evidência local e não significa que 105 ações estejam concluídas ponta a ponta.
 
-**Flutter local — restante fora de `local-green`:** 50,72% (105/207 ações).
+**Flutter local — restante fora de `local-green`:** 49,28% (102/207 ações).
 
 **Flutter `verified`:** 0,00% (0/207 ações). O estado exige todos os gates
 Flutter da seção 2, inclusive inspeção visual e regressões aplicáveis.
@@ -3198,7 +3198,7 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
 | Base | A matriz consolidada contém 207 linhas e 207 `action_id` únicos. O estado foi recalculado diretamente das linhas atuais, sem somar snapshots de branches ou duplicar IDs. |
 | Snapshots reconciliados | V4/V5 em `21e0ed09` registrava 86/207; Formulários/Agenda em `4beea0ec`, 100/207; a consolidação em `f3a3e504`, 96/207. Os números permanecem evidência histórica das respectivas branches, não totais atuais concorrentes. |
 | Diferenças determinísticas | A comparação `4beea0ec` versus o consolidado encontrou exatamente oito estados distintos: seis ações de Agenda estavam `local-green` no handoff e `blocked-decision` no consolidado; `imports.list` e `notices.list` estavam `audited` no handoff, mas receberam evidência posterior V4/V5 e permanecem `local-green`. |
-| Total atual | 102/207 `local-green` (49,28%); 64/207 `audited`; 37/207 `blocked-decision`; 2/207 `audited`/fail-closed; 2/207 `blocked-supabase`. Restam 105/207 fora de `local-green` (50,72%). |
+| Total atual | 105/207 `local-green` (50,72%); 61/207 `audited`; 37/207 `blocked-decision`; 2/207 `audited`/fail-closed; 2/207 `blocked-supabase`. Restam 102/207 fora de `local-green` (49,28%). |
 | Formulários/Agenda | Os 22 IDs permanecem `local-green` visual/Flutter. Evidência do handoff: 238/238 testes combinados, Agenda 112/112, rotas/navegação 14/14, analyzer sem issues, validador/índice/conhecimento/diff verdes e 113 goldens únicos. Produção permanece fail-closed e backend/remoto/E2E continuam abertos. |
 | Famílias operacionais | 28 IDs reconciliados: 24 `local-green` e 4 `audited`, com impacto incremental zero sobre a matriz já consolidada. Turmas, Assiduidade e Rotina receberam correções textuais para refletir os testes e goldens existentes sem declarar produção concluída. |
 | Estado estrito | `verified` permanece 0/207. Fixture, golden, rota `/dev`, fake, teste local ou fail-closed continuam insuficientes para `verified`, Supabase ou E2E. |
@@ -3313,3 +3313,14 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
 - Trinta referências foram preservadas com SHA-256 no commit `86e55dc7`.
   Estado máximo é Flutter `/dev` `local-green`; Supabase/remoto/E2E permanecem
   separados e nenhuma tela foi declarada produtiva.
+
+## Checkpoint 2026-09-01 — Comunicação local após revisão seletiva
+
+- `465482c0` remove launcher duplicado; `78ac0ae8` fixa ordem newest-first e
+  pós-envio; `c2396f2a`/`2401282e` fecham 14 goldens Chat/launcher.
+- `b0dd30a5` faz Convites `/dev` respeitar instituição/unidade/turma/busca/
+  limite e rejeita profile/destinatário incompatíveis antes de mutar; 37/37
+  testes passaram. `57b746a5` fechou 5/5 goldens do formulário.
+- `chat.list/open/send` passam a Flutter `local-green`, levando o total a
+  105/207. `chat.edit/attach/receipts/revoke` ficam `audited`; paginação total
+  aguarda contrato RPC. Backend/remoto/E2E não foram promovidos.

@@ -150,6 +150,10 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
   flutuante dentro da própria tela porque o shell só o ocultava para
   `conversations`. Nove goldens Chat e dois InviteForm também permanecem RED.
   Comunicação deve corrigir/classificar esses gates antes do cherry-pick.
+- Os gates foram corrigidos depois: launcher `465482c0`, ordem multi-message/
+  pós-envio `78ac0ae8`, goldens `c2396f2a`/`2401282e` e escopo Convites
+  `b0dd30a5` + `57b746a5`. Rastreadores promovem somente
+  `chat.list/open/send` a Flutter `local-green`; integração continua bloqueada.
 
 ### Estruturas — `560ce79c`
 
