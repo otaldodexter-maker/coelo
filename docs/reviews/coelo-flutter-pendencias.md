@@ -15,7 +15,8 @@ visual_program_accepted_count: 0
 ## 0. Etapa 2 — resumo recuperável do que foi feito e do que falta
 
 > **Regra do MVP aprovada em 2026-09-01:** importação e exportação reais estão
-> fora do recorte. Os botões permanecem visíveis e devem informar
+> fora do recorte, exceto a exportação individual de cada resposta de
+> Formulário. Os demais botões permanecem visíveis e devem informar
 > honestamente que a função ficará disponível depois do MVP. Não são exigidos
 > picker, arquivo, parser, job, RPC, Edge Function, persistência ou E2E para
 > fechar o lado Flutter; permanecem exigidos layout, responsividade,
@@ -31,7 +32,8 @@ deve perguntar ao Owner se deseja implementar os fluxos reais.
 **Auditoria do código consolidado:** Turmas (`groups.import/export`) e
 Unidade/Pessoas (`units.people-export`) já exibem os controles. Pessoas oculta
 import/export na rota produtiva; Assiduidade não possui `attendance.export`;
-Formulários/Respostas desabilita ou substitui `forms.export`; Usuários internos
+Formulários/Respostas ainda precisa concluir `forms.export` como ação real por
+resposta; Usuários internos
 e Perfis/Modelos exibem controles desabilitados. Nenhuma superfície usa ainda
 a frase normativa “Disponível depois do MVP”. O próximo pacote Flutter deve
 restaurar/habilitar somente o clique informativo e seus testes, sem conectar
@@ -64,7 +66,7 @@ e import/export real. Valores antigos permanecem abaixo apenas como histórico.
 | Chat | Editar, anexar, recibos, revogar e retry no cliente | 2–4 h |
 | Avisos | Estados de lifecycle no cliente | 2–3 h |
 | Formulários — autoria | Editor, estados e testes finais | 3–5 h |
-| Formulários — respostas | Monitor, resposta, detalhe e botão Exportar | 2–3 h |
+| Formulários — respostas | Monitor, resposta, detalhe e exportação real individual | 3–5 h |
 | Formulários — arquivos | Estados Flutter via contrato de mídia | 1,5–3 h |
 | Acontece | Feed e publicador Flutter | 2–4 h |
 | Agora | Viewer e publicador Flutter | 1,5–3 h |
@@ -84,8 +86,8 @@ e import/export real. Valores antigos permanecem abaixo apenas como histórico.
 | Usuários internos | Estados, suspensão e MFA no cliente | 2–4 h |
 | Páginas de erro | Lote 403/404/409/500/503/retry | 1–2 h |
 
-**Total sequencial externo:** 63,5–118,5 h. **Faixa mais provável de
-planejamento:** **78–96 h líquidas**. No modelo considerado para os possíveis
+**Total sequencial externo:** 64,5–120,5 h. **Faixa mais provável de
+planejamento:** **79–98 h líquidas**. No modelo considerado para os possíveis
 prompts — cinco worktrees verticais ponta a ponta, cada uma com ownership
 exclusivo e subagentes separados para implementação, testes e revisão — a
 parcela Flutter entra no caminho crítico por **18–30 h de calendário**. Essa
@@ -227,7 +229,7 @@ reconciliação sem duplicidade.
 
 **Tempo usado:** não calculável com precisão porque as frentes não
 registraram duração homogênea. **ETA Flutter local restante revisado:**
-**78–96 h líquidas mais prováveis**, com parcela de **18–30 h no caminho
+**79–98 h líquidas mais prováveis**, com parcela de **19–31 h no caminho
 crítico de calendário** quando distribuída pelas cinco worktrees verticais com
 subagentes; ver a tabela supersedente no início deste documento.
 
@@ -709,7 +711,7 @@ duplicada. A soma preliminar por família continua na tabela anterior.
 | Unidade de planejamento | Estimativa preliminar | Observação |
 |---|---:|---|
 | Temas gerais compartilhados | 290 h brutas | Não somar integralmente às famílias: shell, UI, responsividade, acessibilidade e regressão são absorvidos por vários pacotes de tela. |
-| 37 famílias / 207 ações Flutter | 78–96 h líquidas mais prováveis | Estimativa supersedente por família, com setup e regressão compartilhados; exclui Supabase/E2E e import/export real. |
+| 37 famílias / 207 ações Flutter | 79–98 h líquidas mais prováveis | Estimativa supersedente por família, com setup e regressão compartilhados; inclui exportação individual de resposta de Formulário e exclui os demais import/export reais. |
 | Pacote Intermediário sugerido para decisão | 2–6 h | Uma ou poucas ações relacionadas de baixo/médio risco; nunca conclui a tela. |
 | Pacote Avançado de uma família complexa | 1–2 dias | Inclui ações relacionadas, arquitetura, estados, acessibilidade, responsividade e regressões. |
 | Pacote Completo de uma tela | 2–5 dias | Só pode fechar a tela Flutter se todas as ações aplicáveis e evidências estiverem completas. |
@@ -1362,9 +1364,9 @@ backend, ambiente remoto e inspeção humana de cada PNG.
 | 36 | `internal_users` — Lista, criar, editar, suspender, MFA | `internal-users.list` `blocked-decision`; `internal-users.create` `local-green`; `internal-users.edit` `local-green`; `internal-users.suspend` `blocked-decision`; `internal-users.mfa` `blocked-decision` | Formulário verde, mas abrir/desativar foi desabilitado sem contrato; decidir domínio e provar MFA/suspensão; 10 h. |
 | 37 | `error_pages` — 403, 404, 409, 500, 503, retry | `errors.403` `audited`; `errors.404` `audited`; `errors.409` `audited`; `errors.500` `audited`; `errors.503` `audited`; `errors.retry` `audited` | Baselines protegidas não foram rerenderizadas integralmente; executar rotas, teclado, reload/retry e matriz visual; 6 h. |
 
-**ETA Flutter sequencial supersedente:** 63,5–118,5 h externas, com faixa mais
-provável de 78–96 h líquidas. Cinco worktrees verticais com subagentes reduzem
-a parcela Flutter do caminho crítico para 18–30 h, sem reduzir a prova
+**ETA Flutter sequencial supersedente:** 64,5–120,5 h externas, com faixa mais
+provável de 79–98 h líquidas. Cinco worktrees verticais com subagentes reduzem
+a parcela Flutter do caminho crítico para 19–31 h, sem reduzir a prova
 necessária.
 
 ## 10. Resíduos e bloqueios que não podem ser esquecidos

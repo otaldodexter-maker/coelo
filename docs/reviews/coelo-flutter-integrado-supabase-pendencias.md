@@ -4,9 +4,9 @@ source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo
 status: "open"
 generated_at: "2026-08-26"
 updated_at: "2026-09-01"
-action_count: 179
+action_count: 180
 historical_action_count: 202
-deferred_post_mvp_action_count: 23
+deferred_post_mvp_action_count: 22
 flutter_action_count: 207
 family_count: 37
 ready_for_e2e_count: 0
@@ -14,8 +14,8 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "D0E4CBBC61678020386AD970DDA1FC449D0AFDF6B534C55FB1577FF3B74BE4FE"
-supabase_tracker_sha256: "9EB59BAE353BA7FA852194D05043E8868F8EF4DF0C28A3D6DED2F000524366A0"
+flutter_tracker_sha256: "E8D6EFB5B01DDD00C67F1043E68D86E426D3ECF1A2CEC1A6A7D4882BDA92EFED"
+supabase_tracker_sha256: "67393917951114FCBA24E449E855170D3A84526692D7E20ECA080E96259836B6"
 ---
 
 # Pendências Coelo — Flutter integrado ao Supabase
@@ -23,21 +23,22 @@ supabase_tracker_sha256: "9EB59BAE353BA7FA852194D05043E8868F8EF4DF0C28A3D6DED2F0
 ## 0. Etapa 2 — controlador recuperável de conclusão ponta a ponta
 
 > **Regras do MVP aprovadas em 2026-09-01:** fluxos reais de importação e
-> exportação estão `deferred-post-mvp`; os botões continuam visíveis e exibem
+> exportação estão `deferred-post-mvp`, exceto a exportação individual de cada
+> resposta de Formulário; os demais botões continuam visíveis e exibem
 > indisponibilidade honesta, mas não exigem backend nem E2E. Toda mídia privada
 > do MVP usa Supabase Storage; Cloudflare R2 não existe no ambiente atual e não
 > é gate da Etapa 2. Ver ADRs 0030 e 0031.
 
-O crosswalk nominal foi concluído para planejamento: 23 fluxos reais de
+O crosswalk nominal foi concluído para planejamento: 22 fluxos reais de
 import/export saíram do denominador obrigatório, reduzindo 202 ações históricas
-para 179 ações integráveis no MVP, sem contar item diferido como concluído. No
+para 180 ações integráveis no MVP, sem contar item diferido como concluído. No
 encerramento formal do MVP, o
 coordenador deve perguntar ao Owner se deseja implementar import/export real e
 se deseja avaliar evolução de Supabase Storage para R2.
 
 | Candidatos ao crosswalk `deferred-post-mvp` | Regra |
 | --- | --- |
-| `institutions.import`, `institutions.export`, `units.import`, `units.export`, `units.people-export`, `groups.import`, `groups.export`, `attendance.export`, `forms.export`, `audit.export` | Flutter mantém o botão e sua mensagem; backend e E2E reais ficam fora do MVP. |
+| `institutions.import`, `institutions.export`, `units.import`, `units.export`, `units.people-export`, `groups.import`, `groups.export`, `attendance.export`, `audit.export` | Flutter mantém o botão e sua mensagem; backend e E2E reais ficam fora do MVP. `forms.export` não pertence a esta linha: exportar uma resposta individual é obrigatório no MVP. |
 | `imports.list`, `imports.create`, `imports.upload`, `imports.preview`, `imports.confirm`, `imports.status`, `imports.download` | Revisar se cada ID representa apenas arquivo real ou também a tela informativa antes de retirar do denominador integrado. |
 | `profile-files.import`, `profile-files.preview`, `profile-files.confirm`, `profile-files.status`, `profile-files.export`, `profile-files.download` | Separar UI visível de operação real antes do recálculo. |
 | Atividades, Circulares, Planos, Modelos de acesso, Perfis de cuidado, Medicação, Pessoas e Usuários internos sem ID exclusivo de arquivo | Diferir somente o subcontrole de import/export; não retirar a ação inteira do MVP. |
@@ -61,7 +62,7 @@ planejamento da Etapa 2. Integração não repete UI, migrations, RLS, pgTAP,
 Advisors ou negativos já certificados pelas skills especializadas; mede apenas
 wiring real, execução pelo cliente, resposta/erro, persistência, reload e a
 matriz transversal reutilizável. O crosswalk do MVP passa de 202 IDs históricos
-para **179 IDs integráveis**: 23 fluxos reais de import/export estão
+para **180 IDs integráveis**: 22 fluxos reais de import/export estão
 `deferred-post-mvp`. Botões informativos são Flutter-only.
 
 | Grupo integrado | IDs abrangidos | Trabalho E2E adicional | ETA líquida |
@@ -75,9 +76,9 @@ para **179 IDs integráveis**: 23 fluxos reais de import/export estão
 | Plataforma/Auditoria/Catálogo | 7 | Contratos e envelopes transversais | 2–4 h |
 | Harness e regressão final | transversal | Fixtures únicas, matriz parametrizada e evidências | 4–6 h |
 
-**Total sequencial adicional de integração:** **40–61 h líquidas**. Com cinco
+**Total sequencial adicional de integração:** **42–65 h líquidas**. Com cinco
 worktrees verticais e subagentes de teste/evidência, o caminho crítico de
-calendário é **12–20 h**: fundação compartilhada 3–5 h, maior vertical 6–10 h e
+calendário é **14–22 h**: fundação compartilhada 3–5 h, maior vertical 8–12 h e
 regressão 3–5 h. Esse tempo
 só começa para uma ação quando Flutter estiver `verified` e Supabase `done`; não
 é somado novamente dentro dos ETAs das duas camadas.
@@ -96,14 +97,14 @@ um único integrador responsável pelos arquivos compartilhados do seu recorte.
 | Identidade e Acessos | 30–50 h | Auth, pessoas, perfis, modelos, permissões e segurança. |
 | Estruturas e Pessoas | 26–43 h | Instituições, unidades, turmas, alunos e vínculos. |
 | Comunicação e menu Coelo (Principal) | 33–52 h | Chat, avisos, convites, circulares e superfícies internas do Superadmin. |
-| Formulários e Cuidado | 34–56 h | Formulários, respostas, Storage, cuidado, saúde e medicação. |
+| Formulários, Respostas e Cuidado | 36–60 h | Formulários, exportação individual de resposta, Storage, cuidado, saúde e medicação. |
 | Agenda, Eventos e Operações | 34–56 h | Agenda, eventos, rotina, assiduidade, atividades, avaliações e operações. |
 | Consolidação/cutover final | 6–10 h | Replay ordenado, regressão conjunta, remoto, hashes, commits e limpeza; já incluído na faixa geral. |
 
-**Prazo provável da Etapa 2: 48–72 h de calendário técnico** se as cinco
+**Prazo provável da Etapa 2: 50–76 h de calendário técnico** se as cinco
 worktrees permanecerem realmente isoladas, cada uma usar o máximo útil de
 subagentes e o coordenador for o único escritor do ledger/deploy remoto.
-**Compromisso recomendado: 72 h. Teto conservador: 96 h**, aplicável quando só
+**Compromisso recomendado: 76 h. Teto conservador: 96 h**, aplicável quando só
 três worktrees puderem escrever com segurança, houver conflitos em arquivos
 compartilhados ou reexecução de migrations/testes. A estimativa anterior de
 42–68 h era otimista porque não reservava margem suficiente para replay,
@@ -131,8 +132,8 @@ de branch está superada somente no aspecto Git.
 | Menu Coelo (Principal) | Para Você, Acontece, Agora, Momentos e Perfil estão dentro do Superadmin. | Fechar backend/audiência/Supabase Storage/publicadores e comprovar cada rota real ponta a ponta. R2 está fora do MVP. |
 | Macro — cabeçalho, shell e migrations | Cabeçalho compartilhado e capabilities combinadas; manifesto único ordenado. | Regressão visual final e replay integral antes do primeiro deploy amplo. |
 
-**Contagem oficial após o crosswalk:** 0/179 `ready-for-e2e` = **0,00%** e
-0/179 `verified-e2e` = **0,00%**. O avanço das camadas continua mensurado sem
+**Contagem oficial após o crosswalk:** 0/180 `ready-for-e2e` = **0,00%** e
+0/180 `verified-e2e` = **0,00%**. O avanço das camadas continua mensurado sem
 mistura: Flutter 105/207 `local-green` (50,72%); Supabase 3/37 famílias
 `local-green` (8,11%), ou 39/202 ações com evidência local (19,31%).
 
@@ -140,14 +141,14 @@ Esta é a resposta canônica para “o que foi feito, onde parou e o que falta n
 Etapa 2” sob a skill `coelo-flutter-supabase-review`. As seções posteriores
 preservam todas as ações e evidências históricas.
 
-**Integração em 2026-09-01:** 0/179 ações `ready-for-e2e` (0,00%) e 0/179
+**Integração em 2026-09-01:** 0/180 ações `ready-for-e2e` (0,00%) e 0/180
 `verified-e2e` (0,00%). Isso não significa avanço zero nas camadas: Flutter
 possui 105/207 ações `local-green` e Supabase possui 3/37 famílias
 `local-green`, além de trabalho parcial registrado tela a tela. Os contadores
 `verified` Flutter e `done` Supabase são informados separadamente.
 
-**Geral conhecido e Etapa 2 integrada:** ambos usam atualmente 179 `action_id`
-integráveis no MVP. A base histórica tinha 202; 23 fluxos reais de
+**Geral conhecido e Etapa 2 integrada:** ambos usam atualmente 180 `action_id`
+integráveis no MVP. A base histórica tinha 202; 22 fluxos reais de
 import/export foram classificados `deferred-post-mvp`. Cinco dos 207 IDs
 Flutter permanecem Flutter-only e não entram no denominador integrado. A antiga
 soma 207 Flutter + gates Supabase foi descontinuada porque misturava camadas e
@@ -155,8 +156,8 @@ duplicava responsabilidades.
 
 | Percentual integrado da Etapa 2 | Concluído | Restante | Interpretação |
 | --- | ---: | ---: | --- |
-| Ações prontas para começar E2E | 0,00% (0/179) | 100,00% (179/179) | Nenhuma ação reúne Flutter e backend prontos. |
-| Ações `verified-e2e` | 0,00% (0/179) | 100,00% (179/179) | Nenhum fluxo foi comprovado ponta a ponta. |
+| Ações prontas para começar E2E | 0,00% (0/180) | 100,00% (180/180) | Nenhuma ação reúne Flutter e backend prontos. |
+| Ações `verified-e2e` | 0,00% (0/180) | 100,00% (180/180) | Nenhum fluxo foi comprovado ponta a ponta. |
 
 > **Leitura correta:** a Etapa 2 tem avanço técnico real e recuperável, mas ainda
 > não tem uma vertical certificada ponta a ponta. Não existe denominador somando
@@ -226,8 +227,8 @@ duplicava responsabilidades.
    evidências estarem conferidos.
 
 **Tempo usado na Etapa 2:** não calculável ainda porque não há duração homogênea
-das frentes. **ETA geral revisado:** **48–72 h de calendário técnico** com cinco
-worktrees ponta a ponta e máximo útil de subagentes; compromisso de 72 h e teto
+das frentes. **ETA geral revisado:** **50–76 h de calendário técnico** com cinco
+worktrees ponta a ponta e máximo útil de subagentes; compromisso de 76 h e teto
 conservador de 96 h. Espera por decisão não é contada como hora técnica.
 
 ## 1. Papel deste documento
@@ -812,9 +813,9 @@ RPC ou tabela própria.
 | Intermediária | Inventário/contrato e correções principais de **uma ação** de baixo ou médio risco. | 2–6 h por ação simples | Pode concluir o pacote contratado; não conclui integração nem tela. |
 | Avançada | Uma fatia vertical autorizada, com negativos, acesso entre instituições e remoto. | 1–2 dias por ação/tela pequena | Adequada a Auth, RLS, migrations, segurança e arquivos; ainda pode deixar a família aberta. |
 | Completa | Todas as ações aplicáveis de uma família, regressão e provas dos três lados. | 2–5 dias por tela simples; maior nas famílias bloqueadas | Única que pode sustentar ação/tela integrada concluída. |
-| Programa conhecido | 37 famílias; 207 ações Flutter; 179 ações integráveis no MVP após diferir 23 fluxos de import/export. | Flutter 78–96 h mais prováveis; Supabase estrito 150–249 h; integração adicional 40–61 h; calendário em pipeline 48–72 h com cinco worktrees ponta a ponta e máximo útil de subagentes; teto conservador 96 h. | Zero ação está pronta para E2E e zero foi concluída ponta a ponta no snapshot atual. |
+| Programa conhecido | 37 famílias; 207 ações Flutter; 180 ações integráveis no MVP após diferir 22 fluxos de import/export. | Flutter 79–98 h mais prováveis; Supabase estrito 152–253 h; integração adicional 42–65 h; calendário em pipeline 50–76 h com cinco worktrees ponta a ponta e máximo útil de subagentes; teto conservador 96 h. | Zero ação está pronta para E2E e zero foi concluída ponta a ponta no snapshot atual. |
 
-## 7. Manifesto integrado histórico de 202 ações / 179 ações no MVP
+## 7. Manifesto integrado histórico de 202 ações / 180 ações no MVP
 
 As referências de ambiente usadas abaixo significam:
 
@@ -972,11 +973,11 @@ desenvolvimento; **FC** = `Unavailable`/503 seguro; **NG** = teste non-golden.
 | 36 | `internal_users` | Platform user directory/form; ações abrir/desativar permanecem indisponíveis. | Fake só pode atender DEV; criação/edição local não prova Auth privilegiado, suspensão ou MFA. | Formulário local-green histórico; nenhum E2E/golden. | Decidir domínio/papéis e testar list/create/edit/suspend/MFA; 10 h. |
 | 37 | `error_pages` | Rotas 403/404/409/500/503 e retry tipado. | Mapper deve ocultar SQLSTATE/PostgREST/Edge e repetir somente operação idempotente. | Rotas de erro 7/7 em lote Health; baselines protegidas não foram rerenderizadas. | Provar matriz real de erros, teclado, reload/retry e visual; 6 h. |
 
-**ETA Flutter supersedente:** 78–96 h líquidas mais prováveis, fora espera,
+**ETA Flutter supersedente:** 79–98 h líquidas mais prováveis, fora espera,
 Supabase e E2E. A tabela detalhada acima conserva valores históricos por linha,
 mas eles não devem mais ser somados.
 
-### 7.3. Crosswalk 207 Flutter → 202 históricas → 179 ações MVP
+### 7.3. Crosswalk 207 Flutter → 202 históricas → 180 ações MVP
 
 O rastreador Flutter conta 207 ações porque inclui cinco ações de shell que não
 representam operação Supabase autônoma. Elas permanecem rastreadas no
@@ -1013,12 +1014,12 @@ gera `ready-for-e2e` automaticamente.
 
 1. Revalidar HEAD, catálogo, rotas e composição compartilhada: 2–4 h.
 2. Fechar as camadas por família conforme os ETAs supersedentes.
-3. Executar as 179 ações MVP por harness compartilhado e verticais, sem repetir
-   pgTAP/RLS ou testes Flutter já comprovados: 40–61 h adicionais de integração.
+3. Executar as 180 ações MVP por harness compartilhado e verticais, sem repetir
+   pgTAP/RLS ou testes Flutter já comprovados: 42–65 h adicionais de integração.
 4. Rodar regressão/evidências finais uma vez: 4–6 h já incluídas na integração.
 
-O ETA total usa pipeline: **48–72 h de calendário técnico** com cinco worktrees
-ponta a ponta e o máximo útil de subagentes, usando **72 h como compromisso** e
+O ETA total usa pipeline: **50–76 h de calendário técnico** com cinco worktrees
+ponta a ponta e o máximo útil de subagentes, usando **76 h como compromisso** e
 **96 h como teto conservador**. Os números antigos de 388 h Flutter, 25–39 dias
 E2E e 10–17 semanas estão substituídos e permanecem apenas nos checkpoints
 históricos.

@@ -350,6 +350,15 @@ participação, ID comum ou ordenação/horário que facilite correlação.
 Owner, Participação anônima. Jobs são server-side, idempotentes, auditados e
 privados.
 
+Cada formulário nasce com exportação individual por resposta, sem toggle ou
+configuração adicional. A ação fica disponível no diretório e no detalhe de
+respostas para quem possuir `forms.responses.export`, gera somente o envio
+selecionado e revalida no backend ator, capability, tenant, formulário,
+ocorrência e ownership/escopo da resposta. CSV e XLSX seguem o formato tabular
+abaixo; quando houver mídia, ZIP inclui o arquivo tabular, manifesto e mídias
+autorizadas. Exportação consolidada de várias respostas permanece fora do MVP
+até nova decisão do Owner.
+
 ### Formato tabular
 
 - Metadados/referências-mãe primeiro.

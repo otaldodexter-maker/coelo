@@ -13,8 +13,9 @@ family_count: 37
 ## 0. Etapa 2 — resumo recuperável do backend e banco
 
 > **Regras do MVP aprovadas em 2026-09-01:** (1) importação/exportação real não
-> será construída no Supabase durante o MVP; seus jobs, arquivos, RPCs, Edge
-> Functions e persistência ficam `deferred-post-mvp` e não bloqueiam a Etapa 2;
+> será construída no Supabase durante o MVP, exceto a exportação individual de
+> cada resposta de Formulário; os demais jobs, arquivos, RPCs, Edge Functions e
+> persistência ficam `deferred-post-mvp` e não bloqueiam a Etapa 2;
 > (2) toda mídia privada do MVP usa Supabase Storage. Cloudflare R2 não existe
 > no ambiente atual e fica fora do MVP. Ver ADRs 0030 e 0031.
 
@@ -61,7 +62,7 @@ real e R2 valem 0 h no MVP.
 | Chat | Mensagens, recibos, revogação, mídia e Realtime | 5–8 h |
 | Avisos | Lifecycle, audiência, agendamento e recibos | 4–6 h |
 | Formulários — autoria | Versão, distribuição, commands e publicação | 6–10 h |
-| Formulários — respostas | Respostas, anonimato e métricas; export fora | 5–8 h |
+| Formulários — respostas | Respostas, anonimato, métricas e exportação individual | 7–12 h |
 | Formulários — mídia | Supabase Storage, expiração e exclusão | 5–8 h |
 | Acontece | Metadados, audiência, publicação e Storage | 4–6 h |
 | Agora | Publicação, audiência, expiração e Storage | 3–5 h |
@@ -81,14 +82,14 @@ real e R2 valem 0 h no MVP.
 | Usuários internos | Identidade, lifecycle, privilégios e auditoria | 5–8 h |
 | Erros backend | Envelope e mapeamento seguro | 1–2 h |
 
-As 37 famílias somam **132–219 h líquidas**. Cinco pacotes transversais —
+As 37 famílias somam **134–223 h líquidas**. Cinco pacotes transversais —
 ledger/replay; ACL + `SECURITY DEFINER` + RLS; Auth/realm; harness + lint +
 Advisors; Storage/Edge + cleanup + secret scan — acrescentam **18–30 h** uma
-única vez. Portanto, o **total sequencial Supabase estrito é 150–249 h
+única vez. Portanto, o **total sequencial Supabase estrito é 152–253 h
 líquidas**. No modelo considerado para os possíveis prompts — cinco worktrees
 verticais ponta a ponta, com subagentes locais por domínio e o coordenador como
 único owner de ledger, ordem de migrations, deploy e cutover — a parcela
-Supabase entra no caminho crítico por **36–60 h de calendário**. Cinco
+Supabase entra no caminho crítico por **38–64 h de calendário**. Cinco
 worktrees não significam cinco escritores simultâneos na produção: migrations
 são sequenciais, cada pacote deve passar replay/pgTAP/RLS isoladamente e a
 promoção remota permanece serial. Sem essa disciplina, usar como teto
@@ -233,7 +234,7 @@ Achados adicionais do mesmo review:
   anterior, não criadas por `e7520192`.
 
 **Tempo usado:** não calculável com precisão. **ETA geral Supabase revisado:**
-150–249 h líquidas sequenciais, com parcela de **36–60 h no caminho crítico de
+152–253 h líquidas sequenciais, com parcela de **38–64 h no caminho crítico de
 calendário** no modelo de cinco worktrees verticais, subagentes locais e cutover
 serial pelo coordenador. Sem isolamento/ownership estritos, usar 70–115 h como
 teto operacional. Famílias bloqueadas por decisão pausam sem acrescentar horas
