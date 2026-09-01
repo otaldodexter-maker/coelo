@@ -3,12 +3,12 @@ import 'package:coelo_superadmin/features/health_care/presentation/health_care_c
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('controller without an authenticated actor fails closed', () async {
+  test('unavailable repository remains fail closed without an actor', () async {
     final controller = HealthCareController(const UnavailableHealthCareRepository());
     addTearDown(controller.dispose);
 
     await controller.load();
 
-    expect(controller.state, HealthCareLoadState.unauthorized);
+    expect(controller.state, HealthCareLoadState.unavailable);
   });
 }
