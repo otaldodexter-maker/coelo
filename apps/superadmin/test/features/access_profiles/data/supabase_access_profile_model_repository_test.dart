@@ -105,7 +105,7 @@ void main() {
         };
       }
       if (request.url.path.endsWith('import_preview')) {
-        return {'valid_count': 1, 'error_count': 0, 'rows': []};
+        return {'valid_count': 1, 'error_count': 0, 'rows': <Object>[]};
       }
       return {'model_id': 'model-1', 'status': 'inactive', 'version': 4};
     });
