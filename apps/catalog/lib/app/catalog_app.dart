@@ -132,10 +132,17 @@ final class _CatalogAccessGateState extends State<_CatalogAccessGate> with Widge
     }
 
     CatalogAccessResult result;
-    try {
-      result = await widget.accessGateway.checkAccess();
-    } on Exception {
-      result = CatalogAccessResult.unavailable;
+    if (!widget.authGateway.isAuthenticated) {
+      result = CatalogAccessResult.unauthenticated;
+    } else {
+      try {
+        result = await widget.accessGateway.checkAccess();
+      } on Exception {
+        result = CatalogAccessResult.unavailable;
+      }
+      if (!widget.authGateway.isAuthenticated) {
+        result = CatalogAccessResult.unauthenticated;
+      }
     }
 
     if (!mounted || version != _requestVersion) {

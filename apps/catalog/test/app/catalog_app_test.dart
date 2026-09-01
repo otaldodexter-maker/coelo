@@ -28,7 +28,7 @@ void main() {
     await tester.pumpWidget(
       CatalogApp(
         accessGateway: _FakeCatalogAccessGateway([CatalogAccessResult.allowed]),
-        authGateway: _FakeCoeloAuthGateway(),
+        authGateway: _FakeCoeloAuthGateway(isAuthenticated: true),
       ),
     );
     await tester.pumpAndSettle();
@@ -37,11 +37,40 @@ void main() {
     expect(find.byType(CatalogHomePage), findsOneWidget);
   });
 
+  testWidgets('does not query access or mount content during password recovery', (tester) async {
+    final access = _FakeCatalogAccessGateway([CatalogAccessResult.allowed]);
+
+    await tester.pumpWidget(
+      CatalogApp(accessGateway: access, authGateway: _FakeCoeloAuthGateway(isAuthenticated: false)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(access.checkCount, 0);
+    expect(find.text('Entre no catálogo'), findsOneWidget);
+    expect(find.byType(CatalogHomePage), findsNothing);
+  });
+
+  testWidgets('does not publish allowed when authentication ends during access check', (
+    tester,
+  ) async {
+    final pendingAccess = Completer<CatalogAccessResult>();
+    final access = _FakeCatalogAccessGateway([pendingAccess.future]);
+    final auth = _FakeCoeloAuthGateway(isAuthenticated: true);
+
+    await tester.pumpWidget(CatalogApp(accessGateway: access, authGateway: auth));
+    await tester.pump();
+    expect(access.checkCount, 1);
+
+    auth.isAuthenticated = false;
+    pendingAccess.complete(CatalogAccessResult.allowed);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Entre no catálogo'), findsOneWidget);
+    expect(find.byType(CatalogHomePage), findsNothing);
+  });
+
   testWidgets('authenticates locally and checks server-side access again', (tester) async {
-    final access = _FakeCatalogAccessGateway([
-      CatalogAccessResult.unauthenticated,
-      CatalogAccessResult.allowed,
-    ]);
+    final access = _FakeCatalogAccessGateway([CatalogAccessResult.allowed]);
     final auth = _FakeCoeloAuthGateway(signInResult: const CoeloAuthSignInResult.success());
 
     await tester.pumpWidget(CatalogApp(accessGateway: access, authGateway: auth));
@@ -56,7 +85,7 @@ void main() {
     expect(auth.email, 'catalogo@coelo.me');
     expect(auth.password, 'senha-segura');
     expect(auth.persistSession, isTrue);
-    expect(access.checkCount, 2);
+    expect(access.checkCount, 1);
     expect(find.text('Catálogo Coelo'), findsOneWidget);
   });
 
@@ -131,7 +160,7 @@ void main() {
     auth.emitAuthState(false);
     await tester.pumpAndSettle();
 
-    expect(access.checkCount, 2);
+    expect(access.checkCount, 1);
     expect(find.text('Entre no catálogo'), findsOneWidget);
     expect(find.text('Catálogo Coelo'), findsNothing);
   });
@@ -370,6 +399,7 @@ final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
   Future<void> close() => _authStateController.close();
 
   void emitAuthState(bool isAuthenticated) {
+    this.isAuthenticated = isAuthenticated;
     _authStateController.add(isAuthenticated);
   }
 
@@ -394,6 +424,7 @@ final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
     if (signInException case final exception?) {
       throw exception;
     }
+    isAuthenticated = signInResult.isSuccess;
     return signInResult;
   }
 
