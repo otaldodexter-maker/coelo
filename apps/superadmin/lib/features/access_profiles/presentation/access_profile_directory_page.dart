@@ -6,7 +6,6 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/activity/superadmin_activity.dart';
-import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
@@ -428,25 +427,22 @@ final class _AccessProfileFileActions extends StatelessWidget {
         key: const Key('access-profile-files-import'),
         label: 'Importar',
         icon: Icons.upload_file_outlined,
-        onPressed: () => _unavailable(context),
+        onPressed: null,
       ),
       CoeloAdminFileAction(
         key: const Key('access-profile-files-export-csv'),
         label: 'Exportar CSV',
         icon: Icons.table_rows_outlined,
-        onPressed: () => _unavailable(context),
+        onPressed: null,
       ),
       CoeloAdminFileAction(
         key: const Key('access-profile-files-export-xlsx'),
         label: 'Exportar XLSX',
         icon: Icons.grid_on_outlined,
-        onPressed: () => _unavailable(context),
+        onPressed: null,
       ),
     ],
   );
-
-  void _unavailable(BuildContext context) =>
-      showSuperadminNotice(context, 'Indisponível nesta etapa', icon: Icons.info_outline_rounded);
 }
 
 final class _DemoNotice extends StatelessWidget {

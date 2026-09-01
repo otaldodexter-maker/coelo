@@ -14,7 +14,9 @@ final class CoeloAdminFileAction {
 
   final String label;
   final IconData icon;
-  final VoidCallback onPressed;
+
+  /// Null keeps the operation visible while communicating that it is not yet available.
+  final VoidCallback? onPressed;
   final Key? key;
 }
 
@@ -38,9 +40,13 @@ final class CoeloAdminFileActions extends StatelessWidget {
             value: action,
             label: action.label,
             icon: action.icon,
+            semanticLabel: action.onPressed == null
+                ? '${action.label}, indisponível'
+                : action.label,
+            enabled: action.onPressed != null,
           ),
       ],
-      onSelected: (action) => action.onPressed(),
+      onSelected: (action) => action.onPressed?.call(),
       itemWidth: 220,
       alignmentOffset: Offset(compact ? compactMenuOffset : -80, CoeloSpacing.spaceHalf),
       builder: (context, controller) {

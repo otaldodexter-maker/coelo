@@ -48,4 +48,30 @@ void main() {
     await tester.pump();
     expect(exports, 1);
   });
+
+  testWidgets('keeps unavailable operations visible and disabled', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: const Scaffold(
+          body: CoeloAdminFileActions(
+            actions: [
+              CoeloAdminFileAction(
+                label: 'Importar',
+                icon: Icons.upload_file_outlined,
+                onPressed: null,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+
+    final item = tester.widget<MenuItemButton>(find.widgetWithText(MenuItemButton, 'Importar'));
+    expect(item.onPressed, isNull);
+    expect(find.text('Importar'), findsOneWidget);
+  });
 }
