@@ -191,6 +191,14 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
       return;
     }
     final existing = _existing;
+    if (widget.eventId != null && existing == null) {
+      setState(() {
+        _feedback = widget.store.isLoading
+            ? 'Aguarde o carregamento do evento antes de salvar.'
+            : widget.store.errorMessage ?? 'O evento não foi encontrado.';
+      });
+      return;
+    }
     if (existing?.recurrence != null &&
         _occurrenceEditScope != AgendaOccurrenceEditScope.series &&
         !widget.store.supportsOccurrenceScopedEdits) {
