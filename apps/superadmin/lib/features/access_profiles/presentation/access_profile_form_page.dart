@@ -373,18 +373,24 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
     onBugReportSubmitted: widget.onBugReportSubmitted,
     onOpenConversations: widget.onConversationsOpen,
     child: _loading
-        ? const CoeloStatePanel(
-            title: 'Carregando perfil',
-            message: 'Aguarde enquanto consultamos o catálogo.',
-            loading: true,
+        ? const SingleChildScrollView(
+            padding: EdgeInsets.all(CoeloSpacing.space4),
+            child: CoeloStatePanel(
+              title: 'Carregando perfil',
+              message: 'Aguarde enquanto consultamos o catálogo.',
+              loading: true,
+            ),
           )
         : _error != null
-        ? CoeloStatePanel(
-            title: 'Não foi possível abrir o perfil',
-            message: _error!,
-            icon: Icons.error_outline_rounded,
-            actionLabel: 'Voltar',
-            onAction: widget.onCancel,
+        ? SingleChildScrollView(
+            padding: const EdgeInsets.all(CoeloSpacing.space4),
+            child: CoeloStatePanel(
+              title: 'Não foi possível abrir o perfil',
+              message: _error!,
+              icon: Icons.error_outline_rounded,
+              actionLabel: 'Voltar',
+              onAction: widget.onCancel,
+            ),
           )
         : PopScope<void>(
             canPop: !_isDirty,
@@ -740,6 +746,21 @@ final class _PermissionMatrixState extends State<_PermissionMatrix> {
                 module: modules.keys.elementAt(index),
                 permissions: modules.values.elementAt(index),
                 onToggle: _toggle,
+                onToggleAll: (selected) {
+                  final codes = modules.values
+                      .elementAt(index)
+                      .map((permission) => permission.code)
+                      .toSet();
+                  widget.onChanged(
+                    widget.permissions
+                        .map(
+                          (permission) => codes.contains(permission.code)
+                              ? permission.withSelection(selected)
+                              : permission,
+                        )
+                        .toList(growable: false),
+                  );
+                },
               ),
               if (index < modules.length - 1) const SizedBox(height: CoeloSpacing.space4),
             ],
@@ -754,11 +775,13 @@ final class _PermissionModule extends StatelessWidget {
     required this.module,
     required this.permissions,
     required this.onToggle,
+    required this.onToggleAll,
   });
 
   final String module;
   final List<AccessPermission> permissions;
   final void Function(AccessPermission permission, bool selected) onToggle;
+  final ValueChanged<bool> onToggleAll;
 
   @override
   Widget build(BuildContext context) {
@@ -772,6 +795,8 @@ final class _PermissionModule extends StatelessWidget {
     final unavailable = permissions
         .where((item) => !item.grantable || item.inherited)
         .toList(growable: false);
+    final selectable = permissions.where((item) => item.grantable && !item.inherited).toList();
+    final allSelected = selectable.isNotEmpty && selectable.every((item) => item.selected);
     return Container(
       decoration: BoxDecoration(
         color: colors.surface,
@@ -787,6 +812,16 @@ final class _PermissionModule extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(child: Text(module, style: Theme.of(context).textTheme.titleMedium)),
+                TextButton.icon(
+                  key: Key('permission-module-select-all-$module'),
+                  onPressed: selectable.isEmpty ? null : () => onToggleAll(!allSelected),
+                  icon: Icon(
+                    allSelected ? Icons.deselect_rounded : Icons.select_all_rounded,
+                    size: CoeloSize.iconSm,
+                  ),
+                  label: Text(allSelected ? 'Limpar módulo' : 'Selecionar módulo'),
+                ),
+                const SizedBox(width: CoeloSpacing.space2),
                 Text(
                   '${permissions.where((item) => item.selected).length} de ${permissions.length}',
                   style: Theme.of(

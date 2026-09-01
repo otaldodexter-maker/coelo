@@ -6,6 +6,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/activity/superadmin_activity.dart';
+import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
@@ -14,6 +15,8 @@ import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
 import '../domain/access_profile.dart';
 import 'access_profile_view_model.dart';
+
+enum AccessProfileDirectoryKind { profiles, templates }
 
 final class AccessProfileDirectoryPage extends StatefulWidget {
   const AccessProfileDirectoryPage({
@@ -28,6 +31,8 @@ final class AccessProfileDirectoryPage extends StatefulWidget {
     this.subtitle = 'Gerencie perfis do Superadmin e Admin e consulte capacidades do Principal.',
     this.currentDestination = 'profiles',
     this.createActionLabel = 'Criar perfil',
+    this.directoryKind = AccessProfileDirectoryKind.profiles,
+    this.onDirectoryKindSelected,
     super.key,
   });
 
@@ -42,6 +47,8 @@ final class AccessProfileDirectoryPage extends StatefulWidget {
   final String subtitle;
   final String currentDestination;
   final String createActionLabel;
+  final AccessProfileDirectoryKind directoryKind;
+  final ValueChanged<AccessProfileDirectoryKind>? onDirectoryKindSelected;
 
   @override
   State<AccessProfileDirectoryPage> createState() => _AccessProfileDirectoryPageState();
@@ -106,6 +113,8 @@ final class _AccessProfileDirectoryPageState extends State<AccessProfileDirector
       onCreate: widget.onCreate,
       onOpen: widget.onOpen,
       createActionLabel: widget.createActionLabel,
+      directoryKind: widget.directoryKind,
+      onDirectoryKindSelected: widget.onDirectoryKindSelected,
       onFooterHeightChanged: (height) {
         if ((_footerHeight - height).abs() < .5) return;
         setState(() => _footerHeight = height);
@@ -122,6 +131,8 @@ final class _AccessProfileDirectoryContent extends StatefulWidget {
     required this.onOpen,
     required this.onFooterHeightChanged,
     required this.createActionLabel,
+    required this.directoryKind,
+    required this.onDirectoryKindSelected,
   });
 
   final AccessProfileViewModel viewModel;
@@ -130,6 +141,8 @@ final class _AccessProfileDirectoryContent extends StatefulWidget {
   final void Function(AccessProfileDomain domain, String profileId)? onOpen;
   final ValueChanged<double> onFooterHeightChanged;
   final String createActionLabel;
+  final AccessProfileDirectoryKind directoryKind;
+  final ValueChanged<AccessProfileDirectoryKind>? onDirectoryKindSelected;
 
   @override
   State<_AccessProfileDirectoryContent> createState() => _AccessProfileDirectoryContentState();
@@ -199,6 +212,22 @@ final class _AccessProfileDirectoryContentState extends State<_AccessProfileDire
                   horizontalPadding + footerInset,
                 ),
                 children: [
+                  SuperadminUnderlineTabs<AccessProfileDirectoryKind>(
+                    key: const Key('access-profile-kind-selector'),
+                    tabs: const [
+                      SuperadminUnderlineTab(
+                        value: AccessProfileDirectoryKind.profiles,
+                        label: 'Perfis',
+                      ),
+                      SuperadminUnderlineTab(
+                        value: AccessProfileDirectoryKind.templates,
+                        label: 'Modelos',
+                      ),
+                    ],
+                    selected: widget.directoryKind,
+                    onSelected: widget.onDirectoryKindSelected ?? (_) {},
+                  ),
+                  const SizedBox(height: CoeloSpacing.space4),
                   _AccessProfileToolbar(
                     viewModel: widget.viewModel,
                     searchController: widget.searchController,
@@ -304,7 +333,7 @@ final class _AccessProfileToolbar extends StatelessWidget {
             ),
           ),
           filters: const [],
-          actions: const [],
+          actions: [_AccessProfileFileActions(compact: compact)],
         );
       }
       final filterWidth = compact ? constraints.maxWidth : 176.0;
@@ -365,10 +394,45 @@ final class _AccessProfileToolbar extends StatelessWidget {
               onTableViewSelected: viewModel.setTableView,
             ),
           ),
+          _AccessProfileFileActions(compact: compact),
         ],
       );
     },
   );
+}
+
+final class _AccessProfileFileActions extends StatelessWidget {
+  const _AccessProfileFileActions({required this.compact});
+
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminFileActions(
+    compact: compact,
+    actions: [
+      CoeloAdminFileAction(
+        key: const Key('access-profile-files-import'),
+        label: 'Importar',
+        icon: Icons.upload_file_outlined,
+        onPressed: () => _unavailable(context),
+      ),
+      CoeloAdminFileAction(
+        key: const Key('access-profile-files-export-csv'),
+        label: 'Exportar CSV',
+        icon: Icons.table_rows_outlined,
+        onPressed: () => _unavailable(context),
+      ),
+      CoeloAdminFileAction(
+        key: const Key('access-profile-files-export-xlsx'),
+        label: 'Exportar XLSX',
+        icon: Icons.grid_on_outlined,
+        onPressed: () => _unavailable(context),
+      ),
+    ],
+  );
+
+  void _unavailable(BuildContext context) =>
+      showSuperadminNotice(context, 'Indisponível nesta etapa', icon: Icons.info_outline_rounded);
 }
 
 final class _DemoNotice extends StatelessWidget {

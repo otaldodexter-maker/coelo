@@ -6,7 +6,6 @@ import 'package:coelo_superadmin/features/access_profiles/domain/access_profile.
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
-import 'package:coelo_superadmin/features/errors/presentation/screens/superadmin_error_screen.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -47,7 +46,7 @@ void main() {
     (label: '375 light', size: const Size(375, 900), theme: CoeloTheme.light),
     (label: '1440 dark', size: const Size(1440, 900), theme: CoeloTheme.dark),
   ]) {
-    testWidgets('basic routes stay unavailable at ${viewport.label} with text at 200 percent', (
+    testWidgets('production profile routes use the injected repository at ${viewport.label}', (
       tester,
     ) async {
       await tester.binding.setSurfaceSize(viewport.size);
@@ -81,23 +80,14 @@ void main() {
         '/profiles/platform/profile-id',
         '/profiles/platform/profile-id/edit',
       ]) {
+        final callsBefore = repository.calls;
         router.go(path);
         await tester.pumpAndSettle();
 
         expect(router.routeInformationProvider.value.uri.path, path, reason: path);
-        expect(find.byType(SuperadminErrorScreen), findsOneWidget, reason: path);
-        expect(
-          tester.widget<SuperadminErrorScreen>(find.byType(SuperadminErrorScreen)).kind,
-          SuperadminErrorKind.unavailable,
-          reason: path,
-        );
-        expect(
-          find.bySemanticsLabel('Erro 503. O Coelo está temporariamente indisponível.'),
-          findsOneWidget,
-          reason: path,
-        );
+        expect(find.text('503'), findsNothing, reason: path);
         expect(tester.takeException(), isNull, reason: path);
-        expect(repository.calls, 0, reason: path);
+        expect(repository.calls, greaterThan(callsBefore), reason: path);
       }
     });
   }

@@ -45,7 +45,7 @@ void main() {
       '/dev/profiles/new/platform': 'Criar perfil',
       '/dev/profiles/platform/demo-owner': 'Owner',
       '/dev/profiles/platform/demo-owner/edit': 'Editar perfil',
-      '/dev/profile-models': 'Modelos de perfil',
+      '/dev/profile-models': 'Perfis e permissões',
       '/dev/profile-models/new/platform': 'Criar modelo de perfil',
       '/dev/profile-models/platform/demo-owner': 'Owner',
       '/dev/profile-models/platform/demo-owner/edit': 'Editar modelo de perfil',
@@ -67,9 +67,6 @@ void main() {
     router.go(SuperadminRoutes.devProfiles);
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('access-profile-card-demo-owner')));
-    await tester.pumpAndSettle();
-    expect(router.routeInformationProvider.value.uri.path, '/dev/profiles/platform/demo-owner');
-    await tester.tap(find.text('Editar perfil'));
     await tester.pumpAndSettle();
     expect(
       router.routeInformationProvider.value.uri.path,

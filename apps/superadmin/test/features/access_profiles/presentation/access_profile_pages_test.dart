@@ -157,6 +157,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(find.byKey(const Key('access-profile-kind-selector')), findsOneWidget);
+    expect(find.byType(CoeloAdminFileActions), findsOneWidget);
+
     tester.widget<CoeloAdminCreateAction>(find.byType(CoeloAdminCreateAction)).onPressed!();
     tester
         .widget<CoeloAdminInteractiveCard>(find.byType(CoeloAdminInteractiveCard).first)
@@ -164,6 +167,27 @@ void main() {
 
     expect(createCalls, 1);
     expect(openCalls, 1);
+  });
+
+  testWidgets('directory switches between profiles and models in one access area', (tester) async {
+    AccessProfileDirectoryKind? selected;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AccessProfileDirectoryPage(
+          repository: FakeAccessProfileRepository(),
+          logout: unavailableSuperadminLogout,
+          directoryKind: AccessProfileDirectoryKind.templates,
+          onDirectoryKindSelected: (value) => selected = value,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Perfis'), findsOneWidget);
+    expect(find.text('Modelos'), findsOneWidget);
+    await tester.tap(find.text('Perfis'));
+    expect(selected, AccessProfileDirectoryKind.profiles);
   });
 
   testWidgets('cards and table remain stable across the responsive matrix', (tester) async {
@@ -185,16 +209,80 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        expect(find.byKey(const Key('access-profile-card-grid')), findsOneWidget);
+        if (find.byKey(const Key('access-profile-card-grid')).evaluate().isEmpty) {
+          await tester.scrollUntilVisible(
+            find.byKey(const Key('access-profile-card-grid')),
+            240,
+            scrollable: find
+                .descendant(
+                  of: find.byKey(const Key('access-profiles-scroll')),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+          );
+        }
+        expect(
+          find.byKey(const Key('access-profile-card-grid')),
+          findsOneWidget,
+          reason: 'cards at $width / $scale',
+        );
         expect(tester.takeException(), isNull, reason: width.toString());
 
+        if (find.byKey(const Key('access-profile-view-table')).evaluate().isEmpty) {
+          await tester.scrollUntilVisible(
+            find.byKey(const Key('access-profile-view-table')),
+            -240,
+            scrollable: find
+                .descendant(
+                  of: find.byKey(const Key('access-profiles-scroll')),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+          );
+        }
         await tester.tap(find.byKey(const Key('access-profile-view-table')));
         await tester.pumpAndSettle();
+        if (find.byKey(const Key('access-profile-table')).evaluate().isEmpty) {
+          await tester.scrollUntilVisible(
+            find.byKey(const Key('access-profile-table')),
+            240,
+            scrollable: find
+                .descendant(
+                  of: find.byKey(const Key('access-profiles-scroll')),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+          );
+        }
         expect(find.byKey(const Key('access-profile-table')), findsOneWidget);
         expect(tester.takeException(), isNull, reason: width.toString());
 
+        if (find.byKey(const Key('access-profile-view-cards')).evaluate().isEmpty) {
+          await tester.scrollUntilVisible(
+            find.byKey(const Key('access-profile-view-cards')),
+            -240,
+            scrollable: find
+                .descendant(
+                  of: find.byKey(const Key('access-profiles-scroll')),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+          );
+        }
         await tester.tap(find.byKey(const Key('access-profile-view-cards')));
         await tester.pumpAndSettle();
+        if (find.byKey(const Key('access-profile-card-grid')).evaluate().isEmpty) {
+          await tester.scrollUntilVisible(
+            find.byKey(const Key('access-profile-card-grid')),
+            240,
+            scrollable: find
+                .descendant(
+                  of: find.byKey(const Key('access-profiles-scroll')),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+          );
+        }
         expect(find.byKey(const Key('access-profile-card-grid')), findsOneWidget);
         expect(tester.takeException(), isNull, reason: width.toString());
       }

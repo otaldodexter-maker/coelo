@@ -1660,7 +1660,26 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.profiles,
             name: SuperadminRoutes.profilesName,
-            builder: (context, state) => _unavailableCompositionRootRoute(context),
+            builder: (context, state) => AccessProfileDirectoryPage(
+              repository: accessProfileRepository,
+              logout: logout,
+              onCreate: (domain) => context.goNamed(
+                SuperadminRoutes.profileCreateName,
+                pathParameters: {'domain': domain.databaseValue},
+              ),
+              onOpen: (domain, profileId) => context.goNamed(
+                SuperadminRoutes.profileEditName,
+                pathParameters: {'domain': domain.databaseValue, 'profileId': profileId},
+              ),
+              directoryKind: AccessProfileDirectoryKind.profiles,
+              onDirectoryKindSelected: (kind) {
+                if (kind == AccessProfileDirectoryKind.templates) {
+                  context.goNamed(SuperadminRoutes.profileModelsName);
+                }
+              },
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.profileModels,
@@ -1690,17 +1709,47 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.profileCreate,
             name: SuperadminRoutes.profileCreateName,
-            builder: (context, state) => _unavailableCompositionRootRoute(context),
+            builder: (context, state) => AccessProfileFormPage(
+              repository: accessProfileRepository,
+              logout: logout,
+              domain: _accessProfileDomain(state.pathParameters['domain']),
+              onCancel: () => context.goNamed(SuperadminRoutes.profilesName),
+              onSaved: (_) => context.goNamed(SuperadminRoutes.profilesName),
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.profileDetail,
             name: SuperadminRoutes.profileDetailName,
-            builder: (context, state) => _unavailableCompositionRootRoute(context),
+            builder: (context, state) => AccessProfileDetailPage(
+              repository: accessProfileRepository,
+              logout: logout,
+              domain: _accessProfileDomain(state.pathParameters['domain']),
+              profileId: state.pathParameters['profileId']!,
+              onBack: () => context.goNamed(SuperadminRoutes.profilesName),
+              onEdit: () => context.goNamed(
+                SuperadminRoutes.profileEditName,
+                pathParameters: state.pathParameters,
+              ),
+              onDeleted: () => context.goNamed(SuperadminRoutes.profilesName),
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.profileEdit,
             name: SuperadminRoutes.profileEditName,
-            builder: (context, state) => _unavailableCompositionRootRoute(context),
+            builder: (context, state) => AccessProfileFormPage(
+              repository: accessProfileRepository,
+              logout: logout,
+              domain: _accessProfileDomain(state.pathParameters['domain']),
+              profileId: state.pathParameters['profileId'],
+              onCancel: () => context.goNamed(SuperadminRoutes.profilesName),
+              onSaved: (_) => context.goNamed(SuperadminRoutes.profilesName),
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.governanceCatalog,
@@ -2465,9 +2514,15 @@ GoRouter createSuperadminRouter({
                 pathParameters: {'domain': domain.databaseValue},
               ),
               onOpen: (domain, profileId) => context.goNamed(
-                SuperadminRoutes.devProfileDetailName,
+                SuperadminRoutes.devProfileEditName,
                 pathParameters: {'domain': domain.databaseValue, 'profileId': profileId},
               ),
+              directoryKind: AccessProfileDirectoryKind.profiles,
+              onDirectoryKindSelected: (kind) {
+                if (kind == AccessProfileDirectoryKind.templates) {
+                  context.goNamed(SuperadminRoutes.devProfileModelsName);
+                }
+              },
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
             ),
@@ -2480,10 +2535,7 @@ GoRouter createSuperadminRouter({
               logout: _previewLogout,
               domain: _accessProfileDomain(state.pathParameters['domain']),
               onCancel: () => context.goNamed(SuperadminRoutes.devProfilesName),
-              onSaved: (profile) => context.goNamed(
-                SuperadminRoutes.devProfileDetailName,
-                pathParameters: {'domain': profile.domain.databaseValue, 'profileId': profile.id},
-              ),
+              onSaved: (_) => context.goNamed(SuperadminRoutes.devProfilesName),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
             ),
@@ -2514,14 +2566,8 @@ GoRouter createSuperadminRouter({
               logout: _previewLogout,
               domain: _accessProfileDomain(state.pathParameters['domain']),
               profileId: state.pathParameters['profileId'],
-              onCancel: () => context.goNamed(
-                SuperadminRoutes.devProfileDetailName,
-                pathParameters: state.pathParameters,
-              ),
-              onSaved: (profile) => context.goNamed(
-                SuperadminRoutes.devProfileDetailName,
-                pathParameters: {'domain': profile.domain.databaseValue, 'profileId': profile.id},
-              ),
+              onCancel: () => context.goNamed(SuperadminRoutes.devProfilesName),
+              onSaved: (_) => context.goNamed(SuperadminRoutes.devProfilesName),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
             ),
@@ -2532,16 +2578,22 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => AccessProfileDirectoryPage(
               repository: accessProfileModelPreviewRepository(),
               logout: _previewLogout,
-              title: 'Modelos de perfil',
-              subtitle: 'Crie e revise modelos locais de permissões antes de aplicá-los.',
-              currentDestination: 'profile-models',
+              title: 'Perfis e permissões',
+              subtitle: 'Gerencie perfis e modelos de acesso em uma única central.',
+              currentDestination: 'profiles',
               createActionLabel: 'Criar modelo de perfil',
+              directoryKind: AccessProfileDirectoryKind.templates,
+              onDirectoryKindSelected: (kind) {
+                if (kind == AccessProfileDirectoryKind.profiles) {
+                  context.goNamed(SuperadminRoutes.devProfilesName);
+                }
+              },
               onCreate: (domain) => context.goNamed(
                 SuperadminRoutes.devProfileModelCreateName,
                 pathParameters: {'domain': domain.databaseValue},
               ),
               onOpen: (domain, modelId) => context.goNamed(
-                SuperadminRoutes.devProfileModelDetailName,
+                SuperadminRoutes.devProfileModelEditName,
                 pathParameters: {'domain': domain.databaseValue, 'modelId': modelId},
               ),
               onDestinationSelected: (destination) =>
@@ -2556,12 +2608,9 @@ GoRouter createSuperadminRouter({
               logout: _previewLogout,
               domain: _accessProfileDomain(state.pathParameters['domain']),
               entityLabel: 'modelo de perfil',
-              currentDestination: 'profile-models',
+              currentDestination: 'profiles',
               onCancel: () => context.goNamed(SuperadminRoutes.devProfileModelsName),
-              onSaved: (profile) => context.goNamed(
-                SuperadminRoutes.devProfileModelDetailName,
-                pathParameters: {'domain': profile.domain.databaseValue, 'modelId': profile.id},
-              ),
+              onSaved: (_) => context.goNamed(SuperadminRoutes.devProfileModelsName),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
             ),
@@ -2574,7 +2623,7 @@ GoRouter createSuperadminRouter({
               logout: _previewLogout,
               domain: _accessProfileDomain(state.pathParameters['domain']),
               profileId: state.pathParameters['modelId']!,
-              currentDestination: 'profile-models',
+              currentDestination: 'profiles',
               onBack: () => context.goNamed(SuperadminRoutes.devProfileModelsName),
               onEdit: () => context.goNamed(
                 SuperadminRoutes.devProfileModelEditName,
@@ -2594,15 +2643,9 @@ GoRouter createSuperadminRouter({
               domain: _accessProfileDomain(state.pathParameters['domain']),
               profileId: state.pathParameters['modelId'],
               entityLabel: 'modelo de perfil',
-              currentDestination: 'profile-models',
-              onCancel: () => context.goNamed(
-                SuperadminRoutes.devProfileModelDetailName,
-                pathParameters: state.pathParameters,
-              ),
-              onSaved: (profile) => context.goNamed(
-                SuperadminRoutes.devProfileModelDetailName,
-                pathParameters: {'domain': profile.domain.databaseValue, 'modelId': profile.id},
-              ),
+              currentDestination: 'profiles',
+              onCancel: () => context.goNamed(SuperadminRoutes.devProfileModelsName),
+              onSaved: (_) => context.goNamed(SuperadminRoutes.devProfileModelsName),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
             ),
@@ -4012,6 +4055,9 @@ bool _usesPersistentShell(String location) {
 bool _isProductionMutationLocation(String location) {
   if (location.startsWith('/dev/')) return false;
   if (location.startsWith('/forms') || location.startsWith('/agenda')) return false;
+  // Access-profile RPCs revalidate actor, scope, MFA and version server-side.
+  // The client route may render the request form without becoming an authorization boundary.
+  if (location.startsWith('/profiles') || location.startsWith('/profile-models')) return false;
   if (location.endsWith('/new') ||
       location.contains('/new/') ||
       location.endsWith('/edit') ||
