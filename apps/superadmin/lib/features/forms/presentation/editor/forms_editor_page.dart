@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:math';
+
+import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -7,17 +11,19 @@ import 'package:flutter/material.dart';
 import '../../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../data/development_forms_api.dart';
+import '../../data/forms_editor_context.dart';
 
 /// Production remains fail-closed until the composition root owns an
 /// authoritative mutation capability. The development constructor exercises
 /// the complete visual editor without claiming remote persistence.
 final class FormsEditorPage extends StatefulWidget {
-  const FormsEditorPage({super.key}) : development = false, formId = null;
+  const FormsEditorPage({this.api, this.formId, super.key}) : development = false;
 
-  const FormsEditorPage.development({this.formId, super.key}) : development = true;
+  const FormsEditorPage.development({this.formId, super.key}) : development = true, api = null;
 
   final bool development;
   final String? formId;
+  final FormsApi? api;
 
   @override
   State<FormsEditorPage> createState() => _FormsEditorPageState();
@@ -28,6 +34,11 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   late final TextEditingController _context;
   final _catalogSearch = TextEditingController();
   final _sections = <_EditorSectionDraft>[];
+  FormsEditorContext? _editorContext;
+  FormDefinition? _definition;
+  String? _institutionId;
+  var _loading = false;
+  var _saving = false;
 
   var _selectedSection = 0;
   String? _expandedQuestionId;
@@ -40,6 +51,12 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   var _nextId = 20;
 
   _EditorSectionDraft get _section => _sections[_selectedSection];
+  FormsEditorInstitution? get _institution =>
+      _editorContext?.institutions.where((value) => value.id == _institutionId).firstOrNull;
+  bool get _canEdit =>
+      widget.development ||
+      (!_loading && widget.api != null && _institution?.canManageForms == true);
+  bool get _canPublish => _canEdit && (_institution?.canPublishForms ?? widget.development);
 
   @override
   void initState() {
@@ -58,6 +75,52 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     _expandedQuestionId = _sections.first.questions.last.id;
     _title.addListener(_markChanged);
     _context.addListener(_markChanged);
+    if (!widget.development) unawaited(_loadProduction());
+  }
+
+  Future<void> _loadProduction() async {
+    final api = widget.api;
+    if (api == null || api is! FormsEditorContextApi) {
+      setState(
+        () => _feedback = 'A composição produtiva do editor não recebeu um contexto autorizado.',
+      );
+      return;
+    }
+    final contextApi = api as FormsEditorContextApi;
+    setState(() => _loading = true);
+    try {
+      final editorContext = await contextApi.getEditorContext();
+      final projection = widget.formId == null ? null : await api.getEditor(widget.formId!);
+      if (!mounted) return;
+      final initialInstitutionId =
+          projection?.definition.institutionId ??
+          editorContext.institutions.where((value) => value.canManageForms).firstOrNull?.id;
+      if (initialInstitutionId == null) {
+        setState(
+          () => _feedback = 'Você não possui instituição autorizada para criar formulários.',
+        );
+        return;
+      }
+      final authorized = editorContext.institutions.any(
+        (value) => value.id == initialInstitutionId && value.canManageForms,
+      );
+      if (!authorized) {
+        setState(
+          () => _feedback = 'Você não possui instituição autorizada para editar este formulário.',
+        );
+        return;
+      }
+      setState(() {
+        _editorContext = editorContext;
+        _institutionId = initialInstitutionId;
+        if (projection != null) _applyDefinition(projection.definition);
+        _feedback = null;
+      });
+    } on FormApiException catch (error) {
+      if (mounted) setState(() => _feedback = error.message);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override
@@ -89,13 +152,15 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (!widget.development) ...[
-                const CoeloStatePanel(
+              if (!widget.development && (_loading || !_canEdit)) ...[
+                CoeloStatePanel(
                   key: Key('forms-editor-unavailable'),
-                  title: 'Editor indisponível',
-                  message:
-                      'A composição permanece visível com valores neutros, mas edição, publicação e persistência estão bloqueadas.',
-                  icon: Icons.lock_outline_rounded,
+                  title: _loading ? 'Carregando formulário' : 'Editor indisponível',
+                  message: _loading
+                      ? 'Verificando instituições e capacidades autorizadas.'
+                      : _feedback ?? 'A edição exige uma instituição autorizada.',
+                  icon: _loading ? null : Icons.lock_outline_rounded,
+                  loading: _loading,
                 ),
                 const SizedBox(height: CoeloSpacing.space4),
               ],
@@ -104,17 +169,19 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           ),
           footer: SuperadminFormActionFooter(
             tertiaryAction: TextButton(
-              onPressed: widget.development ? _confirmCancel : null,
+              onPressed: _canEdit && !_saving ? _confirmCancel : null,
               child: const Text('Cancelar'),
             ),
             continuationActions: [
               OutlinedButton(
-                onPressed: widget.development ? _saveDraftLocally : null,
+                onPressed: _canEdit && !_saving ? _saveDraft : null,
                 child: const Text('Salvar rascunho'),
               ),
               FilledButton(
-                onPressed: widget.development ? _validateLocally : null,
-                child: const Text('Salvar formulário'),
+                onPressed: _canEdit && !_saving
+                    ? (widget.development ? _validateLocally : _saveDraft)
+                    : null,
+                child: Text(_saving ? 'Salvando…' : 'Salvar formulário'),
               ),
             ],
           ),
@@ -123,7 +190,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     );
   }
 
-  Widget _locked(Widget child) => widget.development
+  Widget _locked(Widget child) => _canEdit
       ? child
       : ExcludeFocus(
           child: IgnorePointer(child: Opacity(opacity: 0.64, child: child)),
@@ -159,7 +226,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         alignment: Alignment.centerRight,
         child: OutlinedButton.icon(
           key: const Key('forms-editor-publish'),
-          onPressed: widget.development ? _openPublishDialog : null,
+          onPressed: _canPublish && !_saving ? _openPublishDialog : null,
           icon: const Icon(Icons.publish_outlined),
           label: const Text('Publicar ou agendar'),
         ),
@@ -210,25 +277,50 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           final stack =
               constraints.maxWidth < 720 || MediaQuery.textScalerOf(context).scale(1) > 1.3;
           final fields = [
+            if (!widget.development)
+              CoeloAdminSingleSelectField<String>(
+                key: const Key('forms-editor-institution'),
+                label: 'Instituição',
+                value: _institutionId ?? '',
+                options: [
+                  for (final institution
+                      in _editorContext?.institutions ?? const <FormsEditorInstitution>[])
+                    if (institution.canManageForms) institution.id,
+                ],
+                optionLabel: (id) =>
+                    _editorContext?.institutions
+                        .where((institution) => institution.id == id)
+                        .firstOrNull
+                        ?.name ??
+                    id,
+                prefixIcon: Icons.account_balance_outlined,
+                enabled:
+                    !_loading &&
+                    (_editorContext?.institutions.any((value) => value.canManageForms) ?? false),
+                onChanged: (value) => setState(() {
+                  _institutionId = value;
+                  _feedback = null;
+                }),
+              ),
             CoeloFormTextField(
               controller: _title,
               labelText: 'Nome do formulário',
               prefixIcon: Icons.description_outlined,
-              enabled: widget.development,
+              enabled: _canEdit,
               onChanged: (_) => _markChanged(),
             ),
             CoeloFormTextField(
               controller: _context,
               labelText: 'Contexto',
               prefixIcon: Icons.account_tree_outlined,
-              enabled: widget.development,
+              enabled: _canEdit,
               onChanged: (_) => _markChanged(),
             ),
             CoeloAdminToggleField(
               label: 'Gerar ocorrências',
               description: 'Cria aberturas recorrentes para a rotina de cuidado.',
               value: _recurring,
-              onChanged: widget.development
+              onChanged: _canEdit
                   ? (value) => setState(() {
                       _recurring = value;
                       _feedback = null;
@@ -252,7 +344,11 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                     const SizedBox(width: CoeloSpacing.space3),
                     Expanded(child: fields[1]),
                     const SizedBox(width: CoeloSpacing.space3),
-                    SizedBox(width: 220, child: fields[2]),
+                    if (fields.length == 4) ...[
+                      SizedBox(width: 220, child: fields[2]),
+                      const SizedBox(width: CoeloSpacing.space3),
+                    ],
+                    SizedBox(width: 220, child: fields.last),
                   ],
                 ),
               if (_recurring) ...[
@@ -276,7 +372,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         firstDate: DateTime(2026, 8, 31),
         lastDate: DateTime(2028, 12, 31),
         labelText: 'Primeira ocorrência',
-        enabled: widget.development,
+        enabled: _canEdit,
         onChanged: (value) => setState(() {
           _firstOccurrenceAt = value;
           _feedback = null;
@@ -289,7 +385,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         options: _FormsEditorPeriodicity.values,
         optionLabel: _periodicityLabel,
         prefixIcon: Icons.repeat_rounded,
-        enabled: widget.development,
+        enabled: _canEdit,
         onChanged: (value) => setState(() {
           _periodicity = value;
           _feedback = null;
@@ -301,7 +397,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         options: const [1, 2, 3, 4, 5, 6, 7],
         selectedValues: _weekdays,
         optionLabel: _weekdayLabel,
-        enabled: widget.development && _periodicity == _FormsEditorPeriodicity.weekly,
+        enabled: _canEdit && _periodicity == _FormsEditorPeriodicity.weekly,
         onChanged: (value) => setState(() {
           _weekdays = value;
           _feedback = null;
@@ -814,13 +910,13 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       () => _feedback = issues.isNotEmpty
           ? 'Revise o título, a ordem e os campos obrigatórios antes de salvar.'
           : scheduleIssue ??
-                'Validação local concluída ($_scheduleSummary); a gravação remota continua indisponível.',
+                'Validação local concluída ($_scheduleSummary); nenhum dado foi enviado.',
     );
   }
 
   FormDefinition _localDefinition() => FormDefinition(
-    id: 'local-preview',
-    institutionId: 'local-preview',
+    id: _definition?.id ?? '',
+    institutionId: _institutionId ?? '',
     kind: FormKind.form,
     identityMode: FormIdentityMode.identified,
     responseUnit: FormResponseUnit.person,
@@ -866,11 +962,105 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                       ? 'BRL'
                       : null,
                 ),
+                options: [
+                  for (
+                    var optionIndex = 0;
+                    optionIndex < _sections[sectionIndex].questions[questionIndex].options.length;
+                    optionIndex++
+                  )
+                    FormOption(
+                      id: '${_sections[sectionIndex].questions[questionIndex].id}-option-$optionIndex',
+                      label: _sections[sectionIndex]
+                          .questions[questionIndex]
+                          .options[optionIndex]
+                          .text
+                          .trim(),
+                      position: optionIndex,
+                    ),
+                ],
               ),
           ],
         ),
     ],
   );
+
+  Future<void> _saveDraft() async {
+    if (widget.development) {
+      _saveDraftLocally();
+      return;
+    }
+    final api = widget.api;
+    if (api == null || !_canEdit) return;
+    final definition = _localDefinition();
+    if (const FormDefinitionValidator().validate(definition).isNotEmpty) {
+      setState(
+        () => _feedback = 'Revise o título, a ordem e os campos obrigatórios antes de salvar.',
+      );
+      return;
+    }
+    setState(() => _saving = true);
+    try {
+      final saved = await api.saveDraft(
+        FormCommand(
+          requestId: _newRequestId(),
+          expectedVersion: _definition?.managementVersion ?? 0,
+          payload: definition,
+        ),
+      );
+      if (!mounted) return;
+      setState(() {
+        _definition = saved;
+        _institutionId = saved.institutionId;
+        _feedback = 'Rascunho salvo.';
+      });
+    } on FormApiException catch (error) {
+      if (mounted) setState(() => _feedback = error.message);
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  void _applyDefinition(FormDefinition definition) {
+    for (final section in _sections) {
+      section.dispose();
+    }
+    _sections
+      ..clear()
+      ..addAll([
+        for (final section in definition.sections)
+          _EditorSectionDraft(
+            id: section.id,
+            title: section.title,
+            description: section.description ?? '',
+            questions: [for (final item in section.items) _questionDraft(item)],
+          ),
+      ]);
+    if (_sections.isEmpty) _sections.addAll(_neutralSections());
+    _definition = definition;
+    _title.text = definition.title;
+    _selectedSection = 0;
+    _expandedQuestionId = _sections.first.questions.firstOrNull?.id;
+  }
+
+  _EditorQuestionDraft _questionDraft(FormItem item) {
+    final draft = _EditorQuestionDraft(
+      id: item.id,
+      kind: item.kind,
+      label: item.label,
+      required: item.isRequired,
+    );
+    draft
+      ..details.text = item.helpText ?? ''
+      ..minimum.text = item.config.minValue?.toString() ?? ''
+      ..maximum.text = item.config.maxValue?.toString() ?? '';
+    for (final option in draft.options) {
+      option.dispose();
+    }
+    draft.options
+      ..clear()
+      ..addAll([for (final option in item.options) TextEditingController(text: option.label)]);
+    return draft;
+  }
 
   Future<void> _openPublishDialog() async {
     final issues = const FormDefinitionValidator().validate(_localDefinition());
@@ -888,9 +1078,34 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     final intent = await showDialog<_FormsPublishIntent>(
       context: context,
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
-      builder: (_) => const _FormsPublishDialog(),
+      builder: (_) => _FormsPublishDialog(allowSchedule: widget.development),
     );
     if (intent == null || !mounted) return;
+    if (!widget.development) {
+      final api = widget.api;
+      final definition = _definition;
+      if (api == null || definition == null || !_canPublish) return;
+      setState(() => _saving = true);
+      try {
+        final published = await api.publish(
+          FormCommand(
+            requestId: _newRequestId(),
+            expectedVersion: definition.managementVersion,
+            payload: FormIdPayload(definition.id),
+          ),
+        );
+        if (!mounted) return;
+        setState(() {
+          _definition = published;
+          _feedback = 'Formulário publicado.';
+        });
+      } on FormApiException catch (error) {
+        if (mounted) setState(() => _feedback = error.message);
+      } finally {
+        if (mounted) setState(() => _saving = false);
+      }
+      return;
+    }
     setState(() {
       _feedback = intent.scheduledAt == null
           ? 'Publicação concluída somente nesta fixture local; nenhuma persistência remota foi realizada.'
@@ -1045,7 +1260,9 @@ String _weekdayLabel(int value) => const {
 enum _FormsPublishMode { now, scheduled }
 
 final class _FormsPublishDialog extends StatefulWidget {
-  const _FormsPublishDialog();
+  const _FormsPublishDialog({required this.allowSchedule});
+
+  final bool allowSchedule;
 
   @override
   State<_FormsPublishDialog> createState() => _FormsPublishDialogState();
@@ -1064,15 +1281,17 @@ final class _FormsPublishDialogState extends State<_FormsPublishDialog> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text(
-          'Esta ação altera somente a fixture local do /dev. Nenhuma publicação ou notificação remota será executada.',
+        Text(
+          widget.allowSchedule
+              ? 'Esta ação altera somente a fixture local do /dev. Nenhuma publicação ou notificação remota será executada.'
+              : 'A publicação será executada agora pela operação autorizada.',
         ),
         const SizedBox(height: CoeloSpacing.space4),
         CoeloAdminSingleSelectField<_FormsPublishMode>(
           key: const Key('forms-editor-publish-mode'),
           label: 'Quando publicar',
           value: _mode,
-          options: _FormsPublishMode.values,
+          options: widget.allowSchedule ? _FormsPublishMode.values : const [_FormsPublishMode.now],
           optionLabel: (value) => switch (value) {
             _FormsPublishMode.now => 'Publicar agora',
             _FormsPublishMode.scheduled => 'Agendar publicação',
@@ -1119,6 +1338,14 @@ final class _FormsPublishDialogState extends State<_FormsPublishDialog> {
 
 String _publishDateTime(DateTime value) =>
     '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year} às ${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
+
+String _newRequestId() {
+  final values = List<int>.generate(16, (_) => Random.secure().nextInt(256));
+  values[6] = (values[6] & 0x0f) | 0x40;
+  values[8] = (values[8] & 0x3f) | 0x80;
+  final hex = values.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
+  return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-${hex.substring(16, 20)}-${hex.substring(20)}';
+}
 
 enum _DateRule { free, from, until, range }
 

@@ -79,6 +79,25 @@ void main() {
     }
   });
 
+  test('loads only explicit institution form capabilities from the context RPC', () async {
+    final backend = _Backend({
+      'institutions': [
+        {
+          'id': 'institution-school',
+          'name': 'Escola Horizonte',
+          'capabilities': {'can_manage_forms': true, 'can_publish_forms': false},
+        },
+      ],
+    });
+
+    final context = await SupabaseFormsApi(backend).getEditorContext();
+
+    expect(backend.functionName, 'superadmin_forms_context');
+    expect(context.institutions.single.id, 'institution-school');
+    expect(context.institutions.single.canManageForms, isTrue);
+    expect(context.institutions.single.canPublishForms, isFalse);
+  });
+
   test('monitor hierarchy sends the scoped cursor to the authorized RPC', () async {
     final backend = _Backend({
       'items': [
