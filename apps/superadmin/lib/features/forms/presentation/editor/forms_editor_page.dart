@@ -134,6 +134,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       onDuplicate: _duplicateSection,
       onDelete: _confirmDeleteSection,
       onMove: _moveSection,
+      onReorder: _reorderSection,
     );
     if (!compact || MediaQuery.textScalerOf(context).scale(1) <= 1.3) return navigation;
     return ConstrainedBox(
@@ -299,27 +300,36 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         },
       ),
       const SizedBox(height: CoeloSpacing.space4),
-      for (var index = 0; index < _section.questions.length; index++) ...[
-        _QuestionCard(
+      ReorderableListView.builder(
+        key: const Key('forms-editor-question-reorder-list'),
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        buildDefaultDragHandles: false,
+        itemCount: _section.questions.length,
+        onReorderItem: _reorderQuestion,
+        itemBuilder: (context, index) => Padding(
           key: ValueKey(_section.questions[index].id),
-          question: _section.questions[index],
-          expanded: _expandedQuestionId == _section.questions[index].id,
-          canMoveUp: index > 0,
-          canMoveDown: index < _section.questions.length - 1,
-          onToggle: () => setState(() {
-            _expandedQuestionId = _expandedQuestionId == _section.questions[index].id
-                ? null
-                : _section.questions[index].id;
-          }),
-          onMoveUp: () => _moveQuestion(index, index - 1),
-          onMoveDown: () => _moveQuestion(index, index + 1),
-          onMoveToSection: () => _showMoveQuestionDialog(index),
-          onDuplicate: () => _duplicateQuestion(index),
-          onDelete: () => _confirmDeleteQuestion(index),
-          onChanged: _markChanged,
+          padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+          child: _QuestionCard(
+            index: index,
+            question: _section.questions[index],
+            expanded: _expandedQuestionId == _section.questions[index].id,
+            canMoveUp: index > 0,
+            canMoveDown: index < _section.questions.length - 1,
+            onToggle: () => setState(() {
+              _expandedQuestionId = _expandedQuestionId == _section.questions[index].id
+                  ? null
+                  : _section.questions[index].id;
+            }),
+            onMoveUp: () => _moveQuestion(index, index - 1),
+            onMoveDown: () => _moveQuestion(index, index + 1),
+            onMoveToSection: () => _showMoveQuestionDialog(index),
+            onDuplicate: () => _duplicateQuestion(index),
+            onDelete: () => _confirmDeleteQuestion(index),
+            onChanged: _markChanged,
+          ),
         ),
-        const SizedBox(height: CoeloSpacing.space3),
-      ],
+      ),
       CoeloAdminCreateAction(
         key: const Key('forms-editor-add-question'),
         label: 'Adicionar pergunta',
@@ -457,9 +467,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                               const SizedBox(height: CoeloSpacing.space2),
                               for (final kind in groups[groupIndex].items) ...[
                                 _CatalogItem(
-                                  key: kind == FormItemKind.date
-                                      ? const Key('forms-editor-catalog-date')
-                                      : null,
+                                  key: Key('forms-editor-catalog-${kind.name}'),
                                   kind: kind,
                                   onPressed: () {
                                     Navigator.of(dialogContext).pop();
@@ -531,6 +539,16 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     });
   }
 
+  void _reorderSection(int from, int to) {
+    if (from == to) return;
+    setState(() {
+      final value = _sections.removeAt(from);
+      _sections.insert(to, value);
+      _selectedSection = to;
+      _feedback = null;
+    });
+  }
+
   Future<void> _confirmDeleteSection() async {
     if (_sections.length <= 1) return;
     final delete = await showDialog<bool>(
@@ -582,6 +600,15 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
 
   void _moveQuestion(int from, int to) {
     if (to < 0 || to >= _section.questions.length) return;
+    setState(() {
+      final value = _section.questions.removeAt(from);
+      _section.questions.insert(to, value);
+      _feedback = null;
+    });
+  }
+
+  void _reorderQuestion(int from, int to) {
+    if (from == to) return;
     setState(() {
       final value = _section.questions.removeAt(from);
       _section.questions.insert(to, value);
@@ -709,8 +736,30 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                 id: _sections[sectionIndex].questions[questionIndex].id,
                 kind: _sections[sectionIndex].questions[questionIndex].kind,
                 label: _sections[sectionIndex].questions[questionIndex].label.text.trim(),
+                helpText:
+                    _sections[sectionIndex].questions[questionIndex].details.text.trim().isEmpty
+                    ? null
+                    : _sections[sectionIndex].questions[questionIndex].details.text.trim(),
                 position: questionIndex,
                 isRequired: _sections[sectionIndex].questions[questionIndex].required,
+                config: FormItemConfig(
+                  minValue: num.tryParse(
+                    _sections[sectionIndex].questions[questionIndex].minimum.text.trim().replaceAll(
+                      ',',
+                      '.',
+                    ),
+                  ),
+                  maxValue: num.tryParse(
+                    _sections[sectionIndex].questions[questionIndex].maximum.text.trim().replaceAll(
+                      ',',
+                      '.',
+                    ),
+                  ),
+                  currency:
+                      _sections[sectionIndex].questions[questionIndex].kind == FormItemKind.money
+                      ? 'BRL'
+                      : null,
+                ),
               ),
           ],
         ),
@@ -980,6 +1029,9 @@ final class _EditorQuestionDraft {
     required this.required,
     this.branchEnabled = false,
   }) : label = TextEditingController(text: label),
+       details = TextEditingController(),
+       minimum = TextEditingController(),
+       maximum = TextEditingController(),
        options = kind == FormItemKind.singleChoice || kind == FormItemKind.multipleChoice
            ? [TextEditingController(text: 'Opção 1'), TextEditingController(text: 'Opção 2')]
            : [];
@@ -987,6 +1039,9 @@ final class _EditorQuestionDraft {
   final String id;
   final FormItemKind kind;
   final TextEditingController label;
+  final TextEditingController details;
+  final TextEditingController minimum;
+  final TextEditingController maximum;
   final List<TextEditingController> options;
   final List<_EditorQuestionDraft> branchQuestions = [];
   bool required;
@@ -1006,7 +1061,10 @@ final class _EditorQuestionDraft {
     value
       ..dateRule = dateRule
       ..from = from
-      ..until = until;
+      ..until = until
+      ..details.text = details.text
+      ..minimum.text = minimum.text
+      ..maximum.text = maximum.text;
     for (var index = 0; index < value.options.length && index < options.length; index++) {
       value.options[index].text = options[index].text;
     }
@@ -1019,6 +1077,9 @@ final class _EditorQuestionDraft {
 
   void dispose() {
     label.dispose();
+    details.dispose();
+    minimum.dispose();
+    maximum.dispose();
     for (final option in options) {
       option.dispose();
     }
@@ -1038,6 +1099,7 @@ final class _SectionNavigation extends StatelessWidget {
     required this.onDuplicate,
     required this.onDelete,
     required this.onMove,
+    required this.onReorder,
   });
 
   final bool compact;
@@ -1048,6 +1110,7 @@ final class _SectionNavigation extends StatelessWidget {
   final VoidCallback onDuplicate;
   final VoidCallback onDelete;
   final ValueChanged<int> onMove;
+  final void Function(int from, int to) onReorder;
 
   @override
   Widget build(BuildContext context) {
@@ -1093,50 +1156,61 @@ final class _SectionNavigation extends StatelessWidget {
             ],
           ),
           const SizedBox(height: CoeloSpacing.space2),
-          for (var index = 0; index < sections.length; index++) ...[
-            Semantics(
-              button: true,
-              selected: index == selectedIndex,
-              label: '${sections[index].title}, ${sections[index].questions.length} perguntas',
-              child: OutlinedButton(
-                onPressed: () => onSelected(index),
-                style: OutlinedButton.styleFrom(
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.all(CoeloSpacing.space3),
-                  foregroundColor: index == selectedIndex ? colors.primary : colors.onSurface,
-                  backgroundColor: index == selectedIndex
-                      ? colors.primaryContainer
-                      : colors.surface,
-                  side: BorderSide(
-                    color: index == selectedIndex ? colors.primary : colors.outlineVariant,
+          ReorderableListView.builder(
+            key: const Key('forms-editor-section-reorder-list'),
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            buildDefaultDragHandles: false,
+            itemCount: sections.length,
+            onReorderItem: onReorder,
+            itemBuilder: (context, index) => Padding(
+              key: ValueKey(sections[index].id),
+              padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+              child: Semantics(
+                button: true,
+                selected: index == selectedIndex,
+                label: '${sections[index].title}, ${sections[index].questions.length} perguntas',
+                child: OutlinedButton(
+                  onPressed: () => onSelected(index),
+                  style: OutlinedButton.styleFrom(
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.all(CoeloSpacing.space3),
+                    foregroundColor: index == selectedIndex ? colors.primary : colors.onSurface,
+                    backgroundColor: index == selectedIndex
+                        ? colors.primaryContainer
+                        : colors.surface,
+                    side: BorderSide(
+                      color: index == selectedIndex ? colors.primary : colors.outlineVariant,
+                    ),
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      index == selectedIndex
-                          ? Icons.radio_button_checked_rounded
-                          : Icons.drag_indicator_rounded,
-                    ),
-                    const SizedBox(width: CoeloSpacing.space2),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(sections[index].title),
-                          Text(
-                            '${sections[index].questions.length} perguntas',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ],
+                  child: Row(
+                    children: [
+                      ReorderableDragStartListener(
+                        index: index,
+                        child: const Tooltip(
+                          message: 'Arrastar seção',
+                          child: Icon(Icons.drag_indicator_rounded),
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: CoeloSpacing.space2),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(sections[index].title),
+                            Text(
+                              '${sections[index].questions.length} perguntas',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: CoeloSpacing.space2),
-          ],
+          ),
           OutlinedButton.icon(
             onPressed: onAdd,
             icon: const Icon(Icons.add_rounded),
@@ -1150,6 +1224,7 @@ final class _SectionNavigation extends StatelessWidget {
 
 final class _QuestionCard extends StatefulWidget {
   const _QuestionCard({
+    required this.index,
     required this.question,
     required this.expanded,
     required this.canMoveUp,
@@ -1161,9 +1236,9 @@ final class _QuestionCard extends StatefulWidget {
     required this.onDuplicate,
     required this.onDelete,
     required this.onChanged,
-    super.key,
   });
 
+  final int index;
   final _EditorQuestionDraft question;
   final bool expanded;
   final bool canMoveUp;
@@ -1204,7 +1279,13 @@ final class _QuestionCardState extends State<_QuestionCard> {
                     constraints.maxWidth < 620 || MediaQuery.textScalerOf(context).scale(1) > 1.3;
                 final identity = Row(
                   children: [
-                    const Icon(Icons.drag_indicator_rounded),
+                    ReorderableDragStartListener(
+                      index: widget.index,
+                      child: const Tooltip(
+                        message: 'Arrastar pergunta',
+                        child: Icon(Icons.drag_indicator_rounded),
+                      ),
+                    ),
                     const SizedBox(width: CoeloSpacing.space2),
                     _KindIcon(kind: widget.question.kind),
                     const SizedBox(width: CoeloSpacing.space2),
@@ -1311,6 +1392,52 @@ final class _QuestionCardState extends State<_QuestionCard> {
           widget.onChanged();
         },
       ),
+      if (widget.question.kind == FormItemKind.information) ...[
+        const SizedBox(height: CoeloSpacing.space3),
+        CoeloFormTextField(
+          controller: widget.question.details,
+          labelText: 'Detalhes do bloco',
+          prefixIcon: Icons.notes_rounded,
+          onChanged: (_) => widget.onChanged(),
+        ),
+      ],
+      if (_isNumericKind(widget.question.kind)) ...[
+        const SizedBox(height: CoeloSpacing.space3),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final minimum = CoeloFormTextField(
+              controller: widget.question.minimum,
+              labelText: widget.question.kind == FormItemKind.money ? 'Valor mínimo' : 'Mínimo',
+              prefixIcon: Icons.vertical_align_bottom_rounded,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+              onChanged: (_) => widget.onChanged(),
+            );
+            final maximum = CoeloFormTextField(
+              controller: widget.question.maximum,
+              labelText: widget.question.kind == FormItemKind.money ? 'Valor máximo' : 'Máximo',
+              prefixIcon: Icons.vertical_align_top_rounded,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+              onChanged: (_) => widget.onChanged(),
+            );
+            if (constraints.maxWidth < 520) {
+              return Column(
+                children: [
+                  minimum,
+                  const SizedBox(height: CoeloSpacing.space3),
+                  maximum,
+                ],
+              );
+            }
+            return Row(
+              children: [
+                Expanded(child: minimum),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(child: maximum),
+              ],
+            );
+          },
+        ),
+      ],
       if (widget.question.kind != FormItemKind.information) ...[
         const SizedBox(height: CoeloSpacing.space3),
         CoeloAdminToggleField(
@@ -1331,16 +1458,31 @@ final class _QuestionCardState extends State<_QuestionCard> {
         const SizedBox(height: CoeloSpacing.space3),
         Text('Opções', style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: CoeloSpacing.space2),
-        for (var index = 0; index < widget.question.options.length; index++) ...[
-          CoeloFormTextField(
-            controller: widget.question.options[index],
-            labelText: 'Opção ${index + 1}',
-            prefixIcon: Icons.radio_button_unchecked_rounded,
-            onChanged: (_) => widget.onChanged(),
+        ReorderableListView.builder(
+          key: ValueKey('forms-editor-options-${widget.question.id}'),
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: widget.question.options.length,
+          onReorderItem: (from, to) {
+            setState(() {
+              final option = widget.question.options.removeAt(from);
+              widget.question.options.insert(to, option);
+            });
+            widget.onChanged();
+          },
+          itemBuilder: (context, index) => Padding(
+            key: ObjectKey(widget.question.options[index]),
+            padding: EdgeInsets.only(
+              bottom: index < widget.question.options.length - 1 ? CoeloSpacing.space2 : 0,
+            ),
+            child: CoeloFormTextField(
+              controller: widget.question.options[index],
+              labelText: 'Opção ${index + 1}',
+              prefixIcon: Icons.radio_button_unchecked_rounded,
+              onChanged: (_) => widget.onChanged(),
+            ),
           ),
-          if (index < widget.question.options.length - 1)
-            const SizedBox(height: CoeloSpacing.space2),
-        ],
+        ),
       ],
       if (_canBranch(widget.question.kind)) ...[
         const SizedBox(height: CoeloSpacing.space3),
@@ -1622,6 +1764,9 @@ const _catalogGroups = [
   (label: 'Mídias', items: [FormItemKind.photo, FormItemKind.gallery]),
   (label: 'Estrutura', items: [FormItemKind.information]),
 ];
+
+bool _isNumericKind(FormItemKind kind) =>
+    kind == FormItemKind.integer || kind == FormItemKind.decimal || kind == FormItemKind.money;
 
 String _kindLabel(FormItemKind kind) => switch (kind) {
   FormItemKind.shortText => 'Texto curto',

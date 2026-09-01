@@ -129,6 +129,10 @@ void main() {
     await tester.pumpWidget(_app(const FormsEditorPage.development()));
 
     expect(find.byKey(const Key('forms-editor-section-list')), findsOneWidget);
+    expect(find.byKey(const Key('forms-editor-section-reorder-list')), findsOneWidget);
+    expect(find.byKey(const Key('forms-editor-question-reorder-list')), findsOneWidget);
+    expect(find.byTooltip('Arrastar seção'), findsWidgets);
+    expect(find.byTooltip('Arrastar pergunta'), findsWidgets);
     expect(find.byTooltip('Duplicar seção'), findsOneWidget);
     expect(find.byTooltip('Excluir seção'), findsOneWidget);
     expect(find.byTooltip('Mover pergunta para cima'), findsWidgets);
@@ -156,6 +160,27 @@ void main() {
     await tester.pump();
     expect(find.textContaining('cópia'), findsWidgets);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('configures information details and numeric bounds', (tester) async {
+    await tester.pumpWidget(_app(const FormsEditorPage.development()));
+
+    await tester.ensureVisible(find.byKey(const Key('forms-editor-add-question')));
+    await tester.tap(find.byKey(const Key('forms-editor-add-question')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('forms-editor-catalog-information')));
+    await tester.tap(find.byKey(const Key('forms-editor-catalog-information')));
+    await tester.pumpAndSettle();
+    expect(find.text('Detalhes do bloco'), findsOneWidget);
+
+    await tester.ensureVisible(find.byKey(const Key('forms-editor-add-question')));
+    await tester.tap(find.byKey(const Key('forms-editor-add-question')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('forms-editor-catalog-money')));
+    await tester.tap(find.byKey(const Key('forms-editor-catalog-money')));
+    await tester.pumpAndSettle();
+    expect(find.text('Valor mínimo'), findsOneWidget);
+    expect(find.text('Valor máximo'), findsOneWidget);
   });
 
   testWidgets('publishes now or schedules only inside the development fixture', (tester) async {
