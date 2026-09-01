@@ -11,6 +11,7 @@ import '../../core/config/superadmin_auth_scope.dart' show UnavailableMealPlanIm
 import '../../core/platform/open_download.dart';
 import '../dev_menu/development_assessment_repository.dart';
 import '../dev_menu/development_activity_fixture_repository.dart';
+import '../dev_menu/development_access_health_fixture_catalog.dart';
 import '../dev_menu/development_attendance_repository.dart';
 import '../dev_menu/development_circular_reader_repository.dart';
 import '../dev_menu/development_invite_repository.dart';
@@ -299,6 +300,7 @@ GoRouter createSuperadminRouter({
   DevelopmentInviteRepository invitePreviewRepository() =>
       cachedInvitePreviewRepository ??= DevelopmentInviteRepository();
   const productionActivityAboutRepository = UnavailableActivityProfileAboutRepository();
+  final accessHealthFixtures = DevelopmentAccessHealthFixtureCatalog.standard();
   final developmentActivityStore = DevActivitySessionStore.content();
   final developmentActivityDirectoryRepository = DevActivityDirectoryRepository(
     store: developmentActivityStore,
@@ -309,21 +311,22 @@ GoRouter createSuperadminRouter({
   final developmentActivityAboutRepository = DevelopmentActivityProfileAboutRepository();
   const blockedCareProfilesRepository = UnavailableHealthCareRepository();
   DevHealthCareRepository? cachedCareProfilesPreviewRepository;
-  DevHealthCareRepository careProfilesPreviewRepository() =>
-      cachedCareProfilesPreviewRepository ??= DevHealthCareRepository.content();
+  DevHealthCareRepository careProfilesPreviewRepository() => cachedCareProfilesPreviewRepository ??=
+      DevHealthCareRepository.content(catalog: accessHealthFixtures);
   final medicationPlansPreviewRepository =
-      developmentMedicationPlanRepository ?? DevMedicationPlanRepository();
-  const developmentCareProfileChildren = <HealthCareProfileChildOption>[
-    HealthCareProfileChildOption(id: 'child-demo-a', label: 'Criança Demo A'),
-    HealthCareProfileChildOption(id: 'child-demo-b', label: 'Criança Demo B'),
+      developmentMedicationPlanRepository ??
+      DevMedicationPlanRepository.content(catalog: accessHealthFixtures);
+  final developmentCareProfileChildren = <HealthCareProfileChildOption>[
+    for (final child in accessHealthFixtures.children)
+      HealthCareProfileChildOption(id: child.id, label: child.name),
   ];
-  const developmentMedicationChildren = <HealthCareFormChoice>[
-    HealthCareFormChoice(id: 'child-demo-a', label: 'Criança Demo A'),
-    HealthCareFormChoice(id: 'child-demo-b', label: 'Criança Demo B'),
+  final developmentMedicationChildren = <HealthCareFormChoice>[
+    for (final child in accessHealthFixtures.children)
+      HealthCareFormChoice(id: child.id, label: child.name),
   ];
-  final medicationPlanDirectoryPreviewRepository = DevMedicationPlanHealthCareRepository(
+  final medicationPlanDirectoryPreviewRepository = DevMedicationPlanHealthCareRepository.content(
     medicationPlans: medicationPlansPreviewRepository,
-    childLabels: {for (final child in developmentMedicationChildren) child.id: child.label},
+    catalog: accessHealthFixtures,
   );
   final medicationPlanLoadFutures = <String, Future<MedicationPlanDetail>>{};
 

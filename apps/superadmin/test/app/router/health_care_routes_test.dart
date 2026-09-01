@@ -205,7 +205,7 @@ void main() {
     router.go('/dev/health-care/medication-plans/new');
     await tester.pumpAndSettle();
 
-    expect(find.text('Criança Demo A'), findsOneWidget);
+    expect(find.text('Alice Duarte'), findsOneWidget);
     FilledButton continueButton() =>
         tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Continuar'));
     expect(continueButton().onPressed, isNull);
@@ -240,7 +240,7 @@ void main() {
 
     final saved = await developmentRepository.fetchPage(const MedicationPlanQuery());
     expect(saved.items, hasLength(1));
-    expect(saved.items.single.childPersonId, 'child-demo-a');
+    expect(saved.items.single.childPersonId, 'dev-child-0001');
     expect(saved.items.single.medicationName, 'Ibuprofeno');
     expect(saved.items.single.doseAmount, 5);
     expect(saved.items.single.doseUnit, 'ml');

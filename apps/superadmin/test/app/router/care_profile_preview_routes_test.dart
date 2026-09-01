@@ -34,30 +34,30 @@ void main() {
 
     router.go(SuperadminRoutes.devHealthCareProfiles);
     await tester.pumpAndSettle();
-    expect(find.text('Criança Demo A'), findsOneWidget);
+    expect(find.text('Alice Duarte'), findsOneWidget);
     final paths = <String>[];
     void recordPath() => paths.add(router.routeInformationProvider.value.uri.path);
     router.routeInformationProvider.addListener(recordPath);
     addTearDown(() => router.routeInformationProvider.removeListener(recordPath));
     final childCard = find.ancestor(
-      of: find.text('Criança Demo A'),
+      of: find.text('Alice Duarte'),
       matching: find.byType(CoeloAdminInteractiveCard),
     );
     tester.widget<CoeloAdminInteractiveCard>(childCard).onPressed!();
     await tester.pumpAndSettle();
-    expect(paths, contains('/dev/health-care/profiles/child-demo-a/edit'));
+    expect(paths, contains('/dev/health-care/profiles/dev-child-0001/edit'));
     expect(
       router.routeInformationProvider.value.uri.path,
-      '/dev/health-care/profiles/child-demo-a/edit',
+      '/dev/health-care/profiles/dev-child-0001/edit',
       reason: paths.toString(),
     );
     expect(find.text('Editar perfil de cuidado'), findsWidgets);
-    expect(find.text('Criança Demo A'), findsWidgets);
-    expect(find.text('Edema no episódio registrado.'), findsNothing);
+    expect(find.text('Alice Duarte'), findsWidgets);
+    expect(find.text('Reação registrada no perfil de cuidado.'), findsNothing);
 
     await tester.tap(find.text('Alergias e restrições').last);
     await tester.pumpAndSettle();
-    expect(find.text('Edema no episódio registrado.'), findsOneWidget);
+    expect(find.text('Reação registrada no perfil de cuidado.'), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
 
     await tester.tap(find.text('Cancelar'));
