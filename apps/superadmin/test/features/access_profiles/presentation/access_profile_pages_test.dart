@@ -146,6 +146,7 @@ void main() {
   testWidgets('real create and open callbacks fire exactly once', (tester) async {
     var createCalls = 0;
     var openCalls = 0;
+    var duplicateCalls = 0;
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
@@ -154,6 +155,7 @@ void main() {
           logout: unavailableSuperadminLogout,
           onCreate: (_) => createCalls += 1,
           onOpen: (_, _) => openCalls += 1,
+          onDuplicate: (_, _) => duplicateCalls += 1,
         ),
       ),
     );
@@ -166,9 +168,19 @@ void main() {
     tester
         .widget<CoeloAdminInteractiveCard>(find.byType(CoeloAdminInteractiveCard).first)
         .onPressed!();
+    tester
+        .widget<IconButton>(
+          find
+              .byWidgetPredicate(
+                (widget) => widget.key?.toString().contains('access-profile-duplicate-') ?? false,
+              )
+              .first,
+        )
+        .onPressed!();
 
     expect(createCalls, 1);
     expect(openCalls, 1);
+    expect(duplicateCalls, 1);
   });
 
   testWidgets('duplicate model starts inactive without carrying assignments', (tester) async {

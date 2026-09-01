@@ -56,6 +56,7 @@ import '../../features/access_profiles/domain/access_profile.dart';
 import '../../features/access_profiles/domain/access_profile_model.dart';
 import '../../features/access_profiles/presentation/access_profile_detail_page.dart';
 import '../../features/access_profiles/presentation/access_profile_directory_page.dart';
+import '../../features/access_profiles/presentation/access_profile_duplicate_page.dart';
 import '../../features/access_profiles/presentation/access_profile_form_page.dart';
 import '../../features/agenda/data/agenda_prototype_store.dart';
 import '../../features/agenda/presentation/agenda_calendar_page.dart';
@@ -2686,6 +2687,10 @@ GoRouter createSuperadminRouter({
                 SuperadminRoutes.devProfileModelEditName,
                 pathParameters: {'domain': domain.databaseValue, 'modelId': modelId},
               ),
+              onDuplicate: (domain, modelId) => context.goNamed(
+                SuperadminRoutes.devProfileModelDuplicateName,
+                pathParameters: {'domain': domain.databaseValue, 'modelId': modelId},
+              ),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
             ),
@@ -2736,6 +2741,24 @@ GoRouter createSuperadminRouter({
               currentDestination: 'profiles',
               onCancel: () => context.goNamed(SuperadminRoutes.devProfileModelsName),
               onSaved: (_) => context.goNamed(SuperadminRoutes.devProfileModelsName),
+              onDestinationSelected: (destination) =>
+                  _navigateFromDevelopmentShell(context, destination),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devProfileModelDuplicate,
+            name: SuperadminRoutes.devProfileModelDuplicateName,
+            builder: (context, state) => AccessProfileDuplicatePage(
+              repository: accessProfileModelPreviewRepository(),
+              duplicator: accessProfileModelPreviewRepository(),
+              logout: _previewLogout,
+              domain: _accessProfileDomain(state.pathParameters['domain']),
+              sourceProfileId: state.pathParameters['modelId']!,
+              onCancel: () => context.goNamed(SuperadminRoutes.devProfileModelsName),
+              onDuplicated: (profile) => context.goNamed(
+                SuperadminRoutes.devProfileModelEditName,
+                pathParameters: {'domain': profile.domain.databaseValue, 'modelId': profile.id},
+              ),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
             ),

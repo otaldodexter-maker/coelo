@@ -23,6 +23,7 @@ final class AccessProfileDirectoryPage extends StatefulWidget {
     required this.logout,
     this.onCreate,
     this.onOpen,
+    this.onDuplicate,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     this.onConversationsOpen,
@@ -39,6 +40,7 @@ final class AccessProfileDirectoryPage extends StatefulWidget {
   final LogoutAction logout;
   final ValueChanged<AccessProfileDomain>? onCreate;
   final void Function(AccessProfileDomain domain, String profileId)? onOpen;
+  final void Function(AccessProfileDomain domain, String profileId)? onDuplicate;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final VoidCallback? onConversationsOpen;
@@ -120,6 +122,7 @@ final class _AccessProfileDirectoryPageState extends State<AccessProfileDirector
       searchController: _searchController,
       onCreate: widget.onCreate,
       onOpen: widget.onOpen,
+      onDuplicate: widget.onDuplicate,
       createActionLabel: widget.createActionLabel,
       directoryKind: widget.directoryKind,
       onDirectoryKindSelected: widget.onDirectoryKindSelected,
@@ -137,6 +140,7 @@ final class _AccessProfileDirectoryContent extends StatefulWidget {
     required this.searchController,
     required this.onCreate,
     required this.onOpen,
+    required this.onDuplicate,
     required this.onFooterHeightChanged,
     required this.createActionLabel,
     required this.directoryKind,
@@ -147,6 +151,7 @@ final class _AccessProfileDirectoryContent extends StatefulWidget {
   final TextEditingController searchController;
   final ValueChanged<AccessProfileDomain>? onCreate;
   final void Function(AccessProfileDomain domain, String profileId)? onOpen;
+  final void Function(AccessProfileDomain domain, String profileId)? onDuplicate;
   final ValueChanged<double> onFooterHeightChanged;
   final String createActionLabel;
   final AccessProfileDirectoryKind directoryKind;
@@ -265,6 +270,9 @@ final class _AccessProfileDirectoryContentState extends State<_AccessProfileDire
                     compact: constraints.maxWidth < CoeloBreakpoints.medium.minWidth,
                     onCreate: widget.onCreate == null ? null : () => widget.onCreate!(query.domain),
                     onOpen: widget.onOpen == null ? null : (id) => widget.onOpen!(query.domain, id),
+                    onDuplicate: widget.onDuplicate == null
+                        ? null
+                        : (id) => widget.onDuplicate!(query.domain, id),
                     createActionLabel: widget.createActionLabel,
                   ),
                 ],
@@ -478,6 +486,7 @@ final class _AccessProfileResults extends StatelessWidget {
     required this.compact,
     required this.onCreate,
     required this.onOpen,
+    required this.onDuplicate,
     required this.createActionLabel,
   });
 
@@ -485,6 +494,7 @@ final class _AccessProfileResults extends StatelessWidget {
   final bool compact;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onOpen;
+  final ValueChanged<String>? onDuplicate;
   final String createActionLabel;
 
   @override
@@ -550,6 +560,7 @@ final class _AccessProfileResults extends StatelessWidget {
             items: viewModel.page.items,
             onCreate: onCreate,
             onOpen: onOpen,
+            onDuplicate: onDuplicate,
             createActionLabel: createActionLabel,
           );
         } else {
@@ -558,6 +569,7 @@ final class _AccessProfileResults extends StatelessWidget {
             tableView: viewModel.tableView,
             onCreate: onCreate,
             onOpen: onOpen,
+            onDuplicate: onDuplicate,
             createActionLabel: createActionLabel,
           );
         }
@@ -580,12 +592,14 @@ final class _AccessProfileCards extends StatelessWidget {
     required this.items,
     required this.onCreate,
     required this.onOpen,
+    required this.onDuplicate,
     required this.createActionLabel,
   });
 
   final List<AccessProfile> items;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onOpen;
+  final ValueChanged<String>? onDuplicate;
   final String createActionLabel;
 
   @override
@@ -604,7 +618,11 @@ final class _AccessProfileCards extends StatelessWidget {
             ),
           ),
         for (final item in items)
-          _AccessProfileCard(item: item, onPressed: onOpen == null ? null : () => onOpen!(item.id)),
+          _AccessProfileCard(
+            item: item,
+            onPressed: onOpen == null ? null : () => onOpen!(item.id),
+            onDuplicate: onDuplicate == null ? null : () => onDuplicate!(item.id),
+          ),
       ];
       return Column(
         key: const Key('access-profile-card-grid'),
@@ -634,10 +652,15 @@ final class _AccessProfileCards extends StatelessWidget {
 }
 
 final class _AccessProfileCard extends StatelessWidget {
-  const _AccessProfileCard({required this.item, required this.onPressed});
+  const _AccessProfileCard({
+    required this.item,
+    required this.onPressed,
+    required this.onDuplicate,
+  });
 
   final AccessProfile item;
   final VoidCallback? onPressed;
+  final VoidCallback? onDuplicate;
 
   @override
   Widget build(BuildContext context) {
@@ -687,6 +710,13 @@ final class _AccessProfileCard extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (onDuplicate != null)
+                  IconButton(
+                    key: Key('access-profile-duplicate-${item.id}'),
+                    tooltip: 'Duplicar modelo',
+                    onPressed: onDuplicate,
+                    icon: const Icon(Icons.copy_all_outlined),
+                  ),
                 _ProfileExpandableStatus(status: item.status, itemId: item.id),
               ],
             ),
@@ -761,6 +791,7 @@ final class _AccessProfileTable extends StatelessWidget {
     required this.tableView,
     required this.onCreate,
     required this.onOpen,
+    required this.onDuplicate,
     required this.createActionLabel,
   });
 
@@ -768,6 +799,7 @@ final class _AccessProfileTable extends StatelessWidget {
   final AccessProfileTableView tableView;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onOpen;
+  final ValueChanged<String>? onDuplicate;
   final String createActionLabel;
 
   @override
@@ -805,64 +837,80 @@ final class _AccessProfileTable extends StatelessWidget {
             ],
           ),
         ),
-        columns: tableView == AccessProfileTableView.grouped
-            ? [
-                CoeloAdminTableColumn(
-                  id: 'description',
-                  label: 'Descrição',
-                  initialWidth: 340,
-                  minWidth: 220,
-                  maxWidth: 520,
-                  cellBuilder: (context, item) =>
-                      Text(item.description, maxLines: 1, overflow: TextOverflow.ellipsis),
-                ),
-                CoeloAdminTableColumn(
-                  id: 'scope',
-                  label: 'Escopo máximo',
-                  initialWidth: 180,
-                  minWidth: 140,
-                  maxWidth: 240,
-                  cellBuilder: (context, item) => Text(item.maxScope.label),
-                ),
-                CoeloAdminTableColumn(
-                  id: 'status',
-                  label: 'Status',
-                  initialWidth: 150,
-                  minWidth: 120,
-                  maxWidth: 200,
-                  cellBuilder: (context, item) => _ProfileStatusChip(status: item.status),
-                ),
-                CoeloAdminTableColumn(
-                  id: 'memberships',
-                  label: 'Vínculos',
-                  initialWidth: 120,
-                  minWidth: 96,
-                  maxWidth: 180,
-                  cellBuilder: (context, item) => Text('${item.membershipCount}'),
-                ),
-                CoeloAdminTableColumn(
-                  id: 'type',
-                  label: 'Tipo',
-                  initialWidth: 150,
-                  minWidth: 120,
-                  maxWidth: 200,
-                  cellBuilder: (context, item) => Text(
-                    item.isSystem ? 'Predefinido' : 'Personalizado',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+        columns: [
+          ...(tableView == AccessProfileTableView.grouped
+              ? [
+                  CoeloAdminTableColumn(
+                    id: 'description',
+                    label: 'Descrição',
+                    initialWidth: 340,
+                    minWidth: 220,
+                    maxWidth: 520,
+                    cellBuilder: (context, item) =>
+                        Text(item.description, maxLines: 1, overflow: TextOverflow.ellipsis),
                   ),
-                ),
-              ]
-            : [
-                _assignmentColumn(
-                  'institution',
-                  'Instituição',
-                  AccessAssignmentContext.institution,
-                ),
-                _assignmentColumn('unit', 'Unidade', AccessAssignmentContext.unit),
-                _assignmentColumn('group', 'Turma', AccessAssignmentContext.group),
-                _assignmentColumn('activity', 'Atividade', AccessAssignmentContext.activity),
-              ],
+                  CoeloAdminTableColumn(
+                    id: 'scope',
+                    label: 'Escopo máximo',
+                    initialWidth: 180,
+                    minWidth: 140,
+                    maxWidth: 240,
+                    cellBuilder: (context, item) => Text(item.maxScope.label),
+                  ),
+                  CoeloAdminTableColumn(
+                    id: 'status',
+                    label: 'Status',
+                    initialWidth: 150,
+                    minWidth: 120,
+                    maxWidth: 200,
+                    cellBuilder: (context, item) => _ProfileStatusChip(status: item.status),
+                  ),
+                  CoeloAdminTableColumn(
+                    id: 'memberships',
+                    label: 'Vínculos',
+                    initialWidth: 120,
+                    minWidth: 96,
+                    maxWidth: 180,
+                    cellBuilder: (context, item) => Text('${item.membershipCount}'),
+                  ),
+                  CoeloAdminTableColumn(
+                    id: 'type',
+                    label: 'Tipo',
+                    initialWidth: 150,
+                    minWidth: 120,
+                    maxWidth: 200,
+                    cellBuilder: (context, item) => Text(
+                      item.isSystem ? 'Predefinido' : 'Personalizado',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ]
+              : [
+                  _assignmentColumn(
+                    'institution',
+                    'Instituição',
+                    AccessAssignmentContext.institution,
+                  ),
+                  _assignmentColumn('unit', 'Unidade', AccessAssignmentContext.unit),
+                  _assignmentColumn('group', 'Turma', AccessAssignmentContext.group),
+                  _assignmentColumn('activity', 'Atividade', AccessAssignmentContext.activity),
+                ]),
+          if (onDuplicate != null)
+            CoeloAdminTableColumn(
+              id: 'actions',
+              label: 'Ações',
+              initialWidth: 96,
+              minWidth: 80,
+              maxWidth: 120,
+              cellBuilder: (context, item) => IconButton(
+                key: Key('access-profile-table-duplicate-${item.id}'),
+                tooltip: 'Duplicar modelo',
+                onPressed: () => onDuplicate!(item.id),
+                icon: const Icon(Icons.copy_all_outlined),
+              ),
+            ),
+        ],
         headerHeight: 56,
         rowHeight: 64,
         onRowPressed: onOpen == null ? null : (item) => onOpen!(item.id),
