@@ -4366,3 +4366,21 @@ da simples soma das 207 ações.
 - Chat/Avisos permanecem `blocked-supabase`; Circulares não avança para remoto.
   Nenhuma mutação foi executada e qualquer pacote continua condicionado à
   classificação/autorização nominal do ambiente.
+
+## Checkpoint 2026-09-01 — Operações backend, 0/40 E2E
+
+- Auditoria estrita permanece 0/40 E2E: Agenda 6, Planos 5, Cardápios 6,
+  Formulários 16 e Importações 7. Nenhuma mutação remota foi realizada.
+- Remoto possui 103 migrations e objeto `plan_institution_availability` sem
+  provenance local; migrations locais referenciam `agenda_events` e
+  `agenda_audiences` inexistentes. Não aplicar a cauda em lote: reconciliar
+  ledger/schema e replay primeiro.
+- Planos carece de CRUD/RPC e RLS completa/forçada. Cardápios tem schema/RPCs,
+  mas composition root produtivo não os usa e há 10 alertas SECURITY DEFINER.
+- Forms possui backend RPC-only, porém create/edit/responses/files produtivos
+  continuam desconectados e o hardening final não está remoto. Importações
+  cobre somente units; RPCs genéricas/Edge estão ausentes. Agenda não possui
+  schema/RLS/RPC/CRUD produtivos.
+- Advisors: 207 alertas de segurança e 128 avisos de FKs sem índice exigem
+  triagem, nunca correção cega. Primeiro passo é reconciliar drift/replay; ETA
+  remota não é confiável antes disso.

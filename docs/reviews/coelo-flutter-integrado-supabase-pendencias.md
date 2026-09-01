@@ -13,8 +13,8 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "E91B6941EF4BDC5DADA284510E6A74D83880EC51E2391367B8D3841B9C52D99F"
-supabase_tracker_sha256: "B6848CA5EDB27985AD0787CF1FB0B445A5F703B0BC9D0ED09F39EBA65ACCCDA9"
+flutter_tracker_sha256: "278405B2EC2DA338109879728E37850D00310AE7AC74C280A56B36C4ED451265"
+supabase_tracker_sha256: "24CA9D3B06CBB3092DAE109CA3924F6A9E1447B8BB57145614FA58A82FBD0E36"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
@@ -1457,3 +1457,18 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   declarado coerente/completo nesse gate.
 - Circulares possui RPCs/RLS remotos, mas sem adapter final, ator, tenant A/B,
   persistência/reload ou E2E; não avança para `ready-for-e2e`.
+
+## Checkpoint integrado 68 — Operações Flutter local, backend 0/40 E2E
+
+- Planos, Cardápios, Formulários, Importações e Agenda passaram 344/344 testes
+  Flutter locais em `84759675`; analyzer, contrato visual e conhecimento estão
+  verdes. Isso não promove produção.
+- O recorte backend permanece 0/40 E2E. Drift de ledger/schema impede aplicar
+  migrations em lote; Planos, Agenda e Importações têm contratos ausentes,
+  Forms está desconectado em superfícies produtivas e Cardápios não está ligado
+  ao composition root real.
+- Mapa/geocodificação real de Agenda continua bloqueado por provedor e contrato
+  de privacidade; a UI atual registra apenas prévia visual honesta.
+- Primeiro gate integrado: reconciliar ledger/replay, depois ACL/RLS comuns,
+  Forms, Importações, Cardápios, Planos após decisão e backend novo de Agenda.
+  E2E continua 0/202 e estrito 0/229.

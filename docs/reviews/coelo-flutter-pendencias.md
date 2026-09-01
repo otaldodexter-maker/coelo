@@ -3297,3 +3297,19 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
   busca/limite e `issue` aceitava profile/destinatário cross-institution.
 - As nove referências de Comunicação continuam preservadas em `f6d44af9` e
   `ab484019`. Produção, remoto e E2E não foram promovidos.
+
+## Checkpoint 2026-09-01 — Operações Flutter `/dev` concluída localmente
+
+- Worktree `codex/finalizacao-telas-operacoes` limpa em `84759675`; Planos,
+  Cardápios, Formulários, Importações e Agenda passaram 344/344 testes e analyzer
+  sem issues. Contratos visuais e dois gates de conhecimento passaram.
+- Planos/Cardápios/Importações fecharam diretórios responsivos, filtros,
+  paginação, arquivos honestamente indisponíveis e fixtures vinculadas.
+- Formulários separou criar/ver respostas, preservou reordenação, blocos,
+  número/dinheiro e agendamento; rota produtiva não oferece criação falsa.
+- Agenda fechou calendário/lista/wizard, perguntas curta/Sim-Não com título e
+  IDs monotônicos, Solicitações/Aprovações e redirecionamento de Permissões para
+  Perfis. Localização é prévia visual, não mapa/geocodificação real.
+- Trinta referências foram preservadas com SHA-256 no commit `86e55dc7`.
+  Estado máximo é Flutter `/dev` `local-green`; Supabase/remoto/E2E permanecem
+  separados e nenhuma tela foi declarada produtiva.

@@ -77,7 +77,7 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
 | Frente | Branch | HEAD | Estado observado |
 | --- | --- | --- | --- |
 | Comunicação | `codex/finalizar-tela-comunicacao` | `64a92497` | Em andamento; Chat, Avisos e Convites possuem checkpoints commitados; correção responsiva de Convites e proposta dos três rastreadores continuam na worktree. |
-| Operações | `codex/finalizacao-telas-operacoes` | `dfca4b5c` | Em andamento; Formulários foi commitado e Cardápios conserva quatro arquivos em finalização. |
+| Operações | `codex/finalizacao-telas-operacoes` | `84759675` | Worktree limpa; Flutter `/dev` das cinco áreas passou 344/344, mas backend permanece 0/40 E2E e bloqueado por drift/schema. |
 | Acessos e Saúde | `codex/accessos-ponta-a-ponta` | `796ad8ea` | Em andamento; fixtures compartilhadas e Perfis/Modelos estão commitados; backend permanece sem promoção remota/E2E. |
 | Auth | `codex/auth-first-local-green` | `36ae7c86` | Worktree limpa no snapshot; produção permanece condicionada aos gates registrados pela frente. |
 | Estruturas | `codex/estruturas-superadmin` | `49a52f6e` | Rastreadores e artefatos de migration/modelo por unidade continuam preservados fora do commit final; `.artifacts` permanece fora de Git. |
