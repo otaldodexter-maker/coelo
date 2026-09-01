@@ -799,10 +799,10 @@ de cada `screen_id/action_id`, sem promover o estado por evidência Flutter:
 
 | Estado Supabase | `screen_id/action_id` |
 | --- | --- |
-| `local-green` | `institutions/*`; `activities/*`; `attendance.dashboard`; `attendance.create`; `attendance.mark`; `attendance.correct`; `attendance.finish` |
-| `audited` | `auth.login`; `auth.recover`; `auth.logout`; `shell/*`; `units/*`; `assessments/*`; `chat/*`; `notices/*`; `child-safety/*`; `audit/*`; `account.theme`; `account.logout`; `error_pages/*` |
+| `local-green` | `auth.login`; `auth.recover`; `auth.reset`; `auth.logout`; `institutions/*`; `activities/*`; `attendance.dashboard`; `attendance.create`; `attendance.mark`; `attendance.correct`; `attendance.finish` |
+| `audited` | `shell/*`; `units/*`; `assessments/*`; `chat/*`; `notices/*`; `child-safety/*`; `audit/*`; `account.theme`; `account.logout`; `error_pages/*` |
 | `fail-closed` | `groups/*`; `people/*`; `access_profiles/*`; `access_models/*`; `invites/*`; `students/*`; `attendance.export`; `daily_routine/*`; `forms_authoring/*`; `forms_responses/*`; `forms_files/*`; `health_care/*`; `imports/*`; `profile_files/*`; `support/*`; `account.profile`; `account.settings` |
-| `blocked-decision` | `auth.reset`; `auth.mfa`; `agenda/*`; `acontece/*`; `agora/*`; `momentos/*`; `principal_profile/*`; `medication/*`; `account.mfa`; `account.sessions`; `catalog/*`; `plans/*`; `meal_plans/*`; `internal_users/*` |
+| `blocked-decision` | `auth.mfa`; `agenda/*`; `acontece/*`; `agora/*`; `momentos/*`; `principal_profile/*`; `medication/*`; `account.mfa`; `account.sessions`; `catalog/*`; `plans/*`; `meal_plans/*`; `internal_users/*` |
 | `remote-green` ou `done` | nenhum item em 2026-08-26 |
 
 Os curingas `*` significam exatamente todos os `action_id` enumerados na linha

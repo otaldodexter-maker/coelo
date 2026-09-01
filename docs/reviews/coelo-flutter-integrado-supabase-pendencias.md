@@ -13,8 +13,8 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "548E6861F6B986121A42616E045903206C17ABE33F7FB2B5CE263139CAE88EE6"
-supabase_tracker_sha256: "35275DBD4895D1BA73E0AA8D88544B55AEF31BA012F0F771FCAC9C0ABCDEA4BE"
+flutter_tracker_sha256: "FD073A773E5198E399E4A3C601D518223F580A16C94B857E9B54FC9AEC99B739"
+supabase_tracker_sha256: "8CC3A52FF4BE5004C3A1745923E08A88ADF1D4AFC694D71954EC8AE6A71092AD"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
