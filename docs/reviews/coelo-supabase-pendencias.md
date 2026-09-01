@@ -480,11 +480,11 @@ somada à da família; espera por decisão externa não está incluída.
 
 | Ordem | Tela/subtela | Ação | Pendência Supabase | Estado atual | Básica | Intermediária | Avançada | Completa | Nível aconselhado | Estimativa | Evidência para conclusão |
 | ---: | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---: | --- |
-| 1 | `auth` | `auth.login` | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | `audited` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 6–12 h | Sessão válida/inválida; pessoa e vínculo ativos; revogação/downgrade; tenant A/B; nenhum dado antes da autorização. |
-| 1 | `auth` | `auth.logout` | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | `audited` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 6–12 h | Sessão válida/inválida; pessoa e vínculo ativos; revogação/downgrade; tenant A/B; nenhum dado antes da autorização. |
+| 1 | `auth` | `auth.login` | Login, restauração e refresh foram provados no replay Auth descartável; remoto e E2E remoto permanecem abertos. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | local executado; remoto separado | GoTrue real: login válido, não enumeração, restauração/refresh, sessão revogada, realm/membership/capability/tenant e auditoria. |
+| 1 | `auth` | `auth.logout` | Logout e recusa dos refresh tokens atual e rotacionado foram provados; access token revogado foi recusado em operação sensível. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | local executado; remoto separado | Logout real, revogação de sessão, refresh recusado e bootstrap sensível negado após revogação. |
 | 1 | `auth` | `auth.mfa` | Ação depende de decisão canônica antes de implementação produtiva. | `blocked-decision` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada após decisão` | decisão + 6–12 h | Sessão válida/inválida; pessoa e vínculo ativos; revogação/downgrade; tenant A/B; nenhum dado antes da autorização. |
-| 1 | `auth` | `auth.recover` | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | `audited` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 6–12 h | Sessão válida/inválida; pessoa e vínculo ativos; revogação/downgrade; tenant A/B; nenhum dado antes da autorização. |
-| 1 | `auth` | `auth.reset` | Ação depende de decisão canônica antes de implementação produtiva. | `blocked-decision` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada após decisão` | decisão + 6–12 h | Sessão válida/inválida; pessoa e vínculo ativos; revogação/downgrade; tenant A/B; nenhum dado antes da autorização. |
+| 1 | `auth` | `auth.recover` | Solicitação neutra, e-mail local, redirect e callback recovery foram provados no GoTrue/Mailpit descartáveis. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | local executado; SMTP/remoto separados | Conta existente/desconhecida indistinguíveis; callback válido/inválido; nenhum token, senha ou PII na evidência. |
+| 1 | `auth` | `auth.reset` | Decisão nominal deste pacote aprovou reset sem MFA; troca real, expiração/reuso e recusa da senha antiga foram provados localmente. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | local executado; remoto separado | `updateUser` em sessão recovery, logout posterior, senha antiga negada, nova aceita e link de uso único. |
 | 2 | `shell` | `shell.load` | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | `audited` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 6–12 h | Sessão válida/inválida; pessoa e vínculo ativos; revogação/downgrade; tenant A/B; nenhum dado antes da autorização. |
 | 2 | `shell` | `shell.navigate` | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | `audited` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 6–12 h | Sessão válida/inválida; pessoa e vínculo ativos; revogação/downgrade; tenant A/B; nenhum dado antes da autorização. |
 | 2 | `shell` | `shell.reload` | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | `audited` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 6–12 h | Sessão válida/inválida; pessoa e vínculo ativos; revogação/downgrade; tenant A/B; nenhum dado antes da autorização. |
@@ -754,7 +754,7 @@ do `action_id` não contém `reload`.
 
 | # | `screen_id` | `action_id` por estado | Evidência comprovada — ambiente/data | Bloqueio e próximo passo exato | ETA da família |
 | ---: | --- | --- | --- | --- | --- |
-| 1 | `auth` | `audited`: `auth.login`, `auth.recover`, `auth.logout`; `blocked-decision`: `auth.reset`, `auth.mfa` | Wiring de login/logout/refresh e perguntas OQ-006/OQ-016 auditados localmente em 2026-08-26; sem E2E remoto. | Decidir recovery/SMTP/MFA por papel; testar sessão válida/inválida, callback, AAL2, downgrade, revogação e acesso direto. | decisão 0,5 d + 1–2 d |
+| 1 | `auth` | `local-green`: `auth.login`, `auth.recover`, `auth.reset`, `auth.logout`; `blocked-decision`: `auth.mfa` | Em 2026-09-01, replay Auth-only hash-verificado passou pgTAP 29/29 e lifecycle real completo em GoTrue/PostgREST/Postgres/Mailpit, com teardown sem resíduos. | Remoto continua read-only; MFA permanece fora e AAL2 fail-closed. Para remoto/E2E, classificar ambiente e obter autorização nominal separada. | local executado; remoto/E2E não calculável sem autorização |
 | 2 | `shell` | `audited`: `shell.load`, `shell.navigate`, `shell.switch-context`, `shell.unauthorized`, `shell.reload` | Composição/rotas auditadas localmente em 2026-08-26; baseline tinha 79 rotas normais e 96 `/dev`. | Reextrair grafo vivo; provar nenhum dado pré-autorização, limpeza de cache/contexto e zero Supabase em `/dev`. | 1 d |
 | 3 | `institutions` | `local-green`: `institutions.list`, `institutions.filter`, `institutions.detail`, `institutions.create`, `institutions.edit`, `institutions.status`, `institutions.files`, `institutions.error`, `institutions.access-denied`, `institutions.reload`; `fail-closed`: `institutions.import`, `institutions.export` | Contratos gerais tiveram evidência local anterior, mas o plugin oficial confirmou dois wrappers remotos executáveis por `authenticated` com falhas runtime: import `42702` e export `42703`. Nenhuma ação de arquivo está E2E ou concluída. | Manter import/export indisponíveis; corrigir primeiro a história reproduzível das migrations e os dois REDs; depois provar autorização, tenant A/B, vínculo revogado, IDs/filtros adulterados, arquivos reais, reload, cleanup, remoto autorizado e E2E. | 1–2 d local + remoto/E2E separado |
 | 4 | `units` | `audited`: `units.list`, `units.filter`, `units.error`, `units.reload`, `units.create`, `units.edit`, `units.status`, `units.import`, `units.export`; `audited`/`fail-closed`: `units.access-denied`; `blocked-decision`/`fail-closed`: `units.people-export` | UI confirmou filter/noResults, erro, retry/reload e acesso negado; a ação falsa people-export foi ocultada. Contratos backend correspondentes foram inventariados, mas Unit Directory produtivo segue reprovado, people-export não tem capability/job próprio e não há E2E. | Manter diretório `Unavailable`; decidir capability/escopo/colunas de people-export; provar filtros, erro/retry, reload/persistência e negação uniforme com tenant A/B; reconciliar RPC/Edge/Storage e executar arquivos reais. | 2–4 d + 18–32 h vertical de people-export após decisões |
@@ -4295,3 +4295,100 @@ da simples soma das 207 ações.
 - **Gate de conhecimento:** `no-op`. A atualização corrige estado operacional e
   proveniência Git; não cria regra durável nova de produto, domínio, permissão
   ou UX.
+
+### Checkpoint seguro 64 — Auth-first interrompido por conflito canônico de replay
+
+- **Recorte e teto:** Auth, sessão, autorização interna e recuperação de senha,
+  com máximo autorizado `local-green`; MFA permaneceu excluído e `fail-closed`.
+  Nenhuma ação, família, tela ou integração foi promovida.
+- **Evidência obtida:** contratos PowerShell 7/7; pacote `coelo_auth` 20/20;
+  domínio, composição, sessão e router Superadmin 30/30. O replay descartável
+  iniciou, preparou 124 migrations e aplicou 50 migrations reais antes da RED.
+- **RED preservada:** `20260812002010_import_export_unit_source_retention.sql`
+  referencia `app_private.unit_import_source_attestations`, criada pela órfã
+  remota `20260811222209`. O checkpoint 36 já classifica essa cadeia como
+  bloqueada e exige proveniência/fingerprint antes de replay integral. Não foi
+  criada tabela sintética, omitida migration ou alterada a ordem histórica.
+- **Review de segurança:** três P1 do primeiro review foram corrigidos antes do
+  fechamento: callback recovery vinculado ao access token da sessão realmente
+  estabelecida, reset recusado fora do estado recovery e logout local
+  `fail-closed` mesmo quando a revogação remota lança erro. A prova de revogação
+  remota continua dependente do replay bloqueado.
+- **Estado:** recorte Auth `em elaboração/bloqueado`, não `local-green`,
+  `remote-green` ou `done`. Supabase geral permanece 3/37 famílias
+  `local-green` (8,11%) e 0/37 `done`; conclusão estrita permanece 0/228.
+- **Ambiente e cleanup:** remoto `coelo` permaneceu read-only e
+  `blocked-environment`; nenhum deploy, push, repair, DDL/DML ou configuração
+  Auth remota ocorreu. O stage descartável foi encerrado sem container, volume,
+  rede ou diretório `coelo_safe_*` residual.
+- **Primeiro gate incompleto:** reconciliar canonicamente a proveniência da
+  migration órfã `20260811222209` e sua cadeia de Import/Export. Depois disso,
+  repetir replay + pgTAP + lifecycle Auth antes de qualquer promoção.
+- **Gate de conhecimento:** `no-op`; o bloqueio já estava registrado no
+  checkpoint 36 e não nasceu regra durável aprovada nova.
+
+### Checkpoint seguro 65 — Auth-first local-green sem MFA
+
+- **Supersessão do checkpoint 64:** o bloqueio da cadeia alheia de
+  Import/Export foi preservado, não contornado. Um perfil Auth-only explícito,
+  derivado do manifesto hash-verificado, selecionou somente a fundação exigida
+  por Auth e chegou à migration forward-only `20260901124500`. A família Auth
+  tem 4/4 ações não-MFA `local-green`; `auth.mfa` continua
+  `blocked-decision`/fail-closed, portanto o agregado geral permanece 3/37
+  famílias `local-green` (8,11%) e 0/37 `done`; conclusão estrita 0/228.
+- **Banco e lifecycle reais:** replay descartável aplicou 44 migrations
+  canônicas e duas preflights; pgTAP passou 29/29. O lifecycle passou login,
+  não enumeração, restauração/refresh e rotação, logout, recusa de refresh e de
+  access token revogados, recovery neutra, callback, reset, expiração/reuso,
+  senha antiga/nova, identidade interna separada, membership ativa/suspensa/
+  revogada, cross-realm, capability, Owner AAL1 negado, tenant A/B, ID
+  adulterado e auditoria minimizada.
+- **Hardening:** `20260901124500` impede que um `institution_id` inexistente e
+  não confiável transforme a negação Auth em violação de FK; a auditoria
+  registra o motivo estável e minimiza esse identificador para `null`.
+  `SECURITY DEFINER`, `search_path` vazio e ACL explícita foram preservados.
+- **Gates locais:** contratos PowerShell 8/8; pacote `coelo_auth` 20/20 e
+  analyzer limpo; testes Flutter Auth/composição/router 126/126 e analyzer
+  limpo. O lint amplo reproduziu REDs históricos fora de Auth em Import/Export,
+  Access Profiles e File Jobs; nenhuma função Auth tocada apareceu nos erros.
+- **Estado e cleanup:** máximo `local-green`. Remoto `coelo` permaneceu
+  read-only/`blocked-environment`; nenhum deploy, push, repair, DDL/DML ou
+  configuração Auth remota ocorreu. Dois replays terminaram com zero container,
+  volume, rede ou diretório `coelo_safe_*` residual, inclusive após o lint
+  amplo retornar não zero.
+- **Primeiro gate incompleto:** ambiente remoto classificado e autorização
+  nominal do pacote exato para migration/configuração e E2E. O próximo passo
+  seguro no remoto continua somente inventário read-only.
+- **Gate de conhecimento:** `no-op`; ADR 0019, spec 039 e a especificação local
+  aprovada já contêm o contrato durável. Este checkpoint registra evidência de
+  execução, não uma nova regra de produto.
+
+### Checkpoint seguro 66 — produção classificada, deploy Auth bloqueado por drift
+
+- **Ambiente e estado:** o Owner classificou `evvbomzejfijozbtgvpt` como
+  produção. O plugin oficial confirmou `ACTIVE_HEALTHY` e ledger de 103
+  migrations até `20260821200000`; nenhuma DDL, DML, configuração Auth ou
+  migration foi aplicada. Estado remoto continua `not-deployed`, nunca
+  `remote-green` ou `done`.
+- **Sessão reforçada:** Login e restauração agora vinculam o bootstrap interno
+  ao mesmo `session_id` validado no JWT e relido após o RPC. Troca A→B,
+  `signedOut`, sessão sem identificador válido e evento autenticado que não
+  corresponde ao contexto corrente falham fechados e limpam o contexto.
+  `coelo_auth` passou 21/21; o foco Superadmin passou 56/56; analyzers dos dois
+  pacotes ficaram sem issues.
+- **Replay:** o replay Auth-only foi repetido até `20260901124500`, pgTAP 29/29
+  e lifecycle real completo passaram, com zero recursos residuais. Essa prova
+  permanece `local-green`, pois o perfil inclui `20260827214000` e parte de um
+  subconjunto diferente do schema produtivo.
+- **P1 bloqueante de produção:** entre o ledger remoto e
+  `20260827233000_superadmin_internal_auth_context.sql` existem migrations
+  intermediárias locais ainda não implantadas. Aplicar só `20260827233000` +
+  `20260901124500` criaria um caminho não reproduzido; `db push` ampliaria o
+  pacote além da autorização nominal. A revisão independente manteve esse P1.
+- **Próximo gate seguro:** produzir replay transacional exatamente compatível
+  com o ledger/schema de produção, fechar hashes/preflight/forward-fix e obter
+  nova revisão do pacote nominal. Redirect Auth e E2E de tela também aguardam
+  uma URL produtiva verificável do Superadmin. MFA permanece fora e
+  fail-closed.
+- **Conhecimento:** OQ-041 foi atualizada primeiro com a classificação durável
+  de produção. Validadores de conhecimento seguem como gate final deste lote.

@@ -3245,3 +3245,36 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
 | 2026-08-26 | Criação do rastreador Flutter separado do backend e da prova integrada. |
 | 2026-08-26 | Consolidação retomável em HEAD `447ac02c`: 37 famílias, estados por ação, commits/gates, resíduos, ETA e handoff integrado. |
 | 2026-08-26 | Organização decisória: tabela geral cumulativa, definição B/I/A/C, matriz de 201 ações com nível aconselhado/estimativa/evidência, decomposição explícita das 12 ações de Instituições, dependências integradas fora de escopo e inventário do worktree concorrente; nenhum código ou backend alterado. |
+
+## 18. Auth-first parcial e sem promoção — 2026-09-01
+
+| Campo | Estado |
+|---|---|
+| Recorte | Composição real de Login, recuperação e reset de senha no Superadmin, sem MFA e com teto `local-green`. |
+| Evidência parcial | Pacote Auth 20/20 e domínio/composição/sessão/router 30/30. O Catálogo compartilhado passou 15/16; a única RED textual foi reproduzida idêntica no HEAD principal. O baseline amplo anterior preserva ainda três REDs de golden de Login já existentes no HEAD. |
+| Review | O primeiro review encontrou três P1; foram corrigidos com callback vinculado ao token da sessão, reset restrito a recovery e logout local fail-closed. Revogação remota continua sem prova por causa do replay bloqueado. |
+| Bloqueio | O replay Supabase integral parou na cadeia canônica de Import/Export `20260812002010` → órfã remota `20260811222209`, já bloqueada pelo rastreador backend. A prova visual real e a regressão final não foram executadas depois desse gate. |
+| Estado | Login/recovery/reset permanecem no estado anterior `local-green` somente visual; nenhum `action_id` foi promovido a `verified`. Flutter geral permanece 102/207 `local-green` (49,28%) e 0/207 `verified`. |
+| Limite | Código local está em elaboração numa worktree isolada, sem commit. Não declarar tela concluída, backend integrado, E2E ou Auth remoto. |
+
+## 19. Auth-first local-green composto — 2026-09-01
+
+| Campo | Estado |
+|---|---|
+| Supersessão | Este checkpoint substitui o bloqueio operacional da seção 18: a cadeia Import/Export continua preservada como RED externa, enquanto o perfil Auth-only autorizado concluiu a prova local sem inventar sua dependência. |
+| Telas | Login, Recuperação e Redefinição estão ligadas ao gateway Supabase real pelo composition root. Recovery usa redirect same-origin; reset só aceita sessão recovery realmente estabelecida e encerra a sessão após trocar a senha. |
+| Evidência Flutter | 126/126 testes de domínio, view models, widgets, telas, responsividade, sessão, router e composição passaram; oito goldens de Recuperação/Reset passaram; analyzer focado terminou sem issues e o build web release foi gerado. Login, Recuperação e o estado fail-closed de Reset sem callback foram inspecionados no navegador local da worktree; o servidor visual foi encerrado depois da prova. O pacote compartilhado `coelo_auth` passou 20/20 e analyzer limpo. |
+| Evidência real composta | O lifecycle descartável em GoTrue/PostgREST/Postgres/Mailpit provou credencial válida/inválida sem enumeração, persistência/refresh, logout/revogação, callback e reset reais, senha antiga recusada, link expirado/reutilizado negado e nova senha aceita. A composição das camadas é local; não é E2E remoto. |
+| Estado | As quatro ações Flutter não-MFA já permaneciam `local-green`; nenhuma contagem muda: 102/207 `local-green` (49,28%) e 0/207 `verified`. MFA ficou intocada e fail-closed. |
+| REDs preservadas | Três goldens de Login continuam como RED baseline reproduzida também no HEAD principal; não foram regravadas neste pacote. O Catálogo compartilhado mantém uma RED textual igualmente reproduzida no HEAD. |
+| Limite | Sem commit, remoto, deploy ou declaração de tela/produto concluído. Primeiro gate incompleto: ambiente remoto classificado, autorização nominal e E2E remoto datado. |
+
+## 20. Auth-first com vínculo de `session_id` — 2026-09-01
+
+| Campo | Estado |
+|---|---|
+| Correção | Login e restauração só autorizam o shell quando o bootstrap interno corresponde ao mesmo `session_id` antes/depois do RPC; troca de sessão, logout concorrente, identificador inválido e contexto antigo falham fechados. O atalho produtivo de autenticação sem contexto foi removido; fixtures usam API explicitamente de teste. |
+| Evidência | `coelo_auth` 21/21; foco Superadmin sessão/composição/router/Auth/Login 56/56; analyzers de ambos sem issues. A revisão independente não manteve P1 Flutter após o vínculo por sessão; o P1 remanescente é de implantação/ledger. |
+| Estado | As quatro ações Flutter Auth não-MFA permanecem `local-green`; contagem geral inalterada em 102/207 e 0/207 `verified`. Nenhuma tela foi declarada concluída em produção. |
+| Produção | Projeto classificado como produção, mas sem URL verificável, redirect configurado, deploy backend ou E2E remoto. Zero mutações remotas. |
+| Próximo gate | Resolver o pacote backend contra o ledger produtivo e então provar Login/Recuperação/Reset no ambiente real com redirect, reload, revogação e cleanup. MFA continua fora e fail-closed. |

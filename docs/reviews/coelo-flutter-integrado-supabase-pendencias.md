@@ -13,8 +13,8 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "8D839AC20722D7865D9ADE96D999259EA20343B5A892EBE58B0E9DCC87B42BA6"
-supabase_tracker_sha256: "6A94ED85DDABF7A66FDC5022953E56010E191AD87878CA670F84DFE833BA19C1"
+flutter_tracker_sha256: "548E6861F6B986121A42616E045903206C17ABE33F7FB2B5CE263139CAE88EE6"
+supabase_tracker_sha256: "35275DBD4895D1BA73E0AA8D88544B55AEF31BA012F0F771FCAC9C0ABCDEA4BE"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
@@ -601,7 +601,7 @@ após liberação; o esforço Flutter permanece o registrado no rastreador próp
 
 | # | `screen_id` | Contribuição Flutter por `action_id` | Supabase por `action_id` | Integração por `action_id` | Cadeia backend esperada | Ambiente, blocker, prova faltante e ETA |
 |---:|---|---|---|---|---|---|
-| 1 | `auth` | `local-green`: `auth.login`, `auth.recover`, `auth.reset`, `auth.logout`; `audited`: `auth.mfa` | `audited`: `auth.login`, `auth.recover`, `auth.logout`; `blocked-decision`: `auth.reset`, `auth.mfa` | `blocked-supabase`: `auth.login`, `auth.recover`, `auth.logout`; `blocked-decision`: `auth.reset`, `auth.mfa` | Flutter Auth → Supabase Auth → sessão/refresh → membership/contexto → rota/cache | 99 testes locais de Auth verdes, incluindo 375–1440 e 200%; faltam callback/token/link real, AAL2, downgrade, revogação, acesso direto, reload e E2E; decisão 0,5 d + 1–2 d + E2E 1 d. |
+| 1 | `auth` | `local-green`: `auth.login`, `auth.recover`, `auth.reset`, `auth.logout`; `audited`: `auth.mfa` | `local-green`: `auth.login`, `auth.recover`, `auth.reset`, `auth.logout`; `blocked-decision`: `auth.mfa` | `blocked-supabase`: quatro ações não-MFA; `blocked-decision`: `auth.mfa` | Flutter Auth → Supabase Auth → sessão/refresh → membership/contexto → rota/cache | Flutter focal 126/126, oito goldens Recovery/Reset e `coelo_auth` 20/20; replay Auth 29/29 e lifecycle GoTrue/PostgREST/Postgres/Mailpit completos. Máximo local-green: faltam ambiente remoto classificado, autorização nominal e E2E remoto; MFA intacta/fail-closed. |
 | 2 | `shell` | `local-green`: `shell.load`, `shell.navigate`, `shell.unauthorized`; `audited`: `shell.switch-context`, `shell.reload` | `audited`: todos os 5 IDs | `not-reviewed`: todos os 5 IDs | Shell → auth scope/repository → RPC de contexto → RLS → estado limpo | E0/E2; reextrair rotas, provar ausência de dado pré-auth, troca A/B, cache limpo e `/dev` zero-call; 1–2 d. |
 | 3 | `institutions` | `local-green`: `institutions.list`, `institutions.filter`, `institutions.create`, `institutions.edit`, `institutions.status`; `audited`: `institutions.detail`, `institutions.files`, `institutions.import`, `institutions.export`, `institutions.error`, `institutions.access-denied`, `institutions.reload` | `local-green`: 10 IDs ordinários; `fail-closed`: `institutions.import`, `institutions.export` por SQLSTATE `42702`/`42703` | `blocked-supabase`: `institutions.import`, `institutions.export`; `not-reviewed`: os outros 10 IDs | Page/controller → repository institucional → RPC/Data API/arquivos → RLS/tabelas → audit → reload | E0/E1/E2; import/export permanecem runtime-broken e fail-closed; falta história reproduzível, correções forward-only, ledger limpo, CRUD/arquivos remoto A/B, negativos, erro/retry e read-after-write; 2–3 d + E2E 1 d. |
 | 4 | `units` | `local-green`: `units.list`, `units.filter`, `units.create`, `units.edit`, `units.status`, `units.error`, `units.access-denied`, `units.reload`; `audited`: `units.import`, `units.export`; `blocked-decision`: `units.people-export`, cuja ação falsa foi ocultada. | `audited`: os 10 IDs anteriores; `units.access-denied` também fail-closed; `blocked-decision/fail-closed`: `units.people-export`, sem capability/job/worker próprio. Import chegou a D3d com REDs de membership/retry/cleanup; export checkpoint 21 tem 36/47 verdes e 11 REDs preservados. | `blocked-supabase`: os 10 IDs anteriores; `blocked-decision`: `units.people-export`; zero composição remota/E2E | Unit UI → directory/commands gateway → RPC ou Edge job → RLS/Storage → audit/status/reload | UI list/estados: 16/16, routers 5/5, 375–1440/200%. Pacote A foi preservado e revertido; fail-closed reconfirmado 26/26. Export local endurecido sem composição; people-export exige decisão e backend próprios. Backend restante 11–18 h local + 6–10 h remoto autorizado; people-export 18–32 h vertical após decisões; Completa import+export 3–5 d. |
@@ -1367,14 +1367,14 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   Agenda 112/112 e 113 goldens; isso não prova repository produtivo, backend,
   autorização remota ou E2E.
 - **Recalculo Supabase por `action_id`:** nos 202 IDs normativos, a matriz
-  backend atual contém 35 `local-green`, 38 `audited`, um
-  `audited/fail-closed`, 77 `fail-closed`, 50 `blocked-decision` e um
+  backend atual contém 39 `local-green`, 35 `audited`, um
+  `audited/fail-closed`, 77 `fail-closed`, 49 `blocked-decision` e um
   `blocked-decision/fail-closed`. Essa granularidade por ação não altera o
   denominador de famílias: somente 3/37 famílias estão `local-green` e 0/37
   está `done`. Activities v2 preserva 199/199 pgTAP e focal 25/25 como prova
   local de cinco ações; `activities.assessment` permaneceu fora do pacote.
 - **Estados integrados derivados:** a enumeração dos 202 IDs resulta em 38
-  `not-reviewed`, 113 `blocked-supabase` e 51 `blocked-decision`; zero
+  `not-reviewed`, 114 `blocked-supabase` e 50 `blocked-decision`; zero
   `blocked-flutter`, `ready-for-e2e`, `e2e-failed` ou `verified-e2e`. A
   contagem anterior 40/111/51 foi corrigida porque divergia em duas ações da
   própria matriz. Os 23 ajustes Flutter não promovem estado integrado: o teto
@@ -1397,3 +1397,84 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 - **Gate de conhecimento:** `no-op`. Esta reconciliação corrige estados,
   contagens e proveniência documental; não cria comportamento, permissão,
   domínio ou UX novos.
+
+### Checkpoint integrado 64 — Auth-first parcial, bloqueado antes da prova E2E
+
+- **Progresso preservado:** Flutter `local-green` 102/207 (49,28%), Flutter
+  `verified` 0/207, Supabase `local-green` 3/37 (8,11%), Supabase `done` 0/37,
+  E2E 0/202 e projeto estrito 0/229. Nenhum denominador foi promovido.
+- **Contrato parcial:** Login, recuperação e reset receberam composição local
+  para o gateway Supabase, sessão de recuperação explícita, redirect
+  same-origin e logout após redefinição. Os gates focados passaram 20/20 e
+  30/30, mas não constituem integração ponta a ponta.
+- **Review de segurança:** o callback deixou de confiar só em `type=recovery`:
+  exige tokens no fragmento e só classifica recovery quando o access token
+  coincide com a sessão Supabase estabelecida. O gateway também recusa reset
+  em sessão normal e prova logout local fail-closed quando a revogação lança.
+  A revogação backend real permanece sem evidência pelo bloqueio do replay.
+- **Primeira RED integrada:** o replay descartável foi interrompido em
+  `20260812002010`, dependente da migration remota órfã `20260811222209`, uma
+  cadeia canonicamente bloqueada no checkpoint Supabase 36. A prova em
+  GoTrue/PostgREST/Postgres não chegou ao lifecycle Auth e a inspeção visual
+  final das telas não foi realizada.
+- **Estado e próximo passo:** `blocked-canonical`, sem `ready-for-e2e` ou
+  `verified-e2e`. Reconciliar primeiro a migration órfã e repetir o replay
+  limpo; remoto continua read-only e qualquer mutação exige autorização nominal.
+- **Gate de conhecimento:** `no-op`; apenas se confirmou um bloqueio já
+  documentado, sem nova regra durável aprovada.
+
+### Checkpoint integrado 65 — Auth-first local-green, sem promoção E2E
+
+- **Progresso geral:** Flutter permanece 102/207 `local-green` (49,28%) e
+  0/207 `verified`; Supabase permanece 3/37 famílias `local-green` (8,11%) e
+  0/37 `done`; E2E permanece 0/202 e projeto estrito 0/229. Dentro do recorte,
+  as quatro ações Auth não-MFA estão `local-green` nos lados Flutter e
+  Supabase; MFA continua fora, `blocked-decision` e fail-closed.
+- **Supersessão técnica:** o checkpoint 64 continua válido como histórico do
+  replay integral, mas não é mais o primeiro gate Auth local. O perfil
+  Auth-only hash-verificado preservou a cadeia Import/Export bloqueada e
+  executou somente a fundação necessária: 44 migrations canônicas + duas
+  preflights, pgTAP 29/29 e lifecycle real completo, com zero resíduos.
+- **Composição local:** gateway, sessão, recovery callback, router e as três
+  telas passaram 126/126 testes Flutter; Recuperação/Reset passaram oito
+  goldens; build web release passou e Login, Recuperação e Reset inválido
+  fail-closed foram inspecionados no navegador local. `coelo_auth` passou
+  20/20. O lifecycle real confirmou login,
+  refresh/rotação, logout/revogação, recovery/reset de uso único e autorização
+  por sessão, realm, membership, capability e tenant, incluindo ID adulterado
+  e auditoria minimizada.
+- **Limite honesto:** as evidências de UI e backend foram compostas localmente,
+  mas não houve automação de navegador atravessando um ambiente remoto, nem
+  migration/configuração remota. Por isso as quatro ações continuam
+  `blocked-supabase` na coluna integrada e não viram `ready-for-e2e` ou
+  `verified-e2e`.
+- **REDs preservadas:** três goldens de Login e uma expectativa textual do
+  Catálogo são REDs baseline reproduzidas também no HEAD. O advisor amplo
+  mantém erros históricos fora de Auth em Import/Export, Access Profiles e
+  File Jobs; objetos Auth tocados não apareceram nesses erros.
+- **Primeiro gate incompleto e próximo passo seguro:** classificar o projeto
+  remoto, obter autorização nominal para o pacote exato e executar E2E remoto
+  datado. Até lá, remoto read-only e nenhum deploy/commit/push.
+- **Gate de conhecimento:** `no-op`; as fontes canônicas e a especificação
+  aprovada já cobrem o comportamento durável, e o delta final é evidência de
+  implementação.
+
+### Checkpoint integrado 66 — sessão vinculada e produção ainda bloqueada
+
+- **Denominadores preservados:** Flutter 102/207 `local-green` (49,28%) e
+  0/207 `verified`; Supabase 3/37 famílias `local-green` (8,11%) e 0/37
+  `done`; E2E 0/202; projeto estrito 0/229.
+- **Delta local:** a composição Auth passou a exigir bootstrap interno válido
+  e correspondente ao mesmo `session_id` no login e na restauração. O foco
+  Superadmin passou 56/56 e `coelo_auth` 21/21, com analyzers limpos. O replay
+  Auth-only voltou a passar 29/29 e encerrou sem resíduos.
+- **Produção:** `coelo` foi classificado nominalmente como produção, mas recebeu
+  zero mutações. O ledger termina em `20260821200000`; o perfil local e a cadeia
+  produtiva divergem, há migrations intermediárias e a URL produtiva do
+  Superadmin não foi comprovada. Portanto Login, Recuperação e Reset não foram
+  promovidos a E2E/`verified`, e o Auth remoto não é `remote-green`.
+- **Primeiro gate incompleto:** replay compatível com o ledger/schema de
+  produção, pacote nominal transacional revisado e URL/redirect produtivos.
+  Não aplicar as duas migrations Auth isoladamente nem executar push amplo.
+- **Conhecimento:** OQ-041 registra a classificação durável; demais mudanças
+  deste checkpoint são evidência técnica, sem nova regra de produto.
