@@ -450,7 +450,8 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     double reservedBottomInset = 0,
   }) {
     final destinationHandler = onDestinationSelected ?? widget.onDestinationSelected;
-    if (!widget.showChatLauncher || widget.currentDestination == 'conversations') {
+    if (!widget.showChatLauncher ||
+        const {'conversations', 'principal-chat'}.contains(widget.currentDestination)) {
       return child;
     }
     final openConversations =
