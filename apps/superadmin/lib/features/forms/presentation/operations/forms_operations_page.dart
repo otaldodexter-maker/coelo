@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -36,42 +39,57 @@ final class FormsFilesDevelopmentStore extends ChangeNotifier {
 
 final class FormsOperationsPage extends StatefulWidget {
   const FormsOperationsPage.monitor({
+    this.api,
+    this.formId,
     this.development = false,
     this.state = FormsOperationsState.content,
     super.key,
   }) : surface = FormsOperationsSurface.monitor,
        anonymous = false,
-       developmentStore = null;
+       developmentStore = null,
+       responseId = null;
 
   const FormsOperationsPage.responses({
+    this.api,
+    this.formId,
     this.development = false,
     this.state = FormsOperationsState.content,
     super.key,
   }) : surface = FormsOperationsSurface.responses,
        anonymous = false,
-       developmentStore = null;
+       developmentStore = null,
+       responseId = null;
 
   const FormsOperationsPage.responseDetail({
+    this.api,
+    this.responseId,
     this.development = false,
     this.anonymous = false,
     this.state = FormsOperationsState.content,
     super.key,
   }) : surface = FormsOperationsSurface.responseDetail,
-       developmentStore = null;
+       developmentStore = null,
+       formId = null;
 
   const FormsOperationsPage.files({
+    this.api,
+    this.formId,
     this.development = false,
     this.state = FormsOperationsState.content,
     this.developmentStore,
     super.key,
   }) : surface = FormsOperationsSurface.files,
-       anonymous = false;
+       anonymous = false,
+       responseId = null;
 
   final FormsOperationsSurface surface;
   final bool development;
   final bool anonymous;
   final FormsOperationsState state;
   final FormsFilesDevelopmentStore? developmentStore;
+  final FormsApi? api;
+  final String? formId;
+  final String? responseId;
 
   @override
   State<FormsOperationsPage> createState() => _FormsOperationsPageState();
@@ -79,11 +97,63 @@ final class FormsOperationsPage extends StatefulWidget {
 
 final class _FormsOperationsPageState extends State<FormsOperationsPage> {
   late FormsOperationsState _state = widget.state;
+  Object? _projection;
+
+  bool get _usesProductionApi => !widget.development && widget.api != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_usesProductionApi) unawaited(_loadProduction());
+  }
 
   @override
   void didUpdateWidget(covariant FormsOperationsPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.state != widget.state) _state = widget.state;
+    if (oldWidget.api != widget.api ||
+        oldWidget.formId != widget.formId ||
+        oldWidget.responseId != widget.responseId) {
+      if (_usesProductionApi) unawaited(_loadProduction());
+    }
+  }
+
+  Future<void> _loadProduction() async {
+    final api = widget.api;
+    if (api == null) return;
+    final formId = widget.formId;
+    final responseId = widget.responseId;
+    if ((widget.surface != FormsOperationsSurface.responseDetail && formId == null) ||
+        (widget.surface == FormsOperationsSurface.responseDetail && responseId == null)) {
+      setState(() => _state = FormsOperationsState.unavailable);
+      return;
+    }
+    setState(() => _state = FormsOperationsState.loading);
+    try {
+      final projection = switch (widget.surface) {
+        FormsOperationsSurface.monitor => api.getMonitor(FormMonitorQuery(formId: formId!)),
+        FormsOperationsSurface.responses => api.listResponses(FormResponsesQuery(formId: formId!)),
+        FormsOperationsSurface.responseDetail => api.getResponseDetail(responseId!),
+        FormsOperationsSurface.files => api.listFileJobs(formId: formId!),
+      };
+      final value = await projection;
+      if (mounted) {
+        setState(() {
+          _projection = value;
+          _state = FormsOperationsState.content;
+        });
+      }
+    } on FormApiException catch (error) {
+      if (mounted) {
+        setState(
+          () => _state = error.kind == FormApiFailureKind.unauthorized
+              ? FormsOperationsState.unauthorized
+              : FormsOperationsState.error,
+        );
+      }
+    } on Object {
+      if (mounted) setState(() => _state = FormsOperationsState.error);
+    }
   }
 
   @override
@@ -102,7 +172,15 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
           children: [
             _Header(surface: widget.surface),
             const SizedBox(height: CoeloSpacing.space4),
-            if (!widget.development) ...[
+            if (_usesProductionApi) ...[
+              if (_state != FormsOperationsState.content)
+                _OperationsStatePanel(
+                  state: _state,
+                  onRetry: _state == FormsOperationsState.error ? _loadProduction : null,
+                )
+              else
+                _productionContent(),
+            ] else if (!widget.development) ...[
               const CoeloStatePanel(
                 key: Key('forms-operations-unavailable'),
                 icon: Icons.lock_outline_rounded,
@@ -146,6 +224,34 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
       developmentStore: widget.developmentStore,
     ),
   };
+
+  Widget _productionContent() {
+    final (title, message) = switch (_projection) {
+      FormMonitorProjection value => (
+        'Monitoramento autorizado',
+        '${value.respondedCount} respostas de ${value.eligibleCount} pessoas elegíveis.',
+      ),
+      FormCursorPage<FormResponseSummary> value => (
+        'Respostas autorizadas',
+        '${value.items.length} resposta(s) carregada(s) nesta página.',
+      ),
+      FormResponseDetail value => (
+        'Resposta autorizada',
+        '${value.answers.length} resposta(s) carregada(s) para consulta.',
+      ),
+      FormCursorPage<FormFileJob> value => (
+        'Arquivos autorizados',
+        '${value.items.length} job(s) de arquivo carregado(s).',
+      ),
+      _ => ('Dados indisponíveis', 'Não foi possível interpretar a projeção autorizada.'),
+    };
+    return CoeloStatePanel(
+      key: Key('forms-operations-production-${widget.surface.name}'),
+      icon: Icons.verified_user_outlined,
+      title: title,
+      message: message,
+    );
+  }
 }
 
 final class _OperationsStatePanel extends StatelessWidget {

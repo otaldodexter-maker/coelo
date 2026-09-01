@@ -1,6 +1,7 @@
 {
   "imports": {
     "@supabase/supabase-js": "npm:@supabase/supabase-js@2.57.4",
+    "@std/assert": "jsr:@std/assert@1.0.14",
     "xlsx": "npm:xlsx@0.18.5"
   }
 }

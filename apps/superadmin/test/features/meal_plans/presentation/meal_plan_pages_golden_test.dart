@@ -295,7 +295,7 @@ void main() {
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await mouse.addPointer(location: Offset.zero);
     addTearDown(mouse.removePointer);
-    await mouse.moveTo(tester.getCenter(find.text('Cardápio semanal - Educação Infantil')));
+    await mouse.moveTo(tester.getCenter(find.text('Modelo semanal equilibrado')));
     await tester.pumpAndSettle();
 
     await expectLater(
@@ -555,12 +555,17 @@ final class FakeMealPlanRepository implements MealPlanRepository {
   }
 
   @override
-  Future<MealPlanPage> fetchTemplatePage(MealPlanListFilter filter) async => MealPlanPage(
-    items: templates.map((template) => template.toDirectoryItem()).toList(),
-    total: templates.length,
-    limit: filter.pageSize,
-    offset: filter.offset,
-  );
+  Future<MealPlanPage> fetchTemplatePage(MealPlanListFilter filter) async {
+    lastPageFilter = filter;
+    final loader = pageLoader;
+    if (loader != null) return loader(filter);
+    return MealPlanPage(
+      items: templates.map((template) => template.toDirectoryItem()).toList(),
+      total: totalOverride ?? templates.length,
+      limit: filter.pageSize,
+      offset: filter.offset,
+    );
+  }
 
   @override
   Future<MealPlan> getById(String id) async => mealPlans.firstWhere((item) => item.id == id);

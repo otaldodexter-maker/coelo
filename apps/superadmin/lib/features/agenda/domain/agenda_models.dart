@@ -53,6 +53,8 @@ enum AgendaMutationResult {
   reservationConflict,
   notAuthorized,
   reasonRequired,
+  conflict,
+  unavailable,
 }
 
 enum AgendaHistoryAction { canceled, restored, occurrenceEdited, reservationConflictOverridden }
@@ -64,6 +66,15 @@ enum AgendaRecurrenceFrequency { daily, weekly, monthly }
 enum AgendaResponseMode { none, rsvp, acknowledgement, authorization }
 
 enum GuardianResponsePolicy { oneIsEnough, allMustRespond }
+
+enum AgendaQuestionType { shortText, yesNo }
+
+final class AgendaQuestion {
+  const AgendaQuestion({required this.id, required this.title, required this.type});
+
+  final String id, title;
+  final AgendaQuestionType type;
+}
 
 enum AgendaPublicationRequestStatus { pending, approved, rejected }
 
@@ -233,7 +244,9 @@ final class AgendaItem {
     this.guardianResponsePolicy = GuardianResponsePolicy.oneIsEnough,
     this.audienceLabels = const {},
     this.reminders = const {},
+    this.questions = const [],
     this.history = const [],
+    this.revision = 1,
   });
   factory AgendaItem.fixture({
     required String id,
@@ -256,6 +269,7 @@ final class AgendaItem {
     GuardianResponsePolicy guardianResponsePolicy = GuardianResponsePolicy.oneIsEnough,
     Set<String> audienceLabels = const {},
     Set<String> reminders = const {},
+    List<AgendaQuestion> questions = const [],
     List<AgendaHistoryEntry> history = const [],
   }) => AgendaItem(
     id: id,
@@ -278,6 +292,7 @@ final class AgendaItem {
     guardianResponsePolicy: guardianResponsePolicy,
     audienceLabels: Set.unmodifiable(audienceLabels),
     reminders: Set.unmodifiable(reminders),
+    questions: List.unmodifiable(questions),
     history: List.unmodifiable(history),
   );
   final String id, title, location, description;
@@ -295,7 +310,9 @@ final class AgendaItem {
   final GuardianResponsePolicy guardianResponsePolicy;
   final Set<String> audienceLabels;
   final Set<String> reminders;
+  final List<AgendaQuestion> questions;
   final List<AgendaHistoryEntry> history;
+  final int revision;
   Duration get duration => endsAt.difference(startsAt);
   AgendaVisualProminence get prominence => deriveAgendaProminence(audience: audience, type: type);
   AgendaItem copyWith({
@@ -319,7 +336,9 @@ final class AgendaItem {
     GuardianResponsePolicy? guardianResponsePolicy,
     Set<String>? audienceLabels,
     Set<String>? reminders,
+    List<AgendaQuestion>? questions,
     List<AgendaHistoryEntry>? history,
+    int? revision,
   }) => AgendaItem(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -341,7 +360,9 @@ final class AgendaItem {
     guardianResponsePolicy: guardianResponsePolicy ?? this.guardianResponsePolicy,
     audienceLabels: audienceLabels ?? this.audienceLabels,
     reminders: reminders ?? this.reminders,
+    questions: questions ?? this.questions,
     history: history ?? this.history,
+    revision: revision ?? this.revision,
   );
 }
 

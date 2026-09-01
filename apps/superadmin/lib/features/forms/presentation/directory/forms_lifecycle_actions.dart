@@ -6,7 +6,7 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
-enum _LifecycleAction { edit, duplicate, copy, move, schedules, archive, delete }
+enum _LifecycleAction { responses, edit, duplicate, copy, move, schedules, archive, delete }
 
 final class FormsLifecycleActions extends StatefulWidget {
   const FormsLifecycleActions({
@@ -20,6 +20,7 @@ final class FormsLifecycleActions extends StatefulWidget {
     this.onCompleted,
     this.onEdit,
     this.onManageSchedules,
+    this.onResponses,
     super.key,
   });
 
@@ -33,6 +34,7 @@ final class FormsLifecycleActions extends StatefulWidget {
   final VoidCallback? onCompleted;
   final VoidCallback? onEdit;
   final VoidCallback? onManageSchedules;
+  final VoidCallback? onResponses;
 
   @override
   State<FormsLifecycleActions> createState() => _FormsLifecycleActionsState();
@@ -44,7 +46,9 @@ final class _FormsLifecycleActionsState extends State<FormsLifecycleActions> {
   @override
   Widget build(BuildContext context) {
     final canMutate = widget.canManage && widget.api != null;
-    if (!canMutate && widget.onManageSchedules == null) return const SizedBox.shrink();
+    if (!canMutate && widget.onManageSchedules == null && widget.onResponses == null) {
+      return const SizedBox.shrink();
+    }
     return CoeloAdminFlyout<_LifecycleAction>(
       alignmentOffset: const Offset(0, CoeloSpacing.space1),
       viewportGap: CoeloSpacing.space3,
@@ -53,6 +57,12 @@ final class _FormsLifecycleActionsState extends State<FormsLifecycleActions> {
       crossAxisUnconstrained: true,
       outlineOpacity: 0.38,
       items: [
+        if (widget.onResponses != null)
+          const CoeloAdminFlyoutItem(
+            value: _LifecycleAction.responses,
+            label: 'Ver respostas',
+            icon: Icons.forum_outlined,
+          ),
         if (canMutate && widget.onEdit != null)
           const CoeloAdminFlyoutItem(
             value: _LifecycleAction.edit,
@@ -116,6 +126,8 @@ final class _FormsLifecycleActionsState extends State<FormsLifecycleActions> {
 
   Future<void> _select(_LifecycleAction action) async {
     switch (action) {
+      case _LifecycleAction.responses:
+        widget.onResponses?.call();
       case _LifecycleAction.edit:
         widget.onEdit?.call();
       case _LifecycleAction.duplicate:

@@ -7,6 +7,7 @@ import 'package:coelo_superadmin/features/meal_plans/presentation/meal_plan_wiza
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -79,7 +80,7 @@ void main() {
     await tester.enterText(find.byType(TextFormField).first, 'Cardápio da primavera');
     await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();
-    await tester.tap(find.widgetWithText(FilterChip, 'Colégio Coelo'));
+    await _selectAudienceOption(tester, 'Instituições', 'Colégio Coelo');
     await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();
     await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
@@ -98,7 +99,7 @@ void main() {
 
     expect(savedCount, 1);
     final created = (await repository.fetchPage(
-      const MealPlanListFilter(),
+      const MealPlanListFilter(pageSize: 100),
     )).items.singleWhere((item) => item.name == 'Cardápio da primavera');
     expect(created.status, MealPlanStatus.published);
     expect(tester.takeException(), isNull);
@@ -126,7 +127,7 @@ void main() {
     await tester.enterText(find.byType(TextFormField).first, 'Cardápio com horário');
     await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();
-    await tester.tap(find.widgetWithText(FilterChip, 'Colégio Coelo'));
+    await _selectAudienceOption(tester, 'Instituições', 'Colégio Coelo');
     await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();
     await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
@@ -149,6 +150,50 @@ void main() {
     await tester.tap(find.text('Selecionar hora').first);
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('coelo-time-picker-dialog')), findsOneWidget);
+  });
+
+  testWidgets('contextual links follow the hierarchy and exclusions win over inclusions', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: MealPlanWizardPage(
+            repository: DevelopmentMealPlanRepository(),
+            imageRepository: const UnavailableMealPlanImageRepository(),
+            tenantId: 'dev-tenant',
+            imageSelectionEnabled: false,
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextFormField).first, 'Cardápio com vínculos');
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Vínculos contextuais'), findsNWidgets(3));
+    expect(find.byType(FilterChip), findsNothing);
+    expect(find.byType(CoeloAdminMultiSelectField<String>), findsNWidgets(6));
+
+    await _selectAudienceOption(tester, 'Instituições', 'Colégio Coelo');
+    await _selectAudienceOption(tester, 'Pessoas incluídas', 'Helena Silva');
+    await _selectAudienceOption(tester, 'Pessoas excluídas', 'Helena Silva');
+
+    final included = tester.widget<CoeloAdminMultiSelectField<String>>(
+      _audienceField('Pessoas incluídas'),
+    );
+    final excluded = tester.widget<CoeloAdminMultiSelectField<String>>(
+      _audienceField('Pessoas excluídas'),
+    );
+    expect(included.selectedValues, isEmpty);
+    expect(excluded.selectedValues, {'dev-child'});
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('route A cannot overwrite route B when meal plans load out of order', (tester) async {
@@ -213,7 +258,7 @@ void main() {
     await tester.enterText(find.byType(TextFormField).first, 'Cardápio A');
     await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();
-    await tester.tap(find.widgetWithText(FilterChip, 'Colégio Coelo'));
+    await _selectAudienceOption(tester, 'Instituições', 'Colégio Coelo');
     await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();
     await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
@@ -265,6 +310,19 @@ void main() {
     expect(find.text('O cardápio solicitado não pôde ser validado.'), findsOneWidget);
     expect(find.text('Cardápio incorreto'), findsNothing);
   });
+}
+
+Finder _audienceField(String label) => find.byWidgetPredicate(
+  (widget) => widget is CoeloAdminMultiSelectField<String> && widget.label == label,
+);
+
+Future<void> _selectAudienceOption(WidgetTester tester, String label, String option) async {
+  await tester.tap(find.descendant(of: _audienceField(label), matching: find.text('Selecionar')));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text(option).last);
+  await tester.pumpAndSettle();
+  await tester.tap(find.widgetWithText(FilledButton, 'Aplicar'));
+  await tester.pumpAndSettle();
 }
 
 MealPlan _plan(String id, String name) => MealPlan(

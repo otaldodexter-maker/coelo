@@ -12,7 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('expõe as oito rotas locais da Agenda', (tester) async {
+  testWidgets('expõe as sete rotas locais da Agenda e centraliza permissões em Perfis', (
+    tester,
+  ) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1200, 900);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -40,7 +42,6 @@ void main() {
       '/dev/agenda/events/event-parents/edit',
       SuperadminRoutes.devAgendaRequests,
       SuperadminRoutes.devAgendaApprovals,
-      SuperadminRoutes.devAgendaPermissions,
     ];
     for (final location in locations) {
       router.go(location);
@@ -48,6 +49,9 @@ void main() {
       expect(router.routeInformationProvider.value.uri.path, location);
       expect(tester.takeException(), isNull, reason: location);
     }
+    router.go(SuperadminRoutes.devAgendaPermissions);
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devProfiles);
   });
 
   testWidgets('rotas produtivas preservam composição e permanecem fail-closed', (tester) async {
@@ -76,7 +80,6 @@ void main() {
       '/agenda/events/event-parents/edit',
       SuperadminRoutes.agendaRequests,
       SuperadminRoutes.agendaApprovals,
-      SuperadminRoutes.agendaPermissions,
     ];
     for (final location in locations) {
       router.go(location);
@@ -103,5 +106,8 @@ void main() {
       }
       expect(tester.takeException(), isNull, reason: location);
     }
+    router.go(SuperadminRoutes.agendaPermissions);
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.profiles);
   });
 }

@@ -153,7 +153,6 @@ final coeloSuperadminNavigation = <CoeloNavigationNode>[
       _leaf('agenda-create', 'Criar evento', Icons.add_circle_outline_rounded),
       _leaf('agenda-requests', 'Solicitações', Icons.inbox_outlined),
       _leaf('agenda-approvals', 'Aprovações', Icons.approval_outlined),
-      _leaf('agenda-permissions', 'Permissões', Icons.rule_outlined),
     ]),
   ]),
   _screen('communication', 'Comunicação', Icons.forum_outlined, [

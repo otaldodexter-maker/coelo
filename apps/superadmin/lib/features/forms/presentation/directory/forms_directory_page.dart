@@ -10,7 +10,9 @@ import 'package:flutter/widget_previews.dart';
 
 import '../../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
 import '../../data/development_forms_api.dart';
+import '../../data/forms_editor_context.dart';
 import 'forms_lifecycle_actions.dart';
 
 enum FormsDirectoryDisplay { table, cards }
@@ -27,6 +29,7 @@ final class FormsDirectoryPage extends StatefulWidget {
     this.onOpen,
     this.onEdit,
     this.onManageSchedules,
+    this.onResponses,
     this.onLifecycleCompleted,
     this.visualMetadata = const {},
     super.key,
@@ -40,6 +43,7 @@ final class FormsDirectoryPage extends StatefulWidget {
   final ValueChanged<FormDirectoryItem>? onOpen;
   final ValueChanged<FormDirectoryItem>? onEdit;
   final ValueChanged<FormDirectoryItem>? onManageSchedules;
+  final ValueChanged<FormDirectoryItem>? onResponses;
   final VoidCallback? onLifecycleCompleted;
   final Map<String, DevelopmentFormVisualMetadata> visualMetadata;
 
@@ -59,10 +63,22 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
   int _pageIndex = 0;
   Timer? _searchDebounce;
   int _loadGeneration = 0;
+  FormsEditorContext? _authorizedContext;
+
+  bool get _canManage =>
+      widget.canManage ||
+      (_authorizedContext?.institutions.any((institution) => institution.canManageForms) ?? false);
+  bool get _canManageLifecycle =>
+      widget.canManageLifecycle ||
+      (_authorizedContext?.institutions.any((institution) => institution.canManageForms) ?? false);
+  bool get _canTransferCrossInstitution =>
+      widget.canTransferCrossInstitution ||
+      (_authorizedContext?.canTransferCrossInstitution ?? false);
 
   @override
   void initState() {
     super.initState();
+    unawaited(_loadAuthorizedContext());
     unawaited(_load());
   }
 
@@ -81,7 +97,22 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
         ..clear()
         ..add(null);
       _pageIndex = 0;
+      _authorizedContext = null;
+      unawaited(_loadAuthorizedContext());
       unawaited(_load());
+    }
+  }
+
+  Future<void> _loadAuthorizedContext() async {
+    final api = widget.api;
+    if (api is! FormsEditorContextApi) return;
+    try {
+      final authorizedContext = await (api as FormsEditorContextApi).getEditorContext();
+      if (mounted && identical(api, widget.api)) {
+        setState(() => _authorizedContext = authorizedContext);
+      }
+    } on FormApiException {
+      // Directory reads keep their own explicit unauthorized/error state.
     }
   }
 
@@ -252,6 +283,7 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
       ),
     ],
     actions: [
+      const SuperadminPlaceholderFileActions(resourceLabel: 'formulários'),
       SuperadminDirectoryViewToggle<FormsDirectoryDisplay>(
         cardsKey: const Key('forms-directory-view-cards'),
         tableKey: const Key('forms-directory-view-table'),
@@ -313,12 +345,10 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
     FormsDirectoryLoadStatus.data => FormsDirectoryResults(
       page: _page!,
       display: _display,
-      canManage: widget.canManage,
-      canManageLifecycle:
-          widget.canManageLifecycle || (widget.canManage && widget.api is DevelopmentFormsApi),
+      canManage: _canManage,
+      canManageLifecycle: _canManageLifecycle || (_canManage && widget.api is DevelopmentFormsApi),
       canTransferCrossInstitution:
-          widget.canTransferCrossInstitution ||
-          (widget.canManage && widget.api is DevelopmentFormsApi),
+          _canTransferCrossInstitution || (_canManage && widget.api is DevelopmentFormsApi),
       api: widget.api,
       pageNumber: _pageIndex + 1,
       onPrevious: _pageIndex > 0 ? _previous : null,
@@ -328,6 +358,7 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
       onOpen: widget.onOpen,
       onEdit: widget.onEdit,
       onManageSchedules: widget.onManageSchedules,
+      onResponses: widget.onResponses,
       onLifecycleCompleted: _resetAndLoad,
       visualMetadata: widget.visualMetadata,
     ),
@@ -336,10 +367,10 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
   Widget _stateWithCreate(Widget state) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      if (widget.canManage && widget.onCreate != null) ...[
+      if (_canManage && widget.onCreate != null) ...[
         CoeloAdminCreateAction(
           key: const Key('forms-directory-create'),
-          label: 'Novo formulário',
+          label: 'Criar formulário',
           description: 'Criar e configurar um formulário.',
           variant: CoeloAdminCreateActionVariant.banner,
           onPressed: widget.onCreate,
@@ -366,6 +397,7 @@ final class FormsDirectoryResults extends StatelessWidget {
     this.onOpen,
     this.onEdit,
     this.onManageSchedules,
+    this.onResponses,
     this.onLifecycleCompleted,
     this.includePagination = true,
     this.visualMetadata = const {},
@@ -385,6 +417,7 @@ final class FormsDirectoryResults extends StatelessWidget {
   final ValueChanged<FormDirectoryItem>? onOpen;
   final ValueChanged<FormDirectoryItem>? onEdit;
   final ValueChanged<FormDirectoryItem>? onManageSchedules;
+  final ValueChanged<FormDirectoryItem>? onResponses;
   final VoidCallback? onLifecycleCompleted;
   final bool includePagination;
   final Map<String, DevelopmentFormVisualMetadata> visualMetadata;
@@ -402,7 +435,7 @@ final class FormsDirectoryResults extends StatelessWidget {
         if (canManage) ...[
           CoeloAdminCreateAction(
             key: const Key('forms-directory-create'),
-            label: 'Novo formulário',
+            label: 'Criar formulário',
             description: 'Criar e configurar um formulário.',
             variant: CoeloAdminCreateActionVariant.banner,
             onPressed: onCreate,
@@ -443,7 +476,7 @@ final class FormsDirectoryResults extends StatelessWidget {
               height: 216,
               child: CoeloAdminCreateAction(
                 key: const Key('forms-directory-create'),
-                label: 'Novo formulário',
+                label: 'Criar formulário',
                 variant: CoeloAdminCreateActionVariant.tile,
                 onPressed: onCreate,
               ),
@@ -478,7 +511,9 @@ final class FormsDirectoryResults extends StatelessWidget {
                       Text(_kindLabel(item.kind)),
                       const SizedBox(height: CoeloSpacing.space4),
                       Text('Atualizado em ${_shortDate(item.updatedAt)}'),
-                      if (canManageLifecycle || onManageSchedules != null) ...[
+                      if (canManageLifecycle ||
+                          onManageSchedules != null ||
+                          onResponses != null) ...[
                         const SizedBox(height: CoeloSpacing.space2),
                         Align(alignment: Alignment.centerRight, child: _actions(item)),
                       ],
@@ -555,7 +590,7 @@ final class FormsDirectoryResults extends StatelessWidget {
           return Text(createdAt == null ? '—' : _shortDate(createdAt));
         },
       ),
-      if (canManageLifecycle || onManageSchedules != null)
+      if (canManageLifecycle || onManageSchedules != null || onResponses != null)
         CoeloAdminTableColumn(
           id: 'actions',
           label: 'Ações',
@@ -579,6 +614,7 @@ final class FormsDirectoryResults extends StatelessWidget {
     canTransferCrossInstitution: canTransferCrossInstitution,
     onEdit: onEdit == null ? null : () => onEdit!(item),
     onManageSchedules: onManageSchedules == null ? null : () => onManageSchedules!(item),
+    onResponses: onResponses == null ? null : () => onResponses!(item),
     onCompleted: onLifecycleCompleted,
   );
 }

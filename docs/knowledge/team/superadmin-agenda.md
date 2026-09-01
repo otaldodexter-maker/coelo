@@ -3,7 +3,7 @@ title: Agenda institucional do Superadmin
 knowledge_id: superadmin-agenda
 source: specs/006-comunicacao-agenda.md
 status: validated
-generated_at: 2026-08-31
+generated_at: 2026-09-01
 audience: team
 surfaces: [superadmin, agenda, events, permissions, notifications]
 visibility: internal
@@ -41,10 +41,23 @@ define se uma resposta por criança basta — opção padrão — ou se todos os
 responsáveis devem responder. Solicitações reúne esses retornos; Aprovações
 reúne pedidos de publicação de quem pode criar, mas não publicar.
 
+O evento pode incluir perguntas opcionais de resposta curta ou Sim/Não junto à
+descrição. Toda pergunta adicionada exige título e não deve solicitar dados
+sensíveis. Persistência, respostas, retenção e autorização permanecem
+dependentes de contrato backend futuro.
+
+Na criação, o autor escolhe quando lembrar (publicação, 24 horas antes, 1 hora
+antes ou horário personalizado). A seleção de canais não integra o formulário
+nesta etapa; a estratégia de entrega fica sob responsabilidade da plataforma
+até contrato posterior aprovado.
+
 Perfis e Permissões é a fonte das capacidades de criar, editar próprios, editar
 todos, publicar, cancelar/restaurar, gerenciar respostas e sobrescrever conflito
 de reserva. A Agenda apenas apresenta o acesso efetivo; backend futuro deverá
 revalidar ator, tenant, contexto e recurso.
+
+Por isso, a Agenda não possui uma tela própria de permissões. Seu submenu termina
+em Aprovações e URLs antigas de permissões levam a Perfis e Permissões.
 
 Formulários não aparecem nem são editados na Agenda. Um evento pode conter CTA
 para abrir um Formulário no fluxo próprio, e pendências de Forms permanecem no

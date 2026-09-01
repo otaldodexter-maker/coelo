@@ -1,11 +1,13 @@
+import 'dart:async';
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../auth/domain/logout_action.dart';
-import '../data/agenda_prototype_store.dart';
 import '../domain/agenda_models.dart';
+import '../domain/agenda_repository.dart';
 import 'agenda_module_shell.dart';
 
 enum AgendaInstitutionalView { calendar, list }
@@ -19,7 +21,7 @@ extension on AgendaInstitutionalView {
 
 final class AgendaCalendarPage extends StatefulWidget {
   const AgendaCalendarPage({
-    required AgendaPrototypeStore this.store,
+    required AgendaRepository this.store,
     required this.logout,
     required this.onAreaSelected,
     required this.onCreateItem,
@@ -38,7 +40,7 @@ final class AgendaCalendarPage extends StatefulWidget {
   }) : store = null,
        unavailable = true;
 
-  final AgendaPrototypeStore? store;
+  final AgendaRepository? store;
   final bool unavailable;
   final LogoutAction logout;
   final ValueChanged<AgendaModuleArea> onAreaSelected;
@@ -62,6 +64,17 @@ final class _AgendaCalendarPageState extends State<AgendaCalendarPage> {
   void initState() {
     super.initState();
     _month = widget.store?.referenceDate ?? DateTime(2026, 8, 3);
+    if (!widget.unavailable) unawaited(_loadMonth());
+  }
+
+  Future<void> _loadMonth() => widget.store!.loadEvents(
+    from: DateTime(_month.year, _month.month),
+    to: DateTime(_month.year, _month.month + 1),
+  );
+
+  void _changeMonth(DateTime value) {
+    setState(() => _month = value);
+    unawaited(_loadMonth());
   }
 
   @override
@@ -105,9 +118,9 @@ final class _AgendaCalendarPageState extends State<AgendaCalendarPage> {
           _selectedDay = null;
           _expandedDay = false;
         }),
-        onToday: () => setState(() => _month = widget.store!.referenceDate),
-        onPrevious: () => setState(() => _month = DateTime(_month.year, _month.month - 1)),
-        onNext: () => setState(() => _month = DateTime(_month.year, _month.month + 1)),
+        onToday: () => _changeMonth(widget.store!.referenceDate),
+        onPrevious: () => _changeMonth(DateTime(_month.year, _month.month - 1)),
+        onNext: () => _changeMonth(DateTime(_month.year, _month.month + 1)),
       );
 
       if ((mobile && _selectedDay != null) || _expandedDay) {

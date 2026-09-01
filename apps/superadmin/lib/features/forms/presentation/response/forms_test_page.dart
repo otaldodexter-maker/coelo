@@ -1,20 +1,29 @@
 import 'dart:math' as math;
 
+import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/development_forms_api.dart';
+import 'form_response_page.dart';
 
 /// Fail-closed in production. The development constructor provides a local,
 /// deterministic respondent preview without repositories or remote writes.
 final class FormsTestPage extends StatefulWidget {
-  const FormsTestPage({super.key}) : development = false, anonymous = false, formId = null;
+  const FormsTestPage({this.api, this.occurrenceId, super.key})
+    : development = false,
+      anonymous = false,
+      formId = null;
 
   const FormsTestPage.development({this.anonymous = false, this.formId, super.key})
-    : development = true;
+    : development = true,
+      api = null,
+      occurrenceId = null;
 
   final bool development;
+  final FormsApi? api;
+  final String? occurrenceId;
   final bool anonymous;
   final String? formId;
 
@@ -41,6 +50,9 @@ final class _FormsTestPageState extends State<FormsTestPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.development) {
+      return FormResponsePage(api: widget.api, occurrenceId: widget.occurrenceId);
+    }
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(

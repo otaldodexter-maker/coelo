@@ -25,6 +25,7 @@ void main() {
                 'domain': 'units',
                 'direction': 'import',
                 'format': 'csv',
+                'file_name': 'unidades-centro.csv',
                 'state': 'PENDENTE',
                 'created_at': '2026-08-12T12:00:00Z',
                 'summary': const <String, Object?>{},
@@ -61,6 +62,7 @@ void main() {
       'p_page_size': 100,
     });
     expect(page.items.single.entity, ImportEntity.units);
+    expect(page.items.single.displayFileName, 'unidades-centro.csv');
     expect(jsonDecode(page.nextCursor!), <String, Object?>{
       'created_at': '2026-08-12T12:00:00Z',
       'job_id': '1d4553c8-854e-4a7b-b981-ae3257f334ee',

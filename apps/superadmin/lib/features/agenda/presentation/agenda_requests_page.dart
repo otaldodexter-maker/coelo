@@ -3,7 +3,10 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
-import '../data/agenda_prototype_store.dart';
+import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
+import '../domain/agenda_models.dart';
+import '../domain/agenda_repository.dart';
 
 enum _RequestKind { rsvp, acknowledgement, authorization }
 
@@ -65,6 +68,28 @@ final class _ChildRequest {
   final int guardianCount;
   final _RequestAnswer? answer;
 
+  factory _ChildRequest.fromGuardianRequest(GuardianBirthdayRequest request) => _ChildRequest(
+    id: request.id,
+    title: request.title,
+    childContext: request.childName,
+    kind: _RequestKind.authorization,
+    policy: _GuardianPolicy.oneIsEnough,
+    status:
+        request.status == GuardianRequestStatus.sent ||
+            request.status == GuardianRequestStatus.underReview
+        ? _RequestStatus.pending
+        : _RequestStatus.answered,
+    responseCount: request.decision == null ? 0 : 1,
+    guardianCount: 1,
+    answer: request.decision == null
+        ? null
+        : _RequestAnswer(
+            label: request.decision!.approved ? 'Aprovado' : 'Recusado',
+            actor: request.decision!.actorName,
+            answeredAt: request.decision!.decidedAt,
+          ),
+  );
+
   _ChildRequest answered({required String label, required String actor}) {
     final nextCount = policy == _GuardianPolicy.allRequired
         ? (responseCount + 1).clamp(0, guardianCount)
@@ -90,35 +115,59 @@ final class _ChildRequest {
 /// esta superfície usa fixtures próprias e não grava no store. Produção deve
 /// usar [AgendaRequestsPage.unavailable] até existir uma fonte autorizada.
 final class AgendaRequestsPage extends StatefulWidget {
-  const AgendaRequestsPage({required this.store, super.key}) : _available = true;
+  const AgendaRequestsPage({required this.store, super.key})
+    : _available = true,
+      _localFixtures = true;
 
-  const AgendaRequestsPage.localFixtures({super.key}) : store = null, _available = true;
+  const AgendaRequestsPage.production({required AgendaRepository this.store, super.key})
+    : _available = true,
+      _localFixtures = false;
 
-  const AgendaRequestsPage.unavailable({super.key}) : store = null, _available = false;
+  const AgendaRequestsPage.localFixtures({super.key})
+    : store = null,
+      _available = true,
+      _localFixtures = true;
 
-  final AgendaPrototypeStore? store;
+  const AgendaRequestsPage.unavailable({super.key})
+    : store = null,
+      _available = false,
+      _localFixtures = false;
+
+  final AgendaRepository? store;
   final bool _available;
+  final bool _localFixtures;
 
   @override
   State<AgendaRequestsPage> createState() => _AgendaRequestsPageState();
 }
 
 final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
-  late final List<_ChildRequest> _items = _fixtureRequests();
+  late final List<_ChildRequest> _fixtureItems = _fixtureRequests();
+  List<_ChildRequest> get _items => widget._localFixtures
+      ? _fixtureItems
+      : widget.store!.requests.map(_ChildRequest.fromGuardianRequest).toList(growable: false);
   String? _notice;
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget._available && !widget._localFixtures) {
+      widget.store!.loadRequests();
+    }
+  }
+
   void _answer(_ChildRequest item, String answerLabel) {
-    final index = _items.indexWhere((candidate) => candidate.id == item.id);
+    final index = _fixtureItems.indexWhere((candidate) => candidate.id == item.id);
     if (index < 0 || item.status != _RequestStatus.pending) return;
     setState(() {
-      _items[index] = item.answered(label: answerLabel, actor: 'Marina Oliveira');
+      _fixtureItems[index] = item.answered(label: answerLabel, actor: 'Marina Oliveira');
       _notice = switch (item.policy) {
         _GuardianPolicy.oneIsEnough =>
           'Resposta registrada para ${_childName(item.childContext)}. Os demais responsáveis foram avisados e não precisam responder.',
         _GuardianPolicy.allRequired =>
-          _items[index].status == _RequestStatus.answered
+          _fixtureItems[index].status == _RequestStatus.answered
               ? 'Todos os responsáveis responderam por ${_childName(item.childContext)}.'
-              : 'Resposta registrada. Ainda falta ${_items[index].guardianCount - _items[index].responseCount} responsável por ${_childName(item.childContext)}.',
+              : 'Resposta registrada. Ainda falta ${_fixtureItems[index].guardianCount - _fixtureItems[index].responseCount} responsável por ${_childName(item.childContext)}.',
       };
     });
   }
@@ -126,6 +175,16 @@ final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
   @override
   Widget build(BuildContext context) {
     if (!widget._available) return const _UnavailableRequests();
+    if (!widget._localFixtures) {
+      return AnimatedBuilder(
+        animation: widget.store!,
+        builder: (context, _) => _buildAvailable(context),
+      );
+    }
+    return _buildAvailable(context);
+  }
+
+  Widget _buildAvailable(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final textScale = MediaQuery.textScalerOf(context).scale(1);
@@ -144,8 +203,13 @@ final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
             const Text(
               'Acompanhe RSVP, ciência e autorização por criança, conforme a política de responsáveis.',
             ),
+            const SizedBox(height: CoeloSpacing.space2),
+            const Align(
+              alignment: Alignment.centerRight,
+              child: SuperadminPlaceholderFileActions(resourceLabel: 'solicitações da agenda'),
+            ),
             const SizedBox(height: CoeloSpacing.space3),
-            const _LocalFixtureNotice(),
+            if (widget._localFixtures) const _LocalFixtureNotice(),
             if (_notice != null) ...[
               const SizedBox(height: CoeloSpacing.space3),
               Semantics(
@@ -155,12 +219,27 @@ final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
             ],
             const SizedBox(height: CoeloSpacing.space5),
             if (compact)
-              _RequestCardList(items: _items, onAnswer: _answer)
+              _RequestCardList(items: _items, onAnswer: widget._localFixtures ? _answer : null)
             else
               SizedBox(
                 height: 700,
-                child: _RequestTable(items: _items, onAnswer: _answer),
+                child: _RequestTable(
+                  items: _items,
+                  onAnswer: widget._localFixtures ? _answer : null,
+                ),
               ),
+            const SizedBox(height: CoeloSpacing.space4),
+            SuperadminListingPaginationFooter(
+              horizontalPadding: 0,
+              child: const CoeloAdminPagination(
+                currentPage: 1,
+                totalPages: 1,
+                onPrevious: null,
+                onNext: null,
+                pageSize: 8,
+                pageSizeOptions: [8, 20, 50, 100],
+              ),
+            ),
           ],
         );
       },
@@ -172,7 +251,7 @@ final class _RequestTable extends StatelessWidget {
   const _RequestTable({required this.items, required this.onAnswer});
 
   final List<_ChildRequest> items;
-  final void Function(_ChildRequest item, String label) onAnswer;
+  final void Function(_ChildRequest item, String label)? onAnswer;
 
   Widget _cell(Widget child) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
@@ -237,8 +316,12 @@ final class _RequestTable extends StatelessWidget {
         initialWidth: 300,
         minWidth: 260,
         maxWidth: 380,
-        cellBuilder: (context, item) =>
-            _cell(_RequestActions(item: item, onAnswer: (label) => onAnswer(item, label))),
+        cellBuilder: (context, item) => _cell(
+          _RequestActions(
+            item: item,
+            onAnswer: onAnswer == null ? null : (label) => onAnswer!(item, label),
+          ),
+        ),
       ),
     ],
   );
@@ -248,7 +331,7 @@ final class _RequestCardList extends StatelessWidget {
   const _RequestCardList({required this.items, required this.onAnswer});
 
   final List<_ChildRequest> items;
-  final void Function(_ChildRequest item, String label) onAnswer;
+  final void Function(_ChildRequest item, String label)? onAnswer;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -271,7 +354,10 @@ final class _RequestCardList extends StatelessWidget {
                 _RequestState(item: item),
                 if (item.status == _RequestStatus.pending) ...[
                   const SizedBox(height: CoeloSpacing.space3),
-                  _RequestActions(item: item, onAnswer: (label) => onAnswer(item, label)),
+                  _RequestActions(
+                    item: item,
+                    onAnswer: onAnswer == null ? null : (label) => onAnswer!(item, label),
+                  ),
                 ],
               ],
             ),
@@ -316,7 +402,7 @@ final class _RequestActions extends StatelessWidget {
   const _RequestActions({required this.item, required this.onAnswer});
 
   final _ChildRequest item;
-  final ValueChanged<String> onAnswer;
+  final ValueChanged<String>? onAnswer;
 
   @override
   Widget build(BuildContext context) {
@@ -327,34 +413,34 @@ final class _RequestActions extends StatelessWidget {
       children: switch (item.kind) {
         _RequestKind.authorization => [
           OutlinedButton(
-            onPressed: () => onAnswer('Não autorizado'),
+            onPressed: onAnswer == null ? null : () => onAnswer!('Não autorizado'),
             child: const Text('Não autorizar'),
           ),
           FilledButton(
             key: Key('agenda-request-authorize-${item.id}'),
-            onPressed: () => onAnswer('Autorizado'),
+            onPressed: onAnswer == null ? null : () => onAnswer!('Autorizado'),
             child: const Text('Autorizar'),
           ),
         ],
         _RequestKind.rsvp => [
           OutlinedButton(
-            onPressed: () => onAnswer('Não participará'),
+            onPressed: onAnswer == null ? null : () => onAnswer!('Não participará'),
             child: const Text('Não participará'),
           ),
           OutlinedButton(
-            onPressed: () => onAnswer('Talvez participe'),
+            onPressed: onAnswer == null ? null : () => onAnswer!('Talvez participe'),
             child: const Text('Talvez'),
           ),
           FilledButton(
             key: Key('agenda-request-rsvp-${item.id}'),
-            onPressed: () => onAnswer('Presença confirmada'),
+            onPressed: onAnswer == null ? null : () => onAnswer!('Presença confirmada'),
             child: const Text('Confirmar presença'),
           ),
         ],
         _RequestKind.acknowledgement => [
           FilledButton(
             key: Key('agenda-request-respond-${item.id}'),
-            onPressed: () => onAnswer('Ciência confirmada'),
+            onPressed: onAnswer == null ? null : () => onAnswer!('Ciência confirmada'),
             child: const Text('Confirmar ciência'),
           ),
         ],

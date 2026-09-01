@@ -26,6 +26,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(CoeloAdminPagination), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
     await tester.tap(find.text('Pesquisa anual das famílias').first);
     expect(opened?.id, 'form-family-annual-survey');
 
@@ -76,7 +77,7 @@ void main() {
     expect(find.text('2'), findsOneWidget);
     expect(find.text('01/08/2026'), findsOneWidget);
     expect(find.byKey(const Key('forms-directory-create')), findsOneWidget);
-    expect(find.text('Novo formulário'), findsOneWidget);
+    expect(find.text('Criar formulário'), findsOneWidget);
     expect(find.byKey(const Key('forms-directory-card-grid')), findsNothing);
     final table = tester.widget<CoeloAdminResizableTable<FormDirectoryItem>>(
       find.byType(CoeloAdminResizableTable<FormDirectoryItem>),

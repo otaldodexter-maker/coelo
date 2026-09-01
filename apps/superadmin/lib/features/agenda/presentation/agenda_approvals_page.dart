@@ -3,8 +3,10 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
-import '../data/agenda_prototype_store.dart';
+import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
 import '../domain/agenda_models.dart';
+import '../domain/agenda_repository.dart';
 
 enum _ApprovalStatus { pending, approved, rejected }
 
@@ -84,17 +86,22 @@ final class _AgendaApproval {
       );
 }
 
-/// Surface local de demonstração para o fluxo de aprovação de publicação.
-///
-/// A composição produtiva deve usar [AgendaApprovalsPage.unavailable] até que
-/// uma fonte autorizada seja conectada. As decisões deste protótipo vivem
-/// somente no estado do widget e nunca representam persistência remota.
 final class AgendaApprovalsPage extends StatefulWidget {
-  const AgendaApprovalsPage.localFixtures({this.store, super.key}) : _localFixtures = true;
+  const AgendaApprovalsPage({required AgendaRepository this.store, super.key})
+    : _available = true,
+      _localFixtures = false;
 
-  const AgendaApprovalsPage.unavailable({super.key}) : store = null, _localFixtures = false;
+  const AgendaApprovalsPage.localFixtures({this.store, super.key})
+    : _available = true,
+      _localFixtures = true;
 
-  final AgendaPrototypeStore? store;
+  const AgendaApprovalsPage.unavailable({super.key})
+    : store = null,
+      _available = false,
+      _localFixtures = false;
+
+  final AgendaRepository? store;
+  final bool _available;
   final bool _localFixtures;
 
   @override
@@ -106,29 +113,35 @@ final class _AgendaApprovalsPageState extends State<AgendaApprovalsPage> {
 
   List<_AgendaApproval> get _items => [
     ...?widget.store?.publicationRequests.map(_AgendaApproval.fromPublicationRequest),
-    ..._fixtureItems,
+    if (widget._localFixtures) ..._fixtureItems,
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    if (!widget._localFixtures) widget.store?.loadRequests();
+  }
 
   Future<void> _openDecision(_AgendaApproval item) async {
     await showDialog<void>(
       context: context,
       builder: (dialogContext) => _ApprovalDecisionDialog(
         item: item,
-        onDecide: (status, reason) {
-          if (!mounted) return;
+        onDecide: (status, reason) async {
+          if (!mounted) return AgendaMutationResult.unavailable;
           final requestId = item.publicationRequestId;
           if (requestId != null) {
-            widget.store!.decidePublicationRequest(
+            return widget.store!.decidePublicationRequest(
               requestId: requestId,
               approve: status == _ApprovalStatus.approved,
               decidedBy: 'Marina Oliveira',
               reason: reason,
             );
-            return;
           }
           final index = _fixtureItems.indexWhere((candidate) => candidate.id == item.id);
-          if (index < 0) return;
+          if (index < 0) return AgendaMutationResult.notFound;
           setState(() => _fixtureItems[index] = item.decided(status: status, reason: reason));
+          return AgendaMutationResult.success;
         },
       ),
     );
@@ -136,7 +149,7 @@ final class _AgendaApprovalsPageState extends State<AgendaApprovalsPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget._localFixtures) return const _UnavailableApprovals();
+    if (!widget._available) return const _UnavailableApprovals();
     final store = widget.store;
     if (store == null) return _buildAvailable(context);
     return AnimatedBuilder(animation: store, builder: (context, _) => _buildAvailable(context));
@@ -161,8 +174,13 @@ final class _AgendaApprovalsPageState extends State<AgendaApprovalsPage> {
           const Text(
             'Revise itens enviados por pessoas sem permissão de publicação e registre a decisão.',
           ),
+          const SizedBox(height: CoeloSpacing.space2),
+          const Align(
+            alignment: Alignment.centerRight,
+            child: SuperadminPlaceholderFileActions(resourceLabel: 'aprovações da agenda'),
+          ),
           const SizedBox(height: CoeloSpacing.space3),
-          const _LocalFixtureNotice(),
+          if (widget._localFixtures) const _LocalFixtureNotice(),
           const SizedBox(height: CoeloSpacing.space5),
           if (compact)
             _ApprovalCardList(items: _items, onDecide: _openDecision)
@@ -171,6 +189,18 @@ final class _AgendaApprovalsPageState extends State<AgendaApprovalsPage> {
               height: _items.length <= 3 ? 500 : 80 + _items.length * 140,
               child: _ApprovalTable(items: _items, onDecide: _openDecision),
             ),
+          const SizedBox(height: CoeloSpacing.space4),
+          SuperadminListingPaginationFooter(
+            horizontalPadding: 0,
+            child: const CoeloAdminPagination(
+              currentPage: 1,
+              totalPages: 1,
+              onPrevious: null,
+              onNext: null,
+              pageSize: 8,
+              pageSizeOptions: [8, 20, 50, 100],
+            ),
+          ),
         ],
       );
     },
@@ -181,7 +211,7 @@ final class _ApprovalDecisionDialog extends StatefulWidget {
   const _ApprovalDecisionDialog({required this.item, required this.onDecide});
 
   final _AgendaApproval item;
-  final void Function(_ApprovalStatus status, String reason) onDecide;
+  final Future<AgendaMutationResult> Function(_ApprovalStatus status, String reason) onDecide;
 
   @override
   State<_ApprovalDecisionDialog> createState() => _ApprovalDecisionDialogState();
@@ -190,6 +220,7 @@ final class _ApprovalDecisionDialog extends StatefulWidget {
 final class _ApprovalDecisionDialogState extends State<_ApprovalDecisionDialog> {
   final _reason = TextEditingController();
   String? _error;
+  bool _saving = false;
 
   @override
   void dispose() {
@@ -197,14 +228,25 @@ final class _ApprovalDecisionDialogState extends State<_ApprovalDecisionDialog> 
     super.dispose();
   }
 
-  void _decide(_ApprovalStatus status) {
+  Future<void> _decide(_ApprovalStatus status) async {
     final reason = _reason.text.trim();
     if (reason.isEmpty) {
       setState(() => _error = 'Informe a justificativa da decisão.');
       return;
     }
-    widget.onDecide(status, reason);
-    Navigator.of(context).pop();
+    setState(() => _saving = true);
+    final result = await widget.onDecide(status, reason);
+    if (!mounted) return;
+    if (result == AgendaMutationResult.success) {
+      Navigator.of(context).pop();
+      return;
+    }
+    setState(() {
+      _saving = false;
+      _error = result == AgendaMutationResult.notAuthorized
+          ? 'Você não tem permissão para decidir esta publicação.'
+          : 'Não foi possível registrar a decisão. Tente novamente.';
+    });
   }
 
   @override
@@ -228,17 +270,17 @@ final class _ApprovalDecisionDialogState extends State<_ApprovalDecisionDialog> 
           },
         ),
         const SizedBox(height: CoeloSpacing.space2),
-        const Text('A decisão e sua justificativa ficam no histórico local desta demonstração.'),
+        const Text('A decisão e sua justificativa ficam registradas no histórico da Agenda.'),
       ],
     ),
     secondaryAction: OutlinedButton(
       key: const Key('agenda-approval-confirm-reject'),
-      onPressed: () => _decide(_ApprovalStatus.rejected),
+      onPressed: _saving ? null : () => _decide(_ApprovalStatus.rejected),
       child: const Text('Recusar publicação'),
     ),
     primaryAction: FilledButton(
       key: const Key('agenda-approval-confirm-approve'),
-      onPressed: () => _decide(_ApprovalStatus.approved),
+      onPressed: _saving ? null : () => _decide(_ApprovalStatus.approved),
       child: const Text('Aprovar publicação'),
     ),
   );

@@ -45,6 +45,11 @@ formulário ativo e, na ausência dela, uma ocorrência futura o torna programad
 Ocorrências canceladas não contam e ativo prevalece quando coexistir com
 programado.
 
+O editor permite reordenar seções, perguntas e opções por arraste e mantém
+setas como alternativa acessível. Bloco informativo possui título e detalhes;
+perguntas numéricas e de dinheiro aceitam mínimo e máximo, com moeda BRL para
+dinheiro.
+
 O monitoramento materializa métricas por ocorrência e avança somente na cadeia
 instituição → unidade → turma → atividade → perfil. A RPC de hierarquia exige
 `forms.monitor`, cursor opaco e um `scope_id` pertencente ao mesmo formulário e

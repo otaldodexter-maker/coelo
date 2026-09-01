@@ -13,6 +13,10 @@ import '../../features/assessments/assessment.dart';
 import '../../features/assessments/data/supabase_assessment_repository.dart';
 import '../../features/imports/data/supabase_import_repository.dart';
 import '../../features/imports/domain/import_repository.dart';
+import '../../features/agenda/data/supabase_agenda_repository.dart';
+import '../../features/agenda/domain/agenda_repository.dart';
+import '../../features/plans/data/supabase_plan_catalog_repository.dart';
+import '../../features/plans/domain/plan_catalog_repository.dart';
 import '../../features/invites/domain/platform_invite.dart';
 import '../../features/notices/data/supabase_notice_repository.dart';
 import '../../features/notices/domain/notice_repository.dart';
@@ -85,6 +89,8 @@ final class SuperadminAuthScope {
     required this.unitDirectoryRepository,
     required this.unitBackendCommands,
     required this.importRepository,
+    this.planCatalogRepository = const UnavailablePlanCatalogRepository(),
+    this.agendaRepository,
     required this.inviteRepository,
     required this.noticeRepository,
     required this.attendanceRepository,
@@ -96,6 +102,7 @@ final class SuperadminAuthScope {
     required this.medicationPlanRepository,
     required this.mealPlanRepository,
     required this.mealPlanImageRepository,
+    this.authorizedMealPlanTenantId,
     required this.formsApi,
     this.nowPublicationRepository,
   });
@@ -116,6 +123,8 @@ final class SuperadminAuthScope {
   final UnitDirectoryRepository unitDirectoryRepository;
   final UnitBackendCommandsGateway unitBackendCommands;
   final ImportRepository importRepository;
+  final PlanCatalogRepository planCatalogRepository;
+  final AgendaRepository? agendaRepository;
   final InviteRepository inviteRepository;
   final NoticeRepository noticeRepository;
   final AttendanceRepository attendanceRepository;
@@ -127,6 +136,7 @@ final class SuperadminAuthScope {
   final MedicationPlanRepository medicationPlanRepository;
   final MealPlanRepository mealPlanRepository;
   final MealPlanImageRepository mealPlanImageRepository;
+  final String? authorizedMealPlanTenantId;
   final FormsApi? formsApi;
   final NowPublicationRepository? nowPublicationRepository;
 }
@@ -207,6 +217,8 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
       unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),
       importRepository: SupabaseImportRepository(client),
+      planCatalogRepository: SupabasePlanCatalogRepository(client),
+      agendaRepository: SupabaseAgendaRepository(client),
       inviteRepository: const UnavailableInviteRepository(),
       noticeRepository: SupabaseNoticeRepository(client),
       attendanceRepository: SupabaseAttendanceRepository(client),
@@ -261,6 +273,8 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthLifecycleGateway auth) {
     unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
     unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),
     importRepository: const UnavailableImportRepository(),
+    planCatalogRepository: const UnavailablePlanCatalogRepository(),
+    agendaRepository: null,
     inviteRepository: const UnavailableInviteRepository(),
     noticeRepository: const UnavailableNoticeRepository(),
     attendanceRepository: const UnavailableAttendanceRepository(),

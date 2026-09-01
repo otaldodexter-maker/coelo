@@ -16,6 +16,12 @@ abstract interface class ImportRepository {
   Future<ImportJob> update(ImportJob job);
 }
 
+/// Optional capability advertised by repositories whose executable import
+/// domains differ from the production default.
+abstract interface class ImportExecutionCapabilities {
+  Set<ImportEntity> get supportedImportEntities;
+}
+
 final class ImportRepositoryUnavailableException implements Exception {
   const ImportRepositoryUnavailableException();
 }

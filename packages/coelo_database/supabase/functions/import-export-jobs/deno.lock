@@ -150,6 +150,7 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@std/assert@1.0.14",
       "npm:@supabase/supabase-js@2.57.4",
       "npm:xlsx@0.18.5"
     ]

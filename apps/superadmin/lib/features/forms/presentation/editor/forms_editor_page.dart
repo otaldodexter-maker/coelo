@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:math';
+
+import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -7,17 +11,19 @@ import 'package:flutter/material.dart';
 import '../../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../data/development_forms_api.dart';
+import '../../data/forms_editor_context.dart';
 
 /// Production remains fail-closed until the composition root owns an
 /// authoritative mutation capability. The development constructor exercises
 /// the complete visual editor without claiming remote persistence.
 final class FormsEditorPage extends StatefulWidget {
-  const FormsEditorPage({super.key}) : development = false, formId = null;
+  const FormsEditorPage({this.api, this.formId, super.key}) : development = false;
 
-  const FormsEditorPage.development({this.formId, super.key}) : development = true;
+  const FormsEditorPage.development({this.formId, super.key}) : development = true, api = null;
 
   final bool development;
   final String? formId;
+  final FormsApi? api;
 
   @override
   State<FormsEditorPage> createState() => _FormsEditorPageState();
@@ -28,15 +34,29 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   late final TextEditingController _context;
   final _catalogSearch = TextEditingController();
   final _sections = <_EditorSectionDraft>[];
+  FormsEditorContext? _editorContext;
+  FormDefinition? _definition;
+  String? _institutionId;
+  var _loading = false;
+  var _saving = false;
 
   var _selectedSection = 0;
   String? _expandedQuestionId;
   var _previewVisible = false;
   late bool _recurring;
+  late _FormsEditorPeriodicity _periodicity;
+  late DateTime? _firstOccurrenceAt;
+  late Set<int> _weekdays;
   String? _feedback;
   var _nextId = 20;
 
   _EditorSectionDraft get _section => _sections[_selectedSection];
+  FormsEditorInstitution? get _institution =>
+      _editorContext?.institutions.where((value) => value.id == _institutionId).firstOrNull;
+  bool get _canEdit =>
+      widget.development ||
+      (!_loading && widget.api != null && _institution?.canManageForms == true);
+  bool get _canPublish => _canEdit && (_institution?.canPublishForms ?? widget.development);
 
   @override
   void initState() {
@@ -48,10 +68,59 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     );
     _context = TextEditingController(text: widget.development ? 'Todas as unidades' : '');
     _recurring = widget.development;
+    _periodicity = _FormsEditorPeriodicity.weekly;
+    _firstOccurrenceAt = widget.development ? DateTime(2026, 9, 8, 8) : null;
+    _weekdays = {DateTime.monday, DateTime.wednesday};
     _sections.addAll(widget.development ? _fixtureSections() : _neutralSections());
     _expandedQuestionId = _sections.first.questions.last.id;
     _title.addListener(_markChanged);
     _context.addListener(_markChanged);
+    if (!widget.development) unawaited(_loadProduction());
+  }
+
+  Future<void> _loadProduction() async {
+    final api = widget.api;
+    if (api == null || api is! FormsEditorContextApi) {
+      setState(
+        () => _feedback = 'A composição produtiva do editor não recebeu um contexto autorizado.',
+      );
+      return;
+    }
+    final contextApi = api as FormsEditorContextApi;
+    setState(() => _loading = true);
+    try {
+      final editorContext = await contextApi.getEditorContext();
+      final projection = widget.formId == null ? null : await api.getEditor(widget.formId!);
+      if (!mounted) return;
+      final initialInstitutionId =
+          projection?.definition.institutionId ??
+          editorContext.institutions.where((value) => value.canManageForms).firstOrNull?.id;
+      if (initialInstitutionId == null) {
+        setState(
+          () => _feedback = 'Você não possui instituição autorizada para criar formulários.',
+        );
+        return;
+      }
+      final authorized = editorContext.institutions.any(
+        (value) => value.id == initialInstitutionId && value.canManageForms,
+      );
+      if (!authorized) {
+        setState(
+          () => _feedback = 'Você não possui instituição autorizada para editar este formulário.',
+        );
+        return;
+      }
+      setState(() {
+        _editorContext = editorContext;
+        _institutionId = initialInstitutionId;
+        if (projection != null) _applyDefinition(projection.definition);
+        _feedback = null;
+      });
+    } on FormApiException catch (error) {
+      if (mounted) setState(() => _feedback = error.message);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override
@@ -83,13 +152,15 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (!widget.development) ...[
-                const CoeloStatePanel(
+              if (!widget.development && (_loading || !_canEdit)) ...[
+                CoeloStatePanel(
                   key: Key('forms-editor-unavailable'),
-                  title: 'Editor indisponível',
-                  message:
-                      'A composição permanece visível com valores neutros, mas edição, publicação e persistência estão bloqueadas.',
-                  icon: Icons.lock_outline_rounded,
+                  title: _loading ? 'Carregando formulário' : 'Editor indisponível',
+                  message: _loading
+                      ? 'Verificando instituições e capacidades autorizadas.'
+                      : _feedback ?? 'A edição exige uma instituição autorizada.',
+                  icon: _loading ? null : Icons.lock_outline_rounded,
+                  loading: _loading,
                 ),
                 const SizedBox(height: CoeloSpacing.space4),
               ],
@@ -98,17 +169,19 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           ),
           footer: SuperadminFormActionFooter(
             tertiaryAction: TextButton(
-              onPressed: widget.development ? _confirmCancel : null,
+              onPressed: _canEdit && !_saving ? _confirmCancel : null,
               child: const Text('Cancelar'),
             ),
             continuationActions: [
               OutlinedButton(
-                onPressed: widget.development ? _saveDraftLocally : null,
+                onPressed: _canEdit && !_saving ? _saveDraft : null,
                 child: const Text('Salvar rascunho'),
               ),
               FilledButton(
-                onPressed: widget.development ? _validateLocally : null,
-                child: const Text('Salvar formulário'),
+                onPressed: _canEdit && !_saving
+                    ? (widget.development ? _validateLocally : _saveDraft)
+                    : null,
+                child: Text(_saving ? 'Salvando…' : 'Salvar formulário'),
               ),
             ],
           ),
@@ -117,7 +190,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     );
   }
 
-  Widget _locked(Widget child) => widget.development
+  Widget _locked(Widget child) => _canEdit
       ? child
       : ExcludeFocus(
           child: IgnorePointer(child: Opacity(opacity: 0.64, child: child)),
@@ -134,6 +207,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       onDuplicate: _duplicateSection,
       onDelete: _confirmDeleteSection,
       onMove: _moveSection,
+      onReorder: _reorderSection,
     );
     if (!compact || MediaQuery.textScalerOf(context).scale(1) <= 1.3) return navigation;
     return ConstrainedBox(
@@ -152,7 +226,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         alignment: Alignment.centerRight,
         child: OutlinedButton.icon(
           key: const Key('forms-editor-publish'),
-          onPressed: widget.development ? _openPublishDialog : null,
+          onPressed: _canPublish && !_saving ? _openPublishDialog : null,
           icon: const Icon(Icons.publish_outlined),
           label: const Text('Publicar ou agendar'),
         ),
@@ -203,25 +277,50 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           final stack =
               constraints.maxWidth < 720 || MediaQuery.textScalerOf(context).scale(1) > 1.3;
           final fields = [
+            if (!widget.development)
+              CoeloAdminSingleSelectField<String>(
+                key: const Key('forms-editor-institution'),
+                label: 'Instituição',
+                value: _institutionId ?? '',
+                options: [
+                  for (final institution
+                      in _editorContext?.institutions ?? const <FormsEditorInstitution>[])
+                    if (institution.canManageForms) institution.id,
+                ],
+                optionLabel: (id) =>
+                    _editorContext?.institutions
+                        .where((institution) => institution.id == id)
+                        .firstOrNull
+                        ?.name ??
+                    id,
+                prefixIcon: Icons.account_balance_outlined,
+                enabled:
+                    !_loading &&
+                    (_editorContext?.institutions.any((value) => value.canManageForms) ?? false),
+                onChanged: (value) => setState(() {
+                  _institutionId = value;
+                  _feedback = null;
+                }),
+              ),
             CoeloFormTextField(
               controller: _title,
               labelText: 'Nome do formulário',
               prefixIcon: Icons.description_outlined,
-              enabled: widget.development,
+              enabled: _canEdit,
               onChanged: (_) => _markChanged(),
             ),
             CoeloFormTextField(
               controller: _context,
               labelText: 'Contexto',
               prefixIcon: Icons.account_tree_outlined,
-              enabled: widget.development,
+              enabled: _canEdit,
               onChanged: (_) => _markChanged(),
             ),
             CoeloAdminToggleField(
-              label: 'Recorrente',
-              description: 'Gera tarefas agendadas.',
+              label: 'Gerar ocorrências',
+              description: 'Cria aberturas recorrentes para a rotina de cuidado.',
               value: _recurring,
-              onChanged: widget.development
+              onChanged: _canEdit
                   ? (value) => setState(() {
                       _recurring = value;
                       _feedback = null;
@@ -229,30 +328,109 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                   : null,
             ),
           ];
-          if (stack) {
-            return Column(
-              children: [
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (stack)
                 for (var index = 0; index < fields.length; index++) ...[
                   fields[index],
                   if (index < fields.length - 1) const SizedBox(height: CoeloSpacing.space4),
-                ],
+                ]
+              else
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: fields[0]),
+                    const SizedBox(width: CoeloSpacing.space3),
+                    Expanded(child: fields[1]),
+                    const SizedBox(width: CoeloSpacing.space3),
+                    if (fields.length == 4) ...[
+                      SizedBox(width: 220, child: fields[2]),
+                      const SizedBox(width: CoeloSpacing.space3),
+                    ],
+                    SizedBox(width: 220, child: fields.last),
+                  ],
+                ),
+              if (_recurring) ...[
+                const SizedBox(height: CoeloSpacing.space4),
+                _occurrenceSchedule(),
               ],
-            );
-          }
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: fields[0]),
-              const SizedBox(width: CoeloSpacing.space3),
-              Expanded(child: fields[1]),
-              const SizedBox(width: CoeloSpacing.space3),
-              SizedBox(width: 220, child: fields[2]),
             ],
           );
         },
       ),
     );
   }
+
+  Widget _occurrenceSchedule() => LayoutBuilder(
+    builder: (context, constraints) {
+      final stack = constraints.maxWidth < 720 || MediaQuery.textScalerOf(context).scale(1) > 1.3;
+      final startsAt = CoeloDateTimeField(
+        key: const Key('forms-editor-first-occurrence'),
+        value: _firstOccurrenceAt,
+        currentDate: DateTime(2026, 8, 31),
+        firstDate: DateTime(2026, 8, 31),
+        lastDate: DateTime(2028, 12, 31),
+        labelText: 'Primeira ocorrência',
+        enabled: _canEdit,
+        onChanged: (value) => setState(() {
+          _firstOccurrenceAt = value;
+          _feedback = null;
+        }),
+      );
+      final periodicity = CoeloAdminSingleSelectField<_FormsEditorPeriodicity>(
+        key: const Key('forms-editor-periodicity'),
+        label: 'Periodicidade',
+        value: _periodicity,
+        options: _FormsEditorPeriodicity.values,
+        optionLabel: _periodicityLabel,
+        prefixIcon: Icons.repeat_rounded,
+        enabled: _canEdit,
+        onChanged: (value) => setState(() {
+          _periodicity = value;
+          _feedback = null;
+        }),
+      );
+      final weekdays = CoeloAdminMultiSelectField<int>(
+        key: const Key('forms-editor-weekdays'),
+        label: 'Dias da semana',
+        options: const [1, 2, 3, 4, 5, 6, 7],
+        selectedValues: _weekdays,
+        optionLabel: _weekdayLabel,
+        enabled: _canEdit && _periodicity == _FormsEditorPeriodicity.weekly,
+        onChanged: (value) => setState(() {
+          _weekdays = value;
+          _feedback = null;
+        }),
+      );
+      if (stack) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            startsAt,
+            const SizedBox(height: CoeloSpacing.space4),
+            periodicity,
+            if (_periodicity == _FormsEditorPeriodicity.weekly) ...[
+              const SizedBox(height: CoeloSpacing.space4),
+              weekdays,
+            ],
+          ],
+        );
+      }
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: startsAt),
+          const SizedBox(width: CoeloSpacing.space3),
+          Expanded(child: periodicity),
+          if (_periodicity == _FormsEditorPeriodicity.weekly) ...[
+            const SizedBox(width: CoeloSpacing.space3),
+            Expanded(child: weekdays),
+          ],
+        ],
+      );
+    },
+  );
 
   Widget _questionCanvas() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -299,27 +477,36 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         },
       ),
       const SizedBox(height: CoeloSpacing.space4),
-      for (var index = 0; index < _section.questions.length; index++) ...[
-        _QuestionCard(
+      ReorderableListView.builder(
+        key: const Key('forms-editor-question-reorder-list'),
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        buildDefaultDragHandles: false,
+        itemCount: _section.questions.length,
+        onReorderItem: _reorderQuestion,
+        itemBuilder: (context, index) => Padding(
           key: ValueKey(_section.questions[index].id),
-          question: _section.questions[index],
-          expanded: _expandedQuestionId == _section.questions[index].id,
-          canMoveUp: index > 0,
-          canMoveDown: index < _section.questions.length - 1,
-          onToggle: () => setState(() {
-            _expandedQuestionId = _expandedQuestionId == _section.questions[index].id
-                ? null
-                : _section.questions[index].id;
-          }),
-          onMoveUp: () => _moveQuestion(index, index - 1),
-          onMoveDown: () => _moveQuestion(index, index + 1),
-          onMoveToSection: () => _showMoveQuestionDialog(index),
-          onDuplicate: () => _duplicateQuestion(index),
-          onDelete: () => _confirmDeleteQuestion(index),
-          onChanged: _markChanged,
+          padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+          child: _QuestionCard(
+            index: index,
+            question: _section.questions[index],
+            expanded: _expandedQuestionId == _section.questions[index].id,
+            canMoveUp: index > 0,
+            canMoveDown: index < _section.questions.length - 1,
+            onToggle: () => setState(() {
+              _expandedQuestionId = _expandedQuestionId == _section.questions[index].id
+                  ? null
+                  : _section.questions[index].id;
+            }),
+            onMoveUp: () => _moveQuestion(index, index - 1),
+            onMoveDown: () => _moveQuestion(index, index + 1),
+            onMoveToSection: () => _showMoveQuestionDialog(index),
+            onDuplicate: () => _duplicateQuestion(index),
+            onDelete: () => _confirmDeleteQuestion(index),
+            onChanged: _markChanged,
+          ),
         ),
-        const SizedBox(height: CoeloSpacing.space3),
-      ],
+      ),
       CoeloAdminCreateAction(
         key: const Key('forms-editor-add-question'),
         label: 'Adicionar pergunta',
@@ -457,9 +644,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                               const SizedBox(height: CoeloSpacing.space2),
                               for (final kind in groups[groupIndex].items) ...[
                                 _CatalogItem(
-                                  key: kind == FormItemKind.date
-                                      ? const Key('forms-editor-catalog-date')
-                                      : null,
+                                  key: Key('forms-editor-catalog-${kind.name}'),
                                   kind: kind,
                                   onPressed: () {
                                     Navigator.of(dialogContext).pop();
@@ -531,6 +716,16 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     });
   }
 
+  void _reorderSection(int from, int to) {
+    if (from == to) return;
+    setState(() {
+      final value = _sections.removeAt(from);
+      _sections.insert(to, value);
+      _selectedSection = to;
+      _feedback = null;
+    });
+  }
+
   Future<void> _confirmDeleteSection() async {
     if (_sections.length <= 1) return;
     final delete = await showDialog<bool>(
@@ -582,6 +777,15 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
 
   void _moveQuestion(int from, int to) {
     if (to < 0 || to >= _section.questions.length) return;
+    setState(() {
+      final value = _section.questions.removeAt(from);
+      _section.questions.insert(to, value);
+      _feedback = null;
+    });
+  }
+
+  void _reorderQuestion(int from, int to) {
+    if (from == to) return;
     setState(() {
       final value = _section.questions.removeAt(from);
       _section.questions.insert(to, value);
@@ -673,21 +877,46 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     if (mounted && _feedback != null) setState(() => _feedback = null);
   }
 
-  void _saveDraftLocally() =>
-      setState(() => _feedback = 'Rascunho mantido somente nesta sessão; nenhum dado foi enviado.');
+  void _saveDraftLocally() => setState(() {
+    final issue = _scheduleIssue;
+    _feedback = issue == null
+        ? 'Rascunho mantido somente nesta sessão ($_scheduleSummary); nenhum dado foi enviado.'
+        : 'Rascunho mantido somente nesta sessão, com agendamento incompleto: $issue Nenhum dado foi enviado.';
+  });
+
+  String? get _scheduleIssue {
+    if (!_recurring) return null;
+    if (_firstOccurrenceAt == null) return 'Informe a primeira ocorrência.';
+    if (_periodicity == _FormsEditorPeriodicity.weekly && _weekdays.isEmpty) {
+      return 'Selecione pelo menos um dia da semana.';
+    }
+    return null;
+  }
+
+  String get _scheduleSummary {
+    if (!_recurring) return 'sem recorrência';
+    final occurrence = _firstOccurrenceAt;
+    if (occurrence == null) return 'recorrência sem primeira ocorrência';
+    final days = _periodicity == _FormsEditorPeriodicity.weekly
+        ? ' em ${(_weekdays.toList()..sort()).map(_weekdayLabel).join(', ')}'
+        : '';
+    return '${_periodicityLabel(_periodicity)}$days, a partir de ${_publishDateTime(occurrence)}';
+  }
 
   void _validateLocally() {
     final issues = const FormDefinitionValidator().validate(_localDefinition());
+    final scheduleIssue = _scheduleIssue;
     setState(
-      () => _feedback = issues.isEmpty
-          ? 'Validação local concluída; a gravação remota continua indisponível.'
-          : 'Revise o título, a ordem e os campos obrigatórios antes de salvar.',
+      () => _feedback = issues.isNotEmpty
+          ? 'Revise o título, a ordem e os campos obrigatórios antes de salvar.'
+          : scheduleIssue ??
+                'Validação local concluída ($_scheduleSummary); nenhum dado foi enviado.',
     );
   }
 
   FormDefinition _localDefinition() => FormDefinition(
-    id: 'local-preview',
-    institutionId: 'local-preview',
+    id: _definition?.id ?? '',
+    institutionId: _institutionId ?? '',
     kind: FormKind.form,
     identityMode: FormIdentityMode.identified,
     responseUnit: FormResponseUnit.person,
@@ -709,13 +938,129 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                 id: _sections[sectionIndex].questions[questionIndex].id,
                 kind: _sections[sectionIndex].questions[questionIndex].kind,
                 label: _sections[sectionIndex].questions[questionIndex].label.text.trim(),
+                helpText:
+                    _sections[sectionIndex].questions[questionIndex].details.text.trim().isEmpty
+                    ? null
+                    : _sections[sectionIndex].questions[questionIndex].details.text.trim(),
                 position: questionIndex,
                 isRequired: _sections[sectionIndex].questions[questionIndex].required,
+                config: FormItemConfig(
+                  minValue: num.tryParse(
+                    _sections[sectionIndex].questions[questionIndex].minimum.text.trim().replaceAll(
+                      ',',
+                      '.',
+                    ),
+                  ),
+                  maxValue: num.tryParse(
+                    _sections[sectionIndex].questions[questionIndex].maximum.text.trim().replaceAll(
+                      ',',
+                      '.',
+                    ),
+                  ),
+                  currency:
+                      _sections[sectionIndex].questions[questionIndex].kind == FormItemKind.money
+                      ? 'BRL'
+                      : null,
+                ),
+                options: [
+                  for (
+                    var optionIndex = 0;
+                    optionIndex < _sections[sectionIndex].questions[questionIndex].options.length;
+                    optionIndex++
+                  )
+                    FormOption(
+                      id: '${_sections[sectionIndex].questions[questionIndex].id}-option-$optionIndex',
+                      label: _sections[sectionIndex]
+                          .questions[questionIndex]
+                          .options[optionIndex]
+                          .text
+                          .trim(),
+                      position: optionIndex,
+                    ),
+                ],
               ),
           ],
         ),
     ],
   );
+
+  Future<void> _saveDraft() async {
+    if (widget.development) {
+      _saveDraftLocally();
+      return;
+    }
+    final api = widget.api;
+    if (api == null || !_canEdit) return;
+    final definition = _localDefinition();
+    if (const FormDefinitionValidator().validate(definition).isNotEmpty) {
+      setState(
+        () => _feedback = 'Revise o título, a ordem e os campos obrigatórios antes de salvar.',
+      );
+      return;
+    }
+    setState(() => _saving = true);
+    try {
+      final saved = await api.saveDraft(
+        FormCommand(
+          requestId: _newRequestId(),
+          expectedVersion: _definition?.managementVersion ?? 0,
+          payload: definition,
+        ),
+      );
+      if (!mounted) return;
+      setState(() {
+        _definition = saved;
+        _institutionId = saved.institutionId;
+        _feedback = 'Rascunho salvo.';
+      });
+    } on FormApiException catch (error) {
+      if (mounted) setState(() => _feedback = error.message);
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  void _applyDefinition(FormDefinition definition) {
+    for (final section in _sections) {
+      section.dispose();
+    }
+    _sections
+      ..clear()
+      ..addAll([
+        for (final section in definition.sections)
+          _EditorSectionDraft(
+            id: section.id,
+            title: section.title,
+            description: section.description ?? '',
+            questions: [for (final item in section.items) _questionDraft(item)],
+          ),
+      ]);
+    if (_sections.isEmpty) _sections.addAll(_neutralSections());
+    _definition = definition;
+    _title.text = definition.title;
+    _selectedSection = 0;
+    _expandedQuestionId = _sections.first.questions.firstOrNull?.id;
+  }
+
+  _EditorQuestionDraft _questionDraft(FormItem item) {
+    final draft = _EditorQuestionDraft(
+      id: item.id,
+      kind: item.kind,
+      label: item.label,
+      required: item.isRequired,
+    );
+    draft
+      ..details.text = item.helpText ?? ''
+      ..minimum.text = item.config.minValue?.toString() ?? ''
+      ..maximum.text = item.config.maxValue?.toString() ?? '';
+    for (final option in draft.options) {
+      option.dispose();
+    }
+    draft.options
+      ..clear()
+      ..addAll([for (final option in item.options) TextEditingController(text: option.label)]);
+    return draft;
+  }
 
   Future<void> _openPublishDialog() async {
     final issues = const FormDefinitionValidator().validate(_localDefinition());
@@ -725,12 +1070,42 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       );
       return;
     }
+    final scheduleIssue = _scheduleIssue;
+    if (scheduleIssue != null) {
+      setState(() => _feedback = scheduleIssue);
+      return;
+    }
     final intent = await showDialog<_FormsPublishIntent>(
       context: context,
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
-      builder: (_) => const _FormsPublishDialog(),
+      builder: (_) => _FormsPublishDialog(allowSchedule: widget.development),
     );
     if (intent == null || !mounted) return;
+    if (!widget.development) {
+      final api = widget.api;
+      final definition = _definition;
+      if (api == null || definition == null || !_canPublish) return;
+      setState(() => _saving = true);
+      try {
+        final published = await api.publish(
+          FormCommand(
+            requestId: _newRequestId(),
+            expectedVersion: definition.managementVersion,
+            payload: FormIdPayload(definition.id),
+          ),
+        );
+        if (!mounted) return;
+        setState(() {
+          _definition = published;
+          _feedback = 'Formulário publicado.';
+        });
+      } on FormApiException catch (error) {
+        if (mounted) setState(() => _feedback = error.message);
+      } finally {
+        if (mounted) setState(() => _saving = false);
+      }
+      return;
+    }
     setState(() {
       _feedback = intent.scheduledAt == null
           ? 'Publicação concluída somente nesta fixture local; nenhuma persistência remota foi realizada.'
@@ -774,6 +1149,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       _title.text = '01 - ANHEMBI - FOTOS';
       _context.text = 'Todas as unidades';
       _recurring = true;
+      _periodicity = _FormsEditorPeriodicity.weekly;
+      _firstOccurrenceAt = DateTime(2026, 9, 8, 8);
+      _weekdays = {DateTime.monday, DateTime.wednesday};
     });
   }
 
@@ -861,16 +1239,40 @@ final class _FormsPublishIntent {
   final DateTime? scheduledAt;
 }
 
+enum _FormsEditorPeriodicity { daily, weekly, monthly }
+
+String _periodicityLabel(_FormsEditorPeriodicity value) => switch (value) {
+  _FormsEditorPeriodicity.daily => 'Diária',
+  _FormsEditorPeriodicity.weekly => 'Semanal',
+  _FormsEditorPeriodicity.monthly => 'Mensal',
+};
+
+String _weekdayLabel(int value) => const {
+  DateTime.monday: 'Segunda-feira',
+  DateTime.tuesday: 'Terça-feira',
+  DateTime.wednesday: 'Quarta-feira',
+  DateTime.thursday: 'Quinta-feira',
+  DateTime.friday: 'Sexta-feira',
+  DateTime.saturday: 'Sábado',
+  DateTime.sunday: 'Domingo',
+}[value]!;
+
+enum _FormsPublishMode { now, scheduled }
+
 final class _FormsPublishDialog extends StatefulWidget {
-  const _FormsPublishDialog();
+  const _FormsPublishDialog({required this.allowSchedule});
+
+  final bool allowSchedule;
 
   @override
   State<_FormsPublishDialog> createState() => _FormsPublishDialogState();
 }
 
 final class _FormsPublishDialogState extends State<_FormsPublishDialog> {
-  bool _scheduled = false;
+  var _mode = _FormsPublishMode.now;
   DateTime? _scheduledAt;
+
+  bool get _scheduled => _mode == _FormsPublishMode.scheduled;
 
   @override
   Widget build(BuildContext context) => CoeloAdminDialogShell(
@@ -879,31 +1281,28 @@ final class _FormsPublishDialogState extends State<_FormsPublishDialog> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text(
-          'Esta ação altera somente a fixture local do /dev. Nenhuma publicação ou notificação remota será executada.',
+        Text(
+          widget.allowSchedule
+              ? 'Esta ação altera somente a fixture local do /dev. Nenhuma publicação ou notificação remota será executada.'
+              : 'A publicação será executada agora pela operação autorizada.',
         ),
         const SizedBox(height: CoeloSpacing.space4),
-        Wrap(
-          spacing: CoeloSpacing.space2,
-          runSpacing: CoeloSpacing.space2,
-          children: [
-            ChoiceChip(
-              key: const Key('forms-editor-publish-now'),
-              label: const Text('Publicar agora'),
-              selected: !_scheduled,
-              onSelected: (_) => setState(() => _scheduled = false),
-            ),
-            ChoiceChip(
-              key: const Key('forms-editor-publish-scheduled'),
-              label: const Text('Agendar publicação'),
-              selected: _scheduled,
-              onSelected: (_) => setState(() => _scheduled = true),
-            ),
-          ],
+        CoeloAdminSingleSelectField<_FormsPublishMode>(
+          key: const Key('forms-editor-publish-mode'),
+          label: 'Quando publicar',
+          value: _mode,
+          options: widget.allowSchedule ? _FormsPublishMode.values : const [_FormsPublishMode.now],
+          optionLabel: (value) => switch (value) {
+            _FormsPublishMode.now => 'Publicar agora',
+            _FormsPublishMode.scheduled => 'Agendar publicação',
+          },
+          prefixIcon: Icons.publish_outlined,
+          onChanged: (value) => setState(() => _mode = value),
         ),
         if (_scheduled) ...[
           const SizedBox(height: CoeloSpacing.space4),
           CoeloDateTimeField(
+            key: const Key('forms-editor-publish-scheduled-at'),
             value: _scheduledAt,
             currentDate: DateTime(2026, 8, 31),
             firstDate: DateTime(2026, 8, 31),
@@ -939,6 +1338,14 @@ final class _FormsPublishDialogState extends State<_FormsPublishDialog> {
 
 String _publishDateTime(DateTime value) =>
     '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year} às ${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
+
+String _newRequestId() {
+  final values = List<int>.generate(16, (_) => Random.secure().nextInt(256));
+  values[6] = (values[6] & 0x0f) | 0x40;
+  values[8] = (values[8] & 0x3f) | 0x80;
+  final hex = values.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
+  return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-${hex.substring(16, 20)}-${hex.substring(20)}';
+}
 
 enum _DateRule { free, from, until, range }
 
@@ -980,6 +1387,9 @@ final class _EditorQuestionDraft {
     required this.required,
     this.branchEnabled = false,
   }) : label = TextEditingController(text: label),
+       details = TextEditingController(),
+       minimum = TextEditingController(),
+       maximum = TextEditingController(),
        options = kind == FormItemKind.singleChoice || kind == FormItemKind.multipleChoice
            ? [TextEditingController(text: 'Opção 1'), TextEditingController(text: 'Opção 2')]
            : [];
@@ -987,6 +1397,9 @@ final class _EditorQuestionDraft {
   final String id;
   final FormItemKind kind;
   final TextEditingController label;
+  final TextEditingController details;
+  final TextEditingController minimum;
+  final TextEditingController maximum;
   final List<TextEditingController> options;
   final List<_EditorQuestionDraft> branchQuestions = [];
   bool required;
@@ -1006,7 +1419,10 @@ final class _EditorQuestionDraft {
     value
       ..dateRule = dateRule
       ..from = from
-      ..until = until;
+      ..until = until
+      ..details.text = details.text
+      ..minimum.text = minimum.text
+      ..maximum.text = maximum.text;
     for (var index = 0; index < value.options.length && index < options.length; index++) {
       value.options[index].text = options[index].text;
     }
@@ -1019,6 +1435,9 @@ final class _EditorQuestionDraft {
 
   void dispose() {
     label.dispose();
+    details.dispose();
+    minimum.dispose();
+    maximum.dispose();
     for (final option in options) {
       option.dispose();
     }
@@ -1038,6 +1457,7 @@ final class _SectionNavigation extends StatelessWidget {
     required this.onDuplicate,
     required this.onDelete,
     required this.onMove,
+    required this.onReorder,
   });
 
   final bool compact;
@@ -1048,6 +1468,7 @@ final class _SectionNavigation extends StatelessWidget {
   final VoidCallback onDuplicate;
   final VoidCallback onDelete;
   final ValueChanged<int> onMove;
+  final void Function(int from, int to) onReorder;
 
   @override
   Widget build(BuildContext context) {
@@ -1093,50 +1514,61 @@ final class _SectionNavigation extends StatelessWidget {
             ],
           ),
           const SizedBox(height: CoeloSpacing.space2),
-          for (var index = 0; index < sections.length; index++) ...[
-            Semantics(
-              button: true,
-              selected: index == selectedIndex,
-              label: '${sections[index].title}, ${sections[index].questions.length} perguntas',
-              child: OutlinedButton(
-                onPressed: () => onSelected(index),
-                style: OutlinedButton.styleFrom(
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.all(CoeloSpacing.space3),
-                  foregroundColor: index == selectedIndex ? colors.primary : colors.onSurface,
-                  backgroundColor: index == selectedIndex
-                      ? colors.primaryContainer
-                      : colors.surface,
-                  side: BorderSide(
-                    color: index == selectedIndex ? colors.primary : colors.outlineVariant,
+          ReorderableListView.builder(
+            key: const Key('forms-editor-section-reorder-list'),
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            buildDefaultDragHandles: false,
+            itemCount: sections.length,
+            onReorderItem: onReorder,
+            itemBuilder: (context, index) => Padding(
+              key: ValueKey(sections[index].id),
+              padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+              child: Semantics(
+                button: true,
+                selected: index == selectedIndex,
+                label: '${sections[index].title}, ${sections[index].questions.length} perguntas',
+                child: OutlinedButton(
+                  onPressed: () => onSelected(index),
+                  style: OutlinedButton.styleFrom(
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.all(CoeloSpacing.space3),
+                    foregroundColor: index == selectedIndex ? colors.primary : colors.onSurface,
+                    backgroundColor: index == selectedIndex
+                        ? colors.primaryContainer
+                        : colors.surface,
+                    side: BorderSide(
+                      color: index == selectedIndex ? colors.primary : colors.outlineVariant,
+                    ),
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      index == selectedIndex
-                          ? Icons.radio_button_checked_rounded
-                          : Icons.drag_indicator_rounded,
-                    ),
-                    const SizedBox(width: CoeloSpacing.space2),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(sections[index].title),
-                          Text(
-                            '${sections[index].questions.length} perguntas',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ],
+                  child: Row(
+                    children: [
+                      ReorderableDragStartListener(
+                        index: index,
+                        child: const Tooltip(
+                          message: 'Arrastar seção',
+                          child: Icon(Icons.drag_indicator_rounded),
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: CoeloSpacing.space2),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(sections[index].title),
+                            Text(
+                              '${sections[index].questions.length} perguntas',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: CoeloSpacing.space2),
-          ],
+          ),
           OutlinedButton.icon(
             onPressed: onAdd,
             icon: const Icon(Icons.add_rounded),
@@ -1150,6 +1582,7 @@ final class _SectionNavigation extends StatelessWidget {
 
 final class _QuestionCard extends StatefulWidget {
   const _QuestionCard({
+    required this.index,
     required this.question,
     required this.expanded,
     required this.canMoveUp,
@@ -1161,9 +1594,9 @@ final class _QuestionCard extends StatefulWidget {
     required this.onDuplicate,
     required this.onDelete,
     required this.onChanged,
-    super.key,
   });
 
+  final int index;
   final _EditorQuestionDraft question;
   final bool expanded;
   final bool canMoveUp;
@@ -1204,7 +1637,13 @@ final class _QuestionCardState extends State<_QuestionCard> {
                     constraints.maxWidth < 620 || MediaQuery.textScalerOf(context).scale(1) > 1.3;
                 final identity = Row(
                   children: [
-                    const Icon(Icons.drag_indicator_rounded),
+                    ReorderableDragStartListener(
+                      index: widget.index,
+                      child: const Tooltip(
+                        message: 'Arrastar pergunta',
+                        child: Icon(Icons.drag_indicator_rounded),
+                      ),
+                    ),
                     const SizedBox(width: CoeloSpacing.space2),
                     _KindIcon(kind: widget.question.kind),
                     const SizedBox(width: CoeloSpacing.space2),
@@ -1311,6 +1750,52 @@ final class _QuestionCardState extends State<_QuestionCard> {
           widget.onChanged();
         },
       ),
+      if (widget.question.kind == FormItemKind.information) ...[
+        const SizedBox(height: CoeloSpacing.space3),
+        CoeloFormTextField(
+          controller: widget.question.details,
+          labelText: 'Detalhes do bloco',
+          prefixIcon: Icons.notes_rounded,
+          onChanged: (_) => widget.onChanged(),
+        ),
+      ],
+      if (_isNumericKind(widget.question.kind)) ...[
+        const SizedBox(height: CoeloSpacing.space3),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final minimum = CoeloFormTextField(
+              controller: widget.question.minimum,
+              labelText: widget.question.kind == FormItemKind.money ? 'Valor mínimo' : 'Mínimo',
+              prefixIcon: Icons.vertical_align_bottom_rounded,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+              onChanged: (_) => widget.onChanged(),
+            );
+            final maximum = CoeloFormTextField(
+              controller: widget.question.maximum,
+              labelText: widget.question.kind == FormItemKind.money ? 'Valor máximo' : 'Máximo',
+              prefixIcon: Icons.vertical_align_top_rounded,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+              onChanged: (_) => widget.onChanged(),
+            );
+            if (constraints.maxWidth < 520) {
+              return Column(
+                children: [
+                  minimum,
+                  const SizedBox(height: CoeloSpacing.space3),
+                  maximum,
+                ],
+              );
+            }
+            return Row(
+              children: [
+                Expanded(child: minimum),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(child: maximum),
+              ],
+            );
+          },
+        ),
+      ],
       if (widget.question.kind != FormItemKind.information) ...[
         const SizedBox(height: CoeloSpacing.space3),
         CoeloAdminToggleField(
@@ -1331,16 +1816,31 @@ final class _QuestionCardState extends State<_QuestionCard> {
         const SizedBox(height: CoeloSpacing.space3),
         Text('Opções', style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: CoeloSpacing.space2),
-        for (var index = 0; index < widget.question.options.length; index++) ...[
-          CoeloFormTextField(
-            controller: widget.question.options[index],
-            labelText: 'Opção ${index + 1}',
-            prefixIcon: Icons.radio_button_unchecked_rounded,
-            onChanged: (_) => widget.onChanged(),
+        ReorderableListView.builder(
+          key: ValueKey('forms-editor-options-${widget.question.id}'),
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: widget.question.options.length,
+          onReorderItem: (from, to) {
+            setState(() {
+              final option = widget.question.options.removeAt(from);
+              widget.question.options.insert(to, option);
+            });
+            widget.onChanged();
+          },
+          itemBuilder: (context, index) => Padding(
+            key: ObjectKey(widget.question.options[index]),
+            padding: EdgeInsets.only(
+              bottom: index < widget.question.options.length - 1 ? CoeloSpacing.space2 : 0,
+            ),
+            child: CoeloFormTextField(
+              controller: widget.question.options[index],
+              labelText: 'Opção ${index + 1}',
+              prefixIcon: Icons.radio_button_unchecked_rounded,
+              onChanged: (_) => widget.onChanged(),
+            ),
           ),
-          if (index < widget.question.options.length - 1)
-            const SizedBox(height: CoeloSpacing.space2),
-        ],
+        ),
       ],
       if (_canBranch(widget.question.kind)) ...[
         const SizedBox(height: CoeloSpacing.space3),
@@ -1622,6 +2122,9 @@ const _catalogGroups = [
   (label: 'Mídias', items: [FormItemKind.photo, FormItemKind.gallery]),
   (label: 'Estrutura', items: [FormItemKind.information]),
 ];
+
+bool _isNumericKind(FormItemKind kind) =>
+    kind == FormItemKind.integer || kind == FormItemKind.decimal || kind == FormItemKind.money;
 
 String _kindLabel(FormItemKind kind) => switch (kind) {
   FormItemKind.shortText => 'Texto curto',

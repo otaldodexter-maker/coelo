@@ -28,6 +28,21 @@ void main() {
     expect(schedules, 1);
   });
 
+  testWidgets('exposes responses as a separate read-only navigation action', (tester) async {
+    var responses = 0;
+    await _pump(tester, api: null, canManage: false, onResponses: () => responses++);
+
+    await tester.tap(find.byTooltip('Ações do formulário Pesquisa das famílias'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Ver respostas'), findsOneWidget);
+    expect(find.text('Duplicar'), findsNothing);
+    expect(find.text('Arquivar'), findsNothing);
+    await tester.tap(find.text('Ver respostas'));
+    await tester.pumpAndSettle();
+    expect(responses, 1);
+  });
+
   testWidgets('uses the approved inset zero-halo flyout variant', (tester) async {
     await _pump(tester, api: _LifecycleApi());
 
@@ -142,6 +157,7 @@ Future<void> _pump(
   VoidCallback? onCompleted,
   VoidCallback? onEdit,
   VoidCallback? onManageSchedules,
+  VoidCallback? onResponses,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -159,6 +175,7 @@ Future<void> _pump(
             onCompleted: onCompleted,
             onEdit: onEdit,
             onManageSchedules: onManageSchedules,
+            onResponses: onResponses,
           ),
         ),
       ),

@@ -3,13 +3,13 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
-import '../data/agenda_prototype_store.dart';
+import '../domain/agenda_repository.dart';
 import '../domain/agenda_models.dart';
 
 enum _AgendaPermissionsAccess { available, unavailable, unauthorized }
 
 final class AgendaPermissionsPage extends StatelessWidget {
-  const AgendaPermissionsPage({required AgendaPrototypeStore store, super.key})
+  const AgendaPermissionsPage({required AgendaRepository store, super.key})
     : _store = store,
       _access = _AgendaPermissionsAccess.available;
 
@@ -21,10 +21,10 @@ final class AgendaPermissionsPage extends StatelessWidget {
     : _store = null,
       _access = _AgendaPermissionsAccess.unauthorized;
 
-  final AgendaPrototypeStore? _store;
+  final AgendaRepository? _store;
   final _AgendaPermissionsAccess _access;
 
-  AgendaPrototypeStore get store => _store!;
+  AgendaRepository get store => _store!;
 
   @override
   Widget build(BuildContext context) => switch (_access) {
@@ -108,7 +108,7 @@ final class _PermissionsState extends StatelessWidget {
 
 final class _PermissionsContent extends StatelessWidget {
   const _PermissionsContent({required this.store});
-  final AgendaPrototypeStore store;
+  final AgendaRepository store;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -149,7 +149,7 @@ final class _PermissionsContent extends StatelessWidget {
 
 final class _PermissionMatrix extends StatelessWidget {
   const _PermissionMatrix({required this.store});
-  final AgendaPrototypeStore store;
+  final AgendaRepository store;
 
   Widget _cell(Widget child) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
@@ -208,7 +208,7 @@ final class _PermissionMatrix extends StatelessWidget {
 
 final class _PermissionCard extends StatelessWidget {
   const _PermissionCard({required this.store, required this.node});
-  final AgendaPrototypeStore store;
+  final AgendaRepository store;
   final AgendaContext node;
 
   @override
@@ -246,7 +246,7 @@ final class _PermissionResolutionView extends StatelessWidget {
     this.compact = false,
   });
 
-  final AgendaPrototypeStore store;
+  final AgendaRepository store;
   final AgendaContext node;
   final AgendaCapability capability;
   final bool compact;

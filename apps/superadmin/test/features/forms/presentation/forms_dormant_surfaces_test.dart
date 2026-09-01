@@ -25,9 +25,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Novo formulário'), findsOneWidget);
+    expect(find.text('Criar formulário'), findsOneWidget);
     expect(find.byTooltip('Ações do formulário Pesquisa'), findsOneWidget);
-    await tester.tap(find.text('Novo formulário'));
+    await tester.tap(find.text('Criar formulário'));
     expect(createRequested, isTrue);
     expect(api.calls, ['listDirectory']);
   });

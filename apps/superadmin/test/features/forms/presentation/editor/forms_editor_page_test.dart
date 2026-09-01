@@ -46,6 +46,8 @@ void main() {
         .widgetList<TextFormField>(find.byType(TextFormField))
         .firstWhere((field) => field.controller != null);
     expect(titleField.controller!.text, 'Enquete rápida sobre transporte');
+    expect(find.byKey(const Key('forms-editor-periodicity')), findsOneWidget);
+    expect(find.byKey(const Key('forms-editor-first-occurrence')), findsOneWidget);
   });
 
   testWidgets('keeps preview hidden until requested and owns the canonical footer', (tester) async {
@@ -129,6 +131,10 @@ void main() {
     await tester.pumpWidget(_app(const FormsEditorPage.development()));
 
     expect(find.byKey(const Key('forms-editor-section-list')), findsOneWidget);
+    expect(find.byKey(const Key('forms-editor-section-reorder-list')), findsOneWidget);
+    expect(find.byKey(const Key('forms-editor-question-reorder-list')), findsOneWidget);
+    expect(find.byTooltip('Arrastar seção'), findsWidgets);
+    expect(find.byTooltip('Arrastar pergunta'), findsWidgets);
     expect(find.byTooltip('Duplicar seção'), findsOneWidget);
     expect(find.byTooltip('Excluir seção'), findsOneWidget);
     expect(find.byTooltip('Mover pergunta para cima'), findsWidgets);
@@ -158,6 +164,27 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('configures information details and numeric bounds', (tester) async {
+    await tester.pumpWidget(_app(const FormsEditorPage.development()));
+
+    await tester.ensureVisible(find.byKey(const Key('forms-editor-add-question')));
+    await tester.tap(find.byKey(const Key('forms-editor-add-question')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('forms-editor-catalog-information')));
+    await tester.tap(find.byKey(const Key('forms-editor-catalog-information')));
+    await tester.pumpAndSettle();
+    expect(find.text('Detalhes do bloco'), findsOneWidget);
+
+    await tester.ensureVisible(find.byKey(const Key('forms-editor-add-question')));
+    await tester.tap(find.byKey(const Key('forms-editor-add-question')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('forms-editor-catalog-money')));
+    await tester.tap(find.byKey(const Key('forms-editor-catalog-money')));
+    await tester.pumpAndSettle();
+    expect(find.text('Valor mínimo'), findsOneWidget);
+    expect(find.text('Valor máximo'), findsOneWidget);
+  });
+
   testWidgets('publishes now or schedules only inside the development fixture', (tester) async {
     await tester.pumpWidget(_app(const FormsEditorPage.development()));
 
@@ -165,6 +192,8 @@ void main() {
     await tester.tap(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'));
     await tester.pumpAndSettle();
     expect(find.text('Publicar formulário'), findsOneWidget);
+    expect(find.byKey(const Key('forms-editor-publish-mode')), findsOneWidget);
+    expect(find.byType(ChoiceChip), findsNothing);
     expect(find.text('Publicar agora'), findsWidgets);
     await tester.tap(find.byKey(const Key('forms-editor-confirm-publish')));
     await tester.pumpAndSettle();
@@ -173,20 +202,57 @@ void main() {
 
     await tester.tap(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('forms-editor-publish-scheduled')));
+    await tester.tap(find.byKey(const Key('forms-editor-publish-mode')));
     await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Agendar publicação'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('forms-editor-publish-scheduled-at')), findsOneWidget);
     expect(
       tester.widget<FilledButton>(find.byKey(const Key('forms-editor-confirm-publish'))).onPressed,
       isNull,
     );
     expect(find.textContaining('Escolha a data e a hora'), findsOneWidget);
-    final dateField = tester.widget<CoeloDateTimeField>(find.byType(CoeloDateTimeField));
+    final dateField = tester.widget<CoeloDateTimeField>(
+      find.byKey(const Key('forms-editor-publish-scheduled-at')),
+    );
     dateField.onChanged(DateTime(2026, 9, 12, 8, 30));
     await tester.pump();
     await tester.tap(find.byKey(const Key('forms-editor-confirm-publish')));
     await tester.pumpAndSettle();
     expect(find.textContaining('12/09/2026 às 08:30'), findsOneWidget);
     expect(find.textContaining('nenhuma persistência remota'), findsOneWidget);
+  });
+
+  testWidgets('recorrência incompleta bloqueia publicação e permanece explícita no rascunho', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_app(const FormsEditorPage.development()));
+
+    await tester.ensureVisible(find.byKey(const Key('forms-editor-weekdays')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('forms-editor-weekdays')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(TextButton, 'Limpar'));
+    await tester.pump();
+    await tester.tap(find.widgetWithText(FilledButton, 'Aplicar'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'));
+    await tester.pump();
+    expect(find.text('Selecione pelo menos um dia da semana.'), findsOneWidget);
+    expect(find.text('Publicar formulário'), findsNothing);
+
+    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Salvar formulário'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Salvar formulário'));
+    await tester.pump();
+    expect(find.text('Selecione pelo menos um dia da semana.'), findsOneWidget);
+
+    await tester.ensureVisible(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+    await tester.pump();
+    expect(find.textContaining('agendamento incompleto'), findsOneWidget);
+    expect(find.textContaining('Nenhum dado foi enviado'), findsOneWidget);
   });
 
   testWidgets('production exposes publication context without enabling its local flow', (

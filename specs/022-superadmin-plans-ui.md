@@ -1,6 +1,6 @@
 ---
 source: "Plano aprovado pelo Owner Coelo em 2026-08-05; docs/product/prd-superadmin.md; docs/data/data-model.md; decisions/0016-unit-type-and-plan-inheritance.md; specs/018-profiles-permissions-superadmin.md"
-status: "approved-for-local-prototype"
+status: "approved"
 generated_at: "2026-08-05"
 ---
 
@@ -25,10 +25,13 @@ produtivo.
 ## Fora de escopo
 
 - Preço, moeda, cobrança, pagamento ou assinatura automática.
-- Supabase, migrations, RLS, policies, RPCs e promoção para rota produtiva.
+- Cobrança automática e integrações financeiras. A promoção produtiva manual é
+  regida por `specs/051-superadmin-plans-production.md`.
 - Enforcement de limites no cliente.
 - Limite de responsáveis por criança.
-- Importação ou exportação de arquivos.
+- Processamento real de importação ou exportação de arquivos; as opções devem
+  permanecer visíveis no diretório e comunicar indisponibilidade até existir
+  gateway produtivo, sem callback vazio ou sucesso falso.
 
 ## Contrato de domínio
 
@@ -65,6 +68,8 @@ produtivo.
 - Criar e editar salvam somente na etapa Revisão.
 - Código fica imutável na edição.
 - Instituições vinculadas não oferecem mutação de subscription.
-- Não existem controles falsos de arquivos, preço ou autorização.
+- As opções de arquivos são explícitas e honestamente indisponíveis enquanto o
+  backend não existe; não há callback vazio, download fictício, preço ou
+  autorização simulada.
 - Testes, goldens e análise da feature passam sem localhost; o validador visual
   não aponta violações em arquivos de Planos.

@@ -23,6 +23,7 @@ void main() {
     '/forms/form-1/occurrences/occurrence-1/respond',
     '/forms/form-1/responses',
     '/forms/form-1/responses/response-1',
+    '/forms/form-1/files',
   ];
   const developmentOperationPaths = [
     '/dev/forms/form-1/test',
@@ -33,7 +34,7 @@ void main() {
   ];
   const redirectedProductionPaths = <String>{};
 
-  testWidgets('production routes preserve composition and remain fail-closed with zero API calls', (
+  testWidgets('production routes use authorized reads while mutations remain fail-closed', (
     tester,
   ) async {
     final session = SuperadminSession()..signInForTesting();
@@ -53,6 +54,7 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
 
     for (final path in productionPaths) {
+      api.calls = 0;
       router.go(path);
       await tester.pumpAndSettle();
 
@@ -66,9 +68,27 @@ void main() {
       } else {
         expect(router.routeInformationProvider.value.uri.path, path, reason: path);
         expect(find.byType(SuperadminErrorScreen), findsNothing, reason: path);
-        expect(find.textContaining('indisponível'), findsWidgets, reason: path);
+        final productionSurface = path.endsWith('/monitor')
+            ? 'monitor'
+            : path.endsWith('/responses')
+            ? 'responses'
+            : path.endsWith('response-1')
+            ? 'responseDetail'
+            : path.endsWith('/files')
+            ? 'files'
+            : null;
+        if (productionSurface == null) {
+          expect(find.textContaining('indispon'), findsWidgets, reason: path);
+        } else {
+          expect(find.byKey(Key('forms-operations-production-$productionSurface')), findsOneWidget);
+        }
       }
-      expect(api.calls, 0, reason: path);
+      final readsFromApi =
+          path.endsWith('/monitor') ||
+          path.endsWith('/responses') ||
+          path.endsWith('response-1') ||
+          path.endsWith('/files');
+      expect(api.calls, readsFromApi ? 1 : 0, reason: path);
     }
   });
 
@@ -268,7 +288,7 @@ void main() {
 
     expect(find.byType(CoeloAdminDialogShell), findsOneWidget);
     expect(
-      find.text('A integração de agendamentos não está disponível neste ambiente.'),
+      find.text('A fonte autorizada para distribuir formulários não está disponível.'),
       findsOneWidget,
     );
     expect(
@@ -304,6 +324,46 @@ Future<void> _expectInputsInsideViewport(
 
 final class _TripwireFormsApi implements FormsApi {
   var calls = 0;
+
+  @override
+  Future<FormMonitorProjection> getMonitor(FormMonitorQuery query) async {
+    calls++;
+    return const FormMonitorProjection(
+      eligibleCount: 4,
+      respondedCount: 2,
+      pendingCount: 2,
+      isAnonymous: false,
+    );
+  }
+
+  @override
+  Future<FormCursorPage<FormResponseSummary>> listResponses(FormResponsesQuery query) async {
+    calls++;
+    return FormCursorPage(items: const [], nextCursor: null);
+  }
+
+  @override
+  Future<FormResponseDetail> getResponseDetail(String responseId) async {
+    calls++;
+    return FormResponseDetail(
+      summary: FormResponseSummary(
+        id: responseId,
+        occurrenceId: 'occurrence-1',
+        formVersionId: 'version-1',
+      ),
+      answers: const {},
+    );
+  }
+
+  @override
+  Future<FormCursorPage<FormFileJob>> listFileJobs({
+    required String formId,
+    String? cursor,
+    int limit = 25,
+  }) async {
+    calls++;
+    return FormCursorPage(items: const [], nextCursor: null);
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) {

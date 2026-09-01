@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -5,9 +6,11 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
-import '../data/agenda_prototype_store.dart';
 import '../domain/agenda_models.dart';
+import '../domain/agenda_repository.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
+import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
 import 'agenda_reservation_conflict_dialog.dart';
 
 enum _AgendaEventsDisplay { cards, table }
@@ -25,7 +28,7 @@ final class AgendaEventsPage extends StatefulWidget {
     super.key,
   });
 
-  final AgendaPrototypeStore store;
+  final AgendaRepository store;
   final VoidCallback onCreate;
   final ValueChanged<String> onOpen;
   final ValueChanged<String> onEdit;
@@ -43,6 +46,17 @@ final class _AgendaEventsPageState extends State<AgendaEventsPage> {
   int _pageSize = 11;
 
   @override
+  void initState() {
+    super.initState();
+    unawaited(_loadEvents());
+  }
+
+  Future<void> _loadEvents() => widget.store.loadEvents(
+    from: widget.store.referenceDate.subtract(const Duration(days: 30)),
+    to: widget.store.referenceDate.add(const Duration(days: 370)),
+  );
+
+  @override
   void didUpdateWidget(covariant AgendaEventsPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (identical(oldWidget.store, widget.store)) return;
@@ -51,6 +65,7 @@ final class _AgendaEventsPageState extends State<AgendaEventsPage> {
     _status = null;
     _page = 1;
     _pageSize = _display == _AgendaEventsDisplay.cards ? 11 : 8;
+    unawaited(_loadEvents());
   }
 
   @override
@@ -135,6 +150,7 @@ final class _AgendaEventsPageState extends State<AgendaEventsPage> {
                 ),
               ],
               actions: [
+                const SuperadminPlaceholderFileActions(resourceLabel: 'eventos da agenda'),
                 SuperadminDirectoryViewToggle<_AgendaEventsTableView>(
                   key: const Key('agenda-events-display-toggle'),
                   cardsKey: const Key('agenda-events-view-cards'),
@@ -200,7 +216,8 @@ final class _AgendaEventsPageState extends State<AgendaEventsPage> {
             ],
             if (visible.isNotEmpty) ...[
               const SizedBox(height: CoeloSpacing.space4),
-              Center(
+              SuperadminListingPaginationFooter(
+                horizontalPadding: 0,
                 child: CoeloAdminPagination(
                   currentPage: safePage,
                   totalPages: pages,
@@ -246,11 +263,11 @@ final class _AgendaEventsPageState extends State<AgendaEventsPage> {
     final result = action == _AgendaLifecycleAction.restore
         ? await _restoreWithConflictOverride(context, widget.store, item, actorName: 'Owner Coelo')
         : switch (action) {
-            _AgendaLifecycleAction.cancel => widget.store.cancelItem(
+            _AgendaLifecycleAction.cancel => await widget.store.cancelItem(
               item.id,
               actorName: 'Owner Coelo',
             ),
-            _AgendaLifecycleAction.deleteDraft => widget.store.deleteDraft(item.id),
+            _AgendaLifecycleAction.deleteDraft => await widget.store.deleteDraft(item.id),
             _AgendaLifecycleAction.restore => throw StateError('restore handled above'),
           };
     if (!mounted) return;
@@ -620,7 +637,7 @@ final class AgendaEventDetailPage extends StatefulWidget {
     super.key,
   });
 
-  final AgendaPrototypeStore store;
+  final AgendaRepository store;
   final String eventId;
   final VoidCallback onBack;
   final VoidCallback onEdit;
@@ -632,6 +649,12 @@ final class AgendaEventDetailPage extends StatefulWidget {
 
 final class _AgendaEventDetailPageState extends State<AgendaEventDetailPage> {
   static const _actorName = 'Owner Coelo';
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(widget.store.loadItem(widget.eventId));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -841,11 +864,11 @@ final class _AgendaEventDetailPageState extends State<AgendaEventDetailPage> {
     final result = action == _AgendaLifecycleAction.restore
         ? await _restoreWithConflictOverride(context, widget.store, item, actorName: _actorName)
         : switch (action) {
-            _AgendaLifecycleAction.cancel => widget.store.cancelItem(
+            _AgendaLifecycleAction.cancel => await widget.store.cancelItem(
               item.id,
               actorName: _actorName,
             ),
-            _AgendaLifecycleAction.deleteDraft => widget.store.deleteDraft(item.id),
+            _AgendaLifecycleAction.deleteDraft => await widget.store.deleteDraft(item.id),
             _AgendaLifecycleAction.restore => throw StateError('restore handled above'),
           };
     if (!mounted) return;
@@ -889,21 +912,26 @@ enum _AgendaLifecycleAction { cancel, restore, deleteDraft }
 
 Future<AgendaMutationResult> _restoreWithConflictOverride(
   BuildContext context,
-  AgendaPrototypeStore store,
+  AgendaRepository store,
   AgendaItem item, {
   required String actorName,
 }) async {
   final actorContextId = item.audience.institutionId;
-  var result = store.restoreItem(item.id, actorName: actorName, actorContextId: actorContextId);
+  var result = await store.restoreItem(
+    item.id,
+    actorName: actorName,
+    actorContextId: actorContextId,
+  );
   if (result != AgendaMutationResult.reservationConflict ||
       !store
           .resolveCapability(actorContextId, AgendaCapability.overrideReservationConflict)
           .isAllowed) {
     return result;
   }
+  if (!context.mounted) return AgendaMutationResult.reservationConflict;
   final reason = await showAgendaReservationConflictOverrideDialog(context);
   if (!context.mounted || reason == null) return AgendaMutationResult.reservationConflict;
-  result = store.restoreItem(
+  result = await store.restoreItem(
     item.id,
     actorName: actorName,
     actorContextId: actorContextId,
@@ -1069,6 +1097,10 @@ String _mutationFeedback(_AgendaLifecycleAction action, AgendaMutationResult res
       'Há um conflito de horário. Nenhuma alteração foi aplicada.',
     AgendaMutationResult.reasonRequired =>
       'Informe um motivo para continuar. Nenhuma alteração foi aplicada.',
+    AgendaMutationResult.conflict =>
+      'O item foi alterado em outra sessão. Recarregue antes de tentar novamente.',
+    AgendaMutationResult.unavailable =>
+      'Não foi possível confirmar a alteração agora. Nenhuma mudança foi aplicada.',
     AgendaMutationResult.success => throw StateError('success handled above'),
   };
 }

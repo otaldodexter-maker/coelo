@@ -27,6 +27,18 @@ export async function recordAuthorizedFailureBestEffort(
   }
 }
 
+export async function cleanupNewUploadBestEffort(
+  path: string | null,
+  remove: (path: string) => Promise<{ error: unknown }>,
+) {
+  if (!path) return true;
+  try {
+    return !(await remove(path)).error;
+  } catch {
+    return false;
+  }
+}
+
 function cors(origin: string | null): HeadersInit {
   const configured = (Deno.env.get("COELO_ALLOWED_ORIGINS") ?? "").split(",")
     .map((item) => item.trim()).filter(Boolean);
@@ -202,6 +214,7 @@ export async function handler(request: Request) {
     return response(origin, 401, { error: "authentication_required" });
   }
   let authorizedFailureJobId: string | null = null;
+  let newlyUploadedPath: string | null = null;
   try {
     const url = Deno.env.get("SUPABASE_URL")!;
     const anon = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -229,10 +242,18 @@ export async function handler(request: Request) {
         return response(origin, 400, { error: "invalid_file_contract" });
       }
       const bytes = new Uint8Array(await request.arrayBuffer());
-      if (!bytes.length || bytes.length > Number(upload.max_bytes)) {
+      if (Number(upload.max_bytes) !== MAX_BYTES) {
+        throw new Error("invalid_file_contract");
+      }
+      if (!bytes.length || bytes.length > MAX_BYTES) {
         return response(origin, 400, { error: "invalid_file_size" });
       }
+      const format = mime === "text/csv" ? "csv" : "xlsx";
       const path = String(upload.path ?? "");
+      const expectedPath = `imports/units/${uploadJobId}/source.${format}`;
+      if (upload.bucket !== BUCKET || path !== expectedPath) {
+        throw new Error("invalid_storage_contract");
+      }
       const stored = await admin.storage.from(BUCKET).upload(path, bytes, {
         contentType: mime,
         upsert: false,
@@ -248,11 +269,12 @@ export async function handler(request: Request) {
           await checksum(new Uint8Array(await current.data.arrayBuffer())) !==
             await checksum(bytes)
         ) throw new Error("idempotency_file_mismatch");
+      } else {
+        newlyUploadedPath = path;
       }
-      const format = mime === "text/csv" ? "csv" : "xlsx";
       const rows = format === "csv" ? csv(bytes) : xlsx(bytes);
       if (!rows.length || rows.length > MAX_ROWS) {
-        return response(origin, 400, { error: "invalid_row_count" });
+        throw new Error("invalid_row_count");
       }
       const preview = await admin.rpc(
         "superadmin_preview_unit_import_from_edge",
@@ -268,6 +290,7 @@ export async function handler(request: Request) {
         },
       );
       if (preview.error) throw new Error("preview_failed");
+      newlyUploadedPath = null;
       return response(origin, 200, preview.data as Json);
     }
     const body = await request.json() as Json;
@@ -339,9 +362,21 @@ export async function handler(request: Request) {
     }
     return response(origin, 400, { error: "invalid_request" });
   } catch (error) {
-    const code = error instanceof Error
+    let code = error instanceof Error
       ? error.message.split(":")[0]
       : "worker_error";
+    if (newlyUploadedPath) {
+      const cleaned = await cleanupNewUploadBestEffort(
+        newlyUploadedPath,
+        async (path) => {
+          const admin = createClient(Deno.env.get("SUPABASE_URL")!, secret(), {
+            auth: { persistSession: false },
+          });
+          return await admin.storage.from(BUCKET).remove([path]);
+        },
+      );
+      if (!cleaned) code = `${code}_cleanup_failed`.slice(0, 80);
+    }
     await recordAuthorizedFailureBestEffort(
       authorizedFailureJobId,
       async (jobId) => {

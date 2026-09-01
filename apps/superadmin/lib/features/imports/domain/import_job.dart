@@ -150,6 +150,7 @@ final class ImportJob {
     required this.progress,
     required this.actor,
     required this.createdAt,
+    this.sourceFileName,
   });
 
   final String id;
@@ -165,8 +166,17 @@ final class ImportJob {
   final int progress;
   final String actor;
   final DateTime createdAt;
+  final String? sourceFileName;
 
-  ImportJob copyWith({ImportJobStatus? status, int? progress, ImportResult? result}) => ImportJob(
+  String get displayFileName =>
+      sourceFileName?.trim().isNotEmpty == true ? sourceFileName!.trim() : file.fileName;
+
+  ImportJob copyWith({
+    ImportJobStatus? status,
+    int? progress,
+    ImportResult? result,
+    String? sourceFileName,
+  }) => ImportJob(
     id: id,
     entity: entity,
     context: context,
@@ -180,5 +190,6 @@ final class ImportJob {
     progress: progress ?? this.progress,
     actor: actor,
     createdAt: createdAt,
+    sourceFileName: sourceFileName ?? this.sourceFileName,
   );
 }

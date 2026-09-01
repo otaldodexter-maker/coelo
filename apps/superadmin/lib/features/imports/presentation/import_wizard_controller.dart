@@ -7,7 +7,7 @@ import '../domain/import_job.dart';
 import '../domain/import_repository.dart';
 
 final class ImportWizardController extends ChangeNotifier {
-  static const supportedEntities = <ImportEntity>{ImportEntity.units};
+  static const productionSupportedEntities = <ImportEntity>{ImportEntity.units};
   static const catalogEntities = <ImportEntity>[
     ImportEntity.institutions,
     ImportEntity.units,
@@ -48,6 +48,10 @@ final class ImportWizardController extends ChangeNotifier {
   Timer? _timer;
   var _disposed = false;
   var _generation = 0;
+
+  Set<ImportEntity> get supportedEntities => repository is ImportExecutionCapabilities
+      ? (repository as ImportExecutionCapabilities).supportedImportEntities
+      : productionSupportedEntities;
 
   Map<String, String> get mapping => job?.mapping ?? const {};
   bool get executionAvailable => supportedEntities.contains(entity);

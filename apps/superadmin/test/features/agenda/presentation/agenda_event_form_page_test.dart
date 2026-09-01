@@ -50,11 +50,14 @@ void main() {
     expect(timeZone.value, 'America/Sao_Paulo');
     expect(timeZone.options, containsAll(['America/Sao_Paulo', 'America/Manaus', 'UTC']));
 
-    final allDay = tester.widget<SwitchListTile>(find.byKey(const Key('agenda-event-all-day')));
+    final allDay = tester.widget<CoeloAdminToggleField>(
+      find.byKey(const Key('agenda-event-all-day')),
+    );
     allDay.onChanged!(true);
     await tester.pump();
     expect(find.byType(CoeloDateTimeField), findsNothing);
     expect(find.byType(CoeloDateRangeField), findsOneWidget);
+    expect(find.byKey(const Key('agenda-event-location-map')), findsOneWidget);
 
     final recurrence = tester.widget<CoeloAdminSingleSelectField<String>>(
       find.byKey(const Key('agenda-event-recurrence')),
@@ -64,6 +67,76 @@ void main() {
     await tester.pump();
     expect(find.byKey(const Key('agenda-event-recurrence-end')), findsOneWidget);
     expect(find.text('Editar uma ocorrência, esta e próximas ou toda a série'), findsOneWidget);
+  });
+
+  testWidgets('dados básicos permitem adicionar pergunta contextual ao evento', (tester) async {
+    final prototype = store();
+    final saved = <String>[];
+    await tester.pumpWidget(_app(store: prototype, onSaved: saved.add));
+
+    expect(find.textContaining('Não solicite dados sensíveis'), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const Key('agenda-event-add-question')));
+    await tester.tap(find.byKey(const Key('agenda-event-add-question')));
+    await tester.pump();
+    await tester.enterText(
+      find.byKey(const Key('agenda-event-question-0')),
+      'A criança participará do passeio?',
+    );
+    tester
+        .widget<CoeloAdminSingleSelectField<AgendaQuestionType>>(
+          find.byKey(const Key('agenda-event-question-type-0')),
+        )
+        .onChanged(AgendaQuestionType.yesNo);
+    await tester.pump();
+    await _goToReview(tester);
+    await tester.tap(find.byKey(const Key('agenda-wizard-save-draft')));
+    await tester.pump();
+
+    expect(saved, hasLength(1));
+    final question = prototype.itemById(saved.single)!.questions.single;
+    expect(question.title, 'A criança participará do passeio?');
+    expect(question.type, AgendaQuestionType.yesNo);
+  });
+
+  testWidgets('pergunta vazia bloqueia salvamento e remoção não reutiliza identificador', (
+    tester,
+  ) async {
+    final prototype = store();
+    final saved = <String>[];
+    await tester.pumpWidget(_app(store: prototype, onSaved: saved.add));
+
+    await tester.ensureVisible(find.byKey(const Key('agenda-event-add-question')));
+    await tester.tap(find.byKey(const Key('agenda-event-add-question')));
+    await tester.pump();
+    await _goToReview(tester);
+    await tester.tap(find.byKey(const Key('agenda-wizard-save-draft')));
+    await tester.pump();
+
+    expect(
+      find.text('Preencha o título de todas as perguntas ou remova as perguntas vazias.'),
+      findsOneWidget,
+    );
+    expect(saved, isEmpty);
+
+    for (var index = 0; index < 3; index++) {
+      await tester.tap(find.byKey(const Key('agenda-wizard-previous')));
+      await tester.pump();
+    }
+    await tester.ensureVisible(find.byTooltip('Remover pergunta 1'));
+    await tester.tap(find.byTooltip('Remover pergunta 1'));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('agenda-event-add-question')));
+    await tester.pump();
+    await tester.enterText(
+      find.byKey(const Key('agenda-event-question-0')),
+      'A família precisa de apoio de acessibilidade?',
+    );
+    await _goToReview(tester);
+    await tester.tap(find.byKey(const Key('agenda-wizard-save-draft')));
+    await tester.pump();
+
+    expect(saved, hasLength(1));
+    expect(prototype.itemById(saved.single)!.questions.single.id, 'question-2');
   });
 
   testWidgets('respostas, política de responsáveis e lembretes seguem o contrato', (tester) async {
@@ -92,7 +165,8 @@ void main() {
       '1 hora antes',
       'Personalizado',
     ]);
-    expect(find.textContaining('sininho e push'), findsOneWidget);
+    expect(find.textContaining('sem canais'), findsNothing);
+    expect(find.textContaining('canais serão configurados pela plataforma'), findsOneWidget);
   });
 
   testWidgets('sem capability salva rascunho e solicita publicação', (tester) async {

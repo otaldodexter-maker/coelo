@@ -1,8 +1,7 @@
-import 'package:flutter/foundation.dart';
-
 import '../domain/agenda_models.dart';
+import '../domain/agenda_repository.dart';
 
-final class AgendaPrototypeStore extends ChangeNotifier {
+final class AgendaPrototypeStore extends AgendaRepository {
   AgendaPrototypeStore.empty({DateTime Function()? clock}) : _clock = clock ?? DateTime.now {
     _contexts = const [];
     _items = const [];
@@ -24,15 +23,49 @@ final class AgendaPrototypeStore extends ChangeNotifier {
   late List<GuardianBirthdayRequest> _requests;
   late List<AgendaBirthday> _birthdays;
   late List<AgendaPublicationRequest> _publicationRequests;
+  String? _lastSavedItemId;
+  @override
+  bool get isLoading => false;
+  @override
+  String? get errorMessage => null;
+  @override
+  String? get lastSavedItemId => _lastSavedItemId;
+  @override
+  bool get supportsOccurrenceScopedEdits => true;
+  @override
   DateTime get referenceDate => DateTime(2026, 8, 3);
+  @override
   List<AgendaItem> get items => List.unmodifiable(_items);
+  @override
   List<AgendaContext> get contexts => List.unmodifiable(_contexts);
+  @override
   List<GuardianBirthdayRequest> get requests => List.unmodifiable(_requests);
+  @override
   List<AgendaPublicationRequest> get publicationRequests => List.unmodifiable(_publicationRequests);
+  @override
   AgendaItem? itemById(String id) => _firstOrNull(_items.where((e) => e.id == id));
+  @override
   GuardianBirthdayRequest? requestById(String id) =>
       _firstOrNull(_requests.where((e) => e.id == id));
 
+  @override
+  Future<void> loadEvents({
+    required DateTime from,
+    required DateTime to,
+    String? institutionId,
+    String search = '',
+  }) async {}
+
+  @override
+  Future<void> loadContexts() async {}
+
+  @override
+  Future<void> loadItem(String id) async {}
+
+  @override
+  Future<void> loadRequests() async {}
+
+  @override
   AgendaMutationResult requestPublication(String itemId, {required String requestedBy}) {
     final item = itemById(itemId);
     if (item == null) return AgendaMutationResult.notFound;
@@ -60,6 +93,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     return AgendaMutationResult.success;
   }
 
+  @override
   AgendaMutationResult decidePublicationRequest({
     required String requestId,
     required bool approve,
@@ -93,6 +127,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     return AgendaMutationResult.success;
   }
 
+  @override
   AgendaMutationResult cancelItem(String id, {required String actorName}) {
     final item = itemById(id);
     if (item == null) return AgendaMutationResult.notFound;
@@ -116,6 +151,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     return AgendaMutationResult.success;
   }
 
+  @override
   AgendaMutationResult restoreItem(
     String id, {
     required String actorName,
@@ -174,6 +210,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     return AgendaMutationResult.success;
   }
 
+  @override
   AgendaMutationResult deleteDraft(String id) {
     final index = _items.indexWhere((item) => item.id == id);
     if (index < 0) return AgendaMutationResult.notFound;
@@ -191,6 +228,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     return AgendaMutationResult.success;
   }
 
+  @override
   AgendaMutationResult recordOccurrenceEdit({
     required String itemId,
     required DateTime occurrenceStartsAt,
@@ -216,6 +254,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     return AgendaMutationResult.success;
   }
 
+  @override
   AgendaMutationResult saveItem(
     AgendaItem item, {
     required String actorContextId,
@@ -223,6 +262,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     bool overrideConflict = false,
     String? reason,
   }) {
+    _lastSavedItemId = item.id;
     final hasReservationConflict = _hasReservationConflict(item);
     if (!hasReservationConflict) {
       upsertItem(item);
@@ -299,8 +339,10 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  @override
   List<AgendaItem> itemsForInstitution(String id) =>
       List.unmodifiable(_items.where((e) => e.audience.institutionId == id));
+  @override
   List<AgendaItem> itemsForContext(String id) {
     final c = _context(id);
     if (c == null) return const [];
@@ -314,6 +356,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     );
   }
 
+  @override
   List<AgendaOccurrence> occurrencesBetween(DateTime start, DateTime end) {
     final result = <AgendaOccurrence>[];
     for (final item in _items) {
@@ -342,6 +385,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     return List.unmodifiable(result..sort(AgendaOccurrence.compareChronologically));
   }
 
+  @override
   PermissionResolution resolveCapability(String contextId, AgendaCapability capability) {
     final context = _context(contextId);
     if (context == null) {
@@ -375,6 +419,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     );
   }
 
+  @override
   bool setCapabilityRestricted(String contextId, AgendaCapability capability, bool restricted) {
     final index = _contexts.indexWhere((e) => e.id == contextId);
     if (index < 0) return false;
@@ -391,6 +436,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     return true;
   }
 
+  @override
   RequestDecisionResult decideRequest({
     required String requestId,
     required String actorContextId,

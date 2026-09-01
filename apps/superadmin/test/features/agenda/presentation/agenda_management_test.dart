@@ -33,6 +33,7 @@ void main() {
     );
     expect(find.text('Eventos'), findsOneWidget);
     expect(find.byKey(const Key('agenda-events-create-card')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
 
     await tester.pumpWidget(
       app(AgendaEventFormPage(store: prototype, onCancel: () {}, onSaved: (_) {})),

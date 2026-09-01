@@ -9,6 +9,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('opens with Models first and exposes honest file actions', (tester) async {
+    await tester.pumpWidget(
+      _app(
+        repository: _DirectoryRepository(
+          item: _plan(id: 'template-a', name: 'Modelo sazonal'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Criar modelo de cardápio'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Modelos')).dx,
+      lessThan(tester.getTopLeft(find.text('Cardápios')).dx),
+    );
+
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    expect(find.text('Importar arquivo'), findsOneWidget);
+    expect(find.text('Exportar CSV'), findsOneWidget);
+    expect(find.text('Exportar XLSX'), findsOneWidget);
+
+    await tester.tap(find.text('Importar arquivo'));
+    await tester.pumpAndSettle();
+    expect(find.text('Importação de cardápios estará disponível em breve.'), findsOneWidget);
+  });
+
   testWidgets('repository swap clears A filters and rejects its late response', (tester) async {
     final lateA = Completer<MealPlanPage>();
     final repositoryA = _DirectoryRepository(
@@ -120,7 +147,7 @@ void main() {
         final card = tester.widget<CoeloAdminInteractiveCard>(
           find.byKey(Key('meal-plan-card-${item.id}')),
         );
-        expect(card.minHeight, 216);
+        expect(card.minHeight, CoeloSize.touchMin * 5);
         expect(
           find.descendant(
             of: find.byKey(Key('meal-plan-card-${item.id}')),

@@ -22,6 +22,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Nenhuma importação ainda'), findsOneWidget);
     expect(find.text('Nova importação'), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
   });
 
   testWidgets('renders unavailable separately from an authorized empty history', (tester) async {

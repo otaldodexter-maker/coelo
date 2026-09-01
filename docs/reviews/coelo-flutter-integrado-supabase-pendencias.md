@@ -128,6 +128,27 @@ Nessa situação, a leitura dos três arquivos é obrigatória e nesta ordem:
 Os dois primeiros dizem se cada lado está pronto. Este comprova que os lados
 funcionam juntos no ambiente correto. Nenhum deles substitui os demais.
 
+### Passagem em andamento — Operações — 2026-09-01
+
+- Recorte ativo: Planos, Cardápios, Formulários, Importações, Agenda/Criar,
+  Solicitações e Aprovações; Permissões da Agenda foi consolidada em Perfis e
+  permissões por decisão direta de produto.
+- Flutter avançou localmente em diretórios, fixtures e editor de Formulários,
+  mas nenhuma ação executou `clique -> Supabase autorizado -> persistência ->
+  reload -> auditoria -> negativo cross-tenant`.
+- `verified_e2e_count` e `strict_done_count` permanecem em zero. Não há promoção
+  por teste de widget, fixture `/dev`, menu indisponível ou redirecionamento.
+- Próximo gate: inventário Supabase nominal por `action_id`, seguido de uma
+  primeira vertical CRUD/RLS pequena e reprodutível.
+- Agenda/Criar avançou somente no Flutter local: mini-mapa, perguntas do evento,
+  toggle canônico e lembretes sem canais prematuros passaram em 11 testes e
+  analyzer focado. O remoto read-only não apresentou tabelas nominais de Agenda;
+  portanto criar/editar/solicitar/aprovar continuam `blocked-supabase`, sem
+  promoção de `ready-for-e2e` ou `verified-e2e`.
+- A regressão ampliada preservou 93/93 testes funcionais da Agenda. Vinte
+  comparações de imagem seguem abertas e exigem inspeção antes de qualquer nova
+  baseline; esse RED visual não altera o bloqueio Supabase nem promove E2E.
+
 ### Contrato de abertura da atividade
 
 Toda revisão, auditoria ou correção começa listando as pendências conhecidas e
