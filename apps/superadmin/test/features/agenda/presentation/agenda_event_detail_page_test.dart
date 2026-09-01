@@ -133,6 +133,57 @@ void main() {
     expect(find.textContaining('Restaurado por Owner Coelo'), findsOneWidget);
   });
 
+  testWidgets('restauração conflitante permite override autorizado com justificativa', (
+    tester,
+  ) async {
+    final prototype = store();
+    prototype.cancelItem('reserve-auditorium', actorName: 'Owner Coelo');
+    prototype.upsertItem(
+      AgendaItem.fixture(
+        id: 'reserve-replacement',
+        title: 'Reserva substituta',
+        type: AgendaItemType.resourceReservation,
+        audience: const AgendaAudience(institutionId: 'inst-horizonte'),
+        startsAt: DateTime(2026, 8, 5, 11),
+        endsAt: DateTime(2026, 8, 5, 12),
+        location: 'Auditório',
+      ),
+    );
+    await tester.pumpWidget(
+      app(
+        AgendaEventDetailPage(
+          store: prototype,
+          eventId: 'reserve-auditorium',
+          onBack: () {},
+          onEdit: () {},
+        ),
+      ),
+    );
+
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('agenda-event-restore')),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.byKey(const Key('agenda-event-restore')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('agenda-event-confirm-lifecycle')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Substituir conflito de reserva?'), findsOneWidget);
+    await tester.enterText(
+      find.byKey(const Key('agenda-reservation-override-reason')),
+      'Prioridade institucional',
+    );
+    await tester.tap(find.byKey(const Key('agenda-reservation-override-confirm')));
+    await tester.pumpAndSettle();
+
+    final restored = prototype.itemById('reserve-auditorium')!;
+    expect(restored.status, AgendaItemStatus.published);
+    expect(restored.history.last.action, AgendaHistoryAction.reservationConflictOverridden);
+    expect(restored.history.last.reason, 'Prioridade institucional');
+  });
+
   testWidgets('somente rascunho pode ser excluído e ausência fica explícita', (tester) async {
     final prototype = store();
     prototype.upsertItem(
