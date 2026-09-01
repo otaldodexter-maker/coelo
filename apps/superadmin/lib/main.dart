@@ -28,6 +28,7 @@ Future<void> main() async {
       personIdentityRepository: authScope.personIdentityRepository,
       accessProfileRepository: authScope.accessProfileRepository,
       importRepository: authScope.importRepository,
+      chatRepository: authScope.chatRepository,
       inviteRepository: authScope.inviteRepository,
       noticeRepository: authScope.noticeRepository,
       attendanceRepository: authScope.attendanceRepository,

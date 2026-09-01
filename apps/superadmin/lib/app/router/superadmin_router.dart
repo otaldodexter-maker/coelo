@@ -75,6 +75,7 @@ import '../../features/daily_routine/daily_routine.dart';
 import '../../features/daily_routine/daily_routine_pages.dart';
 import '../../features/catalog/presentation/catalog_host_page.dart';
 import '../../features/chat/data/development_chat_repository.dart';
+import '../../features/chat/domain/chat_repository.dart';
 import '../../features/chat/presentation/screens/superadmin_chat_page.dart';
 import '../../features/circulars/data/development_circular_repository.dart';
 import '../../features/circulars/presentation/circular_directory_page.dart';
@@ -218,6 +219,7 @@ GoRouter createSuperadminRouter({
   SupportPrototypeController? supportController,
   UserPreferencesController? userPreferencesController,
   ImportRepository importRepository = const UnavailableImportRepository(),
+  ChatRepository chatRepository = const UnavailableChatRepository(),
   InviteRepository inviteRepository = const UnavailableInviteRepository(),
   NoticeRepository noticeRepository = const UnavailableNoticeRepository(),
   AttendanceRepository attendanceRepository = const UnavailableAttendanceRepository(),
@@ -1732,6 +1734,7 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.conversationsName,
             builder: (context, state) => SuperadminChatPage(
               logout: logout,
+              chatRepository: chatRepository,
               onBack: () {
                 final origin = state.uri.queryParameters['from'];
                 context.goNamed(switch (origin) {

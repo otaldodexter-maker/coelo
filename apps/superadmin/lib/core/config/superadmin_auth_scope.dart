@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/auth/domain/coelo_auth_login_action.dart';
+import '../../features/chat/data/supabase_chat_repository.dart';
+import '../../features/chat/domain/chat_repository.dart';
 import '../../features/attendance/attendance.dart';
 import '../../features/attendance/data/supabase_attendance_repository.dart';
 import '../../features/audit/data/supabase_audit_repository.dart';
@@ -76,6 +78,7 @@ final class SuperadminAuthScope {
     required this.unitDirectoryRepository,
     required this.unitBackendCommands,
     required this.importRepository,
+    required this.chatRepository,
     required this.inviteRepository,
     required this.noticeRepository,
     required this.attendanceRepository,
@@ -106,6 +109,7 @@ final class SuperadminAuthScope {
   final UnitDirectoryRepository unitDirectoryRepository;
   final UnitBackendCommandsGateway unitBackendCommands;
   final ImportRepository importRepository;
+  final ChatRepository chatRepository;
   final InviteRepository inviteRepository;
   final NoticeRepository noticeRepository;
   final AttendanceRepository attendanceRepository;
@@ -162,6 +166,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
       unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),
       importRepository: SupabaseImportRepository(client),
+      chatRepository: SupabaseChatRepository(client),
       inviteRepository: const UnavailableInviteRepository(),
       // The recovered Notices RPCs still authorize through the people realm,
       // while Superadmin sessions use the isolated internal-identity realm.
@@ -214,6 +219,7 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthGateway auth) {
     unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
     unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),
     importRepository: const UnavailableImportRepository(),
+    chatRepository: const UnavailableChatRepository(),
     inviteRepository: const UnavailableInviteRepository(),
     noticeRepository: const UnavailableNoticeRepository(),
     attendanceRepository: const UnavailableAttendanceRepository(),

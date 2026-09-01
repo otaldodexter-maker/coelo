@@ -12,6 +12,7 @@ import '../features/auth/domain/login_request.dart';
 import '../features/auth/domain/logout_action.dart';
 import '../features/auth/domain/password_recovery.dart';
 import '../features/auth/domain/reset_password_action.dart';
+import '../features/chat/domain/chat_repository.dart';
 import '../features/attendance/attendance.dart';
 import '../features/attendance/data/supabase_attendance_repository.dart';
 import '../features/account/data/user_preferences_repository.dart';
@@ -89,6 +90,7 @@ class SuperadminApp extends StatefulWidget {
     this.unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
     this.accessProfileRepository = const UnavailableAccessProfileRepository(),
     this.importRepository = const UnavailableImportRepository(),
+    this.chatRepository = const UnavailableChatRepository(),
     this.inviteRepository = const UnavailableInviteRepository(),
     this.noticeRepository = const UnavailableNoticeRepository(),
     this.attendanceRepository = const UnavailableAttendanceRepository(),
@@ -117,6 +119,7 @@ class SuperadminApp extends StatefulWidget {
   final UnitBackendCommandsGateway unitBackendCommands;
   final AccessProfileRepository accessProfileRepository;
   final ImportRepository importRepository;
+  final ChatRepository chatRepository;
   final InviteRepository inviteRepository;
   final NoticeRepository noticeRepository;
   final AttendanceRepository attendanceRepository;
@@ -165,6 +168,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       unitBackendCommands: widget.unitBackendCommands,
       accessProfileRepository: widget.accessProfileRepository,
       importRepository: widget.importRepository,
+      chatRepository: widget.chatRepository,
       inviteRepository: widget.inviteRepository,
       noticeRepository: widget.noticeRepository,
       attendanceRepository: widget.attendanceRepository,

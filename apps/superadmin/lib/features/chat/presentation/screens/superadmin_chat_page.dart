@@ -106,7 +106,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   // cannot be selected implicitly for this surface. Production remains
   // fail-closed until an internal-identity gateway is approved and injected by
   // the composition root; `/dev` continues to inject its deterministic repo.
-  ChatRepository _configuredRepository() => const _UnavailableChatRepository();
+  ChatRepository _configuredRepository() => const UnavailableChatRepository();
 
   Future<void> _loadInbox() async {
     final requestGeneration = ++_inboxRequestGeneration;
@@ -603,28 +603,6 @@ final class _MessageBubble extends StatelessWidget {
       ),
     );
   }
-}
-
-final class _UnavailableChatRepository implements ChatRepository {
-  const _UnavailableChatRepository();
-  @override
-  Future<int> fetchUnreadTotal() async => 0;
-
-  @override
-  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) =>
-      Future<ChatInboxPage>.error(const ChatFailureException());
-  @override
-  Future<ChatThreadPage> fetchThread(ChatThreadQuery query) =>
-      Future<ChatThreadPage>.error(const ChatFailureException());
-  @override
-  Future<ChatMessage> sendMessage(ChatSendMessageCommand command) =>
-      Future<ChatMessage>.error(const ChatFailureException());
-  @override
-  Future<void> markRead({required String conversationId, required String upToMessageId}) =>
-      Future<void>.error(const ChatFailureException());
-  @override
-  Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId}) =>
-      Future<ChatRealtimeRefresh>.error(const ChatFailureException());
 }
 
 String _initials(String value) => value

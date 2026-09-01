@@ -213,6 +213,33 @@ abstract interface class ChatRepository {
   Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId});
 }
 
+final class UnavailableChatRepository implements ChatRepository {
+  const UnavailableChatRepository();
+
+  @override
+  Future<int> fetchUnreadTotal() async => 0;
+
+  @override
+  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) =>
+      Future<ChatInboxPage>.error(const ChatFailureException());
+
+  @override
+  Future<ChatThreadPage> fetchThread(ChatThreadQuery query) =>
+      Future<ChatThreadPage>.error(const ChatFailureException());
+
+  @override
+  Future<ChatMessage> sendMessage(ChatSendMessageCommand command) =>
+      Future<ChatMessage>.error(const ChatFailureException());
+
+  @override
+  Future<void> markRead({required String conversationId, required String upToMessageId}) =>
+      Future<void>.error(const ChatFailureException());
+
+  @override
+  Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId}) =>
+      Future<ChatRealtimeRefresh>.error(const ChatFailureException());
+}
+
 final class ChatUnauthorizedException implements Exception {
   const ChatUnauthorizedException();
 }
