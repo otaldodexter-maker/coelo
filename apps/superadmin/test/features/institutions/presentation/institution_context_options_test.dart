@@ -7,7 +7,8 @@ void main() {
     final records = FakeInstitutionDirectoryRepository().records;
     final options = institutionContextOptions(records);
 
-    expect(options, hasLength(15));
+    expect(records.length, inInclusiveRange(2, 5));
+    expect(options, hasLength(records.length));
     expect(options.first.id, records.first.id);
     expect(options.first.children, hasLength(records.first.units.length));
     expect(
