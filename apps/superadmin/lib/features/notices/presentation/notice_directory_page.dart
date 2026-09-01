@@ -96,6 +96,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   int _page = 1;
   int _pageSize = 8;
   bool? _compactPagination;
+  bool _paginationSyncScheduled = false;
   List<PlatformNotice> _items = const [];
   final List<(DateTime?, String?)> _cursorHistory = [];
   DateTime? _nextCursorOccurredAt;
@@ -110,16 +111,6 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   @override
   void initState() {
     super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final compact = MediaQuery.sizeOf(context).width < CoeloBreakpoints.medium.minWidth;
-    if (_compactPagination == compact) return;
-    _compactPagination = compact;
-    _pageSize = compact ? 11 : 8;
-    _load(reset: true);
   }
 
   @override
@@ -163,6 +154,11 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+      _synchronizePaginationMode(compact);
+      final pageSizeOptions = compact ? const [11, 20, 50, 100] : const [8, 20, 50, 100];
+      final displayedPageSize = pageSizeOptions.contains(_pageSize)
+          ? _pageSize
+          : pageSizeOptions.first;
       final contentPadding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
           ? CoeloSpacing.space10
           : compact
@@ -238,8 +234,8 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
                 child: CoeloAdminPagination(
                   currentPage: _page,
                   totalPages: totalPages,
-                  pageSize: _pageSize,
-                  pageSizeOptions: compact ? const [11, 20, 50, 100] : const [8, 20, 50, 100],
+                  pageSize: displayedPageSize,
+                  pageSizeOptions: pageSizeOptions,
                   onPrevious: _page > 1 ? _previousPage : null,
                   onNext: _nextCursorId != null ? _nextPage : null,
                   onPageSelected: null,
@@ -254,6 +250,19 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
       );
     },
   );
+
+  void _synchronizePaginationMode(bool compact) {
+    if (_compactPagination == compact || _paginationSyncScheduled) return;
+    _paginationSyncScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _paginationSyncScheduled = false;
+      if (!mounted || _compactPagination == compact) return;
+      final options = compact ? const [11, 20, 50, 100] : const [8, 20, 50, 100];
+      _compactPagination = compact;
+      if (!options.contains(_pageSize)) _pageSize = options.first;
+      _load(reset: true);
+    });
+  }
 
   Widget _toolbar({required bool compact}) {
     return CoeloAdminListingToolbar(
