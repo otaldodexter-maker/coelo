@@ -41,29 +41,30 @@ void main() {
 
     router.go(SuperadminRoutes.devSafety);
     await tester.pumpAndSettle();
-    expect(find.text('Ana Criança'), findsOneWidget);
-    expect(find.text('Todos (3)'), findsOneWidget);
+    expect(find.text('Alice Duarte'), findsOneWidget);
+    expect(find.text('Todos (164)'), findsOneWidget);
 
     await tester.tap(find.text('Criar segurança'));
     await tester.pumpAndSettle();
     expect(find.text('Criança'), findsWidgets);
-    await tester.enterText(find.byType(TextFormField).first, 'Ana');
+    await tester.enterText(find.byType(TextFormField).first, 'Alice');
     await tester.tap(find.byTooltip('Buscar'));
     await tester.pumpAndSettle();
-    expect(find.text('Ana Criança'), findsWidgets);
+    expect(find.text('Alice Duarte'), findsWidgets);
 
-    router.go('/dev/safety/children/child-1');
+    router.go('/dev/safety/children/dev-child-0001');
     await tester.pumpAndSettle();
-    expect(find.text('Maria Martins'), findsWidgets);
-    expect(find.text('Cadastrar pessoa'), findsOneWidget);
+    expect(find.text('Ana Almeida'), findsWidgets);
+    expect(find.text('Criar autorização'), findsOneWidget);
 
-    await tester.tap(find.bySemanticsLabel('Maria Martins, Pendente'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Editar'));
+    router.go(
+      '/dev/safety/children/dev-child-0001/authorizations/'
+      'dev-safety-0001-approved-1/edit',
+    );
     await tester.pumpAndSettle();
     expect(find.text('Editar segurança'), findsOneWidget);
     await tester.tap(find.byKey(const Key('safety-wizard-primary')));
     await tester.pumpAndSettle();
-    expect(find.text('Solicitação familiar'), findsOneWidget);
+    expect(find.text('Vínculo familiar conferido pela unidade.'), findsOneWidget);
   });
 }

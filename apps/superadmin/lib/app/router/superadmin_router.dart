@@ -238,10 +238,11 @@ GoRouter createSuperadminRouter({
   bool allowDevelopmentPreview = SuperadminAppConfig.allowDevelopmentPreview,
   required ValueChanged<ThemeMode> onThemeModeChanged,
 }) {
+  final accessHealthFixtures = DevelopmentAccessHealthFixtureCatalog.standard();
   final resolvedChildSafetyController =
       childSafetyController ?? ChildSafetyController(const UnavailableChildSafetyRepository());
   final developmentChildSafetyController = ChildSafetyController(
-    DevChildSafetyRepository.content(),
+    DevChildSafetyRepository.content(catalog: accessHealthFixtures),
   );
   final productionSupportController = supportController;
   final developmentSupportController = _createDevelopmentSupportController();
@@ -300,7 +301,6 @@ GoRouter createSuperadminRouter({
   DevelopmentInviteRepository invitePreviewRepository() =>
       cachedInvitePreviewRepository ??= DevelopmentInviteRepository();
   const productionActivityAboutRepository = UnavailableActivityProfileAboutRepository();
-  final accessHealthFixtures = DevelopmentAccessHealthFixtureCatalog.standard();
   final developmentActivityStore = DevActivitySessionStore.content();
   final developmentActivityDirectoryRepository = DevActivityDirectoryRepository(
     store: developmentActivityStore,
