@@ -33,7 +33,9 @@ void main() {
     router.go(SuperadminRoutes.devConversations);
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devConversations);
-    expect(find.text('Nao foi possivel carregar'), findsOneWidget);
+    expect(find.text('Turma Girassol'), findsWidgets);
+    expect(find.text('Coordenação Pedagógica'), findsWidgets);
+    expect(find.text('Nao foi possivel carregar'), findsNothing);
     expect(find.byTooltip('Abrir menu de desenvolvimento'), findsOneWidget);
     expect(find.byTooltip('Voltar'), findsOneWidget);
 
