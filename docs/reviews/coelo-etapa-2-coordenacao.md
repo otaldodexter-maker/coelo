@@ -91,9 +91,77 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
 - Nenhuma referência temporária deve ser considerada preservada somente porque
   permanece no histórico da conversa; deve possuir arquivo estável e manifesto.
 
+## Handoffs recebidos
+
+### Auth-first — `36ae7c86`
+
+- Worktree limpa e quatro commits preservados: `ac167623`, `70065ad3`,
+  `db712f24` e `36ae7c86`.
+- Quatro ações Auth não-MFA propostas como Flutter/backend `local-green`;
+  integração continua `blocked-supabase`, MFA permanece `blocked-decision` e
+  `fail-closed`.
+- Evidências informadas: `coelo_auth` 21/21, foco Superadmin 57/57, replay
+  Auth-only pgTAP 29/29 e lifecycle local real completo.
+- Produção permaneceu sem mutação. O ledger produtivo não é compatível com uma
+  aplicação segura do pacote atual; dump/replay compatível, migration única
+  forward-only, URL/redirect e E2E continuam pendentes.
+- Diffs dos três rastreadores estão preservados nos commits de documentação e
+  aguardam reconciliação central com o código alcançável.
+
+### Comunicações/Avisos — `ee8d3aff`
+
+- `notices.list` permanece Flutter `local-green` e integração
+  `blocked-supabase`; nenhuma promoção foi proposta.
+- Evidências informadas: 37/37 testes focados, analyzer e validador visual
+  verdes, 20 fixtures coerentes e 13 goldens revisados.
+- Produção, RLS, permitido/negado, vínculo revogado, tenant A/B, persistência,
+  reload, auditoria e E2E continuam abertos.
+- Proposta de 45 linhas para os três rastreadores permanece não commitada na
+  worktree de Comunicação e não deve ser descartada até captura central.
+
+### Estruturas — `560ce79c`
+
+- Commits preservados: `b0fb1293`, `d9232a94`, `0b20d76a` e `560ce79c`.
+- Evidências informadas: analyzer completo sem problemas; 62 testes de
+  Atividades/Chat, 18 de Auth/router, seis de adapters e 86 de shell/rotas
+  estruturais passaram. Chat aparece somente como regressão/handoff histórico.
+- Adapters de Unidades/Turmas não são CRUD produtivo concluído: os RPCs legados
+  são people-based e o ator interno permanece bloqueado pela OQ-043.
+- Migration e pgTAP de modelos por Unidade continuam não rastreados. O teste
+  prevê 31 asserts, mas não houve replay Docker; estado correto é
+  `in-progress/local-review`, nunca `local-green`.
+- Diffs dos três rastreadores, spec e projeção de dataset estão preservados;
+  `.artifacts` permanece fora da entrega. Ao reconciliar, corrigir a referência
+  antiga de 12 para 31 asserts sem promover estado.
+
+### Convites — worktree Comunicação em `ee8d3aff`
+
+- Diretório/detalhe e fixtures `/dev` foram corrigidos localmente; importação e
+  exportação permanecem placeholders explicitamente indisponíveis.
+- Evidências informadas: 46 testes funcionais/responsivos, quatro goldens e 12
+  testes de repository passaram; analyzer, validador visual e diff-check verdes.
+- Flutter local do diretório/detalhe pode ser proposto como `local-green`, mas
+  CRUD/RLS/remoto/E2E continuam abertos e Convites não está concluído ponta a
+  ponta.
+- `InviteFormPage` conserva overflow preexistente de 45 px em 375 px/200% e
+  goldens divergentes; registrar como pendência Flutter explícita.
+- Alterações e sete goldens permanecem sem commit na worktree compartilhada e
+  não devem ser perdidos durante o checkpoint da frente Comunicação.
+
 ## Monitoramento e encerramento
 
 - Automação horária ativa: `etapa-2-acompanhamento-hor-rio`.
+- Cada frente deve enviar checkpoint diretamente ao Coordenador pelo menos uma
+  vez por hora, além de reportar conclusão de unidade, bloqueio, regressão,
+  mudança de ETA, commit e proximidade de limite/contexto.
+- Escrita dos três rastreadores oficiais é centralizada no Coordenador. As
+  frentes executoras entregam proposta estruturada por `action_id`/gate,
+  evidência, estado, bloqueio e ETA; não criam novas edições concorrentes em
+  `coelo-flutter-pendencias.md`, `coelo-supabase-pendencias.md` ou
+  `coelo-flutter-integrado-supabase-pendencias.md`.
+- Diffs de rastreadores já existentes em worktrees são preservados e tratados
+  como propostas de handoff. O Coordenador valida contra código, testes e
+  ambiente antes de incorporá-los à versão canônica.
 - Cada relatório deve separar concluído, pendente, bloqueado, Flutter,
   Supabase, E2E, testes, commits, worktree e ETA.
 - Conversa parada com recorte aberto recebe continuação no primeiro gate
