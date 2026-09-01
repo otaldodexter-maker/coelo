@@ -3178,10 +3178,21 @@ Esta onda registra somente os 24 `action_id` acima. Formulários, Respostas, Arq
 | Limite honesto | O dataset prova somente navegação e comportamento local. Supabase remoto, RLS, autorização, persistência real e E2E continuam dependentes de gates próprios. |
 | Conhecimento | Fonte canônica do router e projeção `superadmin-development-dataset` registram a escala e o isolamento produtivo. |
 
+## 16.103. Regressão de transição da toolbar de Instituições — 2026-09-01
+
+| Campo | Estado |
+|---|---|
+| Evidência no navegador | A navegação real `/dev/institutions` → demais famílias reproduziu `BoxConstraints(w=-6.0)` no `InstitutionDirectoryToolbar`, apesar dos gates focados anteriores. |
+| Causa raiz | Durante a transição de rota, a largura intermediária do grupo de filtros podia ficar menor que `CoeloSpacing.space3`; a fórmula de duas colunas subtraía o espaçamento e produzia uma largura negativa. |
+| Correção | A largura compacta dos filtros agora é limitada a `0.0`, preservando o layout aprovado nas larguras suportadas e mantendo constraints válidas nos frames transitórios. |
+| Regressão | Teste dedicado reproduz a toolbar com 6 px de largura e rejeita qualquer `negative minimum width`; Instituições + rotas terminaram 62/62. As expectativas de rota também foram alinhadas ao isolamento canônico: `/dev` usa repository fake próprio e produção não é consultada. |
+| Limite honesto | O ajuste corrige somente a validade do layout transitório e os contratos de teste locais; não promove integração remota ou E2E. |
+
 ## 17. Histórico
 
 | Data | Mudança |
 |---|---|
+| 2026-09-01 | Corrigida a largura negativa transitória da toolbar de Instituições encontrada no navegador; regressão estreita adicionada e suíte combinada Instituições/rotas 62/62 verde. |
 | 2026-09-01 | Consolidadas as quatro frentes e ampliado o `/dev` para 12 instituições, hierarquia completa de unidades/turmas, 30 atividades, 10 modelos, 400 pessoas e 6 rotinas; contrato TDD 20/20 e analyzer focado verdes, produção preservada sem fixtures. |
 | 2026-08-31 | `OPERATIONS-WAVE` pós-rebase sobre `21e0ed09`: rastreador reconciliado manualmente preservando V4.19–V5.31 e os blocos operacionais; Turmas 51/51 e `coelo_ui_admin` 110/110 verdes, analyzers/validador/conhecimento/diff check aprovados. O golden de reporte de bug foi alinhado ao shell compacto aprovado e inspecionado; o diff de Formulários desta branch permanece vazio. |
 | 2026-08-31 | Gate final V4.19–V5.31: 688/688 testes focados, 110/110 `coelo_ui_admin`, 14/14 `coelo_api`, analyzers e validador visual verdes; cinco goldens finais atualizados seletivamente após inspeção. A regressão externa de Conversas e os limites de app Principal/backend/E2E foram preservados sem promoção indevida. |

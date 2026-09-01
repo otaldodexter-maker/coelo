@@ -117,7 +117,7 @@ final class InstitutionDirectoryToolbar extends StatelessWidget {
             final filterWidth = largeText
                 ? filterConstraints.maxWidth
                 : compact
-                ? (filterConstraints.maxWidth - CoeloSpacing.space3) / 2
+                ? math.max(0.0, (filterConstraints.maxWidth - CoeloSpacing.space3) / 2)
                 : 160.0;
             return Wrap(
               key: const Key('institution-filter-controls'),

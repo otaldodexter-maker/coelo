@@ -9,6 +9,7 @@ import 'package:coelo_superadmin/features/institutions/domain/institution_direct
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_query.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/screens/institution_directory_page.dart';
+import 'package:coelo_superadmin/features/institutions/presentation/widgets/institution_directory_toolbar.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -124,7 +125,7 @@ void main() {
   });
 
   testWidgets('matches the approved directory filter flow at every width', (tester) async {
-    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+    for (final width in [280.0, 375.0, 768.0, 1024.0, 1440.0]) {
       await tester.binding.setSurfaceSize(Size(width, 900));
       await tester.pumpWidget(_app(pageKey: ValueKey(width)));
       await tester.pumpAndSettle();
@@ -133,7 +134,7 @@ void main() {
       final searchRect = tester.getRect(_institutionSearchField());
       final typeRect = tester.getRect(find.byKey(const Key('institution-type-filter')));
       final stateRect = tester.getRect(find.byKey(const Key('institution-state-filter')));
-      final expectedSearchWidth = width == 375
+      final expectedSearchWidth = width <= 375
           ? controlsRect.width
           : width == 1440
           ? 300.0
@@ -141,7 +142,7 @@ void main() {
       expect(searchRect.left, closeTo(controlsRect.left, 1));
       expect(searchRect.width, closeTo(expectedSearchWidth, 1));
       expect(typeRect.width, closeTo(stateRect.width, 1));
-      if (width == 375) {
+      if (width <= 375) {
         expect((typeRect.width * 2) + CoeloSpacing.space3, closeTo(searchRect.width, 1));
       } else {
         expect(typeRect.width, 160);
@@ -153,6 +154,35 @@ void main() {
       expect(tester.takeException(), isNull, reason: 'responsive filter flow');
     }
     addTearDown(() => tester.binding.setSurfaceSize(null));
+  });
+
+  testWidgets('keeps filter constraints valid during a narrow route transition', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1280, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    final toolbar = tester.widget<InstitutionDirectoryToolbar>(
+      find.byType(InstitutionDirectoryToolbar),
+    );
+    final errors = <FlutterErrorDetails>[];
+    final previousErrorHandler = FlutterError.onError;
+    FlutterError.onError = errors.add;
+    addTearDown(() => FlutterError.onError = previousErrorHandler);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: Align(child: SizedBox(width: 6, child: toolbar)),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(
+      errors.where((details) => details.exceptionAsString().contains('negative minimum width')),
+      isEmpty,
+    );
   });
 
   testWidgets('reduces filters to one column with text scaled to 200 percent', (tester) async {

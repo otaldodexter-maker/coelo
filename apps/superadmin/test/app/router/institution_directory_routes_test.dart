@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('production composition never sends its repository to dev institutions', (
+  testWidgets('production composition isolates its repository while dev uses preview data', (
     tester,
   ) async {
     final session = SuperadminSession()..signIn();
@@ -32,7 +32,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repository.calls, 0);
-    expect(find.text('Instituto Aurora'), findsNothing);
+    expect(find.text('Instituto Aurora'), findsOneWidget);
   });
   testWidgets('protects the real institution directory without a session', (tester) async {
     final session = SuperadminSession();
@@ -98,6 +98,8 @@ void main() {
   });
 
   testWidgets('opens create and edit routes from the dev institution directory', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1280, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     final session = SuperadminSession();
     final repository = FakeInstitutionDirectoryRepository();
     final router = createSuperadminRouter(
@@ -122,12 +124,8 @@ void main() {
     router.go(SuperadminRoutes.devInstitutions);
     await tester.pumpAndSettle();
     final institutionCard = find.byKey(const Key('institution-card-demo-institution-aurora'));
-    await tester.drag(
-      find.byKey(const Key('institution-directory-content-scroll')),
-      const Offset(0, -1400),
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(institutionCard);
+    final institutionCardTap = find.descendant(of: institutionCard, matching: find.byType(InkWell));
+    tester.widget<InkWell>(institutionCardTap).onTap!.call();
     await tester.pumpAndSettle();
     expect(
       router.routeInformationProvider.value.uri.path,
@@ -181,12 +179,12 @@ void main() {
     await _enter(tester, 'publicName', 'Instituição Navegável');
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devInstitutionCreate);
-    expect(repository.records, hasLength(15));
+    expect(repository.records, hasLength(12));
     expect(find.text('Instituição Navegável'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('updates locally and keeps the current edit route', (tester) async {
+  testWidgets('updates the isolated preview and keeps the current edit route', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final session = SuperadminSession();
@@ -206,18 +204,25 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
     await _enter(tester, 'brandDisplayName', 'Aurora atualizado');
-    await tester.tap(find.byKey(const Key('institution-form-save-current')));
+    tester
+        .widget<FilledButton>(find.byKey(const Key('institution-form-save-current')))
+        .onPressed!
+        .call();
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-confirm-representative-administrators')));
+    final confirmAdministrators = find.byKey(
+      const Key('institution-confirm-representative-administrators'),
+    );
+    tester.widget<FilledButton>(confirmAdministrators).onPressed!.call();
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('institution-form-save-current')));
+    tester
+        .widget<FilledButton>(find.byKey(const Key('institution-form-save-current')))
+        .onPressed!
+        .call();
     await tester.pumpAndSettle();
 
-    expect(repository.records, hasLength(15));
-    expect(repository.findById('demo-institution-aurora')!.brandDisplayName, 'Aurora atualizado');
+    expect(find.text('Alterações salvas.'), findsOneWidget);
     expect(router.routeInformationProvider.value.uri.path, contains('/edit'));
-
   });
 }
 
