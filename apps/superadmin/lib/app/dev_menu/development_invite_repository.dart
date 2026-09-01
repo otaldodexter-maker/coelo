@@ -73,7 +73,40 @@ final class DevelopmentInviteRepository implements InviteRepository {
   }
 
   @override
-  Future<InviteFormOptions> fetchOptions(InviteOptionsQuery query) async => _options;
+  Future<InviteFormOptions> fetchOptions(InviteOptionsQuery query) async {
+    final search = query.search.trim().toLowerCase();
+    bool matchesSearch(Iterable<String?> values) =>
+        search.isEmpty ||
+        values.whereType<String>().any((value) => value.toLowerCase().contains(search));
+    return InviteFormOptions(
+      scopes: List.unmodifiable(
+        _options.scopes
+            .where(
+              (option) =>
+                  _scopeMatchesQuery(option.scope, query) &&
+                  matchesSearch([option.id, option.label, option.kind.label]),
+            )
+            .take(query.pageSize),
+      ),
+      profiles: List.unmodifiable(
+        _options.profiles
+            .where(
+              (option) =>
+                  _profileMatchesQuery(option, query) && matchesSearch([option.id, option.label]),
+            )
+            .take(query.pageSize),
+      ),
+      recipients: List.unmodifiable(
+        _options.recipients
+            .where(
+              (option) =>
+                  _scopeMatchesQuery(_recipientScopes[option.personId]!, query) &&
+                  matchesSearch([option.personId, option.label, option.maskedEmail]),
+            )
+            .take(query.pageSize),
+      ),
+    );
+  }
 
   @override
   Future<PlatformInvite?> fetchById(String inviteId) async =>
@@ -81,12 +114,7 @@ final class DevelopmentInviteRepository implements InviteRepository {
 
   @override
   Future<InviteCommandResult> issue(InviteIssueCommand command) async {
-    final receipt = _issueReceipts[command.requestId];
-    if (receipt != null) {
-      return InviteCommandResult(invite: receipt.invite, replayed: true, link: receipt.link);
-    }
-    final occurredAt = _now().toUtc();
-    final id = 'dev-invite-${_nextInviteId++}';
+    final scopeIsAllowed = _options.scopes.any((option) => _sameScope(option.scope, command.scope));
     final profileOption = _options.profiles
         .where((option) => option.id == command.profileId)
         .firstOrNull;
@@ -95,13 +123,30 @@ final class DevelopmentInviteRepository implements InviteRepository {
         : _options.recipients
               .where((option) => option.personId == command.recipient.personId)
               .firstOrNull;
+    final scopeQuery = InviteOptionsQuery(
+      institutionId: command.scope.institutionId,
+      unitId: command.scope.unitId,
+      groupId: command.scope.groupId,
+    );
+    final profileIsAllowed =
+        profileOption != null && _profileMatchesQuery(profileOption, scopeQuery);
+    final recipientIsAllowed =
+        command.recipient.personId == null ||
+        (personOption != null &&
+            _scopeMatchesQuery(_recipientScopes[personOption.personId]!, scopeQuery));
+    if (!scopeIsAllowed || !profileIsAllowed || !recipientIsAllowed) {
+      throw const InviteValidationException();
+    }
+    final receipt = _issueReceipts[command.requestId];
+    if (receipt != null) {
+      return InviteCommandResult(invite: receipt.invite, replayed: true, link: receipt.link);
+    }
+    final occurredAt = _now().toUtc();
+    final id = 'dev-invite-${_nextInviteId++}';
     final invite = PlatformInvite(
       id: id,
       scope: command.scope,
-      profile: InviteProfileReference(
-        id: command.profileId,
-        label: profileOption?.label ?? command.profileId,
-      ),
+      profile: InviteProfileReference(id: command.profileId, label: profileOption.label),
       recipient: command.recipient.personId != null
           ? InviteRecipient(
               personId: command.recipient.personId,
@@ -192,6 +237,22 @@ final class DevelopmentInviteRepository implements InviteRepository {
     ];
   }
 }
+
+bool _scopeMatchesQuery(InviteScope scope, InviteOptionsQuery query) =>
+    (query.institutionId == null || scope.institutionId == query.institutionId) &&
+    (query.unitId == null || scope.unitId == query.unitId) &&
+    (query.groupId == null || scope.groupId == query.groupId);
+
+bool _profileMatchesQuery(InviteProfileOption profile, InviteOptionsQuery query) =>
+    (query.institutionId == null || profile.institutionId == query.institutionId) &&
+    (query.unitId == null || profile.unitId == null || profile.unitId == query.unitId) &&
+    (query.groupId == null || profile.groupId == null || profile.groupId == query.groupId);
+
+bool _sameScope(InviteScope left, InviteScope right) =>
+    left.kind == right.kind &&
+    left.institutionId == right.institutionId &&
+    left.unitId == right.unitId &&
+    left.groupId == right.groupId;
 
 List<PlatformInvite> _seedInvites() => [
   _seedInvite(
@@ -559,3 +620,9 @@ const _options = InviteFormOptions(
     ),
   ],
 );
+
+const _recipientScopes = <String, InviteScope>{
+  'ana-lima': _girassolScope,
+  'camila-rocha': _seventhGradeScope,
+  'gabriela-moraes': _nurseryScope,
+};
