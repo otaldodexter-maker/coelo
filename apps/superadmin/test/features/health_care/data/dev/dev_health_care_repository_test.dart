@@ -4,7 +4,7 @@ import 'package:coelo_superadmin/features/health_care/domain/health_care.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('content exposes the linked 180 children and 147 care profiles', () async {
+  test('content exposes 147 profiles while retaining all 180 linked children', () async {
     final catalog = DevelopmentAccessHealthFixtureCatalog.standard();
     final repository = DevHealthCareRepository.content(catalog: catalog);
     final page = await repository.fetchDirectory(
@@ -12,10 +12,17 @@ void main() {
       actor: repository.defaultActor,
     );
 
-    expect(page.totalCount, 180);
+    expect(page.totalCount, 147);
     expect(
       page.items.map((item) => item.id).toSet(),
-      catalog.children.map((item) => item.id).toSet(),
+      catalog.careProfiles.map((item) => item.childId).toSet(),
+    );
+    expect(
+      await Future.wait([
+        for (final child in catalog.children)
+          repository.findChild(child.id, actor: repository.defaultActor),
+      ]).then((children) => children.whereType<HealthCareChild>().length),
+      180,
     );
     expect(
       await Future.wait([

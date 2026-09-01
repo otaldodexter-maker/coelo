@@ -88,7 +88,11 @@ final class DevHealthCareRepository implements HealthCareRepository {
     HealthCareDirectoryQuery query, {
     required HealthCareActor actor,
   }) async {
-    final visible = _children.where(actor.canReadDetail).where(query.matches).toList();
+    final visible = _children
+        .where((child) => _careProfileDrafts.containsKey(child.id))
+        .where(actor.canReadDetail)
+        .where(query.matches)
+        .toList();
     final start = query.offset;
     final page = start >= visible.length
         ? const <HealthCareChild>[]
