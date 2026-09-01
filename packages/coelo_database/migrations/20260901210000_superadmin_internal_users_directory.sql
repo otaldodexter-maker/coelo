@@ -50,7 +50,7 @@ create table app_private.superadmin_internal_profiles(
   birth_date date,
   cpf text not null check(cpf~'^[0-9]{11}$'),
   cpf_hash bytea generated always as(
-    extensions.digest(pg_catalog.convert_to(cpf,'UTF8'),'sha256')) stored,
+    extensions.digest(cpf,'sha256')) stored,
   professional_email text not null
     check(professional_email=lower(btrim(professional_email))
       and length(professional_email)<=254 and professional_email like '%@%'),

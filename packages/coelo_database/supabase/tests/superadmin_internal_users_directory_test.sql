@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(28);
+select plan(29);
 
 select ok(
   to_regclass('app_private.superadmin_internal_profiles') is not null
@@ -88,6 +88,14 @@ insert into app_private.superadmin_internal_profiles(
    'owner-internal@invalid.test','Owner'),
   ('93000000-0000-4000-8000-000000000002','Ana','Lima','11144477735',
    'operator-internal@invalid.test','Operações');
+
+select is(
+  pg_catalog.encode(cpf_hash,'hex'),
+  pg_catalog.encode(extensions.digest(cpf,'sha256'),'hex'),
+  'CPF hash uses the immutable text digest overload required by the generated column'
+)
+from app_private.superadmin_internal_profiles
+where internal_identity_id='93000000-0000-4000-8000-000000000002';
 
 select set_config('request.jwt.claims',jsonb_build_object(
   'sub','91000000-0000-4000-8000-000000000001',
