@@ -9,12 +9,15 @@ import '../domain/import_repository.dart';
 
 /// Production adapter: every read is scoped by the hub RPC and uploads are
 /// binary requests to the authenticated Edge boundary.
-final class SupabaseImportRepository implements ImportRepository {
+final class SupabaseImportRepository implements ImportRepository, ImportExecutionCapabilities {
   SupabaseImportRepository(this._client);
 
   final SupabaseClient _client;
   final Map<String, String> _createKeys = <String, String>{};
   final Map<String, String> _confirmKeys = <String, String>{};
+
+  @override
+  Set<ImportEntity> get supportedImportEntities => const <ImportEntity>{ImportEntity.units};
 
   @override
   Future<List<ImportJob>> fetchJobs() async =>
@@ -193,6 +196,7 @@ ImportJob _job(Object? raw) {
     progress: _int(row['progress']).clamp(0, 100),
     actor: '',
     createdAt: created,
+    sourceFileName: row['file_name']?.toString(),
   );
 }
 

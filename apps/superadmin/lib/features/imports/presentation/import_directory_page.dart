@@ -258,7 +258,7 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
               initialWidth: 260,
               minWidth: 200,
               maxWidth: 340,
-              cellBuilder: (_, job) => Text(job.file.fileName),
+              cellBuilder: (_, job) => Text(job.displayFileName),
             ),
             columns: [
               CoeloAdminTableColumn<ImportJob>(
