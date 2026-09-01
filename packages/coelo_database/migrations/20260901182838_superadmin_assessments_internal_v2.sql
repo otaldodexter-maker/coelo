@@ -709,7 +709,7 @@ begin
 end $$;
 
 create or replace function app_private.assessment_v2_initial_students(p_activity_group_link_id uuid)
-returns jsonb language sql stable security definer set search_path = '' as $$
+returns jsonb language sql volatile security definer set search_path = '' as $$
   select coalesce(jsonb_agg(jsonb_build_object(
     'id', gen_random_uuid(), 'child_context_id', child_context.id,
     'name', person.display_name, 'state', 'not_started',
