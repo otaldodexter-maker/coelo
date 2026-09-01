@@ -1,10 +1,16 @@
 ---
 title: "Private Media R2"
-status: "Proposed - live verification blocked"
+status: "superseded-for-mvp"
 generated_at: "2026-06-22"
 ---
 
 # Private Media R2
+
+> **Substituída no MVP pela ADR 0030.** Cloudflare R2 não existe no ambiente
+> atual e não será implementado como requisito de encerramento do MVP. Durante
+> todo o MVP, a mídia privada usa Supabase Storage. No encerramento formal do
+> MVP, o Owner deve ser perguntado se deseja avaliar a evolução para R2. O
+> restante deste documento é preservado apenas como histórico do estudo.
 
 ## Contexto
 

@@ -7,6 +7,11 @@ generated_at: "2026-08-13"
 
 # ADR 0025 - Storage privado e exportações de Formulários
 
+> **Complemento supersedente do MVP:** a ADR 0030 define Supabase Storage
+> privado para toda mídia do MVP. A ADR 0031 adia exportações reais para depois
+> do MVP; o botão pode permanecer visível, mas não haverá job, arquivo ou
+> download real agora. O texto abaixo é preservado como contrato futuro.
+
 ## Contexto
 
 Formulários pode receber fotos e galerias em respostas e produzir CSV, XLSX e

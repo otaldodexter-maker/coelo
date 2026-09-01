@@ -93,9 +93,9 @@ receber mudanças estruturais sem decisão explícita.
 As ações de busca/estado devem preservar os estados aprovados de `loading`,
 `erro`, `retry`, `vazio`, `sem resultados`, `not-found` e `unauthorized`.
 
-Mídia institucional e privada permanece sob o contrato de destino único em
-Cloudflare R2, com metadados no Supabase e sem novo uso de Supabase Storage
-neste domínio.
+Durante o MVP, mídia institucional e privada usa Supabase Storage privado, com
+metadados no Postgres e autorização server-side, conforme ADR 0030. R2 fica
+fora deste domínio até eventual decisão do Owner no encerramento formal do MVP.
 
 ## Referência reutilizável
 

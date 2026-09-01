@@ -20,8 +20,9 @@ Supabase, migrations, RLS, RPCs, envio, arquivos, aceite ou auditoria reais.
 
 Os diretórios reutilizam a composição aprovada de Instituições. Não existe ação
 de criar no cabeçalho: cards usam primeiro card tracejado e tabelas usam uma
-faixa separada antes da tabela. Auditoria é somente leitura e não possui ação de
-criação ou exportação.
+faixa separada antes da tabela. Auditoria é somente leitura, não possui ação de
+criação e mantém o botão Exportar visível com indisponibilidade honesta durante
+o MVP, conforme ADR 0031.
 
 Planos administra o catálogo, recursos e limites com os fixtures Coelo
 Essencial, Coelo Conecta, Coelo Cuidado e Coelo Integral. Plano utilizado pode

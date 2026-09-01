@@ -7,6 +7,10 @@ generated_at: "2026-08-12"
 
 # ADR 0024 - Storage privado de evidências de segurança da criança
 
+> **Complemento supersedente do MVP:** a ADR 0030 define Supabase Storage
+> privado como provedor de toda mídia privada do MVP. Qualquer menção abaixo a
+> exceção ou a R2 como regra-mãe permanece apenas histórica.
+
 ## Contexto
 
 Evidências de autorização, restrição ou alerta não são conteúdo operacional de

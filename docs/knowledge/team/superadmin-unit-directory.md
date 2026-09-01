@@ -43,7 +43,7 @@ usa `plans`, e `NULL` mantém a herança do plano institucional. As duas colunas
 são filtráveis e não importáveis no catálogo atual.
 
 A tela ainda usa repositórios fake e estado em memória. Busca, convite, vínculos
-de pessoas e importação/exportação CSV/XLSX são demonstrativos; nenhum arquivo
-físico é lido ou gerado. Não há integração de Auth ou backend nesta entrega.
-Persistência, mutações auditadas e contratos físicos de importação/exportação
-permanecem para spec posterior.
+de pessoas e os botões de importação/exportação CSV/XLSX são demonstrativos;
+nenhum arquivo físico é lido ou gerado. Não há integração de Auth ou backend
+nesta entrega. A ADR 0031 adia persistência, mutações auditadas e contratos
+físicos de importação/exportação para depois do MVP.

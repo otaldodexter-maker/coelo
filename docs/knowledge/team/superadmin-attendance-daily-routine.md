@@ -15,8 +15,10 @@ review_owner: Coelo Product
 
 Assiduidade usa somente dados reais e autorização recalculada no Supabase. A
 landing combina `Nova chamada` com dashboard analítico e operacional autorizado,
-sem avisos de demonstração. Métricas, rankings, série temporal, tabela e
-exportações são calculados no servidor dentro do escopo efetivo. O wizard segue
+sem avisos de demonstração. Métricas, rankings, série temporal e tabela são
+calculados no servidor dentro do escopo efetivo. Exportação real está fora do
+MVP pela ADR 0031; o botão permanece visível e informa disponibilidade futura.
+O wizard segue
 `Contexto → Rotina diária → Chamada` e aceita hoje ou data anterior, nunca futuro.
 
 Presença considera somente registros ativos de chamadas oficiais fechadas ou
@@ -28,8 +30,8 @@ sessões reais ainda não concluídas; o sistema não presume agenda inexistente
 O dashboard adapta a hierarquia ao escopo: plataforma pode descer por
 instituição, unidade, turma, atividade, aluno e professor; escopos institucionais
 ou profissionais começam no primeiro nível autorizado; família recebe apenas as
-próprias crianças. Exportação exige capability explícita e job auditado no
-servidor. Enquanto Admin, Professor e Principal não possuírem host produtivo, a
+próprias crianças. A capability e o job auditado de exportação permanecem como
+contrato futuro e não são implementados no MVP. Enquanto Admin, Professor e Principal não possuírem host produtivo, a
 integração permanece somente no contrato compartilhado e no backend, sem tela
 ou dados simulados.
 

@@ -30,5 +30,6 @@ círculo; em larguras maiores, uma cápsula laranja estável. Não há arraste l
 nem expansão que mude o layout do composer.
 
 Eventos em tempo real são apenas sinais mínimos em canal privado; cada evento
-faz refetch autorizado. Mídia usa metadados no banco e gateway R2 privado. Sem
-gateway R2 validado, upload e download permanecem indisponíveis de modo seguro.
+faz refetch autorizado. Mídia usa metadados no banco e Supabase Storage privado
+durante o MVP. Sem gateway Storage validado, upload e download permanecem
+indisponíveis de modo seguro. R2 está fora do MVP conforme ADR 0030.

@@ -24,8 +24,9 @@ global arbitrário nem restaurar uma suspensão/revogação decidida pela unidad
 
 As tabs são exclusivas: aguardando aprovação, atenção, autorizadas e sem
 autorização, nessa precedência. Rejeição fica no histórico. Busca, contagens,
-cursor, decisões e exportação são server-side, com RLS, idempotência, versão,
-auditoria e testes cross-tenant/cross-child.
+cursor e decisões são server-side, com RLS, idempotência, versão, auditoria e
+testes cross-tenant/cross-child. Exportação real está fora do MVP pela ADR 0031;
+o botão permanece visível e informa disponibilidade futura.
 
 Evidência usa Supabase Storage privado conforme ADR 0024. O path é gerado no
 servidor e o objeto fica bloqueado em `draft` até scanner confirmar MIME real,

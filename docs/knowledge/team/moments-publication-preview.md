@@ -32,8 +32,9 @@ No web, shell, contêiner direito, largura útil, raios e gaps seguem literalmen
 a geometria canônica já aprovada.
 
 Momentos mantém domínio e repositório próprios, sem compartilhar ownership com
-Acontece ou Agora. A mídia operacional permanece no Cloudflare R2 privado; o
-preview in-memory não concede autorização nem define integração de storage.
+Acontece ou Agora. Durante o MVP, a mídia operacional usa Supabase Storage
+privado conforme ADR 0030; o preview in-memory não concede autorização nem
+define integração de storage.
 Mídia persistida no composer é renderizada por bytes ou URL remota autorizada,
 com proporção preservada; assets empacotados pertencem somente às fixtures demo.
 Sem uma fonte válida, a superfície informa indisponibilidade em vez de fabricar
@@ -46,6 +47,7 @@ para vídeo é honesta e não tenta decodificá-lo como imagem.
 
 A tela de consumo abre o composer por callback e, após publicação, o host recebe
 o resultado e retorna para Momentos. Em produção, o host deverá atualizar a
-timeline consultando o repositório. Até existir metadata/RLS e gateway R2
+timeline consultando o repositório. Até existir metadata/RLS e gateway de
+Supabase Storage privado
 server-side validados, essa integração permanece exclusiva da rota `/dev` e não
 representa persistência remota.

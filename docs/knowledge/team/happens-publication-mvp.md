@@ -23,7 +23,7 @@ mantêm editor linear com mídia dominante, enquanto o desktop acrescenta prévi
 lateral. Shell, contêiner direito, raios, insets e gaps devem reproduzir a
 geometria canônica aprovada, sem aproximações de implementação.
 
-Autorização é server-side, deny-by-default, com versão otimista e capabilities `happens.posts.create` e `happens.posts.publish`. A mídia usa temporariamente Supabase Storage privado conforme ADR 0026; bucket público é proibido e a migração ao R2 deve ocorrer antes de piloto/produção.
+Autorização é server-side, deny-by-default, com versão otimista e capabilities `happens.posts.create` e `happens.posts.publish`. Durante todo o MVP, a mídia usa Supabase Storage privado conforme ADR 0030; bucket público é proibido. R2 não é requisito de piloto, produção ou encerramento do MVP e só poderá ser avaliado após nova decisão do Owner no encerramento formal.
 
 O feed consome uma projeção mínima autorizada por `happens.posts.read`, sem fabricar contagens ou rótulos ausentes. Mídias chegam como tickets opacos ordenados e são trocadas sob demanda por URL assinada curta; como o ticket é descartável, retry de mídia recarrega o feed para obter um novo ticket.
 

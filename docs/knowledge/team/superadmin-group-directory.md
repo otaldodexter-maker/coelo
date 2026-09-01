@@ -38,8 +38,9 @@ instituição, unidade, nome, tipo textual e status são persistidos; pessoas,
 profissionais e convites permanecem demonstrações locais, sem criar domínio ou
 autorização.
 
-Importar turmas e Exportar turmas são demonstrações explícitas no centro de
-atividades, sem arquivo, parser ou persistência. A entrega usa repositório fake
+Importar turmas e Exportar turmas permanecem como botões visíveis com
+indisponibilidade honesta, sem arquivo, parser ou persistência durante o MVP,
+conforme ADR 0031. A entrega usa repositório fake
 local independente: o Supabase atual só permite leitura de grupos por
 `platform.read`, e a interface não infere autorização por metadata do cliente
 nem contorna RLS.

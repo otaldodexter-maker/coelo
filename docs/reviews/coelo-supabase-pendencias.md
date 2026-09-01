@@ -12,6 +12,27 @@ family_count: 37
 
 ## 0. Etapa 2 — resumo recuperável do backend e banco
 
+> **Regras do MVP aprovadas em 2026-09-01:** (1) importação/exportação real não
+> será construída no Supabase durante o MVP; seus jobs, arquivos, RPCs, Edge
+> Functions e persistência ficam `deferred-post-mvp` e não bloqueiam a Etapa 2;
+> (2) toda mídia privada do MVP usa Supabase Storage. Cloudflare R2 não existe
+> no ambiente atual e fica fora do MVP. Ver ADRs 0030 e 0031.
+
+Os percentuais publicados abaixo permanecem como baseline pré-reclassificação
+para não inventar precisão. A família Importações e os subfluxos de arquivo
+precisam de crosswalk nominal antes de recalcular o denominador do MVP; nenhum
+item diferido será contado como `done`. No encerramento formal do MVP, o
+coordenador deve perguntar ao Owner se deseja implementar import/export real e
+se deseja avaliar evolução de Supabase Storage para R2.
+
+**Inventário remoto read-only de 2026-09-01:** o projeto de produção ainda
+possui a Edge Function ativa `import-export-jobs` v2 e migrations históricas de
+import/export para Instituições, Unidades, Formulários e hub genérico, inclusive
+`20260901190449`, `20260901190719` e `20260901193727`. Esses artefatos são
+legado anterior à ADR 0031: ficam congelados, não recebem expansão, não entram
+no wiring do MVP e não contam como `done`. Nenhum rollback/drop foi autorizado;
+eventual desativação exige pacote forward-only específico e coordenado.
+
 ### Checkpoint final de consolidação — 2026-09-01
 
 Todas as migrations, adapters, contratos e testes recebidos foram preservados
@@ -24,9 +45,9 @@ família Supabase atingiu `done`, recebeu deploy ou passou todos os negativos.
 | Auth — login/logout/recovery/reset | Fundação hospedada, lifecycle, identidades internas, configuração remota e migration que adia MFA interno até o gate formal do MVP. | Smoke humano hospedado, SMTP/recovery real e fechamento de todos os gates da família. | Subpacote remoto comprovado; família ainda não `done`. |
 | Pessoas, Segurança, Usuários internos, Perfis, Modelos e Saúde | Gateways, contratos e pgTAP candidatos preservados; detalhe de Pessoa composto. | P0 de realm/lookup/autorização, 4 falhas pgTAP em permissões, Auth/Convites internos, RLS e decisões de dados sensíveis. | Parcial/local; não `done`. |
 | Instituições, Unidades, Turmas, Atividades e Avaliações | Migrations/gateways de Estruturas e pacote de Avaliações incorporados. | Replay por pacote, OQ-032, grants/RLS/negativos, remoto e aprovação por família. | Candidato local; sem promoção familiar. |
-| Planos, Cardápios, Formulários, Importações e Agenda | Migrations e contratos de leitura/operação incorporados no manifesto único. | Reconciliar ledger, commands, jobs/arquivos, RLS, auditoria e negativos antes de qualquer deploy. | Parcial/local; não `done`. |
+| Planos, Cardápios, Formulários, Importações e Agenda | Migrations e contratos de leitura/operação incorporados no manifesto único. | Reconciliar ledger, commands que não sejam import/export, RLS, auditoria e negativos antes de qualquer deploy. Jobs/arquivos de import/export estão `deferred-post-mvp`. | Parcial/local; não `done`. |
 | Chat, Avisos, Convites e Circulares | Migrations nominais ordenadas no manifesto e adapters locais preservados. | Replay/pgTAP por domínio, tenant A/B, revogação, outbox/Realtime/mídia, persistência/reload e remoto. | Parcial/local; não `done`. |
-| Acontece, Agora, Momentos e Perfil | Migration de fundação do recorte preservada. | Contratos de audiência, metadata, R2, retenção, remoção, RLS e auditoria. | Aberto/bloqueado por decisões. |
+| Acontece, Agora, Momentos e Perfil | Migration de fundação do recorte preservada. | Contratos de audiência, metadata, Supabase Storage privado, retenção, remoção, RLS e auditoria. R2 está fora do MVP. | Aberto/bloqueado pelos demais contratos. |
 | Macro — ledger, RLS, grants e auditoria | Manifesto consolidado e harness de replay aceita extensão revisada depois da fundação. | Replay integral compatível, Advisors, deny-by-default, IDOR/BOLA, cross-tenant e fechamento das decisões abertas. | P0 antes de deploy amplo. |
 
 **Contagem oficial após a consolidação:** 3/37 famílias `local-green` =
@@ -66,7 +87,7 @@ fundação Auth é `remote-green`, mas não fecha ainda uma ação ou família A
 | Auth — login/logout/recovery/reset | Lifecycle descartável e pgTAP 29/29; Catalog recovery fail-closed corrigido/revisado em `5e8d2655`. | Integrar; 17 migrations intermediárias, clone/squash forward-only, DNS/hosting/SMTP/identity e E2E. | `local-green`/`not-deployed` |
 | Chat — listar/abrir/enviar/editar/anexar/receipts/revogar | `68d1217d` implementou gateway interno v2 local (migration, adapter, capabilities, MFA, tenant/IDOR, revogação e auditoria); Flutter relacionado 54/54. O harness canônico de replay foi corrigido em `1fca68b8` com 3/3 Pester, e o Docker voltou a responder. | Rodar o pgTAP local do gateway, validar replay limpo, wiring auth scope, anexos/Realtime, tenant A/B e persistência/reload; remoto permanece ausente e sem mutação. | `local-green` técnico / `blocked-supabase` para integração |
 | Convites — listar/detalhe/criar/reenviar/revogar | Produção permanece corretamente `UnavailableInviteRepository`; auditoria 10/10. Migration histórica foi rejeitada por realm people-based/backfill especulativo/issuer person. | Decidir OQ-039: capabilities Owner+AAL2, issuer interno separado sem backfill, evolução aditiva, legado read-only e Superadmin RPC-only; depois token/outbox/RLS/audit/E2E. | `blocked-decision` |
-| Avisos — lista/criar/editar/agendar/publicar/arquivar | Adapter produtivo composto; `c5085746` fail-closed; worker 2/2. SQL `20260827222500` auditado estaticamente: ACL revogada, FORCE RLS e RPCs SECURITY DEFINER com capability/AAL/grants específicos. | Replay pgTAP travou no Docker sem resíduos; OQ-038, OQ-041, Storage×R2, tenant A/B, persistência/reload e remoto. | `blocked-supabase` |
+| Avisos — lista/criar/editar/agendar/publicar/arquivar | Adapter produtivo composto; `c5085746` fail-closed; worker 2/2. SQL `20260827222500` auditado estaticamente: ACL revogada, FORCE RLS e RPCs SECURITY DEFINER com capability/AAL/grants específicos. | Replay pgTAP travou no Docker sem resíduos; OQ-038, OQ-041, Supabase Storage privado, tenant A/B, persistência/reload e remoto. R2 não é bloqueio do MVP. | `blocked-supabase` |
 | Instituições — list/options/detail/edit | Seis gateways internos v2 protegidos por pgTAP declarado de 20 asserts; Flutter composto em `d864f19a`. Remoto read-only confirma ausência de grants CRUD diretos de tabela. | Docker/replay/pgTAP real, hardening de EXECUTE privado remoto, Advisors, tenant A/B, reload e E2E. | `static-reviewed`; não local-green |
 | Instituições — create/status | Ausência explícita preservada; nenhum RPC legacy usado. | Contrato/gateway interno, capability, RLS/audit, replay e E2E. | `fail-closed` |
 | Unidades — list/options/create/edit/status | Drift `institution_type_id` local × `unit_type_id` remoto inventariado. | OQ-032/spec044, gateway interno nominal, replay/remoto/E2E. | `blocked-decision`/fail-closed |
@@ -77,7 +98,7 @@ fundação Auth é `remote-green`, mas não fecha ainda uma ação ou família A
 | Cardápios/Modelos | Schema/RPCs locais históricos inventariados. | Reconciliar drift, SECURITY DEFINER, composição produtiva, cleanup e E2E. | `blocked-supabase` |
 | Formulários — monitor/respostas/detalhe/arquivos | Projeções/RPCs de leitura compostas no Flutter em `236f12cd`: monitor, listagem, detalhe e jobs de arquivo. | Sessão/remoto autorizado, RLS/negativos, reload e E2E. | backend-read composto; não `remote-green` |
 | Formulários — criar/editar/publicar/testar/responder | Backend/DTO de comando incompletos. | Contexto `institution_id` autorizado, versão/request ID, occurrence/participation, segredo anônimo, RLS/audit e E2E. | `fail-closed` |
-| Importações | Backend cobre apenas Unidades. | RPC/Edge/jobs genéricos, idempotência, arquivos, audit e E2E. | `blocked-supabase` |
+| Importações | Nenhum backend adicional é exigido no MVP; o legado observado não autoriza expansão. | Nenhuma implementação agora. No encerramento formal do MVP, perguntar ao Owner se deseja implementar arquivos, parser, jobs, RPC/Edge, auditoria e integração. | `deferred-post-mvp`; não bloqueia Supabase/MVP |
 | Agenda — eventos/solicitações/aprovações | Nenhum backend produtivo comprovado. | Schema, RLS, RPCs, perguntas/respostas, notificações, mapa/privacy e E2E. | `blocked-supabase` |
 | Pessoas — detalhe/vínculos/reload | `superadmin_person_detail_v2` foi composto no Flutter em `d4a87af8`; contrato/envelope e falhas foram testados no cliente. | Replay pgTAP fresco, daemon Docker, negativos de sessão/permissão/MFA, remoto, persistência/reload real e E2E. | composição local; backend não promovido |
 | Pessoas — lista/criar/editar | Contratos legados inventariados. | Spec/gateway interno nominal de escrita, mutações/vínculos, RLS/audit, negativos, reload e E2E. | `fail-closed` |
@@ -87,7 +108,7 @@ fundação Auth é `remote-green`, mas não fecha ainda uma ação ou família A
 | Modelos de perfil | Dez wrappers/18 capabilities escritos sobre quatro tabelas herdadas; FORCE RLS/ACL revisados estaticamente. | P0 realm; autorização antes de lookup; anti-escalation cross-app; motivo obrigatório; replay/pgTAP/Advisors. | `static-reviewed` |
 | Perfis de cuidado | Fixtures Flutter somente. | OQ-003/OQ-040, schema/RLS/CRUD, dados sensíveis, audit e E2E. | `fail-closed` |
 | Medicação | Fixtures Flutter somente. | Base legal, prescrição/dose/evidência/retenção, RLS/CRUD/audit e E2E. | `blocked-decision` |
-| Acontece/Agora/Momentos/Perfil/publicadores | Nenhuma mutação backend. | Contratos, audiência, metadata Postgres, mídia R2, retenção/remoção, audit e E2E. | `blocked-decision` |
+| Acontece/Agora/Momentos/Perfil/publicadores | Nenhuma mutação backend. | Contratos, audiência, metadata Postgres, mídia em Supabase Storage privado, retenção/remoção, audit e prova de camada. R2 está fora do MVP. | `blocked-decision` pelos demais contratos |
 | Circulares | RPCs/RLS remotos históricos observados read-only; Flutter `/dev` agora cobre diretório e CRUD/publicação local em `5e714c16`. | Adapter produtivo, ator/capability, tenant A/B, persistência/reload e E2E; nenhuma promoção remota. | `audited` |
 
 ### Macroajustes Supabase da Etapa 2
@@ -98,7 +119,7 @@ fundação Auth é `remote-green`, mas não fecha ainda uma ação ou família A
 | Auth/realm interno | Lifecycle Auth local e contrato de sessão existem. | Eliminar gateways people-based para Superadmin; revalidar `session_id`, realm, membership e ator interno. |
 | Migrations/ledger | Remoto read-only termina em `20260821200000`; drift catalogado. | Replay integral compatível; não aplicar cauda em lote; OQ-041 antes de remoto. |
 | Auditoria/idempotência | Alguns wrappers têm versão, soft-delete, receipt e advisory lock. | Motivo obrigatório, ator interno, append/negativos, replay divergente e cobertura de todas as ações. |
-| Mídia/Storage/R2 | Separação ADR 0022 preservada. | Storage privado para identidade; R2 para conteúdo; autorização, URL curta, retenção e cleanup. |
+| Mídia/Supabase Storage | ADR 0030 define Supabase Storage privado para toda mídia do MVP. | Autorização server-side, bucket privado, URLs assinadas curtas, MIME/tamanho, retenção, remoção e cleanup. R2 não é pendência do MVP. |
 | Advisors/performance | Alertas inventariados. | Rodar Advisors pós-DDL autorizado, revisar SECURITY DEFINER e índices sem correção global cega. |
 
 ### Estruturas — Instituições v2 e hardening remoto
@@ -567,8 +588,8 @@ snapshot inicial deste rastreador, não uma conclusão definitiva.
 | 18 | Formulários: lista, criar, overview, editar/publicar, testar | CRUD, versionar, publicar, distribuir, agendar | `fail-closed` | F5 e contratos de lifecycle/remoto não foram integrados de forma reprodutível. |
 | 19 | Formulários: monitor, responder, respostas, detalhe | responder, autosave, anônimo, editar resposta, métricas, exportar | `fail-closed` | Triggers, capabilities, tenant e fluxo completo ainda apresentaram REDs. |
 | 20 | Formulários: arquivos e mídia | upload, resolver, baixar, expirar, excluir | `fail-closed` | Rotas foram removidas da composição até backend/Storage aprovados. |
-| 21 | Acontece | listar feed, criar/publicar, audiência, mídia, remover | `blocked-decision` | Contrato backend produtivo entre R2 e metadados Supabase precisa aprovação e implementação. |
-| 22 | Agora | listar, criar/publicar, audiência, mídia, expiração | `blocked-decision` | Contrato produtivo de publicação, audiência, R2 e metadados Supabase não foi aprovado/provado. |
+| 21 | Acontece | listar feed, criar/publicar, audiência, mídia, remover | `blocked-decision` | Contrato backend produtivo entre Supabase Storage privado e metadados Postgres precisa aprovação e implementação; R2 está fora do MVP. |
+| 22 | Agora | listar, criar/publicar, audiência, mídia, expiração | `blocked-decision` | Contrato produtivo de publicação, audiência, Supabase Storage privado e metadados Postgres não foi aprovado/provado; R2 está fora do MVP. |
 | 23 | Momentos | listar, visualizar, criar/publicar, mídia, audiência, remover | `blocked-decision` | Contrato backend de publicação, mídia, audiência e remoção continua protótipo. |
 | 24 | Para Você/perfil Principal | ler, filtrar contexto, editar dados permitidos | `blocked-decision` | Superfície de preview sem contrato produtivo completo. |
 | 25 | Segurança infantil: lista, criança, criar/editar autorização | CRUD, capabilities, suspensão, evidências, notificar | `audited` | Backend/Storage sensível e ownership precisam gate completo. |
@@ -612,7 +633,7 @@ produto inteiro. Recalcular após abrir as ações reais da linha.
 | 18 | Formulários — editor/publicação | `Completa` | 3–7 dias | Versão, distribuição, agenda e lifecycle. |
 | 19 | Formulários — respostas/monitor | `Completa` | 3–7 dias | Autosave, anonimato, métricas e exportação. |
 | 20 | Formulários — arquivos/mídia | `Completa` | 2–5 dias | Storage privado, expiração e exclusão. |
-| 21 | Acontece | `Avançada` após decisão | Recalcular após contrato | Integração R2/metadados ainda bloqueada. |
+| 21 | Acontece | `Avançada` após decisão | Recalcular após contrato | Integração Supabase Storage/metadados ainda bloqueada; R2 está fora do MVP. |
 | 22 | Agora | `Avançada` após decisão | Recalcular após contrato | Publicação, audiência e expiração não aprovadas. |
 | 23 | Momentos | `Avançada` após decisão | Recalcular após contrato | Publicação, mídia e remoção ainda protótipo. |
 | 24 | Para Você/perfil Principal | `Avançada` após decisão | Recalcular após contrato | Superfície produtiva ainda não definida. |

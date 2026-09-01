@@ -46,7 +46,9 @@ Regras globais:
 
 ## Seguranca, LGPD E Midia
 
-`service_role` e qualquer segredo equivalente nunca podem aparecer no cliente, em apps Flutter ou no site publico. Fotos de perfil e identidade usam Supabase Storage privado; conteudo operacional de Agora, Acontece e Momentos usa Cloudflare R2. Postgres/Supabase guarda metadados, permissoes, vinculos, ownership e trilha de auditoria de ambos. A separacao e regida pela ADR 0022 e nao autoriza bucket publico nem segredo no Flutter.
+`service_role` e qualquer segredo equivalente nunca podem aparecer no cliente, em apps Flutter ou no site publico. Durante o MVP, fotos de perfil, identidade e conteudo operacional usam Supabase Storage privado. Cloudflare R2 fica somente como evolucao a ser perguntada ao Owner no encerramento formal do MVP e nao bloqueia a Etapa 2. Postgres/Supabase guarda metadados, permissoes, vinculos, ownership e trilha de auditoria. As ADRs 0030 e 0031 nao autorizam bucket publico nem segredo no Flutter.
+
+Importacao e exportacao reais ficam adiadas para depois do MVP. Os botoes permanecem visiveis nas telas aplicaveis, com indisponibilidade honesta e sem picker, parser, job, arquivo, RPC ou persistencia. No encerramento formal do MVP, perguntar ao Owner se deseja implementar essas acoes.
 
 Dados pessoais, dados de criancas, CPF, midias, mensagens e logs devem respeitar LGPD, minimizacao, base legal, retencao definida, rastreabilidade e melhor interesse da crianca. Lacunas juridicas devem ficar abertas ate decisao formal.
 

@@ -12,13 +12,45 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "08776D3A2953C14D3EA20A8ECC8B35245BF27EBF8B6B5140A01AC1DF492FDB7A"
-supabase_tracker_sha256: "4ECE2FA734993E164057469C92C1CE3A4CEED64CD0095C3098E852F5F80FA764"
+flutter_tracker_sha256: "55936D7DEAFABA660B9447B991E6DAE28C2F9B7BF264062349A882BBC700A7EE"
+supabase_tracker_sha256: "1764FD866C269FDB0D946F75D540D75A09335F972833E5A9F3A952292ABBFF16"
 ---
 
 # Pendências Coelo — Flutter integrado ao Supabase
 
 ## 0. Etapa 2 — controlador recuperável de conclusão ponta a ponta
+
+> **Regras do MVP aprovadas em 2026-09-01:** fluxos reais de importação e
+> exportação estão `deferred-post-mvp`; os botões continuam visíveis e exibem
+> indisponibilidade honesta, mas não exigem backend nem E2E. Toda mídia privada
+> do MVP usa Supabase Storage; Cloudflare R2 não existe no ambiente atual e não
+> é gate da Etapa 2. Ver ADRs 0030 e 0031.
+
+O baseline integrado 0/202 é preservado abaixo somente para rastreabilidade
+pré-ADR. O percentual pós-decisão ainda não é calculável: é obrigatório
+classificar nominalmente os `action_id` antes de reduzir o denominador, sem
+contar item diferido como concluído. No encerramento formal do MVP, o
+coordenador deve perguntar ao Owner se deseja implementar import/export real e
+se deseja avaliar evolução de Supabase Storage para R2.
+
+| Candidatos ao crosswalk `deferred-post-mvp` | Regra |
+| --- | --- |
+| `institutions.import`, `institutions.export`, `units.import`, `units.export`, `units.people-export`, `groups.import`, `groups.export`, `attendance.export`, `forms.export`, `audit.export` | Flutter mantém o botão e sua mensagem; backend e E2E reais ficam fora do MVP. |
+| `imports.list`, `imports.create`, `imports.upload`, `imports.preview`, `imports.confirm`, `imports.status`, `imports.download` | Revisar se cada ID representa apenas arquivo real ou também a tela informativa antes de retirar do denominador integrado. |
+| `profile-files.import`, `profile-files.preview`, `profile-files.confirm`, `profile-files.status`, `profile-files.export`, `profile-files.download` | Separar UI visível de operação real antes do recálculo. |
+| Atividades, Circulares, Planos, Modelos de acesso, Perfis de cuidado, Medicação, Pessoas e Usuários internos sem ID exclusivo de arquivo | Diferir somente o subcontrole de import/export; não retirar a ação inteira do MVP. |
+
+O inventário remoto read-only confirmou `import-export-jobs` v2 ativa e
+migrations históricas de import/export já aplicadas antes da ADR 0031. Elas
+ficam congeladas e fora do wiring integrado do MVP; não contam como ação pronta
+ou verificada. Nenhuma remoção destrutiva foi autorizada. A reconciliação futura
+de produção deve ser forward-only e coordenada.
+
+No Flutter consolidado, Turmas e Unidade/Pessoas já preservam os botões;
+Pessoas, Assiduidade e Formulários/Respostas ainda precisam exibi-los na rota
+real, e Usuários internos e Perfis/Modelos precisam trocar o estado desabilitado
+por clique informativo. Essa correção é exclusivamente Flutter: o clique não
+pode alcançar os artefatos legados do Supabase.
 
 ### Checkpoint final de consolidação — 2026-09-01
 
@@ -33,9 +65,9 @@ de branch está superada somente no aspecto Git.
 | Auth | Flutter Auth + Supabase Auth hospedado + lifecycle + migration de adiamento de MFA. | Executar navegador/SMTP reais, login → sessão → reload → logout/revogação e negativos; registrar persistência/auditoria. |
 | Pessoas/Acessos/Saúde | Telas, adapters, detalhe de Pessoa e migrations candidatas. | Corrigir P0 de realm antes de lookup, pgTAP vermelho, decisões sensíveis; depois permitido/negado/revogado e reload. |
 | Estruturas/Avaliações | Telas, gateways e migrations no mesmo código. | Resolver hierarquia, replay e gates de autorização; escolher uma ação e provar tenant A/B, persistência e reload. |
-| Operações | Planos, Cardápios, Formulários, Importações e Agenda compostos. | Fechar commands/jobs/backend por ação e executar o primeiro fluxo clique → Supabase → persistência → nova leitura. |
+| Operações | Planos, Cardápios, Formulários, Importações e Agenda compostos; botões de import/export permanecem visíveis e honestamente indisponíveis. | Fechar commands/backend que pertencem ao MVP por ação e executar o primeiro fluxo clique → Supabase → persistência → nova leitura. Import/export real não participa deste gate. |
 | Comunicação | Chat é canônico; o botão “Mensagens” do Coelo (Principal) abre a mesma rota em prévia e produção, preservando o retorno; Avisos, Convites e Circulares estão compostos sem rotas duplicadas. | Replay/pgTAP, auth scope, mídia/outbox/Realtime, tenant A/B, revogação e reload; então rodar E2E. |
-| Menu Coelo (Principal) | Para Você, Acontece, Agora, Momentos e Perfil estão dentro do Superadmin. | Fechar backend/audiência/R2/publicadores e comprovar cada rota real ponta a ponta. |
+| Menu Coelo (Principal) | Para Você, Acontece, Agora, Momentos e Perfil estão dentro do Superadmin. | Fechar backend/audiência/Supabase Storage/publicadores e comprovar cada rota real ponta a ponta. R2 está fora do MVP. |
 | Macro — cabeçalho, shell e migrations | Cabeçalho compartilhado e capabilities combinadas; manifesto único ordenado. | Regressão visual final e replay integral antes do primeiro deploy amplo. |
 
 **Contagem oficial após a consolidação:** 0/202 `ready-for-e2e` = **0,00%** e
@@ -77,13 +109,13 @@ descontinuada porque misturava camadas e duplicava responsabilidades.
 | Auth — login/recover/reset/logout | Local-green; Catalog recovery fail-closed corrigido/revisado em `5e8d2655`. | Auth-only local-green; remoto not-deployed. | Integrar, ledger/replay, 17 migrations, redirect/SMTP/hosting/identity e E2E. | Gate local sem P1 conhecido. |
 | Chat — list/open/send/edit/attach/receipts/revoke | UI local preservada; `68d1217d` acrescentou gateway interno v2 e adapter locais, com 54/54 Flutter. Harness de replay corrigido em `1fca68b8` (3/3 Pester) e Docker operacional. | pgTAP/replay do gateway, wiring auth scope, remoto e E2E ainda ausentes. | Provar autorização, tenant A/B, revogação, mídia/Realtime, persistência/reload/audit e E2E antes do cutover. | Avanço local sem promoção integrada. |
 | Convites — list/detail/create/resend/revoke | `/dev` local-green. | Produção Unavailable; migration histórica rejeitada; OQ-039 sem decisão. | Aprovar realm/Owner+AAL2/issuer interno, implementar RPC-only, token/outbox, RLS, reload/audit/E2E. | `blocked-decision`; 10/10 auditoria. |
-| Avisos — list/create/edit/schedule/publish/archive | Lista local; `c5085746` fail-closed; Notices 96/96 e adapter 5/5. | Worker 2/2 e SQL estático auditado; replay Docker travou sem resíduos. | OQ-038/OQ-041/Storage×R2, tenant A/B, persistência/reload/audit/E2E. | Sem promoção integrada. |
+| Avisos — list/create/edit/schedule/publish/archive | Lista local; `c5085746` fail-closed; Notices 96/96 e adapter 5/5. | Worker 2/2 e SQL estático auditado; replay Docker travou sem resíduos. | OQ-038/OQ-041, Supabase Storage privado, tenant A/B, persistência/reload/audit/E2E. R2 não participa do gate. | Sem promoção integrada. |
 | Instituições — list/options/detail/edit | `d864f19a` compõe seis gateways v2; Flutter 6/6. | pgTAP 20 asserts somente declarado/static-reviewed. | Replay, sessão/realm/capability, tenant A/B, reload e E2E. | Composição local; sem promoção. |
 | Instituições — create/status | UI fail-closed. | Gateway ausente. | Contrato, backend/RLS/audit, cutover/reload/E2E. | Pendente. |
 | Unidades/Turmas — CRUD/status | UI local/fail-closed. | Gateways internos bloqueados por decisões/drift. | OQ/specs, backend nominal, replay, cutover e E2E. | Pendente. |
 | Atividades/Modelos | UI local. | Migration/unit scope apenas estática. | Replay, adapter produtivo, autorizado/negado/reload e E2E. | Aguardando replay. |
 | Avaliações | UI local/fail-closed. | Doze RPCs/tabelas ausentes; pacote em desenvolvimento. | Schema/RLS/RPC, concorrência, audit, cutover, reload e E2E. | Backend local em execução. |
-| Planos/Cardápios/Importações/Agenda | UI `/dev` local-green. | Drift e lacunas por domínio. | Integrar Flutter, reconciliar ledger, implementar/compor backend e provar ações E2E. | Inventário de drift em execução. |
+| Planos/Cardápios/Importações/Agenda | UI `/dev` local-green; botões de import/export permanecem como UI futura. | Drift e lacunas dos domínios que pertencem ao MVP. | Reconciliar ledger, implementar/compor backend das ações MVP e provar E2E. Import/export real está `deferred-post-mvp` e não entra no gate. | Inventário de drift em execução. |
 | Formulários — monitor/respostas/detalhe/arquivos | `236f12cd` conecta quatro leituras produtivas; 7/7 rotas. | RPC/projeção existente, sem sessão remota comprovada. | Integrar; RLS/negativos, reload, arquivos e E2E. | Backend-read composto localmente. |
 | Formulários — criar/editar/publicar/testar/responder | UI/editor local; produção fail-closed. | DTO/contexto/versionamento incompletos. | Contrato autorizado, commands/RLS/audit, persistência/reload e E2E. | Pendente. |
 | Pessoas — detalhe/vínculos/reload | `d4a87af8` compõe `superadmin_person_detail_v2`; 16/16 clientes verdes. | RPC contratual sem replay fresco/remoto. | Corrigir fixture/mapa/goldens; replay, sessão/permissão/MFA, persistência/reload e E2E. | Composição local; promoção retida. |
@@ -93,9 +125,9 @@ descontinuada porque misturava camadas e duplicava responsabilidades.
 | Perfis e permissões | UI parcial; detalhe/goldens abertos. | P0 realm people-based. | Redesenho interno, anti-escalation, atribuir/excluir, replay/cutover/E2E. | Integração retida. |
 | Modelos de perfil | UI/adapter parciais. | Static-reviewed com P0/P1; pgTAP não executado. | Corrigir realm/gates/audit/filtro/paginação, replay, remoto e E2E. | Integração retida. |
 | Perfis de cuidado/Medicação | UI fake local. | Fail-closed/blocked-decision. | Decisões, backend sensível, RLS/audit, persistência/reload/E2E. | Aguardando decisões e pacote próprio. |
-| Acontece/Para Você/Agora/Perfil/publicadores | Rotas/histórico local; revisão ainda aberta. | Backend/R2 bloqueado por decisões. | Fechar Flutter, contratos, audience/R2/RLS/audit e E2E. | Fila após Circulares. |
-| Momentos — view/create/publish/remove | View local-green 38/38; demais bloqueadas. | Todos bloqueados por decisão. | Integrar view; contratos/metadata/R2/audience/removal/reload/E2E. | View fechado localmente. |
-| Circulares — view/menu/arquivos | `circulars.view` local-green; `5e714c16` consolidou diretório, busca/paginação, Importar/Exportar, 14 dados `/dev`, responsividade e goldens. | RPCs/RLS históricos, sem adapter final; arquivos sem prova remota. | Integrar Flutter seletivamente; ator/capability, callbacks reais, cutover, tenant A/B, reload/audit/E2E. | Flutter `/dev` fechado; backend inalterado. |
+| Acontece/Para Você/Agora/Perfil/publicadores | Rotas/histórico local; revisão ainda aberta. | Backend e Supabase Storage privado bloqueados pelos contratos restantes. | Fechar Flutter, contratos, audience/Storage/RLS/audit e E2E. R2 está fora do MVP. | Fila após Circulares. |
+| Momentos — view/create/publish/remove | View local-green 38/38; demais bloqueadas. | Todos bloqueados por decisão. | Integrar view; contratos/metadata/Supabase Storage/audience/removal/reload/E2E. R2 está fora do MVP. | View fechado localmente. |
+| Circulares — view/menu/arquivos | `circulars.view` local-green; `5e714c16` consolidou diretório, busca/paginação, botões Importar/Exportar, 14 dados `/dev`, responsividade e goldens. | Fluxos reais de arquivo foram retirados do MVP. | Validar somente UI/mensagem dos botões. Callbacks, backend e E2E de import/export estão `deferred-post-mvp`. | Flutter `/dev` fechado; não há gate integrado de arquivo no MVP. |
 | Circulares — criar/editar/detalhe/publicar | `5e714c16` entregou criar, detalhe, editar, salvar e publicar mutáveis no `/dev`. | Produção continua fail-closed e os contratos remotos são parciais. | Adapter, autorização, estados negativos, persistência/reload e E2E. | Local-green Flutter; integração pendente. |
 
 ### Macroajustes integrados da Etapa 2
@@ -108,7 +140,7 @@ descontinuada porque misturava camadas e duplicava responsabilidades.
 | Migrations/ledger/remoto | Inventário read-only até `20260821200000`; remoto sem mutação. | OQ-041, replay compatível e pacote nominal; nunca aplicar cauda em lote. |
 | Persistência/reload/auditoria | Quase toda evidência atual é fixture/local. | Escrever, recarregar/nova sessão, negar revogado, auditar ator/efeitos e provar E2E. |
 | Responsividade/visual | Várias matrizes locais; Momentos e Comunicação com gates verdes. | Dívida golden de Acessos e regressão visual depois de todos os merges. |
-| Mídia/arquivos | Separação Storage/R2 documentada; placeholders honestos. | Upload/download real, autorização, expiração, retenção, remoção e cleanup. |
+| Mídia/arquivos | Supabase Storage privado é o único provedor do MVP; placeholders honestos de import/export permanecem. | Para mídia do MVP: upload/download autorizado, expiração, retenção, remoção e cleanup. Import/export real e R2 estão fora do MVP. |
 | Consolidação Git | Comunicação integrada; demais branches preservadas. | Reviews/correções, cherry-pick, regressão, hashes dos MDs e só então limpar worktrees. |
 
 ### Instituições v2 — composição local sem replay
@@ -296,7 +328,7 @@ ação para “verified-e2e”.
 | INT-GEN-004 | Fakes, fixtures e caminhos produtivos | Avançada | 1–2 d | Um fake pode simular integração inexistente. |
 | INT-GEN-005 | Sessão, autenticação e MFA | Completa | 2–5 d | Segurança transversal e revogação. |
 | INT-GEN-006 | RLS, IDOR e cross-tenant | Completa | 2–5 d | Impede acesso indevido entre instituições. |
-| INT-GEN-007 | Storage/R2 e ciclo de arquivos | Completa | 2–5 d | Privacidade, expiração e remoção são inseparáveis. |
+| INT-GEN-007 | Supabase Storage e ciclo de mídia | Completa | 2–5 d | Privacidade, expiração e remoção são inseparáveis; R2 está fora do MVP. |
 | INT-GEN-008 | Tradução de erros e nova tentativa | Avançada | 1–2 d | UI deve refletir corretamente falhas reais. |
 | INT-GEN-009 | Gates Flutter, Supabase e E2E | Completa | 2–5 d | Só a combinação sustenta conclusão. |
 | INT-GEN-010 | Rastreamento, checkpoint e ETA | Intermediária | 2–6 h | Permite retomada sem perder pendências. |
@@ -328,7 +360,7 @@ tela integrada concluída, o pacote necessário continua sendo **Completa**.
 | forms_authoring | listar, criar, overview, editar, publicar, testar | Completa | 2–5 d | Editor, versão e publicação. |
 | forms_responses | monitorar, responder, listar, detalhe, exportar | Completa | 2–5 d | Respostas, autorização e exportação. |
 | forms_files | upload, resolver, baixar, expirar, excluir | Completa | 2–5 d | Arquivos privados e ciclo integral. |
-| acontece | feed, criar, publicar, remover | Completa após decisão | 2–5 d | Mídia R2, audiência e publicação. |
+| acontece | feed, criar, publicar, remover | Completa após decisão | 2–5 d | Mídia em Supabase Storage privado, audiência e publicação; R2 está fora do MVP. |
 | agora | visualizar, criar, publicar, expirar | Completa após decisão | 2–5 d | Expiração e audiência server-side. |
 | momentos | visualizar, criar, publicar, remover | Completa após decisão | 2–5 d | Mídia, audiência e remoção. |
 | principal_profile | Para Você, perfil, editar | Completa após decisão | 2–5 d | Dados pessoais e escopo familiar. |
@@ -757,9 +789,9 @@ após liberação; o esforço Flutter permanece o registrado no rastreador próp
 | 18 | `forms_authoring` | `local-green`: `forms.list`, `forms.overview`, `forms.edit`; `audited`: `forms.create`; `blocked-decision`: `forms.publish`, `forms.test` | `fail-closed`: todos os 6 IDs | `blocked-supabase`: todos os 6 IDs | Forms UI → API/repository → route-context/RPC → versions/applications → RLS/audit/reload | Editor local/catalogado passou 24/24 non-golden e Forms tem zero erro; rota produtiva, 150%/200%, F5, autorização e closure backend continuam ausentes; integrar migration/RPC/pgTAP e provar versionar/publicar/distribuir; 3–5 d + E2E 1–2 d. |
 | 19 | `forms_responses` | `local-green`: `forms.respond`; `audited`: `forms.monitor`, `forms.responses`, `forms.response-detail`, `forms.export` | `fail-closed`: todos os 5 IDs | `blocked-supabase`: todos os 5 IDs | Response UI → API/autosave → eligibility RPC → respostas/revisões → RLS/export job/audit | `forms.respond` está verde apenas no placeholder fail-closed: 1/1 teste e zero dos 32 erros anteriores; delta preservado externamente e diagnóstico Catálogo mantido. Faltam contrato produtivo, autosave/edição/métricas/export, A/B e E2E; 4–6 d + E2E 1–2 d. |
 | 20 | `forms_files` | `local-green`: `forms.resolve-file`, `forms.download`; `audited`: `forms.upload`, `forms.expire-file`, `forms.delete-file` | `fail-closed`: todos os 5 IDs | `blocked-supabase`: todos os 5 IDs | Forms files UI → resolver/Edge → auth RPC → Storage privado → ticket HTTPS → expiry/delete/audit | E0/E1/E2; resolver fora da composição e sem deploy; provar zero `storage_path`, TTL, revogação, cleanup e A/B; 2–4 d + E2E 1 d. |
-| 21 | `acontece` | `local-green`: `acontece.feed`; `blocked-decision`: `acontece.create`, `acontece.publish`, `acontece.remove` | `blocked-decision`: todos os 4 IDs | `blocked-decision`: todos os 4 IDs | Acontece UI → metadata repository → Supabase RLS + worker R2 → audience/audit | E2; contrato R2/Supabase, audiência e retenção não aprovado; decisão 1–2 d + 4–6 d + E2E. |
-| 22 | `agora` | `local-green`: `agora.view`; `blocked-decision`: `agora.create`, `agora.publish`, `agora.expire` | `blocked-decision`: todos os 4 IDs | `blocked-decision`: todos os 4 IDs | Agora UI → metadata repository → Supabase RLS + worker R2 → expiry/audit | E2; contrato temporal/audiência/mídia não aprovado; decisão 1–2 d + 3–5 d + E2E. |
-| 23 | `momentos` | `local-green`: `momentos.view`; `blocked-decision`: `momentos.create`, `momentos.publish`, `momentos.remove` | `blocked-decision`: todos os 4 IDs | `blocked-decision`: todos os 4 IDs | Momentos UI → metadata repository → Supabase RLS + worker R2 → audience/removal/audit | E2; contrato de publicação/mídia/retenção não aprovado; decisão 1–2 d + 3–5 d + E2E. |
+| 21 | `acontece` | `local-green`: `acontece.feed`; `blocked-decision`: `acontece.create`, `acontece.publish`, `acontece.remove` | `blocked-decision`: todos os 4 IDs | `blocked-decision`: todos os 4 IDs | Acontece UI → metadata repository → Supabase RLS + Storage privado → audience/audit | E2; contrato Storage/metadados, audiência e retenção não aprovado; R2 fora do MVP; decisão 1–2 d + 4–6 d + E2E. |
+| 22 | `agora` | `local-green`: `agora.view`; `blocked-decision`: `agora.create`, `agora.publish`, `agora.expire` | `blocked-decision`: todos os 4 IDs | `blocked-decision`: todos os 4 IDs | Agora UI → metadata repository → Supabase RLS + Storage privado → expiry/audit | E2; contrato temporal/audiência/mídia não aprovado; R2 fora do MVP; decisão 1–2 d + 3–5 d + E2E. |
+| 23 | `momentos` | `local-green`: `momentos.view`; `blocked-decision`: `momentos.create`, `momentos.publish`, `momentos.remove` | `blocked-decision`: todos os 4 IDs | `blocked-decision`: todos os 4 IDs | Momentos UI → metadata repository → Supabase RLS + Storage privado → audience/removal/audit | E2; contrato de publicação/mídia/retenção não aprovado; R2 fora do MVP; decisão 1–2 d + 3–5 d + E2E. |
 | 24 | `principal_profile` | `local-green`: `principal.for-you`, `principal.profile-view`; `blocked-decision`: `principal.profile-edit` | `blocked-decision`: todos os 3 IDs | `blocked-decision`: todos os 3 IDs | Principal UI → context/profile repository → RLS de pessoa/vínculo → audit/reload | E2; campos permitidos, ownership e edição produtiva não definidos; decisão 1 d + 2–4 d + E2E. |
 | 25 | `child_safety` | `local-green`: `child-safety.list`, `child-safety.child`, `child-safety.create`, `child-safety.edit`; `audited`: `child-safety.suspend` | `audited`: todos os 5 IDs | `not-reviewed`: todos os 5 IDs | Safety UI → repository → RPC sensível → RLS/Storage privado → notification/audit/reload | E0/E1/E2; falta ledger, AAL2/capability, ownership, suspensão, evidência e A/B; 2–4 d + E2E 1 d. |
 | 26 | `health_care` | `local-green`: `health-care.list`, `health-care.create`, `health-care.edit`; estado Flutter de `health-care.detail` pertence ao rastreador Flutter | `fail-closed`: todos os 4 IDs; trabalho Supabase local liberado pelo Owner em 2026-08-28 | `blocked-supabase`: todos os 4 IDs | Health UI → Unavailable/repository → RPC sensível → RLS/Storage privado → history/audit | E0/E2; implementar backend técnico com dados sintéticos, minimização e isolamento; jurídico/retenção ficam como gate posterior de produção, não bloqueio do trabalho local; depois cutover + E2E. |

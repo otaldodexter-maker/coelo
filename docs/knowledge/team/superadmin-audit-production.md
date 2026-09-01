@@ -14,8 +14,9 @@ review_owner: Coelo Product
 
 Auditoria é um diretório somente leitura sobre evidências minimizadas em
 `audit.audit_logs`. O Flutter nunca consulta o schema diretamente: lista,
-detalhe e exportação passam por contratos server-side que revalidam pessoa,
-vínculo, capability e escopo em cada requisição.
+e detalhe passam por contratos server-side que revalidam pessoa, vínculo,
+capability e escopo em cada requisição. Exportação real está fora do MVP pela
+ADR 0031; o botão permanece visível com mensagem de disponibilidade futura.
 
 Cada evento preserva ator e papel/contexto, instituição quando aplicável, ação,
 recurso, before/after minimizado, motivo, correlation id, origem, instante e
@@ -23,8 +24,8 @@ resultado. Eventos não podem ser editados ou excluídos por papéis de aplicaç
 A retenção permanece indefinida até decisão jurídica formal; não existe expurgo
 automático.
 
-`audit.read` autoriza consulta. Exportar é uma capability separada,
-`audit.export`, exige AAL2 e gera job auditado com CSV/XLSX privado e temporário.
+`audit.read` autoriza consulta. `audit.export` permanece como capability de
+contrato futuro, mas não gera job, CSV ou XLSX durante o MVP.
 Busca, filtros, ordenação, contagem e cursor são executados no servidor. A lista
 não carrega o diff; o detalhe o busca sob demanda para evitar N+1 e exposição
 desnecessária.

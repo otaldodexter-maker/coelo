@@ -7,6 +7,10 @@ generated_at: "2026-08-21"
 
 # ADR 0027 — Circulares versionadas e mídia privada no Supabase Storage
 
+> **Complemento supersedente do MVP:** a ADR 0030 generaliza Supabase Storage
+> privado para toda mídia do MVP. O contexto abaixo que apresenta R2 como regra
+> vigente permanece apenas histórico.
+
 ## Contexto
 
 As ADRs 0010 e 0022 reservam Cloudflare R2 para mídia operacional, enquanto a

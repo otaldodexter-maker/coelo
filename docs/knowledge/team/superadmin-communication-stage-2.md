@@ -31,4 +31,5 @@ publica, pausa, reativa e inativa conteúdo textual; Conteúdo e Operações glo
 podem ler. Os estados são rascunho, agendado, ativo, pausado, expirado e
 inativo; expirado/inativo são terminais. Os estados legados publicado/arquivado
 são convertidos para ativo/inativo. Mídia permanece indisponível de modo seguro
-até o gateway R2 aprovado, sem bloquear o CRUD textual.
+até o gateway autorizado de Supabase Storage privado, sem bloquear o CRUD
+textual. R2 está fora do MVP conforme ADR 0030.

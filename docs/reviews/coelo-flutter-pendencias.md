@@ -14,6 +14,29 @@ visual_program_accepted_count: 0
 
 ## 0. Etapa 2 — resumo recuperável do que foi feito e do que falta
 
+> **Regra do MVP aprovada em 2026-09-01:** importação e exportação reais estão
+> fora do recorte. Os botões permanecem visíveis e devem informar
+> honestamente que a função ficará disponível depois do MVP. Não são exigidos
+> picker, arquivo, parser, job, RPC, Edge Function, persistência ou E2E para
+> fechar o lado Flutter; permanecem exigidos layout, responsividade,
+> acessibilidade, acionamento e mensagem correta. Ver ADR 0031.
+
+O denominador Flutter permanece em 207 porque os controles visuais continuam
+no MVP. A decisão não promove automaticamente nenhum `action_id`: botões
+ocultos ou removidos devem ser restaurados e só podem atingir `verified` após
+prova de visibilidade, responsividade, acessibilidade e mensagem explícita de
+disponibilidade depois do MVP. No encerramento formal do MVP, o coordenador
+deve perguntar ao Owner se deseja implementar os fluxos reais.
+
+**Auditoria do código consolidado:** Turmas (`groups.import/export`) e
+Unidade/Pessoas (`units.people-export`) já exibem os controles. Pessoas oculta
+import/export na rota produtiva; Assiduidade não possui `attendance.export`;
+Formulários/Respostas desabilita ou substitui `forms.export`; Usuários internos
+e Perfis/Modelos exibem controles desabilitados. Nenhuma superfície usa ainda
+a frase normativa “Disponível depois do MVP”. O próximo pacote Flutter deve
+restaurar/habilitar somente o clique informativo e seus testes, sem conectar
+qualquer fluxo real.
+
 ### Checkpoint final de consolidação — 2026-09-01
 
 As implementações recebidas foram reunidas no mesmo histórico Git e a árvore
@@ -28,7 +51,7 @@ estado do `action_id`.
 | Auth — login, recovery, reset e logout | Sessão, guards, recuperação confinada, limpeza e adiamento explícito de MFA interno até o gate do MVP. | Smoke humano em navegador, goldens remanescentes e conciliação por `action_id` antes de promover de `local-green`. | 51/51 testes Auth; analyzer global verde. |
 | Pessoas, Segurança da criança, Usuários internos, Perfis, Modelos, Saúde e Medicação | Diretórios, wizards, detalhe produtivo de Pessoa, estados fail-closed e contratos locais foram preservados. | 19/31 ações do recorte ainda abertas; corrigir realm/lookup/autorização dos perfis, dívida visual e decisões de cuidado/medicação. | 73 testes verdes; 7 grupos visuais/golden ainda vermelhos ou obsoletos. |
 | Instituições, Unidades, Turmas, Atividades e Avaliações | Gateways e adapters locais, composição de Instituições e superfícies de Estruturas incorporados. | Avaliações são candidatas a até 5 promoções locais, mas exigem revisão por ID; hierarquia de Unidade e backend produtivo seguem abertos. | 449/449 testes funcionais; clipping mobile visual ainda aberto. |
-| Planos, Cardápios, Formulários, Importações e Agenda | Diretórios, editores, rotas e leituras produtivas de Formulários consolidados. | Commands produtivos, arquivos, mapas, import/export e regressão visual por ação; nenhuma promoção em bloco. | 344/344 testes no repasse da frente. |
+| Planos, Cardápios, Formulários, Importações e Agenda | Diretórios, editores, rotas e leituras produtivas de Formulários consolidados. Os botões de importar/exportar permanecem visíveis com indisponibilidade honesta. | Commands produtivos que não sejam import/export, arquivos próprios de Formulários, mapas e regressão visual por ação; nenhuma promoção em bloco. Import/export real está `deferred-post-mvp`. | 344/344 testes no repasse da frente. |
 | Chat, Avisos, Convites e Circulares | Chat com ownership único, rotas/composer, avisos, convites e CRUD local de Circulares consolidados no Superadmin. O botão visível “Mensagens” do Coelo (Principal) abre Chat em prévia e produção e retorna à origem correta. | Estados remotos, anexos, erros/retry e prova visual/manual das ações ainda não certificadas. | 301/301 no repasse; Chat+Circulares 18/18 após o merge. |
 | Menu Coelo (Principal) — Para Você, Acontece, Agora, Momentos e Perfil | Rotas reais e de prévia, runtime context e viewer de Momentos preservados dentro do Superadmin. | Publicadores, regressão visual conjunta, estados negativos e aprovação por `action_id`. | 17/17 testes focados; analyzer global verde. |
 | Macro — cabeçalho mobile, shell e navegação | Composição única do shell, capabilities combinadas e cabeçalho compartilhado incorporados no Superadmin inteiro. | Executar aprovação visual manual/goldens no conjunto final de larguras, temas e texto ampliado. | Analyzer global verde; sem alteração em Admin, Site ou app Principal. |
@@ -84,22 +107,22 @@ reconciliação sem duplicidade.
 | Avisos — Diretório | `notices.list` | Cards/tabela, filtros, preview, paginação, responsividade e goldens locais. | Repository produtivo e reload. | `local-green` |
 | Avisos — Criar/editar/agendar/publicar/arquivar | `notices.create`, `notices.edit`, `notices.schedule`, `notices.publish`, `notices.archive` | Frame/wizard local parcial; `c5085746` falha fechado em status publicado/arquivado/desconhecido; gate Notices 96/96, adapter 5/5 e analyzer verdes. | OQ-038, commands/lifecycle, dirty state, timezone, duplo envio, replay Docker e reload. | `audited`/fail-closed |
 | Instituições — Diretório/busca/filtros/paginação/detalhe/editar | `institutions.list`, `institutions.search_filter`, `institutions.read`, `institutions.edit` | `d864f19a` usa gateways internos v2 para diretório/opções/detalhe/edit core; paginação 500→lotes 100, idempotência/reload autoritativo; 6/6. | Integrar/retestar; replay pgTAP, regressão, remoto e E2E. | composição local; promoção retida |
-| Instituições — Criar/status/arquivos | `institutions.create` e ações correlatas | UI local/fail-closed. | Gateway interno aprovado para create/status, import/export real e todos os estados. | fail-closed |
+| Instituições — Criar/status/arquivos | `institutions.create` e ações correlatas | UI local/fail-closed; botões de importar/exportar devem permanecer visíveis e honestamente indisponíveis. | Gateway interno aprovado para create/status e todos os estados. Import/export real está `deferred-post-mvp`. | fail-closed |
 | Unidades — Diretório/detalhe/criar/editar/arquivos | `units.*` | UI `/dev` e adapter candidato. | Gateway interno nominal; ações produtivas e reload. | local/fail-closed |
-| Turmas — Diretório/detalhe/criar/editar/membros/arquivos | `groups.*` | UI `/dev`, paginação, métricas e edição local. | Gateway interno nominal, membros produtivos, import/export e reload. | local/fail-closed |
+| Turmas — Diretório/detalhe/criar/editar/membros/arquivos | `groups.*` | UI `/dev`, paginação, métricas e edição local; botões de importar/exportar visíveis com mensagem futura. | Gateway interno nominal, membros produtivos e reload. Import/export real está `deferred-post-mvp`. | local/fail-closed |
 | Atividades/Modelos — Diretórios/criar/editar/duplicar | `activities.*`, `activity_templates.*` | UI local, validações temporais e duplicação candidata. | Integrar/retestar; replay do escopo por Unidade e composição produtiva. | local/static-review |
 | Avaliações — Configurar/lançar/diário/fechar/reabrir | `assessments.*`, `activities.assessment` | UI `/dev` e rotas locais. | Doze RPCs ausentes, estados produtivos, conflitos/reload e regressão. | local/fail-closed |
-| Planos | `plans.*` | Diretório, filtros, paginação e CRUD fake locais. | Review/integrar branch; import/export e repository produtivo. | `local-green` `/dev` |
+| Planos | `plans.*` | Diretório, filtros, paginação e CRUD fake locais; botões de import/export mantidos. | Revisar regressão e repository produtivo. Fluxo real de import/export está `deferred-post-mvp`. | `local-green` `/dev` |
 | Cardápios/Modelos | `meal-plans.*` | Diretório, vínculos, período, recorrência, revisão/publicação fake. | Integrar; conflitos, upload/publicação e repository produtivos. | `local-green` `/dev` |
 | Formulários — Diretório/editor/criar/editar/publicar/testar/responder | `forms.list`, `forms.create`, `forms.edit`, `forms.publish`, `forms.test`, `forms.respond` | Diretório/editor/agendamento locais. | Commands seguem fail-closed: trocar `local-preview` por `institution_id` autorizado, versão/request ID, occurrence/participation e segredo anônimo. | local/fail-closed |
 | Formulários — Monitor/respostas/detalhe/arquivos | `forms.monitor`, `forms.responses`, `forms.response-detail`, `forms.files` | `236f12cd` remove conteúdo estático e conecta rotas produtivas a `getMonitor`, `listResponses`, `getResponseDetail` e `listFileJobs`; 7/7. | Integrar branch; sessão real, estados remotos, reload e E2E. | backend-read composto localmente |
-| Importações | `imports.*` | Hub, paginação e wizard local com indisponibilidade honesta. | Entidades restantes, jobs/arquivos reais e integração produtiva. | `local-green` `/dev` |
+| Importações | `imports.*` | Hub, paginação e botões locais com indisponibilidade honesta. | Validar apenas UI, responsividade, acessibilidade e mensagem. Jobs, arquivos e integração produtiva estão `deferred-post-mvp` e não bloqueiam o MVP. | `local-green` `/dev`; backend diferido |
 | Agenda — Calendário/lista/detalhe/criar/editar | `agenda.view`, `agenda.detail`, `agenda.create`, `agenda.edit` | Calendário/lista/wizard, recorrência, perguntas e localização visual locais. | Integrar; mapa/geocodificação real, persistência e estados produtivos. | `local-green` `/dev` |
 | Agenda — Solicitações/aprovações/permissões | `agenda.request`, `agenda.permissions` | Fluxos locais; Permissões redirecionada para Perfis. | Elegibilidade, autorização produtiva, notificações e reload. | `local-green` `/dev` |
 | Pessoas — Lista/criar/editar | `people.list`, `people.create`, `people.edit` | Diretório e wizard locais com dataset vinculado. | Produção continua no legado people-based; dois testes produtivos, dez goldens, mapa/provider e fixture que perde escopo. | `create/edit` locais; `list` audited |
 | Pessoas — Vínculos/detalhe/reload | `people.links`, `people.reload` | Commit `d4a87af8` compõe detalhe produtivo com `superadmin_person_detail_v2`, envelope estrito e mapeamento fail-closed; 16/16 testes. | Replay pgTAP fresco, daemon Docker, permitido/negado/MFA/sessão, remoto, persistência e E2E. | composição local; promoção retida |
 | Segurança da criança — Lista/criança/criar/editar/suspender | `child-safety.list`, `child-safety.child`, `child-safety.create`, `child-safety.edit`, `child-safety.suspend` | Quatro primeiras ações locais; cards/tabela/wizard e um golden verdes. | `suspend`, lifecycle/revogação, regressão e integração seletiva. | 4 locais; 1 `audited` |
-| Usuários internos — Lista/criar/editar/suspender/MFA | `internal-users.list`, `internal-users.create`, `internal-users.edit`, `internal-users.suspend`, `internal-users.mfa` | Diretório/wizard `/dev`; produção falha fechada em vez de 404. | Decisões de realm, Auth/Convites, suspend/MFA, 23 goldens e import/export. | `blocked-decision` |
+| Usuários internos — Lista/criar/editar/suspender/MFA | `internal-users.list`, `internal-users.create`, `internal-users.edit`, `internal-users.suspend`, `internal-users.mfa` | Diretório/wizard `/dev`; produção falha fechada em vez de 404. | Decisões de realm, Auth/Convites, suspend/MFA e 23 goldens. Import/export real está `deferred-post-mvp`. | `blocked-decision` |
 | Perfis e permissões — Lista/criar/detalhe/editar/atribuir/excluir | `access-profiles.list`, `access-profiles.create`, `access-profiles.detail`, `access-profiles.edit`, `access-profiles.assign`, `access-profiles.delete` | Central visual e wizard local. | Detalhe só por deep link, realm produtivo incorreto, OQ-044, atribuir/excluir e goldens. | parcial/bloqueado |
 | Modelos de perfil — Lista/filtro/criar/detalhe/editar/duplicar | `access-models.list`, `access-models.filter`, `access-models.create`, `access-models.detail`, `access-models.edit`, `access-models.duplicate` | UI/adapter candidatos. | Multi-escopo, `totalCount`, detalhe, duplicar/import/export, P0 backend e goldens. | parcial/bloqueado |
 | Perfis de cuidado — Lista/criar/detalhe/editar | `health-care.list`, `health-care.create`, `health-care.detail`, `health-care.edit` | Diretório e wizard `/dev` responsivos. | Produção, import/export, goldens e decisões de cuidado. | local/fail-closed |
@@ -107,7 +130,7 @@ reconciliação sem duplicidade.
 | Acontece/Para Você/Agora/Perfil | `acontece.*`, `principal.for-you`, `agora.*`, `account.profile` | Rotas do menu isoladas; trabalho visual histórico preservado. | Revisão tela/subtela, publicadores, regressão conjunta e integração seletiva. | em revisão futura |
 | Momentos — Viewer | `momentos.view` | Fullscreen sem shell, retorno/foco e estados inválido/loading/failure/unauthorized/empty; 38/38. | Golden/manual conjunta e integração da branch. | `local-green` |
 | Momentos — Criar/publicar/remover | `momentos.create`, `momentos.publish`, `momentos.remove` | Contratos/UX históricos inventariados. | Decisões, implementação produtiva e todos os estados. | `blocked-decision` |
-| Circulares — Diretório/menu/arquivos | `circulars.view` | Hierarquia no menu correto, diretório, busca/paginação e Importar/Exportar locais; o lote `5e714c16` consolidou 14 registros `/dev`, responsividade e goldens. | Integrar seletivamente; callbacks produtivos, backend/RLS e E2E dos arquivos. | `local-green` Flutter `/dev` |
+| Circulares — Diretório/menu/arquivos | `circulars.view` | Hierarquia no menu correto, diretório, busca/paginação e botões Importar/Exportar locais; o lote `5e714c16` consolidou 14 registros `/dev`, responsividade e goldens. | Validar a indisponibilidade honesta dos botões. Callbacks produtivos, backend/RLS e E2E de import/export estão `deferred-post-mvp`. | `local-green` Flutter `/dev` |
 | Circulares — Criar/editar/detalhe/publicar | `circulars.create` e ações correlatas | `5e714c16` implementou no `/dev` criar, detalhe, editar, salvar e publicar, com dados mutáveis coerentes e testes/goldens locais. | Repository produtivo permanece fail-closed; faltam autorização, persistência/reload, estados remotos negativos e E2E. | `local-green` Flutter `/dev` |
 
 ### Macroajustes Flutter da Etapa 2
@@ -534,7 +557,7 @@ duplicada. A soma preliminar por família continua na tabela anterior.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---: | --- |
 | 21.1 | Acontece / Feed | `acontece.feed` | Feed visual local cobre cabeçalho Principal, Agora no topo, criação, carrossel, feed misto, dock global, contexto desktop, estados e galeria; origem produtiva, autorização, remoto e E2E seguem abertos. | `local-green` | B | I | A | C | Completa | 2 h | Evidência local em testes/goldens 375–1440, light/dark, 200%, hover, foco e galeria; ainda exigir composição produtiva e E2E para `verified`. |
 | 21.2 | Acontece / Criar | `acontece.create` | Audiência, mídia e contrato produtivo não aprovados. | `blocked-decision` | B | I | A | C | Avançada após decisão | 3 h + decisão | Criar/validar/falhar, audiência clara e mídia protegida. |
-| 21.3 | Acontece / Publicar | `acontece.publish` | Publicação/R2 e confirmação não fechadas. | `blocked-decision` | B | I | A | C | Avançada após decisão | 3 h + decisão | Publicar/cancelar/negar/falhar e resultado após reload. |
+| 21.3 | Acontece / Publicar | `acontece.publish` | Publicação/Supabase Storage e confirmação não fechadas; R2 está fora do MVP. | `blocked-decision` | B | I | A | C | Avançada após decisão | 3 h + decisão | Publicar/cancelar/negar/falhar e resultado após reload. |
 | 21.4 | Acontece / Remover | `acontece.remove` | Regra negativa e retenção não decididas. | `blocked-decision` | B | I | A | C | Avançada após decisão | 2 h + decisão | Remover/cancelar/negar/falhar, foco e feed atualizado. |
 | 22.1 | Agora / Visualizar | `agora.view` | Viewer visual local cobre fullscreen, shell suspenso, quadro responsivo, progresso, autoria, audiência, resposta, ações e retorno; entrada/origem produtiva, autorização, mídia remota e E2E seguem abertos. | `local-green` | B | I | A | C | Completa | 2 h | Evidência local em 375/768/1024/1440, light/dark, 200%, foco, hover, teclado e callbacks honestos; ainda exigir deep link/remoto/E2E para `verified`. |
 | 22.2 | Agora / Criar | `agora.create` | Lifecycle e mídia não aprovados. | `blocked-decision` | B | I | A | C | Avançada após decisão | 2 h + decisão | Criar/validar/falhar e mídia protegida. |
@@ -1182,7 +1205,8 @@ Flutter até persistência/autorização no backend. Nesta atividade Flutter:
 - Auth, MFA, sessão e usuários internos dependem de Auth/capabilities reais;
 - criar, editar, publicar, arquivar, revogar e excluir dependem de comandos
   autorizados e não podem ser simulados pela UI;
-- arquivos e mídia dependem dos gateways privados e da separação Storage/R2;
+- arquivos e mídia do MVP dependem de gateways privados do Supabase Storage;
+  R2 está fora do MVP;
 - ações com dados infantis, saúde, medicação e auditoria dependem de decisões
   jurídicas, retenção e autorização;
 - nenhuma migration, policy, RPC, Edge Function, bucket, deploy ou dado remoto
@@ -1261,9 +1285,9 @@ backend, ambiente remoto e inspeção humana de cada PNG.
 | 18 | `forms_authoring` — Lista, criar, overview, editar, publicar, testar | todos os 6 action_ids `local-green` visual/Flutter | `/dev` funcional e produção com composição equivalente fail-closed; persistência, capability e E2E pendentes. |
 | 19 | `forms_responses` — Monitor, responder, respostas, detalhe, exportar | todos os 5 action_ids `local-green` visual/Flutter | Fluxos locais e estados seguros concluídos; fonte autorizada, worker, Storage e E2E pendentes. |
 | 20 | `forms_files` — Upload, resolver, baixar, expirar, excluir | todos os 5 action_ids `local-green` visual/Flutter | Lifecycle local persiste em store injetável; Storage, autorização, auditoria remota e E2E pendentes. |
-| 21 | `acontece` — Feed, criar/publicar, remover | `acontece.feed` `local-green`; `acontece.create` `blocked-decision`; `acontece.publish` `blocked-decision`; `acontece.remove` `blocked-decision` | Preview enquadrado está verde; produção, mídia R2, publicação/remover e goldens exigem contrato/E2E; 10 h. |
+| 21 | `acontece` — Feed, criar/publicar, remover | `acontece.feed` `local-green`; `acontece.create` `blocked-decision`; `acontece.publish` `blocked-decision`; `acontece.remove` `blocked-decision` | Preview enquadrado está verde; produção, mídia em Supabase Storage, publicação/remover e goldens exigem contrato/E2E; R2 está fora do MVP; 10 h. |
 | 22 | `agora` — Viewer, criar/publicar, expirar | `agora.view` `local-green`; `agora.create` `blocked-decision`; `agora.publish` `blocked-decision`; `agora.expire` `blocked-decision` | Viewer/foco coberto no lote; provar entrada por card/deep link e lifecycle real sem alterar baseline; 8 h. |
-| 23 | `momentos` — Viewer, criar/publicar, remover | `momentos.view` `local-green`; `momentos.create` `blocked-decision`; `momentos.publish` `blocked-decision`; `momentos.remove` `blocked-decision` | `Esc`/foco cobertos; publicação/remover, origem real, R2 e goldens continuam abertos; 8 h. |
+| 23 | `momentos` — Viewer, criar/publicar, remover | `momentos.view` `local-green`; `momentos.create` `blocked-decision`; `momentos.publish` `blocked-decision`; `momentos.remove` `blocked-decision` | `Esc`/foco cobertos; publicação/remover, origem real, Supabase Storage e goldens continuam abertos; R2 está fora do MVP; 8 h. |
 | 24 | `principal_profile` — Para Você, perfil/circulares, editar | `principal.for-you` `local-green`; `principal.profile-view` `local-green`; `principal.profile-edit` `blocked-decision` | Preview é estático sem PII/backend; revisar separação de account, responsive/goldens e decidir edição real; 8 h. |
 | 25 | `child_safety` — Lista, criança, criar/editar autorização, suspender | `child-safety.list` `local-green`; `child-safety.child` `local-green`; `child-safety.create` `local-green`; `child-safety.edit` `local-green`; `child-safety.suspend` `audited` | Correção mecânica não prova lifecycle; executar suspensão/revogação, erro/permissão, 200% e visual; 10 h. |
 | 26 | `health_care` — Perfis, criar, detalhe, editar | `health-care.list` `local-green`; `health-care.create` `local-green`; `health-care.detail` `blocked-decision`; `health-care.edit` `local-green` | Detail legado foi removido conforme spec; 12 PNGs M estão bloqueados e produção está fail-closed; 12 h. |

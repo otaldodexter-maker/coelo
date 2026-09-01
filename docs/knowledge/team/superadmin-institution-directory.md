@@ -79,6 +79,6 @@ sem aprovação explícita.
 Na composição de diretório, estados de `loading`, `erro`, `retry`, `vazio`,
 `sem resultados`, `not-found` e `unauthorized` preservam a composição existente.
 
-Mídia privada permanece com metadados em Supabase e armazenamento privado em
-Cloudflare R2 por decisão arquitetural (0010), sem destino Supabase Storage como
-padrão da família.
+Durante o MVP, mídia privada mantém metadados no Postgres e objetos no Supabase
+Storage privado conforme ADR 0030. R2 não é destino nem gate desta família no
+MVP.

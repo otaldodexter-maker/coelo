@@ -16,9 +16,11 @@ Esta projeção incorpora e sucede, sem apagar seus fatos ainda válidos, o
 contrato de inspeção de 2026-07-29.
 
 O Superadmin consulta atividades em `/activities` e seus detalhes em
-`/activities/:activityId`. O diretório, detalhe, criação, edição, vínculos,
-importação e exportação são produtivos quando o ator possui a capability de
-plataforma correspondente. A UI não concede acesso: RPCs e RLS recalculam
+`/activities/:activityId`. O diretório, detalhe, criação, edição e vínculos são
+produtivos quando o ator possui a capability de plataforma correspondente.
+Importação e exportação reais estão fora do MVP pela ADR 0031; seus botões
+permanecem visíveis com mensagem de disponibilidade futura. A UI não concede
+acesso: RPCs e RLS recalculam
 identidade, capability, MFA e escopo hierárquico em cada requisição.
 
 A entidade canônica é `activity_definitions`, vinculada obrigatoriamente a uma
@@ -44,8 +46,9 @@ gestão de taxonomia; os demais usuários dependem do perfil de acesso.
 Busca, leitura e comandos são sempre limitados no backend ao escopo autorizado.
 O handle da Atividade é privado, global e editável, com aliases históricos. A
 identidade aceita foto no Supabase Storage privado, sigla com cor ou ícone
-Material allowlisted; não herda a identidade visual da instituição. Mídias de
-Now, Happens e Moments permanecem no R2.
+Material allowlisted; não herda a identidade visual da instituição. Durante o
+MVP, mídias de Now, Happens e Moments usam Supabase Storage privado conforme
+ADR 0030.
 
 O CTA `Criar atividade` permanece disponível, conforme
 `activities.create`, nos estados com dados, vazio, sem resultados e falha

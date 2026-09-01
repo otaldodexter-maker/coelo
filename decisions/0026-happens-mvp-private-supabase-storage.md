@@ -1,10 +1,15 @@
 ---
 source: planos aprovados de Publicação do Acontece e Publicação do Agora
-status: accepted-temporary
+status: superseded-by-adr-0030
 generated_at: 2026-08-20
 ---
 
 # ADR 0026 — Exceção temporária de Storage privado para publicação no MVP
+
+> **Substituída pela ADR 0030.** Supabase Storage privado deixa de ser exceção
+> temporária e passa a ser o provedor de toda mídia privada durante o MVP. R2
+> não é gate de piloto, produção ou encerramento do MVP; sua avaliação somente
+> poderá começar se o Owner optar por isso no encerramento formal do MVP.
 
 ## Decisão
 
@@ -19,9 +24,12 @@ Esta decisão substitui a ADR 0022 somente para este MVP. Metadados mantêm `sto
 - bucket público permanece proibido;
 - preview de rascunho e leitura pública usam autorizações server-side distintas e URLs de 60 segundos; a leitura pública resgata ticket opaco, individual e descartável após revalidar vínculo, audiência e expiração;
 - operações são auditadas e isoladas por tenant/instituição;
-- a migração para R2 é obrigatória antes do piloto ou produção;
-- a exceção não se estende a Momentos nem a outras superfícies por analogia.
+- não há migração obrigatória para R2 durante o MVP;
+- o contrato de Supabase Storage privado se estende às demais superfícies de
+  mídia do MVP, conforme ADR 0030.
 
 ## Consequências
 
-O MVP reduz integrações simultâneas, mas cria uma dívida deliberada e com prazo. Falhas de upload devem limpar objetos órfãos e nunca ampliar permissões diretas nas tabelas ou no Storage.
+O MVP reduz integrações simultâneas sem criar um prazo obrigatório para R2.
+Falhas de upload devem limpar objetos órfãos e nunca ampliar permissões diretas
+nas tabelas ou no Storage.

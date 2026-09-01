@@ -69,8 +69,9 @@ ou mensagem integral.
 
 Produção usa Supabase por interface assíncrona, RLS deny-by-default, comandos
 idempotentes e auditados e publicação em lotes. Fakes e métricas inventadas
-ficam apenas em testes isolados. Imagem permanece bloqueada até a decisão
-Supabase Storage versus Cloudflare R2; não há placeholder demonstrativo.
+ficam apenas em testes isolados. Imagem usa Supabase Storage privado durante o
+MVP e permanece bloqueada somente até existir o gateway autorizado desse
+Storage; R2 não participa do gate. Não há placeholder demonstrativo.
 Também não se autoriza editor livre, HTML, carrossel, jornadas, gatilhos
 comportamentais, regras booleanas livres, A/B testing, personalização,
 localização ou analytics avançado.
