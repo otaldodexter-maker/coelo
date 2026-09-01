@@ -51,6 +51,7 @@ final class DevActivityCommandRepository implements ActivityCommandRepository {
   ) async => ActivityTemplateCreateResult(
     id: 'dev-template-${_nextTemplateId++}',
     institutionId: command.institutionId,
+    unitId: command.unitId,
     name: command.name,
   );
 

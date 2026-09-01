@@ -4,10 +4,11 @@ import 'unit_status.dart';
 export 'unit_status.dart';
 
 final class UnitRecord {
-  const UnitRecord({required this.institution, required this.unit});
+  const UnitRecord({required this.institution, required this.unit, this.managementVersion = 0});
 
   final InstitutionRecord institution;
   final InstitutionUnit unit;
+  final int managementVersion;
 
   String get id => unit.id;
   String get institutionId => institution.id;
@@ -71,6 +72,7 @@ final class UnitRecord {
     String? textColor,
     String? surfaceColor,
     int? activitiesCount,
+    int? managementVersion,
   }) {
     final targetInstitution = institutionId == null || institutionId == institution.id
         ? institution
@@ -81,6 +83,7 @@ final class UnitRecord {
           );
     return UnitRecord(
       institution: targetInstitution,
+      managementVersion: managementVersion ?? this.managementVersion,
       unit: unit.copyWith(
         id: id,
         name: name,
@@ -274,9 +277,10 @@ final class UnitDirectoryUnauthorizedException implements Exception {
 }
 
 final class UnitFormData {
-  const UnitFormData({required this.institutions, this.record});
+  const UnitFormData({required this.institutions, this.unitTypes = const [], this.record});
 
   final List<InstitutionRecord> institutions;
+  final List<UnitFilterOption> unitTypes;
   final UnitRecord? record;
 }
 

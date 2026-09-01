@@ -210,6 +210,7 @@ GoRouter createSuperadminRouter({
   PersonIdentityRepository personIdentityRepository = const UnavailablePersonIdentityRepository(),
   UnitDirectoryRepository unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
   UnitBackendCommandsGateway unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
+  bool enableStructureMutations = false,
   AccessProfileRepository accessProfileRepository = const UnavailableAccessProfileRepository(),
   ResetPasswordAction resetPassword = unavailableResetPassword,
   String catalogUrl = const String.fromEnvironment(
@@ -448,6 +449,7 @@ GoRouter createSuperadminRouter({
     onAction: () => context.goNamed(SuperadminRoutes.homeName),
   );
   bool hasAuthoritativeMutationCapability() => false;
+  bool hasStructureMutationCapability() => enableStructureMutations;
   void openAgendaArea(BuildContext context, AgendaModuleArea area, {required bool development}) {
     context.goNamed(switch ((area, development)) {
       (AgendaModuleArea.calendar, true) => SuperadminRoutes.devAgendaName,
@@ -511,6 +513,7 @@ GoRouter createSuperadminRouter({
     ActivityTemplateCreateCommand(
       requestId: _activityRequestId(),
       institutionId: draft.institutionId,
+      unitId: draft.unitId,
       name: draft.name,
       description: draft.description,
       taxonomyId: draft.taxonomyId,
@@ -566,7 +569,10 @@ GoRouter createSuperadminRouter({
       if (isOnPublicAuthRoute) {
         return SuperadminRoutes.home;
       }
-      if (_isProductionMutationLocation(location) && !hasAuthoritativeMutationCapability()) {
+      if (_isProductionMutationLocation(location) &&
+          !(_isStructureMutationLocation(location)
+              ? hasStructureMutationCapability()
+              : hasAuthoritativeMutationCapability())) {
         return _productionMutationUnavailablePath;
       }
       return null;
@@ -712,8 +718,15 @@ GoRouter createSuperadminRouter({
               onUnitsOpen: () => context.goNamed(SuperadminRoutes.unitsName),
               onPeopleOpen: () => context.goNamed(SuperadminRoutes.peopleName),
               successMessage: successMessage(state.extra),
-              onCreate: null,
-              onEdit: null,
+              onCreate: hasStructureMutationCapability()
+                  ? () => context.goNamed(SuperadminRoutes.institutionCreateName)
+                  : null,
+              onEdit: hasStructureMutationCapability()
+                  ? (id) => context.goNamed(
+                      SuperadminRoutes.institutionEditName,
+                      pathParameters: {'institutionId': id},
+                    )
+                  : null,
               onCatalogOpen: () =>
                   openConfiguredCatalogExternally(catalogUrl, openExternally: openExternalCatalog),
               onSupportOpen: () => context.goNamed(SuperadminRoutes.supportName),
@@ -727,7 +740,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.institutionCreate,
             name: SuperadminRoutes.institutionCreateName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) => !hasStructureMutationCapability()
                 ? blockedProductionMutationPage(context)
                 : InstitutionFormPage(
                     repository: institutionDirectoryRepository,
@@ -759,7 +772,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.institutionEdit,
             name: SuperadminRoutes.institutionEditName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) => !hasStructureMutationCapability()
                 ? blockedProductionMutationPage(context)
                 : InstitutionFormPage(
                     repository: institutionDirectoryRepository,
@@ -792,11 +805,18 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.unitsName,
             builder: (context, state) => UnitDirectoryPage(
               repository: unitRepository,
-              backendCommands: null,
+              backendCommands: hasStructureMutationCapability() ? unitBackendCommands : null,
               logout: logout,
               successMessage: unitSuccessMessage(state.extra),
-              onCreate: null,
-              onEdit: null,
+              onCreate: hasStructureMutationCapability()
+                  ? () => context.goNamed(SuperadminRoutes.unitCreateName)
+                  : null,
+              onEdit: hasStructureMutationCapability()
+                  ? (id) => context.goNamed(
+                      SuperadminRoutes.unitEditName,
+                      pathParameters: {'unitId': id},
+                    )
+                  : null,
               onBugReportSubmitted: productionSupportController?.submitReport,
               onConversationsOpen: () => context.goNamed(
                 SuperadminRoutes.conversationsName,
@@ -929,8 +949,15 @@ GoRouter createSuperadminRouter({
               repository: groupRepository,
               logout: logout,
               successMessage: groupSuccessMessage(state.extra),
-              onCreate: null,
-              onEdit: null,
+              onCreate: hasStructureMutationCapability()
+                  ? () => context.goNamed(SuperadminRoutes.groupCreateName)
+                  : null,
+              onEdit: hasStructureMutationCapability()
+                  ? (id) => context.goNamed(
+                      SuperadminRoutes.groupEditName,
+                      pathParameters: {'groupId': id},
+                    )
+                  : null,
               onBugReportSubmitted: productionSupportController?.submitReport,
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
@@ -973,11 +1000,43 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => ActivityDirectoryPage(
               repository: activityDirectoryRepository,
               logout: logout,
-              onCreate: null,
-              onCreateFromTemplate: null,
-              onDuplicateTemplate: null,
-              onCreateTemplate: null,
-              onEdit: null,
+              onCreate: hasStructureMutationCapability()
+                  ? () => context.goNamed(SuperadminRoutes.activityCreateName)
+                  : null,
+              onCreateFromTemplate: hasStructureMutationCapability()
+                  ? (template) => context.goNamed(
+                      SuperadminRoutes.activityCreateName,
+                      queryParameters: {
+                        'templateId': template.id,
+                        if (template.institutionId != null)
+                          'institutionId': template.institutionId!,
+                      },
+                    )
+                  : null,
+              onDuplicateTemplate: hasStructureMutationCapability()
+                  ? (template, institutionId, unitId, newName) async {
+                      await createActivityTemplate(
+                        ActivityTemplateCreateDraft(
+                          institutionId: institutionId,
+                          unitId: unitId,
+                          name: newName,
+                          description: template.description,
+                          taxonomyId: template.taxonomyId,
+                          governance: template.governance,
+                        ),
+                        activityCommandRepository,
+                      );
+                    }
+                  : null,
+              onCreateTemplate: hasStructureMutationCapability()
+                  ? (draft) => createActivityTemplate(draft, activityCommandRepository)
+                  : null,
+              onEdit: hasStructureMutationCapability()
+                  ? (id) => context.goNamed(
+                      SuperadminRoutes.activityEditName,
+                      pathParameters: {'activityId': id},
+                    )
+                  : null,
               onView: (id) => context.goNamed(
                 SuperadminRoutes.activityDetailName,
                 pathParameters: {'activityId': id},
@@ -992,7 +1051,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.activityCreate,
             name: SuperadminRoutes.activityCreateName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) => !hasStructureMutationCapability()
                 ? blockedProductionMutationPage(context)
                 : ActivityFormPage(
                     repository: activityDirectoryRepository,
@@ -1068,7 +1127,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.activityEdit,
             name: SuperadminRoutes.activityEditName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) => !hasStructureMutationCapability()
                 ? blockedProductionMutationPage(context)
                 : ActivityFormPage(
                     activityId: state.pathParameters['activityId']!,
@@ -2127,10 +2186,11 @@ GoRouter createSuperadminRouter({
                     'institutionId': template.institutionId!,
                 },
               ),
-              onDuplicateTemplate: (template, institutionId, newName) async {
+              onDuplicateTemplate: (template, institutionId, unitId, newName) async {
                 await createActivityTemplate(
                   ActivityTemplateCreateDraft(
                     institutionId: institutionId,
+                    unitId: unitId,
                     name: newName,
                     description: template.description,
                     taxonomyId: template.taxonomyId,
@@ -4025,6 +4085,12 @@ bool _isProductionMutationLocation(String location) {
       location.endsWith('/manage') ||
       location.contains('/occurrences/') && location.endsWith('/respond');
 }
+
+bool _isStructureMutationLocation(String location) =>
+    location.startsWith('/institutions/') ||
+    location.startsWith('/units/') ||
+    location.startsWith('/groups/') ||
+    location.startsWith('/activities/');
 
 void _closePrincipalViewer(BuildContext context) {
   if (context.canPop()) {

@@ -266,10 +266,11 @@ void main() {
       ),
     );
 
-    expect(captured!.url.path, endsWith('/rpc/superadmin_create_activity_template'));
+    expect(captured!.url.path, endsWith('/rpc/superadmin_create_scoped_activity_template'));
     final body = jsonDecode(captured!.body) as Map<String, dynamic>;
     expect(body, {
       'p_institution_id': 'institution-1',
+      'p_unit_id': null,
       'p_name': 'Física',
       'p_description': 'Ciências exatas',
       'p_taxonomy_id': 'taxonomy-exact-sciences',

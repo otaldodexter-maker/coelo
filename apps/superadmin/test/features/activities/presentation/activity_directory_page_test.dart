@@ -441,6 +441,7 @@ void main() {
     ActivityTemplateOption? started;
     ActivityTemplateOption? duplicated;
     String? duplicateInstitutionId;
+    String? duplicateUnitId;
     String? duplicateName;
     await tester.pumpWidget(
       MaterialApp(
@@ -452,9 +453,10 @@ void main() {
           onView: (_) {},
           onCreateFromTemplate: (template) => started = template,
           onCreateTemplate: (_) async {},
-          onDuplicateTemplate: (template, institutionId, newName) async {
+          onDuplicateTemplate: (template, institutionId, unitId, newName) async {
             duplicated = template;
             duplicateInstitutionId = institutionId;
+            duplicateUnitId = unitId;
             duplicateName = newName;
           },
         ),
@@ -514,6 +516,12 @@ void main() {
         )
         .onChanged('institution-1');
     await tester.pump();
+    tester
+        .widget<CoeloAdminSingleSelectField<String?>>(
+          find.byKey(const Key('activity-template-copy-unit')),
+        )
+        .onChanged('unit-1');
+    await tester.pump();
     expect(
       tester
           .widget<TextFormField>(find.byKey(const Key('activity-template-copy-name')))
@@ -530,6 +538,7 @@ void main() {
 
     expect(duplicated?.id, 'template-1');
     expect(duplicateInstitutionId, 'institution-1');
+    expect(duplicateUnitId, 'unit-1');
     expect(duplicateName, 'Modelo esportivo 2027');
     expect(find.text('Modelo duplicado com sucesso.'), findsOneWidget);
 
@@ -876,18 +885,20 @@ final class _FailingTemplateRepository extends FakeActivityDirectoryRepository {
 
 final class _TemplateOptionsRepository extends FakeActivityDirectoryRepository {
   @override
-  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) async =>
-      const ActivityTemplateOptions(
-        institutions: [
-          ActivityFormInstitutionOption(id: 'institution-1', name: 'Colégio Horizonte'),
-        ],
-        taxonomy: [
-          ActivityTaxonomyOption(id: 'languages', label: 'Idiomas'),
-          ActivityTaxonomyOption(id: 'sports', label: 'Esportes'),
-        ],
-        templates: [
-          ActivityTemplateOption(id: 'template-1', name: 'Inglês', taxonomyId: 'languages'),
-          ActivityTemplateOption(id: 'template-2', name: 'Futebol', taxonomyId: 'sports'),
-        ],
-      );
+  Future<ActivityTemplateOptions> fetchTemplateOptions({
+    String? institutionId,
+  }) async => const ActivityTemplateOptions(
+    institutions: [ActivityFormInstitutionOption(id: 'institution-1', name: 'Colégio Horizonte')],
+    units: [
+      ActivityFormUnitOption(id: 'unit-1', institutionId: 'institution-1', name: 'Unidade Centro'),
+    ],
+    taxonomy: [
+      ActivityTaxonomyOption(id: 'languages', label: 'Idiomas'),
+      ActivityTaxonomyOption(id: 'sports', label: 'Esportes'),
+    ],
+    templates: [
+      ActivityTemplateOption(id: 'template-1', name: 'Inglês', taxonomyId: 'languages'),
+      ActivityTemplateOption(id: 'template-2', name: 'Futebol', taxonomyId: 'sports'),
+    ],
+  );
 }

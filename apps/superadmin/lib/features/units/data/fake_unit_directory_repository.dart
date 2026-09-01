@@ -88,6 +88,12 @@ final class FakeUnitDirectoryRepository implements UnitDirectoryRepository {
   Future<UnitFormData> loadForm({String? unitId}) async {
     return UnitFormData(
       institutions: List.unmodifiable(_institutions.records),
+      unitTypes: [
+        for (final entry in {
+          for (final institution in _institutions.records) institution.typeId: institution.typeName,
+        }.entries)
+          UnitFilterOption(entry.key, entry.value),
+      ],
       record: unitId == null ? null : findById(unitId),
     );
   }

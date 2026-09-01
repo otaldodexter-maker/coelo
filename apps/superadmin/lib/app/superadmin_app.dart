@@ -87,6 +87,7 @@ class SuperadminApp extends StatefulWidget {
     this.personIdentityRepository = const UnavailablePersonIdentityRepository(),
     this.unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
     this.unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
+    this.structureMutationsEnabled = false,
     this.accessProfileRepository = const UnavailableAccessProfileRepository(),
     this.importRepository = const UnavailableImportRepository(),
     this.inviteRepository = const UnavailableInviteRepository(),
@@ -115,6 +116,7 @@ class SuperadminApp extends StatefulWidget {
   final PersonIdentityRepository personIdentityRepository;
   final UnitDirectoryRepository unitDirectoryRepository;
   final UnitBackendCommandsGateway unitBackendCommands;
+  final bool structureMutationsEnabled;
   final AccessProfileRepository accessProfileRepository;
   final ImportRepository importRepository;
   final InviteRepository inviteRepository;
@@ -163,6 +165,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       personIdentityRepository: widget.personIdentityRepository,
       unitDirectoryRepository: widget.unitDirectoryRepository,
       unitBackendCommands: widget.unitBackendCommands,
+      enableStructureMutations: widget.structureMutationsEnabled,
       accessProfileRepository: widget.accessProfileRepository,
       importRepository: widget.importRepository,
       inviteRepository: widget.inviteRepository,

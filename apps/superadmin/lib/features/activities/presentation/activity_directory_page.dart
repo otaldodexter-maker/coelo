@@ -47,12 +47,18 @@ typedef ActivityDirectoryExporter =
 typedef ActivityDirectoryImportRequested = Future<void> Function();
 typedef ActivityTemplateStarter = void Function(ActivityTemplateOption template);
 typedef ActivityTemplateDuplicator =
-    Future<void> Function(ActivityTemplateOption template, String institutionId, String newName);
+    Future<void> Function(
+      ActivityTemplateOption template,
+      String institutionId,
+      String? unitId,
+      String newName,
+    );
 typedef ActivityTemplateCreator = Future<void> Function(ActivityTemplateCreateDraft draft);
 
 final class ActivityTemplateCreateDraft {
   const ActivityTemplateCreateDraft({
     required this.institutionId,
+    this.unitId,
     required this.name,
     required this.description,
     required this.taxonomyId,
@@ -60,6 +66,7 @@ final class ActivityTemplateCreateDraft {
   });
 
   final String institutionId;
+  final String? unitId;
   final String name;
   final String description;
   final String taxonomyId;
@@ -314,9 +321,10 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
   Future<void> _duplicateTemplate(
     ActivityTemplateOption template,
     String institutionId,
+    String? unitId,
     String newName,
   ) async {
-    await widget.onDuplicateTemplate!(template, institutionId, newName);
+    await widget.onDuplicateTemplate!(template, institutionId, unitId, newName);
     if (!mounted) return;
     showSuperadminNotice(
       context,
@@ -902,6 +910,7 @@ final class _ActivityTemplateSection extends StatelessWidget {
       builder: (context) => _ActivityTemplateCopyDialog(
         template: template,
         institutions: options!.institutions,
+        units: options!.units,
         onDuplicate: onDuplicate!,
       ),
     );
@@ -1516,11 +1525,13 @@ final class _ActivityTemplateCopyDialog extends StatefulWidget {
   const _ActivityTemplateCopyDialog({
     required this.template,
     required this.institutions,
+    required this.units,
     required this.onDuplicate,
   });
 
   final ActivityTemplateOption template;
   final List<ActivityFormInstitutionOption> institutions;
+  final List<ActivityFormUnitOption> units;
   final ActivityTemplateDuplicator onDuplicate;
 
   @override
@@ -1530,6 +1541,7 @@ final class _ActivityTemplateCopyDialog extends StatefulWidget {
 final class _ActivityTemplateCopyDialogState extends State<_ActivityTemplateCopyDialog> {
   final TextEditingController _name = TextEditingController();
   String? _institutionId;
+  String? _unitId;
   bool _submitting = false;
   String? _error;
 
@@ -1564,7 +1576,7 @@ final class _ActivityTemplateCopyDialogState extends State<_ActivityTemplateCopy
       _error = null;
     });
     try {
-      await widget.onDuplicate(widget.template, institutionId, newName);
+      await widget.onDuplicate(widget.template, institutionId, _unitId, newName);
       if (mounted) Navigator.of(context).pop();
     } catch (_) {
       if (mounted) {
@@ -1607,9 +1619,33 @@ final class _ActivityTemplateCopyDialogState extends State<_ActivityTemplateCopy
               : widget.institutions.firstWhere((item) => item.id == id).name,
           onChanged: (value) => setState(() {
             _institutionId = value;
+            _unitId = null;
             _error = null;
           }),
           prefixIcon: Icons.apartment_outlined,
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+        CoeloAdminSingleSelectField<String?>(
+          key: const Key('activity-template-copy-unit'),
+          label: 'Unidade (opcional)',
+          value: _unitId,
+          options: [
+            null,
+            ...widget.units
+                .where((item) => item.institutionId == _institutionId)
+                .map((item) => item.id),
+          ],
+          optionLabel: (id) => id == null
+              ? 'Todas as unidades da instituição'
+              : widget.units.firstWhere((item) => item.id == id).name,
+          onChanged: (value) {
+            if (_institutionId == null) return;
+            setState(() {
+              _unitId = value;
+              _error = null;
+            });
+          },
+          prefixIcon: Icons.business_outlined,
         ),
         if (_error != null) ...[
           const SizedBox(height: CoeloSpacing.space2),

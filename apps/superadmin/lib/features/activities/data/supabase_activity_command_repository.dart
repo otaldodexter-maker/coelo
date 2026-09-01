@@ -17,9 +17,10 @@ final class SupabaseActivityCommandRepository implements ActivityCommandReposito
     try {
       final response = _asMap(
         await _client.rpc<Object?>(
-          'superadmin_create_activity_template',
+          'superadmin_create_scoped_activity_template',
           params: {
             'p_institution_id': command.institutionId,
+            'p_unit_id': command.unitId,
             'p_name': command.name.trim(),
             'p_description': command.description.trim(),
             'p_taxonomy_id': command.taxonomyId,
@@ -31,6 +32,7 @@ final class SupabaseActivityCommandRepository implements ActivityCommandReposito
       return ActivityTemplateCreateResult(
         id: response['id'] as String,
         institutionId: response['institution_id'] as String,
+        unitId: response['unit_id'] as String?,
         name: response['name'] as String,
       );
     } on PostgrestException catch (error) {

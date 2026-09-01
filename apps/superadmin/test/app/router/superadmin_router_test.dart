@@ -298,4 +298,29 @@ void main() {
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.home);
   });
+
+  testWidgets('opens authenticated structure mutations when the backend is configured', (
+    tester,
+  ) async {
+    final session = SuperadminSession()..signIn();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
+      enableStructureMutations: true,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.institutionCreate);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.institutionCreate);
+    expect(find.text('Criar instituição'), findsOneWidget);
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsNothing);
+  });
 }

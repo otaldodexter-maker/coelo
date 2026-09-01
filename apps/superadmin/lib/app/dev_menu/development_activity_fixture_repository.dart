@@ -140,6 +140,7 @@ final class DevelopmentActivityFixtureRepository implements ActivityDirectoryRep
     final form = await fetchFormOptions(institutionId: institutionId ?? 'institution-1');
     return ActivityTemplateOptions(
       institutions: form.institutions,
+      units: form.units,
       taxonomy: form.taxonomy,
       templates: form.templates
           .where(

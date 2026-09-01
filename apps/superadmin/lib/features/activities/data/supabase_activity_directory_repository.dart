@@ -77,6 +77,15 @@ final class SupabaseActivityDirectoryRepository implements ActivityDirectoryRepo
               ),
             )
             .toList(growable: false),
+        units: _rows(payload['units'])
+            .map(
+              (row) => ActivityFormUnitOption(
+                id: row['id'] as String,
+                institutionId: row['institution_id'] as String,
+                name: row['name'] as String,
+              ),
+            )
+            .toList(growable: false),
         taxonomy: _taxonomyOptions(payload['taxonomy']),
         templates: _templateOptions(payload['templates']),
       );
@@ -348,6 +357,7 @@ List<ActivityTemplateOption> _templateOptions(Object? value) => _rows(value)
           row['scope_kind'] as String? ?? 'platform',
         ),
         institutionId: row['institution_id'] as String?,
+        unitId: row['unit_id'] as String?,
         governance: ActivityGovernance.fromDatabase(
           row['governance_kind'] as String? ?? 'optional',
         ),
