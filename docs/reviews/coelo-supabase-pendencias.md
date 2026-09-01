@@ -1,9 +1,9 @@
 ---
 title: "Pendências Coelo — Supabase por tela e ação"
-source: "docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; decisions/0020-backend-authorization-application-security.md; specs aprovadas por dominio; auditoria consolidada em 2026-08-26"
+source: "docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; decisions/0020-backend-authorization-application-security.md; specs aprovadas por dominio; auditoria consolidada em 2026-08-26; Git dev cd1ea97c e inventario remoto read-only em 2026-09-01"
 status: "living"
 generated_at: "2026-08-26"
-updated_at: "2026-08-28"
+updated_at: "2026-09-01"
 action_count: 207
 family_count: 37
 ---
@@ -4255,3 +4255,43 @@ da simples soma das 207 ações.
   `docs/knowledge/team/superadmin-activity-directory.md` com a regra durável de
   gateways nominais por realm e o limite local-only, sem PII nem log de
   atividade.
+
+### Checkpoint seguro 63 - reconciliação documental pós-consolidação
+
+- **Progresso geral:** projeto estrito `done` 0,00% (0/229), restante 100,00%
+  (229/229); backlog Supabase estrito `done` 0,00% (0/228), restante 100,00%
+  (228/228); famílias Supabase `done` 0,00% (0/37). O estado local permanece
+  8,11% (3/37 famílias `local-green`). Esta reconciliação documental concluiu
+  100,00% (1/1), restante 0,00% (0/1), sem promover Flutter, E2E ou remoto.
+- **Git consolidado:** o estado vivo é `dev@cd1ea97c`. Os commits técnicos e
+  documentais de Activities v2 citados no checkpoint 62 estão alcançáveis em
+  `dev`: `1e921c47`, `03bf6734`, `65bae28c` e `32516e63`. A inspeção de
+  worktrees anterior a esta atualização encontrou somente a checkout principal
+  limpa; as worktrees backend e visual históricas já haviam sido consolidadas e
+  removidas. A worktree `codex/tracker-supabase-refresh` existe apenas para este
+  commit documental isolado.
+- **Evidência local preservada:** o checkpoint 62 continua sendo a evidência
+  funcional mais recente do recorte Activities v2: pgTAP 199/199, teste focal
+  25/25, perfil 59/59, contrato PowerShell 11/11 e preparação/verificação
+  canônico/mirror 122/122. Esses gates não foram reexecutados nesta correção de
+  texto; nenhuma migration, teste SQL, script ou arquivo em `apps/**` mudou.
+- **Remoto read-only:** o plugin oficial reconfirmou o projeto `coelo`
+  `ACTIVE_HEALTHY` e o ledger com 103 migrations, terminando em
+  `20260821200000_profile_about_remote_context_compatibility`. A saúde técnica
+  não classifica o ambiente como desenvolvimento, homologação ou produção;
+  portanto ele continua `blocked-environment`, sem `remote-green` e sem
+  `done`. Os Advisors 207/505 e as dez Edge Functions permanecem como a última
+  evidência classificada do checkpoint 62; não foram promovidos nem alterados.
+- **Correção de histórico:** o próximo passo do checkpoint 62, que ainda dizia
+  para preservar e consolidar os commits numa worktree backend, foi superado
+  pela consolidação já materializada em `dev`. Ele permanece no registro apenas
+  como fotografia daquele momento e não descreve mais o estado operacional.
+- **Primeiro gate incompleto e próximo passo seguro:** no backend, o primeiro
+  gate incompleto continua sendo a prova remota autorizada em ambiente
+  documentalmente classificado. Até lá, somente inventário read-only é seguro.
+  A adaptação Flutter e a prova E2E dos contratos Activities v2 pertencem às
+  fases próprias dos rastreadores Flutter e integrado; esta atualização não
+  altera seus denominadores nem estados.
+- **Gate de conhecimento:** `no-op`. A atualização corrige estado operacional e
+  proveniência Git; não cria regra durável nova de produto, domínio, permissão
+  ou UX.
