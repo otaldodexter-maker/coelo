@@ -46,6 +46,19 @@ final class AccessProfileViewModel extends ChangeNotifier {
         .toList(growable: false);
   }
 
+  List<PrincipalCapability> get pagedCapabilities {
+    final visible = visibleCapabilities;
+    final start = query.page * query.pageSize;
+    if (start >= visible.length) return const [];
+    return visible.skip(start).take(query.pageSize).toList(growable: false);
+  }
+
+  int get resultCount => usesPrincipalCapabilities ? visibleCapabilities.length : page.totalCount;
+  bool get hasPreviousPage => usesPrincipalCapabilities ? query.page > 0 : page.hasPrevious;
+  bool get hasNextPage => usesPrincipalCapabilities
+      ? (query.page + 1) * query.pageSize < visibleCapabilities.length
+      : page.hasNext;
+
   Future<void> load() async {
     final requestGeneration = ++_requestGeneration;
     if (usesPrincipalCapabilities) {
@@ -150,7 +163,7 @@ final class AccessProfileViewModel extends ChangeNotifier {
   }
 
   Future<void> goToPage(int value) async {
-    query = query.copyWith(page: value);
+    query = query.copyWith(page: value < 0 ? 0 : value);
     await load();
   }
 

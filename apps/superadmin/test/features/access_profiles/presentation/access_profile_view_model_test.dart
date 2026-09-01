@@ -49,6 +49,31 @@ void main() {
     expect(viewModel.state, AccessProfileLoadState.success);
   });
 
+  test('pagina o catálogo do Principal sem misturar a página de perfis', () async {
+    final repository = _DelayedRepository()
+      ..capabilities = List.generate(
+        12,
+        (index) => PrincipalCapability(
+          id: 'capability-$index',
+          code: 'capability.$index.read',
+          name: 'Capacidade $index',
+          description: 'Ação contextual $index.',
+          contextCount: index,
+        ),
+      );
+    final viewModel = AccessProfileViewModel(repository);
+    addTearDown(viewModel.dispose);
+
+    await viewModel.setDomain(AccessProfileDomain.principal);
+    expect(viewModel.pagedCapabilities, hasLength(11));
+    expect(viewModel.hasNextPage, isTrue);
+
+    await viewModel.goToPage(1);
+    expect(viewModel.pagedCapabilities.single.id, 'capability-11');
+    expect(viewModel.hasPreviousPage, isTrue);
+    expect(viewModel.hasNextPage, isFalse);
+  });
+
   test('limpa a busca ao trocar o domínio', () async {
     final repository = _DelayedRepository();
     final viewModel = AccessProfileViewModel(repository);

@@ -203,9 +203,7 @@ final class _AccessProfileDirectoryContentState extends State<_AccessProfileDire
             );
           }
           final query = widget.viewModel.query;
-          final showPagination =
-              !widget.viewModel.usesPrincipalCapabilities &&
-              widget.viewModel.state == AccessProfileLoadState.success;
+          final showPagination = widget.viewModel.state == AccessProfileLoadState.success;
           _measureFooter(showPagination);
           final footerInset = showPagination ? _footerHeight + CoeloSpacing.space4 : 0.0;
           return Stack(
@@ -546,7 +544,7 @@ final class _AccessProfileResults extends StatelessWidget {
         );
       case AccessProfileLoadState.success:
         if (viewModel.usesPrincipalCapabilities) {
-          result = _PrincipalCapabilities(capabilities: viewModel.visibleCapabilities);
+          result = _PrincipalCapabilities(capabilities: viewModel.pagedCapabilities);
         } else if (viewModel.query.layout == AccessProfileLayout.cards) {
           result = _AccessProfileCards(
             items: viewModel.page.items,
@@ -990,20 +988,21 @@ final class _AccessProfilePagination extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final page = viewModel.page;
-    final totalPages = math.max(1, (page.totalCount / viewModel.query.pageSize).ceil());
+    final totalPages = math.max(1, (viewModel.resultCount / viewModel.query.pageSize).ceil());
     final options = viewModel.query.layout == AccessProfileLayout.cards
         ? const [11, 20, 50, 100]
         : const [8, 20, 50, 100];
     return CoeloAdminPagination(
-      currentPage: page.page + 1,
+      currentPage: viewModel.query.page + 1,
       totalPages: totalPages,
       pageSize: viewModel.query.pageSize,
       pageSizeOptions: options,
       onPageSelected: (value) => viewModel.goToPage(value - 1),
       onPageSizeChanged: viewModel.setPageSize,
-      onPrevious: page.hasPrevious ? () => viewModel.goToPage(page.page - 1) : null,
-      onNext: page.hasNext ? () => viewModel.goToPage(page.page + 1) : null,
+      onPrevious: viewModel.hasPreviousPage
+          ? () => viewModel.goToPage(viewModel.query.page - 1)
+          : null,
+      onNext: viewModel.hasNextPage ? () => viewModel.goToPage(viewModel.query.page + 1) : null,
     );
   }
 }
