@@ -12,14 +12,36 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "8962190A00A26D33749385C9414F20B39043B6A2EA21DC60221EB5DCCF769943"
-supabase_tracker_sha256: "FA37887F3059C7C1CDD3D4F567F2D972F338CD2CFD2BE0A55BB679BEA98A0C55"
-coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
+flutter_tracker_sha256: "BD9F743A921EB09B65D9204FFD00D539C3CFA84F10DAB9430062EB5223ABC7A0"
+supabase_tracker_sha256: "4ECE2FA734993E164057469C92C1CE3A4CEED64CD0095C3098E852F5F80FA764"
 ---
 
 # Pendências Coelo — Flutter integrado ao Supabase
 
 ## 0. Etapa 2 — controlador recuperável de conclusão ponta a ponta
+
+### Checkpoint final de consolidação — 2026-09-01
+
+As seis frentes de implementação estão agora no mesmo histórico e as
+composições duplicadas de Chat, rotas, shell e manifesto de migrations foram
+resolvidas. Isso conclui 100% da **consolidação Git recebida**, mas não conclui
+nenhuma vertical E2E. Qualquer linha histórica abaixo que ainda peça integração
+de branch está superada somente no aspecto Git.
+
+| Vertical | O que já está junto no código | Ponto exato de retomada para integração real |
+| --- | --- | --- |
+| Auth | Flutter Auth + Supabase Auth hospedado + lifecycle + migration de adiamento de MFA. | Executar navegador/SMTP reais, login → sessão → reload → logout/revogação e negativos; registrar persistência/auditoria. |
+| Pessoas/Acessos/Saúde | Telas, adapters, detalhe de Pessoa e migrations candidatas. | Corrigir P0 de realm antes de lookup, pgTAP vermelho, decisões sensíveis; depois permitido/negado/revogado e reload. |
+| Estruturas/Avaliações | Telas, gateways e migrations no mesmo código. | Resolver hierarquia, replay e gates de autorização; escolher uma ação e provar tenant A/B, persistência e reload. |
+| Operações | Planos, Cardápios, Formulários, Importações e Agenda compostos. | Fechar commands/jobs/backend por ação e executar o primeiro fluxo clique → Supabase → persistência → nova leitura. |
+| Comunicação | Chat é canônico; Avisos, Convites e Circulares estão compostos sem rotas duplicadas. | Replay/pgTAP, auth scope, mídia/outbox/Realtime, tenant A/B, revogação e reload; então rodar E2E. |
+| Menu Coelo (Principal) | Para Você, Acontece, Agora, Momentos e Perfil estão dentro do Superadmin. | Fechar backend/audiência/R2/publicadores e comprovar cada rota real ponta a ponta. |
+| Macro — cabeçalho, shell e migrations | Cabeçalho compartilhado e capabilities combinadas; manifesto único ordenado. | Regressão visual final e replay integral antes do primeiro deploy amplo. |
+
+**Contagem oficial após a consolidação:** 0/202 `ready-for-e2e` = **0,00%** e
+0/202 `verified-e2e` = **0,00%**. O avanço das camadas continua mensurado sem
+mistura: Flutter 105/207 `local-green` (50,72%); Supabase 3/37 famílias
+`local-green` (8,11%), ou 39/202 ações com evidência local (19,31%).
 
 Esta é a resposta canônica para “o que foi feito, onde parou e o que falta na
 Etapa 2” sob a skill `coelo-flutter-supabase-review`. As seções posteriores

@@ -12,6 +12,29 @@ family_count: 37
 
 ## 0. Etapa 2 — resumo recuperável do backend e banco
 
+### Checkpoint final de consolidação — 2026-09-01
+
+Todas as migrations, adapters, contratos e testes recebidos foram preservados
+no histórico único. As linhas antigas desta seção que dizem “integrar branch”
+devem ser lidas como concluídas no aspecto Git; elas não significam que a
+família Supabase atingiu `done`, recebeu deploy ou passou todos os negativos.
+
+| Família / ações backend | Entregue e consolidado na Etapa 2 | O que ficou aberto no Supabase | Estado de camada |
+| --- | --- | --- | --- |
+| Auth — login/logout/recovery/reset | Fundação hospedada, lifecycle, identidades internas, configuração remota e migration que adia MFA interno até o gate formal do MVP. | Smoke humano hospedado, SMTP/recovery real e fechamento de todos os gates da família. | Subpacote remoto comprovado; família ainda não `done`. |
+| Pessoas, Segurança, Usuários internos, Perfis, Modelos e Saúde | Gateways, contratos e pgTAP candidatos preservados; detalhe de Pessoa composto. | P0 de realm/lookup/autorização, 4 falhas pgTAP em permissões, Auth/Convites internos, RLS e decisões de dados sensíveis. | Parcial/local; não `done`. |
+| Instituições, Unidades, Turmas, Atividades e Avaliações | Migrations/gateways de Estruturas e pacote de Avaliações incorporados. | Replay por pacote, OQ-032, grants/RLS/negativos, remoto e aprovação por família. | Candidato local; sem promoção familiar. |
+| Planos, Cardápios, Formulários, Importações e Agenda | Migrations e contratos de leitura/operação incorporados no manifesto único. | Reconciliar ledger, commands, jobs/arquivos, RLS, auditoria e negativos antes de qualquer deploy. | Parcial/local; não `done`. |
+| Chat, Avisos, Convites e Circulares | Migrations nominais ordenadas no manifesto e adapters locais preservados. | Replay/pgTAP por domínio, tenant A/B, revogação, outbox/Realtime/mídia, persistência/reload e remoto. | Parcial/local; não `done`. |
+| Acontece, Agora, Momentos e Perfil | Migration de fundação do recorte preservada. | Contratos de audiência, metadata, R2, retenção, remoção, RLS e auditoria. | Aberto/bloqueado por decisões. |
+| Macro — ledger, RLS, grants e auditoria | Manifesto consolidado e harness de replay aceita extensão revisada depois da fundação. | Replay integral compatível, Advisors, deny-by-default, IDOR/BOLA, cross-tenant e fechamento das decisões abertas. | P0 antes de deploy amplo. |
+
+**Contagem oficial após a consolidação:** 3/37 famílias `local-green` =
+**8,11%** de avanço técnico por família; 0/37 famílias `done` = **0,00%** de
+conclusão estrita Supabase. Na leitura granular existem 39/202 ações com
+evidência local = **19,31%**, mas esse indicador não substitui o gate canônico
+por família e não autoriza promoção ou deploy.
+
 Esta seção é o ponto de retomada obrigatório da **Etapa 2** para a skill
 `coelo-supabase`. “Feito” aqui distingue análise estática, ambiente local e
 remoto. Fixture Flutter, migration escrita ou RLS apenas habilitada nunca contam

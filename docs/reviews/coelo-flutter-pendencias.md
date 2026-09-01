@@ -14,6 +14,32 @@ visual_program_accepted_count: 0
 
 ## 0. Etapa 2 — resumo recuperável do que foi feito e do que falta
 
+### Checkpoint final de consolidação — 2026-09-01
+
+As implementações recebidas foram reunidas no mesmo histórico Git e a árvore
+consolidada passou `flutter analyze` sem achados. Este checkpoint substitui as
+instruções antigas desta seção que ainda dizem “integrar branch”: o código já
+está integrado; o que continua aberto é a promoção funcional de cada ação pelos
+gates exclusivos do Flutter. Integração física de código não altera, sozinha, o
+estado do `action_id`.
+
+| Tela / subtela | Entregue e consolidado na Etapa 2 | O que ficou aberto no Flutter | Evidência central |
+| --- | --- | --- | --- |
+| Auth — login, recovery, reset e logout | Sessão, guards, recuperação confinada, limpeza e adiamento explícito de MFA interno até o gate do MVP. | Smoke humano em navegador, goldens remanescentes e conciliação por `action_id` antes de promover de `local-green`. | 51/51 testes Auth; analyzer global verde. |
+| Pessoas, Segurança da criança, Usuários internos, Perfis, Modelos, Saúde e Medicação | Diretórios, wizards, detalhe produtivo de Pessoa, estados fail-closed e contratos locais foram preservados. | 19/31 ações do recorte ainda abertas; corrigir realm/lookup/autorização dos perfis, dívida visual e decisões de cuidado/medicação. | 73 testes verdes; 7 grupos visuais/golden ainda vermelhos ou obsoletos. |
+| Instituições, Unidades, Turmas, Atividades e Avaliações | Gateways e adapters locais, composição de Instituições e superfícies de Estruturas incorporados. | Avaliações são candidatas a até 5 promoções locais, mas exigem revisão por ID; hierarquia de Unidade e backend produtivo seguem abertos. | 449/449 testes funcionais; clipping mobile visual ainda aberto. |
+| Planos, Cardápios, Formulários, Importações e Agenda | Diretórios, editores, rotas e leituras produtivas de Formulários consolidados. | Commands produtivos, arquivos, mapas, import/export e regressão visual por ação; nenhuma promoção em bloco. | 344/344 testes no repasse da frente. |
+| Chat, Avisos, Convites e Circulares | Chat com ownership único, rotas/composer, avisos, convites e CRUD local de Circulares consolidados no Superadmin. | Estados remotos, anexos, erros/retry e prova visual/manual das ações ainda não certificadas. | 301/301 no repasse; Chat+Circulares 17/17 após o merge. |
+| Menu Coelo (Principal) — Para Você, Acontece, Agora, Momentos e Perfil | Rotas reais e de prévia, runtime context e viewer de Momentos preservados dentro do Superadmin. | Publicadores, regressão visual conjunta, estados negativos e aprovação por `action_id`. | 17/17 testes focados; analyzer global verde. |
+| Macro — cabeçalho mobile, shell e navegação | Composição única do shell, capabilities combinadas e cabeçalho compartilhado incorporados no Superadmin inteiro. | Executar aprovação visual manual/goldens no conjunto final de larguras, temas e texto ampliado. | Analyzer global verde; sem alteração em Admin, Site ou app Principal. |
+
+**Contagem oficial após a consolidação:** 105/207 `local-green` = **50,72%**
+de avanço técnico Flutter; 0/207 `verified` = **0,00%** de conclusão estrita do
+lado Flutter. Há código e testes adicionais integrados, porém eles permanecem
+como candidatos até a reconciliação ação a ação. O maior incremento já
+delimitado é Avaliações: até +5 ações, que levaria o avanço local a 110/207 =
+53,14%, somente depois dos gates correspondentes.
+
 Esta seção é o ponto de retomada obrigatório da **Etapa 2** para a skill
 `coelo-flutter-review`. Ela deve ser atualizada a cada handoff, regressão,
 integração ou mudança de ETA. O histórico detalhado e as matrizes por
