@@ -1,6 +1,6 @@
 ---
 title: "Pendências Coelo — Flutter por tela e ação"
-source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git base f1aeacf67c218e7e889005ab98391f3d63096f11; codex/forms-agenda-ui-completion through ba7c8d3b"
+source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git base f1aeacf67c218e7e889005ab98391f3d63096f11; codex/forms-agenda-ui-completion through 8cdb024a"
 status: "open"
 generated_at: "2026-08-26"
 updated_at: "2026-08-31"
@@ -2897,23 +2897,24 @@ visual/Flutter). Esta promoção não concede `verified`, `done`, `remote-green`
 
 | Campo | Evidência de fechamento |
 |---|---|
-| Base e HEAD auditado | Base `f1aeacf67c218e7e889005ab98391f3d63096f11`; branch `codex/forms-agenda-ui-completion`; código/testes auditados até `ba7c8d3b`, imediatamente após `a2f0f02b`. |
-| Commits posteriores ao checkpoint 16.82 | `449760d5`, `cf4e9481`, `2621fd7a`, `0e616523`, `a21b3992`, `de2fda82`, `a2f0f02b` e `ba7c8d3b`, nessa ordem. |
+| Base e HEAD auditado | Base `f1aeacf67c218e7e889005ab98391f3d63096f11`; branch `codex/forms-agenda-ui-completion`; código/testes auditados até o P1 final `8cdb024a`. |
+| Commits posteriores ao checkpoint 16.82 | `449760d5`, `cf4e9481`, `2621fd7a`, `0e616523`, `a21b3992`, `de2fda82`, `a2f0f02b`, `ba7c8d3b`, `51620291` e `8cdb024a`, nessa ordem. |
 | Forms respostas | `forms.monitor`, `forms.respond`, `forms.responses`, `forms.response-detail` e `forms.export` promovidos após drill-down, autosave/upload, cursor/seleção e jobs locais funcionais. |
 | Forms arquivos | `forms.upload`, `forms.resolve-file`, `forms.download`, `forms.expire-file` e `forms.delete-file` promovidos após cancelamento, acesso temporário, feedback e store local persistente em reconstrução. |
-| Gate focado | 237/237 testes do recorte passaram. `flutter analyze` passou sem issues; validador visual administrativo, índice Coelo UI e gates de conhecimento passaram. |
+| Gate focado | 238/238 testes do recorte passaram, incluindo Agenda 112/112. `flutter analyze`, validador visual administrativo, índice Coelo UI e gates de conhecimento passaram na repetição final. |
 | Texto ampliado | Matrizes 100%/150%/200% passaram para Agenda Management, Forms Directory e Forms Editor; o recorte preserva 375/768/1024/1440 sem overflow nos testes correspondentes. |
 | Goldens exatos | 113 PNGs únicos do recorte em `HEAD`: 42 de Agenda e 71 de Forms. Após o handoff `c5de6b4b`, 101 foram trabalhados: 84 novos e 17 herdados atualizados. As 42 superfícies adicionais e 12 referências operacionais/autosave foram repetidas sem `--update-goldens`; houve inspeção visual representativa de cada superfície em light/dark e 375/768/1440. |
 | Suíte Flutter global | A execução foi interrompida após 1.265 passes e 76 falhas exclusivamente em famílias fora deste recorte e goldens de shell. Esses resíduos não foram corrigidos por ownership; o repositório global não é declarado verde. |
 | Produção e integração | Rotas normais preservam a mesma composição fail-closed. Supabase, Postgres, Auth, RLS, RPC, migrations, Edge Functions, Storage, deploy, remoto, autorização produtiva e E2E seguem bloqueados/fora de escopo. |
 | Handoff V4.19/V4.20 | `c5de6b4b` permanece o handoff visual. Seus hunks de `SupabaseFormsApi` e `packages/coelo_api` foram revertidos/isolados por `a21b3992`; nenhum contrato backend novo integra o fechamento. |
+| Cross-review final | Sem P0/P1 após `8cdb024a`, que fechou o override auditado de restauração de reserva e acrescentou o teste final de Agenda. |
 | Estado máximo | `local-green` visual/Flutter. O recorte focado está GREEN; falhas globais externas e integração produtiva permanecem explicitamente abertas. |
 
 ## 17. Histórico
 
 | Data | Mudança |
 |---|---|
-| 2026-08-31 | Formulários e Agenda fecharam 22/22 `local-green` visual/Flutter e elevaram o total a 100/207 (48,31%): gate focado 237/237, analyzer/visual/index/knowledge verdes e 113 goldens únicos rastreados. Suíte global interrompida após 1.265 passes/76 falhas externas ao recorte, sem promoção de backend/E2E. |
+| 2026-08-31 | Formulários e Agenda fecharam 22/22 `local-green` visual/Flutter e elevaram o total a 100/207 (48,31%): gate focado 238/238, Agenda 112/112, analyzer/visual/index/knowledge verdes, cross-review sem P0/P1 e 113 goldens únicos rastreados. Suíte global interrompida após 1.265 passes/76 falhas externas ao recorte, sem promoção de backend/E2E. |
 | 2026-08-31 | Formulários e Agenda registrados em checkpoint próprio: 90/207 `local-green` (43,48%), 12/22 ações do recorte verdes localmente e dez `in-progress`; backend/Supabase/E2E permanecem sem promoção. Handoff, resíduos, gates e P1 funcionais foram explicitados sem reescrever checkpoints anteriores. |
 | 2026-08-28 | Registrado o programa visual aprovado de 31 entregáveis em cinco ondas. Separadas as métricas de programa visual, Flutter local, Flutter verified e integração E2E; `0/207 E2E` deixa de representar o progresso Flutter. Nenhum código/backend foi alterado. |
 | 2026-08-26 | `groups.import`/`groups.export`: removidos do formulário os dois botões e SnackBars que simulavam sucesso sem arquivo, gateway ou job. RED→GREEN focado 1/1 e suíte `group_form_page_test.dart` 8/8; analyzer focado e global sem erros/warnings. Estado máximo `audited`/fail-closed; fluxos reais de import/export, autorização, Storage, remoto e E2E continuam pendentes. |

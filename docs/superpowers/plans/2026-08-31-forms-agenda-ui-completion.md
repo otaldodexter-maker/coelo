@@ -33,7 +33,7 @@ generated_at: "2026-08-31"
   `e0529081`, `6a06619e`, `54f311cb`, `9d4ab0d6`, `877d9cb5`, `2f98e6c8`,
   `4a9e851c`, `3d92f1d9`, `e697ac17`, `df2efdcd`, `118edba5`, `83a73890`,
   `449760d5`, `cf4e9481`, `2621fd7a`, `0e616523`, `a21b3992`, `de2fda82`,
-  `a2f0f02b` e `ba7c8d3b`.
+  `a2f0f02b`, `ba7c8d3b`, `51620291` e `8cdb024a`.
 - O recorte está `local-green` visual/Flutter: wiring local, rotas isoladas,
   comportamento funcional, responsividade e goldens fecharam seus gates focados.
 - `forms.monitor`, `forms.respond`, `forms.responses`, `forms.response-detail`,
@@ -47,8 +47,9 @@ generated_at: "2026-08-31"
   promover qualquer contrato backend novo.
 - Estado máximo permanece `local-green` Flutter/visual. Supabase, backend,
   autorização real, remoto e E2E permanecem bloqueados/fora de escopo.
-- Gate focado do recorte: 237/237 testes passaram; analyzer, contratos visuais,
-  índice Coelo UI e conhecimento passaram. Existem 113 goldens únicos no recorte
+- Gate focado do recorte: 238/238 testes passaram, incluindo Agenda 112/112;
+  analyzer, contratos visuais, índice Coelo UI e conhecimento passaram. O
+  cross-review final ficou sem P0/P1. Existem 113 goldens únicos no recorte
   (42 Agenda + 71 Forms); 101 foram trabalhados após o handoff, sendo 84 novos e
   17 herdados atualizados, com inspeção visual representativa de cada superfície.
 - A suíte Flutter global foi interrompida após 1.265 passes e 76 falhas somente
@@ -80,9 +81,9 @@ generated_at: "2026-08-31"
 2. Concluído: arquivos de Forms, overlays e shell foram auditados; os testes
    focados foram repetidos no estado consolidado.
 3. Concluído: `a21b3992` reverteu/isolou os hunks Supabase/API fora do recorte.
-4. Concluído no recorte: 237/237, analyzer, goldens inspecionados e gates
-   visual/index/knowledge verdes. A suíte global conserva 76 falhas externas ao
-   ownership desta frente e não é declarada verde.
+4. Concluído no recorte: 238/238, Agenda 112/112, analyzer, goldens inspecionados,
+   gates visual/index/knowledge verdes e cross-review sem P0/P1. A suíte global
+   conserva 76 falhas externas ao ownership desta frente e não é declarada verde.
 
 ## Fase 3 — Formulários
 
