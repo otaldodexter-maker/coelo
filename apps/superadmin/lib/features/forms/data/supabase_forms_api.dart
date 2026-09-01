@@ -14,29 +14,40 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
   @override
   Future<FormsEditorContext> getEditorContext() => _guard(() async {
     final payload = _map(await _backend.rpc('superadmin_forms_context', const {}));
+    final sharedCapabilities = payload['capabilities'] is Map
+        ? Map<String, Object?>.from(payload['capabilities']! as Map)
+        : const <String, Object?>{};
     final institutions = _list(payload, 'institutions')
         .map(_map)
         .map((value) {
           final capabilities = value['capabilities'] is Map
               ? Map<String, Object?>.from(value['capabilities']! as Map)
-              : const <String, Object?>{};
+              : sharedCapabilities;
           return FormsEditorInstitution(
             id: _string(value, 'id'),
             name:
                 value['name'] as String? ?? value['public_name'] as String? ?? _string(value, 'id'),
             canManageForms: _capability(capabilities, const [
+              'manage',
               'can_manage_forms',
               'can_create_forms',
               'forms_manage',
             ]),
             canPublishForms: _capability(capabilities, const [
+              'publish',
               'can_publish_forms',
               'forms_publish',
             ]),
           );
         })
         .toList(growable: false);
-    return FormsEditorContext(institutions: List.unmodifiable(institutions));
+    return FormsEditorContext(
+      institutions: List.unmodifiable(institutions),
+      canTransferCrossInstitution: _capability(sharedCapabilities, const [
+        'transfer_cross_institution',
+        'forms_transfer_cross_institution',
+      ]),
+    );
   });
 
   @override

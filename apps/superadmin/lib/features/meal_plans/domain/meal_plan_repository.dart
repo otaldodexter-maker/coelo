@@ -564,13 +564,15 @@ final class MealPlanTemplateDraft {
   const MealPlanTemplateDraft({
     this.requestId,
     this.id,
+    this.tenantId,
+    this.institutionId,
     required this.name,
     required this.planVariant,
     required this.audienceSegment,
     required this.payload,
     this.expectedVersion = 0,
   });
-  final String? requestId, id;
+  final String? requestId, id, tenantId, institutionId;
   final String name;
   final MealPlanPlanVariant planVariant;
   final MealPlanAudienceSegment audienceSegment;
@@ -578,6 +580,8 @@ final class MealPlanTemplateDraft {
   final int expectedVersion;
   Map<String, Object?> toJson() => {
     'requestId': requestId,
+    'tenantId': tenantId,
+    'institutionId': institutionId,
     'name': name,
     'planVariant': planVariant.name,
     'audienceSegment': audienceSegment.name,

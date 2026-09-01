@@ -1,7 +1,8 @@
 final class FormsEditorContext {
-  const FormsEditorContext({required this.institutions});
+  const FormsEditorContext({required this.institutions, this.canTransferCrossInstitution = false});
 
   final List<FormsEditorInstitution> institutions;
+  final bool canTransferCrossInstitution;
 }
 
 final class FormsEditorInstitution {

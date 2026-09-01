@@ -8,6 +8,51 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('carrega apenas contextos devolvidos pelo gateway autorizado', () async {
+    Request? captured;
+    final client = _client((request) async {
+      captured = request;
+      return _json(request, {
+        'contexts': [
+          {
+            'id': _institutionId,
+            'name': 'Colégio Horizonte',
+            'level': 'institution',
+            'institution_id': _institutionId,
+            'parent_id': null,
+            'granted_capabilities': ['createAgendaItems', 'publishAgendaItems'],
+            'restricted_capabilities': <String>[],
+          },
+          {
+            'id': _unitId,
+            'name': 'Unidade Centro',
+            'level': 'unit',
+            'institution_id': _institutionId,
+            'parent_id': _institutionId,
+            'granted_capabilities': ['createAgendaItems'],
+            'restricted_capabilities': <String>[],
+          },
+        ],
+      });
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+
+    await repository.loadContexts();
+
+    expect(captured!.url.path, endsWith('/rpc/superadmin_agenda_contexts'));
+    expect(repository.contexts, hasLength(2));
+    expect(repository.contexts.last.level, AgendaContextLevel.unit);
+    expect(repository.contexts.last.parentId, _institutionId);
+    expect(
+      repository.contexts.first.grantedCapabilities,
+      containsAll(<AgendaCapability>[
+        AgendaCapability.createAgendaItems,
+        AgendaCapability.publishAgendaItems,
+      ]),
+    );
+  });
+
   test('lista eventos pelo RPC e substitui o cache no reload real', () async {
     final captured = <Request>[];
     var call = 0;

@@ -98,6 +98,20 @@ void main() {
     expect(context.institutions.single.canPublishForms, isFalse);
   });
 
+  test('applies the deployed top-level capabilities to authorized institutions', () async {
+    final backend = _Backend({
+      'capabilities': {'manage': true, 'publish': true},
+      'institutions': [
+        {'id': 'institution-aurora', 'name': 'Instituto Aurora'},
+      ],
+    });
+
+    final context = await SupabaseFormsApi(backend).getEditorContext();
+
+    expect(context.institutions.single.canManageForms, isTrue);
+    expect(context.institutions.single.canPublishForms, isTrue);
+  });
+
   test('monitor hierarchy sends the scoped cursor to the authorized RPC', () async {
     final backend = _Backend({
       'items': [

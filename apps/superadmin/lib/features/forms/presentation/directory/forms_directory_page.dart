@@ -12,6 +12,7 @@ import '../../../../shared/presentation/widgets/superadmin_directory_view_toggle
 import '../../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
 import '../../data/development_forms_api.dart';
+import '../../data/forms_editor_context.dart';
 import 'forms_lifecycle_actions.dart';
 
 enum FormsDirectoryDisplay { table, cards }
@@ -62,10 +63,22 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
   int _pageIndex = 0;
   Timer? _searchDebounce;
   int _loadGeneration = 0;
+  FormsEditorContext? _authorizedContext;
+
+  bool get _canManage =>
+      widget.canManage ||
+      (_authorizedContext?.institutions.any((institution) => institution.canManageForms) ?? false);
+  bool get _canManageLifecycle =>
+      widget.canManageLifecycle ||
+      (_authorizedContext?.institutions.any((institution) => institution.canManageForms) ?? false);
+  bool get _canTransferCrossInstitution =>
+      widget.canTransferCrossInstitution ||
+      (_authorizedContext?.canTransferCrossInstitution ?? false);
 
   @override
   void initState() {
     super.initState();
+    unawaited(_loadAuthorizedContext());
     unawaited(_load());
   }
 
@@ -84,7 +97,22 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
         ..clear()
         ..add(null);
       _pageIndex = 0;
+      _authorizedContext = null;
+      unawaited(_loadAuthorizedContext());
       unawaited(_load());
+    }
+  }
+
+  Future<void> _loadAuthorizedContext() async {
+    final api = widget.api;
+    if (api is! FormsEditorContextApi) return;
+    try {
+      final authorizedContext = await (api as FormsEditorContextApi).getEditorContext();
+      if (mounted && identical(api, widget.api)) {
+        setState(() => _authorizedContext = authorizedContext);
+      }
+    } on FormApiException {
+      // Directory reads keep their own explicit unauthorized/error state.
     }
   }
 
@@ -317,12 +345,10 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
     FormsDirectoryLoadStatus.data => FormsDirectoryResults(
       page: _page!,
       display: _display,
-      canManage: widget.canManage,
-      canManageLifecycle:
-          widget.canManageLifecycle || (widget.canManage && widget.api is DevelopmentFormsApi),
+      canManage: _canManage,
+      canManageLifecycle: _canManageLifecycle || (_canManage && widget.api is DevelopmentFormsApi),
       canTransferCrossInstitution:
-          widget.canTransferCrossInstitution ||
-          (widget.canManage && widget.api is DevelopmentFormsApi),
+          _canTransferCrossInstitution || (_canManage && widget.api is DevelopmentFormsApi),
       api: widget.api,
       pageNumber: _pageIndex + 1,
       onPrevious: _pageIndex > 0 ? _previous : null,
@@ -341,7 +367,7 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
   Widget _stateWithCreate(Widget state) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      if (widget.canManage && widget.onCreate != null) ...[
+      if (_canManage && widget.onCreate != null) ...[
         CoeloAdminCreateAction(
           key: const Key('forms-directory-create'),
           label: 'Criar formulário',

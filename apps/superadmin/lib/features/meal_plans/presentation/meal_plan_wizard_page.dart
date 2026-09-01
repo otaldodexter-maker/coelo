@@ -286,6 +286,16 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
         onChanged: (value) => setState(() => _audience = value),
         prefixIcon: Icons.groups_outlined,
       ),
+      if (widget.isTemplate) ...[
+        const SizedBox(height: CoeloSpacing.space4),
+        _contextField(
+          label: 'Instituição do modelo',
+          options: _audienceOptions.institutions,
+          selected: _institutions,
+          prefixIcon: Icons.account_balance_outlined,
+          onChanged: (values) => _setContextSelection(_institutions, values),
+        ),
+      ],
       if (!widget.isTemplate) ...[
         const SizedBox(height: CoeloSpacing.space4),
         CoeloAdminSingleSelectField<String>(
@@ -1160,6 +1170,11 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
     _name.text = copyName ? template.name : '${template.name} (cópia)';
     _variant = template.planVariant;
     _audience = template.audienceSegment;
+    if (template.institutionId case final institutionId?) {
+      _institutions
+        ..clear()
+        ..add(institutionId);
+    }
     final payload = template.payload;
     final image = payload['simpleImage'];
     _simpleImage = image is Map
@@ -1404,6 +1419,10 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
       setState(() => _error = 'Informe o nome do modelo que será criado.');
       return;
     }
+    if (widget.isTemplate && _institutions.isEmpty) {
+      setState(() => _error = 'Selecione a instituição autorizada do modelo.');
+      return;
+    }
     setState(() {
       _saving = true;
       _error = null;
@@ -1431,6 +1450,8 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
           MealPlanTemplateDraft(
             requestId: '$operationId-template-save',
             id: mealPlanModelId,
+            tenantId: _institutions.firstOrNull,
+            institutionId: _institutions.firstOrNull,
             name: _name.text.trim(),
             planVariant: _variant,
             audienceSegment: _audience,
@@ -1456,6 +1477,8 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
             MealPlanTemplateDraft(
               requestId: '$operationId-template-media',
               id: savedTemplate.id,
+              tenantId: savedTemplate.tenantId ?? _institutions.firstOrNull,
+              institutionId: savedTemplate.institutionId ?? _institutions.firstOrNull,
               name: _name.text.trim(),
               planVariant: _variant,
               audienceSegment: _audience,
@@ -1587,7 +1610,11 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
     int? expectedRevision,
   }) {
     final period = _period!;
-    final tenantId = _original?.tenantId ?? widget.tenantId;
+    final institutionId = _institutions.firstOrNull ?? _original?.institutionId;
+    // The backend returns only institutions authorized for this actor. In the
+    // institution-scoped model the institution is also the tenant boundary;
+    // never derive it from mutable auth metadata or a hard-coded client value.
+    final tenantId = _original?.tenantId ?? institutionId ?? widget.tenantId;
     final scopeLevel = _people.isNotEmpty
         ? MealPlanScopeLevel.person
         : _activities.isNotEmpty
@@ -1609,7 +1636,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
       requestId: requestId,
       mealPlanId: savedMealPlanId ?? widget.mealPlanId,
       tenantId: tenantId,
-      institutionId: _institutions.firstOrNull ?? _original?.institutionId,
+      institutionId: institutionId,
       unitId: _units.firstOrNull ?? _original?.unitId,
       classId: _groups.firstOrNull ?? _original?.classId,
       personId: _people.firstOrNull ?? _original?.personId,

@@ -24,6 +24,7 @@ abstract class AgendaRepository extends ChangeNotifier {
     String? institutionId,
     String search = '',
   });
+  Future<void> loadContexts();
   Future<void> loadItem(String id);
   Future<void> loadRequests();
 

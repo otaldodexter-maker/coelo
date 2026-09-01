@@ -111,7 +111,20 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
       final suffix = int.tryParse(question.id.split('-').last) ?? 0;
       if (suffix >= _nextQuestionId) _nextQuestionId = suffix + 1;
     }
+    if (widget.store.contexts.isEmpty) unawaited(_loadContexts());
     if (widget.eventId != null && _existing == null) unawaited(_loadExisting());
+  }
+
+  Future<void> _loadContexts() async {
+    await widget.store.loadContexts();
+    if (!mounted) return;
+    setState(() {
+      if (widget.store.contexts.isEmpty) {
+        _feedback =
+            widget.store.errorMessage ??
+            'Nenhum contexto institucional autorizado está disponível.';
+      }
+    });
   }
 
   Future<void> _loadExisting() async {

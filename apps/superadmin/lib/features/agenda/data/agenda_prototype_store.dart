@@ -57,6 +57,9 @@ final class AgendaPrototypeStore extends AgendaRepository {
   }) async {}
 
   @override
+  Future<void> loadContexts() async {}
+
+  @override
   Future<void> loadItem(String id) async {}
 
   @override

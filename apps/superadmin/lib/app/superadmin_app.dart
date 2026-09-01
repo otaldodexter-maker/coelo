@@ -2,6 +2,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:coelo_api/coelo_api.dart';
 
 import '../core/config/superadmin_app_config.dart';
 import '../core/guards/superadmin_session.dart';
@@ -26,6 +27,8 @@ import '../features/people/domain/person_directory.dart';
 import '../features/people/domain/person_identity.dart';
 import '../features/access_profiles/data/supabase_access_profile_repository.dart';
 import '../features/imports/domain/import_repository.dart';
+import '../features/agenda/domain/agenda_repository.dart';
+import '../features/plans/domain/plan_catalog_repository.dart';
 import '../features/meal_plans/domain/meal_plan_image_repository.dart';
 import '../features/meal_plans/domain/meal_plan_repository.dart';
 import '../features/invites/domain/platform_invite.dart';
@@ -91,6 +94,9 @@ class SuperadminApp extends StatefulWidget {
     this.unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
     this.accessProfileRepository = const UnavailableAccessProfileRepository(),
     this.importRepository = const UnavailableImportRepository(),
+    this.planCatalogRepository = const UnavailablePlanCatalogRepository(),
+    this.agendaRepository,
+    this.formsApi,
     this.mealPlanRepository = const UnavailableMealPlanRepository(),
     this.mealPlanImageRepository = const UnavailableMealPlanImageRepository(),
     this.authorizedMealPlanTenantId,
@@ -122,6 +128,9 @@ class SuperadminApp extends StatefulWidget {
   final UnitBackendCommandsGateway unitBackendCommands;
   final AccessProfileRepository accessProfileRepository;
   final ImportRepository importRepository;
+  final PlanCatalogRepository planCatalogRepository;
+  final AgendaRepository? agendaRepository;
+  final FormsApi? formsApi;
   final MealPlanRepository mealPlanRepository;
   final MealPlanImageRepository mealPlanImageRepository;
   final String? authorizedMealPlanTenantId;
@@ -173,6 +182,9 @@ class _SuperadminAppState extends State<SuperadminApp> {
       unitBackendCommands: widget.unitBackendCommands,
       accessProfileRepository: widget.accessProfileRepository,
       importRepository: widget.importRepository,
+      planCatalogRepository: widget.planCatalogRepository,
+      agendaRepository: widget.agendaRepository,
+      formsApi: widget.formsApi,
       mealPlanRepository: widget.mealPlanRepository,
       mealPlanImageRepository: widget.mealPlanImageRepository,
       authorizedMealPlanTenantId: widget.authorizedMealPlanTenantId,

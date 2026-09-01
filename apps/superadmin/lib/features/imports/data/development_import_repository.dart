@@ -27,10 +27,12 @@ final class DevelopmentImportRepository implements ImportRepository, ImportExecu
           if (query.entities.isNotEmpty && !query.entities.contains(job.entity)) return false;
           if (query.file != null && query.file != job.file) return false;
           if (query.status != null && query.status != job.status) return false;
-          if (query.createdAfter != null && job.createdAt.isBefore(query.createdAfter!))
+          if (query.createdAfter != null && job.createdAt.isBefore(query.createdAfter!)) {
             return false;
-          if (query.createdBefore != null && job.createdAt.isAfter(query.createdBefore!))
+          }
+          if (query.createdBefore != null && job.createdAt.isAfter(query.createdBefore!)) {
             return false;
+          }
           if (search == null || search.isEmpty) return true;
           return '${job.displayFileName} ${job.entity.label} ${job.context} ${job.actor}'
               .toLowerCase()

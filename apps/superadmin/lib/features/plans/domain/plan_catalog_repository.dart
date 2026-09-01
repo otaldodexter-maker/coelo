@@ -7,6 +7,24 @@ abstract interface class PlanCatalogRepository {
   Future<PlanDetails> save(PlanSaveCommand command);
 }
 
+final class UnavailablePlanCatalogRepository implements PlanCatalogRepository {
+  const UnavailablePlanCatalogRepository();
+
+  Never _unavailable() => throw const PlanRepositoryException(
+    PlanRepositoryFailureKind.unavailable,
+    'O catálogo de planos não está disponível neste ambiente.',
+  );
+
+  @override
+  Future<PlanDetails> get(String planId) async => _unavailable();
+
+  @override
+  Future<PlanPage> list(PlanQuery query) async => _unavailable();
+
+  @override
+  Future<PlanDetails> save(PlanSaveCommand command) async => _unavailable();
+}
+
 final class PlanDetails {
   const PlanDetails({required this.plan, this.linkedInstitutions = const []});
   final PlanCatalog plan;

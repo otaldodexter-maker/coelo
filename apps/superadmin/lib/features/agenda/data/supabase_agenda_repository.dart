@@ -18,7 +18,7 @@ final class SupabaseAgendaRepository extends AgendaRepository {
   final SupabaseClient _client;
   final DateTime Function() _clock;
   final String Function() _requestId;
-  final List<AgendaContext> _contexts;
+  List<AgendaContext> _contexts;
   List<AgendaItem> _items = const [];
   List<GuardianBirthdayRequest> _requests = const [];
   List<AgendaPublicationRequest> _publicationRequests = const [];
@@ -31,7 +31,7 @@ final class SupabaseAgendaRepository extends AgendaRepository {
   @override
   List<AgendaItem> get items => List.unmodifiable(_items);
   @override
-  List<AgendaContext> get contexts => _contexts;
+  List<AgendaContext> get contexts => List.unmodifiable(_contexts);
   @override
   List<GuardianBirthdayRequest> get requests => List.unmodifiable(_requests);
   @override
@@ -72,6 +72,25 @@ final class SupabaseAgendaRepository extends AgendaRepository {
       ),
     );
     _items = _list(value['items']).map(_item).toList(growable: false);
+  });
+
+  @override
+  Future<void> loadContexts() => _load(() async {
+    final payload = _map(await _client.rpc<Object?>('superadmin_agenda_contexts'));
+    _contexts = _list(payload['contexts'])
+        .map((value) {
+          final context = _map(value);
+          return AgendaContext(
+            id: _required(context, 'id'),
+            name: _required(context, 'name'),
+            level: _enum(AgendaContextLevel.values, _required(context, 'level')),
+            institutionId: _required(context, 'institution_id'),
+            parentId: context['parent_id']?.toString(),
+            grantedCapabilities: _agendaCapabilities(context['granted_capabilities']),
+            restrictedCapabilities: _agendaCapabilities(context['restricted_capabilities']),
+          );
+        })
+        .toList(growable: false);
   });
 
   @override
@@ -567,6 +586,14 @@ Map<String, Object?> _map(Object? value) {
 
 List<Object?> _list(Object? value) => value is List ? List<Object?>.from(value) : const <Object?>[];
 Set<String> _strings(Object? value) => _list(value).map((entry) => entry.toString()).toSet();
+Set<AgendaCapability> _agendaCapabilities(Object? value) => _list(value)
+    .map((entry) => entry.toString())
+    .map(
+      (name) =>
+          _firstOrNull(AgendaCapability.values.where((capability) => capability.name == name)),
+    )
+    .whereType<AgendaCapability>()
+    .toSet();
 String _required(Map<String, Object?> value, String key) {
   final field = value[key]?.toString().trim() ?? '';
   if (field.isEmpty) throw FormatException('Missing Agenda field: $key.');
