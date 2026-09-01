@@ -27,15 +27,16 @@ estado local exigido e nenhuma ação foi certificada como Flutter produtivo.
 | --- | --- | --- | --- |
 | Comunicação — `01a05db6-b171-7a80-9e07-592e2e08dbe9` | Chat: diretório, busca, abrir conversa, leitura e envio local; ordem pós-envio e launcher corrigidos. Convites: diretório, detalhe e formulário `/dev` com escopo coerente. Avisos: diretório, cards/tabela, paginação e criar/editar locais. | Chat editar/anexar/receipts/revogar; paginação total; Convites e Avisos produtivos; regressão visual conjunta após demais merges. Circulares não pertence a esta frente. | Código seletivamente integrado no `dev` até `f516be71`; 301/301 testes pós-merge e analyzer verdes. Flutter local desta fatia concluído; ETA produtiva depende do backend. |
 | Operações — `01a05d88-3187-79a3-9443-218a0c5cb8ae` | Planos, Cardápios/Modelos, Formulários/Respostas/editor/agendamento, Importações e Agenda/calendário/lista/criar/editar/solicitações/aprovações/permissões estão locais em `/dev`. | Integrar seletivamente a branch; reexecutar regressão conjunta; ligar repositories produtivos. Mapa/geocodificação real e import/export reais continuam abertos. | Branch limpa `codex/finalizacao-telas-operacoes` em `84759675`; 344/344 e analyzer verdes. ETA de integração local: 2–4 h após review de conflitos; produção não calculável antes do backend. |
-| Acessos e Saúde/Cuidado — `01a05d66-fdec-7f31-a4c3-fe7f7654e51b` | Pessoas; Segurança da criança; Usuários internos; Perfis e permissões/Modelos; Perfis de cuidado; Planos de medicação: diretórios, filtros, paginação e wizards locais. | Review independente e integração seletiva; corrigir 59 comparações de golden somente após aprovação visual; três cenários antigos de Convites; importar/exportar reais; geocodificação; dois testes produtivos legados; ações produtivas permanecem fail-closed. | Branch limpa `codex/accessos-ponta-a-ponta` em `6e56d3e4`; 152/152 críticos, Acessos 259/259 e Saúde 127/127. Reviews em andamento; ETA de integração será recalculada após os verdicts. |
-| Auth — `01a05d37-a36d-7610-b9dc-f8259243ffcd` | Login, logout, recuperação e reset; recovery confinada à rota correta; guard de sessão/contexto interno; negativos de Home/Instituições/`/dev`. | Integração está retida: o Catalog legado precisa negar recovery antes de consultar acesso, mas `apps/catalog` está fora do recorte. MFA continua fail-closed e fora do pacote. Goldens históricos de Login permanecem divergentes. | Branch limpa `codex/auth-first-local-green` em `a2c6eaab`; 66/66 Superadmin e 23/23 `coelo_auth`. ETA depende de autorização explícita para o ajuste mínimo no Catalog. |
+| Acessos e Saúde/Cuidado — `01a05d66-fdec-7f31-a4c3-fe7f7654e51b` | Pessoas; Segurança da criança; Usuários internos; Perfis e permissões/Modelos; Perfis de cuidado; Planos de medicação: diretórios, filtros, paginação e wizards locais. | Reviews bloquearam promoção: 13 suítes golden RED; action_ids omitidos; detalhe Perfis/Modelos só por deep link; filtro multi-escopo/totalCount incorretos; mapa OSM sem provider; fixture compartilhada perde escopo. Import/export, produção e E2E seguem abertos. | Branch limpa `codex/accessos-ponta-a-ponta` em `6e56d3e4`; 100/100 funcionais do review passaram, mas visual falhou. ETA não calculável até corrigir achados. |
+| Auth — `01a05d37-a36d-7610-b9dc-f8259243ffcd` | Login, logout, recuperação e reset; recovery confinada à rota correta; guard de sessão/contexto interno; negativos de Home/Instituições/`/dev`. | Catalog legado ainda consulta access gateway durante recovery; MFA continua fail-closed e fora do pacote. Goldens históricos de Login permanecem divergentes. | Branch `a2c6eaab`; 66/66 Superadmin e 23/23 `coelo_auth`. Frente reportou autorização recebida para o delta mínimo Catalog e está executando; ETA 30–60 min, ainda sem commit/prova. |
 | Estruturas — `01a05d2b-d4e4-7a90-95a6-e9a401ab5836` | Cabeçalho mobile global; Instituições, Unidades, Turmas, Atividades/Modelos e Avaliações locais; 18 referências preservadas. | Integração seletiva deve excluir hunks duplicados de Chat; revalidar shell com todas as rotas. Avaliações produtivas continuam fail-closed e modelos por Unidade ainda não possuem replay. | Branch limpa `codex/estruturas-superadmin` em `c249db2f`. ETA de integração local: 2–4 h de resolução/reteste; backend separado. |
 | Coelo (Principal) — `01a05dce-96ed-7ca3-b3eb-e4701473510b` | Rotas do menu isoladas sem tocar `apps/principal`; `momentos.view` fullscreen com retorno/foco e estados inválido/loading/failure/unauthorized/empty. | Circulares diretório/arquivos está em execução; depois revisar Acontece, Para Você, Agora, Perfil e subtelas de publicar. Chat deve apenas consumir o núcleo de Comunicação. Validação visual manual/golden conjunta permanece aberta. | Branch `codex/finalizar-telas-coelo-principal` em `14ff3d50`; Momentos 38/38 e review aprovado. Circulares local: ETA informada 25–35 min. |
 
 ### Primeiro próximo passo Flutter da Etapa 2
 
 1. Receber os dois verdicts independentes de Acessos/Saúde e corrigir qualquer
-   achado antes do cherry-pick.
+   achado antes do cherry-pick. Verdicts recebidos: banco P0 e Flutter P1/P2;
+   correções ainda não iniciadas.
 2. Fechar Circulares na frente Coelo (Principal), integrando apenas o trabalho
    válido e excluindo `393fc7ff`.
 3. Integrar seletivamente Estruturas, Operações, Coelo (Principal) e
@@ -3419,3 +3420,35 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
   aprovado em massa.
 - Este checkpoint preserva o handoff sem aumentar a contagem 105/207 enquanto
   as revisões independentes e a integração seletiva não terminarem.
+
+### Review independente do handoff — promoção bloqueada
+
+- **Progresso correto do recorte:** 12/31 `action_id` já estavam
+  `local-green` no rastreador (38,71%); 19/31 permanecem abertos (61,29%). A
+  branch não sustenta promoção adicional.
+- **Action IDs oficiais que não podem ser omitidos:** Pessoas
+  `people.list/create/edit/links/reload`; Segurança
+  `child-safety.list/child/create/edit/suspend`; Perfis
+  `access-profiles.list/create/detail/edit/assign/delete`; Modelos
+  `access-models.list/filter/create/detail/edit/duplicate`; Usuários internos
+  `internal-users.list/create/edit/suspend/mfa`; Saúde
+  `health-care.list/create/detail/edit`; Medicação
+  `medication.list/create/detail/edit/evidence`.
+- **Visual:** 100/100 testes funcionais e validador passaram, mas cinco suítes
+  golden terminaram `+1 -13`; diferenças chegam a 83–93% em Perfis mobile e
+  47–48% em Usuários internos mobile. A dívida é material e impede conclusão UI.
+- **Perfis/Modelos:** composição produtiva usa realm people-based; detalhe só é
+  alcançável por deep link porque o diretório abre edição; multi-escopo vira
+  filtro nulo e `totalCount` é fabricado como itens vistos + 1. Reter toda a
+  fatia até corrigir realm, UX, filtro, paginação, OQ-044 e goldens.
+- **Mapa:** `coelo_compact_address_map.dart` chama diretamente
+  `tile.openstreetmap.org` e adiciona dependências somente para uma aproximação
+  municipal. Não integrar até decidir provider, cache e privacidade.
+- **Fixtures:** para 30 adultos responsáveis+equipe, a entrada de equipe pode
+  sobrescrever instituições do responsável; corrigir preservação de escopo.
+- **Componentes compartilhados:** `d4374e39`/`6e56d3e4` alteram
+  `SuperadminFormFrame`/`CoeloStatePanel`; exigem regressão conjunta de Auth,
+  Comunicação, Estruturas e Acessos antes de cherry-pick.
+- **Primeira fatia candidata:** evidências/decisões, depois fixtures por domínio
+  e Segurança infantil (`156332cb` + `b943a5fe`), mantendo
+  `child-safety.suspend` pendente. Perfis/Modelos e mapa permanecem retidos.

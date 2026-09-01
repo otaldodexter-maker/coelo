@@ -331,6 +331,17 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
   motivo não é obrigatório em create/update/duplicate; planos pgTAP 35+10 não
   foram executados; e o replay completo permanece RED por dependência anterior.
   As quatro tabelas são herdadas de `20260811215451`, não criadas por `e7520192`.
+- **Review Flutter bloqueou promoção:** 100/100 testes funcionais passaram, mas
+  cinco suítes golden terminaram `+1 -13` com diferenças materiais; o handoff
+  confundiu capabilities com `action_id` e omitiu ações oficiais abertas.
+  `access-profiles.detail`/`access-models.detail` só permanecem por deep link;
+  filtro multi-escopo e `totalCount` produtivos estão incorretos; o mapa chama
+  tiles públicos OSM sem decisão de provider/cache/privacidade; fixture de 30
+  adultos compartilhados pode perder escopo. Nenhuma promoção adicional.
+- Estratégia aprovada: integrar primeiro evidências e fixtures por domínio;
+  Segurança infantil é a primeira fatia candidata, mantendo suspend pendente.
+  Reter Perfis/Modelos, mapa/dependências e os componentes compartilhados até
+  correções e regressão conjunta.
 
 ### Estruturas — checkpoint `c249db2f`
 
@@ -345,6 +356,18 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
   OQ-043, contrato v2, Docker e ambiente OQ-041.
 
 ## Monitoramento e encerramento
+
+### Retomadas ativas em 2026-09-01
+
+- **Comunicação:** retomou três linhas paralelas: Chat RPC/RLS+adapter/cutover;
+  Avisos lifecycle/audience/jobs/receipts+cutover; Convites auditoria das cinco
+  decisões OQ-039. Remoto permanece read-only por OQ-041.
+- **Operações:** retomou pelo inventário exato de drift e matriz de composição
+  produtiva; ordem vinculante é ledger/schema → Auth/capabilities → Planos →
+  Cardápios → Forms → Importações → Agenda → E2E/Advisors.
+- **Auth:** a frente reportou autorização recebida na própria conversa para o
+  menor ajuste fail-closed no Catalog, ETA 30–60 min. Isso ainda não é commit ou
+  gate verde; aguardar handoff e verificar que não há expansão adicional.
 
 - Automação horária ativa: `etapa-2-acompanhamento-hor-rio`.
 - Cada frente deve enviar checkpoint diretamente ao Coordenador pelo menos uma

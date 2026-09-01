@@ -13,8 +13,8 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "F4B666B13D0221E900CDD79F65AD7F47F32293709410DDBD8EEFAE60C59C9996"
-supabase_tracker_sha256: "E7B9DC7FAF9FE8FC55305437FA5B082C625FFF32C1A0AD6824ADDB29CC21A653"
+flutter_tracker_sha256: "B94FEA760B7C52F6776799788443D9BFC53903605E06FAE27AF65F093C50A272"
+supabase_tracker_sha256: "31E6BE8502DC93CEC6153C72894C252894DCA67F5648F9F66122DE95F4A5879E"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
@@ -33,16 +33,17 @@ restantes (100,00%). Flutter possui 105/207 ações `local-green`, Supabase poss
 
 | Frente | Último passo realmente concluído | Passo atual | Falta para ponta a ponta | Git/ETA |
 | --- | --- | --- | --- | --- |
-| Comunicação | Código seletivo de Chat/Convites/Avisos integrado no `dev`; 301/301 testes pós-merge. | Flutter local concluído na fatia; backend bloqueado. | RPCs, RLS, anexos/eventos, Convites produtivos, tenant A/B, revogação, persistência/reload, auditoria e E2E. | `dev` até `f516be71`; ETA E2E não calculável antes do ambiente/contratos. |
-| Operações | Cinco áreas Flutter `/dev` passaram 344/344 e branch está limpa. | Aguardando review e integração seletiva; backend no primeiro gate de drift. | Repository produtivo + schema/RLS/RPC por tela + 40 provas E2E. | `84759675`; integração local estimada 2–4 h após review; E2E sem ETA antes do replay. |
-| Acessos e Saúde/Cuidado | Handoff limpo com 152/152 críticos; Acessos 259/259; Saúde 127/127. | Review Flutter em andamento; review banco abriu P0 de principal people-based, além de lookup antes do gate, anti-escalation/auditoria incompletas e replay RED. | Redesenhar contexto Auth/session/realm/audit das RPCs, corrigir gates e negativos; só depois replay e integração. Mutações produtivas, dados sensíveis, remoto/E2E continuam abertas. | `6e56d3e4`; ETA não calculável até correção do P0. |
-| Auth | Recovery bypass corrigido e contratos locais passaram 66/66 + 23/23; backend local Auth passou 29/29. | Bloqueado pelo gate Catalog fora do recorte e pelo ledger remoto. | Autorizar/corrigir Catalog, integrar, replay compatível, deploy/redirect/SMTP e E2E; MFA permanece fora/fail-closed. | `a2c6eaab`; backend 1–2 d + E2E 0,5–1 d após ambiente; Catalog sem ETA sem autorização. |
+| Comunicação | Código seletivo de Chat/Convites/Avisos integrado no `dev`; 301/301 testes pós-merge. | Três linhas backend ativas: Chat; Avisos; auditoria Convites. Remoto permanece read-only. | RPCs, RLS, anexos/eventos, Convites produtivos, tenant A/B, revogação, persistência/reload, auditoria e E2E. | `dev` até `f516be71`; novos commits/evidências aguardados; ETA E2E não calculável antes do ambiente. |
+| Operações | Cinco áreas Flutter `/dev` passaram 344/344 e branch está limpa. | Inventário de drift/matriz produtiva em execução. | Repository produtivo + schema/RLS/RPC por tela + 40 provas E2E. | `84759675`; primeiro checkpoint será o inventário; E2E sem ETA antes do replay. |
+| Acessos e Saúde/Cuidado | Handoff limpo e testes funcionais locais; reviews concluídos sem alterar a branch. | Banco bloqueado por P0 realm/Auth; Flutter bloqueado por 13 goldens RED, action_ids omitidos, detalhe/filtragem/paginação/mapa/fixture incorretos. | Corrigir P0/P1/P2, integrar primeiro fatias não controversas e revalidar componentes compartilhados; depois replay. Remoto/E2E continuam abertos. | `6e56d3e4`; ETA não calculável até correções e novo review. |
+| Auth | Recovery bypass corrigido e contratos locais passaram 66/66 + 23/23; backend local Auth passou 29/29. | Frente executa delta mínimo fail-closed Catalog após autorização reportada; ledger remoto continua bloqueado. | Validar commit Catalog, integrar, replay compatível, deploy/redirect/SMTP e E2E; MFA permanece fora/fail-closed. | `a2c6eaab`; Catalog ETA 30–60 min informada; remoto 1–2 d + E2E 0,5–1 d após ambiente. |
 | Estruturas | UI/cabeçalho local e worktree limpa; Avaliações permanecem honestamente fail-closed. | Aguardando integração seletiva sem hunks Chat. | Gateways internos de Unidades/Turmas, 11 RPCs Avaliações, replay de modelos por Unidade, remoto e E2E. | `c249db2f`; integração 2–4 h; backend 8–16 h após decisões. |
 | Coelo (Principal) | `momentos.view` aprovado localmente: 38/38, estados/retorno/foco. | Circulares diretório/arquivos em execução. | Fechar Circulares e revisar Acontece/Para Você/Agora/Perfil/publicadores; integrar; depois contratos Postgres/R2, autorização, remoto e E2E. | `14ff3d50`; Circulares local 25–35 min; E2E sem ETA antes das decisões. |
 
 ### Ordem de retomada vinculante da Etapa 2
 
-1. Receber reviews de Acessos/Saúde, corrigir achados e atualizar estes três MDs.
+1. Reviews de Acessos/Saúde recebidos e registrados; corrigir P0/P1/P2 e pedir
+   novo review antes de qualquer integração produtiva.
 2. Fechar Circulares e continuar a sequência do menu Coelo (Principal).
 3. Integrar seletivamente branches limpas, com testes pós-merge; preservar
    Comunicação como dona do Chat e Estruturas como dona do cabeçalho.
@@ -1548,6 +1549,11 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   motivo de auditoria opcional e ausência de execução dos planos pgTAP. As
   quatro tabelas citadas são herdadas de migration anterior e o replay completo
   já está RED; estado correto é `static-reviewed`, nunca `static-green`.
+- O review Flutter confirmou apenas 12/31 action_ids `local-green` no recorte e
+  bloqueou promoção: 13 suítes golden RED, IDs oficiais omitidos, detalhes só
+  por deep link, filtro/paginação produtivos incorretos, mapa OSM sem contrato e
+  fixture de adultos compartilhados perdendo escopo. Antes do backend/E2E, a
+  própria integração Flutter precisa ser refeita por fatias.
 
 ## Checkpoint integrado 68 — Operações Flutter local, backend 0/40 E2E
 
