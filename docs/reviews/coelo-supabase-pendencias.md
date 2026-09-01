@@ -4350,3 +4350,19 @@ da simples soma das 207 ações.
 - **Primeiro passo:** contratos nominais de Unidades/Turmas e Avaliações,
   Docker/replay dos 31 asserts e só então pacote remoto nominal. ETA técnica
   após desbloqueios: 8–16 h, sem contar espera externa.
+
+## Checkpoint 2026-09-01 — Comunicação, adapters locais e drift remoto
+
+- `supabase_chat_repository_test.dart` e `supabase_notice_repository_test.dart`
+  passaram 10/10 para cursores, `request_id`, versão esperada e respostas
+  proibidas. Isso é evidência local de adapter, não RLS/remoto/E2E.
+- Leitura remota confirmou RLS nas tabelas principais de Chat/Avisos e RLS
+  forçada em Circulares, mas não encontrou RPCs públicas `chat_*`/gestão de
+  Avisos consumidas pelo Flutter, nem `chat_attachment_metadata` ou
+  `notice_events`.
+- RPCs autenticadas de Circulares (`load_circular_draft`,
+  `save_circular_draft`, `publish_circular` e relacionadas) existem, mas não há
+  ator autorizado, adapter final, tenant A/B, persistência/reload ou E2E.
+- Chat/Avisos permanecem `blocked-supabase`; Circulares não avança para remoto.
+  Nenhuma mutação foi executada e qualquer pacote continua condicionado à
+  classificação/autorização nominal do ambiente.

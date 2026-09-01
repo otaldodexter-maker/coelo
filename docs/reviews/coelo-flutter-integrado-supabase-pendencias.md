@@ -13,8 +13,8 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "3A2FBE5528520181009DA940322B1C34BC755AE34A80ED1904DA6F6F0F629E17"
-supabase_tracker_sha256: "0DA68C8556C864548D27365978406626859695D9983EB8ED7130CF6FCD4A673D"
+flutter_tracker_sha256: "E91B6941EF4BDC5DADA284510E6A74D83880EC51E2391367B8D3841B9C52D99F"
+supabase_tracker_sha256: "B6848CA5EDB27985AD0787CF1FB0B445A5F703B0BC9D0ED09F39EBA65ACCCDA9"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
@@ -1443,3 +1443,17 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   migrations; `7e702447` mantém cinco superfícies produtivas fail-closed.
 - Primeiro gate: contratos backend nominais, replay/pgTAP e OQ-041; ETA técnica
   8–16 h após desbloqueios, sem incluir espera externa.
+
+## Checkpoint integrado 67 — Comunicação preservada, Chat/Convites reabertos
+
+- Chat/Avisos têm adapters locais com 10/10 testes, mas o remoto não possui as
+  RPCs esperadas nem `chat_attachment_metadata`/`notice_events`; continuam
+  `blocked-supabase` e sem E2E.
+- `chat.list/open/send` possuem fixture e testes locais em `5663042f`, porém a
+  ordem de 2+ mensagens/pós-envio está incorreta e o gate visual conserva
+  goldens RED. Flutter permanece `audited/in-progress`, não integrado.
+- Convites `/dev` aceita combinações cross-institution enquanto filtros e
+  validação de escopo não forem corrigidos; `invites.create` não pode ser
+  declarado coerente/completo nesse gate.
+- Circulares possui RPCs/RLS remotos, mas sem adapter final, ator, tenant A/B,
+  persistência/reload ou E2E; não avança para `ready-for-e2e`.

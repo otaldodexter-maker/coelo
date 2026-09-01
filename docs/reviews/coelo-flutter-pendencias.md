@@ -3281,3 +3281,19 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
 - Shell mobile e rotas de Instituições/Unidades/Turmas/Atividades foram
   revalidados; 15 anexos e três QA estão preservados e manifestados. Flutter
   permanece 102/207 `local-green`, `verified` 0/207; remoto/E2E não mudaram.
+
+## Checkpoint 2026-09-01 — Chat local reaberto por ordem e gate visual
+
+- `5663042f` trouxe `DevelopmentChatRepository` determinístico, cinco conversas
+  e 8/8 testes de busca/abertura/leitura/envio. Essa evidência permanece
+  preservada, mas `chat.list/open/send` não são promovidos nesta consolidação:
+  review encontrou ordenação dupla (`newest-first` + `reverse`/índice invertido)
+  e sequência incoerente após envio.
+- `465482c0` corrige o launcher duplicado na entrada `principal-chat` e passou
+  126/126 testes funcionais, porém 14 goldens do conjunto ampliado continuam
+  RED. Chat permanece `audited/in-progress` até teste com 2+ mensagens,
+  pós-envio e reconciliação visual deliberada.
+- Convites `/dev` também permanece em correção: `fetchOptions` ignorava escopo/
+  busca/limite e `issue` aceitava profile/destinatário cross-institution.
+- As nove referências de Comunicação continuam preservadas em `f6d44af9` e
+  `ab484019`. Produção, remoto e E2E não foram promovidos.
