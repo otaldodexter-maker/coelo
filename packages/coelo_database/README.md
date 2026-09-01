@@ -113,8 +113,8 @@ Supabase CLI 2.116.0 validado neste historico. Exemplo:
 
 Quando o objetivo for somente a fundacao interna aprovada, use
 `-FoundationOnly`. Esse perfil usa o manifesto fechado e verificado por hash
-`replay/foundation-migrations.sha256`: 64 migrations canônicas aprovadas e dois
-preflights locais. O perfil inclui a base de Circulares e os gateways internos
+`replay/foundation-migrations.sha256`: 65 migrations canônicas aprovadas e dois
+preflights locais. O perfil inclui as bases Acontece/Circulares e os gateways internos
 v2 de Comunicação; as oito migrations de produto explicitamente negadas e
 qualquer migration futura não entram automaticamente. O alvo deve ser a última
 versão do manifesto, impedindo teardown com o bridge de replay ainda ativo.
