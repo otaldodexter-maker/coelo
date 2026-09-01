@@ -1,8 +1,54 @@
+import 'package:coelo_superadmin/app/dev_menu/development_access_health_fixture_catalog.dart';
+import 'package:coelo_superadmin/features/health_care/data/dev/dev_medication_plan_health_care_repository.dart';
 import 'package:coelo_superadmin/features/health_care/data/dev/dev_medication_plan_repository.dart';
+import 'package:coelo_superadmin/features/health_care/domain/health_care.dart';
 import 'package:coelo_superadmin/features/health_care/domain/medication_plan_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('content exposes 32 coherent plans linked to catalog children', () async {
+    final catalog = DevelopmentAccessHealthFixtureCatalog.standard();
+    final repository = DevMedicationPlanRepository.content(catalog: catalog);
+
+    final first = await repository.fetchPage(const MedicationPlanQuery(pageSize: 11));
+    final third = await repository.fetchPage(const MedicationPlanQuery(page: 2, pageSize: 11));
+    final all = await repository.fetchPage(const MedicationPlanQuery(pageSize: 100));
+
+    expect(first.total, 32);
+    expect(first.items, hasLength(11));
+    expect(third.items, hasLength(10));
+    expect(
+      all.items.map((item) => item.childPersonId),
+      everyElement(isIn(catalog.children.map((item) => item.id))),
+    );
+    expect(all.items.map((item) => item.medicationName).toSet(), hasLength(5));
+  });
+
+  test('content adapter preserves child labels, search and reset', () async {
+    final catalog = DevelopmentAccessHealthFixtureCatalog.standard();
+    final repository = DevMedicationPlanRepository.content(catalog: catalog);
+    final adapter = DevMedicationPlanHealthCareRepository.content(
+      medicationPlans: repository,
+      catalog: catalog,
+    );
+    final target = catalog.medicationPlans[7];
+    final child = catalog.children.singleWhere((item) => item.id == target.childId);
+
+    final search = await adapter.fetchDirectory(
+      HealthCareDirectoryQuery(search: child.name, pageSize: 100),
+      actor: adapter.defaultActor,
+    );
+    final detail = await adapter.findChild(child.id, actor: adapter.defaultActor);
+    await repository.save(_command(requestId: 'fixture-create', childPersonId: child.id));
+    expect((await repository.fetchPage(const MedicationPlanQuery(pageSize: 100))).total, 33);
+    repository.resetSession();
+
+    expect(search.items.map((item) => item.id), contains(child.id));
+    expect(detail?.displayName, child.name);
+    expect(detail?.medications, isNotEmpty);
+    expect((await repository.fetchPage(const MedicationPlanQuery(pageSize: 100))).total, 32);
+  });
+
   test('replays identical request globally and rejects request id payload collisions', () async {
     final repository = DevMedicationPlanRepository();
 
@@ -152,10 +198,11 @@ MedicationPlanSaveCommand _command({
   String? planId,
   int expectedVersion = 0,
   String medicationName = 'Inalador',
+  String childPersonId = 'child-1',
 }) => MedicationPlanSaveCommand(
   requestId: requestId,
   planId: planId,
-  childPersonId: 'child-1',
+  childPersonId: childPersonId,
   expectedVersion: expectedVersion,
   medicationName: medicationName,
   doseAmount: 2,

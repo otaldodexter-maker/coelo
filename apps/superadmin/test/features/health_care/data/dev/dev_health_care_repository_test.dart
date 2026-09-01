@@ -1,8 +1,63 @@
+import 'package:coelo_superadmin/app/dev_menu/development_access_health_fixture_catalog.dart';
 import 'package:coelo_superadmin/features/health_care/data/dev/dev_health_care_repository.dart';
 import 'package:coelo_superadmin/features/health_care/domain/health_care.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('content exposes the linked 180 children and 147 care profiles', () async {
+    final catalog = DevelopmentAccessHealthFixtureCatalog.standard();
+    final repository = DevHealthCareRepository.content(catalog: catalog);
+    final page = await repository.fetchDirectory(
+      const HealthCareDirectoryQuery(pageSize: 200),
+      actor: repository.defaultActor,
+    );
+
+    expect(page.totalCount, 180);
+    expect(
+      page.items.map((item) => item.id).toSet(),
+      catalog.children.map((item) => item.id).toSet(),
+    );
+    expect(
+      await Future.wait([
+        for (final child in catalog.children) repository.loadCareProfileDraft(child.id),
+      ]).then((drafts) => drafts.whereType<HealthCareProfileDraft>().length),
+      147,
+    );
+  });
+
+  test('content preserves linked search, context filters and pagination', () async {
+    final catalog = DevelopmentAccessHealthFixtureCatalog.standard();
+    final repository = DevHealthCareRepository.content(catalog: catalog);
+    final target = catalog.children[73];
+
+    final search = await repository.fetchDirectory(
+      HealthCareDirectoryQuery(search: target.name, pageSize: 25),
+      actor: repository.defaultActor,
+    );
+    final context = await repository.fetchDirectory(
+      HealthCareDirectoryQuery(
+        institutionIds: {target.institutionId},
+        unitIds: {target.unitId},
+        groupOrActivityIds: {target.groupId},
+        pageSize: 200,
+      ),
+      actor: repository.defaultActor,
+    );
+    final secondPage = await repository.fetchDirectory(
+      const HealthCareDirectoryQuery(page: 1, pageSize: 25),
+      actor: repository.defaultActor,
+    );
+
+    expect(search.items.map((item) => item.id), contains(target.id));
+    expect(context.items, isNotEmpty);
+    expect(
+      context.items.map((item) => item.id),
+      everyElement(isIn(catalog.children.map((item) => item.id))),
+    );
+    expect(secondPage.items, hasLength(25));
+    expect(secondPage.items.first.id, catalog.children[25].id);
+  });
+
   test('allows owner care-profile update and blocks minimized actor', () async {
     final child = HealthCareChild(
       id: 'child-1',
@@ -45,9 +100,10 @@ void main() {
   });
 
   test('local profile draft round-trips every field and updates directory data', () async {
-    final repository = DevHealthCareRepository.content();
+    final catalog = DevelopmentAccessHealthFixtureCatalog.standard();
+    final repository = DevHealthCareRepository.content(catalog: catalog);
     final draft = HealthCareProfileDraft(
-      childId: 'child-demo-b',
+      childId: catalog.children[1].id,
       allergyType: HealthCareAllergyType.restriction,
       allergyStatus: HealthCareAllergyStatus.monitoring,
       lastEpisode: '20/08/2026',

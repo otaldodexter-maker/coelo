@@ -1,3 +1,4 @@
+import '../../../../app/dev_menu/development_access_health_fixture_catalog.dart';
 import '../../domain/health_care.dart';
 import '../../domain/health_care_repository.dart';
 
@@ -12,43 +13,43 @@ final class DevHealthCareRepository implements HealthCareRepository {
        _seedCareProfileDrafts = Map.unmodifiable(careProfileDrafts),
        _careProfileDrafts = Map.of(careProfileDrafts);
 
-  factory DevHealthCareRepository.content() {
-    const childIds = ['child-demo-a', 'child-demo-b'];
+  factory DevHealthCareRepository.content({DevelopmentAccessHealthFixtureCatalog? catalog}) {
+    final fixtures = catalog ?? DevelopmentAccessHealthFixtureCatalog.standard();
+    final careProfilesByChild = {
+      for (final profile in fixtures.careProfiles) profile.childId: profile,
+    };
     final actor = HealthCareActor(
       id: 'health-care-owner-dev',
       profile: HealthCareAccessProfile.owner,
-      institutionId: 'institution-demo',
-      authorizedChildIds: childIds.toSet(),
+      authorizedChildIds: fixtures.children.map((child) => child.id).toSet(),
     );
     final children = [
-      for (final (index, id) in childIds.indexed)
+      for (final (index, child) in fixtures.children.indexed)
         HealthCareChild(
-          id: id,
-          personId: 'person-demo-${index + 1}',
-          displayName: 'Criança Demo ${index == 0 ? 'A' : 'B'}',
-          operationalStatus: HealthCareOperationalStatus.active,
-          links: const [HealthCareContextLink(institutionId: 'institution-demo')],
-          careProfile: index == 0 ? [HealthCareProfileItem(catalogItemId: 'autism')] : const [],
+          id: child.id,
+          personId: child.id,
+          displayName: child.name,
+          operationalStatus: index % 29 == 0
+              ? HealthCareOperationalStatus.inactive
+              : careProfilesByChild.containsKey(child.id)
+              ? HealthCareOperationalStatus.active
+              : HealthCareOperationalStatus.implementation,
+          links: [
+            HealthCareContextLink(
+              institutionId: child.institutionId,
+              unitId: child.unitId,
+              groupOrActivityId: child.groupId,
+            ),
+          ],
+          allergies: _fixtureAllergies(child.id, careProfilesByChild[child.id]),
         ),
     ];
     return DevHealthCareRepository(
       actor: actor,
       children: children,
       careProfileDrafts: {
-        childIds.first: HealthCareProfileDraft(
-          childId: childIds.first,
-          allergyType: HealthCareAllergyType.medication,
-          allergyStatus: HealthCareAllergyStatus.monitoring,
-          lastEpisode: '15/07/2026',
-          severity: HealthCareEpisodeSeverity.severe,
-          observedReaction: 'Edema no episódio registrado.',
-          allergyGuidance: 'Seguir o plano familiar de cuidado.',
-          allergyNotes: 'Registro demonstrativo local.',
-          careItemIds: const {'autism'},
-          importantSigns: 'Mudança súbita de comportamento.',
-          adaptations: 'Antecipar mudanças de rotina.',
-          justification: 'Revisão do perfil demonstrativo.',
-        ),
+        for (final profile in fixtures.careProfiles)
+          profile.childId: _fixtureDraft(profile, profile.childId),
       },
     );
   }
@@ -207,3 +208,43 @@ final class DevHealthCareRepository implements HealthCareRepository {
 extension on Iterable<HealthCareChild> {
   HealthCareChild? get firstOrNull => isEmpty ? null : first;
 }
+
+List<HealthCareAllergy> _fixtureAllergies(String childId, DevelopmentCareProfileFixture? profile) =>
+    [
+      if (profile?.hasAllergies ?? false)
+        HealthCareAllergy(
+          id: '${profile!.id}-allergy',
+          childId: childId,
+          label: 'Alergia registrada pela família',
+          type: HealthCareAllergyType.food,
+          active: true,
+          status: HealthCareAllergyStatus.monitoring,
+          guidance: 'Consultar as orientações cadastradas antes do atendimento.',
+        ),
+      if (profile?.hasRestrictions ?? false)
+        HealthCareAllergy(
+          id: '${profile!.id}-restriction',
+          childId: childId,
+          label: 'Restrição de cuidado registrada',
+          type: HealthCareAllergyType.restriction,
+          active: true,
+          guidance: 'Respeitar a restrição informada pelos responsáveis.',
+        ),
+    ];
+
+HealthCareProfileDraft _fixtureDraft(DevelopmentCareProfileFixture profile, String childId) =>
+    HealthCareProfileDraft(
+      childId: childId,
+      allergyType: profile.hasRestrictions
+          ? HealthCareAllergyType.restriction
+          : HealthCareAllergyType.food,
+      allergyStatus: profile.hasAllergies || profile.hasRestrictions
+          ? HealthCareAllergyStatus.monitoring
+          : HealthCareAllergyStatus.active,
+      observedReaction: profile.hasAllergies ? 'Reação registrada no perfil de cuidado.' : '',
+      allergyGuidance: profile.hasAllergies || profile.hasRestrictions
+          ? 'Consultar as orientações cadastradas antes do atendimento.'
+          : '',
+      adaptations: profile.hasRestrictions ? 'Aplicar a restrição informada pela família.' : '',
+      justification: 'Carga demonstrativa vinculada à estrutura institucional.',
+    );
