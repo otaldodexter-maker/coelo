@@ -9,6 +9,8 @@ import '../../features/audit/data/supabase_audit_repository.dart';
 import '../../features/audit/domain/audit.dart';
 import '../../features/activities/domain/activity_command.dart';
 import '../../features/activities/domain/activity_directory.dart';
+import '../../features/activities/data/supabase_activity_command_repository.dart';
+import '../../features/activities/data/supabase_activity_directory_repository.dart';
 import '../../features/assessments/assessment.dart';
 import '../../features/assessments/data/supabase_assessment_repository.dart';
 import '../../features/imports/data/supabase_import_repository.dart';
@@ -46,6 +48,7 @@ import '../../features/groups/domain/group_directory.dart';
 import '../../features/access_profiles/data/supabase_access_profile_repository.dart';
 import '../../features/access_profiles/domain/access_profile.dart';
 import '../../features/units/data/unavailable_unit_composition.dart';
+import '../../features/units/data/supabase_unit_backend_commands_gateway.dart';
 import '../../features/units/domain/unit_backend_commands.dart';
 import '../../features/units/domain/unit_directory.dart';
 import '../../features/safety/data/supabase_child_safety_repository.dart';
@@ -82,12 +85,14 @@ final class SuperadminAuthScope {
     required this.activityDirectoryRepository,
     required this.activityCommandRepository,
     required this.assessmentRepository,
+    required this.assessmentMutationsEnabled,
     required this.personDirectoryRepository,
     this.personIdentityRepository = const UnavailablePersonIdentityRepository(),
     required this.accessProfileRepository,
     required this.groupDirectoryRepository,
     required this.unitDirectoryRepository,
     required this.unitBackendCommands,
+    required this.structureMutationsEnabled,
     required this.importRepository,
     this.planCatalogRepository = const UnavailablePlanCatalogRepository(),
     this.agendaRepository,
@@ -116,12 +121,14 @@ final class SuperadminAuthScope {
   final ActivityDirectoryRepository activityDirectoryRepository;
   final ActivityCommandRepository activityCommandRepository;
   final AssessmentRepository assessmentRepository;
+  final bool assessmentMutationsEnabled;
   final PersonDirectoryRepository personDirectoryRepository;
   final PersonIdentityRepository personIdentityRepository;
   final AccessProfileRepository accessProfileRepository;
   final GroupDirectoryRepository groupDirectoryRepository;
   final UnitDirectoryRepository unitDirectoryRepository;
   final UnitBackendCommandsGateway unitBackendCommands;
+  final bool structureMutationsEnabled;
   final ImportRepository importRepository;
   final PlanCatalogRepository planCatalogRepository;
   final AgendaRepository? agendaRepository;
@@ -144,6 +151,7 @@ final class SuperadminAuthScope {
 Future<SuperadminAuthScope> createSuperadminAuthScope({
   String supabaseUrl = SuperadminAppConfig.supabaseUrl,
   String supabasePublishableKey = SuperadminAppConfig.supabasePublishableKey,
+  bool enableAssessmentMutations = SuperadminAppConfig.assessmentMutationsEnabled,
   SupabaseInitializer initializeSupabase = _initializeSupabase,
   CoeloAuthGatewayFactory createAuthGateway = _createAuthGateway,
   SuperadminAuthContextGatewayFactory createAuthContextGateway = _createAuthContextGateway,
@@ -207,15 +215,20 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       ),
       resetPassword: createCoeloAuthResetPasswordAction(auth: auth),
       institutionDirectoryRepository: SupabaseInstitutionDirectoryRepository(client),
-      activityDirectoryRepository: const UnavailableActivityDirectoryRepository(),
-      activityCommandRepository: const UnavailableActivityCommandRepository(),
+      activityDirectoryRepository: SupabaseActivityDirectoryRepository(client),
+      activityCommandRepository: SupabaseActivityCommandRepository(client),
       assessmentRepository: SupabaseAssessmentRepository(client),
+      assessmentMutationsEnabled: enableAssessmentMutations,
       personDirectoryRepository: SupabasePersonDirectoryRepository(client),
       personIdentityRepository: const UnavailablePersonIdentityRepository(),
       accessProfileRepository: SupabaseAccessProfileRepository(client),
       groupDirectoryRepository: const UnavailableGroupDirectoryRepository(),
       unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
-      unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),
+      unitBackendCommands: SupabaseUnitBackendCommandsGateway(client),
+      // OQ-032/OQ-043: these CRUD repositories still target the legacy
+      // people-based realm. Keep production mutations fail-closed until the
+      // internal v2 directory and command gateways exist.
+      structureMutationsEnabled: false,
       importRepository: SupabaseImportRepository(client),
       planCatalogRepository: SupabasePlanCatalogRepository(client),
       agendaRepository: SupabaseAgendaRepository(client),
@@ -266,12 +279,14 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthLifecycleGateway auth) {
     activityDirectoryRepository: const UnavailableActivityDirectoryRepository(),
     activityCommandRepository: const UnavailableActivityCommandRepository(),
     assessmentRepository: const UnavailableAssessmentRepository(),
+    assessmentMutationsEnabled: false,
     personDirectoryRepository: const UnavailablePersonDirectoryRepository(),
     personIdentityRepository: const UnavailablePersonIdentityRepository(),
     accessProfileRepository: const UnavailableAccessProfileRepository(),
     groupDirectoryRepository: const UnavailableGroupDirectoryRepository(),
     unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
     unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),
+    structureMutationsEnabled: false,
     importRepository: const UnavailableImportRepository(),
     planCatalogRepository: const UnavailablePlanCatalogRepository(),
     agendaRepository: null,

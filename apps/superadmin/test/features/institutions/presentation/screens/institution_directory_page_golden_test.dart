@@ -206,7 +206,7 @@ void main() {
     await mouse.addPointer();
     await mouse.moveTo(
       tester.getCenter(
-        find.ancestor(of: find.textContaining('internos'), matching: find.byType(MenuItemButton)),
+        find.ancestor(of: find.text('Pessoas'), matching: find.byType(MenuItemButton)),
       ),
     );
     await tester.pumpAndSettle();
@@ -240,7 +240,7 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpWidget(_goldenApp());
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-files-action')));
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
     await tester.pumpAndSettle();
     final filesMouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await filesMouse.addPointer();
@@ -255,7 +255,7 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpWidget(_goldenApp());
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-status-demo-institution-casa-nuvem')));
+    await tester.tap(find.byKey(const Key('institution-status-demo-institution-aurora')));
     await tester.pumpAndSettle();
     await expectLater(
       find.byKey(const Key('institution-directory-golden-root')),

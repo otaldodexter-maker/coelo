@@ -435,7 +435,8 @@ final class ActivityTaxonomyOption {
 
 enum ActivityTemplateScopeKind {
   platform('platform'),
-  institution('institution');
+  institution('institution'),
+  unit('unit');
 
   const ActivityTemplateScopeKind(this.databaseValue);
   final String databaseValue;
@@ -453,7 +454,9 @@ final class ActivityTemplateOption {
     this.description = '',
     this.scopeKind = ActivityTemplateScopeKind.platform,
     this.institutionId,
+    this.unitId,
     this.governance = ActivityGovernance.optional,
+    this.status = ActivityStatus.active,
   });
 
   final String id;
@@ -463,7 +466,9 @@ final class ActivityTemplateOption {
   final String description;
   final ActivityTemplateScopeKind scopeKind;
   final String? institutionId;
+  final String? unitId;
   final ActivityGovernance governance;
+  final ActivityStatus status;
 }
 
 final class ActivityFormLocationOption {
@@ -561,11 +566,13 @@ final class ActivityFormOptions {
 final class ActivityTemplateOptions {
   const ActivityTemplateOptions({
     this.institutions = const [],
+    this.units = const [],
     this.taxonomy = const [],
     this.templates = const [],
   });
 
   final List<ActivityFormInstitutionOption> institutions;
+  final List<ActivityFormUnitOption> units;
   final List<ActivityTaxonomyOption> taxonomy;
   final List<ActivityTemplateOption> templates;
 }

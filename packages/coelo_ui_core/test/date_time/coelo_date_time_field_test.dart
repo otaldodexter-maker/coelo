@@ -43,7 +43,7 @@ void main() {
         ),
       ),
     );
-    await tester.tap(find.text('Publicar agora'));
+    await tester.tap(find.text('Definir data e hora'));
     await tester.pump();
     expect(find.byKey(const ValueKey('coelo-date-range-title')), findsNothing);
   });

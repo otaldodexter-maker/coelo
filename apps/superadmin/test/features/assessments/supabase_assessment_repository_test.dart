@@ -17,7 +17,11 @@ void main() {
         calls.add(request.url.path);
         if (request.url.path.endsWith('/rpc/superadmin_assessment_save_gradebook')) {
           return Response(
-            jsonEncode({'id': 'book-1', 'version': 2, 'status': 'draft'}),
+            jsonEncode({
+              'ok': true,
+              'data': {'id': 'book-1', 'version': 2, 'status': 'draft'},
+              'error': null,
+            }),
             200,
             headers: {'content-type': 'application/json'},
             request: request,
@@ -26,34 +30,38 @@ void main() {
         if (request.url.path.endsWith('/rpc/superadmin_assessment_gradebook_read')) {
           return Response(
             jsonEncode({
-              'gradebook': {
-                'id': 'book-1',
-                'management_version': 9,
-                'status': 'reviewed',
-                'activity_group_link_id': 'link-1',
-                'institution_id': 'institution-1',
-                'institution_name': 'Colégio Horizonte',
-                'unit_id': 'unit-1',
-                'unit_name': 'Centro',
-                'group_id': 'group-1',
-                'group_name': '2º A',
-                'activity_id': 'activity-1',
-                'activity_name': 'Inglês',
-                'period_id': 'period-1',
-                'period_name': '1º bimestre',
-              },
-              'configuration': null,
-              'students': <Object?>[],
-              'events': [
-                {
-                  'id': 'event-1',
-                  'event_kind': 'reviewed',
-                  'actor_person_id': 'person-reviewer',
-                  'reason': 'Pendências conferidas',
-                  'version': 9,
-                  'created_at': '2027-07-06T12:00:00Z',
+              'ok': true,
+              'data': {
+                'gradebook': {
+                  'id': 'book-1',
+                  'management_version': 9,
+                  'status': 'reviewed',
+                  'activity_group_link_id': 'link-1',
+                  'institution_id': 'institution-1',
+                  'institution_name': 'Colégio Horizonte',
+                  'unit_id': 'unit-1',
+                  'unit_name': 'Centro',
+                  'group_id': 'group-1',
+                  'group_name': '2º A',
+                  'activity_id': 'activity-1',
+                  'activity_name': 'Inglês',
+                  'period_id': 'period-1',
+                  'period_name': '1º bimestre',
                 },
-              ],
+                'configuration': null,
+                'students': <Object?>[],
+                'events': [
+                  {
+                    'id': 'event-1',
+                    'event_kind': 'reviewed',
+                    'actor_person_id': 'person-reviewer',
+                    'reason': 'Pendências conferidas',
+                    'version': 9,
+                    'created_at': '2027-07-06T12:00:00Z',
+                  },
+                ],
+              },
+              'error': null,
             }),
             200,
             headers: {'content-type': 'application/json'},

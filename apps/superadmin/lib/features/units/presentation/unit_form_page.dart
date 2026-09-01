@@ -11,6 +11,7 @@ import '../../institutions/domain/institution_record.dart';
 import '../../institutions/presentation/widgets/institution_form_dialogs.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
+import '../../../shared/presentation/widgets/superadmin_location_map_preview.dart';
 import '../domain/unit_directory.dart';
 import 'unit_form_controller.dart';
 import 'unit_form_navigation.dart';
@@ -58,6 +59,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
   late final InstitutionLocationService _locationService;
   late InstitutionRecord _institution;
   List<InstitutionRecord> _institutions = const [];
+  List<UnitFilterOption> _unitTypes = const [];
   UnitRecord? _original;
   UnitStatus _status = UnitStatus.draft;
   late String _typeId;
@@ -107,6 +109,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
     try {
       final data = await widget.repository.loadForm(unitId: widget.unitId);
       _institutions = data.institutions;
+      _unitTypes = data.unitTypes;
       _original = data.record;
       final missingUnit = widget.unitId != null && _original == null;
       if (!missingUnit && _institutions.isNotEmpty) {
@@ -129,7 +132,9 @@ final class _UnitFormPageState extends State<UnitFormPage> {
   void _initializeForm() {
     _institution = _original?.institution ?? _institutions.first;
     _status = _original?.status ?? UnitStatus.draft;
-    _typeId = _original?.typeId.isNotEmpty == true ? _original!.typeId : _institution.typeId;
+    _typeId = _original?.typeId.isNotEmpty == true
+        ? _original!.typeId
+        : _typeOptions.firstOrNull?.id ?? _institution.typeId;
     _inheritPlan = _original?.planOverride == null;
     _plan = _original?.effectivePlan ?? _institution.plan;
     final inheritBranding = _original?.inheritInstitutionBranding ?? true;
@@ -201,13 +206,13 @@ final class _UnitFormPageState extends State<UnitFormPage> {
   }
 
   List<InstitutionRecord> get _institutionOptions => _institutions;
-  List<InstitutionRecord> get _typeOptions {
-    final values = <String, InstitutionRecord>{};
+  List<UnitFilterOption> get _typeOptions {
+    if (_unitTypes.isNotEmpty) return _unitTypes;
+    final values = <String, UnitFilterOption>{};
     for (final institution in _institutions) {
-      values[institution.typeId] = institution;
+      values[institution.typeId] = UnitFilterOption(institution.typeId, institution.typeName);
     }
-    return values.values.toList()
-      ..sort((first, second) => first.typeName.compareTo(second.typeName));
+    return values.values.toList()..sort((first, second) => first.label.compareTo(second.label));
   }
 
   void _continue() {
@@ -232,15 +237,15 @@ final class _UnitFormPageState extends State<UnitFormPage> {
     _formController.setSaving(true);
     _formController.setSaveError(null);
     try {
-      final type = _typeOptions.firstWhere((option) => option.typeId == _typeId);
+      final type = _typeOptions.firstWhere((option) => option.id == _typeId);
       final id = _original?.id ?? widget.repository.createId(_institution.id, _text('slug'));
       final unit = InstitutionUnit(
         id: id,
         name: _text('name'),
         slug: _text('slug'),
         status: _status,
-        typeId: type.typeId,
-        typeName: type.typeName,
+        typeId: type.id,
+        typeName: type.label,
         postalCode: _text('postalCode'),
         country: _text('country'),
         state: _text('state'),
@@ -271,7 +276,13 @@ final class _UnitFormPageState extends State<UnitFormPage> {
         activitiesCount: _original?.activitiesCount ?? 0,
         groups: _original?.unit.groups ?? const [],
       );
-      await widget.repository.upsert(UnitRecord(institution: _institution, unit: unit));
+      await widget.repository.upsert(
+        UnitRecord(
+          institution: _institution,
+          unit: unit,
+          managementVersion: _original?.managementVersion ?? 0,
+        ),
+      );
       if (!mounted) return;
       _formController.setSaving(false);
       _formController.markSaved();
@@ -658,7 +669,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
                 onChanged: (value) => setState(() {
                   _institution = value;
                   _plan = value.plan;
-                  _typeId = value.typeId;
+                  _typeId = _typeOptions.firstOrNull?.id ?? value.typeId;
                   _formController.markDirty();
                 }),
                 prefixIcon: Icons.account_balance_outlined,
@@ -679,13 +690,13 @@ final class _UnitFormPageState extends State<UnitFormPage> {
             key: const Key('unit-slug-field'),
             required: true,
           ),
-          CoeloAdminSingleSelectField<InstitutionRecord>(
+          CoeloAdminSingleSelectField<UnitFilterOption>(
             label: 'Tipo',
-            value: _typeOptions.firstWhere((value) => value.typeId == _typeId),
+            value: _typeOptions.firstWhere((value) => value.id == _typeId),
             options: _typeOptions,
-            optionLabel: (value) => value.typeName,
+            optionLabel: (value) => value.label,
             onChanged: (value) => setState(() {
-              _typeId = value.typeId;
+              _typeId = value.id;
               _formController.markDirty();
             }),
             prefixIcon: Icons.category_outlined,
@@ -777,6 +788,16 @@ final class _UnitFormPageState extends State<UnitFormPage> {
           _field('contactPhone', 'Telefone', Icons.phone_outlined),
           _field('contactMobilePhone', 'Celular', Icons.smartphone_outlined),
         ]),
+        const SizedBox(height: CoeloSpacing.space4),
+        SuperadminLocationMapPreview(
+          address: [
+            _text('street'),
+            _text('addressNumber'),
+            _text('district'),
+            _text('city'),
+            _text('state'),
+          ].where((part) => part.isNotEmpty).join(', '),
+        ),
       ],
     ),
   );
@@ -844,7 +865,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
         title: 'Hierarquia',
         summary:
             '${_text('name')} · ${_institution.publicName}\n'
-            '${_typeOptions.firstWhere((value) => value.typeId == _typeId).typeName} · '
+            '${_typeOptions.firstWhere((value) => value.id == _typeId).label} · '
             '${_status.label}',
         onEdit: () => _formController.selectStep(UnitFormStep.profile),
       ),
@@ -928,6 +949,11 @@ final class _UnitFormPageState extends State<UnitFormPage> {
             normalized.isNotEmpty &&
             !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(normalized)) {
           return 'Informe um e-mail válido.';
+        }
+        if (id == 'slug' &&
+            normalized.isNotEmpty &&
+            !RegExp(r'^[a-z0-9]+(?:-[a-z0-9]+)*$').hasMatch(normalized)) {
+          return 'Use somente letras minúsculas sem acento, números e hífens.';
         }
         if (id == 'slug' &&
             normalized.isNotEmpty &&

@@ -24,10 +24,12 @@ final class FakeGroupDirectoryRepository implements GroupDirectoryRepository {
                 createdAt: now,
                 updatedAt: now,
                 studentCount: 8 + index % 23,
-                activityIds: [
-                  for (var activity = 0; activity < 1 + index % 4; activity += 1)
-                    'activity-${(index + activity) % 30 + 1}',
-                ],
+                activityIds: index % 5 == 0
+                    ? const []
+                    : [
+                        for (var activity = 0; activity < 1 + index % 4; activity += 1)
+                          'activity-${(index + activity) % 30 + 1}',
+                      ],
                 teacherOrResponsibleNames: index.isEven
                     ? const ['Ana Souza', 'Marcos Lima']
                     : const ['Beatriz Nunes'],

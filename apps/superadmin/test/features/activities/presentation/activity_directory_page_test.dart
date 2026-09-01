@@ -276,7 +276,6 @@ void main() {
         tester.getRect(find.byKey(const Key('activity-institution-filter'))),
         tester.getRect(find.byKey(const Key('activity-unit-filter'))),
         tester.getRect(find.byKey(const Key('activity-group-filter'))),
-        tester.getRect(find.byKey(const Key('activity-status-filter'))),
         tester.getRect(find.byKey(const Key('activity-origin-filter'))),
       ];
       for (final filter in filters) {
@@ -309,15 +308,12 @@ void main() {
     expect(find.byKey(const Key('activity-institution-filter')), findsOneWidget);
     expect(find.byKey(const Key('activity-unit-filter')), findsOneWidget);
     expect(find.byKey(const Key('activity-group-filter')), findsOneWidget);
-    expect(find.byKey(const Key('activity-status-filter')), findsOneWidget);
-    expect(find.byKey(const Key('activity-status-tabs')), findsNothing);
-    final statusFilter = tester.widget<CoeloAdminMultiSelectFilter<ActivityStatus>>(
-      find.descendant(
-        of: find.byKey(const Key('activity-status-filter')),
-        matching: find.byType(CoeloAdminMultiSelectFilter<ActivityStatus>),
-      ),
-    );
-    expect(statusFilter.options, ActivityStatus.values);
+    expect(find.byKey(const Key('activity-status-filter')), findsNothing);
+    expect(find.byKey(const Key('activity-status-tabs')), findsOneWidget);
+    expect(find.text('Todos'), findsOneWidget);
+    expect(find.text('Ativos'), findsOneWidget);
+    expect(find.text('Rascunho'), findsOneWidget);
+    expect(find.text('Inativos'), findsOneWidget);
     expect(find.byKey(const Key('activity-origin-filter')), findsOneWidget);
     expect(find.byKey(const Key('activity-type-filter')), findsNothing);
     expect(find.text('Recorrência'), findsNothing);
@@ -345,13 +341,7 @@ void main() {
 
     expect(find.byKey(const Key('activity-card-activity-10')), findsOneWidget);
 
-    final statusFilter = tester.widget<CoeloAdminMultiSelectFilter<ActivityStatus>>(
-      find.descendant(
-        of: find.byKey(const Key('activity-status-filter')),
-        matching: find.byType(CoeloAdminMultiSelectFilter<ActivityStatus>),
-      ),
-    );
-    statusFilter.onChanged({ActivityStatus.active});
+    await tester.tap(find.text('Ativos'));
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('activity-card-activity-2')), findsOneWidget);
@@ -451,6 +441,7 @@ void main() {
     ActivityTemplateOption? started;
     ActivityTemplateOption? duplicated;
     String? duplicateInstitutionId;
+    String? duplicateUnitId;
     String? duplicateName;
     await tester.pumpWidget(
       MaterialApp(
@@ -462,9 +453,10 @@ void main() {
           onView: (_) {},
           onCreateFromTemplate: (template) => started = template,
           onCreateTemplate: (_) async {},
-          onDuplicateTemplate: (template, institutionId, newName) async {
+          onDuplicateTemplate: (template, institutionId, unitId, newName) async {
             duplicated = template;
             duplicateInstitutionId = institutionId;
+            duplicateUnitId = unitId;
             duplicateName = newName;
           },
         ),
@@ -507,10 +499,16 @@ void main() {
         .onPressed!();
     await tester.pump();
     expect(find.byKey(const Key('activity-template-template-1')), findsOneWidget);
-    await tester.tap(find.byKey(const Key('activity-template-start-template-1')));
+    final startTemplate = find.byKey(const Key('activity-template-start-template-1'));
+    await tester.ensureVisible(startTemplate);
+    await tester.pumpAndSettle();
+    await tester.tap(startTemplate);
     expect(started?.id, 'template-1');
 
-    await tester.tap(find.byKey(const Key('activity-template-duplicate-template-1')));
+    final duplicateTemplate = find.byKey(const Key('activity-template-duplicate-template-1'));
+    await tester.ensureVisible(duplicateTemplate);
+    await tester.pumpAndSettle();
+    await tester.tap(duplicateTemplate);
     await tester.pumpAndSettle();
     tester
         .widget<CoeloAdminSingleSelectField<String?>>(
@@ -518,9 +516,19 @@ void main() {
         )
         .onChanged('institution-1');
     await tester.pump();
-    await tester.tap(find.byKey(const Key('activity-template-copy-submit')));
+    tester
+        .widget<CoeloAdminSingleSelectField<String?>>(
+          find.byKey(const Key('activity-template-copy-unit')),
+        )
+        .onChanged('unit-1');
     await tester.pump();
-    expect(find.text('Informe o novo nome do modelo.'), findsOneWidget);
+    expect(
+      tester
+          .widget<TextFormField>(find.byKey(const Key('activity-template-copy-name')))
+          .controller!
+          .text,
+      'Inglês (1)',
+    );
     await tester.enterText(
       find.byKey(const Key('activity-template-copy-name')),
       'Modelo esportivo 2027',
@@ -530,6 +538,7 @@ void main() {
 
     expect(duplicated?.id, 'template-1');
     expect(duplicateInstitutionId, 'institution-1');
+    expect(duplicateUnitId, 'unit-1');
     expect(duplicateName, 'Modelo esportivo 2027');
     expect(find.text('Modelo duplicado com sucesso.'), findsOneWidget);
 
@@ -562,8 +571,8 @@ void main() {
     expect(find.text('Criar modelo'), findsOneWidget);
     await tester.tap(find.byKey(const Key('create-activity-template-tile')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('activity-template-create-dialog')), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-form-step-summary')), findsOneWidget);
+    expect(find.byKey(const Key('activity-template-create-page')), findsOneWidget);
+    expect(find.text('Contexto'), findsWidgets);
     expect(find.byKey(const Key('activity-form-units')), findsNothing);
     expect(find.byKey(const Key('activity-form-groups')), findsNothing);
     expect(find.textContaining('Profissionais'), findsNothing);
@@ -597,7 +606,10 @@ void main() {
     await tester.tap(find.byKey(const Key('activity-template-create-next')));
     await tester.pump();
     expect(find.text('Sem vínculos nesta etapa'), findsOneWidget);
-    await tester.tap(find.byKey(const Key('activity-template-create-submit')));
+    final submit = find.byKey(const Key('activity-template-create-submit'));
+    await tester.ensureVisible(submit);
+    await tester.pump();
+    await tester.tap(submit);
     await tester.pumpAndSettle();
 
     expect(created?.institutionId, 'institution-1');
@@ -606,10 +618,10 @@ void main() {
     expect(created?.taxonomyId, 'languages');
     expect(created?.governance, ActivityGovernance.mandatory);
     expect(find.text('Modelo criado com sucesso.'), findsOneWidget);
-    expect(find.byKey(const Key('activity-template-create-dialog')), findsNothing);
+    expect(find.byKey(const Key('activity-template-create-page')), findsNothing);
   });
 
-  testWidgets('keeps the create model dialog open after a recoverable failure', (tester) async {
+  testWidgets('keeps the create model page open after a recoverable failure', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
@@ -642,10 +654,13 @@ void main() {
     await tester.enterText(find.byKey(const Key('activity-template-create-name')), 'Modelo local');
     await tester.tap(find.byKey(const Key('activity-template-create-next')));
     await tester.pump();
-    await tester.tap(find.byKey(const Key('activity-template-create-submit')));
+    final submit = find.byKey(const Key('activity-template-create-submit'));
+    await tester.ensureVisible(submit);
+    await tester.pump();
+    await tester.tap(submit);
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('activity-template-create-dialog')), findsOneWidget);
+    expect(find.byKey(const Key('activity-template-create-page')), findsOneWidget);
     expect(find.text('Não foi possível criar o modelo. Tente novamente.'), findsOneWidget);
     expect(find.text('Modelo local'), findsOneWidget);
   });
@@ -676,9 +691,10 @@ void main() {
       expect(tester.takeException(), isNull, reason: 'directory width $width');
       await tester.tap(find.byKey(const Key('create-activity-template-tile')));
       await tester.pumpAndSettle();
-      expect(find.byKey(const Key('superadmin-form-step-summary')), findsOneWidget);
+      expect(find.byKey(const Key('activity-template-create-page')), findsOneWidget);
+      expect(find.text('Contexto'), findsWidgets);
       expect(tester.takeException(), isNull, reason: 'width $width');
-      await tester.tap(find.byTooltip('Fechar criação de modelo'));
+      await tester.tap(find.byTooltip('Voltar para modelos'));
       await tester.pumpAndSettle();
     }
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -869,18 +885,20 @@ final class _FailingTemplateRepository extends FakeActivityDirectoryRepository {
 
 final class _TemplateOptionsRepository extends FakeActivityDirectoryRepository {
   @override
-  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) async =>
-      const ActivityTemplateOptions(
-        institutions: [
-          ActivityFormInstitutionOption(id: 'institution-1', name: 'Colégio Horizonte'),
-        ],
-        taxonomy: [
-          ActivityTaxonomyOption(id: 'languages', label: 'Idiomas'),
-          ActivityTaxonomyOption(id: 'sports', label: 'Esportes'),
-        ],
-        templates: [
-          ActivityTemplateOption(id: 'template-1', name: 'Inglês', taxonomyId: 'languages'),
-          ActivityTemplateOption(id: 'template-2', name: 'Futebol', taxonomyId: 'sports'),
-        ],
-      );
+  Future<ActivityTemplateOptions> fetchTemplateOptions({
+    String? institutionId,
+  }) async => const ActivityTemplateOptions(
+    institutions: [ActivityFormInstitutionOption(id: 'institution-1', name: 'Colégio Horizonte')],
+    units: [
+      ActivityFormUnitOption(id: 'unit-1', institutionId: 'institution-1', name: 'Unidade Centro'),
+    ],
+    taxonomy: [
+      ActivityTaxonomyOption(id: 'languages', label: 'Idiomas'),
+      ActivityTaxonomyOption(id: 'sports', label: 'Esportes'),
+    ],
+    templates: [
+      ActivityTemplateOption(id: 'template-1', name: 'Inglês', taxonomyId: 'languages'),
+      ActivityTemplateOption(id: 'template-2', name: 'Futebol', taxonomyId: 'sports'),
+    ],
+  );
 }

@@ -9,6 +9,9 @@ abstract final class SuperadminAppConfig {
   static const supabaseUrl = String.fromEnvironment('COELO_SUPABASE_URL');
   static const supabasePublishableKey = String.fromEnvironment('COELO_SUPABASE_PUBLISHABLE_KEY');
   static const isDevMfaEnabled = bool.fromEnvironment('COELO_DEV_MFA');
+  static const assessmentMutationsEnabled = bool.fromEnvironment(
+    'COELO_ENABLE_ASSESSMENT_MUTATIONS',
+  );
   static const allowDevelopmentPreview = !kReleaseMode && environment == 'local';
 
   static bool get hasSupabaseConfig => supabaseUrl.isNotEmpty && supabasePublishableKey.isNotEmpty;

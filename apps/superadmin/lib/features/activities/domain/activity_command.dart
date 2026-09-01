@@ -83,6 +83,7 @@ final class ActivitySaveCommand {
     required this.taxonomyOtherDescription,
     required this.governance,
     required this.institutionId,
+    this.unitId,
     required this.unitIds,
     required this.groupIds,
     required this.assignments,
@@ -111,6 +112,7 @@ final class ActivitySaveCommand {
   final String taxonomyOtherDescription;
   final ActivityGovernance governance;
   final String institutionId;
+  final String? unitId;
   final Set<String> unitIds;
   final Set<String> groupIds;
   final List<ActivityCommandAssignment> assignments;
@@ -134,12 +136,14 @@ final class ActivityLocationCommand {
   const ActivityLocationCommand({
     required this.requestId,
     required this.institutionId,
+    this.unitId,
     required this.unitIds,
     required this.name,
   });
 
   final String requestId;
   final String institutionId;
+  final String? unitId;
   final Set<String> unitIds;
   final String name;
 }
@@ -187,6 +191,7 @@ final class ActivityTemplateCreateCommand {
   const ActivityTemplateCreateCommand({
     required this.requestId,
     required this.institutionId,
+    this.unitId,
     required this.name,
     required this.description,
     required this.taxonomyId,
@@ -195,6 +200,7 @@ final class ActivityTemplateCreateCommand {
 
   final String requestId;
   final String institutionId;
+  final String? unitId;
   final String name;
   final String description;
   final String taxonomyId;
@@ -205,11 +211,13 @@ final class ActivityTemplateCreateResult {
   const ActivityTemplateCreateResult({
     required this.id,
     required this.institutionId,
+    this.unitId,
     required this.name,
   });
 
   final String id;
   final String institutionId;
+  final String? unitId;
   final String name;
 }
 

@@ -91,7 +91,7 @@ void main() {
     );
   });
 
-  testWidgets('matches the approved institution avatar adjustment', (tester) async {
+  testWidgets('matches the fail-closed institution identity state', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1440, 900);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -121,13 +121,12 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-logo-picker')));
-    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
-    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('institution-logo-picker')), findsNothing);
+    expect(find.byKey(const Key('institution-logo-actions-unavailable')), findsOneWidget);
 
     await expectLater(
       find.byKey(const Key('institution-form-golden-root')),
-      matchesGoldenFile('goldens/institution_form_avatar_crop_open_light_1440.png'),
+      matchesGoldenFile('goldens/institution_form_identity_unavailable_light_1440.png'),
     );
   });
 }

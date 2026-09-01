@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:coelo_auth/coelo_auth.dart';
 import 'package:coelo_superadmin/core/config/superadmin_auth_scope.dart';
 import 'package:coelo_superadmin/features/access_profiles/data/supabase_access_profile_repository.dart';
+import 'package:coelo_superadmin/features/activities/data/supabase_activity_command_repository.dart';
+import 'package:coelo_superadmin/features/activities/data/supabase_activity_directory_repository.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_command.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
 import 'package:coelo_superadmin/features/attendance/data/supabase_attendance_repository.dart';
@@ -18,6 +20,7 @@ import 'package:coelo_superadmin/features/people/data/supabase_person_directory_
 import 'package:coelo_superadmin/features/people/domain/person_identity.dart';
 import 'package:coelo_superadmin/features/student_tracking/domain/student_tracking.dart';
 import 'package:coelo_superadmin/features/units/data/unavailable_unit_composition.dart';
+import 'package:coelo_superadmin/features/units/data/supabase_unit_backend_commands_gateway.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -108,6 +111,8 @@ void main() {
     expect(scope.groupDirectoryRepository, isA<UnavailableGroupDirectoryRepository>());
     expect(scope.unitDirectoryRepository, isA<UnavailableUnitDirectoryRepository>());
     expect(scope.unitBackendCommands, isA<UnavailableUnitBackendCommandsGateway>());
+    expect(scope.structureMutationsEnabled, isFalse);
+    expect(scope.assessmentMutationsEnabled, isFalse);
     expect(scope.attendancePermissions.canManage, isFalse);
     expect(scope.auditRepository, isA<UnavailableAuditRepository>());
   });
@@ -120,6 +125,7 @@ void main() {
     final scope = await createSuperadminAuthScope(
       supabaseUrl: 'https://project.supabase.co',
       supabasePublishableKey: 'sb_publishable_test',
+      enableAssessmentMutations: true,
       initializeSupabase: ({required localStorage, required publishableKey, required url}) async {
         initializedUrl = url;
         initializedKey = publishableKey;
@@ -134,8 +140,8 @@ void main() {
     expect(initializedStorage, isA<ConditionalSupabaseLocalStorage>());
     expect(scope.session.isAuthenticated, isFalse);
     expect(scope.personDirectoryRepository, isA<SupabasePersonDirectoryRepository>());
-    expect(scope.activityDirectoryRepository, isA<UnavailableActivityDirectoryRepository>());
-    expect(scope.activityCommandRepository, isA<UnavailableActivityCommandRepository>());
+    expect(scope.activityDirectoryRepository, isA<SupabaseActivityDirectoryRepository>());
+    expect(scope.activityCommandRepository, isA<SupabaseActivityCommandRepository>());
     expect(scope.personIdentityRepository, isA<UnavailablePersonIdentityRepository>());
     expect(scope.accessProfileRepository, isA<SupabaseAccessProfileRepository>());
     expect(scope.inviteRepository, isA<UnavailableInviteRepository>());
@@ -143,10 +149,10 @@ void main() {
     expect(scope.studentTrackingRepository, isA<UnavailableStudentTrackingRepository>());
     expect(scope.routineRepository, isA<UnavailableRoutineRepository>());
     expect(scope.groupDirectoryRepository, isA<UnavailableGroupDirectoryRepository>());
-    expect(scope.activityDirectoryRepository, isA<UnavailableActivityDirectoryRepository>());
-    expect(scope.activityCommandRepository, isA<UnavailableActivityCommandRepository>());
     expect(scope.unitDirectoryRepository, isA<UnavailableUnitDirectoryRepository>());
-    expect(scope.unitBackendCommands, isA<UnavailableUnitBackendCommandsGateway>());
+    expect(scope.unitBackendCommands, isA<SupabaseUnitBackendCommandsGateway>());
+    expect(scope.structureMutationsEnabled, isFalse);
+    expect(scope.assessmentMutationsEnabled, isTrue);
     expect(scope.attendancePermissions.canManage, isFalse);
     expect(scope.attendancePermissions.backendResolved, isTrue);
     expect(scope.auditRepository, isA<SupabaseAuditRepository>());

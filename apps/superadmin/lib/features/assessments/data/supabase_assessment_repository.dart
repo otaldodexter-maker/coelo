@@ -221,10 +221,34 @@ final class SupabaseAssessmentRepository implements AssessmentRepository {
 
   Future<dynamic> _rpc(String function, [Map<String, dynamic>? params]) async {
     try {
-      return await _client.rpc(function, params: params);
+      final value = await _client.rpc<Object?>(function, params: params);
+      if (value is! Map) throw const AssessmentOfflineException();
+      final envelope = Map<String, dynamic>.from(value);
+      if (envelope['ok'] == true) return envelope['data'];
+      final rawError = envelope['error'];
+      final error = rawError is Map
+          ? Map<String, dynamic>.from(rawError)
+          : const <String, dynamic>{};
+      final code = error['code']?.toString();
+      final status = (error['http_status'] as num?)?.toInt();
+      if (status == 401 ||
+          status == 403 ||
+          code?.startsWith('SAI_') == true && code != 'SAI_CONCURRENT_CHANGE') {
+        throw const AssessmentUnauthorizedException();
+      }
+      if (status == 409 || code == 'SAI_CONCURRENT_CHANGE' || code == 'ASSESSMENT_INVALID_STATE') {
+        throw const AssessmentVersionConflictException();
+      }
+      throw const AssessmentOfflineException();
     } on PostgrestException catch (error) {
       if (error.code == '40001') throw const AssessmentVersionConflictException();
       if (error.code == '42501') throw const AssessmentUnauthorizedException();
+      rethrow;
+    } on AssessmentUnauthorizedException {
+      rethrow;
+    } on AssessmentVersionConflictException {
+      rethrow;
+    } on AssessmentOfflineException {
       rethrow;
     } on AuthException {
       throw const AssessmentUnauthorizedException();

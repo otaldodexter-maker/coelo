@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:coelo_superadmin/app/router/superadmin_router.dart';
 import 'package:coelo_superadmin/app/router/superadmin_routes.dart';
+import 'package:coelo_superadmin/app/dev_menu/development_assessment_repository.dart';
 import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
@@ -577,5 +578,61 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.home);
+  });
+
+  testWidgets('opens authenticated structure mutations when the backend is configured', (
+    tester,
+  ) async {
+    final session = SuperadminSession()..signIn();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
+      enableStructureMutations: true,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.institutionCreate);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.institutionCreate);
+    expect(find.text('Criar instituição'), findsOneWidget);
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsNothing);
+  });
+
+  testWidgets('opens assessment flows when their backend is configured', (tester) async {
+    final session = SuperadminSession()..signIn();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      assessmentRepository: DevelopmentAssessmentRepository(),
+      enableAssessmentMutations: true,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.assessmentEntry);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.assessmentEntry);
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsNothing);
+
+    router.go('/activities/activity-1/assessment-settings?institutionId=institution-1');
+    await tester.pumpAndSettle();
+
+    expect(
+      router.routeInformationProvider.value.uri.path,
+      '/activities/activity-1/assessment-settings',
+    );
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsNothing);
   });
 }

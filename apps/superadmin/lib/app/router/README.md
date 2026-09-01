@@ -26,8 +26,8 @@ Regras:
 - O menu privado de pre-visualizacoes lista somente rotas-mae e exclui criar,
   editar, detalhes, previews especificos e erros.
 - A composicao `/dev` usa dados determinísticos e exclusivamente locais. O
-  contrato de escala inclui 12 instituições, 1–4 unidades por instituição,
-  1–20 turmas por unidade, 30 atividades, 10 modelos de atividade, 400 pessoas
+  contrato de escala inclui 5 instituições, 1–6 unidades por instituição,
+  1–28 turmas por unidade, 30 atividades, 12 modelos de atividade, 400 pessoas
   com papéis e vínculos cruzados e 6 modelos de rotina diária. Instituições,
   unidades, turmas e pessoas compartilham os mesmos identificadores de
   hierarquia. A composição produtiva reutiliza as mesmas superfícies, mas nunca

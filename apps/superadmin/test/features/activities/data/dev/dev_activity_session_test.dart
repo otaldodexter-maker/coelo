@@ -8,6 +8,33 @@ import 'package:coelo_superadmin/features/activities/domain/activity_directory.d
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('development catalog exposes thirty activities and twelve templates', () async {
+    final repository = DevelopmentActivityFixtureRepository();
+    final page = await repository.fetchPage(ActivityDirectoryQuery(pageSize: 100));
+    final options = await repository.fetchFormOptions(institutionId: 'demo-institution-aurora');
+
+    expect(page.totalCount, 30);
+    expect(options.templates, hasLength(12));
+  });
+
+  test('development catalog search returns matching fake activities', () async {
+    final repository = DevelopmentActivityFixtureRepository();
+
+    final result = await repository.fetchPage(ActivityDirectoryQuery(search: 'robótica'));
+    final missing = await repository.fetchPage(ActivityDirectoryQuery(search: 'não existe'));
+
+    expect(result.items, isNotEmpty);
+    expect(
+      result.items.every(
+        (item) =>
+            item.name.toLowerCase().contains('robótica') ||
+            (item.description ?? '').toLowerCase().contains('robótica'),
+      ),
+      isTrue,
+    );
+    expect(missing.items, isEmpty);
+  });
+
   test('one DEV session exposes create edit and reload through the directory', () async {
     final store = DevActivitySessionStore.empty();
     final commands = DevActivityCommandRepository(store: store);

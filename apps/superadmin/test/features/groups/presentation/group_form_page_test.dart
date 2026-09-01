@@ -269,7 +269,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(result, GroupFormSaveResult.created);
-    final saved = repository.records.singleWhere((record) => record.name == 'Turma Girassol');
+    final saved = repository.records.lastWhere((record) => record.name == 'Turma Girassol');
     expect(saved.groupType, 'other');
     expect(saved.groupTypeOtherText, 'Oficina maker');
   });

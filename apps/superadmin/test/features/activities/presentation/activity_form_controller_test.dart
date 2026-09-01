@@ -70,6 +70,27 @@ void main() {
     },
   );
 
+  test('activity handle accepts only lowercase ASCII slugs', () async {
+    final options = await FakeActivityDirectoryRepository().fetchFormOptions(
+      institutionId: 'institution-1',
+    );
+    final controller = ActivityFormController.create(options);
+    addTearDown(controller.dispose);
+    controller.name.text = 'Robótica';
+    await controller.selectInstitution('institution-1');
+    controller.toggleUnit('institution-1-unit-1');
+
+    for (final invalid in ['Robotics', 'robótica', 'robotica nova', '@robotica', 'robótica-1']) {
+      controller.handleStem.text = invalid;
+      expect(controller.validateDraft(), isFalse, reason: invalid);
+      expect(controller.handleStemError, isNotNull, reason: invalid);
+    }
+
+    controller.handleStem.text = 'robotica-1';
+    expect(controller.validateDraft(), isTrue);
+    expect(controller.handleStemError, isNull);
+  });
+
   test('taxonomy templates are chained and Other keeps a custom value', () async {
     final base = await FakeActivityDirectoryRepository().fetchFormOptions(
       institutionId: 'institution-1',

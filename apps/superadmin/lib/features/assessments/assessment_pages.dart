@@ -5,6 +5,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../app/activity/superadmin_activity.dart';
+import '../../app/shell/superadmin_notice.dart';
 import '../../app/shell/superadmin_shell.dart';
 import '../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../shared/presentation/widgets/superadmin_form_frame.dart';
@@ -244,6 +245,8 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
     activityController: _activities,
     title: 'Lançar avaliações',
     subtitle: 'Registre resultados e acompanhe as pendências da turma.',
+    actions: const [_AssessmentFileActions()],
+    compactActions: const [_AssessmentFileActions(compact: true)],
     currentDestination: 'assessments',
     onDestinationSelected: widget.onDestinationSelected,
     chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
@@ -1326,6 +1329,8 @@ final class _AssessmentClosingPageState extends State<AssessmentClosingPage> {
   List<AssessmentClosingItem>? _items;
   Object? _error;
   final _search = TextEditingController();
+  int _page = 0;
+  int _pageSize = 8;
   @override
   void initState() {
     super.initState();
@@ -1360,6 +1365,8 @@ final class _AssessmentClosingPageState extends State<AssessmentClosingPage> {
     logout: widget.logout,
     title: 'Fechamento de avaliações',
     subtitle: 'Revise pendências e publique resultados autorizados.',
+    actions: const [_AssessmentFileActions()],
+    compactActions: const [_AssessmentFileActions(compact: true)],
     currentDestination: 'assessment-closing',
     onDestinationSelected: widget.onDestinationSelected,
     child: _body(),
@@ -1383,6 +1390,20 @@ final class _AssessmentClosingPageState extends State<AssessmentClosingPage> {
         icon: Icons.inbox_outlined,
       );
     }
+    final query = _search.text.trim().toLowerCase();
+    final filtered = items
+        .where((item) {
+          return query.isEmpty ||
+              item.institutionName.toLowerCase().contains(query) ||
+              item.unitName.toLowerCase().contains(query) ||
+              item.groupName.toLowerCase().contains(query) ||
+              item.activityName.toLowerCase().contains(query) ||
+              item.periodName.toLowerCase().contains(query);
+        })
+        .toList(growable: false);
+    final totalPages = (filtered.length / _pageSize).ceil().clamp(1, 999999);
+    final safePage = _page.clamp(0, totalPages - 1);
+    final visible = filtered.skip(safePage * _pageSize).take(_pageSize).toList(growable: false);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(CoeloSpacing.space6),
       child: Column(
@@ -1393,10 +1414,11 @@ final class _AssessmentClosingPageState extends State<AssessmentClosingPage> {
               width: 320,
               height: CoeloSize.touchMin,
               child: CoeloSearchField(
+                key: const Key('assessment-closing-search'),
                 controller: _search,
                 semanticLabel: 'Buscar fechamento',
                 hintText: 'Buscar turma ou Atividade',
-                onChanged: (_) => setState(() {}),
+                onChanged: (_) => setState(() => _page = 0),
               ),
             ),
             filters: const [],
@@ -1404,12 +1426,7 @@ final class _AssessmentClosingPageState extends State<AssessmentClosingPage> {
           ),
           const SizedBox(height: CoeloSpacing.space4),
           CoeloAdminResizableTable<AssessmentClosingItem>(
-            items: items.where((item) {
-              final query = _search.text.trim().toLowerCase();
-              return query.isEmpty ||
-                  item.groupName.toLowerCase().contains(query) ||
-                  item.activityName.toLowerCase().contains(query);
-            }).toList(),
+            items: visible,
             rowKey: (item) => item.id,
             onRowPressed: (item) => widget.onOpen(item.id),
             pinnedColumn: CoeloAdminTableColumn(
@@ -1457,10 +1474,63 @@ final class _AssessmentClosingPageState extends State<AssessmentClosingPage> {
             headerHeight: 56,
             rowHeight: 64,
           ),
+          const SizedBox(height: CoeloSpacing.space4),
+          Align(
+            alignment: Alignment.centerRight,
+            child: CoeloAdminPagination(
+              currentPage: safePage + 1,
+              totalPages: totalPages,
+              pageSize: _pageSize,
+              pageSizeOptions: const [8, 20, 50],
+              onPageSelected: (page) => setState(() => _page = page - 1),
+              onPageSizeChanged: (size) => setState(() {
+                _pageSize = size;
+                _page = 0;
+              }),
+              onPrevious: safePage == 0 ? null : () => setState(() => _page = safePage - 1),
+              onNext: safePage + 1 >= totalPages
+                  ? null
+                  : () => setState(() => _page = safePage + 1),
+            ),
+          ),
         ],
       ),
     );
   }
+}
+
+final class _AssessmentFileActions extends StatelessWidget {
+  const _AssessmentFileActions({this.compact = false});
+
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminFileActions(
+    compact: compact,
+    actions: [
+      CoeloAdminFileAction(
+        key: const Key('assessment-files-import'),
+        label: 'Importar',
+        icon: Icons.upload_file_outlined,
+        onPressed: () => _showUnavailable(context),
+      ),
+      CoeloAdminFileAction(
+        key: const Key('assessment-files-export-csv'),
+        label: 'Exportar CSV',
+        icon: Icons.table_rows_outlined,
+        onPressed: () => _showUnavailable(context),
+      ),
+      CoeloAdminFileAction(
+        key: const Key('assessment-files-export-xlsx'),
+        label: 'Exportar XLSX',
+        icon: Icons.grid_on_outlined,
+        onPressed: () => _showUnavailable(context),
+      ),
+    ],
+  );
+
+  void _showUnavailable(BuildContext context) =>
+      showSuperadminNotice(context, 'Indisponível nesta etapa', icon: Icons.info_outline_rounded);
 }
 
 final class AssessmentClosingDetailPage extends StatefulWidget {
