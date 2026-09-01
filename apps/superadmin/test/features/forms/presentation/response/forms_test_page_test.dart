@@ -1,3 +1,5 @@
+import 'package:coelo_api/coelo_api.dart';
+import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_superadmin/features/forms/presentation/response/forms_test_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -20,22 +22,22 @@ void main() {
     ),
   );
 
-  testWidgets('production preserves the test hierarchy with neutral disabled controls', (
-    tester,
-  ) async {
+  testWidgets('production fails closed without an authorized occurrence', (tester) async {
     await tester.pumpWidget(app(const FormsTestPage()));
 
-    expect(find.byKey(const Key('forms-test-unavailable')), findsOneWidget);
-    expect(find.byKey(const Key('forms-test-preview')), findsOneWidget);
-    expect(find.text('Formulário sem dados disponíveis'), findsOneWidget);
-    expect(find.text('Pesquisa das famílias'), findsNothing);
-    expect(find.byKey(const Key('forms-test-comment')), findsOneWidget);
-    expect(
-      tester.widget<TextFormField>(find.byKey(const Key('forms-test-comment'))).enabled,
-      isFalse,
-    );
-    expect(tester.widget<FilledButton>(find.byKey(const Key('forms-test-next'))).onPressed, isNull);
+    expect(find.byKey(const Key('form-response-unavailable')), findsOneWidget);
+    expect(find.textContaining('ocorrência autorizada'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('production test surface delegates to the authorized response flow', (tester) async {
+    final api = _TestOccurrenceApi();
+    await tester.pumpWidget(app(FormsTestPage(api: api, occurrenceId: 'occurrence-1')));
+    await tester.pumpAndSettle();
+
+    expect(api.requestedOccurrenceId, 'occurrence-1');
+    expect(find.text('Compartilhe um cuidado importante'), findsOneWidget);
+    expect(find.text('Fixture local'), findsNothing);
   });
 
   testWidgets('development validates, navigates, preserves answer and finishes only locally', (
@@ -126,4 +128,58 @@ void main() {
       expect(tester.takeException(), isNull, reason: 'overflow at $width px');
     }
   });
+}
+
+final class _TestOccurrenceApi implements FormsApi {
+  String? requestedOccurrenceId;
+
+  @override
+  Future<FormOccurrenceForResponse> getOccurrenceForResponse(String occurrenceId) async {
+    requestedOccurrenceId = occurrenceId;
+    return FormOccurrenceForResponse(
+      occurrence: FormOccurrence(
+        id: occurrenceId,
+        applicationId: 'application-1',
+        formVersionId: 'version-1',
+        opensAt: DateTime(2026),
+        closesAt: DateTime(2026, 12, 31),
+        status: FormOccurrenceStatus.open,
+        managementVersion: 1,
+      ),
+      version: FormVersion(
+        id: 'version-1',
+        formId: 'form-1',
+        number: 1,
+        isPublished: true,
+        sections: [
+          FormSection(
+            id: 'section-1',
+            title: 'Terapia ocupacional',
+            position: 0,
+            items: [
+              FormItem(
+                id: 'item-1',
+                kind: FormItemKind.shortText,
+                label: 'Compartilhe um cuidado importante',
+                position: 0,
+              ),
+            ],
+          ),
+        ],
+      ),
+      participationId: 'participation-1',
+      identityMode: FormIdentityMode.identified,
+      canEdit: true,
+      draft: FormResponseDraft(
+        id: 'response-1',
+        occurrenceId: occurrenceId,
+        status: FormResponseDraftStatus.draft,
+        answers: const {},
+        managementVersion: 1,
+      ),
+    );
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
