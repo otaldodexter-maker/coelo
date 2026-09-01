@@ -53,6 +53,8 @@ enum AgendaMutationResult {
   reservationConflict,
   notAuthorized,
   reasonRequired,
+  conflict,
+  unavailable,
 }
 
 enum AgendaHistoryAction { canceled, restored, occurrenceEdited, reservationConflictOverridden }
@@ -244,6 +246,7 @@ final class AgendaItem {
     this.reminders = const {},
     this.questions = const [],
     this.history = const [],
+    this.revision = 1,
   });
   factory AgendaItem.fixture({
     required String id,
@@ -309,6 +312,7 @@ final class AgendaItem {
   final Set<String> reminders;
   final List<AgendaQuestion> questions;
   final List<AgendaHistoryEntry> history;
+  final int revision;
   Duration get duration => endsAt.difference(startsAt);
   AgendaVisualProminence get prominence => deriveAgendaProminence(audience: audience, type: type);
   AgendaItem copyWith({
@@ -334,6 +338,7 @@ final class AgendaItem {
     Set<String>? reminders,
     List<AgendaQuestion>? questions,
     List<AgendaHistoryEntry>? history,
+    int? revision,
   }) => AgendaItem(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -357,6 +362,7 @@ final class AgendaItem {
     reminders: reminders ?? this.reminders,
     questions: questions ?? this.questions,
     history: history ?? this.history,
+    revision: revision ?? this.revision,
   );
 }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -6,8 +8,8 @@ import 'package:flutter/material.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
-import '../data/agenda_prototype_store.dart';
 import '../domain/agenda_models.dart';
+import '../domain/agenda_repository.dart';
 import 'agenda_reservation_conflict_dialog.dart';
 
 final class AgendaEventFormPage extends StatefulWidget {
@@ -21,7 +23,7 @@ final class AgendaEventFormPage extends StatefulWidget {
     super.key,
   });
 
-  final AgendaPrototypeStore store;
+  final AgendaRepository store;
   final String? eventId;
   final VoidCallback onCancel;
   final ValueChanged<String> onSaved;
@@ -109,6 +111,47 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
       final suffix = int.tryParse(question.id.split('-').last) ?? 0;
       if (suffix >= _nextQuestionId) _nextQuestionId = suffix + 1;
     }
+    if (widget.eventId != null && _existing == null) unawaited(_loadExisting());
+  }
+
+  Future<void> _loadExisting() async {
+    await widget.store.loadItem(widget.eventId!);
+    if (!mounted) return;
+    final item = _existing;
+    if (item == null) {
+      setState(() => _feedback = widget.store.errorMessage ?? 'O evento não foi encontrado.');
+      return;
+    }
+    _title.text = item.title;
+    _location.text = item.location;
+    _details.text = item.description;
+    _occurrenceCount.text = '${item.recurrence?.occurrenceCount ?? 8}';
+    for (final question in _questions) {
+      question.dispose();
+    }
+    _questions
+      ..clear()
+      ..addAll(item.questions.map(_AgendaQuestionDraft.fromQuestion));
+    setState(() {
+      _type = item.type;
+      _priority = item.priority;
+      _start = item.startsAt;
+      _end = item.endsAt;
+      _allDay = item.allDay;
+      _timeZoneId = item.timeZoneId;
+      _context = _contextFor(item.audience);
+      _audience = item.audienceLabels.isEmpty ? {'Responsáveis'} : {...item.audienceLabels};
+      _recurrence = _recurrenceLabel(item.recurrence);
+      _recurrenceEnd = item.recurrence?.occurrenceCount == null
+          ? 'Em uma data'
+          : 'Após uma quantidade';
+      _recurrenceUntil = item.recurrence?.until ?? item.startsAt.add(const Duration(days: 30));
+      _responseMode = item.responseMode;
+      _guardianPolicy = item.guardianResponsePolicy;
+      _reminders = item.reminders.isEmpty
+          ? {'Na publicação', '24 horas antes'}
+          : {...item.reminders};
+    });
   }
 
   @override
@@ -148,7 +191,23 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
       return;
     }
     final existing = _existing;
-    final institutionId = existing?.audience.institutionId ?? 'inst-horizonte';
+    if (existing?.recurrence != null &&
+        _occurrenceEditScope != AgendaOccurrenceEditScope.series &&
+        !widget.store.supportsOccurrenceScopedEdits) {
+      setState(() {
+        _feedback =
+            'A edição de uma ocorrência isolada ainda não está disponível. Selecione toda a série para salvar.';
+      });
+      return;
+    }
+    final selectedContext = _selectedContext();
+    if (existing == null && selectedContext == null) {
+      setState(() {
+        _feedback = 'Nenhum contexto institucional autorizado está disponível para este item.';
+      });
+      return;
+    }
+    final institutionId = existing?.audience.institutionId ?? selectedContext!.institutionId;
     final id = widget.eventId ?? 'local-agenda-${widget.store.items.length + 1}';
     final start = _allDay ? DateTime(_start.year, _start.month, _start.day) : _start;
     var end = _allDay ? DateTime(_end.year, _end.month, _end.day) : _end;
@@ -165,7 +224,7 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
       audience: _resolvedAudience(institutionId),
       priority: _priority,
       status: status,
-      origin: existing?.origin ?? AgendaItemOrigin.fixture,
+      origin: existing?.origin ?? AgendaItemOrigin.institution,
       startsAt: start,
       endsAt: end,
       location: _location.text.trim(),
@@ -182,37 +241,40 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
       questions: [for (final question in _questions) question.toQuestion()],
       history: existing?.history ?? const [],
     );
-    var result = widget.store.saveItem(item, actorContextId: institutionId);
+    final actorContextId = selectedContext?.id ?? institutionId;
+    var result = await widget.store.saveItem(item, actorContextId: actorContextId);
+    if (!mounted) return;
     if (result == AgendaMutationResult.reservationConflict &&
         widget.store
             .resolveCapability(institutionId, AgendaCapability.overrideReservationConflict)
             .isAllowed) {
       final reason = await showAgendaReservationConflictOverrideDialog(context);
       if (!mounted || reason == null) return;
-      result = widget.store.saveItem(
+      result = await widget.store.saveItem(
         item,
-        actorContextId: institutionId,
+        actorContextId: actorContextId,
         actorName: 'Owner Coelo',
         overrideConflict: true,
         reason: reason,
       );
     }
     if (result == AgendaMutationResult.success) {
+      final savedItemId = widget.store.lastSavedItemId ?? id;
       if (existing?.recurrence != null) {
-        widget.store.recordOccurrenceEdit(
-          itemId: id,
+        await widget.store.recordOccurrenceEdit(
+          itemId: savedItemId,
           occurrenceStartsAt: existing!.startsAt,
           scope: _occurrenceEditScope,
           actorName: 'Owner Coelo',
         );
       }
       if (requestedStatus == AgendaItemStatus.published && !widget.canPublish) {
-        widget.store.requestPublication(
-          id,
+        await widget.store.requestPublication(
+          savedItemId,
           requestedBy: 'Usuário local sem permissão de publicação',
         );
       }
-      widget.onSaved(id);
+      widget.onSaved(savedItemId);
       return;
     }
     setState(() {
@@ -223,21 +285,48 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
         AgendaMutationResult.reasonRequired => 'Informe o motivo para substituir o conflito.',
         AgendaMutationResult.invalidLifecycle => 'Este evento não pode ser alterado neste estado.',
         AgendaMutationResult.notFound => 'O evento não está mais disponível.',
+        AgendaMutationResult.conflict =>
+          'Este evento foi alterado em outra sessão. Recarregue antes de salvar novamente.',
+        AgendaMutationResult.unavailable =>
+          'Não foi possível salvar o evento agora. Nenhuma alteração foi confirmada.',
         AgendaMutationResult.success => null,
       };
     });
   }
 
-  AgendaAudience _resolvedAudience(String institutionId) => switch (_context) {
-    'Unidade' => AgendaAudience(institutionId: institutionId, unitIds: const {'unit-cambui'}),
-    'Turma' => AgendaAudience(institutionId: institutionId, groupIds: const {'group-girassol'}),
-    'Atividade' => AgendaAudience(
-      institutionId: institutionId,
-      activityIds: const {'activity-ballet'},
-    ),
-    'Pessoa' => AgendaAudience(institutionId: institutionId, personIds: const {'child-lia'}),
-    _ => AgendaAudience(institutionId: institutionId),
-  };
+  AgendaContext? _selectedContext() {
+    final level = switch (_context) {
+      'Instituição' => AgendaContextLevel.institution,
+      'Unidade' => AgendaContextLevel.unit,
+      'Turma' => AgendaContextLevel.group,
+      'Atividade' => AgendaContextLevel.activity,
+      _ => null,
+    };
+    if (level == null) return null;
+    for (final context in widget.store.contexts) {
+      if (context.level == level) return context;
+    }
+    return null;
+  }
+
+  AgendaAudience _resolvedAudience(String institutionId) {
+    final context = _selectedContext();
+    return switch (context?.level) {
+      AgendaContextLevel.unit => AgendaAudience(
+        institutionId: institutionId,
+        unitIds: {context!.id},
+      ),
+      AgendaContextLevel.group => AgendaAudience(
+        institutionId: institutionId,
+        groupIds: {context!.id},
+      ),
+      AgendaContextLevel.activity => AgendaAudience(
+        institutionId: institutionId,
+        activityIds: {context!.id},
+      ),
+      AgendaContextLevel.institution || null => AgendaAudience(institutionId: institutionId),
+    };
+  }
 
   AgendaRecurrence? _buildRecurrence() {
     if (_recurrence == 'Não se repete') return null;
