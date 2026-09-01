@@ -121,6 +121,57 @@ void main() {
     expect(invoked, ['happens']);
   });
 
+  for (final state in [
+    'invalid configuration',
+    'loading',
+    'unavailable',
+    'unauthorized',
+    'empty',
+  ]) {
+    for (final closeWithEscape in [false, true]) {
+      testWidgets('${closeWithEscape ? 'Escape' : 'back action'} exits the $state state', (
+        tester,
+      ) async {
+        final invoked = <String>[];
+        final repository = switch (state) {
+          'loading' => _FakeMomentsFeedRepository(
+            (_) => Completer<List<PrincipalMomentPreviewItem>>().future,
+          ),
+          'unavailable' => _FakeMomentsFeedRepository(
+            (_) async => throw const PrincipalMomentsFeedUnavailable(),
+          ),
+          'unauthorized' => _FakeMomentsFeedRepository(
+            (_) async => throw const PrincipalMomentsFeedUnauthorized(),
+          ),
+          'empty' => _FakeMomentsFeedRepository((_) async => const []),
+          _ => _FakeMomentsFeedRepository((_) async => const []),
+        };
+        final configured = state != 'invalid configuration';
+
+        await pumpMoments(
+          tester,
+          size: const Size(375, 900),
+          onOpenHappens: () => invoked.add('happens'),
+          feedRepository: repository,
+          feedScope: configured ? scope : null,
+          settle: state != 'loading',
+        );
+
+        expect(find.byKey(const Key('principal-moments-back')), findsOneWidget);
+        expect(FocusManager.instance.primaryFocus?.debugLabel, 'Momentos');
+
+        if (closeWithEscape) {
+          await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+        } else {
+          await tester.tap(find.byKey(const Key('principal-moments-back')));
+        }
+        await tester.pump();
+
+        expect(invoked, ['happens']);
+      });
+    }
+  }
+
   testWidgets('pages vertically through moments', (tester) async {
     await pumpMoments(tester, size: const Size(375, 900));
 

@@ -188,37 +188,49 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
 
   Widget _buildFeedSurface() {
     if (_feedConfigurationInvalid) {
-      return const _MomentsStateSurface(
-        title: 'Momentos indisponíveis',
-        message: 'O contexto necessário para carregar os momentos não está disponível.',
-        icon: Icons.lock_outline_rounded,
+      return _buildExitState(
+        _MomentsStateSurface(
+          title: 'Momentos indisponíveis',
+          message: 'O contexto necessário para carregar os momentos não está disponível.',
+          icon: Icons.lock_outline_rounded,
+          onBack: _returnToHappens,
+        ),
       );
     }
     if (_feedLoading) {
-      return const _MomentsStateSurface(
-        semanticsLabel: 'Carregando momentos',
-        title: 'Carregando momentos',
-        message: 'Buscando publicações disponíveis para você.',
-        loading: true,
+      return _buildExitState(
+        _MomentsStateSurface(
+          semanticsLabel: 'Carregando momentos',
+          title: 'Carregando momentos',
+          message: 'Buscando publicações disponíveis para você.',
+          loading: true,
+          onBack: _returnToHappens,
+        ),
       );
     }
     if (_feedFailure case final failure?) {
       final unauthorized = failure is PrincipalMomentsFeedUnauthorized;
-      return _MomentsStateSurface(
-        title: unauthorized ? 'Momentos indisponíveis' : 'Não foi possível carregar',
-        message: unauthorized
-            ? 'Seu vínculo atual não permite acessar estes momentos.'
-            : 'Confira sua conexão e tente novamente.',
-        icon: unauthorized ? Icons.lock_outline_rounded : Icons.cloud_off_outlined,
-        actionLabel: unauthorized ? null : 'Tentar novamente',
-        onAction: unauthorized ? null : _loadFeed,
+      return _buildExitState(
+        _MomentsStateSurface(
+          title: unauthorized ? 'Momentos indisponíveis' : 'Não foi possível carregar',
+          message: unauthorized
+              ? 'Seu vínculo atual não permite acessar estes momentos.'
+              : 'Confira sua conexão e tente novamente.',
+          icon: unauthorized ? Icons.lock_outline_rounded : Icons.cloud_off_outlined,
+          actionLabel: unauthorized ? null : 'Tentar novamente',
+          onAction: unauthorized ? null : _loadFeed,
+          onBack: _returnToHappens,
+        ),
       );
     }
     if (_moments.isEmpty) {
-      return const _MomentsStateSurface(
-        title: 'Nenhum momento por aqui',
-        message: 'Novos momentos aparecerão quando forem publicados para você.',
-        icon: Icons.video_library_outlined,
+      return _buildExitState(
+        _MomentsStateSurface(
+          title: 'Nenhum momento por aqui',
+          message: 'Novos momentos aparecerão quando forem publicados para você.',
+          icon: Icons.video_library_outlined,
+          onBack: _returnToHappens,
+        ),
       );
     }
     return _MomentPager(
@@ -242,6 +254,11 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
       onAction: _prototypeMessage,
     );
   }
+
+  Widget _buildExitState(Widget child) =>
+      Focus(autofocus: true, focusNode: _focusNode, child: child);
+
+  void _returnToHappens() => _invoke(widget.onOpenHappens, 'Retorno ao Acontece');
 }
 
 final class _MomentsStateSurface extends StatelessWidget {
@@ -252,6 +269,7 @@ final class _MomentsStateSurface extends StatelessWidget {
     this.icon,
     this.actionLabel,
     this.onAction,
+    required this.onBack,
     this.loading = false,
   });
 
@@ -261,6 +279,7 @@ final class _MomentsStateSurface extends StatelessWidget {
   final IconData? icon;
   final String? actionLabel;
   final VoidCallback? onAction;
+  final VoidCallback onBack;
   final bool loading;
 
   @override
@@ -273,13 +292,25 @@ final class _MomentsStateSurface extends StatelessWidget {
           container: true,
           liveRegion: true,
           label: semanticsLabel,
-          child: CoeloStatePanel(
-            title: title,
-            message: message,
-            icon: icon,
-            actionLabel: actionLabel,
-            onAction: onAction,
-            loading: loading,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CoeloStatePanel(
+                title: title,
+                message: message,
+                icon: icon,
+                actionLabel: actionLabel,
+                onAction: onAction,
+                loading: loading,
+              ),
+              const SizedBox(height: CoeloSpacing.space3),
+              TextButton.icon(
+                key: const Key('principal-moments-back'),
+                onPressed: onBack,
+                icon: const Icon(Icons.chevron_left_rounded),
+                label: const Text('Voltar para Acontece'),
+              ),
+            ],
           ),
         ),
       ),

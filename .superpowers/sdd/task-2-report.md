@@ -41,3 +41,9 @@ generated_at: "2026-09-01"
 
 - `no-op`: a fonte canônica e a projeção `principal-moments-viewer` já descrevem o viewer fullscreen, sem shell/dock e com retorno de foco. Nenhuma regra durável aprovada mudou.
 - `Test-CoeloKnowledge.ps1 -Root <worktree>` — base de conhecimento válida.
+
+## P1 de revisão — saídas dos estados sem pager
+
+- RED: cinco estados sem pager (`configuração inválida`, `loading`, `failure`, `unauthorized` e `empty`) não tinham o botão `principal-moments-back`; os dez cenários de botão/Escape falharam pela ausência dele.
+- GREEN: cada estado agora monta o `FocusNode` `Momentos` com `autofocus`, expõe o retorno visível e reutiliza o callback de origem já usado pelo viewer. A dupla focal terminou com `38` testes aprovados.
+- Limite: o pager fullscreen, `SuperadminShell`, publicador, Chat e backend permanecem intocados.
