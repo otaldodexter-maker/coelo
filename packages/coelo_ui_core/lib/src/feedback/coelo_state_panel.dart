@@ -29,21 +29,23 @@ final class CoeloStatePanel extends StatelessWidget {
         child: Center(
           child: loading
               ? const CircularProgressIndicator()
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (icon case final icon?) ...[
-                      Icon(icon, size: CoeloSize.iconLg),
-                      const SizedBox(height: CoeloSpacing.space3),
+              : SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (icon case final icon?) ...[
+                        Icon(icon, size: CoeloSize.iconLg),
+                        const SizedBox(height: CoeloSpacing.space3),
+                      ],
+                      Text(title, style: textTheme.titleMedium, textAlign: TextAlign.center),
+                      const SizedBox(height: CoeloSpacing.space2),
+                      Text(message, textAlign: TextAlign.center),
+                      if (actionLabel case final actionLabel?) ...[
+                        const SizedBox(height: CoeloSpacing.space3),
+                        OutlinedButton(onPressed: onAction, child: Text(actionLabel)),
+                      ],
                     ],
-                    Text(title, style: textTheme.titleMedium, textAlign: TextAlign.center),
-                    const SizedBox(height: CoeloSpacing.space2),
-                    Text(message, textAlign: TextAlign.center),
-                    if (actionLabel case final actionLabel?) ...[
-                      const SizedBox(height: CoeloSpacing.space3),
-                      OutlinedButton(onPressed: onAction, child: Text(actionLabel)),
-                    ],
-                  ],
+                  ),
                 ),
         ),
       ),
