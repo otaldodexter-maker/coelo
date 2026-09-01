@@ -4,7 +4,7 @@
 
 **Goal:** Corrigir o chrome duplicado, tornar Momentos imersivo, mover Circulares e elevar o acabamento responsivo das superficies Principal dentro do teto aprovado de quatro horas.
 
-**Architecture:** Manter os previews existentes, remover o segundo `SuperadminShell` criado por `operationalPage` e introduzir apenas flags explicitas no host persistente para suprimir chrome administrativo nas rotas Principal. Tratar Agora e Momentos como rotas top-level imersivas; manter feeds e compositores dentro do shell de descoberta `/dev`, mas com o chrome proprio do Principal. Aplicar refinamentos locais sem criar um novo pacote vazio.
+**Architecture:** Manter as superficies existentes dentro de `apps/superadmin` e promover as rotas Coelo (Principal) a rotas proprias fora do `ShellRoute`, eliminando o segundo `SuperadminShell` criado por `operationalPage` sem modificar o shell global de Estruturas. Tratar Agora e Momentos como viewers imersivos; feeds, compositores e Chat usam chrome proprio do Principal. Chat consome o contrato/repository mantido por Comunicacao e nao duplica backend.
 
 **Tech Stack:** Flutter, Dart, GoRouter, `coelo_tokens`, `coelo_ui_core`, Supabase existente e testes `flutter_test`.
 
@@ -15,8 +15,11 @@
 - Larguras-alvo: 375, 768 e 1440 px.
 - `/dev` usa fixtures; rotas reais permanecem fail-closed e nunca fazem fallback para fixtures.
 - Nenhuma importacao de `coelo_ui_admin` nas composicoes Principal.
+- Nenhuma alteracao em `apps/admin`, `apps/site` ou `apps/principal`.
+- Nenhuma alteracao em `SuperadminShell`; o cabecalho global pertence a Estruturas.
+- Chat Principal consome `ChatRepository`; nao cria outro repository, RPC ou migration.
 - Testes novos somente para regressao concreta; nenhuma matriz ampla nova de goldens.
-- Atualizar os tres rastreadores no mesmo turno das correcoes e bloqueios.
+- Os tres rastreadores oficiais sao atualizados somente pelo Coordenador; esta frente envia propostas estruturadas por checkpoint.
 
 ---
 
@@ -24,12 +27,11 @@
 
 **Files:**
 - Modify: `apps/superadmin/test/app/router/principal_happens_preview_route_test.dart`
-- Modify: `apps/superadmin/lib/app/shell/superadmin_shell.dart`
 - Modify: `apps/superadmin/lib/app/router/superadmin_router.dart`
 
 **Interfaces:**
-- Consumes: `SuperadminShell.host`, `operationalPage` e destinos `principal-*`.
-- Produces: `showCompactHeader` e `_isPrincipalShellLocation(String)`.
+- Consumes: `ShellRoute`, `operationalPage` e destinos `principal-*`.
+- Produces: rotas top-level Coelo (Principal) com chrome proprio e sem `SuperadminShell` aninhado.
 
 - [ ] **Step 1: Escrever o teste RED**
 
@@ -38,54 +40,36 @@ shell persistente, a sidebar existe em 1440 px, e estes elementos administrativo
 nao aparecem:
 
 ```dart
-expect(find.text('Prévia da experiência do app Principal.'), findsNothing);
+expect(find.byKey(const Key('superadmin-persistent-shell')), findsNothing);
 expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
 expect(find.byKey(const Key('principal-global-messages')), findsOneWidget);
-if (width < CoeloBreakpoints.expanded.minWidth) {
-  expect(find.byKey(const Key('superadmin-mobile-menu')), findsNothing);
-}
+expect(find.byKey(const Key('superadmin-mobile-menu')), findsNothing);
 ```
 
 - [ ] **Step 2: Executar o RED**
 
 Run: `rtk flutter test test/app/router/principal_happens_preview_route_test.dart`
 
-Expected: FAIL porque o shell ainda renderiza divisor/cabecalho, launcher e app bar compacta.
+Expected: FAIL porque Acontece ainda esta dentro do shell persistente e do wrapper `operationalPage`.
 
-- [ ] **Step 3: Implementar flags minimas**
+- [ ] **Step 3: Promover as rotas sem tocar o shell**
 
-Permitir que o construtor `SuperadminShell.host` receba:
+Mover Acontece, Para Voce, Perfil e os tres publicadores para o nivel top-level
+do router, ao lado de Agora. Remover os builders homonimos de dentro da
+`ShellRoute` e construir as paginas diretamente com chrome proprio
+(`embedded: false` quando a API oferecer a opcao). Preservar callbacks e usar o
+menu Coelo (Principal) como ponto de entrada. Nao alterar `SuperadminShell`.
 
-```dart
-this.showCompactHeader = true,
-
-final bool showCompactHeader;
-```
-
-No host compacto, usar `appBar: widget.showCompactHeader ? _CompactAppBar(...) : null`
-e disponibilizar drawer somente quando o cabecalho estiver visivel. Em
-desktop, preservar a sidebar.
-
-No router, identificar as rotas de shell Principal:
+O conjunto top-level fica explicitamente restrito a estas rotas:
 
 ```dart
-bool _isPrincipalShellLocation(String location) =>
-    location.startsWith('/dev/principal-happens') ||
-    location.startsWith('/dev/principal-for-you') ||
-    location.startsWith('/dev/principal-moments/publish') ||
-    location.startsWith('/dev/principal-now/publication') ||
-    location.startsWith('/dev/principal-profile');
+bool _isPrincipalPreviewLocation(String location) =>
+    location.startsWith('/dev/principal-');
 ```
-
-Passar `showCompactHeader: !principalSurface` e
-`showChatLauncher: !principalSurface` ao host. Nos builders Principal, remover
-o wrapper `operationalPage` e retornar diretamente Acontece, Para Voce, Perfil
-e os tres publicadores com seu chrome proprio (`embedded: false` quando a API
-oferecer essa opcao). Nao alterar builders administrativos.
 
 - [ ] **Step 4: Executar GREEN**
 
-Run: `rtk flutter test test/app/router/principal_happens_preview_route_test.dart test/app/shell/superadmin_shell_test.dart`
+Run: `rtk flutter test test/app/router/principal_happens_preview_route_test.dart test/app/router/principal_for_you_preview_route_test.dart test/app/router/principal_profile_preview_route_test.dart`
 
 Expected: PASS sem excecoes de layout.
 
@@ -162,11 +146,13 @@ Expected: FAIL porque Circulares ainda pertence a Comunicacao.
 
 - [ ] **Step 3: Mover os mesmos nodes**
 
-Inspecionar primeiro o handoff commitado da frente Comunicacao. Remover
+Preservar as referencias visuais do commit `f6d44af9` e integrar as acoes de
+arquivo canônicas do commit `d22a9b3d`. Nao integrar `393fc7ff`, marcado WIP e
+sem wiring/teste confiavel. Remover
 `_screen('circulars', ...)` de `communication` e inseri-lo no final da arvore
 `principal`, preservando IDs, icones, rotas e capabilities. Reaproveitar telas
-de diretorio/detalhe/composer recebidas quando seus contratos e testes forem
-mais completos; nao copiar alteracoes soltas da outra worktree.
+Principal existentes em `features/principal_circulars`; nao copiar alteracoes
+soltas da outra worktree.
 
 - [ ] **Step 4: Executar GREEN**
 
@@ -242,25 +228,86 @@ Run: `rtk flutter test test/features/principal_happens/presentation/principal_ha
 
 Expected: PASS sem excecoes de layout.
 
-### Task 5: Evidencia, rastreadores e checkpoint
+### Task 5: Chat contextual funcional do Principal
 
 **Files:**
-- Modify: `docs/reviews/coelo-flutter-pendencias.md`
-- Modify: `docs/reviews/coelo-supabase-pendencias.md`
-- Modify: `docs/reviews/coelo-flutter-integrado-supabase-pendencias.md`
+- Consume after handoff: `apps/superadmin/lib/features/chat/domain/chat_repository.dart`
+- Consume after handoff: `apps/superadmin/lib/features/chat/data/development_chat_repository.dart`
+- Create: `apps/superadmin/lib/features/principal_chat/application/principal_chat_controller.dart`
+- Create: `apps/superadmin/lib/features/principal_chat/presentation/principal_chat_page.dart`
+- Create: `apps/superadmin/test/features/principal_chat/application/principal_chat_controller_test.dart`
+- Create: `apps/superadmin/test/features/principal_chat/presentation/principal_chat_page_test.dart`
+- Create: `apps/superadmin/test/app/router/principal_chat_route_test.dart`
+- Modify: `apps/superadmin/lib/app/router/superadmin_routes.dart`
+- Modify: `apps/superadmin/lib/app/router/superadmin_router.dart`
+
+**Interfaces:**
+- Consumes: `ChatRepository.fetchInbox/fetchThread/sendMessage/markRead`, excecoes tipadas e fixture deterministica de Comunicacao.
+- Produces: rota `/dev/principal-messages`, controller e UI Principal sem widgets `SuperadminChat*` ou `coelo_ui_admin`.
+
+- [ ] **Step 1: Escrever RED do controller**
+
+Cobrir loading para ready/empty/noResults/offline/failure/unauthorized; abrir
+thread e marcar leitura somente apos autorizacao; enviar com chave idempotente
+estavel durante retry; reload refaz inbox/thread; unauthorized limpa thread e
+composer.
+
+Run: `rtk flutter test test/features/principal_chat/application/principal_chat_controller_test.dart`
+
+Expected: FAIL porque controller ainda nao existe.
+
+- [ ] **Step 2: Implementar controller minimo**
+
+Criar `ChangeNotifier` com repository injetado, estados imutaveis e contador de
+request para descartar resposta obsoleta. Mapear `ChatUnauthorizedException`,
+`ChatOfflineException` e falha generica sem expor dados anteriores.
+
+- [ ] **Step 3: Escrever RED da pagina e rota**
+
+Exigir em 375/768/1440 px: inbox, thread, composer, loading, vazio, busca sem
+resultado, offline/retry, falha, sem permissao sem conteudo e read-only. Provar
+que launchers de Acontece/Para Voce/Perfil e a acao Mensagem do Perfil abrem a
+mesma rota; o atalho essencial Mensagens de Para Voce tambem abre essa inbox e
+os demais atalhos preservam o comportamento atual. Retorno restaura foco, envio
+aparece apos resposta normalizada e reload chama repository novamente. Momentos
+nao exibe launcher.
+
+- [ ] **Step 4: Implementar UI e wiring**
+
+Usar somente Flutter, `coelo_tokens` e `coelo_ui_core`. Compacto navega
+inbox→thread; 768+ usa mestre-detalhe. O botao Perfil/Mensagem abre a inbox e
+nao inventa conversationId a partir do perfil. A rota top-level usa a fixture
+commitada por Comunicacao; fora de `/dev`, ausencia de repository permanece
+fail-closed.
+
+- [ ] **Step 5: Executar GREEN**
+
+Run: `rtk flutter test test/features/principal_chat/application/principal_chat_controller_test.dart test/features/principal_chat/presentation/principal_chat_page_test.dart test/app/router/principal_chat_route_test.dart`
+
+Expected: PASS para UI/local; remoto/E2E continua bloqueado ate os RPCs e o hardening de membership existirem e serem provados.
+
+### Task 6: Evidencia, propostas de rastreadores e checkpoint
+
+**Files:**
+- Do not modify: `docs/reviews/coelo-flutter-pendencias.md`
+- Do not modify: `docs/reviews/coelo-supabase-pendencias.md`
+- Do not modify: `docs/reviews/coelo-flutter-integrado-supabase-pendencias.md`
 
 **Interfaces:**
 - Consumes: resultados reais dos Tasks 1–4 e inventario remoto ja coletado.
-- Produces: progresso separado entre Flutter, Supabase local/remoto e E2E.
+- Produces: checkpoint estruturado para o Coordenador reconciliar Flutter, Supabase local/remoto e E2E.
 
-- [ ] **Step 1: Atualizar os tres rastreadores**
+- [ ] **Step 1: Preparar propostas para os tres rastreadores**
 
-Registrar arquivos, comandos, resultados, bloqueios remotos de Agora/Momentos e
-action_ids afetados. Nao promover mock, `/dev` ou `local-green` a concluido.
+Enviar ao Coordenador action_id/gate, estado anterior/proposto, arquivos,
+rotas/repository/RPC/policy/migration, comandos/resultados, distincao `/dev` /
+Flutter local / backend local / remoto / E2E, bloqueios, ETA e estado Git. Nao
+editar diretamente os tres Markdown e nao promover mock, `/dev` ou
+`local-green` a concluido.
 
 - [ ] **Step 2: Verificacao final proporcional**
 
-Run: `rtk dart analyze lib/app/shell lib/app/router lib/app/navigation lib/features/principal_shared lib/features/principal_happens lib/features/principal_for_you lib/features/principal_moments lib/features/principal_now lib/features/principal_profile lib/features/principal_happens_publication lib/features/principal_now_publication lib/features/principal_moments_publication`
+Run: `rtk dart analyze lib/app/router lib/app/navigation lib/features/principal_shared lib/features/principal_happens lib/features/principal_for_you lib/features/principal_moments lib/features/principal_now lib/features/principal_profile lib/features/principal_chat lib/features/principal_circulars lib/features/principal_happens_publication lib/features/principal_now_publication lib/features/principal_moments_publication`
 
 Run: testes focais listados nos Tasks 1–4.
 

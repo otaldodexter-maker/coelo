@@ -33,10 +33,12 @@ nunca fica colado à viewport. Mobile e tablet respeitam safe areas e largura
 Viewers imersivos suspendem temporariamente cabeçalho e dock. Agora e Momentos
 usam retorno contextual visível e devolvem foco e posição ao ponto de origem.
 
-Cada rota exibe um único shell do Principal. No host `/dev`, a navegação lateral
-administrativa pode permanecer para descoberta, mas o cabeçalho de página e o
-launcher de mensagens do Superadmin são suprimidos nas superfícies Principal.
-O runtime do Principal nunca exibe chrome administrativo nem dois launchers de
+Cada rota exibe uma única composição do Principal. O menu administrativo é o
+ponto de descoberta, mas as rotas Coelo (Principal) renderizam sua superfície
+própria sem cabeçalho ou launcher de mensagens do Superadmin concorrentes.
+Nesta etapa, essas superfícies pertencem a `apps/superadmin`; isso não autoriza
+alterar ou materializar `apps/principal`. As features Principal não importam
+`SuperadminShell`, não copiam seu cabeçalho e nunca exibem dois launchers de
 mensagens concorrentes.
 
 A implementação Flutter visual local e seus goldens responsivos estão

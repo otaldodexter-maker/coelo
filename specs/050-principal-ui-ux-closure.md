@@ -8,8 +8,8 @@ generated_at: 2026-09-01
 
 ## Objetivo e problema
 
-Finalizar o acabamento visual responsivo das superficies principais do app
-Principal sem reconstruir os previews existentes. O recorte corrige chrome
+Finalizar o acabamento visual responsivo das superficies Coelo (Principal)
+dentro do Superadmin sem reconstruir os previews existentes. O recorte corrige chrome
 duplicado, hierarquia insuficiente e inconsistencias entre viewers, feeds e
 compositores, preservando identidade, privacidade e contratos do Coelo.
 
@@ -31,6 +31,8 @@ declaradas concluidas.
 ## Escopo
 
 - Acontece, Para Voce, Momentos, Agora e Perfil.
+- Chat contextual aberto pelos launchers do Coelo (Principal), consumindo o
+  nucleo funcional mantido por Comunicacao.
 - Subtelas de publicar Acontece, Agora e Momentos.
 - Entrada e projecao de Circulares dentro de Coelo (Principal), removidas da
   secao Comunicacao.
@@ -43,17 +45,20 @@ declaradas concluidas.
 - Criar uma nova tela de Agenda; o ultimo anexo e referencia de densidade,
   hierarquia e acabamento de cards.
 - Reconstruir o app Principal do zero ou refatorar dominios nao tocados.
+- Alterar `apps/principal`, `apps/admin` ou `apps/site`.
+- Duplicar repository, RPC, migration ou backend de Chat/Conversas.
 - Reauditar as 229 unidades do projeto ou produzir uma matriz ampla de goldens.
 - Simular sucesso remoto quando Supabase, R2 ou autorizacao estiverem ausentes.
 - Alterar regras de produto, retencao ou audiencia sem decisao aprovada.
 
 ## Arquitetura visual
 
-As rotas do Principal usam um unico shell visual. No `/dev`, o menu lateral do
-Superadmin pode continuar como mecanismo de descoberta, mas o cabecalho de
-pagina e o launcher de chat do host nao podem competir com o cabecalho e as
-mensagens do Principal. Em runtime do Principal nao existe chrome
-administrativo.
+As rotas Coelo (Principal) pertencem a `apps/superadmin` e usam uma unica
+composicao visual propria. O menu do Superadmin continua sendo o ponto de
+descoberta, mas o cabecalho de pagina e o launcher de chat administrativos nao
+podem competir com o cabecalho e as mensagens da superficie Principal. A
+implementacao nao importa `SuperadminShell` para dentro das features Principal,
+nao copia seu cabecalho e nao modifica os apps privados separados.
 
 O dock canonico preserva Home, Para voce, a acao central de publicar no Agora,
 Momentos e Pesquisar. Mensagens permanece launcher contextual separado e Perfil
@@ -96,6 +101,22 @@ Momentos, Circulares e Sobre. O acabamento segue a referencia rica de perfil,
 mas nao introduz seguidores publicos, exposicao de criancas ou capacidades nao
 aprovadas.
 
+### Chat contextual
+
+O launcher Mensagens e a acao Mensagem do Perfil abrem uma superficie propria
+do Coelo (Principal), dentro de `apps/superadmin`. A superficie apresenta inbox,
+thread e composer responsivos, com retorno contextual e estados carregando,
+vazio, sem resultados, offline, falha e sem permissao. Abrir uma conversa marca
+como lida somente apos o contrato compartilhado autorizar a thread; enviar usa
+chave de idempotencia e recarrega a thread pela resposta normalizada.
+
+O Principal consome `ChatRepository` e as excecoes tipadas mantidas pela frente
+Comunicacao. Nao cria outro repository Supabase, nao importa widgets
+`SuperadminChat*` ou `coelo_ui_admin` e nao assume autorizacao por ID de conversa.
+Em `/dev`, usa a fixture deterministica entregue por Comunicacao; fora de
+`/dev`, a composicao injeta o repository produtivo compartilhado ou falha
+fechada quando o contrato nao estiver disponivel.
+
 ### Publicadores
 
 Publicar Acontece, Agora e Momentos compartilham shell, insets, organizacao de
@@ -118,6 +139,8 @@ feedback verdadeiro.
   privada em publica nem contorna tickets ou URLs assinadas.
 - Apenas os CRUDs e policies diretamente exercitados pelas telas alteradas sao
   verificados dentro do teto; ausencia de evidencia permanece pendencia.
+- Chat revalida inbox, thread, envio, leitura e refresh no servidor. Eventos
+  realtime nunca sao renderizados diretamente antes da reautorizacao.
 
 ## Estados de UX
 
@@ -143,6 +166,8 @@ conteudo de midia em logs de cliente.
 - Acontece, Para Voce, Perfil e os tres publicadores apresentam hierarquia e
   densidade coerentes em 375, 768 e 1440 px, sem overflow relevante.
 - Circulares aparece em Coelo (Principal) e deixa de aparecer em Comunicacao.
+- Launchers do Principal abrem Chat funcional; abertura, envio, retorno, reload
+  e negacao possuem evidencia sem duplicar repository/backend de Comunicacao.
 - Rotas `/dev` continuam deterministicas; rotas reais nao exibem fixtures.
 - Operacoes remotas tocadas falham fechadas e respeitam RLS, tenant, audiencia
   e ownership.
@@ -153,7 +178,7 @@ conteudo de midia em logs de cliente.
 
 - Analise estatica somente nos pacotes e arquivos afetados.
 - Testes de widget/rota existentes para shell, Acontece, Para Voce, Agora,
-  Momentos, Perfil, Circulares e publicadores; novos testes apenas para
+  Momentos, Perfil, Circulares, Chat contextual e publicadores; novos testes apenas para
   regressao concreta.
 - Smoke visual responsivo em 375, 768 e 1440 px.
 - Provas Supabase focadas nos comandos realmente tocados, incluindo acesso
@@ -171,7 +196,10 @@ conteudo de midia em logs de cliente.
 ## Riscos e pendencias
 
 - `apps/principal` ainda nao e um app Flutter executavel; parte da experiencia
-  vive em previews do Superadmin. Isso impede declarar o Principal completo E2E.
+  vive em superficies do Superadmin e permanece fora desta etapa. Isso impede
+  declarar o app Principal separado completo E2E.
+- A integracao de Chat depende do handoff commitado de Comunicacao. Ausencia do
+  contrato/fixture produtiva compartilhada bloqueia E2E, mas nao autoriza copia.
 - Contratos remotos ausentes ou nao implantados para Agora/Momentos podem limitar
   a validacao produtiva dentro do teto e devem permanecer explicitamente
   bloqueados.
