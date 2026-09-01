@@ -61,6 +61,40 @@ void main() {
       SuperadminRoutes.principalMomentsPublish,
     );
     expect(router.routeInformationProvider.value.uri.path, isNot(startsWith('/dev/')));
+
+    for (final path in const [
+      SuperadminRoutes.principalForYou,
+      SuperadminRoutes.principalMoments,
+      SuperadminRoutes.principalProfile,
+    ]) {
+      router.go(path);
+      await tester.pumpAndSettle();
+      expect(router.routeInformationProvider.value.uri.path, path);
+      expect(path, isNot(startsWith('/dev/')));
+    }
+  });
+
+  testWidgets('real route fails closed when actor has multiple active contexts', (tester) async {
+    final session = SuperadminSession(isAuthenticated: true);
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
+      principalRuntimeContextRepository: const _MultipleContextRepository(),
+      principalHappensFeedRepository: _RecordingFeedRepository(),
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.principalHappens);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Selecione um contexto'), findsOneWidget);
+    expect(find.byType(PrincipalHappensPreviewPage), findsNothing);
   });
 }
 
@@ -96,4 +130,28 @@ final class _RecordingFeedRepository implements PrincipalHappensFeedRepository {
   @override
   Future<PrincipalHappensMediaRead> resolveMedia(PrincipalHappensMediaDescriptor media) =>
       throw UnimplementedError();
+}
+
+final class _MultipleContextRepository implements PrincipalRuntimeContextRepository {
+  const _MultipleContextRepository();
+
+  @override
+  Future<List<PrincipalRuntimeContext>> listAvailableContexts() async => const [
+    PrincipalRuntimeContext(
+      membershipId: 'membership-a',
+      personId: 'person-real',
+      institutionId: 'institution-a',
+      institutionName: 'Instituição A',
+      roleCode: 'guardian',
+      scopeKind: 'institution',
+    ),
+    PrincipalRuntimeContext(
+      membershipId: 'membership-b',
+      personId: 'person-real',
+      institutionId: 'institution-b',
+      institutionName: 'Instituição B',
+      roleCode: 'guardian',
+      scopeKind: 'institution',
+    ),
+  ];
 }

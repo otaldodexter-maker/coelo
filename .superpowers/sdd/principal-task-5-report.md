@@ -20,6 +20,11 @@ generated_at: "2026-09-01"
 - O launcher de mensagens reutiliza `/communication/conversations`.
 - O publicador real de Momentos possui host próprio que cria e descarta o
   controller de produção, sem usar o controller demo.
+- O menu Coelo Principal é visível em produção e os destinos sem backend de
+  leitura ainda completo possuem rotas reais fail-closed, nunca redirecionadas
+  ao `/dev`.
+- Atores com múltiplos vínculos falham fechados até uma seleção explícita; o
+  cliente não escolhe silenciosamente o primeiro vínculo retornado.
 
 ## Backend local
 
@@ -41,6 +46,9 @@ revogação e isolamento entre instituições.
 
 - Reexecutar pgTAP assim que o lock local for liberado.
 - Completar Momentos, Para Você, Perfil, Circulares e Chat tipado nas rotas reais.
+- Implementar e persistir o seletor explícito de contexto múltiplo.
+- Projetar audiências autorizadas no RPC de contexto; Agora usa somente
+  `families` como baseline estreito até esse contrato existir.
 - Implantar migrations/Edges faltantes no ambiente remoto somente após release
   da coordenação.
 - Provar permitido, negado, revogado, cross-tenant, persistência e reload E2E.

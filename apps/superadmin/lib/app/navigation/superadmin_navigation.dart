@@ -182,7 +182,7 @@ final coeloSuperadminNavigation = <CoeloNavigationNode>[
     _screen('circulars', 'Circulares', Icons.description_outlined, [
       _leaf('circular-create', 'Publicar Circular', Icons.note_add_outlined),
     ]),
-  ], availability: _developmentOnly),
+  ]),
 ];
 
 String normalizeCoeloNavigationText(String value) => value

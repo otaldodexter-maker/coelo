@@ -197,6 +197,19 @@ void main() {
     expect(coeloNavigationAncestors('communication'), isNot(contains('circulars')));
   });
 
+  test('exposes Coelo Principal in the production navigation', () {
+    final principal = coeloNavigationNodeById('principal')!;
+
+    expect(principal.isAvailable(CoeloNavigationEnvironment.production), isTrue);
+    expect(
+      searchCoeloNavigation(
+        'Acontece',
+        environment: CoeloNavigationEnvironment.production,
+      ).map((result) => result.node.id),
+      contains('principal-happens'),
+    );
+  });
+
   test('applies an optional capability filter without becoming an authorization boundary', () {
     const restricted = CoeloNavigationNode(
       id: 'restricted',

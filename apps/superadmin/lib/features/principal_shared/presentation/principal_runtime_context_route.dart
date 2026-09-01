@@ -81,6 +81,17 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
           ),
         );
       }
+      if (contexts.length > 1) {
+        return const Scaffold(
+          body: CoeloStatePanel(
+            title: 'Selecione um contexto',
+            message:
+                'Você possui mais de um vínculo ativo. A seleção explícita '
+                'será necessária antes de continuar.',
+            icon: Icons.account_tree_outlined,
+          ),
+        );
+      }
       return widget.builder(context, contexts.first);
     },
   );

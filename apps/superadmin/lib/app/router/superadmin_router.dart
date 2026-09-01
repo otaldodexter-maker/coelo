@@ -699,7 +699,9 @@ GoRouter createSuperadminRouter({
                 institutionName: runtimeContext.institutionName,
                 unitName: unitName,
                 groupName: groupName,
-                allowedAudiences: NowAudience.values.toSet(),
+                // Keep the client surface at the narrow baseline until the
+                // runtime-context RPC projects server-authorized audiences.
+                allowedAudiences: const {NowAudience.families},
               ),
               embedded: false,
               onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
@@ -740,6 +742,30 @@ GoRouter createSuperadminRouter({
               onPublished: (_) => context.goNamed(SuperadminRoutes.principalMomentsName),
             );
           },
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.principalForYou,
+        name: SuperadminRoutes.principalForYouName,
+        builder: (context, state) => PrincipalRuntimeContextRoute(
+          repository: principalRuntimeContextRepository,
+          builder: (context, _) => _unavailableCompositionRootRoute(context),
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.principalMoments,
+        name: SuperadminRoutes.principalMomentsName,
+        builder: (context, state) => PrincipalRuntimeContextRoute(
+          repository: principalRuntimeContextRepository,
+          builder: (context, _) => _unavailableCompositionRootRoute(context),
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.principalProfile,
+        name: SuperadminRoutes.principalProfileName,
+        builder: (context, state) => PrincipalRuntimeContextRoute(
+          repository: principalRuntimeContextRepository,
+          builder: (context, _) => _unavailableCompositionRootRoute(context),
         ),
       ),
       GoRoute(
@@ -4438,6 +4464,22 @@ void _navigateFromPersistentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.profileName);
     case 'settings':
       context.goNamed(SuperadminRoutes.settingsName);
+    case 'principal-happens':
+      context.goNamed(SuperadminRoutes.principalHappensName);
+    case 'principal-happens-publish':
+      context.goNamed(SuperadminRoutes.principalHappensPublishName);
+    case 'principal-for-you':
+      context.goNamed(SuperadminRoutes.principalForYouName);
+    case 'principal-moments':
+      context.goNamed(SuperadminRoutes.principalMomentsName);
+    case 'principal-moments-publish':
+      context.goNamed(SuperadminRoutes.principalMomentsPublishName);
+    case 'principal-now':
+      context.goNamed(SuperadminRoutes.principalNowName);
+    case 'principal-now-publish':
+      context.goNamed(SuperadminRoutes.principalNowPublicationName);
+    case 'principal-profile':
+      context.goNamed(SuperadminRoutes.principalProfileName);
     case 'institution-create':
       context.goNamed(SuperadminRoutes.institutionCreateName);
     case 'unit-create':
