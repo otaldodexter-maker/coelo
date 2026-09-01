@@ -1,9 +1,95 @@
+import 'package:coelo_superadmin/app/dev_menu/development_access_health_fixture_catalog.dart';
+import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/platform_users/data/fake_platform_user_repository.dart';
 import 'package:coelo_superadmin/features/platform_users/domain/platform_user.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('FakePlatformUserRepository', () {
+    test('default roster exposes 42 team members with 30 shared identities', () {
+      final catalog = DevelopmentAccessHealthFixtureCatalog.standard();
+      final repository = FakePlatformUserRepository.content(catalog: catalog);
+      final guardianIds = catalog.guardians.map((adult) => adult.id).toSet();
+
+      expect(repository.records, hasLength(42));
+      expect(repository.records.map((record) => record.id).toSet(), hasLength(42));
+      expect(repository.records.where((record) => guardianIds.contains(record.id)), hasLength(30));
+      expect(repository.records.where((record) => !guardianIds.contains(record.id)), hasLength(12));
+      expect(
+        repository.records.expand((record) => record.membership.scopeIds),
+        everyElement(isIn(catalog.institutionIds)),
+      );
+      for (final record in repository.records.skip(1)) {
+        final institution = demoInstitutionRecords.singleWhere(
+          (item) => item.id == record.membership.scopeIds.single,
+        );
+        expect(record.membership.scopeNames.single, institution.publicName);
+        expect(
+          institution.units.map((unit) => unit.name),
+          contains(record.identity.internalFunction),
+        );
+      }
+    });
+
+    test('roster search, filters and pagination operate on linked data', () async {
+      final catalog = DevelopmentAccessHealthFixtureCatalog.standard();
+      final repository = FakePlatformUserRepository.content(catalog: catalog);
+      final target = repository.records[17];
+
+      final search = await repository.fetchPage(
+        PlatformUserQuery(search: target.fullName, pageSize: 11),
+      );
+      final emailSearch = await repository.fetchPage(
+        PlatformUserQuery(search: target.email, pageSize: 11),
+      );
+      final filtered = await repository.fetchPage(
+        PlatformUserQuery(
+          profileIds: {target.profile.id},
+          statuses: {target.status},
+          scopes: {target.scope},
+          pageSize: 100,
+        ),
+      );
+      final fourthPage = await repository.fetchPage(const PlatformUserQuery(page: 4, pageSize: 11));
+
+      expect(search.items.map((record) => record.id), contains(target.id));
+      expect(emailSearch.items.map((record) => record.id), contains(target.id));
+      expect(
+        filtered.items,
+        everyElement(
+          isA<PlatformUserRecord>()
+              .having((record) => record.profile.id, 'profile', target.profile.id)
+              .having((record) => record.status, 'status', target.status)
+              .having((record) => record.scope, 'scope', target.scope),
+        ),
+      );
+      expect(fourthPage.totalCount, 42);
+      expect(fourthPage.items, hasLength(9));
+    });
+
+    test('limited user update accepts every catalog institution', () async {
+      final catalog = DevelopmentAccessHealthFixtureCatalog.standard();
+      final repository = FakePlatformUserRepository.content(catalog: catalog);
+      final target = repository.records.firstWhere(
+        (record) => !record.profile.isOwner && record.status != PlatformMembershipStatus.revoked,
+      );
+      final institutionIds = catalog.institutionIds.toList()..sort();
+
+      final updated = await repository.update(
+        target.id,
+        PlatformUserDraft(
+          identity: target.identity,
+          profile: target.profile,
+          scope: PlatformUserScope.limited,
+          scopeIds: institutionIds,
+          scopeNames: institutionIds,
+        ),
+      );
+
+      expect(updated.membership.scopeIds, institutionIds);
+      expect(updated.membership.scopeIds, hasLength(12));
+    });
+
     test('filters own masked identity, profile, membership and scope', () async {
       final repository = FakePlatformUserRepository();
       final source = repository.records.first;
