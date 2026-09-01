@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(29);
+select plan(30);
 
 select ok(to_regprocedure('public.superadmin_auth_bootstrap_context()') is not null
   and to_regprocedure('public.superadmin_auth_resolve_institution_context(uuid)') is not null
@@ -74,6 +74,11 @@ select ok(not has_function_privilege('anon','app_private.require_superadmin_inte
     where procedure_record.oid='app_private.require_superadmin_internal_context(text)'::regprocedure
       and acl.grantee=0 and acl.privilege_type='EXECUTE'),
   'the privileged context helper is not executable by client or service roles');
+select ok(position('SAI_MFA_REQUIRED' in pg_get_functiondef(
+    'app_private.require_superadmin_internal_context(text)'::regprocedure))=0
+  and position('permission_record.requires_mfa' in pg_get_functiondef(
+    'app_private.require_superadmin_internal_context(text)'::regprocedure))>0,
+  'the internal MVP gateway keeps MFA metadata but does not enforce an AAL2 gate');
 select ok(not exists(select 1 from information_schema.role_table_grants grant_record
   where grant_record.table_schema='app_private'
     and grant_record.table_name in('superadmin_internal_identities',

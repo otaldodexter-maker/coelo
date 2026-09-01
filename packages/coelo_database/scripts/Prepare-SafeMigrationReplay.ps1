@@ -115,7 +115,12 @@ if ($FoundationOnly -or $AuthOnly) {
     $canonical = @($canonical | Where-Object {
       $version = $_.Name.Substring(0, 14)
       $version -le '20260812001975' -or
-        $version -in @('20260827214000', '20260827233000', '20260901124500')
+        $version -in @(
+          '20260827214000',
+          '20260827233000',
+          '20260901124500',
+          '20260901200206'
+        )
     })
   }
   $foundationManifestHash = Get-FileSha256 $foundationManifestPath

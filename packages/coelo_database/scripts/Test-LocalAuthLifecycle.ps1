@@ -359,12 +359,14 @@ from app_private.superadmin_internal_auth_links auth_link
 where auth_link.internal_identity_id=membership.internal_identity_id
   and auth_link.auth_user_id='$authUserId'::uuid;
 "@
-'Auth authorization stage: Owner AAL1 denial'
-$ownerAal1Denied = Invoke-Bootstrap -ApiUrl $apiUrl -AnonKey $anonKey `
+'Auth authorization stage: Owner AAL1 bootstrap during MVP deferral'
+$ownerAal1Bootstrap = Invoke-Bootstrap -ApiUrl $apiUrl -AnonKey $anonKey `
   -AccessToken $signin.access_token
-if ($ownerAal1Denied.ok -ne $false -or
-    $ownerAal1Denied.error.code -ne 'SAI_MFA_REQUIRED') {
-  throw 'Owner AAL1 did not remain fail-closed'
+if ($ownerAal1Bootstrap.ok -ne $true -or
+    $ownerAal1Bootstrap.data.platform_role_code -ne 'owner' -or
+    $ownerAal1Bootstrap.data.aal -ne 'aal1' -or
+    @($ownerAal1Bootstrap.data.permission_codes) -notcontains 'platform.read') {
+  throw 'Owner AAL1 could not bootstrap during the approved MVP MFA deferral'
 }
 
 Invoke-IsolatedSql -FailureMessage 'cannot assign synthetic capability-less role' -Sql @"
@@ -595,14 +597,16 @@ begin
       where action_code='superadmin.auth.resolve_institution' and outcome='success'
         and institution_id='60000000-0000-4000-8000-000000000001'::uuid)
     or not exists(select 1 from audit.audit_logs
-      where outcome='denied' and reason_code='SAI_MFA_REQUIRED')
-    or not exists(select 1 from audit.audit_logs
       where outcome='denied' and reason_code='SAI_PERMISSION_DENIED')
     or not exists(select 1 from audit.audit_logs
       where outcome='denied' and reason_code='SAI_MEMBERSHIP_SUSPENDED')
     or not exists(select 1 from audit.audit_logs
       where outcome='denied' and reason_code='SAI_MEMBERSHIP_REVOKED') then
     raise exception 'missing minimized Auth audit evidence';
+  end if;
+  if exists(select 1 from audit.audit_logs
+      where reason_code='SAI_MFA_REQUIRED') then
+    raise exception 'internal MVP Auth emitted a deferred MFA denial';
   end if;
   if exists(select 1 from audit.audit_logs log_record
     where to_jsonb(log_record)::text ~* '(access_token|refresh_token|password|@invalid\\.test)') then
@@ -612,4 +616,4 @@ end
 `$audit_check`$;
 "@
 
-'Local Supabase Auth lifecycle PASS: login/recovery without enumeration, refresh rotation and old-token refusal, logout/session revocation, callback/reset/one-use/expiration, internal realm separation, active/suspended/revoked membership, capability/MFA denial, tenant isolation, tampered id refusal and minimized audit; synthetic fixture is confined to the disposable replay volume.'
+'Local Supabase Auth lifecycle PASS: login/recovery without enumeration, refresh rotation and old-token refusal, logout/session revocation, callback/reset/one-use/expiration, internal realm separation, Owner AAL1 MVP bootstrap, active/suspended/revoked membership, capability denial, tenant isolation, tampered id refusal and minimized audit; synthetic fixture is confined to the disposable replay volume.'

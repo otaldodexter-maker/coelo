@@ -393,3 +393,24 @@ implementação para no primeiro bloqueio abaixo:
 
 Nenhum desses bloqueios permite degradar para `platform_memberships`, pessoa
 sintética, claim mutável, e-mail como autorização ou `service_role` no cliente.
+
+## Aditivo normativo 2026-09-01 — política AAL do MVP
+
+Por decisão explícita do Owner Coelo, durante a validação do MVP nenhuma
+operação do realm interno do Superadmin é bloqueada apenas por AAL1 ou ausência
+de MFA. Owner e demais papéis podem autenticar, executar bootstrap, resolver
+contexto e chamar capabilities permitidas em AAL1 ou AAL2, mesmo quando o
+catálogo informa `requires_mfa = true`.
+
+Este aditivo supersede temporariamente as cláusulas desta spec que associam
+`SAI_MFA_REQUIRED` ao Owner ou a `requires_mfa`, inclusive critérios de aceite,
+matriz de erro e passos de bootstrap. O erro e o metadado permanecem reservados
+para compatibilidade e reativação futura, mas não são emitidos pelo gateway
+interno nesse período. Não há supersessão de validação de sessão viva,
+confirmação da conta, realm, link, membership, papel, capability, grant,
+escopo, tenant, revogação, cross-realm/cross-tenant ou auditoria.
+
+O gate formal de entrega do MVP encerra esta exceção e reabre a implantação de
+MFA como pacote separado. Specs internas que herdam a política AAL desta spec
+devem observar este aditivo até esse gate; contratos people-based permanecem
+inalterados.

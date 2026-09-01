@@ -92,3 +92,14 @@ necessidade de outra tela ou dominio, mutacao remota, ambiente nao descartavel
 ou impossibilidade de provar uma negativa sem reduzir seguranca. O primeiro
 gate nao demonstrado permanece explicitamente aberto.
 
+## Aditivo aprovado 2026-09-01 — MFA adiada até a entrega do MVP
+
+O Owner Coelo substituiu explicitamente a regra inicial deste recorte: o realm
+interno do Superadmin não deve bloquear nenhum fluxo por falta de MFA/AAL2 até
+o gate formal de entrega do MVP. Isso inclui Owner e capabilities marcadas
+`requires_mfa`. O metadado continua no contrato para reativação posterior.
+
+A implementação deve ser forward-only e limitada ao gateway interno. Sessão
+real e não revogada, `session_id`, conta confirmada, realm, vínculo, membership,
+papel, capability, grant, escopo, tenant, negativas cruzadas e auditoria seguem
+fail-closed. O helper global e os realms people-based não são alterados.

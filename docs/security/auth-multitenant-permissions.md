@@ -599,3 +599,19 @@ idempotência.
 - OWASP — MASVS: https://mas.owasp.org/MASVS/
 
 Acesso às fontes externas: 21/06/2026. As referências jurídicas não substituem revisão por profissional habilitado.
+
+## 27. Aditivo 2026-09-01 — MFA adiada no realm interno durante o MVP
+
+O Owner Coelo decidiu em 2026-09-01 adiar a exigência operacional de MFA/AAL2
+para todo o realm interno do Superadmin até o gate formal de entrega do MVP.
+Nesse intervalo, AAL1 e AAL2 são níveis de sessão válidos, porém nem o papel
+Owner nem `platform_permissions.requires_mfa` podem bloquear login, bootstrap,
+troca de contexto ou comandos internos. O metadado `requires_mfa` e o código de
+erro compatível permanecem preservados para a reativação futura.
+
+Esta exceção é estreita e não reduz os demais controles backend: `auth.uid()`,
+`session_id` confrontado com `auth.sessions`, conta confirmada, realm privado,
+auth link, membership ativa, papel, grant explícito, capability, escopo,
+isolamento cross-tenant, revogação e auditoria minimizada seguem obrigatórios.
+Os realms people-based não são alterados. Antes do go-live, MFA será novamente
+objeto de decisão, migration forward-only, testes negativos e aceite do Owner.

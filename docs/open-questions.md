@@ -16,6 +16,17 @@ generated_at: "2026-08-11"
   upload, preview ou sucesso.
 Este arquivo registra conflitos, lacunas e decisoes que nao devem ser resolvidas silenciosamente.
 
+## Decisão supersedente — MFA do realm interno no MVP (2026-09-01)
+
+O Owner Coelo decidiu explicitamente que, até o gate formal de entrega do MVP,
+o realm interno do Superadmin não bloqueará login, bootstrap, contexto ou
+comandos por ausência de MFA/AAL2, inclusive para Owner e para capacidades com
+`requires_mfa`. Esta decisão atualiza temporariamente OQ-006, OQ-014, OQ-015,
+OQ-016 e OQ-035; os textos históricos dessas linhas permanecem para
+rastreabilidade. A política definitiva e sua reativação voltam a ser gate antes
+do go-live. Nenhum outro controle de sessão, realm, membership, capability,
+tenant, revogação ou auditoria foi dispensado.
+
 | ID | Tema | Questao | Fonte/Contexto | Decisao necessaria |
 | --- | --- | --- | --- | --- |
 | OQ-001 | Dominio | `coelo.com.br` fica como alias futuro ou dominio secundario? | Plano aprovado define `coelo.me` como primario; documentos podem mencionar outros caminhos. | Confirmar estrategia de dominios e redirecionamentos. |

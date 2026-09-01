@@ -106,8 +106,8 @@ if ($FoundationOnly) {
     throw "foundation replay requires final target $requiredTargetVersion; received $TargetVersion"
   }
 }
-if ($AuthOnly -and $TargetVersion -ne '20260901124500') {
-  throw "Auth-only replay requires target 20260901124500; received $TargetVersion"
+if ($AuthOnly -and $TargetVersion -ne '20260901200206') {
+  throw "Auth-only replay requires target 20260901200206; received $TargetVersion"
 }
 if ($RunAuthLifecycle -and -not $AuthOnly) {
   throw 'Auth lifecycle requires the constrained Auth-only replay profile'

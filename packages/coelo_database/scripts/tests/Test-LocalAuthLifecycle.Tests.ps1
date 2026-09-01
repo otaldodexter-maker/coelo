@@ -71,8 +71,10 @@ Describe 'Local Auth lifecycle recovery contract' {
       Should Be $true
     ($names -contains '20260901124500_harden_superadmin_auth_context_denial_audit.sql') |
       Should Be $true
+    ($names -contains '20260901200206_defer_superadmin_internal_mfa_until_mvp_go_live.sql') |
+      Should Be $true
     ($names -contains '20260812002010_import_export_unit_source_retention.sql') |
       Should Be $false
-    $names[-1] | Should Be '20260901124500_harden_superadmin_auth_context_denial_audit.sql'
+    $names[-1] | Should Be '20260901200206_defer_superadmin_internal_mfa_until_mvp_go_live.sql'
   }
 }
