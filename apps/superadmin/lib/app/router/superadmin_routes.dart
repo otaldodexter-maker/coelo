@@ -115,6 +115,16 @@ abstract final class SuperadminRoutes {
   static const importsName = 'imports';
   static const importCreate = '/imports/new';
   static const importCreateName = 'import-create';
+  static const mealPlans = '/meal-plans';
+  static const mealPlansName = 'meal-plans';
+  static const mealPlanCreate = '/meal-plans/new';
+  static const mealPlanCreateName = 'meal-plan-create';
+  static const mealPlanEdit = '/meal-plans/:mealPlanId/edit';
+  static const mealPlanEditName = 'meal-plan-edit';
+  static const mealPlanModelCreate = '/meal-plans/models/new';
+  static const mealPlanModelCreateName = 'meal-plan-model-create';
+  static const mealPlanModelEdit = '/meal-plans/models/:mealPlanModelId/edit';
+  static const mealPlanModelEditName = 'meal-plan-model-edit';
   static const invites = '/invites';
   static const invitesName = 'invites';
   static const inviteCreate = '/invites/new';

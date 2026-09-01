@@ -88,6 +88,7 @@ final class SuperadminAuthScope {
     required this.medicationPlanRepository,
     required this.mealPlanRepository,
     required this.mealPlanImageRepository,
+    this.authorizedMealPlanTenantId,
     required this.formsApi,
     this.nowPublicationRepository,
   });
@@ -118,6 +119,7 @@ final class SuperadminAuthScope {
   final MedicationPlanRepository medicationPlanRepository;
   final MealPlanRepository mealPlanRepository;
   final MealPlanImageRepository mealPlanImageRepository;
+  final String? authorizedMealPlanTenantId;
   final FormsApi? formsApi;
   final NowPublicationRepository? nowPublicationRepository;
 }

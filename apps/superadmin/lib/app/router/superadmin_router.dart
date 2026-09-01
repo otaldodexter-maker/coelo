@@ -230,6 +230,7 @@ GoRouter createSuperadminRouter({
   DevMedicationPlanRepository? developmentMedicationPlanRepository,
   MealPlanRepository mealPlanRepository = const UnavailableMealPlanRepository(),
   MealPlanImageRepository mealPlanImageRepository = const UnavailableMealPlanImageRepository(),
+  String? authorizedMealPlanTenantId,
   FormsApi? formsApi,
   NowPublicationRepository? nowPublicationRepository,
   ChildSafetyController? childSafetyController,
@@ -444,6 +445,42 @@ GoRouter createSuperadminRouter({
     kind: SuperadminErrorKind.unavailable,
     onAction: () => context.goNamed(SuperadminRoutes.homeName),
   );
+  Widget productionMealPlanWizardPage(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    String? mealPlanId,
+    String? templatePlanId,
+    String? mealPlanModelId,
+    bool isTemplate = false,
+  }) {
+    final tenantId = authorizedMealPlanTenantId?.trim();
+    if (tenantId == null || tenantId.isEmpty) {
+      return SuperadminErrorScreen(
+        key: const Key('meal-plan-authorized-tenant-unavailable'),
+        kind: SuperadminErrorKind.unavailable,
+        onAction: () => context.goNamed(SuperadminRoutes.mealPlansName),
+      );
+    }
+    return productionOperationalPage(
+      context,
+      title: title,
+      subtitle: subtitle,
+      destination: 'meal-plans',
+      child: MealPlanWizardPage(
+        repository: mealPlanRepository,
+        imageRepository: mealPlanImageRepository,
+        tenantId: tenantId,
+        mealPlanId: mealPlanId,
+        templatePlanId: templatePlanId,
+        mealPlanModelId: mealPlanModelId,
+        isTemplate: isTemplate,
+        onSaved: () => context.goNamed(SuperadminRoutes.mealPlansName),
+        onCancel: () => context.goNamed(SuperadminRoutes.mealPlansName),
+      ),
+    );
+  }
+
   bool hasAuthoritativeMutationCapability() => false;
   void openAgendaArea(BuildContext context, AgendaModuleArea area, {required bool development}) {
     context.goNamed(switch ((area, development)) {
@@ -563,7 +600,9 @@ GoRouter createSuperadminRouter({
       if (isOnPublicAuthRoute) {
         return SuperadminRoutes.home;
       }
-      if (_isProductionMutationLocation(location) && !hasAuthoritativeMutationCapability()) {
+      if (_isProductionMutationLocation(location) &&
+          !_isMealPlanMutationLocation(location) &&
+          !hasAuthoritativeMutationCapability()) {
         return _productionMutationUnavailablePath;
       }
       return null;
@@ -2938,6 +2977,73 @@ GoRouter createSuperadminRouter({
             },
           ),
           GoRoute(
+            path: SuperadminRoutes.mealPlans,
+            name: SuperadminRoutes.mealPlansName,
+            builder: (context, state) => productionOperationalPage(
+              context,
+              title: 'Cardápios',
+              subtitle: 'Planeje refeições por período e escopo de atendimento.',
+              destination: 'meal-plans',
+              child: MealPlanDirectoryPage(
+                repository: mealPlanRepository,
+                onCreate: (sourceId) => context.goNamed(
+                  SuperadminRoutes.mealPlanCreateName,
+                  queryParameters: sourceId == null ? const {} : {'templateId': sourceId},
+                ),
+                onEdit: (id) => context.goNamed(
+                  SuperadminRoutes.mealPlanEditName,
+                  pathParameters: {'mealPlanId': id},
+                ),
+                onCreateTemplate: () => context.goNamed(SuperadminRoutes.mealPlanModelCreateName),
+                onEditTemplate: (id) => context.goNamed(
+                  SuperadminRoutes.mealPlanModelEditName,
+                  pathParameters: {'mealPlanModelId': id},
+                ),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.mealPlanCreate,
+            name: SuperadminRoutes.mealPlanCreateName,
+            builder: (context, state) => productionMealPlanWizardPage(
+              context,
+              title: 'Novo cardápio',
+              subtitle: 'Construa a estrutura do cardápio e publique por período.',
+              templatePlanId: state.uri.queryParameters['templateId'],
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.mealPlanEdit,
+            name: SuperadminRoutes.mealPlanEditName,
+            builder: (context, state) => productionMealPlanWizardPage(
+              context,
+              title: 'Editar cardápio',
+              subtitle: 'Ajuste herança, período, refeições e regras de revisão.',
+              mealPlanId: state.pathParameters['mealPlanId']!,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.mealPlanModelCreate,
+            name: SuperadminRoutes.mealPlanModelCreateName,
+            builder: (context, state) => productionMealPlanWizardPage(
+              context,
+              title: 'Novo modelo de cardápio',
+              subtitle: 'Crie uma base reutilizável para novos cardápios.',
+              isTemplate: true,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.mealPlanModelEdit,
+            name: SuperadminRoutes.mealPlanModelEditName,
+            builder: (context, state) => productionMealPlanWizardPage(
+              context,
+              title: 'Editar modelo de cardápio',
+              subtitle: 'Atualize a base reutilizável sem alterar cardápios existentes.',
+              mealPlanModelId: state.pathParameters['mealPlanModelId']!,
+              isTemplate: true,
+            ),
+          ),
+          GoRoute(
             path: SuperadminRoutes.devMealPlans,
             name: SuperadminRoutes.devMealPlansName,
             builder: (context, state) => operationalPage(
@@ -3992,6 +4098,12 @@ void _navigateFromAccount(
       context.goNamed(SuperadminRoutes.safetyCreateName);
     case 'form-create':
       context.goNamed(SuperadminRoutes.formCreateName);
+    case 'meal-plans':
+      context.goNamed(SuperadminRoutes.mealPlansName);
+    case 'meal-plan-create':
+      context.goNamed(SuperadminRoutes.mealPlanCreateName);
+    case 'meal-plan-model-create':
+      context.goNamed(SuperadminRoutes.mealPlanModelCreateName);
     case 'import-create':
       context.goNamed(SuperadminRoutes.importCreateName);
     case 'invite-create':
@@ -4028,6 +4140,10 @@ bool _isProductionMutationLocation(String location) {
       location.endsWith('/manage') ||
       location.contains('/occurrences/') && location.endsWith('/respond');
 }
+
+bool _isMealPlanMutationLocation(String location) =>
+    location.startsWith('/meal-plans/') &&
+    (location.endsWith('/new') || location.endsWith('/edit'));
 
 void _closePrincipalViewer(BuildContext context) {
   if (context.canPop()) {
