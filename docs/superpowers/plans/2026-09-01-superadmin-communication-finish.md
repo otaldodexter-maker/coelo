@@ -133,5 +133,18 @@ generated_at: "2026-09-01"
 - [x] Formatar somente Dart afetado e executar análise focada.
 - [x] Executar `rtk dart run apps/catalog/tool/validate_admin_visual_contracts.dart` na raiz.
 - [x] Executar testes focados e inspecionar 375/768/1024/1440 sem atualizar goldens para esconder regressões.
-- [ ] Entregar propostas por action_id ao Coordenador, único escritor dos três rastreadores oficiais; propostas enviadas, reconciliação central pendente.
+- [x] Entregar propostas por action_id ao Coordenador, único escritor dos três rastreadores oficiais; reconciliação central preservada em `dev@e052493b`.
 - [x] Revisar `rtk git diff --check`, segredos e mudanças não relacionadas antes do commit final.
+
+### Gates reabertos antes da integração
+
+- [x] Ocultar o launcher flutuante quando o Chat é aberto pela entrada
+  `principal-chat`, com regressão no `SuperadminShell` e na rota completa.
+- [x] Fixar o contrato de mensagens em `newest-first`, remover a dupla inversão
+  visual e comprovar a posição antes e depois do envio.
+- [x] Inspecionar e reconciliar deliberadamente os nove goldens da página de
+  Chat, cinco do launcher e dois do formulário de Convites, sem mascarar
+  regressões.
+- [x] Fechar os filtros de opções e negativos cross-institution do repository
+  de Convites `/dev`; a verificação consolidada final permanece como gate de
+  execução, não como trabalho funcional aberto.
