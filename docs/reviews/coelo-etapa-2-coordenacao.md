@@ -347,7 +347,7 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
 
 - Shell mobile, Instituições, Unidades, Turmas, Atividades e Avaliações foram
   decompostos por tela/subtela/action_id no handoff vinculante.
-- Avaliações produtivas permanecem fail-closed: os 11 RPCs
+- Avaliações produtivas permanecem fail-closed: os 12 RPCs
   `superadmin_assessment_*` chamados pelo adapter não existem nas migrations.
   O commit `7e702447` preserva esse bloqueio e 4/4 testes de rotas passaram.
 - Três diffs antigos dos rastreadores aguardam confirmação de captura central;
@@ -368,6 +368,12 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
 - **Auth:** a frente reportou autorização recebida na própria conversa para o
   menor ajuste fail-closed no Catalog, ETA 30–60 min. Isso ainda não é commit ou
   gate verde; aguardar handoff e verificar que não há expansão adicional.
+- **Estruturas:** executa em paralelo gateways internos v2 de
+  Instituições/Unidades/Turmas e schema/RPC/RLS de Avaliações. Inventário remoto
+  read-only confirmou ledger até `20260821200000`, ausência das migrations v2 e
+  ausência das 12 RPCs/tabelas de Avaliações. Os 34 avisos de RLS em
+  `app_private` serão primeiro classificados por exposição/grants, sem correção
+  cega; remoto continua sem mutação por OQ-041.
 
 - Automação horária ativa: `etapa-2-acompanhamento-hor-rio`.
 - Cada frente deve enviar checkpoint diretamente ao Coordenador pelo menos uma

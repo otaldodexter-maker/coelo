@@ -13,8 +13,8 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "B94FEA760B7C52F6776799788443D9BFC53903605E06FAE27AF65F093C50A272"
-supabase_tracker_sha256: "31E6BE8502DC93CEC6153C72894C252894DCA67F5648F9F66122DE95F4A5879E"
+flutter_tracker_sha256: "ABE95BBEF3B53984811A150B543E5595D98A81F13F638B64CD2AF43AC57BA14B"
+supabase_tracker_sha256: "8DD851758DB0BFEBC860410B8FD199B8731A6684F166AC45DD7ED41E6FAF97D4"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
@@ -37,7 +37,7 @@ restantes (100,00%). Flutter possui 105/207 ações `local-green`, Supabase poss
 | Operações | Cinco áreas Flutter `/dev` passaram 344/344 e branch está limpa. | Inventário de drift/matriz produtiva em execução. | Repository produtivo + schema/RLS/RPC por tela + 40 provas E2E. | `84759675`; primeiro checkpoint será o inventário; E2E sem ETA antes do replay. |
 | Acessos e Saúde/Cuidado | Handoff limpo e testes funcionais locais; reviews concluídos sem alterar a branch. | Banco bloqueado por P0 realm/Auth; Flutter bloqueado por 13 goldens RED, action_ids omitidos, detalhe/filtragem/paginação/mapa/fixture incorretos. | Corrigir P0/P1/P2, integrar primeiro fatias não controversas e revalidar componentes compartilhados; depois replay. Remoto/E2E continuam abertos. | `6e56d3e4`; ETA não calculável até correções e novo review. |
 | Auth | Recovery bypass corrigido e contratos locais passaram 66/66 + 23/23; backend local Auth passou 29/29. | Frente executa delta mínimo fail-closed Catalog após autorização reportada; ledger remoto continua bloqueado. | Validar commit Catalog, integrar, replay compatível, deploy/redirect/SMTP e E2E; MFA permanece fora/fail-closed. | `a2c6eaab`; Catalog ETA 30–60 min informada; remoto 1–2 d + E2E 0,5–1 d após ambiente. |
-| Estruturas | UI/cabeçalho local e worktree limpa; Avaliações permanecem honestamente fail-closed. | Aguardando integração seletiva sem hunks Chat. | Gateways internos de Unidades/Turmas, 11 RPCs Avaliações, replay de modelos por Unidade, remoto e E2E. | `c249db2f`; integração 2–4 h; backend 8–16 h após decisões. |
+| Estruturas | UI/cabeçalho local e worktree limpa; Avaliações permanecem honestamente fail-closed. | Gateways internos v2 e backend Avaliações em execução local; remoto read-only confirmou ledger antigo e ausência das migrations/RPCs. | Gateways internos de Unidades/Turmas, 12 RPCs Avaliações, replay de modelos por Unidade, classificação RLS `app_private`, remoto e E2E. | Base `c249db2f`; próximo ETA após commits/replay; nenhuma mutação remota antes da OQ-041. |
 | Coelo (Principal) | `momentos.view` aprovado localmente: 38/38, estados/retorno/foco. | Circulares diretório/arquivos em execução. | Fechar Circulares e revisar Acontece/Para Você/Agora/Perfil/publicadores; integrar; depois contratos Postgres/R2, autorização, remoto e E2E. | `14ff3d50`; Circulares local 25–35 min; E2E sem ETA antes das decisões. |
 
 ### Ordem de retomada vinculante da Etapa 2
@@ -1475,7 +1475,7 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 - Modelos por Unidade têm migration e 31 asserts somente estáticos. Sem replay,
   remoto autorizado, tenant A/B, revogação, persistência e reload, não há
   promoção integrada.
-- Avaliações têm UI `/dev`, mas nenhum dos 11 RPCs requeridos existe nas
+- Avaliações têm UI `/dev`, mas nenhum dos 12 RPCs requeridos existe nas
   migrations; `7e702447` mantém cinco superfícies produtivas fail-closed.
 - Primeiro gate: contratos backend nominais, replay/pgTAP e OQ-041; ETA técnica
   8–16 h após desbloqueios, sem incluir espera externa.
