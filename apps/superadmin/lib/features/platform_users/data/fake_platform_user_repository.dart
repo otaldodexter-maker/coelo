@@ -16,6 +16,9 @@ final class FakePlatformUserRepository implements PlatformUserRepository {
   final List<PlatformUserRecord> _records;
 
   @override
+  bool get isDemo => true;
+
+  @override
   List<PlatformAccessProfile> get profiles => PlatformAccessProfiles.values;
   @override
   List<PlatformUserRecord> get records => List.unmodifiable(_records);

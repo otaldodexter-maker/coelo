@@ -41,7 +41,38 @@ final class PlatformUserDetailPage extends StatefulWidget {
 }
 
 final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
-  PlatformUserRecord? get _record => widget.repository.findById(widget.internalUserId);
+  PlatformUserRecord? _loadedRecord;
+  bool _loading = false;
+  Object? _loadError;
+  PlatformUserRecord? get _record =>
+      _loadedRecord ?? widget.repository.findById(widget.internalUserId);
+
+  @override
+  void initState() {
+    super.initState();
+    final repository = widget.repository;
+    if (repository is PlatformUserRemoteLoader) {
+      _loading = true;
+      _load(repository as PlatformUserRemoteLoader);
+    }
+  }
+
+  Future<void> _load(PlatformUserRemoteLoader loader) async {
+    try {
+      final record = await loader.fetchById(widget.internalUserId);
+      if (!mounted) return;
+      setState(() {
+        _loadedRecord = record;
+        _loading = false;
+      });
+    } on Object catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _loadError = error;
+        _loading = false;
+      });
+    }
+  }
 
   bool get _canManage => widget.capability == PlatformUserCapability.owner;
 
@@ -81,12 +112,24 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
               ),
             );
           }
-          if (record == null) {
+          if (_loading) {
             return const Padding(
               padding: EdgeInsets.all(CoeloSpacing.space6),
               child: CoeloStatePanel(
+                title: 'Carregando usuário interno',
+                message: 'Aguarde enquanto o acesso é revalidado.',
+                loading: true,
+              ),
+            );
+          }
+          if (record == null) {
+            return Padding(
+              padding: EdgeInsets.all(CoeloSpacing.space6),
+              child: CoeloStatePanel(
                 title: 'Usuário interno não encontrado',
-                message: 'O cadastro solicitado não existe nesta demonstração local.',
+                message: _loadError == null
+                    ? 'O cadastro solicitado não existe.'
+                    : 'Não foi possível consultar o cadastro protegido.',
                 icon: Icons.person_off_outlined,
               ),
             );
