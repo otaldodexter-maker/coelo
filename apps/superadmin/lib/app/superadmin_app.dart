@@ -83,6 +83,7 @@ class SuperadminApp extends StatefulWidget {
     this.activityDirectoryRepository = const UnavailableActivityDirectoryRepository(),
     this.activityCommandRepository = const UnavailableActivityCommandRepository(),
     this.assessmentRepository = const UnavailableAssessmentRepository(),
+    this.assessmentMutationsEnabled = false,
     this.personDirectoryRepository = const UnavailablePersonDirectoryRepository(),
     this.personIdentityRepository = const UnavailablePersonIdentityRepository(),
     this.unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
@@ -112,6 +113,7 @@ class SuperadminApp extends StatefulWidget {
   final ActivityDirectoryRepository activityDirectoryRepository;
   final ActivityCommandRepository activityCommandRepository;
   final AssessmentRepository assessmentRepository;
+  final bool assessmentMutationsEnabled;
   final PersonDirectoryRepository personDirectoryRepository;
   final PersonIdentityRepository personIdentityRepository;
   final UnitDirectoryRepository unitDirectoryRepository;
@@ -161,6 +163,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       activityDirectoryRepository: widget.activityDirectoryRepository,
       activityCommandRepository: widget.activityCommandRepository,
       assessmentRepository: widget.assessmentRepository,
+      enableAssessmentMutations: widget.assessmentMutationsEnabled,
       personDirectoryRepository: widget.personDirectoryRepository,
       personIdentityRepository: widget.personIdentityRepository,
       unitDirectoryRepository: widget.unitDirectoryRepository,

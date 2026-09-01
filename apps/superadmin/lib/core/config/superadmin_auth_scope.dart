@@ -73,6 +73,7 @@ final class SuperadminAuthScope {
     required this.activityDirectoryRepository,
     required this.activityCommandRepository,
     required this.assessmentRepository,
+    required this.assessmentMutationsEnabled,
     required this.personDirectoryRepository,
     this.personIdentityRepository = const UnavailablePersonIdentityRepository(),
     required this.accessProfileRepository,
@@ -104,6 +105,7 @@ final class SuperadminAuthScope {
   final ActivityDirectoryRepository activityDirectoryRepository;
   final ActivityCommandRepository activityCommandRepository;
   final AssessmentRepository assessmentRepository;
+  final bool assessmentMutationsEnabled;
   final PersonDirectoryRepository personDirectoryRepository;
   final PersonIdentityRepository personIdentityRepository;
   final AccessProfileRepository accessProfileRepository;
@@ -130,6 +132,7 @@ final class SuperadminAuthScope {
 Future<SuperadminAuthScope> createSuperadminAuthScope({
   String supabaseUrl = SuperadminAppConfig.supabaseUrl,
   String supabasePublishableKey = SuperadminAppConfig.supabasePublishableKey,
+  bool enableAssessmentMutations = SuperadminAppConfig.assessmentMutationsEnabled,
   SupabaseInitializer initializeSupabase = _initializeSupabase,
   CoeloAuthGatewayFactory createAuthGateway = _createAuthGateway,
 }) async {
@@ -161,6 +164,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       activityDirectoryRepository: SupabaseActivityDirectoryRepository(client),
       activityCommandRepository: SupabaseActivityCommandRepository(client),
       assessmentRepository: SupabaseAssessmentRepository(client),
+      assessmentMutationsEnabled: enableAssessmentMutations,
       personDirectoryRepository: SupabasePersonDirectoryRepository(client),
       personIdentityRepository: const UnavailablePersonIdentityRepository(),
       accessProfileRepository: const UnavailableAccessProfileRepository(),
@@ -214,6 +218,7 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthGateway auth) {
     activityDirectoryRepository: const UnavailableActivityDirectoryRepository(),
     activityCommandRepository: const UnavailableActivityCommandRepository(),
     assessmentRepository: const UnavailableAssessmentRepository(),
+    assessmentMutationsEnabled: false,
     personDirectoryRepository: const UnavailablePersonDirectoryRepository(),
     personIdentityRepository: const UnavailablePersonIdentityRepository(),
     accessProfileRepository: const UnavailableAccessProfileRepository(),

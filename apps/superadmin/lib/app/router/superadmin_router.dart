@@ -205,6 +205,7 @@ GoRouter createSuperadminRouter({
   ActivityCommandRepository activityCommandRepository =
       const UnavailableActivityCommandRepository(),
   AssessmentRepository assessmentRepository = const UnavailableAssessmentRepository(),
+  bool enableAssessmentMutations = false,
   PersonDirectoryRepository personDirectoryRepository =
       const UnavailablePersonDirectoryRepository(),
   PersonIdentityRepository personIdentityRepository = const UnavailablePersonIdentityRepository(),
@@ -449,6 +450,7 @@ GoRouter createSuperadminRouter({
     onAction: () => context.goNamed(SuperadminRoutes.homeName),
   );
   bool hasAuthoritativeMutationCapability() => false;
+  bool hasAssessmentMutationCapability() => enableAssessmentMutations;
   bool hasStructureMutationCapability() => enableStructureMutations;
   void openAgendaArea(BuildContext context, AgendaModuleArea area, {required bool development}) {
     context.goNamed(switch ((area, development)) {
@@ -572,6 +574,8 @@ GoRouter createSuperadminRouter({
       if (_isProductionMutationLocation(location) &&
           !(_isStructureMutationLocation(location)
               ? hasStructureMutationCapability()
+              : _isAssessmentMutationLocation(location)
+              ? hasAssessmentMutationCapability()
               : hasAuthoritativeMutationCapability())) {
         return _productionMutationUnavailablePath;
       }
@@ -1089,7 +1093,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.activityAssessmentSettings,
             name: SuperadminRoutes.activityAssessmentSettingsName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) => !hasAssessmentMutationCapability()
                 ? blockedProductionMutationPage(context)
                 : AssessmentConfigurationPage(
                     repository: assessmentRepository,
@@ -1179,7 +1183,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.assessmentEntry,
             name: SuperadminRoutes.assessmentEntryName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) => !hasAssessmentMutationCapability()
                 ? blockedProductionMutationPage(context)
                 : AssessmentEntryPage(
                     repository: assessmentRepository,
@@ -1193,7 +1197,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.assessmentGradebookEdit,
             name: SuperadminRoutes.assessmentGradebookEditName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) => !hasAssessmentMutationCapability()
                 ? blockedProductionMutationPage(context)
                 : AssessmentEntryPage(
                     repository: assessmentRepository,
@@ -1208,7 +1212,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.assessmentClosing,
             name: SuperadminRoutes.assessmentClosingName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) => !hasAssessmentMutationCapability()
                 ? blockedProductionMutationPage(context)
                 : AssessmentClosingPage(
                     repository: assessmentRepository,
@@ -1224,7 +1228,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.assessmentClosingDetail,
             name: SuperadminRoutes.assessmentClosingDetailName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) => !hasAssessmentMutationCapability()
                 ? blockedProductionMutationPage(context)
                 : AssessmentClosingDetailPage(
                     repository: assessmentRepository,
@@ -4102,6 +4106,9 @@ bool _isStructureMutationLocation(String location) =>
     location.startsWith('/units/') ||
     location.startsWith('/groups/') ||
     location.startsWith('/activities/');
+
+bool _isAssessmentMutationLocation(String location) =>
+    location.endsWith('/assessment-settings') || location.startsWith('/assessments/');
 
 void _closePrincipalViewer(BuildContext context) {
   if (context.canPop()) {

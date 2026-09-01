@@ -25,6 +25,7 @@ Future<void> main() async {
       activityDirectoryRepository: authScope.activityDirectoryRepository,
       activityCommandRepository: authScope.activityCommandRepository,
       assessmentRepository: authScope.assessmentRepository,
+      assessmentMutationsEnabled: authScope.assessmentMutationsEnabled,
       personDirectoryRepository: authScope.personDirectoryRepository,
       personIdentityRepository: authScope.personIdentityRepository,
       accessProfileRepository: authScope.accessProfileRepository,

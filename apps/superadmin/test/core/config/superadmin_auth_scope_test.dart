@@ -66,6 +66,7 @@ void main() {
     expect(scope.unitDirectoryRepository, isA<UnavailableUnitDirectoryRepository>());
     expect(scope.unitBackendCommands, isA<UnavailableUnitBackendCommandsGateway>());
     expect(scope.structureMutationsEnabled, isFalse);
+    expect(scope.assessmentMutationsEnabled, isFalse);
     expect(scope.attendancePermissions.canManage, isFalse);
     expect(scope.auditRepository, isA<UnavailableAuditRepository>());
   });
@@ -78,6 +79,7 @@ void main() {
     final scope = await createSuperadminAuthScope(
       supabaseUrl: 'https://project.supabase.co',
       supabasePublishableKey: 'sb_publishable_test',
+      enableAssessmentMutations: true,
       initializeSupabase: ({required localStorage, required publishableKey, required url}) async {
         initializedUrl = url;
         initializedKey = publishableKey;
@@ -104,6 +106,7 @@ void main() {
     expect(scope.unitDirectoryRepository, isA<UnavailableUnitDirectoryRepository>());
     expect(scope.unitBackendCommands, isA<SupabaseUnitBackendCommandsGateway>());
     expect(scope.structureMutationsEnabled, isFalse);
+    expect(scope.assessmentMutationsEnabled, isTrue);
     expect(scope.attendancePermissions.canManage, isFalse);
     expect(scope.attendancePermissions.backendResolved, isTrue);
     expect(scope.auditRepository, isA<SupabaseAuditRepository>());

@@ -20,6 +20,7 @@ Variaveis client-safe atuais:
 - `COELO_APP_ENV`
 - `COELO_SUPABASE_URL`
 - `COELO_SUPABASE_PUBLISHABLE_KEY`
+- `COELO_ENABLE_ASSESSMENT_MUTATIONS` (ative somente depois da migration de avaliações v2)
 - `COELO_DEV_MFA`
 
 ## Pre-visualizacao local
