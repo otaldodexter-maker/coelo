@@ -1,3 +1,4 @@
+import '../../../../app/dev_menu/development_access_health_fixture_catalog.dart';
 import '../../domain/child_safety_contract.dart';
 import '../../domain/child_safety.dart';
 
@@ -10,8 +11,13 @@ final class DevChildSafetyRepository implements ChildSafetyRepository {
        _records = List.of(records),
        _children = List.of(children);
 
-  DevChildSafetyRepository.content()
-    : this(records: developmentChildSafetyRecords, children: developmentChildSafetyChildren);
+  factory DevChildSafetyRepository.content({DevelopmentAccessHealthFixtureCatalog? catalog}) {
+    final fixtures = catalog ?? DevelopmentAccessHealthFixtureCatalog.standard();
+    return DevChildSafetyRepository(
+      records: _developmentRecords(fixtures),
+      children: _developmentChildren(fixtures),
+    );
+  }
 
   final List<ChildSafetyRecord> _seed;
   List<ChildSafetyRecord> _records;
@@ -23,7 +29,10 @@ final class DevChildSafetyRepository implements ChildSafetyRepository {
   Future<ChildSafetyDirectoryPage> fetchDirectory(ChildSafetyDirectoryQuery query) async {
     final needle = query.search.trim().toLowerCase();
     final filtered = _records.where((record) {
-      final textMatch = needle.isEmpty || record.childName.toLowerCase().contains(needle);
+      final textMatch =
+          needle.isEmpty ||
+          record.childName.toLowerCase().contains(needle) ||
+          record.internalId.toLowerCase().contains(needle);
       final institutionMatch =
           query.institutionIds.isEmpty || query.institutionIds.contains(record.institutionId);
       final unitMatch = query.unitIds.isEmpty || query.unitIds.contains(record.unitId);
@@ -65,16 +74,21 @@ final class DevChildSafetyRepository implements ChildSafetyRepository {
       _records.where((record) => record.childId == childId).firstOrNull;
 
   @override
-  Future<List<ChildSafetyChildOption>> searchChildren(String query, {int limit = 20}) async =>
-      _children
-          .where((child) => child.name.toLowerCase().contains(query.trim().toLowerCase()))
-          .take(limit)
-          .toList();
+  Future<List<ChildSafetyChildOption>> searchChildren(String query, {int limit = 20}) async {
+    final needle = query.trim().toLowerCase();
+    return _children
+        .where(
+          (child) =>
+              child.name.toLowerCase().contains(needle) ||
+              (child.internalId?.toLowerCase().contains(needle) ?? false),
+        )
+        .take(limit)
+        .toList();
+  }
 
   @override
   Future<void> saveAuthorization(SavePickupAuthorizationCommand command) async {
-    final record = await fetchChild(command.childId);
-    if (record == null) throw const ChildSafetyNotFoundException();
+    final record = await fetchChild(command.childId) ?? _emptyRecord(command.childId);
     final authorization = PickupAuthorization(
       id: command.authorizationId ?? 'authorization-${record.authorizations.length + 1}',
       name: command.personId,
@@ -119,116 +133,139 @@ final class DevChildSafetyRepository implements ChildSafetyRepository {
   Future<void> requestExport(ChildSafetyExportCommand command) async {}
 
   void _replace(ChildSafetyRecord value) {
-    _records = [for (final record in _records) record.childId == value.childId ? value : record];
+    final exists = _records.any((record) => record.childId == value.childId);
+    _records = [
+      for (final record in _records) record.childId == value.childId ? value : record,
+      if (!exists) value,
+    ];
+  }
+
+  ChildSafetyRecord _emptyRecord(String childId) {
+    final child = _children.where((option) => option.id == childId).firstOrNull;
+    if (child == null) throw const ChildSafetyNotFoundException();
+    return ChildSafetyRecord(
+      childId: child.id,
+      childName: child.name,
+      internalId: child.internalId ?? '',
+      institutionName: child.institutionName,
+      unitName: child.unitName,
+      childContextId: child.childContextId,
+      institutionId: child.institutionId,
+      unitId: child.unitId,
+      authorizations: const [],
+    );
   }
 }
 
-final developmentChildSafetyRecords = <ChildSafetyRecord>[
-  ChildSafetyRecord(
-    childId: 'child-1',
-    childName: 'Ana Criança',
-    internalId: 'RA 1001',
-    institutionName: 'Instituição Aurora',
-    unitName: 'Unidade Centro',
-    childContextId: 'context-1',
-    institutionId: 'institution-1',
-    unitId: 'unit-1',
-    directorySegment: ChildSafetyDirectorySegment.awaitingApproval,
-    authorizationCount: 1,
-    directoryPendingCount: 1,
-    authorizations: [
-      PickupAuthorization(
-        id: 'auth-1',
-        name: 'Maria Martins',
-        relationship: 'Mãe',
-        institutionName: 'Instituição Aurora',
-        unitName: 'Unidade Centro',
-        status: PickupAuthorizationStatus.pending,
-        origin: PickupAuthorizationOrigin.guardian,
-        personId: 'person-1',
-        childContextId: 'context-1',
-        unitId: 'unit-1',
-        capabilityCodes: const {'pickup', 'emergency_contact'},
-        requestReason: 'Solicitação familiar',
-        startsAt: DateTime(2026, 8, 1),
-      ),
-    ],
-  ),
-  const ChildSafetyRecord(
-    childId: 'child-2',
-    childName: 'Caio Criança',
-    internalId: 'RA 1002',
-    institutionName: 'Instituição Aurora',
-    unitName: 'Unidade Norte',
-    childContextId: 'context-2',
-    institutionId: 'institution-1',
-    unitId: 'unit-2',
-    directorySegment: ChildSafetyDirectorySegment.withoutAuthorization,
-    authorizations: [],
-  ),
-  ChildSafetyRecord(
-    childId: 'child-3',
-    childName: 'Lia Criança',
-    internalId: 'RA 1003',
-    institutionName: 'Instituto Horizonte',
-    unitName: 'Unidade Jardim',
-    childContextId: 'context-3',
-    institutionId: 'institution-2',
-    unitId: 'unit-3',
-    directorySegment: ChildSafetyDirectorySegment.authorized,
-    authorizationCount: 1,
-    authorizations: [
-      PickupAuthorization(
-        id: 'auth-2',
-        name: 'Paulo Santos',
-        relationship: 'Avô',
-        institutionName: 'Instituto Horizonte',
-        unitName: 'Unidade Jardim',
-        status: PickupAuthorizationStatus.approved,
-        origin: PickupAuthorizationOrigin.institution,
-        personId: 'person-2',
-        childContextId: 'context-3',
-        unitId: 'unit-3',
-        capabilityCodes: const {'pickup'},
-        requestReason: 'Autorização conferida pela unidade',
-        startsAt: DateTime(2026, 1, 1),
-      ),
-    ],
-  ),
-];
+List<ChildSafetyChildOption> _developmentChildren(DevelopmentAccessHealthFixtureCatalog catalog) =>
+    [
+      for (final child in catalog.children)
+        ChildSafetyChildOption(
+          id: child.id,
+          name: child.name,
+          internalId: child.privateIdentifier,
+          childContextId: child.groupId,
+          institutionId: child.institutionId,
+          institutionName: child.institutionName,
+          unitId: child.unitId,
+          unitName: child.unitName,
+        ),
+    ];
 
-const developmentChildSafetyChildren = <ChildSafetyChildOption>[
-  ChildSafetyChildOption(
-    id: 'child-1',
-    name: 'Ana Criança',
-    internalId: 'RA 1001',
-    childContextId: 'context-1',
-    institutionId: 'institution-1',
-    institutionName: 'Instituição Aurora',
-    unitId: 'unit-1',
-    unitName: 'Unidade Centro',
-  ),
-  ChildSafetyChildOption(
-    id: 'child-2',
-    name: 'Caio Criança',
-    internalId: 'RA 1002',
-    childContextId: 'context-2',
-    institutionId: 'institution-1',
-    institutionName: 'Instituição Aurora',
-    unitId: 'unit-2',
-    unitName: 'Unidade Norte',
-  ),
-  ChildSafetyChildOption(
-    id: 'child-3',
-    name: 'Lia Criança',
-    internalId: 'RA 1003',
-    childContextId: 'context-3',
-    institutionId: 'institution-2',
-    institutionName: 'Instituto Horizonte',
-    unitId: 'unit-3',
-    unitName: 'Unidade Jardim',
-  ),
-];
+List<ChildSafetyRecord> _developmentRecords(DevelopmentAccessHealthFixtureCatalog catalog) {
+  final children = {for (final child in catalog.children) child.id: child};
+  final adults = {
+    for (final adult in [...catalog.guardians, ...catalog.teamMembers]) adult.id: adult,
+  };
+  return [
+    for (final (recordIndex, fixture) in catalog.safetyRecords.indexed)
+      _developmentRecord(fixture, children[fixture.childId]!, adults, recordIndex),
+  ];
+}
+
+ChildSafetyRecord _developmentRecord(
+  DevelopmentSafetyFixture fixture,
+  DevelopmentChildFixture child,
+  Map<String, DevelopmentAdultFixture> adults,
+  int recordIndex,
+) {
+  final authorized = [
+    for (var index = 0; index < fixture.authorizedPeopleCount; index++)
+      _authorization(
+        id: '${fixture.id}-approved-${index + 1}',
+        adult: adults[child.guardianIds[index % child.guardianIds.length]]!,
+        child: child,
+        index: index,
+        status: PickupAuthorizationStatus.approved,
+      ),
+  ];
+  final pending = [
+    for (var index = 0; index < fixture.pendingRequestsCount; index++)
+      _authorization(
+        id: '${fixture.id}-pending-${index + 1}',
+        adult: adults[child.guardianIds[index % child.guardianIds.length]]!,
+        child: child,
+        index: index,
+        status: PickupAuthorizationStatus.pending,
+      ),
+  ];
+  final attention = fixture.status == DevelopmentSafetyStatus.attention
+      ? [
+          _authorization(
+            id: '${fixture.id}-attention',
+            adult: adults[child.guardianIds.first]!,
+            child: child,
+            index: recordIndex,
+            status: PickupAuthorizationStatus.rejected,
+          ),
+        ]
+      : const <PickupAuthorization>[];
+  return ChildSafetyRecord(
+    childId: child.id,
+    childName: child.name,
+    internalId: child.privateIdentifier,
+    institutionName: child.institutionName,
+    unitName: child.unitName,
+    childContextId: child.groupId,
+    institutionId: child.institutionId,
+    unitId: child.unitId,
+    directorySegment: switch (fixture.status) {
+      DevelopmentSafetyStatus.authorized => ChildSafetyDirectorySegment.authorized,
+      DevelopmentSafetyStatus.awaitingApproval => ChildSafetyDirectorySegment.awaitingApproval,
+      DevelopmentSafetyStatus.attention => ChildSafetyDirectorySegment.attention,
+      DevelopmentSafetyStatus.noAuthorization => ChildSafetyDirectorySegment.withoutAuthorization,
+    },
+    authorizationCount: fixture.authorizedPeopleCount,
+    directoryPendingCount: fixture.pendingRequestsCount,
+    authorizations: [...authorized, ...pending, ...attention],
+  );
+}
+
+PickupAuthorization _authorization({
+  required String id,
+  required DevelopmentAdultFixture adult,
+  required DevelopmentChildFixture child,
+  required int index,
+  required PickupAuthorizationStatus status,
+}) => PickupAuthorization(
+  id: id,
+  name: adult.name,
+  relationship: const ['Mãe', 'Pai', 'Avó', 'Tia'][index % 4],
+  institutionName: child.institutionName,
+  unitName: child.unitName,
+  status: status,
+  origin: PickupAuthorizationOrigin.guardian,
+  personId: adult.id,
+  childContextId: child.groupId,
+  unitId: child.unitId,
+  capabilityCodes: const {'pickup', 'emergency_contact'},
+  requestReason: status == PickupAuthorizationStatus.pending
+      ? 'Solicitação familiar aguardando revisão da unidade.'
+      : 'Vínculo familiar conferido pela unidade.',
+  startsAt: DateTime(2026, 1 + index % 12, 1 + index % 27),
+  lifetime: index % 5 == 0,
+  hasAppAccount: true,
+);
 
 extension on Iterable<ChildSafetyRecord> {
   ChildSafetyRecord? get firstOrNull => isEmpty ? null : first;

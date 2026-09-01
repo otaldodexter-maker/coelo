@@ -146,9 +146,19 @@ final class ChildSafetyRecord {
     childContextId: childContextId,
     institutionId: institutionId,
     unitId: unitId,
-    directorySegment: directorySegment,
-    authorizationCount: authorizationCount,
-    directoryPendingCount: directoryPendingCount,
+    directorySegment: value.any((item) => item.status == PickupAuthorizationStatus.pending)
+        ? ChildSafetyDirectorySegment.awaitingApproval
+        : value.any((item) => item.status == PickupAuthorizationStatus.rejected)
+        ? ChildSafetyDirectorySegment.attention
+        : value.any((item) => item.status == PickupAuthorizationStatus.approved)
+        ? ChildSafetyDirectorySegment.authorized
+        : ChildSafetyDirectorySegment.withoutAuthorization,
+    authorizationCount: value
+        .where((item) => item.status == PickupAuthorizationStatus.approved)
+        .length,
+    directoryPendingCount: value
+        .where((item) => item.status == PickupAuthorizationStatus.pending)
+        .length,
   );
 }
 
