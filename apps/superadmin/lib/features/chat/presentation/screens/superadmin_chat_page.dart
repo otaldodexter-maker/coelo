@@ -229,7 +229,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       _pendingSend = null;
       setState(() {
         if (_composer.text.trim() == body) _composer.clear();
-        _thread = ChatThreadPage(items: [...?_thread?.items, sent]);
+        _thread = ChatThreadPage(items: [sent, ...?_thread?.items]);
       });
     } on ChatUnauthorizedException {
       if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
@@ -536,8 +536,8 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
             reverse: true,
             padding: const EdgeInsets.all(CoeloSpacing.space3),
             itemCount: thread.items.length,
-            itemBuilder: (context, reverseIndex) {
-              final message = thread.items[thread.items.length - 1 - reverseIndex];
+            itemBuilder: (context, index) {
+              final message = thread.items[index];
               return _MessageBubble(message: message);
             },
           ),

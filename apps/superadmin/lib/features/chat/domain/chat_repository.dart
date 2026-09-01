@@ -150,6 +150,8 @@ final class ChatMessage {
 final class ChatThreadPage {
   const ChatThreadPage({required this.items, this.nextCursor});
 
+  /// Messages are ordered newest-first, matching the keyset-paginated RPC.
+  /// Presentation may render this list in reverse without reordering the data.
   final List<ChatMessage> items;
   final ChatCursor? nextCursor;
 }
