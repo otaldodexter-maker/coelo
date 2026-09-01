@@ -1,18 +1,22 @@
 begin;
 
 insert into public.platform_permissions(
-  code,module_code,screen_code,action_code,description,risk_level,requires_mfa
+  code,module_code,module_label,screen_code,screen_label,action_code,action_label,
+  description,risk_level,requires_mfa
 ) values
-  ('platform.member.read','platform','members','read',
+  ('platform.member.read','platform','Superadmin','members','Usuários internos','read','Ver',
    'Consultar o diretório privado de usuários internos Coelo.','high',true),
-  ('platform.member.update','platform','members','update',
+  ('platform.member.update','platform','Superadmin','members','Usuários internos','update','Editar',
    'Editar cadastro, perfil e alcance de usuários internos Coelo.','high',true),
-  ('platform.member.suspend','platform','members','status',
+  ('platform.member.suspend','platform','Superadmin','members','Usuários internos','status','Gerenciar',
    'Suspender, reativar ou revogar vínculos internos Coelo.','high',true)
 on conflict(code) do update set
   module_code=excluded.module_code,
+  module_label=excluded.module_label,
   screen_code=excluded.screen_code,
+  screen_label=excluded.screen_label,
   action_code=excluded.action_code,
+  action_label=excluded.action_label,
   description=excluded.description,
   risk_level=excluded.risk_level,
   requires_mfa=excluded.requires_mfa,

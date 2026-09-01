@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(27);
+select plan(28);
 
 select ok(
   to_regclass('app_private.superadmin_internal_profiles') is not null
@@ -45,6 +45,15 @@ select is((select count(*) from public.platform_permissions
   where code in('platform.member.read','platform.member.update','platform.member.suspend')
     and status='active' and requires_mfa),3::bigint,
   'all internal-user capabilities are explicit, active and MFA guarded');
+select results_eq(
+  $$select module_label,screen_label,action_label from public.platform_permissions
+    where code in('platform.member.read','platform.member.suspend','platform.member.update')
+    order by code$$,
+  $$values
+    ('Superadmin','Usuários internos','Ver'),
+    ('Superadmin','Usuários internos','Gerenciar'),
+    ('Superadmin','Usuários internos','Editar')$$,
+  'directory capabilities expose coherent module, screen and action labels');
 
 insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,
   raw_app_meta_data,raw_user_meta_data) values
