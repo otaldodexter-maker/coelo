@@ -19,46 +19,42 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
   @override
   Future<InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) async {
     try {
-      var request = _client.from('institution_directory').select();
-      final search = query.search.trim();
-      if (search.isNotEmpty) {
-        request = request.ilike('search_name', '%${_escapeLike(search)}%');
-      }
-      if (query.statuses.isNotEmpty) {
-        request = request.inFilter(
-          'status',
-          query.statuses.map((status) => status.databaseValue).toList(growable: false),
+      final filters = <String, Object?>{
+        if (query.search.trim().isNotEmpty) 'search': query.search.trim(),
+        if (query.statuses.isNotEmpty)
+          'statuses': query.statuses.map((status) => status.databaseValue).toList(growable: false),
+        if (query.planId != null) 'plan_id': query.planId,
+        if (query.states.isNotEmpty) 'states': query.states.toList(growable: false),
+        if (query.cities.isNotEmpty) 'cities': query.cities.toList(growable: false),
+        if (query.districts.isNotEmpty) 'districts': query.districts.toList(growable: false),
+        if (query.typeIds.isNotEmpty) 'type_ids': query.typeIds.toList(growable: false),
+      };
+      final items = <InstitutionDirectoryItem>[];
+      var totalCount = 0;
+      for (var consumed = 0; consumed < query.pageSize; consumed += 100) {
+        final limit = min(100, query.pageSize - consumed);
+        final data = _unwrapEnvelope(
+          await _client.rpc<Object?>(
+            'superadmin_institution_directory_v2',
+            params: {
+              'p_filters': filters,
+              'p_limit': limit,
+              'p_offset': query.offset + consumed,
+              'p_sort': query.sortColumn.databaseColumn,
+              'p_sort_ascending': query.sortAscending,
+            },
+          ),
         );
+        final page = _asMap(data);
+        totalCount = _asInt(page['total_count']);
+        final rows = _asRows(page['items']);
+        items.addAll(rows.map(InstitutionDirectoryItem.fromJson));
+        if (rows.length < limit) break;
       }
-      if (query.planId != null) {
-        request = request.eq('plan_id', query.planId!);
-      }
-      if (query.states.isNotEmpty) {
-        request = request.inFilter('state', query.states.toList(growable: false));
-      }
-      if (query.cities.isNotEmpty) {
-        request = request.inFilter('city', query.cities.toList(growable: false));
-      }
-      if (query.districts.isNotEmpty) {
-        request = request.inFilter('district', query.districts.toList(growable: false));
-      }
-      if (query.typeIds.isNotEmpty) {
-        request = request.inFilter('institution_type_id', query.typeIds.toList(growable: false));
-      }
-
-      final response = await request
-          .order(query.sortColumn.databaseColumn, ascending: query.sortAscending)
-          .order('id', ascending: true)
-          .range(query.offset, query.offset + query.pageSize - 1)
-          .count(CountOption.exact);
-      final rows = response.data;
-      final items = rows
-          .map((row) => InstitutionDirectoryItem.fromJson(Map<String, dynamic>.from(row)))
-          .toList(growable: false);
 
       return InstitutionDirectoryPage(
         items: items,
-        totalCount: response.count,
+        totalCount: totalCount,
         page: query.page,
         pageSize: query.pageSize,
       );
@@ -72,16 +68,11 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
   @override
   Future<InstitutionRecord> fetchById(String institutionId) async {
     try {
-      final response = await _client.rpc<Map<String, dynamic>>(
-        'get_institution_for_superadmin',
+      final response = await _client.rpc<Object?>(
+        'superadmin_institution_detail_v2',
         params: {'p_institution_id': institutionId},
       );
-      if (response.isEmpty) {
-        throw const InstitutionDirectoryNotFoundException();
-      }
-      return InstitutionRecord.fromRpcPayload(
-        _coercePayload(response, missingError: const InstitutionDirectoryNotFoundException()),
-      );
+      return InstitutionRecord.fromRpcPayload(_asMap(_unwrapEnvelope(response)));
     } on PostgrestException catch (error) {
       _throwMappedException(error);
     } on ClientException {
@@ -93,40 +84,13 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
 
   @override
   Future<InstitutionRecord> create(InstitutionRecord draft) async {
-    _throwIfUnsupportedRelations(draft);
-    final payload = _normalizePayload(draft.toRpcPayload());
-    final signature = _requestSignature(operation: 'create', payload: payload);
-    final requestId = _requestIdFor(signature);
-    try {
-      final response = await _client.rpc<Map<String, dynamic>>(
-        'create_institution_for_superadmin',
-        params: {'p_request_id': requestId, 'p_payload': payload},
-      );
-      final record = InstitutionRecord.fromRpcPayload(
-        _coercePayload(
-          response,
-          missingError: const InstitutionDirectoryUnexpectedException('missing payload'),
-        ),
-      );
-      _clearPendingRequest(signature, requestId);
-      return record;
-    } on PostgrestException catch (error) {
-      if (!_isUnavailableCode(error.code)) {
-        _clearPendingRequest(signature, requestId);
-      }
-      _throwMappedException(error);
-    } on ClientException {
-      throw const InstitutionDirectoryUnavailableException();
-    } catch (_) {
-      _clearPendingRequest(signature, requestId);
-      rethrow;
-    }
+    throw const InstitutionDirectoryUnavailableException();
   }
 
   @override
   Future<InstitutionRecord> update(InstitutionRecord draft, {required int expectedVersion}) async {
     _throwIfUnsupportedRelations(draft);
-    final payload = _normalizePayload(draft.toRpcPayload());
+    final payload = _institutionEditCorePayload(draft);
     final signature = _requestSignature(
       operation: 'update',
       institutionId: draft.id,
@@ -135,8 +99,8 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
     );
     final requestId = _requestIdFor(signature);
     try {
-      final response = await _client.rpc<Map<String, dynamic>>(
-        'update_institution_for_superadmin',
+      final response = await _client.rpc<Object?>(
+        'superadmin_institution_edit_core_v2',
         params: {
           'p_request_id': requestId,
           'p_institution_id': draft.id,
@@ -144,12 +108,8 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
           'p_payload': payload,
         },
       );
-      final record = InstitutionRecord.fromRpcPayload(
-        _coercePayload(
-          response,
-          missingError: const InstitutionDirectoryUnexpectedException('missing payload'),
-        ),
-      );
+      _unwrapEnvelope(response);
+      final record = await fetchById(draft.id);
       _clearPendingRequest(signature, requestId);
       return record;
     } on PostgrestException catch (error) {
@@ -171,28 +131,23 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
     Set<String> cities = const {},
   }) async {
     try {
-      final statesRequest = _client.from('institution_directory_locations').select('state');
-      var locationsRequest = _client
-          .from('institution_directory_locations')
-          .select('state, city, district');
-      if (states.isNotEmpty) {
-        locationsRequest = locationsRequest.inFilter('state', states.toList(growable: false));
-      }
-      if (cities.isNotEmpty) {
-        locationsRequest = locationsRequest.inFilter('city', cities.toList(growable: false));
-      }
-      final results = await Future.wait<List<dynamic>>([
-        _client.from('plans').select('id, name').eq('status', 'active').order('name'),
-        _client.from('institution_types').select('id, name').eq('status', 'active').order('name'),
-        statesRequest.order('state'),
-        locationsRequest.order('city').order('district'),
-      ]);
+      final data = _asMap(
+        _unwrapEnvelope(
+          await _client.rpc<Object?>(
+            'superadmin_institution_filter_options_v2',
+            params: {
+              'p_states': states.toList(growable: false),
+              'p_cities': cities.toList(growable: false),
+            },
+          ),
+        ),
+      );
       return InstitutionDirectoryFilterOptions(
-        plans: _optionsFromRows(results[0]),
-        types: _optionsFromRows(results[1]),
-        states: _locationOptionsFromRows(results[2], 'state'),
-        cities: states.isEmpty ? const [] : _locationOptionsFromRows(results[3], 'city'),
-        districts: cities.isEmpty ? const [] : _locationOptionsFromRows(results[3], 'district'),
+        plans: _options(data['plans']),
+        types: _options(data['types']),
+        states: _options(data['states']),
+        cities: _options(data['cities']),
+        districts: _options(data['districts']),
       );
     } on PostgrestException catch (error) {
       _throwMappedException(error);
@@ -309,47 +264,74 @@ final class UnavailableInstitutionDirectoryRepository implements InstitutionDire
   }
 }
 
-List<InstitutionDirectoryFilterOption> _locationOptionsFromRows(List<dynamic> rows, String key) {
-  final values = <String>{};
-  for (final rawRow in rows) {
-    final row = Map<String, dynamic>.from(rawRow as Map);
-    final value = row[key];
-    if (value is String && value.trim().isNotEmpty) {
-      values.add(value);
-    }
-  }
-  final sorted = values.toList()..sort();
-  return sorted
-      .map((value) => InstitutionDirectoryFilterOption(id: value, label: value))
-      .toList(growable: false);
-}
-
-List<InstitutionDirectoryFilterOption> _optionsFromRows(List<dynamic> rows) {
-  return rows
-      .map((row) => Map<String, dynamic>.from(row as Map))
+List<InstitutionDirectoryFilterOption> _options(Object? value) {
+  return _asRows(value)
       .map(
-        (row) =>
-            InstitutionDirectoryFilterOption(id: row['id'] as String, label: row['name'] as String),
+        (row) => InstitutionDirectoryFilterOption(
+          id: row['id'] as String,
+          label: row['label'] as String,
+        ),
       )
       .toList(growable: false);
 }
 
-String _escapeLike(String value) {
-  return value.replaceAll('\\', '\\\\').replaceAll('%', '\\%').replaceAll('_', '\\_');
+Map<String, Object?> _institutionEditCorePayload(InstitutionRecord record) {
+  return {
+    'public_name': record.publicName,
+    'trade_name': record.tradeName.isEmpty ? null : record.tradeName,
+    'legal_name': record.legalName.isEmpty ? null : record.legalName,
+    'timezone': record.timezone,
+    'locale': record.locale,
+    if (record.typeId.isNotEmpty) 'institution_type_id': record.typeId,
+    'address': {
+      'country': record.country,
+      'state': record.state.isEmpty ? null : record.state,
+      'city': record.city.isEmpty ? null : record.city,
+      'district': record.district.isEmpty ? null : record.district,
+      'street': record.street.isEmpty ? null : record.street,
+      'number': record.addressNumber.isEmpty ? null : record.addressNumber,
+      'complement': record.complement.isEmpty ? null : record.complement,
+      'postal_code': record.postalCode.replaceAll(RegExp(r'\D'), ''),
+    },
+  };
 }
 
-Map<String, dynamic> _normalizePayload(Map<String, dynamic> payload) {
-  final normalized = Map<String, dynamic>.from(payload);
-  final json = jsonEncode(normalized);
-  return jsonDecode(json) as Map<String, dynamic>;
-}
-
-Map<String, dynamic> _coercePayload(Object? payload, {required Exception missingError}) {
-  if (payload is Map<String, dynamic>) {
-    return Map<String, dynamic>.from(payload);
+Object? _unwrapEnvelope(Object? value) {
+  final envelope = _asMap(value);
+  if (envelope['ok'] == true) return envelope['data'];
+  final error = envelope['error'];
+  final details = error is Map ? Map<String, dynamic>.from(error) : const <String, dynamic>{};
+  final code = details['code']?.toString();
+  final message = details['message']?.toString() ?? 'Não foi possível concluir a operação.';
+  switch (code) {
+    case 'SAI_AUTH_REQUIRED':
+    case 'SAI_SESSION_INVALID':
+    case 'SAI_INTERNAL_CONTEXT_DENIED':
+    case 'SAI_MEMBERSHIP_SUSPENDED':
+    case 'SAI_MEMBERSHIP_REVOKED':
+    case 'SAI_PERMISSION_DENIED':
+    case 'SAI_MFA_REQUIRED':
+      throw const InstitutionDirectoryUnauthorizedException();
+    case 'SAI_CONCURRENT_CHANGE':
+    case 'SAI_LAST_OWNER_PROTECTED':
+      throw const InstitutionDirectoryConflictException();
+    case 'SAI_INVALID_ARGUMENT':
+      throw InstitutionDirectoryValidationException(message);
+    default:
+      throw const InstitutionDirectoryUnavailableException();
   }
-  throw missingError;
 }
+
+Map<String, dynamic> _asMap(Object? value) => value is Map
+    ? Map<String, dynamic>.from(value)
+    : throw const InstitutionDirectoryUnavailableException();
+
+List<Map<String, dynamic>> _asRows(Object? value) => value is List
+    ? value.map((row) => _asMap(row)).toList(growable: false)
+    : throw const InstitutionDirectoryUnavailableException();
+
+int _asInt(Object? value) =>
+    value is num ? value.toInt() : throw const InstitutionDirectoryUnavailableException();
 
 String _nextRequestId() {
   final random = Random.secure();
