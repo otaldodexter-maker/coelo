@@ -642,6 +642,10 @@ GoRouter createSuperadminRouter({
         name: SuperadminRoutes.devPrincipalProfileName,
         builder: (context, state) => PrincipalProfilePreviewPage(
           embedded: false,
+          onOpenHome: () => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
+          onOpenForYou: () => context.goNamed(SuperadminRoutes.devPrincipalForYouName),
+          onPublishNow: () => context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName),
+          onOpenMoments: () => context.pushNamed(SuperadminRoutes.devPrincipalMomentsName),
           onOpenAgenda: () => context.goNamed(SuperadminRoutes.devAgendaName),
         ),
       ),

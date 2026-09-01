@@ -72,14 +72,37 @@ Result: `00:03 +8: All tests passed!`
 - Knowledge-memory search for `Principal shell` returned no durable approved
   knowledge to project: no-op.
 
-## Concern / handoff
+## Follow-up P1 correction
 
-A 1440 px route render at 200% text exposes a pre-existing `RenderFlex`
-overflow in Acontece’s `_ContextPanel` (`principal_happens_preview_page.dart`),
-which becomes visible only after removing the Superadmin shell. The routing
-test retains 200% coverage through 1024 px; correcting the 1440 px visual
-overflow is intentionally left to the visual task that owns that surface.
+### RED
+
+```text
+rtk flutter test test/app/router/principal_happens_preview_route_test.dart test/app/router/principal_profile_preview_route_test.dart
+```
+
+Observed result: the Profile dock Home action remained on Perfil because its
+callback was absent, and the restored 1440 px / 200% Acontece assertion found
+three `_ContextPanel` `RenderFlex` overflows.
+
+### GREEN
+
+```text
+rtk flutter test test/app/router/principal_happens_preview_route_test.dart test/app/router/principal_for_you_preview_route_test.dart test/app/router/principal_profile_preview_route_test.dart test/app/router/principal_moments_publication_route_test.dart test/app/router/principal_now_preview_route_test.dart
+```
+
+Result: `00:07 +23: All tests passed!`
+
+```text
+rtk dart analyze lib/app/router/superadmin_router.dart lib/features/principal_happens/presentation/principal_happens_preview_page.dart test/app/router/principal_happens_preview_route_test.dart test/app/router/principal_profile_preview_route_test.dart
+```
+
+Result: `No issues found!`
+
+The Perfil route now connects Home/Acontece, Para você, Publicar no Agora,
+Momentos and Agenda. The test exercises each visible action and asserts no
+`SnackBar`. `_ContextPanel` now stacks its title and action on narrow layout
+constraints, preserving both accessible controls at 1440 px / 200% text.
 
 ## Commit
 
-Pending commit hash.
+`a6c48751 feat(superadmin): isolate principal preview routes`

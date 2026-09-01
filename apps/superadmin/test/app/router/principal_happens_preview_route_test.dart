@@ -69,7 +69,7 @@ void main() {
     addTearDown(session.dispose);
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
-    for (final width in [375.0, 768.0, 1024.0]) {
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
       await tester.binding.setSurfaceSize(Size(width, 1000));
       router.go(SuperadminRoutes.devPrincipalHappens);
       await tester.pumpWidget(
