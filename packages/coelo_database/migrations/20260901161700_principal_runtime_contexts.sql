@@ -85,4 +85,3 @@ $$;
 revoke all on function public.list_my_principal_contexts()
   from public, anon, authenticated;
 grant execute on function public.list_my_principal_contexts() to authenticated;
-

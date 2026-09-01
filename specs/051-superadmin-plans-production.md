@@ -44,4 +44,3 @@ versão e request ID. Tabelas expostas usam RLS habilitada e forçada.
 - `anon`, ator sem permissão, sessão sem AAL2 e ID direto não autorizado falham;
 - a UI produtiva usa repository Supabase e `/dev` mantém fixtures;
 - testes SQL, Flutter, cross-tenant e advisors relevantes passam.
-

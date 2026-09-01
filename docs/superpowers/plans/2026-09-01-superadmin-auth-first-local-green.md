@@ -90,4 +90,3 @@ contexto/ID adulterado e auditoria minimizada.
 - Solicitar revisao independente do delta e corrigir achados por TDD.
 - Atualizar os tres rastreadores e executar o gate `coelo-knowledge`, com fonte
   canonica antes de qualquer projecao duravel.
-

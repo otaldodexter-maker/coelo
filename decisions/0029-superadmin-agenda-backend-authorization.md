@@ -43,4 +43,3 @@ O backend deve:
   superada por esta decisão para a Agenda no Superadmin.
 - Rotas produtivas só deixam de ser fail-closed quando a evidência remota de
   autorização, isolamento e persistência estiver concluída.
-

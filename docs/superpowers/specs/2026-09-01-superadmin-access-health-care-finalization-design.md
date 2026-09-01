@@ -268,4 +268,3 @@ A verificação é focada:
 - `/dev` utiliza apenas fixtures e produção utiliza apenas Supabase;
 - CRUD real respeita RLS, tenant, vínculo, escopo e auditoria;
 - nenhum item bloqueado é apresentado como concluído ponta a ponta.
-

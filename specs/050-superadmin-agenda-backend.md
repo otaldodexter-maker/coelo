@@ -99,4 +99,3 @@ somente o momento relativo/customizado; canais permanecem fora do contrato.
 A entrega por push/e-mail e retenção jurídica detalhada das respostas continuam
 pendentes de contrato próprio. Até lá, o banco não armazena conteúdo sensível,
 anexos ou payloads livres além dos campos explicitamente limitados.
-
