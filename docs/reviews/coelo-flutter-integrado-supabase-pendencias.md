@@ -1415,3 +1415,10 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   de referência `f6d44af9` e `5663042f`. Convites, formulários de Avisos e
   Circulares continuam em execução paralela e serão registrados em novo
   checkpoint antes da consolidação.
+- **Remoto read-only:** o catálogo confirmou as tabelas principais de
+  Chat/Avisos com RLS, mas não encontrou as RPCs públicas consumidas pelos
+  adapters nem `chat_attachment_metadata`/`notice_events`. As RPCs e RLS
+  forçada de Circulares estão presentes. Assim, Chat e Avisos ficam
+  explicitamente `blocked-supabase`; Circulares ainda não avança para
+  `ready-for-e2e` sem adapter produtivo, ator autorizado, tenant A/B,
+  persistência e reload. Nenhuma mutation remota foi executada.

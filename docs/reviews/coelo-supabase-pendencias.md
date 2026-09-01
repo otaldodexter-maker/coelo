@@ -4314,3 +4314,14 @@ da simples soma das 207 ações.
 - **Mudança Flutter isolada:** o repository `/dev` de Conversas do commit
   `5663042f` não participa da composição produtiva e não altera o estado do
   backend.
+- **Divergência remota confirmada por leitura:** o catálogo do projeto `coelo`
+  mostrou RLS habilitada em `conversations`, `messages`, `message_receipts`,
+  `message_edits`, `platform_notices`, `notice_rules`, `notice_media` e
+  `notice_receipts`; as tabelas públicas de Circulares estão com RLS habilitada
+  e forçada. Entretanto, `chat_attachment_metadata` e `notice_events` não
+  apareceram, e nenhuma RPC pública `chat_*` ou de gestão de Avisos usada pelos
+  adapters Flutter apareceu em `pg_proc`. As RPCs autenticadas de Circulares
+  (`load_circular_draft`, `save_circular_draft`, `publish_circular` e afins)
+  estão presentes. Chat/Avisos permanecem `blocked-supabase` por drift remoto;
+  aplicar migrations continua bloqueado até classificar formalmente o ambiente
+  e revisar o pacote exato, sem promover saúde técnica a autorização de DDL.
