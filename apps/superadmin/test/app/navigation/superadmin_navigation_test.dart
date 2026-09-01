@@ -114,8 +114,6 @@ void main() {
       'Conversas',
       'Convites',
       'Comunicações',
-      'Circulares',
-      'Publicar Circular',
       'Governança',
       'Suporte e implantação',
       'Auditoria',
@@ -129,6 +127,8 @@ void main() {
       'Agora',
       'Publicar no Agora',
       'Perfil',
+      'Circulares',
+      'Publicar Circular',
     ]);
 
     final labels = coeloSuperadminNavigation.expand(flatten).toSet();
@@ -189,6 +189,12 @@ void main() {
       ),
       isEmpty,
     );
+  });
+
+  test('places circulars under Coelo Principal rather than Communication', () {
+    expect(coeloNavigationAncestors('circulars'), {'principal'});
+    expect(coeloNavigationAncestors('circular-create'), {'principal', 'circulars'});
+    expect(coeloNavigationAncestors('communication'), isNot(contains('circulars')));
   });
 
   test('applies an optional capability filter without becoming an authorization boundary', () {
