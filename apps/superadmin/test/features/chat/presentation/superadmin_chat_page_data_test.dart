@@ -127,7 +127,7 @@ void main() {
       lessThan(tester.getTopLeft(find.text('Tudo bem?')).dy),
     );
   });
-  testWidgets('uses a safe unavailable state when Supabase is not initialized', (tester) async {
+  testWidgets('fails closed without an explicit internal-realm repository', (tester) async {
     await tester.pumpWidget(
       const MaterialApp(home: SuperadminChatPage(logout: unavailableSuperadminLogout)),
     );

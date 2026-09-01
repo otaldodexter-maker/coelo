@@ -5,11 +5,9 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../auth/domain/logout_action.dart';
-import '../../data/supabase_chat_repository.dart';
 import '../../domain/chat_repository.dart';
 import '../widgets/superadmin_chat_attachment_tile.dart';
 import '../widgets/superadmin_chat_composer.dart';
@@ -103,13 +101,12 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     super.dispose();
   }
 
-  ChatRepository _configuredRepository() {
-    try {
-      return SupabaseChatRepository(Supabase.instance.client);
-    } catch (_) {
-      return const _UnavailableChatRepository();
-    }
-  }
+  // Superadmin uses the isolated internal identity realm (ADR 0019). The
+  // existing Supabase Chat RPCs resolve people/current_person_id and therefore
+  // cannot be selected implicitly for this surface. Production remains
+  // fail-closed until an internal-identity gateway is approved and injected by
+  // the composition root; `/dev` continues to inject its deterministic repo.
+  ChatRepository _configuredRepository() => const _UnavailableChatRepository();
 
   Future<void> _loadInbox() async {
     final requestGeneration = ++_inboxRequestGeneration;
