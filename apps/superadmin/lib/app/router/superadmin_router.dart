@@ -1089,19 +1089,21 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.activityAssessmentSettings,
             name: SuperadminRoutes.activityAssessmentSettingsName,
-            builder: (context, state) => AssessmentConfigurationPage(
-              repository: assessmentRepository,
-              logout: logout,
-              activityId: state.pathParameters['activityId']!,
-              institutionId: state.uri.queryParameters['institutionId'] ?? '',
-              unitId: state.uri.queryParameters['unitId'],
-              onCancel: () => context.goNamed(
-                SuperadminRoutes.activityDetailName,
-                pathParameters: {'activityId': state.pathParameters['activityId']!},
-              ),
-              onDestinationSelected: (destination) =>
-                  _navigateFromPersistentShell(context, destination),
-            ),
+            builder: (context, state) => !hasAuthoritativeMutationCapability()
+                ? blockedProductionMutationPage(context)
+                : AssessmentConfigurationPage(
+                    repository: assessmentRepository,
+                    logout: logout,
+                    activityId: state.pathParameters['activityId']!,
+                    institutionId: state.uri.queryParameters['institutionId'] ?? '',
+                    unitId: state.uri.queryParameters['unitId'],
+                    onCancel: () => context.goNamed(
+                      SuperadminRoutes.activityDetailName,
+                      pathParameters: {'activityId': state.pathParameters['activityId']!},
+                    ),
+                    onDestinationSelected: (destination) =>
+                        _navigateFromPersistentShell(context, destination),
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.activityDetail,
@@ -1177,53 +1179,61 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.assessmentEntry,
             name: SuperadminRoutes.assessmentEntryName,
-            builder: (context, state) => AssessmentEntryPage(
-              repository: assessmentRepository,
-              logout: logout,
-              onCancel: () => context.goNamed(SuperadminRoutes.activitiesName),
-              onSubmitted: (_) => context.goNamed(SuperadminRoutes.assessmentClosingName),
-              onDestinationSelected: (destination) =>
-                  _navigateFromPersistentShell(context, destination),
-            ),
+            builder: (context, state) => !hasAuthoritativeMutationCapability()
+                ? blockedProductionMutationPage(context)
+                : AssessmentEntryPage(
+                    repository: assessmentRepository,
+                    logout: logout,
+                    onCancel: () => context.goNamed(SuperadminRoutes.activitiesName),
+                    onSubmitted: (_) => context.goNamed(SuperadminRoutes.assessmentClosingName),
+                    onDestinationSelected: (destination) =>
+                        _navigateFromPersistentShell(context, destination),
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.assessmentGradebookEdit,
             name: SuperadminRoutes.assessmentGradebookEditName,
-            builder: (context, state) => AssessmentEntryPage(
-              repository: assessmentRepository,
-              logout: logout,
-              gradebookId: state.pathParameters['gradebookId']!,
-              onCancel: () => context.goNamed(SuperadminRoutes.activitiesName),
-              onSubmitted: (_) => context.goNamed(SuperadminRoutes.assessmentClosingName),
-              onDestinationSelected: (destination) =>
-                  _navigateFromPersistentShell(context, destination),
-            ),
+            builder: (context, state) => !hasAuthoritativeMutationCapability()
+                ? blockedProductionMutationPage(context)
+                : AssessmentEntryPage(
+                    repository: assessmentRepository,
+                    logout: logout,
+                    gradebookId: state.pathParameters['gradebookId']!,
+                    onCancel: () => context.goNamed(SuperadminRoutes.activitiesName),
+                    onSubmitted: (_) => context.goNamed(SuperadminRoutes.assessmentClosingName),
+                    onDestinationSelected: (destination) =>
+                        _navigateFromPersistentShell(context, destination),
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.assessmentClosing,
             name: SuperadminRoutes.assessmentClosingName,
-            builder: (context, state) => AssessmentClosingPage(
-              repository: assessmentRepository,
-              logout: logout,
-              onOpen: (id) => context.goNamed(
-                SuperadminRoutes.assessmentClosingDetailName,
-                pathParameters: {'gradebookId': id},
-              ),
-              onDestinationSelected: (destination) =>
-                  _navigateFromPersistentShell(context, destination),
-            ),
+            builder: (context, state) => !hasAuthoritativeMutationCapability()
+                ? blockedProductionMutationPage(context)
+                : AssessmentClosingPage(
+                    repository: assessmentRepository,
+                    logout: logout,
+                    onOpen: (id) => context.goNamed(
+                      SuperadminRoutes.assessmentClosingDetailName,
+                      pathParameters: {'gradebookId': id},
+                    ),
+                    onDestinationSelected: (destination) =>
+                        _navigateFromPersistentShell(context, destination),
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.assessmentClosingDetail,
             name: SuperadminRoutes.assessmentClosingDetailName,
-            builder: (context, state) => AssessmentClosingDetailPage(
-              repository: assessmentRepository,
-              logout: logout,
-              gradebookId: state.pathParameters['gradebookId']!,
-              onBack: () => context.goNamed(SuperadminRoutes.assessmentClosingName),
-              onDestinationSelected: (destination) =>
-                  _navigateFromPersistentShell(context, destination),
-            ),
+            builder: (context, state) => !hasAuthoritativeMutationCapability()
+                ? blockedProductionMutationPage(context)
+                : AssessmentClosingDetailPage(
+                    repository: assessmentRepository,
+                    logout: logout,
+                    gradebookId: state.pathParameters['gradebookId']!,
+                    onBack: () => context.goNamed(SuperadminRoutes.assessmentClosingName),
+                    onDestinationSelected: (destination) =>
+                        _navigateFromPersistentShell(context, destination),
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.students,

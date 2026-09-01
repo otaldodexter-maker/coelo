@@ -58,7 +58,9 @@ void main() {
     expect(registered, containsAll(declared));
   });
 
-  testWidgets('opens all production and development assessment routes', (tester) async {
+  testWidgets('opens development assessment routes and keeps production fail closed', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final session = SuperadminSession()..signIn();
@@ -76,9 +78,7 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
 
     for (final route in [
-      SuperadminRoutes.assessmentEntry,
       SuperadminRoutes.devAssessmentEntry,
-      '/assessments/gradebooks/dev-gradebook-1/edit',
       '/dev/assessments/gradebooks/dev-gradebook-1/edit',
     ]) {
       router.go(route);
@@ -87,30 +87,21 @@ void main() {
       expect(tester.takeException(), isNull, reason: route);
     }
 
-    for (final route in [
-      SuperadminRoutes.assessmentClosing,
-      SuperadminRoutes.devAssessmentClosing,
-    ]) {
+    for (final route in [SuperadminRoutes.devAssessmentClosing]) {
       router.go(route);
       await tester.pumpAndSettle();
       expect(find.text('Fechamento de avaliações'), findsWidgets, reason: route);
       expect(tester.takeException(), isNull, reason: route);
     }
 
-    for (final route in [
-      '/assessments/closing/dev-gradebook-1',
-      '/dev/assessments/closing/dev-gradebook-1',
-    ]) {
+    for (final route in ['/dev/assessments/closing/dev-gradebook-1']) {
       router.go(route);
       await tester.pumpAndSettle();
       expect(find.text('Revisar fechamento'), findsOneWidget, reason: route);
       expect(tester.takeException(), isNull, reason: route);
     }
 
-    for (final route in [
-      '/activities/activity-1/assessment-settings',
-      '/dev/activities/activity-1/assessment-settings',
-    ]) {
+    for (final route in ['/dev/activities/activity-1/assessment-settings']) {
       router.go(route);
       await tester.pumpAndSettle();
       expect(find.text('Configuração avaliativa'), findsOneWidget, reason: route);
@@ -122,13 +113,25 @@ void main() {
       expect(tester.takeException(), isNull, reason: route);
     }
 
-    router.go('/assessments/gradebooks/invalid/edit');
-    await tester.pumpAndSettle();
-    expect(find.text('Diário não encontrado'), findsOneWidget);
-    expect(tester.takeException(), isNull);
+    for (final route in [
+      SuperadminRoutes.assessmentEntry,
+      '/assessments/gradebooks/dev-gradebook-1/edit',
+      SuperadminRoutes.assessmentClosing,
+      '/assessments/closing/dev-gradebook-1',
+      '/activities/activity-1/assessment-settings',
+    ]) {
+      router.go(route);
+      await tester.pumpAndSettle();
+      expect(
+        find.byKey(const Key('production-mutation-capability-unavailable')),
+        findsOneWidget,
+        reason: route,
+      );
+      expect(tester.takeException(), isNull, reason: route);
+    }
   });
 
-  testWidgets('renders the unavailable dependency state without crashing', (tester) async {
+  testWidgets('renders the production fail-closed state without crashing', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final session = SuperadminSession()..signIn();
@@ -146,7 +149,7 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 
-    expect(find.text('Não foi possível carregar'), findsOneWidget);
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }
