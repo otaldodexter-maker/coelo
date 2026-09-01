@@ -141,6 +141,12 @@ abstract final class SuperadminRoutes {
   static const safetyCreateName = 'safety-create';
   static const safetyEdit = '/safety/children/:childId/authorizations/:authorizationId/edit';
   static const safetyEditName = 'safety-edit';
+  static const internalUsers = '/internal-users';
+  static const internalUsersName = 'internal-users';
+  static const internalUserCreate = '/internal-users/new';
+  static const internalUserCreateName = 'internal-user-create';
+  static const internalUserEdit = '/internal-users/:internalUserId/edit';
+  static const internalUserEditName = 'internal-user-edit';
   static const profiles = '/profiles';
   static const profilesName = 'profiles';
   static const profileModels = '/profile-models';

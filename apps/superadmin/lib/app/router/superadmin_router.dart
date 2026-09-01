@@ -387,8 +387,8 @@ GoRouter createSuperadminRouter({
 
   final peoplePreviewRepository = DevelopmentPersonDirectoryRepository();
   FakePlatformUserRepository? platformUserPreviewRepository;
-  FakePlatformUserRepository previewPlatformUsers() =>
-      platformUserPreviewRepository ??= FakePlatformUserRepository();
+  FakePlatformUserRepository previewPlatformUsers() => platformUserPreviewRepository ??=
+      FakePlatformUserRepository.content(catalog: accessHealthFixtures);
   String? successMessage(Object? extra) {
     return switch (extra) {
       InstitutionFormSaveResult.created => 'Instituição criada com sucesso.',
@@ -1592,6 +1592,21 @@ GoRouter createSuperadminRouter({
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
             ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.internalUsers,
+            name: SuperadminRoutes.internalUsersName,
+            builder: (context, state) => _unavailableCompositionRootRoute(context),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.internalUserCreate,
+            name: SuperadminRoutes.internalUserCreateName,
+            builder: (context, state) => blockedProductionMutationPage(context),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.internalUserEdit,
+            name: SuperadminRoutes.internalUserEditName,
+            builder: (context, state) => blockedProductionMutationPage(context),
           ),
           GoRoute(
             path: SuperadminRoutes.personCreate,
@@ -3977,6 +3992,10 @@ void _navigateFromAccount(
     case 'profile-models':
     case 'profile-model-create':
       context.goNamed(SuperadminRoutes.profileModelsName);
+    case 'internal-users':
+      context.goNamed(SuperadminRoutes.internalUsersName);
+    case 'internal-user-create':
+      context.goNamed(SuperadminRoutes.internalUserCreateName);
     case 'health-care-profiles':
       context.goNamed(SuperadminRoutes.healthCareProfilesName);
     case 'health-medication-plans':
@@ -4325,6 +4344,10 @@ void _navigateFromPersistentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.safetyName);
     case 'profiles':
       context.goNamed(SuperadminRoutes.profilesName);
+    case 'internal-users':
+      context.goNamed(SuperadminRoutes.internalUsersName);
+    case 'internal-user-create':
+      context.goNamed(SuperadminRoutes.internalUserCreateName);
     case 'profile-create':
       context.goNamed(SuperadminRoutes.profilesName);
     case 'profile-models':
