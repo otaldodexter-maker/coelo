@@ -119,11 +119,11 @@ if ($preflightIndex -lt 0 -or
   throw 'safe replay preflight must be immediately before the historical Groups migration'
 }
 $labelBridgeIndex = [Array]::IndexOf(@($combined.Name), $preflight[1].Name)
+$auditProductionIndex = [Array]::IndexOf(@($combined.Name), '20260812000847_audit_production.sql')
 if ($labelBridgeIndex -lt 1 -or
     $combined[$labelBridgeIndex - 1].Name -ne '20260811215451_access_profile_management_v2.sql' -or
-    $labelBridgeIndex + 1 -ge $combined.Count -or
-    $combined[$labelBridgeIndex + 1].Name -ne '20260812000847_audit_production.sql') {
-  throw 'label replay bridge must immediately follow access-profile management v2'
+    $auditProductionIndex -le $labelBridgeIndex) {
+  throw 'label replay bridge must immediately follow access-profile management v2 and precede audit production'
 }
 
 foreach ($source in @($canonical) + @($preflight)) {
