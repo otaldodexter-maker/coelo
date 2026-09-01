@@ -13,8 +13,8 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "C059F842DE9EE9816B2AC783EDCC3F77B615D0C3C85A50573DDE4139B92A66B1"
-supabase_tracker_sha256: "040A0BC91FAA54D49B399D980274BE21AC5F62A621C70AED2BF9E69B66CCC146"
+flutter_tracker_sha256: "F4B666B13D0221E900CDD79F65AD7F47F32293709410DDBD8EEFAE60C59C9996"
+supabase_tracker_sha256: "E7B9DC7FAF9FE8FC55305437FA5B082C625FFF32C1A0AD6824ADDB29CC21A653"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
@@ -35,7 +35,7 @@ restantes (100,00%). Flutter possui 105/207 ações `local-green`, Supabase poss
 | --- | --- | --- | --- | --- |
 | Comunicação | Código seletivo de Chat/Convites/Avisos integrado no `dev`; 301/301 testes pós-merge. | Flutter local concluído na fatia; backend bloqueado. | RPCs, RLS, anexos/eventos, Convites produtivos, tenant A/B, revogação, persistência/reload, auditoria e E2E. | `dev` até `f516be71`; ETA E2E não calculável antes do ambiente/contratos. |
 | Operações | Cinco áreas Flutter `/dev` passaram 344/344 e branch está limpa. | Aguardando review e integração seletiva; backend no primeiro gate de drift. | Repository produtivo + schema/RLS/RPC por tela + 40 provas E2E. | `84759675`; integração local estimada 2–4 h após review; E2E sem ETA antes do replay. |
-| Acessos e Saúde/Cuidado | Handoff limpo com 152/152 críticos; Acessos 259/259; Saúde 127/127. | Reviews independentes em andamento; banco já abriu P1 de principal people-based incompatível com usuário interno. | Corrigir contexto Auth/session/realm/audit das RPCs, negativos e demais achados; só depois integrar/replay. Mutações produtivas, dados sensíveis, remoto/E2E continuam abertas. | `6e56d3e4`; ETA recalculada após verdicts e correção do P1. |
+| Acessos e Saúde/Cuidado | Handoff limpo com 152/152 críticos; Acessos 259/259; Saúde 127/127. | Review Flutter em andamento; review banco abriu P0 de principal people-based, além de lookup antes do gate, anti-escalation/auditoria incompletas e replay RED. | Redesenhar contexto Auth/session/realm/audit das RPCs, corrigir gates e negativos; só depois replay e integração. Mutações produtivas, dados sensíveis, remoto/E2E continuam abertas. | `6e56d3e4`; ETA não calculável até correção do P0. |
 | Auth | Recovery bypass corrigido e contratos locais passaram 66/66 + 23/23; backend local Auth passou 29/29. | Bloqueado pelo gate Catalog fora do recorte e pelo ledger remoto. | Autorizar/corrigir Catalog, integrar, replay compatível, deploy/redirect/SMTP e E2E; MFA permanece fora/fail-closed. | `a2c6eaab`; backend 1–2 d + E2E 0,5–1 d após ambiente; Catalog sem ETA sem autorização. |
 | Estruturas | UI/cabeçalho local e worktree limpa; Avaliações permanecem honestamente fail-closed. | Aguardando integração seletiva sem hunks Chat. | Gateways internos de Unidades/Turmas, 11 RPCs Avaliações, replay de modelos por Unidade, remoto e E2E. | `c249db2f`; integração 2–4 h; backend 8–16 h após decisões. |
 | Coelo (Principal) | `momentos.view` aprovado localmente: 38/38, estados/retorno/foco. | Circulares diretório/arquivos em execução. | Fechar Circulares e revisar Acontece/Para Você/Agora/Perfil/publicadores; integrar; depois contratos Postgres/R2, autorização, remoto e E2E. | `14ff3d50`; Circulares local 25–35 min; E2E sem ETA antes das decisões. |
@@ -1540,10 +1540,14 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 - Revisões independentes Flutter e banco estão em andamento. Contagens ficam
   inalteradas: Flutter 105/207 `local-green`, Supabase 3/37 famílias
   `local-green`, E2E 0/202 e estrito 0/229.
-- O review de banco encontrou P1: as RPCs de Modelos usam principal
+- O review de banco encontrou P0: as RPCs de Modelos usam principal
   people-based, incompatível com o contexto interno nominal de ADR 0019/spec
   039. Sem revalidação de sessão/realm e auditoria do ator interno, o pacote não
   pode ser integrado nem levado a replay como solução produtiva.
+- Também há lookup antes da autorização, anti-escalation cross-app incompleta,
+  motivo de auditoria opcional e ausência de execução dos planos pgTAP. As
+  quatro tabelas citadas são herdadas de migration anterior e o replay completo
+  já está RED; estado correto é `static-reviewed`, nunca `static-green`.
 
 ## Checkpoint integrado 68 — Operações Flutter local, backend 0/40 E2E
 
