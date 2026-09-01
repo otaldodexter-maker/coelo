@@ -27,12 +27,105 @@ void main() {
     );
   });
 
+  test('options respect context, search, and limit', () async {
+    final repository = DevelopmentInviteRepository(now: () => now);
+
+    final horizonte = await repository.fetchOptions(
+      const InviteOptionsQuery(
+        institutionId: 'colegio-horizonte',
+        unitId: 'horizonte-centro',
+        groupId: 'turma-girassol',
+      ),
+    );
+    final searched = await repository.fetchOptions(
+      const InviteOptionsQuery(search: 'camila', institutionId: 'colegio-horizonte'),
+    );
+    final limited = await repository.fetchOptions(const InviteOptionsQuery(pageSize: 2));
+
+    expect(horizonte.scopes.map((option) => option.id), ['turma-girassol']);
+    expect(
+      horizonte.profiles.every((option) => option.institutionId == 'colegio-horizonte'),
+      isTrue,
+    );
+    expect(horizonte.recipients.map((option) => option.personId), ['ana-lima']);
+    expect(searched.scopes, isEmpty);
+    expect(searched.profiles, isEmpty);
+    expect(searched.recipients.map((option) => option.personId), ['camila-rocha']);
+    expect(limited.scopes, hasLength(2));
+    expect(limited.profiles, hasLength(2));
+    expect(limited.recipients, hasLength(2));
+  });
+
+  test('issue rejects a profile from another institution without mutation', () async {
+    final repository = DevelopmentInviteRepository(now: () => now);
+
+    await expectLater(
+      repository.issue(
+        InviteIssueCommand(
+          requestId: 'cross-institution-profile',
+          scope: _horizonteUnitScope,
+          profileId: 'sementes-family-profile',
+          recipient: const InviteRecipientDraft(email: 'maria@example.test'),
+          channels: const {InviteChannel.email},
+        ),
+      ),
+      throwsA(isA<InviteValidationException>()),
+    );
+
+    expect((await repository.fetchPage(InviteDirectoryQuery(pageSize: 20))).totalCount, 12);
+  });
+
+  test('issue rejects a recipient from another institution without mutation', () async {
+    final repository = DevelopmentInviteRepository(now: () => now);
+
+    await expectLater(
+      repository.issue(
+        InviteIssueCommand(
+          requestId: 'cross-institution-recipient',
+          scope: _horizonteUnitScope,
+          profileId: 'horizonte-family-profile',
+          recipient: const InviteRecipientDraft(personId: 'gabriela-moraes'),
+          channels: const {InviteChannel.email},
+        ),
+      ),
+      throwsA(isA<InviteValidationException>()),
+    );
+
+    expect((await repository.fetchPage(InviteDirectoryQuery(pageSize: 20))).totalCount, 12);
+  });
+
+  test('an idempotency receipt cannot bypass scope validation', () async {
+    final repository = DevelopmentInviteRepository(now: () => now);
+    await repository.issue(
+      InviteIssueCommand(
+        requestId: 'scoped-receipt',
+        scope: _horizonteUnitScope,
+        profileId: 'horizonte-family-profile',
+        recipient: const InviteRecipientDraft(email: 'maria@example.test'),
+        channels: const {InviteChannel.email},
+      ),
+    );
+
+    await expectLater(
+      repository.issue(
+        InviteIssueCommand(
+          requestId: 'scoped-receipt',
+          scope: _horizonteUnitScope,
+          profileId: 'sementes-family-profile',
+          recipient: const InviteRecipientDraft(email: 'maria@example.test'),
+          channels: const {InviteChannel.email},
+        ),
+      ),
+      throwsA(isA<InviteValidationException>()),
+    );
+  });
+
   test('issue preserves command data and replays without duplicating', () async {
     final repository = DevelopmentInviteRepository(now: () => now);
     final command = InviteIssueCommand(
       requestId: 'issue-complete',
-      scope: _unitScope,
-      profileId: 'family-profile',
+      scope: _horizonteUnitScope,
+      profileId: 'horizonte-family-profile',
       recipient: const InviteRecipientDraft(email: 'maria@example.test'),
       channels: const {InviteChannel.email, InviteChannel.link},
       expiresInHours: 72,
@@ -64,8 +157,8 @@ void main() {
     final family = await repository.issue(
       InviteIssueCommand(
         requestId: 'issue-family',
-        scope: _unitScope,
-        profileId: 'family-profile',
+        scope: _horizonteUnitScope,
+        profileId: 'horizonte-family-profile',
         recipient: const InviteRecipientDraft(email: 'maria@example.test'),
         channels: const {InviteChannel.email, InviteChannel.link},
       ),
@@ -74,9 +167,9 @@ void main() {
     final revoked = await repository.issue(
       InviteIssueCommand(
         requestId: 'issue-revoked',
-        scope: _otherScope,
-        profileId: 'teacher-profile',
-        recipient: const InviteRecipientDraft(personId: 'teacher-person'),
+        scope: _sementesGroupScope,
+        profileId: 'sementes-teacher-profile',
+        recipient: const InviteRecipientDraft(personId: 'gabriela-moraes'),
         channels: const {InviteChannel.link},
       ),
     );
@@ -91,18 +184,21 @@ void main() {
 
     final filtered = await repository.fetchPage(
       InviteDirectoryQuery(
-        search: 'unidade família',
+        search: 'unidade centro',
         statuses: const {InviteStatus.pending},
         channels: const {InviteChannel.email, InviteChannel.link},
-        institutionIds: const {'institution-family'},
-        unitIds: const {'unit-family'},
-        profileIds: const {'family-profile'},
+        institutionIds: const {'colegio-horizonte'},
+        unitIds: const {'horizonte-centro'},
+        profileIds: const {'horizonte-family-profile'},
         createdFrom: DateTime.utc(2026, 8, 25, 7, 59),
         createdTo: DateTime.utc(2026, 8, 25, 8, 1),
       ),
     );
     final groupFiltered = await repository.fetchPage(
-      InviteDirectoryQuery(groupIds: const {'group-other'}, statuses: const {InviteStatus.revoked}),
+      InviteDirectoryQuery(
+        groupIds: const {'bercario-azul'},
+        statuses: const {InviteStatus.revoked},
+      ),
     );
 
     expect(filtered.items.map((item) => item.id), [family.invite.id]);
@@ -117,8 +213,8 @@ void main() {
       await repository.issue(
         InviteIssueCommand(
           requestId: 'issue-page-$index',
-          scope: _groupScope,
-          profileId: 'dev-profile',
+          scope: _horizonteGroupScope,
+          profileId: 'horizonte-family-profile',
           recipient: InviteRecipientDraft(email: 'person$index@example.test'),
           channels: const {InviteChannel.email},
         ),
@@ -257,9 +353,9 @@ void main() {
     final issued = await repository.issue(
       InviteIssueCommand(
         requestId: 'issue-2',
-        scope: _groupScope,
-        profileId: 'dev-profile',
-        recipient: InviteRecipientDraft(personId: 'dev-person'),
+        scope: _horizonteGroupScope,
+        profileId: 'horizonte-family-profile',
+        recipient: InviteRecipientDraft(personId: 'ana-lima'),
         channels: {InviteChannel.email},
       ),
     );
@@ -284,25 +380,25 @@ void main() {
   });
 }
 
-const _groupScope = InviteScope(
+const _horizonteGroupScope = InviteScope(
   kind: InviteScopeKind.group,
-  institutionId: 'dev-institution',
-  unitId: 'dev-unit',
-  groupId: 'dev-group',
+  institutionId: 'colegio-horizonte',
+  unitId: 'horizonte-centro',
+  groupId: 'turma-girassol',
   label: 'Turma Girassol',
 );
 
-const _unitScope = InviteScope(
+const _horizonteUnitScope = InviteScope(
   kind: InviteScopeKind.unit,
-  institutionId: 'institution-family',
-  unitId: 'unit-family',
-  label: 'Unidade Família',
+  institutionId: 'colegio-horizonte',
+  unitId: 'horizonte-centro',
+  label: 'Unidade Centro',
 );
 
-const _otherScope = InviteScope(
+const _sementesGroupScope = InviteScope(
   kind: InviteScopeKind.group,
-  institutionId: 'institution-other',
-  unitId: 'unit-other',
-  groupId: 'group-other',
-  label: 'Turma Horizonte',
+  institutionId: 'instituto-sementes',
+  unitId: 'sementes-vila-nova',
+  groupId: 'bercario-azul',
+  label: 'Berçário Azul',
 );
