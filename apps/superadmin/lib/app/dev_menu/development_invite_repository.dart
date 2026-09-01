@@ -7,14 +7,14 @@ final class DevelopmentInviteRepository implements InviteRepository {
     DateTime Function()? now,
     this.mode = DevelopmentRepositoryMode.content,
   }) : _now = now ?? _utcNow,
-       _invites = [_invite()];
+       _invites = _seedInvites();
 
   final DateTime Function() _now;
   final DevelopmentRepositoryMode mode;
   final _issueReceipts = <String, InviteCommandResult>{};
   final _receipts = <String, InviteCommandResult>{};
   List<PlatformInvite> _invites;
-  var _nextInviteId = 2;
+  var _nextInviteId = 13;
 
   @override
   Future<InviteDirectoryResult> fetchPage(InviteDirectoryQuery query) async {
@@ -193,18 +193,179 @@ final class DevelopmentInviteRepository implements InviteRepository {
   }
 }
 
-PlatformInvite _invite({String id = 'dev-invite-1'}) => PlatformInvite(
-  id: id,
-  scope: _scope,
-  profile: const InviteProfileReference(id: 'dev-profile', label: 'Profissional'),
-  recipient: const InviteRecipient(label: 'Ana Lima', maskedEmail: 'a***@coelo.local'),
-  channels: const {InviteChannel.email},
-  status: InviteStatus.pending,
-  issuer: const InviteIssuer(personId: 'dev-owner', label: 'Owner Coelo'),
-  createdAt: DateTime.utc(2026, 8, 24),
-  expiresAt: DateTime.utc(2026, 8, 26),
-  emailDeliveryStatus: InviteDeliveryStatus.sent,
+List<PlatformInvite> _seedInvites() => [
+  _seedInvite(
+    id: 1,
+    scope: _girassolScope,
+    profile: _horizonteProfessionalProfile,
+    name: 'Ana Lima',
+    email: 'a***@horizonte.edu.br',
+    channels: const {InviteChannel.email},
+    status: InviteStatus.pending,
+    createdAt: DateTime.utc(2026, 8, 24, 9, 15),
+    expiresAt: DateTime.utc(2026, 9, 5, 9, 15),
+  ),
+  _seedInvite(
+    id: 2,
+    scope: _girassolScope,
+    profile: _horizonteFamilyProfile,
+    name: 'Bruno Santos',
+    email: 'b***@familia.test',
+    channels: const {InviteChannel.email, InviteChannel.link},
+    status: InviteStatus.accepted,
+    createdAt: DateTime.utc(2026, 8, 22, 14, 30),
+    expiresAt: DateTime.utc(2026, 8, 29, 14, 30),
+    acceptedAt: DateTime.utc(2026, 8, 23, 8, 10),
+  ),
+  _seedInvite(
+    id: 3,
+    scope: _seventhGradeScope,
+    profile: _horizonteTeacherProfile,
+    name: 'Camila Rocha',
+    email: 'c***@horizonte.edu.br',
+    channels: const {InviteChannel.link},
+    status: InviteStatus.pending,
+    createdAt: DateTime.utc(2026, 8, 28, 10),
+    expiresAt: DateTime.utc(2026, 9, 4, 10),
+  ),
+  _seedInvite(
+    id: 4,
+    scope: _seventhGradeScope,
+    profile: _horizonteFamilyProfile,
+    name: 'Diego Martins',
+    email: 'd***@familia.test',
+    channels: const {InviteChannel.email},
+    status: InviteStatus.expired,
+    createdAt: DateTime.utc(2026, 8, 12, 11, 20),
+    expiresAt: DateTime.utc(2026, 8, 19, 11, 20),
+  ),
+  _seedInvite(
+    id: 5,
+    scope: _nurseryScope,
+    profile: _sementesFamilyProfile,
+    name: 'Elisa Nogueira',
+    email: 'e***@familia.test',
+    channels: const {InviteChannel.email, InviteChannel.link},
+    status: InviteStatus.pending,
+    createdAt: DateTime.utc(2026, 8, 30, 16, 45),
+    expiresAt: DateTime.utc(2026, 9, 6, 16, 45),
+  ),
+  _seedInvite(
+    id: 6,
+    scope: _pedagogicalTeamScope,
+    profile: _sementesProfessionalProfile,
+    name: 'Felipe Alves',
+    email: 'f***@sementes.edu.br',
+    channels: const {InviteChannel.email},
+    status: InviteStatus.revoked,
+    createdAt: DateTime.utc(2026, 8, 18, 13),
+    expiresAt: DateTime.utc(2026, 8, 25, 13),
+    revokedAt: DateTime.utc(2026, 8, 20, 9, 40),
+  ),
+  _seedInvite(
+    id: 7,
+    scope: _nurseryScope,
+    profile: _sementesTeacherProfile,
+    name: 'Gabriela Moraes',
+    email: 'g***@sementes.edu.br',
+    channels: const {InviteChannel.email, InviteChannel.link},
+    status: InviteStatus.accepted,
+    createdAt: DateTime.utc(2026, 8, 15, 8, 30),
+    expiresAt: DateTime.utc(2026, 8, 22, 8, 30),
+    acceptedAt: DateTime.utc(2026, 8, 15, 10, 5),
+  ),
+  _seedInvite(
+    id: 8,
+    scope: _horizonteScope,
+    profile: _horizonteCoordinationProfile,
+    name: 'Helena Costa',
+    email: 'h***@horizonte.edu.br',
+    channels: const {InviteChannel.email},
+    status: InviteStatus.expired,
+    createdAt: DateTime.utc(2026, 8, 10, 17),
+    expiresAt: DateTime.utc(2026, 8, 17, 17),
+  ),
+  _seedInvite(
+    id: 9,
+    scope: _centerUnitScope,
+    profile: _horizonteProfessionalProfile,
+    name: 'Igor Ribeiro',
+    email: 'i***@horizonte.edu.br',
+    channels: const {InviteChannel.link},
+    status: InviteStatus.pending,
+    createdAt: DateTime.utc(2026, 8, 29, 9, 5),
+    expiresAt: DateTime.utc(2026, 9, 5, 9, 5),
+  ),
+  _seedInvite(
+    id: 10,
+    scope: _vilaNovaUnitScope,
+    profile: _sementesCoordinationProfile,
+    name: 'Juliana Freitas',
+    email: 'j***@sementes.edu.br',
+    channels: const {InviteChannel.email, InviteChannel.link},
+    status: InviteStatus.accepted,
+    createdAt: DateTime.utc(2026, 8, 21, 12),
+    expiresAt: DateTime.utc(2026, 8, 28, 12),
+    acceptedAt: DateTime.utc(2026, 8, 21, 15, 25),
+  ),
+  _seedInvite(
+    id: 11,
+    scope: _girassolScope,
+    profile: _horizonteFamilyProfile,
+    name: 'Karen Oliveira',
+    email: 'k***@familia.test',
+    channels: const {InviteChannel.email},
+    status: InviteStatus.revoked,
+    createdAt: DateTime.utc(2026, 8, 17, 10, 10),
+    expiresAt: DateTime.utc(2026, 8, 24, 10, 10),
+    revokedAt: DateTime.utc(2026, 8, 18, 8),
+  ),
+  _seedInvite(
+    id: 12,
+    scope: _seventhGradeScope,
+    profile: _horizonteFamilyProfile,
+    name: 'Lucas Pereira',
+    email: 'l***@familia.test',
+    channels: const {InviteChannel.email, InviteChannel.link},
+    status: InviteStatus.pending,
+    createdAt: DateTime.utc(2026, 8, 31, 18),
+    expiresAt: DateTime.utc(2026, 9, 7, 18),
+  ),
+];
+
+PlatformInvite _seedInvite({
+  required int id,
+  required InviteScope scope,
+  required InviteProfileReference profile,
+  required String name,
+  required String email,
+  required Set<InviteChannel> channels,
+  required InviteStatus status,
+  required DateTime createdAt,
+  required DateTime expiresAt,
+  DateTime? acceptedAt,
+  DateTime? revokedAt,
+}) => PlatformInvite(
+  id: 'dev-invite-$id',
+  scope: scope,
+  profile: profile,
+  recipient: InviteRecipient(label: name, maskedEmail: email),
+  channels: channels,
+  status: status,
+  issuer: id.isEven ? _pedagogicalIssuer : _ownerIssuer,
+  createdAt: createdAt,
+  expiresAt: expiresAt,
+  acceptedAt: acceptedAt,
+  revokedAt: revokedAt,
+  emailDeliveryStatus: channels.contains(InviteChannel.email)
+      ? InviteDeliveryStatus.sent
+      : InviteDeliveryStatus.notRequested,
   managementVersion: 1,
+  timeline: [
+    InviteTimelineEntry('Convite emitido', createdAt),
+    if (acceptedAt != null) InviteTimelineEntry('Convite aceito', acceptedAt),
+    if (revokedAt != null) InviteTimelineEntry('Convite revogado', revokedAt),
+  ],
 );
 
 PlatformInvite _copyInvite(
@@ -233,24 +394,168 @@ PlatformInvite _copyInvite(
 
 DateTime _utcNow() => DateTime.now().toUtc();
 
-const _scope = InviteScope(
+const _horizonteScope = InviteScope(
+  kind: InviteScopeKind.institution,
+  institutionId: 'colegio-horizonte',
+  label: 'Colégio Horizonte',
+);
+
+const _centerUnitScope = InviteScope(
+  kind: InviteScopeKind.unit,
+  institutionId: 'colegio-horizonte',
+  unitId: 'horizonte-centro',
+  label: 'Unidade Centro',
+);
+
+const _girassolScope = InviteScope(
   kind: InviteScopeKind.group,
-  institutionId: 'dev-institution',
-  unitId: 'dev-unit',
-  groupId: 'dev-group',
+  institutionId: 'colegio-horizonte',
+  unitId: 'horizonte-centro',
+  groupId: 'turma-girassol',
   label: 'Turma Girassol',
 );
 
+const _seventhGradeScope = InviteScope(
+  kind: InviteScopeKind.group,
+  institutionId: 'colegio-horizonte',
+  unitId: 'horizonte-centro',
+  groupId: 'setimo-ano-a',
+  label: '7º ano A',
+);
+
+const _vilaNovaUnitScope = InviteScope(
+  kind: InviteScopeKind.unit,
+  institutionId: 'instituto-sementes',
+  unitId: 'sementes-vila-nova',
+  label: 'Unidade Vila Nova',
+);
+
+const _nurseryScope = InviteScope(
+  kind: InviteScopeKind.group,
+  institutionId: 'instituto-sementes',
+  unitId: 'sementes-vila-nova',
+  groupId: 'bercario-azul',
+  label: 'Berçário Azul',
+);
+
+const _pedagogicalTeamScope = InviteScope(
+  kind: InviteScopeKind.group,
+  institutionId: 'instituto-sementes',
+  unitId: 'sementes-vila-nova',
+  groupId: 'equipe-pedagogica',
+  label: 'Equipe Pedagógica',
+);
+
+const _horizonteProfessionalProfile = InviteProfileReference(
+  id: 'horizonte-professional-profile',
+  label: 'Profissional',
+);
+const _horizonteTeacherProfile = InviteProfileReference(
+  id: 'horizonte-teacher-profile',
+  label: 'Professor(a)',
+);
+const _horizonteFamilyProfile = InviteProfileReference(
+  id: 'horizonte-family-profile',
+  label: 'Responsável',
+);
+const _horizonteCoordinationProfile = InviteProfileReference(
+  id: 'horizonte-coordination-profile',
+  label: 'Coordenação',
+);
+const _sementesProfessionalProfile = InviteProfileReference(
+  id: 'sementes-professional-profile',
+  label: 'Profissional',
+);
+const _sementesTeacherProfile = InviteProfileReference(
+  id: 'sementes-teacher-profile',
+  label: 'Professor(a)',
+);
+const _sementesFamilyProfile = InviteProfileReference(
+  id: 'sementes-family-profile',
+  label: 'Responsável',
+);
+const _sementesCoordinationProfile = InviteProfileReference(
+  id: 'sementes-coordination-profile',
+  label: 'Coordenação',
+);
+const _ownerIssuer = InviteIssuer(personId: 'owner-coelo', label: 'Owner Coelo');
+const _pedagogicalIssuer = InviteIssuer(personId: 'coordinator-marina', label: 'Marina Ferreira');
+
 const _options = InviteFormOptions(
-  scopes: [InviteScopeOption(scope: _scope)],
+  scopes: [
+    InviteScopeOption(scope: _horizonteScope),
+    InviteScopeOption(scope: _centerUnitScope),
+    InviteScopeOption(scope: _girassolScope),
+    InviteScopeOption(scope: _seventhGradeScope),
+    InviteScopeOption(scope: _vilaNovaUnitScope),
+    InviteScopeOption(scope: _nurseryScope),
+    InviteScopeOption(scope: _pedagogicalTeamScope),
+  ],
   profiles: [
     InviteProfileOption(
-      id: 'dev-profile',
+      id: 'horizonte-professional-profile',
       label: 'Profissional',
-      institutionId: 'dev-institution',
-      unitId: 'dev-unit',
-      groupId: 'dev-group',
+      institutionId: 'colegio-horizonte',
+      unitId: 'horizonte-centro',
+    ),
+    InviteProfileOption(
+      id: 'horizonte-teacher-profile',
+      label: 'Professor(a)',
+      institutionId: 'colegio-horizonte',
+      unitId: 'horizonte-centro',
+    ),
+    InviteProfileOption(
+      id: 'horizonte-family-profile',
+      label: 'Responsável',
+      institutionId: 'colegio-horizonte',
+      unitId: 'horizonte-centro',
+    ),
+    InviteProfileOption(
+      id: 'horizonte-coordination-profile',
+      label: 'Coordenação',
+      institutionId: 'colegio-horizonte',
+      unitId: 'horizonte-centro',
+    ),
+    InviteProfileOption(
+      id: 'sementes-professional-profile',
+      label: 'Profissional',
+      institutionId: 'instituto-sementes',
+      unitId: 'sementes-vila-nova',
+    ),
+    InviteProfileOption(
+      id: 'sementes-teacher-profile',
+      label: 'Professor(a)',
+      institutionId: 'instituto-sementes',
+      unitId: 'sementes-vila-nova',
+    ),
+    InviteProfileOption(
+      id: 'sementes-family-profile',
+      label: 'Responsável',
+      institutionId: 'instituto-sementes',
+      unitId: 'sementes-vila-nova',
+    ),
+    InviteProfileOption(
+      id: 'sementes-coordination-profile',
+      label: 'Coordenação',
+      institutionId: 'instituto-sementes',
+      unitId: 'sementes-vila-nova',
     ),
   ],
-  recipients: [InviteRecipientOption(personId: 'dev-person', label: 'Ana Lima')],
+  recipients: [
+    InviteRecipientOption(
+      personId: 'ana-lima',
+      label: 'Ana Lima',
+      maskedEmail: 'a***@horizonte.edu.br',
+    ),
+    InviteRecipientOption(
+      personId: 'camila-rocha',
+      label: 'Camila Rocha',
+      maskedEmail: 'c***@horizonte.edu.br',
+    ),
+    InviteRecipientOption(
+      personId: 'gabriela-moraes',
+      label: 'Gabriela Moraes',
+      maskedEmail: 'g***@sementes.edu.br',
+    ),
+  ],
 );

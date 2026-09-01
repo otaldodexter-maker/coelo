@@ -245,16 +245,7 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('Detalhe do convite', style: Theme.of(context).textTheme.headlineSmall),
-                  const SizedBox(height: CoeloSpacing.space1),
-                  Text(invite.recipientMasked, style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: CoeloSpacing.space3),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: InviteStatusChip(status: invite.status),
-                  ),
-                  const SizedBox(height: CoeloSpacing.space4),
-                  _actions(invite),
+                  _header(invite, compact: compact),
                   if (_result case final result?) ...[
                     const SizedBox(height: CoeloSpacing.space5),
                     InviteDeliveryResult(
@@ -263,13 +254,43 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
                     ),
                   ],
                   const SizedBox(height: CoeloSpacing.space6),
-                  Text('Dados do convite', style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: CoeloSpacing.space3),
-                  _details(invite),
+                  const Divider(),
                   const SizedBox(height: CoeloSpacing.space6),
-                  Text('Linha do tempo', style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: CoeloSpacing.space3),
-                  _timeline(invite),
+                  Column(
+                    key: const Key('invite-detail-data-section'),
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text('Dados do convite', style: Theme.of(context).textTheme.titleLarge),
+                      const SizedBox(height: CoeloSpacing.space1),
+                      Text(
+                        'Escopo, entrega e validade vinculados a este convite.',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: CoeloSpacing.space4),
+                      _details(invite),
+                    ],
+                  ),
+                  const SizedBox(height: CoeloSpacing.space6),
+                  const Divider(),
+                  const SizedBox(height: CoeloSpacing.space6),
+                  Column(
+                    key: const Key('invite-detail-timeline-section'),
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text('Linha do tempo', style: Theme.of(context).textTheme.titleLarge),
+                      const SizedBox(height: CoeloSpacing.space1),
+                      Text(
+                        'Eventos auditados do ciclo de vida do convite.',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: CoeloSpacing.space3),
+                      _timeline(invite),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -278,6 +299,33 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
       );
     },
   );
+
+  Widget _header(PlatformInvite invite, {required bool compact}) {
+    final identity = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Detalhe do convite', style: Theme.of(context).textTheme.headlineSmall),
+        const SizedBox(height: CoeloSpacing.space1),
+        Text(invite.recipientMasked, style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: CoeloSpacing.space3),
+        InviteStatusChip(status: invite.status),
+      ],
+    );
+    final actions = _actions(invite);
+    return Flex(
+      key: const Key('invite-detail-header'),
+      direction: compact ? Axis.vertical : Axis.horizontal,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (compact) identity else Expanded(child: identity),
+        SizedBox(
+          width: compact ? 0 : CoeloSpacing.space4,
+          height: compact ? CoeloSpacing.space4 : 0,
+        ),
+        actions,
+      ],
+    );
+  }
 
   Widget _actions(PlatformInvite invite) {
     final busy = _busy != null;
