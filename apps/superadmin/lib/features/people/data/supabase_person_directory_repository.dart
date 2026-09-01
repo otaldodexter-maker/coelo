@@ -62,10 +62,19 @@ final class SupabasePersonDirectoryRepository implements PersonDirectoryReposito
   Future<PersonDirectoryItem> fetchDetail(String personId) async {
     try {
       final response = await _client.rpc<Map<String, dynamic>>(
-        'superadmin_people_detail',
+        'superadmin_person_detail_v2',
         params: {'p_person_id': personId},
       );
-      return PersonDirectoryItem.fromJson(Map<String, dynamic>.from(response as Map));
+      final envelope = Map<String, dynamic>.from(response as Map);
+      if (envelope['ok'] != true) {
+        final error = envelope['error'] is Map
+            ? Map<String, dynamic>.from(envelope['error'] as Map)
+            : const <String, dynamic>{};
+        throw _mapInternalError(error['code'] as String?);
+      }
+      final data = envelope['data'];
+      if (data is! Map) throw const PersonDirectoryUnavailableException();
+      return PersonDirectoryItem.fromJson(Map<String, dynamic>.from(data));
     } on PostgrestException catch (error) {
       throw _mapError(error);
     }
@@ -97,6 +106,14 @@ final class SupabasePersonDirectoryRepository implements PersonDirectoryReposito
     }
   }
 }
+
+Exception _mapInternalError(String? code) => switch (code) {
+  'SAI_PERMISSION_DENIED' ||
+  'SAI_INTERNAL_CONTEXT_DENIED' ||
+  'SAI_SESSION_INVALID' ||
+  'SAI_MFA_REQUIRED' => const PersonDirectoryUnauthorizedException(),
+  _ => const PersonDirectoryUnavailableException(),
+};
 
 List<PersonFilterOption> _options(Object? raw) {
   final rows = raw as List<dynamic>? ?? const [];
