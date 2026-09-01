@@ -1,8 +1,8 @@
 ---
 title: "Perfis e Permissões no Superadmin"
-source: "AGENTS.md; specs/002-auth-multitenant.md; specs/011-superadmin-database-rls.md; specs/012-superadmin-mvp.md; specs/015-contextual-people-access-attendance.md; docs/security/auth-multitenant-permissions.md; docs/data/data-model.md; inspeção read-only do Supabase em 2026-07-29; decisões aprovadas pelo usuário em 2026-07-29, 2026-08-04 e 2026-08-05"
+source: "AGENTS.md; specs/002-auth-multitenant.md; specs/011-superadmin-database-rls.md; specs/012-superadmin-mvp.md; specs/015-contextual-people-access-attendance.md; docs/security/auth-multitenant-permissions.md; docs/data/data-model.md; inspeção read-only do Supabase em 2026-07-29; decisões aprovadas pelo usuário em 2026-07-29, 2026-08-04, 2026-08-05 e 2026-09-01; docs/superpowers/specs/2026-09-01-superadmin-access-health-care-finalization-design.md"
 status: "approved-for-implementation"
-generated_at: "2026-08-05"
+generated_at: "2026-09-01"
 ---
 
 # Perfis e Permissões no Superadmin
@@ -200,3 +200,29 @@ sem permissão, conteúdo e salvamento. O Principal não simula ações de escri
   depender das permissões `people.*`.
 - Os avisos atuais dos advisors sobre `person_auth_links` e proteção contra
   senhas vazadas não são resolvidos silenciosamente por esta spec.
+
+## Aditivo 2026-09-01 — catálogo transversal e Modelos
+
+Este aditivo substitui as regras anteriores desta spec quando houver conflito.
+A central passa a ter um único destino de navegação, **Perfis de acesso**, com
+as abas **Perfis** e **Modelos**, seguindo a relação entre Atividades e Modelos
+de Atividade. Modelos iniciam perfis reutilizáveis e não são atribuídos
+diretamente a pessoas.
+
+O catálogo de permissões passa a abranger ações reais de Superadmin, Admin e
+Principal, ordenadas por aplicativo, módulo, tela e ação. Principal deixa de
+ser apenas um catálogo de impacto somente leitura. Essa ampliação não cria
+vínculos familiares ou institucionais automaticamente: perfil define ações e
+teto; atribuição define instituições, unidades, turmas, atividades, crianças e
+demais contextos concretos.
+
+O editor oferece seleção por aplicativo, módulo e tela. Importar e Exportar
+entram no Admin e Superadmin nas telas de gestão em que existem contratos
+aplicáveis. Ações específicas, risco, MFA, herança e delegabilidade são
+metadados server-side; Flutter não inventa permissões nem infere autoridade por
+rótulo.
+
+Permissão efetiva continua exigindo aplicativo, ação, vínculo ativo, alcance
+atribuído, tenant e ausência de negação explícita. Selecionar uma capacidade de
+Admin ou Principal em um perfil não substitui membership institucional nem
+relação responsável–criança.
