@@ -1,7 +1,7 @@
 ---
 title: "Consolidação física do workspace — Etapa 2"
 source: "Auditoria local read-only; inventário de recoveries; Git worktree list"
-status: "archives-preserved; git-consolidation-in-progress"
+status: "archives-preserved; git-consolidated; one-empty-os-locked-directory"
 generated_at: "2026-09-01"
 updated_at: "2026-09-01"
 ---
@@ -39,11 +39,39 @@ deduplicação ficam bloqueadas até reconciliação explícita desses artefatos
 
 ## Worktrees Git
 
-As seis worktrees reais ficam em `Coelo\.worktrees`, usam o mesmo common-dir
-`Coelo\.git` e não possuem registros órfãos. Elas só serão removidas depois de:
+Os seis HEADs recebidos (`1915f847`, `2b70c435`, `b191b727`, `0fe90573`,
+`a921d174` e `f3ae2a2a`) foram comprovados como ancestrais do consolidado. O
+histórico foi promovido por fast-forward para `dev`; as seis worktrees foram
+retiradas do registro Git, podadas, e as branches temporárias foram excluídas
+somente depois dessa prova. `git worktree list` termina com uma única entrada:
+`C:\Users\adrie\Documents\Coelo` em `dev`.
 
-1. handoff e status limpo;
-2. integração dos commits em uma branch de consolidação;
-3. testes e regressão;
-4. atualização dos três rastreadores oficiais;
-5. prova de que cada HEAD está alcançável pelo consolidado.
+Um processo antigo do ambiente Windows manteve aberto o diretório
+`.worktrees\finalizacao-telas-operacoes\apps\superadmin` durante a remoção.
+Todo o conteúdo foi movido para
+`.recovery-archives\retired-worktree-residues\finalizacao-telas-operacoes`;
+o caminho antigo contém **zero arquivos** e apenas dois diretórios vazios. Ele
+não é worktree, não contém commit ou mudança e pode ser apagado depois que o
+handle do aplicativo for liberado.
+
+## Proteção pós-consolidação
+
+- Bundle completo:
+  `.recovery-archives\etapa-2-postconsolidation-20260901.bundle`.
+- Tamanho: 351.863.257 bytes.
+- SHA-256:
+  `9F393E843366F15BA815BA0CD5141030964B349D1C4DD4F9F395AEE830D52DEF`.
+- `git bundle verify`: válido, 356 refs e histórico completo.
+- As refs `refs/backup/pre-consolidation-20260901/*` preservam nominalmente os
+  seis HEADs anteriores à limpeza.
+
+## Verificação do consolidado
+
+- `flutter analyze --no-fatal-infos`: sem achados.
+- Chat e Circulares: 18/18 testes focados.
+- Rotas do menu Coelo (Principal): 17/17 testes focados.
+- Harness seguro de replay: 13/13 Pester.
+- Chat do Coelo (Principal): botão “Mensagens” ligado à mesma rota em prévia e
+  produção, com retorno à origem correta.
+- Nenhum arquivo de `apps/admin`, `apps/site` ou `apps/principal` foi alterado
+  pelo recorte consolidado.
