@@ -1424,3 +1424,18 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 - **Gate de conhecimento:** `no-op`. Esta reconciliação corrige estados,
   contagens e proveniência documental; não cria comportamento, permissão,
   domínio ou UX novos.
+
+### Checkpoint integrado 2026-09-01 — Estruturas e Avaliações candidatas
+
+- A fronteira está comprovada: `/dev` usa fixtures; rotas sem `/dev` usam
+  Supabase ou indisponibilidade fail-closed, nunca dados fake.
+- Instituições têm leitura e edição core candidatas; criação, CRUD completo de
+  Unidades/Turmas e o aggregate CRUD de Atividades continuam bloqueados por
+  contratos internos ausentes/não equivalentes. Importar/Exportar permanecem
+  visíveis onde previstos, sem fabricar sucesso.
+- Avaliações têm Flutter v2, 12 RPCs locais e gate desligado por padrão. O
+  backend possui 47 asserts somente estáticos; sem replay, deploy, usuário real,
+  tenant A/B, persistência e reload não há ação `ready-for-e2e`.
+- O remoto não contém as dependências internas e a ordem canônica para no drift
+  OQ-032; OQ-041 ainda exige classificação nominal do projeto. E2E e remoto
+  permanecem zero, sem alteração do progresso geral.

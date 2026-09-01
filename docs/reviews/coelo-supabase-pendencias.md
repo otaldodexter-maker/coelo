@@ -4326,3 +4326,20 @@ da simples soma das 207 ações.
 - **Gate de conhecimento:** `no-op`. A atualização corrige estado operacional e
   proveniência Git; não cria regra durável nova de produto, domínio, permissão
   ou UX.
+
+### Checkpoint seguro 2026-09-01 — Avaliações internas v2 e bloqueio remoto
+
+- `20260901182838_superadmin_assessments_internal_v2.sql` materializa 12 RPCs
+  `superadmin_assessment_*`, envelope `{ok,data,error}`, RLS/FORCE, grants
+  mínimos, idempotência, versão, receipts e auditoria com `activities.read` e
+  `activities.manage`. O plano pgTAP contém 47 asserts revisados estaticamente.
+- Migration canônica e mirror têm SHA-256
+  `636F36645669A1D407AF60F5E60B2212448653F8607FC56841117606E9944188` e
+  parse SQL válido. Docker não respondeu; os 47 asserts não foram executados,
+  portanto o estado não é `local-green`, remoto nem E2E.
+- Inventário remoto read-only encontrou 107 migrations até `20260901184240`,
+  sem contexto Auth interno, gateways internos de Estruturas/Activities e sem
+  tabelas/RPCs de Avaliações. O guard canônico `20260831164937` falha no shape
+  remoto por `institution_type_id` versus `unit_type_id`, confirmando OQ-032.
+- OQ-041 continua aberta. Não houve DDL/DML remoto neste pacote e os
+  denominadores/percentuais gerais permanecem inalterados.

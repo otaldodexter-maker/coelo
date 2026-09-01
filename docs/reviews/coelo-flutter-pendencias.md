@@ -3259,3 +3259,22 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
 | 2026-08-26 | Criação do rastreador Flutter separado do backend e da prova integrada. |
 | 2026-08-26 | Consolidação retomável em HEAD `447ac02c`: 37 famílias, estados por ação, commits/gates, resíduos, ETA e handoff integrado. |
 | 2026-08-26 | Organização decisória: tabela geral cumulativa, definição B/I/A/C, matriz de 201 ações com nível aconselhado/estimativa/evidência, decomposição explícita das 12 ações de Instituições, dependências integradas fora de escopo e inventário do worktree concorrente; nenhum código ou backend alterado. |
+
+## Checkpoint 2026-09-01 — Estruturas reais sem fallback fake
+
+- `/dev/*` permanece ligado somente aos repositórios determinísticos: 5
+  instituições, 1–4 unidades por instituição, turmas com e sem atividades, 30
+  atividades e 12 modelos. Busca e paginação dessas superfícies continuam
+  cobertas pelas fixtures locais.
+- Rotas sem `/dev` não usam fallback fake. Instituições consomem os gateways
+  internos v2 para lista, filtros, detalhe e edição core; criação permanece
+  indisponível. Unidades e Turmas permanecem `Unavailable` porque CRUD interno
+  nominal ainda não foi aprovado. Atividades mantém somente opções/criação de
+  modelos equivalentes e falha fechado no restante.
+- Avaliações agora possuem adapter para envelopes v2 e gate próprio
+  `COELO_ENABLE_ASSESSMENT_MUTATIONS`, desligado por padrão. Corrigida a
+  precedência de `/activities/:id/assessment-settings`; URLs diretas de criar/
+  editar Unidade e Turma também respeitam o gate produtivo.
+- Evidência focada: Assessments 17/17, dados Activities/Institutions 52/52,
+  router 14/14 e analyzer do recorte sem issues. Os goldens antigos divergentes
+  não foram regenerados. Percentuais gerais e `verified` não são promovidos.
