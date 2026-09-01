@@ -37,3 +37,14 @@ Os hashes abaixo são SHA-256 do conteúdo preservado no repositório.
 - Nenhum vídeo ou outro arquivo visual foi fornecido nesta frente além dos 15
   PNGs inventariados acima.
 
+## Capturas de QA da worktree
+
+Estas capturas foram geradas localmente durante a verificação visual. Todas
+foram preservadas, inclusive as inválidas, para que uma falha de captura não
+seja confundida com evidência de tela aprovada.
+
+| Captura | Resultado visual | Arquivo estável | SHA-256 |
+| --- | --- | --- | --- |
+| Turmas desktop | Inválida: imagem vazia com apenas faixa superior azul | `qa-groups-desktop-invalida.png` | `b1dd42024b111eaeef97d119c46d92fd54e94c1e10c76dbff3443f0a766bd6ee` |
+| Instituições mobile, tema escuro | Válida: cabeçalho Coelo sem hambúrguer, filtros, card e paginação | `qa-institutions-mobile-dark.png` | `db49bb9afb4dbbb0def5fc2771c3c434ae2ff364193b088549308ea326869303` |
+| Captura de teste | Inválida: imagem vazia com apenas faixa superior azul | `qa-test-invalida.png` | `050530a8cdbdd76f8b2ddb78f3c0257d75537b86fbe2e04e0be9e0cc5a94320d` |
