@@ -1270,3 +1270,35 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   Supabase `done` permanece 0,00% (0/37) e projeto estrito permanece 0,00%
   (0/229). Backend `local-green` não promove tela, ação integrada,
   `remote-green` ou `done`.
+
+### Checkpoint integrado 61 - Activities v2 backend local sem promoção
+
+- O backend interno de Activities v2 fechou localmente directory, detail,
+  create, update, publish e snapshots de unidades, turmas, participantes,
+  profissionais e permissões. As suítes executaram 199 asserts pgTAP; todos
+  passaram, incluindo o teste focal final 25/25, junto do ciclo Auth,
+  concorrência real, contratos PowerShell 11/11, perfil 59/59 e mirror
+  122/122. O review final aprovou o fechamento técnico `1e921c47`.
+- A autorização usa somente identidade/sessão interna, capability, AAL e escopo
+  validados. Admin people-based permanece separado e o Principal não recebeu
+  endpoint ou grant. Tenant A/B, sibling, cross-app, membership revogada,
+  UUID adulterado, replay e conflito de versão foram negados ou resolvidos
+  conforme o contrato.
+- O repository Flutter atual ainda usa o contrato legado de upsert e não
+  encadeia os gateways/snapshots v2. Nenhum arquivo Flutter, tela, rota,
+  repository, golden ou teste visual foi alterado; portanto não há prova de
+  clique, persistência remota e reload.
+- O remoto está `ACTIVE_HEALTHY`, mas continua `blocked-environment`, somente
+  leitura, com ledger em 103 migrations até `20260821200000`. Nenhuma migration
+  ou configuração foi aplicada. Importação, exportação, arquivos e mídia
+  existentes permaneceram fora do trabalho, sem exclusão.
+- Estados e percentuais permanecem inalterados: Flutter `verified` 0,00%
+  (0/207), E2E 0,00% (0/202), Supabase `done` 0,00% (0/37) e projeto estrito
+  `done` 0,00% (0/229). Os cinco `action_id` Activities têm prova backend
+  `local-green`, mas nenhum foi promovido a `ready-for-e2e`, `verified-e2e`,
+  `remote-green` ou `done`.
+- Próximo gate integrado: consolidar os commits backend sem tocar a frente
+  visual; depois criar um contrato próprio para o adapter Flutter e, somente
+  com ambiente classificado e mutação remota autorizada, executar a prova E2E.
+  A ETA integrada permanece não calculável enquanto esses gates estiverem
+  abertos.

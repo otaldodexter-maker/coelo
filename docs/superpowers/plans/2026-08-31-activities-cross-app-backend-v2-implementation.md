@@ -86,7 +86,7 @@ Update after backend evidence:
 - Consumes: existing Activity tables and spec-039 `require_superadmin_internal_context` contract.
 - Produces: generated `*_actor_kind`, guarded nullable people actor fields, and legacy-safe provenance consumed by later commands.
 
-- [ ] **Step 1: Write the 26-assertion actor RED**
+- [x] **Step 1: Write the 26-assertion actor RED**
 
 Start the file with the actual structural contract below, then add behavioral fixtures for a people actor, an internal marker, a forged NULL actor and a mismatched person. The transaction must end with `finish()` and `rollback`.
 
@@ -147,7 +147,7 @@ select * from finish();
 rollback;
 ```
 
-- [ ] **Step 2: Run the actor test against the preceding green target**
+- [x] **Step 2: Run the actor test against the preceding green target**
 
 Run:
 
@@ -159,7 +159,7 @@ Run:
 
 Expected: RED because `created_by_actor_kind` and the other generated provenance columns do not exist. The wrapper must still report zero residual `coelo_safe_*` resources.
 
-- [ ] **Step 3: Create and relocate the migration using the pinned CLI**
+- [x] **Step 3: Create and relocate the migration using the pinned CLI**
 
 ```powershell
 $mirrorRoot = [IO.Path]::GetFullPath('packages/coelo_database/supabase/migrations')
@@ -175,7 +175,7 @@ if (-not $destination.StartsWith($canonicalRoot + [IO.Path]::DirectorySeparatorC
 Move-Item -LiteralPath $generated[0].FullName -Destination $destination
 ```
 
-- [ ] **Step 4: Implement generated actor provenance and guard triggers**
+- [x] **Step 4: Implement generated actor provenance and guard triggers**
 
 The migration must make the nine approved people actor fields nullable, add generated stored kinds, backfill implicitly from the existing non-null person values, and install one private guard trigger function on all touched tables.
 
@@ -202,13 +202,13 @@ end $$;
 
 Apply the equivalent generated column and trigger to unit links, group links, participants, instructor assignments, admin assignments, instructor actions, policies and group settings. The internal marker helper must revalidate spec-039 identity/auth-link/session and may not trust only `current_setting`. Add missing indexes on `activity_assignment_capability_actions.changed_by_person_id` and `activity_admin_assignments.assigned_by_person_id`. Reject new group-assignment role `activity_admin` while allowing updates that only revoke historical rows.
 
-- [ ] **Step 5: Add normalized SHA-256 to the foundation profile and run GREEN**
+- [x] **Step 5: Add normalized SHA-256 to the foundation profile and run GREEN**
 
 Append the exact generated filename and normalized CRLF SHA-256 using the same `Get-NormalizedTextSha256` algorithm already present in `Test-FoundationReplayProfile.ps1`. Change the expected count from 52 to 53 and final boundary to the generated filename.
 
 Run mirror Prepare/Verify, the profile test and the focused replay at the generated 14-digit version. Expected: 26/26 GREEN and profile 53/53.
 
-- [ ] **Step 6: Commit the actor slice**
+- [x] **Step 6: Commit the actor slice**
 
 ```powershell
 rtk git add packages/coelo_database/migrations packages/coelo_database/supabase/tests/superadmin_internal_activities_v2_actor_contract_test.sql packages/coelo_database/replay/foundation-migrations.sha256 packages/coelo_database/scripts/Test-FoundationReplayProfile.ps1
@@ -228,15 +228,15 @@ rtk git commit -m "feat(database): type activities v2 authorship"
 - Consumes: Task 1 actor provenance and spec-039 internal identities.
 - Produces: `activity_admin_capability_actions`, private receipts, canonical request hashing and Activity error envelopes.
 
-- [ ] **Step 1: Write and prove the 30-assertion security RED**
+- [x] **Step 1: Write and prove the 30-assertion security RED**
 
 Assert the new table/receipt/helper absence, then exact owners, ACLs, FORCE RLS, 32-byte hash constraint, FK indexes, no PII columns, error allowlist and deterministic hash. Run against Task 1 target; expected RED at `activity_admin_capability_actions` absence.
 
-- [ ] **Step 2: Create `activities_v2_permissions_receipts` with the CLI relocation procedure from Task 1**
+- [x] **Step 2: Create `activities_v2_permissions_receipts` with the CLI relocation procedure from Task 1**
 
 Expected: one timestamped canonical file and no manually constructed timestamp.
 
-- [ ] **Step 3: Implement the physical contracts**
+- [x] **Step 3: Implement the physical contracts**
 
 ```sql
 create table public.activity_admin_capability_actions (
@@ -270,11 +270,11 @@ create table app_private.superadmin_internal_activity_command_receipts (
 
 Add command-kind allowlist for the eight mutation wrappers, exact indexes, owner `postgres`, FORCE RLS and zero client grants. Implement `activity_v2_error_envelope` with only `code/message/http_status/correlation_id` and the approved 422/404/409 mappings. Implement canonical SHA-256 over command kind, institution, activity, expected version and normalized payload; never store the payload.
 
-- [ ] **Step 4: Update profile to 54, mirror, run 30/30 GREEN and accumulated Task 1 regression**
+- [x] **Step 4: Update profile to 54, mirror, run 30/30 GREEN and accumulated Task 1 regression**
 
 Expected: both new test files GREEN, legacy schema unchanged, no new lint error in this delta.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 rtk git commit -m "feat(database): add activities v2 permissions receipts"
@@ -293,7 +293,7 @@ rtk git commit -m "feat(database): add activities v2 permissions receipts"
 - Consumes: Tasks 1–2 provenance, receipt, error and spec-039 context.
 - Produces: the exact eleven v2 wrappers from the approved design and private actor-specific apply helpers.
 
-- [ ] **Step 1: Write focused REDs before the migration**
+- [x] **Step 1: Write focused REDs before the migration**
 
 Use these exact plan counts:
 
@@ -304,13 +304,13 @@ Use these exact plan counts:
 
 Each test creates only synthetic tenant A/B fixtures in a transaction. Include unauthenticated, expired session, revoked link, Owner AAL1, capability inactive/deny, institutional scope, people-only cross-app, sibling unit, random UUID and tenant B negatives. Run all four against Task 2 target. Expected: RED because the first v2 read signature is absent.
 
-- [ ] **Step 2: Create `activities_v2_internal_gateways` using the pinned CLI**
+- [x] **Step 2: Create `activities_v2_internal_gateways` using the pinned CLI**
 
-- [ ] **Step 3: Implement context, scope, marker and audit helpers first**
+- [x] **Step 3: Implement context, scope, marker and audit helpers first**
 
 Private helpers must accept the private spec-039 context type, never a caller-constructible generic actor. Validate all requested permissions independently and revalidate identity/auth-link/JWT session/auth.sessions before each command and replay. Install a transaction-local marker containing identity/action/permission/correlation; `audit_activity_change()` suppresses legacy v1 only after independently revalidating it. Every accepted mutation appends one minimized internal domain audit before receipt; audit failure rolls back everything.
 
-- [ ] **Step 4: Implement exact read wrappers and allowlisted builders**
+- [x] **Step 4: Implement exact read wrappers and allowlisted builders**
 
 ```sql
 -- Signatures are binding; bodies return the approved {ok,data,error} jsonb.
@@ -321,7 +321,7 @@ public.superadmin_activity_form_options_v2(uuid,text[],text,integer)
 
 Directory filters/sorts/limits, detail sections and form-option sections must match the design literally. Builders construct named JSON keys; `to_jsonb(row)` is forbidden. Requested sensitive sections require `assign_people` or `manage_permissions` and fail whole-call when unauthorized.
 
-- [ ] **Step 5: Implement create/update/publish and structure wrappers**
+- [x] **Step 5: Implement create/update/publish and structure wrappers**
 
 ```sql
 public.superadmin_activity_create_v2(uuid,jsonb)
@@ -333,7 +333,7 @@ public.superadmin_activity_set_groups_v2(uuid,uuid,bigint,uuid[],jsonb)
 
 All commands follow: reauthorize → advisory request lock → receipt check → activity `FOR UPDATE` → version check → reference locks → one atomic mutation → exactly one version increment → audit → receipt. Create forces institution origin and atomically links at least one unit. Unit/group removals fail while active dependencies remain. Publish accepts only draft with valid taxonomy, unit, group, relations and explicit actions.
 
-- [ ] **Step 6: Implement participant, professional and permission snapshots**
+- [x] **Step 6: Implement participant, professional and permission snapshots**
 
 ```sql
 public.superadmin_activity_set_participants_v2(uuid,uuid,bigint,jsonb)
@@ -343,15 +343,15 @@ public.superadmin_activity_set_permissions_v2(uuid,uuid,bigint,jsonb,jsonb,jsonb
 
 Apply the literal schemas/cardinality from the design. Derive children through active child-group → child-unit → child-context. Derive adult professionals only from active same-institution memberships. A revoked assignment is never reactivated. Omitted action/settings entries clear stale permissions. Enforce the approved prohibited/legacy-deny/action/legacy-allow/required/setting/default/profile precedence; `required` rejects explicit `none`.
 
-- [ ] **Step 7: Close private/public function ACLs inside this migration**
+- [x] **Step 7: Close private/public function ACLs inside this migration**
 
 Before commit, revoke every new helper/wrapper from `PUBLIC, anon, authenticated, service_role`; Task 4 later grants only nominal public wrappers after final RLS verification. This prevents a permissive intermediate migration.
 
-- [ ] **Step 8: Update profile to 55 and run accumulated GREEN**
+- [x] **Step 8: Update profile to 55 and run accumulated GREEN**
 
 Expected: the six v2 pgTAP files total 154/154; Tasks 1–2 remain GREEN; no synthetic person, no actor-null audit, no second version bump or audit on replay.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```powershell
 rtk git commit -m "feat(database): add internal activities v2 gateways"
@@ -371,19 +371,19 @@ rtk git commit -m "feat(database): add internal activities v2 gateways"
 - Consumes: all Task 3 wrappers.
 - Produces: final authenticated-only public execution surface, reproducible two-session concurrency proof and profile target 56.
 
-- [ ] **Step 1: Extend the existing security test with the final ACL/RLS RED**
+- [x] **Step 1: Extend the existing security test with the final ACL/RLS RED**
 
 Prove public wrappers currently lack authenticated EXECUTE, then assert final owners/search paths, no helper execution, no anon/service-role/public access, FORCE RLS, safe default privileges, people-policy isolation and FK/predicate indexes.
 
-- [ ] **Step 2: Create and implement `activities_v2_rls_grants`**
+- [x] **Step 2: Create and implement `activities_v2_rls_grants`**
 
 Revoke all helper access again, grant EXECUTE only on the eleven nominal public wrappers to `authenticated`, retain legacy people-based grants required by Admin, and prove an internal account cannot pass them. Do not add `OR internal` to legacy policies. Set safe default function privileges and qualify every schema reference.
 
-- [ ] **Step 3: Add the two-session concurrency harness**
+- [x] **Step 3: Add the two-session concurrency harness**
 
 Add `-RunActivityV2Concurrency` to the wrapper. The new script must receive the disposable project root/identity, open two independent SQL sessions against the generated local database, issue the same expected version concurrently with distinct request IDs, and assert exactly one successful version increment plus one `SAI_CONCURRENT_CHANGE`, no deadlock and no leaked credentials/output. Fixtures live only in the disposable volume.
 
-- [ ] **Step 4: Update profile to 56 and run the final local gate**
+- [x] **Step 4: Update profile to 56 and run the final local gate**
 
 ```powershell
 $tests = @(
@@ -405,7 +405,7 @@ $tests = @(
 
 Expected: all v2 assertions and compatible regressions GREEN; one concurrency winner; zero Docker residual.
 
-- [ ] **Step 5: Run lint separately and classify, never hide, historical errors**
+- [x] **Step 5: Run lint separately and classify, never hide, historical errors**
 
 ```powershell
 & packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
@@ -414,7 +414,7 @@ Expected: all v2 assertions and compatible regressions GREEN; one concurrency wi
 
 Expected: no new Activity v2 lint error. The four already documented import/export/file errors may keep the global lint RED; record exact unchanged signatures and do not edit those products.
 
-- [ ] **Step 6: Run Auth lifecycle, mirror, profile, secret and diff gates**
+- [x] **Step 6: Run Auth lifecycle, mirror, profile, secret and diff gates**
 
 ```powershell
 & packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
@@ -429,7 +429,7 @@ rtk git status --short
 
 Expected: Auth lifecycle GREEN, profile 56/56, canonical/mirror equal, no secret in the delta, diff clean and only intended files pending.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```powershell
 rtk git commit -m "feat(database): close activities v2 authorization"
@@ -445,23 +445,23 @@ rtk git commit -m "feat(database): close activities v2 authorization"
 - Consumes: verified test, lint, mirror, Auth and cleanup evidence.
 - Produces: canonical state and consolidation ledger without promoting Flutter/E2E/remote/done.
 
-- [ ] **Step 1: Update canonical sources first**
+- [x] **Step 1: Update canonical sources first**
 
 Mark the design `implemented-local-green` only if every Task 4 gate passed. Append to ADR 0022 that shared domain invariants use nominal actor-realm gateways and that Principal receives no new grant. Mark OQ-043 resolved specifically for Activities v2; do not generalize resolution to other legacy CRUD domains.
 
-- [ ] **Step 2: Update trackers in order**
+- [x] **Step 2: Update trackers in order**
 
 Append a Supabase checkpoint containing objective, exact paths/migrations/hashes, first RED, final GREEN, assertions, regression, lint classification, environment, local/remote state, elapsed time, ETA, blockers and next safe command. Then append the integrated tracker only with backend dependency state; leave Flutter and `verified_e2e` unchanged.
 
-- [ ] **Step 3: Run the coelo-knowledge gate**
+- [x] **Step 3: Run the coelo-knowledge gate**
 
 Project only durable approved knowledge. If the existing team Activity pages already state the cross-app rule, record `no-op` in the tracker rather than creating activity logs as knowledge.
 
-- [ ] **Step 4: Update the worktree/commit ledger**
+- [x] **Step 4: Update the worktree/commit ledger**
 
 Classify `f793867d` and every new commit as exclusive, patch-equivalent or superseded. Do not touch the visual branch, `dev`, push, merge or remove worktrees in this task.
 
-- [ ] **Step 5: Verify docs and commit**
+- [x] **Step 5: Verify docs and commit**
 
 ```powershell
 rtk git diff --check
@@ -480,3 +480,30 @@ After Tasks 1–5 pass their per-task spec and quality reviews:
 3. fix every Critical/Important finding in one reviewed fix wave;
 4. repeat focused/full verification affected by fixes;
 5. use `finishing-a-development-branch` only for the local consolidation decision already authorized—never push.
+
+## Resultado de execução — 2026-08-31
+
+O plano foi executado até o gate backend local. O fechamento de gateways ficou
+em `3bcf927e` e a closure final de RLS, privilégios, índices e concorrência em
+`cb460b7b`; os achados finais de segurança e contrato foram fechados em
+`1e921c47`. O perfil final contém 59 migrations revisadas e o canônico/mirror
+foi verificado em 122/122 arquivos.
+
+As suítes Activities v2 somaram 199 asserts pgTAP, todos verdes, e o teste
+focal final passou 25/25. O ciclo Auth nativo passou; a concorrência real em
+duas sessões produziu exatamente um vencedor e um `SAI_CONCURRENT_CHANGE`; os
+contratos PowerShell totalizaram 11/11 verdes. O lint manteve somente quatro
+erros históricos já classificados:
+dois `42702` em imports de Activity/Groups, um `42804` no import de Access
+Profiles e um `42703` no file job. Esses quatro fluxos pertencem a importação ou
+arquivos e não foram alterados neste pacote.
+
+O review final do Task 4 foi aprovado. A migration final
+`20260831234307_activities_v2_final_review_hardening.sql` tem SHA-256 bruto
+`c1a221d67054dbfd401db7737df1126e137eaadf1df706bb7eff0dec0dd9e883` e
+hash normalizado no manifesto
+`01663a89c55e5de081aa97b808cec0329ae4af9dd6a24ef2d80c87d6c0ddc898`.
+Cleanup encerrou sem container, volume, rede ou staging `coelo_safe_*`, e os
+scans focais não encontraram segredo. O remoto permaneceu somente leitura e
+`blocked-environment`; Flutter, E2E, `remote-green` e `done` não foram
+promovidos.

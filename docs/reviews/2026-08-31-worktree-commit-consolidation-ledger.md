@@ -202,3 +202,76 @@ JWT literal. A checkout principal `dev` continua dirty na frente visual/Forms;
 nenhum arquivo dela foi tocado. Portanto os seis commits permanecem
 preservados nesta worktree e ainda não devem ser cherry-picked, mesclados ou
 removidos. Não fazer push.
+
+## Continuação backend — Activities v2
+
+O lote Activities v2 acrescentou quatorze commits exclusivos e alcançáveis pela
+branch `codex/supabase-cross-app-foundation`. A comparação por patch contra
+`dev` os mantém marcados com `+`; portanto eles ainda não podem ser descartados
+nem tratados como equivalentes já integrados.
+
+| Commit | Classificação contra `dev` | Evidência |
+| --- | --- | --- |
+| `f793867d` | exclusivo correto, pendente | design aprovado do contrato backend cross-app |
+| `219f70dd` | exclusivo correto, pendente | plano TDD executável do recorte Activities v2 |
+| `849649a1` | exclusivo correto, pendente | atribuição de ator criada por migration forward-only |
+| `0762b1cd` | exclusivo correto, pendente | endurecimento da proveniência do ator |
+| `84799f2b` | exclusivo correto, pendente | semântica estável dos markers de teste |
+| `cdd5d949` | exclusivo correto, pendente | autodetecção do agente no wrapper local |
+| `5ad90208` | exclusivo correto, pendente | permissões e recibos de publicação |
+| `e8e7cfdc` | exclusivo correto, pendente | REDs estruturais de segurança |
+| `f1be4708` | exclusivo correto, pendente | limites exatos de autorização catalogados |
+| `55da277d` | exclusivo correto, pendente | gateways internos nominais de Activities v2 |
+| `3bcf927e` | exclusivo correto, pendente | endurecimento dos gateways e contratos |
+| `cb460b7b` | exclusivo correto, pendente | fechamento de RLS, grants e concorrência |
+| `1e921c47` | exclusivo correto, pendente | fechamento dos achados finais de segurança e contrato |
+| commit documental final deste ledger | exclusivo correto, pendente | fontes, rastreadores, hashes e handoff local-green reconciliados; o hash resulta deste próprio commit |
+
+O estado final do lote é `local-green`: profile `59`, mirror `122`, pgTAP
+`199/199`, teste focal `25/25`, Auth `PASS`, concorrência real com duas sessões
+`PASS` e contratos PowerShell `11/11`. O review final foi aprovado. O lint
+manteve somente quatro achados históricos, sem novo achado no delta. As sete
+migrations do lote são:
+
+- `20260831192831_activities_v2_actor_attribution.sql` —
+  `6cde88d2d2c4d2c91d394b5152a6804fa18a609cec786f131ba29016ba17e37d`;
+- `20260831195118_activities_v2_actor_provenance_hardening.sql` —
+  `3fd41204dc977b1d4bcb7e497d9b47e855c8b72b51a6f9feab437c0faae8204d`;
+- `20260831195944_activities_v2_actor_provenance_semantics.sql` —
+  `7f06bc3df7f936f06bbc103cf732d83aa9c9724092aae768ac4aa530b8bf5a0c`;
+- `20260831203645_activities_v2_permissions_receipts.sql` —
+  `1def96ddb74014af4ab04bb81a3063faf49d11988c507aacf0801ba5a219539a`;
+- `20260831211945_activities_v2_internal_gateways.sql` —
+  `e627be30cc5f56b27a68f46b32ff17a1d64a304b1f8cb6e8ac648acfb3e4207d`;
+- `20260831231645_activities_v2_rls_grants.sql` —
+  `0eb6efe209f594e0b4219c4764deded1f6604ad88c9e1a2a5a0d32d5f361376a`;
+- `20260831234307_activities_v2_final_review_hardening.sql` —
+  SHA-256 bruto
+  `c1a221d67054dbfd401db7737df1126e137eaadf1df706bb7eff0dec0dd9e883`,
+  hash normalizado no manifesto
+  `01663a89c55e5de081aa97b808cec0329ae4af9dd6a24ef2d80c87d6c0ddc898`.
+
+Este registro não autoriza integração, remoção de worktree, push ou mutação
+remota. A consolidação final deve recalcular `git cherry`, integrar somente os
+commits ainda exclusivos na ordem e repetir os gates antes de avançar `dev`.
+
+### Auditoria Git final do lote backend
+
+No snapshot imediatamente anterior ao fechamento deste próprio commit,
+`dev` estava em `21e0ed09`, o backend em `6ed31b63` e o merge-base em
+`f1aeacf6`. A divergência era `6 20`: seis commits somente em `dev` e vinte
+somente no backend, todos estes marcados com `+` por `git cherry`. O amend
+deste ledger substitui o último commit documental e não altera a quantidade
+de vinte patches backend pendentes.
+
+Nenhum dos vinte commits backend altera `apps/**` ou `packages/coelo_ui/**`.
+O tip legado `5d4cc133` continua com 41/41 patches equivalentes em `dev` e
+zero patch exclusivo. A worktree backend está limpa quanto a arquivos de
+produto; apenas `.superpowers/sdd/progress.md`, controlado pela execução, fica
+fora de Git.
+
+A checkout `dev` permanece com o lote visual não commitado e foi preservada.
+O snapshot detached `057aad8f` já é alcançável por `dev`; `5704c3b5` permanece
+um snapshot visual exclusivo, protegido pela própria worktree. Nenhuma dessas
+worktrees pode ser removida ou consolidada por esta frente antes de a frente
+visual classificar o snapshot e liberar uma checkout `dev` limpa.
