@@ -92,6 +92,41 @@ void main() {
       throwsA(isA<PlatformUserRuleException>()),
     );
   });
+
+  test('maps a successful HTTP denial envelope without exposing backend details', () async {
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => Response(
+          jsonEncode({
+            'ok': false,
+            'data': null,
+            'error': {
+              'code': 'SAI_PERMISSION_DENIED',
+              'message': 'Acesso não autorizado.',
+              'correlation_id': '97000000-0000-4000-8000-000000000009',
+              'http_status': 403,
+            },
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabasePlatformUserRepository(client);
+
+    await expectLater(
+      repository.fetchById(_identityId),
+      throwsA(
+        isA<PlatformUserRuleException>()
+            .having((error) => error.code, 'code', 'unauthorized')
+            .having((error) => error.message, 'message', 'Acesso não autorizado.'),
+      ),
+    );
+  });
 }
 
 SupabaseClient _client(List<String> paths, {List<Request>? requests}) => SupabaseClient(

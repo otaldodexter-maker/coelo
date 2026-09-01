@@ -204,9 +204,83 @@ $$;
 revoke all on function app_private.superadmin_internal_user_projection(uuid,boolean)
   from public,anon,authenticated,service_role;
 
+create function app_private.superadmin_internal_user_target_allowed(
+  p_ctx app_private.superadmin_internal_context,p_internal_identity_id uuid
+) returns boolean language sql stable security definer set search_path='' as $$
+  select p_internal_identity_id is not null and exists(
+    select 1 from app_private.superadmin_internal_profiles profile_record
+    join lateral(select membership_item.*
+      from app_private.superadmin_internal_memberships membership_item
+      where membership_item.internal_identity_id=profile_record.internal_identity_id
+      order by (membership_item.status='active') desc,membership_item.created_at desc limit 1
+    ) membership_record on true
+    join lateral(select auth_item.*
+      from app_private.superadmin_internal_auth_links auth_item
+      where auth_item.internal_identity_id=profile_record.internal_identity_id
+      order by (auth_item.status='active') desc,auth_item.created_at desc limit 1
+    ) auth_link on true
+    where profile_record.internal_identity_id=p_internal_identity_id
+      and (p_ctx.scope_kind='platform' or (
+        membership_record.scope_kind='institution' and (
+          membership_record.scope_institution_id=p_ctx.scope_institution_id or exists(
+            select 1 from app_private.superadmin_internal_membership_scopes scope_record
+            where scope_record.membership_id=membership_record.id
+              and scope_record.institution_id=p_ctx.scope_institution_id))))
+  )
+$$;
+
+create function app_private.superadmin_internal_user_denial_code(
+  p_sqlstate text,p_detail text
+) returns text language sql immutable security invoker set search_path='' as $$
+  select case
+    when p_detail in('SAI_AUTH_REQUIRED','SAI_SESSION_INVALID','SAI_INTERNAL_CONTEXT_DENIED',
+      'SAI_MEMBERSHIP_SUSPENDED','SAI_MEMBERSHIP_REVOKED','SAI_PERMISSION_DENIED',
+      'SAI_MFA_REQUIRED','SAI_LAST_OWNER_PROTECTED','SAI_CONCURRENT_CHANGE') then p_detail
+    when p_sqlstate='40001' then 'SAI_CONCURRENT_CHANGE'
+    when p_sqlstate in('22023','23503','23514','22P02','22001') then 'SAI_INVALID_INPUT'
+    when p_sqlstate in('P0002','42501') then 'SAI_PERMISSION_DENIED'
+    else 'SAI_INTERNAL_ERROR' end
+$$;
+
+create function app_private.superadmin_internal_user_error_envelope(
+  p_code text,p_correlation_id uuid
+) returns jsonb language sql immutable security invoker set search_path='' as $$
+  select pg_catalog.jsonb_build_object('ok',false,'data',null,'error',
+    pg_catalog.jsonb_build_object(
+      'code',case when p_code in('SAI_AUTH_REQUIRED','SAI_SESSION_INVALID',
+        'SAI_INTERNAL_CONTEXT_DENIED','SAI_MEMBERSHIP_SUSPENDED','SAI_MEMBERSHIP_REVOKED',
+        'SAI_PERMISSION_DENIED','SAI_MFA_REQUIRED','SAI_LAST_OWNER_PROTECTED',
+        'SAI_CONCURRENT_CHANGE','SAI_INVALID_INPUT') then p_code else 'SAI_INTERNAL_ERROR' end,
+      'message',case
+        when p_code in('SAI_AUTH_REQUIRED','SAI_SESSION_INVALID') then 'Autenticação necessária.'
+        when p_code='SAI_MFA_REQUIRED' then 'Confirme o segundo fator.'
+        when p_code='SAI_INVALID_INPUT' then 'Revise os dados enviados.'
+        when p_code in('SAI_LAST_OWNER_PROTECTED','SAI_CONCURRENT_CHANGE')
+          then 'O estado mudou. Recarregue e tente novamente.'
+        when p_code like 'SAI_%DENIED' or p_code like 'SAI_MEMBERSHIP_%'
+          then 'Acesso não autorizado.'
+        else 'Não foi possível concluir a operação.' end,
+      'correlation_id',p_correlation_id,
+      'http_status',case
+        when p_code in('SAI_AUTH_REQUIRED','SAI_SESSION_INVALID') then 401
+        when p_code in('SAI_LAST_OWNER_PROTECTED','SAI_CONCURRENT_CHANGE') then 409
+        when p_code='SAI_INVALID_INPUT' then 422
+        when p_code in('SAI_INTERNAL_CONTEXT_DENIED','SAI_MEMBERSHIP_SUSPENDED',
+          'SAI_MEMBERSHIP_REVOKED','SAI_PERMISSION_DENIED','SAI_MFA_REQUIRED') then 403
+        else 500 end))
+$$;
+
+revoke all on function app_private.superadmin_internal_user_target_allowed(
+  app_private.superadmin_internal_context,uuid) from public,anon,authenticated,service_role;
+revoke all on function app_private.superadmin_internal_user_denial_code(text,text)
+  from public,anon,authenticated,service_role;
+revoke all on function app_private.superadmin_internal_user_error_envelope(text,uuid)
+  from public,anon,authenticated,service_role;
+
 create function public.superadmin_internal_user_profiles()
 returns jsonb language plpgsql volatile security definer set search_path='' as $$
 declare ctx app_private.superadmin_internal_context;correlation uuid:=gen_random_uuid();result jsonb;
+  error_state text;error_detail text;reason_code text;
 begin
   select * into strict ctx
     from app_private.require_superadmin_internal_context('platform.member.read');
@@ -225,6 +299,12 @@ begin
     ctx.internal_auth_link_id,ctx.internal_membership_id,ctx.session_id,
     'platform.member.read',ctx.aal,'superadmin.internal-users.profiles','success',null,correlation);
   return result;
+exception when others then
+  get stacked diagnostics error_state=returned_sqlstate,error_detail=pg_exception_detail;
+  reason_code:=app_private.superadmin_internal_user_denial_code(error_state,error_detail);
+  perform app_private.audit_superadmin_internal_denial_if_identified(
+    'platform.member.read','superadmin.internal-users.profiles',reason_code,correlation);
+  return app_private.superadmin_internal_user_error_envelope(reason_code,correlation);
 end
 $$;
 
@@ -235,11 +315,27 @@ create function public.superadmin_internal_users_list(
 ) returns jsonb language plpgsql volatile security definer set search_path='' as $$
 declare ctx app_private.superadmin_internal_context;correlation uuid:=gen_random_uuid();
   result jsonb;safe_page integer;safe_size integer;
+  error_state text;error_detail text;reason_code text;
 begin
   select * into strict ctx
     from app_private.require_superadmin_internal_context('platform.member.read');
-  safe_page:=pg_catalog.greatest(1,coalesce(p_page,1));
-  safe_size:=pg_catalog.least(100,pg_catalog.greatest(1,coalesce(p_page_size,11)));
+  if length(coalesce(p_search,''))>160
+    or coalesce(p_page,1) not between 1 and 10000
+    or coalesce(p_page_size,11) not in(8,11,20,50,100)
+    or coalesce(cardinality(p_profile_ids),0)>100
+    or coalesce(cardinality(p_statuses),0)>4
+    or coalesce(cardinality(p_scopes),0)>2
+    or exists(select 1 from unnest(coalesce(p_statuses,'{}'::text[])) item
+      where item not in('invited','active','suspended','revoked'))
+    or exists(select 1 from unnest(coalesce(p_scopes,'{}'::text[])) item
+      where item not in('platform','limited'))
+    or exists(select 1 from unnest(coalesce(p_profile_ids,'{}'::uuid[])) profile_id
+      where not exists(select 1 from public.platform_roles role_record
+        where role_record.id=profile_id and role_record.status='active')) then
+    raise invalid_parameter_value using message='invalid internal user directory filters';
+  end if;
+  safe_page:=coalesce(p_page,1);
+  safe_size:=coalesce(p_page_size,11);
   with filtered as(
     select identity_record.id,profile_record.first_name,profile_record.last_name
     from app_private.superadmin_internal_identities identity_record
@@ -250,10 +346,11 @@ begin
       where membership_item.internal_identity_id=identity_record.id
       order by (membership_item.status='active') desc,membership_item.created_at desc limit 1
     ) membership_record on true
-    where (ctx.scope_kind='platform' or exists(
-      select 1 from app_private.superadmin_internal_membership_scopes scope_record
-      where scope_record.membership_id=membership_record.id
-        and scope_record.institution_id=ctx.scope_institution_id))
+    where (ctx.scope_kind='platform' or (membership_record.scope_kind='institution' and (
+      membership_record.scope_institution_id=ctx.scope_institution_id or exists(
+        select 1 from app_private.superadmin_internal_membership_scopes scope_record
+        where scope_record.membership_id=membership_record.id
+          and scope_record.institution_id=ctx.scope_institution_id))))
       and (nullif(btrim(p_search),'') is null or concat_ws(' ',profile_record.first_name,
         profile_record.last_name,profile_record.professional_email,profile_record.job_title)
         ilike '%'||btrim(p_search)||'%')
@@ -274,30 +371,37 @@ begin
     ctx.internal_auth_link_id,ctx.internal_membership_id,ctx.session_id,
     'platform.member.read',ctx.aal,'superadmin.internal-users.list','success',null,correlation);
   return result;
+exception when others then
+  get stacked diagnostics error_state=returned_sqlstate,error_detail=pg_exception_detail;
+  reason_code:=app_private.superadmin_internal_user_denial_code(error_state,error_detail);
+  perform app_private.audit_superadmin_internal_denial_if_identified(
+    'platform.member.read','superadmin.internal-users.list',reason_code,correlation);
+  return app_private.superadmin_internal_user_error_envelope(reason_code,correlation);
 end
 $$;
 
 create function public.superadmin_internal_user_detail(p_internal_identity_id uuid)
 returns jsonb language plpgsql volatile security definer set search_path='' as $$
 declare ctx app_private.superadmin_internal_context;correlation uuid:=gen_random_uuid();result jsonb;
+  error_state text;error_detail text;reason_code text;
 begin
   select * into strict ctx
     from app_private.require_superadmin_internal_context('platform.member.read');
-  result:=app_private.superadmin_internal_user_projection(p_internal_identity_id,true);
-  if result is null then raise no_data_found using message='internal user not found';end if;
-  if ctx.scope_kind='institution' and not exists(
-    select 1 from app_private.superadmin_internal_memberships membership_record
-    join app_private.superadmin_internal_membership_scopes scope_record
-      on scope_record.membership_id=membership_record.id
-    where membership_record.internal_identity_id=p_internal_identity_id
-      and scope_record.institution_id=ctx.scope_institution_id) then
-    raise insufficient_privilege using message='internal user scope denied',detail='SAI_PERMISSION_DENIED';
+  if not app_private.superadmin_internal_user_target_allowed(ctx,p_internal_identity_id) then
+    raise insufficient_privilege using message='internal user unavailable',detail='SAI_PERMISSION_DENIED';
   end if;
+  result:=app_private.superadmin_internal_user_projection(p_internal_identity_id,true);
   perform app_private.audit_append_superadmin_internal(ctx.internal_identity_id,
     ctx.internal_auth_link_id,ctx.internal_membership_id,ctx.session_id,
     'platform.member.read',ctx.aal,'superadmin.internal-users.detail','success',null,
     correlation,null,'superadmin_internal_identity',p_internal_identity_id);
   return result;
+exception when others then
+  get stacked diagnostics error_state=returned_sqlstate,error_detail=pg_exception_detail;
+  reason_code:=app_private.superadmin_internal_user_denial_code(error_state,error_detail);
+  perform app_private.audit_superadmin_internal_denial_if_identified(
+    'platform.member.read','superadmin.internal-users.detail',reason_code,correlation);
+  return app_private.superadmin_internal_user_error_envelope(reason_code,correlation);
 end
 $$;
 
@@ -310,13 +414,41 @@ declare ctx app_private.superadmin_internal_context;correlation uuid:=gen_random
   membership_record app_private.superadmin_internal_memberships%rowtype;
   target_role public.platform_roles%rowtype;scope_id uuid;result jsonb;
   fingerprint bytea;receipt app_private.superadmin_internal_user_command_receipts%rowtype;
+  error_state text;error_detail text;reason_code text;audit_institution_id uuid;
 begin
-  if p_request_id is null or p_internal_identity_id is null
-    or nullif(btrim(p_reason),'') is null or length(p_reason)>500 then
-    raise invalid_parameter_value using message='invalid internal user command';
-  end if;
   select * into strict ctx
     from app_private.require_superadmin_internal_context('platform.member.update');
+  audit_institution_id:=case when ctx.scope_kind='institution'
+    then ctx.scope_institution_id else null end;
+  if p_request_id is null or p_internal_identity_id is null
+    or p_expected_version is null or p_expected_version<1
+    or length(btrim(coalesce(p_reason,''))) not between 8 and 500
+    or p_draft is null or pg_column_size(p_draft)>32768
+    or jsonb_typeof(p_draft)<>'object' or jsonb_typeof(p_draft->'identity')<>'object'
+    or (select array_agg(key order by key) from jsonb_object_keys(p_draft) key)
+      is distinct from array['identity','profile_id','scope','scope_ids']::text[]
+    or (select array_agg(key order by key) from jsonb_object_keys(p_draft->'identity') key)
+      is distinct from array['additional_phone','birth_date','city','complement','country','cpf','department',
+        'display_name','first_name','internal_function','job_title','last_name','mobile',
+        'neighborhood','number','postal_code','professional_email','professional_notes','state',
+        'street']::text[]
+    or jsonb_typeof(p_draft->'profile_id')<>'string'
+    or jsonb_typeof(p_draft->'scope')<>'string'
+    or p_draft->>'scope' is null or p_draft->>'scope' not in('platform','limited')
+    or jsonb_typeof(p_draft->'scope_ids')<>'array'
+    or jsonb_array_length(p_draft->'scope_ids')>100
+    or (select count(*)<>count(distinct value)
+      from jsonb_array_elements_text(p_draft->'scope_ids')) then
+    raise invalid_parameter_value using message='invalid internal user command';
+  end if;
+  if not app_private.superadmin_internal_user_target_allowed(ctx,p_internal_identity_id) then
+    raise insufficient_privilege using message='internal user unavailable',detail='SAI_PERMISSION_DENIED';
+  end if;
+  if ctx.scope_kind='institution' and (
+    p_draft->>'scope'<>'limited' or jsonb_array_length(p_draft->'scope_ids')<>1
+    or (p_draft->'scope_ids'->>0)::uuid is distinct from ctx.scope_institution_id) then
+    raise insufficient_privilege using message='internal user scope escalation denied',detail='SAI_PERMISSION_DENIED';
+  end if;
   fingerprint:=extensions.digest(pg_catalog.convert_to(pg_catalog.jsonb_build_object(
     'identity_id',p_internal_identity_id,'expected_version',p_expected_version,
     'reason',btrim(p_reason),'draft',p_draft)::text,'UTF8'),'sha256');
@@ -405,6 +537,13 @@ begin
     request_id,actor_internal_identity_id,action_code,request_hash,result
   ) values(p_request_id,ctx.internal_identity_id,'update',fingerprint,result);
   return result;
+exception when others then
+  get stacked diagnostics error_state=returned_sqlstate,error_detail=pg_exception_detail;
+  reason_code:=app_private.superadmin_internal_user_denial_code(error_state,error_detail);
+  perform app_private.audit_superadmin_internal_denial_if_identified(
+    'platform.member.update','superadmin.internal-users.update',reason_code,correlation,
+    audit_institution_id);
+  return app_private.superadmin_internal_user_error_envelope(reason_code,correlation);
 end
 $$;
 
@@ -416,14 +555,21 @@ declare ctx app_private.superadmin_internal_context;correlation uuid:=gen_random
   membership_record app_private.superadmin_internal_memberships%rowtype;
   auth_link app_private.superadmin_internal_auth_links%rowtype;result jsonb;action_code text;
   fingerprint bytea;receipt app_private.superadmin_internal_user_command_receipts%rowtype;
+  error_state text;error_detail text;reason_code text;audit_institution_id uuid;
 begin
-  if p_request_id is null or p_internal_identity_id is null
-    or p_status not in('active','suspended','revoked')
-    or nullif(btrim(p_reason),'') is null or length(p_reason)>500 then
-    raise invalid_parameter_value using message='invalid internal status command';
-  end if;
   select * into strict ctx
     from app_private.require_superadmin_internal_context('platform.member.suspend');
+  audit_institution_id:=case when ctx.scope_kind='institution'
+    then ctx.scope_institution_id else null end;
+  if p_request_id is null or p_internal_identity_id is null
+    or p_expected_version is null or p_expected_version<1
+    or p_status is null or p_status not in('active','suspended','revoked')
+    or length(btrim(coalesce(p_reason,''))) not between 8 and 500 then
+    raise invalid_parameter_value using message='invalid internal status command';
+  end if;
+  if not app_private.superadmin_internal_user_target_allowed(ctx,p_internal_identity_id) then
+    raise insufficient_privilege using message='internal user unavailable',detail='SAI_PERMISSION_DENIED';
+  end if;
   fingerprint:=extensions.digest(pg_catalog.convert_to(pg_catalog.jsonb_build_object(
     'identity_id',p_internal_identity_id,'expected_version',p_expected_version,
     'status',p_status,'reason',btrim(p_reason))::text,'UTF8'),'sha256');
@@ -474,6 +620,13 @@ begin
     request_id,actor_internal_identity_id,action_code,request_hash,result
   ) values(p_request_id,ctx.internal_identity_id,'status',fingerprint,result);
   return result;
+exception when others then
+  get stacked diagnostics error_state=returned_sqlstate,error_detail=pg_exception_detail;
+  reason_code:=app_private.superadmin_internal_user_denial_code(error_state,error_detail);
+  perform app_private.audit_superadmin_internal_denial_if_identified(
+    'platform.member.suspend','superadmin.internal-users.status',reason_code,correlation,
+    audit_institution_id);
+  return app_private.superadmin_internal_user_error_envelope(reason_code,correlation);
 end
 $$;
 

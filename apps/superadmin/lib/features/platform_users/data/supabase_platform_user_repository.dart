@@ -32,7 +32,7 @@ final class SupabasePlatformUserRepository
   Future<List<PlatformAccessProfile>> fetchProfiles() async {
     try {
       final response = await _client.rpc<Map<String, dynamic>>('superadmin_internal_user_profiles');
-      final payload = Map<String, dynamic>.from(response as Map);
+      final payload = _payload(response);
       final rows = payload['items'] as List<dynamic>? ?? const [];
       _profiles = rows
           .map((row) => _profile(Map<String, dynamic>.from(row as Map)))
@@ -63,7 +63,7 @@ final class SupabasePlatformUserRepository
           'p_page_size': query.pageSize,
         },
       );
-      final payload = Map<String, dynamic>.from(response as Map);
+      final payload = _payload(response);
       final items = (payload['items'] as List<dynamic>? ?? const [])
           .map((row) => _record(Map<String, dynamic>.from(row as Map)))
           .toList(growable: false);
@@ -89,7 +89,7 @@ final class SupabasePlatformUserRepository
         'superadmin_internal_user_detail',
         params: {'p_internal_identity_id': id},
       );
-      final record = _record(Map<String, dynamic>.from(response as Map));
+      final record = _record(_payload(response));
       _records[record.id] = record;
       return record;
     } on PostgrestException catch (error) {
@@ -168,7 +168,7 @@ final class SupabasePlatformUserRepository
   Future<PlatformUserRecord> _command(String function, Map<String, dynamic> params) async {
     try {
       final response = await _client.rpc<Map<String, dynamic>>(function, params: params);
-      final record = _record(Map<String, dynamic>.from(response as Map));
+      final record = _record(_payload(response));
       _records[record.id] = record;
       return record;
     } on PostgrestException catch (error) {
@@ -285,6 +285,45 @@ final class SupabasePlatformUserRepository
     'city': identity.city,
     'state': identity.state,
     'country': identity.country,
+  };
+}
+
+Map<String, dynamic> _payload(Object? response) {
+  final payload = Map<String, dynamic>.from(response as Map);
+  if (payload['ok'] == false) {
+    final error = Map<String, dynamic>.from(payload['error'] as Map? ?? const {});
+    throw _mapEnvelope(error);
+  }
+  return payload;
+}
+
+Exception _mapEnvelope(Map<String, dynamic> error) {
+  final code = error['code'] as String? ?? 'SAI_INTERNAL_ERROR';
+  return switch (code) {
+    'SAI_MFA_REQUIRED' => const PlatformUserRuleException(
+      'mfa',
+      'Confirme o segundo fator para continuar.',
+    ),
+    'SAI_CONCURRENT_CHANGE' => const PlatformUserRuleException(
+      'conflict',
+      'O cadastro mudou. Recarregue e tente novamente.',
+    ),
+    'SAI_LAST_OWNER_PROTECTED' => const PlatformUserRuleException(
+      'last-owner',
+      'O último Owner global ativo permanece protegido.',
+    ),
+    'SAI_INVALID_INPUT' => const PlatformUserRuleException(
+      'invalid-input',
+      'Revise os dados enviados.',
+    ),
+    'SAI_PERMISSION_DENIED' ||
+    'SAI_INTERNAL_CONTEXT_DENIED' ||
+    'SAI_MEMBERSHIP_SUSPENDED' ||
+    'SAI_MEMBERSHIP_REVOKED' => const PlatformUserRuleException(
+      'unauthorized',
+      'Acesso não autorizado.',
+    ),
+    _ => const PlatformUserRuleException('backend', 'Não foi possível concluir a operação.'),
   };
 }
 
