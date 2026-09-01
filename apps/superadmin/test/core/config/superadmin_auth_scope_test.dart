@@ -180,6 +180,32 @@ void main() {
     expect(scope.session.isAuthenticated, isFalse);
   });
 
+  test('keeps a restored recovery session out of internal context bootstrap', () async {
+    final authContext = _FakeSuperadminAuthContextGateway();
+    final auth = _FakeCoeloAuthGateway(
+      isAuthenticated: false,
+      authStateChanges: const Stream<bool>.empty(),
+      initialSessionState: const CoeloAuthSessionState.passwordRecovery(),
+    );
+
+    final scope = await createSuperadminAuthScope(
+      supabaseUrl: 'https://project.supabase.co',
+      supabasePublishableKey: 'sb_publishable_test',
+      initializeSupabase: ({required localStorage, required publishableKey, required url}) async =>
+          SupabaseClient(url, publishableKey),
+      createAuthGateway:
+          ({required client, required sessionPersistence, required initialRecoveryAccessToken}) =>
+              auth,
+      createAuthContextGateway: (_) => authContext,
+    );
+    addTearDown(scope.session.dispose);
+
+    expect(scope.session.isPasswordRecovery, isTrue);
+    expect(scope.session.isAuthenticated, isFalse);
+    expect(scope.session.authContext, isNull);
+    expect(authContext.bootstrapCalls, 0);
+  });
+
   test('rejects and revokes a restored credential without internal context', () async {
     final auth = _FakeCoeloAuthGateway(
       isAuthenticated: true,
@@ -319,20 +345,26 @@ void main() {
 }
 
 final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
-  _FakeCoeloAuthGateway({required this.isAuthenticated, required Stream<bool> authStateChanges})
-    : _authStateChanges = authStateChanges;
+  _FakeCoeloAuthGateway({
+    required this.isAuthenticated,
+    required Stream<bool> authStateChanges,
+    this.initialSessionState,
+  }) : _authStateChanges = authStateChanges;
 
   bool isAuthenticated;
   String sessionId = _sessionA;
+  final CoeloAuthSessionState? initialSessionState;
 
   final Stream<bool> _authStateChanges;
   String? lastRecoveryEmail;
   int signOutCalls = 0;
 
   @override
-  CoeloAuthSessionState get currentSessionState => isAuthenticated
-      ? CoeloAuthSessionState.authenticated(sessionId: sessionId)
-      : const CoeloAuthSessionState.signedOut();
+  CoeloAuthSessionState get currentSessionState =>
+      initialSessionState ??
+      (isAuthenticated
+          ? CoeloAuthSessionState.authenticated(sessionId: sessionId)
+          : const CoeloAuthSessionState.signedOut());
 
   @override
   Stream<CoeloAuthSessionState> get authStateChanges => _authStateChanges.map(
@@ -396,14 +428,18 @@ final class _FakeSuperadminAuthContextGateway implements SuperadminAuthContextGa
   _FakeSuperadminAuthContextGateway({this.isAuthorized = true});
 
   final bool isAuthorized;
+  int bootstrapCalls = 0;
 
   @override
-  Future<SuperadminAuthContext?> bootstrap() async => isAuthorized
-      ? const SuperadminAuthContext(
-          platformRoleCode: 'operations',
-          scopeKind: SuperadminAuthScopeKind.platform,
-          permissionCodes: {'platform.read'},
-          aal: 'aal1',
-        )
-      : null;
+  Future<SuperadminAuthContext?> bootstrap() async {
+    bootstrapCalls++;
+    return isAuthorized
+        ? const SuperadminAuthContext(
+            platformRoleCode: 'operations',
+            scopeKind: SuperadminAuthScopeKind.platform,
+            permissionCodes: {'platform.read'},
+            aal: 'aal1',
+          )
+        : null;
+  }
 }

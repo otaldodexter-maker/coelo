@@ -54,12 +54,12 @@ void main() {
 
     authStates.add(const CoeloAuthSessionState.passwordRecovery());
     await Future<void>.delayed(Duration.zero);
-    expect(session.isAuthenticated, isTrue);
+    expect(session.isAuthenticated, isFalse);
     expect(session.isPasswordRecovery, isTrue);
 
     authStates.add(const CoeloAuthSessionState.authenticated());
     await Future<void>.delayed(Duration.zero);
-    expect(session.isAuthenticated, isTrue);
+    expect(session.isAuthenticated, isFalse);
     expect(session.isPasswordRecovery, isTrue);
 
     session.authorize(
@@ -89,6 +89,36 @@ void main() {
 
     expect(session.isAuthenticated, isFalse);
     expect(session.authContext, isNull);
+  });
+
+  test('session clears an authorized context when password recovery starts', () async {
+    final authStates = StreamController<CoeloAuthSessionState>();
+    addTearDown(authStates.close);
+    final session = SuperadminSession(authSessionStateChanges: authStates.stream)
+      ..signInForTesting();
+    addTearDown(session.dispose);
+    final staleRevision = session.authorizationInvalidationRevision;
+
+    authStates.add(const CoeloAuthSessionState.passwordRecovery());
+    await Future<void>.delayed(Duration.zero);
+
+    expect(session.isAuthenticated, isFalse);
+    expect(session.isPasswordRecovery, isTrue);
+    expect(session.authContext, isNull);
+    expect(session.authorizationInvalidationRevision, greaterThan(staleRevision));
+    expect(
+      session.authorizeIfCurrent(
+        const SuperadminAuthContext(
+          platformRoleCode: 'operations',
+          scopeKind: SuperadminAuthScopeKind.platform,
+          permissionCodes: {'platform.read'},
+          aal: 'aal1',
+        ),
+        sessionId: '33333333-3333-4333-8333-333333333333',
+        expectedInvalidationRevision: staleRevision,
+      ),
+      isFalse,
+    );
   });
 
   testWidgets('starts on login and protects the shell without a session', (tester) async {
@@ -258,6 +288,39 @@ void main() {
     expect(find.text('Acesse sua conta'), findsOneWidget);
   });
 
+  testWidgets('redirects an authorized shell to reset when recovery starts at runtime', (
+    tester,
+  ) async {
+    final authStates = StreamController<CoeloAuthSessionState>();
+    addTearDown(authStates.close);
+    final session = SuperadminSession(authSessionStateChanges: authStates.stream)
+      ..signInForTesting();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      resetPassword: unavailableResetPassword,
+      institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.home);
+
+    authStates.add(const CoeloAuthSessionState.passwordRecovery());
+    await tester.pumpAndSettle();
+
+    expect(session.isAuthenticated, isFalse);
+    expect(session.isPasswordRecovery, isTrue);
+    expect(session.authContext, isNull);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.resetPassword);
+    expect(find.text('Crie uma nova senha'), findsOneWidget);
+  });
+
   testWidgets('opens password recovery publicly and returns to login', (tester) async {
     final session = SuperadminSession();
     final router = createSuperadminRouter(
@@ -342,6 +405,152 @@ void main() {
     addTearDown(session.dispose);
 
     router.go(SuperadminRoutes.resetPassword);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.resetPassword);
+    expect(find.text('Crie uma nova senha'), findsOneWidget);
+  });
+
+  testWidgets('starts a recovery session on reset instead of the initial login route', (
+    tester,
+  ) async {
+    final session = SuperadminSession(isPasswordRecovery: true);
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      resetPassword: unavailableResetPassword,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.resetPassword);
+    expect(find.text('Crie uma nova senha'), findsOneWidget);
+  });
+
+  testWidgets('revokes a recovery session before returning to login', (tester) async {
+    final session = SuperadminSession(isPasswordRecovery: true);
+    var logoutCalls = 0;
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: () async {
+        logoutCalls++;
+        session.signOut();
+        return const LogoutResult.success();
+      },
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      resetPassword: unavailableResetPassword,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Voltar para entrar'));
+    await tester.pumpAndSettle();
+
+    expect(logoutCalls, 1);
+    expect(session.isPasswordRecovery, isFalse);
+    expect(session.isAuthenticated, isFalse);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
+  });
+
+  testWidgets('keeps recovery confined when revocation before login fails', (tester) async {
+    final session = SuperadminSession(isPasswordRecovery: true);
+    var logoutCalls = 0;
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: () async {
+        logoutCalls++;
+        return const LogoutResult.failure(LogoutResult.genericFailureMessage);
+      },
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      resetPassword: unavailableResetPassword,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Voltar para entrar'));
+    await tester.pumpAndSettle();
+
+    expect(logoutCalls, 1);
+    expect(session.isPasswordRecovery, isTrue);
+    expect(session.isAuthenticated, isFalse);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.resetPassword);
+  });
+
+  testWidgets('confines a recovery session to reset when Home is requested', (tester) async {
+    final session = SuperadminSession(isPasswordRecovery: true);
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      resetPassword: unavailableResetPassword,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.home);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.resetPassword);
+    expect(find.text('Crie uma nova senha'), findsOneWidget);
+  });
+
+  testWidgets('confines a recovery session to reset when a protected route is requested', (
+    tester,
+  ) async {
+    final session = SuperadminSession(isPasswordRecovery: true);
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      resetPassword: unavailableResetPassword,
+      institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.institutions);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.resetPassword);
+    expect(find.text('Crie uma nova senha'), findsOneWidget);
+  });
+
+  testWidgets('confines a recovery session before development preview routes', (tester) async {
+    final session = SuperadminSession(isPasswordRecovery: true);
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      resetPassword: unavailableResetPassword,
+      allowDevelopmentPreview: true,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.devHome);
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 

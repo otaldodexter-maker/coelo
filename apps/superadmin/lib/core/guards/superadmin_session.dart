@@ -10,7 +10,7 @@ final class SuperadminSession extends ChangeNotifier {
     bool isPasswordRecovery = false,
     Stream<bool>? authStateChanges,
     Stream<CoeloAuthSessionState>? authSessionStateChanges,
-  }) : _isAuthenticated = isPasswordRecovery,
+  }) : _isAuthenticated = false,
        _authContext = null,
        _isPasswordRecovery = isPasswordRecovery {
     _authStateSubscription = authStateChanges?.distinct().listen(
@@ -104,11 +104,13 @@ final class SuperadminSession extends ChangeNotifier {
       _authContext = null;
       _sessionId = null;
     }
-    if (_isAuthenticated == state.isAuthenticated &&
+    final isAuthenticated =
+        state.kind == CoeloAuthSessionKind.authenticated && _authContext != null;
+    if (_isAuthenticated == isAuthenticated &&
         _isPasswordRecovery == state.isPasswordRecovery) {
       return;
     }
-    _isAuthenticated = state.isAuthenticated;
+    _isAuthenticated = isAuthenticated;
     _isPasswordRecovery = state.isPasswordRecovery;
     notifyListeners();
   }
