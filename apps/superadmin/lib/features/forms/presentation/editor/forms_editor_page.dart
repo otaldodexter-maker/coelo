@@ -33,6 +33,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   String? _expandedQuestionId;
   var _previewVisible = false;
   late bool _recurring;
+  late _FormsEditorPeriodicity _periodicity;
+  late DateTime? _firstOccurrenceAt;
+  late Set<int> _weekdays;
   String? _feedback;
   var _nextId = 20;
 
@@ -48,6 +51,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     );
     _context = TextEditingController(text: widget.development ? 'Todas as unidades' : '');
     _recurring = widget.development;
+    _periodicity = _FormsEditorPeriodicity.weekly;
+    _firstOccurrenceAt = widget.development ? DateTime(2026, 9, 8, 8) : null;
+    _weekdays = {DateTime.monday, DateTime.wednesday};
     _sections.addAll(widget.development ? _fixtureSections() : _neutralSections());
     _expandedQuestionId = _sections.first.questions.last.id;
     _title.addListener(_markChanged);
@@ -219,8 +225,8 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
               onChanged: (_) => _markChanged(),
             ),
             CoeloAdminToggleField(
-              label: 'Recorrente',
-              description: 'Gera tarefas agendadas.',
+              label: 'Gerar ocorrências',
+              description: 'Cria aberturas recorrentes para a rotina de cuidado.',
               value: _recurring,
               onChanged: widget.development
                   ? (value) => setState(() {
@@ -230,30 +236,105 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                   : null,
             ),
           ];
-          if (stack) {
-            return Column(
-              children: [
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (stack)
                 for (var index = 0; index < fields.length; index++) ...[
                   fields[index],
                   if (index < fields.length - 1) const SizedBox(height: CoeloSpacing.space4),
-                ],
+                ]
+              else
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: fields[0]),
+                    const SizedBox(width: CoeloSpacing.space3),
+                    Expanded(child: fields[1]),
+                    const SizedBox(width: CoeloSpacing.space3),
+                    SizedBox(width: 220, child: fields[2]),
+                  ],
+                ),
+              if (_recurring) ...[
+                const SizedBox(height: CoeloSpacing.space4),
+                _occurrenceSchedule(),
               ],
-            );
-          }
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: fields[0]),
-              const SizedBox(width: CoeloSpacing.space3),
-              Expanded(child: fields[1]),
-              const SizedBox(width: CoeloSpacing.space3),
-              SizedBox(width: 220, child: fields[2]),
             ],
           );
         },
       ),
     );
   }
+
+  Widget _occurrenceSchedule() => LayoutBuilder(
+    builder: (context, constraints) {
+      final stack = constraints.maxWidth < 720 || MediaQuery.textScalerOf(context).scale(1) > 1.3;
+      final startsAt = CoeloDateTimeField(
+        key: const Key('forms-editor-first-occurrence'),
+        value: _firstOccurrenceAt,
+        currentDate: DateTime(2026, 8, 31),
+        firstDate: DateTime(2026, 8, 31),
+        lastDate: DateTime(2028, 12, 31),
+        labelText: 'Primeira ocorrência',
+        enabled: widget.development,
+        onChanged: (value) => setState(() {
+          _firstOccurrenceAt = value;
+          _feedback = null;
+        }),
+      );
+      final periodicity = CoeloAdminSingleSelectField<_FormsEditorPeriodicity>(
+        key: const Key('forms-editor-periodicity'),
+        label: 'Periodicidade',
+        value: _periodicity,
+        options: _FormsEditorPeriodicity.values,
+        optionLabel: _periodicityLabel,
+        prefixIcon: Icons.repeat_rounded,
+        enabled: widget.development,
+        onChanged: (value) => setState(() {
+          _periodicity = value;
+          _feedback = null;
+        }),
+      );
+      final weekdays = CoeloAdminMultiSelectField<int>(
+        key: const Key('forms-editor-weekdays'),
+        label: 'Dias da semana',
+        options: const [1, 2, 3, 4, 5, 6, 7],
+        selectedValues: _weekdays,
+        optionLabel: _weekdayLabel,
+        enabled: widget.development && _periodicity == _FormsEditorPeriodicity.weekly,
+        onChanged: (value) => setState(() {
+          _weekdays = value;
+          _feedback = null;
+        }),
+      );
+      if (stack) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            startsAt,
+            const SizedBox(height: CoeloSpacing.space4),
+            periodicity,
+            if (_periodicity == _FormsEditorPeriodicity.weekly) ...[
+              const SizedBox(height: CoeloSpacing.space4),
+              weekdays,
+            ],
+          ],
+        );
+      }
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: startsAt),
+          const SizedBox(width: CoeloSpacing.space3),
+          Expanded(child: periodicity),
+          if (_periodicity == _FormsEditorPeriodicity.weekly) ...[
+            const SizedBox(width: CoeloSpacing.space3),
+            Expanded(child: weekdays),
+          ],
+        ],
+      );
+    },
+  );
 
   Widget _questionCanvas() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -823,6 +904,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       _title.text = '01 - ANHEMBI - FOTOS';
       _context.text = 'Todas as unidades';
       _recurring = true;
+      _periodicity = _FormsEditorPeriodicity.weekly;
+      _firstOccurrenceAt = DateTime(2026, 9, 8, 8);
+      _weekdays = {DateTime.monday, DateTime.wednesday};
     });
   }
 
@@ -910,6 +994,26 @@ final class _FormsPublishIntent {
   final DateTime? scheduledAt;
 }
 
+enum _FormsEditorPeriodicity { daily, weekly, monthly }
+
+String _periodicityLabel(_FormsEditorPeriodicity value) => switch (value) {
+  _FormsEditorPeriodicity.daily => 'Diária',
+  _FormsEditorPeriodicity.weekly => 'Semanal',
+  _FormsEditorPeriodicity.monthly => 'Mensal',
+};
+
+String _weekdayLabel(int value) => const {
+  DateTime.monday: 'Segunda-feira',
+  DateTime.tuesday: 'Terça-feira',
+  DateTime.wednesday: 'Quarta-feira',
+  DateTime.thursday: 'Quinta-feira',
+  DateTime.friday: 'Sexta-feira',
+  DateTime.saturday: 'Sábado',
+  DateTime.sunday: 'Domingo',
+}[value]!;
+
+enum _FormsPublishMode { now, scheduled }
+
 final class _FormsPublishDialog extends StatefulWidget {
   const _FormsPublishDialog();
 
@@ -918,8 +1022,10 @@ final class _FormsPublishDialog extends StatefulWidget {
 }
 
 final class _FormsPublishDialogState extends State<_FormsPublishDialog> {
-  bool _scheduled = false;
+  var _mode = _FormsPublishMode.now;
   DateTime? _scheduledAt;
+
+  bool get _scheduled => _mode == _FormsPublishMode.scheduled;
 
   @override
   Widget build(BuildContext context) => CoeloAdminDialogShell(
@@ -932,27 +1038,22 @@ final class _FormsPublishDialogState extends State<_FormsPublishDialog> {
           'Esta ação altera somente a fixture local do /dev. Nenhuma publicação ou notificação remota será executada.',
         ),
         const SizedBox(height: CoeloSpacing.space4),
-        Wrap(
-          spacing: CoeloSpacing.space2,
-          runSpacing: CoeloSpacing.space2,
-          children: [
-            ChoiceChip(
-              key: const Key('forms-editor-publish-now'),
-              label: const Text('Publicar agora'),
-              selected: !_scheduled,
-              onSelected: (_) => setState(() => _scheduled = false),
-            ),
-            ChoiceChip(
-              key: const Key('forms-editor-publish-scheduled'),
-              label: const Text('Agendar publicação'),
-              selected: _scheduled,
-              onSelected: (_) => setState(() => _scheduled = true),
-            ),
-          ],
+        CoeloAdminSingleSelectField<_FormsPublishMode>(
+          key: const Key('forms-editor-publish-mode'),
+          label: 'Quando publicar',
+          value: _mode,
+          options: _FormsPublishMode.values,
+          optionLabel: (value) => switch (value) {
+            _FormsPublishMode.now => 'Publicar agora',
+            _FormsPublishMode.scheduled => 'Agendar publicação',
+          },
+          prefixIcon: Icons.publish_outlined,
+          onChanged: (value) => setState(() => _mode = value),
         ),
         if (_scheduled) ...[
           const SizedBox(height: CoeloSpacing.space4),
           CoeloDateTimeField(
+            key: const Key('forms-editor-publish-scheduled-at'),
             value: _scheduledAt,
             currentDate: DateTime(2026, 8, 31),
             firstDate: DateTime(2026, 8, 31),

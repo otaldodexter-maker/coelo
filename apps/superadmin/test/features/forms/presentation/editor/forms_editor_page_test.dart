@@ -46,6 +46,8 @@ void main() {
         .widgetList<TextFormField>(find.byType(TextFormField))
         .firstWhere((field) => field.controller != null);
     expect(titleField.controller!.text, 'Enquete rápida sobre transporte');
+    expect(find.byKey(const Key('forms-editor-periodicity')), findsOneWidget);
+    expect(find.byKey(const Key('forms-editor-first-occurrence')), findsOneWidget);
   });
 
   testWidgets('keeps preview hidden until requested and owns the canonical footer', (tester) async {
@@ -190,6 +192,8 @@ void main() {
     await tester.tap(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'));
     await tester.pumpAndSettle();
     expect(find.text('Publicar formulário'), findsOneWidget);
+    expect(find.byKey(const Key('forms-editor-publish-mode')), findsOneWidget);
+    expect(find.byType(ChoiceChip), findsNothing);
     expect(find.text('Publicar agora'), findsWidgets);
     await tester.tap(find.byKey(const Key('forms-editor-confirm-publish')));
     await tester.pumpAndSettle();
@@ -198,14 +202,18 @@ void main() {
 
     await tester.tap(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('forms-editor-publish-scheduled')));
+    final dynamic publishMode = tester.widget(find.byKey(const Key('forms-editor-publish-mode')));
+    publishMode.onChanged(publishMode.options.last);
     await tester.pumpAndSettle();
+    expect(find.byKey(const Key('forms-editor-publish-scheduled-at')), findsOneWidget);
     expect(
       tester.widget<FilledButton>(find.byKey(const Key('forms-editor-confirm-publish'))).onPressed,
       isNull,
     );
     expect(find.textContaining('Escolha a data e a hora'), findsOneWidget);
-    final dateField = tester.widget<CoeloDateTimeField>(find.byType(CoeloDateTimeField));
+    final dateField = tester.widget<CoeloDateTimeField>(
+      find.byKey(const Key('forms-editor-publish-scheduled-at')),
+    );
     dateField.onChanged(DateTime(2026, 9, 12, 8, 30));
     await tester.pump();
     await tester.tap(find.byKey(const Key('forms-editor-confirm-publish')));

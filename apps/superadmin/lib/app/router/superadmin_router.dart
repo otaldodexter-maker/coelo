@@ -1269,8 +1269,14 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.formsName,
             builder: (context, state) => FormsDirectoryPage(
               api: formsApi,
+              canManage: true,
+              onCreate: () => context.goNamed(SuperadminRoutes.formCreateName),
               onOpen: (form) => context.goNamed(
                 SuperadminRoutes.formOverviewName,
+                pathParameters: {'formId': form.id},
+              ),
+              onResponses: (form) => context.goNamed(
+                SuperadminRoutes.formResponsesName,
                 pathParameters: {'formId': form.id},
               ),
               onManageSchedules: (form) => showFormsScheduleDialog(
@@ -3159,6 +3165,10 @@ GoRouter createSuperadminRouter({
               onCreate: () => context.goNamed(SuperadminRoutes.devFormCreateName),
               onOpen: (form) => context.goNamed(
                 SuperadminRoutes.devFormOverviewName,
+                pathParameters: {'formId': form.id},
+              ),
+              onResponses: (form) => context.goNamed(
+                SuperadminRoutes.devFormResponsesName,
                 pathParameters: {'formId': form.id},
               ),
               onEdit: (form) => context.goNamed(

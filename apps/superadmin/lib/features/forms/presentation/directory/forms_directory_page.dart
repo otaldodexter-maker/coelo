@@ -28,6 +28,7 @@ final class FormsDirectoryPage extends StatefulWidget {
     this.onOpen,
     this.onEdit,
     this.onManageSchedules,
+    this.onResponses,
     this.onLifecycleCompleted,
     this.visualMetadata = const {},
     super.key,
@@ -41,6 +42,7 @@ final class FormsDirectoryPage extends StatefulWidget {
   final ValueChanged<FormDirectoryItem>? onOpen;
   final ValueChanged<FormDirectoryItem>? onEdit;
   final ValueChanged<FormDirectoryItem>? onManageSchedules;
+  final ValueChanged<FormDirectoryItem>? onResponses;
   final VoidCallback? onLifecycleCompleted;
   final Map<String, DevelopmentFormVisualMetadata> visualMetadata;
 
@@ -330,6 +332,7 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
       onOpen: widget.onOpen,
       onEdit: widget.onEdit,
       onManageSchedules: widget.onManageSchedules,
+      onResponses: widget.onResponses,
       onLifecycleCompleted: _resetAndLoad,
       visualMetadata: widget.visualMetadata,
     ),
@@ -341,7 +344,7 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
       if (widget.canManage && widget.onCreate != null) ...[
         CoeloAdminCreateAction(
           key: const Key('forms-directory-create'),
-          label: 'Novo formulário',
+          label: 'Criar formulário',
           description: 'Criar e configurar um formulário.',
           variant: CoeloAdminCreateActionVariant.banner,
           onPressed: widget.onCreate,
@@ -368,6 +371,7 @@ final class FormsDirectoryResults extends StatelessWidget {
     this.onOpen,
     this.onEdit,
     this.onManageSchedules,
+    this.onResponses,
     this.onLifecycleCompleted,
     this.includePagination = true,
     this.visualMetadata = const {},
@@ -387,6 +391,7 @@ final class FormsDirectoryResults extends StatelessWidget {
   final ValueChanged<FormDirectoryItem>? onOpen;
   final ValueChanged<FormDirectoryItem>? onEdit;
   final ValueChanged<FormDirectoryItem>? onManageSchedules;
+  final ValueChanged<FormDirectoryItem>? onResponses;
   final VoidCallback? onLifecycleCompleted;
   final bool includePagination;
   final Map<String, DevelopmentFormVisualMetadata> visualMetadata;
@@ -404,7 +409,7 @@ final class FormsDirectoryResults extends StatelessWidget {
         if (canManage) ...[
           CoeloAdminCreateAction(
             key: const Key('forms-directory-create'),
-            label: 'Novo formulário',
+            label: 'Criar formulário',
             description: 'Criar e configurar um formulário.',
             variant: CoeloAdminCreateActionVariant.banner,
             onPressed: onCreate,
@@ -445,7 +450,7 @@ final class FormsDirectoryResults extends StatelessWidget {
               height: 216,
               child: CoeloAdminCreateAction(
                 key: const Key('forms-directory-create'),
-                label: 'Novo formulário',
+                label: 'Criar formulário',
                 variant: CoeloAdminCreateActionVariant.tile,
                 onPressed: onCreate,
               ),
@@ -480,7 +485,9 @@ final class FormsDirectoryResults extends StatelessWidget {
                       Text(_kindLabel(item.kind)),
                       const SizedBox(height: CoeloSpacing.space4),
                       Text('Atualizado em ${_shortDate(item.updatedAt)}'),
-                      if (canManageLifecycle || onManageSchedules != null) ...[
+                      if (canManageLifecycle ||
+                          onManageSchedules != null ||
+                          onResponses != null) ...[
                         const SizedBox(height: CoeloSpacing.space2),
                         Align(alignment: Alignment.centerRight, child: _actions(item)),
                       ],
@@ -557,7 +564,7 @@ final class FormsDirectoryResults extends StatelessWidget {
           return Text(createdAt == null ? '—' : _shortDate(createdAt));
         },
       ),
-      if (canManageLifecycle || onManageSchedules != null)
+      if (canManageLifecycle || onManageSchedules != null || onResponses != null)
         CoeloAdminTableColumn(
           id: 'actions',
           label: 'Ações',
@@ -581,6 +588,7 @@ final class FormsDirectoryResults extends StatelessWidget {
     canTransferCrossInstitution: canTransferCrossInstitution,
     onEdit: onEdit == null ? null : () => onEdit!(item),
     onManageSchedules: onManageSchedules == null ? null : () => onManageSchedules!(item),
+    onResponses: onResponses == null ? null : () => onResponses!(item),
     onCompleted: onLifecycleCompleted,
   );
 }
