@@ -34,7 +34,6 @@ import '../features/safety/application/child_safety_controller.dart';
 import '../features/safety/domain/child_safety_contract.dart';
 import '../features/access_profiles/domain/access_profile.dart';
 import '../features/groups/domain/group_directory.dart';
-import '../features/health_care/domain/health_care_repository.dart';
 import '../features/health_care/domain/medication_plan_repository.dart';
 import 'router/superadmin_router.dart';
 import 'theme/superadmin_theme_mode_scope.dart';
@@ -97,7 +96,6 @@ class SuperadminApp extends StatefulWidget {
     this.routineRepository = const UnavailableRoutineRepository(),
     this.auditRepository = const UnavailableAuditRepository(),
     this.childSafetyRepository = const UnavailableChildSafetyRepository(),
-    this.healthCareRepository = const UnavailableHealthCareRepository(),
     this.medicationPlanRepository = const UnavailableMedicationPlanRepository(),
     this.userPreferencesRepository,
     super.key,
@@ -126,7 +124,6 @@ class SuperadminApp extends StatefulWidget {
   final RoutineRepository routineRepository;
   final AuditRepository auditRepository;
   final ChildSafetyRepository childSafetyRepository;
-  final HealthCareRepository healthCareRepository;
   final MedicationPlanRepository medicationPlanRepository;
   final UserPreferencesRepository? userPreferencesRepository;
 
@@ -175,7 +172,6 @@ class _SuperadminAppState extends State<SuperadminApp> {
       routineRepository: widget.routineRepository,
       auditRepository: widget.auditRepository,
       childSafetyController: _childSafetyController,
-      healthCareRepository: widget.healthCareRepository,
       medicationPlanRepository: widget.medicationPlanRepository,
       userPreferencesController: _preferencesController,
       onThemeModeChanged: _setThemeMode,

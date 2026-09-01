@@ -10,8 +10,6 @@ import 'package:coelo_superadmin/features/audit/data/supabase_audit_repository.d
 import 'package:coelo_superadmin/features/audit/domain/audit.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/daily_routine/domain/routine_contract.dart';
-import 'package:coelo_superadmin/features/health_care/data/supabase_health_care_repository.dart';
-import 'package:coelo_superadmin/features/health_care/domain/health_care_repository.dart';
 import 'package:coelo_superadmin/features/health_care/domain/medication_plan_repository.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_directory.dart';
 import 'package:coelo_superadmin/features/invites/domain/platform_invite.dart';
@@ -66,7 +64,6 @@ void main() {
     expect(scope.unitBackendCommands, isA<UnavailableUnitBackendCommandsGateway>());
     expect(scope.attendancePermissions.canManage, isFalse);
     expect(scope.auditRepository, isA<UnavailableAuditRepository>());
-    expect(scope.healthCareRepository, isA<UnavailableHealthCareRepository>());
   });
 
   test('initializes Supabase with public config and conditional local storage', () async {
@@ -107,7 +104,6 @@ void main() {
     expect(scope.attendancePermissions.canManage, isFalse);
     expect(scope.attendancePermissions.backendResolved, isTrue);
     expect(scope.auditRepository, isA<SupabaseAuditRepository>());
-    expect(scope.healthCareRepository, isA<SupabaseHealthCareRepository>());
     expect(scope.medicationPlanRepository, isA<UnavailableMedicationPlanRepository>());
   });
 

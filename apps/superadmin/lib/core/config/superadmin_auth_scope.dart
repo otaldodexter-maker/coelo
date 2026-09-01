@@ -22,9 +22,6 @@ import '../../features/auth/domain/login_request.dart';
 import '../../features/auth/domain/logout_action.dart';
 import '../../features/auth/domain/password_recovery.dart';
 import '../../features/daily_routine/domain/routine_contract.dart';
-import '../../features/health_care/data/supabase_health_care_repository.dart';
-import '../../features/health_care/domain/health_care.dart';
-import '../../features/health_care/domain/health_care_repository.dart';
 import '../../features/health_care/domain/medication_plan_repository.dart';
 import '../../features/meal_plans/data/supabase_meal_plan_repository.dart';
 import '../../features/meal_plans/data/supabase_meal_plan_image_repository.dart';
@@ -88,7 +85,6 @@ final class SuperadminAuthScope {
     required this.routineRepository,
     required this.auditRepository,
     required this.childSafetyRepository,
-    this.healthCareRepository = const UnavailableHealthCareRepository(),
     required this.medicationPlanRepository,
     required this.mealPlanRepository,
     required this.mealPlanImageRepository,
@@ -119,7 +115,6 @@ final class SuperadminAuthScope {
   final RoutineRepository routineRepository;
   final AuditRepository auditRepository;
   final ChildSafetyRepository childSafetyRepository;
-  final HealthCareRepository healthCareRepository;
   final MedicationPlanRepository medicationPlanRepository;
   final MealPlanRepository mealPlanRepository;
   final MealPlanImageRepository mealPlanImageRepository;
@@ -176,18 +171,6 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       routineRepository: const UnavailableRoutineRepository(),
       auditRepository: SupabaseAuditRepository(client),
       childSafetyRepository: SupabaseChildSafetyRepository(client),
-      healthCareRepository: SupabaseHealthCareRepository(
-        client,
-        actorProvider: () {
-          final authenticatedUser = client.auth.currentUser;
-          return authenticatedUser == null
-              ? null
-              : HealthCareActor(
-                  id: authenticatedUser.id,
-                  profile: HealthCareAccessProfile.sensitiveReader,
-                );
-        },
-      ),
       medicationPlanRepository: const UnavailableMedicationPlanRepository(),
       mealPlanRepository: SupabaseMealPlanRepository(client),
       mealPlanImageRepository: SupabaseMealPlanImageRepository(client),
@@ -237,7 +220,6 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthGateway auth) {
     routineRepository: const UnavailableRoutineRepository(),
     auditRepository: const UnavailableAuditRepository(),
     childSafetyRepository: const UnavailableChildSafetyRepository(),
-    healthCareRepository: const UnavailableHealthCareRepository(),
     medicationPlanRepository: const UnavailableMedicationPlanRepository(),
     mealPlanRepository: const UnavailableMealPlanRepository(),
     mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
