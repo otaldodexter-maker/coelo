@@ -266,31 +266,46 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
                   : box.maxWidth >= 720
                   ? 2
                   : 1;
-              final width = (box.maxWidth - CoeloSpacing.space6 * (columns - 1)) / columns;
-              return Wrap(
-                spacing: CoeloSpacing.space6,
-                runSpacing: CoeloSpacing.space6,
+              final cards = <Widget>[
+                if (c.canCreate && widget.onCreate != null)
+                  ConstrainedBox(
+                    key: const Key('safety-create-card'),
+                    constraints: const BoxConstraints(minHeight: 220),
+                    child: CoeloAdminCreateAction(
+                      label: 'Criar segurança',
+                      icon: Icons.add_moderator_outlined,
+                      onPressed: widget.onCreate,
+                    ),
+                  ),
+                for (final record in c.records)
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 220),
+                    child: SafetyChildDirectoryCard(
+                      record: record,
+                      onPressed: () => widget.onOpenChild(record.childId),
+                    ),
+                  ),
+              ];
+              return Column(
                 children: [
-                  if (c.canCreate && widget.onCreate != null)
-                    SizedBox(
-                      key: const Key('safety-create-card'),
-                      width: width,
-                      height: 220,
-                      child: CoeloAdminCreateAction(
-                        label: 'Criar segurança',
-                        icon: Icons.add_moderator_outlined,
-                        onPressed: widget.onCreate,
+                  for (var start = 0; start < cards.length; start += columns) ...[
+                    IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (var column = 0; column < columns; column++) ...[
+                            Expanded(
+                              child: start + column < cards.length
+                                  ? cards[start + column]
+                                  : const SizedBox.shrink(),
+                            ),
+                            if (column + 1 < columns) const SizedBox(width: CoeloSpacing.space6),
+                          ],
+                        ],
                       ),
                     ),
-                  for (final record in c.records)
-                    SizedBox(
-                      width: width,
-                      height: 220,
-                      child: SafetyChildDirectoryCard(
-                        record: record,
-                        onPressed: () => widget.onOpenChild(record.childId),
-                      ),
-                    ),
+                    if (start + columns < cards.length) const SizedBox(height: CoeloSpacing.space6),
+                  ],
                 ],
               );
             },
