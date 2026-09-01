@@ -344,13 +344,14 @@ void main() {
   });
 }
 
-final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
+final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
   _FakeCoeloAuthGateway({
     required this.isAuthenticated,
     required Stream<bool> authStateChanges,
     this.initialSessionState,
   }) : _authStateChanges = authStateChanges;
 
+  @override
   bool isAuthenticated;
   String sessionId = _sessionA;
   final CoeloAuthSessionState? initialSessionState;
@@ -367,14 +368,14 @@ final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
           : const CoeloAuthSessionState.signedOut());
 
   @override
-  Stream<CoeloAuthSessionState> get authStateChanges => _authStateChanges.map(
+  Stream<CoeloAuthSessionState> get authSessionStateChanges => _authStateChanges.map(
     (authenticated) => authenticated
         ? CoeloAuthSessionState.authenticated(sessionId: sessionId)
         : const CoeloAuthSessionState.signedOut(),
   );
 
   @override
-  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecoveryWithRedirect({
     required String email,
     required Uri redirectTo,
   }) async {

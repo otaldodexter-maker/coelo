@@ -14,11 +14,14 @@ final class PasswordRecoveryResult {
 }
 
 PasswordRecoveryAction createCoeloAuthPasswordRecoveryAction({
-  required CoeloAuthGateway auth,
+  required CoeloAuthLifecycleGateway auth,
   required Uri redirectTo,
 }) {
   return (email) async {
-    final result = await auth.requestPasswordRecovery(email: email, redirectTo: redirectTo);
+    final result = await auth.requestPasswordRecoveryWithRedirect(
+      email: email,
+      redirectTo: redirectTo,
+    );
     if (result.isSuccess) {
       return const PasswordRecoveryResult.success();
     }

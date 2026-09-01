@@ -125,14 +125,28 @@ void main() {
       expect(gateway.isAuthenticated, isFalse);
       expectLater(
         gateway.authStateChanges,
-        emitsInOrder(const <CoeloAuthSessionState>[
-          CoeloAuthSessionState.authenticated(),
-          CoeloAuthSessionState.signedOut(),
-        ]),
+        emitsInOrder(const <bool>[true, false]),
       );
 
       controller.add(const CoeloAuthSessionState.authenticated());
+      controller.add(const CoeloAuthSessionState.passwordRecovery());
       controller.add(const CoeloAuthSessionState.signedOut());
+    },
+  );
+
+  test(
+    'keeps the legacy gateway contract independently implementable',
+    () async {
+      final CoeloAuthGateway gateway = _LegacyCoeloAuthGateway();
+
+      expect(gateway.isAuthenticated, isFalse);
+      expect(await gateway.authStateChanges.toList(), isEmpty);
+      expect(
+        (await gateway.requestPasswordRecovery(
+          email: 'owner@coelo.me',
+        )).isSuccess,
+        isTrue,
+      );
     },
   );
 
@@ -169,7 +183,7 @@ void main() {
       sessionPersistence: _FakeSessionPersistence(),
     );
 
-    final result = await gateway.requestPasswordRecovery(
+    final result = await gateway.requestPasswordRecoveryWithRedirect(
       email: 'owner@coelo.me',
       redirectTo: Uri.parse('http://127.0.0.1:8766/reset-password'),
     );
@@ -183,6 +197,25 @@ void main() {
     );
   });
 
+  test(
+    'preserves password recovery without redirect for legacy consumers',
+    () async {
+      final api = _FakeSupabaseAuthApi(isAuthenticated: false);
+      final CoeloAuthGateway gateway = SupabaseCoeloAuthGateway.test(
+        api,
+        sessionPersistence: _FakeSessionPersistence(),
+      );
+
+      final result = await gateway.requestPasswordRecovery(
+        email: 'catalogo@coelo.me',
+      );
+
+      expect(result.isSuccess, isTrue);
+      expect(api.lastRecoveryEmail, 'catalogo@coelo.me');
+      expect(api.lastRecoveryRedirect, isNull);
+    },
+  );
+
   test('maps password recovery failures to a safe generic message', () async {
     final gateway = SupabaseCoeloAuthGateway.test(
       _FakeSupabaseAuthApi(
@@ -192,7 +225,7 @@ void main() {
       sessionPersistence: _FakeSessionPersistence(),
     );
 
-    final result = await gateway.requestPasswordRecovery(
+    final result = await gateway.requestPasswordRecoveryWithRedirect(
       email: 'owner@coelo.me',
       redirectTo: Uri.parse('http://127.0.0.1:8766/reset-password'),
     );
@@ -208,7 +241,7 @@ void main() {
   test('keeps password recovery unavailable without Supabase config', () async {
     const gateway = UnavailableCoeloAuthGateway();
 
-    final result = await gateway.requestPasswordRecovery(
+    final result = await gateway.requestPasswordRecoveryWithRedirect(
       email: 'owner@coelo.me',
       redirectTo: Uri.parse('http://127.0.0.1:8766/reset-password'),
     );
@@ -232,8 +265,9 @@ void main() {
 
       expect(gateway.currentSessionState.isAuthenticated, isTrue);
       expect(gateway.currentSessionState.isPasswordRecovery, isTrue);
+      expect(gateway.isAuthenticated, isFalse);
       expectLater(
-        gateway.authStateChanges,
+        gateway.authSessionStateChanges,
         emitsInOrder(const <CoeloAuthSessionState>[
           CoeloAuthSessionState.passwordRecovery(),
           CoeloAuthSessionState.signedOut(),
@@ -337,6 +371,31 @@ void main() {
   );
 }
 
+final class _LegacyCoeloAuthGateway implements CoeloAuthGateway {
+  @override
+  bool get isAuthenticated => false;
+
+  @override
+  Stream<bool> get authStateChanges => const Stream<bool>.empty();
+
+  @override
+  Future<CoeloAuthSignInResult> signInWithPassword({
+    required String email,
+    required String password,
+    required bool persistSession,
+  }) async => const CoeloAuthSignInResult.failure(
+    CoeloAuthSignInResult.genericFailureMessage,
+  );
+
+  @override
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
+    required String email,
+  }) async => const CoeloAuthPasswordRecoveryResult.success();
+
+  @override
+  Future<void> signOut() async {}
+}
+
 final class _FakeSupabaseAuthApi implements CoeloSupabaseAuthApi {
   _FakeSupabaseAuthApi({
     bool isAuthenticated = false,
@@ -376,7 +435,7 @@ final class _FakeSupabaseAuthApi implements CoeloSupabaseAuthApi {
   @override
   Future<void> requestPasswordRecovery({
     required String email,
-    required Uri redirectTo,
+    Uri? redirectTo,
   }) async {
     lastRecoveryEmail = email;
     lastRecoveryRedirect = redirectTo;

@@ -33,20 +33,21 @@ void main() {
   });
 }
 
-final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
+final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
   _FakeCoeloAuthGateway({this.signOutException});
 
   final Exception? signOutException;
   bool didSignOut = false;
 
   @override
-  Stream<CoeloAuthSessionState> get authStateChanges => const Stream<CoeloAuthSessionState>.empty();
+  Stream<CoeloAuthSessionState> get authSessionStateChanges =>
+      const Stream<CoeloAuthSessionState>.empty();
 
   @override
   CoeloAuthSessionState get currentSessionState => const CoeloAuthSessionState.signedOut();
 
   @override
-  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecoveryWithRedirect({
     required String email,
     required Uri redirectTo,
   }) async {

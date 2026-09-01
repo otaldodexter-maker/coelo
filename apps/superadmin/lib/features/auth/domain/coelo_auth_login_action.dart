@@ -5,7 +5,7 @@ import 'login_request.dart';
 import 'superadmin_auth_context.dart';
 
 LoginAction createCoeloAuthLoginAction({
-  required CoeloAuthGateway auth,
+  required CoeloAuthLifecycleGateway auth,
   required SuperadminAuthContextGateway authContext,
   required SuperadminSession session,
 }) {

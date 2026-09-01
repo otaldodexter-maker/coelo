@@ -17,7 +17,7 @@ abstract interface class CoeloSupabaseAuthApi {
 
   Future<void> requestPasswordRecovery({
     required String email,
-    required Uri redirectTo,
+    Uri? redirectTo,
   });
 
   Future<void> updatePassword({required String password});
@@ -25,7 +25,7 @@ abstract interface class CoeloSupabaseAuthApi {
   Future<void> signOut();
 }
 
-final class SupabaseCoeloAuthGateway implements CoeloAuthGateway {
+final class SupabaseCoeloAuthGateway extends CoeloAuthLifecycleGateway {
   SupabaseCoeloAuthGateway(
     SupabaseClient client, {
     required CoeloAuthSessionPersistence sessionPersistence,
@@ -48,14 +48,12 @@ final class SupabaseCoeloAuthGateway implements CoeloAuthGateway {
   final CoeloAuthSessionPersistence _sessionPersistence;
 
   @override
-  Stream<CoeloAuthSessionState> get authStateChanges => _api.authStateChanges;
+  Stream<CoeloAuthSessionState> get authSessionStateChanges =>
+      _api.authStateChanges;
 
   @override
   CoeloAuthSessionState get currentSessionState => _api.currentSessionState;
 
-  bool get isAuthenticated => currentSessionState.isAuthenticated;
-
-  @override
   Future<CoeloAuthSignInResult> signInWithPassword({
     required String email,
     required String password,
@@ -87,7 +85,17 @@ final class SupabaseCoeloAuthGateway implements CoeloAuthGateway {
   @override
   Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
     required String email,
+  }) => _requestPasswordRecovery(email: email);
+
+  @override
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecoveryWithRedirect({
+    required String email,
     required Uri redirectTo,
+  }) => _requestPasswordRecovery(email: email, redirectTo: redirectTo);
+
+  Future<CoeloAuthPasswordRecoveryResult> _requestPasswordRecovery({
+    required String email,
+    Uri? redirectTo,
   }) async {
     try {
       await _api.requestPasswordRecovery(email: email, redirectTo: redirectTo);
@@ -186,8 +194,11 @@ final class _SupabaseAuthApi implements CoeloSupabaseAuthApi {
   @override
   Future<void> requestPasswordRecovery({
     required String email,
-    required Uri redirectTo,
+    Uri? redirectTo,
   }) {
+    if (redirectTo == null) {
+      return _client.auth.resetPasswordForEmail(email);
+    }
     return _client.auth.resetPasswordForEmail(
       email,
       redirectTo: redirectTo.toString(),

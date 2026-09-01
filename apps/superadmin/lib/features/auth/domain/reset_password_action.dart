@@ -13,7 +13,7 @@ final class ResetPasswordResult {
   final String? message;
 }
 
-ResetPasswordAction createCoeloAuthResetPasswordAction({required CoeloAuthGateway auth}) {
+ResetPasswordAction createCoeloAuthResetPasswordAction({required CoeloAuthLifecycleGateway auth}) {
   return (password) async {
     final result = await auth.updatePassword(password: password);
     if (result.isSuccess) {

@@ -354,15 +354,10 @@ final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
   final CoeloAuthSignInResult signInResult;
   final Exception? signInException;
   final Exception? signOutException;
-  final _authStateController =
-      StreamController<CoeloAuthSessionState>.broadcast();
-
-  bool isAuthenticated;
+  final _authStateController = StreamController<bool>.broadcast();
 
   @override
-  CoeloAuthSessionState get currentSessionState => isAuthenticated
-      ? const CoeloAuthSessionState.authenticated()
-      : const CoeloAuthSessionState.signedOut();
+  bool isAuthenticated;
 
   String? email;
   String? password;
@@ -370,17 +365,12 @@ final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
   var signOutCount = 0;
 
   @override
-  Stream<CoeloAuthSessionState> get authStateChanges =>
-      _authStateController.stream;
+  Stream<bool> get authStateChanges => _authStateController.stream;
 
   Future<void> close() => _authStateController.close();
 
   void emitAuthState(bool isAuthenticated) {
-    _authStateController.add(
-      isAuthenticated
-          ? const CoeloAuthSessionState.authenticated()
-          : const CoeloAuthSessionState.signedOut(),
-    );
+    _authStateController.add(isAuthenticated);
   }
 
   void emitAuthError(Exception error) {
@@ -388,18 +378,8 @@ final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
   }
 
   @override
-  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
-    required String email,
-    required Uri redirectTo,
-  }) async {
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({required String email}) async {
     return const CoeloAuthPasswordRecoveryResult.success();
-  }
-
-  @override
-  Future<CoeloAuthPasswordUpdateResult> updatePassword({
-    required String password,
-  }) async {
-    return const CoeloAuthPasswordUpdateResult.success();
   }
 
   @override

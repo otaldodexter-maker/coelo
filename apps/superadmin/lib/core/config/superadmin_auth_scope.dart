@@ -58,7 +58,7 @@ typedef SupabaseInitializer =
     });
 
 typedef CoeloAuthGatewayFactory =
-    CoeloAuthGateway Function({
+    CoeloAuthLifecycleGateway Function({
       required SupabaseClient client,
       required CoeloAuthSessionPersistence sessionPersistence,
       required String? initialRecoveryAccessToken,
@@ -162,7 +162,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
     final initialState = auth.currentSessionState;
     final session = SuperadminSession(
       isPasswordRecovery: initialState.isPasswordRecovery,
-      authSessionStateChanges: auth.authStateChanges,
+      authSessionStateChanges: auth.authSessionStateChanges,
     );
     if (initialState.kind == CoeloAuthSessionKind.authenticated) {
       final expectedRevision = session.authorizationInvalidationRevision;
@@ -238,7 +238,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
   }
 }
 
-SuperadminAuthScope _createUnavailableScope(CoeloAuthGateway auth) {
+SuperadminAuthScope _createUnavailableScope(CoeloAuthLifecycleGateway auth) {
   final session = SuperadminSession();
   const authContext = UnavailableSuperadminAuthContextGateway();
   return SuperadminAuthScope(
@@ -277,7 +277,7 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthGateway auth) {
   );
 }
 
-CoeloAuthGateway _createAuthGateway({
+CoeloAuthLifecycleGateway _createAuthGateway({
   required SupabaseClient client,
   required CoeloAuthSessionPersistence sessionPersistence,
   required String? initialRecoveryAccessToken,

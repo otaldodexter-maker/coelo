@@ -1,6 +1,6 @@
 abstract interface class CoeloAuthGateway {
-  CoeloAuthSessionState get currentSessionState;
-  Stream<CoeloAuthSessionState> get authStateChanges;
+  bool get isAuthenticated;
+  Stream<bool> get authStateChanges;
 
   Future<CoeloAuthSignInResult> signInWithPassword({
     required String email,
@@ -10,6 +10,25 @@ abstract interface class CoeloAuthGateway {
 
   Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
     required String email,
+  });
+
+  Future<void> signOut();
+}
+
+abstract class CoeloAuthLifecycleGateway implements CoeloAuthGateway {
+  const CoeloAuthLifecycleGateway();
+
+  CoeloAuthSessionState get currentSessionState;
+  Stream<CoeloAuthSessionState> get authSessionStateChanges;
+
+  Future<CoeloAuthSignInResult> signInWithPassword({
+    required String email,
+    required String password,
+    required bool persistSession,
+  });
+
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecoveryWithRedirect({
+    required String email,
     required Uri redirectTo,
   });
 
@@ -17,7 +36,25 @@ abstract interface class CoeloAuthGateway {
     required String password,
   });
 
-  Future<void> signOut();
+  @override
+  bool get isAuthenticated =>
+      currentSessionState.kind == CoeloAuthSessionKind.authenticated;
+
+  @override
+  Stream<bool> get authStateChanges => authSessionStateChanges
+      .map((state) => state.kind == CoeloAuthSessionKind.authenticated)
+      .distinct();
+
+  @override
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
+    required String email,
+  }) {
+    return Future.value(
+      const CoeloAuthPasswordRecoveryResult.failure(
+        CoeloAuthPasswordRecoveryResult.genericFailureMessage,
+      ),
+    );
+  }
 }
 
 enum CoeloAuthSessionKind { signedOut, authenticated, passwordRecovery }
@@ -100,7 +137,7 @@ final class CoeloAuthPasswordUpdateResult {
   final String? message;
 }
 
-final class UnavailableCoeloAuthGateway implements CoeloAuthGateway {
+final class UnavailableCoeloAuthGateway extends CoeloAuthLifecycleGateway {
   const UnavailableCoeloAuthGateway({this.message = defaultMessage});
 
   static const defaultMessage =
@@ -109,16 +146,13 @@ final class UnavailableCoeloAuthGateway implements CoeloAuthGateway {
   final String message;
 
   @override
-  Stream<CoeloAuthSessionState> get authStateChanges =>
+  Stream<CoeloAuthSessionState> get authSessionStateChanges =>
       const Stream<CoeloAuthSessionState>.empty();
 
   @override
   CoeloAuthSessionState get currentSessionState =>
       const CoeloAuthSessionState.signedOut();
 
-  bool get isAuthenticated => currentSessionState.isAuthenticated;
-
-  @override
   Future<CoeloAuthSignInResult> signInWithPassword({
     required String email,
     required String password,
@@ -128,9 +162,16 @@ final class UnavailableCoeloAuthGateway implements CoeloAuthGateway {
   }
 
   @override
-  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecoveryWithRedirect({
     required String email,
     required Uri redirectTo,
+  }) {
+    return Future.value(CoeloAuthPasswordRecoveryResult.failure(message));
+  }
+
+  @override
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
+    required String email,
   }) {
     return Future.value(CoeloAuthPasswordRecoveryResult.failure(message));
   }

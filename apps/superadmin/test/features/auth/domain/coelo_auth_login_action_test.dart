@@ -144,7 +144,7 @@ final class _PendingSuperadminAuthContextGateway implements SuperadminAuthContex
   }
 }
 
-final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
+final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
   _FakeCoeloAuthGateway({this.nextResult = const CoeloAuthSignInResult.success()});
 
   String? lastEmail;
@@ -156,7 +156,8 @@ final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
   bool _isSignedOut = false;
 
   @override
-  Stream<CoeloAuthSessionState> get authStateChanges => const Stream<CoeloAuthSessionState>.empty();
+  Stream<CoeloAuthSessionState> get authSessionStateChanges =>
+      const Stream<CoeloAuthSessionState>.empty();
 
   @override
   CoeloAuthSessionState get currentSessionState => nextResult.isSuccess && !_isSignedOut
@@ -164,7 +165,7 @@ final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
       : const CoeloAuthSessionState.signedOut();
 
   @override
-  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecoveryWithRedirect({
     required String email,
     required Uri redirectTo,
   }) async {
