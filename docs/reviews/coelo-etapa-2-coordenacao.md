@@ -76,12 +76,12 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
 
 | Frente | Branch | HEAD | Estado observado |
 | --- | --- | --- | --- |
-| Comunicação | `codex/finalizar-tela-comunicacao` | `393fc7ff` | Em andamento; Convites e Comunicações possuem alterações/testes/goldens não commitados. |
-| Operações | `codex/finalizacao-telas-operacoes` | `7b8a4d02` | Em andamento; Formulários, Cardápios e rotas possuem alterações não commitadas. |
-| Acessos e Saúde | `codex/accessos-ponta-a-ponta` | `056f29d2` | Em andamento; Perfis/Modelos e migration nova ainda não commitados. |
+| Comunicação | `codex/finalizar-tela-comunicacao` | `64a92497` | Em andamento; Chat, Avisos e Convites possuem checkpoints commitados; correção responsiva de Convites e proposta dos três rastreadores continuam na worktree. |
+| Operações | `codex/finalizacao-telas-operacoes` | `dfca4b5c` | Em andamento; Formulários foi commitado e Cardápios conserva quatro arquivos em finalização. |
+| Acessos e Saúde | `codex/accessos-ponta-a-ponta` | `796ad8ea` | Em andamento; fixtures compartilhadas e Perfis/Modelos estão commitados; backend permanece sem promoção remota/E2E. |
 | Auth | `codex/auth-first-local-green` | `36ae7c86` | Worktree limpa no snapshot; produção permanece condicionada aos gates registrados pela frente. |
-| Estruturas | `codex/estruturas-superadmin` | `560ce79c` | Rastreadores e migration de modelo por unidade ainda não commitados; `.artifacts` permanece fora de Git. |
-| Coelo (Principal) | `codex/finalizar-telas-coelo-principal` | `6cb7aa53` | Worktree limpa no snapshot; recorte do menu Superadmin ampliado com Circulares e integração visual do Chat, sem tocar `apps/principal`. |
+| Estruturas | `codex/estruturas-superadmin` | `49a52f6e` | Rastreadores e artefatos de migration/modelo por unidade continuam preservados fora do commit final; `.artifacts` permanece fora de Git. |
+| Coelo (Principal) | `codex/finalizar-telas-coelo-principal` | `0fee7a46` | Worktree limpa; spec, plano e conhecimento vinculam o recorte ao menu Superadmin e ao consumo do Chat compartilhado, sem tocar `apps/principal`. |
 
 ## Evidências e referências
 
@@ -90,6 +90,20 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
 - Comunicação preservou nove referências visuais no commit `f6d44af9`.
 - Nenhuma referência temporária deve ser considerada preservada somente porque
   permanece no histórico da conversa; deve possuir arquivo estável e manifesto.
+- Comunicação concluiu inventário 9/9 no commit `ab484019`, com origem,
+  tela/fluxo e SHA-256 em
+  `docs/superpowers/specs/assets/2026-09-01-superadmin-communication/manifest.md`.
+- Estruturas preservou 15/15 anexos no commit `2eb3985e` e mais três QA no
+  checkpoint `c249db2f`, manifestados em
+  `docs/reviews/evidence/etapa-2/estruturas-superadmin/README.md`.
+- Acessos/Saúde preservou 13/13 anexos no commit `4a8168d4`, manifestados em
+  `docs/reviews/evidence/etapa-2/acessos-saude/manifest.md`.
+- Operações preservou 30/30 PNGs no commit `86e55dc7`, manifestados em
+  `docs/reviews/evidence/etapa-2/operacoes/manifest.md`.
+- Coelo (Principal) informou 12 anexos ainda não recuperados do histórico.
+  A frente deve tentar os caminhos originais e listar item a item; enquanto não
+  houver arquivo/hash/commit, este é bloqueio documental e o usuário poderá
+  precisar reenviar os itens exatos.
 
 ## Handoffs recebidos
 
@@ -107,6 +121,12 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
   forward-only, URL/redirect e E2E continuam pendentes.
 - Diffs dos três rastreadores estão preservados nos commits de documentação e
   aguardam reconciliação central com o código alcançável.
+- Verificação fresca do Coordenador: `coelo_auth` passou 21/21 e analyzer sem
+  problemas. A regressão ampliada Superadmin terminou com 14 testes vermelhos
+  tanto neste worktree (309 verdes) quanto no `dev` de comparação (295 verdes),
+  incluindo débitos de rotas e três goldens de Login. Portanto, o resultado não
+  caracteriza regressão nova de Auth, mas a integração permanece retida até
+  revisão independente e validação pós-cherry-pick.
 
 ### Comunicações/Avisos — `ee8d3aff`
 
@@ -148,6 +168,75 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
 - Alterações e sete goldens permanecem sem commit na worktree compartilhada e
   não devem ser perdidos durante o checkpoint da frente Comunicação.
 
+### Formulários — `dfca4b5c`
+
+- Diretório, editor, rota de respostas e agendamento recorrente foram
+  commitados; a UI separa criar, editar e ver respostas e mantém produção
+  fail-closed.
+- Evidências informadas: 128/128 testes de Forms, analyzer, validador visual e
+  diff-check verdes; goldens do diretório/editor foram regenerados
+  deliberadamente e incluídos no commit.
+- Estado proposto: Flutter `local-green`; Supabase/remoto/E2E continuam sem
+  promoção. Nenhum dos três rastreadores foi editado pela frente.
+
+### Operações — auditoria backend/Supabase
+
+- Auditoria read-only confirmou 0/40 ações E2E no recorte: Agenda 6,
+  Planos 5, Cardápios 6, Forms 16 e Importações 7 continuam bloqueadas por
+  decisão, schema, implantação ou composição produtiva.
+- Há drift não reproduzível no ledger remoto e referências a tabelas de Agenda
+  inexistentes; a orientação é não aplicar o tail de migrations em lote.
+- Sequência segura proposta: reconciliar drift/replay, ACL/RLS comuns, Forms,
+  Importações, Cardápios, Planos após decisão e somente então criar o backend
+  novo de Agenda. Nenhuma mutação remota ocorreu.
+
+### Convites — auditoria backend em `64a92497`
+
+- Produção permanece com `UnavailableInviteRepository`; `/dev` usa fixture
+  isolada. Não existe `SupabaseInviteRepository` produtivo atual.
+- O remoto observado é SELECT-only sobre schema legado, expõe colunas
+  sensíveis a `authenticated`, não possui RPCs `superadmin_invite_*` e não
+  comprova os hardenings necessários. Nenhuma mutação remota ocorreu.
+- Proposta: `invites.list/detail/create/resend/revoke` no máximo Flutter
+  `local-green`; Supabase e integração `blocked-decision`/`blocked-supabase`.
+  OQ-039, spec 047, provenance do schema, idempotência, versionamento, outbox,
+  tenant negativo e E2E permanecem abertos.
+
+### Coelo (Principal) — `0fee7a46`
+
+- Spec 050, plano e conhecimento foram corrigidos para limitar o trabalho ao
+  menu dentro de `apps/superadmin`; nenhum diff existe em `apps/admin`,
+  `apps/site`, `apps/principal` ou `SuperadminShell`.
+- A integração contextual de Chat deverá consumir `ChatRepository` de
+  Comunicação; é proibido criar repository, RPC, migration ou widgets de
+  domínio duplicados.
+- `momentos.view` tem regressão aberta: a rota atual permanece no shell e a
+  mídia é limitada por `AspectRatio`/aside, divergindo da experiência
+  fullscreen registrada. O `local-green` deve permanecer suspenso até nova
+  evidência de viewport, retorno e foco.
+- Circulares preserva referências em `f6d44af9`; `d22a9b3d` é candidato a
+  integração/revalidação e `393fc7ff` é WIP não integrável sem wiring/teste.
+
+### Segurança da criança — `b943a5fe`
+
+- `child-safety.list` corrigiu overflow/alinhamento do grid sem altura rígida;
+  card Criar e cards de crianças compartilham altura por linha, inclusive em
+  375 px, claro/escuro e texto 200%.
+- Evidência informada: 10/10 testes e um golden inspecionado/atualizado. Estado
+  máximo proposto é Flutter `local-green`; backend/remoto/E2E não mudam.
+
+### Estruturas — checkpoint `c249db2f`
+
+- Shell mobile, Instituições, Unidades, Turmas, Atividades e Avaliações foram
+  decompostos por tela/subtela/action_id no handoff vinculante.
+- Avaliações produtivas permanecem fail-closed: os 11 RPCs
+  `superadmin_assessment_*` chamados pelo adapter não existem nas migrations.
+  O commit `7e702447` preserva esse bloqueio e 4/4 testes de rotas passaram.
+- Três diffs antigos dos rastreadores aguardam confirmação de captura central;
+  não devem ser descartados até reconciliação. ETA para limpeza local após essa
+  confirmação: 2 minutos. Backend produtivo estimado 8–16 h somente após
+  OQ-043, contrato v2, Docker e ambiente OQ-041.
+
 ## Monitoramento e encerramento
 
 - Automação horária ativa: `etapa-2-acompanhamento-hor-rio`.
@@ -164,6 +253,12 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
   ambiente antes de incorporá-los à versão canônica.
 - Cada relatório deve separar concluído, pendente, bloqueado, Flutter,
   Supabase, E2E, testes, commits, worktree e ETA.
+- O campo `Passo` é obrigatório por tela, subtela e `action_id`: cada linha
+  registra último passo concluído, passo exato em execução, primeiro próximo
+  passo, estados separados Flutter/Supabase local/Supabase remoto/E2E,
+  evidência, bloqueio, commit/worktree, arquivos sujos e ETA do passo/unidade.
+  Diretório, detalhe, criar, editar, arquivos, filtros e estados loading/vazio/
+  erro/acesso negado não podem ser ocultados em um progresso genérico da frente.
 - Conversa parada com recorte aberto recebe continuação no primeiro gate
   incompleto.
 - Antes de consolidar: exigir checkpoint/commit, diff-check, varredura de
