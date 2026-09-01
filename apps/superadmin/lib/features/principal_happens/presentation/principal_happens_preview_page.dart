@@ -686,11 +686,18 @@ final class _DashedRoundedBorderPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    const strokeWidth = 1.5;
+    const inset = strokeWidth / 2;
     final path = Path()
-      ..addRRect(RRect.fromRectAndRadius(Offset.zero & size, Radius.circular(radius)));
+      ..addRRect(
+        RRect.fromRectAndRadius(
+          (Offset.zero & size).deflate(inset),
+          Radius.circular(radius > inset ? radius - inset : 0),
+        ),
+      );
     final paint = Paint()
       ..color = color
-      ..strokeWidth = 1.5
+      ..strokeWidth = strokeWidth
       ..style = PaintingStyle.stroke;
     for (final metric in path.computeMetrics()) {
       for (var offset = 0.0; offset < metric.length; offset += 8) {

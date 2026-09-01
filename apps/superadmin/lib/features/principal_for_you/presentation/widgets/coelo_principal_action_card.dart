@@ -32,23 +32,32 @@ final class _CoeloPrincipalActionCardState extends State<CoeloPrincipalActionCar
   void initState() {
     super.initState();
     _statesController = WidgetStatesController()..addListener(_onStatesChanged);
+    _focusNode.addListener(_syncFocusState);
   }
 
   void _onStatesChanged() => setState(() {});
+
+  void _syncFocusState() =>
+      _statesController.update(WidgetState.focused, _focusNode.hasFocus);
 
   @override
   void dispose() {
     _statesController
       ..removeListener(_onStatesChanged)
       ..dispose();
-    _focusNode.dispose();
+    _focusNode
+      ..removeListener(_syncFocusState)
+      ..dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final states = _statesController.value;
+    final states = <WidgetState>{
+      ..._statesController.value,
+      if (widget.selected) WidgetState.selected,
+    };
     final highlighted =
         states.contains(WidgetState.hovered) ||
         states.contains(WidgetState.focused) ||

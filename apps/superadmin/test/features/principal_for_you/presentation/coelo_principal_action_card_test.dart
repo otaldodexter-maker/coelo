@@ -57,11 +57,15 @@ void main() {
     );
 
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
-    addTearDown(mouse.removePointer);
     await mouse.addPointer();
     await mouse.moveTo(tester.getCenter(find.byType(CoeloPrincipalActionCard)));
     await tester.pump();
     expect(find.text('hovered'), findsOneWidget);
+
+    await mouse.removePointer();
+    tester.widget<TextButton>(find.byType(TextButton)).focusNode!.requestFocus();
+    await tester.pump();
+    expect(find.text('focused'), findsOneWidget);
 
     final gesture = await tester.startGesture(
       tester.getCenter(find.byType(CoeloPrincipalActionCard)),
@@ -69,5 +73,32 @@ void main() {
     await tester.pump();
     expect(find.text('pressed'), findsOneWidget);
     await gesture.up();
+  });
+
+  testWidgets('merges selected into the states exposed to custom builders', (tester) async {
+    Set<WidgetState>? decorationStates;
+    Set<WidgetState>? childStates;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: CoeloPrincipalActionCard(
+            selected: true,
+            onPressed: () {},
+            decoration: WidgetStateProperty.resolveWith((states) {
+              decorationStates = {...states};
+              return const BoxDecoration();
+            }),
+            childBuilder: (context, states) {
+              childStates = {...states};
+              return const Text('Selecionado');
+            },
+          ),
+        ),
+      ),
+    );
+
+    expect(decorationStates, contains(WidgetState.selected));
+    expect(childStates, contains(WidgetState.selected));
   });
 }
