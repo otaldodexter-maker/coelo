@@ -288,7 +288,7 @@ void main() {
 
     expect(find.byType(CoeloAdminDialogShell), findsOneWidget);
     expect(
-      find.text('A integração de agendamentos não está disponível neste ambiente.'),
+      find.text('A fonte autorizada para distribuir formulários não está disponível.'),
       findsOneWidget,
     );
     expect(

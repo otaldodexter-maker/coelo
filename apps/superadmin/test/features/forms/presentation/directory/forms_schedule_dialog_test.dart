@@ -1,3 +1,6 @@
+import 'package:coelo_api/coelo_api.dart';
+import 'package:coelo_domain/coelo_domain.dart';
+import 'package:coelo_superadmin/features/forms/data/forms_editor_context.dart';
 import 'package:coelo_superadmin/features/forms/presentation/directory/forms_schedule_dialog.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -147,6 +150,107 @@ void main() {
       isNull,
     );
   });
+
+  testWidgets('persists an authorized institution audience and recurring schedule', (tester) async {
+    final api = _ScheduleApi();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () => showFormsProductionScheduleDialog(
+              context: context,
+              api: api,
+              contextApi: const _ScheduleContextApi(),
+              formId: '10000000-0000-4000-8000-000000000001',
+              formTitle: 'Cuidados da terapia ocupacional',
+            ),
+            child: const Text('Abrir produção'),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Abrir produção'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('forms-schedule-institution')), findsOneWidget);
+    expect(find.text('Toda a instituição'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Editar agendamento'), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilledButton, 'Salvar'));
+    await tester.pumpAndSettle();
+
+    expect(api.applicationCommand?.expectedVersion, 0);
+    expect(
+      api.applicationCommand?.payload.application.institutionId,
+      '20000000-0000-4000-8000-000000000001',
+    );
+    expect(
+      api.applicationCommand?.payload.application.audienceRules.single.targetId,
+      '20000000-0000-4000-8000-000000000001',
+    );
+    expect(api.scheduleCommand?.expectedVersion, 0);
+    expect(api.scheduleCommand?.payload.schedule.recurrence, isA<FormOnceRecurrence>());
+  });
+}
+
+final class _ScheduleContextApi implements FormsEditorContextApi {
+  const _ScheduleContextApi();
+
+  @override
+  Future<FormsEditorContext> getEditorContext() async => const FormsEditorContext(
+    canManageApplications: true,
+    institutions: [
+      FormsEditorInstitution(
+        id: '20000000-0000-4000-8000-000000000001',
+        name: 'Escola Horizonte',
+        canManageForms: true,
+        canPublishForms: true,
+      ),
+    ],
+  );
+}
+
+final class _ScheduleApi implements FormsApi {
+  FormCommand<FormSaveApplicationPayload>? applicationCommand;
+  FormCommand<FormSaveSchedulePayload>? scheduleCommand;
+
+  @override
+  Future<FormEditorProjection> getEditor(String formId) async => FormEditorProjection(
+    definition: FormDefinition(
+      id: formId,
+      institutionId: '20000000-0000-4000-8000-000000000001',
+      kind: FormKind.form,
+      identityMode: FormIdentityMode.identified,
+      responseUnit: FormResponseUnit.person,
+      title: 'Cuidados da terapia ocupacional',
+      sections: const [],
+    ),
+  );
+
+  @override
+  Future<FormApplication> saveApplication(FormCommand<FormSaveApplicationPayload> command) async {
+    applicationCommand = command;
+    return command.payload.application;
+  }
+
+  @override
+  Future<FormApplication> saveSchedule(FormCommand<FormSaveSchedulePayload> command) async {
+    scheduleCommand = command;
+    return FormApplication(
+      id: command.payload.applicationId,
+      formId: '10000000-0000-4000-8000-000000000001',
+      institutionId: '20000000-0000-4000-8000-000000000001',
+      name: 'Distribuição',
+      audienceRules: const [],
+      managementVersion: 1,
+    );
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 Future<void> _pumpDialog(

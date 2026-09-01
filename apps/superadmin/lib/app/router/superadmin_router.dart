@@ -150,6 +150,7 @@ import '../../features/meal_plans/data/dev/development_meal_plan_repository.dart
 import '../../features/meal_plans/presentation/meal_plan_directory_page.dart';
 import '../../features/meal_plans/presentation/meal_plan_wizard_page.dart';
 import '../../features/forms/presentation/directory/forms_directory_page.dart';
+import '../../features/forms/data/forms_editor_context.dart';
 import '../../features/forms/presentation/directory/forms_schedule_dialog.dart';
 import '../../features/forms/presentation/overview/forms_overview_page.dart';
 import '../../features/forms/presentation/operations/forms_operations_page.dart';
@@ -1317,20 +1318,31 @@ GoRouter createSuperadminRouter({
                 SuperadminRoutes.formEditName,
                 pathParameters: {'formId': form.id},
               ),
-              onManageSchedules: (form) => showFormsScheduleDialog(
-                context: context,
-                initialValue: FormsScheduleDraft(
-                  active: true,
-                  name: 'Agendamento de ${form.title}',
-                  startsAt: DateTime.now(),
-                  endsAt: DateTime.now(),
-                  frequency: FormsScheduleFrequency.once,
-                  weekdays: const {},
-                  audienceLabel: 'Público da distribuição',
-                ),
-                unavailableReason:
-                    'A integração de agendamentos não está disponível neste ambiente.',
-              ),
+              onManageSchedules: (form) {
+                final productionApi = formsApi;
+                if (productionApi is FormsEditorContextApi) {
+                  final FormsApi api = productionApi!;
+                  final FormsEditorContextApi contextApi = api as FormsEditorContextApi;
+                  unawaited(
+                    showFormsProductionScheduleDialog(
+                      context: context,
+                      api: api,
+                      contextApi: contextApi,
+                      formId: form.id,
+                      formTitle: form.title,
+                    ),
+                  );
+                  return;
+                }
+                unawaited(
+                  showFormsScheduleDialog(
+                    context: context,
+                    initialValue: FormsScheduleDraft.empty(),
+                    unavailableReason:
+                        'A fonte autorizada para distribuir formulários não está disponível.',
+                  ),
+                );
+              },
             ),
           ),
           GoRoute(

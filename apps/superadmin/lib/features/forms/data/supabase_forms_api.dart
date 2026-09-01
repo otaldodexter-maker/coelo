@@ -43,6 +43,11 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
         .toList(growable: false);
     return FormsEditorContext(
       institutions: List.unmodifiable(institutions),
+      canManageApplications: _capability(sharedCapabilities, const [
+        'manage_applications',
+        'can_manage_applications',
+        'forms_manage_applications',
+      ]),
       canTransferCrossInstitution: _capability(sharedCapabilities, const [
         'transfer_cross_institution',
         'forms_transfer_cross_institution',

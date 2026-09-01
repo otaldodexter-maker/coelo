@@ -100,7 +100,7 @@ void main() {
 
   test('applies the deployed top-level capabilities to authorized institutions', () async {
     final backend = _Backend({
-      'capabilities': {'manage': true, 'publish': true},
+      'capabilities': {'manage': true, 'publish': true, 'manage_applications': true},
       'institutions': [
         {'id': 'institution-aurora', 'name': 'Instituto Aurora'},
       ],
@@ -110,6 +110,7 @@ void main() {
 
     expect(context.institutions.single.canManageForms, isTrue);
     expect(context.institutions.single.canPublishForms, isTrue);
+    expect(context.canManageApplications, isTrue);
   });
 
   test('monitor hierarchy sends the scoped cursor to the authorized RPC', () async {
