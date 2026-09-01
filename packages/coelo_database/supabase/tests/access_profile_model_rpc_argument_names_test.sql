@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(10);
+select plan(11);
 
 select is(
   (select proargnames from pg_catalog.pg_proc
@@ -72,9 +72,27 @@ select is(
       ('public.superadmin_access_profile_models_import_confirm(uuid,text,jsonb,text)'::regprocedure)
     ) rpc(function_oid)
     where has_function_privilege('authenticated',rpc.function_oid,'EXECUTE')
-      and not has_function_privilege('anon',rpc.function_oid,'EXECUTE')),
+      and not has_function_privilege('anon',rpc.function_oid,'EXECUTE')
+      and not has_function_privilege('service_role',rpc.function_oid,'EXECUTE')),
   9::bigint,
   'all named gateways remain authenticated-only'
+);
+
+select ok(not exists(
+    select 1 from (values
+      ('public.superadmin_access_profile_model_detail(uuid)'::regprocedure),
+      ('public.superadmin_access_profile_models_cursor(text,text,text,text,integer,text,uuid)'::regprocedure),
+      ('public.superadmin_access_profile_model_create(uuid,jsonb)'::regprocedure),
+      ('public.superadmin_access_profile_model_update(uuid,jsonb)'::regprocedure),
+      ('public.superadmin_access_profile_model_delete(uuid,uuid,bigint,text)'::regprocedure),
+      ('public.superadmin_access_profile_model_duplicate(uuid,jsonb)'::regprocedure),
+      ('public.superadmin_access_profile_models_export(text)'::regprocedure),
+      ('public.superadmin_access_profile_models_import_preview(text,jsonb)'::regprocedure),
+      ('public.superadmin_access_profile_models_import_confirm(uuid,text,jsonb,text)'::regprocedure)
+    ) rpc(function_oid)
+    where lower(pg_catalog.pg_get_functiondef(function_oid))
+      not like '%access_profile_model_call%'),
+  'all named gateways preserve the internal-v2 envelope dispatcher'
 );
 
 select * from finish();
