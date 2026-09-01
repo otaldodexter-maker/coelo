@@ -49,8 +49,8 @@ locais são Publicações, Momentos e Circulares, sem contrato remoto inventado.
 ## Commits
 
 - `b9c75c7e fix(principal): polish publish card and profile`
-- correções do review e este relatório: commit imediatamente posterior, a ser
-  registrado no fechamento documental.
+- `3fd605b8 fix(principal): address publish card review`
+- `3e19b8c7 docs(principal): record publish card evidence`
 
 ## Limite de evidência
 
