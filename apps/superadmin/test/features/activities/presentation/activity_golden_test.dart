@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import '../../../support/activities/fake_activity_directory_repository.dart';
+import 'package:coelo_superadmin/app/dev_menu/development_activity_fixture_repository.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_detail_page.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_directory_page.dart';
@@ -276,8 +277,16 @@ void main() {
     await tester.pump();
     await tester.tap(find.byKey(const Key('activity-form-continue')));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('activity-form-continue')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('activity-group-institution-1-group-1')));
     await tester.pump();
+    await tester.tap(find.byKey(const Key('activity-form-continue')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('activity-about-objective')),
+      'Desenvolver raciocínio lógico',
+    );
     await tester.tap(find.byKey(const Key('activity-form-continue')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('activity-invite-institution-1-group-1')));
@@ -354,6 +363,7 @@ Widget _formApp({required Brightness brightness, String? activityId}) => _app(
         ActivityFormLocationOption(id: 'golden-location-$unitId', unitId: unitId, name: draft.name),
     ],
     imagePicker: () async => null,
+    aboutRepository: DevelopmentActivityProfileAboutRepository(),
   ),
 );
 
