@@ -175,6 +175,45 @@ void main() {
     expect(find.byKey(const Key('safety-add-authorized-person')), findsNothing);
   });
 
+  testWidgets('suspension confirms, can be cancelled and reloads after success', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(768, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _Repository();
+    final controller = ChildSafetyController(repository);
+    await controller.load();
+    await tester.pumpWidget(
+      _app(
+        ChildSecurityPage(
+          childId: 'child-1',
+          controller: controller,
+          logout: _logout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Gerenciar').first);
+    await tester.tap(find.text('Gerenciar').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('safety-suspend-authorization')));
+    await tester.pumpAndSettle();
+    expect(find.text('Suspender autorização?'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('safety-cancel-suspension')));
+    await tester.pumpAndSettle();
+    expect(repository.suspendedCommand, isNull);
+
+    await tester.tap(find.byKey(const Key('safety-suspend-authorization')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('safety-confirm-suspension')));
+    await tester.pumpAndSettle();
+
+    expect(repository.suspendedCommand?.authorizationId, 'auth-1');
+    expect(repository.suspendedCommand?.expectedVersion, 7);
+    expect(repository.directoryLoads, 2);
+    expect(find.text('Suspender autorização?'), findsNothing);
+  });
+
   testWidgets('wizard searches server-side and requires child selection', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -327,6 +366,8 @@ final class _Repository implements ChildSafetyRepository {
   final int totalCount;
   final bool canCreate;
   SavePickupAuthorizationCommand? savedCommand;
+  SuspendPickupAuthorizationCommand? suspendedCommand;
+  int directoryLoads = 0;
   static final records = [
     ChildSafetyRecord(
       childId: 'child-1',
@@ -390,6 +431,7 @@ final class _Repository implements ChildSafetyRepository {
   ];
   @override
   Future<ChildSafetyDirectoryPage> fetchDirectory(ChildSafetyDirectoryQuery query) async {
+    directoryLoads++;
     if (unauthorized) throw const ChildSafetyUnauthorizedException();
     return ChildSafetyDirectoryPage(
       records: records,
@@ -434,7 +476,10 @@ final class _Repository implements ChildSafetyRepository {
   @override
   Future<void> transitionAuthorization(TransitionPickupAuthorizationCommand command) async {}
   @override
-  Future<void> removeAuthorization(RemovePickupAuthorizationCommand command) async {}
+  Future<void> suspendAuthorization(SuspendPickupAuthorizationCommand command) async {
+    suspendedCommand = command;
+  }
+
   @override
   Future<void> requestExport(ChildSafetyExportCommand command) async {}
 }

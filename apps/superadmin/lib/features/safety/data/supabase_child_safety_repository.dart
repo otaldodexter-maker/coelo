@@ -80,12 +80,12 @@ final class SupabaseChildSafetyRepository implements ChildSafetyRepository {
   }
 
   @override
-  Future<void> removeAuthorization(RemovePickupAuthorizationCommand command) async {
+  Future<void> suspendAuthorization(SuspendPickupAuthorizationCommand command) async {
     await _rpc('child_safety_change_lifecycle', {
       'p_request_id': command.requestId,
       'p_authorization_id': command.authorizationId,
       'p_expected_version': command.expectedVersion,
-      'p_lifecycle_status': 'archived',
+      'p_lifecycle_status': 'suspended',
       'p_reason': command.reason.trim(),
     });
   }

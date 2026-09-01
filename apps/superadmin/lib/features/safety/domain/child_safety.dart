@@ -101,6 +101,29 @@ final class PickupAuthorization {
     lifecycleStatus: lifecycleStatus,
     version: version,
   );
+
+  PickupAuthorization withLifecycleStatus(PickupAuthorizationLifecycleStatus value) =>
+      PickupAuthorization(
+        id: id,
+        name: name,
+        relationship: relationship,
+        institutionName: institutionName,
+        unitName: unitName,
+        status: status,
+        origin: origin,
+        personId: personId,
+        childContextId: childContextId,
+        unitId: unitId,
+        capabilityCodes: capabilityCodes,
+        requestReason: requestReason,
+        identifier: identifier,
+        startsAt: startsAt,
+        endsAt: endsAt,
+        lifetime: lifetime,
+        hasAppAccount: hasAppAccount,
+        lifecycleStatus: value,
+        version: version + 1,
+      );
 }
 
 final class ChildSafetyRecord {

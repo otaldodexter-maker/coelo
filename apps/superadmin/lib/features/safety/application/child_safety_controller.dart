@@ -88,8 +88,8 @@ final class ChildSafetyController extends ChangeNotifier {
       _runCommand(() => _repository.saveAuthorization(command));
   Future<bool> transitionAuthorization(TransitionPickupAuthorizationCommand command) =>
       _runCommand(() => _repository.transitionAuthorization(command));
-  Future<bool> removeAuthorization(RemovePickupAuthorizationCommand command) =>
-      _runCommand(() => _repository.removeAuthorization(command));
+  Future<bool> suspendAuthorization(SuspendPickupAuthorizationCommand command) =>
+      _runCommand(() => _repository.suspendAuthorization(command));
   Future<bool> requestExport(ChildSafetyExportCommand command) =>
       _runCommand(() => _repository.requestExport(command), refresh: false);
 

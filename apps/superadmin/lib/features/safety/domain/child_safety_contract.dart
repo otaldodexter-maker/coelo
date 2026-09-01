@@ -171,8 +171,8 @@ final class TransitionPickupAuthorizationCommand {
   final int expectedVersion;
 }
 
-final class RemovePickupAuthorizationCommand {
-  const RemovePickupAuthorizationCommand({
+final class SuspendPickupAuthorizationCommand {
+  const SuspendPickupAuthorizationCommand({
     required this.requestId,
     required this.childId,
     required this.authorizationId,
@@ -192,7 +192,7 @@ abstract interface class ChildSafetyRepository {
   Future<List<ChildSafetyChildOption>> searchChildren(String query, {int limit = 20});
   Future<void> saveAuthorization(SavePickupAuthorizationCommand command);
   Future<void> transitionAuthorization(TransitionPickupAuthorizationCommand command);
-  Future<void> removeAuthorization(RemovePickupAuthorizationCommand command);
+  Future<void> suspendAuthorization(SuspendPickupAuthorizationCommand command);
   Future<void> requestExport(ChildSafetyExportCommand command);
 }
 
@@ -241,7 +241,7 @@ final class UnavailableChildSafetyRepository implements ChildSafetyRepository {
   @override
   Future<void> transitionAuthorization(TransitionPickupAuthorizationCommand command) => _fail();
   @override
-  Future<void> removeAuthorization(RemovePickupAuthorizationCommand command) => _fail();
+  Future<void> suspendAuthorization(SuspendPickupAuthorizationCommand command) => _fail();
   @override
   Future<void> requestExport(ChildSafetyExportCommand command) => _fail();
 }

@@ -496,7 +496,9 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
   void _controllerChanged() {
     if (!mounted || dataVersion == widget.controller.dataVersion) return;
     dataVersion = widget.controller.dataVersion;
-    setState(() => record = widget.controller.fetchChild(widget.childId));
+    setState(() {
+      record = widget.controller.fetchChild(widget.childId);
+    });
   }
 
   @override
@@ -1258,6 +1260,8 @@ Future<void> _manage(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _Status(status: authorization.status),
+        const SizedBox(height: CoeloSpacing.space2),
+        Text('Situação: ${authorization.lifecycleStatus.label}'),
         const SizedBox(height: CoeloSpacing.space4),
         AuthorizationValiditySummary(authorization: authorization),
         if (authorization.status == PickupAuthorizationStatus.pending) ...[
@@ -1292,9 +1296,23 @@ Future<void> _manage(
             label: const Text('Rejeitar'),
           ),
         ],
+        if (authorization.status == PickupAuthorizationStatus.approved &&
+            authorization.lifecycleStatus == PickupAuthorizationLifecycleStatus.active) ...[
+          const SizedBox(height: CoeloSpacing.space4),
+          OutlinedButton.icon(
+            key: const Key('safety-suspend-authorization'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+              side: BorderSide(color: Theme.of(context).colorScheme.error),
+            ),
+            onPressed: () => _confirmSuspend(dialogContext, controller, record, authorization),
+            icon: const Icon(Icons.pause_circle_outline_rounded),
+            label: const Text('Suspender autorização'),
+          ),
+        ],
       ],
     ),
-    secondaryAction: onEdit == null
+    secondaryAction: onEdit == null || authorization.status != PickupAuthorizationStatus.pending
         ? null
         : OutlinedButton(
             onPressed: () {
@@ -1309,6 +1327,51 @@ Future<void> _manage(
     ),
   ),
 );
+
+Future<void> _confirmSuspend(
+  BuildContext context,
+  ChildSafetyController controller,
+  ChildSafetyRecord record,
+  PickupAuthorization authorization,
+) async {
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (confirmationContext) => CoeloAdminDialogShell(
+      title: 'Suspender autorização?',
+      body: Text('${authorization.name} ficará impedido(a) de retirar a criança até nova revisão.'),
+      secondaryAction: OutlinedButton(
+        key: const Key('safety-cancel-suspension'),
+        onPressed: () => Navigator.of(confirmationContext).pop(false),
+        child: const Text('Cancelar'),
+      ),
+      primaryAction: FilledButton(
+        key: const Key('safety-confirm-suspension'),
+        onPressed: () => Navigator.of(confirmationContext).pop(true),
+        child: const Text('Suspender'),
+      ),
+    ),
+  );
+  if (confirmed != true || !context.mounted) return;
+  final succeeded = await controller.suspendAuthorization(
+    SuspendPickupAuthorizationCommand(
+      requestId: _uuid(),
+      childId: record.childId,
+      authorizationId: authorization.id,
+      reason: 'Autorização suspensa para revisão da unidade',
+      expectedVersion: authorization.version,
+    ),
+  );
+  if (!context.mounted) return;
+  if (succeeded) {
+    Navigator.of(context).pop();
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(controller.errorMessage ?? 'Não foi possível suspender a autorização.'),
+      ),
+    );
+  }
+}
 
 Future<void> _transition(
   BuildContext context,

@@ -161,7 +161,7 @@ final class _Repository implements ChildSafetyRepository {
   void completeTransition() => _transitionCompleter?.complete();
 
   @override
-  Future<void> removeAuthorization(RemovePickupAuthorizationCommand command) async {}
+  Future<void> suspendAuthorization(SuspendPickupAuthorizationCommand command) async {}
   @override
   Future<void> requestExport(ChildSafetyExportCommand command) async {}
 }

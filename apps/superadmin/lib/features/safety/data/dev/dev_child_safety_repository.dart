@@ -119,12 +119,18 @@ final class DevChildSafetyRepository implements ChildSafetyRepository {
   }
 
   @override
-  Future<void> removeAuthorization(RemovePickupAuthorizationCommand command) async {
+  Future<void> suspendAuthorization(SuspendPickupAuthorizationCommand command) async {
     final record = await fetchChild(command.childId);
     if (record == null) throw const ChildSafetyNotFoundException();
     _replace(
       record.withAuthorizations(
-        record.authorizations.where((item) => item.id != command.authorizationId).toList(),
+        record.authorizations
+            .map(
+              (item) => item.id == command.authorizationId
+                  ? item.withLifecycleStatus(PickupAuthorizationLifecycleStatus.suspended)
+                  : item,
+            )
+            .toList(),
       ),
     );
   }
