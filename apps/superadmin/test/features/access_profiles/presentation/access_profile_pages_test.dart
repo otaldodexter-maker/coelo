@@ -5,10 +5,12 @@ import 'package:coelo_superadmin/features/access_profiles/data/supabase_access_p
 import 'package:coelo_superadmin/features/access_profiles/domain/access_profile.dart';
 import 'package:coelo_superadmin/features/access_profiles/presentation/access_profile_detail_page.dart';
 import 'package:coelo_superadmin/features/access_profiles/presentation/access_profile_directory_page.dart';
+import 'package:coelo_superadmin/features/access_profiles/presentation/access_profile_duplicate_page.dart';
 import 'package:coelo_superadmin/features/access_profiles/presentation/access_profile_form_page.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -167,6 +169,44 @@ void main() {
 
     expect(createCalls, 1);
     expect(openCalls, 1);
+  });
+
+  testWidgets('duplicate model starts inactive without carrying assignments', (tester) async {
+    final repository = FakeAccessProfileRepository();
+    AccessProfile? duplicated;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AccessProfileDuplicatePage(
+          repository: repository,
+          duplicator: repository,
+          logout: unavailableSuperadminLogout,
+          domain: AccessProfileDomain.platform,
+          sourceProfileId: 'demo-owner',
+          onCancel: () {},
+          onDuplicated: (profile) => duplicated = profile,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nova cópia'), findsOneWidget);
+    await tester.enterText(
+      find.widgetWithText(CoeloFormTextField, 'Nome do novo modelo'),
+      'Owner regional revisado',
+    );
+    await tester.enterText(
+      find.widgetWithText(CoeloFormTextField, 'Motivo da duplicação'),
+      'Base independente para revisão regional.',
+    );
+    await tester.ensureVisible(find.byKey(const Key('access-profile-duplicate-submit')));
+    await tester.tap(find.byKey(const Key('access-profile-duplicate-submit')));
+    await tester.pumpAndSettle();
+
+    expect(duplicated?.name, 'Owner regional revisado');
+    expect(duplicated?.status, AccessProfileStatus.inactive);
+    expect(duplicated?.membershipCount, 0);
+    expect(duplicated?.isSystem, isFalse);
   });
 
   testWidgets('directory switches between profiles and models in one access area', (tester) async {

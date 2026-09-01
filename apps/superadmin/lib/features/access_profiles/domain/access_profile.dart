@@ -434,6 +434,16 @@ abstract interface class AccessProfileRepository {
   });
 }
 
+abstract interface class AccessProfileDuplicator {
+  Future<AccessProfile> duplicate({
+    required String requestId,
+    required String sourceProfileId,
+    required AccessProfileDomain domain,
+    required String name,
+    required String reason,
+  });
+}
+
 class AccessProfileException implements Exception {
   const AccessProfileException(this.message);
   final String message;

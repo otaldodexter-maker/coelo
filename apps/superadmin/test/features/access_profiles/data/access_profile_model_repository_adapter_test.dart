@@ -80,7 +80,7 @@ void main() {
     );
     final duplicated = await adapter.duplicate(
       requestId: 'request-copy',
-      sourceModelId: 'model-1',
+      sourceProfileId: 'model-1',
       domain: AccessProfileDomain.institution,
       name: 'Gestão escolar regional',
       reason: 'Nova região',

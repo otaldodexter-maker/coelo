@@ -2,7 +2,8 @@ import '../domain/access_profile.dart';
 import '../domain/access_profile_model.dart';
 
 /// Reuses the canonical profile screens for profile-model CRUD.
-final class AccessProfileModelRepositoryAdapter implements AccessProfileRepository {
+final class AccessProfileModelRepositoryAdapter
+    implements AccessProfileRepository, AccessProfileDuplicator {
   AccessProfileModelRepositoryAdapter(this._models);
 
   final AccessProfileModelRepository _models;
@@ -134,9 +135,10 @@ final class AccessProfileModelRepositoryAdapter implements AccessProfileReposito
     reason: reason,
   );
 
+  @override
   Future<AccessProfile> duplicate({
     required String requestId,
-    required String sourceModelId,
+    required String sourceProfileId,
     required AccessProfileDomain domain,
     required String name,
     required String reason,
@@ -144,7 +146,7 @@ final class AccessProfileModelRepositoryAdapter implements AccessProfileReposito
     final duplicated = await _models.duplicateModel(
       requestId,
       AccessProfileModelDraft(
-        sourceModelId: sourceModelId,
+        sourceModelId: sourceProfileId,
         domain: domain,
         name: name,
         description: '',
