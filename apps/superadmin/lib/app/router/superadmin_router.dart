@@ -89,6 +89,8 @@ import '../../features/groups/presentation/group_directory_page.dart';
 import '../../features/groups/presentation/group_form_page.dart';
 import '../../features/help_center/presentation/screens/superadmin_help_center_page.dart';
 import '../../features/health_care/domain/health_care_repository.dart';
+import '../../features/health_care/data/supabase_health_care_repository.dart';
+import '../../features/health_care/domain/health_care.dart';
 import '../../features/health_care/data/dev/dev_health_care_repository.dart';
 import '../../features/health_care/data/dev/dev_medication_plan_health_care_repository.dart';
 import '../../features/health_care/data/dev/dev_medication_plan_repository.dart';
@@ -230,6 +232,7 @@ GoRouter createSuperadminRouter({
   AttendancePermissions attendancePermissions = const AttendancePermissions.readOnly(),
   RoutineRepository routineRepository = const UnavailableRoutineRepository(),
   AuditRepository auditRepository = const UnavailableAuditRepository(),
+  HealthCareRepository healthCareRepository = const UnavailableHealthCareRepository(),
   MedicationPlanRepository medicationPlanRepository = const UnavailableMedicationPlanRepository(),
   DevMedicationPlanRepository? developmentMedicationPlanRepository,
   MealPlanRepository mealPlanRepository = const UnavailableMealPlanRepository(),
@@ -315,7 +318,19 @@ GoRouter createSuperadminRouter({
     store: developmentActivityStore,
   );
   final developmentActivityAboutRepository = DevelopmentActivityProfileAboutRepository();
-  const blockedCareProfilesRepository = UnavailableHealthCareRepository();
+  final productionCareProfileRepository = healthCareRepository is SupabaseHealthCareRepository
+      ? healthCareRepository
+      : null;
+  final productionCareActor = healthCareRepository.defaultActor;
+  final productionCareCanEdit =
+      productionCareActor?.can(HealthCareCapability.recordCreateEdit) ?? false;
+  final productionCareChildren = productionCareProfileRepository == null || !productionCareCanEdit
+      ? null
+      : productionCareProfileRepository.fetchChildOptions().then(
+          (items) => [
+            for (final item in items) HealthCareProfileChildOption(id: item.id, label: item.label),
+          ],
+        );
   DevHealthCareRepository? cachedCareProfilesPreviewRepository;
   DevHealthCareRepository careProfilesPreviewRepository() => cachedCareProfilesPreviewRepository ??=
       DevHealthCareRepository.content(catalog: accessHealthFixtures);
@@ -1471,35 +1486,54 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.healthCareProfiles,
             name: SuperadminRoutes.healthCareProfilesName,
             builder: (context, state) => HealthCareProfileDirectoryPage(
-              controller: HealthCareController(blockedCareProfilesRepository),
+              controller: HealthCareController(healthCareRepository),
               logout: logout,
-              onCreate: () => context.goNamed(SuperadminRoutes.healthCareProfileCreateName),
-              onChildSelected: (childId) => context.pushNamed(
-                SuperadminRoutes.healthCareProfileDetailName,
-                pathParameters: {'childId': childId},
-              ),
+              onCreate: productionCareCanEdit
+                  ? () => context.goNamed(SuperadminRoutes.healthCareProfileCreateName)
+                  : null,
+              onChildSelected: productionCareCanEdit
+                  ? (childId) => context.pushNamed(
+                      SuperadminRoutes.healthCareProfileDetailName,
+                      pathParameters: {'childId': childId},
+                    )
+                  : null,
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.healthCareProfileCreate,
             name: SuperadminRoutes.healthCareProfileCreateName,
-            builder: (context, state) => HealthCareProfileFormPage(
+            builder: (context, state) => _productionCareProfileForm(
+              context: context,
               logout: logout,
+              repository: productionCareProfileRepository,
+              childOptions: productionCareChildren,
+              canEdit: productionCareCanEdit,
               onCancel: () => context.goNamed(SuperadminRoutes.healthCareProfilesName),
+              onSaveSucceeded: () => context.goNamed(SuperadminRoutes.healthCareProfilesName),
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.healthCareProfileDetail,
             name: SuperadminRoutes.healthCareProfileDetailName,
-            redirect: (context, state) => _productionMutationUnavailablePath,
+            redirect: (context, state) => productionCareCanEdit
+                ? context.namedLocation(
+                    SuperadminRoutes.healthCareProfileEditName,
+                    pathParameters: {'childId': state.pathParameters['childId']!},
+                  )
+                : _productionMutationUnavailablePath,
           ),
           GoRoute(
             path: SuperadminRoutes.healthCareProfileEdit,
             name: SuperadminRoutes.healthCareProfileEditName,
-            builder: (context, state) => HealthCareProfileFormPage(
+            builder: (context, state) => _productionCareProfileForm(
+              context: context,
               logout: logout,
+              repository: productionCareProfileRepository,
+              childOptions: productionCareChildren,
+              canEdit: productionCareCanEdit,
               childId: state.pathParameters['childId']!,
-              onCancel: () => context.pop(),
+              onCancel: () => context.goNamed(SuperadminRoutes.healthCareProfilesName),
+              onSaveSucceeded: () => context.goNamed(SuperadminRoutes.healthCareProfilesName),
             ),
           ),
           GoRoute(
@@ -4658,6 +4692,39 @@ final _developmentCircularDirectoryItems = <CircularDirectoryItem>[
     responseCount: 0,
   ),
 ];
+
+Widget _productionCareProfileForm({
+  required BuildContext context,
+  required LogoutAction logout,
+  required SupabaseHealthCareRepository? repository,
+  required Future<List<HealthCareProfileChildOption>>? childOptions,
+  required bool canEdit,
+  required VoidCallback onCancel,
+  required VoidCallback onSaveSucceeded,
+  String? childId,
+}) {
+  if (!canEdit || repository == null || childOptions == null) {
+    return _unavailableCompositionRootRoute(context);
+  }
+  return FutureBuilder<List<HealthCareProfileChildOption>>(
+    future: childOptions,
+    builder: (context, snapshot) {
+      if (snapshot.hasError) return _unavailableCompositionRootRoute(context);
+      if (!snapshot.hasData) {
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      }
+      return HealthCareProfileFormPage(
+        logout: logout,
+        childOptions: snapshot.data!,
+        childId: childId,
+        loadDraft: childId == null ? null : repository.loadCareProfileDraft,
+        onCancel: onCancel,
+        onSaved: repository.saveCareProfileDraft,
+        onSaveSucceeded: onSaveSucceeded,
+      );
+    },
+  );
+}
 
 RoutineEntryKind _routineEntryKind(String? value) {
   for (final kind in RoutineEntryKind.values) {

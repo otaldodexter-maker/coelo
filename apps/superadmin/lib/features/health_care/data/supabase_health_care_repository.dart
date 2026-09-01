@@ -6,15 +6,24 @@ import '../domain/health_care.dart';
 import '../domain/health_care_repository.dart';
 
 final class SupabaseHealthCareRepository implements HealthCareRepository {
-  SupabaseHealthCareRepository(this._client);
+  SupabaseHealthCareRepository(
+    this._client, {
+    HealthCareActor? actor,
+    HealthCareActor? Function()? actorProvider,
+  }) : _actor = actor,
+       _actorProvider = actorProvider;
 
   final SupabaseClient _client;
+  final HealthCareActor? _actor;
+  final HealthCareActor? Function()? _actorProvider;
   final Map<String, int> _versions = {};
   final Map<String, String> _profileByChild = {};
 
   @override
-  HealthCareActor get defaultActor =>
-      HealthCareActor(id: 'authenticated-superadmin', profile: HealthCareAccessProfile.owner);
+  HealthCareActor? get defaultActor => _actorProvider?.call() ?? _actor;
+
+  HealthCareActor get _authenticatedActor =>
+      defaultActor ?? (throw StateError('Contexto autenticado de Saúde e Cuidado indisponível.'));
 
   @override
   Future<HealthCareDirectoryPage> fetchDirectory(
@@ -75,7 +84,7 @@ final class SupabaseHealthCareRepository implements HealthCareRepository {
   }
 
   Future<HealthCareProfileDraft?> loadCareProfileDraft(String profileId) async {
-    final child = await findChild(profileId, actor: defaultActor);
+    final child = await findChild(profileId, actor: _authenticatedActor);
     if (child == null) return null;
     return HealthCareProfileDraft(
       childId: child.personId,
@@ -87,7 +96,7 @@ final class SupabaseHealthCareRepository implements HealthCareRepository {
     childId: draft.childId,
     items: [for (final id in draft.careItemIds) HealthCareProfileItem(catalogItemId: id)],
     justification: draft.justification,
-    actor: defaultActor,
+    actor: _authenticatedActor,
   );
 
   @override

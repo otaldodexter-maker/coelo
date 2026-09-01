@@ -8,6 +8,8 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  final actor = HealthCareActor(id: 'actor-1', profile: HealthCareAccessProfile.owner);
+
   test('directory maps server pagination and keeps filters server-side', () async {
     late Request captured;
     final client = _client((request) async {
@@ -26,7 +28,7 @@ void main() {
       });
     });
     addTearDown(client.dispose);
-    final repository = SupabaseHealthCareRepository(client);
+    final repository = SupabaseHealthCareRepository(client, actor: actor);
 
     final page = await repository.fetchDirectory(
       const HealthCareDirectoryQuery(
@@ -36,7 +38,7 @@ void main() {
         page: 2,
         pageSize: 11,
       ),
-      actor: repository.defaultActor,
+      actor: actor,
     );
 
     expect(page.totalCount, 147);
@@ -64,9 +66,9 @@ void main() {
       }),
     );
     addTearDown(client.dispose);
-    final repository = SupabaseHealthCareRepository(client);
+    final repository = SupabaseHealthCareRepository(client, actor: actor);
 
-    final child = await repository.findChild('profile-1', actor: repository.defaultActor);
+    final child = await repository.findChild('profile-1', actor: actor);
 
     expect(child?.careProfile.single.catalogItemId, 'asthma');
     expect(child?.links.single.unitId, 'unit-1');
@@ -80,13 +82,13 @@ void main() {
       return _ok(request, {'profile_id': 'profile-1', 'current_version': 1});
     });
     addTearDown(client.dispose);
-    final repository = SupabaseHealthCareRepository(client);
+    final repository = SupabaseHealthCareRepository(client, actor: actor);
 
     await repository.updateCareProfile(
       childId: 'child-1',
       items: [HealthCareProfileItem(catalogItemId: 'asthma')],
       justification: 'Cadastro inicial validado',
-      actor: repository.defaultActor,
+      actor: actor,
     );
 
     final body = jsonDecode(captured.body) as Map<String, dynamic>;
@@ -99,12 +101,21 @@ void main() {
   test('semantic denial remains fail closed', () async {
     final client = _client((request) async => _error(request, 'SAI_PERMISSION_DENIED'));
     addTearDown(client.dispose);
-    final repository = SupabaseHealthCareRepository(client);
+    final repository = SupabaseHealthCareRepository(client, actor: actor);
 
     await expectLater(
-      repository.fetchDirectory(const HealthCareDirectoryQuery(), actor: repository.defaultActor),
+      repository.fetchDirectory(const HealthCareDirectoryQuery(), actor: actor),
       throwsStateError,
     );
+  });
+
+  test('does not fabricate an authenticated actor', () async {
+    final client = _client((request) async => _ok(request, const {}));
+    addTearDown(client.dispose);
+    final repository = SupabaseHealthCareRepository(client);
+
+    expect(repository.defaultActor, isNull);
+    await expectLater(repository.loadCareProfileDraft('profile-1'), throwsStateError);
   });
 }
 
