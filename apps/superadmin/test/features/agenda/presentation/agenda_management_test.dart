@@ -232,7 +232,7 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
-    for (final scale in [1.0, 2.0]) {
+    for (final scale in [1.0, 1.5, 2.0]) {
       for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
         tester.view.physicalSize = Size(width, 1400);
         await tester.pumpWidget(
@@ -310,7 +310,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     tester.view.devicePixelRatio = 1;
 
-    for (final scale in [1.0, 2.0]) {
+    for (final scale in [1.0, 1.5, 2.0]) {
       for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
         tester.view.physicalSize = Size(width, 1400);
         await tester.pumpWidget(
