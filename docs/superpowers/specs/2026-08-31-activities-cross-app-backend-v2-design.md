@@ -1,7 +1,7 @@
 ---
 title: "Activities cross-app backend v2"
 source: "AGENTS.md; decisions/0014-contextual-activities-and-delegated-unit-creation.md; decisions/0019-superadmin-internal-identity.md; decisions/0022-superadmin-activities-and-identity-storage.md; specs/014-atividade-contextual.md; specs/039-superadmin-internal-auth-session-context.md; docs/superpowers/specs/2026-07-29-superadmin-activity-inspection-design.md; docs/superpowers/specs/2026-08-04-superadmin-activity-form-wizard-design.md; contrato aprovado pelo Owner Coelo em 2026-08-31"
-status: "approved-for-implementation"
+status: "implemented-local-green"
 generated_at: "2026-08-31"
 ---
 
@@ -539,3 +539,21 @@ tela.
 - replay local limpo, pgTAP, lint, mirror/hash, secret scan e regressao ficam
   verdes;
 - nenhuma alteracao em Flutter, UI, importacao, exportacao, arquivo ou midia.
+
+## Evidencia de implementacao local — 2026-08-31
+
+O contrato foi implementado pelas sete migrations forward-only
+`20260831192831`, `20260831195118`, `20260831195944`, `20260831203645`,
+`20260831211945`, `20260831231645` e `20260831234307`. O perfil fechado
+instalou 59 migrations revisadas, o canônico e o mirror coincidiram em 122
+arquivos e as suítes Activities v2 executaram 199 asserts pgTAP; todos
+passaram. O teste focal final passou 25/25 e os contratos PowerShell passaram
+11/11. O ciclo Auth nativo e a prova de concorrência com duas sessões também
+passaram: uma atualização venceu, a outra recebeu `SAI_CONCURRENT_CHANGE`, com
+receipt e auditorias correlacionadas. O review final foi aprovado.
+
+O estado comprovado é somente `local-green`. O projeto remoto continua
+`blocked-environment` e não recebeu migration, DDL, DML, configuração Auth ou
+deploy. O repository Flutter atual ainda não encadeia os gateways v2; portanto
+Flutter, E2E, `remote-green` e `done` permanecem abertos. Importação,
+exportação, arquivos e mídia existentes foram preservados e não trabalhados.

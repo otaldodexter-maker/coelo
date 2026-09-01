@@ -4163,3 +4163,95 @@ da simples soma das 207 ações.
   alterado ou staged pelo backend. Os seis commits ficam preservados na branch
   até `dev` estar limpa; não houve push, merge, cherry-pick ou remoção de
   worktree/branch.
+
+### Checkpoint seguro 62 - Activities v2 interno local-green
+
+- **Progresso geral conhecido:** projeto estrito `done` 0,00% (0/229),
+  restante 100,00% (229/229); backlog Supabase estrito `done` 0,00% (0/228),
+  restante 100,00% (228/228); famílias Supabase `done` 0,00% (0/37). A
+  contagem local global permanece 8,11% (3/37 famílias), porque Activities já
+  possuía evidência local e `activities.assessment` ficou fora deste pacote.
+- **Progresso do recorte:** os quatro gates backend locais foram concluídos,
+  100,00% (4/4), restante 0,00% (0/4). Os cinco `action_id`
+  `activities.list`, `activities.create`, `activities.detail`,
+  `activities.edit` e `activities.publish` receberam evidência v2 local
+  fresca; nenhum dos cinco é `remote-green` ou `done`. Participantes,
+  profissionais e permissões são subcontratos dessas ações, não novos
+  denominadores.
+- **Objetivo e paths:** fundação Activities cross-app para o Superadmin interno,
+  com domínio compartilhado e gateways nominais, sem alterar `apps/**`, Flutter,
+  UI, importação, exportação, arquivos ou mídia. Os paths mudados ficaram em
+  migrations, mirror gerado, testes SQL, scripts de replay e documentação
+  autorizada.
+- **Migrations e SHA-256 dos arquivos canônicos:**
+  `20260831192831_activities_v2_actor_attribution.sql`
+  `6cde88d2d2c4d2c91d394b5152a6804fa18a609cec786f131ba29016ba17e37d`;
+  `20260831195118_activities_v2_actor_provenance_hardening.sql`
+  `3fd41204dc977b1d4bcb7e497d9b47e855c8b72b51a6f9feab437c0faae8204d`;
+  `20260831195944_activities_v2_actor_provenance_semantics.sql`
+  `7f06bc3df7f936f06bbc103cf732d83aa9c9724092aae768ac4aa530b8bf5a0c`;
+  `20260831203645_activities_v2_permissions_receipts.sql`
+  `1def96ddb74014af4ab04bb81a3063faf49d11988c507aacf0801ba5a219539a`;
+  `20260831211945_activities_v2_internal_gateways.sql`
+  `e627be30cc5f56b27a68f46b32ff17a1d64a304b1f8cb6e8ac648acfb3e4207d`;
+  `20260831231645_activities_v2_rls_grants.sql`
+  `0eb6efe209f594e0b4219c4764deded1f6604ad88c9e1a2a5a0d32d5f361376a`;
+  `20260831234307_activities_v2_final_review_hardening.sql`
+  `c1a221d67054dbfd401db7737df1126e137eaadf1df706bb7eff0dec0dd9e883`.
+  Para a última migration, o manifesto registra o hash normalizado
+  `01663a89c55e5de081aa97b808cec0329ae4af9dd6a24ef2d80c87d6c0ddc898`.
+- **REDs:** o contrato inicial não representava autoria interna sem pessoa
+  global. O review adversarial posterior rejeitou lookup antes da autorização,
+  validação incompleta de publicação, ausência de auditoria negativa,
+  precedência de permissões incompleta, rejeição indevida do no-op
+  `belongs=false`, locks/referências insuficientes e matriz negativa incompleta.
+  Cada achado permaneceu RED até correção e replay novos.
+- **GREEN funcional:** as suítes Activities v2 executaram 199 asserts pgTAP;
+  todos os 199 passaram, incluindo o teste focal final 25/25. As provas cobrem
+  Auth e sessão vivas, AAL,
+  lifecycle, role/capability/grant ativos, negação explícita, membership
+  suspensa/revogada, tenant A/B, sibling scope, cross-app, UUID aleatório,
+  list/detail, create/update/publish, snapshots de unidades/turmas,
+  participantes, profissionais, permissões, replay e auditoria minimizada.
+- **Segurança e concorrência:** onze relações têm RLS habilitada e forçada;
+  somente onze wrappers nominais têm EXECUTE de `authenticated`; dezoito
+  helpers permanecem sem EXECUTE cliente, owner `postgres` e
+  `search_path=''`. Vinte e duas policies people-based foram preservadas sem
+  bypass interno. Oito caminhos FK foram provados por catálogo; três índices
+  novos fecharam os gaps reais. Duas sessões concorrentes produziram um único
+  vencedor na versão 2 e um `SAI_CONCURRENT_CHANGE`, um receipt, uma auditoria
+  de sucesso e uma negativa com a mesma correlação.
+- **Regressões e ferramentas:** ciclo Auth nativo passou; concorrência real
+  passou; contratos PowerShell passaram 11/11; perfil fechado passou 59/59 e
+  canônico/mirror 122/122. O review final aprovou o delta em `1e921c47`. O
+  lint repetiu apenas quatro erros históricos fora do recorte: dois `42702` em
+  imports Activity/Groups, um `42804` no import de Access Profiles e um
+  `42703` no file job. Secret scan focal e `git diff --check` ficaram limpos;
+  cleanup terminou sem container, volume, rede, fixture, segredo ou staging
+  `coelo_safe_*` residual.
+- **Remoto read-only:** o projeto `coelo` está `ACTIVE_HEALTHY`, mas continua
+  `blocked-environment`. O ledger mantém 103 migrations, até
+  `20260821200000_profile_about_remote_context_compatibility`; existem dez Edge
+  Functions, e `form-operations`/`circular-media` seguem com
+  `verify_jwt=false`, apenas classificados. O Security Advisor mantém 207
+  achados: 50 INFO de RLS sem policy, 156 WARN de `SECURITY DEFINER`
+  executável por `authenticated` e um aviso de proteção contra senhas vazadas.
+  O Performance Advisor mantém 505: 128 FKs sem índice e 377 índices não
+  usados. Nenhuma migration, DDL, DML, configuração Auth, Edge Function ou
+  deploy remoto ocorreu; logo o máximo comprovado é `local-green`.
+- **Tempo e ETA:** a janela Git factual entre o primeiro commit do design
+  `f793867d` às 16:05:55 BRT e o fechamento técnico `1e921c47` às 21:00:21 BRT
+  foi de 4 h 54 min 26 s. O recorte backend local não tem trabalho funcional
+  restante. ETA de remoto ou integração não é calculável sem classificação do
+  ambiente, autorização nominal e contrato de cutover Flutter.
+- **Primeiro gate incompleto e próximo passo seguro:** o review final já foi
+  aprovado; resta persistir este checkpoint e preservar os commits na worktree
+  isolada. Somente a tarefa de consolidação pode integrá-los em `dev` quando as
+  frentes visuais estiverem em checkpoint seguro. No remoto, o próximo comando
+  seguro continua sendo inventário somente leitura; qualquer mutação exige um
+  pacote nominal com migrations, hashes, objetos, riscos e estratégia
+  forward-only.
+- **Gate de conhecimento:** atualizado
+  `docs/knowledge/team/superadmin-activity-directory.md` com a regra durável de
+  gateways nominais por realm e o limite local-only, sem PII nem log de
+  atividade.

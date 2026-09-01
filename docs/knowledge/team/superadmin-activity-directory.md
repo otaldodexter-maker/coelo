@@ -1,9 +1,9 @@
 ---
 title: Diretório de atividades do Superadmin
 knowledge_id: superadmin-activity-directory
-source: docs/superpowers/specs/2026-07-29-superadmin-activity-inspection-design.md
+source: docs/superpowers/specs/2026-08-31-activities-cross-app-backend-v2-design.md
 status: validated
-generated_at: 2026-08-11
+generated_at: 2026-08-31
 audience: team
 surfaces: [superadmin, activities]
 visibility: internal
@@ -11,6 +11,9 @@ review_owner: Coelo Product
 ---
 
 # Diretório de atividades do Superadmin
+
+Esta projeção incorpora e sucede, sem apagar seus fatos ainda válidos, o
+contrato de inspeção de 2026-07-29.
 
 O Superadmin consulta atividades em `/activities` e seus detalhes em
 `/activities/:activityId`. O diretório, detalhe, criação, edição, vínculos,
@@ -27,8 +30,9 @@ oferecem também 20, 50 e 100 itens por página.
 Os status confirmados são `draft`, `active`, `inactive`, `suspended` e
 `archived`. A origem é `institution` ou `unit`; a distribuição é
 `institution_standard` ou `unit_local`; a governança é `optional`,
-`mandatory` ou `fixed`. Não há contrato para tipo, agenda, recorrência,
-duração, anexos, publicação, cancelamento ou conclusão nessa superfície.
+`mandatory` ou `fixed`. O backend v2 possui contrato de publicação; a UI e o
+adapter atuais ainda não o implementam. Não há contrato para tipo, agenda,
+recorrência, duração, anexos, cancelamento ou conclusão nessa superfície.
 
 O detalhe mostra identidade, governança, unidades e grupos vinculados.
 Profissionais e participantes são retornados somente dentro do escopo
@@ -55,3 +59,25 @@ distribuídos por categorias filtráveis coerentes. Começar a partir de um mode
 idempotente: o servidor aplica defaults, mescla overrides, persiste a origem e
 audita. Duplicar modelo é outro comando e cria uma cópia institucional; não
 cria uma Atividade.
+
+## Regra cross-app dos gateways v2
+
+As entidades e invariantes de Activities são compartilhadas entre aplicativos,
+mas a autorização de cada tipo de ator usa um gateway nominal próprio. O
+Superadmin v2 resolve exclusivamente identidade interna, sessão, membership,
+capability, AAL e escopo; ele não fabrica uma pessoa global nem reutiliza a
+autorização people-based. O Admin mantém o caminho people-based existente. O
+Principal não recebe endpoint, papel, capability ou grant novo sem contrato
+familiar posterior.
+
+O backend v2 local cobre diretório, detalhe, criação, edição, publicação,
+participantes, profissionais e permissões granulares. Essa implementação é
+`local-green`: passou no ambiente local, mas ainda não foi aplicada ao remoto.
+O Flutter atual continua dependente de adaptação futura para encadear os
+snapshots v2 e recuperar o rascunho; por isso nenhuma tela ou integração foi
+declarada concluída.
+
+Os gateways validam o escopo autorizado antes de resolver ou devolver o
+recurso solicitado. Filtros e identificadores enviados pelo cliente somente
+podem estreitar esse escopo; negações relevantes preservam correlação e
+auditoria minimizada sem expor o recurso de outro tenant.
