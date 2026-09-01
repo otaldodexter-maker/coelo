@@ -209,6 +209,64 @@ void main() {
     expect(duplicated?.isSystem, isFalse);
   });
 
+  testWidgets('permission matrix selects by app, module and screen', (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AccessProfileFormPage(
+          repository: FakeAccessProfileRepository(),
+          logout: unavailableSuperadminLogout,
+          domain: AccessProfileDomain.platform,
+          profileId: 'demo-owner',
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('access-profile-continue')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('permission-app-select-all')), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget.key?.toString().contains('permission-module-select-all-') ?? false,
+      ),
+      findsWidgets,
+    );
+    final screenAction = find.byWidgetPredicate(
+      (widget) =>
+          widget is IconButton &&
+          widget.onPressed != null &&
+          (widget.key?.toString().contains('permission-screen-select-all-') ?? false),
+    );
+    expect(screenAction, findsWidgets);
+
+    final initiallyAllSelected = find.text('Limpar app').evaluate().isNotEmpty;
+    await tester.ensureVisible(find.byKey(const Key('permission-app-select-all')));
+    await tester.tap(find.byKey(const Key('permission-app-select-all')));
+    await tester.pump();
+    expect(
+      find.text(initiallyAllSelected ? 'Selecionar todo o app' : 'Limpar app'),
+      findsOneWidget,
+    );
+    if (!initiallyAllSelected) {
+      await tester.tap(find.byKey(const Key('permission-app-select-all')));
+      await tester.pump();
+    }
+    await tester.ensureVisible(screenAction.first);
+    await tester.tap(screenAction.first);
+    await tester.pump();
+    expect(
+      (tester.widget<IconButton>(screenAction.first).icon as Icon).icon,
+      Icons.deselect_rounded,
+    );
+  });
+
   testWidgets('directory switches between profiles and models in one access area', (tester) async {
     AccessProfileDirectoryKind? selected;
     await tester.pumpWidget(

@@ -703,6 +703,18 @@ final class _PermissionMatrixState extends State<_PermissionMatrix> {
     );
   }
 
+  void _toggleWhere(bool Function(AccessPermission permission) matches, bool selected) {
+    widget.onChanged(
+      widget.permissions
+          .map(
+            (permission) => matches(permission) && permission.grantable && !permission.inherited
+                ? permission.withSelection(selected)
+                : permission,
+          )
+          .toList(growable: false),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final query = _search.trim().toLowerCase();
@@ -719,6 +731,11 @@ final class _PermissionMatrixState extends State<_PermissionMatrix> {
     for (final permission in filtered) {
       modules.putIfAbsent(permission.module, () => []).add(permission);
     }
+    final appSelectable = widget.permissions
+        .where((permission) => permission.grantable && !permission.inherited)
+        .toList(growable: false);
+    final appSelected =
+        appSelectable.isNotEmpty && appSelectable.every((permission) => permission.selected);
     return _FormSurface(
       surfaceKey: const Key('access-profile-permission-matrix'),
       title: 'Permissões',
@@ -733,6 +750,21 @@ final class _PermissionMatrixState extends State<_PermissionMatrix> {
             semanticLabel: 'Buscar permissão por módulo, tela ou ação',
             onChanged: (value) => setState(() => _search = value),
           ),
+          const SizedBox(height: CoeloSpacing.space3),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              key: const Key('permission-app-select-all'),
+              onPressed: appSelectable.isEmpty
+                  ? null
+                  : () => _toggleWhere((_) => true, !appSelected),
+              icon: Icon(
+                appSelected ? Icons.deselect_rounded : Icons.select_all_rounded,
+                size: CoeloSize.iconSm,
+              ),
+              label: Text(appSelected ? 'Limpar app' : 'Selecionar todo o app'),
+            ),
+          ),
           const SizedBox(height: CoeloSpacing.space4),
           if (modules.isEmpty)
             const CoeloStatePanel(
@@ -745,22 +777,20 @@ final class _PermissionMatrixState extends State<_PermissionMatrix> {
               _PermissionModule(
                 module: modules.keys.elementAt(index),
                 permissions: modules.values.elementAt(index),
+                selectionPermissions: widget.permissions
+                    .where((permission) => permission.module == modules.keys.elementAt(index))
+                    .toList(growable: false),
                 onToggle: _toggle,
-                onToggleAll: (selected) {
-                  final codes = modules.values
-                      .elementAt(index)
-                      .map((permission) => permission.code)
-                      .toSet();
-                  widget.onChanged(
-                    widget.permissions
-                        .map(
-                          (permission) => codes.contains(permission.code)
-                              ? permission.withSelection(selected)
-                              : permission,
-                        )
-                        .toList(growable: false),
-                  );
-                },
+                onToggleAll: (selected) => _toggleWhere(
+                  (permission) => permission.module == modules.keys.elementAt(index),
+                  selected,
+                ),
+                onToggleScreen: (screen, selected) => _toggleWhere(
+                  (permission) =>
+                      permission.module == modules.keys.elementAt(index) &&
+                      permission.screenCode == screen,
+                  selected,
+                ),
               ),
               if (index < modules.length - 1) const SizedBox(height: CoeloSpacing.space4),
             ],
@@ -774,14 +804,18 @@ final class _PermissionModule extends StatelessWidget {
   const _PermissionModule({
     required this.module,
     required this.permissions,
+    required this.selectionPermissions,
     required this.onToggle,
     required this.onToggleAll,
+    required this.onToggleScreen,
   });
 
   final String module;
   final List<AccessPermission> permissions;
+  final List<AccessPermission> selectionPermissions;
   final void Function(AccessPermission permission, bool selected) onToggle;
   final ValueChanged<bool> onToggleAll;
+  final void Function(String screen, bool selected) onToggleScreen;
 
   @override
   Widget build(BuildContext context) {
@@ -795,7 +829,9 @@ final class _PermissionModule extends StatelessWidget {
     final unavailable = permissions
         .where((item) => !item.grantable || item.inherited)
         .toList(growable: false);
-    final selectable = permissions.where((item) => item.grantable && !item.inherited).toList();
+    final selectable = selectionPermissions
+        .where((item) => item.grantable && !item.inherited)
+        .toList();
     final allSelected = selectable.isNotEmpty && selectable.every((item) => item.selected);
     return Container(
       decoration: BoxDecoration(
@@ -809,26 +845,46 @@ final class _PermissionModule extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(CoeloSpacing.space4),
-            child: Row(
-              children: [
-                Expanded(child: Text(module, style: Theme.of(context).textTheme.titleMedium)),
-                TextButton.icon(
-                  key: Key('permission-module-select-all-$module'),
-                  onPressed: selectable.isEmpty ? null : () => onToggleAll(!allSelected),
-                  icon: Icon(
-                    allSelected ? Icons.deselect_rounded : Icons.select_all_rounded,
-                    size: CoeloSize.iconSm,
-                  ),
-                  label: Text(allSelected ? 'Limpar módulo' : 'Selecionar módulo'),
-                ),
-                const SizedBox(width: CoeloSpacing.space2),
-                Text(
-                  '${permissions.where((item) => item.selected).length} de ${permissions.length}',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelMedium?.copyWith(color: colors.onSurfaceVariant),
-                ),
-              ],
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final title = Text(module, style: Theme.of(context).textTheme.titleMedium);
+                final actions = Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextButton.icon(
+                      key: Key('permission-module-select-all-$module'),
+                      onPressed: selectable.isEmpty ? null : () => onToggleAll(!allSelected),
+                      icon: Icon(
+                        allSelected ? Icons.deselect_rounded : Icons.select_all_rounded,
+                        size: CoeloSize.iconSm,
+                      ),
+                      label: Text(allSelected ? 'Limpar módulo' : 'Selecionar módulo'),
+                    ),
+                    const SizedBox(width: CoeloSpacing.space2),
+                    Text(
+                      '${permissions.where((item) => item.selected).length} de ${permissions.length}',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelMedium?.copyWith(color: colors.onSurfaceVariant),
+                    ),
+                  ],
+                );
+                if (constraints.maxWidth < 480) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      title,
+                      Align(alignment: Alignment.centerRight, child: actions),
+                    ],
+                  );
+                }
+                return Row(
+                  children: [
+                    Expanded(child: title),
+                    actions,
+                  ],
+                );
+              },
             ),
           ),
           Divider(height: 1, color: colors.outlineVariant),
@@ -843,12 +899,14 @@ final class _PermissionModule extends StatelessWidget {
                     screens: screens,
                     actions: actions,
                     onToggle: onToggle,
+                    onToggleScreen: onToggleScreen,
                   );
                 }
                 return _StackedPermissionMatrix(
                   module: module,
                   screens: screens,
                   onToggle: onToggle,
+                  onToggleScreen: onToggleScreen,
                 );
               },
             ),
@@ -888,12 +946,14 @@ final class _DesktopPermissionMatrix extends StatelessWidget {
     required this.screens,
     required this.actions,
     required this.onToggle,
+    required this.onToggleScreen,
   });
 
   final String module;
   final Map<String, List<AccessPermission>> screens;
   final List<String> actions;
   final void Function(AccessPermission permission, bool selected) onToggle;
+  final void Function(String screen, bool selected) onToggleScreen;
 
   @override
   Widget build(BuildContext context) {
@@ -931,10 +991,11 @@ final class _DesktopPermissionMatrix extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: Text(
-                    _screenLabel(screens.keys.elementAt(index), module),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                  child: _ScreenSelectionHeader(
+                    module: module,
+                    screen: screens.keys.elementAt(index),
+                    permissions: screens.values.elementAt(index),
+                    onToggleAll: onToggleScreen,
                   ),
                 ),
                 for (final action in actions)
@@ -971,11 +1032,13 @@ final class _StackedPermissionMatrix extends StatelessWidget {
     required this.module,
     required this.screens,
     required this.onToggle,
+    required this.onToggleScreen,
   });
 
   final String module;
   final Map<String, List<AccessPermission>> screens;
   final void Function(AccessPermission permission, bool selected) onToggle;
+  final void Function(String screen, bool selected) onToggleScreen;
 
   @override
   Widget build(BuildContext context) {
@@ -992,9 +1055,11 @@ final class _StackedPermissionMatrix extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  _screenLabel(screens.keys.elementAt(index), module),
-                  style: Theme.of(context).textTheme.titleSmall,
+                _ScreenSelectionHeader(
+                  module: module,
+                  screen: screens.keys.elementAt(index),
+                  permissions: screens.values.elementAt(index),
+                  onToggleAll: onToggleScreen,
                 ),
                 const SizedBox(height: CoeloSpacing.space2),
                 for (final permission in screens.values.elementAt(index))
@@ -1008,6 +1073,44 @@ final class _StackedPermissionMatrix extends StatelessWidget {
           ),
           if (index < screens.length - 1) const SizedBox(height: CoeloSpacing.space3),
         ],
+      ],
+    );
+  }
+}
+
+final class _ScreenSelectionHeader extends StatelessWidget {
+  const _ScreenSelectionHeader({
+    required this.module,
+    required this.screen,
+    required this.permissions,
+    required this.onToggleAll,
+  });
+
+  final String module;
+  final String screen;
+  final List<AccessPermission> permissions;
+  final void Function(String screen, bool selected) onToggleAll;
+
+  @override
+  Widget build(BuildContext context) {
+    final selectable = permissions.where((item) => item.grantable && !item.inherited).toList();
+    final allSelected = selectable.isNotEmpty && selectable.every((item) => item.selected);
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            _screenLabel(screen, module),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+        ),
+        IconButton(
+          key: Key('permission-screen-select-all-$module-$screen'),
+          tooltip: allSelected ? 'Limpar tela' : 'Selecionar tela',
+          onPressed: selectable.isEmpty ? null : () => onToggleAll(screen, !allSelected),
+          icon: Icon(allSelected ? Icons.deselect_rounded : Icons.select_all_rounded),
+        ),
       ],
     );
   }
