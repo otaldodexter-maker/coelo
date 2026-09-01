@@ -113,6 +113,7 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
                 padding: const EdgeInsets.only(top: CoeloSpacing.space3),
                 child: SuperadminFormActionFooter(
                   surfaceKey: const Key('circular-publication-footer'),
+                  inlineMinimumWidth: 840,
                   tertiaryAction: TextButton(
                     key: const Key('circular-cancel'),
                     onPressed: widget.controller.busy ? null : widget.onCancel,

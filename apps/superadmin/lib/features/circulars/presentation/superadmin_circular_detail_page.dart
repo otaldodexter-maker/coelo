@@ -1,7 +1,7 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../principal_circulars/domain/circular.dart';
 import '../../principal_circulars/domain/circular_repository.dart';
@@ -69,51 +69,59 @@ final class _SuperadminCircularDetailPageState extends State<SuperadminCircularD
         loading: true,
       );
     }
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-        final content = _content(detail);
-        return ColoredBox(
-          color: Theme.of(context).colorScheme.surface,
-          child: ListView(
-            padding: EdgeInsets.all(compact ? CoeloSpacing.space4 : CoeloSpacing.space6),
-            children: [
-              Row(
+    return CallbackShortcuts(
+      bindings: {const SingleActivator(LogicalKeyboardKey.escape): widget.onBack},
+      child: Focus(
+        autofocus: true,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+            final content = _content(detail);
+            return ColoredBox(
+              color: Theme.of(context).colorScheme.surface,
+              child: ListView(
+                padding: EdgeInsets.all(compact ? CoeloSpacing.space4 : CoeloSpacing.space6),
                 children: [
-                  IconButton(
-                    tooltip: 'Voltar para Circulares',
-                    onPressed: widget.onBack,
-                    icon: const Icon(Icons.arrow_back_rounded),
+                  Row(
+                    children: [
+                      IconButton(
+                        key: const Key('circular-detail-back'),
+                        tooltip: 'Voltar para Circulares',
+                        onPressed: widget.onBack,
+                        icon: const Icon(Icons.arrow_back_rounded),
+                      ),
+                      const SizedBox(width: CoeloSpacing.space2),
+                      Expanded(
+                        child: Text(
+                          'Detalhe da circular',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+                        ),
+                      ),
+                      if (widget.onEdit != null)
+                        FilledButton.icon(
+                          key: const Key('circular-detail-edit'),
+                          onPressed: widget.onEdit,
+                          icon: const Icon(Icons.edit_outlined),
+                          label: const Text('Editar circular'),
+                        ),
+                    ],
                   ),
-                  const SizedBox(width: CoeloSpacing.space2),
-                  Expanded(
-                    child: Text(
-                      'Detalhe da circular',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+                  const SizedBox(height: CoeloSpacing.space6),
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 980),
+                      child: content,
                     ),
                   ),
-                  if (widget.onEdit != null)
-                    FilledButton.icon(
-                      onPressed: widget.onEdit,
-                      icon: const Icon(Icons.edit_outlined),
-                      label: const Text('Editar circular'),
-                    ),
                 ],
               ),
-              const SizedBox(height: CoeloSpacing.space6),
-              Align(
-                alignment: Alignment.topCenter,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 980),
-                  child: content,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+            );
+          },
+        ),
+      ),
     );
   }
 

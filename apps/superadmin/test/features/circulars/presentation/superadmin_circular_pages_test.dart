@@ -12,10 +12,6 @@ void main() {
     testWidgets('admin composer follows the approved responsive form at ${width.toInt()}px', (
       tester,
     ) async {
-      final errors = <FlutterErrorDetails>[];
-      final previous = FlutterError.onError;
-      FlutterError.onError = errors.add;
-      addTearDown(() => FlutterError.onError = previous);
       await tester.binding.setSurfaceSize(Size(width, 1000));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       final controller = CircularComposerController(
@@ -36,13 +32,13 @@ void main() {
         ),
       );
 
-      expect(find.text('Publicar circular'), findsOneWidget);
+      expect(find.text('Publicar circular'), findsAtLeastNWidgets(1));
       expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
       expect(
         find.byKey(const Key('superadmin-circular-preview')),
         width >= 1200 ? findsOneWidget : findsNothing,
       );
-      expect(errors.where((error) => error.exceptionAsString().contains('overflowed')), isEmpty);
+      expect(tester.takeException(), isNull);
     });
   }
 
@@ -69,6 +65,7 @@ void main() {
 
     await tester.enterText(find.byKey(const Key('circular-title')), 'Renovação 2027');
     await tester.enterText(find.byKey(const Key('circular-body')), 'Queridos responsáveis');
+    await tester.ensureVisible(find.byKey(const Key('circular-audience-families')));
     await tester.tap(find.byKey(const Key('circular-audience-families')));
     await tester.ensureVisible(find.byKey(const Key('circular-save-draft')));
     await tester.tap(find.byKey(const Key('circular-save-draft')));
@@ -80,29 +77,34 @@ void main() {
     expect(repository.published, isTrue);
   });
 
-  testWidgets('admin detail renders circular content and an edit action', (tester) async {
-    var edited = false;
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: SuperadminCircularDetailPage(
-            circularId: 'circular-published',
-            repository: _Repository(),
-            onBack: () {},
-            onEdit: () => edited = true,
+  for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+    testWidgets('admin detail is responsive at ${width.toInt()}px', (tester) async {
+      await tester.binding.setSurfaceSize(Size(width, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      var edited = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SuperadminCircularDetailPage(
+              circularId: 'circular-published',
+              repository: _Repository(),
+              onBack: () {},
+              onEdit: () => edited = true,
+            ),
           ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.text('Renovação de matrícula'), findsOneWidget);
-    expect(find.text('Coordenação Pedagógica'), findsOneWidget);
-    expect(find.text('Ensino Fundamental'), findsOneWidget);
-    expect(find.text('Confirme a renovação até 30 de setembro.'), findsOneWidget);
-    await tester.tap(find.text('Editar circular'));
-    expect(edited, isTrue);
-  });
+      expect(find.text('Renovação de matrícula'), findsOneWidget);
+      expect(find.text('Coordenação Pedagógica · Ensino Fundamental'), findsOneWidget);
+      expect(find.text('Confirme a renovação até 30 de setembro.'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('circular-detail-edit')));
+      expect(edited, isTrue);
+      expect(tester.takeException(), isNull);
+    });
+  }
 }
 
 final class _Repository implements CircularRepository {

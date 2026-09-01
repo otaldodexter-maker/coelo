@@ -12,7 +12,6 @@ import '../../core/platform/open_download.dart';
 import '../dev_menu/development_assessment_repository.dart';
 import '../dev_menu/development_activity_fixture_repository.dart';
 import '../dev_menu/development_attendance_repository.dart';
-import '../dev_menu/development_circular_reader_repository.dart';
 import '../dev_menu/development_invite_repository.dart';
 import '../dev_menu/development_routine_repository.dart';
 import '../dev_menu/development_student_tracking_repository.dart';
@@ -77,7 +76,10 @@ import '../../features/daily_routine/daily_routine_pages.dart';
 import '../../features/catalog/presentation/catalog_host_page.dart';
 import '../../features/chat/data/development_chat_repository.dart';
 import '../../features/chat/presentation/screens/superadmin_chat_page.dart';
+import '../../features/circulars/data/development_circular_repository.dart';
 import '../../features/circulars/presentation/circular_directory_page.dart';
+import '../../features/circulars/presentation/development_circular_composer_host.dart';
+import '../../features/circulars/presentation/superadmin_circular_detail_page.dart';
 import '../../features/errors/presentation/screens/superadmin_error_screen.dart';
 import '../../features/forms/presentation/editor/forms_editor_page.dart';
 import '../../features/forms/data/development_forms_api.dart';
@@ -117,11 +119,7 @@ import '../../features/notices/domain/notice_repository.dart'
 import '../../features/notices/data/development_notice_repository.dart';
 import '../../features/notices/presentation/notice_directory_page.dart';
 import '../../features/notices/presentation/notice_form_page.dart';
-import '../../features/principal_circulars/application/circular_composer_controller.dart';
-import '../../features/principal_circulars/domain/circular.dart';
 import '../../features/principal_circulars/domain/circular_repository.dart';
-import '../../features/principal_circulars/presentation/principal_circular_composer_page.dart';
-import '../../features/principal_circulars/presentation/principal_circular_detail_page.dart';
 import '../../features/plans/data/fake_plan_catalog_repository.dart';
 import '../../features/plans/presentation/plan_directory_page.dart';
 import '../../features/plans/presentation/plan_form_page.dart';
@@ -300,6 +298,9 @@ GoRouter createSuperadminRouter({
   DevelopmentInviteRepository? cachedInvitePreviewRepository;
   DevelopmentInviteRepository invitePreviewRepository() =>
       cachedInvitePreviewRepository ??= DevelopmentInviteRepository();
+  DevelopmentCircularRepository? cachedCircularPreviewRepository;
+  DevelopmentCircularRepository circularPreviewRepository() =>
+      cachedCircularPreviewRepository ??= DevelopmentCircularRepository();
   const productionActivityAboutRepository = UnavailableActivityProfileAboutRepository();
   final developmentActivityStore = DevActivitySessionStore.content();
   final developmentActivityDirectoryRepository = DevActivityDirectoryRepository(
@@ -583,30 +584,6 @@ GoRouter createSuperadminRouter({
           onClose: () => _closePrincipalViewer(context),
           onOpenHappens: () => _closePrincipalViewer(context),
           onCreate: () => context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName),
-        ),
-      ),
-      GoRoute(
-        path: SuperadminRoutes.circularDetail,
-        name: SuperadminRoutes.circularDetailName,
-        builder: (context, state) => PrincipalCircularDetailPage(
-          circularId: state.pathParameters['circularId']!,
-          repository: const UnavailableCircularRepository(),
-          responseRepository: const UnavailableCircularResponseRepository(),
-          onReturn: () =>
-              _returnFromCircularReader(context, fallbackRouteName: SuperadminRoutes.circularsName),
-        ),
-      ),
-      GoRoute(
-        path: SuperadminRoutes.devCircularDetail,
-        name: SuperadminRoutes.devCircularDetailName,
-        builder: (context, state) => PrincipalCircularDetailPage(
-          circularId: state.pathParameters['circularId']!,
-          repository: const DevelopmentCircularReaderRepository(),
-          responseRepository: const UnavailableCircularResponseRepository(),
-          onReturn: () => _returnFromCircularReader(
-            context,
-            fallbackRouteName: SuperadminRoutes.devCircularsName,
-          ),
         ),
       ),
       ShellRoute(
@@ -3471,33 +3448,101 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => blockedProductionMutationPage(context),
           ),
           GoRoute(
-            path: SuperadminRoutes.devCirculars,
-            name: SuperadminRoutes.devCircularsName,
+            path: SuperadminRoutes.circularDetail,
+            name: SuperadminRoutes.circularDetailName,
             builder: (context, state) => operationalPage(
               context,
-              title: 'Circulares',
-              subtitle: 'Prévia local do diretório aprovado de Circulares.',
+              title: 'Circular',
+              subtitle: 'Consulte conteúdo, contexto e respostas da Circular.',
               destination: 'circulars',
-              child: CircularDirectoryPage(
-                items: _developmentCircularDirectoryItems,
-                onCreate: () => context.goNamed(SuperadminRoutes.devCircularCreateName),
-                onOpen: (id) {
-                  final item = _developmentCircularDirectoryItems.firstWhere(
-                    (candidate) => candidate.id == id,
-                  );
-                  if (item.status == CircularStatus.published) {
-                    context.pushNamed(
-                      SuperadminRoutes.devCircularDetailName,
-                      pathParameters: {'circularId': id},
-                    );
-                    return;
-                  }
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Somente Circulares publicadas podem ser lidas.')),
-                  );
-                },
+              child: SuperadminCircularDetailPage(
+                circularId: state.pathParameters['circularId']!,
+                repository: const UnavailableCircularRepository(),
+                onBack: () => _returnFromCircularReader(
+                  context,
+                  fallbackRouteName: SuperadminRoutes.circularsName,
+                ),
               ),
             ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.circularEdit,
+            name: SuperadminRoutes.circularEditName,
+            builder: (context, state) => blockedProductionMutationPage(context),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devCirculars,
+            name: SuperadminRoutes.devCircularsName,
+            builder: (context, state) {
+              final repository = circularPreviewRepository();
+              return operationalPage(
+                context,
+                title: 'Circulares',
+                subtitle: 'Crie, publique e acompanhe Circulares institucionais.',
+                destination: 'circulars',
+                child: ListenableBuilder(
+                  listenable: repository,
+                  builder: (context, _) => CircularDirectoryPage(
+                    items: repository.items,
+                    onCreate: () => context.goNamed(SuperadminRoutes.devCircularCreateName),
+                    onOpen: (id) => context.pushNamed(
+                      SuperadminRoutes.devCircularDetailName,
+                      pathParameters: {'circularId': id},
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devCircularDetail,
+            name: SuperadminRoutes.devCircularDetailName,
+            builder: (context, state) {
+              final circularId = state.pathParameters['circularId']!;
+              return operationalPage(
+                context,
+                title: 'Circular',
+                subtitle: 'Consulte conteúdo, contexto e respostas da Circular.',
+                destination: 'circulars',
+                child: SuperadminCircularDetailPage(
+                  circularId: circularId,
+                  repository: circularPreviewRepository(),
+                  onBack: () => _returnFromCircularReader(
+                    context,
+                    fallbackRouteName: SuperadminRoutes.devCircularsName,
+                  ),
+                  onEdit: () => context.goNamed(
+                    SuperadminRoutes.devCircularEditName,
+                    pathParameters: {'circularId': circularId},
+                  ),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devCircularEdit,
+            name: SuperadminRoutes.devCircularEditName,
+            builder: (context, state) {
+              final circularId = state.pathParameters['circularId']!;
+              return operationalPage(
+                context,
+                title: 'Editar Circular',
+                subtitle: 'Atualize o conteúdo e publique uma nova revisão.',
+                destination: 'circular-create',
+                child: DevelopmentCircularComposerHost(
+                  repository: circularPreviewRepository(),
+                  circularId: circularId,
+                  onCancel: () => context.goNamed(
+                    SuperadminRoutes.devCircularDetailName,
+                    pathParameters: {'circularId': circularId},
+                  ),
+                  onDone: () => context.goNamed(
+                    SuperadminRoutes.devCircularDetailName,
+                    pathParameters: {'circularId': circularId},
+                  ),
+                ),
+              );
+            },
           ),
           GoRoute(
             path: SuperadminRoutes.devCircularCreate,
@@ -3505,19 +3550,12 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => operationalPage(
               context,
               title: 'Publicar Circular',
-              subtitle: 'Prévia local; persistência e publicação permanecem indisponíveis.',
+              subtitle: 'Prepare o conteúdo, o público e a publicação.',
               destination: 'circular-create',
-              child: PrincipalCircularComposerPage(
-                controller: CircularComposerController(
-                  repository: const UnavailableCircularRepository(),
-                  scope: const CircularScope(institutionId: 'development-preview'),
-                ),
+              child: DevelopmentCircularComposerHost(
+                repository: circularPreviewRepository(),
                 onCancel: () => context.goNamed(SuperadminRoutes.devCircularsName),
-                onPickFiles: () async {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Arquivos indisponíveis nesta prévia local.')),
-                  );
-                },
+                onDone: () => context.goNamed(SuperadminRoutes.devCircularsName),
               ),
             ),
           ),
@@ -4483,45 +4521,6 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.devPrincipalProfileName);
   }
 }
-
-final _developmentCircularDirectoryItems = <CircularDirectoryItem>[
-  CircularDirectoryItem(
-    id: 'circular-published',
-    title: 'Renovação de matrícula',
-    excerpt: 'Confirme a renovação para o próximo ano.',
-    authorName: 'Ana Souza',
-    contextLabel: 'Ensino Fundamental',
-    status: CircularStatus.published,
-    effectiveAt: DateTime.utc(2026, 8, 21),
-    attachmentCount: 2,
-    questionCount: 1,
-    responseCount: 84,
-  ),
-  CircularDirectoryItem(
-    id: 'circular-scheduled',
-    title: 'Reunião de responsáveis',
-    excerpt: 'Agenda e orientações para o encontro.',
-    authorName: 'Bruno Lima',
-    contextLabel: 'Educação Infantil',
-    status: CircularStatus.scheduled,
-    effectiveAt: DateTime.utc(2026, 9, 2),
-    attachmentCount: 1,
-    questionCount: 0,
-    responseCount: 0,
-  ),
-  CircularDirectoryItem(
-    id: 'circular-draft',
-    title: 'Circular em elaboração',
-    excerpt: 'Conteúdo ainda não publicado.',
-    authorName: 'Carla Melo',
-    contextLabel: 'Ensino Médio',
-    status: CircularStatus.draft,
-    effectiveAt: DateTime.utc(2026, 8, 30),
-    attachmentCount: 0,
-    questionCount: 2,
-    responseCount: 0,
-  ),
-];
 
 RoutineEntryKind _routineEntryKind(String? value) {
   for (final kind in RoutineEntryKind.values) {
