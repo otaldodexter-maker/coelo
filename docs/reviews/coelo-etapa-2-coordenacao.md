@@ -128,6 +128,12 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
   incluindo débitos de rotas e três goldens de Login. Portanto, o resultado não
   caracteriza regressão nova de Auth, mas a integração permanece retida até
   revisão independente e validação pós-cherry-pick.
+- O review independente encontrou bypass recovery→rota protegida; o commit
+  `f280e291` corrigiu o guard e passou 66/66 Auth/guards/router + 21/21
+  `coelo_auth`. O bloqueio crítico local foi removido.
+- A branch ainda altera `apps/catalog`, fora do recorte exclusivo Superadmin,
+  por quebra de compatibilidade do stream Auth. A frente deve preservar
+  compatibilidade/remover esses dois deltas antes da integração.
 
 ### Comunicações/Avisos — `ee8d3aff`
 
@@ -137,8 +143,13 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
   verdes, 20 fixtures coerentes e 13 goldens revisados.
 - Produção, RLS, permitido/negado, vínculo revogado, tenant A/B, persistência,
   reload, auditoria e E2E continuam abertos.
-- Proposta de 45 linhas para os três rastreadores permanece não commitada na
-  worktree de Comunicação e não deve ser descartada até captura central.
+- As 45 linhas propostas foram reconciliadas nos rastreadores oficiais no
+  commit central `e052493b`; a frente restaurou somente esses três diffs e
+  confirmou worktree limpa.
+- A revisão de integração reabriu Chat: `principal-chat` pode exibir o launcher
+  flutuante dentro da própria tela porque o shell só o ocultava para
+  `conversations`. Nove goldens Chat e dois InviteForm também permanecem RED.
+  Comunicação deve corrigir/classificar esses gates antes do cherry-pick.
 
 ### Estruturas — `560ce79c`
 
