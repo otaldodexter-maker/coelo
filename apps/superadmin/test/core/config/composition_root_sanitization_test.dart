@@ -31,16 +31,16 @@ void main() {
     }
   });
 
-  test('configured and fallback invitation composition remains unavailable', () {
-    for (final source in [authScope, app, mainSource]) {
-      expect(source, isNot(contains('SupabaseInviteRepository')));
-      expect(source, isNot(contains('supabase_invite_repository.dart')));
+  test('configured invitation composition uses Supabase and fallback remains unavailable', () {
+    for (final source in [app, mainSource]) {
       expect(source, isNot(contains('DevelopmentInviteRepository')));
       expect(source, isNot(contains('development_invite_repository.dart')));
     }
+    expect(authScope, contains('SupabaseInviteRepository(client)'));
+    expect(authScope, contains('supabase_invite_repository.dart'));
     expect(
       RegExp(r'inviteRepository:\s*const UnavailableInviteRepository\(\)').allMatches(authScope),
-      hasLength(2),
+      hasLength(1),
     );
     expect(app, contains('this.inviteRepository = const UnavailableInviteRepository()'));
     expect(router, isNot(contains('SupabaseInviteRepository')));

@@ -383,7 +383,7 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
         children: [
           _field('Contexto', invite.scope.label, width),
           _field('Perfil', invite.profile.label, width),
-          _field('Canais', invite.channels.map((value) => value.label).join(' + '), width),
+          _field('Canais', invite.channelLabel, width),
           _field('Emissor', invite.issuer.label, width),
           _field('Criado em', formatInviteDate(invite.createdAt), width),
           _field('Expira em', formatInviteDate(invite.expiresAt), width),

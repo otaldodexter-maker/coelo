@@ -126,12 +126,29 @@ final class InviteRecipient {
   final String? maskedEmail;
 }
 
-final class InviteIssuer {
-  const InviteIssuer({required this.personId, required this.label})
-    : assert(personId != ''),
-      assert(label != '');
+enum InviteIssuerKind {
+  legacyPerson('legacy_person'),
+  superadminInternal('superadmin_internal'),
+  unknown('unknown');
 
-  final String personId;
+  const InviteIssuerKind(this.databaseValue);
+
+  final String databaseValue;
+
+  static InviteIssuerKind fromDatabase(String value) => switch (value) {
+    'legacy_person' => legacyPerson,
+    'superadmin_internal' => superadminInternal,
+    'unknown' => unknown,
+    _ => throw FormatException('Unsupported invitation issuer kind.'),
+  };
+}
+
+/// Coarse issuer projection. Internal and people-realm identifiers never cross
+/// the productive invitation RPC boundary.
+final class InviteIssuer {
+  const InviteIssuer({required this.kind, required this.label}) : assert(label != '');
+
+  final InviteIssuerKind kind;
   final String label;
 }
 
@@ -182,6 +199,8 @@ final class PlatformInvite {
       status == InviteStatus.expired ||
       (status == InviteStatus.pending && !expiresAt.isAfter(now.toUtc()));
   bool get canRevoke => status == InviteStatus.pending;
+  String get channelLabel =>
+      channels.isEmpty ? 'Não informado' : channels.map((value) => value.label).join(' + ');
 }
 
 final class InviteDirectoryQuery {

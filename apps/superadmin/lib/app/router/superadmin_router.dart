@@ -450,7 +450,16 @@ GoRouter createSuperadminRouter({
     kind: SuperadminErrorKind.unavailable,
     onAction: () => context.goNamed(SuperadminRoutes.homeName),
   );
-  bool hasAuthoritativeMutationCapability() => false;
+  bool hasAuthoritativeMutationCapability([String location = '']) {
+    if (location.startsWith('/invites')) {
+      return inviteRepository is! UnavailableInviteRepository;
+    }
+    if (location.startsWith('/notices')) {
+      return noticeRepository is! UnavailableNoticeRepository;
+    }
+    return false;
+  }
+
   void openAgendaArea(BuildContext context, AgendaModuleArea area, {required bool development}) {
     context.goNamed(switch ((area, development)) {
       (AgendaModuleArea.calendar, true) => SuperadminRoutes.devAgendaName,
@@ -3262,9 +3271,12 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.invitesName,
             builder: (context, state) => InviteDirectoryPage(
               repository: inviteRepository,
+              allowCommands: inviteRepository is! UnavailableInviteRepository,
               logout: logout,
               onDestinationSelected: (value) => _navigateFromPersistentShell(context, value),
-              onCreate: null,
+              onCreate: inviteRepository is UnavailableInviteRepository
+                  ? null
+                  : () => context.goNamed(SuperadminRoutes.inviteCreateName),
               onOpen: (id) => context.goNamed(
                 SuperadminRoutes.inviteDetailName,
                 pathParameters: {'inviteId': id},
@@ -3274,7 +3286,8 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.inviteCreate,
             name: SuperadminRoutes.inviteCreateName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) =>
+                !hasAuthoritativeMutationCapability(SuperadminRoutes.inviteCreate)
                 ? blockedProductionMutationPage(context)
                 : InviteFormPage(
                     repository: inviteRepository,
@@ -3341,16 +3354,24 @@ GoRouter createSuperadminRouter({
               destination: 'notices',
               child: NoticeDirectoryPage(
                 repository: noticeRepository,
-                onCreate: null,
-                onEdit: null,
-                canManageLifecycle: false,
+                onCreate: noticeRepository is UnavailableNoticeRepository
+                    ? null
+                    : () => context.goNamed(SuperadminRoutes.noticeCreateName),
+                onEdit: noticeRepository is UnavailableNoticeRepository
+                    ? null
+                    : (id) => context.goNamed(
+                        SuperadminRoutes.noticeEditName,
+                        pathParameters: {'noticeId': id},
+                      ),
+                canManageLifecycle: noticeRepository is! UnavailableNoticeRepository,
               ),
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.noticeCreate,
             name: SuperadminRoutes.noticeCreateName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) =>
+                !hasAuthoritativeMutationCapability(SuperadminRoutes.noticeCreate)
                 ? blockedProductionMutationPage(context)
                 : productionOperationalPage(
                     context,
@@ -3367,7 +3388,8 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.noticeEdit,
             name: SuperadminRoutes.noticeEditName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) =>
+                !hasAuthoritativeMutationCapability(SuperadminRoutes.noticeEdit)
                 ? blockedProductionMutationPage(context)
                 : productionOperationalPage(
                     context,

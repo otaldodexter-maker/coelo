@@ -15,6 +15,7 @@ import '../../features/assessments/assessment.dart';
 import '../../features/assessments/data/supabase_assessment_repository.dart';
 import '../../features/imports/data/supabase_import_repository.dart';
 import '../../features/imports/domain/import_repository.dart';
+import '../../features/invites/data/supabase_invite_repository.dart';
 import '../../features/invites/domain/platform_invite.dart';
 import '../../features/notices/data/supabase_notice_repository.dart';
 import '../../features/notices/domain/notice_repository.dart';
@@ -168,7 +169,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),
       importRepository: SupabaseImportRepository(client),
       chatRepository: SupabaseChatRepository(client),
-      inviteRepository: const UnavailableInviteRepository(),
+      inviteRepository: SupabaseInviteRepository(client),
       noticeRepository: SupabaseNoticeRepository(client),
       attendanceRepository: SupabaseAttendanceRepository(client),
       studentTrackingRepository: const UnavailableStudentTrackingRepository(),

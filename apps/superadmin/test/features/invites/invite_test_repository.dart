@@ -120,10 +120,7 @@ PlatformInvite testInvite({
   ),
   channels: channels,
   status: status,
-  issuer: const InviteIssuer(
-    personId: '66666666-6666-4666-8666-666666666666',
-    label: 'Owner Coelo',
-  ),
+  issuer: const InviteIssuer(kind: InviteIssuerKind.superadminInternal, label: 'Owner Coelo'),
   createdAt: DateTime.utc(2026, 8, 11, 12),
   expiresAt: expiresAt ?? DateTime.utc(2026, 8, 14, 12),
   emailDeliveryStatus: channels.contains(InviteChannel.email)
