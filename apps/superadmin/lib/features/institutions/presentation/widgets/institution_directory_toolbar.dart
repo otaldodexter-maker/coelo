@@ -11,6 +11,7 @@ import '../../../../shared/presentation/widgets/superadmin_directory_view_toggle
 import '../../domain/institution_directory_repository.dart';
 import '../institution_directory_table_view.dart';
 import '../view_models/institution_directory_view_model.dart';
+import 'institution_file_actions.dart';
 
 enum InstitutionDirectoryDisplay { cards, table }
 
@@ -181,6 +182,11 @@ final class InstitutionDirectoryToolbar extends StatelessWidget {
                 ],
                 onCardsSelected: () => onDisplayChanged(InstitutionDirectoryDisplay.cards),
                 onTableViewSelected: onTableViewChanged,
+              ),
+              const SizedBox(width: CoeloSpacing.space2),
+              InstitutionFileActions(
+                activityController: activityController,
+                compact: compactFileAction,
               ),
             ],
           ),

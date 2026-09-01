@@ -161,7 +161,7 @@ final class _CoeloAdminFlyoutState<T> extends State<CoeloAdminFlyout<T>> {
         reservedPadding: reservedPadding,
         alignmentOffset: effectiveAlignmentOffset,
         style: MenuStyle(
-          alignment: widget.alignPanelToViewportEnd ? AlignmentDirectional.topEnd : null,
+          alignment: widget.alignPanelToViewportEnd ? AlignmentDirectional.bottomEnd : null,
           backgroundColor: WidgetStatePropertyAll(colors.surface),
           surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
           elevation: WidgetStatePropertyAll(widget.elevation),

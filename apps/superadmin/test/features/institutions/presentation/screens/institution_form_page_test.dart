@@ -1084,6 +1084,7 @@ void main() {
     await tester.tap(find.text('Localização e contato'));
     await tester.pumpAndSettle();
     expect(find.byTooltip('Buscar CEP'), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-location-map')), findsOneWidget);
 
     await tester.tap(find.text('Representantes legais'));
     await tester.pumpAndSettle();

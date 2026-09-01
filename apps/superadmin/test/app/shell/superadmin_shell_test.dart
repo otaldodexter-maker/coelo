@@ -928,10 +928,13 @@ void main() {
 
     await tester.pumpWidget(_shellApp());
 
-    expect(tester.getSize(find.byType(AppBar)).height, 48);
-    expect(find.text('Coelo'), findsNothing);
+    expect(tester.getSize(find.byType(AppBar)).height, 64);
+    expect(find.text('Coelo'), findsOneWidget);
+    expect(find.byIcon(Icons.menu), findsNothing);
+    expect(find.byIcon(Icons.chevron_right_rounded), findsOneWidget);
     await tester.tap(find.byKey(const Key('superadmin-mobile-menu')));
     await tester.pumpAndSettle();
+    expect(find.byIcon(Icons.keyboard_arrow_down_rounded), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('superadmin-navigation-section-operations')));
     await tester.pumpAndSettle();
@@ -1070,25 +1073,10 @@ void main() {
 
       final triggerRect = tester.getRect(trigger);
       final actionRect = tester.getRect(_menuItemWithText('Perfil'));
-      final panelRects =
-          find
-              .ancestor(of: _menuItemWithText('Perfil'), matching: find.byType(Material))
-              .evaluate()
-              .map((element) {
-                final box = element.renderObject! as RenderBox;
-                return box.localToGlobal(Offset.zero) & box.size;
-              })
-              .where((rect) => rect.width >= actionRect.width && rect.height > actionRect.height)
-              .toList()
-            ..sort(
-              (left, right) => (left.width * left.height).compareTo(right.width * right.height),
-            );
-      expect(panelRects, isNotEmpty);
-      final panelRect = panelRects.first;
-      expect(panelRect.right, lessThanOrEqualTo(triggerRect.right));
-      expect(panelRect.right, lessThanOrEqualTo(width - CoeloSpacing.space2));
-      expect(panelRect.left, greaterThanOrEqualTo(CoeloSpacing.space2));
-      expect(panelRect.bottom, lessThanOrEqualTo(800));
+      expect(actionRect.right, lessThanOrEqualTo(triggerRect.right));
+      expect(actionRect.right, lessThanOrEqualTo(width - CoeloSpacing.space2));
+      expect(actionRect.left, greaterThanOrEqualTo(CoeloSpacing.space2));
+      expect(actionRect.bottom, lessThanOrEqualTo(800));
 
       await tester.tap(trigger);
       await tester.pumpAndSettle();

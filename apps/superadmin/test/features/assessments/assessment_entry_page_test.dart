@@ -8,6 +8,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('closing search filters the fake queue across its visible context', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AssessmentClosingPage(
+          repository: const _ClosingAssessmentRepository(),
+          logout: unavailableSuperadminLogout,
+          onOpen: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Robótica'), findsWidgets);
+    expect(find.text('Expressão musical'), findsWidgets);
+    await tester.enterText(find.byKey(const Key('assessment-closing-search')), 'unidade norte');
+    await tester.pump();
+
+    expect(find.text('Robótica'), findsNothing);
+    expect(find.text('Expressão musical'), findsWidgets);
+  });
+
   testWidgets('repository and gradebook swap loads only B and discards late A', (tester) async {
     final pageKey = GlobalKey();
     final repositoryA = _PageAssessmentRepository.pending();
@@ -139,6 +163,39 @@ final class _PageAssessmentRepository implements AssessmentRepository {
     if (_immediate case final value?) return Future.value(value);
     return (_loads[id] ??= Completer<AssessmentGradebook?>()).future;
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _ClosingAssessmentRepository implements AssessmentRepository {
+  const _ClosingAssessmentRepository();
+
+  @override
+  Future<List<AssessmentClosingItem>> fetchClosingQueue() async => const [
+    AssessmentClosingItem(
+      id: 'closing-1',
+      status: AssessmentGradebookStatus.draft,
+      version: 1,
+      institutionName: 'Instituto Aurora',
+      unitName: 'Unidade Centro',
+      groupName: 'Turma Girassol',
+      activityName: 'Robótica',
+      periodName: '1º bimestre',
+      pendingCount: 2,
+    ),
+    AssessmentClosingItem(
+      id: 'closing-2',
+      status: AssessmentGradebookStatus.submitted,
+      version: 1,
+      institutionName: 'Casa Nuvem',
+      unitName: 'Unidade Norte',
+      groupName: 'Turma Azul',
+      activityName: 'Expressão musical',
+      periodName: '2º bimestre',
+      pendingCount: 1,
+    ),
+  ];
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);

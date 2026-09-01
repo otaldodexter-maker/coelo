@@ -1145,17 +1145,28 @@ final class _PedagogicalSectionState extends State<_PedagogicalSection> {
               children: [
                 CoeloDateTimeField(
                   value: period.entryDeadlineAt,
-                  onChanged: (date) => _updatePeriod(index, period.copyWith(entryDeadlineAt: date)),
-                  firstDate: firstDate,
+                  onChanged: (date) {
+                    if (date == null || !date.isBefore(period.endsOn)) {
+                      _updatePeriod(index, period.copyWith(entryDeadlineAt: date));
+                    }
+                  },
+                  firstDate: period.endsOn,
                   lastDate: lastDate,
                   labelText: 'Prazo de lançamento',
+                  emptyLabel: 'Definir prazo',
                 ),
                 CoeloDateTimeField(
                   value: period.familyReleaseAt,
-                  onChanged: (date) => _updatePeriod(index, period.copyWith(familyReleaseAt: date)),
-                  firstDate: firstDate,
+                  onChanged: (date) {
+                    final deadline = period.entryDeadlineAt;
+                    if (date == null || deadline == null || !date.isBefore(deadline)) {
+                      _updatePeriod(index, period.copyWith(familyReleaseAt: date));
+                    }
+                  },
+                  firstDate: period.entryDeadlineAt ?? period.endsOn,
                   lastDate: lastDate,
                   labelText: 'Liberação para a família',
+                  emptyLabel: 'Definir liberação',
                 ),
               ],
             ),

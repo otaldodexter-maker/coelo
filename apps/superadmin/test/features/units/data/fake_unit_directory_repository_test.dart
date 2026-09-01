@@ -154,6 +154,19 @@ void main() {
     expect(first.pageSize, 8);
   });
 
+  test('searches the deterministic directory by unit name', () async {
+    final repository = FakeUnitDirectoryRepository(FakeInstitutionDirectoryRepository());
+    final target = repository.records.last;
+
+    final page = await repository.fetchPage(UnitDirectoryQuery(search: target.name));
+
+    expect(page.items, isNotEmpty);
+    expect(
+      page.items.every((item) => item.name.toLowerCase().contains(target.name.toLowerCase())),
+      isTrue,
+    );
+  });
+
   test('sorts unit rows by the selected domain column', () async {
     final repository = FakeUnitDirectoryRepository(FakeInstitutionDirectoryRepository());
 

@@ -25,8 +25,6 @@ const _headerHeight = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _expandedSidebarWidth = 260.0;
 const _collapsedSidebarWidth = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _shellGutter = CoeloSpacing.space3;
-const _compactProfileMenuWidth = 236.0;
-const _compactProfileTriggerWidth = 52.0;
 const _coeloMotionCurve = Curves.easeInOut;
 
 class SuperadminShell extends StatefulWidget {
@@ -204,6 +202,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
               Scaffold(
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 appBar: _CompactAppBar(
+                  drawerOpen: _drawerOpen,
                   onLogout: _handleLogout,
                   onDestinationSelected: widget.onDestinationSelected,
                   activityController: _activityController,
@@ -248,6 +247,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
             Scaffold(
               backgroundColor: Theme.of(context).colorScheme.surface,
               appBar: _CompactAppBar(
+                drawerOpen: _drawerOpen,
                 onLogout: _handleLogout,
                 onDestinationSelected: widget.onDestinationSelected,
                 activityController: _activityController,
@@ -1402,6 +1402,7 @@ class _FlatCarrotPainter extends CustomPainter {
 
 class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
   const _CompactAppBar({
+    required this.drawerOpen,
     required this.onLogout,
     required this.onDestinationSelected,
     required this.activityController,
@@ -1409,6 +1410,7 @@ class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onBugReportSubmitted,
   });
 
+  final bool drawerOpen;
   final VoidCallback onLogout;
   final ValueChanged<String>? onDestinationSelected;
   final SuperadminActivityController activityController;
@@ -1416,24 +1418,50 @@ class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
 
   @override
-  Size get preferredSize => const Size.fromHeight(CoeloSize.touchMin);
+  Size get preferredSize => const Size.fromHeight(CoeloSpacing.space16);
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return AppBar(
+      toolbarHeight: CoeloSpacing.space16,
       backgroundColor: colors.surface,
       surfaceTintColor: Colors.transparent,
+      leadingWidth: 148,
       leading: Builder(
-        builder: (context) => IconButton(
-          key: const Key('superadmin-mobile-menu'),
-          tooltip: 'Abrir menu',
-          onPressed: () => Scaffold.of(context).openDrawer(),
-          icon: const Icon(Icons.menu),
+        builder: (context) => Tooltip(
+          message: drawerOpen ? 'Menu aberto' : 'Abrir menu',
+          child: TextButton(
+            key: const Key('superadmin-mobile-menu'),
+            style: TextButton.styleFrom(
+              foregroundColor: colors.onSurface,
+              padding: const EdgeInsetsDirectional.only(start: CoeloSpacing.space4),
+              shape: const RoundedRectangleBorder(),
+            ),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: AlignmentDirectional.centerStart,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SuperadminBrandMark(size: 36),
+                  const SizedBox(width: CoeloSpacing.space2),
+                  Text('Coelo', style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(width: CoeloSpacing.space1),
+                  Icon(
+                    drawerOpen ? Icons.keyboard_arrow_down_rounded : Icons.chevron_right_rounded,
+                    key: const Key('superadmin-mobile-menu-chevron'),
+                    size: CoeloSize.iconSm,
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
       titleSpacing: 0,
-      title: Semantics(label: 'Coelo Superadmin', image: true, child: const SuperadminBrandMark()),
+      title: const SizedBox.shrink(),
       actionsPadding: const EdgeInsetsDirectional.only(
         top: CoeloSpacing.space1,
         end: CoeloSpacing.space5,
@@ -1486,6 +1514,37 @@ class _PageHeader extends StatelessWidget {
       builder: (context, constraints) {
         final compactProfile = constraints.maxWidth < 900;
         final visibleActions = compact && compactActions.isNotEmpty ? compactActions : actions;
+        if (compact && visibleActions.isNotEmpty) {
+          return ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: _headerHeight),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space5),
+              child: Stack(
+                alignment: AlignmentDirectional.topEnd,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: theme.textTheme.headlineSmall),
+                      const SizedBox(height: CoeloSpacing.space1),
+                      Text(
+                        subtitle,
+                        style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: visibleActions
+                        .expand((action) => [action, const SizedBox(width: CoeloSpacing.space1)])
+                        .toList(growable: false),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
         return ConstrainedBox(
           constraints: const BoxConstraints(minHeight: _headerHeight),
           child: Padding(
@@ -1573,6 +1632,7 @@ class _ProfileSummary extends StatelessWidget {
     ];
     return CoeloAdminFlyout<String>(
       items: items,
+      alignPanelToViewportEnd: compact,
       onSelected: (selection) {
         if (selection == 'logout') {
           onLogout();
@@ -1585,10 +1645,7 @@ class _ProfileSummary extends StatelessWidget {
         final prefix = isDevelopmentPreview ? '/dev' : '';
         router?.go('$prefix/$selection');
       },
-      alignmentOffset: Offset(
-        compact ? _compactProfileTriggerWidth - _compactProfileMenuWidth : 0,
-        CoeloSpacing.space2,
-      ),
+      alignmentOffset: const Offset(0, CoeloSpacing.space2),
       builder: (context, controller) {
         return Tooltip(
           message: 'Abrir menu do usuário',

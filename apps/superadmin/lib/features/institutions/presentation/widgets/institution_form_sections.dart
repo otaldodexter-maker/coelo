@@ -11,6 +11,7 @@ import '../../data/institution_location_service.dart';
 import '../../domain/institution_directory_item.dart';
 import '../../domain/institution_record.dart';
 import '../../../../shared/presentation/widgets/avatar_crop_dialog.dart';
+import '../../../../shared/presentation/widgets/superadmin_location_map_preview.dart';
 import '../view_models/institution_form_controller.dart';
 import 'institution_form_dialogs.dart';
 import 'institution_logo_picker.dart';
@@ -214,6 +215,16 @@ final class _LocationSectionState extends State<_LocationSection> {
               ),
               _field(controller, InstitutionFormField.country, 'País', enabled: false),
             ],
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+          SuperadminLocationMapPreview(
+            address: [
+              controller.text(InstitutionFormField.street),
+              controller.text(InstitutionFormField.addressNumber),
+              controller.text(InstitutionFormField.district),
+              controller.text(InstitutionFormField.city),
+              controller.text(InstitutionFormField.state),
+            ].where((part) => part.isNotEmpty).join(', '),
           ),
           if (_municipalityError != null) ...[
             const SizedBox(height: CoeloSpacing.space2),

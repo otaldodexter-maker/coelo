@@ -716,6 +716,7 @@ void main() {
     await tester.enterText(find.byKey(const Key('unit-slug-field')), 'unidade-parque');
     await tester.tap(find.byKey(const Key('unit-form-continue')));
     await tester.pumpAndSettle();
+    expect(find.byKey(const Key('superadmin-location-map')), findsOneWidget);
     await tester.enterText(find.byKey(const Key('unit-contact-email-field')), 'email-invalido');
     await tester.tap(find.byKey(const Key('unit-form-continue')));
     await tester.pumpAndSettle();

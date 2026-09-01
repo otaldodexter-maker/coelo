@@ -719,28 +719,48 @@ final class _GroupCard extends StatelessWidget {
             const SizedBox(height: CoeloSpacing.space4),
             const Divider(height: 1),
             const SizedBox(height: CoeloSpacing.space4),
-            _GroupDetail(
-              icon: Icons.category_outlined,
-              label: 'Tipo da turma',
-              value: item.groupTypeLabel,
-            ),
-            const SizedBox(height: CoeloSpacing.space3),
-            _GroupDetail(
-              icon: Icons.school_outlined,
-              label: 'Alunos',
-              value: _countLabel(item.studentCount, singular: 'aluno', plural: 'alunos'),
-            ),
-            const SizedBox(height: CoeloSpacing.space3),
-            _GroupDetail(
-              icon: Icons.local_activity_outlined,
-              label: 'Atividades',
-              value: _countLabel(item.activityCount, singular: 'atividade', plural: 'atividades'),
-            ),
-            const SizedBox(height: CoeloSpacing.space3),
-            _GroupDetail(
-              icon: Icons.supervisor_account_outlined,
-              label: 'Professores / responsáveis',
-              value: _namesLabel(item.teacherOrResponsibleNames),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final itemWidth = (constraints.maxWidth - CoeloSpacing.space3) / 2;
+                return Wrap(
+                  spacing: CoeloSpacing.space3,
+                  runSpacing: CoeloSpacing.space3,
+                  children: [
+                    SizedBox(
+                      width: itemWidth,
+                      child: _GroupDetail(
+                        icon: Icons.category_outlined,
+                        label: 'Tipo',
+                        value: item.groupTypeLabel,
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: _GroupDetail(
+                        icon: Icons.school_outlined,
+                        label: 'Alunos',
+                        value: '${item.studentCount}',
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: _GroupDetail(
+                        icon: Icons.local_activity_outlined,
+                        label: 'Atividades',
+                        value: '${item.activityCount}',
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: _GroupDetail(
+                        icon: Icons.supervisor_account_outlined,
+                        label: 'Professores',
+                        value: '${item.teacherOrResponsibleNames.length}',
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),
@@ -748,16 +768,6 @@ final class _GroupCard extends StatelessWidget {
     );
   }
 }
-
-String _countLabel(int count, {required String singular, required String plural}) =>
-    '$count ${count == 1 ? singular : plural}';
-
-String _namesLabel(List<String> names) => switch (names) {
-  [] => 'Não informados',
-  [final name] => name,
-  [final first, final second] => '$first e $second',
-  _ => '${names.take(names.length - 1).join(', ')} e ${names.last}',
-};
 
 final class _CardContextLine extends StatelessWidget {
   const _CardContextLine({required this.label, required this.value});

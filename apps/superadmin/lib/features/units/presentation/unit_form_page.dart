@@ -11,6 +11,7 @@ import '../../institutions/domain/institution_record.dart';
 import '../../institutions/presentation/widgets/institution_form_dialogs.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
+import '../../../shared/presentation/widgets/superadmin_location_map_preview.dart';
 import '../domain/unit_directory.dart';
 import 'unit_form_controller.dart';
 import 'unit_form_navigation.dart';
@@ -777,6 +778,16 @@ final class _UnitFormPageState extends State<UnitFormPage> {
           _field('contactPhone', 'Telefone', Icons.phone_outlined),
           _field('contactMobilePhone', 'Celular', Icons.smartphone_outlined),
         ]),
+        const SizedBox(height: CoeloSpacing.space4),
+        SuperadminLocationMapPreview(
+          address: [
+            _text('street'),
+            _text('addressNumber'),
+            _text('district'),
+            _text('city'),
+            _text('state'),
+          ].where((part) => part.isNotEmpty).join(', '),
+        ),
       ],
     ),
   );
@@ -928,6 +939,11 @@ final class _UnitFormPageState extends State<UnitFormPage> {
             normalized.isNotEmpty &&
             !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(normalized)) {
           return 'Informe um e-mail válido.';
+        }
+        if (id == 'slug' &&
+            normalized.isNotEmpty &&
+            !RegExp(r'^[a-z0-9]+(?:-[a-z0-9]+)*$').hasMatch(normalized)) {
+          return 'Use somente letras minúsculas sem acento, números e hífens.';
         }
         if (id == 'slug' &&
             normalized.isNotEmpty &&

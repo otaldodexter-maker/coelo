@@ -40,7 +40,7 @@ void main() {
     expect(find.text('Gerencie as turmas da plataforma.'), findsOneWidget);
     expect(find.textContaining('Instituição:'), findsWidgets);
     expect(find.textContaining('Unidade:'), findsWidgets);
-    expect(find.text('Tipo da turma'), findsWidgets);
+    expect(find.text('Tipo'), findsWidgets);
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
     expect(
       find.byWidgetPredicate((widget) => widget is SuperadminDirectoryViewToggle),
@@ -48,17 +48,24 @@ void main() {
     );
     final firstCard = find.byKey(Key('group-card-${first.id}'));
     expect(find.descendant(of: firstCard, matching: find.text('Alunos')), findsOneWidget);
-    expect(find.descendant(of: firstCard, matching: find.text('18 alunos')), findsOneWidget);
+    expect(
+      find.descendant(of: firstCard, matching: find.text('${first.studentCount}')),
+      findsWidgets,
+    );
     expect(find.descendant(of: firstCard, matching: find.text('Atividades')), findsOneWidget);
-    expect(find.descendant(of: firstCard, matching: find.text('3 atividades')), findsOneWidget);
     expect(
-      find.descendant(of: firstCard, matching: find.text('Professores / responsáveis')),
-      findsOneWidget,
+      find.descendant(of: firstCard, matching: find.text('${first.activityIds.length}')),
+      findsWidgets,
     );
+    expect(find.descendant(of: firstCard, matching: find.text('Professores')), findsOneWidget);
     expect(
-      find.descendant(of: firstCard, matching: find.text('Ana Souza e Marcos Lima')),
-      findsOneWidget,
+      find.descendant(
+        of: firstCard,
+        matching: find.text('${first.teacherOrResponsibleNames.length}'),
+      ),
+      findsWidgets,
     );
+    expect(find.text('Ana Souza e Marcos Lima'), findsNothing);
 
     expect(
       tester.getSize(find.byType(CoeloAdminCreateAction)).height,
@@ -391,7 +398,7 @@ void main() {
     await tester.tap(find.widgetWithText(OutlinedButton, 'Limpar filtros'));
     await tester.pumpAndSettle();
     expect(tester.widget<TextField>(search).controller!.text, isEmpty);
-    expect(find.text('Turma 1'), findsWidgets);
+    expect(find.text(institutions.records.first.units.first.groups.first.name), findsWidgets);
   });
 
   testWidgets('read-only cards preserve their detailed semantics', (tester) async {

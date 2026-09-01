@@ -221,19 +221,19 @@ void main() {
     expect(repository.queries.last.statuses, isEmpty);
   });
 
-  testWidgets('starts with eleven card items and switches to eight table rows', (tester) async {
+  testWidgets('renders all five dev institutions in card and table views', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1200));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    expect(_institutionCards(), findsNWidgets(11));
+    expect(_institutionCards(), findsNWidgets(5));
     expect(find.byKey(const Key('create-institution-card')), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('institution-view-table')));
     await tester.pumpAndSettle();
 
-    expect(_institutionTableRows(), findsNWidgets(8));
+    expect(_institutionTableRows(), findsNWidgets(5));
     await tester.tap(find.byKey(const Key('coelo-admin-pagination-page-size')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('coelo-admin-pagination-page-size-8')), findsOneWidget);
@@ -252,9 +252,7 @@ void main() {
     expect(find.byKey(const Key('coelo-admin-pagination-page-1')), findsNothing);
     expect(find.textContaining('Página 1 de'), findsOneWidget);
     expect(find.bySemanticsLabel('Página anterior'), findsOneWidget);
-    await tester.tap(find.bySemanticsLabel('Próxima página'));
-    await tester.pumpAndSettle();
-    expect(find.text('Página 2 de 2'), findsOneWidget);
+    expect(find.text('Página 1 de 1'), findsOneWidget);
 
     expect(find.bySemanticsLabel('Próxima página'), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -460,7 +458,7 @@ void main() {
     await tester.tap(find.byKey(const Key('institution-state-filter')));
     await tester.pumpAndSettle();
     expect(tester.widget<TextField>(stateSearch).controller!.text, isEmpty);
-    expect(find.text('BA — Bahia'), findsOneWidget);
+    expect(find.text('PE — Pernambuco'), findsOneWidget);
   });
 
   testWidgets(
@@ -475,7 +473,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('SP — São Paulo'), findsOneWidget);
       expect(find.text('AC — Acre'), findsNothing);
-      expect(find.text('BA — Bahia'), findsOneWidget);
+      expect(find.text('PE — Pernambuco'), findsOneWidget);
 
       await tester.tap(find.text('SP — São Paulo'));
       await tester.pumpAndSettle();
@@ -921,7 +919,7 @@ void main() {
     await gesture.removePointer();
   });
 
-  testWidgets('keeps unavailable file actions hidden at every supported width', (tester) async {
+  testWidgets('keeps honest file actions visible at every supported width', (tester) async {
     for (final width in [375.0, 1024.0, 1440.0]) {
       await tester.binding.setSurfaceSize(Size(width, 900));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -934,9 +932,12 @@ void main() {
       expect(actions, findsOneWidget);
       expect(tester.getSize(view).height, CoeloSize.touchMin);
       expect(tester.getTopRight(view).dx, lessThanOrEqualTo(width - CoeloSpacing.space4));
-      expect(find.byKey(const Key('institution-files-action')), findsNothing);
-      expect(find.text('Arquivos'), findsNothing);
-      expect(find.text('Importar'), findsNothing);
+      expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+      await tester.pumpAndSettle();
+      expect(find.text('Importar'), findsOneWidget);
+      expect(find.text('Exportar CSV'), findsOneWidget);
+      expect(find.text('Exportar XLSX'), findsOneWidget);
       expect(tester.takeException(), isNull, reason: 'toolbar width $width');
     }
   });

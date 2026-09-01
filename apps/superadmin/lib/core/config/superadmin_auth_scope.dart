@@ -9,6 +9,8 @@ import '../../features/audit/data/supabase_audit_repository.dart';
 import '../../features/audit/domain/audit.dart';
 import '../../features/activities/domain/activity_command.dart';
 import '../../features/activities/domain/activity_directory.dart';
+import '../../features/activities/data/supabase_activity_command_repository.dart';
+import '../../features/activities/data/supabase_activity_directory_repository.dart';
 import '../../features/assessments/assessment.dart';
 import '../../features/assessments/data/supabase_assessment_repository.dart';
 import '../../features/imports/data/supabase_import_repository.dart';
@@ -39,6 +41,7 @@ import '../../features/groups/domain/group_directory.dart';
 import '../../features/access_profiles/data/supabase_access_profile_repository.dart';
 import '../../features/access_profiles/domain/access_profile.dart';
 import '../../features/units/data/unavailable_unit_composition.dart';
+import '../../features/units/data/supabase_unit_backend_commands_gateway.dart';
 import '../../features/units/domain/unit_backend_commands.dart';
 import '../../features/units/domain/unit_directory.dart';
 import '../../features/safety/data/supabase_child_safety_repository.dart';
@@ -153,15 +156,15 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       logout: createCoeloAuthLogoutAction(auth: auth, session: session),
       requestPasswordRecovery: createCoeloAuthPasswordRecoveryAction(auth: auth),
       institutionDirectoryRepository: SupabaseInstitutionDirectoryRepository(client),
-      activityDirectoryRepository: const UnavailableActivityDirectoryRepository(),
-      activityCommandRepository: const UnavailableActivityCommandRepository(),
+      activityDirectoryRepository: SupabaseActivityDirectoryRepository(client),
+      activityCommandRepository: SupabaseActivityCommandRepository(client),
       assessmentRepository: SupabaseAssessmentRepository(client),
       personDirectoryRepository: SupabasePersonDirectoryRepository(client),
       personIdentityRepository: const UnavailablePersonIdentityRepository(),
       accessProfileRepository: const UnavailableAccessProfileRepository(),
       groupDirectoryRepository: const UnavailableGroupDirectoryRepository(),
       unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
-      unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),
+      unitBackendCommands: SupabaseUnitBackendCommandsGateway(client),
       importRepository: SupabaseImportRepository(client),
       inviteRepository: const UnavailableInviteRepository(),
       noticeRepository: SupabaseNoticeRepository(client),

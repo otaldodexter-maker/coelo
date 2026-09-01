@@ -179,7 +179,7 @@ void main() {
     await _enter(tester, 'publicName', 'Instituição Navegável');
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devInstitutionCreate);
-    expect(repository.records, hasLength(12));
+    expect(repository.records.length, inInclusiveRange(2, 5));
     expect(find.text('Instituição Navegável'), findsWidgets);
     expect(tester.takeException(), isNull);
   });

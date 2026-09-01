@@ -12,6 +12,7 @@ final class CoeloDateTimeField extends StatefulWidget {
     required this.firstDate,
     required this.lastDate,
     this.labelText = 'Data e hora',
+    this.emptyLabel = 'Definir data e hora',
     this.currentDate,
     this.enabled = true,
     super.key,
@@ -23,6 +24,7 @@ final class CoeloDateTimeField extends StatefulWidget {
   final DateTime lastDate;
   final DateTime? currentDate;
   final String labelText;
+  final String emptyLabel;
   final bool enabled;
 
   @override
@@ -79,7 +81,7 @@ final class _CoeloDateTimeFieldState extends State<CoeloDateTimeField> {
       button: true,
       enabled: widget.enabled,
       label: widget.labelText,
-      value: widget.value == null ? 'Publicar agora' : _full(widget.value!),
+      value: widget.value == null ? widget.emptyLabel : _full(widget.value!),
       child: FocusableActionDetector(
         focusNode: _focusNode,
         enabled: widget.enabled,
@@ -114,7 +116,7 @@ final class _CoeloDateTimeFieldState extends State<CoeloDateTimeField> {
               const Icon(Icons.calendar_today_outlined),
               const SizedBox(width: CoeloSpacing.space3),
               Expanded(
-                child: Text(widget.value == null ? 'Publicar agora' : _numeric(widget.value!)),
+                child: Text(widget.value == null ? widget.emptyLabel : _numeric(widget.value!)),
               ),
               const Icon(Icons.expand_more_rounded),
             ],

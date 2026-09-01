@@ -113,7 +113,7 @@ final class DevelopmentActivityFixtureRepository implements ActivityDirectoryRep
         ),
       ],
       templates: [
-        for (var index = 0; index < 10; index++)
+        for (var index = 0; index < _templateNames.length; index++)
           ActivityTemplateOption(
             id: 'template-${index + 1}',
             name: _templateNames[index],
@@ -125,6 +125,11 @@ final class DevelopmentActivityFixtureRepository implements ActivityDirectoryRep
                 : ActivityTemplateScopeKind.institution,
             institutionId: index < 5 ? null : institutionId,
             governance: index.isEven ? ActivityGovernance.optional : ActivityGovernance.mandatory,
+            status: index % 4 == 0
+                ? ActivityStatus.draft
+                : index % 5 == 0
+                ? ActivityStatus.inactive
+                : ActivityStatus.active,
           ),
       ],
     );
@@ -225,7 +230,7 @@ List<ActivityDetail> _seedActivities() {
         id: 'activity-${index + 1}',
         name: names[index].$1,
         description: names[index].$2,
-        institution: institutions[index % institutions.length],
+        institution: institutions[index % 5],
         origin: index.isEven ? ActivityOrigin.institution : ActivityOrigin.unit,
         status: ActivityStatus.values[index % ActivityStatus.values.length],
         index: index,
@@ -244,6 +249,8 @@ const _templateNames = [
   'Arte e criação',
   'Idiomas em contexto',
   'Educação ambiental',
+  'Cultura e cidadania',
+  'Descobertas sensoriais',
 ];
 
 ActivityDetail _detail({

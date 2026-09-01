@@ -613,6 +613,9 @@ final class InstitutionFormController extends ChangeNotifier {
       return 'Preencha este campo para concluir o cadastro.';
     }
     if (field == InstitutionFormField.slug && value.isNotEmpty) {
+      if (!RegExp(r'^[a-z0-9]+(?:-[a-z0-9]+)*$').hasMatch(value)) {
+        return 'Use somente letras minúsculas sem acento, números e hífens.';
+      }
       final handle = _normalizeHandle('@$value');
       final administratorHandles = {
         for (final administrator in _administrators) _normalizeHandle(administrator.handle),

@@ -351,6 +351,7 @@ List<ActivityTemplateOption> _templateOptions(Object? value) => _rows(value)
         governance: ActivityGovernance.fromDatabase(
           row['governance_kind'] as String? ?? 'optional',
         ),
+        status: ActivityStatus.fromDatabase(row['status'] as String? ?? 'active'),
       ),
     )
     .toList(growable: false);

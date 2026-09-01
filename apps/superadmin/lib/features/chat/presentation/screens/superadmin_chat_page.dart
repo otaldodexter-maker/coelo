@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -57,6 +58,8 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   int _inboxRequestGeneration = 0;
   int _threadRequestGeneration = 0;
   int _sendRequestGeneration = 0;
+  final List<ChatCursor?> _inboxCursors = [null];
+  int _inboxPage = 0;
   late ChatRepository _repository;
   ChatInboxState _inboxState = const ChatInboxState.loading();
   ChatConversationSummary? _selected;
@@ -88,6 +91,10 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     _threadError = null;
     _sending = false;
     _pendingSend = null;
+    _inboxCursors
+      ..clear()
+      ..add(null);
+    _inboxPage = 0;
     _inboxState = const ChatInboxState.loading();
     _loadInbox();
   }
@@ -108,13 +115,21 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     }
   }
 
-  Future<void> _loadInbox() async {
+  Future<void> _loadInbox({bool resetPagination = false}) async {
+    if (resetPagination) {
+      _inboxCursors
+        ..clear()
+        ..add(null);
+      _inboxPage = 0;
+    }
     final requestGeneration = ++_inboxRequestGeneration;
     final requestedRepository = _repository;
     final search = _search.text;
     setState(() => _inboxState = const ChatInboxState.loading());
     try {
-      final page = await requestedRepository.fetchInbox(ChatInboxQuery(search: search));
+      final page = await requestedRepository.fetchInbox(
+        ChatInboxQuery(search: search, cursor: _inboxCursors[_inboxPage]),
+      );
       if (!mounted ||
           requestGeneration != _inboxRequestGeneration ||
           !identical(requestedRepository, _repository)) {
@@ -259,7 +274,10 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
 
   void _scheduleInboxSearch() {
     _searchDebounce?.cancel();
-    _searchDebounce = Timer(const Duration(milliseconds: 300), _loadInbox);
+    _searchDebounce = Timer(
+      const Duration(milliseconds: 300),
+      () => _loadInbox(resetPagination: true),
+    );
   }
 
   @override
@@ -268,6 +286,8 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       logout: widget.logout,
       title: 'Conversas',
       subtitle: 'Comunicacao institucional privada e contextual.',
+      actions: [_fileActions(compact: false)],
+      compactActions: [_fileActions(compact: true)],
       currentDestination: 'conversations',
       onDestinationSelected: widget.onDestinationSelected,
       child: LayoutBuilder(
@@ -314,6 +334,22 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     );
   }
 
+  Widget _fileActions({required bool compact}) => CoeloAdminFileActions(
+    compact: compact,
+    actions: [
+      CoeloAdminFileAction(
+        label: 'Importar — em breve',
+        icon: Icons.upload_file_outlined,
+        onPressed: () => _showNotice('A importação de conversas estará disponível em breve.'),
+      ),
+      CoeloAdminFileAction(
+        label: 'Exportar — em breve',
+        icon: Icons.download_outlined,
+        onPressed: () => _showNotice('A exportação de conversas estará disponível em breve.'),
+      ),
+    ],
+  );
+
   Widget _body() {
     return switch (_inboxState.kind) {
       ChatInboxLoadState.loading => const CoeloStatePanel(
@@ -335,7 +371,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         actionLabel: 'Limpar busca',
         onAction: () {
           _search.clear();
-          _loadInbox();
+          _loadInbox(resetPagination: true);
         },
       ),
       ChatInboxLoadState.unauthorized => CoeloStatePanel(
@@ -454,6 +490,27 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
               );
             },
           ),
+        ),
+        _ChatInboxPagination(
+          page: _inboxPage + 1,
+          onPrevious: _inboxPage == 0
+              ? null
+              : () {
+                  setState(() => _inboxPage--);
+                  _loadInbox();
+                },
+          onNext: page.nextCursor == null
+              ? null
+              : () {
+                  final nextCursor = page.nextCursor!;
+                  if (_inboxCursors.length == _inboxPage + 1) {
+                    _inboxCursors.add(nextCursor);
+                  } else {
+                    _inboxCursors[_inboxPage + 1] = nextCursor;
+                  }
+                  setState(() => _inboxPage++);
+                  _loadInbox();
+                },
         ),
       ],
     );
@@ -580,6 +637,43 @@ final class _MessageBubble extends StatelessWidget {
       ),
     );
   }
+}
+
+final class _ChatInboxPagination extends StatelessWidget {
+  const _ChatInboxPagination({required this.page, this.onPrevious, this.onNext});
+
+  final int page;
+  final VoidCallback? onPrevious;
+  final VoidCallback? onNext;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: 'Paginação das conversas. Página $page.',
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              tooltip: 'Página anterior',
+              onPressed: onPrevious,
+              icon: const Icon(Icons.chevron_left_rounded),
+            ),
+            Text('Página $page', style: Theme.of(context).textTheme.labelLarge),
+            IconButton(
+              tooltip: 'Próxima página',
+              onPressed: onNext,
+              icon: const Icon(Icons.chevron_right_rounded),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 final class _UnavailableChatRepository implements ChatRepository {

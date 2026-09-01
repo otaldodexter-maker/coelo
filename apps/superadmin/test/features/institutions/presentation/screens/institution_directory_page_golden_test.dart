@@ -240,7 +240,7 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpWidget(_goldenApp());
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-files-action')));
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
     await tester.pumpAndSettle();
     final filesMouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await filesMouse.addPointer();

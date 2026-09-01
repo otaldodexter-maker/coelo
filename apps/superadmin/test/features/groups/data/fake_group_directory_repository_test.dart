@@ -20,6 +20,8 @@ void main() {
       ),
       isTrue,
     );
+    expect(repository.records.any((record) => record.activityIds.isEmpty), isTrue);
+    expect(repository.records.any((record) => record.activityIds.isNotEmpty), isTrue);
   });
 
   test('filters, paginates, and discards units outside selected institutions', () async {
@@ -44,6 +46,25 @@ void main() {
     expect(page.items.every((item) => item.institutionId == first.institutionId), isTrue);
     expect(page.pageSize, 8);
     expect(options.units.every((unit) => unit.institutionId == anotherInstitution), isTrue);
+  });
+
+  test('searches deterministic groups by group, institution, and unit name', () async {
+    final repository = FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository());
+    final target = repository.records.last;
+
+    expect(
+      (await repository.fetchPage(GroupDirectoryQuery(search: target.name))).items,
+      isNotEmpty,
+    );
+    expect(
+      (await repository.fetchPage(GroupDirectoryQuery(search: target.institutionName))).items,
+      isNotEmpty,
+    );
+    expect(
+      (await repository.fetchPage(GroupDirectoryQuery(search: target.unitName))).items,
+      isNotEmpty,
+    );
+    expect((await repository.fetchPage(GroupDirectoryQuery(search: 'não existe'))).items, isEmpty);
   });
 
   test('creates and edits local groups without allowing hierarchy moves', () async {

@@ -454,6 +454,7 @@ final class ActivityTemplateOption {
     this.scopeKind = ActivityTemplateScopeKind.platform,
     this.institutionId,
     this.governance = ActivityGovernance.optional,
+    this.status = ActivityStatus.active,
   });
 
   final String id;
@@ -464,6 +465,7 @@ final class ActivityTemplateOption {
   final ActivityTemplateScopeKind scopeKind;
   final String? institutionId;
   final ActivityGovernance governance;
+  final ActivityStatus status;
 }
 
 final class ActivityFormLocationOption {
