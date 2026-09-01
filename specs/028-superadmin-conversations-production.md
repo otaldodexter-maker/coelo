@@ -18,6 +18,18 @@ O launcher usa a baseline Home/Central de Ajuda e
 acima disso, badge semântico e posição fixa na safe area. O arraste livre não
 faz parte da experiência produtiva.
 
+### Reuso na superfície Coelo (Principal)
+
+`Coelo (Principal)` é uma superfície do menu de `apps/superadmin`, não o
+aplicativo `apps/principal`. A opção Chat dessa superfície reutiliza a mesma
+`SuperadminChatPage` e o mesmo `ChatRepository` de Comunicação > Conversas.
+Ela pode navegar para a rota existente com uma origem de retorno, mas não cria
+repository, cache, contrato Supabase, modelo ou cópia de mensagens próprios.
+No `/dev`, ambas as entradas compartilham a mesma instância determinística da
+sessão; em produção, ambas passam exclusivamente pelo adapter RPC autorizado.
+Nenhum arquivo de `apps/principal`, `apps/admin` ou `apps/site` é dependência
+desse consumo.
+
 ## Dados e autorização
 
 - pessoa é global; participação, membership, capability e contexto efetivo
@@ -50,6 +62,15 @@ forma segura.
 - anexos truncam nome com tooltip, expõem estado semântico e oferecem retry só
   quando autorizado;
 - teclado, Escape, foco visível, reduced motion e alvos de 48 px são exigidos.
+
+## Pendência contratual de paginação
+
+O diretório deve reutilizar a paginação canônica de Instituições, mas o RPC
+atual entrega somente cursor por linha e não informa uma contagem ou um
+`has_more` inequívoco para representar o total de páginas. Até o contrato
+backend fornecer esse dado de forma autorizada, a UI não inventa `Página X de
+Y` nem reintroduz um paginador local paralelo. `chat.list` permanece parcial
+nesse gate mesmo com a primeira página, busca e estados locais funcionais.
 
 ## Verificação obrigatória
 

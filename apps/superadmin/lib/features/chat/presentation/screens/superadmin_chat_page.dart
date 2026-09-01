@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -36,6 +37,7 @@ final class SuperadminChatPage extends StatefulWidget {
   const SuperadminChatPage({
     required this.logout,
     this.chatRepository,
+    this.currentDestination = 'conversations',
     this.onDestinationSelected,
     this.onBack,
     super.key,
@@ -43,6 +45,7 @@ final class SuperadminChatPage extends StatefulWidget {
 
   final LogoutAction logout;
   final ChatRepository? chatRepository;
+  final String currentDestination;
   final ValueChanged<String>? onDestinationSelected;
   final VoidCallback? onBack;
 
@@ -268,7 +271,9 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       logout: widget.logout,
       title: 'Conversas',
       subtitle: 'Comunicacao institucional privada e contextual.',
-      currentDestination: 'conversations',
+      actions: [_fileActions(compact: false)],
+      compactActions: [_fileActions(compact: true)],
+      currentDestination: widget.currentDestination,
       onDestinationSelected: widget.onDestinationSelected,
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -313,6 +318,27 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       ),
     );
   }
+
+  Widget _fileActions({required bool compact}) => CoeloAdminFileActions(
+    compact: compact,
+    actions: [
+      CoeloAdminFileAction(
+        label: 'Importar',
+        icon: Icons.upload_file_outlined,
+        onPressed: () => _showNotice('A importação de conversas ainda não está disponível.'),
+      ),
+      CoeloAdminFileAction(
+        label: 'Exportar CSV',
+        icon: Icons.table_rows_outlined,
+        onPressed: () => _showNotice('A exportação de conversas ainda não está disponível.'),
+      ),
+      CoeloAdminFileAction(
+        label: 'Exportar XLSX',
+        icon: Icons.grid_on_outlined,
+        onPressed: () => _showNotice('A exportação de conversas ainda não está disponível.'),
+      ),
+    ],
+  );
 
   Widget _body() {
     return switch (_inboxState.kind) {

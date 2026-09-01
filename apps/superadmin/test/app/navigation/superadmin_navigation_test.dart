@@ -128,6 +128,7 @@ void main() {
       'Publicar em Momentos',
       'Agora',
       'Publicar no Agora',
+      'Chat',
       'Perfil',
     ]);
 
@@ -182,6 +183,7 @@ void main() {
       'principal',
       'principal-moments',
     });
+    expect(coeloNavigationAncestors('principal-chat'), {'principal'});
     expect(
       searchCoeloNavigation(
         'usuários internos',

@@ -1,10 +1,34 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/chat/domain/chat_repository.dart';
 import 'package:coelo_superadmin/features/chat/presentation/screens/superadmin_chat_page.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('exposes canonical file actions with honest unavailable feedback', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: SuperadminChatPage(
+          logout: unavailableSuperadminLogout,
+          chatRepository: _ChatRepository(inbox: const ChatInboxPage(items: [], totalUnread: 0)),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final fileActions = tester.widget<CoeloAdminFileActions>(find.byType(CoeloAdminFileActions));
+    expect(fileActions.actions.map((action) => action.label), [
+      'Importar',
+      'Exportar CSV',
+      'Exportar XLSX',
+    ]);
+
+    fileActions.actions.first.onPressed();
+    await tester.pumpAndSettle();
+    expect(find.text('A importação de conversas ainda não está disponível.'), findsOneWidget);
+  });
+
   testWidgets('renders a usable empty inbox from the real repository result', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
