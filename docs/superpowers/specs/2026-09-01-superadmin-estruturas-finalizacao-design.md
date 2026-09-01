@@ -14,6 +14,12 @@ Unidades, Turmas, Atividades, Lançar avaliações, Fechamento de avaliações e
 Chat. As mesmas páginas devem servir ao preview `/dev`, com fixtures locais, e
 à composição produtiva, com repositories Supabase fail-closed e RLS.
 
+Este recorte executável é exclusivo de `apps/superadmin` e dos pacotes/backend
+indispensáveis a essas telas. Qualquer referência a `Coelo (Principal)` neste
+contexto significa o item de menu interno do Superadmin, não o aplicativo
+`apps/principal`; `apps/admin`, `apps/site` e `apps/principal` não pertencem a
+esta frente.
+
 ## Abordagem aprovada
 
 Aplicar correções cirúrgicas sobre páginas, controllers, repositories e

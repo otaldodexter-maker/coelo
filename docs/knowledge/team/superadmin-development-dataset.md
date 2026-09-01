@@ -14,6 +14,9 @@ review_owner: Coelo Product
 # Dados determinísticos do preview Superadmin
 
 As rotas `/dev` usam dados exclusivamente locais, determinísticos e reiniciáveis.
+Este dataset pertence somente a `apps/superadmin`; o rótulo de navegação
+`Coelo (Principal)` dentro desse shell não identifica nem autoriza mudanças em
+`apps/principal`.
 O catálogo contém 5 instituições, de uma a quatro unidades por instituição, de
 uma a vinte e oito turmas por unidade, 30 atividades, 12 modelos de atividade, 400
 pessoas e 6 modelos de rotina diária. Pessoas incluem crianças, responsáveis,
