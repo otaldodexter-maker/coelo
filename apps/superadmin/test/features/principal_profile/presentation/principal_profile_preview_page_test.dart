@@ -52,14 +52,7 @@ void main() {
     }
     expect(find.byKey(const Key('principal-profile-open-agenda')), findsOneWidget);
     final metricLabels = [
-      for (final label in const [
-        'Seguidores',
-        'Seguindo',
-        'Publicações',
-        'Localização',
-        'Fundação',
-        'Colaboradores',
-      ])
+      for (final label in const ['Publicações', 'Momentos', 'Circulares'])
         find.byKey(Key('principal-profile-metric-$label')),
     ];
     for (final label in metricLabels) {
@@ -118,7 +111,7 @@ void main() {
     expect(find.byKey(const Key('principal-global-dock')), findsOneWidget);
     expect(find.text('Colégio Horizonte'), findsOneWidget);
     expect(find.text('Instituição de Ensino'), findsOneWidget);
-    expect(find.text('Acompanhar'), findsOneWidget);
+    expect(find.text('Acompanhar'), findsNothing);
     expect(find.text('Mensagem'), findsOneWidget);
     expect(find.text('Destaques'), findsOneWidget);
     expect(find.text('Vínculos'), findsOneWidget);
@@ -131,6 +124,26 @@ void main() {
     await tester.pump();
     expect(agendaOpened, isTrue);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('keeps the institutional profile free of public follow signals', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(768, 1024));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalProfilePreviewPage(onOpenAgenda: () {}),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Seguidores'), findsNothing);
+    expect(find.text('Seguindo'), findsNothing);
+    expect(find.byKey(const Key('principal-profile-follow')), findsNothing);
+    expect(find.text('Mensagem'), findsOneWidget);
+    expect(find.byKey(const Key('principal-profile-tab-acontece')), findsOneWidget);
+    expect(find.byKey(const Key('principal-profile-tab-momentos')), findsOneWidget);
+    expect(find.byKey(const Key('principal-profile-tab-circulares')), findsOneWidget);
   });
 
   testWidgets('keeps the complete crest visible and renders editorial fixtures', (tester) async {
@@ -285,7 +298,7 @@ void main() {
 
     expect(find.text('Acontece'), findsOneWidget);
     expect(find.text('Momentos'), findsWidgets);
-    expect(find.text('Circulares'), findsOneWidget);
+    expect(find.byKey(const Key('principal-profile-tab-circulares')), findsOneWidget);
     expect(find.text('Sobre'), findsOneWidget);
 
     await tester.ensureVisible(find.byKey(const Key('principal-profile-tab-circulares')));

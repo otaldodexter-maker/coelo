@@ -1,3 +1,5 @@
+import 'dart:ui' show PointerDeviceKind;
+
 import 'package:coelo_superadmin/features/principal_happens/presentation/principal_happens_preview_page.dart';
 import 'package:coelo_superadmin/features/principal_happens/domain/principal_happens_feed_repository.dart';
 import 'package:coelo_superadmin/features/principal_happens/domain/principal_happens_preview_data.dart';
@@ -132,6 +134,25 @@ void main() {
     expect(nowCreated, isTrue);
     expect(happensCreated, isFalse);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('uses the dashed publish now card and promotes its action on hover', (tester) async {
+    await pumpHappens(tester, size: const Size(1440, 1000));
+
+    final card = find.byKey(const Key('principal-happens-publish-now-card'));
+    expect(find.byKey(const Key('principal-happens-publish-now-dashed-border')), findsOneWidget);
+    expect(find.byKey(const Key('principal-happens-publish-now-action')), findsOneWidget);
+
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    addTearDown(mouse.removePointer);
+    await mouse.addPointer();
+    await mouse.moveTo(tester.getCenter(card));
+    await tester.pump();
+
+    final action = tester.widget<DecoratedBox>(
+      find.byKey(const Key('principal-happens-publish-now-action')),
+    );
+    expect((action.decoration as BoxDecoration).color, CoeloTheme.light.colorScheme.primary);
   });
 
   testWidgets('opens post media in an accessible gallery and navigates between items', (

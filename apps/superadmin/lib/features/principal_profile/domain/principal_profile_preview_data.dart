@@ -27,12 +27,9 @@ final class PrincipalProfilePreviewData {
         'Educação que inspira, acolhe e transforma. Formamos cidadãos éticos, '
         'criativos e preparados para o futuro.',
     metrics: [
-      PrincipalProfileMetric(Icons.groups_outlined, '1,2 mil', 'Seguidores'),
-      PrincipalProfileMetric(Icons.person_outline_rounded, '286', 'Seguindo'),
       PrincipalProfileMetric(Icons.article_outlined, '128', 'Publicações'),
-      PrincipalProfileMetric(Icons.location_on_outlined, 'São Paulo, SP', 'Localização'),
-      PrincipalProfileMetric(Icons.calendar_today_outlined, 'Desde 1988', 'Fundação'),
-      PrincipalProfileMetric(Icons.diversity_3_outlined, '50+', 'Colaboradores'),
+      PrincipalProfileMetric(Icons.play_circle_outline_rounded, '42', 'Momentos'),
+      PrincipalProfileMetric(Icons.campaign_outlined, '12', 'Circulares'),
     ],
     highlights: [
       PrincipalProfileHighlight(Icons.school_outlined, 'Aprendizagem', -1),

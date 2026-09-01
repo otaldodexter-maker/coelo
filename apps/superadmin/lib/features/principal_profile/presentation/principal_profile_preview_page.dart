@@ -67,7 +67,6 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
 
 final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePreviewPage> {
   var _selectedTab = _ProfileTab.happens;
-  var _following = false;
 
   @override
   Widget build(BuildContext context) {
@@ -159,8 +158,6 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
       _IdentitySection(
         data: widget.data,
         wide: !compact,
-        following: _following,
-        onFollow: () => setState(() => _following = !_following),
         onMessage: () => _runOrPreview(context, widget.onMessage, 'Mensagem'),
         onOpenBio: () => _runOrPreview(context, widget.onOpenBio, 'Biografia completa'),
       ),
@@ -359,16 +356,12 @@ final class _IdentitySection extends StatelessWidget {
   const _IdentitySection({
     required this.data,
     required this.wide,
-    required this.following,
-    required this.onFollow,
     required this.onMessage,
     required this.onOpenBio,
   });
 
   final PrincipalProfilePreviewData data;
   final bool wide;
-  final bool following;
-  final VoidCallback onFollow;
   final VoidCallback onMessage;
   final VoidCallback onOpenBio;
 
@@ -436,12 +429,6 @@ final class _IdentitySection extends StatelessWidget {
       spacing: CoeloSpacing.space2,
       runSpacing: CoeloSpacing.space2,
       children: [
-        FilledButton.icon(
-          key: const Key('principal-profile-follow'),
-          onPressed: onFollow,
-          icon: Icon(following ? Icons.check_rounded : Icons.person_add_alt_1_outlined),
-          label: Text(following ? 'Acompanhando' : 'Acompanhar'),
-        ),
         OutlinedButton.icon(
           key: const Key('principal-profile-message'),
           onPressed: onMessage,
