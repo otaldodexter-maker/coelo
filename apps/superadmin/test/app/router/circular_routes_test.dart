@@ -7,8 +7,11 @@ import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/features/circulars/presentation/circular_directory_page.dart';
 import 'package:coelo_superadmin/features/circulars/presentation/development_circular_composer_host.dart';
+import 'package:coelo_superadmin/features/circulars/presentation/production_circular_hosts.dart';
 import 'package:coelo_superadmin/features/circulars/presentation/superadmin_circular_composer_page.dart';
 import 'package:coelo_superadmin/features/circulars/presentation/superadmin_circular_detail_page.dart';
+import 'package:coelo_superadmin/features/circulars/domain/superadmin_circular_repository.dart';
+import 'package:coelo_superadmin/features/principal_circulars/domain/circular.dart';
 import 'package:coelo_superadmin/features/errors/presentation/screens/superadmin_error_screen.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -70,12 +73,12 @@ void main() {
     expect(find.byType(CircularDirectoryPage), findsOneWidget);
   });
 
-  testWidgets('production directory, create and edit remain fail closed', (tester) async {
+  testWidgets('unconfigured production directory and mutations remain fail closed', (tester) async {
     final fixture = await _pumpRouter(tester, size: const Size(1440, 900), authenticated: true);
     fixture.router.go(SuperadminRoutes.circulars);
     await tester.pumpAndSettle();
 
-    expect(find.text('Sem permissão'), findsOneWidget);
+    expect(find.text('Não foi possível carregar'), findsOneWidget);
     expect(find.text('Nova circular'), findsNothing);
 
     for (final location in [SuperadminRoutes.circularCreate, '/circulars/circular-1/edit']) {
@@ -88,6 +91,26 @@ void main() {
       expect(find.byType(SuperadminErrorScreen), findsOneWidget);
       expect(find.byType(DevelopmentCircularComposerHost), findsNothing);
     }
+  });
+
+  testWidgets('configured production directory uses the internal gateway', (tester) async {
+    final fixture = await _pumpRouter(
+      tester,
+      size: const Size(1440, 900),
+      authenticated: true,
+      circularRepository: _SuperadminRepository(),
+    );
+    fixture.router.go(SuperadminRoutes.circulars);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Renovação institucional 2027'), findsWidgets);
+    expect(find.text('Nova circular'), findsOneWidget);
+
+    fixture.router.go(SuperadminRoutes.circularCreate);
+    await tester.pumpAndSettle();
+    expect(fixture.router.routeInformationProvider.value.uri.path, SuperadminRoutes.circularCreate);
+    expect(find.byType(ProductionCircularComposerHost), findsOneWidget);
+    expect(find.byType(SuperadminErrorScreen), findsNothing);
   });
 
   testWidgets('directory reaches the administrative composer and cancel returns', (tester) async {
@@ -167,6 +190,7 @@ Future<({GoRouter router, SuperadminSession session})> _pumpRouter(
   WidgetTester tester, {
   required Size size,
   bool authenticated = false,
+  SuperadminCircularRepository circularRepository = const UnavailableSuperadminCircularRepository(),
 }) async {
   await tester.binding.setSurfaceSize(size);
   addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -177,6 +201,7 @@ Future<({GoRouter router, SuperadminSession session})> _pumpRouter(
     login: unavailableSuperadminLogin,
     logout: unavailableSuperadminLogout,
     requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+    circularRepository: circularRepository,
     mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
     onThemeModeChanged: (_) {},
   );
@@ -184,4 +209,32 @@ Future<({GoRouter router, SuperadminSession session})> _pumpRouter(
   addTearDown(session.dispose);
   await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
   return (router: router, session: session);
+}
+
+final class _SuperadminRepository implements SuperadminCircularRepository {
+  @override
+  Future<SuperadminCircularDirectoryPage> fetchDirectory(
+    SuperadminCircularDirectoryQuery query,
+  ) async => SuperadminCircularDirectoryPage(
+    items: [
+      SuperadminCircularDirectoryItem(
+        id: 'circular-real',
+        institutionId: '11111111-1111-4111-8111-111111111111',
+        title: 'Renovação institucional 2027',
+        excerpt: 'Confirmação de matrícula para o próximo ano.',
+        authorName: 'Equipe Coelo',
+        contextLabel: 'Colégio Horizonte',
+        status: CircularStatus.draft,
+        effectiveAt: DateTime.utc(2026, 9, 1),
+        updatedAt: DateTime.utc(2026, 9, 1),
+        attachmentCount: 0,
+        questionCount: 1,
+        responseCount: 0,
+        managementVersion: 1,
+      ),
+    ],
+  );
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

@@ -11,6 +11,8 @@ import 'package:coelo_superadmin/features/audit/domain/audit.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/chat/data/supabase_chat_repository.dart';
 import 'package:coelo_superadmin/features/chat/domain/chat_repository.dart';
+import 'package:coelo_superadmin/features/circulars/data/supabase_superadmin_circular_repository.dart';
+import 'package:coelo_superadmin/features/circulars/domain/superadmin_circular_repository.dart';
 import 'package:coelo_superadmin/features/daily_routine/domain/routine_contract.dart';
 import 'package:coelo_superadmin/features/health_care/domain/medication_plan_repository.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_directory.dart';
@@ -61,6 +63,7 @@ void main() {
     expect(scope.personIdentityRepository, isA<UnavailablePersonIdentityRepository>());
     expect(scope.accessProfileRepository, isA<UnavailableAccessProfileRepository>());
     expect(scope.chatRepository, isA<UnavailableChatRepository>());
+    expect(scope.circularRepository, isA<UnavailableSuperadminCircularRepository>());
     expect(scope.inviteRepository, isA<UnavailableInviteRepository>());
     expect(scope.noticeRepository, isA<UnavailableNoticeRepository>());
     expect(scope.attendanceRepository, isA<UnavailableAttendanceRepository>());
@@ -100,6 +103,7 @@ void main() {
     expect(scope.personIdentityRepository, isA<UnavailablePersonIdentityRepository>());
     expect(scope.accessProfileRepository, isA<UnavailableAccessProfileRepository>());
     expect(scope.chatRepository, isA<SupabaseChatRepository>());
+    expect(scope.circularRepository, isA<SupabaseSuperadminCircularRepository>());
     expect(scope.inviteRepository, isA<SupabaseInviteRepository>());
     expect(scope.noticeRepository, isA<SupabaseNoticeRepository>());
     expect(scope.attendanceRepository, isA<SupabaseAttendanceRepository>());

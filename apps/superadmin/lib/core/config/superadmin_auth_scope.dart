@@ -5,6 +5,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../features/auth/domain/coelo_auth_login_action.dart';
 import '../../features/chat/data/supabase_chat_repository.dart';
 import '../../features/chat/domain/chat_repository.dart';
+import '../../features/circulars/data/supabase_superadmin_circular_repository.dart';
+import '../../features/circulars/domain/superadmin_circular_repository.dart';
 import '../../features/attendance/attendance.dart';
 import '../../features/attendance/data/supabase_attendance_repository.dart';
 import '../../features/audit/data/supabase_audit_repository.dart';
@@ -81,6 +83,7 @@ final class SuperadminAuthScope {
     required this.unitBackendCommands,
     required this.importRepository,
     required this.chatRepository,
+    required this.circularRepository,
     required this.inviteRepository,
     required this.noticeRepository,
     required this.attendanceRepository,
@@ -112,6 +115,7 @@ final class SuperadminAuthScope {
   final UnitBackendCommandsGateway unitBackendCommands;
   final ImportRepository importRepository;
   final ChatRepository chatRepository;
+  final SuperadminCircularRepository circularRepository;
   final InviteRepository inviteRepository;
   final NoticeRepository noticeRepository;
   final AttendanceRepository attendanceRepository;
@@ -169,6 +173,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),
       importRepository: SupabaseImportRepository(client),
       chatRepository: SupabaseChatRepository(client),
+      circularRepository: SupabaseSuperadminCircularRepository(client),
       inviteRepository: SupabaseInviteRepository(client),
       noticeRepository: SupabaseNoticeRepository(client),
       attendanceRepository: SupabaseAttendanceRepository(client),
@@ -219,6 +224,7 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthGateway auth) {
     unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),
     importRepository: const UnavailableImportRepository(),
     chatRepository: const UnavailableChatRepository(),
+    circularRepository: const UnavailableSuperadminCircularRepository(),
     inviteRepository: const UnavailableInviteRepository(),
     noticeRepository: const UnavailableNoticeRepository(),
     attendanceRepository: const UnavailableAttendanceRepository(),
