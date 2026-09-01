@@ -3,6 +3,25 @@ import 'package:coelo_superadmin/features/meal_plans/domain/meal_plan_repository
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('ships coherent realistic fixtures with useful pagination and relationships', () async {
+    final repository = DevelopmentMealPlanRepository();
+
+    final firstPage = await repository.fetchPage(const MealPlanListFilter(pageSize: 5));
+    final therapy = await repository.fetchPage(
+      const MealPlanListFilter(search: 'terapia ocupacional'),
+    );
+    final templates = await repository.fetchTemplatePage(const MealPlanListFilter());
+    final audience = await repository.fetchAudienceOptions();
+
+    expect(firstPage.total, greaterThanOrEqualTo(12));
+    expect(firstPage.items, hasLength(5));
+    expect(therapy.items.single.name, contains('Terapia ocupacional'));
+    expect(therapy.items.single.personId, isNotNull);
+    expect(templates.total, greaterThanOrEqualTo(5));
+    expect(audience.institutions.map((item) => item.label), contains('Instituto Horizonte'));
+    expect(audience.groups.map((item) => item.label), contains('Turma Girassol'));
+  });
+
   test('provides dev-only audience data and keeps a locally saved draft', () async {
     final repository = DevelopmentMealPlanRepository();
 
@@ -27,11 +46,15 @@ void main() {
 
     expect(saved.name, 'Cardápio de teste');
     expect((await repository.getById(saved.id)).name, 'Cardápio de teste');
-    expect((await repository.fetchPage(const MealPlanListFilter())).items, contains(saved));
+    expect(
+      (await repository.fetchPage(const MealPlanListFilter(pageSize: 100))).items,
+      contains(saved),
+    );
   });
 
   test('keeps templates separate from meal plans', () async {
     final repository = DevelopmentMealPlanRepository();
+    final initialTotal = (await repository.fetchTemplatePage(const MealPlanListFilter())).total;
     final template = await repository.saveTemplate(
       const MealPlanTemplateDraft(
         requestId: 'create-template',
@@ -45,7 +68,10 @@ void main() {
 
     expect(template.status, 'draft');
     expect(await repository.getTemplateById(template.id), same(template));
-    expect((await repository.fetchTemplatePage(const MealPlanListFilter())).total, 2);
+    expect(
+      (await repository.fetchTemplatePage(const MealPlanListFilter())).total,
+      initialTotal + 1,
+    );
   });
 
   test('deduplicates request ids and rejects stale revisions in the dev preview', () async {

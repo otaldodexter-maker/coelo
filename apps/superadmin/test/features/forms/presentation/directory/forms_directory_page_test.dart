@@ -26,6 +26,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(CoeloAdminPagination), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
     await tester.tap(find.text('Pesquisa anual das famílias').first);
     expect(opened?.id, 'form-family-annual-survey');
 

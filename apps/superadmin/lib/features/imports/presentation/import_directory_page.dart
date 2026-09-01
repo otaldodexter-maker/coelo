@@ -5,6 +5,8 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
+
 import '../domain/import_job.dart';
 import '../domain/import_repository.dart';
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
@@ -180,6 +182,9 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
                   ),
                 ],
                 actions: [
+                  const SuperadminPlaceholderFileActions(
+                    resourceLabel: 'importações e exportações',
+                  ),
                   if (_hasFilters)
                     TextButton.icon(
                       onPressed: _clear,

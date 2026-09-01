@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import '../data/agenda_prototype_store.dart';
 import '../domain/agenda_models.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
+import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
 import 'agenda_reservation_conflict_dialog.dart';
 
 enum _AgendaEventsDisplay { cards, table }
@@ -135,6 +137,7 @@ final class _AgendaEventsPageState extends State<AgendaEventsPage> {
                 ),
               ],
               actions: [
+                const SuperadminPlaceholderFileActions(resourceLabel: 'eventos da agenda'),
                 SuperadminDirectoryViewToggle<_AgendaEventsTableView>(
                   key: const Key('agenda-events-display-toggle'),
                   cardsKey: const Key('agenda-events-view-cards'),
@@ -200,7 +203,8 @@ final class _AgendaEventsPageState extends State<AgendaEventsPage> {
             ],
             if (visible.isNotEmpty) ...[
               const SizedBox(height: CoeloSpacing.space4),
-              Center(
+              SuperadminListingPaginationFooter(
+                horizontalPadding: 0,
                 child: CoeloAdminPagination(
                   currentPage: safePage,
                   totalPages: pages,

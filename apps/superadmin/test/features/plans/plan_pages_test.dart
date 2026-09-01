@@ -31,6 +31,7 @@ void main() {
     expect(find.byType(SuperadminDirectoryViewToggle<PlanDirectoryView>), findsOneWidget);
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
     expect(find.byType(CoeloAdminPagination), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
 
     var pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
     expect(pagination.pageSize, 11);

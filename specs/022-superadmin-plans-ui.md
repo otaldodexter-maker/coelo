@@ -28,7 +28,9 @@ produtivo.
 - Supabase, migrations, RLS, policies, RPCs e promoção para rota produtiva.
 - Enforcement de limites no cliente.
 - Limite de responsáveis por criança.
-- Importação ou exportação de arquivos.
+- Processamento real de importação ou exportação de arquivos; as opções devem
+  permanecer visíveis no diretório e comunicar indisponibilidade até existir
+  gateway produtivo, sem callback vazio ou sucesso falso.
 
 ## Contrato de domínio
 
@@ -65,6 +67,8 @@ produtivo.
 - Criar e editar salvam somente na etapa Revisão.
 - Código fica imutável na edição.
 - Instituições vinculadas não oferecem mutação de subscription.
-- Não existem controles falsos de arquivos, preço ou autorização.
+- As opções de arquivos são explícitas e honestamente indisponíveis enquanto o
+  backend não existe; não há callback vazio, download fictício, preço ou
+  autorização simulada.
 - Testes, goldens e análise da feature passam sem localhost; o validador visual
   não aponta violações em arquivos de Planos.

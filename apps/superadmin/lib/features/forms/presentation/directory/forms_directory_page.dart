@@ -10,6 +10,7 @@ import 'package:flutter/widget_previews.dart';
 
 import '../../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
 import '../../data/development_forms_api.dart';
 import 'forms_lifecycle_actions.dart';
 
@@ -252,6 +253,7 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
       ),
     ],
     actions: [
+      const SuperadminPlaceholderFileActions(resourceLabel: 'formulários'),
       SuperadminDirectoryViewToggle<FormsDirectoryDisplay>(
         cardsKey: const Key('forms-directory-view-cards'),
         tableKey: const Key('forms-directory-view-table'),

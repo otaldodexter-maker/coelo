@@ -4,6 +4,8 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
+import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
 import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../data/fake_plan_catalog_repository.dart';
 import '../domain/plan_catalog.dart';
@@ -66,6 +68,7 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
             ),
             filters: const [],
             actions: [
+              const SuperadminPlaceholderFileActions(resourceLabel: 'planos'),
               SuperadminDirectoryViewToggle<PlanDirectoryView>(
                 cardsKey: const Key('plan-directory-cards-toggle'),
                 tableKey: const Key('plan-directory-table-toggle'),
@@ -104,7 +107,8 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
           Expanded(child: _body(page)),
           if (widget.repository.state == PlanDataState.ready && page.totalItems > 0) ...[
             const SizedBox(height: CoeloSpacing.space3),
-            Center(
+            SuperadminListingPaginationFooter(
+              horizontalPadding: 0,
               child: CoeloAdminPagination(
                 key: const Key('plan-directory-pagination'),
                 currentPage: _page.clamp(1, page.totalPages),

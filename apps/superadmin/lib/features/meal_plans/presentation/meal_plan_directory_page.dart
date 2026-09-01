@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
+import '../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
 import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../domain/meal_plan_repository.dart';
 
@@ -50,7 +51,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
   final _periodEnd = TextEditingController();
 
   _MealPlanDirectoryDisplay _display = _MealPlanDirectoryDisplay.cards;
-  _MealPlanDirectorySection _section = _MealPlanDirectorySection.mealPlans;
+  _MealPlanDirectorySection _section = _MealPlanDirectorySection.models;
   bool _loading = true;
   bool _unauthorized = false;
   bool _actionRunning = false;
@@ -89,7 +90,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
     _periodEnd.clear();
     setState(() {
       _display = _MealPlanDirectoryDisplay.cards;
-      _section = _MealPlanDirectorySection.mealPlans;
+      _section = _MealPlanDirectorySection.models;
       _loading = true;
       _unauthorized = false;
       _actionRunning = false;
@@ -163,12 +164,12 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
                       selected: _section,
                       tabs: const [
                         SuperadminUnderlineTab(
-                          value: _MealPlanDirectorySection.mealPlans,
-                          label: 'Cardápios',
-                        ),
-                        SuperadminUnderlineTab(
                           value: _MealPlanDirectorySection.models,
                           label: 'Modelos',
+                        ),
+                        SuperadminUnderlineTab(
+                          value: _MealPlanDirectorySection.mealPlans,
+                          label: 'Cardápios',
                         ),
                       ],
                       onSelected: _selectSection,
@@ -294,6 +295,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
       ),
     ],
     actions: [
+      const SuperadminPlaceholderFileActions(resourceLabel: 'cardápios'),
       SuperadminDirectoryViewToggle<_MealPlanDirectoryDisplay>(
         cardsKey: const Key('meal-plan-directory-view-cards'),
         tableKey: const Key('meal-plan-directory-view-table'),
