@@ -1010,6 +1010,7 @@ GoRouter createSuperadminRouter({
                         'templateId': template.id,
                         if (template.institutionId != null)
                           'institutionId': template.institutionId!,
+                        if (template.unitId != null) 'unitId': template.unitId!,
                       },
                     )
                   : null,

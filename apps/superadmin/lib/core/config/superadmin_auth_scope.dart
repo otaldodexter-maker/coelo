@@ -38,11 +38,9 @@ import '../../features/people/data/supabase_person_directory_repository.dart';
 import '../../features/people/domain/person_directory.dart';
 import '../../features/people/domain/person_identity.dart';
 import '../../features/groups/domain/group_directory.dart';
-import '../../features/groups/data/supabase_group_directory_repository.dart';
 import '../../features/access_profiles/data/supabase_access_profile_repository.dart';
 import '../../features/access_profiles/domain/access_profile.dart';
 import '../../features/units/data/unavailable_unit_composition.dart';
-import '../../features/units/data/supabase_unit_directory_repository.dart';
 import '../../features/units/data/supabase_unit_backend_commands_gateway.dart';
 import '../../features/units/domain/unit_backend_commands.dart';
 import '../../features/units/domain/unit_directory.dart';
@@ -166,10 +164,13 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       personDirectoryRepository: SupabasePersonDirectoryRepository(client),
       personIdentityRepository: const UnavailablePersonIdentityRepository(),
       accessProfileRepository: const UnavailableAccessProfileRepository(),
-      groupDirectoryRepository: SupabaseGroupDirectoryRepository(client),
-      unitDirectoryRepository: SupabaseUnitDirectoryRepository(client),
+      groupDirectoryRepository: const UnavailableGroupDirectoryRepository(),
+      unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
       unitBackendCommands: SupabaseUnitBackendCommandsGateway(client),
-      structureMutationsEnabled: true,
+      // OQ-032/OQ-043: these CRUD repositories still target the legacy
+      // people-based realm. Keep production mutations fail-closed until the
+      // internal v2 directory and command gateways exist.
+      structureMutationsEnabled: false,
       importRepository: SupabaseImportRepository(client),
       inviteRepository: const UnavailableInviteRepository(),
       noticeRepository: SupabaseNoticeRepository(client),
