@@ -31,7 +31,7 @@ como backend concluído.
 | Tela / ação backend | Feito na Etapa 2 | Pendente / primeiro próximo passo | Estado |
 | --- | --- | --- | --- |
 | Auth — login/logout/recovery/reset | Lifecycle descartável e pgTAP 29/29; Catalog recovery fail-closed corrigido/revisado em `5e8d2655`. | Integrar; 17 migrations intermediárias, clone/squash forward-only, DNS/hosting/SMTP/identity e E2E. | `local-green`/`not-deployed` |
-| Chat — listar/abrir/enviar/editar/anexar/receipts/revogar | Adapters locais inventariados/testados; pacote RPC/RLS em execução. | RPCs ausentes no remoto, metadata de anexos, RLS/capability, tenant A/B, revogação, auditoria e reload. | `blocked-supabase` |
+| Chat — listar/abrir/enviar/editar/anexar/receipts/revogar | `68d1217d` implementou gateway interno v2 local (migration, adapter, capabilities, MFA, tenant/IDOR, revogação e auditoria); Flutter relacionado 54/54. O harness canônico de replay foi corrigido em `1fca68b8` com 3/3 Pester, e o Docker voltou a responder. | Rodar o pgTAP local do gateway, validar replay limpo, wiring auth scope, anexos/Realtime, tenant A/B e persistência/reload; remoto permanece ausente e sem mutação. | `local-green` técnico / `blocked-supabase` para integração |
 | Convites — listar/detalhe/criar/reenviar/revogar | Produção permanece corretamente `UnavailableInviteRepository`; auditoria 10/10. Migration histórica foi rejeitada por realm people-based/backfill especulativo/issuer person. | Decidir OQ-039: capabilities Owner+AAL2, issuer interno separado sem backfill, evolução aditiva, legado read-only e Superadmin RPC-only; depois token/outbox/RLS/audit/E2E. | `blocked-decision` |
 | Avisos — lista/criar/editar/agendar/publicar/arquivar | Adapter produtivo composto; `c5085746` fail-closed; worker 2/2. SQL `20260827222500` auditado estaticamente: ACL revogada, FORCE RLS e RPCs SECURITY DEFINER com capability/AAL/grants específicos. | Replay pgTAP travou no Docker sem resíduos; OQ-038, OQ-041, Storage×R2, tenant A/B, persistência/reload e remoto. | `blocked-supabase` |
 | Instituições — list/options/detail/edit | Seis gateways internos v2 protegidos por pgTAP declarado de 20 asserts; Flutter composto em `d864f19a`. Remoto read-only confirma ausência de grants CRUD diretos de tabela. | Docker/replay/pgTAP real, hardening de EXECUTE privado remoto, Advisors, tenant A/B, reload e E2E. | `static-reviewed`; não local-green |
@@ -55,7 +55,7 @@ como backend concluído.
 | Perfis de cuidado | Fixtures Flutter somente. | OQ-003/OQ-040, schema/RLS/CRUD, dados sensíveis, audit e E2E. | `fail-closed` |
 | Medicação | Fixtures Flutter somente. | Base legal, prescrição/dose/evidência/retenção, RLS/CRUD/audit e E2E. | `blocked-decision` |
 | Acontece/Agora/Momentos/Perfil/publicadores | Nenhuma mutação backend. | Contratos, audiência, metadata Postgres, mídia R2, retenção/remoção, audit e E2E. | `blocked-decision` |
-| Circulares | RPCs/RLS remotos históricos observados read-only. | Adapter final, ator/capability, tenant A/B, persistência/reload e E2E. | `audited` |
+| Circulares | RPCs/RLS remotos históricos observados read-only; Flutter `/dev` agora cobre diretório e CRUD/publicação local em `5e714c16`. | Adapter produtivo, ator/capability, tenant A/B, persistência/reload e E2E; nenhuma promoção remota. | `audited` |
 
 ### Macroajustes Supabase da Etapa 2
 
