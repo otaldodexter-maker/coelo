@@ -18,7 +18,7 @@ generated_at: "2026-09-01"
 
 - Orçamento máximo: seis horas.
 - Não implementar processamento real de importação/exportação neste pacote.
-- Não importar componentes do Principal no Superadmin.
+- Restringir alterações a `apps/superadmin` e aos pacotes/backend indispensáveis ao seu funcionamento. `Coelo (Principal)` é o nome de uma superfície do menu do Superadmin neste recorte; não alterar `apps/principal`, `apps/admin` ou `apps/site`.
 - Não declarar conclusão ponta a ponta com evidência apenas de `/dev` ou teste isolado.
 - Usar `rtk` em todos os comandos shell.
 
@@ -131,4 +131,3 @@ generated_at: "2026-09-01"
 - [ ] Executar testes focados e inspecionar 375/768/1024/1440 sem atualizar goldens para esconder regressões.
 - [ ] Atualizar os três rastreadores com estados `local-green`, `blocked-supabase` ou `done` conforme a evidência real.
 - [ ] Revisar `rtk git diff --check`, segredos e mudanças não relacionadas antes do commit final.
-
