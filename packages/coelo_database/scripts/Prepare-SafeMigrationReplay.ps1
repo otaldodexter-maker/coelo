@@ -4,7 +4,9 @@ param(
   [ValidateNotNullOrEmpty()]
   [string]$DestinationMigrationsRoot,
 
-  [switch]$FoundationOnly
+  [switch]$FoundationOnly,
+
+  [string[]]$AdditionalMigration = @()
 )
 
 $ErrorActionPreference = 'Stop'
@@ -53,6 +55,11 @@ if (@(Get-ChildItem -LiteralPath $destinationFull -Force).Count -ne 0) {
 $canonical = @(Get-ChildItem -LiteralPath $canonicalFull -File -Filter '*.sql' | Sort-Object Name)
 $preflight = @(Get-ChildItem -LiteralPath $preflightFull -File -Filter '*.sql' | Sort-Object Name)
 $foundationManifestHash = $null
+$additionalCanonical = @()
+$foundationBoundaryVersion = $null
+if ($AdditionalMigration.Count -gt 0 -and -not $FoundationOnly) {
+  throw 'additional migrations require FoundationOnly'
+}
 if ($FoundationOnly) {
   if (-not (Test-Path -LiteralPath $foundationManifestPath -PathType Leaf)) {
     throw 'foundation replay manifest is missing'
@@ -77,6 +84,7 @@ if ($FoundationOnly) {
       @(Compare-Object @($manifestEntries.Name) @($manifestEntries.Name | Sort-Object) -SyncWindow 0).Count -ne 0) {
     throw 'foundation replay manifest must be non-empty, unique, and strictly ordered'
   }
+  $foundationBoundaryVersion = $manifestEntries[-1].Version
   $canonicalByName = @{}
   foreach ($migration in $canonical) { $canonicalByName[$migration.Name] = $migration }
   $canonical = @($manifestEntries | ForEach-Object {
@@ -92,6 +100,39 @@ if ($FoundationOnly) {
   })
   if ($canonical.Count -ne $manifestEntries.Count) {
     throw 'foundation replay manifest count mismatch'
+  }
+  $additionalEntries = @($AdditionalMigration | ForEach-Object {
+    if ($_ -notmatch '^((\d{14})_[a-z0-9_]+\.sql)\|([0-9a-f]{64})$') {
+      throw "invalid additional migration entry: $_"
+    }
+    [pscustomobject]@{ Name = $Matches[1]; Version = $Matches[2]; Hash = $Matches[3] }
+  })
+  if ($additionalEntries.Count -gt 0) {
+    if (@($additionalEntries.Name | Sort-Object -Unique).Count -ne $additionalEntries.Count -or
+        @($additionalEntries.Version | Sort-Object -Unique).Count -ne $additionalEntries.Count -or
+        @(Compare-Object @($additionalEntries.Name) @($additionalEntries.Name | Sort-Object) -SyncWindow 0).Count -ne 0) {
+      throw 'additional migrations must be unique and strictly ordered'
+    }
+    if (@($additionalEntries | Where-Object {
+          $_.Version -le $foundationBoundaryVersion
+        }).Count -ne 0) {
+      throw 'additional migrations must be newer than the foundation manifest boundary'
+    }
+    $additionalCanonical = @($additionalEntries | ForEach-Object {
+      if (-not $canonicalByName.ContainsKey($_.Name)) {
+        throw "additional canonical migration is missing: $($_.Name)"
+      }
+      $migration = $canonicalByName[$_.Name]
+      if (($migration.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+        throw "additional migration cannot be a reparse point: $($migration.FullName)"
+      }
+      $actualHash = Get-NormalizedTextSha256 $migration.FullName
+      if ($actualHash -cne $_.Hash) {
+        throw "additional migration hash mismatch: $($_.Name)"
+      }
+      $migration
+    })
+    $canonical = @($canonical) + @($additionalCanonical)
   }
   $foundationManifestHash = (Get-FileHash -LiteralPath $foundationManifestPath -Algorithm SHA256).Hash
 }
@@ -146,4 +187,4 @@ $preflightHashes = @($preflight | ForEach-Object {
 }) -join ','
 $profile = if ($FoundationOnly) { 'foundation' } else { 'full' }
 $manifestEvidence = if ($FoundationOnly) { "; manifest_sha256=$foundationManifestHash" } else { '' }
-"Prepared $($generated.Count) safe replay migrations ($($canonical.Count) canonical + $($preflight.Count) preflight); profile=$profile$manifestEvidence; preflight_sha256=$preflightHashes."
+"Prepared $($generated.Count) safe replay migrations ($($canonical.Count) canonical + $($preflight.Count) preflight); profile=$profile; additional=$($additionalCanonical.Count)$manifestEvidence; preflight_sha256=$preflightHashes."
