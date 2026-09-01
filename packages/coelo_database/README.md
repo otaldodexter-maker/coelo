@@ -113,8 +113,9 @@ Supabase CLI 2.116.0 validado neste historico. Exemplo:
 
 Quando o objetivo for somente a fundacao interna aprovada, use
 `-FoundationOnly`. Esse perfil usa o manifesto fechado e verificado por hash
-`replay/foundation-migrations.sha256`: 52 migrations canônicas aprovadas e dois
-preflights locais. Migrations de Activity/Chat/Import/Notice fora do recorte e
+`replay/foundation-migrations.sha256`: 64 migrations canônicas aprovadas e dois
+preflights locais. O perfil inclui a base de Circulares e os gateways internos
+v2 de Comunicação; as oito migrations de produto explicitamente negadas e
 qualquer migration futura não entram automaticamente. O alvo deve ser a última
 versão do manifesto, impedindo teardown com o bridge de replay ainda ativo.
 `Test-FoundationReplayProfile.ps1` valida contagem, limites, hashes e a lista
@@ -127,7 +128,7 @@ SQL continua alterando o hash e bloqueando o replay.
 
 ```powershell
 & packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
-  -TargetVersion 20260831164937 `
+  -TargetVersion 20260901191921 `
   -FoundationOnly `
   -TestPath packages/coelo_database/supabase/tests/superadmin_internal_auth_context_test.sql
 ```
@@ -141,7 +142,7 @@ wrapper confirma zero recurso Docker residual no teardown:
 
 ```powershell
 & packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
-  -TargetVersion 20260831164937 `
+  -TargetVersion 20260901191921 `
   -FoundationOnly `
   -RunAuthLifecycle
 ```
