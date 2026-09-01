@@ -13,8 +13,8 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "3FFA5842CBF5B6A38CB2467302B692105E7D454614BBD65C79C109D21B56A51E"
-supabase_tracker_sha256: "572B88B154DE219781789EF8232810C95B1543A14C337E9F484EED2838D85350"
+flutter_tracker_sha256: "691FBE8E408AC9966C40795FE4366F928604BF0FECB68DA90FAA1926FC8C608A"
+supabase_tracker_sha256: "1BB2880763580D195EE51A93AAC5F308ACAD5B5F73BAF78E2F7D00895363483F"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
@@ -26,16 +26,23 @@ Esta é a resposta canônica para “o que foi feito, onde parou e o que falta n
 Etapa 2” sob a skill `coelo-flutter-supabase-review`. As seções posteriores
 preservam todas as ações e evidências históricas.
 
-**Progresso estrito em 2026-09-01:** 0/229 unidades `done` (0,00%); 229/229
-restantes (100,00%). Flutter possui 105/207 ações `local-green`, Supabase possui
-3/37 famílias `local-green`, mas 0/202 ações estão `ready-for-e2e` e 0/202 foram
-`verified-e2e`.
+**Certificação final estrita em 2026-09-01:** 0/229 unidades `done` (0,00%);
+229/229 ainda não atravessaram todos os gates finais. Isso não significa avanço
+zero: Flutter possui 105/207 ações `local-green` e Supabase possui 3/37 famílias
+`local-green`, além de trabalho parcial registrado tela a tela. Neste momento,
+0/202 ações estão `ready-for-e2e` e 0/202 foram `verified-e2e`.
 
 | Percentual integrado da Etapa 2 | Concluído | Restante | Interpretação |
 | --- | ---: | ---: | --- |
 | Ações prontas para começar E2E | 0,00% (0/202) | 100,00% (202/202) | Nenhuma ação reúne Flutter e backend prontos. |
 | Ações `verified-e2e` | 0,00% (0/202) | 100,00% (202/202) | Nenhum fluxo foi comprovado ponta a ponta. |
-| Conclusão estrita Flutter + 22 gates Supabase | 0,00% (0/229) | 100,00% (229/229) | Percentual oficial de conclusão real da Etapa 2. |
+| Certificação final Flutter + 22 gates Supabase | 0,00% (0/229) | 100,00% (229/229) | Mede somente unidades que atravessaram todos os gates finais; não é o percentual de trabalho executado. |
+
+> **Leitura correta:** a Etapa 2 tem avanço técnico real e recuperável, mas ainda
+> não tem uma vertical certificada ponta a ponta. Enquanto os estados parciais
+> não forem normalizados numa única escala sem dupla contagem, não existe um
+> percentual geral único honesto. Devem ser reportados separadamente Flutter
+> local, Supabase local, prontidão E2E e certificação final.
 
 ### Telas, subtelas e ações ponta a ponta
 

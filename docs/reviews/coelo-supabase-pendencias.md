@@ -24,7 +24,12 @@ como backend concluído.
 | Percentual Supabase da Etapa 2 | Concluído | Restante | Interpretação |
 | --- | ---: | ---: | --- |
 | Progresso técnico local por família | 8,11% (3/37) | 91,89% (34/37) | Prova local suficiente somente em três famílias. |
-| Conclusão Supabase `done` | 0,00% (0/37) | 100,00% (37/37) | Nenhuma família fechou remoto, negativos, audit e cleanup. |
+| Certificação Supabase final `done` | 0,00% (0/37) | 100,00% (37/37) | Mede somente o gate final remoto; não representa o volume de trabalho executado. |
+
+> **Leitura correta:** o avanço Supabase já comprovado como pacote local completo
+> é **8,11%**. Há outras famílias em implementação ou revisão estática que ainda
+> não entram nesse numerador. O `done` em 0,00% é certificação final, não
+> “trabalho realizado”.
 
 ### Telas, subtelas e ações Supabase
 

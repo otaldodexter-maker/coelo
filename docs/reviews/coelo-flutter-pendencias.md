@@ -26,7 +26,12 @@ estado local exigido e nenhuma ação foi certificada como Flutter produtivo.
 | Percentual Flutter da Etapa 2 | Concluído | Restante | Interpretação |
 | --- | ---: | ---: | --- |
 | Progresso técnico local | 50,72% (105/207) | 49,28% (102/207) | Passou localmente; não significa produção. |
-| Conclusão Flutter `verified` | 0,00% (0/207) | 100,00% (207/207) | Nenhuma ação possui todos os gates Flutter produtivos. |
+| Certificação Flutter produtiva `verified` | 0,00% (0/207) | 100,00% (207/207) | Mede somente o gate final produtivo; não representa o volume de trabalho executado. |
+
+> **Leitura correta:** o avanço Flutter mensurável da Etapa 2 é **50,72% no
+> estágio técnico local**. O indicador `verified` em 0,00% significa apenas que
+> nenhuma dessas ações atravessou ainda todos os gates produtivos; ele não deve
+> ser chamado isoladamente de “conclusão real da Etapa 2”.
 
 ### Telas, subtelas e ações Flutter
 
