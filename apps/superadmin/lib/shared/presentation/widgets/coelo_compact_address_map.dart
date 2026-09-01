@@ -3,6 +3,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
+typedef CoeloAddressCoordinates = ({double latitude, double longitude});
+
+/// Municipality-center fallback used only as an explicitly approximate preview.
+CoeloAddressCoordinates? coeloApproximateAddressCoordinates({
+  required String city,
+  required String state,
+}) {
+  final key = '${city.trim().toLowerCase()}|${state.trim().toUpperCase()}';
+  return _municipalityCenters[key];
+}
+
+const _municipalityCenters = <String, CoeloAddressCoordinates>{
+  'são paulo|SP': (latitude: -23.5505, longitude: -46.6333),
+  'campinas|SP': (latitude: -22.9056, longitude: -47.0608),
+  'curitiba|PR': (latitude: -25.4284, longitude: -49.2733),
+  'belo horizonte|MG': (latitude: -19.9167, longitude: -43.9345),
+  'recife|PE': (latitude: -8.0476, longitude: -34.8770),
+  'goiânia|GO': (latitude: -16.6869, longitude: -49.2648),
+  'florianópolis|SC': (latitude: -27.5949, longitude: -48.5482),
+  'salvador|BA': (latitude: -12.9777, longitude: -38.5016),
+  'rio de janeiro|RJ': (latitude: -22.9068, longitude: -43.1729),
+  'porto alegre|RS': (latitude: -30.0346, longitude: -51.2177),
+  'fortaleza|CE': (latitude: -3.7319, longitude: -38.5267),
+  'brasília|DF': (latitude: -15.7939, longitude: -47.8828),
+};
+
 /// Compact, read-only address preview shared by administrative forms.
 final class CoeloCompactAddressMap extends StatelessWidget {
   const CoeloCompactAddressMap({required this.latitude, required this.longitude, super.key});

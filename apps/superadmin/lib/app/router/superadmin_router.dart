@@ -2896,6 +2896,10 @@ GoRouter createSuperadminRouter({
               logout: _previewLogout,
               successMessage: state.extra as String?,
               onCreate: () => context.goNamed(SuperadminRoutes.devInternalUserCreateName),
+              onView: (internalUserId) => context.goNamed(
+                SuperadminRoutes.devInternalUserEditName,
+                pathParameters: {'internalUserId': internalUserId},
+              ),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
             ),

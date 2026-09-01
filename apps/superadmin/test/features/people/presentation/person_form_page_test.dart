@@ -13,6 +13,13 @@ import 'package:go_router/go_router.dart';
 import '../../../support/people/fake_person_directory_repository.dart';
 
 void main() {
+  testWidgets('person identity step includes the compact address map state', (tester) async {
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('coelo-address-map-unavailable')), findsOneWidget);
+  });
+
   testWidgets('form keeps a local address section out of the persisted identity contract', (
     tester,
   ) async {

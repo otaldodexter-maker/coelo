@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
+import '../../../shared/presentation/widgets/coelo_compact_address_map.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../institutions/presentation/widgets/institution_logo_picker.dart';
@@ -140,7 +141,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   }
 
   void _changed([Object? _]) {
-    if (!_dirty) setState(() => _dirty = true);
+    setState(() => _dirty = true);
   }
 
   bool _validateIdentity() {
@@ -477,6 +478,29 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
         _field(_mobile, 'Celular', Icons.phone_android_outlined, keyboardType: TextInputType.phone),
       ]),
       const SizedBox(height: CoeloSpacing.space4),
+      Builder(
+        builder: (context) {
+          final coordinates = coeloApproximateAddressCoordinates(
+            city: _city.text,
+            state: _state.text,
+          );
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Referência aproximada do município',
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
+              const SizedBox(height: CoeloSpacing.space2),
+              CoeloCompactAddressMap(
+                latitude: coordinates?.latitude ?? double.nan,
+                longitude: coordinates?.longitude ?? double.nan,
+              ),
+            ],
+          );
+        },
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
       _responsiveFields([
         _field(
           _additionalPhone,
@@ -613,6 +637,29 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
         ],
         if (_scope == PlatformUserScope.limited) ...[
           const SizedBox(height: CoeloSpacing.space4),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              key: const Key('platform-user-scopes-select-all'),
+              onPressed: () {
+                setState(() {
+                  _scopeIds = _scopeIds.length == institutionIds.length
+                      ? <String>{}
+                      : institutionIds.toSet();
+                  _dirty = true;
+                });
+              },
+              icon: Icon(
+                _scopeIds.length == institutionIds.length
+                    ? Icons.deselect_outlined
+                    : Icons.select_all_outlined,
+              ),
+              label: Text(
+                _scopeIds.length == institutionIds.length ? 'Limpar seleção' : 'Selecionar todas',
+              ),
+            ),
+          ),
+          const SizedBox(height: CoeloSpacing.space2),
           CoeloAdminMultiSelectField<String>(
             key: const Key('platform-user-scopes'),
             label: 'Instituições permitidas',
