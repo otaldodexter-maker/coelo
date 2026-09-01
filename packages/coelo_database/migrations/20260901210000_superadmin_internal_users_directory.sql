@@ -122,7 +122,7 @@ create function app_private.superadmin_internal_user_projection(
 returns jsonb language sql stable security definer set search_path='' as $$
   select pg_catalog.jsonb_build_object(
     'id',identity_record.id,
-    'version',pg_catalog.greatest(profile_record.version,membership_record.version,auth_link.version),
+    'version',greatest(profile_record.version,membership_record.version,auth_link.version),
     'identity',pg_catalog.jsonb_build_object(
       'id',identity_record.id,'first_name',profile_record.first_name,
       'last_name',profile_record.last_name,'display_name',profile_record.display_name,
@@ -472,7 +472,7 @@ begin
   select * into strict membership_record from app_private.superadmin_internal_memberships
     where internal_identity_id=p_internal_identity_id
     order by (status='active') desc,created_at desc limit 1 for update;
-  if pg_catalog.greatest(profile_record.version,membership_record.version)<>p_expected_version then
+  if greatest(profile_record.version,membership_record.version)<>p_expected_version then
     raise serialization_failure using message='concurrent internal user change',detail='SAI_CONCURRENT_CHANGE';
   end if;
   if lower(btrim(p_draft#>>'{identity,professional_email}'))
@@ -594,7 +594,7 @@ begin
   select * into strict auth_link from app_private.superadmin_internal_auth_links
     where internal_identity_id=p_internal_identity_id
     order by (status='active') desc,created_at desc limit 1 for update;
-  if pg_catalog.greatest(membership_record.version,auth_link.version)<>p_expected_version then
+  if greatest(membership_record.version,auth_link.version)<>p_expected_version then
     raise serialization_failure using message='concurrent internal user change',detail='SAI_CONCURRENT_CHANGE';
   end if;
   if membership_record.status='revoked' then
