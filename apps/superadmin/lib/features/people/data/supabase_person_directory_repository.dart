@@ -61,22 +61,30 @@ final class SupabasePersonDirectoryRepository implements PersonDirectoryReposito
   @override
   Future<PersonDirectoryItem> fetchDetail(String personId) async {
     try {
-      final response = await _client.rpc<Map<String, dynamic>>(
+      final response = await _client.rpc<Object?>(
         'superadmin_person_detail_v2',
         params: {'p_person_id': personId},
       );
-      final envelope = Map<String, dynamic>.from(response as Map);
+      if (response is! Map) throw const PersonDirectoryUnavailableException();
+      final envelope = Map<String, dynamic>.from(response);
       if (envelope['ok'] != true) {
         final error = envelope['error'] is Map
             ? Map<String, dynamic>.from(envelope['error'] as Map)
             : const <String, dynamic>{};
-        throw _mapInternalError(error['code'] as String?);
+        final code = error['code'];
+        throw _mapInternalError(code is String ? code : null);
       }
       final data = envelope['data'];
       if (data is! Map) throw const PersonDirectoryUnavailableException();
       return PersonDirectoryItem.fromJson(Map<String, dynamic>.from(data));
     } on PostgrestException catch (error) {
       throw _mapError(error);
+    } on PersonDirectoryUnauthorizedException {
+      rethrow;
+    } on PersonDirectoryUnavailableException {
+      rethrow;
+    } on Object {
+      throw const PersonDirectoryUnavailableException();
     }
   }
 

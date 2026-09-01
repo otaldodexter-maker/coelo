@@ -1260,8 +1260,10 @@ Future<void> _manage(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _Status(status: authorization.status),
-        const SizedBox(height: CoeloSpacing.space2),
-        Text('Situação: ${authorization.lifecycleStatus.label}'),
+        if (authorization.status == PickupAuthorizationStatus.approved) ...[
+          const SizedBox(height: CoeloSpacing.space2),
+          Text('Situação: ${authorization.lifecycleStatus.label}'),
+        ],
         const SizedBox(height: CoeloSpacing.space4),
         AuthorizationValiditySummary(authorization: authorization),
         if (authorization.status == PickupAuthorizationStatus.pending) ...[

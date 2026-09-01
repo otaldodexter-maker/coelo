@@ -214,6 +214,32 @@ void main() {
     expect(find.text('Suspender autorização?'), findsNothing);
   });
 
+  testWidgets('pending request does not present inactive lifecycle as revoked', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(768, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final controller = ChildSafetyController(_Repository());
+    await controller.load();
+    await tester.pumpWidget(
+      _app(
+        ChildSecurityPage(
+          childId: 'child-1',
+          controller: controller,
+          logout: _logout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Gerenciar').last);
+    await tester.tap(find.text('Gerenciar').last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Gerenciar Carlos'), findsOneWidget);
+    expect(find.textContaining('Situação:'), findsNothing);
+    expect(find.textContaining('Revogada'), findsNothing);
+  });
+
   testWidgets('wizard searches server-side and requires child selection', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));

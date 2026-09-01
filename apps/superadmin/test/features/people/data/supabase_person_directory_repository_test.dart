@@ -277,4 +277,36 @@ void main() {
       throwsA(isA<PersonDirectoryUnavailableException>()),
     );
   });
+
+  test('detail v2 normalizes non-map envelopes and non-string error codes', () async {
+    Object payload = <Object>[];
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => Response(
+          jsonEncode(payload),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabasePersonDirectoryRepository(client);
+
+    await expectLater(
+      repository.fetchDetail('person-1'),
+      throwsA(isA<PersonDirectoryUnavailableException>()),
+    );
+    payload = {
+      'ok': false,
+      'data': null,
+      'error': {'code': 403},
+    };
+    await expectLater(
+      repository.fetchDetail('person-1'),
+      throwsA(isA<PersonDirectoryUnavailableException>()),
+    );
+  });
 }
