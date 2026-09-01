@@ -85,10 +85,15 @@ As 37 famílias somam **132–219 h líquidas**. Cinco pacotes transversais —
 ledger/replay; ACL + `SECURITY DEFINER` + RLS; Auth/realm; harness + lint +
 Advisors; Storage/Edge + cleanup + secret scan — acrescentam **18–30 h** uma
 única vez. Portanto, o **total sequencial Supabase estrito é 150–249 h
-líquidas**. Com três frentes backend, o caminho crítico de calendário é
-**70–115 h**; com quatro frentes isoladas, **55–90 h**, porque ledger e cutover
-remoto continuam seriais. Os 207 IDs permanecem baseline pré-crosswalk e não
-devem ser somados individualmente para produzir ETA.
+líquidas**. No modelo considerado para os possíveis prompts — cinco worktrees
+verticais ponta a ponta, com subagentes locais por domínio e o coordenador como
+único owner de ledger, ordem de migrations, deploy e cutover — a parcela
+Supabase entra no caminho crítico por **36–60 h de calendário**. Cinco
+worktrees não significam cinco escritores simultâneos na produção: migrations
+são sequenciais, cada pacote deve passar replay/pgTAP/RLS isoladamente e a
+promoção remota permanece serial. Sem essa disciplina, usar como teto
+operacional a faixa anterior de **70–115 h**. Os 207 IDs permanecem baseline
+pré-crosswalk e não devem ser somados individualmente para produzir ETA.
 
 ### Checkpoint final de consolidação — 2026-09-01
 
@@ -228,8 +233,11 @@ Achados adicionais do mesmo review:
   anterior, não criadas por `e7520192`.
 
 **Tempo usado:** não calculável com precisão. **ETA geral Supabase revisado:**
-150–249 h líquidas sequenciais, ou 70–115 h de calendário com três frentes.
-Famílias bloqueadas por decisão pausam sem acrescentar horas de espera.
+150–249 h líquidas sequenciais, com parcela de **36–60 h no caminho crítico de
+calendário** no modelo de cinco worktrees verticais, subagentes locais e cutover
+serial pelo coordenador. Sem isolamento/ownership estritos, usar 70–115 h como
+teto operacional. Famílias bloqueadas por decisão pausam sem acrescentar horas
+de espera.
 
 ## 1. Finalidade e leitura obrigatória
 

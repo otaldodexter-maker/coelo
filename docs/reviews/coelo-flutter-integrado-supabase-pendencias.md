@@ -14,8 +14,8 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "C17C23314EE0B749DA147EF526E00DA2C84CCAAD7054736AEFAAE2B5670765AF"
-supabase_tracker_sha256: "9FFE58419156D482C913472FBF0396B0023830BF7BAEA9FDBF2023DD2B1824EE"
+flutter_tracker_sha256: "D0E4CBBC61678020386AD970DDA1FC449D0AFDF6B534C55FB1577FF3B74BE4FE"
+supabase_tracker_sha256: "9EB59BAE353BA7FA852194D05043E8868F8EF4DF0C28A3D6DED2F000524366A0"
 ---
 
 # Pendências Coelo — Flutter integrado ao Supabase
@@ -75,18 +75,43 @@ para **179 IDs integráveis**: 23 fluxos reais de import/export estão
 | Plataforma/Auditoria/Catálogo | 7 | Contratos e envelopes transversais | 2–4 h |
 | Harness e regressão final | transversal | Fixtures únicas, matriz parametrizada e evidências | 4–6 h |
 
-**Total sequencial adicional de integração:** **40–61 h líquidas**. Com
-verticais independentes em paralelo, o caminho crítico de calendário é
-**16–24 h**: fundação 4–6 h, maior vertical 8–12 h e regressão 4–6 h. Esse tempo
+**Total sequencial adicional de integração:** **40–61 h líquidas**. Com cinco
+worktrees verticais e subagentes de teste/evidência, o caminho crítico de
+calendário é **12–20 h**: fundação compartilhada 3–5 h, maior vertical 6–10 h e
+regressão 3–5 h. Esse tempo
 só começa para uma ação quando Flutter estiver `verified` e Supabase `done`; não
 é somado novamente dentro dos ETAs das duas camadas.
 
-**ETA de calendário da Etapa 2 completa:** executando as verticais em pipeline,
-em vez de esperar todas as camadas acabarem para só então integrar, são
-**74–121 h de relógio com três frentes** (aproximadamente 9–15 dias úteis de
-8 h) ou **59–96 h com quatro frentes** (aproximadamente 7,5–12 dias úteis).
+### ETA de entrega revisada — cinco worktrees ponta a ponta
+
+O cálculo oficial de calendário agora corresponde ao modelo discutido para os
+possíveis prompts: um coordenador e cinco worktrees verticais, cada worktree
+responsável por Flutter, Supabase local, wiring, testes e evidência do próprio
+recorte. Cada writer pode usar subagentes para tarefas independentes, mas mantém
+um único integrador responsável pelos arquivos compartilhados do seu recorte.
+
+| Frente futura | Prazo próprio estimado | Observação de caminho crítico |
+| --- | ---: | --- |
+| Coordenador | 18–30 h ativas, sobrepostas | Ownership, deduplicação, trackers, ledger, merges e cutover; não somar integralmente ao calendário. |
+| Identidade e Acessos | 30–50 h | Auth, pessoas, perfis, modelos, permissões e segurança. |
+| Estruturas e Pessoas | 26–43 h | Instituições, unidades, turmas, alunos e vínculos. |
+| Comunicação e menu Coelo (Principal) | 33–52 h | Chat, avisos, convites, circulares e superfícies internas do Superadmin. |
+| Formulários e Cuidado | 34–56 h | Formulários, respostas, Storage, cuidado, saúde e medicação. |
+| Agenda, Eventos e Operações | 34–56 h | Agenda, eventos, rotina, assiduidade, atividades, avaliações e operações. |
+| Consolidação/cutover final | 6–10 h | Replay ordenado, regressão conjunta, remoto, hashes, commits e limpeza; já incluído na faixa geral. |
+
+**Prazo provável da Etapa 2: 48–72 h de calendário técnico** se as cinco
+worktrees permanecerem realmente isoladas, cada uma usar o máximo útil de
+subagentes e o coordenador for o único escritor do ledger/deploy remoto.
+**Compromisso recomendado: 72 h. Teto conservador: 96 h**, aplicável quando só
+três worktrees puderem escrever com segurança, houver conflitos em arquivos
+compartilhados ou reexecução de migrations/testes. A estimativa anterior de
+42–68 h era otimista porque não reservava margem suficiente para replay,
+conflitos, retestes e cutover serial. Espera por decisão do Owner, indisponibilidade
+externa e mudança de escopo não estão incluídas.
+
 Uma única pessoa em sequência teria de somar Flutter, Supabase e integração;
-essa soma representa esforço, não prazo de calendário coordenado.
+essa soma representa esforço técnico bruto, não prazo de calendário coordenado.
 
 ### Checkpoint final de consolidação — 2026-09-01
 
@@ -201,9 +226,9 @@ duplicava responsabilidades.
    evidências estarem conferidos.
 
 **Tempo usado na Etapa 2:** não calculável ainda porque não há duração homogênea
-das frentes. **ETA geral revisado:** 74–121 h de calendário com três frentes ou
-59–96 h com quatro, executando verticais em pipeline. Espera por decisão não é
-contada como hora técnica.
+das frentes. **ETA geral revisado:** **48–72 h de calendário técnico** com cinco
+worktrees ponta a ponta e máximo útil de subagentes; compromisso de 72 h e teto
+conservador de 96 h. Espera por decisão não é contada como hora técnica.
 
 ## 1. Papel deste documento
 
@@ -787,7 +812,7 @@ RPC ou tabela própria.
 | Intermediária | Inventário/contrato e correções principais de **uma ação** de baixo ou médio risco. | 2–6 h por ação simples | Pode concluir o pacote contratado; não conclui integração nem tela. |
 | Avançada | Uma fatia vertical autorizada, com negativos, acesso entre instituições e remoto. | 1–2 dias por ação/tela pequena | Adequada a Auth, RLS, migrations, segurança e arquivos; ainda pode deixar a família aberta. |
 | Completa | Todas as ações aplicáveis de uma família, regressão e provas dos três lados. | 2–5 dias por tela simples; maior nas famílias bloqueadas | Única que pode sustentar ação/tela integrada concluída. |
-| Programa conhecido | 37 famílias; 207 ações Flutter; 179 ações integráveis no MVP após diferir 23 fluxos de import/export. | Flutter 78–96 h mais prováveis; Supabase estrito 150–249 h; integração adicional 40–61 h; calendário em pipeline 74–121 h com três frentes ou 59–96 h com quatro. | Zero ação está pronta para E2E e zero foi concluída ponta a ponta no snapshot atual. |
+| Programa conhecido | 37 famílias; 207 ações Flutter; 179 ações integráveis no MVP após diferir 23 fluxos de import/export. | Flutter 78–96 h mais prováveis; Supabase estrito 150–249 h; integração adicional 40–61 h; calendário em pipeline 48–72 h com cinco worktrees ponta a ponta e máximo útil de subagentes; teto conservador 96 h. | Zero ação está pronta para E2E e zero foi concluída ponta a ponta no snapshot atual. |
 
 ## 7. Manifesto integrado histórico de 202 ações / 179 ações no MVP
 
@@ -992,9 +1017,11 @@ gera `ready-for-e2e` automaticamente.
    pgTAP/RLS ou testes Flutter já comprovados: 40–61 h adicionais de integração.
 4. Rodar regressão/evidências finais uma vez: 4–6 h já incluídas na integração.
 
-O ETA total usa pipeline: **74–121 h de calendário com três frentes** ou
-**59–96 h com quatro**. Os números antigos de 388 h Flutter, 25–39 dias E2E e
-10–17 semanas estão substituídos e permanecem apenas nos checkpoints históricos.
+O ETA total usa pipeline: **48–72 h de calendário técnico** com cinco worktrees
+ponta a ponta e o máximo útil de subagentes, usando **72 h como compromisso** e
+**96 h como teto conservador**. Os números antigos de 388 h Flutter, 25–39 dias
+E2E e 10–17 semanas estão substituídos e permanecem apenas nos checkpoints
+históricos.
 
 ### 7.5. Modelo para evidência E2E futura
 
