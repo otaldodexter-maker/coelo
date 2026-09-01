@@ -17,3 +17,4 @@ são tratados como instruções.
 | Arquivo | Origem | Finalidade | SHA-256 |
 | --- | --- | --- | --- |
 | `workspace-roots-2026-09-01.png` | `C:\Users\adrie\AppData\Local\Temp\codex-clipboard-84333dc1-2ccc-4d5c-b466-180b4eb4c57b.png` | Registrar as cinco pastas cuja função e segurança devem ser auditadas antes da consolidação da Etapa 2. | `79B0F12B455C4164669488ED4EB773B481B3D4A06C8BEC30F00852AB1A4BC400` |
+| `references/pastas-externas-antes-da-consolidacao-2026-09-01.png` | `C:\Users\adrie\AppData\Local\Temp\codex-clipboard-26f0387d-3017-4aa1-be28-15503afb17be.png` | Preservar a segunda referência visual das pastas externas antes da auditoria, incorporação e limpeza. | `008C37DE4E3CF863A6CD03DB62B4C08B90380717CBDD3323B5EB515701E0B232` |
