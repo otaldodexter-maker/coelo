@@ -7,16 +7,16 @@ import 'package:coelo_superadmin/features/institutions/domain/institution_direct
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('ships fifteen deterministic institutions with valid hierarchy', () {
+  test('ships twelve deterministic institutions with valid hierarchy', () {
     final repository = FakeInstitutionDirectoryRepository();
 
-    expect(repository.records, hasLength(15));
-    expect(repository.records.map((record) => record.id).toSet(), hasLength(15));
+    expect(repository.records, hasLength(12));
+    expect(repository.records.map((record) => record.id).toSet(), hasLength(12));
     for (final record in repository.records) {
       expect(record.units.length, inInclusiveRange(1, 4));
       expect(record.units.expand((unit) => unit.groups), isNotEmpty);
       for (final unit in record.units) {
-        expect(unit.groups.length, inInclusiveRange(1, 40));
+        expect(unit.groups.length, inInclusiveRange(1, 20));
       }
       expect(record.directoryItem.unitsCount, record.units.length);
       expect(

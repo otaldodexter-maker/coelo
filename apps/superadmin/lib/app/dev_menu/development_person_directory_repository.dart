@@ -1,4 +1,5 @@
 import '../../features/people/domain/person_directory.dart';
+import '../../features/institutions/data/fake_institution_directory_repository.dart';
 
 /// Deterministic repository used only by the authenticated development preview.
 final class DevelopmentPersonDirectoryRepository implements PersonDirectoryRepository {
@@ -14,11 +15,25 @@ final class DevelopmentPersonDirectoryRepository implements PersonDirectoryRepos
   final bool unauthorized;
   final List<PersonDirectoryItem> people;
 
-  static final samplePeople = List<PersonDirectoryItem>.generate(24, (index) {
-    final type = PersonType.values[index % PersonType.values.length];
-    final dualProfile = index % 5 == 0;
+  static final samplePeople = List<PersonDirectoryItem>.generate(400, (index) {
+    final institution = demoInstitutionRecords[index % demoInstitutionRecords.length];
+    final unit = institution.units[index % institution.units.length];
+    final group = unit.groups[index % unit.groups.length];
+    final secondaryInstitution =
+        demoInstitutionRecords[(index + 3) % demoInstitutionRecords.length];
+    final secondaryUnit =
+        secondaryInstitution.units[(index + 1) % secondaryInstitution.units.length];
+    final secondaryGroup = secondaryUnit.groups[(index + 2) % secondaryUnit.groups.length];
+    final type = index % 37 == 0
+        ? PersonType.service
+        : index % 5 < 2
+        ? PersonType.child
+        : PersonType.adult;
+    final dualProfile = type == PersonType.adult && index % 7 == 0;
     final primaryRole = type == PersonType.child
         ? 'student'
+        : type == PersonType.service
+        ? 'integration'
         : dualProfile
         ? 'guardian'
         : index.isEven
@@ -29,7 +44,8 @@ final class DevelopmentPersonDirectoryRepository implements PersonDirectoryRepos
       firstName: type == PersonType.service ? null : 'Pessoa',
       lastName: type == PersonType.service ? null : '${index + 1}',
       displayName: switch (type) {
-        PersonType.adult => 'Ana Pessoa ${index + 1}',
+        PersonType.adult =>
+          index.isEven ? 'Educador Coelo ${index + 1}' : 'Responsável Coelo ${index + 1}',
         PersonType.child => 'Criança Coelo ${index + 1}',
         PersonType.service => 'Serviço Coelo ${index + 1}',
       },
@@ -50,22 +66,26 @@ final class DevelopmentPersonDirectoryRepository implements PersonDirectoryRepos
       memberships: [
         PersonMembership(
           id: 'membership-$index-a',
-          institutionId: 'institution-${index % 2}',
-          institutionName: 'Instituição ${index % 2 + 1}',
-          unitId: 'unit-${index % 3}',
-          unitName: 'Unidade ${index % 3 + 1}',
-          groupId: 'group-${index % 4}',
-          groupName: 'Turma ${index % 4 + 1}',
-          activityId: 'activity-${index % 2}',
-          activityName: index.isEven ? 'Música' : 'Esportes',
+          institutionId: institution.id,
+          institutionName: institution.publicName,
+          unitId: unit.id,
+          unitName: unit.name,
+          groupId: group.id,
+          groupName: group.name,
+          activityId: 'activity-${index % 30 + 1}',
+          activityName: index.isEven ? 'Música' : 'Robótica',
           role: primaryRole,
         ),
         PersonMembership(
           id: 'membership-$index-b',
-          institutionId: 'institution-2',
-          institutionName: 'Instituição 3',
-          activityId: 'activity-${(index + 1) % 2}',
-          activityName: index.isEven ? 'Esportes' : 'Música',
+          institutionId: secondaryInstitution.id,
+          institutionName: secondaryInstitution.publicName,
+          unitId: secondaryUnit.id,
+          unitName: secondaryUnit.name,
+          groupId: secondaryGroup.id,
+          groupName: secondaryGroup.name,
+          activityId: 'activity-${(index + 11) % 30 + 1}',
+          activityName: index.isEven ? 'Teatro' : 'Leitura',
           role: type == PersonType.service
               ? 'integration'
               : dualProfile
@@ -73,8 +93,24 @@ final class DevelopmentPersonDirectoryRepository implements PersonDirectoryRepos
               : 'member',
         ),
       ],
+      childContexts: type == PersonType.adult && (primaryRole == 'guardian' || dualProfile)
+          ? [
+              for (var childIndex = 0; childIndex < index % 3 + 1; childIndex++)
+                PersonChildContext(
+                  id: 'child-context-$index-$childIndex',
+                  institutionId: institution.id,
+                  institutionName: institution.publicName,
+                  unitId: unit.id,
+                  unitName: unit.name,
+                  groupId: unit.groups[(index + childIndex) % unit.groups.length].id,
+                  groupName: unit.groups[(index + childIndex) % unit.groups.length].name,
+                ),
+            ]
+          : const [],
       platformMembershipSummary: type == PersonType.service ? 'Serviço interno' : null,
-      guardianLinksSummary: type == PersonType.child ? '2 responsáveis vinculados' : null,
+      guardianLinksSummary: type == PersonType.child
+          ? '${2 + index % 2} responsáveis vinculados'
+          : null,
       linkedChildrenCount: type == PersonType.adult && primaryRole == 'guardian'
           ? index % 3 + 1
           : 0,
@@ -176,58 +212,81 @@ final class DevelopmentPersonDirectoryRepository implements PersonDirectoryRepos
   @override
   Future<PersonDirectoryFilterOptions> fetchFilterOptions() async {
     _guard();
-    return const PersonDirectoryFilterOptions(
+    final states = <String, String>{};
+    final municipalities = <String, ({String name, String state})>{};
+    final neighborhoods = <String, ({String name, String state, String municipality})>{};
+    for (final institution in demoInstitutionRecords) {
+      states[institution.state] = institution.state;
+      final municipalityId = 'municipality-${institution.city.toLowerCase().replaceAll(' ', '-')}';
+      municipalities[municipalityId] = (name: institution.city, state: institution.state);
+      final neighborhoodId =
+          'neighborhood-${institution.district.toLowerCase().replaceAll(' ', '-')}';
+      neighborhoods[neighborhoodId] = (
+        name: institution.district,
+        state: institution.state,
+        municipality: municipalityId,
+      );
+    }
+    const activityNames = [
+      'Música',
+      'Dança',
+      'Capoeira',
+      'Biologia',
+      'Robótica',
+      'Teatro',
+      'Xadrez',
+      'Matemática',
+      'Inglês',
+      'Artes',
+    ];
+    return PersonDirectoryFilterOptions(
       institutions: [
-        PersonFilterOption('institution-0', 'Instituição 1'),
-        PersonFilterOption('institution-1', 'Instituição 2'),
-        PersonFilterOption('institution-2', 'Instituição 3'),
+        for (final institution in demoInstitutionRecords)
+          PersonFilterOption(institution.id, institution.publicName),
       ],
       units: [
-        PersonFilterOption('unit-0', 'Unidade 1', institutionId: 'institution-0'),
-        PersonFilterOption('unit-1', 'Unidade 2', institutionId: 'institution-1'),
+        for (final institution in demoInstitutionRecords)
+          for (final unit in institution.units)
+            PersonFilterOption(unit.id, unit.name, institutionId: institution.id),
       ],
       groups: [
-        PersonFilterOption('group-0', 'Turma 1', institutionId: 'institution-0', unitId: 'unit-0'),
-        PersonFilterOption('group-1', 'Turma 2', institutionId: 'institution-1', unitId: 'unit-1'),
+        for (final institution in demoInstitutionRecords)
+          for (final unit in institution.units)
+            for (final group in unit.groups)
+              PersonFilterOption(
+                group.id,
+                group.name,
+                institutionId: institution.id,
+                unitId: unit.id,
+              ),
       ],
-      roles: [
-        PersonFilterOption('guardian', 'Responsável', institutionId: 'institution-0'),
-        PersonFilterOption('student', 'Aluno', institutionId: 'institution-0'),
+      roles: const [
+        PersonFilterOption('guardian', 'Responsável'),
+        PersonFilterOption('student', 'Aluno'),
+        PersonFilterOption('educator', 'Educador'),
+        PersonFilterOption('integration', 'Integração'),
       ],
       activities: [
-        PersonFilterOption(
-          'activity-0',
-          'Música',
-          institutionId: 'institution-0',
-          unitId: 'unit-0',
-          groupId: 'group-0',
-        ),
-        PersonFilterOption(
-          'activity-1',
-          'Esportes',
-          institutionId: 'institution-1',
-          unitId: 'unit-1',
-          groupId: 'group-1',
-        ),
+        for (var index = 0; index < 30; index++)
+          PersonFilterOption(
+            'activity-${index + 1}',
+            '${activityNames[index % activityNames.length]} ${index ~/ activityNames.length + 1}',
+            institutionId: demoInstitutionRecords[index % demoInstitutionRecords.length].id,
+          ),
       ],
-      states: [PersonFilterOption('SP', 'São Paulo'), PersonFilterOption('RJ', 'Rio de Janeiro')],
+      states: [for (final entry in states.entries) PersonFilterOption(entry.key, entry.value)],
       municipalities: [
-        PersonFilterOption('municipality-sp', 'São Paulo', stateCode: 'SP'),
-        PersonFilterOption('municipality-rj', 'Rio de Janeiro', stateCode: 'RJ'),
+        for (final entry in municipalities.entries)
+          PersonFilterOption(entry.key, entry.value.name, stateCode: entry.value.state),
       ],
       neighborhoods: [
-        PersonFilterOption(
-          'neighborhood-centro',
-          'Centro',
-          stateCode: 'SP',
-          municipalityId: 'municipality-sp',
-        ),
-        PersonFilterOption(
-          'neighborhood-jardim',
-          'Jardim',
-          stateCode: 'RJ',
-          municipalityId: 'municipality-rj',
-        ),
+        for (final entry in neighborhoods.entries)
+          PersonFilterOption(
+            entry.key,
+            entry.value.name,
+            stateCode: entry.value.state,
+            municipalityId: entry.value.municipality,
+          ),
       ],
     );
   }

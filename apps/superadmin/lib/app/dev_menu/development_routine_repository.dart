@@ -3,7 +3,7 @@ import '../../features/daily_routine/domain/routine_contract.dart';
 final class DevelopmentRoutineRepository implements RoutineRepository {
   DevelopmentRoutineRepository.content()
     : _mode = _DevelopmentRoutineMode.content,
-      _models = {'model-1': _seedModel},
+      _models = {for (final model in _seedModels) model.id: model},
       _applications = {'application-1': _seedApplication},
       _launches = {'launch-1': _seedLaunch};
 
@@ -221,17 +221,29 @@ RoutineLaunch _launchWith(RoutineLaunch value, {required RoutineLaunchStatus sta
       canManage: value.canManage,
     );
 
-final _seedModel = RoutineModel(
-  id: 'model-1',
-  name: 'Rotina diária',
-  description: 'Modelo local para pré-visualização.',
-  version: 1,
-  status: RoutineModelStatus.active,
-  sections: const [],
-  expectedVersion: 1,
-  institutionId: 'institution-1',
-  canManage: true,
-);
+final _seedModels = <RoutineModel>[
+  for (var index = 0; index < _routineNames.length; index++)
+    RoutineModel(
+      id: 'model-${index + 1}',
+      name: _routineNames[index],
+      description: 'Modelo local determinístico para ${_routineNames[index].toLowerCase()}.',
+      version: 1,
+      status: RoutineModelStatus.active,
+      sections: const [],
+      expectedVersion: 1,
+      institutionId: 'demo-institution-${index.isEven ? 'aurora' : 'horizonte'}',
+      canManage: true,
+    ),
+];
+
+const _routineNames = [
+  'Chegada e acolhimento',
+  'Higiene da manhã',
+  'Alimentação e hidratação',
+  'Descanso e bem-estar',
+  'Atividades pedagógicas',
+  'Saída e entrega',
+];
 
 const _seedApplication = RoutineApplication(
   id: 'application-1',

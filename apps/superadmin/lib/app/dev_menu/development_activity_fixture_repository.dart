@@ -113,24 +113,19 @@ final class DevelopmentActivityFixtureRepository implements ActivityDirectoryRep
         ),
       ],
       templates: [
-        const ActivityTemplateOption(
-          id: 'template-robotics',
-          name: 'Robótica',
-          description: 'Modelo Coelo para atividades de robótica.',
-          taxonomyId: 'taxonomy-sciences',
-          subtypeId: 'subtype-robotics',
-          governance: ActivityGovernance.optional,
-        ),
-        ActivityTemplateOption(
-          id: 'template-robotics-institution',
-          name: 'Robótica da instituição',
-          description: 'Cópia institucional editável.',
-          taxonomyId: 'taxonomy-sciences',
-          subtypeId: 'subtype-robotics',
-          scopeKind: ActivityTemplateScopeKind.institution,
-          institutionId: institutionId,
-          governance: ActivityGovernance.mandatory,
-        ),
+        for (var index = 0; index < 10; index++)
+          ActivityTemplateOption(
+            id: 'template-${index + 1}',
+            name: _templateNames[index],
+            description: 'Modelo determinístico para ${_templateNames[index].toLowerCase()}.',
+            taxonomyId: 'taxonomy-sciences',
+            subtypeId: 'subtype-robotics',
+            scopeKind: index < 5
+                ? ActivityTemplateScopeKind.platform
+                : ActivityTemplateScopeKind.institution,
+            institutionId: index < 5 ? null : institutionId,
+            governance: index.isEven ? ActivityGovernance.optional : ActivityGovernance.mandatory,
+          ),
       ],
     );
   }
@@ -193,11 +188,36 @@ List<ActivityDetail> _seedActivities() {
     ('Circo', 'Equilíbrio, coordenação e expressão.'),
     ('Culinária', 'Experiências alimentares orientadas.'),
     ('Leitura', 'Mediação e formação leitora.'),
+    ('Psicomotricidade', 'Coordenação motora e consciência corporal.'),
+    ('Contação de histórias', 'Imaginação, oralidade e vínculo.'),
+    ('Educação financeira', 'Escolhas, planejamento e colaboração.'),
+    ('Programação', 'Pensamento computacional para crianças.'),
+    ('Futebol', 'Prática esportiva e trabalho em equipe.'),
+    ('Natação', 'Segurança aquática e desenvolvimento motor.'),
+    ('Judô', 'Disciplina, equilíbrio e respeito.'),
+    ('Ballet', 'Técnica, musicalidade e expressão.'),
+    ('Laboratório maker', 'Experimentação e prototipagem.'),
+    ('Clube de ciências', 'Investigação orientada e registro.'),
+    ('Espanhol', 'Vivências em língua espanhola.'),
+    ('Musicalização', 'Ritmo, escuta e criação coletiva.'),
+    ('Educação ambiental', 'Sustentabilidade e cuidado comunitário.'),
+    ('Apoio pedagógico', 'Acompanhamento individual de aprendizagem.'),
+    ('Brincar livre', 'Autonomia, convivência e imaginação.'),
+    ('Fotografia', 'Olhar, composição e narrativa visual.'),
   ];
   const institutions = [
-    ('institution-1', 'Casa Nuvem'),
-    ('institution-2', 'Centro Bem-Te-Vi'),
-    ('institution-3', 'Colégio Maré Alta'),
+    ('demo-institution-aurora', 'Instituto Aurora'),
+    ('demo-institution-horizonte', 'Centro Horizonte'),
+    ('demo-institution-pontes', 'Instituição Pontes'),
+    ('demo-institution-sementes', 'Sementes do Vale'),
+    ('demo-institution-mare-alta', 'Colégio Maré Alta'),
+    ('demo-institution-ipe', 'Núcleo Ipê'),
+    ('demo-institution-caminhos', 'Escola Caminhos'),
+    ('demo-institution-casa-nuvem', 'Casa Nuvem'),
+    ('demo-institution-viver', 'Instituto Viver'),
+    ('demo-institution-raizes', 'Colégio Raízes'),
+    ('demo-institution-bem-te-vi', 'Centro Bem-Te-Vi'),
+    ('demo-institution-estacao', 'Escola Estação'),
   ];
   return [
     for (var index = 0; index < names.length; index++)
@@ -212,6 +232,19 @@ List<ActivityDetail> _seedActivities() {
       ),
   ];
 }
+
+const _templateNames = [
+  'Robótica introdutória',
+  'Expressão musical',
+  'Movimento e dança',
+  'Investigação científica',
+  'Leitura compartilhada',
+  'Projeto maker',
+  'Esporte e convivência',
+  'Arte e criação',
+  'Idiomas em contexto',
+  'Educação ambiental',
+];
 
 ActivityDetail _detail({
   required String id,

@@ -9,30 +9,32 @@ final class FakeGroupDirectoryRepository implements GroupDirectoryRepository {
       final now = DateTime(2026, 7, 29);
       var index = 0;
       for (final institution in _institutions.records) {
-        for (final unit in institution.units.take(2)) {
-          _records.add(
-            GroupRecord(
-              id: 'fixture-group-${index + 1}',
-              institutionId: institution.id,
-              institutionName: institution.publicName,
-              unitId: unit.id,
-              unitName: unit.name,
-              name: 'Turma ${index + 1}',
-              groupType: index.isEven ? 'class' : 'workshop',
-              status: index % 3 == 0 ? GroupStatus.draft : GroupStatus.active,
-              createdAt: now,
-              updatedAt: now,
-              studentCount: 18 + index,
-              activityIds: [
-                for (var activity = 0; activity < 3 + index % 3; activity += 1)
-                  'fixture-activity-${index + 1}-${activity + 1}',
-              ],
-              teacherOrResponsibleNames: index.isEven
-                  ? const ['Ana Souza', 'Marcos Lima']
-                  : const ['Beatriz Nunes'],
-            ),
-          );
-          index += 1;
+        for (final unit in institution.units) {
+          for (final group in unit.groups) {
+            _records.add(
+              GroupRecord(
+                id: group.id,
+                institutionId: institution.id,
+                institutionName: institution.publicName,
+                unitId: unit.id,
+                unitName: unit.name,
+                name: group.name,
+                groupType: index.isEven ? 'class' : 'workshop',
+                status: index % 3 == 0 ? GroupStatus.draft : GroupStatus.active,
+                createdAt: now,
+                updatedAt: now,
+                studentCount: 8 + index % 23,
+                activityIds: [
+                  for (var activity = 0; activity < 1 + index % 4; activity += 1)
+                    'activity-${(index + activity) % 30 + 1}',
+                ],
+                teacherOrResponsibleNames: index.isEven
+                    ? const ['Ana Souza', 'Marcos Lima']
+                    : const ['Beatriz Nunes'],
+              ),
+            );
+            index += 1;
+          }
         }
       }
     }
