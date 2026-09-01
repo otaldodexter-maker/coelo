@@ -383,6 +383,35 @@ void main() {
     expect(pagination.pageSizeOptions, const [8, 20, 50, 100]);
   });
 
+  testWidgets('uses the constrained content width for compact pagination', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(900, 900);
+    addTearDown(tester.view.reset);
+    final repository = _repository(extraNotices: 25);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: Align(
+            alignment: Alignment.topLeft,
+            child: SizedBox(
+              width: 560,
+              height: 900,
+              child: NoticeDirectoryPage(repository: repository, canManageLifecycle: true),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    final pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
+    expect(pagination.pageSize, 11);
+    expect(pagination.pageSizeOptions, const [11, 20, 50, 100]);
+  });
+
   testWidgets('keeps tabular cells on one line at 200 percent text', (tester) async {
     final repository = _repository()..create(_draft(1));
     await _pumpDirectory(
