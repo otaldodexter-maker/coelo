@@ -8,8 +8,9 @@ generated_at: "2026-09-01"
 
 ## Resultado parcial
 
-- `/principal-happens`, `/principal-happens/publish`, `/principal-now` e
-  `/principal-now/publication` foram separados das rotas fake `/dev`.
+- `/principal-happens`, `/principal-happens/publish`, `/principal-now`,
+  `/principal-now/publication` e `/principal-moments/publish` foram separados
+  das rotas fake `/dev`.
 - A composição recebe repositories Supabase pelo `SuperadminAuthScope`,
   `SuperadminApp`, `main.dart` e router.
 - O contexto é derivado pelo ator autenticado; IDs de tenant/instituição não
@@ -17,6 +18,8 @@ generated_at: "2026-09-01"
 - A rota real de Acontece usa dados-base vazios e o feed remoto, sem herdar
   `PrincipalHappensPreviewData.demo`.
 - O launcher de mensagens reutiliza `/communication/conversations`.
+- O publicador real de Momentos possui host próprio que cria e descarta o
+  controller de produção, sem usar o controller demo.
 
 ## Backend local
 
@@ -47,4 +50,3 @@ revogação e isolamento entre instituições.
 Flutter real: parcial. Supabase: local-green parcial, com replay pendente.
 Integração E2E: aberta. Nenhuma parte deste relatório equivale a implantação
 remota concluída.
-

@@ -53,6 +53,14 @@ void main() {
       SuperadminRoutes.principalNowPublication,
     );
     expect(router.routeInformationProvider.value.uri.path, isNot(startsWith('/dev/')));
+
+    router.go(SuperadminRoutes.principalMomentsPublish);
+    await tester.pumpAndSettle();
+    expect(
+      router.routeInformationProvider.value.uri.path,
+      SuperadminRoutes.principalMomentsPublish,
+    );
+    expect(router.routeInformationProvider.value.uri.path, isNot(startsWith('/dev/')));
   });
 }
 

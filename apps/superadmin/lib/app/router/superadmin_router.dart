@@ -44,6 +44,7 @@ import '../../features/principal_happens_publication/presentation/principal_happ
 import '../../features/principal_moments/presentation/principal_moments_preview_page.dart';
 import '../../features/principal_moments_publication/domain/moments_publication.dart';
 import '../../features/principal_moments_publication/presentation/principal_moments_publication_page.dart';
+import '../../features/principal_moments_publication/presentation/principal_moments_publication_route.dart';
 import '../../features/principal_now/domain/principal_now_feed_repository.dart';
 import '../../features/principal_now/presentation/principal_now_preview_page.dart';
 import '../../features/principal_now_publication/domain/now_publication.dart';
@@ -703,6 +704,40 @@ GoRouter createSuperadminRouter({
               embedded: false,
               onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
               onCompleted: (_) => context.goNamed(SuperadminRoutes.principalNowName),
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.principalMomentsPublish,
+        name: SuperadminRoutes.principalMomentsPublishName,
+        builder: (context, state) => PrincipalRuntimeContextRoute(
+          repository: principalRuntimeContextRepository,
+          builder: (context, runtimeContext) {
+            final repository = momentsPublicationRepository;
+            final unitId = runtimeContext.unitId;
+            final unitName = runtimeContext.unitName;
+            final groupId = runtimeContext.groupId;
+            final groupName = runtimeContext.groupName;
+            if (repository == null ||
+                unitId == null ||
+                unitName == null ||
+                groupId == null ||
+                groupName == null) {
+              return _unavailableCompositionRootRoute(context);
+            }
+            return PrincipalMomentsPublicationRoute(
+              repository: repository,
+              publicationContext: MomentsPublicationContext(
+                institutionId: runtimeContext.institutionId,
+                institutionName: runtimeContext.institutionName,
+                unitId: unitId,
+                unitName: unitName,
+                groupId: groupId,
+                groupName: groupName,
+              ),
+              onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
+              onPublished: (_) => context.goNamed(SuperadminRoutes.principalMomentsName),
             );
           },
         ),
@@ -4065,6 +4100,8 @@ void _navigateFromAccount(
       context.goNamed(SuperadminRoutes.principalNowName);
     case 'principal-now-publish':
       context.goNamed(SuperadminRoutes.principalNowPublicationName);
+    case 'principal-moments-publish':
+      context.goNamed(SuperadminRoutes.principalMomentsPublishName);
     case 'institution-create':
       context.goNamed(SuperadminRoutes.institutionCreateName);
     case 'unit-create':
