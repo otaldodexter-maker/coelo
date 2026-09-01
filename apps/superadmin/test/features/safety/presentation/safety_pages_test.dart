@@ -38,6 +38,9 @@ void main() {
     expect(find.byType(CoeloAdminInteractiveCard), findsNWidgets(3));
     expect(find.byKey(const Key('safety-create-card')), findsOneWidget);
     expect(find.byType(CoeloAdminFileActions), findsOneWidget);
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    expect(find.text('Importar'), findsOneWidget);
 
     await tester.tap(find.text('Criar segurança'));
     expect(created, isTrue);
@@ -130,7 +133,9 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('authorized-persons-table')), findsOneWidget);
-    expect(find.text('Cadastrar pessoa'), findsOneWidget);
+    expect(find.byKey(const Key('safety-create-authorization-banner')), findsOneWidget);
+    expect(find.text('Criar autorização'), findsOneWidget);
+    expect(find.text('Cadastrar pessoa'), findsNothing);
 
     await tester.binding.setSurfaceSize(const Size(375, 1000));
     await tester.pumpWidget(

@@ -154,6 +154,16 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
                         CoeloAdminFileActions(
                           actions: [
                             CoeloAdminFileAction(
+                              key: const Key('safety-import-file'),
+                              label: 'Importar',
+                              icon: Icons.upload_file_outlined,
+                              onPressed: () => showSuperadminNotice(
+                                context,
+                                'Indisponível nesta etapa',
+                                icon: Icons.info_outline_rounded,
+                              ),
+                            ),
+                            CoeloAdminFileAction(
                               key: const Key('safety-export-csv'),
                               label: 'Exportar CSV',
                               icon: Icons.download_outlined,
@@ -275,6 +285,7 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
                   for (final record in c.records)
                     SizedBox(
                       width: width,
+                      height: 220,
                       child: SafetyChildDirectoryCard(
                         record: record,
                         onPressed: () => widget.onOpenChild(record.childId),
@@ -527,7 +538,6 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
               : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
               ? CoeloSpacing.space6
               : CoeloSpacing.space4;
-          final compactHeader = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
           final identity = Row(
             children: [
               IconButton(
@@ -551,39 +561,22 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
               ),
             ],
           );
-          final createButton = !widget.controller.canCreate || widget.onCreate == null
-              ? null
-              : FilledButton.icon(
-                  key: const Key('safety-add-authorized-person'),
-                  onPressed: widget.onCreate,
-                  icon: const Icon(Icons.person_add_alt_1_outlined),
-                  label: const Text('Cadastrar pessoa'),
-                );
           return ListView(
             padding: EdgeInsets.all(inset),
             children: [
-              if (compactHeader)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    identity,
-                    if (createButton != null) ...[
-                      const SizedBox(height: CoeloSpacing.space3),
-                      Align(alignment: Alignment.centerRight, child: createButton),
-                    ],
-                  ],
-                )
-              else
-                Row(
-                  children: [
-                    Expanded(child: identity),
-                    ...switch (createButton) {
-                      null => const <Widget>[],
-                      final button => <Widget>[button],
-                    },
-                  ],
-                ),
+              identity,
               const SizedBox(height: CoeloSpacing.space6),
+              if (widget.controller.canCreate && widget.onCreate != null) ...[
+                CoeloAdminCreateAction(
+                  key: const Key('safety-create-authorization-banner'),
+                  label: 'Criar autorização',
+                  description: 'Cadastre uma pessoa autorizada para esta criança.',
+                  icon: Icons.person_add_alt_1_outlined,
+                  variant: CoeloAdminCreateActionVariant.banner,
+                  onPressed: widget.onCreate,
+                ),
+                const SizedBox(height: CoeloSpacing.space4),
+              ],
               if (child.pendingCount > 0) ...[
                 _PendingNotice(count: child.pendingCount),
                 const SizedBox(height: CoeloSpacing.space4),
@@ -594,7 +587,7 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
                   message: 'A retirada permanece bloqueada até uma autorização ser aprovada.',
                   icon: Icons.gpp_bad_outlined,
                   actionLabel: widget.controller.canCreate && widget.onCreate != null
-                      ? 'Cadastrar pessoa'
+                      ? 'Criar autorização'
                       : null,
                   onAction: widget.controller.canCreate ? widget.onCreate : null,
                 )
