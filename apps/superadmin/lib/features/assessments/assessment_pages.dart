@@ -5,6 +5,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../app/activity/superadmin_activity.dart';
+import '../../app/shell/superadmin_notice.dart';
 import '../../app/shell/superadmin_shell.dart';
 import '../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../shared/presentation/widgets/superadmin_form_frame.dart';
@@ -1504,31 +1505,32 @@ final class _AssessmentFileActions extends StatelessWidget {
   final bool compact;
 
   @override
-  Widget build(BuildContext context) => PopupMenuButton<void>(
-    key: const Key('assessment-files'),
-    tooltip: 'Arquivos',
-    padding: compact ? EdgeInsets.zero : const EdgeInsets.all(CoeloSpacing.space2),
-    itemBuilder: (context) => const [
-      PopupMenuItem<void>(enabled: false, child: Text('Importar — em breve')),
-      PopupMenuItem<void>(enabled: false, child: Text('Exportar — em breve')),
+  Widget build(BuildContext context) => CoeloAdminFileActions(
+    compact: compact,
+    actions: [
+      CoeloAdminFileAction(
+        key: const Key('assessment-files-import'),
+        label: 'Importar',
+        icon: Icons.upload_file_outlined,
+        onPressed: () => _showUnavailable(context),
+      ),
+      CoeloAdminFileAction(
+        key: const Key('assessment-files-export-csv'),
+        label: 'Exportar CSV',
+        icon: Icons.table_rows_outlined,
+        onPressed: () => _showUnavailable(context),
+      ),
+      CoeloAdminFileAction(
+        key: const Key('assessment-files-export-xlsx'),
+        label: 'Exportar XLSX',
+        icon: Icons.grid_on_outlined,
+        onPressed: () => _showUnavailable(context),
+      ),
     ],
-    child: compact
-        ? const Padding(
-            padding: EdgeInsets.all(CoeloSpacing.space2),
-            child: Icon(Icons.folder_outlined),
-          )
-        : const Padding(
-            padding: EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.folder_outlined),
-                SizedBox(width: CoeloSpacing.space2),
-                Text('Arquivos'),
-              ],
-            ),
-          ),
   );
+
+  void _showUnavailable(BuildContext context) =>
+      showSuperadminNotice(context, 'Indisponível nesta etapa', icon: Icons.info_outline_rounded);
 }
 
 final class AssessmentClosingDetailPage extends StatefulWidget {
