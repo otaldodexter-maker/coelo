@@ -404,6 +404,7 @@ final _developmentPlans = <MealPlan>[
     sourceType: MealPlanSourceType.institution,
     dish: 'Arroz, feijão, peixe assado e salada fresca',
     startDay: 4,
+    month: 10,
     audience: MealPlanAudienceSegment.staff,
   ),
   _fixturePlan(
@@ -471,6 +472,7 @@ final _developmentPlans = <MealPlan>[
     sourceType: MealPlanSourceType.exception,
     dish: 'Mesa de pães, patês, frutas e café',
     startDay: 16,
+    month: 10,
     audience: MealPlanAudienceSegment.staff,
   ),
 ];
@@ -549,7 +551,8 @@ MealPlanTemplate _fixtureTemplate(String id, String name) => MealPlanTemplate(
 
 const _audienceOptions = MealPlanAudienceOptions(
   institutions: [
-    MealPlanAudienceOption(id: 'dev-institution', label: 'Instituto Horizonte'),
+    MealPlanAudienceOption(id: 'dev-institution', label: 'Colégio Coelo'),
+    MealPlanAudienceOption(id: 'dev-institution-horizonte', label: 'Instituto Horizonte'),
     MealPlanAudienceOption(id: 'dev-institution-aurora', label: 'Escola Aurora'),
   ],
   units: [

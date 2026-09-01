@@ -98,7 +98,7 @@ void main() {
 
     expect(savedCount, 1);
     final created = (await repository.fetchPage(
-      const MealPlanListFilter(),
+      const MealPlanListFilter(pageSize: 100),
     )).items.singleWhere((item) => item.name == 'Cardápio da primavera');
     expect(created.status, MealPlanStatus.published);
     expect(tester.takeException(), isNull);
