@@ -9,6 +9,7 @@ import 'package:coelo_superadmin/features/attendance/data/supabase_attendance_re
 import 'package:coelo_superadmin/features/audit/data/supabase_audit_repository.dart';
 import 'package:coelo_superadmin/features/audit/domain/audit.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
+import 'package:coelo_superadmin/features/auth/domain/superadmin_auth_context.dart';
 import 'package:coelo_superadmin/features/daily_routine/domain/routine_contract.dart';
 import 'package:coelo_superadmin/features/health_care/domain/medication_plan_repository.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_directory.dart';
@@ -22,6 +23,51 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('builds a clean same-origin password recovery redirect', () {
+    final redirect = buildSuperadminPasswordRecoveryRedirect(
+      Uri.parse('http://attacker@127.0.0.1:8766/login?unsafe=value#fragment'),
+    );
+
+    expect(redirect, Uri.parse('http://127.0.0.1:8766/reset-password'));
+  });
+
+  test('recognizes only a recovery callback on the reset route', () {
+    expect(
+      isSuperadminPasswordRecoveryRedirect(
+        Uri.parse(
+          'http://127.0.0.1:8766/reset-password'
+          '#type=recovery&access_token=access&refresh_token=refresh',
+        ),
+      ),
+      isTrue,
+    );
+    expect(
+      isSuperadminPasswordRecoveryRedirect(
+        Uri.parse('http://127.0.0.1:8766/reset-password#type=recovery'),
+      ),
+      isFalse,
+    );
+    expect(
+      isSuperadminPasswordRecoveryRedirect(
+        Uri.parse(
+          'http://127.0.0.1:8766/reset-password'
+          '?type=recovery&access_token=access&refresh_token=refresh',
+        ),
+      ),
+      isFalse,
+    );
+    expect(
+      isSuperadminPasswordRecoveryRedirect(
+        Uri.parse('http://127.0.0.1:8766/reset-password#type=signup'),
+      ),
+      isFalse,
+    );
+    expect(
+      isSuperadminPasswordRecoveryRedirect(Uri.parse('http://127.0.0.1:8766/?type=recovery')),
+      isFalse,
+    );
+  });
+
   test('uses a safe unavailable scope when Supabase config is missing', () async {
     var didInitialize = false;
 
@@ -118,16 +164,125 @@ void main() {
       initializeSupabase: ({required localStorage, required publishableKey, required url}) async {
         return SupabaseClient(url, publishableKey);
       },
-      createAuthGateway: ({required client, required sessionPersistence}) => auth,
+      createAuthGateway:
+          ({required client, required sessionPersistence, required initialRecoveryAccessToken}) =>
+              auth,
+      createAuthContextGateway: (_) => _FakeSuperadminAuthContextGateway(),
     );
     addTearDown(scope.session.dispose);
 
     expect(scope.session.isAuthenticated, isTrue);
+    expect(scope.session.authContext?.platformRoleCode, 'operations');
 
     authStates.add(false);
     await Future<void>.delayed(Duration.zero);
 
     expect(scope.session.isAuthenticated, isFalse);
+  });
+
+  test('keeps a restored recovery session out of internal context bootstrap', () async {
+    final authContext = _FakeSuperadminAuthContextGateway();
+    final auth = _FakeCoeloAuthGateway(
+      isAuthenticated: false,
+      authStateChanges: const Stream<bool>.empty(),
+      initialSessionState: const CoeloAuthSessionState.passwordRecovery(),
+    );
+
+    final scope = await createSuperadminAuthScope(
+      supabaseUrl: 'https://project.supabase.co',
+      supabasePublishableKey: 'sb_publishable_test',
+      initializeSupabase: ({required localStorage, required publishableKey, required url}) async =>
+          SupabaseClient(url, publishableKey),
+      createAuthGateway:
+          ({required client, required sessionPersistence, required initialRecoveryAccessToken}) =>
+              auth,
+      createAuthContextGateway: (_) => authContext,
+    );
+    addTearDown(scope.session.dispose);
+
+    expect(scope.session.isPasswordRecovery, isTrue);
+    expect(scope.session.isAuthenticated, isFalse);
+    expect(scope.session.authContext, isNull);
+    expect(authContext.bootstrapCalls, 0);
+  });
+
+  test('rejects and revokes a restored credential without internal context', () async {
+    final auth = _FakeCoeloAuthGateway(
+      isAuthenticated: true,
+      authStateChanges: const Stream<bool>.empty(),
+    );
+    final scope = await createSuperadminAuthScope(
+      supabaseUrl: 'https://project.supabase.co',
+      supabasePublishableKey: 'sb_publishable_test',
+      initializeSupabase: ({required localStorage, required publishableKey, required url}) async =>
+          SupabaseClient(url, publishableKey),
+      createAuthGateway:
+          ({required client, required sessionPersistence, required initialRecoveryAccessToken}) =>
+              auth,
+      createAuthContextGateway: (_) => _FakeSuperadminAuthContextGateway(isAuthorized: false),
+    );
+    addTearDown(scope.session.dispose);
+
+    expect(scope.session.isAuthenticated, isFalse);
+    expect(scope.session.authContext, isNull);
+    expect(auth.signOutCalls, 1);
+  });
+
+  test('does not restore a session signed out while context bootstrap is pending', () async {
+    final authStates = StreamController<bool>();
+    final auth = _FakeCoeloAuthGateway(isAuthenticated: true, authStateChanges: authStates.stream);
+    final authContext = _PendingSuperadminAuthContextGateway();
+    addTearDown(authStates.close);
+
+    final scopeFuture = createSuperadminAuthScope(
+      supabaseUrl: 'https://project.supabase.co',
+      supabasePublishableKey: 'sb_publishable_test',
+      initializeSupabase: ({required localStorage, required publishableKey, required url}) async =>
+          SupabaseClient(url, publishableKey),
+      createAuthGateway:
+          ({required client, required sessionPersistence, required initialRecoveryAccessToken}) =>
+              auth,
+      createAuthContextGateway: (_) => authContext,
+    );
+
+    await authContext.started.future;
+    auth.isAuthenticated = false;
+    authStates.add(false);
+    authContext.completeAuthorized();
+
+    final scope = await scopeFuture;
+    addTearDown(scope.session.dispose);
+    expect(scope.session.isAuthenticated, isFalse);
+    expect(scope.session.authContext, isNull);
+  });
+
+  test('does not attach context from one session to a replacement session', () async {
+    final authStates = StreamController<bool>();
+    final auth = _FakeCoeloAuthGateway(isAuthenticated: true, authStateChanges: authStates.stream);
+    final authContext = _PendingSuperadminAuthContextGateway();
+    addTearDown(authStates.close);
+
+    final scopeFuture = createSuperadminAuthScope(
+      supabaseUrl: 'https://project.supabase.co',
+      supabasePublishableKey: 'sb_publishable_test',
+      initializeSupabase: ({required localStorage, required publishableKey, required url}) async =>
+          SupabaseClient(url, publishableKey),
+      createAuthGateway:
+          ({required client, required sessionPersistence, required initialRecoveryAccessToken}) =>
+              auth,
+      createAuthContextGateway: (_) => authContext,
+    );
+
+    await authContext.started.future;
+    auth.sessionId = _sessionB;
+    authStates.add(true);
+    authContext.completeAuthorized();
+
+    final scope = await scopeFuture;
+    addTearDown(scope.session.dispose);
+    expect(scope.session.isAuthenticated, isFalse);
+    expect(scope.session.authContext, isNull);
+    expect(auth.signOutCalls, 1);
   });
 
   test('exposes password recovery through the configured auth gateway', () async {
@@ -142,7 +297,9 @@ void main() {
       initializeSupabase: ({required localStorage, required publishableKey, required url}) async {
         return SupabaseClient(url, publishableKey);
       },
-      createAuthGateway: ({required client, required sessionPersistence}) => auth,
+      createAuthGateway:
+          ({required client, required sessionPersistence, required initialRecoveryAccessToken}) =>
+              auth,
     );
     addTearDown(scope.session.dispose);
 
@@ -187,21 +344,48 @@ void main() {
   });
 }
 
-final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
-  _FakeCoeloAuthGateway({required this.isAuthenticated, required this.authStateChanges});
+final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
+  _FakeCoeloAuthGateway({
+    required this.isAuthenticated,
+    required Stream<bool> authStateChanges,
+    this.initialSessionState,
+  }) : _authStateChanges = authStateChanges;
 
   @override
-  final bool isAuthenticated;
+  bool isAuthenticated;
+  String sessionId = _sessionA;
+  final CoeloAuthSessionState? initialSessionState;
 
-  @override
-  final Stream<bool> authStateChanges;
+  final Stream<bool> _authStateChanges;
   String? lastRecoveryEmail;
+  int signOutCalls = 0;
 
   @override
-  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({required String email}) async {
+  CoeloAuthSessionState get currentSessionState =>
+      initialSessionState ??
+      (isAuthenticated
+          ? CoeloAuthSessionState.authenticated(sessionId: sessionId)
+          : const CoeloAuthSessionState.signedOut());
+
+  @override
+  Stream<CoeloAuthSessionState> get authSessionStateChanges => _authStateChanges.map(
+    (authenticated) => authenticated
+        ? CoeloAuthSessionState.authenticated(sessionId: sessionId)
+        : const CoeloAuthSessionState.signedOut(),
+  );
+
+  @override
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecoveryWithRedirect({
+    required String email,
+    required Uri redirectTo,
+  }) async {
     lastRecoveryEmail = email;
     return const CoeloAuthPasswordRecoveryResult.success();
   }
+
+  @override
+  Future<CoeloAuthPasswordUpdateResult> updatePassword({required String password}) async =>
+      const CoeloAuthPasswordUpdateResult.success();
 
   @override
   Future<CoeloAuthSignInResult> signInWithPassword({
@@ -213,5 +397,50 @@ final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
   }
 
   @override
-  Future<void> signOut() async {}
+  Future<void> signOut() async {
+    signOutCalls++;
+  }
+}
+
+const _sessionA = '11111111-1111-4111-8111-111111111111';
+const _sessionB = '22222222-2222-4222-8222-222222222222';
+
+final class _PendingSuperadminAuthContextGateway implements SuperadminAuthContextGateway {
+  final started = Completer<void>();
+  final _result = Completer<SuperadminAuthContext?>();
+
+  void completeAuthorized() => _result.complete(
+    const SuperadminAuthContext(
+      platformRoleCode: 'operations',
+      scopeKind: SuperadminAuthScopeKind.platform,
+      permissionCodes: {'platform.read'},
+      aal: 'aal1',
+    ),
+  );
+
+  @override
+  Future<SuperadminAuthContext?> bootstrap() {
+    started.complete();
+    return _result.future;
+  }
+}
+
+final class _FakeSuperadminAuthContextGateway implements SuperadminAuthContextGateway {
+  _FakeSuperadminAuthContextGateway({this.isAuthorized = true});
+
+  final bool isAuthorized;
+  int bootstrapCalls = 0;
+
+  @override
+  Future<SuperadminAuthContext?> bootstrap() async {
+    bootstrapCalls++;
+    return isAuthorized
+        ? const SuperadminAuthContext(
+            platformRoleCode: 'operations',
+            scopeKind: SuperadminAuthScopeKind.platform,
+            permissionCodes: {'platform.read'},
+            aal: 'aal1',
+          )
+        : null;
+  }
 }

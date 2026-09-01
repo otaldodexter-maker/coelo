@@ -21,7 +21,7 @@ void main() {
   });
 
   testWidgets('production profile fails closed without mounting the local editor', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
@@ -96,7 +96,7 @@ void main() {
   });
 
   testWidgets('production settings lazily loads its injected controller once', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final productionRepository = _TrackingPreferencesRepository();
     final production = UserPreferencesController(productionRepository);
     final router = createSuperadminRouter(

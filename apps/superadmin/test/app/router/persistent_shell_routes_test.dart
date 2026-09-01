@@ -22,7 +22,7 @@ void main() {
   ) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = _router(session);
     addTearDown(router.dispose);
     addTearDown(session.dispose);
@@ -49,7 +49,7 @@ void main() {
   testWidgets('swaps protected content without a perceptible opacity transition', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = _router(session);
     addTearDown(router.dispose);
     addTearDown(session.dispose);
@@ -68,7 +68,7 @@ void main() {
   testWidgets('switches protected content immediately under reduced motion', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = _router(session);
     addTearDown(router.dispose);
     addTearDown(session.dispose);
@@ -91,7 +91,7 @@ void main() {
   ) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     addTearDown(session.dispose);
     await tester.pumpWidget(
       SuperadminApp(
@@ -429,7 +429,7 @@ void main() {
   testWidgets('hides the development preview trigger in production', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = _router(session);
     addTearDown(router.dispose);
     addTearDown(session.dispose);
@@ -445,7 +445,7 @@ void main() {
   ) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = _router(session);
     addTearDown(router.dispose);
     addTearDown(session.dispose);

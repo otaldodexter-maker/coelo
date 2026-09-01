@@ -15,7 +15,7 @@ import 'package:go_router/go_router.dart';
 
 void main() {
   testWidgets('production unit routes receive only unavailable composition', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = _router(session, allowDevelopmentPreview: true);
     addTearDown(router.dispose);
     addTearDown(session.dispose);
@@ -42,7 +42,7 @@ void main() {
   testWidgets('development unit routes receive cached fake repository and null gateway', (
     tester,
   ) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = _router(session, allowDevelopmentPreview: true);
     addTearDown(router.dispose);
     addTearDown(session.dispose);
@@ -68,7 +68,7 @@ void main() {
   });
 
   testWidgets('release guard keeps development unit routes unreachable', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = _router(session, allowDevelopmentPreview: false);
     addTearDown(router.dispose);
     addTearDown(session.dispose);

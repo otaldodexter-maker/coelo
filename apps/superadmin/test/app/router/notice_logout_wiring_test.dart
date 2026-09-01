@@ -13,7 +13,7 @@ void main() {
   testWidgets('production notices use real logout while development stays isolated', (
     tester,
   ) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     var productionLogoutCalls = 0;
     Future<LogoutResult> logout() async {
       productionLogoutCalls++;

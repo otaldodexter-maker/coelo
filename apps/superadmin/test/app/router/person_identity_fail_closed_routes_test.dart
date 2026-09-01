@@ -41,7 +41,7 @@ void main() {
   testWidgets('production receives the injected unavailable repository and dev stays isolated', (
     tester,
   ) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final repository = _TrackingUnavailablePersonIdentityRepository();
     final router = _router(session, repository: repository, allowDevelopmentPreview: true);
     addTearDown(router.dispose);
@@ -69,7 +69,7 @@ void main() {
   });
 
   testWidgets('release guard keeps the development identity lookup unreachable', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final repository = _TrackingUnavailablePersonIdentityRepository();
     final router = _router(session, repository: repository, allowDevelopmentPreview: false);
     addTearDown(router.dispose);

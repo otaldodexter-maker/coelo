@@ -21,6 +21,9 @@ import '../../features/principal_now_publication/domain/now_publication.dart';
 import '../../features/auth/domain/login_request.dart';
 import '../../features/auth/domain/logout_action.dart';
 import '../../features/auth/domain/password_recovery.dart';
+import '../../features/auth/domain/reset_password_action.dart';
+import '../../features/auth/data/supabase_superadmin_auth_context_gateway.dart';
+import '../../features/auth/domain/superadmin_auth_context.dart';
 import '../../features/daily_routine/domain/routine_contract.dart';
 import '../../features/health_care/domain/medication_plan_repository.dart';
 import '../../features/meal_plans/data/supabase_meal_plan_repository.dart';
@@ -55,10 +58,14 @@ typedef SupabaseInitializer =
     });
 
 typedef CoeloAuthGatewayFactory =
-    CoeloAuthGateway Function({
+    CoeloAuthLifecycleGateway Function({
       required SupabaseClient client,
       required CoeloAuthSessionPersistence sessionPersistence,
+      required String? initialRecoveryAccessToken,
     });
+
+typedef SuperadminAuthContextGatewayFactory =
+    SuperadminAuthContextGateway Function(SupabaseClient client);
 
 final class SuperadminAuthScope {
   const SuperadminAuthScope({
@@ -66,6 +73,7 @@ final class SuperadminAuthScope {
     required this.login,
     required this.logout,
     required this.requestPasswordRecovery,
+    required this.resetPassword,
     required this.institutionDirectoryRepository,
     required this.activityDirectoryRepository,
     required this.activityCommandRepository,
@@ -96,6 +104,7 @@ final class SuperadminAuthScope {
   final LoginAction login;
   final LogoutAction logout;
   final PasswordRecoveryAction requestPasswordRecovery;
+  final ResetPasswordAction resetPassword;
   final InstitutionDirectoryRepository institutionDirectoryRepository;
   final ActivityDirectoryRepository activityDirectoryRepository;
   final ActivityCommandRepository activityCommandRepository;
@@ -127,12 +136,15 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
   String supabasePublishableKey = SuperadminAppConfig.supabasePublishableKey,
   SupabaseInitializer initializeSupabase = _initializeSupabase,
   CoeloAuthGatewayFactory createAuthGateway = _createAuthGateway,
+  SuperadminAuthContextGatewayFactory createAuthContextGateway = _createAuthContextGateway,
+  Uri? appUri,
 }) async {
   if (supabaseUrl.isEmpty || supabasePublishableKey.isEmpty) {
     return _createUnavailableScope(const UnavailableCoeloAuthGateway());
   }
 
   try {
+    final initialUri = appUri ?? Uri.base;
     final storage = ConditionalSupabaseLocalStorage(
       delegate: SharedPreferencesLocalStorage(persistSessionKey: 'coelo.superadmin.auth.session'),
     );
@@ -141,17 +153,49 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       publishableKey: supabasePublishableKey,
       localStorage: storage,
     );
-    final auth = createAuthGateway(client: client, sessionPersistence: storage);
-    final session = SuperadminSession(
-      isAuthenticated: auth.isAuthenticated,
-      authStateChanges: auth.authStateChanges,
+    final auth = createAuthGateway(
+      client: client,
+      sessionPersistence: storage,
+      initialRecoveryAccessToken: superadminPasswordRecoveryAccessToken(initialUri),
     );
+    final authContext = createAuthContextGateway(client);
+    final initialState = auth.currentSessionState;
+    final session = SuperadminSession(
+      isPasswordRecovery: initialState.isPasswordRecovery,
+      authSessionStateChanges: auth.authSessionStateChanges,
+    );
+    if (initialState.kind == CoeloAuthSessionKind.authenticated) {
+      final expectedRevision = session.authorizationInvalidationRevision;
+      final initialContext = await authContext.bootstrap();
+      final latestState = auth.currentSessionState;
+      final authorized =
+          initialContext != null &&
+          initialState.sessionId != null &&
+          latestState.sessionId == initialState.sessionId &&
+          latestState.kind == CoeloAuthSessionKind.authenticated &&
+          session.authorizeIfCurrent(
+            initialContext,
+            sessionId: initialState.sessionId!,
+            expectedInvalidationRevision: expectedRevision,
+          );
+      if (!authorized) {
+        try {
+          await auth.signOut();
+        } on Exception {
+          // The local Supabase session is cleared before remote revocation.
+        }
+      }
+    }
     final formsBackend = SupabaseFormsBackendGateway(client);
     return SuperadminAuthScope(
       session: session,
-      login: createCoeloAuthLoginAction(auth: auth, session: session),
+      login: createCoeloAuthLoginAction(auth: auth, authContext: authContext, session: session),
       logout: createCoeloAuthLogoutAction(auth: auth, session: session),
-      requestPasswordRecovery: createCoeloAuthPasswordRecoveryAction(auth: auth),
+      requestPasswordRecovery: createCoeloAuthPasswordRecoveryAction(
+        auth: auth,
+        redirectTo: buildSuperadminPasswordRecoveryRedirect(initialUri),
+      ),
+      resetPassword: createCoeloAuthResetPasswordAction(auth: auth),
       institutionDirectoryRepository: SupabaseInstitutionDirectoryRepository(client),
       activityDirectoryRepository: const UnavailableActivityDirectoryRepository(),
       activityCommandRepository: const UnavailableActivityCommandRepository(),
@@ -194,13 +238,18 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
   }
 }
 
-SuperadminAuthScope _createUnavailableScope(CoeloAuthGateway auth) {
+SuperadminAuthScope _createUnavailableScope(CoeloAuthLifecycleGateway auth) {
   final session = SuperadminSession();
+  const authContext = UnavailableSuperadminAuthContextGateway();
   return SuperadminAuthScope(
     session: session,
-    login: createCoeloAuthLoginAction(auth: auth, session: session),
+    login: createCoeloAuthLoginAction(auth: auth, authContext: authContext, session: session),
     logout: createCoeloAuthLogoutAction(auth: auth, session: session),
-    requestPasswordRecovery: createCoeloAuthPasswordRecoveryAction(auth: auth),
+    requestPasswordRecovery: createCoeloAuthPasswordRecoveryAction(
+      auth: auth,
+      redirectTo: buildSuperadminPasswordRecoveryRedirect(Uri.base),
+    ),
+    resetPassword: createCoeloAuthResetPasswordAction(auth: auth),
     institutionDirectoryRepository: const UnavailableInstitutionDirectoryRepository(),
     activityDirectoryRepository: const UnavailableActivityDirectoryRepository(),
     activityCommandRepository: const UnavailableActivityCommandRepository(),
@@ -228,11 +277,53 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthGateway auth) {
   );
 }
 
-CoeloAuthGateway _createAuthGateway({
+CoeloAuthLifecycleGateway _createAuthGateway({
   required SupabaseClient client,
   required CoeloAuthSessionPersistence sessionPersistence,
+  required String? initialRecoveryAccessToken,
 }) {
-  return SupabaseCoeloAuthGateway(client, sessionPersistence: sessionPersistence);
+  return SupabaseCoeloAuthGateway(
+    client,
+    sessionPersistence: sessionPersistence,
+    initialRecoveryAccessToken: initialRecoveryAccessToken,
+  );
+}
+
+SuperadminAuthContextGateway _createAuthContextGateway(SupabaseClient client) =>
+    SupabaseSuperadminAuthContextGateway(client);
+
+Uri buildSuperadminPasswordRecoveryRedirect(Uri appUri) => Uri(
+  scheme: appUri.scheme,
+  host: appUri.host,
+  port: appUri.hasPort ? appUri.port : null,
+  path: '/reset-password',
+);
+
+bool isSuperadminPasswordRecoveryRedirect(Uri uri) {
+  return superadminPasswordRecoveryAccessToken(uri) != null;
+}
+
+String? superadminPasswordRecoveryAccessToken(Uri uri) {
+  if (uri.path != '/reset-password') {
+    return null;
+  }
+  try {
+    final fragment = uri.fragment.isEmpty
+        ? const <String, String>{}
+        : Uri.splitQueryString(uri.fragment);
+    final accessToken = fragment['access_token'];
+    final refreshToken = fragment['refresh_token'];
+    if (fragment['type'] != 'recovery' ||
+        accessToken == null ||
+        accessToken.isEmpty ||
+        refreshToken == null ||
+        refreshToken.isEmpty) {
+      return null;
+    }
+    return accessToken;
+  } on FormatException {
+    return null;
+  }
 }
 
 Future<SupabaseClient> _initializeSupabase({

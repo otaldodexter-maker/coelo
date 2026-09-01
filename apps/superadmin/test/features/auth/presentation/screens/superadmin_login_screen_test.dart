@@ -328,7 +328,9 @@ void main() {
     expect(session.isAuthenticated, isFalse);
   });
 
-  testWidgets('forwards form values and signs in after success', (tester) async {
+  testWidgets('forwards form values and leaves session transition to the login action', (
+    tester,
+  ) async {
     final session = SuperadminSession();
     LoginRequest? receivedRequest;
     addTearDown(session.dispose);
@@ -338,6 +340,7 @@ void main() {
       session: session,
       login: (request) async {
         receivedRequest = request;
+        session.signInForTesting();
         return const LoginResult.success();
       },
     );

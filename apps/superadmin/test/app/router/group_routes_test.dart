@@ -54,7 +54,7 @@ void main() {
   });
 
   testWidgets('development routes share one local fake and never call production', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final production = _TrackingGroupDirectoryRepository();
     final router = createSuperadminRouter(
       session: session,
@@ -93,7 +93,7 @@ void main() {
   });
 
   testWidgets('production list uses its repository while mutations fail closed', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final repository = _TrackingGroupDirectoryRepository();
     final router = createSuperadminRouter(
       session: session,

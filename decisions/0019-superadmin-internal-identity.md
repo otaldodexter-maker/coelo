@@ -54,3 +54,17 @@ ativa tiver `platform_permissions.requires_mfa = true`.
 
 Os detalhes contratuais de `auth_link` privado, revalidação de sessão e contexto
 estão em `specs/039-superadmin-internal-auth-session-context.md`.
+
+## Aditivo 2026-09-01 — supersessão temporária da exigência AAL2
+
+**Decisão explícita do Owner Coelo em 2026-09-01.** Durante a validação do MVP,
+o realm interno do Superadmin aceita AAL1 e AAL2 sem usar MFA como gate de
+login, bootstrap, contexto ou comando, inclusive para Owner e para capacidades
+marcadas `requires_mfa`. Este aditivo supersede temporariamente os dois
+parágrafos de MFA do aditivo de 2026-08-27; a separação de identidade e todos os
+demais controles dessa ADR permanecem vigentes.
+
+O adiamento termina no gate formal de entrega do MVP. A reativação de MFA exige
+decisão nominal, mudança forward-only, regressão e prova ponta a ponta próprias.
+Até esse gate, `requires_mfa` é metadado observacional preservado para
+compatibilidade, nunca fonte de autorização no cliente.

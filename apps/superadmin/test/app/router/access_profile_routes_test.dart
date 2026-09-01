@@ -52,7 +52,7 @@ void main() {
     ) async {
       await tester.binding.setSurfaceSize(viewport.size);
       addTearDown(() => tester.binding.setSurfaceSize(null));
-      final session = SuperadminSession()..signIn();
+      final session = SuperadminSession()..signInForTesting();
       final repository = _TrackingAccessProfileRepository();
       final router = createSuperadminRouter(
         session: session,

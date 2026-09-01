@@ -14,7 +14,7 @@ void main() {
   testWidgets('create route requires identity lookup before exposing editable identity', (
     tester,
   ) async {
-    final session = SuperadminSession(isAuthenticated: true);
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,

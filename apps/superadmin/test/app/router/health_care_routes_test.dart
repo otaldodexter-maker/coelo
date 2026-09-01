@@ -66,7 +66,7 @@ void main() {
   testWidgets('legacy production care profile detail fails closed before rendering a form', (
     tester,
   ) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
@@ -91,7 +91,7 @@ void main() {
   testWidgets('medication plan production routes stay unavailable without repository calls', (
     tester,
   ) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final repository = _TrackingMedicationPlanRepository();
     final router = createSuperadminRouter(
       session: session,
@@ -139,7 +139,7 @@ void main() {
   });
 
   testWidgets('medication plan development routes remain demonstrative', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final repository = _TrackingMedicationPlanRepository();
     final router = createSuperadminRouter(
       session: session,
@@ -185,7 +185,7 @@ void main() {
   ) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final productionTripwire = _TrackingMedicationPlanRepository();
     final developmentRepository = DevMedicationPlanRepository();
     final router = createSuperadminRouter(
@@ -283,7 +283,7 @@ void main() {
   });
 
   testWidgets('care profile fixtures are injected only by development routes', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
@@ -314,7 +314,7 @@ void main() {
   testWidgets('development create routes keep canonical wizards inside one responsive shell', (
     tester,
   ) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final repository = _TrackingMedicationPlanRepository();
     final router = createSuperadminRouter(
       session: session,

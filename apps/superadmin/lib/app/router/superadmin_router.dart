@@ -550,6 +550,10 @@ GoRouter createSuperadminRouter({
     ),
     redirect: (context, state) {
       final location = state.matchedLocation;
+      final isOnResetPassword = location == SuperadminRoutes.resetPassword;
+      if (session.isPasswordRecovery) {
+        return isOnResetPassword ? null : SuperadminRoutes.resetPassword;
+      }
       if (!allowDevelopmentPreview && location.startsWith('/dev/')) {
         return session.isAuthenticated ? SuperadminRoutes.home : SuperadminRoutes.login;
       }
@@ -558,7 +562,6 @@ GoRouter createSuperadminRouter({
       }
       final isOnLogin = location == SuperadminRoutes.login;
       final isOnForgotPassword = location == SuperadminRoutes.forgotPassword;
-      final isOnResetPassword = location == SuperadminRoutes.resetPassword;
       final isOnPublicAuthRoute = isOnLogin || isOnForgotPassword || isOnResetPassword;
       if (!session.isAuthenticated) {
         return isOnPublicAuthRoute ? null : SuperadminRoutes.login;
@@ -664,7 +667,18 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.resetPasswordName,
             builder: (context, state) => SuperadminResetPasswordScreen(
               resetPassword: resetPassword,
-              onBackToLogin: () => context.goNamed(SuperadminRoutes.loginName),
+              initialLinkState: session.isPasswordRecovery
+                  ? RecoveryLinkState.valid
+                  : RecoveryLinkState.invalid,
+              onBackToLogin: () async {
+                if (session.isPasswordRecovery) {
+                  final result = await logout();
+                  if (!result.isSuccess) return;
+                }
+                if (context.mounted) {
+                  context.goNamed(SuperadminRoutes.loginName);
+                }
+              },
               onThemeModeChanged: onThemeModeChanged,
             ),
           ),

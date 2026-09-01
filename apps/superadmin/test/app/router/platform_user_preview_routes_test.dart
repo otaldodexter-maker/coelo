@@ -53,7 +53,7 @@ void main() {
   testWidgets('does not expose a production internal-users route or fake repository', (
     tester,
   ) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,

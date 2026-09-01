@@ -30,7 +30,7 @@ void main() {
   });
 
   testWidgets('unknown authenticated URL renders 404 and preserves the URL', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,

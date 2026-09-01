@@ -487,3 +487,19 @@ Até existir integração aprovada, a UI produtiva permanece fail-closed.
 - OWASP — MASVS: https://mas.owasp.org/MASVS/
 
 Acesso às fontes externas: 21/06/2026. As referências jurídicas não substituem revisão por profissional habilitado.
+
+## Aditivo 2026-09-01 — adiamento operacional de MFA no MVP interno
+
+Por decisão explícita do Owner Coelo em 2026-09-01, o realm interno do
+Superadmin não bloqueia login, bootstrap, resolução de contexto ou comandos por
+ausência de MFA/AAL2 durante a validação do MVP. A decisão supersede
+temporariamente, somente nesse realm, as cláusulas anteriores que exigiam MFA
+do Owner ou por capacidade.
+
+O adiamento termina no gate formal de entrega do MVP, quando a política deverá
+ser reavaliada e reativada por pacote próprio antes do go-live. Até lá,
+`requires_mfa` permanece como metadado de catálogo, sem efeito de autorização.
+Sessão viva e não revogada, `session_id`, conta confirmada, realm, vínculo,
+membership, papel, capability, escopo, tenant e auditoria continuam obrigatórios
+e fail-closed. A decisão não altera os realms Admin/Principal nem autoriza usar
+`user_metadata`, pessoa sintética ou autorização apenas no cliente.

@@ -20,7 +20,7 @@ void main() {
   });
 
   testWidgets('development routes use one local fixture and never call production', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final repository = _TrackingRoutineRepository();
     final router = createSuperadminRouter(
       session: session,
@@ -63,7 +63,7 @@ void main() {
   testWidgets('development model actions open seeded duplicate and application editors', (
     tester,
   ) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
@@ -101,7 +101,7 @@ void main() {
   });
 
   testWidgets('production routes preserve the injected repository', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final repository = _TrackingRoutineRepository();
     final router = createSuperadminRouter(
       session: session,

@@ -114,7 +114,7 @@ void main() {
   });
 
   testWidgets('production hides create actions when commands are unavailable', (tester) async {
-    final session = SuperadminSession(isAuthenticated: true);
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
@@ -137,7 +137,7 @@ void main() {
   testWidgets('production mutation deep links render fullscreen 503 without repository access', (
     tester,
   ) async {
-    final session = SuperadminSession(isAuthenticated: true);
+    final session = SuperadminSession()..signInForTesting();
     final directory = _TrackingActivityDirectoryRepository();
     final commands = _TripwireActivityCommandRepository();
     final router = createSuperadminRouter(
@@ -168,7 +168,7 @@ void main() {
   });
 
   testWidgets('production routes use only the injected directory repository', (tester) async {
-    final session = SuperadminSession(isAuthenticated: true);
+    final session = SuperadminSession()..signInForTesting();
     final directory = _TrackingActivityDirectoryRepository();
     final commands = _TripwireActivityCommandRepository();
     final router = createSuperadminRouter(

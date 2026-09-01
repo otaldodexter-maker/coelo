@@ -183,7 +183,7 @@ void main() {
 
     for (final authenticated in <bool>[false, true]) {
       final session = SuperadminSession();
-      if (authenticated) session.signIn();
+      if (authenticated) session.signInForTesting();
       final router = createSuperadminRouter(
         session: session,
         login: (_) async => const LoginResult.success(),
@@ -211,7 +211,7 @@ void main() {
   });
 
   testWidgets('opens protected conversations for an authenticated session', (tester) async {
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
       login: (_) async => const LoginResult.success(),
