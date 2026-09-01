@@ -24,6 +24,12 @@ somente depois de duas auditorias confirmarem zero itens, inclusive ocultos.
 Os 15 bundles passaram em `git bundle verify`. A movimentação ocorreu no mesmo
 volume e as contagens e somas de bytes antes/depois foram idênticas.
 
+Quatro arquivos não rastreados de `form-export-download`, encontrados na
+worktree Comunicação mas pertencentes semanticamente à pendência de Formulários,
+foram movidos sem alteração de hash para
+`.recovery-archives/etapa-2-handoffs/communication-untracked-form-export-download`.
+Eles não foram promovidos nem integrados como funcionalidade concluída.
+
 ## Por que os arquivos não foram apagados
 
 A auditoria encontrou material ainda não alcançável pelo `dev`: 33 versões SQL,
@@ -41,4 +47,3 @@ As seis worktrees reais ficam em `Coelo\.worktrees`, usam o mesmo common-dir
 3. testes e regressão;
 4. atualização dos três rastreadores oficiais;
 5. prova de que cada HEAD está alcançável pelo consolidado.
-
