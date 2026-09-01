@@ -4,6 +4,7 @@ Plan: docs/superpowers/plans/2026-09-01-principal-ui-ux-closure.md
 Base before implementation: 0fee7a467a6e8724059490d6d22927116b4d8b98
 
 Task 1: complete in `a6c48751` + `714d9b86`; independent re-review approved; 23/23 focused tests and focused analysis green.
+Task 2: complete in `e1cf1be3` + `008c14c2`; independent re-review approved; 38/38 focused tests and focused analysis green.
 Evidence gate: 12/12 user references preserved in `8f89d6d6` and inventoried in `cb6fa272`.
 
 # Historical progress preserved from the shared ledger
