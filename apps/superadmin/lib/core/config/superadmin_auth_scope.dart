@@ -14,7 +14,6 @@ import '../../features/assessments/data/supabase_assessment_repository.dart';
 import '../../features/imports/data/supabase_import_repository.dart';
 import '../../features/imports/domain/import_repository.dart';
 import '../../features/invites/domain/platform_invite.dart';
-import '../../features/notices/data/supabase_notice_repository.dart';
 import '../../features/notices/domain/notice_repository.dart';
 import '../../features/principal_now_publication/data/supabase_now_publication_repository.dart';
 import '../../features/principal_now_publication/domain/now_publication.dart';
@@ -164,7 +163,10 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),
       importRepository: SupabaseImportRepository(client),
       inviteRepository: const UnavailableInviteRepository(),
-      noticeRepository: SupabaseNoticeRepository(client),
+      // The recovered Notices RPCs still authorize through the people realm,
+      // while Superadmin sessions use the isolated internal-identity realm.
+      // Keep production fail-closed until the internal gateway is approved.
+      noticeRepository: const UnavailableNoticeRepository(),
       attendanceRepository: SupabaseAttendanceRepository(client),
       studentTrackingRepository: const UnavailableStudentTrackingRepository(),
       attendancePermissions: const AttendancePermissions.backend(),
