@@ -28,6 +28,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
       onThemeModeChanged: (_) {},
     );
@@ -43,15 +44,11 @@ void main() {
     expect(find.byType(PrincipalForYouPreviewPage), findsOneWidget);
     expect(
       tester.widget<PrincipalForYouPreviewPage>(find.byType(PrincipalForYouPreviewPage)).embedded,
-      isTrue,
+      isFalse,
     );
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalForYou);
 
-    await tester.tap(find.byKey(const Key('superadmin-mobile-menu')));
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byKey(const Key('superadmin-navigation-search')), 'Acontece');
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('superadmin-navigation-principal-happens')));
+    await tester.tap(find.byTooltip('Home'));
     await tester.pumpAndSettle();
     expect(find.byType(PrincipalHappensPreviewPage), findsOneWidget);
   });
@@ -65,6 +62,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
       onThemeModeChanged: (_) {},
     );
@@ -81,7 +79,6 @@ void main() {
     tester.widget<PrincipalForYouPreviewPage>(originPage).onOpenMoments!.call();
     await tester.pumpAndSettle();
     expect(find.byType(PrincipalMomentsPreviewPage), findsOneWidget);
-    expect(Navigator.of(tester.element(find.byType(PrincipalMomentsPreviewPage))).canPop(), isTrue);
 
     await tester.tap(find.byKey(const Key('principal-moments-back')));
     await tester.pumpAndSettle();
@@ -90,15 +87,14 @@ void main() {
     expect(focus.hasFocus, isTrue);
   });
 
-  testWidgets('keeps Para você embedded in one responsive shell at 200 percent text', (
-    tester,
-  ) async {
+  testWidgets('keeps Para você in its Principal surface at 200 percent text', (tester) async {
     final session = SuperadminSession();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
       onThemeModeChanged: (_) {},
     );
@@ -125,16 +121,10 @@ void main() {
       final page = tester.widget<PrincipalForYouPreviewPage>(
         find.byType(PrincipalForYouPreviewPage),
       );
-      expect(page.embedded, isTrue, reason: '$width');
-      expect(find.byKey(const Key('superadmin-persistent-shell')), findsOneWidget);
-      final content = find.byKey(const Key('superadmin-content-transition'));
-      expect(content, findsOneWidget);
-      expect(
-        find.descendant(of: content, matching: find.byType(PrincipalForYouPreviewPage)),
-        findsOneWidget,
-      );
-      expect(find.byKey(const Key('principal-for-you-desktop-rail')), findsNothing);
-      expect(find.byKey(const Key('principal-for-you-mobile-nav')), findsNothing);
+      expect(page.embedded, isFalse, reason: '$width');
+      expect(find.byKey(const Key('superadmin-persistent-shell')), findsNothing);
+      expect(find.byKey(const Key('principal-global-dock')), findsOneWidget);
+      expect(find.byKey(const Key('principal-for-you-logo')), findsOneWidget);
       final hero = tester.getRect(find.byKey(const Key('principal-for-you-hero')));
       final heroTitle = tester.getRect(find.text('Feira Cultural hoje!'));
       final heroBody = tester.getRect(
@@ -148,13 +138,6 @@ void main() {
         expect(child.bottom, lessThanOrEqualTo(hero.bottom), reason: '$width');
       }
       expect(tester.takeException(), isNull, reason: '$width');
-
-      if (width == 1440) {
-        final sidebar = find.byKey(const Key('superadmin-sidebar'));
-        expect(sidebar, findsOneWidget);
-        expect(find.byKey(const Key('superadmin-floating-content')), findsOneWidget);
-        expect(tester.getTopLeft(content).dx, greaterThan(tester.getTopRight(sidebar).dx));
-      }
     }
   });
 }

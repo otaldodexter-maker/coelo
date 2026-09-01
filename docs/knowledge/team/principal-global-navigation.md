@@ -1,9 +1,10 @@
 ---
 title: "Navegação global responsiva do Principal"
 knowledge_id: "principal-global-navigation"
-source: "docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md"
+source: "specs/050-principal-ui-ux-closure.md"
 status: "validated"
 generated_at: "2026-08-31"
+updated_at: "2026-09-01"
 audience: "team"
 surfaces: [principal, navigation, mobile, tablet, web]
 visibility: "internal"
@@ -31,6 +32,14 @@ nunca fica colado à viewport. Mobile e tablet respeitam safe areas e largura
 
 Viewers imersivos suspendem temporariamente cabeçalho e dock. Agora e Momentos
 usam retorno contextual visível e devolvem foco e posição ao ponto de origem.
+
+Cada rota exibe uma única composição do Principal. O menu administrativo é o
+ponto de descoberta, mas as rotas Coelo (Principal) renderizam sua superfície
+própria sem cabeçalho ou launcher de mensagens do Superadmin concorrentes.
+Nesta etapa, essas superfícies pertencem a `apps/superadmin`; isso não autoriza
+alterar ou materializar `apps/principal`. As features Principal não importam
+`SuperadminShell`, não copiam seu cabeçalho e nunca exibem dois launchers de
+mensagens concorrentes.
 
 A implementação Flutter visual local e seus goldens responsivos estão
 registrados no rastreador. Em texto a 200%, os rótulos refluem sem clamp e sem

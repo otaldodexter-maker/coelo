@@ -5,6 +5,9 @@ import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
+import 'package:coelo_superadmin/features/principal_for_you/presentation/principal_for_you_preview_page.dart';
+import 'package:coelo_superadmin/features/principal_happens/presentation/principal_happens_preview_page.dart';
+import 'package:coelo_superadmin/features/principal_moments/presentation/principal_moments_preview_page.dart';
 import 'package:coelo_superadmin/features/principal_profile/presentation/principal_profile_preview_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +29,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
       onThemeModeChanged: (_) {},
     );
@@ -39,7 +43,7 @@ void main() {
     expect(find.byType(PrincipalProfilePreviewPage), findsOneWidget);
     expect(
       tester.widget<PrincipalProfilePreviewPage>(find.byType(PrincipalProfilePreviewPage)).embedded,
-      isTrue,
+      isFalse,
     );
     await tester.ensureVisible(find.byKey(const Key('principal-profile-open-agenda')));
     await tester.tap(find.byKey(const Key('principal-profile-open-agenda')));
@@ -48,13 +52,74 @@ void main() {
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devAgenda);
   });
 
-  testWidgets('keeps Perfil embedded in one responsive shell at 200 percent text', (tester) async {
+  testWidgets('connects every visible Principal profile dock action to its route', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(768, 1024));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     final session = SuperadminSession();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
+      mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    Future<void> openProfile() async {
+      router.go(SuperadminRoutes.devPrincipalProfile);
+      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+      await tester.pumpAndSettle();
+      expect(find.byType(SnackBar), findsNothing);
+    }
+
+    await openProfile();
+    await tester.tap(find.byTooltip('Home'));
+    await tester.pumpAndSettle();
+    expect(find.byType(PrincipalHappensPreviewPage), findsOneWidget);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalHappens);
+    expect(find.byType(SnackBar), findsNothing);
+
+    await openProfile();
+    await tester.tap(find.byTooltip('Para você'));
+    await tester.pumpAndSettle();
+    expect(find.byType(PrincipalForYouPreviewPage), findsOneWidget);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalForYou);
+    expect(find.byType(SnackBar), findsNothing);
+
+    await openProfile();
+    await tester.tap(find.byKey(const Key('principal-global-publish-now')));
+    await tester.pumpAndSettle();
+    expect(
+      router.routeInformationProvider.value.uri.path,
+      SuperadminRoutes.devPrincipalNowPublication,
+    );
+    expect(find.byType(SnackBar), findsNothing);
+
+    await openProfile();
+    await tester.tap(find.byTooltip('Momentos'));
+    await tester.pumpAndSettle();
+    expect(find.byType(PrincipalMomentsPreviewPage), findsOneWidget);
+    expect(find.byType(SnackBar), findsNothing);
+
+    await openProfile();
+    await tester.ensureVisible(find.byKey(const Key('principal-profile-open-agenda')));
+    await tester.tap(find.byKey(const Key('principal-profile-open-agenda')));
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devAgenda);
+    expect(find.byType(SnackBar), findsNothing);
+  });
+
+  testWidgets('keeps Perfil in its Principal surface at 200 percent text', (tester) async {
+    final session = SuperadminSession();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
       onThemeModeChanged: (_) {},
     );
@@ -81,30 +146,18 @@ void main() {
       final page = tester.widget<PrincipalProfilePreviewPage>(
         find.byType(PrincipalProfilePreviewPage),
       );
-      expect(page.embedded, isTrue, reason: '$width');
-      expect(find.byKey(const Key('superadmin-persistent-shell')), findsOneWidget);
-      final content = find.byKey(const Key('superadmin-content-transition'));
-      expect(content, findsOneWidget);
-      expect(
-        find.descendant(of: content, matching: find.byType(PrincipalProfilePreviewPage)),
-        findsOneWidget,
-      );
+      expect(page.embedded, isFalse, reason: '$width');
+      expect(find.byKey(const Key('superadmin-persistent-shell')), findsNothing);
+      expect(find.byKey(const Key('principal-global-dock')), findsOneWidget);
       for (final key in [
         'principal-profile-logo',
-        'principal-profile-bug',
+        'principal-profile-report-problem',
         'principal-profile-notifications',
         'principal-profile-context-avatar',
       ]) {
-        expect(find.byKey(ValueKey(key)), findsNothing, reason: '$width');
+        expect(find.byKey(ValueKey(key)), findsOneWidget, reason: '$width');
       }
       expect(tester.takeException(), isNull, reason: '$width');
-
-      if (width == 1440) {
-        final sidebar = find.byKey(const Key('superadmin-sidebar'));
-        expect(sidebar, findsOneWidget);
-        expect(find.byKey(const Key('superadmin-floating-content')), findsOneWidget);
-        expect(tester.getTopLeft(content).dx, greaterThan(tester.getTopRight(sidebar).dx));
-      }
     }
   });
 }

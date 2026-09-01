@@ -1,4 +1,18 @@
-# Superadmin Support Prototype
+# Principal UI/UX closure progress
+
+Plan: docs/superpowers/plans/2026-09-01-principal-ui-ux-closure.md
+Base before implementation: 0fee7a467a6e8724059490d6d22927116b4d8b98
+
+Task 1: complete in `a6c48751` + `714d9b86`; independent re-review approved; 23/23 focused tests and focused analysis green.
+Task 2: complete in `e1cf1be3` + `008c14c2`; independent re-review approved; 38/38 focused tests and focused analysis green.
+Task 3: complete in `ebc0ac29` + `cb6763ed` + `52735a18`; independent review approved; 21/21 focused tests and focused analysis green; WIP `393fc7ff` excluded.
+Task 4: Flutter local `/dev` complete in `b9c75c7e` + `3fd605b8`; 132/132 focused tests, analyzer and visual validator green. Backend/real routes/E2E explicitly open.
+Task 5: in progress; real Acontece/Agora routes and Supabase dependency composition exist locally, authenticated runtime-context RPC/migration and negative pgTAP were added. Dart gates green; SQL replay, remote deploy and E2E remain open.
+Evidence gate: 12/12 user references preserved in `8f89d6d6` and inventoried in `cb6fa272`.
+
+# Historical progress preserved from the shared ledger
+
+## Superadmin Support Prototype
 
 Baseline: branch `codex/superadmin-support-prototype`; focused reused-component and shell/router tests passing.
 
@@ -10,7 +24,7 @@ Task 3: complete in working tree (responsive Kanban/table/detail, approved popup
 
 Final verification: focused analysis clean; 61 relevant tests passed; UI index, package-boundary, and catalog-sync validators passed; localhost 8769 visually inspected.
 
-# Coelo UI Surface Interaction Contracts
+## Coelo UI Surface Interaction Contracts
 
 Task 1: complete (commits 84929e2..84169be, review clean).
 Task 2: complete (commits 84169be..f7cba44, review clean).
@@ -18,7 +32,7 @@ Task 3: complete in working tree (isolated snapshot review clean; index overlap 
 Task 6: complete (commit f7cba44..a53acc3; table RED/GREEN and documentary contract test passing).
 Task 5: complete (commit 1a646cf..5d1aa4f, review clean; external Task 4 analyzer warning recorded separately).
 
-# Support Operations Redesign
+## Support Operations Redesign
 
 Plan: `docs/superpowers/plans/2026-07-27-support-operations-redesign.md`
 Execution: subagent-driven in the current checkout, explicitly approved by the user.
@@ -28,12 +42,12 @@ Task 3: complete (commits 3288a4a and cc0022c, review clean; 6 focused and 33 pa
 Task 4: complete (creation partly captured by concurrent checkpoint aaabbcf, final commit ceb345e; review approved with Minor coverage note for SupportAssigneeView; golden interaction deferred explicitly to Task 7; 4 focused tests and focused analysis passed).
 Task 5: complete (commits 9538281, 817dcb6 and ecef8b6; review clean; 37 controller/page tests and focused analysis passed; goldens deferred to Task 7).
 
-# Shared Admin Operational Foundation
+## Shared Admin Operational Foundation
 
 Decision: implement code and visual preview first; update catalog, design system, specs and coelo-ui skill only after user visual approval.
 Consumers: Admin and Superadmin.
 
-# Superadmin Screen Corrections
+## Superadmin Screen Corrections
 
 Task 1 Home: complete (commits d42e89b..0abc0f4, review clean; 11 focused tests and focused analysis passed before an unrelated concurrent Activity Center compile break; golden baselines intentionally pending visual approval).
 Task 2 Institutions listing: complete (commits 0abc0f4..001bbbb, review clean; 62 shared-package tests and 27 independent institution tests passed; integrated page test pending resolution of unrelated concurrent shell compile work).
@@ -43,7 +57,7 @@ Task 3C Institution Supabase schema: complete (migrations 20260728172333 and 202
 Task 4 Support corrections: complete (equivalent multi-assignees, in-progress guard, create actions in Kanban/table, neutral shared Kanban, explicit full-screen detail, enriched local history, sortable pagination 9/20/50/100, and page clamping after filtered mutations; focused tests and analysis passed).
 Task 5 Persistent menu and motion: complete (one protected shell host, short content fade, reduced-motion bypass, stable geometry, distinct parent/child hierarchy, Units active, Activities future destination, distinct communication icons, centralized Support/Catalog routing, and protected `/dev/support`; focused tests and analysis passed).
 
-# Superadmin Profile and Settings Refinement
+## Superadmin Profile and Settings Refinement
 
 Plan: `docs/superpowers/plans/2026-07-28-superadmin-profile-settings-refinement.md`
 Task 1: complete (commits bfeeeee..814fec3, review clean; 14 domain/controller tests plus failure-retry coverage and focused analysis passed).
@@ -53,7 +67,7 @@ Task 4: complete (commits 51921fb..099c1fa, review clean; canonical password clo
 Task 5: complete (commit c6623f7, review approved; 34 account tests, 8 golden cases, full analysis and knowledge validators passed; unrelated pre-existing Institutions test failure at institution_form_page_test.dart:812 remains documented).
 Final review fixes: complete (commits f2ef952, fb7cccb and a9e1ad4, re-review approved; recoverable save errors, accessible SV/hue controls with visible focus, keyboard and semantics, and delayed profile hydration without draft loss; 88 relevant tests and full analysis passed).
 
-# People Visual Parity with Institutions
+## People Visual Parity with Institutions
 
 Plan: `docs/superpowers/plans/2026-07-29-superadmin-people-visual-files-institution-parity.md`
 Execution: subagent-driven in the current checkout, explicitly approved by the user; visual-only, no Supabase/MFA changes.

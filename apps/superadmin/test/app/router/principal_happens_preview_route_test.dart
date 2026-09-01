@@ -29,6 +29,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
       onThemeModeChanged: (_) {},
     );
@@ -42,8 +43,12 @@ void main() {
     expect(find.byType(PrincipalHappensPreviewPage), findsOneWidget);
     expect(
       tester.widget<PrincipalHappensPreviewPage>(find.byType(PrincipalHappensPreviewPage)).embedded,
-      isTrue,
+      isFalse,
     );
+    expect(find.byKey(const Key('superadmin-persistent-shell')), findsNothing);
+    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
+    expect(find.byKey(const Key('superadmin-mobile-menu')), findsNothing);
+    expect(find.byKey(const Key('principal-global-messages')), findsOneWidget);
     expect(find.byKey(const Key('principal-happens-local-title')), findsOneWidget);
     await tester.tap(find.byKey(const Key('principal-happens-context-avatar')));
     await tester.pumpAndSettle();
@@ -51,15 +56,14 @@ void main() {
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalProfile);
   });
 
-  testWidgets('keeps Acontece embedded in one responsive shell at 200 percent text', (
-    tester,
-  ) async {
+  testWidgets('keeps Acontece in its Principal surface at 200 percent text', (tester) async {
     final session = SuperadminSession();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
       onThemeModeChanged: (_) {},
     );
@@ -86,23 +90,14 @@ void main() {
       final page = tester.widget<PrincipalHappensPreviewPage>(
         find.byType(PrincipalHappensPreviewPage),
       );
-      expect(page.embedded, isTrue, reason: '$width');
-      expect(find.byKey(const Key('superadmin-persistent-shell')), findsOneWidget);
-      final content = find.byKey(const Key('superadmin-content-transition'));
-      expect(content, findsOneWidget);
-      expect(
-        find.descendant(of: content, matching: find.byType(PrincipalHappensPreviewPage)),
-        findsOneWidget,
-      );
+      expect(page.embedded, isFalse, reason: '$width');
+      expect(find.byKey(const Key('superadmin-persistent-shell')), findsNothing);
+      expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
+      expect(find.byKey(const Key('superadmin-mobile-menu')), findsNothing);
+      expect(find.byKey(const Key('principal-global-messages')), findsOneWidget);
       expect(find.byKey(const Key('principal-happens-local-title')), findsOneWidget);
+      expect(find.byKey(const Key('principal-global-dock')), findsOneWidget, reason: '$width');
       expect(tester.takeException(), isNull, reason: '$width');
-
-      if (width == 1440) {
-        final sidebar = find.byKey(const Key('superadmin-sidebar'));
-        expect(sidebar, findsOneWidget);
-        expect(find.byKey(const Key('superadmin-floating-content')), findsOneWidget);
-        expect(tester.getTopLeft(content).dx, greaterThan(tester.getTopRight(sidebar).dx));
-      }
     }
   });
 
@@ -113,6 +108,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
       onThemeModeChanged: (_) {},
     );
@@ -131,15 +127,14 @@ void main() {
     );
   });
 
-  testWidgets('composes the Acontece publisher inside the persistent shell container', (
-    tester,
-  ) async {
+  testWidgets('composes the Acontece publisher in the Principal surface', (tester) async {
     final session = SuperadminSession();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
       onThemeModeChanged: (_) {},
     );
@@ -153,6 +148,7 @@ void main() {
     final page = tester.widget<PrincipalHappensPublicationPage>(
       find.byType(PrincipalHappensPublicationPage),
     );
-    expect(page.embedded, isTrue);
+    expect(page.embedded, isFalse);
+    expect(find.byKey(const Key('superadmin-persistent-shell')), findsNothing);
   });
 }

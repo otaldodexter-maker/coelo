@@ -1,10 +1,10 @@
 ---
 title: "Estrutura do Acontece no Principal"
 knowledge_id: principal-happens-feed
-source: docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md
+source: "specs/050-principal-ui-ux-closure.md"
 status: validated
 generated_at: 2026-08-31
-updated_at: 2026-08-31
+updated_at: 2026-09-01
 audience: team
 surfaces: [principal, acontece, agora, navigation]
 visibility: internal
@@ -16,6 +16,11 @@ review_owner: Coelo Product
 O Acontece abre pelo carrossel horizontal Agora, sem `Ver tudo`. O primeiro
 card retangular publica no Agora. Depois do carrossel, o título discreto
 `Acontece` introduz o feed unificado de publicações Acontece e Circulares.
+
+O card `Publicar agora` usa contorno tracejado arredondado, ação circular
+central, ícone vetorial e rótulo curto. No estado normal, a superfície é neutra
+e o ícone é laranja; hover, foco e pressionado reforçam borda e ação em laranja
+sem depender somente de cor.
 
 A publicação preserva a ordem autor, mídia dominante, ações, prova social e
 legenda. Não existe texto editorial antes da mídia nem navegação interna

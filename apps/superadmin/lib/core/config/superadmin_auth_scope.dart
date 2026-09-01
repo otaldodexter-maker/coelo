@@ -27,8 +27,20 @@ import '../../features/invites/data/supabase_invite_repository.dart';
 import '../../features/invites/domain/platform_invite.dart';
 import '../../features/notices/data/supabase_notice_repository.dart';
 import '../../features/notices/domain/notice_repository.dart';
+import '../../features/principal_circulars/data/supabase_principal_mixed_feed_repository.dart';
+import '../../features/principal_circulars/domain/principal_happens_mixed_feed.dart';
+import '../../features/principal_happens/data/supabase_principal_happens_feed_repository.dart';
+import '../../features/principal_happens/domain/principal_happens_feed_repository.dart';
+import '../../features/principal_happens_publication/data/supabase_happens_publication_repository.dart';
+import '../../features/principal_happens_publication/domain/happens_publication.dart';
+import '../../features/principal_moments_publication/data/supabase_moments_publication_repository.dart';
+import '../../features/principal_moments_publication/domain/moments_publication.dart';
+import '../../features/principal_now/data/supabase_principal_now_feed_repository.dart';
+import '../../features/principal_now/domain/principal_now_feed_repository.dart';
 import '../../features/principal_now_publication/data/supabase_now_publication_repository.dart';
 import '../../features/principal_now_publication/domain/now_publication.dart';
+import '../../features/principal_shared/data/supabase_principal_runtime_context_repository.dart';
+import '../../features/principal_shared/domain/principal_runtime_context.dart';
 import '../../features/auth/domain/login_request.dart';
 import '../../features/auth/domain/logout_action.dart';
 import '../../features/auth/domain/password_recovery.dart';
@@ -116,6 +128,12 @@ final class SuperadminAuthScope {
     required this.mealPlanImageRepository,
     this.authorizedMealPlanTenantId,
     required this.formsApi,
+    this.principalRuntimeContextRepository,
+    this.principalHappensFeedRepository,
+    this.principalMixedFeedRepository,
+    this.happensPublicationRepository,
+    this.principalNowFeedRepository,
+    this.momentsPublicationRepository,
     this.nowPublicationRepository,
   });
 
@@ -154,6 +172,12 @@ final class SuperadminAuthScope {
   final MealPlanImageRepository mealPlanImageRepository;
   final String? authorizedMealPlanTenantId;
   final FormsApi? formsApi;
+  final PrincipalRuntimeContextRepository? principalRuntimeContextRepository;
+  final PrincipalHappensFeedRepository? principalHappensFeedRepository;
+  final PrincipalMixedFeedRepository? principalMixedFeedRepository;
+  final HappensPublicationRepository? happensPublicationRepository;
+  final PrincipalNowFeedRepository? principalNowFeedRepository;
+  final MomentsPublicationRepository? momentsPublicationRepository;
   final NowPublicationRepository? nowPublicationRepository;
 }
 
@@ -255,6 +279,12 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       mealPlanRepository: SupabaseMealPlanRepository(client),
       mealPlanImageRepository: SupabaseMealPlanImageRepository(client),
       formsApi: SupabaseFormsApi(formsBackend),
+      principalRuntimeContextRepository: SupabasePrincipalRuntimeContextRepository(client),
+      principalHappensFeedRepository: SupabasePrincipalHappensFeedRepository(client),
+      principalMixedFeedRepository: SupabasePrincipalMixedFeedRepository(client),
+      happensPublicationRepository: SupabaseHappensPublicationRepository(client),
+      principalNowFeedRepository: SupabasePrincipalNowFeedRepository(client),
+      momentsPublicationRepository: SupabaseMomentsPublicationRepository(client),
       nowPublicationRepository: SupabaseNowPublicationRepository(client),
     );
   } on Exception catch (error, stackTrace) {
@@ -315,6 +345,12 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthLifecycleGateway auth) {
     mealPlanRepository: const UnavailableMealPlanRepository(),
     mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
     formsApi: null,
+    principalRuntimeContextRepository: null,
+    principalHappensFeedRepository: null,
+    principalMixedFeedRepository: null,
+    happensPublicationRepository: null,
+    principalNowFeedRepository: null,
+    momentsPublicationRepository: null,
     nowPublicationRepository: null,
   );
 }

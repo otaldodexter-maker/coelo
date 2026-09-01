@@ -35,6 +35,13 @@ import '../features/meal_plans/domain/meal_plan_image_repository.dart';
 import '../features/meal_plans/domain/meal_plan_repository.dart';
 import '../features/invites/domain/platform_invite.dart';
 import '../features/notices/domain/notice_repository.dart';
+import '../features/principal_circulars/domain/principal_happens_mixed_feed.dart';
+import '../features/principal_happens/domain/principal_happens_feed_repository.dart';
+import '../features/principal_happens_publication/domain/happens_publication.dart';
+import '../features/principal_moments_publication/domain/moments_publication.dart';
+import '../features/principal_now/domain/principal_now_feed_repository.dart';
+import '../features/principal_now_publication/domain/now_publication.dart';
+import '../features/principal_shared/domain/principal_runtime_context.dart';
 import '../features/daily_routine/domain/routine_contract.dart';
 import '../features/audit/domain/audit.dart';
 import '../features/safety/application/child_safety_controller.dart';
@@ -114,6 +121,13 @@ class SuperadminApp extends StatefulWidget {
     this.auditRepository = const UnavailableAuditRepository(),
     this.childSafetyRepository = const UnavailableChildSafetyRepository(),
     this.medicationPlanRepository = const UnavailableMedicationPlanRepository(),
+    this.principalRuntimeContextRepository,
+    this.principalHappensFeedRepository,
+    this.principalMixedFeedRepository,
+    this.happensPublicationRepository,
+    this.principalNowFeedRepository,
+    this.momentsPublicationRepository,
+    this.nowPublicationRepository,
     this.userPreferencesRepository,
     super.key,
   });
@@ -152,6 +166,13 @@ class SuperadminApp extends StatefulWidget {
   final AuditRepository auditRepository;
   final ChildSafetyRepository childSafetyRepository;
   final MedicationPlanRepository medicationPlanRepository;
+  final PrincipalRuntimeContextRepository? principalRuntimeContextRepository;
+  final PrincipalHappensFeedRepository? principalHappensFeedRepository;
+  final PrincipalMixedFeedRepository? principalMixedFeedRepository;
+  final HappensPublicationRepository? happensPublicationRepository;
+  final PrincipalNowFeedRepository? principalNowFeedRepository;
+  final MomentsPublicationRepository? momentsPublicationRepository;
+  final NowPublicationRepository? nowPublicationRepository;
   final UserPreferencesRepository? userPreferencesRepository;
 
   @override
@@ -210,6 +231,15 @@ class _SuperadminAppState extends State<SuperadminApp> {
       auditRepository: widget.auditRepository,
       childSafetyController: _childSafetyController,
       medicationPlanRepository: widget.medicationPlanRepository,
+      principalRuntimeContextRepository:
+          widget.principalRuntimeContextRepository ??
+          const UnavailablePrincipalRuntimeContextRepository(),
+      principalHappensFeedRepository: widget.principalHappensFeedRepository,
+      principalMixedFeedRepository: widget.principalMixedFeedRepository,
+      happensPublicationRepository: widget.happensPublicationRepository,
+      principalNowFeedRepository: widget.principalNowFeedRepository,
+      momentsPublicationRepository: widget.momentsPublicationRepository,
+      nowPublicationRepository: widget.nowPublicationRepository,
       userPreferencesController: _preferencesController,
       onThemeModeChanged: _setThemeMode,
     );
