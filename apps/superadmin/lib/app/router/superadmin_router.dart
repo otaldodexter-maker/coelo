@@ -685,7 +685,10 @@ GoRouter createSuperadminRouter({
               onCreatePost: () => context.goNamed(SuperadminRoutes.principalHappensPublishName),
               onOpenNow: () => context.pushNamed(SuperadminRoutes.principalNowName),
               onPublishNow: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
-              onOpenMessages: () => context.goNamed(SuperadminRoutes.conversationsName),
+              onOpenMessages: () => context.goNamed(
+                SuperadminRoutes.conversationsName,
+                queryParameters: const {'from': 'principal'},
+              ),
             );
           },
         ),
@@ -875,6 +878,10 @@ GoRouter createSuperadminRouter({
           onOpenNow: () => context.pushNamed(SuperadminRoutes.devPrincipalNowName),
           onPublishNow: () => context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName),
           onCreatePost: () => context.goNamed(SuperadminRoutes.devPrincipalHappensPublishName),
+          onOpenMessages: () => context.goNamed(
+            SuperadminRoutes.devConversationsName,
+            queryParameters: const {'from': 'principal'},
+          ),
         ),
       ),
       GoRoute(
@@ -2344,6 +2351,7 @@ GoRouter createSuperadminRouter({
                 context.goNamed(switch (origin) {
                   'home' => SuperadminRoutes.homeName,
                   'catalog' => SuperadminRoutes.governanceCatalogName,
+                  'principal' => SuperadminRoutes.principalHappensName,
                   _ => SuperadminRoutes.institutionsName,
                 });
               },

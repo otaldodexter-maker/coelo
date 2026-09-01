@@ -99,21 +99,9 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 
-    final navigationScroll = find.descendant(
-      of: find.byKey(const Key('superadmin-navigation-scroll')),
-      matching: find.byType(Scrollable),
-    );
-    await tester.scrollUntilVisible(
-      find.byKey(const Key('superadmin-navigation-section-principal')),
-      240,
-      scrollable: navigationScroll,
-    );
-    await tester.scrollUntilVisible(
-      find.byKey(const Key('superadmin-navigation-principal-chat')),
-      120,
-      scrollable: navigationScroll,
-    );
-    await tester.tap(find.byKey(const Key('superadmin-navigation-principal-chat')));
+    final messages = find.byKey(const Key('principal-global-messages'));
+    expect(messages, findsOneWidget);
+    await tester.tap(messages);
     await tester.pumpAndSettle();
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devConversations);
@@ -236,6 +224,27 @@ void main() {
     expect(find.text('Nao foi possivel carregar'), findsOneWidget);
     expect(find.byTooltip('Voltar'), findsOneWidget);
     expect(find.byTooltip('Abrir menu de desenvolvimento'), findsNothing);
+  });
+
+  testWidgets('protected Principal Chat returns to the Principal surface', (tester) async {
+    final session = SuperadminSession()..signInForTesting();
+    final router = createSuperadminRouter(
+      session: session,
+      login: (_) async => const LoginResult.success(),
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go('${SuperadminRoutes.conversations}?from=principal');
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Voltar'));
+    await tester.pumpAndSettle();
+
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.principalHappens);
   });
 
   testWidgets('protected conversations use the injected production repository', (tester) async {

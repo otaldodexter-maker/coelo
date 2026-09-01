@@ -178,6 +178,15 @@ void main() {
     final fixture = await _pumpRouter(tester, size: const Size(1440, 900));
     fixture.router.go(SuperadminRoutes.devNotices);
     await tester.pumpAndSettle();
+    await tester.drag(
+      find.byKey(const Key('superadmin-navigation-scroll')),
+      const Offset(0, -700),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-navigation-section-principal')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('superadmin-navigation-circulars')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('superadmin-navigation-circulars')));
     await tester.pumpAndSettle();
 
