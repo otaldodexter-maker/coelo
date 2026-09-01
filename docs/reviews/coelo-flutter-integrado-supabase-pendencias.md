@@ -4,7 +4,9 @@ source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo
 status: "open"
 generated_at: "2026-08-26"
 updated_at: "2026-09-01"
-action_count: 202
+action_count: 179
+historical_action_count: 202
+deferred_post_mvp_action_count: 23
 flutter_action_count: 207
 family_count: 37
 ready_for_e2e_count: 0
@@ -12,8 +14,8 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "55936D7DEAFABA660B9447B991E6DAE28C2F9B7BF264062349A882BBC700A7EE"
-supabase_tracker_sha256: "1764FD866C269FDB0D946F75D540D75A09335F972833E5A9F3A952292ABBFF16"
+flutter_tracker_sha256: "C17C23314EE0B749DA147EF526E00DA2C84CCAAD7054736AEFAAE2B5670765AF"
+supabase_tracker_sha256: "9FFE58419156D482C913472FBF0396B0023830BF7BAEA9FDBF2023DD2B1824EE"
 ---
 
 # Pendências Coelo — Flutter integrado ao Supabase
@@ -26,10 +28,10 @@ supabase_tracker_sha256: "1764FD866C269FDB0D946F75D540D75A09335F972833E5A9F3A952
 > do MVP usa Supabase Storage; Cloudflare R2 não existe no ambiente atual e não
 > é gate da Etapa 2. Ver ADRs 0030 e 0031.
 
-O baseline integrado 0/202 é preservado abaixo somente para rastreabilidade
-pré-ADR. O percentual pós-decisão ainda não é calculável: é obrigatório
-classificar nominalmente os `action_id` antes de reduzir o denominador, sem
-contar item diferido como concluído. No encerramento formal do MVP, o
+O crosswalk nominal foi concluído para planejamento: 23 fluxos reais de
+import/export saíram do denominador obrigatório, reduzindo 202 ações históricas
+para 179 ações integráveis no MVP, sem contar item diferido como concluído. No
+encerramento formal do MVP, o
 coordenador deve perguntar ao Owner se deseja implementar import/export real e
 se deseja avaliar evolução de Supabase Storage para R2.
 
@@ -52,6 +54,40 @@ real, e Usuários internos e Perfis/Modelos precisam trocar o estado desabilitad
 por clique informativo. Essa correção é exclusivamente Flutter: o clique não
 pode alcançar os artefatos legados do Supabase.
 
+### ETA integrado supersedente — somente trabalho adicional E2E
+
+Esta tabela substitui todas as estimativas integradas anteriores para
+planejamento da Etapa 2. Integração não repete UI, migrations, RLS, pgTAP,
+Advisors ou negativos já certificados pelas skills especializadas; mede apenas
+wiring real, execução pelo cliente, resposta/erro, persistência, reload e a
+matriz transversal reutilizável. O crosswalk do MVP passa de 202 IDs históricos
+para **179 IDs integráveis**: 23 fluxos reais de import/export estão
+`deferred-post-mvp`. Botões informativos são Flutter-only.
+
+| Grupo integrado | IDs abrangidos | Trabalho E2E adicional | ETA líquida |
+| --- | ---: | --- | ---: |
+| Fundação/Auth/Conta/Erros | 17 | Wiring de sessão, lifecycle, reload e envelopes | 4–6 h |
+| Cadastros e Acessos | 49 | CRUD, vínculos, permissão e tenant A/B | 8–12 h |
+| Operação escolar | 43 | Commands, persistência, reload e concorrência | 7–10 h |
+| Comunicação e Formulários | 34 | Mensagens/publicações/respostas e mídia aplicável | 7–11 h |
+| Menu Coelo (Principal) + mídia | 15 | Rotas do Superadmin e Supabase Storage | 4–6 h |
+| Cuidado/Saúde | 14 | Fluxos sensíveis permitidos/negados/revogados | 4–6 h |
+| Plataforma/Auditoria/Catálogo | 7 | Contratos e envelopes transversais | 2–4 h |
+| Harness e regressão final | transversal | Fixtures únicas, matriz parametrizada e evidências | 4–6 h |
+
+**Total sequencial adicional de integração:** **40–61 h líquidas**. Com
+verticais independentes em paralelo, o caminho crítico de calendário é
+**16–24 h**: fundação 4–6 h, maior vertical 8–12 h e regressão 4–6 h. Esse tempo
+só começa para uma ação quando Flutter estiver `verified` e Supabase `done`; não
+é somado novamente dentro dos ETAs das duas camadas.
+
+**ETA de calendário da Etapa 2 completa:** executando as verticais em pipeline,
+em vez de esperar todas as camadas acabarem para só então integrar, são
+**74–121 h de relógio com três frentes** (aproximadamente 9–15 dias úteis de
+8 h) ou **59–96 h com quatro frentes** (aproximadamente 7,5–12 dias úteis).
+Uma única pessoa em sequência teria de somar Flutter, Supabase e integração;
+essa soma representa esforço, não prazo de calendário coordenado.
+
 ### Checkpoint final de consolidação — 2026-09-01
 
 As seis frentes de implementação estão agora no mesmo histórico e as
@@ -70,8 +106,8 @@ de branch está superada somente no aspecto Git.
 | Menu Coelo (Principal) | Para Você, Acontece, Agora, Momentos e Perfil estão dentro do Superadmin. | Fechar backend/audiência/Supabase Storage/publicadores e comprovar cada rota real ponta a ponta. R2 está fora do MVP. |
 | Macro — cabeçalho, shell e migrations | Cabeçalho compartilhado e capabilities combinadas; manifesto único ordenado. | Regressão visual final e replay integral antes do primeiro deploy amplo. |
 
-**Contagem oficial após a consolidação:** 0/202 `ready-for-e2e` = **0,00%** e
-0/202 `verified-e2e` = **0,00%**. O avanço das camadas continua mensurado sem
+**Contagem oficial após o crosswalk:** 0/179 `ready-for-e2e` = **0,00%** e
+0/179 `verified-e2e` = **0,00%**. O avanço das camadas continua mensurado sem
 mistura: Flutter 105/207 `local-green` (50,72%); Supabase 3/37 famílias
 `local-green` (8,11%), ou 39/202 ações com evidência local (19,31%).
 
@@ -79,22 +115,23 @@ Esta é a resposta canônica para “o que foi feito, onde parou e o que falta n
 Etapa 2” sob a skill `coelo-flutter-supabase-review`. As seções posteriores
 preservam todas as ações e evidências históricas.
 
-**Integração em 2026-09-01:** 0/202 ações `ready-for-e2e` (0,00%) e 0/202
+**Integração em 2026-09-01:** 0/179 ações `ready-for-e2e` (0,00%) e 0/179
 `verified-e2e` (0,00%). Isso não significa avanço zero nas camadas: Flutter
 possui 105/207 ações `local-green` e Supabase possui 3/37 famílias
 `local-green`, além de trabalho parcial registrado tela a tela. Os contadores
 `verified` Flutter e `done` Supabase são informados separadamente.
 
-**Geral conhecido e Etapa 2 integrada:** ambos usam atualmente os mesmos 202
-`action_id` integráveis. Cinco dos 207 IDs Flutter ainda precisam de crosswalk
-explícito como Flutter-only ou correção de mapeamento; eles não são somados ao
-denominador integrado. A antiga soma 207 Flutter + 22 gates Supabase foi
-descontinuada porque misturava camadas e duplicava responsabilidades.
+**Geral conhecido e Etapa 2 integrada:** ambos usam atualmente 179 `action_id`
+integráveis no MVP. A base histórica tinha 202; 23 fluxos reais de
+import/export foram classificados `deferred-post-mvp`. Cinco dos 207 IDs
+Flutter permanecem Flutter-only e não entram no denominador integrado. A antiga
+soma 207 Flutter + gates Supabase foi descontinuada porque misturava camadas e
+duplicava responsabilidades.
 
 | Percentual integrado da Etapa 2 | Concluído | Restante | Interpretação |
 | --- | ---: | ---: | --- |
-| Ações prontas para começar E2E | 0,00% (0/202) | 100,00% (202/202) | Nenhuma ação reúne Flutter e backend prontos. |
-| Ações `verified-e2e` | 0,00% (0/202) | 100,00% (202/202) | Nenhum fluxo foi comprovado ponta a ponta. |
+| Ações prontas para começar E2E | 0,00% (0/179) | 100,00% (179/179) | Nenhuma ação reúne Flutter e backend prontos. |
+| Ações `verified-e2e` | 0,00% (0/179) | 100,00% (179/179) | Nenhum fluxo foi comprovado ponta a ponta. |
 
 > **Leitura correta:** a Etapa 2 tem avanço técnico real e recuperável, mas ainda
 > não tem uma vertical certificada ponta a ponta. Não existe denominador somando
@@ -164,8 +201,9 @@ descontinuada porque misturava camadas e duplicava responsabilidades.
    evidências estarem conferidos.
 
 **Tempo usado na Etapa 2:** não calculável ainda porque não há duração homogênea
-das frentes. **ETA geral:** não calculável antes dos reviews, decisões e
-classificação do ambiente. Cada frente possui a melhor ETA recuperável na tabela.
+das frentes. **ETA geral revisado:** 74–121 h de calendário com três frentes ou
+59–96 h com quatro, executando verticais em pipeline. Espera por decisão não é
+contada como hora técnica.
 
 ## 1. Papel deste documento
 
@@ -749,9 +787,9 @@ RPC ou tabela própria.
 | Intermediária | Inventário/contrato e correções principais de **uma ação** de baixo ou médio risco. | 2–6 h por ação simples | Pode concluir o pacote contratado; não conclui integração nem tela. |
 | Avançada | Uma fatia vertical autorizada, com negativos, acesso entre instituições e remoto. | 1–2 dias por ação/tela pequena | Adequada a Auth, RLS, migrations, segurança e arquivos; ainda pode deixar a família aberta. |
 | Completa | Todas as ações aplicáveis de uma família, regressão e provas dos três lados. | 2–5 dias por tela simples; maior nas famílias bloqueadas | Única que pode sustentar ação/tela integrada concluída. |
-| Programa conhecido | 37 famílias; 207 ações Flutter, das quais 202 possuem contrato integrado normativo. | aproximadamente 393 h Flutter + 715–1430 h Supabase bruto + 25–39 dias úteis de E2E; calendário conservador de 10–17 semanas após decisões | Zero ação está pronta para E2E e zero foi concluída ponta a ponta no snapshot atual. |
+| Programa conhecido | 37 famílias; 207 ações Flutter; 179 ações integráveis no MVP após diferir 23 fluxos de import/export. | Flutter 78–96 h mais prováveis; Supabase estrito 150–249 h; integração adicional 40–61 h; calendário em pipeline 74–121 h com três frentes ou 59–96 h com quatro. | Zero ação está pronta para E2E e zero foi concluída ponta a ponta no snapshot atual. |
 
-## 7. Manifesto integrado retomável das 202 ações normativas
+## 7. Manifesto integrado histórico de 202 ações / 179 ações no MVP
 
 As referências de ambiente usadas abaixo significam:
 
@@ -909,11 +947,11 @@ desenvolvimento; **FC** = `Unavailable`/503 seguro; **NG** = teste non-golden.
 | 36 | `internal_users` | Platform user directory/form; ações abrir/desativar permanecem indisponíveis. | Fake só pode atender DEV; criação/edição local não prova Auth privilegiado, suspensão ou MFA. | Formulário local-green histórico; nenhum E2E/golden. | Decidir domínio/papéis e testar list/create/edit/suspend/MFA; 10 h. |
 | 37 | `error_pages` | Rotas 403/404/409/500/503 e retry tipado. | Mapper deve ocultar SQLSTATE/PostgREST/Edge e repetir somente operação idempotente. | Rotas de erro 7/7 em lote Health; baselines protegidas não foram rerenderizadas. | Provar matriz real de erros, teclado, reload/retry e visual; 6 h. |
 
-**ETA Flutter sequencial:** aproximadamente 388 h, fora espera por decisões,
-backend/ambiente remoto e inspeção humana dos PNGs. Os ETAs Supabase da tabela
-principal permanecem válidos e não foram substituídos por esta passagem.
+**ETA Flutter supersedente:** 78–96 h líquidas mais prováveis, fora espera,
+Supabase e E2E. A tabela detalhada acima conserva valores históricos por linha,
+mas eles não devem mais ser somados.
 
-### 7.3. Crosswalk 207 Flutter → 202 ações integradas
+### 7.3. Crosswalk 207 Flutter → 202 históricas → 179 ações MVP
 
 O rastreador Flutter conta 207 ações porque inclui cinco ações de shell que não
 representam operação Supabase autônoma. Elas permanecem rastreadas no
@@ -948,19 +986,15 @@ gera `ready-for-e2e` automaticamente.
 
 ### 7.4. Próxima prova integrada e ETA total
 
-1. Revalidar HEAD, catálogo, rotas prod/DEV e composição sem overlays: 1–2 d.
-2. Fechar decisões e backend conforme os ETAs Supabase preservados na tabela.
-3. Executar, por ação, clique → repository → backend remoto → reload/nova sessão,
-   incluindo negado, sessão revogada, duplo envio e cross-tenant: mínimo de 202
-   provas, estimativa inicial de 25–39 d úteis após os blockers estruturais.
-4. Executar a dívida Flutter estimada em 388 h, paralelizável por famílias, mais
-   inspeção individual dos 199 PNGs rastreados fora de `failures/`.
+1. Revalidar HEAD, catálogo, rotas e composição compartilhada: 2–4 h.
+2. Fechar as camadas por família conforme os ETAs supersedentes.
+3. Executar as 179 ações MVP por harness compartilhado e verticais, sem repetir
+   pgTAP/RLS ou testes Flutter já comprovados: 40–61 h adicionais de integração.
+4. Rodar regressão/evidências finais uma vez: 4–6 h já incluídas na integração.
 
-O ETA total não é a soma cega de todas as linhas: trabalho Flutter, backend e
-E2E pode ocorrer em paralelo. Conservadoramente, o programa permanece em
-**10–17 semanas úteis de calendário** após decisões externas e disponibilidade
-do ambiente, com reestimativa obrigatória após as primeiras três famílias
-verticais. Espera jurídica/produto não está incluída.
+O ETA total usa pipeline: **74–121 h de calendário com três frentes** ou
+**59–96 h com quatro**. Os números antigos de 388 h Flutter, 25–39 dias E2E e
+10–17 semanas estão substituídos e permanecem apenas nos checkpoints históricos.
 
 ### 7.5. Modelo para evidência E2E futura
 

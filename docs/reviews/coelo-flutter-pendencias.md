@@ -37,6 +37,60 @@ a frase normativa “Disponível depois do MVP”. O próximo pacote Flutter dev
 restaurar/habilitar somente o clique informativo e seus testes, sem conectar
 qualquer fluxo real.
 
+### ETA Flutter supersedente — execução líquida
+
+Esta tabela substitui todas as estimativas Flutter anteriores para planejamento
+da Etapa 2. Ela mede somente trabalho do cliente Flutter, agrupa setup, testes,
+goldens e regressões compartilhados e exclui espera, Supabase, remoto, E2E, R2
+e import/export real. Valores antigos permanecem abaixo apenas como histórico.
+
+| Família | Pendência Flutter restante | ETA líquida |
+| --- | --- | ---: |
+| Auth | MFA e gates finais do cliente | 1–2 h |
+| Shell | Contexto, navegação, reload e regressão | 1–2 h |
+| Instituições | Estados finais, arquivos no cliente e botões informativos | 2–4 h |
+| Unidades | Estados do cliente, reload e botões informativos | 1,5–3 h |
+| Turmas | Membros, estados finais e mensagem pós-MVP | 1–2 h |
+| Pessoas | Fluxos locais, mapa, fixtures e goldens | 3–5 h |
+| Perfis de acesso | Detalhe, atribuição/exclusão, UX e goldens | 3–5 h |
+| Modelos de acesso | Filtros, detalhe, duplicação e goldens | 2,5–4 h |
+| Convites | Confirmações, erros e regressão | 1–2 h |
+| Atividades | Wizard, detalhe e estados do cliente | 2–4 h |
+| Avaliações | Páginas, conflitos e regressão local | 2–4 h |
+| Alunos | Ações e estados locais após decisão | 2–3 h |
+| Assiduidade | Marcação, correção, conclusão e botão Exportar | 2–4 h |
+| Rotina diária | Estados e regressão | 1,5–3 h |
+| Agenda | Estados, localização visual e regressão | 2–4 h |
+| Chat | Editar, anexar, recibos, revogar e retry no cliente | 2–4 h |
+| Avisos | Estados de lifecycle no cliente | 2–3 h |
+| Formulários — autoria | Editor, estados e testes finais | 3–5 h |
+| Formulários — respostas | Monitor, resposta, detalhe e botão Exportar | 2–3 h |
+| Formulários — arquivos | Estados Flutter via contrato de mídia | 1,5–3 h |
+| Acontece | Feed e publicador Flutter | 2–4 h |
+| Agora | Viewer e publicador Flutter | 1,5–3 h |
+| Momentos | Golden do viewer e publicador Flutter | 1–2,5 h |
+| Menu Coelo (Principal) — perfil | Preview, perfil e edição dentro do Superadmin | 1,5–3 h |
+| Segurança infantil | Estados sensíveis e suspensão no cliente | 2–4 h |
+| Perfis de cuidado | Detalhe, estados e goldens | 2–4 h |
+| Medicação | Superfícies Flutter após decisões | 2–4 h |
+| Importações | Somente botões, mensagem e testes | 0,5–1 h |
+| Arquivos de perfil | Somente controles diferidos e mensagem | 0,5–1 h |
+| Auditoria | Estados, detalhe e botão Exportar | 1,5–2,5 h |
+| Suporte | Detalhe, resposta e encerramento | 2–3 h |
+| Conta | Configurações, MFA, sessões e regressão | 2–3 h |
+| Catálogo | Reconciliação técnica final | 0,5–1,5 h |
+| Planos | Estados Flutter e ações permitidas | 1,5–3 h |
+| Cardápios | CRUD, modelos e publicação no cliente | 2–4 h |
+| Usuários internos | Estados, suspensão e MFA no cliente | 2–4 h |
+| Páginas de erro | Lote 403/404/409/500/503/retry | 1–2 h |
+
+**Total sequencial externo:** 63,5–118,5 h. **Faixa mais provável de
+planejamento:** **78–96 h líquidas**. Com três frentes independentes, o tempo de
+calendário estimado é **30–48 h**; com quatro, **24–38 h**. O caminho crítico é
+fundação compartilhada (3–5 h), identidade/permissões/segurança (14–22 h) e
+regressão/reconciliação final dos IDs (4–7 h). Decisões externas suspendem a
+família afetada, mas não são somadas como horas de execução.
+
 ### Checkpoint final de consolidação — 2026-09-01
 
 As implementações recebidas foram reunidas no mesmo histórico Git e a árvore
@@ -168,9 +222,9 @@ reconciliação sem duplicidade.
    ledger/infra/E2E remoto.
 
 **Tempo usado:** não calculável com precisão porque as frentes não
-registraram duração homogênea. **ETA Flutter local restante:** não calculável
-até os reviews e integrações seletivas; as estimativas por frente acima são as
-fatias atualmente recuperáveis.
+registraram duração homogênea. **ETA Flutter local restante revisado:**
+**78–96 h líquidas mais prováveis**, ou 30–48 h de calendário com três frentes;
+ver a tabela supersedente no início deste documento.
 
 ## 1. Finalidade e leitura obrigatória
 
@@ -650,7 +704,7 @@ duplicada. A soma preliminar por família continua na tabela anterior.
 | Unidade de planejamento | Estimativa preliminar | Observação |
 |---|---:|---|
 | Temas gerais compartilhados | 290 h brutas | Não somar integralmente às famílias: shell, UI, responsividade, acessibilidade e regressão são absorvidos por vários pacotes de tela. |
-| 37 famílias / 207 ações Flutter | aproximadamente 388 h sequenciais | Soma operacional atual por família, sem espera externa; inclui a decomposição explícita das 12 ações de Instituições e exige reestimativa após rerun do snapshot. |
+| 37 famílias / 207 ações Flutter | 78–96 h líquidas mais prováveis | Estimativa supersedente por família, com setup e regressão compartilhados; exclui Supabase/E2E e import/export real. |
 | Pacote Intermediário sugerido para decisão | 2–6 h | Uma ou poucas ações relacionadas de baixo/médio risco; nunca conclui a tela. |
 | Pacote Avançado de uma família complexa | 1–2 dias | Inclui ações relacionadas, arquitetura, estados, acessibilidade, responsividade e regressões. |
 | Pacote Completo de uma tela | 2–5 dias | Só pode fechar a tela Flutter se todas as ações aplicáveis e evidências estiverem completas. |
@@ -1303,10 +1357,9 @@ backend, ambiente remoto e inspeção humana de cada PNG.
 | 36 | `internal_users` — Lista, criar, editar, suspender, MFA | `internal-users.list` `blocked-decision`; `internal-users.create` `local-green`; `internal-users.edit` `local-green`; `internal-users.suspend` `blocked-decision`; `internal-users.mfa` `blocked-decision` | Formulário verde, mas abrir/desativar foi desabilitado sem contrato; decidir domínio e provar MFA/suspensão; 10 h. |
 | 37 | `error_pages` — 403, 404, 409, 500, 503, retry | `errors.403` `audited`; `errors.404` `audited`; `errors.409` `audited`; `errors.500` `audited`; `errors.503` `audited`; `errors.retry` `audited` | Baselines protegidas não foram rerenderizadas integralmente; executar rotas, teclado, reload/retry e matriz visual; 6 h. |
 
-**ETA Flutter sequencial das 37 famílias:** aproximadamente 388 h de execução,
-mais espera por decisões, ownership, backend/E2E e inspeção humana de imagens.
-Famílias independentes podem reduzir tempo de calendário, nunca a quantidade de
-prova necessária.
+**ETA Flutter sequencial supersedente:** 63,5–118,5 h externas, com faixa mais
+provável de 78–96 h líquidas. Famílias independentes reduzem o calendário para
+30–48 h com três frentes, sem reduzir a prova necessária.
 
 ## 10. Resíduos e bloqueios que não podem ser esquecidos
 

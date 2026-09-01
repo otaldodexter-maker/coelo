@@ -33,6 +33,63 @@ legado anterior à ADR 0031: ficam congelados, não recebem expansão, não entr
 no wiring do MVP e não contam como `done`. Nenhum rollback/drop foi autorizado;
 eventual desativação exige pacote forward-only específico e coordenado.
 
+### ETA Supabase supersedente — execução líquida
+
+Esta tabela substitui todas as estimativas Supabase anteriores para planejamento
+da Etapa 2. Schema compartilhado, fixtures, replay, RLS, negativos, Advisors e
+cutover são contabilizados uma vez por pacote/domínio, nunca repetidos por
+`action_id`. O tempo exclui espera por decisão, Flutter e E2E. Import/export
+real e R2 valem 0 h no MVP.
+
+| Família backend | Pendência Supabase restante | ETA líquida |
+| --- | --- | ---: |
+| Auth | Sessão, lifecycle e prova remota restante | 3–5 h |
+| Shell/contexto | Bootstrap, troca de contexto e revogação | 1–2 h |
+| Instituições | Gateways, RLS, negativos e remoto | 2–3 h |
+| Unidades | Hierarquia, gateways, RLS e remoto | 3–5 h |
+| Turmas | CRUD, membros, RLS e remoto | 3–5 h |
+| Pessoas | Identidade, vínculos, gateways e negativos | 4–7 h |
+| Perfis de acesso | Realm interno, anti-escalation e auditoria | 4–7 h |
+| Modelos de acesso | Realm, capabilities, versão e auditoria | 4–7 h |
+| Convites | Emissão, expiração, revogação e outbox | 2–4 h |
+| Atividades | Gateways nominais, escopo e replay | 2–3 h |
+| Avaliações | Schema, commands, concorrência e auditoria | 2–4 h |
+| Alunos | Vínculos, transferência, revogação e negativos | 4–7 h |
+| Assiduidade | Commands, idempotência e fechamento; export fora | 2–3 h |
+| Rotina diária | Modelos, aplicação, publicação e versão | 3–5 h |
+| Agenda | Schema, RLS, RPCs e notificações após spec | 6–10 h |
+| Chat | Mensagens, recibos, revogação, mídia e Realtime | 5–8 h |
+| Avisos | Lifecycle, audiência, agendamento e recibos | 4–6 h |
+| Formulários — autoria | Versão, distribuição, commands e publicação | 6–10 h |
+| Formulários — respostas | Respostas, anonimato e métricas; export fora | 5–8 h |
+| Formulários — mídia | Supabase Storage, expiração e exclusão | 5–8 h |
+| Acontece | Metadados, audiência, publicação e Storage | 4–6 h |
+| Agora | Publicação, audiência, expiração e Storage | 3–5 h |
+| Momentos | Publicação, audiência, remoção e Storage | 4–6 h |
+| Menu Coelo (Principal) | Contratos backend das prévias no Superadmin | 3–5 h |
+| Segurança infantil | Evidências, suspensão, RLS e auditoria | 5–8 h |
+| Saúde/cuidado | Dados sensíveis, mídia, histórico e auditoria | 7–12 h |
+| Medicação | Contrato sensível após decisão | 7–12 h |
+| Importações | Fluxo real diferido para pós-MVP | 0 h |
+| Arquivos de perfis import/export | Fluxo real diferido para pós-MVP | 0 h |
+| Auditoria | Imutabilidade, retenção e cross-tenant; export fora | 2–3 h |
+| Suporte | Schema, conversa, status e permissões | 6–10 h |
+| Conta/configurações | Senha, sessões e dados após Auth | 3–5 h |
+| Catálogo | Tooling local, se mantido | 1–2 h |
+| Planos/assinaturas | Contrato, autorização e lifecycle | 5–8 h |
+| Cardápios/modelos | Publicação, imagem e audiência | 6–10 h |
+| Usuários internos | Identidade, lifecycle, privilégios e auditoria | 5–8 h |
+| Erros backend | Envelope e mapeamento seguro | 1–2 h |
+
+As 37 famílias somam **132–219 h líquidas**. Cinco pacotes transversais —
+ledger/replay; ACL + `SECURITY DEFINER` + RLS; Auth/realm; harness + lint +
+Advisors; Storage/Edge + cleanup + secret scan — acrescentam **18–30 h** uma
+única vez. Portanto, o **total sequencial Supabase estrito é 150–249 h
+líquidas**. Com três frentes backend, o caminho crítico de calendário é
+**70–115 h**; com quatro frentes isoladas, **55–90 h**, porque ledger e cutover
+remoto continuam seriais. Os 207 IDs permanecem baseline pré-crosswalk e não
+devem ser somados individualmente para produzir ETA.
+
 ### Checkpoint final de consolidação — 2026-09-01
 
 Todas as migrations, adapters, contratos e testes recebidos foram preservados
@@ -170,8 +227,9 @@ Achados adicionais do mesmo review:
   antes dessas migrations. As quatro tabelas são herdadas dessa migration
   anterior, não criadas por `e7520192`.
 
-**Tempo usado:** não calculável com precisão. **ETA geral Supabase:** não
-calculável antes de OQ-041, OQ-043, OQ-044, OQ-003/OQ-040 e replay compatível.
+**Tempo usado:** não calculável com precisão. **ETA geral Supabase revisado:**
+150–249 h líquidas sequenciais, ou 70–115 h de calendário com três frentes.
+Famílias bloqueadas por decisão pausam sem acrescentar horas de espera.
 
 ## 1. Finalidade e leitura obrigatória
 
