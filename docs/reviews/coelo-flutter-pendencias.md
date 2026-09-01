@@ -230,8 +230,8 @@ duplicada. A soma preliminar por família continua na tabela anterior.
 | Ordem | Tela/subtela | Ação | Pendência Flutter | Estado atual | Básica | Intermediária | Avançada | Completa | Nível aconselhado | Estimativa | Evidência para conclusão |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---: | --- |
 | 1.1 | Auth / Login | `auth.login` | Fluxo local, erros e matriz responsiva revalidados; integração Auth remota e rota global continuam fora da prova. | `local-green` | B | I | A | C | Avançada | 1 h | Login válido/inválido, 375/768/1024/1440, 200%, foco e erro; E2E remoto separado. |
-| 1.2 | Auth / Recuperar senha | `auth.recover` | UI local passou, porém review independente encontrou sessão recovery tratada como autenticada fora de `/reset-password`, alcançando Home/rotas protegidas sem contexto interno. | `in-progress` | B | I | A | C | Avançada | 1–2 h | Corrigir confinamento fail-closed; testar recovery→Home/rota protegida, auto-refresh, teclado, foco, responsividade e anúncio; link remoto separado. |
-| 1.3 | Auth / Redefinir senha | `auth.reset` | UI local passou, mas o guard compartilhado não confina a sessão recovery ao reset e o auto-refresh pode perder o estado recovery. | `in-progress` | B | I | A | C | Avançada | 1–2 h | Corrigir guard; provar rota exclusiva, token inválido/expirado/reutilizado, auto-refresh, campos, erro, sucesso e 200%; integração remota separada. |
+| 1.2 | Auth / Recuperar senha | `auth.recover` | O commit `f280e291` confina recovery ao reset, limpa contexto e bloqueia Home/rotas protegidas; produção/link remoto continuam fora da prova. | `local-green` | B | I | A | C | Avançada | 1 h remoto separado | Recovery→Home, Instituições, `/dev`, login/startup e evento runtime negados ou redirecionados; auto-refresh, teclado, foco e link remoto permanecem gates posteriores. |
+| 1.3 | Auth / Redefinir senha | `auth.reset` | Recovery é estado distinto, nunca autenticação do shell; voltar para login revoga/limpa a sessão e falha fechado se logout falhar. | `local-green` | B | I | A | C | Avançada | 1 h remoto separado | 66/66 Auth/guards/router e 21/21 `coelo_auth`; depois token remoto inválido/expirado/reutilizado, auto-refresh, produção e E2E. |
 | 1.4 | Auth / Sair | `auth.logout` | Provar sessão revogada e navegação segura. | `local-green` | B | I | A | C | Avançada | 1 h | Logout, voltar/link direto sem dado anterior e foco correto. |
 | 1.5 | Auth / MFA | `auth.mfa` | Fluxo sensível e recuperação não têm prova atual. | `audited` | B | I | A | C | Avançada | 2 h | Desafio, erro, cancelamento, sessão revogada e acessibilidade. |
 | 2.1 | Shell / Carregamento | `shell.load` | Revalidar sessão, loading e ausência de dado pré-auth. | `local-green` | B | I | A | C | Avançada | 1 h | Loading/sucesso/erro sem vazamento, 375–1440 e 200%. |
@@ -1071,7 +1071,7 @@ backend, ambiente remoto e inspeção humana de cada PNG.
 
 | # | `screen_id` e telas/subtelas | Estado por `action_id` | Bloqueio, próxima ação exata e ETA da família |
 |---:|---|---|---|
-| 1 | `auth` — Login, recuperar, redefinir, MFA | `auth.login` `local-green`; `auth.recover` `in-progress`; `auth.reset` `in-progress`; `auth.logout` `local-green`; `auth.mfa` `audited` | UI e testes focados passaram, mas review independente bloqueou integração por bypass recovery→rota protegida e ausência dos negativos correspondentes; correção local 1–2 h, produção/E2E separados. |
+| 1 | `auth` — Login, recuperar, redefinir, MFA | `auth.login` `local-green`; `auth.recover` `local-green`; `auth.reset` `local-green`; `auth.logout` `local-green`; `auth.mfa` `audited` | O bypass recovery→rota protegida foi corrigido em `f280e291`; 66/66 Auth/guards/router e 21/21 `coelo_auth` passaram. Integração ainda aguarda remoção do delta fora de escopo em `apps/catalog`, ledger/deploy e E2E remoto. |
 | 2 | `shell` — Home, menu, contexto, unauthorized, reload | `shell.load` `local-green`; `shell.navigate` `local-green`; `shell.switch-context` `audited`; `shell.unauthorized` `local-green`; `shell.reload` `audited` | Reconciliar deep links e troca de contexto; smoke dos estados e foco; 6 h. |
 | 3 | `institutions` — Lista, filtros, detalhe, criar, editar, status, arquivos, importar/exportar, erro, acesso negado e reload | `institutions.list`/`filter`/`create`/`edit`/`status` `local-green`; `institutions.detail`/`files`/`import`/`export`/`error`/`access-denied`/`reload` `audited` | Revalidar baseline e 7 PNGs alterados, com prova isolada das 12 ações e texto 200%; 16 h. |
 | 4 | `units` — Lista, filtros, criar, editar, status, erro, acesso negado, reload e arquivos | `units.list`/`filter`/`create`/`edit`/`status`/`error`/`access-denied`/`reload` `local-green`; `units.import`/`export` `blocked-supabase`; `units.people-export` `blocked-decision` | Diretório recompila e 16 testes passaram; import/export continuam com gateways produtivos indisponíveis; `people-export` não possui capability, job, arquivo ou URL próprios e exige decisão. Revisar 17+ PNGs, E2E e composição somente após handoff; 13 h + decisão. |
@@ -1650,10 +1650,10 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 
 **Programa visual — Aceito visualmente:** 0,00% (0/31 entregáveis).
 
-**Flutter local — `local-green`:** 48,31% (100/207 ações). Esse número registra
-evidência local e não significa que 100 ações estejam concluídas ponta a ponta.
+**Flutter local — `local-green`:** 49,28% (102/207 ações). Esse número registra
+evidência local e não significa que 102 ações estejam concluídas ponta a ponta.
 
-**Flutter local — restante fora de `local-green`:** 51,69% (107/207 ações).
+**Flutter local — restante fora de `local-green`:** 50,72% (105/207 ações).
 
 **Flutter `verified`:** 0,00% (0/207 ações). O estado exige todos os gates
 Flutter da seção 2, inclusive inspeção visual e regressões aplicáveis.
@@ -3198,7 +3198,7 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
 | Base | A matriz consolidada contém 207 linhas e 207 `action_id` únicos. O estado foi recalculado diretamente das linhas atuais, sem somar snapshots de branches ou duplicar IDs. |
 | Snapshots reconciliados | V4/V5 em `21e0ed09` registrava 86/207; Formulários/Agenda em `4beea0ec`, 100/207; a consolidação em `f3a3e504`, 96/207. Os números permanecem evidência histórica das respectivas branches, não totais atuais concorrentes. |
 | Diferenças determinísticas | A comparação `4beea0ec` versus o consolidado encontrou exatamente oito estados distintos: seis ações de Agenda estavam `local-green` no handoff e `blocked-decision` no consolidado; `imports.list` e `notices.list` estavam `audited` no handoff, mas receberam evidência posterior V4/V5 e permanecem `local-green`. |
-| Total atual | 100/207 `local-green` (48,31%); 64/207 `audited`; 37/207 `blocked-decision`; 2/207 `audited`/fail-closed; 2/207 `blocked-supabase`; 2/207 `in-progress` em Auth recovery/reset. Restam 107/207 fora de `local-green` (51,69%). |
+| Total atual | 102/207 `local-green` (49,28%); 64/207 `audited`; 37/207 `blocked-decision`; 2/207 `audited`/fail-closed; 2/207 `blocked-supabase`. Restam 105/207 fora de `local-green` (50,72%). |
 | Formulários/Agenda | Os 22 IDs permanecem `local-green` visual/Flutter. Evidência do handoff: 238/238 testes combinados, Agenda 112/112, rotas/navegação 14/14, analyzer sem issues, validador/índice/conhecimento/diff verdes e 113 goldens únicos. Produção permanece fail-closed e backend/remoto/E2E continuam abertos. |
 | Famílias operacionais | 28 IDs reconciliados: 24 `local-green` e 4 `audited`, com impacto incremental zero sobre a matriz já consolidada. Turmas, Assiduidade e Rotina receberam correções textuais para refletir os testes e goldens existentes sem declarar produção concluída. |
 | Estado estrito | `verified` permanece 0/207. Fixture, golden, rota `/dev`, fake, teste local ou fail-closed continuam insuficientes para `verified`, Supabase ou E2E. |
@@ -3246,6 +3246,7 @@ Esta onda registra 28 `action_id`: 24 permanecem `local-green` e 4 permanecem `a
 | 2026-08-26 | Consolidação retomável em HEAD `447ac02c`: 37 famílias, estados por ação, commits/gates, resíduos, ETA e handoff integrado. |
 | 2026-08-26 | Organização decisória: tabela geral cumulativa, definição B/I/A/C, matriz de 201 ações com nível aconselhado/estimativa/evidência, decomposição explícita das 12 ações de Instituições, dependências integradas fora de escopo e inventário do worktree concorrente; nenhum código ou backend alterado. |
 | 2026-09-01 | Etapa 2/Auth: review independente de `36ae7c86` bloqueou integração porque uma sessão password-recovery era considerada autenticada e podia alcançar Home/rotas protegidas sem `authContext`; `auth.recover` e `auth.reset` foram rebaixadas para `in-progress`, total Flutter ajustado para 100/207. Correção e testes negativos recovery→Home/rota protegida são o primeiro gate (ETA local 1–2 h). Login/logout permanecem `local-green`; MFA permanece aberto/fail-closed; remoto/E2E não foram promovidos. O delta em `apps/catalog` também viola o recorte exclusivo Superadmin e deve preservar compatibilidade ou ser removido antes da integração. |
+| 2026-09-01 | Etapa 2/Auth: `f280e291` corrigiu o bypass recovery, adicionou negativos de Home/Instituições/`/dev`/startup/runtime e passou 66/66 Auth/guards/router + 21/21 `coelo_auth`; `auth.recover` e `auth.reset` retornaram a `local-green`, total Flutter 102/207. A branch ainda não é integrável enquanto alterar `apps/catalog` fora do recorte e enquanto ledger/deploy/E2E remoto permanecerem abertos. |
 
 ## Checkpoint 2026-09-01 — Comunicações/Avisos e limite da Etapa 2
 
