@@ -34,10 +34,10 @@ generated_at: "2026-09-01"
 - Consumes: `CoeloAdminPagination` e `SuperadminListingPaginationFooter`.
 - Produces: uma única decisão de layout que fornece `pageSize` e `pageSizeOptions` compatíveis.
 
-- [ ] Adicionar teste que redimensiona a largura útil de ampla para compacta e verifica ausência de exceção com paginação visível.
-- [ ] Executar `rtk flutter test test/features/notices/notice_directory_page_test.dart` em `apps/superadmin` e confirmar falha na asserção de `pageSizeOptions.contains(pageSize)`.
-- [ ] Mover a sincronização do tamanho de página para a mesma decisão de breakpoint usada no `LayoutBuilder`, mantendo `11` para cards compactos e `8` para tabela.
-- [ ] Executar novamente o teste focado e confirmar sucesso.
+- [x] Adicionar teste que redimensiona a largura útil de ampla para compacta e verifica ausência de exceção com paginação visível.
+- [x] Executar `rtk flutter test test/features/notices/notice_directory_page_test.dart` em `apps/superadmin` e confirmar falha na asserção de `pageSizeOptions.contains(pageSize)`.
+- [x] Mover a sincronização do tamanho de página para a mesma decisão de breakpoint usada no `LayoutBuilder`, mantendo `11` para cards compactos e `8` para tabela.
+- [x] Executar novamente o teste focado e confirmar sucesso.
 
 ### Task 2: Conversas e detalhe de Convite
 
@@ -52,11 +52,11 @@ generated_at: "2026-09-01"
 - Consumes: `ChatRepository`, `PlatformInvite` e os componentes administrativos já exportados.
 - Produces: estados de chat distinguíveis e detalhe de convite com hierarquia canônica.
 
-- [ ] Escrever teste reproduzindo o carregamento que atualmente cai no painel genérico e identificar a exceção segura produzida pelo repository.
-- [ ] Corrigir apenas a causa identificada, preservando fail-closed e autorização server-side.
-- [ ] Escrever teste do detalhe com retorno, resumo, ações, dados e linha do tempo em 375 e 1440.
-- [ ] Compor o detalhe com superfícies e espaçamentos tokenizados, mantendo reenviar e revogar intactos.
-- [ ] Executar os dois arquivos de teste focados.
+- [x] Escrever teste reproduzindo o carregamento que atualmente cai no painel genérico e identificar a exceção segura produzida pelo repository.
+- [x] Corrigir apenas a causa identificada, preservando fail-closed e autorização server-side.
+- [x] Escrever teste do detalhe com retorno, resumo, ações, dados e linha do tempo em 375 e 1440.
+- [x] Compor o detalhe com superfícies e espaçamentos tokenizados, mantendo reenviar e revogar intactos.
+- [x] Executar os dois arquivos de teste focados.
 
 ### Task 3: Diretórios, arquivos e paginação
 
@@ -72,10 +72,10 @@ generated_at: "2026-09-01"
 - Consumes: `CoeloAdminListingToolbar`, `CoeloAdminFileActions`, `CoeloAdminResizableTable`, `CoeloAdminCreateAction` e `CoeloAdminPagination`.
 - Produces: diretórios com a anatomia de Instituições e ações de arquivo explicitamente indisponíveis.
 
-- [ ] Adicionar expectativas focadas para ações de arquivo, criação, tabela/lista e paginação depois do conteúdo.
-- [ ] Reorganizar cada diretório na ordem toolbar, tabs, criação, conteúdo e rodapé de paginação.
-- [ ] Ajustar larguras naturais de coluna e habilitar rolagem somente quando o conteúdo exigir.
-- [ ] Executar os três testes focados.
+- [x] Adicionar expectativas focadas para ações de arquivo, criação, tabela/lista e paginação depois do conteúdo.
+- [x] Reorganizar os diretórios de Convites e Comunicações na ordem canônica; Circulares foi transferido à frente proprietária da superfície `Coelo (Principal)` do Superadmin.
+- [x] Ajustar larguras naturais de coluna nas superfícies mantidas por esta frente e habilitar rolagem somente quando o conteúdo exigir.
+- [x] Executar os testes focados de Convites, Comunicações e do diretório de Circulares antes do handoff.
 
 ### Task 4: Formulários de Comunicações e Circulares
 
@@ -91,11 +91,15 @@ generated_at: "2026-09-01"
 - Consumes: `SuperadminFormStepNavigation`, `SuperadminFormActionFooter`, campos Coelo e contratos de circular existentes.
 - Produces: formulário de aviso canônico e editor de circular com prévia responsiva.
 
-- [ ] Escrever expectativas para a hierarquia do rodapé e para o editor/preview nos breakpoints críticos.
-- [ ] Substituir o rodapé vertical local do aviso pelo rodapé compartilhado.
+- [x] Confirmar por testes a hierarquia do formulário de Avisos nos breakpoints críticos.
+- [x] Confirmar que o formulário de Avisos já usa o rodapé compartilhado e não requer substituição.
 - [ ] Compor circular com título, corpo, mídia, perguntas, público/contexto, agendamento e publicação; a prévia aparece apenas quando houver largura útil.
 - [ ] Ligar criar, editar e detalhe às rotas existentes sem alterar autorização.
 - [ ] Executar os testes focados de formulários e rotas.
+
+> Handoff: os três itens pendentes de Circular pertencem à frente `Coelo
+> (Principal)` do Superadmin. O commit WIP `393fc7ff` não é integrável e deve
+> permanecer excluído da consolidação.
 
 ### Task 5: Fixtures e Supabase
 
@@ -109,10 +113,10 @@ generated_at: "2026-09-01"
 - Consumes: contratos de repository atuais e RPCs existentes.
 - Produces: fixtures determinísticas e operações autorizadas sem acesso direto privilegiado no cliente.
 
-- [ ] Escrever testes que comprovem quantidades maiores que uma página e vínculos coerentes por instituição, unidade, grupo, autor e público.
-- [ ] Substituir fixtures numeradas por entidades plausíveis e datas relacionadas.
-- [ ] Conferir CRUD/RLS de chat, convites, avisos e circulares por ator, tenant e escopo; alterar banco apenas quando o teste demonstrar lacuna.
-- [ ] Executar testes Dart e SQL focados.
+- [x] Escrever testes que comprovem quantidades maiores que uma página e vínculos coerentes nas fixtures de Chat, Convites e Comunicações.
+- [x] Substituir fixtures numeradas por entidades plausíveis e datas relacionadas nas superfícies desta frente.
+- [x] Auditar CRUD/RLS de Chat, Convites e Avisos por ator, tenant e escopo sem mutar o remoto não classificado.
+- [ ] Executar SQL focado depois da aprovação das decisões OQ-039/OQ-041 e do pacote nominal de migrations; adapters Dart focados estão verdes.
 
 ### Task 6: Gates e rastreadores
 
@@ -126,8 +130,8 @@ generated_at: "2026-09-01"
 - Consumes: resultados das cinco tarefas anteriores.
 - Produces: evidência rastreável sem ampliar a declaração de conclusão.
 
-- [ ] Formatar somente Dart afetado e executar análise focada.
-- [ ] Executar `rtk dart run apps/catalog/tool/validate_admin_visual_contracts.dart` na raiz.
-- [ ] Executar testes focados e inspecionar 375/768/1024/1440 sem atualizar goldens para esconder regressões.
-- [ ] Atualizar os três rastreadores com estados `local-green`, `blocked-supabase` ou `done` conforme a evidência real.
-- [ ] Revisar `rtk git diff --check`, segredos e mudanças não relacionadas antes do commit final.
+- [x] Formatar somente Dart afetado e executar análise focada.
+- [x] Executar `rtk dart run apps/catalog/tool/validate_admin_visual_contracts.dart` na raiz.
+- [x] Executar testes focados e inspecionar 375/768/1024/1440 sem atualizar goldens para esconder regressões.
+- [ ] Entregar propostas por action_id ao Coordenador, único escritor dos três rastreadores oficiais; propostas enviadas, reconciliação central pendente.
+- [x] Revisar `rtk git diff --check`, segredos e mudanças não relacionadas antes do commit final.
