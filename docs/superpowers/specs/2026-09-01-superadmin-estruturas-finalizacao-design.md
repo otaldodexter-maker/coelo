@@ -3,6 +3,7 @@ title: "Finalização das telas de Estruturas do Superadmin"
 source: "Solicitação do Owner em 2026-09-01; anexos visuais 1–15; PRDs e design system Coelo"
 status: "approved-design"
 generated_at: "2026-09-01"
+updated_at: "2026-09-02"
 ---
 
 # Finalização das telas de Estruturas do Superadmin
@@ -41,6 +42,13 @@ implementação das telas nem fallback de fixtures em produção.
   atividades.
 - Formulários de instituição e unidade apresentam mapa no cadastro/edição de
   localização, reutilizando coordenadas e serviço de localização existentes.
+- O comportamento normativo de catálogos independentes, locais internos e
+  externos, mapa visual simples, fotos, visibilidade e agendamento passa a ser
+  definido por
+  `2026-09-02-superadmin-locais-mapas-agendamentos-design.md`. Esta referência
+  substitui qualquer leitura de que o mapa exige geocodificação ou provedor
+  cartográfico: a imagem/planta é opcional e usa marcadores posicionados sobre
+  ela.
 - No mobile, o cabeçalho usa logo completa Coelo com respiro superior e chevron:
   direita quando fechado, baixo quando o drawer está aberto. Não há hambúrguer.
   O acionador de Bug permanece acessível.

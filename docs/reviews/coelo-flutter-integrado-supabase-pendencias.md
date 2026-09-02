@@ -14,11 +14,38 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "E9BC65B1A0B9A913081D1D26A6B2611389337E8ADB0D93457DA3896EE66E26BE"
-supabase_tracker_sha256: "54DB8CE5E76EA4AEC07F4A4F849017887A84656A60565556EA02DEBB1BE31E99"
+flutter_tracker_sha256: "A20ED99A3589306C957E2FEA8752349015B0FB2CEBBFD85A28FE30C2F2A67620"
+supabase_tracker_sha256: "D0771A612FCD9A966328545ADDCE218C567537979477F3DDEBDA63B3BC441F55"
 ---
 
 # Pendências Coelo — Flutter integrado ao Supabase
+
+## Decisão aprovada — locais, mapas e agendamentos — 2026-09-02
+
+- Fonte canônica:
+  `docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md`.
+  Nenhum trabalho de implementação foi iniciado; `ready-for-e2e` e
+  `verified-e2e` permanecem inalterados.
+- Cadeia futura obrigatória para os doze IDs reservados: Superadmin real →
+  repository produtivo → Supabase → autorização/RLS → persistência ou Storage
+  privado → resposta → reload. `/dev` usa somente fixtures determinísticas e
+  nunca serve de fallback para produção.
+- E2E 2: `institutions.locations-map`, `units.locations-map`,
+  `units.copy-institution-location`, `locations.list`,
+  `locations.create-edit`, `locations.detail-links` e `groups.location`.
+- E2E 4: `forms.location-question` e `forms.location-answer`, limitados a locais
+  internos catalogados e visíveis ao respondente.
+- E2E 5: `locations.schedule`, `activities.location` e `agenda.location`, com
+  reservas opcionais, recorrência, disponibilidade e política de conflito
+  `bloquear` ou `alertar` com override autorizado/auditado.
+- A prova integrada deverá cobrir cópia independente, local pontual versus
+  catalogado, externo sem endereço negado, visibilidade por público, mídia
+  privada, permitido/negado/revogado, tenant A/B, conflito, override,
+  idempotência, persistência e reload.
+- Os IDs ainda não alteram os denominadores históricos de 207 Flutter e 180
+  E2E; o inventário posterior deverá reconciliar aliases antes de recalcular.
+  Estado inicial correto: Flutter pendente, Supabase
+  `blocked-implementation`, integração 0/12 `verified-e2e`.
 
 ## Checkpoint E2E 4 — rodada controlada de 45 minutos — 2026-09-02
 

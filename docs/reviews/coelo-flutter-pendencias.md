@@ -12,6 +12,34 @@ visual_program_accepted_count: 0
 
 # Pendências Coelo — Flutter por tela e ação
 
+## Decisão aprovada — locais, mapas e agendamentos — 2026-09-02
+
+- Fonte canônica:
+  `docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md`.
+  Este checkpoint registra somente escopo; nenhuma implementação foi iniciada
+  e nenhum estado foi promovido.
+- `/dev` deverá usar fixtures determinísticas próprias, sem gravar no Supabase;
+  produção continuará exclusivamente ligada a repositories Supabase e
+  fail-closed, sem fallback fake.
+- E2E 2 recebe as telas Instituição criar/editar (`institutions.locations-map`),
+  Unidade criar/editar (`units.locations-map`), copiar local da instituição
+  (`units.copy-institution-location`), diretório de Locais (`locations.list`),
+  Local criar/editar (`locations.create-edit`), detalhe/vínculos
+  (`locations.detail-links`) e Turma criar/editar (`groups.location`).
+- E2E 4 recebe Formulário/editor (`forms.location-question`) e
+  Formulário/responder (`forms.location-answer`), com pergunta de local interno
+  de escolha única ou múltipla e opções filtradas pela visibilidade do ator.
+- E2E 5 recebe Gestão de agendamento (`locations.schedule`), Atividade
+  criar/editar (`activities.location`) e Evento criar/editar
+  (`agenda.location`), incluindo reserva opcional, recorrência e conflito.
+- Requisitos visuais: seção `Mapa e locais` sempre disponível; imagem/planta e
+  foto por local opcionais; marcador clicável; tipo interno/externo; endereço
+  obrigatório somente no externo; andar livre; visibilidade `equipe`,
+  `responsáveis`, `alunos` ou `todos`; uso pontual com convite para catalogar.
+- Os doze IDs estão reservados e pendentes, fora do denominador histórico de
+  207 até o inventário técnico eliminar aliases/duplicidades. O repasse às
+  frentes não autoriza editar código, router, fixtures, testes ou goldens.
+
 ## Checkpoint E2E 4 — rodada controlada de 45 minutos — 2026-09-02
 
 - Branch `codex/e2e-formularios-cuidado`, base `1add8200`, commit

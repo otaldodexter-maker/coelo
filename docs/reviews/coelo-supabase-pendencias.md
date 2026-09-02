@@ -10,6 +10,36 @@ family_count: 37
 
 # Pendências Coelo — Supabase
 
+## Decisão aprovada — locais, mapas e agendamentos — 2026-09-02
+
+- Fonte canônica:
+  `docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md`.
+  Este bloco é somente normativo: zero migration, RPC, RLS, Edge Function,
+  Storage, ledger, deploy ou mutação remota foi autorizado ou executado.
+- O backend futuro deve sustentar catálogos independentes por instituição e
+  unidade. Repassar um local cria cópia independente e auditável, nunca vínculo
+  mutável compartilhado.
+- `locations.create-edit`: interno não exige endereço; externo exige endereço;
+  nome e andar são livres, limitados e validados server-side. Visibilidade por
+  local é `equipe`, `responsáveis`, `alunos` ou `todos` autenticados do escopo.
+- `institutions.locations-map`, `units.locations-map` e
+  `locations.detail-links`: imagem geral, marcador e foto opcional usam
+  Supabase Storage privado, reautorização e URL temporária. Não usar bucket
+  público, R2, path ou segredo no Flutter.
+- `locations.schedule`, `groups.location`, `activities.location` e
+  `agenda.location`: reservas únicas/recorrentes e intervalos precisam de
+  concorrência/idempotência. A política por instituição/unidade é `bloquear` ou
+  `alertar`; override exige capability específica, justificativa e auditoria.
+- `forms.location-question` e `forms.location-answer` persistem IDs de locais
+  internos catalogados mais snapshot versionado, oferecendo somente opções
+  visíveis ao respondente. Local pontual não participa da agenda nem dessa lista.
+- Todo contrato valida ator, capability, tenant, proprietário, consumidor e
+  visibilidade, com RLS deny-by-default, grants mínimos, IDOR/BOLA, tenant A/B,
+  negado/revogado e cleanup de mídia.
+- Os doze IDs aprovados permanecem fora do denominador histórico de 207 até o
+  inventário físico. Estado de todas as novas ações: `blocked-implementation`;
+  nenhuma família avançou para `done`.
+
 ## Checkpoint E2E 4 — rodada controlada de 45 minutos — 2026-09-02
 
 - `forms.export` recebeu somente o contrato cliente/API do commit `2f1479fc`;

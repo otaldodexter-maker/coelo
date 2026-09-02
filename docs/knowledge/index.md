@@ -4,7 +4,7 @@ knowledge_id: knowledge-index
 source: docs/knowledge/README.md
 status: validated
 generated_at: 2026-08-04
-updated_at: 2026-08-11
+updated_at: 2026-09-02
 audience: team
 surfaces:
   - documentation
@@ -32,6 +32,8 @@ review_owner: Coelo Owner
 | team | MVP / Mídia e arquivos | [Storage e ações de arquivo diferidas no MVP](team/mvp-storage-and-deferred-file-actions.md) | validated | `decisions/0030-mvp-private-media-supabase-storage.md`; `decisions/0031-mvp-import-export-buttons-only.md` |
 | team | Superadmin / Conversas | [Conversas produtivas do Superadmin](team/superadmin-conversations-production.md) | validated | specs/028-superadmin-conversations-production.md |
 | team | Suporte / Benchmark externo | [Benchmark de suporte e stories do ClassDojo](team/classdojo-support-benchmark.md) | validated | `docs/product/competitive-map.md` |
+| team | Superadmin / Locais, mapas e agendamentos | [Locais, mapas e agendamentos no Superadmin](team/superadmin-locations-maps-scheduling.md) | validated | `docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md` |
+| admin | Locais, mapas e reservas | [Gestão de locais, mapas e reservas](admin/superadmin-locations-maps-scheduling.md) | validated | `docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md` |
 
 | team | Superadmin / Saúde e Cuidado | [Saúde e Cuidado centrados na criança](team/health-care.md) | validated | `specs/020-superadmin-health-care.md` |
 | admin | Saúde e Cuidado | [Operação de Saúde e Cuidado](admin/health-care.md) | validated | `specs/020-superadmin-health-care.md` |
