@@ -3,7 +3,7 @@ title: "Progresso de Aprendizagem do Coelo"
 source: "Interacoes do usuario com a skill coelo-tutor"
 status: "active-learning-memory"
 generated_at: "2026-07-14"
-updated_at: "2026-07-15"
+updated_at: "2026-09-02"
 ---
 
 # Progresso de Aprendizagem do Coelo
@@ -44,6 +44,14 @@ updated_at: "2026-07-15"
 - Widget como a peca visual que o Flutter desenha.
 - `class` como a forma de definir um tipo novo em Dart.
 - `State` como a memoria viva de um widget.
+- Smoke e smoke humano como verificações rápidas automatizada e manual.
+- SMTP/recovery real como o envio e recebimento efetivo de recuperação de senha.
+- Revogação como retirada de acesso que deve valer também após recarregar.
+- `fail-closed` como acesso bloqueado com segurança quando a autorização ou o backend não pode confirmar permissão.
+- Gateway e adapter local como fronteiras entre a tela e a fonte de dados, usadas para testar e trocar a implementação sem misturar regras no widget.
+- Replay como reaplicar migrations em ordem num ambiente limpo para conferir se o banco pode ser reconstruído.
+- Tenant A/B como teste de isolamento entre duas instituições fictícias.
+- Persistência, reload e E2E como salvar no backend, recarregar o app e comprovar o fluxo inteiro.
 
 ## Compreendidos com evidencia
 
@@ -61,6 +69,9 @@ updated_at: "2026-07-15"
 - Explicar por que `SuperadminApp` e um `StatefulWidget` neste projeto.
 - Distinguir melhor a casca web de entrada do app e o que o Flutter monta de fato.
 - Distinguir com clareza Dart, Flutter, widget e classe no `SuperadminApp`.
+- Explicar a diferença entre smoke automático e smoke humano.
+- Explicar por que Tenant A/B e revogação precisam ser testados juntos.
+- Explicar, com palavras próprias, a cadeia persistência → reload → E2E.
 
 ## Retomar
 
@@ -83,6 +94,9 @@ updated_at: "2026-07-15"
 - O usuario confirmou `lib` como pasta do codigo Dart/Flutter e apontou `main.dart` como o arquivo de entrada.
 - Aula de hoje avancou para Dart e Flutter usando `SuperadminApp` como exemplo real.
 - O usuario confirmou que `class` e Dart e `StatefulWidget` e Flutter.
+- Em 2026-09-02, foram apresentados termos de validação da Etapa 2: smoke,
+  SMTP/recovery, revogação, fail-closed, gateways/adapters, replay, Tenant A/B,
+  persistência, reload e E2E. Evidência de compreensão ainda pendente.
 
 ## Proximo passo
 
@@ -92,6 +106,7 @@ updated_at: "2026-07-15"
 ## Historico
 
 - 2026-07-15 - Aula de hoje avancou em `main.dart`: `import`, `main()`, `usePathUrlStrategy()`, `runApp()` e `SuperadminApp`. Estudo pausado por agora.
+- 2026-09-02 - Glossário da Etapa 2 apresentado a pedido do usuário, usando gateways e replay reais do Coelo. Checagem pendente.
 - 2026-07-15 - O usuario pediu para incluir Git e GitHub na trilha do tutor.
 - 2026-07-15 - Aula 00 apresentada: repositorio, pastas, arquivo, `lib`, `main.dart` e caminho inicial do Superadmin. Checagem pendente.
 - 2026-07-15 - Aula 00 checada: `lib` confirmado como pasta do codigo Dart/Flutter e `main.dart` confirmado como arquivo de entrada.
