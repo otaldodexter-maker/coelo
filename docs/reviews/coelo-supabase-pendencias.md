@@ -3,12 +3,89 @@ title: "Pendências Coelo — Supabase por tela e ação"
 source: "docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; decisions/0020-backend-authorization-application-security.md; specs aprovadas por dominio; auditoria consolidada em 2026-08-26; Git dev cd1ea97c e inventario remoto read-only em 2026-09-01"
 status: "living"
 generated_at: "2026-08-26"
-updated_at: "2026-09-01"
+updated_at: "2026-09-02"
 action_count: 207
 family_count: 37
 ---
 
 # Pendências Coelo — Supabase
+
+## Checkpoint E2E 4 — rodada controlada de 45 minutos — 2026-09-02
+
+- `forms.export` recebeu somente o contrato cliente/API do commit `2f1479fc`;
+  não houve migration, deploy, Storage, ledger ou mutação remota. O estado
+  Supabase continua `fail-closed`, não `done`.
+- Primeiro gate aberto: gateway v2 sob contexto interno nominal, exigindo
+  `response_id` e validando ator, `forms.responses.export`, tenant, formulário,
+  ocorrência e resposta antes de criar o job individual; depois worker,
+  idempotência, auditoria e negativos permitido/negado/revogado/cross-tenant.
+- Inventário remoto read-only encontrou 11 Edge Functions, enquanto o snapshot
+  anterior registrava 10; encontrou também 7 arquivos pgTAP de Forms com 159
+  asserts, contra 9 arquivos/169 no histórico. Reconciliar antes de promover
+  qualquer evidência.
+- P0 de proveniência: `form-export-download` v4 está implantada, mas sua fonte
+  não existe no checkout atual; recuperar e revisar o histórico antes de editar
+  ou publicar essa função. Nenhuma mutação foi feita para investigar a lacuna.
+- URLs assinadas privadas já emitidas não oferecem revogação forte por mudança
+  de sessão; o desenho deve usar ticket one-time antes da emissão e TTL curto.
+
+## Checkpoint E2E 5 — rodada controlada de 45 minutos — 2026-09-02
+
+- Nenhuma migration, ledger, deploy ou mutação remota foi executada; nenhuma
+  família avançou para `done`.
+- `superadmin_activity_directory_v2` foi inventariada read-only. A projeção
+  atual não entrega `description`, `origin_scope_kind`, `distribution_scope`
+  nem `governance_kind`, todos obrigatórios em `ActivityDirectoryItem`.
+- Não mapear defaults no Flutter. O primeiro gate é reservar uma migration
+  forward-only estritamente de Activities v2, completar a projeção e então
+  provar pgTAP permitido/negado/revogado, tenant A/B, paginação e reload.
+- Permanecem conflitos históricos a reconciliar antes de promoção:
+  `activities.assessment`, o pacote 85/85 de Avaliações e o backend people-based
+  de Assiduidade. O remoto não foi usado nesta rodada.
+
+## Checkpoint E2E 3 — rodada controlada de 45 minutos — 2026-09-02
+
+- Inventário remoto read-only confirmou o projeto saudável e ledger remoto até
+  `20260901200206`; nenhuma migration, deploy ou mutação remota foi executada.
+- Migrations locais recentes de Chat, Avisos, Convites e Circulares ainda não
+  constam no remoto; nenhuma família avançou para `done`.
+- Chat preserva um repository canônico, mas Realtime ainda é refresh por RPC,
+  anexos ainda citam R2 e precisam convergir para Supabase Storage privado.
+  Avisos/Circulares continuam bloqueados por mídia e Convites por delivery/outbox.
+- Primeiro gate: replay/cutover coordenado de uma vertical pequena e prova
+  permitido/negado/revogado, tenant A/B, persistência, reload e auditoria.
+
+## Checkpoint E2E 2 — rodada controlada de 45 minutos — 2026-09-02
+
+- `people.list` recebeu somente comportamento informativo Flutter para ações de
+  arquivo. Nenhum backend, job, RPC, Storage, migration ou remoto foi alterado;
+  a operação real permanece `deferred-post-mvp` e não promove `done`.
+- O diretório funcional de Pessoas continua dependente do legado people-based;
+  detalhe/reload v2 ainda carecem de replay e prova remota. OQ-031/OQ-032/OQ-043
+  continuam bloqueando gateways nominais de Unidades/Turmas/Pessoas.
+- Reconciliar expectativas pgTAP antigas de AAL2 com o adiamento de MFA do MVP
+  antes de qualquer promoção.
+
+## Checkpoint E2E 1 — rodada controlada de 45 minutos — 2026-09-02
+
+- O commit `054a09cc` altera somente a tradução de erros no cliente do
+  repository de Usuários internos. Não houve migration, RPC, RLS, Storage,
+  Edge Function, configuração ou mutação remota; estado Supabase inalterado.
+- Primeiro gate backend permanece a confirmação do contrato nominal de
+  `internal-users.list`, seguida de permitido/401/403, sessão ou membership
+  revogada, tenant A/B, reload e auditoria. Nenhuma família avançou para `done`.
+- P0 de ledger/cutover: o inventário encontrou 116 migrations remotas e 146
+  arquivos locais, com 53 versões somente remotas e 83 somente locais. É
+  proibido aplicar a cauda em lote; reconciliar proveniência e ordem antes de
+  qualquer deploy.
+- O remoto ainda não possui os RPCs públicos de Usuários internos da migration
+  local `20260901210000`; Perfis permanecem people-based e Modelos possuem
+  apenas cursor legado. `platform_permissions` conserva grants amplos que
+  precisam ser reconciliados com menor privilégio.
+- Advisors retornaram 236 achados: 59 INFO de RLS sem policy, 176 WARN de
+  funções `SECURITY DEFINER` executáveis por `authenticated` e 1 WARN de
+  proteção contra senha vazada. No recorte de Identidade/Acessos são 7 INFO e
+  25 WARN, além do aviso Auth. Nenhuma correção remota foi executada.
 
 ## 0. Etapa 2 — resumo recuperável do backend e banco
 

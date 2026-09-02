@@ -3,7 +3,7 @@ title: "Pendências Coelo — Flutter integrado ao Supabase"
 source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; Git dev 7b94428aa9861b68fcc81b335a98857b43de789f"
 status: "open"
 generated_at: "2026-08-26"
-updated_at: "2026-09-01"
+updated_at: "2026-09-02"
 action_count: 180
 historical_action_count: 202
 deferred_post_mvp_action_count: 22
@@ -14,11 +14,74 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "E8D6EFB5B01DDD00C67F1043E68D86E426D3ECF1A2CEC1A6A7D4882BDA92EFED"
-supabase_tracker_sha256: "67393917951114FCBA24E449E855170D3A84526692D7E20ECA080E96259836B6"
+flutter_tracker_sha256: "E9BC65B1A0B9A913081D1D26A6B2611389337E8ADB0D93457DA3896EE66E26BE"
+supabase_tracker_sha256: "54DB8CE5E76EA4AEC07F4A4F849017887A84656A60565556EA02DEBB1BE31E99"
 ---
 
 # Pendências Coelo — Flutter integrado ao Supabase
+
+## Checkpoint E2E 4 — rodada controlada de 45 minutos — 2026-09-02
+
+- Branch `codex/e2e-formularios-cuidado`, commit `2f1479fc`, preserva `/dev`
+  com fixtures determinísticas e altera somente o contrato produtivo de
+  `forms.export` para carregar exatamente um `response_id`.
+- `forms.export` continua 0/1 `verified-e2e`: cliente e backend estão
+  intencionalmente incompatíveis até existir gateway v2 nominal, worker de uma
+  resposta, Storage privado com ticket one-time/TTL curto, auditoria, cleanup e
+  testes permitido/negado/revogado/cross-tenant, persistência e reload.
+- O recorte E2E 4 inventariado contém 30 `action_id`; permanece 0/30
+  `ready-for-e2e` e 0/30 `verified-e2e`. O denominador geral permanece 180,
+  sem promoção de contadores nesta rodada.
+- Próximo passo coordenado: reservar nome/ordem da migration forward-only,
+  recuperar a fonte implantada de `form-export-download` e só então implementar
+  o backend individual com arquivo sintético sem PII.
+
+## Checkpoint E2E 5 — rodada controlada de 45 minutos — 2026-09-02
+
+- Recorte: 57 ações integráveis após retirar `attendance.export` e
+  `audit.export`; permanece 0/57 `ready-for-e2e` e 0/57 `verified-e2e`.
+- `activities.list` foi rastreada até o primeiro gate: rota normal injeta o
+  repository Supabase, mas `fetchPage` falha fechado porque a projeção RPC v2
+  ainda não é equivalente ao DTO Flutter. `/dev` continua separado, com dados
+  fake/determinísticos.
+- A branch `codex/e2e-agenda-operacoes` terminou limpa, sem commit e sem tocar
+  router, shell, design system, migrations, ledger, Storage ou remoto.
+- Próximo passo: migration forward-only reservada para completar a projeção;
+  depois RED do adapter, negativos, persistência/reload e prova remota. Nenhuma
+  ação foi promovida nesta rodada.
+
+## Checkpoint E2E 3 — rodada controlada de 45 minutos — 2026-09-02
+
+- Branch `codex/e2e-comunicacao-coelo-principal`, commit `1293138e`, alterou
+  somente o contrato de regressão do shell; `/dev` fake/determinístico e rotas
+  normais produtivas/`fail-closed` permanecem separados.
+- O recorte normativo inventariado contém 38 ações; continua 0/38
+  `ready-for-e2e` e 0/38 `verified-e2e`. O denominador geral canônico permanece
+  180, corrigindo a referência histórica 202 do handoff.
+- Não houve prova nova de tenant A/B, revogação, persistência, reload ou
+  auditoria. Gate seguinte: escolher Chat list/open/send ou Convites, integrar
+  o backend pelo Coordenador e executar a cadeia completa no Superadmin real.
+
+## Checkpoint E2E 2 — rodada controlada de 45 minutos — 2026-09-02
+
+- Commit `35da78b9`: `people.list` mantém as ações de arquivo visíveis e
+  informativas na rota normal, sem conectar operação real. `/dev` preserva
+  fixtures; produção preserva a boundary sem fake.
+- O subcontrole de import/export é Flutter-only no MVP e não possui gate E2E.
+  `people.list` funcional continua sem `verified-e2e`; nenhuma das 39 ações do
+  recorte foi promovida.
+
+## Checkpoint E2E 1 — rodada controlada de 45 minutos — 2026-09-02
+
+- Commit `054a09cc`: `internal-users.list` sanitiza localmente erros 401/403,
+  mas continua 503 na rota normal porque o composition root produtivo não foi
+  reservado nesta rodada. `/dev` permanece fake/determinístico.
+- Recorte canônico de 28 ações: 0/28 `ready-for-e2e` e 0/28 `verified-e2e`.
+  Próximo gate é reservar serialmente o composition root/router, compor o
+  repository e provar permitido/negado/revogado, tenant A/B, reload e auditoria.
+- Cutover permanece bloqueado por drift de ledger (116 migrations remotas, 146
+  arquivos locais; 53 somente remotas e 83 somente locais) e por Advisors de
+  segurança ainda abertos. Nunca aplicar a cauda local em lote.
 
 ## 0. Etapa 2 — controlador recuperável de conclusão ponta a ponta
 

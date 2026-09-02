@@ -3,7 +3,7 @@ title: "Pendências Coelo — Flutter por tela e ação"
 source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git HEAD cd1ea97c76695e4be72cd91882d65c9c235704a4"
 status: "open"
 generated_at: "2026-08-26"
-updated_at: "2026-09-01"
+updated_at: "2026-09-02"
 action_count: 207
 family_count: 37
 visual_program_count: 31
@@ -11,6 +11,81 @@ visual_program_accepted_count: 0
 ---
 
 # Pendências Coelo — Flutter por tela e ação
+
+## Checkpoint E2E 4 — rodada controlada de 45 minutos — 2026-09-02
+
+- Branch `codex/e2e-formularios-cuidado`, base `1add8200`, commit
+  `2f1479fc` (`fix(forms): scope exports to one response`); worktree limpa.
+- `forms.export`: o contrato produtivo Flutter/API agora exige exatamente um
+  `response_id` por exportação de resposta individual. A participação anônima
+  nominal usa contrato separado e o export de conteúdo não envia
+  `justification`.
+- Evidência fresca: 13/13 testes Flutter, 9/9 testes de `coelo_api`, 34/34
+  testes Deno de `form-operations`, análise estática e `git diff --check`
+  verdes. As fixtures e rotas `/dev` não foram alteradas.
+- Estado permanece `local-green`/parcial, não `verified`: ainda faltam a ação
+  real na linha e no detalhe, backend v2 compatível e prova ponta a ponta.
+- A regressão separada observada por E2E 1 em `/dev/profile` e `/dev/settings`
+  (2 falhas em 33 testes de `account_routes_test.dart`) continua aberta e não
+  foi corrigida nesta branch por conflito de ownership do router.
+
+## Checkpoint E2E 5 — rodada controlada de 45 minutos — 2026-09-02
+
+- Branch `codex/e2e-agenda-operacoes`, base `1add8200`, terminou limpa e sem
+  commit porque nenhum delta seguro cabia antes de completar o contrato.
+- `activities.list`: a rota normal já injeta
+  `SupabaseActivityDirectoryRepository`, enquanto `/dev` preserva o repository
+  fake/determinístico. `fetchPage` continua honestamente `fail-closed`.
+- Evidência fresca: 3/3 testes do diretório de Atividades, 6/6 de Agenda e 2/2
+  de Planos passaram; 11 testes executados, todos os 11 verdes. Nenhum
+  `action_id` foi promovido.
+- Recorte histórico E2E 5: 59 IDs; `attendance.export` e `audit.export` são
+  pós-MVP, deixando 57 ações integráveis. O próximo passo não envolve UI:
+  completar primeiro a projeção backend v2 sem inventar defaults no cliente.
+
+## Checkpoint E2E 3 — rodada controlada de 45 minutos — 2026-09-02
+
+- Branch `codex/e2e-comunicacao-coelo-principal`, commit `1293138e`
+  (`test(superadmin): align principal shell regression contract`); worktree
+  limpa. Somente
+  `apps/superadmin/test/app/router/persistent_shell_routes_test.dart` mudou.
+- O harness `/dev` agora habilita explicitamente o preview e os testes deixam de
+  exigir o shell administrativo nas superfícies dedicadas do menu Coelo
+  (Principal). Router, shell e UI produtiva não foram alterados.
+- Evidência fresca declarada: 15/15 em `persistent_shell_routes_test`, 66/66 na
+  suíte de shell e 21/21 nas suítes específicas Principal; análise focal e
+  `git diff --check` verdes. Nenhum `action_id` foi promovido.
+- Gaps Flutter mantidos: confirmação do caso produtivo `principal-chat`, golden
+  conjunto do cabeçalho e teste compacto de `_PageHeader` a 375 px/texto 200%.
+
+## Checkpoint E2E 2 — rodada controlada de 45 minutos — 2026-09-02
+
+- Branch `codex/e2e-estruturas-pessoas`, commit `35da78b9`
+  (`fix(superadmin): keep people file actions visible`); worktree limpa.
+- `people.list`: a rota normal sem callbacks produtivos mantém `Arquivos`,
+  `Importar` e `Exportar CSV/XLSX` visíveis. O clique não abre picker, arquivo,
+  job ou RPC e informa exatamente “Disponível depois do MVP”. `/dev` preserva
+  callbacks e fixtures determinísticas.
+- Evidência fresca: 19/19 testes focados, 2/2 testes da boundary produção/dev,
+  analyzer focal e validador visual verdes. Uma suíte de rotas teve 4/5 verdes;
+  a falha restante é o redirect preexistente de `/dev/people` sem sessão.
+- Estado máximo `local-green`; `people.list` não avança para `verified` e a
+  operação real de import/export continua `deferred-post-mvp`.
+
+## Checkpoint E2E 1 — rodada controlada de 45 minutos — 2026-09-02
+
+- Branch `codex/e2e-identidade-acessos`, commit `054a09cc`
+  (`fix(superadmin): sanitize internal user authorization errors`); worktree
+  limpa. A fatia pertence a `internal-users.list` e não foi promovida.
+- O repository agora traduz SQLSTATE `42501` e `PGRST301` para erro constante
+  `unauthorized`/“Acesso não autorizado.”, sem expor detalhes privados do
+  backend. Evidência: 7/7 testes focados, analyzer e diff checks verdes.
+- A rota normal `/internal-users` continua 503/`fail-closed` porque o
+  composition root ainda não injeta o repository produtivo. `/dev` permanece
+  fake/determinístico.
+- O preflight encontrou regressão preexistente em `/dev/profile` e
+  `/dev/settings`: 31/33 testes passaram; os dois casos não montaram as páginas
+  esperadas. A correção aguarda reserva serial do router/composition root.
 
 ## 0. Etapa 2 — resumo recuperável do que foi feito e do que falta
 
