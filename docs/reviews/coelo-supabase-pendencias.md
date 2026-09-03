@@ -10,6 +10,10 @@ family_count: 37
 
 # Pendências Coelo — Supabase
 
+> **Etapa 2 — 2026-09-03:** ADR 0032 aprovou R2 privado para mídia nova do MVP.
+> Supabase cobre metadados, RLS, autorização, auditoria e Media Gateway; não
+> criar Storage para mídia nova. Só `forms.responses.export` é exportação real.
+
 ## Decisão aprovada — locais, mapas e agendamentos — 2026-09-02
 
 - Fonte canônica:

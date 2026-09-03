@@ -7,6 +7,14 @@ generated_at: "2026-08-11"
 
 # Perguntas abertas e conflitos
 
+## Atualização de decisão — 2026-09-03
+
+ADR 0032 supersede a decisão anterior de Supabase Storage: mídia nova do MVP
+usa R2 privado, sem migração (não existem dados). Stream e transformações ficam
+dependentes de métricas reais. A única exportação real continua sendo
+`forms.responses.export` por resposta individual. As linhas históricas abaixo
+permanecem para rastreabilidade.
+
 ## Decisões supersedentes — mídia e arquivos no MVP (2026-09-01)
 
 - Toda mídia privada do MVP usa Supabase Storage. Cloudflare R2 não existe no

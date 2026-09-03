@@ -1,11 +1,14 @@
 ---
 title: "Mídia privada do MVP no Supabase Storage"
 source: "decisão explícita do Owner Coelo em 2026-09-01; decisions/0010-private-media-r2.md; decisions/0022-superadmin-activities-and-identity-storage.md; decisions/0026-happens-mvp-private-supabase-storage.md"
-status: "approved"
+status: "superseded"
 generated_at: "2026-09-01"
+superseded_by: "decisions/0032-mvp-private-media-r2.md"
 ---
 
-# ADR 0030 — Mídia privada do MVP no Supabase Storage
+# ADR 0030 — Mídia privada do MVP no Supabase Storage (histórica)
+
+> Supersedida em 2026-09-03 pela ADR 0032; preservada apenas para proveniência.
 
 ## Decisão
 

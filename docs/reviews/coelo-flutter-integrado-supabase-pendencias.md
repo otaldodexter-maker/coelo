@@ -20,6 +20,10 @@ supabase_tracker_sha256: "D0771A612FCD9A966328545ADDCE218C567537979477F3DDEBDA63
 
 # Pendências Coelo — Flutter integrado ao Supabase
 
+> **Etapa 2 — 2026-09-03:** fronteira de mídia atualizada pela ADR 0032:
+> Flutter → Media Gateway → R2 privado; Supabase mantém metadados/RLS/auditoria.
+> Stream não é gate do MVP; somente `forms.responses.export` exige E2E de arquivo.
+
 ## Decisão aprovada — locais, mapas e agendamentos — 2026-09-02
 
 - Fonte canônica:

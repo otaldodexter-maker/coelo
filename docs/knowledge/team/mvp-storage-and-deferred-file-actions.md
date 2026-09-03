@@ -4,7 +4,7 @@ knowledge_id: "mvp-storage-and-deferred-file-actions"
 source: "AGENTS.md"
 status: "validated"
 generated_at: "2026-09-01"
-updated_at: "2026-09-01"
+updated_at: "2026-09-03"
 audience: "team"
 surfaces: [superadmin, principal-menu, supabase, storage, imports, exports, media]
 visibility: "internal"
@@ -13,9 +13,9 @@ review_owner: "Coelo Product e Segurança"
 
 # Storage e ações de arquivo no MVP
 
-Toda mídia privada do MVP usa Supabase Storage privado. R2 não existe no
-ambiente atual e não bloqueia a Etapa 2 nem o MVP. Bucket público, segredo no
-cliente e URL permanente continuam proibidos.
+Desde 2026-09-03, toda mídia privada nova do MVP usa Cloudflare R2 privado;
+Supabase guarda metadados, permissões e auditoria. Não há dados para migrar.
+Bucket público, segredo no cliente e URL permanente continuam proibidos.
 
 Importação e exportação reais estão adiadas para depois do MVP. Nas telas
 aplicáveis, os botões permanecem visíveis, acessíveis e responsivos, mas apenas
@@ -37,7 +37,7 @@ coordenada e não destrutiva.
 No encerramento formal do MVP, o Owner deve ser consultado separadamente sobre:
 
 1. implementar importação e/ou exportação reais;
-2. avaliar evolução do Supabase Storage para Cloudflare R2.
+2. avaliar Stream/transformações após métricas reais do piloto.
 
 Sem nova aprovação, nenhum dos dois temas entra automaticamente na etapa
 seguinte.
