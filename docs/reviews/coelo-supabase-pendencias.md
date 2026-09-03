@@ -16,6 +16,20 @@ family_count: 37
 > gerando Excel com as respostas do formulário; exportações do Superadmin ficam
 > adiadas.
 
+## Checkpoint Etapa 2 — mídia por produto e exportação — 2026-09-03
+
+- R2 é o storage dos binários novos. O Media Gateway server-side valida sessão,
+  tenant, capability, audiência, MIME/tamanho, emite URL temporária, finaliza,
+  audita e limpa órfãos; Supabase mantém metadados e RLS.
+- Agora pode promover vídeo ao Stream por até 24h; expiração remove apenas a
+  cópia Stream e preserva o master R2. Enquanto codifica, R2 é fallback.
+- Momentos usa R2 por padrão e Stream somente por tráfego medido; Acontece usa
+  R2 por padrão; Chat não usa Stream no MVP.
+- Pendente: spec/migration/RLS/replay do Media Gateway e job de expiração;
+  nenhum recurso remoto foi criado.
+- `forms.responses.export` deve gerar Excel com as respostas do formulário;
+  exportações do Superadmin permanecem apenas botão visual.
+
 ## Decisão aprovada — locais, mapas e agendamentos — 2026-09-02
 
 - Fonte canônica:

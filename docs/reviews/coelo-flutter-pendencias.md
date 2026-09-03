@@ -17,6 +17,18 @@ visual_program_accepted_count: 0
 > para as respostas do Formulário em Excel; no Superadmin os demais botões
 > permanecem visíveis, honestos e adiados.
 
+## Checkpoint Etapa 2 — contrato de reprodução e exportação — 2026-09-03
+
+- Agora: player escolhe Stream quando pronto e usa MP4 temporário do R2 como
+  fallback durante a codificação; expiração de 24h não pode produzir tela
+  travada nem mensagem de download.
+- Momentos/Acontece: player reproduz URL temporária do R2 progressivamente;
+  Stream é exceção orientada por métricas. Chat permanece R2.
+- `forms.responses.export` renderiza ação de exportar Excel com as respostas do
+  formulário; import/export do Superadmin continua botão visível e indisponível.
+- Pendente: estados loading/processing/expired/error, renovação de URL,
+  acessibilidade e regressão visual precisam ser comprovados nas telas reais.
+
 ## Decisão aprovada — locais, mapas e agendamentos — 2026-09-02
 
 - Fonte canônica:

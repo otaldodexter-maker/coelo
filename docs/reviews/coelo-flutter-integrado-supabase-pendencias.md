@@ -25,6 +25,16 @@ supabase_tracker_sha256: "4B30E0883CFC8641CAD687EA19AB18FA6E858402A13F6CECB57C0D
 > Stream não é gate do MVP; somente `forms.responses.export` exige E2E de arquivo
 > Excel contendo as respostas do formulário.
 
+## Checkpoint Etapa 2 — política híbrida R2/Stream — 2026-09-03
+
+O fluxo integrado deve provar: Flutter → Media Gateway → autorização/RLS →
+R2 master → (opcional) Stream HOT → player, com tenant A/B, revogação,
+expiração, reload e auditoria. Agora usa janela de até 24h; Momentos promove
+somente por tráfego; Acontece e Chat permanecem R2 por padrão. A cadeia
+`forms.responses.export` deve produzir Excel com as respostas do formulário;
+botões de import/export do Superadmin não executam backend. `ready-for-e2e` e
+`verified-e2e` permanecem inalterados até existirem evidências remotas.
+
 ## Decisão aprovada — locais, mapas e agendamentos — 2026-09-02
 
 - Fonte canônica:
