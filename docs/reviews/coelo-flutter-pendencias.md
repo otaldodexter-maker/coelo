@@ -16,6 +16,10 @@ visual_program_accepted_count: 0
 > vínculos institucionais, turma, atividade, crianças e relações familiares.
 > Pronome de tratamento aparece conforme o contexto; contextos nomeados
 > informam que o nome fica salvo e oferecem filtros Todos/Contexto/Pessoa.
+> O pronome usa lista suspensa pesquisável, com opções familiares, educacionais,
+> de gestão e profissionais; pessoa híbrida pode ter valores diferentes por
+> contexto. O responsável escolhe explicitamente os membros, inclusive podendo
+> misturar relacionamentos diferentes.
 
 > **Etapa 2 — 2026-09-03:** upload/download de mídia passa pelo Media Gateway
 > para R2 privado; nenhuma chave entra no Flutter. Exportação real existe apenas

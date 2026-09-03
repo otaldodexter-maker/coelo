@@ -23,7 +23,8 @@ supabase_tracker_sha256: "4B30E0883CFC8641CAD687EA19AB18FA6E858402A13F6CECB57C0D
 > **Pessoas e vínculos — 2026-09-03:** provar na integração que memberships,
 > guardian/child links, assignments de atividades e contextos nomeados respeitam
 > hierarquia, tenant, relações familiares e revogação; pronome é contextual e
-> não pode alterar autorização.
+> não pode alterar autorização. Contextos podem misturar membros somente por
+> seleção explícita do responsável, nunca por inferência.
 
 > **Etapa 2 — 2026-09-03:** fronteira de mídia atualizada pela ADR 0032:
 > Flutter → Media Gateway → R2 privado; Supabase mantém metadados/RLS/auditoria.

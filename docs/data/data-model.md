@@ -173,9 +173,11 @@ O ponto central é separar pessoa global de dados contextuais. Uma criança pode
 escopo; não representa somente funcionários. Responsável–criança permanece em
 `guardian_links`/permissões, aluno em `child_contexts` + links de unidade/turma,
 e atividades usam participantes/assignments próprios. Pronome de tratamento é
-atributo opcional do vínculo/contexto, não da identidade global, para suportar
-pessoa híbrida. Contextos familiares nomeados e seus membros serão especificados
-antes de qualquer migration; são filtros/agrupadores, nunca grants de acesso.
+atributo opcional do vínculo/contexto, escolhido em catálogo pesquisável, não da
+identidade global, para suportar pessoa híbrida. Contextos familiares nomeados
+podem misturar explicitamente membros de relacionamentos diferentes por escolha
+do responsável; nunca são misturados por inferência. Serão especificados antes
+de qualquer migration; são filtros/agrupadores, nunca grants de acesso.
 
 | Entidade | Responsabilidade | Campos/relacionamentos |
 | --- | --- | --- |

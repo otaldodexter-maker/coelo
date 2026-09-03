@@ -14,5 +14,7 @@ visibility: "internal"
 
 `people` é global; papéis são vínculos contextuais. Uma pessoa pode ser
 responsável, aluno, funcionário e professora em contextos diferentes. O
-pronome de tratamento acompanha o contexto. Contextos familiares nomeados são
-agrupadores explícitos para filtros e nunca ampliam autorização.
+pronome de tratamento acompanha o contexto e é escolhido em lista pesquisável.
+Contextos familiares nomeados permitem ao responsável misturar explicitamente
+qualquer conjunto de membros, inclusive de relacionamentos diferentes; nunca
+ampliam autorização nem são montados por inferência.

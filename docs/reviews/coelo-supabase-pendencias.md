@@ -49,9 +49,10 @@ family_count: 37
 `institution_memberships` é genérico e recebe papel/escopo; responsável e aluno
 continuam com `guardian_links`/permissões e `child_contexts`/links. Atividades
 ligam crianças por participantes e professores/equipe por assignments. Pronome
-de tratamento é contextual e opcional. Contextos familiares nomeados, membros,
-subgrupos e visibilidade ainda exigem spec física e RLS; não criar tabela nesta
-rodada.
+de tratamento é contextual, opcional e pesquisável em catálogo. O responsável
+pode misturar explicitamente membros de relacionamentos diferentes no contexto;
+o sistema não infere mistura. Contextos, membros, subgrupos e visibilidade ainda
+exigem spec física e RLS; não criar tabela nesta rodada.
 
 ## Checkpoint Etapa 2 — mídia por produto e exportação — 2026-09-03
 
