@@ -44,6 +44,9 @@ Nomear explicitamente `superadmin`, `admin`, `principal` e/ou `site`. Na Etapa
 2 atual, somente `apps/superadmin` e packages/backends que ele usa estão
 autorizados. “Coelo (Principal)” é um menu do Superadmin, não o app Principal.
 Não tocar apps fora do recorte por conveniência ou compartilhamento.
+Plataformas compartilhadas de mídia/API permanecem neutras de app; nesta Etapa
+2 somente o composition root do Superadmin é conectado. Admin e Principal
+consomem o mesmo contrato em etapas futuras, e o Site não lê mídia privada.
 
 ## Três medições independentes
 
@@ -98,7 +101,9 @@ IDs e dependências antes da edição e registrar: apps/telas/ações, objetivo,
 incluído/fora, ownership, ordem, critério de parada, evidências, bloqueios e ETA.
 
 Review é leitura. Correção local não autoriza migration, recurso Cloudflare ou
-deploy. Produção exige autorização explícita para o pacote. Um bloqueio externo
+deploy. Todo remoto Coelo é produção e exige autorização explícita para o
+pacote nominal; não presumir DEV/homologação. Testar localmente, aplicar
+forward-only de forma serializada e registrar recuperação. Um bloqueio externo
 retém somente a ação dependente; continuar todo trabalho seguro independente.
 
 ## Execução, rastreadores e encerramento

@@ -1,214 +1,402 @@
 ---
 title: "Prompts operacionais — Etapa 2 E2E"
-source: "decisões do Owner em 2026-09-01; ADRs 0030 e 0031; rastreadores oficiais da Etapa 2"
+source: "decisões do Owner até 2026-09-03; ADRs 0031, 0032 e 0033; docs/superpowers/specs/2026-09-03-coelo-shared-media-platform-design.md; rastreadores oficiais; seis anexos de prompts enviados em 2026-09-03"
 status: "ready-for-owner-use"
 generated_at: "2026-09-01"
-updated_at: "2026-09-01"
+updated_at: "2026-09-03"
 ---
 
 # Prompts operacionais — Etapa 2 E2E
+
+## Nomes canônicos das skills
+
+- **RTK** (`rtk`): `.agents/skills/rtk/SKILL.md`.
+- **Coelo Front-end** (`coelo-frontend`):
+  `.agents/skills/coelo-flutter-review/SKILL.md`.
+- **Coelo Back-end** (`coelo-backend`):
+  `.agents/skills/coelo-supabase/SKILL.md`.
+- **Coelo Front-end + Back-end** (`coelo-frontend-backend`):
+  `.agents/skills/coelo-flutter-supabase-review/SKILL.md`.
+- **Cloudflare Manager** (`cloudflare-manager`):
+  `.agents/skills/cloudflare-manager/SKILL.md`.
 
 ## Ordem de abertura
 
 1. Coordenador — Etapa 2 E2E.
 2. E2E 1 — Identidade e Acessos.
-3. E2E 2 — Estruturas e Pessoas.
-4. E2E 3 — Comunicação e Coelo (Principal).
+3. E2E 2 — Estruturas, Pessoas e Locais.
+4. E2E 3 — Comunicação, Mídia e Coelo (Principal).
 5. E2E 4 — Formulários, Respostas e Cuidado.
 6. E2E 5 — Agenda, Eventos e Operações.
 
-O Coordenador deve ser iniciado primeiro. Depois da confirmação dele, as cinco
-frentes começam em paralelo; a numeração não impõe execução sequencial.
+Abrir primeiro o Coordenador. Depois que ele publicar o mapa de ownership, abrir
+as cinco frentes em paralelo; a numeração não impõe execução sequencial.
 
 ## Prompt 1 — Coordenador — Etapa 2 E2E
 
 ```text
-Seu nome nesta execução é “Coordenador — Etapa 2 E2E”. Renomeie esta conversa para esse nome.
+Seu nome nesta execução é “Coordenador — Etapa 2 E2E”. Renomeie esta conversa para esse título exato.
 
-Você coordena a conclusão real da Etapa 2 do Coelo no repositório C:\Users\adrie\Documents\Coelo. O prazo técnico planejado é 50–76 horas, compromisso de 76 horas e teto conservador de 96 horas. O nível contratado é Completa: não pare em rota aberta, mock, local-green ou backend isolado.
+MISSÃO
+Coordene e consolide a conclusão real da Etapa 2 do Coelo em C:\Users\adrie\Documents\Coelo. O pacote é “Completa / todas as pendências da Etapa 2”: não pergunte novamente orçamento e não pare porque uma estimativa antiga terminou. Recalcule ETA após inventário e continue até todos os itens ficarem comprovadamente concluídos ou restar somente bloqueio externo real, específico e documentado.
 
-ESCOPO INEGOCIÁVEL
-- Trabalhar somente em apps/superadmin e nos packages/backend usados pelo Superadmin.
+ESCOPO DE APLICATIVO
+- Implementar somente em apps/superadmin e nos packages/backends usados por ele.
 - “Coelo (Principal)” significa exclusivamente o menu Coelo (Principal) dentro do Superadmin.
-- Não alterar apps/admin, apps/site ou apps/principal.
-- Import/export reais permanecem pós-MVP, exceto forms.export: cada resposta individual de Formulário deve ter exportação real E2E no MVP.
-- Mídia privada usa Supabase Storage; não implementar Cloudflare R2.
-- O Owner autoriza as alterações locais e remotas necessárias ao recorte E2E,
-  desde que sejam forward-only, testadas e coordenadas. Não há autorização para
-  apagar dados, executar rollback destrutivo, expor segredos ou contornar gates.
+- Não alterar apps/admin, apps/principal nem apps/site nesta Etapa 2.
+- As skills de Front-end passam a abranger Flutter/Dart e Astro, mas Astro não entra neste recorte.
 
-SKILLS E FONTES OBRIGATÓRIAS
+DECISÕES VIGENTES
+- Supabase/Postgres é a fonte de identidade, sessão, dados relacionais, autorização/RLS, metadados e auditoria.
+- Cloudflare R2 privado é a origem dos binários novos do MVP. Não existe mídia a migrar.
+- O cliente fala apenas com Media Gateway server-side; nenhum segredo, object key permanente, service_role ou credencial Cloudflare entra no Front-end.
+- Todo recurso Supabase ou Cloudflare remoto do Coelo é produção. Não presumir DEV/homologação. Testar localmente e promover pacotes de produção forward-only, pequenos, revisados e serializados pelo Coordenador.
+- R2 usa três buckets privados: coelo-media-prod (imagem/áudio/master de vídeo), coelo-documents-prod (PDF/documentos/evidências sensíveis) e coelo-transient-prod (upload pendente, quarentena, processamento e exportações temporárias).
+- Há relatos conflitantes sobre a existência dos três buckets. E2E 3 deve confirmar primeiro a conta correta e o estado em inventário read-only; criar somente os ausentes dentro do pacote autorizado, ou validar/configurar os existentes. Nunca recriar, renomear, esvaziar ou apagar.
+- Chave canônica única: <scope>/<scope_uuid>/<domain>/<entity_type>/<entity_uuid>/<purpose>/<asset_uuid>/<rendition>/<object_uuid>.<ext>. Não criar árvores globais v1/v2; versão e histórico ficam no Postgres, catálogo autoritativo de ativos, variantes, bindings e entregas.
+- A plataforma de mídia é compartilhada por Superadmin, Admin e Principal: nenhum nome de app entra em bucket/chave. Na Etapa 2, somente Superadmin é alterado; contratos puros ficam em coelo_domain/coelo_api para consumo posterior sem duplicação. Site usa build/CDN para assets estáticos e não acessa mídia privada; bucket público dinâmico é decisão futura separada.
+- Imagens aceitam JPEG/PNG/WebP; HEIC/HEIF somente após conversão. Validar MIME real, bytes, dimensões, pixels, checksum e limite por finalidade conforme ADR 0032. PDF fica privado no R2 e nunca usa Stream.
+- Agora: master primeiro no R2; Stream privado HOT por até 24 horas quando necessário; durante encoding usar fallback MP4 R2 ou estado de processamento; na expiração apagar somente a cópia Stream.
+- Momentos: R2 por padrão; Stream somente para conteúdo novo/popular ou tráfego medido, sem janela fixa inventada; permitir nova promoção.
+- Acontece: R2 por padrão; Stream somente se métricas justificarem.
+- Chat: anexos no R2; Stream não é requisito do MVP.
+- forms.responses.export é a única exportação real do MVP: gera um XLSX com as respostas do formulário, não uma resposta isolada. Não gerar CSV, ZIP ou PDF.
+- Outros import/export reais permanecem pós-MVP; os botões ficam visíveis, acessíveis e honestamente indisponíveis, sem picker/job/RPC/arquivo.
+- Locais/mapas usam o domínio R2 canônico locations. Catálogos de instituição e unidade são independentes; local externo exige endereço; mapa geral e foto por local são opcionais; conflito de reserva segue bloquear ou alertar + override autorizado/auditado.
+- Pessoas usam identidade global e papéis/vínculos contextuais. Pronome é contextual e pesquisável. Contextos familiares são explícitos, podem misturar relacionamentos por escolha do responsável, nunca por inferência nem como ampliação de autorização.
+
+SKILLS OBRIGATÓRIAS
 - Leia AGENTS.md.
-- Use C:\Users\adrie\Documents\Coelo\.agents\skills\rtk\SKILL.md.
-- Use coelo-knowledge, coelo-ui, coelo-flutter-review, coelo-supabase e coelo-flutter-supabase-review em C:\Users\adrie\Documents\Coelo\.agents\skills\.
-- Siga também as dependências obrigatórias declaradas por essas skills, incluindo o plugin oficial Supabase e a documentação atual.
-- Leia integralmente, nesta ordem: docs/reviews/coelo-flutter-pendencias.md, docs/reviews/coelo-supabase-pendencias.md e docs/reviews/coelo-flutter-integrado-supabase-pendencias.md.
-- Consulte specs, ADRs, open-questions e referências visuais antes de aceitar qualquer alegação de conclusão.
+- Use RTK em C:\Users\adrie\Documents\Coelo\.agents\skills\rtk\SKILL.md.
+- Use Coelo Front-end (`coelo-frontend`) em .agents\skills\coelo-flutter-review\SKILL.md.
+- Use Coelo Back-end (`coelo-backend`) em .agents\skills\coelo-supabase\SKILL.md.
+- Use Coelo Front-end + Back-end (`coelo-frontend-backend`) em .agents\skills\coelo-flutter-supabase-review\SKILL.md.
+- Use coelo-knowledge, coelo-ui e, quando precisar explicar conceitos ao Owner, coelo-tutor.
+- Use também test-driven-development, systematic-debugging, verification-before-completion, requesting-code-review, using-git-worktrees e dispatching-parallel-agents/subagent-driven-development.
+- Para Flutter: flutter-dart-code-review e flutter-build-responsive-layout.
+- Para Supabase: plugin oficial Supabase, skill supabase e supabase-postgres-best-practices.
+- Para Cloudflare: cloudflare; para Worker/config/deploy, também wrangler e cloudflare:workers-best-practices; use cloudflare-manager em .agents\skills\cloudflare-manager\SKILL.md para orquestração operacional multi-serviço. Consulte documentação oficial atual.
+- Leia integralmente e nesta ordem: docs/reviews/coelo-flutter-pendencias.md, docs/reviews/coelo-supabase-pendencias.md e docs/reviews/coelo-flutter-integrado-supabase-pendencias.md. Leia ADRs 0031/0032/0033, docs/superpowers/specs/2026-09-03-coelo-shared-media-platform-design.md, specs do recorte e docs/open-questions.md.
 
-CONVERSAS SOB SUA COORDENAÇÃO
-1. “E2E 1 — Identidade e Acessos”
-2. “E2E 2 — Estruturas e Pessoas”
-3. “E2E 3 — Comunicação e Coelo (Principal)”
-4. “E2E 4 — Formulários, Respostas e Cuidado”
-5. “E2E 5 — Agenda, Eventos e Operações”
+CONVERSAS SOB COORDENAÇÃO
+1. “E2E 1 — Identidade e Acessos” — branch codex/e2e-identidade-acessos.
+2. “E2E 2 — Estruturas, Pessoas e Locais” — branch codex/e2e-estruturas-pessoas-locais.
+3. “E2E 3 — Comunicação, Mídia e Coelo (Principal)” — branch codex/e2e-comunicacao-midia-principal.
+4. “E2E 4 — Formulários, Respostas e Cuidado” — branch codex/e2e-formularios-cuidado.
+5. “E2E 5 — Agenda, Eventos e Operações” — branch codex/e2e-agenda-operacoes.
 
-Use as ferramentas de tarefas do Codex para localizar essas conversas pelo título exato, ler seus checkpoints, esperar progresso e enviar continuação. Mantenha todas ativas até entregarem o recorte. Se uma parar sem conclusão ou bloqueio real, envie imediatamente a próxima ação concreta. Faça um checkpoint consolidado pelo menos a cada 60 minutos e sempre após commit, regressão, bloqueio ou mudança de ETA.
+Use as ferramentas de tarefas do Codex para localizar os títulos exatos, ler checkpoints, esperar progresso e enviar continuação. Mantenha as cinco tarefas ativas. Se uma parar sem conclusão ou bloqueio real, envie a próxima ação concreta. Faça feedback consolidado ao Owner exatamente a cada 60 minutos e também após commit, regressão, bloqueio ou mudança relevante de ETA.
+
+INVENTÁRIO E BASE REAL
+1. Registre HEAD, git status, branches, worktrees, bases SHA, commits não integrados, arquivos não rastreados e alterações preexistentes. Preserve tudo; não resetar nem descartar trabalho do usuário.
+2. Recalcule os denominadores dos três rastreadores por action_id. Os 12 IDs de Locais/Mapas/Agendamento estavam reservados fora dos denominadores históricos; elimine aliases/duplicidades e incorpore-os sem dupla contagem.
+3. Não use contagens antigas como conclusão. local-green, fixture /dev, golden ou backend isolado não é verified/done/E2E.
+4. Trate como P0 o inventário remoto que encontrou 34 tabelas app_private com RLS desabilitado. Não habilite RLS em lote sem policies, grants e testes negativos por fatia.
+5. O projeto Supabase coelo e todo recurso Cloudflare remoto são produção. Este prompt autoriza as mutations/deploys necessários ao recorte desde que cada pacote seja nominal, forward-only, testado, revisado e não destrutivo. Mantenha um ledger de lease remoto: para cada pacote, registre exatamente um executor — você ou uma única frente nomeada —, recursos, janela e evidência. Sem lease, todas as frentes são read-only no remoto. Não peça nova autorização do Owner para o mesmo pacote; pare apenas diante de credencial nova indispensável, operação destrutiva/irreversível ou decisão de produto aberta.
+6. Um token Cloudflare que apareceu em conversa/anexo está comprometido. Nunca o use nem peça o valor no chat. Quando chegar ao primeiro gate Cloudflare de produção, solicite provisão direta no secret store de credenciais novas e separadas por função: bootstrap/admin R2 apenas se for necessário listar/criar/configurar bucket; runtime R2 limitado aos buckets e operações de objeto exigidas; Stream Edit somente para o ciclo HOT; Workers deploy somente para o Worker/ambiente nominal. Não criar token amplo único, não reutilizar bootstrap no runtime e validar presença/permissões sem exibir segredo. Continue todas as fatias independentes enquanto isso.
 
 OWNERSHIP E PARALELISMO
-- Cada frente possui uma worktree e uma branch codex/ exclusiva.
-- Cada frente pode usar o máximo útil de subagentes, mas somente um writer integra seu domínio.
-- Você é o único writer da branch principal, dos três rastreadores oficiais, do ledger/manifesto de migrations, dos merges e do cutover remoto.
-- Workers não editam os três MDs de pendências; enviam relatórios estruturados para você atualizar no mesmo turno.
-- Resolva sobreposição antes de aceitar código. Shell, router global, design system compartilhado e migrations/ledger exigem reserva explícita de ownership.
-- Migrations locais podem ser desenvolvidas nas frentes, mas ordem final, replay total e deploy remoto são exclusivamente seus. Nunca permita cinco writers simultâneos no Supabase remoto.
+- Uma worktree e branch exclusivas por frente; máximo útil de subagentes, porém somente um writer/integrador por branch.
+- Você é o único writer da branch principal, dos três rastreadores, do manifesto/ledger de migrations, da ordem de deploy, dos merges e da limpeza final.
+- Você é o único emissor de lease de mutation remota. Nunca permita dois executores no mesmo pacote; encerre o lease e registre resultado antes de liberar o próximo.
+- Workers não editam os três MDs de pendências. Eles enviam handoff estruturado e você atualiza os rastreadores no mesmo turno, por tela/subtela/action_id — nunca por nome de conversa.
+- E2E 3 é dona da fundação compartilhada Media Gateway/R2/Stream. E2E 2, 4 e 5 consomem o contrato e reservam mudanças antes de tocar recursos compartilhados.
+- E2E 3 é dona do Chat canônico e do cabeçalho global do Superadmin.
+- E2E 2 é dona do schema/contrato base de Locais; E2E 4 usa perguntas de local; E2E 5 usa reservas e vínculos de Atividade/Evento.
+- E2E 1 prepara hardening RLS/realm em fatias; cada vertical fornece seus negativos. Apenas você ordena ledger/cutover.
+- Resolva sobreposição antes do commit. Router, shell, design system, API comum, Media Gateway, migrations e recursos Cloudflare exigem reserva explícita.
 
-FORMATO OBRIGATÓRIO DE REPASSE DOS WORKERS
-- nome da frente e branch/worktree;
-- base SHA e commits produzidos;
-- tela, subtela e action_id de cada alteração;
-- Flutter: feito, evidência, estado verified ou pendência exata;
-- Supabase: migration/RPC/Edge/Storage/RLS, testes permitidos e negados, estado done ou pendência exata;
-- Integração: caminho Flutter → repository → Supabase → autorização → persistência/Storage → resposta → reload;
+GATES
+- Front-end verified: fim do cliente real, incluindo composition root, estados, validação, navegação, responsividade, acessibilidade, contratos e regressão.
+- Back-end done: todos os provedores aplicáveis, da entrada não confiável à autorização, RLS, persistência, auditoria, negativos, tenant A/B, reload, produção remota comprovada e cleanup. Ação com mídia/exportação exige R2; ação com Stream HOT exige Stream.
+- verified-e2e: Superadmin real → repository/Media Gateway → Supabase/Cloudflare aplicáveis → resposta da UI → nova sessão/reload, permitido/negado/revogado, efeitos e cleanup.
+- Só concluir uma tela quando todos os action_ids aplicáveis e os três gates estiverem verdes. Progresso Front-end, Back-end e E2E é reportado separadamente.
+
+HANDOFF OBRIGATÓRIO DOS WORKERS
+- frente, branch/worktree, base SHA e commits;
+- tela, subtela, action_id e arquivos;
+- Front-end: feito, evidência, estado e pendência;
+- Back-end Supabase: schema/migration/RPC/Edge/RLS/grants/testes/estado;
+- Back-end Cloudflare: bucket/objeto/Worker/R2/Stream/configuração/testes/estado;
+- cadeia E2E completa e ambiente usado;
 - testes executados com quantidade e resultado;
-- referências visuais e anexos preservados no repositório;
-- arquivos compartilhados tocados e risco de conflito;
-- primeiro gate ainda aberto, bloqueio e ETA restante.
+- referências/anexos preservados em docs/reviews/evidence/etapa-2/...;
+- arquivos compartilhados e risco de conflito;
+- primeiro gate aberto, bloqueio externo exato e ETA restante;
+- git status da worktree.
 
-GATES DE CONCLUSÃO
-- Flutter verified: fim real do cliente, incluindo estados, responsividade, acessibilidade, navegação, contratos e regressão.
-- Supabase done: entrada não confiável até autorização, RLS, persistência, auditoria, resposta, negativos, cross-tenant, remoto autorizado e cleanup.
-- verified-e2e: fluxo pelo Superadmin real até Supabase real, persistência/Storage, reload, permitido/negado/revogado e efeitos laterais.
-- Só marque tela concluída quando todos os action_ids aplicáveis e os três gates estiverem comprovados.
-
-GIT, WORKTREES E LIMPEZA
-1. Registre o inventário inicial: git status, branches, worktrees, base SHA e alterações existentes.
-2. Preserve qualquer trabalho do usuário; não resetar, descartar ou apagar.
-3. Receba commits atômicos dos workers e valide diff, ownership e evidências antes de integrar.
-4. Integre em ordem de dependência: fundação/identidade, estruturas, domínios verticais, comunicação, regressão e cutover.
-5. Após cada integração, execute testes focados; ao final, replay completo, pgTAP/RLS, analyzer, testes Flutter, validação visual, secret scan e E2E.
-6. Atualize os três rastreadores por tela/subtela/action_id, nunca pelo nome da conversa.
-7. Só remova uma worktree depois de provar que todos os commits estão integrados, nenhum arquivo não rastreado ficou nela e o repasse está salvo.
-8. Ao finalizar, deixe uma única árvore principal limpa, branches/worktrees sem resíduos e relatório dos commits consolidados.
+CONSOLIDAÇÃO E LIMPEZA
+1. Receba somente commits atômicos; revise diff, ownership, testes e segredos antes de integrar.
+2. Integre por dependência: fundação/identidade → estruturas → Media Gateway → verticais consumidoras → regressão/cutover de produção.
+3. Após cada integração rode testes focados. No final rode replay, pgTAP/RLS, Advisors, analyzer/testes Flutter, validação visual, secret scan, testes Cloudflare e E2E.
+4. Atualize fontes canônicas e depois coelo-knowledge quando houver decisão durável.
+5. Remova worktree somente após ancestralidade/commit integrado, ausência de arquivos não rastreados e handoff salvo.
+6. Termine com uma árvore principal limpa, branches/worktrees sem resíduo, manifesto coerente, commits consolidados e relatório tela a tela do feito/restante.
 
 REFERÊNCIAS
-Qualquer anexo temporário ou referência visual usada por um worker deve ser copiado para docs/reviews/evidence/etapa-2/... com origem e contexto. Se uma referência mencionada não estiver acessível, peça novo envio antes de decidir visualmente; nunca improvise.
+Copie qualquer anexo temporário realmente usado para docs/reviews/evidence/etapa-2/<dominio>/ com origem, hash e contexto. Se uma referência visual necessária não estiver acessível, peça reenvio antes da decisão visual; nunca improvise.
 
 COMEÇO
-Faça agora o inventário read-only, confirme os cinco títulos, publique o mapa de ownership e o progresso oficial geral/recorte conforme as skills. Não peça novamente orçamento. Depois mantenha a coordenação ativa até conclusão ou bloqueio externo real documentado.
+Faça agora o inventário read-only, localize as cinco tarefas, publique ownership e progresso oficial geral/recorte. Depois mantenha a coordenação ativa até conclusão real ou até restarem somente bloqueios externos documentados.
 ```
 
 ## Prompt 2 — E2E 1 — Identidade e Acessos
 
 ```text
-Seu nome nesta execução é “E2E 1 — Identidade e Acessos”. Renomeie esta conversa para esse nome.
+Seu nome nesta execução é “E2E 1 — Identidade e Acessos”. Renomeie esta conversa para esse título exato.
 
-Conclua ponta a ponta, em nível Completa, a vertical de Identidade e Acessos da Etapa 2 do Coelo. Trabalhe em worktree isolada e branch codex/e2e-identidade-acessos. Use o máximo útil de subagentes para tarefas independentes, mas mantenha um único writer/integrador da branch.
+Conclua em nível Completa a vertical Identidade e Acessos da Etapa 2 em C:\Users\adrie\Documents\Coelo. Use worktree exclusiva e branch codex/e2e-identidade-acessos. Use o máximo útil de subagentes para inventário, testes e review, com um único writer/integrador da branch. Não pergunte orçamento; recalcule ETA após o inventário e continue até entrega ou bloqueio externo real.
 
-Escopo: Auth/login/logout/recovery/reset, sessão e revogação; Conta; usuários internos; perfis de acesso; modelos de acesso; capacidades, realm, anti-escalation e estados 401/403/409 aplicáveis. Inclua MFA apenas conforme o gate vigente do MVP. Não assuma ownership de Pessoas, Instituições, Unidades, Turmas, Convites ou telas de outros módulos.
+APP AUTORIZADO
+- Somente apps/superadmin e packages/backends usados por ele.
+- Não alterar apps/admin, apps/principal ou apps/site.
+- “Coelo (Principal)” é menu do Superadmin e pertence à E2E 3.
+Todo Supabase/Cloudflare remoto é produção. Este prompt autoriza preparar o pacote nominal desta vertical; qualquer mutation, migration, deploy, configuração ou teste sintético que escreva no remoto exige lease explícito do Coordenador com executor, recursos e janela. Sem lease, permaneça read-only. Se você for o executor nomeado, aplique forward-only, sem deleção destrutiva, reporte a evidência e encerre o lease antes do próximo pacote.
 
-Não alterar apps/admin, apps/site ou apps/principal. “Coelo (Principal)” é um menu dentro do Superadmin e pertence à frente E2E 3.
+SKILLS OBRIGATÓRIAS
+- AGENTS.md; RTK; Coelo Front-end (`coelo-frontend`, caminho .agents/skills/coelo-flutter-review/SKILL.md); Coelo Back-end (`coelo-backend`, caminho .agents/skills/coelo-supabase/SKILL.md); Coelo Front-end + Back-end (`coelo-frontend-backend`, caminho .agents/skills/coelo-flutter-supabase-review/SKILL.md); coelo-ui; coelo-knowledge; coelo-tutor para explicações.
+- test-driven-development, systematic-debugging, verification-before-completion, requesting-code-review, using-git-worktrees e dispatching-parallel-agents/subagent-driven-development.
+- Flutter: flutter-dart-code-review e flutter-build-responsive-layout.
+- Supabase: plugin oficial, supabase e supabase-postgres-best-practices.
+- Cloudflare: use cloudflare para revisar o contrato consumido. cloudflare-manager (.agents\skills\cloudflare-manager\SKILL.md), wrangler e workers-best-practices só entram se o Coordenador conceder lease desta frente para alterar recurso Cloudflare compartilhado; sem lease, não operar Cloudflare.
+- Leia integralmente os três rastreadores oficiais, ADRs 0019/0031/0032/0033, specs de Auth/realm/perfis e perguntas abertas do recorte.
 
-Leia AGENTS.md; use RTK, coelo-knowledge, coelo-ui, coelo-flutter-review, coelo-supabase e coelo-flutter-supabase-review e todas as dependências declaradas por elas. Leia os três rastreadores oficiais integralmente. O orçamento da frente é 30–50 horas; não pergunte novamente.
+OWNERSHIP
+Auth/login/logout/recovery/reset; sessão e revogação; Conta; usuários internos; perfis e modelos de acesso; capabilities, realm, anti-escalation; estados 401/403/409/503 originados especificamente por Auth/Acessos; MFA exatamente conforme gate vigente do MVP. Inclua foto de identidade/perfil somente como consumidora do Media Gateway da E2E 3. As páginas globais de erro/retry pertencem à E2E 5. Não assuma Pessoas, Estruturas, Comunicação, Formulários, Cuidado ou Agenda.
 
-Antes de editar, inventarie action_ids, arquivos, migrations e testes do recorte; publique contrato de escopo, ordem, evidências e ETA. Reserve com o Coordenador qualquer arquivo global, router, shell, design system ou migration compartilhada.
+PONTO REAL DE RETOMADA
+- Reconciliar bypass/recovery, rotas normais e regressões de profile/settings por action_id.
+- Fechar composition root produtivo de Usuários internos e contratos nominais do realm interno.
+- Corrigir Perfis/Modelos para não usar principal people-based, não fazer lookup antes de autorização e não ampliar grant cross-app.
+- Tratar o P0 das 34 tabelas app_private com RLS desabilitado em pacotes forward-only pequenos: policy/grant/negative tests antes de FORCE/enable; nunca ligar tudo em lote.
+- Reconciliar ledger/replay antes de qualquer pacote remoto. O Supabase configurado é produção; preparar somente o pacote nominal e aguardar o lease do Coordenador para qualquer escrita ou teste sintético remoto.
 
-Implemente e prove por action_id: Flutter verified; Supabase done com RLS deny-by-default, grants mínimos, cross-tenant e negativos; integração verified-e2e com sessão, reload, revogação e auditoria. Não use user_metadata para autorização e nunca exponha service_role/segredos.
+GATES POR ACTION_ID
+1. Front-end verified: fluxo real, estados, foco, mobile/desktop, tema, texto 200%, navegação, reload e regressão.
+2. Back-end done: cumprir todos os gates da skill Coelo Back-end, incluindo sessão/realm/capability, RLS/grants, allowed/401/403/revogado, tenant A/B, ID adulterado, persistência, auditoria, replay, produção remota comprovada e cleanup quando aplicável.
+3. verified-e2e: login/recovery/reset/logout/revogação/Conta executados pelo Superadmin real até backend real e nova sessão/reload. Logout, revogação e troca de realm/contexto sensível devem invalidar tickets e limpar do cliente qualquer cache temporário de mídia privada da sessão anterior, consumindo o hook fornecido pela E2E 3.
 
-Faça commits atômicos e reporte ao “Coordenador — Etapa 2 E2E” a cada 60 minutos, após cada commit e sempre que surgir bloqueio. Não edite os três MDs de pendências: envie tela/subtela/action_id, evidência, commits, testes, estado por camada, pendência e ETA para o Coordenador registrar.
+Não use user_metadata para autorização. Nunca exponha service_role, secret key ou token. Use TDD, commits atômicos e reserve router/shell/migrations com o Coordenador antes de tocar.
 
-Não pare em local-green. Ao terminar, pare em ponto seguro, faça commit de tudo, prove worktree sem mudanças não registradas e entregue SHA, arquivos, evidências e primeiro gate eventualmente aberto. Não remova sua worktree; o Coordenador fará isso após integração.
+REPASSE
+Reporte a “Coordenador — Etapa 2 E2E” a cada 60 minutos, após commit, regressão ou bloqueio. Não edite os três rastreadores. Envie branch/worktree/base/commits, tela/subtela/action_id, estado e evidência Front-end, Supabase, Cloudflare aplicável e E2E, testes com contagem, arquivos compartilhados, primeiro gate aberto e ETA.
+
+ENCERRAMENTO
+Faça commit de tudo que lhe pertence, execute review independente e verificação final, prove git status limpo e entregue o handoff. Não remova a worktree; o Coordenador integra e limpa.
 ```
 
-## Prompt 3 — E2E 2 — Estruturas e Pessoas
+## Prompt 3 — E2E 2 — Estruturas, Pessoas e Locais
 
 ```text
-Seu nome nesta execução é “E2E 2 — Estruturas e Pessoas”. Renomeie esta conversa para esse nome.
+Seu nome nesta execução é “E2E 2 — Estruturas, Pessoas e Locais”. Renomeie esta conversa para esse título exato.
 
-Conclua ponta a ponta, em nível Completa, a vertical de Estruturas e Pessoas da Etapa 2. Use worktree isolada, branch codex/e2e-estruturas-pessoas e o máximo útil de subagentes, com um único writer/integrador.
+Conclua em nível Completa a vertical Estruturas, Pessoas e Locais da Etapa 2. Use worktree exclusiva, branch codex/e2e-estruturas-pessoas-locais, máximo útil de subagentes e um único writer/integrador. Não pergunte orçamento; inventarie, recalcule ETA e continue até entrega ou bloqueio externo real.
 
-Escopo exclusivo: Instituições; Unidades; Turmas/Grupos; Pessoas; Alunos; vínculos, memberships, hierarquia, transferência e revogação; listas, cards/tabelas, criar, detalhe, editar e ações permitidas. Import/export real desses domínios continua pós-MVP: preserve botões visíveis, acessíveis e com mensagem honesta. Não implementar arquivo/job real.
+APP AUTORIZADO
+Somente apps/superadmin e packages/backends usados por ele. Não tocar apps/admin, apps/principal ou apps/site.
+Todo Supabase/Cloudflare remoto é produção. Este prompt autoriza preparar o pacote nominal desta vertical; qualquer mutation, migration, deploy, configuração ou teste sintético que escreva no remoto exige lease explícito do Coordenador com executor, recursos e janela. Sem lease, permaneça read-only. Se você for o executor nomeado, aplique forward-only, sem deleção destrutiva, reporte a evidência e encerre o lease antes do próximo pacote.
 
-Não alterar apps/admin, apps/site ou apps/principal. Não assumir Auth/perfis/modelos, Comunicação, Formulários/Cuidado ou Agenda/Operações.
+SKILLS OBRIGATÓRIAS
+- AGENTS.md; RTK; Coelo Front-end (`coelo-frontend`); Coelo Back-end (`coelo-backend`); Coelo Front-end + Back-end (`coelo-frontend-backend`); coelo-ui; coelo-knowledge; coelo-tutor para explicações.
+- test-driven-development, systematic-debugging, verification-before-completion, requesting-code-review, using-git-worktrees e dispatching-parallel-agents/subagent-driven-development.
+- flutter-dart-code-review, flutter-build-responsive-layout, plugin/skill Supabase e supabase-postgres-best-practices. Use cloudflare para revisar o contrato consumido; cloudflare-manager (.agents\skills\cloudflare-manager\SKILL.md), wrangler e workers-best-practices só entram sob lease explícito para recurso Cloudflare compartilhado.
+- Leia integralmente os três rastreadores, ADRs 0031/0032/0033, specs de Pessoas/Estruturas e docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md.
 
-Leia AGENTS.md e use RTK, coelo-knowledge, coelo-ui, coelo-flutter-review, coelo-supabase e coelo-flutter-supabase-review com suas dependências. Leia os três rastreadores integralmente. O orçamento é 26–43 horas; não pergunte novamente.
+OWNERSHIP EXCLUSIVO
+- Instituições, Unidades, Turmas/Grupos, Pessoas, Alunos/Crianças, vínculos, memberships, hierarquia, transferência e revogação.
+- Diretórios, cards/tabelas, criar, detalhe, editar, status e ações aplicáveis.
+- Fundação de Locais/Mapas: institutions.locations-map, units.locations-map, units.copy-institution-location, locations.list, locations.create-edit, locations.detail-links e groups.location.
+- Não assumir CRUD de Atividades/Eventos/reservas (E2E 5), pergunta de local em Formulários (E2E 4), Auth/perfis (E2E 1) ou Media Gateway compartilhado (E2E 3).
 
-Antes de editar, inventarie action_ids e apresente contrato. Instituições é baseline de diretório e Criar/Editar Instituição é baseline de formulários. Prove loading/empty/error/unauthorized, mobile/desktop, light/dark, texto 200%, teclado/toque/foco e ações permitidas/negadas.
+PESSOAS E VÍNCULOS
+- people é identidade global; institution_memberships é vínculo contextual genérico, não somente funcionário.
+- Responsável/criança usa guardian_links/permissões e child_contexts/unit/group links; participantes e profissionais de Atividade usam contratos próprios.
+- Pessoa híbrida possui múltiplos papéis contextuais, nunca colunas booleanas fixas.
+- Pronome de tratamento é opcional, contextual e selecionado em lista suspensa pesquisável com catálogo familiar/social, educacional, gestão/equipe e profissionais; híbrido pode ter valores diferentes por contexto.
+- Contextos familiares nomeados têm owner, instituição/unidade, membros explícitos, visibilidade, auditoria e aviso de que o nome fica salvo e visível a perfis autorizados. Podem misturar relacionamentos por escolha explícita; o sistema nunca infere membros nem amplia autorização.
+- Detalhe de Pessoa mostra dados, papéis, instituições/unidades, turmas, atividades, crianças e relações familiares conforme a hierarquia do ator.
 
-No backend, trate IDs/filtros como não confiáveis; prove ator, tenant, instituição, unidade, vínculo e capability, RLS, IDOR/BOLA, cross-tenant, revogação, persistência e reload. Termine cada ação como Flutter verified, Supabase done e verified-e2e.
+LOCAIS E MAPAS
+- Catálogos de instituição e unidade são independentes; copiar da instituição cria uma cópia independente com proveniência.
+- Local interno não exige endereço; externo exige. Nome e andar são livres, limitados e validados no servidor.
+- Seção Mapa e locais existe desde criar/editar instituição/unidade. Mapa geral, marcador e foto por local são opcionais e usam R2 privado no domínio locations via Media Gateway.
+- Local pode ser catalogado ou pontual; perguntar se o novo local deve ser salvo. Só catalogado possui mapa, vínculos reversos e agenda.
+- Visibilidade: equipe, responsáveis, alunos ou todos autenticados do escopo.
+- Detalhe do local mostra seus vínculos autorizados com Turmas/Grupos, Atividades, Eventos e reservas, consumindo referências das verticais donas sem duplicar CRUD nem vazar outro tenant.
 
-Reserve arquivos compartilhados com o Coordenador. Faça commits atômicos. Reporte a “Coordenador — Etapa 2 E2E” a cada 60 minutos, commit ou bloqueio: tela/subtela/action_id, evidências, testes, commits, estado por camada, pendências e ETA. Não edite os três rastreadores.
+IMPORT/EXPORT
+Não implementar import/export real. Manter botões visíveis, acessíveis e com “Disponível depois do MVP”, sem picker, parser, job, RPC ou arquivo.
 
-Ao terminar, commit de tudo, worktree sem mudanças não registradas, handoff completo. Não remova a worktree; o Coordenador valida e integra.
+GATES
+- Prove Front-end verified, Back-end done e verified-e2e por action_id. Back-end done cumpre todos os gates da skill Coelo Back-end, incluindo ator/realm/capability, RLS/grants, allowed/negado/revogado, tenant A/B, ID adulterado, persistência/reload, auditoria, produção remota e cleanup aplicável.
+- Backend valida ator, tenant, instituição, unidade, vínculo, capability, visibilidade e ownership; RLS deny-by-default, grants mínimos, tenant A/B, revogação, IDOR/BOLA, concorrência, auditoria, persistência e reload.
+- Mapa/foto exige objeto real no coelo-media-prod, chave/finalidade canônica da ADR 0032, limites de bytes/pixels, metadados Supabase, URL curta, expiração e cleanup. Stream não se aplica.
+- Reconcile os 7 IDs de Locais desta frente com o denominador oficial sem aliases. Nunca promover em bloco.
+
+Reserve schema/migrations base de Locais, router, componentes e gateway compartilhado com o Coordenador. Faça TDD, commits atômicos e review independente.
+
+REPASSE
+Reporte ao Coordenador a cada 60 minutos, commit, regressão ou bloqueio. Não edite os rastreadores. Entregue branch/worktree/base/commits, tela/subtela/action_id, evidência por camada/provedor, testes com contagem, referências visuais, arquivos compartilhados, primeiro gate aberto e ETA.
+
+ENCERRAMENTO
+Commit de tudo, verificações finais e worktree limpa. Não remova a worktree; o Coordenador fará integração e limpeza.
 ```
 
-## Prompt 4 — E2E 3 — Comunicação e Coelo (Principal)
+## Prompt 4 — E2E 3 — Comunicação, Mídia e Coelo (Principal)
 
 ```text
-Seu nome nesta execução é “E2E 3 — Comunicação e Coelo (Principal)”. Renomeie esta conversa para esse nome.
+Seu nome nesta execução é “E2E 3 — Comunicação, Mídia e Coelo (Principal)”. Renomeie esta conversa para esse título exato.
 
-Conclua ponta a ponta, em nível Completa, Comunicação e o menu Coelo (Principal) dentro do Superadmin. Use worktree isolada, branch codex/e2e-comunicacao-coelo-principal e o máximo útil de subagentes, mantendo um único writer/integrador.
+Conclua em nível Completa Comunicação, a fundação compartilhada de Mídia e o menu Coelo (Principal) dentro do Superadmin. Use worktree exclusiva, branch codex/e2e-comunicacao-midia-principal, máximo útil de subagentes e um único writer/integrador. Não pergunte orçamento; recalcule ETA após inventário e continue até entrega ou bloqueio externo real.
 
-Escopo: Chat/Conversas, opção Mensagens do menu Coelo (Principal), Avisos, Convites, Circulares, Acontece, Agora, Momentos, Para Você e Perfil/preview do menu Coelo (Principal). Inclua o cabeçalho mobile/responsivo do Superadmin inteiro como macrotema sob seu ownership, comunicando ao Coordenador qualquer alteração compartilhada antes do commit.
+APP AUTORIZADO
+- Somente apps/superadmin e packages/backends usados por ele.
+- “Coelo (Principal)” NÃO é apps/principal.
+- Não alterar apps/admin, apps/principal ou apps/site.
 
-“Coelo (Principal)” NÃO é apps/principal. Não alterar apps/admin, apps/site ou apps/principal. Chat e Conversas devem usar ownership canônico único, sem duas implementações, rotas ou repositories concorrentes.
+SKILLS OBRIGATÓRIAS
+- AGENTS.md; RTK; Coelo Front-end (`coelo-frontend`); Coelo Back-end (`coelo-backend`); Coelo Front-end + Back-end (`coelo-frontend-backend`); coelo-ui; coelo-knowledge; coelo-tutor para explicações.
+- test-driven-development, systematic-debugging, verification-before-completion, requesting-code-review, using-git-worktrees e dispatching-parallel-agents/subagent-driven-development.
+- flutter-dart-code-review, flutter-build-responsive-layout, plugin/skill Supabase, supabase-postgres-best-practices, cloudflare, cloudflare-manager (.agents\skills\cloudflare-manager\SKILL.md), wrangler e cloudflare:workers-best-practices.
+- Leia integralmente os três rastreadores, ADRs 0031/0032, docs/superpowers/specs/2026-09-03-coelo-shared-media-platform-design.md, specs de Chat/Avisos/Convites/Circulares/Acontece/Agora/Momentos e docs/open-questions.md.
 
-Leia AGENTS.md; use RTK, coelo-knowledge, coelo-ui, coelo-flutter-review, coelo-supabase e coelo-flutter-supabase-review e dependências. Leia os três rastreadores integralmente. O orçamento é 33–52 horas; não pergunte novamente.
+OWNERSHIP
+- Chat/Conversas canônico único, opção Mensagens no menu Coelo (Principal), Avisos, Convites, Circulares, Acontece, Agora, Momentos, Para Você e Perfil/preview do menu.
+- Cabeçalho mobile/responsivo do Superadmin inteiro; validar em todas as rotas.
+- Fundação compartilhada Media Gateway + R2 + Stream e contratos consumidos pelas E2E 1/2/4/5. Reserve migrations/Workers/Edge/recursos com o Coordenador antes de criar.
+- A fundação é neutra de app e reutilizável por Superadmin, Admin e Principal via coelo_domain/coelo_api; nesta Etapa 2, conectar somente o composition root do Superadmin. Não criar pasta, bucket, schema ou gateway por app. Site não consome mídia privada.
+- Chat e Conversas não podem ter rotas, models, repositories ou implementations concorrentes.
 
-Antes de editar, inventarie action_ids, rotas e duplicidades. Prove listar/abrir/enviar/editar/revogar/recibos/retry/anexos quando aplicáveis, Realtime/outbox, audiência, Storage privado, retorno à origem e comportamento após reload/revogação. O cabeçalho deve ser validado em todas as rotas do Superadmin, não só numa tela.
+FUNDAÇÃO DE MÍDIA
+1. Todo remoto é produção. Há relatos conflitantes sobre coelo-media-prod, coelo-documents-prod e coelo-transient-prod. Confirme primeiro a conta correta e liste buckets/configuração em modo read-only. Prepare criação dos ausentes ou configuração dos existentes, mas só execute após lease explícito do Coordenador nomeando você como único executor, recursos e janela. Nunca recriar, renomear, esvaziar ou apagar. Encerre o lease com evidência antes de outra mutação.
+2. Hierarquia server-issued sem PII: <scope>/<scope_uuid>/<domain>/<entity_type>/<entity_uuid>/<purpose>/<asset_uuid>/<rendition>/<object_uuid>.<ext>. Não criar árvores globais v1/v2; substituição cria novo ativo/objeto e versão/histórico ficam no Postgres. `rendition` usa somente `original`, `variants/<profile>`, `thumbnail/<size>` ou `preview`. Os nomes media_assets, media_variants, media_bindings, media_delivery_instances, uploads/jobs/auditoria descrevem o modelo lógico. Antes de qualquer migration, faça crosswalk bloqueante com public.media_assets, now_media_assets, moments_media_assets, circular_media_assets, form_assets, meal_plan_image_assets e Chat; evolua forward-only e nunca crie segundo catálogo universal ou ownership paralelo. Paths nunca autorizam.
+3. O catálogo, o gateway e os contratos de mídia devem suportar as finalidades de perfil/avatar, capas, logos, mapas/fotos de local, Acontece/Agora/Momentos, Chat/Circulares, Eventos, Formulários/respostas, Rotina/Cuidado e anexos/documentos. Nesta frente, implemente UI somente para Comunicação, Coelo (Principal), Perfil/preview e componentes compartilhados da fundação; as UIs de Pessoas/Locais, Formulários/Cuidado e Agenda/Eventos permanecem com E2E 2, 4 e 5. PDF pertence à entidade/finalidade no bucket de documentos e nunca ao Stream.
+4. Imagem aceita JPEG/PNG/WebP; HEIC/HEIF somente após conversão. Validar conteúdo/MIME real, bytes, dimensões, pixels, checksum e limites da ADR 0032. Remover EXIF/GPS; recusar SVG de usuário e GIF animado no MVP; gerar variants/thumbnail/preview.
+5. Media Gateway valida sessão, capability, tenant, audiência, finalidade e operação; emite acesso temporário mínimo, finaliza, audita e limpa órfãos. Configurar CORS mínimo; CORS não substitui autorização.
+6. Segredos ficam em secret store. Token já exposto é comprometido e proibido; nunca pedir o valor no chat. No primeiro gate remoto, solicitar credenciais novas separadas e de menor privilégio diretamente no secret store: bootstrap/admin R2 somente para inventário/criação/configuração necessária; runtime R2 restrito a objetos dos buckets aprovados; Stream Edit para promoção/remoção HOT; Workers deploy para o Worker nominal. Nunca usar uma credencial ampla em runtime nem reutilizar bootstrap; validar sem exibir segredo e continuar tarefas independentes enquanto isso.
+7. Lifecycle só expira uploads/quarentena/processamento/exportações conforme prefixo e contrato; nunca aplicar regra ampla capaz de apagar masters ou documentos permanentes.
+8. O cliente mantém apenas cache temporário mínimo e escopado por sessão/realm. Forneça um hook compartilhado para invalidar tickets e purgar mídia privada em logout, revogação e troca de contexto sensível; E2E 1 conecta esse hook aos fluxos de sessão.
 
-Prove Flutter verified, Supabase done e verified-e2e, incluindo tenant A/B, acesso negado, revogação, persistência, reload e auditoria. R2 fica fora; use Supabase Storage privado.
+POLÍTICA DE PRODUTO
+- Agora: upload master R2 antes da promoção; Stream privado HOT por até 24 h quando necessário; signed playback, encoding/progress/fallback; job idempotente remove apenas Stream na expiração.
+- Momentos: R2 padrão e reprodução progressiva; Stream por conteúdo novo/popular ou limiar medido, sem regra fixa de 30 dias; rebaixar/promover sem perder master.
+- Acontece: R2 padrão; Stream só com evidência de necessidade.
+- Chat: R2 e URL temporária; sem Stream obrigatório.
+- Perfil: avatar e capas aplicáveis no R2 privado via gateway. A conta Superadmin atual possui avatar, mas não ganha capa por inferência; o Perfil Principal usa capa 3:1.
 
-Reserve router/shell/componentes globais com o Coordenador. Faça commits atômicos e reporte a “Coordenador — Etapa 2 E2E” a cada 60 minutos, commit ou bloqueio. Não edite os três rastreadores; envie action_ids, evidências, testes, commits, pendências e ETA.
+FLUXOS DE COMUNICAÇÃO
+Prove listar/abrir/enviar/editar/revogar/recibos/retry/anexos, audiência, Realtime/outbox e retorno à origem quando aplicáveis. Convites não aceitam combinações cross-institution indevidas. Circulares mantêm import/export somente visual e pós-MVP.
 
-Ao terminar, commit de tudo, worktree sem mudanças não registradas e handoff completo; não remova a worktree.
+GATES
+- Front-end verified por action_id e cabeçalho global em mobile/desktop, tema, texto 200%, foco/toque/teclado, loading/empty/error/unauthorized/processing/expired.
+- Back-end done cumpre todos os gates da skill Coelo Back-end: Supabase e Cloudflare aplicáveis, ator/realm/capability, RLS/grants, objeto privado real, permitido/negado/revogado, tenant A/B, ID adulterado, persistência/reload, auditoria, ticket curto/expirado, retry e cleanup; quando houver Stream HOT, inclui entrega privada, fallback de encoding e remoção da cópia sem apagar o master, tudo comprovado em produção.
+- verified-e2e inclui arquivo/vídeo sintético real: Superadmin → gateway → Supabase metadados/RLS/audit → R2 → Stream quando aplicável → player/UI → reload/expiração/remoção.
+
+Faça TDD, commits atômicos, review independente e reserve shell/router/API/migrations com o Coordenador.
+
+REPASSE
+Reporte ao Coordenador a cada 60 minutos, commit, regressão ou bloqueio. Não edite os rastreadores. Entregue branch/worktree/base/commits, tela/subtela/action_id, evidência Front-end/Supabase/R2/Stream/E2E, testes com contagem, recursos de produção criados/alterados, referências, arquivos compartilhados, primeiro gate aberto e ETA.
+
+ENCERRAMENTO
+Commit de tudo, secret scan, verificações finais e worktree limpa. Não remover worktree; o Coordenador integra e limpa.
 ```
 
 ## Prompt 5 — E2E 4 — Formulários, Respostas e Cuidado
 
 ```text
-Seu nome nesta execução é “E2E 4 — Formulários, Respostas e Cuidado”. Renomeie esta conversa para esse nome.
+Seu nome nesta execução é “E2E 4 — Formulários, Respostas e Cuidado”. Renomeie esta conversa para esse título exato.
 
-Conclua ponta a ponta, em nível Completa, Formulários/Respostas e Cuidado. Use worktree isolada, branch codex/e2e-formularios-cuidado e o máximo útil de subagentes, com um único writer/integrador. O orçamento revisado é 36–60 horas; não pergunte novamente.
+Conclua em nível Completa Formulários/Respostas e Cuidado. Use worktree exclusiva, branch codex/e2e-formularios-cuidado, máximo útil de subagentes e um único writer/integrador. Não pergunte orçamento; inventarie, recalcule ETA e continue até entrega ou bloqueio externo real.
 
-Escopo: autoria, editor, versões, distribuições, agenda própria do formulário, responder/autosave/enviar/editar, monitor, lista e detalhe de respostas, mídias do formulário; perfis de cuidado, segurança infantil, saúde e medicação conforme decisões aprovadas.
+APP AUTORIZADO
+Somente apps/superadmin e packages/backends usados por ele. Não tocar apps/admin, apps/principal ou apps/site.
+Todo Supabase/Cloudflare remoto é produção. Este prompt autoriza preparar o pacote nominal desta vertical; qualquer mutation, migration, deploy, configuração ou teste sintético que escreva no remoto exige lease explícito do Coordenador com executor, recursos e janela. Sem lease, permaneça read-only. Se você for o executor nomeado, aplique forward-only, sem deleção destrutiva, reporte a evidência e encerre o lease antes do próximo pacote.
 
-REGRA NOVA OBRIGATÓRIA
-- Cada formulário nasce com exportação real de cada resposta individual, sem configuração/toggle adicional.
-- A ação aparece na linha e no detalhe da resposta para ator com forms.responses.export.
-- Exporta exatamente uma resposta, preservando versão, ordem e perguntas.
-- Reutilize CSV/XLSX; ZIP apenas quando houver mídia. Não invente PDF.
-- O backend valida ator, capability, tenant, formulário, ocorrência e resposta; arquivo e mídia ficam no Supabase Storage privado, com ticket/URL temporária emitida após reautorização.
-- Prove expiração, revogação, retry, idempotência, neutralização de fórmulas, auditoria, cleanup e ausência de path/segredo no Flutter.
-- Resposta anônima nunca pode ser correlacionada com pessoa; participação anônima nominal continua ação Owner-only separada e auditada.
-- Exportação consolidada de várias respostas e demais import/export reais continuam pós-MVP.
+SKILLS OBRIGATÓRIAS
+- AGENTS.md; RTK; Coelo Front-end (`coelo-frontend`); Coelo Back-end (`coelo-backend`); Coelo Front-end + Back-end (`coelo-frontend-backend`); coelo-ui; coelo-knowledge; coelo-tutor para explicações.
+- test-driven-development, systematic-debugging, verification-before-completion, requesting-code-review, using-git-worktrees e dispatching-parallel-agents/subagent-driven-development.
+- flutter-dart-code-review, flutter-build-responsive-layout, plugin/skill Supabase e supabase-postgres-best-practices. Use cloudflare para revisar o contrato consumido; cloudflare-manager (.agents\skills\cloudflare-manager\SKILL.md), wrangler e workers-best-practices somente sob lease explícito para alterar o gateway/recurso compartilhado.
+- Leia integralmente os três rastreadores, ADRs 0031/0032/0033, docs/superpowers/specs/2026-08-13-superadmin-forms-end-to-end-design.md, spec de Locais e decisões de Cuidado/Saúde.
 
-Não alterar apps/admin, apps/site ou apps/principal. Leia AGENTS.md; use RTK, coelo-knowledge, coelo-ui, coelo-flutter-review, coelo-supabase e coelo-flutter-supabase-review com dependências. Leia os três rastreadores e a spec docs/superpowers/specs/2026-08-13-superadmin-forms-end-to-end-design.md integralmente.
+OWNERSHIP
+- Formulários: autoria, editor, versões, distribuições, agenda própria, responder/autosave/enviar/editar, monitor, lista/detalhe de respostas, mídia e exportação.
+- Pergunta/resposta de local interno: forms.location-question e forms.location-answer, com escolha única/múltipla e somente locais catalogados visíveis ao respondente.
+- Perfis de cuidado, segurança infantil, saúde e medicação conforme decisões aprovadas, com dados sintéticos e gates sensíveis.
+- Consumir a fundação Media Gateway/R2 da E2E 3; não criar um gateway ou bucket paralelo.
 
-Antes de editar, inventarie action_ids, jobs, Edge Functions, migrations, Storage e REDs existentes. Prove Flutter verified, Supabase done e verified-e2e por ação, incluindo permitido/negado/revogado, cross-tenant, persistência, reload e arquivos reais sintéticos sem PII.
+EXPORTAÇÃO CORRETA DO MVP
+- forms.responses.export gera um único arquivo XLSX com as respostas do formulário.
+- A ação é do contexto do formulário/diretório de respostas e exige capability; não fica por linha como exportação de uma resposta.
+- Não gerar CSV, ZIP, PDF nem exportação individual.
+- O workbook preserva formulário/versão, ordem das perguntas, respostas e referências. Valores múltiplos/mídias podem usar abas auxiliares versionadas sem produto cartesiano falso.
+- Mídia aparece como link protegido que reautoriza no clique; nenhum binário é embutido e nenhuma URL permanente entra no XLSX. Imagem enviada por responsável fica vinculada à resposta como answer-image. Tipo de pergunta Documento/PDF continua fora do MVP de Formulários; não ampliá-lo por inferência.
+- Job server-side idempotente e auditado; artefato XLSX em coelo-transient-prod sob o prefixo canônico de exports/forms; ticket/URL curta, expiração, revogação, retry e cleanup.
+- Participação anônima não pode ser correlacionada ao conteúdo. Exportação nominal de participação anônima e todos os demais import/export ficam pós-MVP com botão honesto.
 
-Reserve migrations/Storage/router compartilhados com o Coordenador. Faça commits atômicos. Reporte a “Coordenador — Etapa 2 E2E” a cada 60 minutos, commit ou bloqueio. Não edite os três rastreadores; envie telas/subtelas/action_ids, evidências, testes, commits, pendências e ETA.
+FORMULÁRIOS E CUIDADO
+- Respostas anônimas não guardam pessoa, participation_id nem chave comum.
+- Prove editor/versionamento/publicação/distribuição/resposta/monitor/detalhe e mídia por action_id.
+- Dados de cuidado/saúde/medicação exigem minimização, AAL/capability aplicável, leitura/escrita/revogação/auditoria e zero exposição em logs/evidências.
 
-Ao terminar, commit de tudo, worktree sem mudanças não registradas e handoff completo; não remova a worktree.
+GATES
+- Front-end verified com estados, responsividade, acessibilidade, navegação, autosave/retry e reload.
+- Back-end done cumpre todos os gates da skill Coelo Back-end, incluindo Supabase + R2, ator/realm/capability, RLS/grants, objeto/arquivo privado real, tenant A/B, ID adulterado, negado/revogado/expirado, idempotência, persistência/reload, auditoria, XLSX real em produção e cleanup.
+- verified-e2e: Superadmin real gera XLSX sintético, baixa após reautorização, valida conteúdo/neutralização de fórmulas, expiração e negação cross-tenant; uploads de Formulário percorrem Media Gateway e R2 reais.
+- Reconcile forms.location-question/answer e o action_id de exportação no denominador oficial sem duplicar aliases históricos.
+
+Reserve migrations, R2/Worker, router e API compartilhados com o Coordenador. Faça TDD, commits atômicos e review independente.
+
+REPASSE
+Reporte ao Coordenador a cada 60 minutos, commit, regressão ou bloqueio. Não edite os rastreadores. Entregue branch/worktree/base/commits, tela/subtela/action_id, evidência Front-end/Supabase/R2/E2E, testes e inspeção do XLSX com contagem, arquivos compartilhados, primeiro gate aberto e ETA.
+
+ENCERRAMENTO
+Commit de tudo, secret scan, verificação final e worktree limpa. Não remova a worktree; o Coordenador integra e limpa.
 ```
 
 ## Prompt 6 — E2E 5 — Agenda, Eventos e Operações
 
 ```text
-Seu nome nesta execução é “E2E 5 — Agenda, Eventos e Operações”. Renomeie esta conversa para esse nome.
+Seu nome nesta execução é “E2E 5 — Agenda, Eventos e Operações”. Renomeie esta conversa para esse título exato.
 
-Conclua ponta a ponta, em nível Completa, Agenda, Eventos e Operações. Use worktree isolada, branch codex/e2e-agenda-operacoes e o máximo útil de subagentes, com um único writer/integrador. O orçamento é 34–56 horas; não pergunte novamente.
+Conclua em nível Completa Agenda, Eventos e Operações. Use worktree exclusiva, branch codex/e2e-agenda-operacoes, máximo útil de subagentes e um único writer/integrador. Não pergunte orçamento; inventarie, recalcule ETA e continue até entrega ou bloqueio externo real.
 
-Escopo: Agenda e eventos; Rotina diária; Assiduidade/Chamada; Atividades; Avaliações; Planos/assinaturas; Cardápios/modelos/publicação; Suporte; Auditoria; Catálogo técnico e páginas de erro/retry aplicáveis. Import/export real desses domínios continua pós-MVP; mantenha os botões visíveis e informativos sem jobs/arquivos reais.
+APP AUTORIZADO
+Somente apps/superadmin e packages/backends usados por ele. Não tocar apps/admin, apps/principal ou apps/site. A agenda interna de distribuição de Formulários pertence à E2E 4; o cabeçalho global e Media Gateway pertencem à E2E 3.
+Todo Supabase/Cloudflare remoto é produção. Este prompt autoriza preparar o pacote nominal desta vertical; qualquer mutation, migration, deploy, configuração ou teste sintético que escreva no remoto exige lease explícito do Coordenador com executor, recursos e janela. Sem lease, permaneça read-only. Se você for o executor nomeado, aplique forward-only, sem deleção destrutiva, reporte a evidência e encerre o lease antes do próximo pacote.
 
-Não alterar apps/admin, apps/site ou apps/principal. Não assumir a agenda interna de distribuição de Formulários, que pertence à E2E 4, nem o cabeçalho global, que pertence à E2E 3.
+SKILLS OBRIGATÓRIAS
+- AGENTS.md; RTK; Coelo Front-end (`coelo-frontend`); Coelo Back-end (`coelo-backend`); Coelo Front-end + Back-end (`coelo-frontend-backend`); coelo-ui; coelo-knowledge; coelo-tutor para explicações.
+- test-driven-development, systematic-debugging, verification-before-completion, requesting-code-review, using-git-worktrees e dispatching-parallel-agents/subagent-driven-development.
+- flutter-dart-code-review, flutter-build-responsive-layout, plugin/skill Supabase e supabase-postgres-best-practices. Use cloudflare para revisar o contrato consumido; cloudflare-manager (.agents\skills\cloudflare-manager\SKILL.md), wrangler e workers-best-practices somente sob lease explícito para alterar recurso compartilhado.
+- Leia integralmente os três rastreadores, ADRs 0031/0032, spec de Locais/Mapas/Agendamentos e specs aprovadas de cada domínio.
 
-Leia AGENTS.md; use RTK, coelo-knowledge, coelo-ui, coelo-flutter-review, coelo-supabase e coelo-flutter-supabase-review e dependências. Leia os três rastreadores integralmente.
+OWNERSHIP
+- Agenda e Eventos; Rotina diária; Assiduidade/Chamada; Atividades; Avaliações; Planos/assinaturas; Cardápios/modelos/publicação; Suporte; Auditoria; Catálogo técnico; páginas de erro/retry.
+- Locais: locations.schedule, activities.location e agenda.location. Consumir catálogo/schema base da E2E 2 e Media Gateway da E2E 3.
+- Não assumir Pessoas/Estruturas base, Chat/Comunicação, Formulários/Cuidado ou cabeçalho global.
 
-Antes de editar, inventarie action_ids, decisões abertas e dependências. Prove calendário/lista/criar/detalhe/editar/solicitar/publicar/corrigir/concluir e permissões quando aplicáveis; loading/empty/error/unauthorized; responsividade e acessibilidade. No Supabase, prove schema, RPCs, concorrência/idempotência, RLS, tenant A/B, revogação, auditoria, notificações/efeitos e reload.
+LOCAIS E RESERVAS
+- Atividade/Evento escolhe local catalogado ou pontual; local novo oferece salvar no catálogo correto. Turma/groups.location pertence exclusivamente à E2E 2.
+- Reserva é opcional. Suportar única/recorrente, intervalos, disponibilidade, cancelamento e concorrência/idempotência.
+- Política por instituição/unidade: bloquear ou alertar. Em alertar, somente capability específica permite override com justificativa e auditoria; em bloquear, não persistir sobreposição.
+- O detalhe e os vínculos reversos do local pertencem à E2E 2; esta frente apenas produz e referencia reservas/Atividades/Eventos pelos contratos compartilhados, sem duplicar a tela.
 
-Cada ação só termina com Flutter verified, Supabase done e verified-e2e. Reserve router, design system, ledger e migrations compartilhadas com o Coordenador antes de tocar.
+OPERAÇÕES E MÍDIA
+- Prove calendário/lista/criar/detalhe/editar/solicitar/aprovar/publicar/corrigir/concluir conforme cada domínio.
+- Rotina/Cardápio e outras mídias aplicáveis usam R2 privado via Media Gateway; Stream somente se uma política aprovada específica exigir — não inventar.
+- attendance.export, audit.export e demais import/export reais ficam pós-MVP. Botões visíveis e informativos, sem job/arquivo/backend.
 
-Faça commits atômicos e reporte a “Coordenador — Etapa 2 E2E” a cada 60 minutos, commit ou bloqueio. Não edite os três rastreadores; envie telas/subtelas/action_ids, evidências, testes, commits, pendências e ETA.
+GATES
+- Front-end verified: estados completos, responsividade, acessibilidade, navegação, conflito/retry e regressão.
+- Back-end done cumpre todos os gates da skill Coelo Back-end: schema/RPC/Edge, ator/realm/capability, RLS/grants, permitido/negado/revogado, tenant A/B, ID adulterado, concorrência/idempotência, auditoria/notificações, persistência/reload, objeto privado real e ticket expirável quando R2 for aplicável, produção remota e cleanup.
+- verified-e2e: ação real pelo Superadmin até Supabase/Cloudflare aplicáveis e retorno/reload, incluindo permitido/negado/revogado e conflito concorrente.
+- Reconcile locations.schedule, activities.location e agenda.location no denominador oficial, sem dupla contagem.
 
-Ao terminar, commit de tudo, worktree sem mudanças não registradas e handoff completo; não remova a worktree.
+Reserve router, design system, ledger, migrations e recursos compartilhados com o Coordenador. Faça TDD, commits atômicos e review independente.
+
+REPASSE
+Reporte ao Coordenador a cada 60 minutos, commit, regressão ou bloqueio. Não edite os rastreadores. Entregue branch/worktree/base/commits, tela/subtela/action_id, evidência Front-end/Supabase/R2/E2E, testes com contagem, arquivos compartilhados, primeiro gate aberto e ETA.
+
+ENCERRAMENTO
+Commit de tudo, verificações finais e worktree limpa. Não remova a worktree; o Coordenador integra e limpa.
 ```

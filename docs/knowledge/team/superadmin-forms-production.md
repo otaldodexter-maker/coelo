@@ -4,6 +4,7 @@ knowledge_id: superadmin-forms-production
 source: docs/superpowers/specs/2026-08-13-superadmin-forms-end-to-end-design.md
 status: validated
 generated_at: 2026-08-13
+updated_at: 2026-09-03
 audience: team
 surfaces: [superadmin, forms, permissions, storage, exports]
 visibility: internal
@@ -64,10 +65,16 @@ auditável e nunca expõe um identificador ou horário que permita correlacionar
 pessoa com uma resposta.
 
 Photo captura pela câmera e Gallery escolhe imagens existentes. JPEG, PNG e
-WebP de até 10 MB usam o bucket privado `coelo-forms-private`: o backend cria
-path opaco e URL assinada curta, o cliente envia sem credencial privilegiada, e a
-finalização verifica tamanho, MIME e checksum. Downloads passam pela rota
-protegida de mídia e reautorizam cada acesso. Exportações CSV, XLSX e ZIP são
-jobs privados, idempotentes e auditados; perguntas multivaloradas expandem em
-grupos independentes, sem produto cartesiano, e valores são neutralizados
-contra fórmulas.
+WebP de até 10 MiB e 36 MP usam `coelo-media-prod` pelo Media Gateway; HEIC/HEIF
+de celular é convertido antes da finalização. O backend cria chave opaca na
+finalidade `answer-image` e URL curta; o cliente envia sem credencial
+privilegiada e a finalização verifica MIME real, bytes, dimensões, pixels e
+checksum. Downloads passam pela rota protegida e reautorizam cada acesso.
+Documento/PDF continua fora dos tipos de pergunta do MVP de Formulários.
+
+`forms.responses.export` é a única exportação funcional do MVP: um job privado,
+idempotente e auditado gera um XLSX com as respostas do formulário em
+`coelo-transient-prod`. O
+workbook pode usar abas auxiliares versionadas para respostas múltiplas e links
+de mídia, sem produto cartesiano; valores são neutralizados contra fórmulas.
+Não existe exportação por resposta, CSV, ZIP ou PDF neste recorte.

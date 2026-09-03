@@ -1,4 +1,4 @@
 interface:
-  display_name: "Coelo Flutter Review"
-  short_description: "Revisa Flutter/Dart por escopo e evidência."
-  default_prompt: "Use $coelo-flutter-review para listar as pendências, confirmar o recorte e revisar o Flutter/Dart do Coelo."
+  display_name: "Coelo Front-end"
+  short_description: "Flutter, Dart e Astro por app e evidência"
+  default_prompt: "Use $coelo-frontend para concluir o Front-end Coelo em Flutter/Dart ou Astro no app autorizado."

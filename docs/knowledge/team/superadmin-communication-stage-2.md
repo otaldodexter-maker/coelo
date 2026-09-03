@@ -4,7 +4,7 @@ knowledge_id: "superadmin-communication-stage-2"
 source: "docs/superpowers/specs/2026-09-01-superadmin-communication-finish-design.md"
 status: "validated"
 generated_at: "2026-09-01"
-updated_at: "2026-09-01"
+updated_at: "2026-09-03"
 audience: "team"
 surfaces: [superadmin, communication, chat, invites, notices, circulars]
 visibility: "internal"
@@ -31,5 +31,5 @@ publica, pausa, reativa e inativa conteúdo textual; Conteúdo e Operações glo
 podem ler. Os estados são rascunho, agendado, ativo, pausado, expirado e
 inativo; expirado/inativo são terminais. Os estados legados publicado/arquivado
 são convertidos para ativo/inativo. Mídia permanece indisponível de modo seguro
-até o gateway autorizado de Supabase Storage privado, sem bloquear o CRUD
-textual. R2 está fora do MVP conforme ADR 0030.
+até o Media Gateway autorizado para Cloudflare R2 privado, sem bloquear o CRUD
+textual. Supabase guarda metadados, autorização e auditoria conforme ADR 0032.

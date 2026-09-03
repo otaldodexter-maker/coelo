@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "cloudflare-manager": {
+      "source": "secondsky/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/cloudflare-manager/skills/cloudflare-manager/SKILL.md",
+      "computedHash": "d5aa4b026275a449ab878d7351a5cbd03a7e8db8cc6e6ee87333fce27151d5ee"
+    },
     "dart-add-unit-test": {
       "source": "dart-lang/skills",
       "sourceType": "github",

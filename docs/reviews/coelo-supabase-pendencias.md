@@ -1,5 +1,5 @@
 ---
-title: "Pendências Coelo — Supabase por tela e ação"
+title: "Pendências Coelo — Back-end por tela e ação"
 source: "docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; decisions/0020-backend-authorization-application-security.md; specs aprovadas por dominio; auditoria consolidada em 2026-08-26; Git dev cd1ea97c e inventario remoto read-only em 2026-09-01"
 status: "living"
 generated_at: "2026-08-26"
@@ -8,13 +8,33 @@ action_count: 207
 family_count: 37
 ---
 
-# Pendências Coelo — Supabase
+# Pendências Coelo — Back-end
+
+> **Nomenclatura canônica — 2026-09-03:** este rastreador é governado por
+> **Coelo Back-end** (`coelo-backend`) e cobre Supabase/Postgres e Cloudflare
+> R2/Stream/Workers conforme os provedores aplicáveis. O nome do arquivo é
+> histórico e foi preservado para compatibilidade.
+
+> **Supersedência:** qualquer seção histórica abaixo que ainda descreva
+> Supabase Storage como storage do MVP, R2 pós-MVP ou exportação individual de
+> resposta foi substituída pela ADR 0032 e pelos checkpoints de 2026-09-03 no
+> topo.
 
 > **Etapa 2 — 2026-09-03:** ADR 0032 aprovou R2 privado para mídia nova do MVP.
 > Supabase cobre metadados, RLS, autorização, auditoria e Media Gateway; não
 > criar Storage para mídia nova. Só `forms.responses.export` é exportação real,
 > gerando Excel com as respostas do formulário; exportações do Superadmin ficam
 > adiadas.
+
+> **Produção e hierarquia de mídia — 2026-09-03:** todo remoto Coelo é
+> produção. A topologia aprovada usa `coelo-media-prod`,
+> `coelo-documents-prod` e `coelo-transient-prod`, todos privados. A chave única
+> não usa raiz `v1`/`v2`; segue escopo/domínio/entidade/finalidade/ativo/rendição
+> e objeto opaco. Postgres é o catálogo autoritativo. Formatos, bytes,
+> dimensões/pixels e limites de imagem/PDF estão fechados na ADR 0032.
+> A plataforma é compartilhada por Superadmin, Admin e Principal, sem nome de
+> app na chave; a Etapa 2 implementa somente o primeiro consumidor Superadmin.
+> O Site não acessa mídia privada.
 
 ## Auditoria read-only de Pessoas e Vínculos — 2026-09-03
 
@@ -57,14 +77,27 @@ exigem spec física e RLS; não criar tabela nesta rodada.
 ## Checkpoint Etapa 2 — mídia por produto e exportação — 2026-09-03
 
 - R2 é o storage dos binários novos. O Media Gateway server-side valida sessão,
-  tenant, capability, audiência, MIME/tamanho, emite URL temporária, finaliza,
-  audita e limpa órfãos; Supabase mantém metadados e RLS.
+  tenant, capability, audiência, finalidade, MIME real, bytes,
+  dimensões/pixels, checksum e limites da ADR 0032; emite URL temporária,
+  finaliza, audita e limpa órfãos; Supabase mantém catálogo, bindings e RLS.
+- `coelo-media-prod` recebe avatar/capa/logo, mapas/fotos de local, imagens de
+  eventos, comunicação, perguntas/respostas e masters de vídeo/áudio;
+  `coelo-documents-prod` recebe PDF/documentos/evidências; temporários,
+  quarentena, processamento e XLSX ficam em `coelo-transient-prod` com
+  lifecycle por prefixo. PDF nunca passa pelo Stream.
+- A hierarquia é única e permanente, sem pasta global de versão. Substituição
+  cria novo `asset_uuid`/objeto; histórico fica no Postgres.
 - Agora pode promover vídeo ao Stream por até 24h; expiração remove apenas a
   cópia Stream e preserva o master R2. Enquanto codifica, R2 é fallback.
 - Momentos usa R2 por padrão e Stream somente por tráfego medido; Acontece usa
   R2 por padrão; Chat não usa Stream no MVP.
-- Pendente: spec/migration/RLS/replay do Media Gateway e job de expiração;
-  nenhum recurso remoto foi criado.
+- Há relatos conflitantes sobre a existência de `coelo-media-prod`,
+  `coelo-documents-prod` e `coelo-transient-prod`. E2E 3 deve verificar a conta
+  correta read-only; criar os três privados somente se ausentes, ou
+  validar/configurar se presentes. Nunca recriar, renomear, esvaziar ou apagar.
+- Pendente: schema/migration/RLS/replay do catálogo universal de mídia,
+  `media_assets`, variantes, bindings, entregas, sessões/jobs; Media Gateway,
+  bindings/CORS mínimos, lifecycle transitório e job de expiração.
 - `forms.responses.export` deve gerar Excel com as respostas do formulário;
   exportações do Superadmin permanecem apenas botão visual.
 
@@ -98,8 +131,8 @@ exigem spec física e RLS; não criar tabela nesta rodada.
 - Os doze IDs aprovados permanecem fora do denominador histórico de 207 até o
   inventário físico. Estado de todas as novas ações: `blocked-implementation`;
   nenhuma família avançou para `done`.
-- OQ-045 bloqueia a mídia real: a allowlist da ADR 0032 não possui domínio para
-  mapas/locais. Não reutilizar prefixo existente nem criar um ad hoc.
+- OQ-045 foi encerrada: `locations` integra a hierarquia canônica única; não
+  criar prefixo paralelo nem pasta por tela.
 - ETA backend, sem início de implementação: catálogo/cópia/RLS 18–30 h;
   reservas, recorrência, concorrência e auditoria 20–34 h; Media Gateway/R2,
   metadados e cleanup 12–20 h; Forms e vínculos 8–14 h; replay, negativos e

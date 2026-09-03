@@ -5,6 +5,7 @@ source: docs/superpowers/specs/2026-07-28-superadmin-institution-form-feedback-d
 status: validated
 generated_at: 2026-07-29
 revised_at: 2026-08-04
+updated_at: 2026-09-03
 audience: team
 surfaces: [superadmin, institutions]
 visibility: internal
@@ -93,9 +94,9 @@ receber mudanças estruturais sem decisão explícita.
 As ações de busca/estado devem preservar os estados aprovados de `loading`,
 `erro`, `retry`, `vazio`, `sem resultados`, `not-found` e `unauthorized`.
 
-Durante o MVP, mídia institucional e privada usa Supabase Storage privado, com
-metadados no Postgres e autorização server-side, conforme ADR 0030. R2 fica
-fora deste domínio até eventual decisão do Owner no encerramento formal do MVP.
+Durante o MVP, mídia institucional e privada usa Cloudflare R2 privado via
+Media Gateway, com metadados e autorização server-side no Postgres/Supabase,
+conforme ADR 0032.
 
 ## Referência reutilizável
 

@@ -5,6 +5,7 @@ source: docs/design/design-system.md
 status: validated
 generated_at: 2026-07-29
 revised_at: 2026-08-04
+updated_at: 2026-09-03
 audience: team
 surfaces: [superadmin, institutions]
 visibility: internal
@@ -79,6 +80,5 @@ sem aprovação explícita.
 Na composição de diretório, estados de `loading`, `erro`, `retry`, `vazio`,
 `sem resultados`, `not-found` e `unauthorized` preservam a composição existente.
 
-Durante o MVP, mídia privada mantém metadados no Postgres e objetos no Supabase
-Storage privado conforme ADR 0030. R2 não é destino nem gate desta família no
-MVP.
+Durante o MVP, mídia privada mantém metadados e autorização no Postgres e
+objetos no Cloudflare R2 privado via Media Gateway, conforme ADR 0032.

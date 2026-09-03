@@ -46,9 +46,38 @@ Regras globais:
 
 ## Seguranca, LGPD E Midia
 
-`service_role` e qualquer segredo equivalente nunca podem aparecer no cliente, em apps Flutter ou no site publico. Desde a decisão do Owner de 2026-09-03 (ADR 0032), toda mídia nova do MVP usa Cloudflare R2 privado; Postgres/Supabase guarda metadados, permissoes, vinculos, ownership e trilha de auditoria. A ADR 0030 fica histórica. R2 não substitui o banco nem autoriza bucket público ou segredo no Flutter.
+`service_role` e qualquer segredo equivalente nunca podem aparecer no cliente,
+em apps Flutter ou no site publico. Desde a decisao do Owner de 2026-09-03
+(ADR 0032), toda midia nova do MVP usa Cloudflare R2 privado;
+Postgres/Supabase guarda metadados, permissoes, vinculos, ownership e trilha de
+auditoria. A ADR 0030 fica historica. R2 nao substitui o banco nem autoriza
+bucket publico ou segredo no Front-end. Cloudflare Stream e somente uma copia
+HOT privada e removivel: Agora pode usa-la por ate 24 horas; Momentos e
+Acontece somente por necessidade medida; Chat nao exige Stream no MVP. O master
+permanece no R2.
 
-Importacao e exportacao reais ficam adiadas para depois do MVP. Os botoes permanecem visiveis nas telas aplicaveis, com indisponibilidade honesta e sem picker, parser, job, arquivo, RPC ou persistencia. A excecao e `forms.export`: o formulário deve exportar um arquivo Excel com suas respostas no MVP, sem configuração adicional, usando R2 privado quando houver mídia, reautorizacao server-side, expiracao e auditoria. Exportações gerais do Superadmin e de vários domínios continuam adiadas. No encerramento formal do MVP, perguntar ao Owner se deseja implementar as demais acoes.
+Todo recurso Supabase ou Cloudflare remoto do Coelo e producao; nao presumir
+DEV ou homologacao. Testar localmente e aplicar pacotes remotos nominais,
+forward-only, revisados e serializados. A topologia R2 privada usa
+`coelo-media-prod`, `coelo-documents-prod` e `coelo-transient-prod`, com chaves
+opacas versionadas por escopo, dominio, entidade, finalidade, ativo e rendicao.
+Postgres e o catalogo autoritativo de ativos, variantes, usos e entregas.
+Imagens e documentos seguem MIME real, bytes, dimensoes/pixels, checksum,
+retencao e limites por finalidade da ADR 0032; PDF nunca usa Stream.
+Superadmin, Admin e Principal consomem a mesma plataforma sem app no path; na
+Etapa 2 somente Superadmin e conectado. O Site nao acessa midia privada e usa
+assets estaticos no proprio build/CDN; publicacao dinamica futura exige fluxo e
+bucket publico separados.
+
+Importacao e exportacao reais ficam adiadas para depois do MVP. Os botoes
+permanecem visiveis nas telas aplicaveis, com indisponibilidade honesta e sem
+picker, parser, job, arquivo, RPC ou persistencia. A excecao e
+`forms.responses.export`: o formulario exporta um arquivo XLSX com suas
+respostas no MVP, sem configuracao adicional, armazenado no R2 privado com
+reautorizacao server-side, expiracao e auditoria. Nao e uma exportacao por
+resposta e nao inclui CSV, ZIP ou PDF. Exportacoes gerais do Superadmin e de
+outros dominios continuam adiadas. No encerramento formal do MVP, perguntar ao
+Owner se deseja implementar as demais acoes.
 
 Dados pessoais, dados de criancas, CPF, midias, mensagens e logs devem respeitar LGPD, minimizacao, base legal, retencao definida, rastreabilidade e melhor interesse da crianca. Lacunas juridicas devem ficar abertas ate decisao formal.
 
@@ -110,18 +139,26 @@ todas as telas, um macrotema, macrotema mais telas, telas especificas ou acoes
 especificas. Concluir o recorte nunca autoriza declarar concluido o que ficou
 fora dele.
 
-Escolha a skill e os rastreadores conforme o pedido:
+Escolha a skill e os rastreadores conforme o pedido. Os caminhos historicos das
+skills foram preservados para compatibilidade, mas os nomes abaixo sao
+canonicos:
 
-- Flutter/Dart: use `.agents/skills/coelo-flutter-review/SKILL.md` e leia
+- **Coelo Front-end** (`coelo-frontend`): use
+  `.agents/skills/coelo-flutter-review/SKILL.md` para Flutter/Dart nos apps
+  privados e Astro no Site, sempre com recorte explicito por app; leia
   integralmente `docs/reviews/coelo-flutter-pendencias.md`.
-- Supabase/backend: use `.agents/skills/coelo-supabase/SKILL.md` e leia
-  integralmente `docs/reviews/coelo-supabase-pendencias.md`.
-- Flutter integrado ao Supabase ou conclusao ponta a ponta: use
-  `.agents/skills/coelo-flutter-supabase-review/SKILL.md` e leia integralmente os
-  tres rastreadores, terminando por
+- **Coelo Back-end** (`coelo-backend`): use
+  `.agents/skills/coelo-supabase/SKILL.md` para Supabase/Postgres e Cloudflare
+  R2/Stream/Workers; leia integralmente
+  `docs/reviews/coelo-supabase-pendencias.md`.
+- **Coelo Front-end + Back-end** (`coelo-frontend-backend`): use
+  `.agents/skills/coelo-flutter-supabase-review/SKILL.md` quando a conclusao
+  cruzar cliente, Supabase ou Cloudflare; leia integralmente os tres
+  rastreadores, terminando por
   `docs/reviews/coelo-flutter-integrado-supabase-pendencias.md`.
 
-`coelo-ui` permanece a autoridade visual em qualquer revisao Flutter. Atualize
+`coelo-ui` permanece a autoridade visual em qualquer revisao de Front-end.
+Atualize
 os rastreadores afetados no mesmo turno de cada correcao, regressao, bloqueio ou
 mudanca de estimativa. Tela aberta, `fail-closed`, `local-green`, rota `/dev`,
 mock ou teste isolado nunca deve ser declarada concluida ponta a ponta.

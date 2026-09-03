@@ -1,10 +1,10 @@
 ---
 title: "Publicação do Agora no MVP"
 knowledge_id: "now-publication-mvp"
-source: "specs/036-principal-now-publication-mvp.md"
+source: "decisions/0032-mvp-private-media-r2.md"
 status: "validated"
 generated_at: "2026-08-20"
-updated_at: "2026-08-31"
+updated_at: "2026-09-03"
 audience: "team"
 surfaces: [principal, agora, superadmin-preview, supabase, authorization]
 visibility: "internal"
@@ -25,7 +25,14 @@ mídia temporária vertical, texto curto, ferramentas, público/contexto, aviso 
 gaps devem reproduzir a geometria canônica sem aproximações; o preview lateral e
 o rodapé permanecem contidos nessa superfície.
 
-No MVP, mídia e áudio usam temporariamente o bucket privado `coelo-now-mvp` do Supabase conforme ADR 0026. O upload transitório é limitado a 25 MB e ocorre diretamente por URL assinada após intenção server-side; a Edge Function relê e valida o objeto antes de finalizar os metadados. O cliente não escolhe paths, não recebe segredo e não concede autorização. Metadados, contexto, versão, auditoria, idempotência e expiração de 24 horas ficam no Postgres, atrás de um repositório independente do provedor; unidade e grupo são sempre revalidados contra a instituição.
+No MVP, o master Coelo de mídia e áudio fica no R2 privado
+`coelo-media-prod`, pela arquitetura aprovada na ADR 0032. O upload passa pelo
+Media Gateway server-side; o cliente não escolhe paths, não recebe segredo e
+não concede autorização. Para vídeo quente, uma cópia privada pode ser
+promovida ao Stream por até 24 horas; quando o Agora expira, um job idempotente
+remove apenas a cópia do Stream, preservando o master no R2. Metadados,
+contexto, versão, auditoria, idempotência e expiração ficam no Postgres;
+unidade e grupo são sempre revalidados contra a instituição.
 
 Na composição Flutter, contexto produtivo é obrigatório e fixtures só entram por
 `.demo` explícito. O rascunho preserva e reaplica escala, deslocamentos de crop e

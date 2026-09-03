@@ -1,5 +1,5 @@
 ---
-title: "Pendências Coelo — Flutter integrado ao Supabase"
+title: "Pendências Coelo — Front-end + Back-end"
 source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; Git dev 7b94428aa9861b68fcc81b335a98857b43de789f"
 status: "open"
 generated_at: "2026-08-26"
@@ -18,7 +18,16 @@ flutter_tracker_sha256: "3AEC930708733F218F3B044B0C0E461758755325970D3EACC04E81E
 supabase_tracker_sha256: "4B30E0883CFC8641CAD687EA19AB18FA6E858402A13F6CECB57C0D674E3C9D6A"
 ---
 
-# Pendências Coelo — Flutter integrado ao Supabase
+# Pendências Coelo — Front-end + Back-end
+
+> **Nomenclatura canônica — 2026-09-03:** este rastreador é governado por
+> **Coelo Front-end + Back-end** (`coelo-frontend-backend`). O nome do arquivo
+> é histórico; a integração agora inclui Front-end, Supabase e Cloudflare.
+
+> **Supersedência:** qualquer seção histórica abaixo que ainda descreva
+> Supabase Storage, R2 pós-MVP, Stream sempre fora do gate ou exportação
+> individual de resposta foi substituída pela ADR 0032 e pelos checkpoints de
+> 2026-09-03 no topo.
 
 > **Pessoas e vínculos — 2026-09-03:** provar na integração que memberships,
 > guardian/child links, assignments de atividades e contextos nomeados respeitam
@@ -28,8 +37,19 @@ supabase_tracker_sha256: "4B30E0883CFC8641CAD687EA19AB18FA6E858402A13F6CECB57C0D
 
 > **Etapa 2 — 2026-09-03:** fronteira de mídia atualizada pela ADR 0032:
 > Flutter → Media Gateway → R2 privado; Supabase mantém metadados/RLS/auditoria.
-> Stream não é gate do MVP; somente `forms.responses.export` exige E2E de arquivo
-> Excel contendo as respostas do formulário.
+> Stream é gate somente nas ações em que a política HOT o exige; em Agora, deve
+> ser provado quando a publicação for promovida. `forms.responses.export` exige
+> E2E de um arquivo XLSX contendo as respostas do formulário.
+
+> **Produção — 2026-09-03:** todo recurso Supabase/Cloudflare remoto é
+> produção. A prova usa os buckets privados `coelo-media-prod`,
+> `coelo-documents-prod` e `coelo-transient-prod`, hierarquia canônica única sem
+> raiz v1/v2 e catálogo autoritativo no Postgres. Cada upload comprova MIME
+> real, bytes, dimensões/pixels quando imagem, checksum, finalidade, URL curta,
+> revogação e cleanup conforme ADR 0032.
+> Contratos de domínio/API são compartilhados por Superadmin, Admin e Principal,
+> mas somente Superadmin entra no recorte de código da Etapa 2. O Site usa
+> assets estáticos próprios e não lê os buckets privados.
 
 ## Checkpoint Etapa 2 — política híbrida R2/Stream — 2026-09-03
 
@@ -40,6 +60,16 @@ somente por tráfego; Acontece e Chat permanecem R2 por padrão. A cadeia
 `forms.responses.export` deve produzir Excel com as respostas do formulário;
 botões de import/export do Superadmin não executam backend. `ready-for-e2e` e
 `verified-e2e` permanecem inalterados até existirem evidências remotas.
+
+Cobrir também avatar/perfil, capa 3:1 onde aprovada, logo, mapa/foto de local,
+galeria/capa de evento, imagens de pergunta e resposta, anexos e PDF. PDF fica
+em documentos, nunca Stream; fotos usam variant/thumbnail para primeira
+renderização. A conta Superadmin não recebe capa por inferência.
+
+Há relatos conflitantes sobre a existência dos três buckets canônicos. O gate
+integrado começa por inventário read-only na conta correta; E2E 3 cria somente
+os ausentes ou valida/configura os existentes. Criação não pode ser repetida e
+nunca autoriza renomear, esvaziar ou apagar.
 
 ## Decisão aprovada — locais, mapas e agendamentos — 2026-09-02
 
@@ -68,9 +98,9 @@ botões de import/export do Superadmin não executam backend. `ready-for-e2e` e
   E2E; o inventário posterior deverá reconciliar aliases antes de recalcular.
   Estado inicial correto: Flutter pendente, Supabase
   `blocked-implementation`, integração 0/12 `verified-e2e`.
-- OQ-045 bloqueia apenas a prova de mídia real até a definição do prefixo R2;
-  catálogo, marcadores, visibilidade, vínculos e agenda continuam especificados,
-  mas não autorizados para início neste repasse.
+- OQ-045 foi encerrada com `locations` como prefixo R2 canônico. A prova de
+  mídia continua dependente de Media Gateway, retenção, autorização, expiração
+  e cleanup; catálogo, marcadores, vínculos e agenda seguem seus gates próprios.
 - ETA integrada de esforço: E2E 2 em 36–60 h; E2E 4 em 10–18 h; E2E 5 em
   28–46 h; fundação compartilhada, replay e regressão conjunta em 18–30 h.
   Total estimado 92–154 h de esforço. Com três frentes paralelas após a fundação,

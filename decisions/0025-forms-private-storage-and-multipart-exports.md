@@ -7,10 +7,11 @@ generated_at: "2026-08-13"
 
 # ADR 0025 - Storage privado e exportações de Formulários
 
-> **Complemento supersedente do MVP:** a ADR 0030 define Supabase Storage
-> privado para toda mídia do MVP. A ADR 0031 adia exportações reais para depois
-> do MVP; o botão pode permanecer visível, mas não haverá job, arquivo ou
-> download real agora. O texto abaixo é preservado como contrato futuro.
+> **Complemento supersedente do MVP:** a ADR 0032 define R2 privado para mídia
+> de respostas e `coelo-transient-prod` para o XLSX temporário. A ADR 0031 adia
+> as demais exportações, mas `forms.responses.export` gera um XLSX com as
+> respostas do formulário. CSV, ZIP, PDF e exportação individual permanecem
+> fora do MVP. O texto conflitante abaixo é histórico.
 
 ## Contexto
 

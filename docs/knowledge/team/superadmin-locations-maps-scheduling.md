@@ -26,7 +26,10 @@ A seção Mapa e locais está sempre disponível no cadastro de instituição e
 unidade. Imagem/planta geral, marcadores clicáveis e foto por local são
 opcionais e usam Cloudflare R2 privado pelo Media Gateway; Postgres/Supabase
 mantém metadados, autorização e auditoria. O desenho não depende de mapa
-cartográfico ou geocodificação. O prefixo R2 definitivo aguarda OQ-045.
+cartográfico ou geocodificação. O domínio R2 canônico é `locations`: mapa geral
+usa a finalidade `map-general` e foto do local usa `photo`, dentro da
+hierarquia única da ADR 0032. O mapa aceita limite maior e variantes de zoom;
+a foto do local segue o limite de foto comum.
 
 Turmas, Atividades e Eventos aceitam local catalogado ou texto pontual. Um local
 pontual pode ser salvo posteriormente no catálogo; somente locais catalogados

@@ -6,10 +6,9 @@ generated_at: 2026-08-20
 
 # ADR 0026 — Exceção temporária de Storage privado para publicação no MVP
 
-> **Substituída pela ADR 0030.** Supabase Storage privado deixa de ser exceção
-> temporária e passa a ser o provedor de toda mídia privada durante o MVP. R2
-> não é gate de piloto, produção ou encerramento do MVP; sua avaliação somente
-> poderá começar se o Owner optar por isso no encerramento formal do MVP.
+> **Substituída pela ADR 0032.** R2 privado é o master dos binários novos;
+> Stream é uma cópia HOT seletiva. Buckets e paths Supabase descritos abaixo são
+> históricos e não entram no wiring novo da Etapa 2.
 
 ## Decisão
 

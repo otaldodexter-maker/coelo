@@ -1,5 +1,5 @@
 ---
-title: "Pendências Coelo — Flutter por tela e ação"
+title: "Pendências Coelo — Front-end por tela e ação"
 source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git HEAD cd1ea97c76695e4be72cd91882d65c9c235704a4"
 status: "open"
 generated_at: "2026-08-26"
@@ -10,7 +10,16 @@ visual_program_count: 31
 visual_program_accepted_count: 0
 ---
 
-# Pendências Coelo — Flutter por tela e ação
+# Pendências Coelo — Front-end por tela e ação
+
+> **Nomenclatura canônica — 2026-09-03:** este rastreador é governado por
+> **Coelo Front-end** (`coelo-frontend`). O arquivo mantém o nome histórico e,
+> na Etapa 2, mede apenas Flutter/Dart de `apps/superadmin`; Astro terá
+> denominador próprio quando `apps/site` entrar em recorte autorizado.
+
+> **Supersedência:** qualquer seção histórica abaixo que ainda descreva
+> Supabase Storage, R2 pós-MVP ou exportação individual de resposta foi
+> substituída pela ADR 0032 e pelos checkpoints de 2026-09-03 no topo.
 
 > **Pessoas — decisão 2026-09-03:** cadastro/detalhe deverá mostrar papéis,
 > vínculos institucionais, turma, atividade, crianças e relações familiares.
@@ -26,6 +35,13 @@ visual_program_accepted_count: 0
 > para as respostas do Formulário em Excel; no Superadmin os demais botões
 > permanecem visíveis, honestos e adiados.
 
+> **Uploads de produção — 2026-09-03:** o cliente aceita JPEG/PNG/WebP e
+> converte HEIC/HEIF antes de finalizar; valida tamanho, dimensões e pixels para
+> feedback imediato, mas o servidor repete toda validação. Avatar, capa 3:1,
+> foto comum, mapa e PDF usam limites distintos da ADR 0032. SVG de usuário e
+> GIF animado são recusados. A conta Superadmin possui avatar; capa só aparece
+> nas entidades/superfícies que já a possuem, inclusive Perfil Principal.
+
 ## Checkpoint Etapa 2 — contrato de reprodução e exportação — 2026-09-03
 
 - Agora: player escolhe Stream quando pronto e usa MP4 temporário do R2 como
@@ -35,6 +51,10 @@ visual_program_accepted_count: 0
   Stream é exceção orientada por métricas. Chat permanece R2.
 - `forms.responses.export` renderiza ação de exportar Excel com as respostas do
   formulário; import/export do Superadmin continua botão visível e indisponível.
+- Fotos enviadas por responsáveis em respostas são `answer-image` e exibem
+  envio/processamento/erro/retry, preview seguro e acesso reautorizado, sem URL
+  permanente. Tipo de pergunta Documento/PDF permanece fora do MVP de
+  Formulários. Fotos/capas/mapas carregam thumbnail/variant antes do master.
 - Pendente: estados loading/processing/expired/error, renovação de URL,
   acessibilidade e regressão visual precisam ser comprovados nas telas reais.
 
@@ -66,8 +86,8 @@ visual_program_accepted_count: 0
   207 até o inventário técnico eliminar aliases/duplicidades. O repasse às
   frentes não autoriza editar código, router, fixtures, testes ou goldens.
 - Mídia da planta/foto: o Flutter fala somente com o Media Gateway; R2 privado,
-  chave de objeto e credenciais não entram no cliente. OQ-045 bloqueia o upload
-  real até existir prefixo canônico na allowlist da ADR 0032.
+  chave de objeto e credenciais não entram no cliente. OQ-045 está encerrada;
+  usar a finalidade canônica `map-general` ou `photo`, sem caminho ad hoc.
 - ETA Flutter, ainda sem implementação: E2E 2 em 24–40 h para as sete ações;
   E2E 4 em 6–10 h para as duas ações; E2E 5 em 12–20 h para as três ações.
   Esforço cliente estimado: 42–70 h, recalculável após inventário de aliases,

@@ -1,10 +1,10 @@
 ---
 title: "Publicação do Acontece no MVP"
 knowledge_id: "happens-publication-mvp"
-source: "docs/superpowers/specs/2026-08-20-coelo-happens-publication-design.md"
+source: "decisions/0032-mvp-private-media-r2.md"
 status: "validated"
 generated_at: "2026-08-20"
-updated_at: "2026-08-31"
+updated_at: "2026-09-03"
 audience: "team"
 surfaces: [principal, acontece, superadmin-preview, supabase, authorization]
 visibility: "internal"
@@ -23,7 +23,11 @@ mantêm editor linear com mídia dominante, enquanto o desktop acrescenta prévi
 lateral. Shell, contêiner direito, raios, insets e gaps devem reproduzir a
 geometria canônica aprovada, sem aproximações de implementação.
 
-Autorização é server-side, deny-by-default, com versão otimista e capabilities `happens.posts.create` e `happens.posts.publish`. Durante todo o MVP, a mídia usa Supabase Storage privado conforme ADR 0030; bucket público é proibido. R2 não é requisito de piloto, produção ou encerramento do MVP e só poderá ser avaliado após nova decisão do Owner no encerramento formal.
+Autorização é server-side, deny-by-default, com versão otimista e capabilities
+`happens.posts.create` e `happens.posts.publish`. Durante o MVP, o master usa o
+R2 privado `coelo-media-prod` por meio do Media Gateway da ADR 0032; bucket
+público é proibido. Acontece usa reprodução progressiva por URL temporária do
+R2 e somente promove vídeo ao Stream quando métricas reais justificarem.
 
 O feed consome uma projeção mínima autorizada por `happens.posts.read`, sem fabricar contagens ou rótulos ausentes. Mídias chegam como tickets opacos ordenados e são trocadas sob demanda por URL assinada curta; como o ticket é descartável, retry de mídia recarrega o feed para obter um novo ticket.
 

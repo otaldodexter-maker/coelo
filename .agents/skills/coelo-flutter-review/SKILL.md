@@ -1,124 +1,112 @@
 ---
-name: coelo-flutter-review
-description: Use when starting or continuing a Coelo Flutter/Dart code review, revision, audit, correction, refactor, screen-completion check, or pending-work inventory. Applies to screens, subtelas, actions, architecture, tests, responsiveness and accessibility; use the integrated skill when Supabase completion is in scope.
+name: coelo-frontend
+description: Use when a Coelo task reviews, audits, corrects, implements, estimates, or verifies front-end behavior in Flutter/Dart apps or the Astro site, including screens, routes, states, responsiveness, accessibility, architecture, tests, and app-specific completion.
 ---
 
-# Coelo Flutter Review
+# Coelo Front-end
 
-Revise Flutter/Dart sem confundir rota aberta, aparência correta ou teste
-isolado com tela concluída.
+> O caminho `coelo-flutter-review/` foi mantido para compatibilidade. O nome e
+> o contrato canônicos são **Coelo Front-end** (`coelo-frontend`).
+
+## Princípio e superfícies
+
+Concluir somente o que pertence ao cliente, sem confundir UI visível, rota
+aberta, fixture ou teste isolado com ação Front-end concluída.
+
+- `apps/superadmin`, `apps/admin` e `apps/principal`: Flutter/Dart.
+- `apps/site`: Astro quando o site entrar em um recorte autorizado.
+- Packages compartilhados podem ser alterados apenas quando o contrato listar
+  consumidores e regressões. Compartilhamento não autoriza tocar outro app.
+
+Todo contrato nomeia os apps incluídos. Na Etapa 2 atual, o único app é
+`apps/superadmin`; “Coelo (Principal)” é o menu dentro dele. `apps/admin`,
+`apps/principal` e `apps/site` permanecem fora.
 
 ## Dependências obrigatórias
 
-Em toda atividade, leia e aplique sempre estas cinco skills:
+Sempre ler `AGENTS.md`, `docs/reviews/coelo-flutter-pendencias.md` e usar:
 
-1. `coelo-ui`: autoridade visual, componentes, padrões e baselines;
-2. `rtk`: forma obrigatória de executar comandos de shell;
-3. `ponytail`: solução mínima que corrige a causa raiz, em modo completo;
-4. `flutter-dart-code-review`: checklist técnico Flutter/Dart;
-5. `flutter-build-responsive-layout`: adaptação real à largura disponível.
+1. `coelo-ui`, autoridade visual e de interação;
+2. `rtk`, para comandos com wrapper compatível;
+3. `ponytail`, para a menor solução que corrige a causa raiz;
+4. `test-driven-development` e `verification-before-completion`;
+5. `coelo-knowledge` quando houver conhecimento durável.
 
-Leia também `AGENTS.md` e `docs/reviews/coelo-flutter-pendencias.md`
-integralmente. Use `coelo-knowledge` quando houver conhecimento durável. Se o
-pedido envolver persistência, Auth ou Supabase, use também
-`coelo-flutter-supabase-review`.
+Em Flutter/Dart, usar também `flutter-dart-code-review` e
+`flutter-build-responsive-layout`. Em Astro, usar `astro` e as ferramentas de
+browser/validação web aplicáveis. Quando houver Auth, persistência, Supabase,
+R2, Stream ou alegação ponta a ponta, usar `coelo-frontend-backend`.
 
-Mesmo quando Supabase estiver fora do recorte, faça uma consulta breve a
-`coelo-flutter-supabase-review` para identificar dependências integradas e
-registrá-las como fora de escopo. Essa consulta não certifica nem altera backend.
+Consultar brevemente o rastreador integrado mesmo quando o backend estiver fora
+para registrar dependências sem certificá-las.
 
-## Começo obrigatório pelo orçamento
+## Progresso e limite de `verified`
 
-Se o usuário ainda não informou o tempo total, a primeira pergunta é:
+Medir Front-end até o fim do cliente: rota e composition root normais, UI,
+loading/empty/error/unauthorized/processing/expired, validação, navegação,
+foco/teclado/toque, responsividade, acessibilidade, tema, arquitetura,
+contrato do repository/gateway e regressão.
 
-> Quanto tempo total você quer investir nesta atividade?
+`local-green` indica uma fatia local ainda incompleta. `verified` indica que a
+ação chegou ao fim do Front-end; pode usar double fiel no teste, mas runtime
+normal não pode cair em fake/fixture. A falta do backend não rebaixa um
+`verified`; fica aberta no rastreador integrado.
 
-Não comece correções antes da resposta. Se o tempo já foi informado, não
-pergunte novamente. Depois, inventarie as pendências reais, recalcule o tempo
-por risco, complexidade, dependências e bloqueios, e mostre o que cabe e o que
-ficará pendente.
+O rastreador atual mede 207 ações Flutter. Quando Astro entrar em escopo, criar
+denominador explícito por app ou ampliar o rastreador de forma reconciliada;
+nunca somar apps diferentes silenciosamente.
 
-| Nível cumulativo | Conteúdo | Referência inicial | Regra |
-|---|---|---:|---|
-| Básica | Correção pequena, localizada e de baixo risco. | 30–90 min por ação simples | Nunca conclui uma tela. |
-| Intermediária | Básica + problemas principais, contratos e testes proporcionais. | 2–6 h por ação ou tela simples | MÍNIMO RECOMENDADO. |
-| Avançada | Anteriores + ações aplicáveis, arquitetura, estados, acessibilidade e regressões. | 1–2 dias por tela | Pode continuar parcial. |
-| Completa | Todas as pendências aplicáveis, regressão e evidências finais. | 2–5 dias por tela | Único nível que pode sustentar conclusão integral. |
-
-Auth, permissões, segurança e dados sensíveis nunca recebem recomendação
-Básica. As faixas não são promessa: ajuste-as após o inventário.
-
-## Progresso percentual obrigatório
-
-### Limite de conclusão Flutter
-
-Meça Flutter até o fim das responsabilidades do cliente: rota normal e
-composição do cliente, UI, estados de loading/empty/error/unauthorized,
-validação, navegação, foco, responsividade, acessibilidade, arquitetura,
-contratos no limite do repository e regressão. Uma ação pode ser `verified` no
-rastreador Flutter sem Supabase real, RLS, persistência remota ou E2E, desde que
-tudo o que pertence ao cliente esteja comprovado e a dependência externa
-permaneça registrada somente no rastreador integrado. Doubles fiéis ao contrato
-podem provar o cliente em teste; fake ou fixture no runtime normal não conclui a
-ação.
-
-`local-green` significa que uma fatia passou localmente, mas ainda falta algum
-gate Flutter. `verified` significa que a ação chegou ao fim da camada Flutter.
-Não rebaixe uma ação Flutter completa por falta de backend e não promova uma
-fatia parcial apenas porque testes isolados passaram.
-
-Depois de ler o rastreador obrigatório, a primeira resposta ao usuário deve
-começar pelo progresso geral de todas as pendências Flutter conhecidas, antes
-da pergunta de orçamento, dos níveis e do recorte. Essa prioridade também vale
-quando a skill for chamada apenas para revisão, estimativa ou continuação.
-
-Calcule o geral sobre todos os `action_id` e gates de conceito do rastreador
-Flutter, incluindo itens fora do recorte atual. Na abertura e em todo checkpoint,
-pausa ou encerramento, apresente primeiro esse geral e depois o progresso do
-recorte contratado, sem misturar os dois. Informe a base do cálculo. Uma unidade
-só conta como concluída quando possui as evidências exigidas para o estado
-declarado; trabalho parcial permanece no restante.
-
-Use sempre este formato, com duas casas decimais e soma igual a `100,00%`:
+Sempre reportar progresso geral e do recorte separadamente, base de IDs,
+evidência e horário. Tempo usado é medido; se faltar, escrever `não calculável
+ainda`.
 
 ```text
-Progresso geral conhecido — Concluído: 21,43% (3/14 unidades)
-Progresso geral conhecido — Restante: 78,57% (11/14 unidades)
-Tempo usado no trabalho geral concluído: 50 h
+Progresso geral conhecido — Concluído: ... (.../... unidades)
+Progresso geral conhecido — Restante: ... (.../... unidades)
+Tempo usado no trabalho geral concluído: ...
 Tempo estimado para finalizar o backlog geral: ...
 Progresso do recorte — Concluído: ...
 Progresso do recorte — Restante: ...
 Tempo usado no trabalho concluído no recorte: ...
-Tempo estimado para finalizar o recorte: 2 dias 4 h 48 min
-Base do cálculo: action_ids/gates considerados, evidência e horário de referência.
+Tempo estimado para finalizar o recorte: ...
+Base do cálculo: action_ids/gates, app, evidência e horário.
 ```
 
-Tempo usado é duração medida, nunca deduzida pelo percentual. ETA considera
-dependências, testes e bloqueios e deve ser recalculado quando o inventário
-mudar. Se faltarem dados confiáveis, escreva `não calculável ainda`, liste o dado
-ausente e dê o próximo passo para torná-lo calculável; não use zero, percentual
-aproximado ou falsa precisão.
+## Contrato de abertura
 
-## Contrato e confirmação
+Se o usuário não informou tempo, perguntar. Se já definiu `Completa`, todas as
+pendências ou execução até terminar, não perguntar novamente. Antes da primeira
+edição, registrar apps, telas/subtelas/actions, objetivo, incluído/fora, ordem,
+critério de parada, evidências, nível e ETA recalculado.
 
-Antes de alterar código, apresente pendências gerais e por tela/subtela/ação;
-objetivo; incluído e fora do escopo; ordem; critério de parada; evidências; nível
-recomendado por unidade; estimativa total; o que cabe no orçamento; e o que
-continuará pendente. Classifique o recorte como `todas as pendências`, `todas as
-telas`, `macrotema`, `macrotema + X telas`, `X telas` ou `X ações específicas`.
+| Nível | Referência inicial | Limite |
+| --- | ---: | --- |
+| `Básica` | 30–90 min por ação simples | Não conclui tela. |
+| `Intermediária` | 2–6 h por ação/tela simples | Mínimo recomendado. |
+| `Avançada` | 1–2 dias por tela | Pode permanecer parcial. |
+| `Completa` | 2–5 dias por tela | Pode sustentar conclusão integral. |
 
-Peça confirmação do pacote antes de corrigir. Review, auditoria ou diagnóstico
-não autorizam correção. Nunca amplie o recorte nem declare concluído o que ficou
-fora dele. Um nível parcial não muda a ação ou tela para concluída.
+As faixas são referência pré-inventário, não promessa. Reduzir recorte em vez
+de remover testes, acessibilidade ou regressão.
+
+## Contratos Front-end de mídia e arquivos
+
+- O cliente chama apenas o Media Gateway; nunca recebe credencial R2, Stream,
+  secret key ou `service_role`.
+- Agora prefere Stream pronto e usa MP4 temporário do R2 ou estado de
+  processamento enquanto codifica; expiração não vira download nem tela presa.
+- Momentos e Acontece reproduzem R2 progressivamente; Stream é seletivo.
+- Chat usa R2 para anexos.
+- Formulários exibem exportação XLSX com as respostas do formulário. Demais
+  import/export mantêm botão acessível com indisponibilidade honesta.
 
 ## Execução e checkpoint
 
-Siga o rastreador e atualize cada `action_id`. Verifique listar, criar, detalhe,
-editar, publicar/ativar, excluir/revogar, arquivos, erros/permissão e recarga
-quando aplicáveis. Criar/Editar Instituição é a baseline administrativa;
-Instituições é a baseline de diretórios, Cards e tabelas.
+Usar teste primeiro. Por `action_id`, provar listar, criar, detalhe, editar,
+publicar/ativar, excluir/revogar, arquivos, estados e reload visual quando
+aplicáveis. Validar mobile/desktop, light/dark, texto 200%, teclado, toque e
+foco. Atualizar o rastreador após correção, regressão, bloqueio ou ETA novo.
 
-Atualize o Markdown após correção, regressão, bloqueio ou nova estimativa. No
-checkpoint, informe pacote autorizado, posição, evidência em linguagem simples,
-pendências dentro e fora do recorte, bloqueios, próxima ação e tempo restante.
-Diferencie `atividade concluída`, `tela Flutter concluída` e `produto pendente`.
+No checkpoint, informar app, tela/subtela/action, evidência, estado Front-end,
+dependência externa, primeiro gate aberto e ETA. Diferenciar atividade
+concluída, ação Front-end `verified` e produto pendente.

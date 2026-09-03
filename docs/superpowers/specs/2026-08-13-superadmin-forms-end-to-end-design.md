@@ -346,18 +346,17 @@ participação, ID comum ou ordenação/horário que facilite correlação.
 
 ## Exportações
 
-`CoeloAdminFileActions` agrupa XLSX, CSV, Respostas e mídias (ZIP) e, para
-Owner, Participação anônima. Jobs são server-side, idempotentes, auditados e
-privados.
+`forms.responses.export` é a única exportação funcional do MVP. Cada formulário
+nasce, sem toggle ou configuração adicional, com a ação de gerar **um arquivo
+XLSX contendo suas respostas**. A ação fica no contexto do formulário e do
+diretório de respostas para quem possuir a capability; não existe exportação de
+uma resposta isolada.
 
-Cada formulário nasce com exportação individual por resposta, sem toggle ou
-configuração adicional. A ação fica disponível no diretório e no detalhe de
-respostas para quem possuir `forms.responses.export`, gera somente o envio
-selecionado e revalida no backend ator, capability, tenant, formulário,
-ocorrência e ownership/escopo da resposta. CSV e XLSX seguem o formato tabular
-abaixo; quando houver mídia, ZIP inclui o arquivo tabular, manifesto e mídias
-autorizadas. Exportação consolidada de várias respostas permanece fora do MVP
-até nova decisão do Owner.
+O job é server-side, idempotente, auditado e privado. Revalida ator,
+capability, tenant, formulário, versões, distribuições/ocorrências e escopo das
+respostas. O artefato fica no Cloudflare R2 privado sob `exports/...`, e o
+download exige ticket/URL temporária após nova autorização. CSV, ZIP, PDF,
+exportação por resposta e demais exportações do Superadmin ficam pós-MVP.
 
 ### Formato tabular
 
@@ -365,27 +364,30 @@ até nova decisão do Owner.
 - Uma coluna por pergunta na ordem do formulário.
 - Tipos permanecem tipados.
 - Uma única coluna por pergunta Foto/Galeria.
-- Cada mídia é hyperlink `Ver foto` para rota protegida Coelo; a rota reautoriza
-  e só então gera URL temporária do Storage.
+- Cada mídia é hyperlink `Ver mídia` para rota protegida Coelo; a rota reautoriza
+  e só então gera URL temporária do R2.
 - Nunca inserir URL assinada permanente no arquivo.
 - Incluir ID da resposta, ID da ocorrência, ID do item, Pergunta expandida e
   versão.
 
-Cada valor multivalorado gera uma linha. Referências-mãe e respostas únicas se
-repetem. Várias perguntas multivaloradas geram grupos independentes indicados
-por Pergunta expandida, sem produto cartesiano falso.
+O workbook pode usar abas auxiliares para valores multivalorados e mídias,
+preservando IDs e referências à linha da resposta sem produto cartesiano falso.
+O contrato físico das abas deve ser versionado e testado antes do cutover.
 
-### ZIP
+### Mídia no XLSX
 
-Inclui XLSX, manifesto e mídias por IDs opacos. Em anônimos, nomes e caminhos
-não incluem pessoas. Pacotes grandes são processados em streaming e divididos
-em partes. Artefatos temporários expiram em até 24 horas; originais não.
+O XLSX não incorpora binários nem gera ZIP. Registra links protegidos por IDs
+opacos; cada clique reautoriza e emite acesso temporário. Em respostas anônimas,
+nomes, abas, IDs e caminhos não podem permitir correlação com pessoas.
+Artefatos de exportação expiram e recebem cleanup; originais seguem sua política
+de retenção própria.
 
 ### Participação anônima
 
-Exportação exclusiva do `platform_owner`, com motivo, pessoa, hierarquia e
-Respondeu/Não respondeu. Não contém respostas, ID da resposta, horário exato
-ou chave comum com o arquivo de conteúdo anônimo.
+Consulta nominal permanece exclusiva do `platform_owner`, com motivo e
+auditoria. A exportação real de participação anônima fica pós-MVP; seu botão,
+quando presente, informa a indisponibilidade. Nenhuma consulta contém respostas,
+ID da resposta, horário exato ou chave comum com o conteúdo anônimo.
 
 ## Modelo de dados aprovado
 
@@ -448,21 +450,18 @@ explica que a edição anônima permanece naquele dispositivo.
 
 O modo identificado/anônimo fica imutável após a primeira publicação.
 
-## Supabase Storage no MVP
+## Cloudflare R2 no MVP
 
-Formulários usam bucket privado próprio no Supabase Storage para imagens de
-apoio, Foto e Galeria. Metadados registram provider, bucket, path, MIME,
-tamanho, checksum, status, ownership e vínculos. Caminho é server-issued;
-extensão, MIME real, tamanho e ownership são validados. Limite: cinco imagens
-por pergunta, 10 MB por imagem, JPEG/PNG/WebP. Não há URL pública.
+Formulários usam Cloudflare R2 privado para imagens de apoio, Foto, Galeria e
+artefatos XLSX. Supabase/Postgres guarda provider, object key opaca, MIME,
+tamanho, checksum, status, ownership, retenção e vínculos sob RLS. O caminho é
+emitido pelo Media Gateway; extensão, MIME real, tamanho, checksum e ownership
+são validados. Limite inicial: cinco imagens por pergunta, 10 MB por imagem,
+JPEG/PNG/WebP. Não há URL pública nem segredo no cliente.
 
-Resposta e mídia original não expiram automaticamente. Upload abandonado é
-limpo. `storage_provider` permite migração futura para R2 sem mudar formulários,
-respostas ou hyperlinks protegidos.
-
-Essa escolha exige decisão canônica que registre a exceção MVP em relação à
-arquitetura atual de mídia operacional. O ZIP de mídia também exige decisão
-para artefatos maiores que o limite vigente da ADR 0021.
+Upload abandonado e artefato expirado recebem cleanup. Resposta e mídia
+original seguem retenção própria. A ADR 0032 é canônica e supersede qualquer
+menção histórica de Supabase Storage nesta spec.
 
 ## Permissões e autorização
 
@@ -477,7 +476,8 @@ Capabilities:
 - `forms.responses.export`
 - `forms.transfer_cross_institution`
 - `forms.anonymous_participation.read`
-- `forms.anonymous_participation.export`
+- `forms.anonymous_participation.export` (catálogo preservado, execução real
+  adiada para depois do MVP)
 - `forms.respond`
 
 Transferência cross-institution exige papel de plataforma Superadmin e
@@ -609,7 +609,7 @@ idempotente; falha de push não anuncia sucesso. Retry tem limite/backoff.
 4. Rascunho → editar → enviar.
 5. Alterar publicado sem reagendar.
 6. Anônimo → responder → agregado → operação excepcional do Owner.
-7. Upload → resposta → visualizador protegido → XLSX/ZIP.
+7. Upload R2 → resposta → visualizador protegido → XLSX com links protegidos.
 8. Entrar/sair da hierarquia durante ocorrência ativa.
 9. Duplicar, copiar e mover.
 10. Arquivar e impedir exclusão com histórico.
@@ -627,13 +627,14 @@ e gate de conhecimento.
 3. Ocorrências abertas preservam estrutura histórica.
 4. Audiência dinâmica recebe novos elegíveis e remove autorização obsoleta.
 5. Respostas identificadas e anônimas respeitam contratos distintos.
-6. Somente Owner acessa/exporta participação nominal anônima, com motivo.
+6. Somente Owner consulta participação nominal anônima, com motivo; exportação
+   real desse relatório permanece pós-MVP.
 7. Uma tabela nova não é criada por formulário.
 8. Diretórios e respostas paginam por cursor e carregam detalhes sob demanda.
 9. Exportação reproduz colunas por pergunta e linhas expandidas conforme o XLSX
    de referência.
 10. Hyperlink de mídia reautoriza no Coelo e não expõe URL permanente.
-11. Storage é privado e preparado para migração futura de provider.
+11. R2 é privado; Supabase preserva metadados, autorização e auditoria.
 12. UI respeita baselines, responsividade, acessibilidade e estados Coelo.
 13. Admin e Principal não recebem alterações nesta entrega.
 
@@ -643,7 +644,7 @@ e gate de conhecimento.
 - e-mail;
 - texto longo;
 - áudio, vídeo, documento, assinatura e localização;
-- R2 nesta entrega;
+- exportação CSV, ZIP, PDF ou de resposta individual;
 - MFA;
 - retenção automática de respostas/mídias originais;
 - UI no Admin e Principal;
@@ -652,9 +653,8 @@ e gate de conhecimento.
 
 ## Riscos e decisões canônicas necessárias
 
-- Registrar ADR/exceção para mídia de Formulários no Supabase Storage no MVP.
-- Atualizar a ADR 0021 ou criar decisão complementar para ZIPs multipartes com
-  mídia acima do limite operacional de 5 MB.
+- Fechar contrato versionado das abas XLSX, limites, expiração e cleanup do
+  artefato no R2 antes do cutover.
 - A ausência de retenção automática exige revisão jurídica/LGPD futura.
 - A redação anônima aprovada afirma que ninguém saberá quem respondeu, enquanto
   o Owner pode consultar/exportar participação; a cópia é decisão explícita do

@@ -107,8 +107,10 @@ possíveis ações já cobertas, evitando dupla contagem.
 - `location_bindings`: vínculo autorizado do local catalogado com o consumidor;
   usos pontuais preservam um snapshot local sem participar da agenda.
 
-Os nomes físicos finais dependem de inventário e migration forward-only. Esta
-spec não autoriza criar tabelas ou alterar o ledger.
+Os nomes físicos finais dependem de inventário e migration forward-only. O
+domínio R2 canônico para a planta geral e a foto opcional é `locations`, já
+incluído na allowlist da ADR 0032. Esta spec não autoriza criar tabelas ou
+alterar o ledger.
 
 ## Permissões, tenant e segurança
 
@@ -184,9 +186,9 @@ podem antecipar confirmação quando a reserva falhar ou for bloqueada.
 Qualquer schema, migration, Media Gateway/R2, router ou componente compartilhado exige
 reserva prévia com o Coordenador. O repasse desta spec não inicia trabalho.
 
-## Riscos e pergunta aberta
+## Riscos e decisão de prefixo
 
-- A allowlist de `domain` da ADR 0032 ainda não nomeia mapas ou locais. OQ-045
-  deve definir a chave canônica antes de upload real; não reutilizar outro
-  domínio nem criar prefixo ad hoc. A ausência dessa decisão bloqueia somente a
-  mídia real, não o desenho do catálogo, marcadores, visibilidade ou agenda.
+- OQ-045 foi encerrada com `locations` como domínio R2 canônico. Continuam
+  obrigatórios inventário físico, retenção, Media Gateway, autorização,
+  expiração e cleanup antes do upload real; não reutilizar outro domínio nem
+  criar prefixo ad hoc.

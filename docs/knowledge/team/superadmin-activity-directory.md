@@ -1,9 +1,10 @@
 ---
 title: Diretório de atividades do Superadmin
 knowledge_id: superadmin-activity-directory
-source: docs/superpowers/specs/2026-08-31-activities-cross-app-backend-v2-design.md
+source: decisions/0032-mvp-private-media-r2.md
 status: validated
 generated_at: 2026-08-31
+updated_at: 2026-09-03
 audience: team
 surfaces: [superadmin, activities]
 visibility: internal
@@ -45,10 +46,10 @@ gestão de taxonomia; os demais usuários dependem do perfil de acesso.
 
 Busca, leitura e comandos são sempre limitados no backend ao escopo autorizado.
 O handle da Atividade é privado, global e editável, com aliases históricos. A
-identidade aceita foto no Supabase Storage privado, sigla com cor ou ícone
-Material allowlisted; não herda a identidade visual da instituição. Durante o
-MVP, mídias de Now, Happens e Moments usam Supabase Storage privado conforme
-ADR 0030.
+identidade aceita foto no R2 privado `coelo-media-prod` via Media Gateway,
+sigla com cor ou ícone Material allowlisted; não herda a identidade visual da
+instituição. A mídia compartilhada segue a ADR 0032, sem segredo ou object key
+concedendo autorização no cliente.
 
 O CTA `Criar atividade` permanece disponível, conforme
 `activities.create`, nos estados com dados, vazio, sem resultados e falha

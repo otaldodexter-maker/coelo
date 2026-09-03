@@ -1,9 +1,10 @@
 ---
 title: Segurança da criança produtiva
 knowledge_id: superadmin-child-safety-production
-source: specs/030-superadmin-child-safety-production.md
+source: decisions/0032-mvp-private-media-r2.md
 status: validated
 generated_at: 2026-08-12
+updated_at: 2026-09-03
 audience: team
 surfaces: [superadmin, child-safety, permissions, storage]
 visibility: internal
@@ -28,6 +29,7 @@ cursor e decisões são server-side, com RLS, idempotência, versão, auditoria 
 testes cross-tenant/cross-child. Exportação real está fora do MVP pela ADR 0031;
 o botão permanece visível e informa disponibilidade futura.
 
-Evidência usa Supabase Storage privado conforme ADR 0024. O path é gerado no
-servidor e o objeto fica bloqueado em `draft` até scanner confirmar MIME real,
-tamanho e SHA-256.
+Evidência usa o bucket privado `coelo-documents-prod` via Media Gateway,
+conforme a supersedência da ADR 0032. A chave é gerada no servidor e o objeto
+fica bloqueado em `draft` até o scanner confirmar MIME real, tamanho, limites e
+SHA-256.

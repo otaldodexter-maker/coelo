@@ -1,4 +1,4 @@
 interface:
-  display_name: "Coelo Supabase"
-  short_description: "Revisa o backend Supabase do Coelo por escopo"
-  default_prompt: "Use $coelo-supabase para perguntar meu orçamento de tempo, listar as pendências, recomendar o nível de correção e revisar o backend Supabase do Coelo em ordem."
+  display_name: "Coelo Back-end"
+  short_description: "Supabase e Cloudflare com prova por escopo"
+  default_prompt: "Use $coelo-backend para concluir o Back-end Coelo em Supabase e Cloudflare com evidência por ação."

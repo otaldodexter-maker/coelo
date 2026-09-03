@@ -7,9 +7,9 @@ generated_at: 2026-08-11
 
 # ADR 0022 - Atividades privilegiadas e identidade
 
-> **Complemento supersedente para o MVP:** a ADR 0030 substitui a divisão de
-> provedores abaixo: toda mídia privada do MVP usa Supabase Storage, inclusive
-> conteúdo operacional. A ADR 0031 também adia toda importação/exportação real
+> **Complemento supersedente para o MVP:** a ADR 0032 substitui a divisão de
+> provedores abaixo: binários privados novos usam Cloudflare R2 e Stream HOT
+> somente quando aplicável. A ADR 0031 também adia toda importação/exportação real
 > para depois do MVP; no MVP permanecem apenas os botões com indisponibilidade
 > honesta. Capabilities aqui descritas continuam como desenho futuro e não
 > autorizam backend, arquivo ou job de importação/exportação agora.

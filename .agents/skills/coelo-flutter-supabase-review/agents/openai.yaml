@@ -1,4 +1,4 @@
 interface:
-  display_name: "Coelo Flutter + Supabase Review"
-  short_description: "Comprova Flutter e Supabase ponta a ponta."
-  default_prompt: "Use $coelo-flutter-supabase-review para listar as pendências, confirmar o recorte e revisar o Coelo ponta a ponta."
+  display_name: "Coelo Front-end + Back-end"
+  short_description: "Comprova cliente, Supabase e Cloudflare E2E"
+  default_prompt: "Use $coelo-frontend-backend para concluir o Coelo ponta a ponta entre Front-end, Supabase e Cloudflare."

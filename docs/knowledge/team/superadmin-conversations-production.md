@@ -4,6 +4,7 @@ knowledge_id: superadmin-conversations-production
 source: specs/028-superadmin-conversations-production.md
 status: validated
 generated_at: 2026-08-11
+updated_at: 2026-09-03
 audience: team
 surfaces: [superadmin, conversations]
 visibility: internal
@@ -30,6 +31,6 @@ círculo; em larguras maiores, uma cápsula laranja estável. Não há arraste l
 nem expansão que mude o layout do composer.
 
 Eventos em tempo real são apenas sinais mínimos em canal privado; cada evento
-faz refetch autorizado. Mídia usa metadados no banco e Supabase Storage privado
-durante o MVP. Sem gateway Storage validado, upload e download permanecem
-indisponíveis de modo seguro. R2 está fora do MVP conforme ADR 0030.
+faz refetch autorizado. Anexos usam R2 privado, com metadados e autorização no
+Supabase. Sem Media Gateway validado, upload e download permanecem
+indisponíveis de modo seguro. Stream não é requisito do Chat no MVP.

@@ -3,11 +3,11 @@ name: coelo-backend
 description: Use when a Coelo task involves backend, Supabase, Postgres, Auth, RLS, RPCs, Edge Functions, Realtime, Cloudflare R2, Stream, Workers, Media Gateway, migrations, remote persistence, backend security, or backend completion.
 ---
 
-# Coelo Backend
+# Coelo Back-end
 
 > O caminho desta skill permanece `coelo-supabase/` por compatibilidade com
 > documentos e prompts antigos. O nome e o contrato canônicos são **Coelo
-> Backend** (`coelo-backend`).
+> Back-end** (`coelo-backend`).
 
 ## Princípio e limite
 
@@ -52,7 +52,10 @@ Antes de analisar, estimar ou editar:
 Review, auditoria e diagnóstico autorizam somente leitura. Mutation, migration,
 deploy, configuração ou recurso remoto exigem autorização para o ambiente e o
 pacote exatos. O projeto Supabase `coelo` é produção; autorização anterior de
-outro pacote não se transfere. Usar DEV/homologação para E2E quando autorizado.
+outro pacote não se transfere. Todo recurso Supabase ou Cloudflare remoto do
+Coelo deve ser tratado como produção; não presumir DEV/homologação. Validar
+localmente primeiro e aplicar no remoto somente o pacote nominal, forward-only,
+revisado, serializado e com plano de recuperação.
 
 ## Segurança de credenciais
 
@@ -62,7 +65,8 @@ outro pacote não se transfere. Usar DEV/homologação para E2E quando autorizad
 - Guardar segredos somente no secret store do ambiente. Arquivos locais de
   segredo ficam ignorados; exemplos contêm apenas nomes e valores fictícios.
 - Token que apareceu em conversa, anexo, log ou diff é comprometido: não usar,
-  não testar e não copiar; solicitar rotação e menor privilégio.
+  não testar, não copiar e não pedir novamente em chat; solicitar rotação e
+  provisão de menor privilégio diretamente no secret store.
 - Presigned URL é credencial temporária: operação, objeto, MIME e TTL mínimos;
   CORS não substitui autorização.
 
@@ -130,10 +134,26 @@ parada, evidências e ETA por fatia.
 
 ## Políticas vigentes de mídia e exportação
 
-- Hierarquia R2 server-issued:
-  `<domain>/<tenant_uuid>/<asset_uuid>/<original|variant|thumb|tmp>/...`, sem
-  PII. Domínios aprovados incluem `profile`, `happens`, `now`, `moments`,
-  `routine`, `chat`, `forms`, `exports` e `locations`.
+- Usar os buckets privados de produção definidos na ADR 0032:
+  `coelo-media-prod`, `coelo-documents-prod` e `coelo-transient-prod`.
+- A plataforma é compartilhada por Superadmin, Admin e Principal. Não criar
+  bucket, chave, gateway ou catálogo por app; a Etapa 2 conecta somente
+  Superadmin, preservando contratos em `coelo_domain`/`coelo_api` para os
+  consumidores posteriores. Site não acessa mídia privada.
+- A chave R2 única e estável é emitida pelo servidor, sem PII e sem árvore
+  global `v1`/`v2`:
+  `<scope>/<scope_uuid>/<domain>/<entity_type>/<entity_uuid>/<purpose>/<asset_uuid>/<rendition>/<object_uuid>.<ext>`.
+  Substituição cria novo ativo/objeto; versão e histórico ficam no Postgres.
+  Postgres mantém ativos, variantes, bindings, entregas Stream, uploads, jobs e
+  auditoria; a chave nunca decide autorização.
+- Perfil/avatar, capas, logos, eventos, mapas, fotos de local, imagens de
+  perguntas/respostas e anexos pertencem à entidade/finalidade correspondente.
+  PDF fica em `coelo-documents-prod`, nunca no Stream. Temporários, quarentena,
+  processamento e XLSX ficam em `coelo-transient-prod` com lifecycle.
+- Aceitar imagem JPEG/PNG/WebP; HEIC/HEIF somente após conversão. Validar MIME
+  real, bytes, dimensões, pixels, checksum e política da finalidade no servidor.
+  SVG de usuário e GIF animado ficam recusados no MVP. Aplicar os limites por
+  finalidade da ADR 0032 e remover EXIF/GPS por padrão.
 - **Agora:** master no R2; Stream HOT por até 24 h quando necessário. Após a
   janela, apagar somente a cópia Stream.
 - **Momentos:** R2 por padrão; Stream apenas por publicação nova/popular ou
@@ -154,7 +174,8 @@ Para cada item:
 2. rastrear schema, migration, grants, RLS, RPC/Edge/Worker, R2 e Stream;
 3. escrever o teste antes da correção e provar sucesso e negativas;
 4. fazer replay/cutover forward-only na ordem coordenada;
-5. provar remoto somente no ambiente autorizado, com dados sintéticos;
+5. provar o pacote no remoto de produção autorizado, com dados sintéticos
+   minimizados e cleanup comprovado;
 6. atualizar o rastreador no mesmo turno com ação, estado, evidência, bloqueio
    e ETA.
 
