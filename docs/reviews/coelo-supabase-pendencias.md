@@ -3,7 +3,7 @@ title: "Pendências Coelo — Supabase por tela e ação"
 source: "docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; decisions/0020-backend-authorization-application-security.md; specs aprovadas por dominio; auditoria consolidada em 2026-08-26; Git dev cd1ea97c e inventario remoto read-only em 2026-09-01"
 status: "living"
 generated_at: "2026-08-26"
-updated_at: "2026-09-02"
+updated_at: "2026-09-03"
 action_count: 207
 family_count: 37
 ---
@@ -30,8 +30,9 @@ family_count: 37
   local é `equipe`, `responsáveis`, `alunos` ou `todos` autenticados do escopo.
 - `institutions.locations-map`, `units.locations-map` e
   `locations.detail-links`: imagem geral, marcador e foto opcional usam
-  Supabase Storage privado, reautorização e URL temporária. Não usar bucket
-  público, R2, path ou segredo no Flutter.
+  R2 privado via Media Gateway, reautorização e URL temporária. Supabase guarda
+  metadados, ownership, retenção e auditoria sob RLS. Não usar bucket público,
+  chave de objeto, credencial R2 ou segredo no Flutter.
 - `locations.schedule`, `groups.location`, `activities.location` e
   `agenda.location`: reservas únicas/recorrentes e intervalos precisam de
   concorrência/idempotência. A política por instituição/unidade é `bloquear` ou
@@ -45,6 +46,13 @@ family_count: 37
 - Os doze IDs aprovados permanecem fora do denominador histórico de 207 até o
   inventário físico. Estado de todas as novas ações: `blocked-implementation`;
   nenhuma família avançou para `done`.
+- OQ-045 bloqueia a mídia real: a allowlist da ADR 0032 não possui domínio para
+  mapas/locais. Não reutilizar prefixo existente nem criar um ad hoc.
+- ETA backend, sem início de implementação: catálogo/cópia/RLS 18–30 h;
+  reservas, recorrência, concorrência e auditoria 20–34 h; Media Gateway/R2,
+  metadados e cleanup 12–20 h; Forms e vínculos 8–14 h; replay, negativos e
+  regressão 12–20 h. Esforço total estimado: 70–118 h, condicionado a OQ-045,
+  reconciliação do ledger e reserva única das migrations.
 
 ## Checkpoint E2E 4 — rodada controlada de 45 minutos — 2026-09-02
 

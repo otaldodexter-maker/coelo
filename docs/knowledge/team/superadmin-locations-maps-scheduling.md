@@ -4,6 +4,7 @@ knowledge_id: superadmin-locations-maps-scheduling
 source: docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md
 status: validated
 generated_at: 2026-09-02
+updated_at: 2026-09-03
 audience: team
 surfaces: [superadmin, institutions, units, groups, activities, agenda, forms]
 visibility: internal
@@ -23,8 +24,9 @@ públicos autenticados do contexto.
 
 A seção Mapa e locais está sempre disponível no cadastro de instituição e
 unidade. Imagem/planta geral, marcadores clicáveis e foto por local são
-opcionais e usam Supabase Storage privado. O desenho não depende de mapa
-cartográfico ou geocodificação.
+opcionais e usam Cloudflare R2 privado pelo Media Gateway; Postgres/Supabase
+mantém metadados, autorização e auditoria. O desenho não depende de mapa
+cartográfico ou geocodificação. O prefixo R2 definitivo aguarda OQ-045.
 
 Turmas, Atividades e Eventos aceitam local catalogado ou texto pontual. Um local
 pontual pode ser salvo posteriormente no catálogo; somente locais catalogados

@@ -3,7 +3,7 @@ title: "Pendências Coelo — Flutter integrado ao Supabase"
 source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; Git dev 7b94428aa9861b68fcc81b335a98857b43de789f"
 status: "open"
 generated_at: "2026-08-26"
-updated_at: "2026-09-02"
+updated_at: "2026-09-03"
 action_count: 180
 historical_action_count: 202
 deferred_post_mvp_action_count: 22
@@ -14,8 +14,8 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "A20ED99A3589306C957E2FEA8752349015B0FB2CEBBFD85A28FE30C2F2A67620"
-supabase_tracker_sha256: "D0771A612FCD9A966328545ADDCE218C567537979477F3DDEBDA63B3BC441F55"
+flutter_tracker_sha256: "3AEC930708733F218F3B044B0C0E461758755325970D3EACC04E81EAA4F56445"
+supabase_tracker_sha256: "4B30E0883CFC8641CAD687EA19AB18FA6E858402A13F6CECB57C0D674E3C9D6A"
 ---
 
 # Pendências Coelo — Flutter integrado ao Supabase
@@ -32,9 +32,10 @@ supabase_tracker_sha256: "D0771A612FCD9A966328545ADDCE218C567537979477F3DDEBDA63
   Nenhum trabalho de implementação foi iniciado; `ready-for-e2e` e
   `verified-e2e` permanecem inalterados.
 - Cadeia futura obrigatória para os doze IDs reservados: Superadmin real →
-  repository produtivo → Supabase → autorização/RLS → persistência ou Storage
-  privado → resposta → reload. `/dev` usa somente fixtures determinísticas e
-  nunca serve de fallback para produção.
+  repository produtivo → Supabase → autorização/RLS → Media Gateway → R2
+  privado quando houver imagem → persistência/metadados → resposta → reload.
+  `/dev` usa somente fixtures determinísticas e nunca serve de fallback para
+  produção.
 - E2E 2: `institutions.locations-map`, `units.locations-map`,
   `units.copy-institution-location`, `locations.list`,
   `locations.create-edit`, `locations.detail-links` e `groups.location`.
@@ -51,6 +52,13 @@ supabase_tracker_sha256: "D0771A612FCD9A966328545ADDCE218C567537979477F3DDEBDA63
   E2E; o inventário posterior deverá reconciliar aliases antes de recalcular.
   Estado inicial correto: Flutter pendente, Supabase
   `blocked-implementation`, integração 0/12 `verified-e2e`.
+- OQ-045 bloqueia apenas a prova de mídia real até a definição do prefixo R2;
+  catálogo, marcadores, visibilidade, vínculos e agenda continuam especificados,
+  mas não autorizados para início neste repasse.
+- ETA integrada de esforço: E2E 2 em 36–60 h; E2E 4 em 10–18 h; E2E 5 em
+  28–46 h; fundação compartilhada, replay e regressão conjunta em 18–30 h.
+  Total estimado 92–154 h de esforço. Com três frentes paralelas após a fundação,
+  janela de calendário estimada em 54–90 h; recalcular após OQ-045 e inventário.
 
 ## Checkpoint E2E 4 — rodada controlada de 45 minutos — 2026-09-02
 

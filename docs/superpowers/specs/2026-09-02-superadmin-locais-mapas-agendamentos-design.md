@@ -1,9 +1,9 @@
 ---
 title: "Locais, mapas e agendamentos de espaços no Superadmin"
-source: "Decisões do Owner em 2026-09-02; AGENTS.md; ADRs 0030 e 0031; specs aprovadas de Estruturas, Atividades, Agenda e Formulários"
+source: "Decisões do Owner em 2026-09-02; AGENTS.md; ADRs 0031 e 0032; specs aprovadas de Estruturas, Atividades, Agenda e Formulários"
 status: "approved-design"
 generated_at: "2026-09-02"
-updated_at: "2026-09-02"
+updated_at: "2026-09-03"
 ---
 
 # Locais, mapas e agendamentos de espaços no Superadmin
@@ -16,8 +16,8 @@ por módulo. O catálogo também sustenta um mapa visual simples, fotos opcionai
 visibilidade por público, vínculos reversos e reservas únicas ou recorrentes.
 
 Esta spec registra o comportamento aprovado. Ela não autoriza iniciar a
-implementação, alterar o Supabase remoto ou promover qualquer gate dos
-rastreadores.
+implementação, alterar Supabase ou Cloudflare remotos ou promover qualquer gate
+dos rastreadores.
 
 ## Escopo aprovado
 
@@ -68,7 +68,7 @@ rastreadores.
 - Tornar um local pontual reservável antes de salvá-lo no catálogo.
 - Sincronizar automaticamente alterações entre o local original da instituição
   e a cópia independente da unidade.
-- Bucket público, Cloudflare R2 ou exposição de paths permanentes no Flutter.
+- Bucket público, credencial R2 ou exposição de paths permanentes no Flutter.
 
 ## Superfícies e action_ids reservados
 
@@ -99,7 +99,8 @@ possíveis ações já cobertas, evitando dupla contagem.
   versão/auditoria.
 - `location_map_markers`: posição normalizada do marcador, referência ao local
   e metadados de acessibilidade.
-- `location_media`: foto opcional do local no Supabase Storage privado.
+- `location_media`: metadados Postgres da imagem geral e da foto opcional;
+  binários novos pertencem ao Cloudflare R2 privado conforme ADR 0032.
 - `location_reservations`: início/fim, recorrência, intervalos, consumidor,
   estado, idempotência e autoria.
 - `location_scheduling_policies`: política `bloquear` ou `alertar` por escopo.
@@ -119,8 +120,11 @@ spec não autoriza criar tabelas ou alterar o ledger.
   IDOR/BOLA, tenant A/B, acesso revogado e recurso fora do escopo.
 - Confirmação de conflito na política `alertar` exige capability própria,
   justificativa, versão/idempotência e evento de auditoria.
-- Mapas e fotos usam Supabase Storage privado. Downloads/previews exigem nova
-  autorização e URL temporária; bucket, path e segredo não são expostos.
+- Mapas e fotos usam Cloudflare R2 privado. O Media Gateway server-side valida
+  sessão, tenant, capability, audiência, MIME, tamanho e checksum antes de
+  emitir acesso temporário; bucket, chave de objeto e segredo não são expostos
+  pelo contrato Flutter. Postgres/Supabase preserva metadados, ownership,
+  retenção e auditoria sob RLS.
 - A visibilidade controla tanto o diretório/detalhe quanto os marcadores do
   mapa e as opções oferecidas em Formulários.
 
@@ -143,7 +147,8 @@ spec não autoriza criar tabelas ou alterar o ledger.
   falham fechadas quando o backend não estiver disponível.
 - Dados fake nunca são fallback da rota produtiva e não entram no Supabase.
 - A futura prova E2E precisa usar Superadmin real → repository → Supabase →
-  autorização/RLS → persistência/Storage → resposta → reload.
+  autorização/RLS → Media Gateway → R2 privado → persistência/metadados →
+  resposta → reload.
 
 ## Eventos, auditoria e efeitos
 
@@ -162,7 +167,8 @@ podem antecipar confirmação quando a reserva falhar ou for bloqueada.
 - Override permitido exige capability e justificativa; negado/revogado falha
   sem persistir efeito parcial.
 - Alterações persistem após reload; concorrência e retries são idempotentes.
-- Storage privado, URL temporária, expiração e revogação são comprovados.
+- R2 privado, Media Gateway, URL temporária, expiração, revogação e cleanup são
+  comprovados.
 - `/dev` permanece fake/determinístico e separado da composição produtiva.
 - Flutter verified, Supabase done e verified-e2e somente após evidência real de
   permitido/negado/revogado, tenant A/B, persistência, reload e auditoria.
@@ -175,5 +181,12 @@ podem antecipar confirmação quando a reserva falhar ou for bloqueada.
 - E2E 5 — Agenda, Eventos e Operações: Atividades, Eventos e motor/tela de
   reservas e conflitos.
 
-Qualquer schema, migration, Storage, router ou componente compartilhado exige
+Qualquer schema, migration, Media Gateway/R2, router ou componente compartilhado exige
 reserva prévia com o Coordenador. O repasse desta spec não inicia trabalho.
+
+## Riscos e pergunta aberta
+
+- A allowlist de `domain` da ADR 0032 ainda não nomeia mapas ou locais. OQ-045
+  deve definir a chave canônica antes de upload real; não reutilizar outro
+  domínio nem criar prefixo ad hoc. A ausência dessa decisão bloqueia somente a
+  mídia real, não o desenho do catálogo, marcadores, visibilidade ou agenda.

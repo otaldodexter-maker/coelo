@@ -3,7 +3,7 @@ title: "Pendências Coelo — Flutter por tela e ação"
 source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git HEAD cd1ea97c76695e4be72cd91882d65c9c235704a4"
 status: "open"
 generated_at: "2026-08-26"
-updated_at: "2026-09-02"
+updated_at: "2026-09-03"
 action_count: 207
 family_count: 37
 visual_program_count: 31
@@ -44,6 +44,14 @@ visual_program_accepted_count: 0
 - Os doze IDs estão reservados e pendentes, fora do denominador histórico de
   207 até o inventário técnico eliminar aliases/duplicidades. O repasse às
   frentes não autoriza editar código, router, fixtures, testes ou goldens.
+- Mídia da planta/foto: o Flutter fala somente com o Media Gateway; R2 privado,
+  chave de objeto e credenciais não entram no cliente. OQ-045 bloqueia o upload
+  real até existir prefixo canônico na allowlist da ADR 0032.
+- ETA Flutter, ainda sem implementação: E2E 2 em 24–40 h para as sete ações;
+  E2E 4 em 6–10 h para as duas ações; E2E 5 em 12–20 h para as três ações.
+  Esforço cliente estimado: 42–70 h, recalculável após inventário de aliases,
+  componentes existentes e goldens. Execução paralela não torna esses números
+  aditivos em calendário.
 
 ## Checkpoint E2E 4 — rodada controlada de 45 minutos — 2026-09-02
 
