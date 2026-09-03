@@ -36,8 +36,8 @@ R2 Standard no piloto (10 GB-month, 1M Class A e 10M Class B incluídos; egress
 direto gratuito). Infrequent Access fica para depois. Vídeos comuns são MP4
 otimizado no R2; Stream, Video Transformations, tiering e transcoding só após
 métricas reais e aprovação. Import/export geral é adiado; somente
-`forms.responses.export` exporta uma resposta individual (CSV/XLSX e ZIP com
-mídia).
+`forms.responses.export` exporta um arquivo Excel com as respostas do
+formulário; a exportação geral do Superadmin continua adiada.
 No Superadmin, os botões de importação/exportação permanecem visíveis por
 composição e descoberta, mas não abrem picker, não geram arquivo e informam a
 indisponibilidade de forma honesta.

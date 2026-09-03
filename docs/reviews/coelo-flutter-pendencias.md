@@ -14,7 +14,8 @@ visual_program_accepted_count: 0
 
 > **Etapa 2 — 2026-09-03:** upload/download de mídia passa pelo Media Gateway
 > para R2 privado; nenhuma chave entra no Flutter. Exportação real existe apenas
-> para resposta individual de Formulário; demais botões permanecem adiados.
+> para as respostas do Formulário em Excel; no Superadmin os demais botões
+> permanecem visíveis, honestos e adiados.
 
 ## Decisão aprovada — locais, mapas e agendamentos — 2026-09-02
 

@@ -22,11 +22,10 @@ aplicáveis, os botões permanecem visíveis, acessíveis e responsivos, mas ape
 informam honestamente que a função estará disponível depois do MVP. Não existe
 picker, parser, job, arquivo, download ou persistência Supabase nesse recorte.
 
-A única exceção atual é Formulários: cada resposta individual possui
-exportação real, sem configuração adicional ao criar o formulário. A ação usa
-`forms.responses.export`, gera somente o envio escolhido em CSV/XLSX e inclui
-ZIP quando houver mídia. O backend reautoriza ator, tenant, formulário,
-resposta e capability; arquivos ficam privados, temporários e auditados.
+A única exceção atual é Formulários: o formulário possui exportação real em
+Excel com suas respostas, sem configuração adicional. A ação usa
+`forms.responses.export`; o backend reautoriza ator, tenant, formulário e
+capability; arquivo e mídia ficam privados, temporários e auditados.
 Exportação consolidada e exportações de outros módulos continuam adiadas.
 
 Artefatos legados já implantados antes da decisão ficam congelados e fora do
