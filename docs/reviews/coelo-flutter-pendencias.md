@@ -12,6 +12,11 @@ visual_program_accepted_count: 0
 
 # Pendências Coelo — Flutter por tela e ação
 
+> **Pessoas — decisão 2026-09-03:** cadastro/detalhe deverá mostrar papéis,
+> vínculos institucionais, turma, atividade, crianças e relações familiares.
+> Pronome de tratamento aparece conforme o contexto; contextos nomeados
+> informam que o nome fica salvo e oferecem filtros Todos/Contexto/Pessoa.
+
 > **Etapa 2 — 2026-09-03:** upload/download de mídia passa pelo Media Gateway
 > para R2 privado; nenhuma chave entra no Flutter. Exportação real existe apenas
 > para as respostas do Formulário em Excel; no Superadmin os demais botões

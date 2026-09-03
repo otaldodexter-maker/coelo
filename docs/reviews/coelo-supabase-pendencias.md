@@ -44,6 +44,15 @@ family_count: 37
   detalhe livre), respeitando Superadmin total, hierarquia institucional e
   responsável limitado às próprias crianças.
 
+## Decisão documental — papéis e contextos de Pessoas — 2026-09-03
+
+`institution_memberships` é genérico e recebe papel/escopo; responsável e aluno
+continuam com `guardian_links`/permissões e `child_contexts`/links. Atividades
+ligam crianças por participantes e professores/equipe por assignments. Pronome
+de tratamento é contextual e opcional. Contextos familiares nomeados, membros,
+subgrupos e visibilidade ainda exigem spec física e RLS; não criar tabela nesta
+rodada.
+
 ## Checkpoint Etapa 2 — mídia por produto e exportação — 2026-09-03
 
 - R2 é o storage dos binários novos. O Media Gateway server-side valida sessão,

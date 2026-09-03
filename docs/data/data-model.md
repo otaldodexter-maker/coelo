@@ -5,6 +5,7 @@ source_copy: "docs/source/originals/docx/Coelo PRD Modelo de Dados Master Oficia
 original_path: "C:/Users/adrie/Desktop/Coelo/PRD/Coelo PRD Modelo de Dados Master Oficial v1.docx"
 supplemental_source: "decisions/0014-contextual-activities-and-delegated-unit-creation.md; decisions/0016-unit-type-and-plan-inheritance.md; packages/coelo_database/migrations/20260724120307_contextual_activities_foundation.sql"
 contextual_access_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md"
+people_contexts_decision: "decisions/0033-contextual-people-roles-and-family-contexts.md"
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
@@ -165,6 +166,16 @@ O ponto central é separar pessoa global de dados contextuais. Uma criança pode
 | schema_columns | Catálogo de colunas. | Nome canonico, nome exibido, descrição, tipo, imports e localidades. |
 
 # 8. Multi-tenant e vínculos
+
+## 8.0 Papéis, atividades e contextos nomeados (decisão 2026-09-03)
+
+`institution_memberships` é o vínculo institucional genérico, com papel e
+escopo; não representa somente funcionários. Responsável–criança permanece em
+`guardian_links`/permissões, aluno em `child_contexts` + links de unidade/turma,
+e atividades usam participantes/assignments próprios. Pronome de tratamento é
+atributo opcional do vínculo/contexto, não da identidade global, para suportar
+pessoa híbrida. Contextos familiares nomeados e seus membros serão especificados
+antes de qualquer migration; são filtros/agrupadores, nunca grants de acesso.
 
 | Entidade | Responsabilidade | Campos/relacionamentos |
 | --- | --- | --- |
