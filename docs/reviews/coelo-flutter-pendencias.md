@@ -4,13 +4,27 @@ source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills
 status: "open"
 generated_at: "2026-08-26"
 updated_at: "2026-09-03"
-action_count: 207
+action_count: 219
 family_count: 37
 visual_program_count: 31
 visual_program_accepted_count: 0
 ---
 
 # Pendências Coelo — Front-end por tela e ação
+
+> **Checkpoint do Coordenador — denominador Etapa 2 E2E — 2026-09-03:** os
+> doze `action_id` aprovados de Locais/Mapas/Agendamentos foram comparados
+> nominalmente com a matriz histórica. Nenhum deles existia como ID literal;
+> portanto, todos entram uma única vez e o denominador Front-end passa de 207
+> para **219 ações**. São eles: `institutions.locations-map`,
+> `units.locations-map`, `units.copy-institution-location`, `locations.list`,
+> `locations.create-edit`, `locations.detail-links`, `locations.schedule`,
+> `groups.location`, `activities.location`, `agenda.location`,
+> `forms.location-question` e `forms.location-answer`. O numerador estrito
+> permanece **0/219 `verified`**; as 105 ações `local-green` históricas agora
+> representam 47,95% (105/219) de avanço técnico, sem promoção de estado.
+> Contagens históricas de 207 abaixo permanecem como registros datados e são
+> supersedidas por este checkpoint para o planejamento corrente.
 
 > **Nomenclatura canônica — 2026-09-03:** este rastreador é governado por
 > **Coelo Front-end** (`coelo-frontend`). O arquivo mantém o nome histórico e,

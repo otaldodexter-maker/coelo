@@ -4,11 +4,22 @@ source: "docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; decisions
 status: "living"
 generated_at: "2026-08-26"
 updated_at: "2026-09-03"
-action_count: 207
+action_count: 219
 family_count: 37
 ---
 
 # Pendências Coelo — Back-end
+
+> **Checkpoint do Coordenador — denominador Etapa 2 E2E — 2026-09-03:** os
+> doze `action_id` aprovados de Locais/Mapas/Agendamentos foram comparados
+> nominalmente com a matriz histórica e nenhum existia como ID literal. Eles
+> entram uma única vez; o denominador Back-end passa de 207 para **219 ações**.
+> Com os 21 gates gerais já declarados no frontmatter, o total exclusivamente
+> Back-end passa de 228 para **240 unidades**. O estado estrito permanece
+> **0/219 ações `done`** e **0/240 unidades concluídas**. Nenhuma inclusão
+> documental autoriza migration/deploy ou habilitação de RLS em lote.
+> Contagens históricas abaixo permanecem como registros datados e são
+> supersedidas por este checkpoint para o planejamento corrente.
 
 > **Nomenclatura canônica — 2026-09-03:** este rastreador é governado por
 > **Coelo Back-end** (`coelo-backend`) e cobre Supabase/Postgres e Cloudflare

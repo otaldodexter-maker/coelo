@@ -4,10 +4,10 @@ source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo
 status: "open"
 generated_at: "2026-08-26"
 updated_at: "2026-09-03"
-action_count: 180
-historical_action_count: 202
+action_count: 192
+historical_action_count: 214
 deferred_post_mvp_action_count: 22
-flutter_action_count: 207
+flutter_action_count: 219
 family_count: 37
 ready_for_e2e_count: 0
 verified_e2e_count: 0
@@ -19,6 +19,16 @@ supabase_tracker_sha256: "4B30E0883CFC8641CAD687EA19AB18FA6E858402A13F6CECB57C0D
 ---
 
 # Pendências Coelo — Front-end + Back-end
+
+> **Checkpoint do Coordenador — denominador Etapa 2 E2E — 2026-09-03:** os
+> doze `action_id` aprovados de Locais/Mapas/Agendamentos foram comparados
+> nominalmente com as matrizes históricas e nenhum existia como ID literal.
+> Todos entram uma única vez. O universo histórico passa de 202 para **214**;
+> excluídas as mesmas 22 ações pós-MVP, o denominador integrado passa de 180
+> para **192 ações MVP**. O denominador Flutter relacionado passa de 207 para
+> **219**. `ready-for-e2e` e `verified-e2e` permanecem **0/192**; nenhuma ação
+> foi promovida por esta reconciliação. Contagens históricas abaixo permanecem
+> como registros datados e são supersedidas por este checkpoint.
 
 > **Nomenclatura canônica — 2026-09-03:** este rastreador é governado por
 > **Coelo Front-end + Back-end** (`coelo-frontend-backend`). O nome do arquivo
