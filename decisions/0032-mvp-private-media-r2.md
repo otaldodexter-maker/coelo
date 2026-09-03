@@ -33,9 +33,23 @@ Postgres; Stream é cópia HOT removível e o master permanece no R2.
 ## Escopo e segurança
 
 R2 Standard no piloto (10 GB-month, 1M Class A e 10M Class B incluídos; egress
-direto gratuito). Infrequent Access fica para depois. Vídeos comuns são MP4
-otimizado no R2; Stream, Video Transformations, tiering e transcoding só após
-métricas reais e aprovação. Import/export geral é adiado; somente
+direto gratuito). Infrequent Access fica para depois. O master sempre é salvo
+primeiro no R2. A política de distribuição é por produto:
+
+- **Agora:** promover vídeo para Stream por até 24 horas quando a publicação
+  exigir reprodução adaptativa; enquanto a cópia codifica, tocar o MP4 do R2 ou
+  mostrar estado de processamento. Ao expirar, remover somente Stream e manter
+  o master no R2.
+- **Momentos:** R2 é padrão; Stream apenas para conteúdo novo/popular ou que
+  ultrapasse um limiar de tráfego medido. A janela inicial não é fixada em 30
+  dias; será decidida após métricas do piloto. Pode promover novamente depois.
+- **Acontece:** fotos e vídeos curtos começam no R2; Stream somente se métricas
+  de tamanho, compatibilidade ou tráfego justificarem. Não usar Stream para
+  todo o feed.
+- **Chat:** anexos e vídeos ficam no R2; Stream não é requisito do MVP.
+
+Video Transformations, tiering automático e transcoding complexo ficam para
+spikes posteriores. Import/export geral é adiado; somente
 `forms.responses.export` exporta um arquivo Excel com as respostas do
 formulário; a exportação geral do Superadmin continua adiada.
 No Superadmin, os botões de importação/exportação permanecem visíveis por
