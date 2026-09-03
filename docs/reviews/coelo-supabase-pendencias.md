@@ -16,6 +16,34 @@ family_count: 37
 > gerando Excel com as respostas do formulário; exportações do Superadmin ficam
 > adiadas.
 
+## Auditoria read-only de Pessoas e Vínculos — 2026-09-03
+
+- Projeto remoto `coelo` (`evvbomzejfijozbtgvpt`), região `sa-east-1`,
+  `ACTIVE_HEALTHY`; nenhuma mutação foi executada.
+- Fonte global: `people` (`person_type`: `adult`, `child`, `service`; 1 registro
+  remoto). Dados complementares estão separados em `person_profile_details`,
+  `person_professional_details`, `person_education_details`, `person_addresses`,
+  `person_contacts`, `person_auth_links` e `person_handles`.
+- Vínculos institucionais: `institution_memberships`, `institution_role_grants`,
+  `professional_child_assignments`, `child_contexts`, `child_unit_links` e
+  `child_group_links`. Família: `guardian_links`,
+  `guardian_context_permissions`, `family_relationship_types`,
+  `authorized_people` e `authorized_person_authorizations`.
+- Superadmin é realm separado: `app_private.superadmin_internal_identities`,
+  `superadmin_internal_auth_links` e `superadmin_internal_memberships` (3
+  registros cada), não deve ser misturado com o papel institucional da pessoa.
+- O modelo já suporta pessoa híbrida por múltiplas memberships/assignments;
+  não criar colunas fixas `is_staff`, `is_guardian` ou `is_superadmin`.
+- **P0 bloqueante:** o advisor remoto reportou 34 tabelas `app_private` com RLS
+  desabilitado, potencialmente expostas a `anon`/`authenticated`. Não habilitar
+  RLS em lote sem policies; preparar pacote forward-only de policies/grants e
+  testes antes de dados reais.
+- Pendente de produto: tela Diretório de Pessoas + detalhe com abas de dados,
+  papéis/vínculos institucionais, vínculos de turma/atividade e relações
+  familiares (pai/mãe/responsável, avó/avô, tio/tia, irmão, primo e outro com
+  detalhe livre), respeitando Superadmin total, hierarquia institucional e
+  responsável limitado às próprias crianças.
+
 ## Checkpoint Etapa 2 — mídia por produto e exportação — 2026-09-03
 
 - R2 é o storage dos binários novos. O Media Gateway server-side valida sessão,
