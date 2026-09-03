@@ -1,244 +1,177 @@
 ---
-name: coelo-supabase
-description: Use when a Coelo task involves Supabase, Postgres, Database, Auth, RLS, grants, policies, RPCs, Edge Functions, Storage, Realtime, migrations, database security, or a review, audit, correction, estimate, or status report about those areas.
+name: coelo-backend
+description: Use when a Coelo task involves backend, Supabase, Postgres, Auth, RLS, RPCs, Edge Functions, Realtime, Cloudflare R2, Stream, Workers, Media Gateway, migrations, remote persistence, backend security, or backend completion.
 ---
 
-# Coelo Supabase
+# Coelo Backend
 
-## Princípio
+> O caminho desta skill permanece `coelo-supabase/` por compatibilidade com
+> documentos e prompts antigos. O nome e o contrato canônicos são **Coelo
+> Backend** (`coelo-backend`).
 
-Nenhuma revisão Supabase do Coelo começa sem inventário de pendências e contrato
-de escopo. Urgência não autoriza omitir essa abertura nem ampliar a atividade.
+## Princípio e limite
 
-## Leitura obrigatória
+Tratar o backend Coelo como a soma dos provedores realmente usados pela ação:
+
+- **Supabase/Postgres:** identidade, sessão, dados relacionais, vínculos,
+  autorização, RLS, metadados, auditoria, RPCs, Edge Functions e Realtime;
+- **Cloudflare R2:** origem privada dos binários novos do MVP;
+- **Cloudflare Stream:** cópia privada e removível para vídeo HOT somente onde
+  a política do produto exigir;
+- **Media Gateway server-side:** fronteira que reautoriza o ator e coordena
+  Supabase e Cloudflare sem expor segredo ao cliente.
+
+Uma ação sem mídia não precisa de Cloudflare. Uma ação com mídia ou exportação
+não pode ser `done` apenas porque o Supabase está verde.
+
+## Leitura e skills obrigatórias
 
 Antes de analisar, estimar ou editar:
 
-1. Leia `AGENTS.md`.
-2. Leia integralmente `docs/reviews/coelo-supabase-pendencias.md`.
-3. Leia specs, ADRs e perguntas abertas da superfície.
-4. Use sempre o plugin oficial `@Supabase` (`supabase@openai-curated-remote`) e
-   a skill oficial `supabase`. Acione ao menos uma ferramenta apropriada do
-   plugin em cada atividade: documentação atual para planejamento/revisão e,
-   quando houver projeto identificado e autoridade, inventário remoto somente
-   leitura. Confira changelog e documentação atual antes de implementar ou
-   fazer afirmação temporalmente instável.
-5. Use sempre `supabase-postgres-best-practices`. Leia somente as referências
-   pertinentes ao tema depois de ler integralmente a skill principal.
-6. Use sempre `rtk` para comandos de terminal que possuam wrapper compatível,
-   como busca, leitura, Git, teste e lint. Se um cmdlet nativo do PowerShell não
-   for suportado pelo RTK, use-o diretamente e registre a exceção sem inventar
-   um wrapper.
-7. Faça sempre uma leitura leve de `coelo-flutter-supabase-review` para conferir
-   os limites entre backend e integração ponta a ponta. Só carregue os dois
-   rastreadores Flutter e aplique o fluxo integrado quando Flutter estiver no
-   escopo ou a conclusão da tela depender dele.
+1. Ler `AGENTS.md` e integralmente
+   `docs/reviews/coelo-supabase-pendencias.md`.
+2. Ler specs, ADRs, decisões e perguntas abertas da superfície; para mídia,
+   começar por `decisions/0032-mvp-private-media-r2.md`.
+3. Usar `coelo-knowledge` quando comportamento, domínio, segurança, UX ou
+   documentação observável mudar.
+4. Usar `rtk` em comandos com wrapper compatível.
+5. Para Supabase, usar a skill oficial `supabase`, o plugin oficial disponível
+   e `supabase-postgres-best-practices`; consultar documentação atual antes de
+   afirmações temporais ou implementação.
+6. Para Cloudflare, usar `cloudflare`; usar `wrangler` e
+   `cloudflare:workers-best-practices` quando houver Worker, binding, recurso ou
+   deploy. Se a tarefa envolver gerenciamento operacional de vários serviços
+   Cloudflare (deploy, DNS, rotas, KV, R2, Pages) em um fluxo único, usar também
+   `cloudflare-manager` como fallback para guiar a orquestração; manter a decisão
+   final em `cloudflare`, `wrangler` e `cloudflare:workers-best-practices` conforme
+   o objetivo técnico.
+7. Consultar `coelo-frontend-backend` para os limites da prova integrada. Ler
+   também os rastreadores de Front-end e integração quando a conclusão da tela
+   depender do cliente.
 
-O plugin `@Supabase` não amplia autorização. Antes da confirmação do pacote,
-use apenas ferramentas de documentação e inspeção compatíveis com o acesso
-concedido. Nunca execute SQL, aplique migration, publique função, crie branch,
-altere configuração ou faça deploy remoto apenas para cumprir a regra de
-acionamento. Se o plugin estiver indisponível ou sem conexão, informe isso como
-bloqueio de evidência remota e não declare `remote-green` nem `done`.
+Review, auditoria e diagnóstico autorizam somente leitura. Mutation, migration,
+deploy, configuração ou recurso remoto exigem autorização para o ambiente e o
+pacote exatos. O projeto Supabase `coelo` é produção; autorização anterior de
+outro pacote não se transfere. Usar DEV/homologação para E2E quando autorizado.
 
-Se a tarefa incluir comportamento Flutter integrado ao backend, leia também
-`docs/reviews/coelo-flutter-pendencias.md` e
-`docs/reviews/coelo-flutter-integrado-supabase-pendencias.md`, usando a skill
-`coelo-flutter-supabase-review`. Esta skill continua responsável pelo lado
-Supabase; não duplica a autoridade Flutter/UI.
+## Segurança de credenciais
 
-## Comunicação clara
+- Nunca colocar `service_role`, secret key, token Cloudflare, credencial R2,
+  signing key, segredo de Worker ou URL temporária em Flutter, Astro, Git,
+  asset, log, evidência ou parâmetro permanente.
+- Guardar segredos somente no secret store do ambiente. Arquivos locais de
+  segredo ficam ignorados; exemplos contêm apenas nomes e valores fictícios.
+- Token que apareceu em conversa, anexo, log ou diff é comprometido: não usar,
+  não testar e não copiar; solicitar rotação e menor privilégio.
+- Presigned URL é credencial temporária: operação, objeto, MIME e TTL mínimos;
+  CORS não substitui autorização.
 
-Na primeira ocorrência dirigida ao usuário, traduza siglas e estados para
-linguagem cotidiana. Exemplos: Auth (entrada e sessão da pessoa), RLS (segurança
-por linha do banco), RPC (função do banco chamada pelo aplicativo), Edge
-Function (função executada no servidor), `fail-closed` (acesso negado e recurso
-indisponível por segurança), `local-green` (passou apenas localmente) e
-`remote-green` (passou no backend remoto autorizado).
+## Comunicação e progresso
 
-Explique contagens e percentuais, sem exibir apenas `54/54` ou `100%`: diga
-“54 testes executados; todos os 54 passaram”. Não presuma que o usuário conhece
-SQLSTATE, IDOR/BOLA, ledger, migration ou advisor; defina o termo brevemente na
-primeira ocorrência relevante.
+Traduzir na primeira ocorrência: Auth (entrada/sessão), RLS (segurança por
+linha), RPC (função do banco), Edge Function/Worker (função no servidor),
+`fail-closed` (nega por segurança), `local-green` (prova local),
+`remote-green` (provedores remotos aplicáveis comprovados) e `done` (fim do
+backend da ação).
 
-## Progresso percentual obrigatório
-
-### Limite de conclusão Supabase
-
-Meça Supabase até o fim das responsabilidades do backend: schema, migrations,
-RPC/Edge/query, Auth e sessão aplicáveis, RLS, grants, isolamento entre tenants,
-validação, persistência, reload por um cliente de teste, auditoria, efeitos
-laterais, testes e cleanup. Uma família pode ser `done` no rastreador Supabase
-sem Flutter integrado, desde que todo o contrato backend esteja comprovado.
-
-`local-green` significa backend comprovado apenas no ambiente local. `done`
-encerra somente o lado Supabase: da entrada não confiável no endpoint até
-autorização, persistência, auditoria, resposta estável e regressão no backend
-remoto autorizado. A ausência de Flutter não bloqueia `done`; a ligação
-Flutter↔Supabase pertence ao rastreador integrado.
-
-Depois de ler o rastreador obrigatório, a primeira resposta ao usuário deve
-começar pelo progresso geral de todas as pendências Supabase conhecidas, antes
-da pergunta de orçamento, dos níveis e do recorte. Essa prioridade também vale
-quando a skill for chamada apenas para revisão, estimativa ou continuação.
-
-Calcule o geral sobre todos os `action_id` e gates de conceito do rastreador
-Supabase, incluindo itens fora do recorte atual. Na abertura e em todo
-checkpoint, pausa ou encerramento, apresente primeiro esse geral e depois o
-progresso do recorte contratado, sem misturar os dois. Informe a base do cálculo.
-Uma unidade só conta como concluída quando possui as evidências exigidas para o
-estado declarado; trabalho parcial permanece no restante.
-
-Use sempre este formato, com duas casas decimais e soma igual a `100,00%`:
+Calcular o progresso geral sobre todas as famílias e `action_id` do rastreador,
+e o recorte separadamente. Não inferir tempo usado pelo percentual. Se faltarem
+horários/evidências, usar `não calculável ainda` e registrar o próximo dado
+necessário.
 
 ```text
 Progresso geral conhecido — Concluído: 21,43% (3/14 unidades)
 Progresso geral conhecido — Restante: 78,57% (11/14 unidades)
-Tempo usado no trabalho geral concluído: 50 h
+Tempo usado no trabalho geral concluído: ...
 Tempo estimado para finalizar o backlog geral: ...
 Progresso do recorte — Concluído: ...
 Progresso do recorte — Restante: ...
 Tempo usado no trabalho concluído no recorte: ...
-Tempo estimado para finalizar o recorte: 2 dias 4 h 48 min
-Base do cálculo: action_ids/gates considerados, evidência e horário de referência.
+Tempo estimado para finalizar o recorte: ...
+Base do cálculo: IDs/gates, evidência, provedores e horário de referência.
 ```
 
-Tempo usado é duração medida, nunca deduzida pelo percentual. ETA considera
-dependências, testes, autorizações e bloqueios e deve ser recalculado quando o
-inventário mudar. Se faltarem dados confiáveis, escreva `não calculável ainda`,
-liste o dado ausente e dê o próximo passo para torná-lo calculável; não use zero,
-percentual aproximado ou falsa precisão.
+### Limite de `done` do Back-end
 
-## Contrato obrigatório de abertura
+`done` encerra tudo que pertence ao backend da ação, sem exigir Front-end:
 
-Antes de qualquer alteração, decida primeiro o orçamento de tempo.
+1. contrato e validação de entrada não confiável;
+2. sessão, ator, capability, tenant, ownership e hierarquia;
+3. schema/migration, RLS deny-by-default, grants mínimos e caminho server-side;
+4. persistência, idempotência/concorrência, auditoria e efeitos laterais;
+5. permitido, negado, revogado, tenant A/B e IDOR/BOLA;
+6. reload por cliente de teste e resposta estável;
+7. todos os provedores aplicáveis comprovados no remoto autorizado;
+8. regressão, Advisors/observabilidade, cleanup e rastreador atualizado.
 
-- Se o usuário ainda não informou: comece com “Quanto tempo total você quer
-  investir nesta atividade? Responda em minutos, horas ou dias.” Na mesma
-  resposta, apresente as pendências conhecidas e as faixas abaixo; não edite.
-- Se já informou: não pergunte novamente. Faça inventário read-only, calcule o
-  que cabe e recomende o nível por tema, tela e ação.
-- Se o orçamento não comportar um pacote seguro, proponha reduzir o recorte; não
-  comprima testes ou autorização para caber artificialmente.
+Para mídia/exportação, acrescentar: objeto R2 privado real, metadados
+consistentes no Supabase, URL curta após reautorização, expiração/revogação,
+retenção e limpeza de órfãos. Para vídeo HOT, acrescentar Stream privado,
+estado de processamento, playback autorizado, fallback R2, retry e remoção da
+cópia Stream sem remover o master R2.
+
+## Contrato de abertura
+
+Se o usuário ainda não informou tempo, perguntar quanto quer investir. Se já
+definiu `Completa`, `todas as pendências` ou continuidade até conclusão, não
+perguntar novamente: inventariar, recalcular e prosseguir dentro da autoridade.
 
 | Nível | Inclui | Referência inicial por unidade simples |
 | --- | --- | --- |
-| `Básica` | Uma correção pequena, RED e teste local mínimo | 30–90 min |
-| `Intermediária` | Básica + contrato backend, autorização e negativas aplicáveis | 2–6 h |
-| `Avançada` | Intermediária + ações aplicáveis, cross-tenant e remoto autorizado | 1–2 dias |
-| `Completa` | Avançada + regressão, Advisors, auditoria, cleanup e fechamento | 2–5 dias |
+| `Básica` | Correção pequena, RED e teste local mínimo | 30–90 min |
+| `Intermediária` | Básica + contrato, autorização e negativas aplicáveis | 2–6 h |
+| `Avançada` | Intermediária + cross-tenant e remoto autorizado | 1–2 dias |
+| `Completa` | Avançada + regressão, auditoria, cleanup e fechamento | 2–5 dias |
 
-Na primeira resposta, exiba sempre os quatro nomes e faixas exatamente como
-acima. Não renomeie, omita, funda ou antecipe o recálculo de nenhum nível. O
-recálculo só acontece depois do inventário e deve preservar o nome escolhido.
+As faixas são somente referência pré-inventário. Reduzir o recorte quando o
+tempo não comportar o pacote seguro; nunca retirar testes, autorização ou
+cleanup para caber. Registrar objetivo, apps afetados, incluído/fora, ordem,
+parada, evidências e ETA por fatia.
 
-Essas faixas são estimativas, não promessas. Recalcule após o inventário e
-explique premissas. Recomende no mínimo `Intermediária` para correção relevante;
-`Avançada` para Auth, RLS, grants, migrations com drift, dados sensíveis e
-segurança; `Completa` quando a intenção for declarar o item Supabase `done`.
-`Básica`, `Intermediária` e `Avançada` podem concluir o pacote contratado, mas
-não fecham automaticamente toda a tela ou todo o produto.
+## Políticas vigentes de mídia e exportação
 
-Depois apresente ao usuário, nesta ordem:
-
-1. tempo disponível e nível recomendado, com motivo;
-2. pendências gerais conhecidas;
-3. domínios, telas, subtelas e ações pendentes relevantes;
-4. objetivo e modalidade do recorte;
-5. incluído e fora de escopo, incluindo o que ficará pendente;
-6. ordem e critério de parada;
-7. evidências esperadas;
-8. ETA recalculado por fatia e total.
-
-Use uma modalidade ou combinação explícita:
-
-| Modalidade | Significado |
-| --- | --- |
-| `todas as pendências` | fecha backlog geral e todas as superfícies aplicáveis |
-| `todas as telas` | percorre todas as telas na ordem do rastreador |
-| `macrotema` | fecha RLS, Auth, migrations, Storage ou outro tema transversal |
-| `macrotema + X telas` | fecha o tema e depois a quantidade indicada de telas |
-| `X telas` | fecha a quantidade indicada na ordem de dependência |
-| `X ações` | fecha ações nomeadas, como criar e editar instituição |
-
-Se o usuário já definiu o recorte, confirme-o no contrato e prossiga sem
-perguntar novamente. Se não definiu, faça inspeção read-only suficiente para
-listar as pendências e peça a escolha antes de modificar código ou banco.
-
-Autorização para `review`, `revisão`, `auditoria`, `diagnóstico` ou `relatório`
-é somente leitura. Corrigir código, aplicar migration, alterar o remoto, publicar
-Edge Function ou usar privilégio elevado exige autorização compatível.
-
-### Exemplo de abertura
-
-```text
-Tempo disponível: 4 horas.
-Pendências conhecidas: 14 gerais; Instituições criar/editar ainda sem prova remota;
-RLS e migrations remotas abertas.
-Recomendação: Intermediária em Instituições/criar; não cabe fechar RLS geral e
-duas telas com segurança nesse período.
-Incluído: contrato backend, autorização, negativas e testes locais da ação.
-Ficará pendente: remoto, regressão da tela inteira, RLS transversal e Unidades.
-ETA: 2–4 horas após o inventário inicial.
-Confirme este pacote antes de eu corrigir.
-```
+- Hierarquia R2 server-issued:
+  `<domain>/<tenant_uuid>/<asset_uuid>/<original|variant|thumb|tmp>/...`, sem
+  PII. Domínios aprovados incluem `profile`, `happens`, `now`, `moments`,
+  `routine`, `chat`, `forms`, `exports` e `locations`.
+- **Agora:** master no R2; Stream HOT por até 24 h quando necessário. Após a
+  janela, apagar somente a cópia Stream.
+- **Momentos:** R2 por padrão; Stream apenas por publicação nova/popular ou
+  tráfego medido, sem janela fixa arbitrária; permitir nova promoção.
+- **Acontece:** R2 por padrão; Stream somente por necessidade medida.
+- **Chat:** R2; Stream não é requisito do MVP.
+- **Formulários:** `forms.responses.export` gera um arquivo XLSX com as
+  respostas do formulário. Não gerar uma exportação por resposta e não
+  inventar CSV, ZIP ou PDF. O artefato fica privado no R2.
+- Demais importações/exportações reais do Superadmin ficam pós-MVP; botões
+  permanecem visíveis e honestamente indisponíveis.
 
 ## Execução e evidência
 
-Siga a ordem do rastreador Supabase. Para cada item:
+Para cada item:
 
-1. reproduza o RED e identifique ator, tenant, recurso e capacidade;
-2. rastreie schema, migration, grants, policies, RPC/Edge e Storage aplicáveis;
-3. trate IDs, claims, filtros e payloads do cliente como não confiáveis;
-4. imponha RLS deny-by-default e grants mínimos;
-5. valide autorização, ownership, hierarquia, MFA/AAL e concorrência no backend;
-6. prove sucesso e negativas, incluindo cross-tenant e IDOR/BOLA;
-7. execute advisors e testes proporcionais ao risco no ambiente autorizado;
-8. atualize o rastreador no mesmo turno com evidência, estado, bloqueio e ETA.
+1. reproduzir o RED e nomear ator, tenant, recurso, capability e provedores;
+2. rastrear schema, migration, grants, RLS, RPC/Edge/Worker, R2 e Stream;
+3. escrever o teste antes da correção e provar sucesso e negativas;
+4. fazer replay/cutover forward-only na ordem coordenada;
+5. provar remoto somente no ambiente autorizado, com dados sintéticos;
+6. atualizar o rastreador no mesmo turno com ação, estado, evidência, bloqueio
+   e ETA.
 
-Nunca exponha `service_role`, segredo, PII ou dados de crianças em Git, cliente,
-bundle, log, URL ou evidência.
+Não habilitar RLS em lote sem policies e testes: a auditoria remota registrou
+34 tabelas `app_private` com RLS desabilitado, um P0 que exige correção fatiada.
+Não aplicar cauda de migrations em lote diante do drift de ledger.
 
-Respeite a separação de mídia: perfil e identidade usam Supabase Storage privado;
-conteúdo operacional de Agora, Acontece e Momentos usa Cloudflare R2 conforme a
-ADR vigente. Uma integração não substitui a outra silenciosamente.
+## Estados e encerramento
 
-## Estados e conclusão
-
-- `audited`: inventariado, ainda aberto;
-- `fail-closed`: seguro, mas indisponível;
-- `blocked-decision`: depende de decisão formal;
-- `local-green`: somente artefatos/testes locais verdes;
-- `remote-green`: backend remoto e negativas comprovados;
-- `done`: todos os gates da camada Supabase do recorte comprovados e registrados,
-  sem exigir Flutter ou E2E;
+- `audited`: inventariado e aberto;
+- `fail-closed`: seguro, porém indisponível;
+- `blocked-decision`/`blocked-environment`: depende de decisão ou ambiente;
+- `local-green`: provas locais verdes;
+- `remote-green`: todos os provedores remotos aplicáveis e negativas verdes;
+- `done`: todos os gates do backend da unidade comprovados;
 - `regressed`: evidência anterior deixou de valer.
 
-Não chame `local-green`, RLS apenas habilitada, função existente, migration local
-ou mock de `done`. Para tela ponta a ponta, `done` Supabase é necessário, mas não
-suficiente: o rastreador integrado também deve estar verde. A falta dessa
-integração não reabre uma família já concluída dentro do limite Supabase.
-
-## Erros comuns e sinais de parada
-
-| Racionalização | Correção obrigatória |
-| --- | --- |
-| “O usuário pediu tudo; posso começar.” | Formalize `todas as pendências`, liste-as e dê ordem/ETA. |
-| “O prazo é curto; listo depois.” | A lista vem antes da primeira edição. |
-| “O usuário pediu algo rápido; escolho Básica.” | Pergunte o tempo concreto e explique o risco/pendência. |
-| “O orçamento é menor; retiro testes.” | Reduza o recorte, nunca os gates do pacote. |
-| “Posso resumir os quatro níveis.” | Exiba exatamente Básica, Intermediária, Avançada e Completa com suas faixas. |
-| “Li o rastreador; não preciso mostrá-lo.” | A abertura deve ser visível ao usuário. |
-| “Review inclui corrigir.” | Review é read-only sem autorização adicional. |
-| “O teste local passou.” | Registre `local-green`; não declare remoto nem integração ponta a ponta. |
-
-Pare e corrija o contrato se a primeira resposta não contiver pendências,
-recorte, incluído/fora de escopo, ordem, parada, evidências e ETA.
-
-## Checkpoint e encerramento
-
-Todo checkpoint informa: posição na ordem, concluído com evidência, restante no
-recorte, pendências fora do recorte, bloqueios, ETA atualizado e estado
-local/ledger/remoto. Ao pausar, registre o primeiro gate incompleto e o próximo
-passo seguro. Ao encerrar, diferencie `atividade concluída`, `item Supabase done`
-e `produto ainda pendente`.
+Supabase verde sem R2/Stream aplicável não é `done`; R2 verde sem RLS,
+autorização e metadados também não é. No encerramento, diferenciar atividade
+concluída, unidade Backend `done` e produto ainda pendente.

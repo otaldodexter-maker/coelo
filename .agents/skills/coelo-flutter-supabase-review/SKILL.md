@@ -1,123 +1,115 @@
 ---
-name: coelo-flutter-supabase-review
-description: Use when a Coelo review, audit, correction, implementation, or completion claim combines Flutter/Dart with Supabase, Auth, Postgres, RLS, RPCs, Edge Functions, Storage, migrations, remote persistence, or end-to-end screen behavior.
+name: coelo-frontend-backend
+description: Use when a Coelo review, audit, correction, implementation, estimate, or completion claim crosses Front-end and Back-end, including Flutter/Dart or Astro with Supabase/Postgres, Auth, Edge Functions, Cloudflare R2, Stream, Workers, Media Gateway, remote persistence, or end-to-end behavior.
 ---
 
-# Coelo Flutter + Supabase Review
+# Coelo Front-end + Back-end
 
-Controle a conclusão ponta a ponta sem substituir as autoridades especializadas.
+> O caminho `coelo-flutter-supabase-review/` foi mantido para compatibilidade.
+> O nome e o contrato canônicos são **Coelo Front-end + Back-end**
+> (`coelo-frontend-backend`).
+
+## Princípio
+
+Controlar conclusão ponta a ponta sem substituir as autoridades de cada camada.
+E2E significa executar o fluxo real por todos os provedores que a ação usa; não
+significa somente Flutter → Supabase.
 
 ## Dependências obrigatórias
 
-Em toda atividade, leia e aplique sempre:
+Sempre:
 
-1. `coelo-ui`, autoridade visual;
-2. `rtk`, para todos os comandos de shell;
-3. `ponytail`, em modo completo, para a menor correção segura da causa raiz;
-4. `flutter-dart-code-review`, checklist técnico Flutter/Dart;
-5. o plugin oficial Supabase disponível no ambiente;
-6. `supabase`, orientação atual da plataforma;
-7. `supabase-postgres-best-practices`, práticas de Postgres e desempenho.
+1. ler `AGENTS.md`;
+2. usar `coelo-frontend`, `coelo-backend`, `coelo-ui`, `coelo-knowledge`,
+   `rtk`, `ponytail`, `test-driven-development` e
+   `verification-before-completion`;
+3. para Flutter, usar `flutter-dart-code-review` e
+   `flutter-build-responsive-layout`; para Astro, usar `astro`;
+4. para Supabase, usar o plugin oficial, `supabase` e
+   `supabase-postgres-best-practices`;
+5. para Cloudflare, usar `cloudflare`; quando houver Worker/config/deploy,
+   também `wrangler` e `cloudflare:workers-best-practices`;
+   para fluxo cruzado de Workers+R2+DNS+Pages no mesmo passo, usar
+   `cloudflare-manager` como fallback de orquestração.
+6. ler integralmente, nesta ordem, os rastreadores em `docs/reviews/`:
+   `coelo-flutter-pendencias.md`, `coelo-supabase-pendencias.md` e
+   `coelo-flutter-integrado-supabase-pendencias.md`.
 
-Consulte também, sempre, `coelo-flutter-review` para o cliente e
-`coelo-supabase` para o contrato Coelo de backend. Leia `AGENTS.md` e, nesta
-ordem, os três rastreadores `coelo-flutter-pendencias.md`,
-`coelo-supabase-pendencias.md` e
-`coelo-flutter-integrado-supabase-pendencias.md`, em `docs/reviews/`. Use
-`coelo-knowledge` quando aplicável.
+Os nomes dos arquivos dos rastreadores foram mantidos por compatibilidade;
+Front-end abrange Flutter/Dart e Astro, Back-end abrange Supabase e Cloudflare.
 
-## Começo obrigatório pelo orçamento
+## Recorte por app
 
-Se o usuário ainda não informou o tempo total, a primeira pergunta é:
+Nomear explicitamente `superadmin`, `admin`, `principal` e/ou `site`. Na Etapa
+2 atual, somente `apps/superadmin` e packages/backends que ele usa estão
+autorizados. “Coelo (Principal)” é um menu do Superadmin, não o app Principal.
+Não tocar apps fora do recorte por conveniência ou compartilhamento.
 
-> Quanto tempo total você quer investir nesta atividade?
+## Três medições independentes
 
-Não comece correções antes da resposta. Se o tempo já foi informado, não
-pergunte novamente. Depois, inventarie pendências Flutter, Supabase e integradas
-e recalcule o tempo por risco, complexidade, dependências, ambiente e bloqueios.
+- Front-end `verified`: chegou ao fim do cliente; não exige backend real.
+- Back-end `done`: chegou ao fim dos provedores backend aplicáveis; não exige
+  Front-end.
+- Integração `verified-e2e`: cliente real atravessou gateway, autorização,
+  provedores, persistência e voltou à UI, incluindo reload e negativas.
 
-| Nível cumulativo | Conteúdo | Referência inicial | Regra |
-|---|---|---:|---|
-| Básica | Ajuste local e de baixo risco, sem alegar fechamento de backend. | 30–90 min por ação simples | Nunca conclui ação integrada ou tela. |
-| Intermediária | Básica + problemas principais, contrato existente e testes proporcionais. | 2–6 h por ação ou tela simples | MÍNIMO RECOMENDADO apenas para baixo/médio risco. |
-| Avançada | Anteriores + ações aplicáveis, autorização, isolamento entre instituições e prova remota. | 1–2 dias por tela | Pode continuar parcial. |
-| Completa | Todas as pendências, regressão e provas Flutter, Supabase e ponta a ponta. | 2–5 dias por tela | Único nível que pode sustentar conclusão integral. |
+Não somar os três denominadores. Preservar progresso de camada quando a cadeia
+integrada ainda estiver aberta. `ready-for-e2e` exige Front-end `verified` e
+Back-end `done` para a mesma ação.
 
-Autenticação, RLS (regras de acesso no banco), autorização, segurança, arquivos
-privados e dados sensíveis nunca recebem recomendação Básica. As faixas são
-referências e devem ser recalculadas depois do inventário.
+Sempre publicar progresso geral e do recorte, tempo usado medido, ETA e base de
+cálculo. Se faltarem evidências/horários, usar `não calculável ainda`, sem falsa
+precisão.
 
-## Progresso percentual obrigatório
+## Gate `verified-e2e`
 
-### Limites das três medições
+Para cada `action_id`, provar:
 
-- Flutter `verified`: chegou ao fim do que o cliente Flutter pode fazer; não
-  exige Supabase real.
-- Supabase `done`: chegou ao fim do que o backend pode fazer; não exige Flutter.
-- Integração `verified-e2e`: a tela Flutter chamou o Supabase real, atravessou
-  autorização e persistência e confirmou resposta, reload e efeitos ponta a
-  ponta. Este é o único dos três indicadores que exige a cadeia completa.
+1. UI/rota normal → estado → repository/gateway produtivo;
+2. sessão, ator, capability, tenant, ownership e hierarquia no servidor;
+3. RPC/query/Edge/Worker, RLS e grants mínimos;
+4. persistência e nova leitura/reload;
+5. permitido, negado, revogado, tenant A/B e ID adulterado;
+6. auditoria, efeitos laterais, retry/idempotência e cleanup;
+7. regressão Front-end, Back-end e integrada no ambiente autorizado.
 
-Preserve os dois primeiros resultados quando a fronteira entre as camadas ainda
-estiver aberta. Não use a ausência de E2E para transformar progresso Flutter ou
-Supabase em zero; reporte a integração separadamente.
+Quando houver mídia/exportação, a cadeia inclui Supabase para metadados e
+autorização, Media Gateway e objeto R2 privado real. Quando a política exigir
+vídeo HOT, inclui também Stream privado, signed playback, estado de encoding,
+fallback R2 e remoção da cópia Stream. Mock, bucket público, URL artificial,
+rota `/dev`, golden ou teste isolado não comprovam isso.
 
-Depois de ler os três rastreadores obrigatórios, a primeira resposta ao usuário
-deve começar pelo progresso geral de todas as pendências Flutter, Supabase e
-integradas conhecidas, antes da pergunta de orçamento, dos níveis e do recorte.
-Essa prioridade também vale quando a skill for chamada apenas para revisão,
-estimativa ou continuação.
+### Contratos de produto obrigatórios
 
-Calcule a conclusão integrada exclusivamente sobre os `action_id` do rastreador
-integrado. `ready-for-e2e` mede ações cujos lados Flutter e Supabase já foram
-concluídos separadamente; `verified-e2e` mede a conclusão ponta a ponta. Não some
-unidades Flutter, Supabase e integradas em um denominador único. Informe
-`verified` Flutter e `done` Supabase separadamente como contexto, incluindo
-itens fora do recorte atual. Na abertura e em todo checkpoint, pausa ou
-encerramento, apresente primeiro o geral e depois o progresso do recorte
-contratado, sem misturar os dois.
+- Agora: R2 master primeiro; Stream HOT por até 24 h quando necessário; apagar
+  somente Stream na expiração.
+- Momentos: R2 padrão; Stream por demanda medida, sem janela fixa inventada.
+- Acontece: R2 padrão; Stream somente quando métricas justificarem.
+- Chat: R2, sem obrigação de Stream no MVP.
+- Formulários: um XLSX com as respostas do formulário no R2 privado; não uma
+  exportação por resposta, e sem CSV/ZIP/PDF inventado.
+- Outros import/export do Superadmin: botão visível e honestamente indisponível.
 
-Use sempre este formato, com duas casas decimais e soma igual a `100,00%`:
+## Contrato de abertura
 
-```text
-Progresso geral conhecido — Concluído: 21,43% (3/14 unidades)
-Progresso geral conhecido — Restante: 78,57% (11/14 unidades)
-Tempo usado no trabalho geral concluído: 50 h
-Tempo estimado para finalizar o backlog geral: ...
-Progresso do recorte — Concluído: ...
-Progresso do recorte — Restante: ...
-Tempo usado no trabalho concluído no recorte: ...
-Tempo estimado para finalizar o recorte: 2 dias 4 h 48 min
-Base do cálculo: action_ids/gates considerados, evidência e horário de referência.
-```
+Se o usuário não informou tempo, perguntar. Se o pacote já é `Completa`, todas
+as pendências ou execução até terminar, não perguntar novamente. Inventariar
+IDs e dependências antes da edição e registrar: apps/telas/ações, objetivo,
+incluído/fora, ownership, ordem, critério de parada, evidências, bloqueios e ETA.
 
-Tempo usado é duração medida, nunca deduzida pelo percentual. ETA considera
-dependências, testes, ambiente, autorizações e bloqueios e deve ser recalculado
-quando o inventário mudar. Se faltarem dados confiáveis, escreva `não calculável
-ainda`, liste o dado ausente e dê o próximo passo para torná-lo calculável; não
-use zero, percentual aproximado ou falsa precisão.
+Review é leitura. Correção local não autoriza migration, recurso Cloudflare ou
+deploy. Produção exige autorização explícita para o pacote. Um bloqueio externo
+retém somente a ação dependente; continuar todo trabalho seguro independente.
 
-## Contrato e confirmação
+## Execução, rastreadores e encerramento
 
-Antes de alterar código, banco ou remoto, apresente: pendências por lado e por
-tela/subtela/ação; objetivo; incluído e fora do escopo; ordem; critério de
-parada; evidências; nível recomendado; o que cabe no orçamento; o que continuará
-pendente; e estimativa total. Aceite os recortes `todas as pendências`, `todas as
-telas`, `macrotema`, `macrotema + X telas`, `X telas` ou `X ações específicas`.
+Usar TDD por fatias verticais. Um único writer coordena migrations, recursos
+Cloudflare compartilhados e cutover remoto. Sincronizar os três rastreadores no
+mesmo turno de correção, regressão, bloqueio ou mudança de ETA, por
+tela/subtela/action_id e não por nome da conversa.
 
-Peça confirmação antes de corrigir. Review não autoriza correção; correção local
-não autoriza migration, deploy ou alteração remota. Um pacote parcial não muda
-ação ou tela para concluída. Nunca declare conclusão fora do recorte.
-
-## Execução e checkpoint
-
-Para cada `action_id`, rastreie `Flutter → estado → repository produtivo →
-RPC/query/Edge → autorização/RLS → banco/Storage → resposta da UI`. Prove fluxo
-permitido, negado, sessão ou vínculo revogado, acesso cruzado entre instituições,
-recarga, persistência, auditoria e efeitos laterais aplicáveis. Mock, rota aberta,
-golden, migration local ou testes isolados não bastam para conclusão integrada.
-
-Sincronize os três rastreadores após cada correção, regressão, bloqueio ou nova
-estimativa. No checkpoint, separe correções Flutter, correções Supabase e prova
-ponta a ponta; explique números e siglas; informe pendências, bloqueios, próxima
-ação e tempo restante.
+No checkpoint, separar Front-end, Back-end Supabase, Back-end Cloudflare e
+prova integrada. Informar commits, testes com quantidade/resultado, primeiro
+gate aberto e ETA. Só declarar conclusão quando worktree estiver limpa, commits
+integrados, segredos ausentes, evidências preservadas e todos os gates do
+recorte realmente verdes.
