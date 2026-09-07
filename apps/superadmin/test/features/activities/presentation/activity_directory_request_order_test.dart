@@ -5,6 +5,76 @@ import 'package:coelo_superadmin/features/activities/presentation/activity_direc
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final deniedPage in [false, true]) {
+    test('authorization denial wins over another RPC failure (page=$deniedPage)', () async {
+      final first = _DeferredActivityLoad();
+      final second = _DeferredActivityLoad();
+      final viewModel = ActivityDirectoryViewModel(_OrderedActivityRepository([first, second]));
+      addTearDown(viewModel.dispose);
+      final initial = viewModel.load();
+      first.complete(
+        'previous',
+        filters: const ActivityFilterOptions(
+          institutions: [ActivityFilterOption(id: 'institution-a', label: 'Previous institution')],
+          units: [
+            ActivityFilterOption(id: 'unit-a', label: 'Previous unit', parentId: 'institution-a'),
+          ],
+          groups: [
+            ActivityFilterOption(id: 'group-a', label: 'Previous group', parentId: 'unit-a'),
+          ],
+        ),
+      );
+      await initial;
+      expect(viewModel.filterOptions.institutions, hasLength(1));
+      expect(viewModel.filterOptions.units, hasLength(1));
+      expect(viewModel.filterOptions.groups, hasLength(1));
+      final loading = viewModel.retry();
+      if (deniedPage) {
+        second.filters.completeError(const ActivityDirectoryUnavailableException());
+      } else {
+        second.page.completeError(const ActivityDirectoryUnavailableException());
+      }
+      await Future<void>.delayed(Duration.zero);
+      if (deniedPage) {
+        second.page.completeError(const ActivityDirectoryUnauthorizedException());
+      } else {
+        second.filters.completeError(const ActivityDirectoryUnauthorizedException());
+      }
+      await loading;
+      expect(viewModel.state, ActivityDirectoryLoadState.unauthorized);
+      expect(viewModel.visibleItems, isEmpty);
+      expect(viewModel.filterOptions.institutions, isEmpty);
+      expect(viewModel.filterOptions.units, isEmpty);
+      expect(viewModel.filterOptions.groups, isEmpty);
+    });
+  }
+
+  test('ignores a pending response as soon as search changes before debounce', () async {
+    final first = _DeferredActivityLoad();
+    final viewModel = ActivityDirectoryViewModel(
+      _OrderedActivityRepository([first]),
+      searchDebounce: const Duration(days: 1),
+    );
+    addTearDown(viewModel.dispose);
+    final loading = viewModel.load();
+    viewModel.setSearch('new query');
+    first.complete('stale');
+    await loading;
+    expect(viewModel.query.search, 'new query');
+    expect(viewModel.visibleItems, isEmpty);
+    expect(viewModel.state, ActivityDirectoryLoadState.loading);
+  });
+
+  test('does not apply or notify when a pending response completes after dispose', () async {
+    final pending = _DeferredActivityLoad();
+    final viewModel = ActivityDirectoryViewModel(_OrderedActivityRepository([pending]));
+    final loading = viewModel.load();
+    viewModel.dispose();
+    pending.complete('late');
+    await expectLater(loading, completes);
+    expect(viewModel.visibleItems, isEmpty);
+  });
+
   test('ignores a stale activity response that completes after a newer filter request', () async {
     final first = _DeferredActivityLoad();
     final second = _DeferredActivityLoad();
@@ -30,7 +100,7 @@ final class _DeferredActivityLoad {
   final page = Completer<ActivityDirectoryResult>();
   final filters = Completer<ActivityFilterOptions>();
 
-  void complete(String id) {
+  void complete(String id, {ActivityFilterOptions filters = const ActivityFilterOptions()}) {
     page.complete(
       ActivityDirectoryResult(
         items: [_item(id)],
@@ -39,7 +109,7 @@ final class _DeferredActivityLoad {
         pageSize: ActivityDirectoryQuery.defaultPageSize,
       ),
     );
-    filters.complete(const ActivityFilterOptions());
+    this.filters.complete(filters);
   }
 }
 

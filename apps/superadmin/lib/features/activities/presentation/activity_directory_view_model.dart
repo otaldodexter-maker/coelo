@@ -33,6 +33,7 @@ final class ActivityDirectoryViewModel extends ChangeNotifier {
   ActivityDirectoryLoadState _state = ActivityDirectoryLoadState.initial;
   Timer? _searchTimer;
   int _requestVersion = 0;
+  bool _disposed = false;
 
   ActivityDirectoryQuery get query => _query;
   ActivityDirectoryResult get page => _page;
@@ -44,20 +45,20 @@ final class ActivityDirectoryViewModel extends ChangeNotifier {
   List<ActivityFilterOption> get unitOptions => _filterOptions.units
       .where(
         (option) =>
-            _query.institutionIds.isEmpty ||
-            option.parentId == null ||
-            _query.institutionIds.contains(option.parentId),
+            _query.institutionIds.isEmpty || _query.institutionIds.contains(option.parentId),
       )
       .toList(growable: false);
 
-  List<ActivityFilterOption> get groupOptions => _filterOptions.groups
-      .where(
-        (option) =>
-            _query.unitIds.isEmpty ||
-            option.parentId == null ||
-            _query.unitIds.contains(option.parentId),
-      )
-      .toList(growable: false);
+  List<ActivityFilterOption> get groupOptions {
+    if (_query.institutionIds.isEmpty && _query.unitIds.isEmpty) return _filterOptions.groups;
+    final allowedUnitIds = unitOptions
+        .where((unit) => _query.unitIds.isEmpty || _query.unitIds.contains(unit.id))
+        .map((unit) => unit.id)
+        .toSet();
+    return _filterOptions.groups
+        .where((group) => allowedUnitIds.contains(group.parentId))
+        .toList(growable: false);
+  }
 
   List<ActivityDirectoryItem> get visibleItems => _page.items;
 
@@ -65,8 +66,11 @@ final class ActivityDirectoryViewModel extends ChangeNotifier {
   Future<void> retry() => _load(_query);
 
   void setSearch(String value) {
+    if (_disposed) return;
     _query = _copy(search: value);
     _searchTimer?.cancel();
+    _requestVersion++;
+    _state = ActivityDirectoryLoadState.loading;
     _searchTimer = Timer(searchDebounce, () => _load(_query));
     notifyListeners();
   }
@@ -124,21 +128,28 @@ final class ActivityDirectoryViewModel extends ChangeNotifier {
   );
 
   Future<void> _replace(ActivityDirectoryQuery value) {
+    if (_disposed) return Future.value();
     _searchTimer?.cancel();
     _query = value;
     return _load(value);
   }
 
   Future<void> _load(ActivityDirectoryQuery value) async {
+    if (_disposed) return;
     final version = ++_requestVersion;
     _state = ActivityDirectoryLoadState.loading;
     notifyListeners();
     try {
       final results = await Future.wait<Object>([
-        _repository.fetchPage(value),
-        _repository.fetchFilterOptions(),
+        _capture(() => _repository.fetchPage(value)),
+        _capture(_repository.fetchFilterOptions),
       ]);
       if (version != _requestVersion) return;
+      if (results.any((result) => result is ActivityDirectoryUnauthorizedException)) {
+        throw const ActivityDirectoryUnauthorizedException();
+      }
+      final errors = results.whereType<Exception>();
+      if (errors.isNotEmpty) throw errors.first;
       _page = results[0] as ActivityDirectoryResult;
       _filterOptions = results[1] as ActivityFilterOptions;
       _state = _page.items.isNotEmpty
@@ -148,6 +159,13 @@ final class ActivityDirectoryViewModel extends ChangeNotifier {
           : ActivityDirectoryLoadState.empty;
     } on ActivityDirectoryUnauthorizedException {
       if (version == _requestVersion) {
+        _page = ActivityDirectoryResult(
+          items: const [],
+          totalCount: 0,
+          page: value.page,
+          pageSize: value.pageSize,
+        );
+        _filterOptions = const ActivityFilterOptions();
         _state = ActivityDirectoryLoadState.unauthorized;
       }
     } on Exception {
@@ -158,8 +176,18 @@ final class ActivityDirectoryViewModel extends ChangeNotifier {
     if (version == _requestVersion) notifyListeners();
   }
 
+  Future<Object> _capture(Future<Object> Function() operation) async {
+    try {
+      return await operation();
+    } on Exception catch (error) {
+      return error;
+    }
+  }
+
   @override
   void dispose() {
+    _disposed = true;
+    _requestVersion++;
     _searchTimer?.cancel();
     super.dispose();
   }
