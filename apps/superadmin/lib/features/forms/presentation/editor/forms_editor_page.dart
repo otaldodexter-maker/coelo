@@ -1199,7 +1199,11 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
       builder: (context) => CoeloAdminDialogShell(
         title: 'Descartar alterações locais?',
-        body: const Text('A prévia voltará ao conteúdo inicial desta sessão.'),
+        body: Text(
+          widget.development
+              ? 'A prévia voltará ao conteúdo inicial desta sessão.'
+              : 'O editor voltará ao último conteúdo confirmado. Em um formulário novo, os campos voltarão ao estado inicial.',
+        ),
         secondaryAction: OutlinedButton(
           onPressed: () => Navigator.of(context).pop(false),
           child: const Text('Continuar editando'),
@@ -1215,6 +1219,34 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       ),
     );
     if (cancel != true || !_isCurrentContext(generation)) return;
+    if (!widget.development) {
+      setState(() {
+        final confirmed = _definition;
+        if (confirmed != null) {
+          _applyDefinition(confirmed);
+          _institutionId = confirmed.institutionId;
+        } else {
+          for (final section in _sections) {
+            section.dispose();
+          }
+          _sections
+            ..clear()
+            ..addAll(_neutralSections());
+          _title.clear();
+          _selectedSection = 0;
+          _expandedQuestionId = _sections.first.questions.firstOrNull?.id;
+        }
+        _context.clear();
+        _catalogSearch.clear();
+        _previewVisible = false;
+        _feedback = null;
+        _recurring = false;
+        _periodicity = _FormsEditorPeriodicity.weekly;
+        _firstOccurrenceAt = null;
+        _weekdays = {DateTime.monday, DateTime.wednesday};
+      });
+      return;
+    }
     for (final section in _sections) {
       section.dispose();
     }

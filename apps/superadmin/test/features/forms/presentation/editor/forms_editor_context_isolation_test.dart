@@ -10,12 +10,189 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('owned editor dialog preserves the theme below its navigator', (tester) async {
-    await tester.pumpWidget(MaterialApp(theme: CoeloTheme.light, home: Scaffold(body: Theme(data: CoeloTheme.dark, child: FormsEditorPage(api: _EditorApi(), formId: 'form-1')))));
+  testWidgets('production discard confirmation describes the confirmed baseline', (tester) async {
+    await tester.pumpWidget(_app(_EditorApi(), 'form-1'));
     await tester.pumpAndSettle();
     await _openOverlay(tester, 'cancel');
     await tester.pumpAndSettle();
-    expect(Theme.of(tester.element(find.byType(CoeloAdminDialogShell))).brightness, Brightness.dark);
+    expect(
+      find.text(
+        'O editor voltará ao último conteúdo confirmado. Em um formulário novo, os campos voltarão ao estado inicial.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('A prévia voltará ao conteúdo inicial desta sessão.'), findsNothing);
+  });
+
+  testWidgets('production discard restores removed questions and clears local context', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = _EditorApi();
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    final contextField = tester
+        .widgetList<TextField>(find.byType(TextField))
+        .firstWhere((field) => field.decoration?.labelText == 'Contexto');
+    await tester.enterText(find.byWidget(contextField), 'Unsaved context');
+    await _openOverlay(tester, 'delete-question');
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Excluir pergunta'));
+    await tester.pumpAndSettle();
+    await _discard(tester);
+    expect(contextField.controller!.text, isEmpty);
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+    await tester.pumpAndSettle();
+    expect(api.savedCommands.single.payload.sections.first.items.single.id, 'item-1');
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('production discard restores the latest publication receipt', (tester) async {
+    final api = _EditorApi(title: 'Loaded', publishedTitle: 'Published baseline');
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    await _openOverlay(tester, 'publish');
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('forms-editor-confirm-publish')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byWidget(_title(tester)), 'Unsaved edit');
+    await _discard(tester);
+    expect(_title(tester).controller!.text, 'Published baseline');
+    expect(api.publishCommands, hasLength(1));
+    expect(api.savedCommands, isEmpty);
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+    await tester.pumpAndSettle();
+    expect(api.savedCommands.single.expectedVersion, 2);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('production discard restores the authorized loaded definition', (tester) async {
+    final api = _EditorApi(title: 'Authorized form');
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byWidget(_title(tester)), 'Unsaved');
+    await _discard(tester);
+    expect(_title(tester).controller!.text, 'Authorized form');
+    expect(api.savedCommands, isEmpty);
+    expect(api.publishCommands, isEmpty);
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+    await tester.pumpAndSettle();
+    final command = api.savedCommands.single;
+    expect(command.payload.id, 'form-1');
+    expect(command.expectedVersion, 1);
+    expect(command.payload.sections.map((value) => value.id), ['section-1', 'section-2']);
+    expect(command.payload.sections.expand((value) => value.items).map((value) => value.id), [
+      'item-1',
+      'item-2',
+    ]);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('production discard keeps edits when confirmation is cancelled', (tester) async {
+    final api = _EditorApi();
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byWidget(_title(tester)), 'Unsaved');
+    await _openOverlay(tester, 'cancel');
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Continuar editando'));
+    await tester.pumpAndSettle();
+    expect(_title(tester).controller!.text, 'Unsaved');
+    expect(api.savedCommands, isEmpty);
+    expect(api.publishCommands, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('production discard restores the latest successful save receipt', (tester) async {
+    final api = _EditorApi(title: 'Loaded', savedTitle: 'Confirmed save');
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byWidget(_title(tester)), 'Submitted');
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byWidget(_title(tester)), 'Unsaved after save');
+    await _discard(tester);
+    expect(_title(tester).controller!.text, 'Confirmed save');
+    expect(api.savedCommands, hasLength(1));
+    expect(api.requestedForms, ['form-1']);
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+    await tester.pumpAndSettle();
+    expect(api.savedCommands.last.expectedVersion, 2);
+    expect(api.savedCommands.last.payload.title, 'Confirmed save');
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('discarding a new production form restores its neutral authorized draft', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = _EditorApi();
+    await tester.pumpWidget(_app(api, null));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byWidget(_title(tester)), 'Unsaved new form');
+    await _openOverlay(tester, 'catalog');
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('forms-editor-catalog-date')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('forms-editor-catalog-date')));
+    await tester.pumpAndSettle();
+    await _discard(tester);
+    expect(_title(tester).controller!.text, isEmpty);
+    expect(_save(tester).onPressed, isNotNull);
+    expect(api.requestedForms, isEmpty);
+    expect(api.savedCommands, isEmpty);
+    await tester.enterText(find.byWidget(_title(tester)), 'New form');
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+    await tester.pumpAndSettle();
+    final command = api.savedCommands.single;
+    expect(command.payload.id, isEmpty);
+    expect(command.expectedVersion, 0);
+    expect(command.payload.institutionId, 'institution-1');
+    expect(command.payload.sections, hasLength(1));
+    expect(command.payload.sections.single.items, hasLength(1));
+    expect(command.payload.sections.single.items.single.kind, FormItemKind.shortText);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('failed save does not replace the production discard baseline', (tester) async {
+    final pending = Completer<void>();
+    final api = _EditorApi(title: 'Authorized form', saveGate: pending.future);
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byWidget(_title(tester)), 'Rejected edit');
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+    await tester.pump();
+    pending.completeError(const FormApiException(FormApiFailureKind.conflict, 'Rejected save'));
+    await tester.pumpAndSettle();
+    expect(find.text('Rejected save'), findsOneWidget);
+    await _discard(tester);
+    expect(_title(tester).controller!.text, 'Authorized form');
+    expect(find.text('Rejected save'), findsNothing);
+    expect(api.savedCommands, hasLength(1));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('owned editor dialog preserves the theme below its navigator', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: Theme(
+            data: CoeloTheme.dark,
+            child: FormsEditorPage(api: _EditorApi(), formId: 'form-1'),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await _openOverlay(tester, 'cancel');
+    await tester.pumpAndSettle();
+    expect(
+      Theme.of(tester.element(find.byType(CoeloAdminDialogShell))).brightness,
+      Brightness.dark,
+    );
     expect(tester.takeException(), isNull);
   });
 
@@ -278,6 +455,13 @@ void main() {
 
 Widget _app(FormsApi api, String? formId) => _host(FormsEditorPage(api: api, formId: formId));
 
+Future<void> _discard(WidgetTester tester) async {
+  await _openOverlay(tester, 'cancel');
+  await tester.pumpAndSettle();
+  await tester.tap(find.widgetWithText(FilledButton, 'Descartar'));
+  await tester.pumpAndSettle();
+}
+
 Widget _host(Widget editor) => MaterialApp(
   theme: CoeloTheme.light,
   home: Scaffold(body: editor),
@@ -317,6 +501,8 @@ String _overlayTitle(String overlay) => switch (overlay) {
 final class _EditorApi implements FormsApi, FormsEditorContextApi {
   _EditorApi({
     this.title = 'Form title',
+    this.savedTitle,
+    this.publishedTitle,
     this.contextGate,
     this.projectionGate,
     this.saveGate,
@@ -324,6 +510,8 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
     this.canPublish = true,
   });
   final String title;
+  final String? savedTitle;
+  final String? publishedTitle;
   final Future<void>? contextGate;
   final Future<void>? projectionGate;
   final Future<void>? saveGate;
@@ -355,10 +543,10 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
     return FormEditorProjection(definition: definition(formId));
   }
 
-  FormDefinition definition(String id, {int version = 1}) => FormDefinition(
+  FormDefinition definition(String id, {int version = 1, String? confirmedTitle}) => FormDefinition(
     id: id,
     institutionId: 'institution-1',
-    title: title,
+    title: confirmedTitle ?? title,
     kind: FormKind.form,
     identityMode: FormIdentityMode.identified,
     responseUnit: FormResponseUnit.person,
@@ -387,14 +575,22 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
   Future<FormDefinition> saveDraft(FormCommand<FormDefinition> command) async {
     savedCommands.add(command);
     if (saveGate != null) await saveGate;
-    return definition(command.payload.id, version: command.expectedVersion + 1);
+    return definition(
+      command.payload.id,
+      version: command.expectedVersion + 1,
+      confirmedTitle: savedTitle,
+    );
   }
 
   @override
   Future<FormDefinition> publish(FormCommand<FormIdPayload> command) async {
     publishCommands.add(command);
     if (publishGate != null) await publishGate;
-    return definition(requestedForms.last, version: command.expectedVersion + 1);
+    return definition(
+      requestedForms.last,
+      version: command.expectedVersion + 1,
+      confirmedTitle: publishedTitle,
+    );
   }
 
   @override
