@@ -13,12 +13,16 @@ abstract final class SuperadminRoutes {
   static const unitCreateName = 'unit-create';
   static const unitEdit = '/units/:unitId/edit';
   static const unitEditName = 'unit-edit';
+  static const unitDetail = '/units/:unitId';
+  static const unitDetailName = 'unit-detail';
   static const groups = '/groups';
   static const groupsName = 'groups';
   static const groupCreate = '/groups/new';
   static const groupCreateName = 'group-create';
   static const groupEdit = '/groups/:groupId/edit';
   static const groupEditName = 'group-edit';
+  static const groupDetail = '/groups/:groupId';
+  static const groupDetailName = 'group-detail';
   static const activities = '/activities';
   static const activitiesName = 'activities';
   static const activityCreate = '/activities/new';

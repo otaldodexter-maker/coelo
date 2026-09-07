@@ -7,6 +7,22 @@ generated_at: "2026-09-07"
 
 # D01 — plano de implementação
 
+## Passos visíveis por tela — execução contínua
+
+| Tela / subtela / ação | Passo | Camada e BD efetivamente trabalhado | Responsável | Evidência | Próximo gate |
+| --- | --- | --- | --- | --- | --- |
+| Grupos / detalhe e reload | 5/6 local; gate 4 real aberto | Flutter + adapter RPC `superadmin_group_detail_v2`, HTTP mock; sem BD acessado | principal; review_file_actions | suíte D01 combinada 123 GREEN; 12 goldens | logout desktop compartilhado, produção |
+| Unidades / detalhe e reload | 5/6 local; gate 4 real aberto | Flutter + adapter RPC `superadmin_unit_detail_v2`, HTTP mock; sem BD acessado | principal; review_file_actions | suíte D01 combinada 123 GREEN; analyzer zero | logout desktop compartilhado, produção |
+| Instituições / edição e reload | 6/6 do pacote corretivo, não da tela | controller + RPC mock `superadmin_institution_edit_core_v2` / `superadmin_institution_detail_v2` | principal; inspect_institution_reload | commit52be4fc5; 36 testes | validação core e reidratação produtiva |
+| Unidades e Grupos / import-export | 6/6 do pacote corretivo, não da tela | nenhum BD nesta fatia | principal; review_file_actions | commitd60f23b4; 38 testes | comprovação composição produtiva |
+| Locais / contrato compartilhado de seleção | 1/6 | fontes SQL lidas: `public.activity_locations`; nenhum BD acessado | locations_contract_crosswalk | crosswalk read-only | reserva e decisão de schema/autoridade |
+
+Marcos por tela: 1 contrato/inventário; 2 backend/segurança/negativas;
+3 cliente/estados; 4 integração real/persistência/reload; 5 regressão/visual;
+6 review/evidências/commit. Nenhum percentual fictício ou conclusão E2E.
+Não há API de plano nativo disponível nesta tarefa; este arquivo não altera o
+contador de arquivos da interface.
+
 Objetivo: consumir exclusivamente as RPCs internas de detalhe/reload aprovadas,
 sem reutilizar gateway legado nem inferir campos ausentes.
 
@@ -34,8 +50,9 @@ grants. Nenhum deploy ou cutover remoto integra este plano.
   `features/units/data/supabase_unit_detail_repository.dart` e teste paralelo.
   Preservar address/contact/effective_plan anuláveis e inherited server-side;
   não inferir tipo físico nem plano no cliente.
-- [ ] Testes focados, analyzer e review independente; commit e handoff.
-- [ ] Propor reserva nominal de composição/router antes de editar arquivos
+- [x] Testes focados123, analyzer zero, validador visual e review independente.
+- [ ] Commit e handoff D01-UI; logout desktop compartilhado e produção abertos.
+- [x] Propor reserva nominal de composição/router antes de editar arquivos
   compartilhados. UI read-only usa somente os campos aprovados e controles
   canônicos; estados loading/denied/unavailable e reload removem payload antigo.
   Não reaproveitar formulário editável como detalhe.

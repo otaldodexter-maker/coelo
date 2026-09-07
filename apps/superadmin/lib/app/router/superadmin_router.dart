@@ -1,4 +1,8 @@
 import 'dart:async';
+import '../../features/groups/domain/group_detail.dart';
+import '../../features/groups/presentation/group_detail_page.dart';
+import '../../features/units/domain/unit_detail.dart';
+import '../../features/units/presentation/unit_detail_page.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -215,6 +219,8 @@ GoRouter createSuperadminRouter({
   InstitutionDirectoryRepository institutionDirectoryRepository =
       const UnavailableInstitutionDirectoryRepository(),
   GroupDirectoryRepository groupDirectoryRepository = const UnavailableGroupDirectoryRepository(),
+  GroupDetailRepository groupDetailRepository = const UnavailableGroupDetailRepository(),
+  UnitDetailRepository unitDetailRepository = const UnavailableUnitDetailRepository(),
   ActivityDirectoryRepository activityDirectoryRepository =
       const UnavailableActivityDirectoryRepository(),
   ActivityCommandRepository activityCommandRepository =
@@ -1279,6 +1285,18 @@ GoRouter createSuperadminRouter({
                   ),
           ),
           GoRoute(
+            path: SuperadminRoutes.unitDetail,
+            name: SuperadminRoutes.unitDetailName,
+            builder: (context, state) => UnitDetailPage(
+              repository: unitDetailRepository,
+              id: state.pathParameters['unitId']!,
+              logout: logout,
+              onBack: () => context.goNamed(SuperadminRoutes.unitsName),
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+            ),
+          ),
+          GoRoute(
             path: SuperadminRoutes.groups,
             name: SuperadminRoutes.groupsName,
             builder: (context, state) => GroupDirectoryPage(
@@ -1333,6 +1351,18 @@ GoRouter createSuperadminRouter({
                     onDestinationSelected: (destination) =>
                         _navigateFromPersistentShell(context, destination),
                   ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.groupDetail,
+            name: SuperadminRoutes.groupDetailName,
+            builder: (context, state) => GroupDetailPage(
+              repository: groupDetailRepository,
+              id: state.pathParameters['groupId']!,
+              logout: logout,
+              onBack: () => context.goNamed(SuperadminRoutes.groupsName),
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.activities,
