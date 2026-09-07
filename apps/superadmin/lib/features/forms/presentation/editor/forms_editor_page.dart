@@ -39,6 +39,8 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   String? _institutionId;
   var _loading = false;
   var _saving = false;
+  var _contextGeneration = 0;
+  final _ownedOverlays = <(NavigatorState, Route<dynamic>)>{};
 
   var _selectedSection = 0;
   String? _expandedQuestionId;
@@ -79,7 +81,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   }
 
   Future<void> _loadProduction() async {
+    final generation = ++_contextGeneration;
     final api = widget.api;
+    final formId = widget.formId;
     if (api == null || api is! FormsEditorContextApi) {
       setState(
         () => _feedback = 'A composição produtiva do editor não recebeu um contexto autorizado.',
@@ -90,8 +94,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     setState(() => _loading = true);
     try {
       final editorContext = await contextApi.getEditorContext();
-      final projection = widget.formId == null ? null : await api.getEditor(widget.formId!);
-      if (!mounted) return;
+      if (!_isCurrentContext(generation)) return;
+      final projection = formId == null ? null : await api.getEditor(formId);
+      if (!_isCurrentContext(generation)) return;
       final initialInstitutionId =
           projection?.definition.institutionId ??
           editorContext.institutions.where((value) => value.canManageForms).firstOrNull?.id;
@@ -117,14 +122,55 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         _feedback = null;
       });
     } on FormApiException catch (error) {
-      if (mounted) setState(() => _feedback = error.message);
+      if (_isCurrentContext(generation)) setState(() => _feedback = error.message);
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (_isCurrentContext(generation)) setState(() => _loading = false);
     }
+  }
+
+  bool _isCurrentContext(int generation) => mounted && generation == _contextGeneration;
+
+  @override
+  void didUpdateWidget(covariant FormsEditorPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.api, widget.api) &&
+        oldWidget.formId == widget.formId &&
+        oldWidget.development == widget.development) {
+      return;
+    }
+    _contextGeneration++;
+    _dismissOwnedOverlays();
+    _editorContext = null;
+    _definition = null;
+    _institutionId = null;
+    _loading = false;
+    _saving = false;
+    _feedback = null;
+    _selectedSection = 0;
+    _previewVisible = false;
+    _catalogSearch.clear();
+    _title.text = widget.development
+        ? developmentFormTitle(widget.formId, fallback: '01 - ANHEMBI - FOTOS')
+        : '';
+    _context.text = widget.development ? 'Todas as unidades' : '';
+    _recurring = widget.development;
+    _periodicity = _FormsEditorPeriodicity.weekly;
+    _firstOccurrenceAt = widget.development ? DateTime(2026, 9, 8, 8) : null;
+    _weekdays = {DateTime.monday, DateTime.wednesday};
+    for (final section in _sections) {
+      section.dispose();
+    }
+    _sections
+      ..clear()
+      ..addAll(widget.development ? _fixtureSections() : _neutralSections());
+    _expandedQuestionId = _sections.first.questions.last.id;
+    if (!widget.development) unawaited(_loadProduction());
   }
 
   @override
   void dispose() {
+    _contextGeneration++;
+    _dismissOwnedOverlays();
     _title
       ..removeListener(_markChanged)
       ..dispose();
@@ -565,6 +611,34 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     );
   }
 
+  Future<T?> _showOwnedDialog<T>({required WidgetBuilder builder, Color? barrierColor}) async {
+    final generation = _contextGeneration;
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final route = DialogRoute<T>(
+      context: context,
+      themes: InheritedTheme.capture(from: context, to: navigator.context),
+      builder: (context) =>
+          _isCurrentContext(generation) ? builder(context) : const SizedBox.shrink(),
+      barrierColor: barrierColor,
+    );
+    final entry = (navigator, route as Route<dynamic>);
+    _ownedOverlays.add(entry);
+    try {
+      final result = await navigator.push<T>(route);
+      await route.completed;
+      return result;
+    } finally {
+      _ownedOverlays.remove(entry);
+    }
+  }
+
+  void _dismissOwnedOverlays() {
+    for (final (navigator, route) in _ownedOverlays.toList(growable: false)) {
+      if (route.isActive) navigator.removeRoute(route);
+    }
+    _ownedOverlays.clear();
+  }
+
   Future<void> _togglePreview() async {
     final canShowBeside =
         MediaQuery.sizeOf(context).width >= 1280 &&
@@ -573,8 +647,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       setState(() => _previewVisible = !_previewVisible);
       return;
     }
-    await showDialog<void>(
-      context: context,
+    await _showOwnedDialog<void>(
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
       builder: (context) => CoeloAdminDialogShell(
         title: 'Prévia do formulário',
@@ -589,9 +662,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   }
 
   Future<void> _showQuestionCatalog() async {
+    final generation = _contextGeneration;
     _catalogSearch.clear();
-    await showDialog<void>(
-      context: context,
+    await _showOwnedDialog<void>(
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
       builder: (dialogContext) {
         var query = '';
@@ -625,7 +698,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                       controller: _catalogSearch,
                       labelText: 'Buscar tipo de pergunta',
                       prefixIcon: Icons.search_rounded,
-                      onChanged: (value) => setDialogState(() => query = value),
+                      onChanged: (value) {
+                        if (_isCurrentContext(generation)) setDialogState(() => query = value);
+                      },
                     ),
                     const SizedBox(height: CoeloSpacing.space4),
                     Expanded(
@@ -647,6 +722,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                                   key: Key('forms-editor-catalog-${kind.name}'),
                                   kind: kind,
                                   onPressed: () {
+                                    if (!_isCurrentContext(generation)) return;
                                     Navigator.of(dialogContext).pop();
                                     _addQuestion(kind);
                                   },
@@ -727,9 +803,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   }
 
   Future<void> _confirmDeleteSection() async {
+    final generation = _contextGeneration;
     if (_sections.length <= 1) return;
-    final delete = await showDialog<bool>(
-      context: context,
+    final delete = await _showOwnedDialog<bool>(
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
       builder: (context) => CoeloAdminDialogShell(
         title: 'Excluir seção?',
@@ -748,7 +824,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         ),
       ),
     );
-    if (delete != true || !mounted) return;
+    if (delete != true || !_isCurrentContext(generation)) return;
     final removed = _sections.removeAt(_selectedSection);
     removed.dispose();
     setState(() {
@@ -803,9 +879,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   }
 
   Future<void> _confirmDeleteQuestion(int index) async {
+    final generation = _contextGeneration;
     final question = _section.questions[index];
-    final delete = await showDialog<bool>(
-      context: context,
+    final delete = await _showOwnedDialog<bool>(
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
       builder: (context) => CoeloAdminDialogShell(
         title: 'Excluir pergunta?',
@@ -824,7 +900,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         ),
       ),
     );
-    if (delete != true || !mounted) return;
+    if (delete != true || !_isCurrentContext(generation)) return;
     final removed = _section.questions.removeAt(index);
     removed.dispose();
     setState(() {
@@ -834,10 +910,14 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   }
 
   Future<void> _showMoveQuestionDialog(int index) async {
+    final generation = _contextGeneration;
     if (_sections.length <= 1) return;
+    final destinationLabels = {
+      for (var sectionIndex = 0; sectionIndex < _sections.length; sectionIndex++)
+        if (sectionIndex != _selectedSection) sectionIndex: _sections[sectionIndex].title,
+    };
     var destination = _sections.indexWhere((section) => section != _section);
-    final moved = await showDialog<bool>(
-      context: context,
+    final moved = await _showOwnedDialog<bool>(
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => CoeloAdminDialogShell(
@@ -845,13 +925,12 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           body: CoeloAdminSingleSelectField<int>(
             label: 'Seção de destino',
             value: destination,
-            options: [
-              for (var sectionIndex = 0; sectionIndex < _sections.length; sectionIndex++)
-                if (sectionIndex != _selectedSection) sectionIndex,
-            ],
-            optionLabel: (value) => _sections[value].title,
+            options: destinationLabels.keys.toList(growable: false),
+            optionLabel: (value) => destinationLabels[value]!,
             prefixIcon: Icons.drive_file_move_outline,
-            onChanged: (value) => setDialogState(() => destination = value),
+            onChanged: (value) {
+              if (_isCurrentContext(generation)) setDialogState(() => destination = value);
+            },
           ),
           secondaryAction: OutlinedButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
@@ -864,7 +943,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         ),
       ),
     );
-    if (moved != true || !mounted) return;
+    if (moved != true || !_isCurrentContext(generation)) return;
     final question = _section.questions.removeAt(index);
     setState(() {
       _sections[destination].questions.add(question);
@@ -985,6 +1064,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   );
 
   Future<void> _saveDraft() async {
+    final generation = _contextGeneration;
     if (widget.development) {
       _saveDraftLocally();
       return;
@@ -1007,16 +1087,16 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           payload: definition,
         ),
       );
-      if (!mounted) return;
+      if (!_isCurrentContext(generation)) return;
       setState(() {
         _definition = saved;
         _institutionId = saved.institutionId;
         _feedback = 'Rascunho salvo.';
       });
     } on FormApiException catch (error) {
-      if (mounted) setState(() => _feedback = error.message);
+      if (_isCurrentContext(generation)) setState(() => _feedback = error.message);
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (_isCurrentContext(generation)) setState(() => _saving = false);
     }
   }
 
@@ -1063,6 +1143,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   }
 
   Future<void> _openPublishDialog() async {
+    final generation = _contextGeneration;
     final issues = const FormDefinitionValidator().validate(_localDefinition());
     if (issues.isNotEmpty) {
       setState(
@@ -1075,12 +1156,11 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       setState(() => _feedback = scheduleIssue);
       return;
     }
-    final intent = await showDialog<_FormsPublishIntent>(
-      context: context,
+    final intent = await _showOwnedDialog<_FormsPublishIntent>(
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
       builder: (_) => _FormsPublishDialog(allowSchedule: widget.development),
     );
-    if (intent == null || !mounted) return;
+    if (intent == null || !_isCurrentContext(generation)) return;
     if (!widget.development) {
       final api = widget.api;
       final definition = _definition;
@@ -1094,15 +1174,15 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
             payload: FormIdPayload(definition.id),
           ),
         );
-        if (!mounted) return;
+        if (!_isCurrentContext(generation)) return;
         setState(() {
           _definition = published;
           _feedback = 'Formulário publicado.';
         });
       } on FormApiException catch (error) {
-        if (mounted) setState(() => _feedback = error.message);
+        if (_isCurrentContext(generation)) setState(() => _feedback = error.message);
       } finally {
-        if (mounted) setState(() => _saving = false);
+        if (_isCurrentContext(generation)) setState(() => _saving = false);
       }
       return;
     }
@@ -1114,8 +1194,8 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   }
 
   Future<void> _confirmCancel() async {
-    final cancel = await showDialog<bool>(
-      context: context,
+    final generation = _contextGeneration;
+    final cancel = await _showOwnedDialog<bool>(
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
       builder: (context) => CoeloAdminDialogShell(
         title: 'Descartar alterações locais?',
@@ -1134,7 +1214,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         ),
       ),
     );
-    if (cancel != true || !mounted) return;
+    if (cancel != true || !_isCurrentContext(generation)) return;
     for (final section in _sections) {
       section.dispose();
     }
