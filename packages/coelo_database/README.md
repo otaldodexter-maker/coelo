@@ -1,3 +1,10 @@
+---
+title: coelo_database
+source: specs/011-superadmin-database-rls.md; packages/coelo_database/scripts; packages/coelo_database/replay/foundation-migrations.sha256
+status: active
+generated_at: 2026-09-07
+---
+
 # coelo_database
 
 Schema fisico, migrations, seeds, testes de RLS, policies, outbox e ownership por contexto.
@@ -113,7 +120,7 @@ Supabase CLI 2.116.0 validado neste historico. Exemplo:
 
 Quando o objetivo for somente a fundacao interna aprovada, use
 `-FoundationOnly`. Esse perfil usa o manifesto fechado e verificado por hash
-`replay/foundation-migrations.sha256`: 65 migrations canônicas aprovadas e dois
+`replay/foundation-migrations.sha256`: 67 migrations canônicas aprovadas e dois
 preflights locais. O perfil inclui as bases Acontece/Circulares e os gateways internos
 v2 de Comunicação; as oito migrations de produto explicitamente negadas e
 qualquer migration futura não entram automaticamente. O alvo deve ser a última
@@ -128,13 +135,16 @@ SQL continua alterando o hash e bloqueando o replay.
 
 ```powershell
 & packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
-  -TargetVersion 20260901191921 `
+  -TargetVersion 20260901200206 `
   -FoundationOnly `
   -TestPath packages/coelo_database/supabase/tests/superadmin_internal_auth_context_test.sql
 ```
 
-Use `-RunAuthLifecycle` somente quando for necessário provar o ciclo real do
-Supabase Auth. Esse modo mantém GoTrue, PostgREST e Kong na stack isolada,
+Para Auth, use `-AuthOnly`: o perfil seleciona 45 migrations canônicas e os
+dois preflights, com alvo obrigatório `20260901200206`. Os perfis
+`-AuthOnly` e `-FoundationOnly` são mutuamente exclusivos.
+Use `-RunAuthLifecycle` com `-AuthOnly` quando for necessário provar o ciclo
+real do Supabase Auth. Esse modo mantém GoTrue, PostgREST, Kong e Mailpit na stack isolada,
 executa cadastro sintético, login por senha, bootstrap do contexto interno,
 refresh, logout e rejeição imediata da sessão revogada. E-mail, senha e tokens
 existem apenas em memória; a fixture fica confinada ao volume descartável e o
@@ -142,8 +152,9 @@ wrapper confirma zero recurso Docker residual no teardown:
 
 ```powershell
 & packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
-  -TargetVersion 20260901191921 `
-  -FoundationOnly `
+  -TargetVersion 20260901200206 `
+  -AuthOnly `
+  -TestPath packages/coelo_database/supabase/tests/superadmin_internal_auth_context_test.sql `
   -RunAuthLifecycle
 ```
 
