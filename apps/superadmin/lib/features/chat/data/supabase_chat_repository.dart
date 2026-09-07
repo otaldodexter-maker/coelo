@@ -92,9 +92,11 @@ final class SupabaseChatRepository implements ChatRepository {
   @override
   Future<void> markRead({required String conversationId, required String upToMessageId}) async {
     try {
-      await _client.rpc<Object?>(
-        'superadmin_chat_mark_read_v2',
-        params: {'p_conversation_id': conversationId, 'p_through_message_id': upToMessageId},
+      _data(
+        await _client.rpc<Object?>(
+          'superadmin_chat_mark_read_v2',
+          params: {'p_conversation_id': conversationId, 'p_through_message_id': upToMessageId},
+        ),
       );
     } catch (error) {
       throw _mapError(error);
