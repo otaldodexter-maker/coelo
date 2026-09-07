@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:coelo_auth/coelo_auth.dart';
 import 'package:coelo_superadmin/core/config/superadmin_auth_scope.dart';
 import 'package:coelo_superadmin/features/access_profiles/data/supabase_access_profile_repository.dart';
+import 'package:coelo_superadmin/features/platform_users/data/supabase_platform_user_repository.dart';
 import 'package:coelo_superadmin/features/activities/data/supabase_activity_command_repository.dart';
 import 'package:coelo_superadmin/features/activities/data/supabase_activity_directory_repository.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_command.dart';
@@ -111,6 +112,7 @@ void main() {
     expect(scope.activityCommandRepository, isA<UnavailableActivityCommandRepository>());
     expect(scope.personIdentityRepository, isA<UnavailablePersonIdentityRepository>());
     expect(scope.accessProfileRepository, isA<UnavailableAccessProfileRepository>());
+    expect(scope.platformUserRepository, isNull);
     expect(scope.chatRepository, isA<UnavailableChatRepository>());
     expect(scope.circularRepository, isA<UnavailableSuperadminCircularRepository>());
     expect(scope.inviteRepository, isA<UnavailableInviteRepository>());
@@ -154,6 +156,7 @@ void main() {
     expect(scope.activityCommandRepository, isA<SupabaseActivityCommandRepository>());
     expect(scope.personIdentityRepository, isA<UnavailablePersonIdentityRepository>());
     expect(scope.accessProfileRepository, isA<SupabaseAccessProfileRepository>());
+    expect(scope.platformUserRepository, isA<SupabasePlatformUserRepository>());
     expect(scope.chatRepository, isA<SupabaseChatRepository>());
     expect(scope.circularRepository, isA<SupabaseSuperadminCircularRepository>());
     expect(scope.inviteRepository, isA<SupabaseInviteRepository>());

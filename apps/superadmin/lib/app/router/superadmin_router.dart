@@ -228,6 +228,7 @@ GoRouter createSuperadminRouter({
   UnitBackendCommandsGateway unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
   bool enableStructureMutations = false,
   AccessProfileRepository accessProfileRepository = const UnavailableAccessProfileRepository(),
+  PlatformUserRepository? platformUserRepository,
   ResetPasswordAction resetPassword = unavailableResetPassword,
   String catalogUrl = const String.fromEnvironment(
     'COELO_CATALOG_URL',
@@ -2055,7 +2056,24 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.internalUsers,
             name: SuperadminRoutes.internalUsersName,
-            builder: (context, state) => _unavailableCompositionRootRoute(context),
+            builder: (context, state) {
+              final repository = platformUserRepository;
+              if (repository == null || repository.isDemo) {
+                return _unavailableCompositionRootRoute(context);
+              }
+              final canRead =
+                  session.authContext?.permissionCodes.contains('platform.member.read') == true;
+              return PlatformUserDirectoryPage(
+                key: ObjectKey(session.authContext),
+                repository: repository,
+                capability: canRead
+                    ? PlatformUserCapability.auditor
+                    : PlatformUserCapability.unauthorized,
+                logout: logout,
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
+              );
+            },
           ),
           GoRoute(
             path: SuperadminRoutes.internalUserCreate,

@@ -4,6 +4,7 @@ knowledge_id: superadmin-internal-users
 source: decisions/0019-superadmin-internal-identity.md
 status: validated
 generated_at: 2026-08-27
+updated_at: 2026-09-07
 audience: team
 surfaces: [superadmin, internal-users, access, permissions]
 visibility: internal
@@ -29,9 +30,12 @@ Uma instituição selecionada é apenas contexto efêmero: o backend resolve e
 revalida a instituição e a capacidade em cada comando, sem persistir uma
 “instituição atual” como autoridade.
 
-O Owner exige AAL2 em todo contexto e comando, inclusive no bootstrap. Os
-demais papéis exigem AAL2 somente quando a capacidade ativa tiver
-`platform_permissions.requires_mfa = true`.
+O aditivo de 2026-09-01 da ADR 0019 supersede temporariamente a exigência
+anterior de MFA: durante a validação do MVP, o realm interno aceita AAL1 e
+AAL2 sem bloquear login, bootstrap, contexto ou comando por MFA, inclusive
+Owner e capacidades `requires_mfa`. Os demais controles permanecem vigentes.
+A reativação exige decisão nominal no gate formal do MVP e regressão própria;
+`requires_mfa` não concede autorização no cliente.
 
 Suspensão é reversível. Revogação do vínculo é terminal e um retorno exige novo
 vínculo e novo convite, preservando o ciclo anterior. O último Owner ativo e

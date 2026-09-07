@@ -30,6 +30,7 @@ Future<void> main() async {
       personDirectoryRepository: authScope.personDirectoryRepository,
       personIdentityRepository: authScope.personIdentityRepository,
       accessProfileRepository: authScope.accessProfileRepository,
+      platformUserRepository: authScope.platformUserRepository,
       importRepository: authScope.importRepository,
       planCatalogRepository: authScope.planCatalogRepository,
       agendaRepository: authScope.agendaRepository,
