@@ -173,6 +173,48 @@ void main() {
     expect(auth.signOutCalls, 1);
     expect(session.isAuthenticated, isFalse);
   });
+
+  test('does not clear a winner authorized while sign out is pending', () async {
+    final auth = _FakeCoeloAuthGateway(
+      signOutStarted: Completer<void>(),
+      signOutRelease: Completer<void>(),
+    );
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+    final action = createCoeloAuthLoginAction(
+      auth: auth,
+      authContext: _FakeSuperadminAuthContextGateway(isAuthorized: false),
+      session: session,
+    );
+
+    final resultFuture = action(request);
+    await auth.signOutStarted!.future;
+    auth.sessionId = _sessionB;
+    session.authorize(_context, sessionId: _sessionB);
+    auth.signOutRelease!.complete();
+    final result = await resultFuture;
+
+    expect(result.isSuccess, isFalse);
+    expect(session.isAuthenticated, isTrue);
+    expect(session.sessionId, _sessionB);
+  });
+
+  test('clears a divergent authorization created before sign out began', () async {
+    final auth = _FakeCoeloAuthGateway();
+    final session = SuperadminSession();
+    final context = _PendingSuperadminAuthContextGateway();
+    addTearDown(session.dispose);
+    final action = createCoeloAuthLoginAction(auth: auth, authContext: context, session: session);
+
+    final resultFuture = action(request);
+    await context.started.future;
+    session.authorize(_context, sessionId: _sessionB);
+    context.completeAuthorized();
+    final result = await resultFuture;
+
+    expect(result.isSuccess, isFalse);
+    expect(session.isAuthenticated, isFalse);
+  });
 }
 
 const _context = SuperadminAuthContext(
@@ -209,13 +251,19 @@ final class _PendingSuperadminAuthContextGateway implements SuperadminAuthContex
 }
 
 final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
-  _FakeCoeloAuthGateway({this.nextResult = const CoeloAuthSignInResult.success()});
+  _FakeCoeloAuthGateway({
+    this.nextResult = const CoeloAuthSignInResult.success(),
+    this.signOutStarted,
+    this.signOutRelease,
+  });
 
   String? lastEmail;
   String? lastPassword;
   bool? persistSession;
   final CoeloAuthSignInResult nextResult;
   int signOutCalls = 0;
+  final Completer<void>? signOutStarted;
+  final Completer<void>? signOutRelease;
   String sessionId = _sessionA;
   bool _isSignedOut = false;
 
@@ -256,6 +304,10 @@ final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
   Future<void> signOut() async {
     signOutCalls++;
     _isSignedOut = true;
+    signOutStarted?.complete();
+    if (signOutRelease case final release?) {
+      await release.future;
+    }
   }
 }
 

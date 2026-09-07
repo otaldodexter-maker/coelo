@@ -41,12 +41,15 @@ LoginAction createCoeloAuthLoginAction({
         if (winningAuthorization) {
           return const LoginResult.failure(CoeloAuthSignInResult.genericFailureMessage);
         }
+        final cleanupRevision = session.authorizationInvalidationRevision;
         try {
           await auth.signOut();
         } on Exception {
           // Supabase clears its local session before the remote revoke request.
         }
-        session.signOut();
+        if (session.authorizationInvalidationRevision == cleanupRevision) {
+          session.signOut();
+        }
         return const LoginResult.failure(CoeloAuthSignInResult.genericFailureMessage);
       }
       return const LoginResult.success();
