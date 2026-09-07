@@ -62,9 +62,16 @@ Describe 'Invoke-SafeLocalMigrationReplay Supabase CLI agent mode' {
     $text | Should Match '\$validatedMigrationRoot'
     $text | Should Match '-DestinationMigrationsRoot \$validatedMigrationRoot'
     $text | Should Match 'Copy-Item -LiteralPath \$validatedMigration\.FullName -Destination \$migrationRoot'
-    $text.IndexOf('-DestinationMigrationsRoot $validatedMigrationRoot') |
-      Should BeLessThan $text.IndexOf('$startAttempted = $true')
-    $text.IndexOf('Copy-Item -LiteralPath $validatedMigration.FullName -Destination $migrationRoot') |
-      Should BeGreaterThan $text.IndexOf('supabase start failed with exit code')
+    $prepareIndex = $text.IndexOf('-DestinationMigrationsRoot $validatedMigrationRoot')
+    $startIndex = $text.IndexOf('$startAttempted = $true')
+    $copyIndex = $text.IndexOf('Copy-Item -LiteralPath $validatedMigration.FullName -Destination $migrationRoot')
+    $startupFailureIndex = $text.IndexOf('supabase start failed after 2 attempts with exit code')
+
+    $prepareIndex | Should BeGreaterThan -1
+    $startIndex | Should BeGreaterThan -1
+    $copyIndex | Should BeGreaterThan -1
+    $startupFailureIndex | Should BeGreaterThan -1
+    $prepareIndex | Should BeLessThan $startIndex
+    $copyIndex | Should BeGreaterThan $startupFailureIndex
   }
 }
