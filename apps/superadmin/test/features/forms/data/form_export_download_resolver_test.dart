@@ -2,6 +2,40 @@ import 'package:coelo_superadmin/features/forms/data/form_export_download_resolv
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final value in <Object?>[
+    'https:relative-path',
+    'https:///missing-host',
+    'https://user:password@media.example.test/export',
+    'https://media.example.test/export#fragment',
+    42,
+    null,
+  ]) {
+    test('rejects a malformed download capability: $value', () async {
+      final resolver = FormExportDownloadResolver(
+        gateway: _Gateway({'download_url': value, 'expires_at': '2026-08-20T15:05:00Z'}),
+        now: () => DateTime.utc(2026, 8, 20, 15),
+      );
+      await expectLater(
+        resolver.resolve('11111111-1111-4111-8111-111111111111'),
+        throwsA(isA<FormExportDownloadUnavailable>()),
+      );
+    });
+  }
+
+  test('rejects a ticket at the exact expiration boundary', () async {
+    final resolver = FormExportDownloadResolver(
+      gateway: _Gateway({
+        'download_url': 'https://media.example.test/export?ticket=synthetic',
+        'expires_at': '2026-08-20T15:00:00Z',
+      }),
+      now: () => DateTime.utc(2026, 8, 20, 15),
+    );
+    await expectLater(
+      resolver.resolve('11111111-1111-4111-8111-111111111111'),
+      throwsA(isA<FormExportDownloadUnavailable>()),
+    );
+  });
+
   test('reauthorizes a job and accepts only a future HTTPS ticket', () async {
     final gateway = _Gateway({
       'download_url': 'https://storage.example.test/object/sign/private?token=short',
