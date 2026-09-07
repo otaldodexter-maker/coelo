@@ -22,7 +22,10 @@ final class SupabaseAgendaRepository extends AgendaRepository {
   List<AgendaItem> _items = const [];
   List<GuardianBirthdayRequest> _requests = const [];
   List<AgendaPublicationRequest> _publicationRequests = const [];
-  bool _isLoading = false;
+  final _readVersions = <String, int>{};
+  final _pendingReads = <String>{};
+  var _accessEpoch = 0;
+  var _disposed = false;
   String? _errorMessage;
   String? _lastSavedItemId;
 
@@ -37,7 +40,7 @@ final class SupabaseAgendaRepository extends AgendaRepository {
   @override
   List<AgendaPublicationRequest> get publicationRequests => List.unmodifiable(_publicationRequests);
   @override
-  bool get isLoading => _isLoading;
+  bool get isLoading => _pendingReads.isNotEmpty;
   @override
   String? get errorMessage => _errorMessage;
   @override
@@ -57,7 +60,7 @@ final class SupabaseAgendaRepository extends AgendaRepository {
     required DateTime to,
     String? institutionId,
     String search = '',
-  }) => _load(() async {
+  }) => _load('events', () async {
     final value = _map(
       await _client.rpc<Object?>(
         'superadmin_agenda_list',
@@ -71,13 +74,14 @@ final class SupabaseAgendaRepository extends AgendaRepository {
         },
       ),
     );
-    _items = _list(value['items']).map(_item).toList(growable: false);
+    final items = _requiredList(value['items']).map(_item).toList(growable: false);
+    return () => _items = items;
   });
 
   @override
-  Future<void> loadContexts() => _load(() async {
+  Future<void> loadContexts() => _load('contexts', () async {
     final payload = _map(await _client.rpc<Object?>('superadmin_agenda_contexts'));
-    _contexts = _list(payload['contexts'])
+    final contexts = _requiredList(payload['contexts'])
         .map((value) {
           final context = _map(value);
           return AgendaContext(
@@ -91,17 +95,27 @@ final class SupabaseAgendaRepository extends AgendaRepository {
           );
         })
         .toList(growable: false);
+    return () => _contexts = contexts;
   });
 
   @override
-  Future<void> loadItem(String id) => _load(() async {
-    _upsertItem(
-      _item(await _client.rpc<Object?>('superadmin_agenda_get', params: {'p_event_id': id})),
-    );
-  });
+  Future<void> loadItem(String id) => _load(
+    'item:$id',
+    () async {
+      final item = _item(
+        await _client.rpc<Object?>('superadmin_agenda_get', params: {'p_event_id': id}),
+      );
+      return () => _upsertItem(item);
+    },
+    onNotFound: () {
+      _invalidateEventReads();
+      _items = _items.where((item) => item.id != id).toList(growable: false);
+      if (_lastSavedItemId == id) _lastSavedItemId = null;
+    },
+  );
 
   @override
-  Future<void> loadRequests() => _load(() async {
+  Future<void> loadRequests() => _load('requests', () async {
     final values = await Future.wait<Object?>([
       _client.rpc<Object?>(
         'superadmin_agenda_requests',
@@ -112,8 +126,14 @@ final class SupabaseAgendaRepository extends AgendaRepository {
         params: const {'p_kind': 'guardian', 'p_status': null, 'p_limit': 50, 'p_offset': 0},
       ),
     ]);
-    _publicationRequests = _list(values[0]).map(_publicationRequest).toList(growable: false);
-    _requests = _list(values[1]).map(_guardianRequest).toList(growable: false);
+    final publicationRequests = _requiredList(
+      values[0],
+    ).map(_publicationRequest).toList(growable: false);
+    final requests = _requiredList(values[1]).map(_guardianRequest).toList(growable: false);
+    return () {
+      _publicationRequests = publicationRequests;
+      _requests = requests;
+    };
   });
 
   @override
@@ -127,6 +147,8 @@ final class SupabaseAgendaRepository extends AgendaRepository {
     required String decidedBy,
     required String reason,
   }) async {
+    if (_disposed) return AgendaMutationResult.unavailable;
+    final epoch = _accessEpoch;
     if (reason.trim().isEmpty) return AgendaMutationResult.reasonRequired;
     try {
       final mapped = _publicationRequest(
@@ -140,6 +162,8 @@ final class SupabaseAgendaRepository extends AgendaRepository {
           },
         ),
       );
+      if (!_canApply(epoch)) return _staleMutationResult;
+      _invalidateEventReads();
       final index = _publicationRequests.indexWhere((request) => request.id == mapped.id);
       _publicationRequests = [..._publicationRequests];
       if (index < 0) {
@@ -148,9 +172,10 @@ final class SupabaseAgendaRepository extends AgendaRepository {
         _publicationRequests[index] = mapped;
       }
       await loadItem(mapped.itemId);
+      if (!_canApply(epoch)) return _staleMutationResult;
       return AgendaMutationResult.success;
     } on PostgrestException catch (error) {
-      return _mutationError(error);
+      return _commandFailure(error, epoch);
     } on FormatException {
       return AgendaMutationResult.unavailable;
     }
@@ -190,6 +215,8 @@ final class SupabaseAgendaRepository extends AgendaRepository {
     bool overrideConflict = false,
     String? reason,
   }) async {
+    if (_disposed) return AgendaMutationResult.unavailable;
+    final epoch = _accessEpoch;
     final existing = itemById(item.id);
     try {
       final saved = _item(
@@ -205,12 +232,14 @@ final class SupabaseAgendaRepository extends AgendaRepository {
           },
         ),
       );
+      if (!_canApply(epoch)) return _staleMutationResult;
+      _invalidateEventReads();
       _lastSavedItemId = saved.id;
       _upsertItem(saved);
       notifyListeners();
       return AgendaMutationResult.success;
     } on PostgrestException catch (error) {
-      return _mutationError(error);
+      return _commandFailure(error, epoch);
     } on FormatException {
       return AgendaMutationResult.unavailable;
     }
@@ -293,6 +322,8 @@ final class SupabaseAgendaRepository extends AgendaRepository {
   }) async => RequestDecisionResult.notAuthorized;
 
   Future<AgendaMutationResult> _command(String id, String action, {String? reason}) async {
+    if (_disposed) return AgendaMutationResult.unavailable;
+    final epoch = _accessEpoch;
     final item = itemById(id);
     if (item == null) return AgendaMutationResult.notFound;
     try {
@@ -308,39 +339,112 @@ final class SupabaseAgendaRepository extends AgendaRepository {
           },
         ),
       );
-      if (value['deleted'] == true) {
+      if (!_canApply(epoch)) return _staleMutationResult;
+      final deleted = value['deleted'] == true;
+      final updated = deleted ? null : _item(value['event'] is Map ? value['event'] : value);
+      _invalidateEventReads();
+      if (deleted) {
         _items = _items.where((candidate) => candidate.id != id).toList(growable: false);
-      } else if (value['event'] is Map) {
-        _upsertItem(_item(value['event']));
       } else {
-        _upsertItem(_item(value));
+        _upsertItem(updated!);
       }
       if (action == 'request_publication') await loadRequests();
+      if (!_canApply(epoch)) return _staleMutationResult;
       notifyListeners();
       return AgendaMutationResult.success;
     } on PostgrestException catch (error) {
-      return _mutationError(error);
+      return _commandFailure(error, epoch);
     } on FormatException {
       return AgendaMutationResult.unavailable;
     }
   }
 
-  Future<void> _load(Future<void> Function() operation) async {
-    _isLoading = true;
+  Future<void> _load(
+    String channel,
+    Future<void Function()> Function() operation, {
+    void Function()? onNotFound,
+  }) async {
+    if (_disposed) return;
+    final version = (_readVersions[channel] ?? 0) + 1;
+    _readVersions[channel] = version;
+    final epoch = _accessEpoch;
+    _pendingReads.add(channel);
     _errorMessage = null;
     notifyListeners();
     try {
-      await operation();
+      final apply = await operation();
+      if (_isCurrentRead(channel, version, epoch)) apply();
     } on PostgrestException catch (error) {
-      _errorMessage = error.code == '42501'
-          ? 'Você não tem permissão para consultar a Agenda.'
-          : 'Não foi possível carregar a Agenda.';
+      if (!_isCurrentRead(channel, version, epoch)) return;
+      if (_mutationError(error) == AgendaMutationResult.notAuthorized) {
+        _invalidateAccess();
+      } else if (_mutationError(error) == AgendaMutationResult.notFound && onNotFound != null) {
+        _errorMessage = 'O item não foi encontrado ou não pode ser revelado.';
+        onNotFound();
+        notifyListeners();
+      } else {
+        _errorMessage = 'Não foi possível carregar a Agenda.';
+      }
     } on FormatException {
-      _errorMessage = 'A Agenda retornou dados inválidos.';
+      if (_isCurrentRead(channel, version, epoch)) {
+        _errorMessage = 'A Agenda retornou dados inválidos.';
+      }
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      if (_isCurrentRead(channel, version, epoch)) {
+        _pendingReads.remove(channel);
+        notifyListeners();
+      }
     }
+  }
+
+  bool _canApply(int epoch) => !_disposed && epoch == _accessEpoch;
+
+  void _invalidateEventReads() {
+    // A successful command (or non-revealable detail) supersedes snapshots
+    // already in flight. Context capability reads remain independent.
+    for (final channel in _readVersions.keys.toList(growable: false)) {
+      if (channel == 'contexts') continue;
+      _readVersions[channel] = _readVersions[channel]! + 1;
+      _pendingReads.remove(channel);
+    }
+  }
+
+  bool _isCurrentRead(String channel, int version, int epoch) =>
+      _canApply(epoch) && _readVersions[channel] == version;
+
+  AgendaMutationResult get _staleMutationResult =>
+      _disposed ? AgendaMutationResult.unavailable : AgendaMutationResult.notAuthorized;
+
+  AgendaMutationResult _commandFailure(PostgrestException error, int epoch) {
+    if (!_canApply(epoch)) return _staleMutationResult;
+    final result = _mutationError(error);
+    if (result == AgendaMutationResult.notAuthorized) _invalidateAccess();
+    return result;
+  }
+
+  void _clearCache() {
+    _items = const [];
+    _contexts = const [];
+    _requests = const [];
+    _publicationRequests = const [];
+    _lastSavedItemId = null;
+  }
+
+  void _invalidateAccess() {
+    _accessEpoch++;
+    _pendingReads.clear();
+    _clearCache();
+    _errorMessage = 'Você não tem permissão para consultar a Agenda.';
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _accessEpoch++;
+    _pendingReads.clear();
+    _clearCache();
+    super.dispose();
   }
 
   void _upsertItem(AgendaItem item) {
@@ -585,6 +689,11 @@ Map<String, Object?> _map(Object? value) {
 }
 
 List<Object?> _list(Object? value) => value is List ? List<Object?>.from(value) : const <Object?>[];
+List<Object?> _requiredList(Object? value) {
+  if (value is! List) throw const FormatException('Invalid Agenda collection.');
+  return List<Object?>.from(value);
+}
+
 Set<String> _strings(Object? value) => _list(value).map((entry) => entry.toString()).toSet();
 Set<AgendaCapability> _agendaCapabilities(Object? value) => _list(value)
     .map((entry) => entry.toString())

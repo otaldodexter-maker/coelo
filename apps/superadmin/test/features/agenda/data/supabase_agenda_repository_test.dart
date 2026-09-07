@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:coelo_superadmin/features/agenda/data/supabase_agenda_repository.dart';
@@ -8,6 +9,346 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('comando malformado preserva leitura pendente e suas notificações', () async {
+    var delayedRead = false;
+    final delayed = Completer<Response>();
+    Request? pending;
+    final client = _client((request) async {
+      if (request.url.path.endsWith('superadmin_agenda_command')) {
+        return _json(request, <String, Object?>{});
+      }
+      if (delayedRead) {
+        pending = request;
+        return delayed.future;
+      }
+      return _json(request, {
+        'items': [_eventJson(id: _eventId, revision: 1)],
+      });
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    await repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 10));
+    delayedRead = true;
+    var notifications = 0;
+    repository.addListener(() => notifications++);
+    final loading = repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 10));
+    expect(await repository.deleteDraft(_eventId), AgendaMutationResult.unavailable);
+    expect(repository.isLoading, isTrue);
+    final notificationsBeforeReply = notifications;
+    delayed.complete(
+      _json(pending!, {
+        'items': [_eventJson(id: _eventId, revision: 2)],
+      }),
+    );
+    await loading;
+    expect(repository.items.single.revision, 2);
+    expect(repository.isLoading, isFalse);
+    expect(notifications, greaterThan(notificationsBeforeReply));
+  });
+
+  test('resposta de escrita anterior à revogação não repopula o cache', () async {
+    final delayed = Completer<Response>();
+    Request? pending;
+    final client = _client((request) async {
+      if (request.url.path.endsWith('superadmin_agenda_save')) {
+        pending = request;
+        return delayed.future;
+      }
+      return _denied(request);
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    final saving = repository.saveItem(
+      AgendaItem.fixture(
+        id: 'local',
+        title: 'Evento',
+        audience: const AgendaAudience(institutionId: _institutionId),
+        startsAt: DateTime.utc(2026, 9, 3),
+        endsAt: DateTime.utc(2026, 9, 4),
+      ),
+      actorContextId: _institutionId,
+    );
+    await repository.loadContexts();
+    delayed.complete(_json(pending!, _eventJson(id: _eventId, revision: 1)));
+    expect(await saving, AgendaMutationResult.notAuthorized);
+    expect(repository.items, isEmpty);
+    expect(repository.lastSavedItemId, isNull);
+  });
+
+  test('negação obsoleta do mesmo canal não apaga leitura autorizada mais recente', () async {
+    final delayed = Completer<Response>();
+    Request? pending;
+    var calls = 0;
+    final client = _client((request) async {
+      if (++calls == 1) {
+        pending = request;
+        return delayed.future;
+      }
+      return _json(request, {
+        'items': [_eventJson(id: _eventId, revision: 2)],
+      });
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    final old = repository.loadEvents(from: DateTime.utc(2026, 8), to: DateTime.utc(2026, 9));
+    await repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 10));
+    delayed.complete(_denied(pending!));
+    await old;
+    expect(repository.items.single.revision, 2);
+    expect(repository.errorMessage, isNull);
+  });
+
+  test('solicitações aplicam ambas as coleções somente após validar as duas', () async {
+    var corrupt = false;
+    final client = _client((request) async {
+      final kind = (jsonDecode(request.body) as Map<String, dynamic>)['p_kind'];
+      if (kind == 'guardian') return _json(request, corrupt ? 'invalid' : <Object?>[]);
+      return _json(request, [
+        {
+          'id': _publicationRequestId,
+          'event_id': _eventId,
+          'institution_id': _institutionId,
+          'requested_at': '2026-09-03T10:00:00Z',
+          'status': corrupt ? 'approved' : 'pending',
+        },
+      ]);
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    await repository.loadRequests();
+    corrupt = true;
+    await repository.loadRequests();
+    expect(repository.publicationRequests.single.status, AgendaPublicationRequestStatus.pending);
+    expect(repository.requests, isEmpty);
+    expect(repository.errorMessage, 'A Agenda retornou dados inválidos.');
+  });
+
+  test('leitura anterior ao comando não ressuscita evento excluído', () async {
+    var delayedRead = false;
+    final delayed = Completer<Response>();
+    Request? pending;
+    final client = _client((request) async {
+      if (request.url.path.endsWith('superadmin_agenda_command')) {
+        return _json(request, {'deleted': true});
+      }
+      if (delayedRead) {
+        pending = request;
+        return delayed.future;
+      }
+      return _json(request, {
+        'items': [_eventJson(id: _eventId, revision: 1)],
+      });
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    await repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 10));
+    delayedRead = true;
+    final loading = repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 10));
+    expect(await repository.deleteDraft(_eventId), AgendaMutationResult.success);
+    delayed.complete(
+      _json(pending!, {
+        'items': [_eventJson(id: _eventId, revision: 1)],
+      }),
+    );
+    await loading;
+    expect(repository.items, isEmpty);
+    expect(repository.isLoading, isFalse);
+  });
+
+  test('detalhe não revelável remove a cópia previamente autorizada', () async {
+    var deny = false;
+    final client = _client(
+      (request) async => deny
+          ? Response(
+              '{"code":"P0002","message":"not found"}',
+              404,
+              headers: {'content-type': 'application/json'},
+              request: request,
+            )
+          : _json(request, _eventJson(id: _eventId, revision: 1)),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    await repository.loadItem(_eventId);
+    expect(repository.itemById(_eventId), isNotNull);
+    deny = true;
+    await repository.loadItem(_eventId);
+    expect(repository.itemById(_eventId), isNull);
+  });
+
+  test('resposta antiga não substitui o período mais recente nem seu erro', () async {
+    final requests = <Request>[];
+    final replies = [Completer<Response>(), Completer<Response>()];
+    final client = _client((request) {
+      requests.add(request);
+      return replies[requests.length - 1].future;
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    final first = repository.loadEvents(from: DateTime.utc(2026, 8), to: DateTime.utc(2026, 9));
+    final second = repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 10));
+    await Future<void>.delayed(Duration.zero);
+    replies[1].complete(
+      _json(requests[1], {
+        'items': [_eventJson(id: _secondEventId, revision: 2)],
+      }),
+    );
+    await second;
+    expect(repository.isLoading, isFalse);
+    replies[0].complete(
+      _json(requests[0], {
+        'items': [_eventJson(id: _eventId, revision: 1)],
+      }),
+    );
+    await first;
+    expect(repository.items.single.id, _secondEventId);
+    expect(repository.errorMessage, isNull);
+  });
+
+  test('negação limpa dados e capacidades e invalida outra leitura em trânsito', () async {
+    var deny = false;
+    final delayed = Completer<Response>();
+    Request? pending;
+    final client = _client((request) async {
+      if (!deny) {
+        return _json(request, {
+          'items': [_eventJson(id: _eventId, revision: 1)],
+        });
+      }
+      if (request.url.path.endsWith('superadmin_agenda_get')) {
+        pending = request;
+        return delayed.future;
+      }
+      return _denied(request);
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(
+      client,
+      contexts: [
+        const AgendaContext(
+          id: _institutionId,
+          name: 'Contexto sintético',
+          level: AgendaContextLevel.institution,
+          institutionId: _institutionId,
+          grantedCapabilities: {AgendaCapability.createAgendaItems},
+        ),
+      ],
+    );
+    await repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 10));
+    deny = true;
+    final detail = repository.loadItem(_eventId);
+    await repository.loadContexts();
+    expect(repository.items, isEmpty);
+    expect(repository.contexts, isEmpty);
+    expect(repository.errorMessage, contains('permissão'));
+    delayed.complete(_json(pending!, _eventJson(id: _eventId, revision: 2)));
+    await detail;
+    expect(repository.items, isEmpty);
+    expect(repository.errorMessage, contains('permissão'));
+  });
+
+  test('erro de transporte preserva snapshot, mas payload inválido não vira lista vazia', () async {
+    var phase = 0;
+    final client = _client((request) async {
+      if (phase == 0) {
+        return _json(request, {
+          'items': [_eventJson(id: _eventId, revision: 1)],
+        });
+      }
+      if (phase == 1) {
+        return Response(
+          '{"code":"XX000","message":"untrusted"}',
+          500,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }
+      return _json(request, {'items': 'invalid'});
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    Future<void> reload() =>
+        repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 10));
+    await reload();
+    phase = 1;
+    await reload();
+    expect(repository.items.single.id, _eventId);
+    expect(repository.errorMessage, 'Não foi possível carregar a Agenda.');
+    phase = 2;
+    await reload();
+    expect(repository.items.single.id, _eventId);
+    expect(repository.errorMessage, 'A Agenda retornou dados inválidos.');
+  });
+
+  test('leituras independentes mantêm loading até ambas terminarem', () async {
+    final delayed = Completer<Response>();
+    Request? pending;
+    final client = _client((request) async {
+      if (request.url.path.endsWith('superadmin_agenda_contexts')) {
+        pending = request;
+        return delayed.future;
+      }
+      return _json(request, {'items': <Object?>[]});
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    final contexts = repository.loadContexts();
+    await repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 10));
+    expect(repository.isLoading, isTrue);
+    delayed.complete(_json(pending!, {'contexts': <Object?>[]}));
+    await contexts;
+    expect(repository.isLoading, isFalse);
+  });
+
+  test('dispose durante leitura não notifica nem repopula o repository', () async {
+    final delayed = Completer<Response>();
+    Request? pending;
+    final client = _client((request) {
+      pending = request;
+      return delayed.future;
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    final loading = repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 10));
+    await Future<void>.delayed(Duration.zero);
+    repository.dispose();
+    delayed.complete(
+      _json(pending!, {
+        'items': [_eventJson(id: _eventId, revision: 1)],
+      }),
+    );
+    await loading;
+    expect(repository.items, isEmpty);
+  });
+
+  test('negação de comando remove evento e último ID salvo do cache', () async {
+    var deny = false;
+    final client = _client(
+      (request) async =>
+          deny ? _denied(request) : _json(request, _eventJson(id: _eventId, revision: 1)),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    await repository.saveItem(
+      AgendaItem.fixture(
+        id: 'local-agenda',
+        title: 'Evento',
+        audience: const AgendaAudience(institutionId: _institutionId),
+        startsAt: DateTime.utc(2026, 9, 3),
+        endsAt: DateTime.utc(2026, 9, 4),
+      ),
+      actorContextId: _institutionId,
+    );
+    expect(repository.lastSavedItemId, _eventId);
+    deny = true;
+    expect(
+      await repository.cancelItem(_eventId, actorName: 'Ator'),
+      AgendaMutationResult.notAuthorized,
+    );
+    expect(repository.items, isEmpty);
+    expect(repository.lastSavedItemId, isNull);
+  });
+
   test('carrega apenas contextos devolvidos pelo gateway autorizado', () async {
     Request? captured;
     final client = _client((request) async {
@@ -240,6 +581,13 @@ SupabaseClient _client(Future<Response> Function(Request request) handler) => Su
 Response _json(Request request, Object value) => Response(
   jsonEncode(value),
   200,
+  headers: {'content-type': 'application/json'},
+  request: request,
+);
+
+Response _denied(Request request) => Response(
+  '{"code":"42501","message":"untrusted"}',
+  403,
   headers: {'content-type': 'application/json'},
   request: request,
 );
