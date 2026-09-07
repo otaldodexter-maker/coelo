@@ -21,6 +21,7 @@ void main() {
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
       onThemeModeChanged: (_) {},
+      allowDevelopmentPreview: true,
     );
     addTearDown(router.dispose);
     addTearDown(session.dispose);

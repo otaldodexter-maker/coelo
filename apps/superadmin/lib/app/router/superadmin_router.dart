@@ -142,6 +142,7 @@ import '../../features/plans/presentation/plan_form_page.dart';
 import '../../features/platform_users/data/fake_platform_user_repository.dart';
 import '../../features/platform_users/domain/platform_user.dart';
 import '../../features/platform_users/presentation/platform_user_directory_page.dart';
+import '../../features/platform_users/presentation/platform_user_detail_page.dart';
 import '../../features/platform_users/presentation/platform_user_form_page.dart';
 import '../../features/people/data/supabase_person_directory_repository.dart';
 import '../dev_menu/development_person_directory_repository.dart';
@@ -2072,6 +2073,10 @@ GoRouter createSuperadminRouter({
                       ? PlatformUserCapability.auditor
                       : PlatformUserCapability.unauthorized,
                   logout: logout,
+                  onView: (internalUserId) => context.goNamed(
+                    SuperadminRoutes.internalUserDetailName,
+                    pathParameters: {'internalUserId': internalUserId},
+                  ),
                   onDestinationSelected: (destination) =>
                       _navigateFromPersistentShell(context, destination),
                 );
@@ -2087,6 +2092,35 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.internalUserEdit,
             name: SuperadminRoutes.internalUserEditName,
             builder: (context, state) => blockedProductionMutationPage(context),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.internalUserDetail,
+            name: SuperadminRoutes.internalUserDetailName,
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, child) {
+                final repository = platformUserRepository;
+                if (repository == null || repository.isDemo) {
+                  return _unavailableCompositionRootRoute(context);
+                }
+                final canRead =
+                    session.authContext?.permissionCodes.contains('platform.member.read') == true;
+                return PlatformUserDetailPage(
+                  key: ValueKey(
+                    '${session.authorizationInvalidationRevision}:${state.pathParameters['internalUserId']}',
+                  ),
+                  repository: repository,
+                  internalUserId: state.pathParameters['internalUserId']!,
+                  capability: canRead
+                      ? PlatformUserCapability.auditor
+                      : PlatformUserCapability.unauthorized,
+                  logout: logout,
+                  onBack: () => context.goNamed(SuperadminRoutes.internalUsersName),
+                  onDestinationSelected: (destination) =>
+                      _navigateFromPersistentShell(context, destination),
+                );
+              },
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.personCreate,
