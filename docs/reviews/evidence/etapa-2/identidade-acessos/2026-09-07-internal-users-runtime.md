@@ -23,6 +23,9 @@ convites, mutações remotas e deploy Supabase permanecem fora deste incremento.
   acesso não autorizado.
 - Repositório ausente ou demo continua retornando o estado 503 de composição.
 - A rota de edição permanece explicitamente indisponível, sem mutação falsa.
+- O login não revoga uma sessão vencedora concorrente: a proteção compara o ID
+  da sessão e a revisão de autorização; negação do bootstrap atual ainda revoga
+  uma autorização antiga quando não houve autorização posterior.
 
 ## Evidência local
 
@@ -33,6 +36,8 @@ convites, mutações remotas e deploy Supabase permanecem fora deste incremento.
 - `flutter test test/features/platform_users/data/supabase_platform_user_repository_test.dart` — 25/25.
 - `flutter test test/app/router/internal_user_routes_test.dart` — 4/4.
 - `flutter test test/app/router/platform_user_preview_routes_test.dart` — 6/6.
+- `flutter test test/features/auth/domain/coelo_auth_login_action_test.dart` — 8/8,
+  incluindo corridas de sessão A→B, reautorização no mesmo ID e negação atual.
 - Analyzer focado e `dart format` sem diagnósticos.
 
 ## Gates ainda abertos
