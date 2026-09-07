@@ -215,9 +215,11 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
     );
     final authContext = createAuthContextGateway(client);
     final initialState = auth.currentSessionState;
+    final platformUsers = SupabasePlatformUserRepository(client);
     final session = SuperadminSession(
       isPasswordRecovery: initialState.isPasswordRecovery,
       authSessionStateChanges: auth.authSessionStateChanges,
+      onDispose: platformUsers.clearSessionCache,
     );
     if (initialState.kind == CoeloAuthSessionKind.authenticated) {
       final expectedRevision = session.authorizationInvalidationRevision;
@@ -242,7 +244,6 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       }
     }
     final formsBackend = SupabaseFormsBackendGateway(client);
-    final platformUsers = SupabasePlatformUserRepository(client);
     session.addListener(platformUsers.clearSessionCache);
     return SuperadminAuthScope(
       session: session,
