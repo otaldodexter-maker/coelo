@@ -204,6 +204,45 @@ void main() {
     },
   );
 
+  test('markRead rejects a revoked membership returned in an HTTP 200 envelope', () async {
+    final client = _client(
+      (request) async => _json({
+        'ok': false,
+        'data': null,
+        'error': {'code': 'SAI_MEMBERSHIP_REVOKED', 'http_status': 403},
+      }, request),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseChatRepository(
+        client,
+      ).markRead(conversationId: 'conversation-1', upToMessageId: 'message-1'),
+      throwsA(isA<ChatUnauthorizedException>()),
+    );
+  });
+
+  test('markRead rejects malformed or unsuccessful envelopes', () async {
+    for (final body in <Object?>[
+      null,
+      [],
+      {'ok': true},
+      {
+        'ok': false,
+        'error': {'code': 'UNEXPECTED'},
+      },
+    ]) {
+      final client = _client((request) async => _json(body, request));
+      addTearDown(client.dispose);
+      await expectLater(
+        SupabaseChatRepository(
+          client,
+        ).markRead(conversationId: 'conversation-1', upToMessageId: 'message-1'),
+        throwsA(isA<ChatFailureException>()),
+      );
+    }
+  });
+
   test('maps authorization failure without leaking a fallback', () async {
     final client = _client(
       (request) async => Response(
