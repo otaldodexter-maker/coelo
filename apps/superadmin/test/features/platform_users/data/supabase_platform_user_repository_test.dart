@@ -8,6 +8,85 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('preserves the existing typed MFA error before generic privilege denial', () async {
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => Response(
+          jsonEncode({'code': '42501', 'message': 'private detail', 'details': 'SAI_MFA_REQUIRED'}),
+          403,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+    await expectLater(
+      SupabasePlatformUserRepository(client).fetchPage(const PlatformUserQuery()),
+      throwsA(isA<PlatformUserRuleException>().having((error) => error.code, 'code', 'mfa')),
+    );
+  });
+  for (final code in ['42501', 'PGRST301', 'PGRST302', 'PGRST303']) {
+    test('sanitizes authorization transport error $code', () async {
+      final client = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-key',
+        httpClient: MockClient(
+          (request) async => Response(
+            jsonEncode({
+              'code': code,
+              'message': 'private backend detail',
+              'details': 'private context',
+            }),
+            code == '42501' ? 403 : 401,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          ),
+        ),
+      );
+      addTearDown(client.dispose);
+      await expectLater(
+        SupabasePlatformUserRepository(client).fetchPage(const PlatformUserQuery()),
+        throwsA(
+          isA<PlatformUserRuleException>()
+              .having((error) => error.code, 'code', 'unauthorized')
+              .having((error) => error.message, 'message', 'Acesso não autorizado.'),
+        ),
+      );
+    });
+  }
+
+  for (final code in ['SAI_AUTH_REQUIRED', 'SAI_SESSION_INVALID']) {
+    test('maps session denial envelope $code to unauthorized', () async {
+      final client = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-key',
+        httpClient: MockClient(
+          (request) async => Response(
+            jsonEncode({
+              'ok': false,
+              'data': null,
+              'error': {'code': code, 'message': 'private detail'},
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          ),
+        ),
+      );
+      addTearDown(client.dispose);
+      await expectLater(
+        SupabasePlatformUserRepository(client).fetchPage(const PlatformUserQuery()),
+        throwsA(
+          isA<PlatformUserRuleException>()
+              .having((error) => error.code, 'code', 'unauthorized')
+              .having((error) => error.message, 'message', 'Acesso não autorizado.'),
+        ),
+      );
+    });
+  }
+
   test('loads the protected directory and keeps the server projection cached', () async {
     final paths = <String>[];
     final client = _client(paths);
