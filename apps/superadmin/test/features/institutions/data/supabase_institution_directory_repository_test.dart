@@ -11,6 +11,52 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('terminal reload denial clears the pending edit request', () async {
+    final requestIds = <String>[];
+    var detailCalls = 0;
+    final repository = _repository((request) async {
+      if (request.url.pathSegments.contains('superadmin_institution_edit_core_v2')) {
+        requestIds.add((jsonDecode(request.body) as Map)['p_request_id'] as String);
+        return _json(request, _ok({'institution_id': 'institution-1', 'management_version': 8}));
+      }
+      if (++detailCalls == 1) {
+        return _json(request, {
+          'ok': false,
+          'error': {'code': 'SAI_PERMISSION_DENIED'},
+        });
+      }
+      return _json(request, _ok(_detailRow(version: 8)));
+    });
+    await expectLater(
+      repository.update(_draft(), expectedVersion: 7),
+      throwsA(isA<InstitutionDirectoryUnauthorizedException>()),
+    );
+    await repository.update(_draft(), expectedVersion: 7);
+    expect(requestIds, hasLength(2));
+    expect(requestIds.last, isNot(requestIds.first));
+  });
+
+  test('retry after accepted edit and transient reload failure retains request ID', () async {
+    final requestIds = <String>[];
+    var detailCalls = 0;
+    final repository = _repository((request) async {
+      if (request.url.pathSegments.contains('superadmin_institution_edit_core_v2')) {
+        requestIds.add((jsonDecode(request.body) as Map)['p_request_id'] as String);
+        return _json(request, _ok({'institution_id': 'institution-1', 'management_version': 8}));
+      }
+      if (++detailCalls == 1) throw ClientException('connection interrupted');
+      return _json(request, _ok(_detailRow(version: 8)));
+    });
+    await expectLater(
+      repository.update(_draft(), expectedVersion: 7),
+      throwsA(isA<InstitutionDirectoryUnavailableException>()),
+    );
+    final saved = await repository.update(_draft(), expectedVersion: 7);
+    expect(saved.version, 8);
+    expect(requestIds, hasLength(2));
+    expect(requestIds.last, requestIds.first);
+  });
+
   test('lists through the internal v2 envelope with server pagination', () async {
     Request? captured;
     final repository = _repository((request) async {

@@ -119,6 +119,9 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
       _throwMappedException(error);
     } on ClientException {
       throw const InstitutionDirectoryUnavailableException();
+    } on InstitutionDirectoryUnavailableException {
+      // The write may already be committed; retry its receipt after reload fails.
+      rethrow;
     } catch (_) {
       _clearPendingRequest(signature, requestId);
       rethrow;
