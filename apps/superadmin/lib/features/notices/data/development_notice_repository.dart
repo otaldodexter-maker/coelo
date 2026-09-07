@@ -108,7 +108,7 @@ final class DevelopmentNoticeRepository implements NoticeRepository {
       draft,
       id: noticeId ?? 'notice-dev-${_nextId++}',
       status: current?.status ?? NoticeStatus.draft,
-      version: (current?.managementVersion ?? -1) + 1,
+      version: (current?.managementVersion ?? 0) + 1,
     );
     if (current == null) {
       _items.add(notice);

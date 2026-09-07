@@ -4,6 +4,27 @@ import 'package:coelo_superadmin/features/notices/domain/platform_notice.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('development creation follows v2 version one and increments on edit', () async {
+    final repository = DevelopmentNoticeRepository();
+    const draft = NoticeDraft(
+      title: 'Novo',
+      message: 'Mensagem',
+      priority: NoticePriority.routine,
+      audience: NoticeAudience.everyone,
+      audienceLabel: 'Todos',
+      behavior: NoticeBehavior.dismissible,
+    );
+    final created = await repository.saveDraft(draft, requestId: 'synthetic-create');
+    expect(created.managementVersion, 1);
+    final edited = await repository.saveDraft(
+      draft,
+      requestId: 'synthetic-edit',
+      noticeId: created.id,
+      expectedVersion: created.managementVersion,
+    );
+    expect(edited.managementVersion, 2);
+  });
+
   test('seeds realistic content exclusively through the development repository', () async {
     final repository = DevelopmentNoticeRepository(now: () => DateTime.utc(2026, 8, 27, 12));
 

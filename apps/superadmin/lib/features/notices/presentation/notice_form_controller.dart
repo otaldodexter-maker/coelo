@@ -670,7 +670,7 @@ final class NoticeFormController extends ChangeNotifier {
   );
 
   void _validateSaveReceipt(_PendingNoticeSave intent, PlatformNotice notice) {
-    final expectedReceiptVersion = (intent.expectedVersion ?? -1) + 1;
+    final expectedReceiptVersion = (intent.expectedVersion ?? 0) + 1;
     if ((intent.noticeId != null && notice.id != intent.noticeId) ||
         notice.managementVersion != expectedReceiptVersion) {
       _pendingSave = null;

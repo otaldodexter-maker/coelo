@@ -3,12 +3,39 @@ import 'dart:convert';
 import 'package:coelo_superadmin/features/notices/data/supabase_notice_repository.dart';
 import 'package:coelo_superadmin/features/notices/domain/notice_repository.dart';
 import 'package:coelo_superadmin/features/notices/domain/platform_notice.dart';
+import 'package:coelo_superadmin/features/notices/presentation/notice_form_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('controller accepts v2 create version one and queued publication version two', () async {
+    final requests = <Request>[];
+    final client = _client((request) async {
+      requests.add(request);
+      final publishing = request.url.path.endsWith('/superadmin_notice_publish_v2');
+      return _json(request, {
+        ..._noticeJson(),
+        'status': publishing ? 'scheduled' : 'draft',
+        'management_version': publishing ? 2 : 1,
+      });
+    });
+    addTearDown(client.dispose);
+    final controller = NoticeFormController(repository: SupabaseNoticeRepository(client));
+    addTearDown(controller.dispose);
+    controller.titleController.text = 'Rotina';
+    controller.messageController.text = 'Mensagem';
+    final result = await controller.saveAndPublish();
+    expect(result?.status, NoticeStatus.scheduled);
+    expect(result?.managementVersion, 2);
+    expect(requests, hasLength(2));
+    expect(requests.first.url.path, endsWith('/superadmin_notice_save_draft_v2'));
+    expect(requests.last.url.path, endsWith('/superadmin_notice_publish_v2'));
+    expect((jsonDecode(requests.first.body) as Map)['p_expected_version'], isNull);
+    expect((jsonDecode(requests.last.body) as Map)['p_expected_version'], 1);
+  });
+
   test('lists notices through the authorized cursor RPC', () async {
     Request? captured;
     final client = _client((request) async {
