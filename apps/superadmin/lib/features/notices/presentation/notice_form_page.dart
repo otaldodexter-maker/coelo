@@ -860,7 +860,11 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
       return;
     }
     widget.onSaved?.call(notice);
-    _showFeedback('Aviso publicado: ${notice.title}');
+    _showFeedback(
+      notice.status == NoticeStatus.scheduled
+          ? 'Publicação agendada: ${notice.title}'
+          : 'Aviso publicado: ${notice.title}',
+    );
   }
 
   bool _isCurrentCommand(int generation, NoticeFormController controller) =>

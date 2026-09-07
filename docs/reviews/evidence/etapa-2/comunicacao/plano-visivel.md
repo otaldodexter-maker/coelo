@@ -32,6 +32,7 @@ Coordenador; este arquivo registra somente esta frente.
 | --- | --- | --- | --- | --- |
 | 6/6 da fatia | Conversas / recibo após refresh / `chat.receipts` | Nenhum BD nesta fatia; Flutter | `review_chat_receipt` | RED reproduzido, GREEN 29/29, analyzer e review aprovados; commit e revogação real pendentes |
 | 2/6 | Avisos / publicação e leitura / `notices.publish`, `notices.read` | Teste de `public.platform_notices`, `app_private.notice_publication_jobs`, RPCs v2 preparado; nenhum SQL executado | `crosswalk_media` | 17 assertivas e SHA enviados para replay exclusivo Eng1; aguarda baseline e lease |
+| 6/6 da fatia | Avisos / formulário-publicar / `notices.publish` | Nenhum BD nesta fatia; mensagem Flutter pelo status retornado | `review_chat_receipt`, `crosswalk_media` | RED scheduled, GREEN focal 2/2; ampliado 38 verdes e 2 falhas mobile preexistentes; replay/visual continuam abertos |
 | 6/6 da fatia | Momentos / transporte privado R2 / mídia server-side | Deno `moments-media/r2_s3.ts` e `_shared/r2_s3.ts`; nenhum BD nesta fatia | `review_media_session`, `review_chat_receipt`, `crosswalk_media` | M02 com extensão index_test autorizada; RED seis falhas, GREEN 29/29 completo, lint/typecheck; commit e integração real pendentes |
 
 Sem API de plano nativo disponível nesta sessão. Este documento é a alternativa
