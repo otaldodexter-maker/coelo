@@ -17,9 +17,18 @@ family_count: 37
   cleanup nominal confirmado pelo Engenheiro 1. Não prova produção nem wiring Flutter.
 - E1-P0-RLS01 nas três tabelas privadas de Perfis foi entregue em `8a264c1`:
   Eng1 informou RED 88 (18 falhas esperadas) e GREEN 118/118 (P0 88 + Auth 30),
-  com cleanup nominal. Review central/integração ainda são gates separados.
+  com cleanup nominal. Review central aprovado; integrado em `256f0370`.
+  FORCE RLS não certifica wrappers, tenant/realm ou E2E remoto.
   N01 Avisos, F-READ01 Formulários e A01 Atividades continuam pacotes nominais
   separados. Nenhum lease remoto, migration produtiva ou deploy foi executado.
+- Harness Eng1 integrado: três suítes Pester de destino passaram, 27/27,
+  sem Docker. O resultado P0 118/118 continua sendo o replay do Eng1 com
+  identidade isolada, não uma nova execução SQL pelo coordenador.
+- Autorizado somente o diagnóstico local fechado `N01PrerequisitesRed`:
+  Auth45 + cinco migrations Avisos, 50+2, alvo `20260901200206`, sem ponte
+  adicional. Nomes/hashes/âncoras revisados; RED real ainda pendente. Eng1 é
+  operador único, inclusive após reinício. Replays Users/F-READ/A01 ficam
+  na fila nominal; baseline Auth sozinho não autoriza esses pacotes.
 - O primeiro lote cliente da E2E 4 foi integrado até `d9d1bf46`, com 83/83
   testes locais de destino e análise focal sem issues. Ele não altera
   SQL/RLS/RPC e não fecha backend: XLSX do formulário inteiro ainda depende do

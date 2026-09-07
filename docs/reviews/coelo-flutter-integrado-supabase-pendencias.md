@@ -14,8 +14,8 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "631D78CBACC6F1F5298D67DB49CCDEFAFE46E95E9117E5F62CD1317C03F51D9C"
-supabase_tracker_sha256: "B8FFF75B4AB21B5591082DEDDCDBF8D9AE0F9029922EC8F4B06439D242DD9F26"
+flutter_tracker_sha256: "517BC9EC7BF0865B9289CF0AC0C79CBE09EBCFF69FFE506613D3D7AC4586E13F"
+supabase_tracker_sha256: "F65FAE702DB1CECCBF59B5E6D4AB2D795D88636A3DA55101C4F70098FCCEBCC3"
 ---
 
 # Pendências Coelo — Front-end + Back-end
@@ -29,7 +29,19 @@ supabase_tracker_sha256: "B8FFF75B4AB21B5591082DEDDCDBF8D9AE0F9029922EC8F4B06439
   a `ready-for-e2e` ou `verified-e2e` por esses commits.
 - D01 Unit/Group continua na fila por invalidação de contexto ausente no
   detalhe; correção com regressão foi encaminhada à frente responsável.
-  P0 RLS entregue pelo Eng1 com 118/118 locais ainda aguarda integração central.
+  P0 RLS foi integrado em `256f0370`, com review central e Pester 27/27 no
+  destino; 118/118 SQL é a evidência local do Eng1, não produção.
+- Checkpoint por ação após integração e reinício:
+
+  | Ações | Evidência de destino | Gate que continua aberto |
+  | --- | --- | --- |
+  | `auth.login`, `auth.logout`, `internal-users.list` e detalhe complementar | E2E 1 até `2cce76cc`; dez suítes 92/92; analyzer 11 arquivos sem issues | Runtime Supabase autorizado/revogado e prova E2E real; sobrevivência da sessão vencedora no SDK/backend |
+  | `medication.create`, `medication.edit` | MED-DEV01 `ce142d27`; sete suítes 71/71 incluindo rotas Auth; analyzer cinco arquivos sem issues | Somente `/dev`, em memória; conexão clínica produtiva e E2E continuam fora desta prova |
+  | `access-profiles.*` — tabelas privadas de catálogo/receipts | P0 `256f0370`; ENABLE/FORCE nominal, replay Eng1 118/118 | Wrappers v2, isolamento tenant/realm, pacote remoto e E2E não certificados |
+
+- As sete tarefas receberam retomada após o desligamento informado pelo Owner
+  e foram conferidas ativas às 20:50–20:52 BRT. Feedbacks devem confrontar
+  execução e próximo passo com as pendências originais, sem parar as frentes.
 - Até 03:20 BRT as frentes continuam o escopo original; coordenação apoia somente
   bloqueios concretos e consolida sem exigir interrupção administrativa.
   Balanços às 21:00, 22:15, 23:30 e fechamento previsto até 04:40.

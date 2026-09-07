@@ -23,9 +23,20 @@ visual_program_accepted_count: 0
   obsoleto não altera a nova tela. Seis commits integrados até `d9d1bf46`:
   cinco suítes no destino passaram, 83/83 testes; análise dos cinco arquivos
   de produção sem issues. Nenhum estado `verified` foi promovido.
+- E2E 1 integrada até `2cce76cc`: `auth.login`, `auth.logout` e
+  `internal-users.list`/detalhe read-only receberam correções de revisão,
+  cache e concorrência. Dez suítes de destino: 92/92; análise de 11 arquivos
+  sem issues. Não comprova sessão/negação/revogação no Supabase remoto.
+- MED-DEV01 integrado em `ce142d27`: `medication.create`/`medication.edit`
+  preservam round-trip e intenção de retry apenas na prévia. Sete suítes de
+  destino, incluindo rotas Auth: 71/71; análise de cinco arquivos sem issues.
+  Sem conexão clínica produtiva ou promoção E2E.
 - D01 Unit/Group `c11614d5` permanece na fila: review central identificou
   ausência de invalidação do detalhe por revisão de autorização. Correção
   nominal e regressão de troca de contexto encaminhadas à própria frente.
+- Após reinício informado pelo Owner, retomada enviada às sete tarefas;
+  estados ativos conferidos às 20:50–20:52 BRT. Logout desktop permanece em
+  correção NAV-LOGOUT01 na E2E 2; não marcar como resolvido antes do GREEN.
 - Os três rastreadores foram lidos integralmente pelo coordenador antes da
   integração. Evidência e fila: `evidence/etapa-2/coordenador/rodada-2026-09-07.md`.
   As contagens históricas abaixo ainda não incorporam os doze IDs de Locais;
