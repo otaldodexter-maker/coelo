@@ -72,6 +72,11 @@ final class SupabaseChatRepository implements ChatRepository {
 
   @override
   Future<ChatMessage> sendMessage(ChatSendMessageCommand command) async {
+    // The internal v2 RPC is text-only. Do not turn a richer command into a
+    // successful partial send by silently discarding its attachments/context.
+    if (command.attachmentIds.isNotEmpty || command.childContextIds.isNotEmpty) {
+      throw const ChatFailureException();
+    }
     try {
       final response = _data(
         await _client.rpc<Object?>(
