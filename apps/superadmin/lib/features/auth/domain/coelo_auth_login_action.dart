@@ -33,6 +33,13 @@ LoginAction createCoeloAuthLoginAction({
             expectedInvalidationRevision: expectedRevision,
           );
       if (!authorized) {
+        final winningAuthorization =
+            session.isAuthenticated &&
+            session.sessionId != null &&
+            session.sessionId == latestState.sessionId;
+        if (winningAuthorization) {
+          return const LoginResult.failure(CoeloAuthSignInResult.genericFailureMessage);
+        }
         try {
           await auth.signOut();
         } on Exception {

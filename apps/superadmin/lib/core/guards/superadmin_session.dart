@@ -38,6 +38,7 @@ final class SuperadminSession extends ChangeNotifier {
   bool get isAuthenticated => _isAuthenticated;
   bool get isPasswordRecovery => _isPasswordRecovery;
   SuperadminAuthContext? get authContext => _authContext;
+  String? get sessionId => _sessionId;
   int get authorizationInvalidationRevision => _authorizationInvalidationRevision;
 
   void authorize(SuperadminAuthContext context, {required String sessionId}) {

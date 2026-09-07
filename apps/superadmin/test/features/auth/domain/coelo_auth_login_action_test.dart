@@ -109,6 +109,53 @@ void main() {
     expect(auth.signOutCalls, 1);
     expect(session.isAuthenticated, isFalse);
   });
+
+  test('does not sign out a newer winning session after stale bootstrap', () async {
+    final auth = _FakeCoeloAuthGateway();
+    final session = SuperadminSession();
+    final context = _PendingSuperadminAuthContextGateway();
+    addTearDown(session.dispose);
+    final action = createCoeloAuthLoginAction(auth: auth, authContext: context, session: session);
+
+    final resultFuture = action(request);
+    await context.started.future;
+    auth.sessionId = _sessionB;
+    session.authorize(_context, sessionId: _sessionB);
+    context.completeAuthorized();
+    final result = await resultFuture;
+
+    expect(result.isSuccess, isFalse);
+    expect(auth.signOutCalls, 0);
+    expect(session.isAuthenticated, isTrue);
+    expect(session.authContext, _context);
+  });
+
+  test('does not sign out a reauthorized same session after stale bootstrap', () async {
+    final auth = _FakeCoeloAuthGateway();
+    final session = SuperadminSession();
+    final context = _PendingSuperadminAuthContextGateway();
+    addTearDown(session.dispose);
+    final action = createCoeloAuthLoginAction(auth: auth, authContext: context, session: session);
+
+    final resultFuture = action(request);
+    await context.started.future;
+    session.authorize(
+      const SuperadminAuthContext(
+        platformRoleCode: 'newer-role',
+        scopeKind: SuperadminAuthScopeKind.platform,
+        permissionCodes: {'platform.read'},
+        aal: 'aal1',
+      ),
+      sessionId: _sessionA,
+    );
+    context.completeAuthorized();
+    final result = await resultFuture;
+
+    expect(result.isSuccess, isFalse);
+    expect(auth.signOutCalls, 0);
+    expect(session.isAuthenticated, isTrue);
+    expect(session.sessionId, _sessionA);
+  });
 }
 
 const _context = SuperadminAuthContext(
