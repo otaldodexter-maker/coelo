@@ -50,6 +50,10 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
   int _pageSize = PlatformUserQuery.cardsPageSize;
   bool _loading = true;
   Object? _error;
+  bool get _isUnauthorized =>
+      widget.capability == PlatformUserCapability.unauthorized ||
+      (_error is PlatformUserRuleException &&
+          (_error! as PlatformUserRuleException).code == 'unauthorized');
   double _footerHeight = 0;
   bool _measurementScheduled = false;
   var _loadGeneration = 0;
@@ -152,6 +156,10 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
     } catch (error) {
       if (!_isCurrent(generation, repository)) return;
       setState(() {
+        if (error is PlatformUserRuleException && error.code == 'unauthorized') {
+          _debounce?.cancel();
+          _resetSensitiveState();
+        }
         _error = error;
         _loading = false;
       });
@@ -224,10 +232,7 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
               ? CoeloSpacing.space6
               : CoeloSpacing.space4;
           final showFooter =
-              !_loading &&
-              _error == null &&
-              widget.capability != PlatformUserCapability.unauthorized &&
-              _result.totalCount > 0;
+              !_loading && _error == null && !_isUnauthorized && _result.totalCount > 0;
           _measureFooter(showFooter);
           final footerInset = showFooter ? _footerHeight + CoeloSpacing.space4 : 0.0;
           return ColoredBox(
@@ -241,10 +246,8 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
                   key: const Key('platform-user-directory-content-scroll'),
                   padding: EdgeInsets.fromLTRB(padding, padding, padding, padding + footerInset),
                   children: [
-                    if (widget.capability != PlatformUserCapability.unauthorized)
-                      _toolbar(constraints.maxWidth - (padding * 2)),
-                    if (widget.capability != PlatformUserCapability.unauthorized)
-                      const SizedBox(height: CoeloSpacing.space4),
+                    if (!_isUnauthorized) _toolbar(constraints.maxWidth - (padding * 2)),
+                    if (!_isUnauthorized) const SizedBox(height: CoeloSpacing.space4),
                     _results(),
                   ],
                 ),
@@ -392,7 +395,7 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
   }
 
   Widget _results() {
-    if (widget.capability == PlatformUserCapability.unauthorized) {
+    if (_isUnauthorized) {
       return const CoeloStatePanel(
         title: 'Acesso não autorizado',
         message: 'Você não tem permissão para visualizar usuários internos.',
@@ -431,7 +434,9 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
         title: filtered ? 'Nenhum resultado encontrado' : 'Nenhum usuário interno cadastrado',
         message: filtered
             ? 'Ajuste a busca ou limpe os filtros.'
-            : 'Crie o primeiro vínculo de equipe no preview.',
+            : widget.onCreate != null
+            ? 'Crie o primeiro vínculo de equipe no preview.'
+            : 'Não há usuários internos disponíveis neste contexto.',
         icon: filtered ? Icons.search_off_outlined : Icons.badge_outlined,
         actionLabel: !filtered && widget.capability == PlatformUserCapability.owner
             ? 'Criar usuário'

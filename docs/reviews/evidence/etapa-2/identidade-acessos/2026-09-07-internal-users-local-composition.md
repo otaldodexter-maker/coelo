@@ -31,6 +31,16 @@ Cloudflare, convite, criação ou edição produtiva.
 
 ## Gates ainda abertos
 
+### Incremento de apresentação após a composição
+
+Negação server-side tipada agora limpa busca/filtros/resultados da tela e
+oculta toolbar, paginação e retry. Mensagem privada nunca é renderizada.
+O vazio somente leitura não sugere criação em preview. Suíte de diretório:
+13/13, incluindo transição carregado → negado, estados e matriz de larguras
+375/768/1024/1440 com escala de texto até 200%. Analyzer focal sem problemas;
+revisão independente sem bloqueios. Cache do repositório e sessão permanecem
+como trabalho separado; essa mudança não comprova revogação ponta a ponta.
+
 Não promover Front-end verified, Back-end done ou verified-e2e. Faltam estados
 remotos completos da UI, detalhe/edição, invalidação de contexto/cache,
 verificação visual e cadeia real autorizada com reload, negativas e auditoria.
