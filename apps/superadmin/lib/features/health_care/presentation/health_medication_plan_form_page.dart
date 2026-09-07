@@ -116,6 +116,7 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
   var _expectedVersion = 0;
   HealthMedicationPlanFormDraft? _pendingSubmission;
   var _draftChangedAfterSubmission = false;
+  var _commandGeneration = 0;
 
   bool get _editing => widget.medicationId != null;
   bool get _hasExternalChild =>
@@ -135,7 +136,26 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
   @override
   void initState() {
     super.initState();
+    _hydrateSourceDraft();
+  }
+
+  void _hydrateSourceDraft() {
     final draft = widget.initialDraft;
+    _step = _Step.medicine;
+    _name.clear();
+    _dose.clear();
+    _unit.clear();
+    _route = 'oral';
+    _startsAt = null;
+    _endsAt = null;
+    _time = null;
+    _weekdays = {};
+    _responsibles = {};
+    _pendingSubmission = null;
+    _requestWasSubmitted = false;
+    _draftChangedAfterSubmission = false;
+    _retrySave = false;
+    _saveError = null;
     _requestId = draft?.requestId ?? _nextMedicationFormRequestId();
     _persistedPlanId = draft?.planId ?? widget.medicationId;
     _expectedVersion = draft?.expectedVersion ?? 0;
@@ -154,7 +174,24 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
   }
 
   @override
+  void didUpdateWidget(covariant HealthMedicationPlanFormPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final sourceChanged =
+        oldWidget.childId != widget.childId ||
+        oldWidget.medicationId != widget.medicationId ||
+        !_sameSourceDraft(oldWidget.initialDraft, widget.initialDraft);
+    if (sourceChanged ||
+        oldWidget.onDraftSaved != widget.onDraftSaved ||
+        oldWidget.onSaved != widget.onSaved) {
+      _commandGeneration++;
+      _saving = false;
+    }
+    if (sourceChanged) _hydrateSourceDraft();
+  }
+
+  @override
   void dispose() {
+    _commandGeneration++;
     _name.dispose();
     _dose.dispose();
     _unit.dispose();
@@ -181,7 +218,8 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
 
   Future<void> _save() async {
     if (_saving) return;
-    final retryWithoutEdits = _retrySave;
+    final generation = ++_commandGeneration;
+    final onSaved = widget.onSaved;
     final validityError = _validityError;
     if (validityError != null) {
       setState(() {
@@ -212,15 +250,14 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
         final pendingSubmission = _pendingSubmission;
         if (pendingSubmission != null) {
           final pendingMatchesCurrent =
-              retryWithoutEdits &&
-              !_draftChangedAfterSubmission &&
-              _matchesCurrentDraft(pendingSubmission);
+              !_draftChangedAfterSubmission && _matchesCurrentDraft(pendingSubmission);
           final receipt = await onDraftSaved(pendingSubmission);
+          if (!_isCurrentCommand(generation)) return;
           _applyReceipt(receipt);
           _pendingSubmission = null;
           if (pendingMatchesCurrent) {
             _requestWasSubmitted = false;
-            await widget.onSaved();
+            await onSaved();
             return;
           }
           if (pendingSubmission.requestId == _requestId) {
@@ -246,22 +283,46 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
         _pendingSubmission = draft;
         _draftChangedAfterSubmission = false;
         final receipt = await onDraftSaved(draft);
+        if (!_isCurrentCommand(generation)) return;
         _applyReceipt(receipt);
         _pendingSubmission = null;
         _draftChangedAfterSubmission = false;
         _requestWasSubmitted = false;
       }
-      await widget.onSaved();
+      await onSaved();
     } catch (_) {
-      if (mounted) {
+      if (_isCurrentCommand(generation)) {
         setState(() {
           _saveError = 'Não foi possível salvar o plano de medicação. Tente novamente.';
           _retrySave = true;
         });
       }
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (_isCurrentCommand(generation)) setState(() => _saving = false);
     }
+  }
+
+  bool _isCurrentCommand(int generation) => mounted && generation == _commandGeneration;
+
+  bool _sameSourceDraft(
+    HealthMedicationPlanFormDraft? first,
+    HealthMedicationPlanFormDraft? second,
+  ) {
+    if (identical(first, second)) return true;
+    if (first == null || second == null) return false;
+    return first.childId == second.childId &&
+        first.planId == second.planId &&
+        first.requestId == second.requestId &&
+        first.expectedVersion == second.expectedVersion &&
+        first.medicationName == second.medicationName &&
+        first.doseAmount == second.doseAmount &&
+        first.doseUnit == second.doseUnit &&
+        first.administrationRoute == second.administrationRoute &&
+        first.validFrom == second.validFrom &&
+        first.validUntil == second.validUntil &&
+        first.time == second.time &&
+        _sameValues(first.weekdays, second.weekdays) &&
+        _sameValues(first.responsibleIds, second.responsibleIds);
   }
 
   void _applyReceipt(HealthMedicationPlanSaveReceipt receipt) {
