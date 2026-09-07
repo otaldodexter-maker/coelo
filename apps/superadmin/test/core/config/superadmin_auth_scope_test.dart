@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:coelo_auth/coelo_auth.dart';
 import 'package:coelo_superadmin/core/config/superadmin_auth_scope.dart';
@@ -31,9 +32,60 @@ import 'package:coelo_superadmin/features/units/data/unavailable_unit_compositio
 import 'package:coelo_superadmin/features/units/data/supabase_unit_backend_commands_gateway.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart';
+import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('internal directory cache follows authorization changes but not equal refresh', () async {
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => Response(
+          jsonEncode({
+            'items': [
+              {
+                'id': 'profile-a',
+                'code': 'operations',
+                'name': 'Operations',
+                'status': 'active',
+                'permissions': <String>[],
+              },
+            ],
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+    final scope = await createSuperadminAuthScope(
+      supabaseUrl: 'https://example.supabase.co',
+      supabasePublishableKey: 'publishable-key',
+      initializeSupabase: ({required localStorage, required publishableKey, required url}) async =>
+          client,
+    );
+    addTearDown(scope.session.dispose);
+    final repository = scope.platformUserRepository! as SupabasePlatformUserRepository;
+    const context = SuperadminAuthContext(
+      platformRoleCode: 'operations',
+      scopeKind: SuperadminAuthScopeKind.platform,
+      permissionCodes: {'platform.read'},
+      aal: 'aal1',
+    );
+    scope.session.authorize(context, sessionId: 'session-a');
+    await repository.fetchProfiles();
+    scope.session.authorize(context, sessionId: 'session-a');
+    expect(repository.profiles, hasLength(1));
+    scope.session.authorize(context, sessionId: 'session-b');
+    expect(repository.profiles, isEmpty);
+    await repository.fetchProfiles();
+    scope.session.signOut();
+    expect(repository.profiles, isEmpty);
+  });
+
   test('builds a clean same-origin password recovery redirect', () {
     final redirect = buildSuperadminPasswordRecoveryRedirect(
       Uri.parse('http://attacker@127.0.0.1:8766/login?unsafe=value#fragment'),

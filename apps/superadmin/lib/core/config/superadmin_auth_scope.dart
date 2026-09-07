@@ -242,6 +242,8 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       }
     }
     final formsBackend = SupabaseFormsBackendGateway(client);
+    final platformUsers = SupabasePlatformUserRepository(client);
+    session.addListener(platformUsers.clearSessionCache);
     return SuperadminAuthScope(
       session: session,
       login: createCoeloAuthLoginAction(auth: auth, authContext: authContext, session: session),
@@ -259,7 +261,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       personDirectoryRepository: SupabasePersonDirectoryRepository(client),
       personIdentityRepository: const UnavailablePersonIdentityRepository(),
       accessProfileRepository: SupabaseAccessProfileRepository(client),
-      platformUserRepository: SupabasePlatformUserRepository(client),
+      platformUserRepository: platformUsers,
       groupDirectoryRepository: const UnavailableGroupDirectoryRepository(),
       unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
       unitBackendCommands: SupabaseUnitBackendCommandsGateway(client),
