@@ -427,8 +427,12 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
   });
 
   @override
-  Future<FormFileJob> requestExport(FormCommand<FormExportPayload> command) =>
-      _fileJobCommand(FormsRpc.requestExport, command);
+  Future<FormFileJob> requestExport(FormCommand<FormExportPayload> command) async {
+    if (command.payload.kind != FormExportKind.xlsx) {
+      throw const FormApiException(FormApiFailureKind.unavailable, 'Disponível depois do MVP');
+    }
+    return _fileJobCommand(FormsRpc.requestExport, command);
+  }
 
   @override
   Future<FormCursorPage<FormFileJob>> listFileJobs({
@@ -471,8 +475,11 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
   });
 
   @override
-  Future<FormFileJob> requestAnonymousParticipationExport(FormCommand<FormExportPayload> command) =>
-      _fileJobCommand(FormsRpc.requestAnonymousParticipationExport, command);
+  Future<FormFileJob> requestAnonymousParticipationExport(
+    FormCommand<FormExportPayload> command,
+  ) async {
+    throw const FormApiException(FormApiFailureKind.unavailable, 'Disponível depois do MVP');
+  }
 
   Future<FormDefinition> _definitionCommand<T>(
     FormsRpc rpc,

@@ -5,6 +5,81 @@ import 'package:coelo_superadmin/features/forms/data/forms_backend_gateway.dart'
 import 'package:coelo_superadmin/features/forms/data/supabase_forms_api.dart';
 
 void main() {
+  test('preserves the existing XLSX job contract and concurrency envelope', () async {
+    final backend = _Backend({
+      'id': 'job-1',
+      'status': 'pending',
+      'progress': 0,
+      'download_available': false,
+    });
+    final job = await SupabaseFormsApi(backend).requestExport(
+      const FormCommand(
+        requestId: 'export-request',
+        expectedVersion: 4,
+        payload: FormExportPayload(formId: 'form-1', kind: FormExportKind.xlsx),
+      ),
+    );
+    expect(job.id, 'job-1');
+    expect(job.status, FormFileJobStatus.pending);
+    expect(backend.functionName, 'form_request_export');
+    expect(backend.parameters, {
+      'p_request_id': 'export-request',
+      'p_expected_version': 4,
+      'p_payload': {
+        'form_id': 'form-1',
+        'occurrence_id': null,
+        'kind': 'xlsx',
+        'justification': null,
+      },
+    });
+  });
+
+  for (final kind in [
+    FormExportKind.csv,
+    FormExportKind.zip,
+    FormExportKind.anonymousParticipation,
+  ]) {
+    test('defers $kind export without contacting the backend', () async {
+      final backend = _Backend(null);
+      await expectLater(
+        SupabaseFormsApi(backend).requestExport(
+          FormCommand(
+            requestId: 'export-request',
+            expectedVersion: 1,
+            payload: FormExportPayload(formId: 'form-1', kind: kind),
+          ),
+        ),
+        throwsA(
+          isA<FormApiException>()
+              .having((error) => error.kind, 'kind', FormApiFailureKind.unavailable)
+              .having((error) => error.message, 'message', 'Disponível depois do MVP'),
+        ),
+      );
+      expect(backend.functionName, isNull);
+    });
+  }
+
+  test('defers nominal anonymous participation export for every format', () async {
+    for (final kind in FormExportKind.values) {
+      final backend = _Backend(null);
+      await expectLater(
+        SupabaseFormsApi(backend).requestAnonymousParticipationExport(
+          FormCommand(
+            requestId: 'export-request',
+            expectedVersion: 1,
+            payload: FormExportPayload(formId: 'form-1', kind: kind),
+          ),
+        ),
+        throwsA(
+          isA<FormApiException>()
+              .having((error) => error.kind, 'kind', FormApiFailureKind.unavailable)
+              .having((error) => error.message, 'message', 'Disponível depois do MVP'),
+        ),
+      );
+      expect(backend.functionName, isNull);
+    }
+  });
+
   test(
     'directory maps opaque cursors without OFFSET and decodes the authorized projection',
     () async {
