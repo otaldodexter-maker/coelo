@@ -27,6 +27,15 @@ final class AgendaPrototypeStore extends AgendaRepository {
   @override
   bool get isLoading => false;
   @override
+  AgendaReadStatus get eventsRead => AgendaReadStatus.ready;
+  @override
+  AgendaReadStatus get contextsRead => AgendaReadStatus.ready;
+  @override
+  AgendaReadStatus get requestsRead => AgendaReadStatus.ready;
+  @override
+  AgendaReadStatus itemRead(String id) =>
+      itemById(id) == null ? AgendaReadStatus.notFound : AgendaReadStatus.ready;
+  @override
   String? get errorMessage => null;
   @override
   String? get lastSavedItemId => _lastSavedItemId;

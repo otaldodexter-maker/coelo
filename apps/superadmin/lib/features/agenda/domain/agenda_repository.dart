@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 
 import 'agenda_models.dart';
 
+enum AgendaReadStatus { idle, loading, ready, notFound, unauthorized, failure }
+
 abstract class AgendaRepository extends ChangeNotifier {
   DateTime get referenceDate;
   List<AgendaItem> get items;
@@ -11,6 +13,10 @@ abstract class AgendaRepository extends ChangeNotifier {
   List<GuardianBirthdayRequest> get requests;
   List<AgendaPublicationRequest> get publicationRequests;
   bool get isLoading;
+  AgendaReadStatus get eventsRead;
+  AgendaReadStatus get contextsRead;
+  AgendaReadStatus get requestsRead;
+  AgendaReadStatus itemRead(String id);
   String? get errorMessage;
   String? get lastSavedItemId;
   bool get supportsOccurrenceScopedEdits;

@@ -24,6 +24,8 @@ final class SupabaseAgendaRepository extends AgendaRepository {
   List<AgendaPublicationRequest> _publicationRequests = const [];
   final _readVersions = <String, int>{};
   final _pendingReads = <String>{};
+  final _readStates = <String, AgendaReadStatus>{};
+  var _accessDenied = false;
   var _accessEpoch = 0;
   var _disposed = false;
   String? _errorMessage;
@@ -41,6 +43,14 @@ final class SupabaseAgendaRepository extends AgendaRepository {
   List<AgendaPublicationRequest> get publicationRequests => List.unmodifiable(_publicationRequests);
   @override
   bool get isLoading => _pendingReads.isNotEmpty;
+  @override
+  AgendaReadStatus get eventsRead => _readStatus('events');
+  @override
+  AgendaReadStatus get contextsRead => _readStatus('contexts');
+  @override
+  AgendaReadStatus get requestsRead => _readStatus('requests');
+  @override
+  AgendaReadStatus itemRead(String id) => _readStatus('item:$id');
   @override
   String? get errorMessage => _errorMessage;
   @override
@@ -345,6 +355,7 @@ final class SupabaseAgendaRepository extends AgendaRepository {
       _invalidateEventReads();
       if (deleted) {
         _items = _items.where((candidate) => candidate.id != id).toList(growable: false);
+        _readStates['item:$id'] = AgendaReadStatus.notFound;
       } else {
         _upsertItem(updated!);
       }
@@ -369,11 +380,15 @@ final class SupabaseAgendaRepository extends AgendaRepository {
     _readVersions[channel] = version;
     final epoch = _accessEpoch;
     _pendingReads.add(channel);
+    _readStates[channel] = AgendaReadStatus.loading;
     _errorMessage = null;
     notifyListeners();
     try {
       final apply = await operation();
-      if (_isCurrentRead(channel, version, epoch)) apply();
+      if (_isCurrentRead(channel, version, epoch)) {
+        apply();
+        _readStates[channel] = AgendaReadStatus.ready;
+      }
     } on PostgrestException catch (error) {
       if (!_isCurrentRead(channel, version, epoch)) return;
       if (_mutationError(error) == AgendaMutationResult.notAuthorized) {
@@ -381,13 +396,16 @@ final class SupabaseAgendaRepository extends AgendaRepository {
       } else if (_mutationError(error) == AgendaMutationResult.notFound && onNotFound != null) {
         _errorMessage = 'O item não foi encontrado ou não pode ser revelado.';
         onNotFound();
+        _readStates[channel] = AgendaReadStatus.notFound;
         notifyListeners();
       } else {
         _errorMessage = 'Não foi possível carregar a Agenda.';
+        _readStates[channel] = AgendaReadStatus.failure;
       }
     } on FormatException {
       if (_isCurrentRead(channel, version, epoch)) {
         _errorMessage = 'A Agenda retornou dados inválidos.';
+        _readStates[channel] = AgendaReadStatus.failure;
       }
     } finally {
       if (_isCurrentRead(channel, version, epoch)) {
@@ -399,6 +417,10 @@ final class SupabaseAgendaRepository extends AgendaRepository {
 
   bool _canApply(int epoch) => !_disposed && epoch == _accessEpoch;
 
+  AgendaReadStatus _readStatus(String channel) =>
+      _readStates[channel] ??
+      (_accessDenied ? AgendaReadStatus.unauthorized : AgendaReadStatus.idle);
+
   void _invalidateEventReads() {
     // A successful command (or non-revealable detail) supersedes snapshots
     // already in flight. Context capability reads remain independent.
@@ -406,6 +428,9 @@ final class SupabaseAgendaRepository extends AgendaRepository {
       if (channel == 'contexts') continue;
       _readVersions[channel] = _readVersions[channel]! + 1;
       _pendingReads.remove(channel);
+      if (_readStates[channel] == AgendaReadStatus.loading) {
+        _readStates[channel] = AgendaReadStatus.idle;
+      }
     }
   }
 
@@ -432,6 +457,10 @@ final class SupabaseAgendaRepository extends AgendaRepository {
 
   void _invalidateAccess() {
     _accessEpoch++;
+    _accessDenied = true;
+    for (final channel in _readStates.keys.toList(growable: false)) {
+      _readStates[channel] = AgendaReadStatus.unauthorized;
+    }
     _pendingReads.clear();
     _clearCache();
     _errorMessage = 'Você não tem permissão para consultar a Agenda.';
@@ -448,6 +477,7 @@ final class SupabaseAgendaRepository extends AgendaRepository {
   }
 
   void _upsertItem(AgendaItem item) {
+    _readStates['item:${item.id}'] = AgendaReadStatus.ready;
     final index = _items.indexWhere((candidate) => candidate.id == item.id);
     _items = [..._items];
     if (index < 0) {
