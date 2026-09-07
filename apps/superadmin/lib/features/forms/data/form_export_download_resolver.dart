@@ -41,10 +41,17 @@ final class FormExportDownloadResolver {
       final raw = await _gateway.resolve(jobId);
       if (raw is! Map) throw const FormatException();
       final payload = Map<String, Object?>.from(raw);
-      final url = Uri.tryParse(payload['download_url']?.toString() ?? '');
-      final expiresAt = DateTime.tryParse(payload['expires_at']?.toString() ?? '')?.toUtc();
+      final rawUrl = payload['download_url'];
+      final rawExpiry = payload['expires_at'];
+      if (rawUrl is! String || rawExpiry is! String) throw const FormatException();
+      final url = Uri.tryParse(rawUrl);
+      final expiresAt = DateTime.tryParse(rawExpiry)?.toUtc();
       if (url == null ||
           url.scheme != 'https' ||
+          !url.hasAuthority ||
+          url.host.isEmpty ||
+          url.userInfo.isNotEmpty ||
+          url.hasFragment ||
           expiresAt == null ||
           !expiresAt.isAfter(_now().toUtc())) {
         throw const FormatException();
