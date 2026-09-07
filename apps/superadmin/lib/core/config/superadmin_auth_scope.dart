@@ -64,6 +64,8 @@ import '../../features/people/domain/person_identity.dart';
 import '../../features/groups/domain/group_directory.dart';
 import '../../features/access_profiles/data/supabase_access_profile_repository.dart';
 import '../../features/access_profiles/domain/access_profile.dart';
+import '../../features/platform_users/data/supabase_platform_user_repository.dart';
+import '../../features/platform_users/domain/platform_user.dart';
 import '../../features/units/data/unavailable_unit_composition.dart';
 import '../../features/units/data/supabase_unit_backend_commands_gateway.dart';
 import '../../features/units/domain/unit_backend_commands.dart';
@@ -106,6 +108,7 @@ final class SuperadminAuthScope {
     required this.personDirectoryRepository,
     this.personIdentityRepository = const UnavailablePersonIdentityRepository(),
     required this.accessProfileRepository,
+    this.platformUserRepository,
     required this.groupDirectoryRepository,
     required this.unitDirectoryRepository,
     required this.unitBackendCommands,
@@ -150,6 +153,7 @@ final class SuperadminAuthScope {
   final PersonDirectoryRepository personDirectoryRepository;
   final PersonIdentityRepository personIdentityRepository;
   final AccessProfileRepository accessProfileRepository;
+  final PlatformUserRepository? platformUserRepository;
   final GroupDirectoryRepository groupDirectoryRepository;
   final UnitDirectoryRepository unitDirectoryRepository;
   final UnitBackendCommandsGateway unitBackendCommands;
@@ -255,6 +259,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       personDirectoryRepository: SupabasePersonDirectoryRepository(client),
       personIdentityRepository: const UnavailablePersonIdentityRepository(),
       accessProfileRepository: SupabaseAccessProfileRepository(client),
+      platformUserRepository: SupabasePlatformUserRepository(client),
       groupDirectoryRepository: const UnavailableGroupDirectoryRepository(),
       unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
       unitBackendCommands: SupabaseUnitBackendCommandsGateway(client),

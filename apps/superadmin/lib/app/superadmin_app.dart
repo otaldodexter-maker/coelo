@@ -47,6 +47,7 @@ import '../features/audit/domain/audit.dart';
 import '../features/safety/application/child_safety_controller.dart';
 import '../features/safety/domain/child_safety_contract.dart';
 import '../features/access_profiles/domain/access_profile.dart';
+import '../features/platform_users/domain/platform_user.dart';
 import '../features/groups/domain/group_directory.dart';
 import '../features/health_care/domain/medication_plan_repository.dart';
 import 'router/superadmin_router.dart';
@@ -104,6 +105,7 @@ class SuperadminApp extends StatefulWidget {
     this.unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
     this.structureMutationsEnabled = false,
     this.accessProfileRepository = const UnavailableAccessProfileRepository(),
+    this.platformUserRepository,
     this.importRepository = const UnavailableImportRepository(),
     this.planCatalogRepository = const UnavailablePlanCatalogRepository(),
     this.agendaRepository,
@@ -149,6 +151,7 @@ class SuperadminApp extends StatefulWidget {
   final UnitBackendCommandsGateway unitBackendCommands;
   final bool structureMutationsEnabled;
   final AccessProfileRepository accessProfileRepository;
+  final PlatformUserRepository? platformUserRepository;
   final ImportRepository importRepository;
   final PlanCatalogRepository planCatalogRepository;
   final AgendaRepository? agendaRepository;
@@ -214,6 +217,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       unitBackendCommands: widget.unitBackendCommands,
       enableStructureMutations: widget.structureMutationsEnabled,
       accessProfileRepository: widget.accessProfileRepository,
+      platformUserRepository: widget.platformUserRepository,
       importRepository: widget.importRepository,
       planCatalogRepository: widget.planCatalogRepository,
       agendaRepository: widget.agendaRepository,
