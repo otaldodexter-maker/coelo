@@ -44,6 +44,7 @@ void main() {
   testWidgets('dev profile mounts only its isolated local controller', (tester) async {
     final session = SuperadminSession();
     final router = createSuperadminRouter(
+      allowDevelopmentPreview: true,
       session: session,
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
@@ -67,6 +68,7 @@ void main() {
     final productionRepository = _TrackingPreferencesRepository();
     final production = UserPreferencesController(productionRepository);
     final router = createSuperadminRouter(
+      allowDevelopmentPreview: true,
       session: session,
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
