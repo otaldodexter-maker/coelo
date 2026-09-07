@@ -165,6 +165,8 @@ abstract final class SuperadminRoutes {
   static const internalUserCreateName = 'internal-user-create';
   static const internalUserEdit = '/internal-users/:internalUserId/edit';
   static const internalUserEditName = 'internal-user-edit';
+  static const internalUserDetail = '/internal-users/:internalUserId';
+  static const internalUserDetailName = 'internal-user-detail';
   static const profiles = '/profiles';
   static const profilesName = 'profiles';
   static const profileModels = '/profile-models';
