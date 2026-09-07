@@ -2056,24 +2056,27 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.internalUsers,
             name: SuperadminRoutes.internalUsersName,
-            builder: (context, state) {
-              final repository = platformUserRepository;
-              if (repository == null || repository.isDemo) {
-                return _unavailableCompositionRootRoute(context);
-              }
-              final canRead =
-                  session.authContext?.permissionCodes.contains('platform.member.read') == true;
-              return PlatformUserDirectoryPage(
-                key: ObjectKey(session.authContext),
-                repository: repository,
-                capability: canRead
-                    ? PlatformUserCapability.auditor
-                    : PlatformUserCapability.unauthorized,
-                logout: logout,
-                onDestinationSelected: (destination) =>
-                    _navigateFromPersistentShell(context, destination),
-              );
-            },
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, child) {
+                final repository = platformUserRepository;
+                if (repository == null || repository.isDemo) {
+                  return _unavailableCompositionRootRoute(context);
+                }
+                final canRead =
+                    session.authContext?.permissionCodes.contains('platform.member.read') == true;
+                return PlatformUserDirectoryPage(
+                  key: ValueKey(session.authorizationInvalidationRevision),
+                  repository: repository,
+                  capability: canRead
+                      ? PlatformUserCapability.auditor
+                      : PlatformUserCapability.unauthorized,
+                  logout: logout,
+                  onDestinationSelected: (destination) =>
+                      _navigateFromPersistentShell(context, destination),
+                );
+              },
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.internalUserCreate,
