@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:coelo_auth/coelo_auth.dart';
 import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_superadmin/features/auth/domain/superadmin_auth_context.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -31,12 +34,42 @@ void main() {
     expect(result.message, isNot(contains('network details')));
     expect(session.isAuthenticated, isTrue);
   });
+
+  test('does not clear a newer authorization while logout is pending', () async {
+    final auth = _FakeCoeloAuthGateway(
+      signOutStarted: Completer<void>(),
+      signOutRelease: Completer<void>(),
+    );
+    final session = SuperadminSession()..signInForTesting();
+    addTearDown(session.dispose);
+    final logout = createCoeloAuthLogoutAction(auth: auth, session: session);
+
+    final resultFuture = logout();
+    await auth.signOutStarted!.future;
+    session.authorize(
+      const SuperadminAuthContext(
+        platformRoleCode: 'newer-role',
+        scopeKind: SuperadminAuthScopeKind.platform,
+        permissionCodes: {'platform.read'},
+        aal: 'aal1',
+      ),
+      sessionId: 'new-session',
+    );
+    auth.signOutRelease!.complete();
+    final result = await resultFuture;
+
+    expect(result.isSuccess, isTrue);
+    expect(session.isAuthenticated, isTrue);
+    expect(session.sessionId, 'new-session');
+  });
 }
 
 final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
-  _FakeCoeloAuthGateway({this.signOutException});
+  _FakeCoeloAuthGateway({this.signOutException, this.signOutStarted, this.signOutRelease});
 
   final Exception? signOutException;
+  final Completer<void>? signOutStarted;
+  final Completer<void>? signOutRelease;
   bool didSignOut = false;
 
   @override
@@ -73,5 +106,9 @@ final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
       throw exception;
     }
     didSignOut = true;
+    signOutStarted?.complete();
+    if (signOutRelease case final release?) {
+      await release.future;
+    }
   }
 }
