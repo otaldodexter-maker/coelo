@@ -158,7 +158,7 @@ final class FakeNoticeRepository implements NoticeRepository {
     NoticeDraft draft, {
     required String id,
     NoticeStatus status = NoticeStatus.draft,
-    int version = 0,
+    int version = 1,
   }) => PlatformNotice(
     type: draft.type,
     id: id,

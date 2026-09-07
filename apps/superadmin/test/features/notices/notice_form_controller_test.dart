@@ -8,6 +8,29 @@ import 'package:flutter_test/flutter_test.dart';
 import 'support/fake_notice_repository.dart';
 
 void main() {
+  for (final version in [1, 0]) {
+    test('create receipt requires the v2 initial version (received $version)', () async {
+      final repository = _PendingSaveRepository();
+      final controller = NoticeFormController(repository: repository);
+      addTearDown(controller.dispose);
+      controller.titleController.text = 'Rascunho';
+      controller.messageController.text = 'Mensagem';
+      final result = controller.saveDraft();
+      repository.pending.single.complete(
+        _notice('notice-new', 'Rascunho').copyWith(managementVersion: version),
+      );
+      final saved = await result;
+      if (version == 1) {
+        expect(saved?.managementVersion, 1);
+        expect(controller.errorMessage, isNull);
+      } else {
+        expect(saved, isNull);
+        expect(controller.savedNotice, isNull);
+        expect(controller.errorMessage, const NoticeUnexpectedException().safeMessage);
+      }
+    });
+  }
+
   test('changing away from Aviso removes popup-only configuration', () {
     final controller = NoticeFormController(repository: FakeNoticeRepository());
     addTearDown(controller.dispose);
@@ -133,14 +156,14 @@ void main() {
     final second = controller.saveDraft();
     expect(repository.pending, hasLength(2));
     repository.pending[1].complete(
-      _notice('notice-a', 'Rascunho B').copyWith(managementVersion: 1),
+      _notice('notice-a', 'Rascunho B').copyWith(managementVersion: 2),
     );
     await expectLater(
       second,
       completion(
         isA<PlatformNotice>()
             .having((notice) => notice.id, 'id', 'notice-a')
-            .having((notice) => notice.managementVersion, 'version', 1),
+            .having((notice) => notice.managementVersion, 'version', 2),
       ),
     );
   });
@@ -174,7 +197,7 @@ void main() {
 
     expect(saved?.id, 'notice-1');
     expect(saved?.title, 'Rascunho B');
-    expect(saved?.managementVersion, 1);
+    expect(saved?.managementVersion, 2);
     expect(repository.creates, 1);
     expect(repository.item?.id, 'notice-1');
     expect(repository.item?.title, 'Rascunho B');
@@ -195,7 +218,7 @@ void main() {
 
     expect(saved?.id, 'notice-1');
     expect(saved?.title, 'Rascunho A');
-    expect(saved?.managementVersion, 0);
+    expect(saved?.managementVersion, 1);
     expect(repository.creates, 1);
     expect(repository.requestIds, hasLength(2));
     expect(repository.requestIds[1], repository.requestIds[0]);
@@ -219,13 +242,13 @@ void main() {
 
     expect(repository.requestIds, hasLength(2));
     expect(controller.savedNotice?.id, 'notice-1');
-    expect(controller.savedNotice?.managementVersion, 0);
+    expect(controller.savedNotice?.managementVersion, 1);
     expect(controller.titleController.text, 'Rascunho C');
 
     final saved = await controller.saveDraft();
     expect(saved?.id, 'notice-1');
     expect(saved?.title, 'Rascunho C');
-    expect(saved?.managementVersion, 1);
+    expect(saved?.managementVersion, 2);
     expect(repository.requestIds, hasLength(3));
     expect(repository.requestIds[2], isNot(repository.requestIds[0]));
   });
@@ -254,7 +277,7 @@ void main() {
     final published = await controller.saveAndPublish();
 
     expect(published?.status, NoticeStatus.active);
-    expect(published?.managementVersion, 1);
+    expect(published?.managementVersion, 2);
     expect(repository.saveCalls, 1);
     expect(repository.publishRequestIds, hasLength(2));
     expect(repository.publishRequestIds[1], repository.publishRequestIds[0]);
@@ -274,10 +297,10 @@ void main() {
     expect(published?.id, 'notice-1');
     expect(published?.title, 'Aviso B');
     expect(published?.status, NoticeStatus.active);
-    expect(published?.managementVersion, 3);
+    expect(published?.managementVersion, 4);
     expect(repository.saveCalls, 2);
     expect(repository.saveNoticeIds, [null, 'notice-1']);
-    expect(repository.saveExpectedVersions, [null, 1]);
+    expect(repository.saveExpectedVersions, [null, 2]);
     expect(repository.publishRequestIds, hasLength(3));
     expect(repository.publishRequestIds[1], repository.publishRequestIds[0]);
     expect(repository.publishRequestIds[2], isNot(repository.publishRequestIds[0]));
@@ -294,7 +317,7 @@ void main() {
     final published = await controller.saveAndPublish();
 
     expect(published?.status, NoticeStatus.active);
-    expect(published?.managementVersion, 2);
+    expect(published?.managementVersion, 3);
     expect(repository.saveCalls, 2);
     expect(repository.publishRequestIds, hasLength(2));
     expect(repository.publishRequestIds[1], isNot(repository.publishRequestIds[0]));
@@ -303,6 +326,7 @@ void main() {
 
 PlatformNotice _notice(String id, String title) => PlatformNotice(
   id: id,
+  managementVersion: 1,
   title: title,
   message: 'Mensagem',
   priority: NoticePriority.important,
@@ -428,7 +452,7 @@ final class _PublishRetryRepository implements NoticeRepository {
     saveCalls++;
     saveNoticeIds.add(noticeId);
     saveExpectedVersions.add(expectedVersion);
-    final version = noticeId == null ? 0 : (expectedVersion ?? -1) + 1;
+    final version = (expectedVersion ?? 0) + 1;
     return _notice(noticeId ?? 'notice-1', draft.title).copyWith(managementVersion: version);
   }
 

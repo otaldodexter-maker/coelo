@@ -18,7 +18,7 @@ void main() {
     );
 
     expect(draft.status, NoticeStatus.draft);
-    expect(draft.managementVersion, 0);
+    expect(draft.managementVersion, 1);
 
     final published = await repository.publish(
       draft,
@@ -27,7 +27,7 @@ void main() {
     );
 
     expect(published.status, NoticeStatus.active);
-    expect(published.managementVersion, 1);
+    expect(published.managementVersion, 2);
     expect((await repository.getById(draft.id)).status, NoticeStatus.active);
   });
 

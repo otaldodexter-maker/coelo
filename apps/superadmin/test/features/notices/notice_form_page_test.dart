@@ -59,26 +59,26 @@ void main() {
 
     expect(find.byKey(const Key('notice-step-identity')), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();
     expect(find.text('Informe o título do aviso para continuar.'), findsOneWidget);
     expect(find.byKey(const Key('notice-step-identity')), findsOneWidget);
 
     await tester.enterText(_fieldIn(const Key('notice-title')), 'Manutenção programada');
-    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();
     expect(find.byKey(const Key('notice-step-content')), findsOneWidget);
 
     await tester.enterText(_fieldIn(const Key('notice-message')), 'O serviço ficará indisponível.');
-    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();
     expect(find.byKey(const Key('notice-step-audience')), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();
     expect(find.byKey(const Key('notice-step-schedule')), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();
     expect(find.byKey(const Key('notice-step-review')), findsOneWidget);
     expect(find.text('Manutenção programada'), findsWidgets);
@@ -91,15 +91,15 @@ void main() {
     await _pumpForm(tester, const Size(375, 812));
 
     await tester.enterText(_fieldIn(const Key('notice-title')), 'Manutenção programada');
-    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();
     await tester.enterText(_fieldIn(const Key('notice-message')), 'O serviço ficará indisponível.');
-    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();
-    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();
 
-    await tester.tap(find.byKey(const Key('notice-date-Data de início')));
+    await _tapVisible(tester, find.byKey(const Key('notice-date-Data de início')));
     await tester.pumpAndSettle();
 
     final picker = tester.widget<CoeloDateRangePicker>(find.byType(CoeloDateRangePicker));
@@ -375,6 +375,14 @@ final class _DeniedLoadNoticeRepository implements NoticeRepository {
 
 Finder _fieldIn(Key key) =>
     find.descendant(of: find.byKey(key), matching: find.byType(EditableText));
+
+Future<void> _tapVisible(WidgetTester tester, Finder target) async {
+  await tester.pumpAndSettle();
+  await tester.ensureVisible(target);
+  await tester.pumpAndSettle();
+  expect(target.hitTestable(), findsOneWidget);
+  await tester.tap(target);
+}
 
 Future<void> _pumpForm(WidgetTester tester, Size size) async {
   tester.view.devicePixelRatio = 1;
