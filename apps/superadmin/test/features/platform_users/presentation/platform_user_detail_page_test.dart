@@ -63,11 +63,35 @@ void main() {
     expect(find.textContaining(second.cached.fullName), findsWidgets);
     expect(find.textContaining(first.cached.fullName), findsNothing);
   });
+
+  testWidgets('back action returns to the directory callback', (tester) async {
+    final repository = _RemoteRepository();
+    var backCalls = 0;
+    await tester.pumpWidget(_page(repository, onBack: () => backCalls++));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Voltar'));
+    expect(backCalls, 1);
+  });
+
+  testWidgets('authorization revision clears the detail before rendering denial', (tester) async {
+    final repository = _RemoteRepository();
+    await tester.pumpWidget(_page(repository));
+    await tester.pumpAndSettle();
+    expect(find.textContaining(repository.cached.fullName), findsWidgets);
+
+    await tester.pumpWidget(_page(repository, capability: PlatformUserCapability.unauthorized));
+    await tester.pump();
+    expect(find.text('Acesso não autorizado'), findsOneWidget);
+    expect(find.textContaining(repository.cached.fullName), findsNothing);
+    expect(repository.calls, 1);
+  });
 }
 
 Widget _page(
   _RemoteRepository repository, {
   PlatformUserCapability capability = PlatformUserCapability.auditor,
+  VoidCallback? onBack,
 }) => MaterialApp(
   theme: CoeloTheme.light,
   home: PlatformUserDetailPage(
@@ -76,6 +100,7 @@ Widget _page(
     internalUserId: repository.cached.id,
     capability: capability,
     logout: unavailableSuperadminLogout,
+    onBack: onBack,
   ),
 );
 
