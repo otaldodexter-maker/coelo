@@ -16,6 +16,52 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../support/fake_attendance_repository.dart';
 
 void main() {
+  for (final configuration in [
+    (375.0, 2.0, false),
+    (768.0, 1.0, true),
+    (1024.0, 1.0, false),
+    (1440.0, 1.0, true),
+  ]) {
+    testWidgets('dashboard exports are informative only at ${configuration.$1}px', (tester) async {
+      await tester.binding.setSurfaceSize(Size(configuration.$1, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final repository = FakeAttendanceRepository.seeded();
+      addTearDown(repository.dispose);
+      final dashboard = _DashboardRepository(canCreate: configuration.$3);
+      await tester.pumpWidget(
+        _app(
+          AttendanceDashboardPage(
+            repository: repository,
+            dashboardRepository: dashboard,
+            permissions: const AttendancePermissions.owner(),
+            logout: unavailableSuperadminLogout,
+            onCreate: configuration.$3 ? () {} : null,
+            onOpenCall: (_) {},
+          ),
+          textScaler: TextScaler.linear(configuration.$2),
+          brightness: configuration.$3 ? Brightness.dark : Brightness.light,
+        ),
+      );
+      await tester.pumpAndSettle();
+      final trigger = find.byKey(const Key('coelo-admin-files-action'));
+      expect(trigger, findsOneWidget);
+      expect(tester.getSize(trigger).height, greaterThanOrEqualTo(CoeloSize.touchMin));
+      for (final label in ['Exportar CSV', 'Exportar XLSX']) {
+        await tester.ensureVisible(trigger);
+        await tester.pumpAndSettle();
+        await tester.tap(trigger);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(label));
+        await tester.pumpAndSettle();
+        expect(find.text('Disponível depois do MVP'), findsWidgets);
+        expect(dashboard.exportRequests, 0);
+        expect(dashboard.exportPolls, 0);
+        expect(find.text('Solicitar exportação'), findsNothing);
+        expect(tester.takeException(), isNull);
+      }
+    });
+  }
+
   testWidgets('new call uses the canonical single-date picker and restores keyboard focus', (
     tester,
   ) async {
@@ -1165,8 +1211,12 @@ void main() {
 String _testDate(DateTime value) =>
     '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
 
-Widget _app(Widget child, {TextScaler textScaler = TextScaler.noScaling}) => MaterialApp(
-  theme: CoeloTheme.light,
+Widget _app(
+  Widget child, {
+  TextScaler textScaler = TextScaler.noScaling,
+  Brightness brightness = Brightness.light,
+}) => MaterialApp(
+  theme: brightness == Brightness.dark ? CoeloTheme.dark : CoeloTheme.light,
   builder: (context, appChild) => MediaQuery(
     data: MediaQuery.of(context).copyWith(textScaler: textScaler),
     child: appChild!,
@@ -1258,6 +1308,8 @@ final class _DashboardRepository implements AttendanceDashboardRepository {
   final String label;
   final Future<void>? dashboardDelay;
   bool failNext = false;
+  int exportRequests = 0;
+  int exportPolls = 0;
 
   AttendanceDashboardAccess get _access => AttendanceDashboardAccess(
     scope: AttendanceDashboardScope.platform,
@@ -1411,8 +1463,14 @@ final class _DashboardRepository implements AttendanceDashboardRepository {
     required AttendanceDashboardExportKind kind,
     required AttendanceDashboardExportFormat format,
     required String idempotencyKey,
-  }) => throw UnimplementedError();
+  }) {
+    exportRequests += 1;
+    throw UnimplementedError();
+  }
 
   @override
-  Future<AttendanceDashboardExportJob> fetchExportJob(String id) => throw UnimplementedError();
+  Future<AttendanceDashboardExportJob> fetchExportJob(String id) {
+    exportPolls += 1;
+    throw UnimplementedError();
+  }
 }
