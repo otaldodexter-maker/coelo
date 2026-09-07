@@ -210,11 +210,12 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       if (mounted &&
           threadGeneration == _threadRequestGeneration &&
           identical(requestedRepository, _repository) &&
-          _selected?.id == conversation.id &&
-          isCurrentAutomaticSelection()) {
+          _selected?.id == conversation.id) {
         if (error is ChatUnauthorizedException) {
+          // A same-conversation inbox refresh does not invalidate a pending
+          // read receipt's denial. Presentation errors still follow the search.
           _denyAccess(error);
-        } else {
+        } else if (isCurrentAutomaticSelection()) {
           setState(() => _threadError = error);
         }
       }

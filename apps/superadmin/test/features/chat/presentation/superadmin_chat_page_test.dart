@@ -388,6 +388,58 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('denied pending receipt purges chat after same-ID inbox refresh', (tester) async {
+    _viewport(tester, 1440);
+    final repository = _RevokedChatRepository(pendingReceipt: true);
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('superadmin-chat-composer-field')), 'Privado');
+    final search = tester.widget<CoeloSearchField>(find.byKey(const Key('superadmin-chat-search')));
+    search.controller.text = 'refresh';
+    search.onChanged('refresh');
+    await tester.pump(const Duration(milliseconds: 301));
+    await tester.pumpAndSettle();
+    expect(find.text('Thread A'), findsOneWidget);
+    expect(repository.threadRequests, 1);
+
+    repository.receipt.completeError(const ChatUnauthorizedException());
+    await tester.pumpAndSettle();
+    expect(find.text('Acesso nao autorizado'), findsOneWidget);
+    expect(find.text('Thread A'), findsNothing);
+    expect(find.text('Privado'), findsNothing);
+    expect(find.byKey(const Key('superadmin-chat-composer-field')), findsNothing);
+    expect(repository.threadRequests, 1);
+  });
+
+  testWidgets('denied old receipt cannot clear a newly selected conversation', (tester) async {
+    _viewport(tester, 1440);
+    final repository = _RevokedChatRepository(pendingReceipt: true, secondConversation: true);
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('chat-real-conversation-conversation-b')));
+    await tester.pumpAndSettle();
+    repository.receipt.completeError(const ChatUnauthorizedException());
+    await tester.pumpAndSettle();
+    expect(find.text('Thread B'), findsOneWidget);
+    expect(find.text('Acesso nao autorizado'), findsNothing);
+    expect(find.byKey(const Key('superadmin-chat-composer-field')), findsOneWidget);
+    expect(repository.threadRequests, 2);
+  });
+
+  testWidgets('denied old receipt cannot clear a replacement repository', (tester) async {
+    _viewport(tester, 1440);
+    final previous = _RevokedChatRepository(pendingReceipt: true);
+    await tester.pumpWidget(_app(repository: previous));
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(_app(repository: _RevokedChatRepository()));
+    await tester.pumpAndSettle();
+    previous.receipt.completeError(const ChatUnauthorizedException());
+    await tester.pumpAndSettle();
+    expect(find.text('Thread A'), findsOneWidget);
+    expect(find.text('Acesso nao autorizado'), findsNothing);
+    expect(find.byKey(const Key('superadmin-chat-composer-field')), findsOneWidget);
+  });
+
   testWidgets('denied inbox refresh purges the retained composer draft', (tester) async {
     _viewport(tester, 1440);
     final repository = _RevokedChatRepository();
@@ -860,31 +912,44 @@ final class _AmbiguousSendRepository implements ChatRepository {
 }
 
 final class _RevokedChatRepository implements ChatRepository {
-  _RevokedChatRepository({this.pendingReceipt = false, this.denyThread = false});
+  _RevokedChatRepository({
+    this.pendingReceipt = false,
+    this.denyThread = false,
+    this.secondConversation = false,
+  });
 
   final bool pendingReceipt;
   final bool denyThread;
+  final bool secondConversation;
   final receipt = Completer<void>();
   final send = Completer<ChatMessage>();
   final inbox = Completer<ChatInboxPage>();
   int sendCount = 0;
+  int threadRequests = 0;
 
   @override
   Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async {
     if (query.search == 'revoked') throw const ChatUnauthorizedException();
     if (query.search == 'pending') return inbox.future;
-    return ChatInboxPage(totalUnread: 0, items: [_conversation('conversation-a', 'Conversa A')]);
+    return ChatInboxPage(
+      totalUnread: 0,
+      items: [
+        _conversation('conversation-a', 'Conversa A'),
+        if (secondConversation) _conversation('conversation-b', 'Conversa B'),
+      ],
+    );
   }
 
   @override
   Future<ChatThreadPage> fetchThread(ChatThreadQuery query) async {
+    threadRequests++;
     if (denyThread) throw const ChatUnauthorizedException();
-    return _threadPage('Thread A');
+    return _threadPage(query.conversationId == 'conversation-b' ? 'Thread B' : 'Thread A');
   }
 
   @override
   Future<void> markRead({required String conversationId, required String upToMessageId}) =>
-      pendingReceipt ? receipt.future : Future.value();
+      pendingReceipt && conversationId == 'conversation-a' ? receipt.future : Future.value();
 
   @override
   Future<ChatMessage> sendMessage(ChatSendMessageCommand command) {

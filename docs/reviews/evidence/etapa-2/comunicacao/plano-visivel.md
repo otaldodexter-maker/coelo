@@ -26,6 +26,19 @@ Coordenador; este arquivo registra somente esta frente.
 
 ## Subagentes e exclusividade
 
+## Execução atual detalhada
+
+| Passo | Tela / subtela / action_id | Backend efetivamente trabalhado | Subagente revisor | Evidência / próximo gate |
+| --- | --- | --- | --- | --- |
+| 6/6 da fatia | Conversas / recibo após refresh / `chat.receipts` | Nenhum BD nesta fatia; Flutter | `review_chat_receipt` | RED reproduzido, GREEN 29/29, analyzer e review aprovados; commit e revogação real pendentes |
+| 2/6 | Avisos / publicação e leitura / `notices.publish`, `notices.read` | Teste de `public.platform_notices`, `app_private.notice_publication_jobs`, RPCs v2 preparado; nenhum SQL executado | `crosswalk_media` | 17 assertivas e SHA enviados para replay exclusivo Eng1; aguarda baseline e lease |
+| 2/6 | Momentos / transporte privado R2 / mídia server-side | Deno `moments-media/r2_s3.ts`; nenhum BD nesta fatia | `review_media_session` | M02 local concedida em quatro arquivos; baseline 3/3, próximo RED de endpoint inseguro |
+
+Sem API de plano nativo disponível nesta sessão. Este documento é a alternativa
+aberta no painel direito; não substitui nem controla o contador nativo do app.
+
+## Responsabilidades dos subagentes
+
 - `review_chat_receipt`: revisão read-only de Chat, negação e refresh; propõe
   testes e faz review independente do diff do writer.
 - `crosswalk_media`: crosswalk local entregue; revisão read-only dos testes e
