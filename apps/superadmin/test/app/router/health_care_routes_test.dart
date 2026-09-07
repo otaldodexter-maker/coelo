@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:coelo_superadmin/app/dev_menu/development_access_health_fixture_catalog.dart';
 import 'package:coelo_superadmin/app/router/superadmin_router.dart';
 import 'package:coelo_superadmin/app/router/superadmin_routes.dart';
 import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
@@ -20,6 +21,117 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('development medication edit preserves additional schedules and stored context', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final child = DevelopmentAccessHealthFixtureCatalog.standard().children.first;
+    final schedules = [
+      MedicationScheduleDraft(
+        timeOfDay: '08:15',
+        weekdays: {2, 4},
+        timezone: 'UTC',
+        frequencyKind: 'synthetic-frequency',
+        startDate: DateTime(2026, 1, 2),
+        endDate: DateTime(2026, 12, 20),
+        maxOccurrencesPerDay: 1,
+      ),
+      MedicationScheduleDraft(timeOfDay: '16:45', weekdays: {1, 3}, timezone: 'America/Sao_Paulo'),
+    ];
+    final command = MedicationPlanSaveCommand(
+      requestId: 'seed-context',
+      planId: 'plan-context',
+      childPersonId: child.id,
+      expectedVersion: 0,
+      medicationName: 'Synthetic medicine',
+      doseAmount: 1,
+      doseUnit: 'synthetic unit',
+      administrationRoute: 'oral',
+      validFrom: DateTime(2026, 1, 1),
+      reason: 'Synthetic fixture',
+      scopeKind: 'institution',
+      timezone: 'UTC',
+      schedules: schedules,
+      institutionId: child.institutionId,
+      unitId: child.unitId,
+      groupId: child.groupId,
+      childContextId: 'synthetic-child-context',
+    );
+    final original = MedicationPlanDetail(
+      id: 'plan-context',
+      childPersonId: child.id,
+      status: MedicationPlanStatus.suspended,
+      currentVersion: 1,
+      medicationName: command.medicationName,
+      doseAmount: command.doseAmount,
+      doseUnit: command.doseUnit,
+      administrationRoute: command.administrationRoute,
+      validFrom: command.validFrom,
+      timezone: command.timezone,
+      schedules: schedules,
+      instructions: 'Synthetic stored instructions',
+      routeDetails: 'Synthetic stored route details',
+    );
+    final repository = DevMedicationPlanRepository(
+      plans: [original],
+      commandsByPlanId: {original.id: command},
+    );
+    final session = SuperadminSession()..signInForTesting();
+    final productionTripwire = _TrackingMedicationPlanRepository();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      medicationPlanRepository: productionTripwire,
+      developmentMedicationPlanRepository: repository,
+      allowDevelopmentPreview: true,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    router.go('/dev/health-care/medication-plans/${original.id}/edit');
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('health-medication-name')), 'Synthetic renamed');
+    tester
+        .widget<SuperadminFormStepNavigation>(find.byType(SuperadminFormStepNavigation))
+        .onStepSelected(4);
+    await tester.pump();
+    await tester.tap(find.widgetWithText(FilledButton, 'Salvar alterações'));
+    await tester.pumpAndSettle();
+    final saved = await repository.fetchDetail(original.id);
+    expect(saved.medicationName, 'Synthetic renamed');
+    expect(saved.schedules, hasLength(2));
+    expect(saved.schedules.first.frequencyKind, schedules.first.frequencyKind);
+    expect(saved.schedules.first.timezone, schedules.first.timezone);
+    expect(saved.schedules.first.startDate, schedules.first.startDate);
+    expect(saved.schedules.first.endDate, schedules.first.endDate);
+    expect(saved.schedules.first.maxOccurrencesPerDay, schedules.first.maxOccurrencesPerDay);
+    expect(saved.schedules.last, same(schedules.last));
+    expect(saved.timezone, original.timezone);
+    expect(saved.instructions, original.instructions);
+    expect(saved.routeDetails, original.routeDetails);
+    expect(saved.status, MedicationPlanStatus.suspended);
+    final storedCommand = repository.latestCommandFor(original.id)!;
+    expect(storedCommand.institutionId, command.institutionId);
+    expect(storedCommand.unitId, command.unitId);
+    expect(storedCommand.groupId, command.groupId);
+    expect(storedCommand.childContextId, command.childContextId);
+    router.go('/dev/health-care/medication-plans/${original.id}/edit');
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<TextFormField>(find.byKey(const Key('health-medication-name')))
+          .controller!
+          .text,
+      'Synthetic renamed',
+    );
+    expect(productionTripwire.calls, 0);
+    expect(tester.takeException(), isNull);
+  });
+
   test('declares the clean health care route tree', () {
     expect(SuperadminRoutes.healthCareProfiles, '/health-care/profiles');
     expect(SuperadminRoutes.healthCareProfileCreate, '/health-care/profiles/new');
@@ -247,7 +359,14 @@ void main() {
     expect(saved.items.single.route, 'oral');
     expect(router.routeInformationProvider.value.uri.path, '/dev/health-care/medication-plans');
     expect(find.text('Ibuprofeno'), findsOneWidget);
+    // The directory label resolver is still a separate placeholder; assert
+    // the actual stored context below, without certifying that display gate.
     expect(find.textContaining('Contexto institucional indisponível'), findsOneWidget);
+    final child = DevelopmentAccessHealthFixtureCatalog.standard().children.first;
+    expect(
+      developmentRepository.latestCommandFor(saved.items.single.id)!.institutionId,
+      child.institutionId,
+    );
     expect(find.textContaining('Casa'), findsNothing);
     expect(find.text('Não foi possível carregar'), findsNothing);
 

@@ -8,6 +8,7 @@ import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart'
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
+import '../domain/medication_plan_edit_snapshot.dart';
 import 'health_care_responsive_surface.dart';
 import 'health_medication_form_sections.dart';
 
@@ -33,6 +34,7 @@ final class HealthMedicationPlanFormDraft {
     this.validFrom,
     this.validUntil,
     this.time,
+    this.editSnapshot,
   });
 
   final String childId;
@@ -48,13 +50,19 @@ final class HealthMedicationPlanFormDraft {
   final TimeOfDay? time;
   final Set<int> weekdays;
   final Set<String> responsibleIds;
+  final MedicationPlanEditSnapshot? editSnapshot;
 }
 
 final class HealthMedicationPlanSaveReceipt {
-  const HealthMedicationPlanSaveReceipt({required this.planId, required this.version});
+  const HealthMedicationPlanSaveReceipt({
+    required this.planId,
+    required this.version,
+    this.editSnapshot,
+  });
 
   final String planId;
   final int version;
+  final MedicationPlanEditSnapshot? editSnapshot;
 }
 
 typedef HealthMedicationPlanDraftSave =
@@ -112,11 +120,13 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
   final _unit = TextEditingController();
   late String _requestId;
   var _requestWasSubmitted = false;
+  var _awaitingSavedNavigation = false;
   String? _persistedPlanId;
   var _expectedVersion = 0;
   HealthMedicationPlanFormDraft? _pendingSubmission;
   var _draftChangedAfterSubmission = false;
   var _commandGeneration = 0;
+  MedicationPlanEditSnapshot? _editSnapshot;
 
   bool get _editing => widget.medicationId != null;
   bool get _hasExternalChild =>
@@ -153,12 +163,14 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
     _responsibles = {};
     _pendingSubmission = null;
     _requestWasSubmitted = false;
+    _awaitingSavedNavigation = false;
     _draftChangedAfterSubmission = false;
     _retrySave = false;
     _saveError = null;
     _requestId = draft?.requestId ?? _nextMedicationFormRequestId();
     _persistedPlanId = draft?.planId ?? widget.medicationId;
     _expectedVersion = draft?.expectedVersion ?? 0;
+    _editSnapshot = draft?.editSnapshot;
     _childId = widget.childId ?? draft?.childId ?? widget.childOptions.firstOrNull?.id;
     if (draft != null) {
       _name.text = draft.medicationName;
@@ -234,8 +246,30 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
       _retrySave = false;
     });
     try {
+      if (_awaitingSavedNavigation) {
+        await onSaved();
+        return;
+      }
       final onDraftSaved = widget.onDraftSaved;
       if (onDraftSaved != null) {
+        final pendingSubmission = _pendingSubmission;
+        if (pendingSubmission != null) {
+          final receipt = await onDraftSaved(pendingSubmission);
+          if (!_isCurrentCommand(generation)) return;
+          final pendingMatchesCurrent =
+              !_draftChangedAfterSubmission && _matchesCurrentDraft(pendingSubmission);
+          _applyReceipt(receipt, pendingSubmission);
+          _pendingSubmission = null;
+          if (pendingMatchesCurrent) {
+            _requestWasSubmitted = true;
+            _awaitingSavedNavigation = true;
+            await onSaved();
+            return;
+          }
+          if (pendingSubmission.requestId == _requestId) {
+            _requestId = _nextMedicationFormRequestId();
+          }
+        }
         final childId = _childId;
         final medicationName = _name.text.trim();
         final doseAmount = _parsedDose;
@@ -244,25 +278,9 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
             medicationName.isEmpty ||
             doseAmount == null ||
             doseAmount <= 0 ||
-            doseUnit.isEmpty) {
+            doseUnit.isEmpty ||
+            _validityError != null) {
           throw ArgumentError('Invalid medication plan draft.');
-        }
-        final pendingSubmission = _pendingSubmission;
-        if (pendingSubmission != null) {
-          final pendingMatchesCurrent =
-              !_draftChangedAfterSubmission && _matchesCurrentDraft(pendingSubmission);
-          final receipt = await onDraftSaved(pendingSubmission);
-          if (!_isCurrentCommand(generation)) return;
-          _applyReceipt(receipt);
-          _pendingSubmission = null;
-          if (pendingMatchesCurrent) {
-            _requestWasSubmitted = false;
-            await onSaved();
-            return;
-          }
-          if (pendingSubmission.requestId == _requestId) {
-            _requestId = _nextMedicationFormRequestId();
-          }
         }
         final draft = HealthMedicationPlanFormDraft(
           requestId: _requestId,
@@ -278,16 +296,19 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
           time: _time,
           weekdays: Set.unmodifiable(_weekdays),
           responsibleIds: Set.unmodifiable(_responsibles),
+          editSnapshot: _editSnapshot,
         );
         _requestWasSubmitted = true;
         _pendingSubmission = draft;
         _draftChangedAfterSubmission = false;
         final receipt = await onDraftSaved(draft);
         if (!_isCurrentCommand(generation)) return;
-        _applyReceipt(receipt);
+        _awaitingSavedNavigation = !_draftChangedAfterSubmission && _matchesCurrentDraft(draft);
+        _applyReceipt(receipt, draft);
         _pendingSubmission = null;
         _draftChangedAfterSubmission = false;
-        _requestWasSubmitted = false;
+        _requestWasSubmitted = _requestId == draft.requestId;
+        if (!_awaitingSavedNavigation) return;
       }
       await onSaved();
     } catch (_) {
@@ -321,13 +342,35 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
         first.validFrom == second.validFrom &&
         first.validUntil == second.validUntil &&
         first.time == second.time &&
+        (identical(first.editSnapshot, second.editSnapshot) ||
+            (first.editSnapshot != null &&
+                second.editSnapshot != null &&
+                first.editSnapshot!.hasSameValue(second.editSnapshot!))) &&
         _sameValues(first.weekdays, second.weekdays) &&
         _sameValues(first.responsibleIds, second.responsibleIds);
   }
 
-  void _applyReceipt(HealthMedicationPlanSaveReceipt receipt) {
+  void _applyReceipt(
+    HealthMedicationPlanSaveReceipt receipt,
+    HealthMedicationPlanFormDraft submitted,
+  ) {
     _persistedPlanId = receipt.planId;
     _expectedVersion = receipt.version;
+    final snapshot = receipt.editSnapshot;
+    if (snapshot == null) return;
+    _editSnapshot = snapshot;
+    final firstSchedule = snapshot.schedules.firstOrNull;
+    if (submitted.planId == null && firstSchedule != null) {
+      // Promote only untouched creation defaults; edits made while awaiting
+      // the receipt remain in the form and belong to the next intention.
+      if (_time == null && submitted.time == null) {
+        final parts = firstSchedule.timeOfDay.split(':');
+        _time = TimeOfDay(hour: int.parse(parts.first), minute: int.parse(parts.last));
+      }
+      if (_weekdays.isEmpty && submitted.weekdays.isEmpty) {
+        _weekdays = Set.of(firstSchedule.weekdays);
+      }
+    }
   }
 
   bool _matchesCurrentDraft(HealthMedicationPlanFormDraft draft) =>
@@ -345,6 +388,7 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
   void _updateDraft(VoidCallback update) {
     setState(() {
       update();
+      _awaitingSavedNavigation = false;
       if (_pendingSubmission != null) {
         _draftChangedAfterSubmission = true;
         _requestId = _nextMedicationFormRequestId();
