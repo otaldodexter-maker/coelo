@@ -4,6 +4,22 @@ import 'package:coelo_superadmin/features/activities/presentation/activity_direc
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('limits groups to the selected institutions even without a selected unit', () async {
+    final viewModel = ActivityDirectoryViewModel(_RelationalFilterRepository());
+    addTearDown(viewModel.dispose);
+    await viewModel.load();
+    expect(viewModel.groupOptions.map((option) => option.id), {
+      'institution-1-group-1',
+      'institution-2-group-1',
+    });
+    await viewModel.setInstitutions({'institution-1'});
+    expect(viewModel.selectedUnitIds, isEmpty);
+    expect(viewModel.unitOptions.map((option) => option.id), ['institution-1-unit-1']);
+    expect(viewModel.groupOptions.map((option) => option.id), ['institution-1-group-1']);
+    await viewModel.setInstitutions({'institution-2'});
+    expect(viewModel.groupOptions.map((option) => option.id), ['institution-2-group-1']);
+  });
+
   test('isolates loading, success, no-results and empty states', () async {
     final viewModel = ActivityDirectoryViewModel(
       _RelationalFilterRepository(),
@@ -119,12 +135,20 @@ final class _RelationalFilterRepository implements ActivityDirectoryRepository {
 
   @override
   Future<ActivityFilterOptions> fetchFilterOptions() async => const ActivityFilterOptions(
-    institutions: [ActivityFilterOption(id: 'institution-1', label: 'Casa Nuvem')],
+    institutions: [
+      ActivityFilterOption(id: 'institution-1', label: 'Casa Nuvem'),
+      ActivityFilterOption(id: 'institution-2', label: 'Casa Sol'),
+    ],
     units: [
       ActivityFilterOption(
         id: 'institution-1-unit-1',
         label: 'Unidade Centro',
         parentId: 'institution-1',
+      ),
+      ActivityFilterOption(
+        id: 'institution-2-unit-1',
+        label: 'Unidade Sul',
+        parentId: 'institution-2',
       ),
     ],
     groups: [
@@ -132,6 +156,11 @@ final class _RelationalFilterRepository implements ActivityDirectoryRepository {
         id: 'institution-1-group-1',
         label: 'Turma 1',
         parentId: 'institution-1-unit-1',
+      ),
+      ActivityFilterOption(
+        id: 'institution-2-group-1',
+        label: 'Turma 2',
+        parentId: 'institution-2-unit-1',
       ),
     ],
   );
