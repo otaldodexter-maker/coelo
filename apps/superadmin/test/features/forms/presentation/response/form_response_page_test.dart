@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_superadmin/features/forms/presentation/response/form_response_page.dart';
@@ -5,6 +7,169 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('date picker result from an old context cannot populate the new response', (
+    tester,
+  ) async {
+    final first = _ResponseApi(kind: FormItemKind.date);
+    final second = _ResponseApi(kind: FormItemKind.date);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FormResponsePage(api: first, occurrenceId: 'occurrence-1'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Selecionar data'));
+    await tester.pumpAndSettle();
+    expect(find.byType(DatePickerDialog), findsOneWidget);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FormResponsePage(api: second, occurrenceId: 'occurrence-2'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('form-response-save-draft')));
+    await tester.pumpAndSettle();
+    expect(second.saveCommand?.payload.answers, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final fails in [false, true]) {
+    testWidgets('obsolete save ${fails ? 'failure' : 'receipt'} does not affect the next context', (
+      tester,
+    ) async {
+      final pending = Completer<void>();
+      final first = _ResponseApi(saveGate: pending.future);
+      final second = _ResponseApi();
+      await tester.pumpWidget(
+        MaterialApp(
+          home: FormResponsePage(api: first, occurrenceId: 'occurrence-1'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('form-response-item-item-1')),
+        'Answer from context A',
+      );
+      await tester.tap(find.byKey(const Key('form-response-save-draft')));
+      await tester.pump();
+      expect(first.saveCommand, isNotNull);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: FormResponsePage(api: second, occurrenceId: 'occurrence-2'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('form-response-item-item-1')),
+        'Answer from context B',
+      );
+      if (fails) {
+        pending.completeError(
+          const FormApiException(FormApiFailureKind.conflict, 'Obsolete save error'),
+        );
+      } else {
+        pending.complete();
+      }
+      await tester.pumpAndSettle();
+      expect(find.text('Obsolete save error'), findsNothing);
+      await tester.tap(find.byKey(const Key('form-response-save-draft')));
+      await tester.pumpAndSettle();
+      expect(second.saveCommand?.expectedVersion, 1);
+      expect(second.saveCommand?.payload.occurrenceId, 'occurrence-2');
+      expect(second.saveCommand?.payload.responseId, 'response-occurrence-2');
+      expect(
+        second.saveCommand?.payload.answers['item-1']?.value,
+        isA<FormShortTextValue>().having((value) => value.value, 'answer', 'Answer from context B'),
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final replaceApi in [false, true]) {
+    testWidgets('production clears answers when ${replaceApi ? 'API' : 'occurrence'} changes', (
+      tester,
+    ) async {
+      final first = _ResponseApi();
+      final second = replaceApi ? _ResponseApi() : first;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: FormResponsePage(api: first, occurrenceId: 'occurrence-1'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('form-response-item-item-1')),
+        'Answer from context A',
+      );
+
+      final nextId = replaceApi ? 'occurrence-1' : 'occurrence-2';
+      await tester.pumpWidget(
+        MaterialApp(
+          home: FormResponsePage(api: second, occurrenceId: nextId),
+        ),
+      );
+      expect(find.text('Answer from context A'), findsNothing);
+      await tester.pumpAndSettle();
+      expect(
+        second.requestedOccurrences,
+        replaceApi ? ['occurrence-1'] : ['occurrence-1', 'occurrence-2'],
+      );
+      await tester.enterText(
+        find.byKey(const Key('form-response-item-item-1')),
+        'Answer from context B',
+      );
+      await tester.tap(find.byKey(const Key('form-response-save-draft')));
+      await tester.pumpAndSettle();
+      expect(second.saveCommand?.payload.occurrenceId, nextId);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('obsolete occurrence lookup cannot open a draft after context replacement', (
+    tester,
+  ) async {
+    final pending = Completer<void>();
+    final first = _ResponseApi(loadGate: pending.future, label: 'Old question');
+    final second = _ResponseApi(label: 'New question');
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FormResponsePage(api: first, occurrenceId: 'occurrence-1'),
+      ),
+    );
+    await tester.pump();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FormResponsePage(api: second, occurrenceId: 'occurrence-2'),
+      ),
+    );
+    await tester.pump();
+    pending.complete();
+    await tester.pumpAndSettle();
+    expect(first.openCalls, 0);
+    expect(second.openCalls, 1);
+    expect(find.text('Old question *'), findsNothing);
+    expect(find.text('New question *'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('disposed occurrence lookup cannot open a response draft', (tester) async {
+    final pending = Completer<void>();
+    final api = _ResponseApi(loadGate: pending.future);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FormResponsePage(api: api, occurrenceId: 'occurrence-1'),
+      ),
+    );
+    await tester.pump();
+    await tester.pumpWidget(const MaterialApp(home: SizedBox()));
+    pending.complete();
+    await tester.pumpAndSettle();
+    expect(api.openCalls, 0);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('production fails closed without an authorized occurrence', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: FormResponsePage()));
 
@@ -84,63 +249,73 @@ void main() {
 }
 
 final class _ResponseApi implements FormsApi {
+  _ResponseApi({
+    this.loadGate,
+    this.saveGate,
+    this.label = 'Como foi o acolhimento?',
+    this.kind = FormItemKind.shortText,
+  });
+
+  final Future<void>? loadGate;
+  final Future<void>? saveGate;
+  final String label;
+  final FormItemKind kind;
+  final List<String> requestedOccurrences = [];
   int openCalls = 0;
   FormCommand<FormResponseDraftPayload>? saveCommand;
   FormCommand<FormResponseDraftPayload>? submitCommand;
   FormCommand<FormResponseDraftPayload>? editCommand;
 
   @override
-  Future<FormOccurrenceForResponse> getOccurrenceForResponse(String occurrenceId) async =>
-      FormOccurrenceForResponse(
-        occurrence: FormOccurrence(
-          id: occurrenceId,
-          applicationId: 'application-1',
-          formVersionId: 'version-1',
-          opensAt: DateTime(2026),
-          closesAt: DateTime(2026, 12, 31),
-          status: FormOccurrenceStatus.open,
-          managementVersion: 1,
-        ),
-        version: FormVersion(
-          id: 'version-1',
-          formId: 'form-1',
-          number: 1,
-          isPublished: true,
-          sections: [
-            FormSection(
-              id: 'section-1',
-              title: 'Cuidado',
-              position: 0,
-              items: [
-                FormItem(
-                  id: 'item-1',
-                  kind: FormItemKind.shortText,
-                  label: 'Como foi o acolhimento?',
-                  position: 0,
-                  isRequired: true,
-                ),
-              ],
-            ),
-          ],
-        ),
-        participationId: 'participation-1',
-        identityMode: FormIdentityMode.identified,
-        canEdit: true,
-      );
+  Future<FormOccurrenceForResponse> getOccurrenceForResponse(String occurrenceId) async {
+    requestedOccurrences.add(occurrenceId);
+    if (loadGate != null) await loadGate;
+    return FormOccurrenceForResponse(
+      occurrence: FormOccurrence(
+        id: occurrenceId,
+        applicationId: 'application-1',
+        formVersionId: 'version-1',
+        opensAt: DateTime(2026),
+        closesAt: DateTime(2026, 12, 31),
+        status: FormOccurrenceStatus.open,
+        managementVersion: 1,
+      ),
+      version: FormVersion(
+        id: 'version-1',
+        formId: 'form-1',
+        number: 1,
+        isPublished: true,
+        sections: [
+          FormSection(
+            id: 'section-1',
+            title: 'Cuidado',
+            position: 0,
+            items: [
+              FormItem(id: 'item-1', kind: kind, label: label, position: 0, isRequired: true),
+            ],
+          ),
+        ],
+      ),
+      participationId: 'participation-1',
+      identityMode: FormIdentityMode.identified,
+      canEdit: true,
+    );
+  }
 
   @override
   Future<FormResponseDraft> openResponseDraft(
     FormCommand<FormOpenResponseDraftPayload> command,
   ) async {
     openCalls++;
-    return _draft(1);
+    return _draft(1, command.payload.occurrenceId);
   }
 
   @override
   Future<FormResponseDraft> saveResponseDraft(FormCommand<FormResponseDraftPayload> command) async {
     saveCommand = command;
+    if (saveGate != null) await saveGate;
     return FormResponseDraft(
-      id: 'response-1',
+      id: command.payload.responseId,
       occurrenceId: command.payload.occurrenceId,
       status: FormResponseDraftStatus.draft,
       answers: command.payload.answers,
@@ -172,9 +347,9 @@ final class _ResponseApi implements FormsApi {
     );
   }
 
-  FormResponseDraft _draft(int version) => FormResponseDraft(
-    id: 'response-1',
-    occurrenceId: 'occurrence-1',
+  FormResponseDraft _draft(int version, String occurrenceId) => FormResponseDraft(
+    id: 'response-$occurrenceId',
+    occurrenceId: occurrenceId,
     status: FormResponseDraftStatus.draft,
     answers: const {},
     managementVersion: version,
