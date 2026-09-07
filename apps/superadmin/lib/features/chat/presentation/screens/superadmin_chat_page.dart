@@ -165,18 +165,23 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     int? inboxRequestGeneration,
     String? inboxSearch,
   }) async {
+    bool isCurrentAutomaticSelection() =>
+        inboxRequestGeneration == null ||
+        (inboxRequestGeneration == _inboxRequestGeneration && inboxSearch == _search.text);
+    if (!isCurrentAutomaticSelection()) return;
     final conversationChanged = _selected?.id != conversation.id;
-    if (!conversationChanged && _thread != null && _threadError == null) return;
+    if (!conversationChanged && _thread != null && _threadError == null) {
+      // A fresh inbox may change readonly/title/context without changing the
+      // conversation ID. Preserve the thread and any single-flight send.
+      setState(() => _selected = conversation);
+      return;
+    }
     final threadGeneration = ++_threadRequestGeneration;
     final requestedRepository = _repository;
     if (conversationChanged) {
       _sendRequestGeneration++;
       _pendingSend = null;
     }
-    bool isCurrentAutomaticSelection() =>
-        inboxRequestGeneration == null ||
-        (inboxRequestGeneration == _inboxRequestGeneration && inboxSearch == _search.text);
-    if (!isCurrentAutomaticSelection()) return;
     setState(() {
       _selected = conversation;
       _thread = null;

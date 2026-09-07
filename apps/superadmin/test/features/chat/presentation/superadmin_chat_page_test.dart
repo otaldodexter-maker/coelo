@@ -450,6 +450,64 @@ void main() {
     expect(find.text('Retorno privado'), findsNothing);
     expect(find.byKey(const Key('superadmin-chat-composer-field')), findsNothing);
   });
+  testWidgets('same-conversation inbox refresh applies the latest readonly summary', (
+    tester,
+  ) async {
+    _viewport(tester, 1440);
+    final repository = _RefreshingChatRepository(readOnlyAfterRefresh: true);
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('superadmin-chat-composer-field')), findsOneWidget);
+    final search = tester.widget<CoeloSearchField>(find.byKey(const Key('superadmin-chat-search')));
+    search.controller.text = 'updated';
+    search.onChanged('updated');
+    await tester.pump(const Duration(milliseconds: 301));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Conversa atualizada'), findsNWidgets(2));
+    expect(find.byKey(const Key('superadmin-chat-composer-field')), findsNothing);
+    expect(repository.threadRequests, 1);
+  });
+
+  for (final readOnly in [false, true]) {
+    testWidgets('same-conversation refresh preserves in-flight send (readonly=$readOnly)', (
+      tester,
+    ) async {
+      _viewport(tester, 1440);
+      final repository = _RefreshingChatRepository(readOnlyAfterRefresh: readOnly);
+      await tester.pumpWidget(_app(repository: repository));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('superadmin-chat-composer-field')),
+        'Envio pendente',
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+      await tester.pump();
+      final search = tester.widget<CoeloSearchField>(
+        find.byKey(const Key('superadmin-chat-search')),
+      );
+      search.controller.text = 'updated';
+      search.onChanged('updated');
+      await tester.pump(const Duration(milliseconds: 301));
+      await tester.pumpAndSettle();
+      expect(find.text('Conversa atualizada'), findsNWidgets(2));
+      if (!readOnly) {
+        expect(find.text('Envio pendente'), findsOneWidget);
+        await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+        await tester.pump();
+      } else {
+        expect(find.byKey(const Key('superadmin-chat-composer-field')), findsNothing);
+      }
+      expect(repository.sendCount, 1);
+      repository.send.complete(_threadPage('Envio confirmado').items.single);
+      await tester.pumpAndSettle();
+      expect(find.text('Envio confirmado'), findsOneWidget);
+      expect(find.text('Conversa atualizada'), findsNWidgets(2));
+      expect(repository.threadRequests, 1);
+      if (readOnly) expect(find.byKey(const Key('superadmin-chat-composer-field')), findsNothing);
+    });
+  }
 }
 
 Widget _app({ChatRepository? repository, double textScale = 1}) => MaterialApp(
@@ -827,6 +885,49 @@ final class _RevokedChatRepository implements ChatRepository {
   @override
   Future<void> markRead({required String conversationId, required String upToMessageId}) =>
       pendingReceipt ? receipt.future : Future.value();
+
+  @override
+  Future<ChatMessage> sendMessage(ChatSendMessageCommand command) {
+    sendCount++;
+    return send.future;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _RefreshingChatRepository implements ChatRepository {
+  _RefreshingChatRepository({required this.readOnlyAfterRefresh});
+  final bool readOnlyAfterRefresh;
+  final send = Completer<ChatMessage>();
+  int sendCount = 0;
+  int threadRequests = 0;
+
+  @override
+  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async => ChatInboxPage(
+    totalUnread: 0,
+    items: [
+      ChatConversationSummary(
+        id: 'conversation-a',
+        title: query.search.isEmpty ? 'Conversa A' : 'Conversa atualizada',
+        preview: 'Preview',
+        contextLabel: 'Contexto autorizado',
+        kind: 'group',
+        unreadCount: 0,
+        updatedAt: DateTime.utc(2026, 9, 7),
+        isReadOnly: query.search.isNotEmpty && readOnlyAfterRefresh,
+      ),
+    ],
+  );
+
+  @override
+  Future<ChatThreadPage> fetchThread(ChatThreadQuery query) async {
+    threadRequests++;
+    return _threadPage('Thread A');
+  }
+
+  @override
+  Future<void> markRead({required String conversationId, required String upToMessageId}) async {}
 
   @override
   Future<ChatMessage> sendMessage(ChatSendMessageCommand command) {
