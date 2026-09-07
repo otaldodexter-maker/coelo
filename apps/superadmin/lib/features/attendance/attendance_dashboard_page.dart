@@ -7,6 +7,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../app/activity/superadmin_activity.dart';
+import '../../app/shell/superadmin_notice.dart';
 import '../../app/shell/superadmin_shell.dart';
 import '../auth/domain/logout_action.dart';
 import 'attendance.dart';
@@ -273,6 +274,7 @@ class _DashboardContent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _DashboardHeader(
+          compact: maxWidth < CoeloBreakpoints.medium.minWidth,
           canCreate:
               onCreate != null &&
               snapshot.access.canCreateCall &&
@@ -312,9 +314,10 @@ class _DashboardContent extends StatelessWidget {
 }
 
 class _DashboardHeader extends StatelessWidget {
-  const _DashboardHeader({required this.canCreate, required this.onCreate});
+  const _DashboardHeader({required this.canCreate, required this.onCreate, required this.compact});
   final bool canCreate;
   final VoidCallback? onCreate;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) => Wrap(
@@ -330,12 +333,34 @@ class _DashboardHeader extends StatelessWidget {
           const Text('Indicadores calculados sobre registros oficiais válidos.'),
         ],
       ),
-      if (canCreate && onCreate != null)
-        FilledButton.icon(
-          onPressed: onCreate,
-          icon: const Icon(Icons.add_rounded),
-          label: const Text('Nova chamada'),
-        ),
+      Wrap(
+        spacing: CoeloSpacing.space3,
+        runSpacing: CoeloSpacing.space3,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          if (canCreate && onCreate != null)
+            FilledButton.icon(
+              onPressed: onCreate,
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('Nova chamada'),
+            ),
+          CoeloAdminFileActions(
+            compact: compact,
+            actions: [
+              CoeloAdminFileAction(
+                label: 'Exportar CSV',
+                icon: Icons.table_view_outlined,
+                onPressed: () => showSuperadminNotice(context, 'Disponível depois do MVP'),
+              ),
+              CoeloAdminFileAction(
+                label: 'Exportar XLSX',
+                icon: Icons.grid_on_outlined,
+                onPressed: () => showSuperadminNotice(context, 'Disponível depois do MVP'),
+              ),
+            ],
+          ),
+        ],
+      ),
     ],
   );
 }

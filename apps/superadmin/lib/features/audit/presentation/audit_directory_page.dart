@@ -188,14 +188,8 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
               onCardsSelected: () => _setDisplay(AuditDirectoryDisplay.cards),
               onTableViewSelected: _setDisplay,
             ),
-            if (controller.canExport) ...[
-              const SizedBox(width: CoeloSpacing.space2),
-              AuditExportActions(
-                controller: controller,
-                compact: compact,
-                openDownloadUrl: widget.openDownloadUrl,
-              ),
-            ],
+            const SizedBox(width: CoeloSpacing.space2),
+            AuditExportActions(compact: compact),
           ],
         ),
       ],

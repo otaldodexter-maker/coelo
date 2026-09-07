@@ -64,7 +64,7 @@ void main() {
     expect(repository.queries.last.outcomes, {AuditOutcome.denied});
   });
 
-  testWidgets('exports only CSV or XLSX with the active server query', (tester) async {
+  testWidgets('CSV export is informative only and never starts a job', (tester) async {
     final repository = _AuditRepository(page: _page());
     await _pump(tester, width: 1440, repository: repository);
 
@@ -74,18 +74,13 @@ void main() {
     expect(find.text('Exportar XLSX'), findsOneWidget);
     await tester.tap(find.text('Exportar CSV'));
     await tester.pumpAndSettle();
-    expect(find.text('Exportar auditoria'), findsOneWidget);
-    await tester.tap(find.text('Solicitar exportação'));
-    await tester.pumpAndSettle();
-
-    expect(repository.exports.single.format, AuditExportFormat.csv);
-    expect(repository.exports.single.idempotencyKey, isNotEmpty);
-    expect(find.text('Exportação enfileirada'), findsOneWidget);
+    expect(find.text('Disponível depois do MVP'), findsOneWidget);
+    expect(find.text('Solicitar exportação'), findsNothing);
+    expect(repository.exports, isEmpty);
+    expect(repository.exportStatusRequests, isEmpty);
   });
 
-  testWidgets('opens a completed temporary HTTPS export through the injected adapter', (
-    tester,
-  ) async {
+  testWidgets('XLSX export never polls or opens even an existing completed job', (tester) async {
     final repository = _AuditRepository(
       page: _page(),
       exportJob: AuditExportJob(
@@ -111,12 +106,26 @@ void main() {
     await tester.pump();
     await tester.tap(find.text('Exportar XLSX'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Solicitar exportação'));
+    expect(find.text('Disponível depois do MVP'), findsOneWidget);
+    expect(find.text('Baixar arquivo'), findsNothing);
+    expect(repository.exports, isEmpty);
+    expect(repository.exportStatusRequests, isEmpty);
+    expect(openedUrl, isNull);
+  });
+
+  testWidgets('informative exports remain visible without export capability', (tester) async {
+    final repository = _AuditRepository(page: _page(canExport: false));
+    await _pump(tester, width: 375, repository: repository, textScale: 2);
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
     await tester.pumpAndSettle();
-    expect(find.text('Link temporário válido por 5 min'), findsOneWidget);
-    await tester.tap(find.text('Baixar arquivo'));
-    await tester.pump();
-    expect(openedUrl, 'https://files.coelo.me/export.xlsx');
+    expect(find.text('Exportar CSV'), findsOneWidget);
+    expect(find.text('Exportar XLSX'), findsOneWidget);
+    await tester.tap(find.text('Exportar CSV'));
+    await tester.pumpAndSettle();
+    expect(find.text('Disponível depois do MVP'), findsOneWidget);
+    expect(repository.exports, isEmpty);
+    expect(repository.exportStatusRequests, isEmpty);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('opens a read-only detail with masked diff and no simulated labels', (tester) async {
@@ -309,6 +318,7 @@ final class _AuditRepository implements AuditRepository {
   final detailRequests = <String>[];
   final queries = <AuditQuery>[];
   final exports = <AuditExportRequest>[];
+  final exportStatusRequests = <String>[];
   var _detailRequested = false;
 
   void completeDetail() => _detailRequested = true;
@@ -346,16 +356,18 @@ final class _AuditRepository implements AuditRepository {
   }
 
   @override
-  Future<AuditExportJob> fetchExportStatus(String jobId) async =>
-      exportJob ??
-      AuditExportJob(id: jobId, status: AuditExportStatus.queued, format: AuditExportFormat.csv);
+  Future<AuditExportJob> fetchExportStatus(String jobId) async {
+    exportStatusRequests.add(jobId);
+    return exportJob ??
+        AuditExportJob(id: jobId, status: AuditExportStatus.queued, format: AuditExportFormat.csv);
+  }
 }
 
-AuditPage _page({List<AuditEvent>? events}) => AuditPage(
+AuditPage _page({List<AuditEvent>? events, bool canExport = true}) => AuditPage(
   events: events ?? [_event()],
   hasMore: false,
   totalCount: events?.length ?? 1,
-  canExport: true,
+  canExport: canExport,
 );
 
 AuditEvent _event() => AuditEvent(
