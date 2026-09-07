@@ -41,6 +41,8 @@ convites, mutações remotas e deploy Supabase permanecem fora deste incremento.
   incluindo corridas de sessão A→B, reautorização no mesmo ID e negação atual.
 - A mesma suíte foi ampliada para 10/10 com o caso de autorização concorrente
   durante `auth.signOut()` e o caso divergente criado antes do cleanup.
+- `flutter test test/features/auth/domain/logout_action_test.dart` — 3/3,
+  cobrindo logout concorrente sem limpar uma autorização vencedora.
 - Analyzer focado e `dart format` sem diagnósticos.
 
 ## Gates ainda abertos

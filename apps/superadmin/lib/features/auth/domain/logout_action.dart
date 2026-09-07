@@ -23,9 +23,12 @@ LogoutAction createCoeloAuthLogoutAction({
   required SuperadminSession session,
 }) {
   return () async {
+    final cleanupRevision = session.authorizationInvalidationRevision;
     try {
       await auth.signOut();
-      session.signOut();
+      if (session.authorizationInvalidationRevision == cleanupRevision) {
+        session.signOut();
+      }
       return const LogoutResult.success();
     } on Exception {
       return const LogoutResult.failure(LogoutResult.genericFailureMessage);
