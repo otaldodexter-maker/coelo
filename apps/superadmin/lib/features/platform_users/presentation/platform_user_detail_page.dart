@@ -64,8 +64,9 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
     super.didUpdateWidget(oldWidget);
     if (identical(oldWidget.repository, widget.repository) &&
         oldWidget.internalUserId == widget.internalUserId &&
-        oldWidget.capability == widget.capability)
+        oldWidget.capability == widget.capability) {
       return;
+    }
     _loadGeneration++;
     _loadedRecord = null;
     _loadError = null;
@@ -81,7 +82,9 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
   }
 
   void _startLoad() {
-    if (widget.capability == PlatformUserCapability.unauthorized) return;
+    if (widget.capability == PlatformUserCapability.unauthorized) {
+      return;
+    }
     final repository = widget.repository;
     if (repository is PlatformUserRemoteLoader) {
       _load(repository as PlatformUserRemoteLoader);
@@ -98,13 +101,17 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
     });
     try {
       final record = await loader.fetchById(id);
-      if (!mounted || generation != _loadGeneration) return;
+      if (!mounted || generation != _loadGeneration) {
+        return;
+      }
       setState(() {
         _loadedRecord = record;
         _loading = false;
       });
     } on Object catch (error) {
-      if (!mounted || generation != _loadGeneration) return;
+      if (!mounted || generation != _loadGeneration) {
+        return;
+      }
       setState(() {
         _loadError = error;
         _loading = false;
@@ -115,7 +122,9 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
   bool get _canManage => widget.capability == PlatformUserCapability.owner;
 
   bool _isProtectedLastOwner(PlatformUserRecord record) {
-    if (widget.repository is PlatformUserRemoteLoader) return false;
+    if (widget.repository is PlatformUserRemoteLoader) {
+      return false;
+    }
     if (record.profile.baseRole != PlatformUserRole.owner ||
         record.status != PlatformMembershipStatus.active) {
       return false;
