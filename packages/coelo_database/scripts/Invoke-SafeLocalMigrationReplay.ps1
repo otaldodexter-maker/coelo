@@ -91,8 +91,8 @@ if ($targetMigration.Count -ne 1) {
 if ($FoundationOnly -and $AuthOnly) {
   throw 'foundation-only and Auth-only replay profiles are mutually exclusive'
 }
-if ($AdditionalMigration.Count -gt 0 -and -not $FoundationOnly) {
-  throw 'additional migrations require FoundationOnly'
+if ($AdditionalMigration.Count -gt 0 -and -not ($FoundationOnly -or $AuthOnly)) {
+  throw 'additional migrations require FoundationOnly or AuthOnly'
 }
 if ($FoundationOnly) {
   if (-not (Test-Path -LiteralPath $foundationManifestPath -PathType Leaf)) {
@@ -128,8 +128,31 @@ if ($FoundationOnly) {
     throw "foundation replay requires final target $requiredTargetVersion; received $TargetVersion"
   }
 }
-if ($AuthOnly -and $TargetVersion -ne '20260901200206') {
-  throw "Auth-only replay requires target 20260901200206; received $TargetVersion"
+if ($AuthOnly) {
+  if ($AdditionalMigration.Count -eq 0) {
+    if ($TargetVersion -ne '20260901200206') {
+      throw "Auth-only replay requires target 20260901200206; received $TargetVersion"
+    }
+  }
+  else {
+    $additionalVersions = @($AdditionalMigration | ForEach-Object {
+      if ($_ -notmatch '^((\d{14})_[a-z0-9_]+\.sql)\|[0-9a-f]{64}$') {
+        throw "invalid additional migration entry: $_"
+      }
+      $Matches[2]
+    })
+    if (@($additionalVersions | Sort-Object -Unique).Count -ne $additionalVersions.Count -or
+        @(Compare-Object @($additionalVersions) @($additionalVersions | Sort-Object) -SyncWindow 0).Count -ne 0) {
+      throw 'additional migrations must be unique and strictly ordered'
+    }
+    if (@($additionalVersions | Where-Object { $_ -le '20260901200206' }).Count -ne 0) {
+      throw 'additional migrations must be newer than the Auth-only boundary'
+    }
+    $requiredTargetVersion = $additionalVersions[-1]
+    if ($TargetVersion -ne $requiredTargetVersion) {
+      throw "Auth-only replay requires final target $requiredTargetVersion; received $TargetVersion"
+    }
+  }
 }
 if ($RunAuthLifecycle -and -not $AuthOnly) {
   throw 'Auth lifecycle requires the constrained Auth-only replay profile'

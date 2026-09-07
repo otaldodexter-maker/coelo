@@ -75,8 +75,8 @@ $preflight = @(Get-ChildItem -LiteralPath $preflightFull -File -Filter '*.sql' |
 $foundationManifestHash = $null
 $additionalCanonical = @()
 $foundationBoundaryVersion = $null
-if ($AdditionalMigration.Count -gt 0 -and -not $FoundationOnly) {
-  throw 'additional migrations require FoundationOnly'
+if ($AdditionalMigration.Count -gt 0 -and -not ($FoundationOnly -or $AuthOnly)) {
+  throw 'additional migrations require FoundationOnly or AuthOnly'
 }
 if ($FoundationOnly -or $AuthOnly) {
   if (-not (Test-Path -LiteralPath $foundationManifestPath -PathType Leaf)) {
@@ -137,7 +137,8 @@ if ($FoundationOnly -or $AuthOnly) {
         )
     })
   }
-  else {
+  $additionalBoundaryVersion = if ($AuthOnly) { '20260901200206' } else { $foundationBoundaryVersion }
+  if ($AdditionalMigration.Count -gt 0) {
     $additionalEntries = @($AdditionalMigration | ForEach-Object {
       if ($_ -notmatch '^((\d{14})_[a-z0-9_]+\.sql)\|([0-9a-f]{64})$') {
         throw "invalid additional migration entry: $_"
@@ -151,8 +152,11 @@ if ($FoundationOnly -or $AuthOnly) {
         throw 'additional migrations must be unique and strictly ordered'
       }
       if (@($additionalEntries | Where-Object {
-            $_.Version -le $foundationBoundaryVersion
+            $_.Version -le $additionalBoundaryVersion
           }).Count -ne 0) {
+        if ($AuthOnly) {
+          throw 'additional migrations must be newer than the Auth-only boundary'
+        }
         throw 'additional migrations must be newer than the foundation manifest boundary'
       }
       $additionalCanonical = @($additionalEntries | ForEach-Object {
