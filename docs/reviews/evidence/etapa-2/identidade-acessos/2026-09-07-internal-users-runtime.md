@@ -32,7 +32,8 @@ convites, mutações remotas e deploy Supabase permanecem fora deste incremento.
 - Commit `4206f2bb`: detalhe remoto isolado e cinco testes de widget.
 - Commit `10730253`: rota produtiva protegida, constantes e conexão da lista ao
   detalhe.
-- `flutter test test/features/platform_users/presentation/platform_user_detail_page_test.dart` — 5/5.
+- `flutter test test/features/platform_users/presentation/platform_user_detail_page_test.dart` — 7/7,
+  incluindo volta à listagem e troca de revisão para acesso negado.
 - `flutter test test/features/platform_users/data/supabase_platform_user_repository_test.dart` — 25/25.
 - `flutter test test/app/router/internal_user_routes_test.dart` — 4/4.
 - `flutter test test/app/router/platform_user_preview_routes_test.dart` — 6/6.
