@@ -156,6 +156,23 @@ void main() {
     expect(session.isAuthenticated, isTrue);
     expect(session.sessionId, _sessionA);
   });
+
+  test('revokes a previously authorized session when current bootstrap is denied', () async {
+    final auth = _FakeCoeloAuthGateway();
+    final session = SuperadminSession()..authorize(_context, sessionId: _sessionA);
+    addTearDown(session.dispose);
+    final action = createCoeloAuthLoginAction(
+      auth: auth,
+      authContext: _FakeSuperadminAuthContextGateway(isAuthorized: false),
+      session: session,
+    );
+
+    final result = await action(request);
+
+    expect(result.isSuccess, isFalse);
+    expect(auth.signOutCalls, 1);
+    expect(session.isAuthenticated, isFalse);
+  });
 }
 
 const _context = SuperadminAuthContext(
