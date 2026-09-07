@@ -10,6 +10,67 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('blocked image publication gives honest feedback without a request', () async {
+    var requests = 0;
+    final client = _client((request) async {
+      requests++;
+      return _json(request, _noticeJson());
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseNoticeRepository(client);
+    final notice = await repository.getById('image-notice');
+    requests = 0;
+
+    await expectLater(
+      repository.publish(
+        notice.copyWith(contentFormat: NoticeContentFormat.image),
+        requestId: '10000000-0000-4000-8000-000000000001',
+        expectedVersion: notice.managementVersion,
+      ),
+      throwsA(
+        isA<NoticeMediaDecisionRequiredException>().having(
+          (error) => error.safeMessage,
+          'safeMessage',
+          'A publicação com imagem ainda não está disponível. '
+              'Converta o aviso para texto antes de publicar.',
+        ),
+      ),
+    );
+    expect(requests, 0);
+  });
+
+  test('media blocked envelope ignores stale or sensitive server feedback', () async {
+    final client = _client(
+      (request) async => Response(
+        jsonEncode({
+          'ok': false,
+          'data': null,
+          'error': {
+            'code': 'NOTICE_MEDIA_BLOCKED',
+            'message': 'sensitive internal storage detail',
+            'http_status': 409,
+          },
+        }),
+        200,
+        headers: {'content-type': 'application/json'},
+        request: request,
+      ),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseNoticeRepository(client).getById('image-notice'),
+      throwsA(
+        isA<NoticeMediaDecisionRequiredException>().having(
+          (error) => error.safeMessage,
+          'safeMessage',
+          'A publicação com imagem ainda não está disponível. '
+              'Converta o aviso para texto antes de publicar.',
+        ),
+      ),
+    );
+  });
+
   test('controller accepts v2 create version one and queued publication version two', () async {
     final requests = <Request>[];
     final client = _client((request) async {
