@@ -3,12 +3,31 @@ title: "Pendências Coelo — Back-end por tela e ação"
 source: "docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; decisions/0020-backend-authorization-application-security.md; specs aprovadas por dominio; auditoria consolidada em 2026-08-26; Git dev cd1ea97c e inventario remoto read-only em 2026-09-01"
 status: "living"
 generated_at: "2026-08-26"
-updated_at: "2026-09-03"
+updated_at: "2026-09-07"
 action_count: 207
 family_count: 37
 ---
 
 # Pendências Coelo — Back-end
+
+## Rodada de 2026-09-07 — backend local e integração em curso
+
+- Docker recuperado e baseline Auth-only real passou localmente: 45 migrations
+  canônicas + dois preflights, pgTAP 30/30 e lifecycle GoTrue/PostgREST/Mailpit;
+  cleanup nominal confirmado pelo Engenheiro 1. Não prova produção nem wiring Flutter.
+- E1-P0-RLS01 nas três tabelas privadas de Perfis foi entregue em `8a264c1`:
+  Eng1 informou RED 88 (18 falhas esperadas) e GREEN 118/118 (P0 88 + Auth 30),
+  com cleanup nominal. Review central/integração ainda são gates separados.
+  N01 Avisos, F-READ01 Formulários e A01 Atividades continuam pacotes nominais
+  separados. Nenhum lease remoto, migration produtiva ou deploy foi executado.
+- O primeiro lote cliente da E2E 4 foi integrado até `d9d1bf46`, com 83/83
+  testes locais de destino e análise focal sem issues. Ele não altera
+  SQL/RLS/RPC e não fecha backend: XLSX do formulário inteiro ainda depende do
+  worker/R2 privado, autorização, auditoria, expiração e prova real.
+- R2 privado é canônico para mídia nova; Supabase mantém banco/catálogo/permissões.
+  MFA interno do MVP segue o adiamento aprovado, sem reabrir gates históricos.
+  Fila/evidência: `evidence/etapa-2/coordenador/rodada-2026-09-07.md`.
+
 
 > **Nomenclatura canônica — 2026-09-03:** este rastreador é governado por
 > **Coelo Back-end** (`coelo-backend`) e cobre Supabase/Postgres e Cloudflare

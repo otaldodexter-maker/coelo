@@ -3,7 +3,7 @@ title: "Pendências Coelo — Front-end + Back-end"
 source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; Git dev 7b94428aa9861b68fcc81b335a98857b43de789f"
 status: "open"
 generated_at: "2026-08-26"
-updated_at: "2026-09-03"
+updated_at: "2026-09-07"
 action_count: 180
 historical_action_count: 202
 deferred_post_mvp_action_count: 22
@@ -14,11 +14,32 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "3AEC930708733F218F3B044B0C0E461758755325970D3EACC04E81EAA4F56445"
-supabase_tracker_sha256: "4B30E0883CFC8641CAD687EA19AB18FA6E858402A13F6CECB57C0D674E3C9D6A"
+flutter_tracker_sha256: "631D78CBACC6F1F5298D67DB49CCDEFAFE46E95E9117E5F62CD1317C03F51D9C"
+supabase_tracker_sha256: "B8FFF75B4AB21B5591082DEDDCDBF8D9AE0F9029922EC8F4B06439D242DD9F26"
 ---
 
 # Pendências Coelo — Front-end + Back-end
+
+## Rodada de 2026-09-07 — consolidação não é conclusão E2E
+
+- Integração incremental iniciada pelo lote E2E 4 `c0729294` → `4e6f8dc5`:
+  Formulários/Respostas/Editor e receipt de Medicação, sem SQL ou deploy.
+  Seis commits integrados até `d9d1bf46`; cinco suítes no destino passaram
+  (83/83), análise de cinco arquivos sem issues. Nenhuma ação foi promovida
+  a `ready-for-e2e` ou `verified-e2e` por esses commits.
+- D01 Unit/Group continua na fila por invalidação de contexto ausente no
+  detalhe; correção com regressão foi encaminhada à frente responsável.
+  P0 RLS entregue pelo Eng1 com 118/118 locais ainda aguarda integração central.
+- Até 03:20 BRT as frentes continuam o escopo original; coordenação apoia somente
+  bloqueios concretos e consolida sem exigir interrupção administrativa.
+  Balanços às 21:00, 22:15, 23:30 e fechamento previsto até 04:40.
+- Prova restante distingue cliente, backend local, produção e E2E real.
+- No localhost, `/dev/...` é prévia com fixtures; sem `/dev` é composição real
+  Supabase, sem fallback fake. Os dois caminhos exigem evidências separadas.
+  R2 privado e XLSX das respostas do formulário inteiro substituem referências
+  históricas contrárias. Contagens/ETAs antigos não representam nova certificação.
+- Ledger vivo: `evidence/etapa-2/coordenador/rodada-2026-09-07.md`.
+
 
 > **Nomenclatura canônica — 2026-09-03:** este rastreador é governado por
 > **Coelo Front-end + Back-end** (`coelo-frontend-backend`). O nome do arquivo

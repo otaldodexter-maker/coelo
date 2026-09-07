@@ -3,7 +3,7 @@ title: "Pendências Coelo — Front-end por tela e ação"
 source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git HEAD cd1ea97c76695e4be72cd91882d65c9c235704a4"
 status: "open"
 generated_at: "2026-08-26"
-updated_at: "2026-09-03"
+updated_at: "2026-09-07"
 action_count: 207
 family_count: 37
 visual_program_count: 31
@@ -11,6 +11,26 @@ visual_program_accepted_count: 0
 ---
 
 # Pendências Coelo — Front-end por tela e ação
+
+## Rodada de 2026-09-07 — integração incremental em curso
+
+- Recorte vigente: cinco frentes E2E do Superadmin até 03:20 de 08/09;
+  coordenação consolida continuamente, com fechamento previsto até 04:40 BRT.
+  Sem ampliação de produto, mensagens administrativas repetidas ou parada por commit.
+- Primeiro lote recebido: E2E 4, sequência `c0729294` → `4e6f8dc5`.
+  Formulários: exportação XLSX somente, ticket HTTPS/expiração, troca de contexto
+  em respostas/editor, descarte para conteúdo confirmado. Medicação: receipt
+  obsoleto não altera a nova tela. Seis commits integrados até `d9d1bf46`:
+  cinco suítes no destino passaram, 83/83 testes; análise dos cinco arquivos
+  de produção sem issues. Nenhum estado `verified` foi promovido.
+- D01 Unit/Group `c11614d5` permanece na fila: review central identificou
+  ausência de invalidação do detalhe por revisão de autorização. Correção
+  nominal e regressão de troca de contexto encaminhadas à própria frente.
+- Os três rastreadores foram lidos integralmente pelo coordenador antes da
+  integração. Evidência e fila: `evidence/etapa-2/coordenador/rodada-2026-09-07.md`.
+  As contagens históricas abaixo ainda não incorporam os doze IDs de Locais;
+  não usar estimativas históricas somadas como prazo desta rodada.
+
 
 > **Nomenclatura canônica — 2026-09-03:** este rastreador é governado por
 > **Coelo Front-end** (`coelo-frontend`). O arquivo mantém o nome histórico e,
