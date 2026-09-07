@@ -337,6 +337,119 @@ void main() {
     expect(repository.commands[1].idempotencyKey, isNot(repository.commands[0].idempotencyKey));
     expect(find.text('Mensagem B'), findsOneWidget);
   });
+
+  testWidgets('denied send purges private chat state and cannot be retried', (tester) async {
+    _viewport(tester, 1440);
+    final repository = _RevokedChatRepository();
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+    final composer = tester
+        .widget<EditableText>(
+          find.descendant(
+            of: find.byKey(const Key('superadmin-chat-composer-field')),
+            matching: find.byType(EditableText),
+          ),
+        )
+        .controller;
+    await tester.enterText(find.byKey(const Key('superadmin-chat-composer-field')), 'Privado');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+    await tester.pump();
+    repository.send.completeError(const ChatUnauthorizedException());
+    await tester.pumpAndSettle();
+
+    expect(find.text('Acesso nao autorizado'), findsOneWidget);
+    expect(find.text('Thread A'), findsNothing);
+    expect(find.text('Conversa A'), findsNothing);
+    expect(find.byKey(const Key('superadmin-chat-composer-field')), findsNothing);
+    expect(composer.text, isEmpty);
+    expect(repository.sendCount, 1);
+  });
+
+  testWidgets('denied read receipt invalidates a send already in flight', (tester) async {
+    _viewport(tester, 1440);
+    final repository = _RevokedChatRepository(pendingReceipt: true);
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('superadmin-chat-composer-field')), 'Privado');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+    await tester.pump();
+    repository.receipt.completeError(const ChatUnauthorizedException());
+    await tester.pumpAndSettle();
+    expect(find.text('Acesso nao autorizado'), findsOneWidget);
+
+    repository.send.complete(_threadPage('Resposta tardia').items.single);
+    await tester.pumpAndSettle();
+    expect(find.text('Acesso nao autorizado'), findsOneWidget);
+    expect(find.text('Resposta tardia'), findsNothing);
+    expect(find.text('Thread A'), findsNothing);
+    expect(find.byKey(const Key('superadmin-chat-composer-field')), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('denied inbox refresh purges the retained composer draft', (tester) async {
+    _viewport(tester, 1440);
+    final repository = _RevokedChatRepository();
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+    final composer = tester
+        .widget<EditableText>(
+          find.descendant(
+            of: find.byKey(const Key('superadmin-chat-composer-field')),
+            matching: find.byType(EditableText),
+          ),
+        )
+        .controller;
+    await tester.enterText(find.byKey(const Key('superadmin-chat-composer-field')), 'Privado');
+    final search = tester.widget<CoeloSearchField>(find.byKey(const Key('superadmin-chat-search')));
+    search.controller.text = 'revoked';
+    search.onChanged('revoked');
+    await tester.pump(const Duration(milliseconds: 301));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Acesso nao autorizado'), findsOneWidget);
+    expect(composer.text, isEmpty);
+    expect(find.text('Thread A'), findsNothing);
+  });
+
+  testWidgets('denied thread discards the inbox preview instead of offering retry', (tester) async {
+    _viewport(tester, 375);
+    await tester.pumpWidget(_app(repository: _RevokedChatRepository(denyThread: true)));
+    await tester.pumpAndSettle();
+    expect(find.text('Acesso nao autorizado'), findsOneWidget);
+    expect(find.text('Conversa A'), findsNothing);
+    expect(find.text('Tentar novamente'), findsNothing);
+    expect(find.byKey(const Key('superadmin-chat-composer-field')), findsNothing);
+  });
+
+  testWidgets('inbox response pending before denial cannot restore private content', (
+    tester,
+  ) async {
+    _viewport(tester, 1440);
+    final repository = _RevokedChatRepository();
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('superadmin-chat-composer-field')), 'Privado');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+    await tester.pump();
+    final search = tester.widget<CoeloSearchField>(find.byKey(const Key('superadmin-chat-search')));
+    search.controller.text = 'pending';
+    search.onChanged('pending');
+    await tester.pump(const Duration(milliseconds: 301));
+    repository.send.completeError(const ChatUnauthorizedException());
+    await tester.pumpAndSettle();
+    expect(find.text('Acesso nao autorizado'), findsOneWidget);
+
+    repository.inbox.complete(
+      ChatInboxPage(totalUnread: 0, items: [_conversation('conversation-b', 'Retorno privado')]),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Acesso nao autorizado'), findsOneWidget);
+    expect(find.text('Retorno privado'), findsNothing);
+    expect(find.byKey(const Key('superadmin-chat-composer-field')), findsNothing);
+  });
 }
 
 Widget _app({ChatRepository? repository, double textScale = 1}) => MaterialApp(
@@ -682,6 +795,43 @@ final class _AmbiguousSendRepository implements ChatRepository {
       throw const ChatOfflineException();
     }
     return receipt;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _RevokedChatRepository implements ChatRepository {
+  _RevokedChatRepository({this.pendingReceipt = false, this.denyThread = false});
+
+  final bool pendingReceipt;
+  final bool denyThread;
+  final receipt = Completer<void>();
+  final send = Completer<ChatMessage>();
+  final inbox = Completer<ChatInboxPage>();
+  int sendCount = 0;
+
+  @override
+  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async {
+    if (query.search == 'revoked') throw const ChatUnauthorizedException();
+    if (query.search == 'pending') return inbox.future;
+    return ChatInboxPage(totalUnread: 0, items: [_conversation('conversation-a', 'Conversa A')]);
+  }
+
+  @override
+  Future<ChatThreadPage> fetchThread(ChatThreadQuery query) async {
+    if (denyThread) throw const ChatUnauthorizedException();
+    return _threadPage('Thread A');
+  }
+
+  @override
+  Future<void> markRead({required String conversationId, required String upToMessageId}) =>
+      pendingReceipt ? receipt.future : Future.value();
+
+  @override
+  Future<ChatMessage> sendMessage(ChatSendMessageCommand command) {
+    sendCount++;
+    return send.future;
   }
 
   @override

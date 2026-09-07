@@ -145,7 +145,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       }
     } on ChatUnauthorizedException catch (error) {
       if (!_isCurrentInboxRequest(requestGeneration, requestedRepository)) return;
-      setState(() => _inboxState = ChatInboxState.unauthorized(error));
+      _denyAccess(error);
     } on ChatOfflineException catch (error) {
       if (!_isCurrentInboxRequest(requestGeneration, requestedRepository)) return;
       setState(() => _inboxState = ChatInboxState.offline(error));
@@ -207,7 +207,11 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
           identical(requestedRepository, _repository) &&
           _selected?.id == conversation.id &&
           isCurrentAutomaticSelection()) {
-        setState(() => _threadError = error);
+        if (error is ChatUnauthorizedException) {
+          _denyAccess(error);
+        } else {
+          setState(() => _threadError = error);
+        }
       }
     }
   }
@@ -243,10 +247,9 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         if (_composer.text.trim() == body) _composer.clear();
         _thread = ChatThreadPage(items: [sent, ...?_thread?.items]);
       });
-    } on ChatUnauthorizedException {
+    } on ChatUnauthorizedException catch (error) {
       if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
-        _pendingSend = null;
-        _showNotice('Sua permissao para esta conversa foi alterada.');
+        _denyAccess(error);
       }
     } on ChatOfflineException {
       if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
@@ -268,6 +271,28 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       generation == _sendRequestGeneration &&
       identical(requestedRepository, _repository) &&
       _selected?.id == conversationId;
+
+  void _denyAccess(ChatUnauthorizedException error) {
+    // A confirmed denial invalidates this page's private snapshot, including
+    // outstanding requests. Network failures keep their separate retry path.
+    _searchDebounce?.cancel();
+    _inboxRequestGeneration++;
+    _threadRequestGeneration++;
+    _sendRequestGeneration++;
+    _search.clear();
+    _composer.clear();
+    setState(() {
+      _selected = null;
+      _thread = null;
+      _threadError = null;
+      _pendingSend = null;
+      _sending = false;
+      _inboxPage = 1;
+      _inboxCursor = null;
+      _inboxCursorHistory.clear();
+      _inboxState = ChatInboxState.unauthorized(error);
+    });
+  }
 
   void _showNotice(String message) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
