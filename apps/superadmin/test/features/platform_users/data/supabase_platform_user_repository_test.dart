@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:coelo_superadmin/features/platform_users/data/supabase_platform_user_repository.dart';
@@ -8,6 +9,188 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  for (final operation in ['profiles', 'list', 'detail', 'status']) {
+    for (final oldDenial in [false, true]) {
+      test('late $operation response denial=$oldDenial preserves the new cache', () async {
+        var blockNext = false;
+        final started = Completer<void>();
+        final release = Completer<void>();
+        final function = switch (operation) {
+          'profiles' => 'superadmin_internal_user_profiles',
+          'list' => 'superadmin_internal_users_list',
+          'detail' => 'superadmin_internal_user_detail',
+          _ => 'superadmin_internal_user_change_status',
+        };
+        final client = SupabaseClient(
+          'https://example.supabase.co',
+          'publishable-key',
+          httpClient: MockClient((request) async {
+            if (blockNext && request.url.path.endsWith(function)) {
+              blockNext = false;
+              started.complete();
+              await release.future;
+              if (oldDenial) {
+                return Response(
+                  jsonEncode({'code': '42501', 'message': 'old private detail'}),
+                  403,
+                  headers: {'content-type': 'application/json'},
+                  request: request,
+                );
+              }
+            }
+            final body = request.url.path.endsWith('superadmin_internal_user_profiles')
+                ? {
+                    'items': [_profileJson],
+                  }
+                : request.url.path.endsWith('superadmin_internal_users_list')
+                ? {
+                    'items': [_recordJson],
+                    'total': 1,
+                  }
+                : _recordJson;
+            return Response(
+              jsonEncode(body),
+              200,
+              headers: {'content-type': 'application/json'},
+              request: request,
+            );
+          }),
+        );
+        addTearDown(client.dispose);
+        final repository = SupabasePlatformUserRepository(client);
+        await repository.fetchPage(const PlatformUserQuery());
+        blockNext = true;
+        final Future<Object?> pending = switch (operation) {
+          'profiles' => repository.fetchProfiles(),
+          'list' => repository.fetchPage(const PlatformUserQuery()),
+          'detail' => repository.fetchById(_identityId),
+          _ => repository.suspend(_identityId),
+        };
+        final denied = expectLater(
+          pending,
+          throwsA(
+            isA<PlatformUserRuleException>().having((error) => error.code, 'code', 'unauthorized'),
+          ),
+        );
+        await started.future;
+        repository.clearSessionCache();
+        await repository.fetchPage(const PlatformUserQuery());
+        final currentRecord = repository.records.single;
+        final currentProfile = repository.profiles.single;
+        release.complete();
+        await denied;
+        expect(repository.records.single, same(currentRecord));
+        expect(repository.profiles.single, same(currentProfile));
+      });
+    }
+  }
+
+  test('clearing session cache removes records and profiles', () async {
+    final client = _client([]);
+    addTearDown(client.dispose);
+    final repository = SupabasePlatformUserRepository(client);
+    await repository.fetchPage(const PlatformUserQuery());
+    expect(repository.records, isNotEmpty);
+    expect(repository.profiles, isNotEmpty);
+    repository.clearSessionCache();
+    expect(repository.records, isEmpty);
+    expect(repository.profiles, isEmpty);
+    expect(repository.findById(_identityId), isNull);
+  });
+
+  test('pending list cannot repopulate a cleared session cache', () async {
+    final pending = Completer<Response>();
+    final started = Completer<void>();
+    late Request listRequest;
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        if (request.url.path.endsWith('superadmin_internal_user_profiles')) {
+          return Response(
+            jsonEncode({
+              'items': [_profileJson],
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          );
+        }
+        listRequest = request;
+        started.complete();
+        return pending.future;
+      }),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabasePlatformUserRepository(client);
+    final result = repository.fetchPage(const PlatformUserQuery());
+    final denied = expectLater(
+      result,
+      throwsA(
+        isA<PlatformUserRuleException>().having((error) => error.code, 'code', 'unauthorized'),
+      ),
+    );
+    await started.future;
+    repository.clearSessionCache();
+    pending.complete(
+      Response(
+        jsonEncode({
+          'items': [_recordJson],
+          'total': 1,
+        }),
+        200,
+        headers: {'content-type': 'application/json'},
+        request: listRequest,
+      ),
+    );
+    await denied;
+    expect(repository.records, isEmpty);
+    expect(repository.profiles, isEmpty);
+  });
+
+  for (final envelope in [true, false]) {
+    test('authorization denial clears populated caches envelope=$envelope', () async {
+      var deny = false;
+      final client = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-key',
+        httpClient: MockClient((request) async {
+          final Object body = deny
+              ? (envelope
+                    ? {
+                        'ok': false,
+                        'error': {'code': 'SAI_SESSION_INVALID'},
+                      }
+                    : {'code': '42501', 'message': 'private detail'})
+              : request.url.path.endsWith('superadmin_internal_user_profiles')
+              ? {
+                  'items': [_profileJson],
+                }
+              : {
+                  'items': [_recordJson],
+                  'total': 1,
+                };
+          return Response(
+            jsonEncode(body),
+            deny && !envelope ? 403 : 200,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          );
+        }),
+      );
+      addTearDown(client.dispose);
+      final repository = SupabasePlatformUserRepository(client);
+      await repository.fetchPage(const PlatformUserQuery());
+      deny = true;
+      await expectLater(
+        repository.fetchPage(const PlatformUserQuery()),
+        throwsA(isA<PlatformUserRuleException>()),
+      );
+      expect(repository.records, isEmpty);
+      expect(repository.profiles, isEmpty);
+    });
+  }
+
   test('preserves the existing typed MFA error before generic privilege denial', () async {
     final client = SupabaseClient(
       'https://example.supabase.co',

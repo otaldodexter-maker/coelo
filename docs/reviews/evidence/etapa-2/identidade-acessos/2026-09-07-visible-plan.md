@@ -20,7 +20,7 @@ Docker ou deploy por esta frente nesta retomada.
 | 1/6 Contrato/inventário | read/update/suspend internos | Recorte local listado; criação/convite não habilitados |
 | 2/6 Backend/negativas | RPCs superadmin_internal_user_profiles e superadmin_internal_users_list | Adapter testado via HTTP simulado; falta prova SQL/runtime autorizado |
 | 3/6 Cliente/estados | scope/main/app/router/diretório | Composição readonly, negativa e limpeza de tela implementadas |
-| 4/6 Integração/reload | Sessão → RPC → UI | Aberto: ausência de prova com backend real; cache/revogação em andamento |
+| 4/6 Integração/reload | Sessão → RPC → UI | Cache local ligado à sessão; epoch descarta respostas antigas. Falta backend real e lifecycle de mídia |
 | 5/6 Regressão/visual | testes Flutter | Diretório 13/13; composição inicial combinada 32/32; visual real ainda aberto |
 | 6/6 Review/evidências/commit | commits locais | 151d9ddf, 022e1568, bbafe63e; reviews locais aprovados, sem promover E2E |
 
@@ -32,7 +32,7 @@ Docker ou deploy por esta frente nesta retomada.
 | 2/6 Backend/negativas | Nenhum BD nesta fatia | Servidor continua reautorizando; não há mudança de claims/capabilities |
 | 3/6 Cliente/estados | authorize/_setSessionState | Alteração semântica notifica; reautorização equivalente permanece estável |
 | 4/6 Integração/reload | Lista normal escuta sessão | ListenableBuilder + chave de revisão; teste prova nova carga e perda de permissão sem RPC |
-| 5/6 Regressão/visual | sessão/scope/router/login | 55/55 locais verdes; MediaSession/cache privados ainda abertos |
+| 5/6 Regressão/visual | sessão/scope/router/login | 55/55 locais verdes; cache/scope 36/36. MediaSession e dispose em andamento |
 | 6/6 Review/evidências/commit | account_review | Bootstrap concorrente inicial corrigido após RED; revisão final aprovada |
 
 ## Usuários internos — detalhe/edição
@@ -59,3 +59,14 @@ Docker ou deploy por esta frente nesta retomada.
 
 Os rastreadores oficiais permanecem sob autoria exclusiva do Coordenador.
 Este plano registra andamento, não amplia o recorte nem substitui evidência.
+
+## Incremento R05 — cache por autorização
+
+`SupabasePlatformUserRepository.clearSessionCache` limpa records/profiles e
+avança um epoch. Leituras de perfis/lista/detalhe e comandos validam o epoch
+antes de publicar respostas; comandos o capturam antes da leitura preparatória.
+Resposta antiga, inclusive negação, não repovoa nem apaga o cache novo.
+O scope liga a limpeza às notificações efetivas da sessão; refresh equivalente
+não limpa. Testes: repository 24/24 + scope 12/12 = 36/36, analyzer de quatro
+arquivos sem problemas, revisão independente favorável. Sem SQL executado.
+O callback de dispose é extensão separada, ainda pendente neste incremento.

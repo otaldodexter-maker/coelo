@@ -15,6 +15,39 @@ final class SupabasePlatformUserRepository
   final SupabaseClient _client;
   final Map<String, PlatformUserRecord> _records = {};
   List<PlatformAccessProfile> _profiles = const [];
+  int _cacheRevision = 0;
+
+  /// Discards this session's projection and invalidates its pending responses.
+  void clearSessionCache() {
+    _cacheRevision++;
+    _records.clear();
+    _profiles = const [];
+  }
+
+  void _requireCurrentCache(int revision) {
+    if (revision != _cacheRevision) {
+      throw const PlatformUserRuleException('unauthorized', 'Acesso não autorizado.');
+    }
+  }
+
+  Map<String, dynamic> _responsePayload(Object? response, int revision) {
+    _requireCurrentCache(revision);
+    try {
+      return _payload(response);
+    } on PlatformUserRuleException catch (error) {
+      if (error.code == 'unauthorized') clearSessionCache();
+      rethrow;
+    }
+  }
+
+  Exception _requestError(PostgrestException error, int revision) {
+    _requireCurrentCache(revision);
+    final mapped = _mapError(error);
+    if (mapped is PlatformUserRuleException && mapped.code == 'unauthorized') {
+      clearSessionCache();
+    }
+    return mapped;
+  }
 
   @override
   bool get isDemo => false;
@@ -30,9 +63,10 @@ final class SupabasePlatformUserRepository
 
   @override
   Future<List<PlatformAccessProfile>> fetchProfiles() async {
+    final revision = _cacheRevision;
     try {
       final response = await _client.rpc<Map<String, dynamic>>('superadmin_internal_user_profiles');
-      final payload = _payload(response);
+      final payload = _responsePayload(response, revision);
       final rows = payload['items'] as List<dynamic>? ?? const [];
       _profiles = rows
           .map((row) => _profile(Map<String, dynamic>.from(row as Map)))
@@ -40,14 +74,16 @@ final class SupabasePlatformUserRepository
           .toList(growable: false);
       return profiles;
     } on PostgrestException catch (error) {
-      throw _mapError(error);
+      throw _requestError(error, revision);
     }
   }
 
   @override
   Future<PlatformUserPage> fetchPage(PlatformUserQuery query) async {
+    final revision = _cacheRevision;
     try {
       if (_profiles.isEmpty) await fetchProfiles();
+      _requireCurrentCache(revision);
       final response = await _client.rpc<Map<String, dynamic>>(
         'superadmin_internal_users_list',
         params: {
@@ -63,7 +99,7 @@ final class SupabasePlatformUserRepository
           'p_page_size': query.pageSize,
         },
       );
-      final payload = _payload(response);
+      final payload = _responsePayload(response, revision);
       final items = (payload['items'] as List<dynamic>? ?? const [])
           .map((row) => _record(Map<String, dynamic>.from(row as Map)))
           .toList(growable: false);
@@ -77,24 +113,30 @@ final class SupabasePlatformUserRepository
         pageSize: (payload['page_size'] as num?)?.toInt() ?? query.pageSize,
       );
     } on PostgrestException catch (error) {
-      throw _mapError(error);
+      throw _requestError(error, revision);
     }
   }
 
   @override
   Future<PlatformUserRecord?> fetchById(String id) async {
+    final revision = _cacheRevision;
     try {
       if (_profiles.isEmpty) await fetchProfiles();
+      _requireCurrentCache(revision);
       final response = await _client.rpc<Map<String, dynamic>>(
         'superadmin_internal_user_detail',
         params: {'p_internal_identity_id': id},
       );
-      final record = _record(_payload(response));
+      final record = _record(_responsePayload(response, revision));
       _records[record.id] = record;
       return record;
     } on PostgrestException catch (error) {
-      if (error.code == 'P0002') return null;
-      throw _mapError(error);
+      _requireCurrentCache(revision);
+      if (error.code == 'P0002') {
+        _records.remove(id);
+        return null;
+      }
+      throw _requestError(error, revision);
     }
   }
 
@@ -107,6 +149,7 @@ final class SupabasePlatformUserRepository
 
   @override
   Future<PlatformUserRecord> update(String id, PlatformUserDraft draft) async {
+    final revision = _cacheRevision;
     final current = await _required(id);
     return _command('superadmin_internal_user_update', {
       'p_request_id': _requestId(),
@@ -119,7 +162,7 @@ final class SupabasePlatformUserRepository
         'scope': draft.scope.name,
         'scope_ids': draft.scopeIds,
       },
-    });
+    }, revision: revision);
   }
 
   @override
@@ -151,6 +194,7 @@ final class SupabasePlatformUserRepository
       );
 
   Future<PlatformUserRecord> _changeStatus(String id, String status) async {
+    final revision = _cacheRevision;
     final current = await _required(id);
     return _command('superadmin_internal_user_change_status', {
       'p_request_id': _requestId(),
@@ -162,17 +206,22 @@ final class SupabasePlatformUserRepository
         'active' => 'Acesso interno reativado no Superadmin.',
         _ => 'Vínculo interno revogado no Superadmin.',
       },
-    });
+    }, revision: revision);
   }
 
-  Future<PlatformUserRecord> _command(String function, Map<String, dynamic> params) async {
+  Future<PlatformUserRecord> _command(
+    String function,
+    Map<String, dynamic> params, {
+    required int revision,
+  }) async {
+    _requireCurrentCache(revision);
     try {
       final response = await _client.rpc<Map<String, dynamic>>(function, params: params);
-      final record = _record(_payload(response));
+      final record = _record(_responsePayload(response, revision));
       _records[record.id] = record;
       return record;
     } on PostgrestException catch (error) {
-      throw _mapError(error);
+      throw _requestError(error, revision);
     }
   }
 
