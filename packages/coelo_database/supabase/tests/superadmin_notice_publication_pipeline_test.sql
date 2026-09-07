@@ -30,7 +30,19 @@ select set_config('request.jwt.claims',jsonb_build_object(
  'aal','aal2','role','authenticated')::text,true);
 
 create temporary table pipeline_results(label text primary key,body jsonb not null);
-insert into pipeline_results values ('draft',public.superadmin_notice_save_draft_v2(
+-- Calls execute as the actual SQL client role. Fixtures/results remain private
+-- to the test runner; no grants and no SECURITY DEFINER test helpers.
+do $$
+declare
+  draft_result jsonb;
+  notice_id uuid;
+  publish_result jsonb;
+  replay_result jsonb;
+  detail_result jsonb;
+  directory_result jsonb;
+begin
+  set local role authenticated;
+  draft_result := public.superadmin_notice_save_draft_v2(
  '9b200000-0000-4000-8000-000000000701',null,null,
  jsonb_build_object('type','popup','title','Aviso sintético','body','Conteúdo de teste.',
   'priority','routine','audience',jsonb_build_object('rules',jsonb_build_array(
@@ -40,17 +52,23 @@ insert into pipeline_results values ('draft',public.superadmin_notice_save_draft
   'button_color','#D63C00','popup_size','standard','has_outer_inset',true,
   'button_label','Entendi','recurrence','one_time','weekly_days','[]'::jsonb,
   'image_orientation','vertical','starts_at',now()-interval '1 minute',
-  'ends_at',now()+interval '1 day')));
-insert into pipeline_results values ('publish',public.superadmin_notice_publish_v2(
- '9b200000-0000-4000-8000-000000000702',
- (select (body#>>'{data,id}')::uuid from pipeline_results where label='draft'),1));
-insert into pipeline_results values ('replay',public.superadmin_notice_publish_v2(
- '9b200000-0000-4000-8000-000000000702',
- (select (body#>>'{data,id}')::uuid from pipeline_results where label='draft'),1));
-insert into pipeline_results values ('detail',public.superadmin_notice_detail_v2(
- (select (body#>>'{data,id}')::uuid from pipeline_results where label='draft')));
-insert into pipeline_results values ('directory',public.superadmin_notice_directory_v2(
- null,'Aviso sintético',array['scheduled'],null,null,null,24));
+  'ends_at',now()+interval '1 day'));
+  notice_id := (draft_result#>>'{data,id}')::uuid;
+  publish_result := public.superadmin_notice_publish_v2(
+    '9b200000-0000-4000-8000-000000000702',notice_id,1);
+  replay_result := public.superadmin_notice_publish_v2(
+    '9b200000-0000-4000-8000-000000000702',notice_id,1);
+  detail_result := public.superadmin_notice_detail_v2(notice_id);
+  directory_result := public.superadmin_notice_directory_v2(
+    null,'Aviso sintético',array['scheduled'],null,null,null,24);
+  reset role;
+  insert into pipeline_results values ('draft',draft_result),
+    ('publish',publish_result),('replay',replay_result),
+    ('detail',detail_result),('directory',directory_result);
+exception when others then
+  reset role;
+  raise;
+end $$;
 
 -- The baseline foundation profile lacks the worker table. Return an empty
 -- inventory rather than aborting the test before the behavioral RED assertions.

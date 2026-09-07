@@ -15,7 +15,7 @@ Replay depende do perfil e da janela serializados pelo Coordenador/Eng1.
 | Arquivo em supabase/tests | Assertivas | Recorte |
 | --- | --- | --- |
 | superadmin_notice_publication_pipeline_test.sql | 17 | Autor interno sem people bridge; publish/replay gera um job scheduled/queued; detail/directory não ativam por relógio; versão/audiência congeladas; zero entrega |
-| superadmin_notice_publication_worker_security_test.sql | 14 | ACL dos wrappers; ausência de role, worker NULL e limites NULL/zero/excessivo negados antes de operar jobs |
+| superadmin_notice_publication_worker_security_test.sql | 19 | ACL dos wrappers; execução anon/authenticated negada; service_role alcança claim vazio; ausência de role, worker NULL e limites NULL/zero/excessivo negados antes de operar jobs |
 | superadmin_notice_publication_metrics_test.sql | 10 | Geração atual, zero sem ponteiro, exclusão de recibos antigos/legados, pause não confunde versão administrativa, preservação dos receipts |
 
 Todos usam begin/rollback. O teste de worker deve rodar somente no projeto
@@ -24,6 +24,26 @@ de NULL. O teste de métricas usa fixtures diretas de jobs/recipients e não
 prova que o worker materializa ou entrega mensagens. Os atores humanos dos
 comandos são exclusivamente identidades internas; pessoas de fixture são
 destinatários, não bridges de autoria.
+
+## Revisão dos papéis SQL
+
+As chamadas públicas de save/publish/replay/detail/directory agora ficam em
+blocos DO invoker com `SET LOCAL ROLE authenticated`. IDs necessários são
+lidos antes da troca; respostas ficam em variáveis e somente são gravadas nas
+temporárias após `RESET ROLE`. Exceções restauram o papel e são propagadas.
+Não há grants artificiais sobre fixtures nem helper SECURITY DEFINER.
+
+Worker combina inspeção de ACL com quatro chamadas negadas sob anon e
+authenticated. Os guards públicos rodam sob service_role, incluindo uma
+chamada válida que deve encontrar a fila isolada vazia. Os probes diretos do
+materializador privado continuam administrativos e não são apresentados como
+prova de acesso do cliente. Total preparado: 17+19+10 = 46 assertivas.
+
+Review read-only `crosswalk_media` detectou delimitadores inválidos em três
+blocos novos; foram corrigidos e reinspecionados antes do commit. Nenhum SQL
+foi executado. Esta revisão não substitui replay, RLS, revogação ou E2E.
+Referências: [SET ROLE](https://www.postgresql.org/docs/current/sql-set-role.html)
+e [DO](https://www.postgresql.org/docs/current/sql-do.html).
 
 ## Gates da implementação
 

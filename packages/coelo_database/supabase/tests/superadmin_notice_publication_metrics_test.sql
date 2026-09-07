@@ -30,7 +30,14 @@ select set_config('request.jwt.claims',jsonb_build_object(
  'aal','aal2','role','authenticated')::text,true);
 
 create temporary table pipeline_results(label text primary key,body jsonb not null);
-insert into pipeline_results values ('draft',public.superadmin_notice_save_draft_v2(
+-- Calls execute as the actual SQL client role. Fixtures/results remain private
+-- to the test runner; no grants and no SECURITY DEFINER test helpers.
+do $$
+declare
+  draft_result jsonb;
+begin
+  set local role authenticated;
+  draft_result := public.superadmin_notice_save_draft_v2(
  '9b300000-0000-4000-8000-000000000701',null,null,
  jsonb_build_object('type','popup','title','Aviso sintético','body','Conteúdo de teste.',
   'priority','routine','audience',jsonb_build_object('rules',jsonb_build_array(
@@ -40,7 +47,13 @@ insert into pipeline_results values ('draft',public.superadmin_notice_save_draft
   'button_color','#D63C00','popup_size','standard','has_outer_inset',true,
   'button_label','Entendi','recurrence','one_time','weekly_days','[]'::jsonb,
   'image_orientation','vertical','starts_at',now()-interval '1 minute',
-  'ends_at',now()+interval '1 day')));
+  'ends_at',now()+interval '1 day'));
+  reset role;
+  insert into pipeline_results values ('draft',draft_result);
+exception when others then
+  reset role;
+  raise;
+end $$;
 
 -- Direct owner fixtures below isolate metric generations; they do not simulate
 -- a successful worker or prove delivery. Recipient people are not author links.
@@ -81,10 +94,25 @@ create function pg_temp.metric_tuple(p_value jsonb) returns jsonb language sql a
  select jsonb_build_array(p_value->'reach',p_value->'delivered_count',
    p_value->'viewed_count',p_value->'accepted_count')
 $$;
-insert into pipeline_results values
- ('no_job_detail',public.superadmin_notice_detail_v2(
-   (select (body#>>'{data,id}')::uuid from pipeline_results where label='draft'))),
- ('no_job_directory',public.superadmin_notice_directory_v2(null,'Aviso sintético',null,null,null,null,24));
+do $$
+declare
+  notice_id uuid;
+  detail_result jsonb;
+  directory_result jsonb;
+begin
+  select (body#>>'{data,id}')::uuid into notice_id
+    from pipeline_results where label='draft';
+  set local role authenticated;
+  detail_result := public.superadmin_notice_detail_v2(notice_id);
+  directory_result := public.superadmin_notice_directory_v2(
+    null,'Aviso sintético',null,null,null,null,24);
+  reset role;
+  insert into pipeline_results values
+    ('no_job_detail',detail_result),('no_job_directory',directory_result);
+exception when others then
+  reset role;
+  raise;
+end $$;
 
 select is((select body->>'ok' from pipeline_results where label='draft'),'true',
   'internal author saves the fixture without a people bridge');
@@ -98,10 +126,25 @@ select is((select pg_temp.metric_tuple(body#>'{data,items,0}') from pipeline_res
 update public.platform_notices
 set current_publication_job_id='9b300000-0000-4000-8000-000000000802'
 where id=(select (body#>>'{data,id}')::uuid from pipeline_results where label='draft');
-insert into pipeline_results values
- ('current_detail',public.superadmin_notice_detail_v2(
-   (select (body#>>'{data,id}')::uuid from pipeline_results where label='draft'))),
- ('current_directory',public.superadmin_notice_directory_v2(null,'Aviso sintético',null,null,null,null,24));
+do $$
+declare
+  notice_id uuid;
+  detail_result jsonb;
+  directory_result jsonb;
+begin
+  select (body#>>'{data,id}')::uuid into notice_id
+    from pipeline_results where label='draft';
+  set local role authenticated;
+  detail_result := public.superadmin_notice_detail_v2(notice_id);
+  directory_result := public.superadmin_notice_directory_v2(
+    null,'Aviso sintético',null,null,null,null,24);
+  reset role;
+  insert into pipeline_results values
+    ('current_detail',detail_result),('current_directory',directory_result);
+exception when others then
+  reset role;
+  raise;
+end $$;
 select is((select pg_temp.metric_tuple(body->'data') from pipeline_results where label='current_detail'),
  '[3,2,1,1]'::jsonb,'detail counts only the selected publication generation');
 select is((select pg_temp.metric_tuple(body#>'{data,items,0}') from pipeline_results where label='current_directory'),
@@ -109,8 +152,22 @@ select is((select pg_temp.metric_tuple(body#>'{data,items,0}') from pipeline_res
 
 update public.platform_notices set status='paused',management_version=4
 where id=(select (body#>>'{data,id}')::uuid from pipeline_results where label='draft');
-select is(pg_temp.metric_tuple(public.superadmin_notice_detail_v2(
- (select (body#>>'{data,id}')::uuid from pipeline_results where label='draft'))->'data'),
+do $$
+declare
+  notice_id uuid;
+  detail_result jsonb;
+begin
+  select (body#>>'{data,id}')::uuid into notice_id
+    from pipeline_results where label='draft';
+  set local role authenticated;
+  detail_result := public.superadmin_notice_detail_v2(notice_id);
+  reset role;
+  insert into pipeline_results values ('paused_detail',detail_result);
+exception when others then
+  reset role;
+  raise;
+end $$;
+select is((select pg_temp.metric_tuple(body->'data') from pipeline_results where label='paused_detail'),
  '[3,2,1,1]'::jsonb,'pausing increments management version without erasing publication metrics');
 select ok(not exists(
  (select * from original_receipts except select * from public.notice_receipts)
