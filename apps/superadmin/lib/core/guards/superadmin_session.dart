@@ -37,10 +37,27 @@ final class SuperadminSession extends ChangeNotifier {
   int get authorizationInvalidationRevision => _authorizationInvalidationRevision;
 
   void authorize(SuperadminAuthContext context, {required String sessionId}) {
+    final authorizationChanged =
+        _sessionId != sessionId || !_sameAuthorizationContext(_authContext, context);
+    if (!authorizationChanged && _isAuthenticated && !_isPasswordRecovery) return;
+    if (authorizationChanged) {
+      _authorizationInvalidationRevision++;
+    }
     _authContext = context;
     _sessionId = sessionId;
-    _setSessionState(CoeloAuthSessionState.authenticated(sessionId: sessionId));
+    _setSessionState(
+      CoeloAuthSessionState.authenticated(sessionId: sessionId),
+      authorizationChanged: authorizationChanged,
+    );
   }
+
+  bool _sameAuthorizationContext(SuperadminAuthContext? previous, SuperadminAuthContext next) =>
+      previous != null &&
+      previous.platformRoleCode == next.platformRoleCode &&
+      previous.scopeKind == next.scopeKind &&
+      previous.scopeInstitutionId == next.scopeInstitutionId &&
+      previous.aal == next.aal &&
+      setEquals(previous.permissionCodes, next.permissionCodes);
 
   bool authorizeIfCurrent(
     SuperadminAuthContext context, {
@@ -98,7 +115,7 @@ final class SuperadminSession extends ChangeNotifier {
     _setSessionState(state);
   }
 
-  void _setSessionState(CoeloAuthSessionState state) {
+  void _setSessionState(CoeloAuthSessionState state, {bool authorizationChanged = false}) {
     if (!state.isAuthenticated || state.isPasswordRecovery) {
       _authorizationInvalidationRevision++;
       _authContext = null;
@@ -106,7 +123,9 @@ final class SuperadminSession extends ChangeNotifier {
     }
     final isAuthenticated =
         state.kind == CoeloAuthSessionKind.authenticated && _authContext != null;
-    if (_isAuthenticated == isAuthenticated && _isPasswordRecovery == state.isPasswordRecovery) {
+    if (!authorizationChanged &&
+        _isAuthenticated == isAuthenticated &&
+        _isPasswordRecovery == state.isPasswordRecovery) {
       return;
     }
     _isAuthenticated = isAuthenticated;
