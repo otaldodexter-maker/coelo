@@ -724,7 +724,9 @@ final class InstitutionFormController extends ChangeNotifier {
       publicName: text(InstitutionFormField.publicName),
       tradeName: text(InstitutionFormField.tradeName),
       legalName: text(InstitutionFormField.legalName),
-      typeId: 'local-type-${_slugify(text(InstitutionFormField.typeName))}',
+      typeId: original != null && text(InstitutionFormField.typeName) == original!.typeName
+          ? original!.typeId
+          : 'local-type-${_slugify(text(InstitutionFormField.typeName))}',
       typeName: text(InstitutionFormField.typeName),
       documentType: text(InstitutionFormField.documentType),
       document: text(InstitutionFormField.document),

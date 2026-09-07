@@ -7,6 +7,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('editing core fields preserves the authoritative institution type ID', () {
+    final record = InstitutionRecord.fromRpcPayload({
+      'id': '22222222-2222-4222-8222-222222222222',
+      'public_name': 'Instituição',
+      'status': 'active',
+      'management_version': 7,
+      'institution_type': {'id': '11111111-1111-4111-8111-111111111111', 'name': 'Escola'},
+    });
+    final controller = InstitutionFormController(record: record);
+    addTearDown(controller.dispose);
+    controller.setText(InstitutionFormField.publicName, 'Nome atualizado');
+    expect(controller.toRecord(id: record.id).typeId, record.typeId);
+    controller.setText(InstitutionFormField.typeName, 'Outro tipo');
+    expect(controller.toRecord(id: record.id).typeId, isNot(record.typeId));
+    controller.setText(InstitutionFormField.typeName, record.typeName);
+    expect(controller.toRecord(id: record.id).typeId, record.typeId);
+  });
+
   test('create mode starts empty and suggests an editable slug', () {
     final controller = InstitutionFormController();
     addTearDown(controller.dispose);
