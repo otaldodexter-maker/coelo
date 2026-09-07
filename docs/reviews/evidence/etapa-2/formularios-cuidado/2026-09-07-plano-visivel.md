@@ -27,7 +27,7 @@ Passos locais concluídos não significam tela ou E2E concluído.
 | Formulários / Responder / forms.respond | Lifecycle inventariado | Ator/contrato pendentes | Isolamento A/B local corrigido | Router autorizado e remoto pendentes | 23/23 comportamentais; golden DEV preexistente falha | 8d2ab5a, review local |
 | Medicação / Criar e editar / medication.create, medication.edit | MED-STALE inventariado | Decisões produtivas abertas | Recibos/replay/source locais corrigidos | Bloqueado por decisão | 54/54 regressão; 4 goldens preexistentes falham | 8e336868, review local |
 | Formulários / Editor / forms.create, forms.edit, forms.publish | Lifecycle e descarte inventariados | Crosswalk interno com Eng2/Coordenador; sem SQL | Isolamento e descarte locais corrigidos | Pendente | 50/50 comportamentais; 5 diferenças golden preexistentes abertas | Lifecycle ad2962da; descarte em evidência/commit |
-| Medicação / Round-trip e ciclo / medication.edit | Subagente read-only | Não alterar política clínica | Ainda não implementado | Produção bloqueada | RED recomendado em análise | Pendente |
+| Medicação / Round-trip e ciclo / medication.create, medication.edit | MED-DEV01 inventariado | Não alterar política clínica | Snapshot/mapper DEV e replay corrigidos | Só memória DEV; produção bloqueada | 60/60, incluindo rotas; visual pendente | Review aprovado, evidência/commit |
 
 ## Passo atual por tela, responsável e backend
 
@@ -38,15 +38,15 @@ indicador. O arquivo é aberto no painel direito como alternativa disponível.
 | Tela / subtela / action_id | Passo atual | Backend efetivamente trabalhado | Responsável | Teste / evidência | Próximo gate |
 | --- | --- | --- | --- | --- | --- |
 | Formulários / Editor: contexto e modais / forms.create, forms.edit, forms.publish | 6/6 da fatia local; tela ainda aberta | Nenhum BD nesta fatia; sem RPC/Worker executado | Root; review_export_policy read-only | ad2962da; 42/42; analyzer 2 arquivos sem problemas | Integração produtiva continua pendente |
-| Formulários / Editor: descartar / forms.create, forms.edit | 6/6 da fatia local | Nenhum BD nesta fatia | Root; review_export_policy read-only | 50/50; analyzer 2 arquivos; review aprovado; editor-discard-baseline.md | Commit; tela permanece parcial |
-| Medicação / round-trip DEV / medication.create, medication.edit | 1/6 | Repositório em memória DEV; nenhum BD | Root; medication_roundtrip analisa contrato read-only | Mapeamento e perdas inventariados | RED; preservar dados sem criar regra clínica |
+| Formulários / Editor: descartar / forms.create, forms.edit | 6/6 da fatia local | Nenhum BD nesta fatia | Root; review_export_policy read-only | 4e6f8dc5; 50/50; analyzer 2 arquivos | Tela permanece parcial |
+| Medicação / round-trip DEV / medication.create, medication.edit | 6/6 da fatia local | Repositório em memória DEV; nenhum BD | Root; medication_roundtrip/review_export_policy read-only | 60/60; review aprovado; medication-dev-roundtrip.md | Commit; backend/visual/produção pendentes |
 | Formulários / Diretório / forms.list | 1/6 | Código legado somente lido; novo RPC nominal public/app_private.superadmin_forms_directory_v2 reservado LOCAL; nenhum SQL executado | Root; análise forms_next_slice concluída | Escopo SAI/cursor e reader isolado desenhados | RED/migration local; reservar injeção antes de hunk compartilhado |
 | Formulários / Exportar respostas / forms.responses.export | 2/6 aberto após fatia cliente | Nenhum BD nesta fatia; R2/Worker não executados | Root; integração depende E2E 3 | Commits c0729294 e ff06b26d; 29/29 dados | Backend nominal e XLSX real no R2 privado |
 | Formulários / Responder / forms.respond | 2/6 aberto após fatia cliente | Nenhum BD nesta fatia | Root | Commit 8d2ab5a; 23/23 comportamentais | Contrato autorizado e composition root |
 
 ## Trabalho ativo e BD
 
-- Root: Editor, descarte e evidência. Camada Flutter; BD nenhum neste
+- Root: Medicação DEV, evidência. Camada Flutter; BD nenhum neste
   passo. Não alterar router/API compartilhada sem reserva.
 - forms_next_slice: casos RED de descarte produtivo e baseline; análise read-only.
 - review_export_policy: revisão final do lifecycle aprovada; sem backend.
@@ -55,7 +55,7 @@ indicador. O arquivo é aberto no painel direito como alternativa disponível.
 - Engenheiro 2 (coordenação externa): crosswalk nominal de ator/DTO/RPC Forms;
   não é writer desta branch.
 
-Próximo gate: commit de descarte do Editor e RED de round-trip Medicação DEV.
+Próximo gate: commit MED-DEV01 e RED do reader interno nominal de Formulários.
 Etapas 2/4 continuam abertas: planejar contrato não executa
 SQL nem comprova autorização, persistência ou produção.
 

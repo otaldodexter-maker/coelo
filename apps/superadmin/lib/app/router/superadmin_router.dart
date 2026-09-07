@@ -107,6 +107,7 @@ import '../../features/health_care/domain/health_care_repository.dart';
 import '../../features/health_care/data/dev/dev_health_care_repository.dart';
 import '../../features/health_care/data/dev/dev_medication_plan_health_care_repository.dart';
 import '../../features/health_care/data/dev/dev_medication_plan_repository.dart';
+import '../../features/health_care/data/dev/dev_medication_plan_form_mapper.dart';
 import '../../features/health_care/domain/medication_plan_repository.dart';
 import '../../features/health_care/presentation/health_care_controller.dart';
 import '../../features/health_care/presentation/health_care_directory_page.dart';
@@ -369,55 +370,25 @@ GoRouter createSuperadminRouter({
   Future<HealthMedicationPlanSaveReceipt> saveDevelopmentMedicationPlanDraft(
     HealthMedicationPlanFormDraft draft,
   ) async {
-    const timezone = 'America/Sao_Paulo';
-    final time = draft.time;
-    final saved = await medicationPlansPreviewRepository.save(
-      MedicationPlanSaveCommand(
-        requestId: draft.requestId!,
-        planId: draft.planId,
-        childPersonId: draft.childId,
-        expectedVersion: draft.expectedVersion,
-        medicationName: draft.medicationName,
-        doseAmount: draft.doseAmount,
-        doseUnit: draft.doseUnit,
-        administrationRoute: draft.administrationRoute,
-        validFrom: draft.validFrom!,
-        validUntil: draft.validUntil,
-        reason: 'Prévia local de desenvolvimento',
-        scopeKind: 'institution',
-        institutionId: 'institution-dev',
-        timezone: timezone,
-        schedules: [
-          MedicationScheduleDraft(
-            timeOfDay: time == null
-                ? '08:00'
-                : '${time.hour.toString().padLeft(2, '0')}:'
-                      '${time.minute.toString().padLeft(2, '0')}',
-            weekdays: draft.weekdays.isEmpty ? const {1, 2, 3, 4, 5} : draft.weekdays,
-            timezone: timezone,
-          ),
-        ],
-      ),
+    final command = developmentMedicationSaveCommand(
+      draft: draft,
+      childrenById: {for (final child in accessHealthFixtures.children) child.id: child},
     );
-    return HealthMedicationPlanSaveReceipt(planId: saved.id, version: saved.currentVersion);
+    final saved = await medicationPlansPreviewRepository.save(command);
+    return HealthMedicationPlanSaveReceipt(
+      planId: saved.id,
+      version: saved.currentVersion,
+      editSnapshot: developmentMedicationFormDraft(
+        detail: saved,
+        contextCommand: command,
+      ).editSnapshot,
+    );
   }
 
   HealthMedicationPlanFormDraft developmentMedicationDraft(MedicationPlanDetail detail) {
-    final schedule = detail.schedules.first;
-    final timeParts = schedule.timeOfDay.split(':');
-    return HealthMedicationPlanFormDraft(
-      planId: detail.id,
-      expectedVersion: detail.currentVersion,
-      childId: detail.childPersonId,
-      medicationName: detail.medicationName,
-      doseAmount: detail.doseAmount,
-      doseUnit: detail.doseUnit,
-      administrationRoute: detail.administrationRoute,
-      validFrom: detail.validFrom,
-      validUntil: detail.validUntil,
-      time: TimeOfDay(hour: int.parse(timeParts.first), minute: int.parse(timeParts.last)),
-      weekdays: schedule.weekdays,
-      responsibleIds: const {},
+    return developmentMedicationFormDraft(
+      detail: detail,
+      contextCommand: medicationPlansPreviewRepository.latestCommandFor(detail.id),
     );
   }
 

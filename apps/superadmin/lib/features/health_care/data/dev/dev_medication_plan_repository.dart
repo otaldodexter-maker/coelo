@@ -136,7 +136,7 @@ final class DevMedicationPlanRepository implements MedicationPlanRepository {
     final detail = MedicationPlanDetail(
       id: existing?.id ?? command.planId ?? 'medication-plan-${_plans.length + 1}',
       childPersonId: command.childPersonId,
-      status: MedicationPlanStatus.active,
+      status: existing?.status ?? MedicationPlanStatus.active,
       currentVersion: (existing?.currentVersion ?? 0) + 1,
       medicationName: command.medicationName,
       doseAmount: command.doseAmount,

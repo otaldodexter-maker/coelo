@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:coelo_superadmin/app/dev_menu/development_access_health_fixture_catalog.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/health_care/data/dev/dev_medication_plan_repository.dart';
+import 'package:coelo_superadmin/features/health_care/data/dev/dev_medication_plan_form_mapper.dart';
 import 'package:coelo_superadmin/features/health_care/domain/medication_plan_repository.dart';
+import 'package:coelo_superadmin/features/health_care/domain/medication_plan_edit_snapshot.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_form_pages.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_medication_form_sections.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
@@ -13,6 +16,202 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final replay in [false, true]) {
+    testWidgets(
+      'DEV mapper preserves edits made while ${replay ? 'replay' : 'first save'} awaits its receipt',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(1024, 900));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        final child = DevelopmentAccessHealthFixtureCatalog.standard().children.first;
+        final repository = DevMedicationPlanRepository();
+        final receiptGate = Completer<void>();
+        var calls = 0;
+        var navigations = 0;
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CoeloTheme.light,
+            home: HealthMedicationPlanFormPage(
+              logout: unavailableSuperadminLogout,
+              onCancel: () {},
+              onSaved: () async => navigations++,
+              childOptions: [HealthCareFormChoice(id: child.id, label: 'Synthetic child')],
+              initialDraft: HealthMedicationPlanFormDraft(
+                childId: child.id,
+                medicationName: 'Synthetic original',
+                doseAmount: 1,
+                doseUnit: 'unit',
+                administrationRoute: 'oral',
+                weekdays: const {},
+                responsibleIds: const {},
+                validFrom: DateTime(2026, 1, 1),
+              ),
+              onDraftSaved: (draft) async {
+                calls++;
+                final command = developmentMedicationSaveCommand(
+                  draft: draft,
+                  childrenById: {child.id: child},
+                );
+                final saved = await repository.save(command);
+                if (replay && calls == 1) throw StateError('Synthetic lost response');
+                if (calls == (replay ? 2 : 1)) await receiptGate.future;
+                return HealthMedicationPlanSaveReceipt(
+                  planId: saved.id,
+                  version: saved.currentVersion,
+                  editSnapshot: developmentMedicationFormDraft(
+                    detail: saved,
+                    contextCommand: command,
+                  ).editSnapshot,
+                );
+              },
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await _openReviewAndSave(tester, 'Criar plano');
+        await tester.pumpAndSettle();
+        if (replay) {
+          await tester.tap(find.byKey(const Key('health-medication-primary-action')));
+          await tester.pumpAndSettle();
+        }
+        tester
+            .widget<SuperadminFormStepNavigation>(find.byType(SuperadminFormStepNavigation))
+            .onStepSelected(0);
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('health-medication-name')),
+          'Synthetic changed during wait',
+        );
+        receiptGate.complete();
+        await tester.pumpAndSettle();
+        if (!replay) {
+          expect(navigations, 0);
+          await _openReviewAndSave(tester, 'Criar plano');
+          await tester.pumpAndSettle();
+        }
+        final page = await repository.fetchPage(const MedicationPlanQuery());
+        final saved = await repository.fetchDetail(page.items.single.id);
+        expect(saved.currentVersion, 2);
+        expect(saved.medicationName, 'Synthetic changed during wait');
+        expect(navigations, 1);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  for (final lostAt in ['receipt', 'navigation', 'navigation-no-edit', 'receipt-schedule']) {
+    testWidgets('DEV mapper preserves confirmed create defaults after lost $lostAt and edits', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1024, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final child = DevelopmentAccessHealthFixtureCatalog.standard().children.first;
+      final repository = DevMedicationPlanRepository();
+      final submissions = <HealthMedicationPlanFormDraft>[];
+      var navigationCalls = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: HealthMedicationPlanFormPage(
+            logout: unavailableSuperadminLogout,
+            onCancel: () {},
+            childOptions: [HealthCareFormChoice(id: child.id, label: 'Synthetic child')],
+            initialDraft: HealthMedicationPlanFormDraft(
+              childId: child.id,
+              medicationName: 'Synthetic medicine',
+              doseAmount: 1,
+              doseUnit: 'unit',
+              administrationRoute: 'oral',
+              weekdays: const {},
+              responsibleIds: const {},
+              validFrom: DateTime(2026, 1, 1),
+            ),
+            onDraftSaved: (draft) async {
+              submissions.add(draft);
+              final command = developmentMedicationSaveCommand(
+                draft: draft,
+                childrenById: {child.id: child},
+              );
+              final saved = await repository.save(command);
+              if (lostAt.startsWith('receipt') && submissions.length == 1) {
+                throw StateError('Synthetic lost receipt');
+              }
+              return HealthMedicationPlanSaveReceipt(
+                planId: saved.id,
+                version: saved.currentVersion,
+                editSnapshot: developmentMedicationFormDraft(
+                  detail: saved,
+                  contextCommand: command,
+                ).editSnapshot,
+              );
+            },
+            onSaved: () async {
+              navigationCalls++;
+              if (lostAt.startsWith('navigation') && navigationCalls == 1) {
+                throw StateError('Synthetic navigation failure');
+              }
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await _openReviewAndSave(tester, 'Criar plano');
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('health-medication-save-error')), findsOneWidget);
+      if (lostAt != 'navigation-no-edit') {
+        tester
+            .widget<SuperadminFormStepNavigation>(find.byType(SuperadminFormStepNavigation))
+            .onStepSelected(0);
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('health-medication-name')),
+          'Synthetic changed',
+        );
+        if (lostAt == 'receipt-schedule') {
+          tester
+              .widget<SuperadminFormStepNavigation>(find.byType(SuperadminFormStepNavigation))
+              .onStepSelected(2);
+          await tester.pumpAndSettle();
+          tester
+              .widget<CoeloMedicationTimeField>(find.byType(CoeloMedicationTimeField))
+              .onChanged(const TimeOfDay(hour: 9, minute: 30));
+          tester
+              .widget<CoeloMedicationWeekdaySelector>(find.byType(CoeloMedicationWeekdaySelector))
+              .onChanged({6});
+          await tester.pumpAndSettle();
+        }
+      }
+      await _openReviewAndSave(
+        tester,
+        lostAt == 'navigation-no-edit' ? 'Tentar novamente' : 'Criar plano',
+      );
+      await tester.pumpAndSettle();
+      final page = await repository.fetchPage(const MedicationPlanQuery());
+      final saved = await repository.fetchDetail(page.items.single.id);
+      expect(saved.currentVersion, lostAt == 'navigation-no-edit' ? 1 : 2);
+      expect(
+        saved.medicationName,
+        lostAt == 'navigation-no-edit' ? 'Synthetic medicine' : 'Synthetic changed',
+      );
+      expect(saved.schedules.single.timeOfDay, lostAt == 'receipt-schedule' ? '09:30' : '08:00');
+      expect(saved.schedules.single.weekdays, lostAt == 'receipt-schedule' ? {6} : {1, 2, 3, 4, 5});
+      expect(repository.latestCommandFor(saved.id)!.institutionId, child.institutionId);
+      expect(page.total, 1);
+      expect(
+        submissions,
+        hasLength(
+          lostAt.startsWith('receipt')
+              ? 3
+              : lostAt == 'navigation-no-edit'
+              ? 1
+              : 2,
+        ),
+      );
+      if (lostAt.startsWith('receipt')) expect(submissions[1], same(submissions[0]));
+      expect(find.byKey(const Key('health-medication-save-error')), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   Widget subject({
     String? medicationId,
     String? childId,
@@ -37,6 +236,37 @@ void main() {
       onSaved: onSaved ?? () async {},
     ),
   );
+
+  for (final changed in [false, true]) {
+    testWidgets(
+      'snapshot source ${changed ? 'changes reset' : 'equivalent values preserve'} unsaved medication edits',
+      (tester) async {
+        MedicationPlanEditSnapshot snapshot(String instructions) => MedicationPlanEditSnapshot(
+          planId: 'plan-a',
+          childPersonId: 'child-a',
+          timezone: 'UTC',
+          instructions: instructions,
+          schedules: [
+            MedicationScheduleDraft(timeOfDay: '08:00', weekdays: {1}, timezone: 'UTC'),
+          ],
+          scopeKind: 'home',
+        );
+        await tester.pumpWidget(subject(initialDraft: _draft(editSnapshot: snapshot('original'))));
+        await tester.pumpAndSettle();
+        final name = _textField(tester, 'Nome do medicamento');
+        name.controller!.text = 'Unsaved edit';
+        await tester.pumpWidget(
+          subject(initialDraft: _draft(editSnapshot: snapshot(changed ? 'updated' : 'original'))),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          _textField(tester, 'Nome do medicamento').controller!.text,
+          changed ? 'Dipirona' : 'Unsaved edit',
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 
   for (final dispose in [false, true]) {
     testWidgets(
@@ -688,18 +918,22 @@ void main() {
   });
 }
 
-HealthMedicationPlanFormDraft _draft({DateTime? validFrom, DateTime? validUntil}) =>
-    HealthMedicationPlanFormDraft(
-      childId: 'child-a',
-      medicationName: 'Dipirona',
-      doseAmount: 5,
-      doseUnit: 'ml',
-      administrationRoute: 'oral',
-      validFrom: validFrom,
-      validUntil: validUntil,
-      weekdays: const {1, 2, 3, 4, 5},
-      responsibleIds: const {},
-    );
+HealthMedicationPlanFormDraft _draft({
+  DateTime? validFrom,
+  DateTime? validUntil,
+  MedicationPlanEditSnapshot? editSnapshot,
+}) => HealthMedicationPlanFormDraft(
+  childId: 'child-a',
+  medicationName: 'Dipirona',
+  doseAmount: 5,
+  doseUnit: 'ml',
+  administrationRoute: 'oral',
+  validFrom: validFrom,
+  validUntil: validUntil,
+  editSnapshot: editSnapshot,
+  weekdays: const {1, 2, 3, 4, 5},
+  responsibleIds: const {},
+);
 
 Future<MedicationPlanDetail> _saveMedicationDraft(
   DevMedicationPlanRepository repository,

@@ -6,6 +6,39 @@ import 'package:coelo_superadmin/features/health_care/domain/medication_plan_rep
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final status in MedicationPlanStatus.values) {
+    test('editing a dev plan preserves ${status.name} without a clinical transition', () async {
+      final command = _command(
+        requestId: 'edit-${status.name}',
+        planId: 'plan-1',
+        expectedVersion: 1,
+      );
+      final repository = DevMedicationPlanRepository(
+        plans: [
+          MedicationPlanDetail(
+            id: 'plan-1',
+            childPersonId: command.childPersonId,
+            status: status,
+            currentVersion: 1,
+            medicationName: command.medicationName,
+            doseAmount: command.doseAmount,
+            doseUnit: command.doseUnit,
+            administrationRoute: command.administrationRoute,
+            validFrom: command.validFrom,
+            timezone: command.timezone,
+            schedules: command.schedules,
+          ),
+        ],
+      );
+      final saved = await repository.save(command);
+      expect(saved.status, status);
+      expect(saved.currentVersion, 2);
+      expect(await repository.save(command), same(saved));
+      expect((await repository.fetchDetail('plan-1')).status, status);
+      expect((await repository.fetchPage(const MedicationPlanQuery())).total, 1);
+    });
+  }
+
   test('content exposes 32 coherent plans linked to catalog children', () async {
     final catalog = DevelopmentAccessHealthFixtureCatalog.standard();
     final repository = DevMedicationPlanRepository.content(catalog: catalog);
