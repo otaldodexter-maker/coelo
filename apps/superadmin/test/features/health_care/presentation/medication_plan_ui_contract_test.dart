@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/health_care/data/dev/dev_medication_plan_repository.dart';
 import 'package:coelo_superadmin/features/health_care/domain/medication_plan_repository.dart';
@@ -34,6 +36,243 @@ void main() {
       onDraftSaved: onDraftSaved,
       onSaved: onSaved ?? () async {},
     ),
+  );
+
+  for (final dispose in [false, true]) {
+    testWidgets(
+      'late medication receipt is ignored after ${dispose ? 'dispose' : 'callback replacement'}',
+      (tester) async {
+        final pending = Completer<HealthMedicationPlanSaveReceipt>();
+        final initial = _draft(validFrom: DateTime(2026, 9, 10));
+        var savedA = 0;
+        var savedB = 0;
+        await tester.pumpWidget(
+          subject(
+            initialDraft: initial,
+            onDraftSaved: (_) => pending.future,
+            onSaved: () async => savedA++,
+          ),
+        );
+        await tester.pumpAndSettle();
+        await _openReviewAndSave(tester, 'Criar plano');
+        await tester.pumpWidget(
+          dispose
+              ? const SizedBox.shrink()
+              : subject(initialDraft: initial, onSaved: () async => savedB++),
+        );
+        await tester.pump();
+        pending.complete(const HealthMedicationPlanSaveReceipt(planId: 'plan-a', version: 1));
+        await tester.pumpAndSettle();
+        expect(savedA, 0);
+        expect(savedB, 0);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets('replacing medication source clears the pending command and hydrates the new plan', (
+    tester,
+  ) async {
+    final pending = Completer<HealthMedicationPlanSaveReceipt>();
+    final draftsB = <HealthMedicationPlanFormDraft>[];
+    final initialA = _draft(validFrom: DateTime(2026, 9, 10));
+    final initialB = HealthMedicationPlanFormDraft(
+      childId: 'child-b',
+      medicationName: 'Medicamento sintético B',
+      doseAmount: 2,
+      doseUnit: 'unidade',
+      administrationRoute: 'oral',
+      weekdays: const {2},
+      responsibleIds: const {},
+      planId: 'plan-b',
+      expectedVersion: 7,
+      validFrom: DateTime(2026, 9, 10),
+    );
+    await tester.pumpWidget(
+      subject(
+        initialDraft: initialA,
+        childId: 'child-a',
+        medicationId: 'plan-a',
+        onDraftSaved: (_) => pending.future,
+      ),
+    );
+    await tester.pumpAndSettle();
+    await _openReviewAndSave(tester, 'Salvar alterações');
+    await tester.pumpWidget(
+      subject(
+        initialDraft: initialB,
+        childId: 'child-b',
+        medicationId: 'plan-b',
+        onDraftSaved: (draft) async {
+          draftsB.add(draft);
+          return const HealthMedicationPlanSaveReceipt(planId: 'plan-b', version: 8);
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+    tester
+        .widget<SuperadminFormStepNavigation>(find.byType(SuperadminFormStepNavigation))
+        .onStepSelected(0);
+    await tester.pumpAndSettle();
+    expect(_textField(tester, 'Nome do medicamento').controller!.text, 'Medicamento sintético B');
+    pending.complete(const HealthMedicationPlanSaveReceipt(planId: 'plan-a', version: 1));
+    await tester.pumpAndSettle();
+    await _openReviewAndSave(tester, 'Salvar alterações');
+    await tester.pumpAndSettle();
+    expect(draftsB, hasLength(1));
+    expect(draftsB.single.childId, 'child-b');
+    expect(draftsB.single.planId, 'plan-b');
+    expect(draftsB.single.expectedVersion, 7);
+    expect(draftsB.single.medicationName, 'Medicamento sintético B');
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final edit in [false, true]) {
+    testWidgets(
+      'obsolete medication replay ${edit ? 'with edits' : 'without edits'} cannot continue saving',
+      (tester) async {
+        final pending = Completer<HealthMedicationPlanSaveReceipt>();
+        final initial = _draft(validFrom: DateTime(2026, 9, 10));
+        final draftsA = <HealthMedicationPlanFormDraft>[];
+        var savedA = 0;
+        var savedB = 0;
+        await tester.pumpWidget(
+          subject(
+            initialDraft: initial,
+            onDraftSaved: (draft) async {
+              draftsA.add(draft);
+              if (draftsA.length == 1) throw StateError('synthetic response lost');
+              return pending.future;
+            },
+            onSaved: () async => savedA++,
+          ),
+        );
+        await tester.pumpAndSettle();
+        await _openReviewAndSave(tester, 'Criar plano');
+        await tester.pumpAndSettle();
+        if (edit) {
+          tester
+              .widget<SuperadminFormStepNavigation>(find.byType(SuperadminFormStepNavigation))
+              .onStepSelected(0);
+          await tester.pumpAndSettle();
+          final field = find.byKey(const Key('health-medication-name')).hitTestable();
+          final control = tester.widget<CoeloFormTextField>(
+            find.ancestor(of: field, matching: find.byType(CoeloFormTextField)),
+          );
+          control.controller.text = 'Nome sintético atualizado';
+          control.onChanged?.call(control.controller.text);
+          await tester.pumpAndSettle();
+          tester
+              .widget<SuperadminFormStepNavigation>(find.byType(SuperadminFormStepNavigation))
+              .onStepSelected(4);
+          await tester.pumpAndSettle();
+        }
+        await tester.tap(find.byKey(const Key('health-medication-primary-action')).hitTestable());
+        await tester.pump();
+        expect(draftsA, hasLength(2));
+        await tester.pumpWidget(subject(initialDraft: initial, onSaved: () async => savedB++));
+        await tester.pump();
+        pending.complete(const HealthMedicationPlanSaveReceipt(planId: 'plan-a', version: 1));
+        await tester.pumpAndSettle();
+        expect(draftsA, hasLength(2));
+        expect(savedA, 0);
+        expect(savedB, 0);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets('obsolete medication failure cannot clear a newer busy state or show an error', (
+    tester,
+  ) async {
+    final pendingA = Completer<HealthMedicationPlanSaveReceipt>();
+    final pendingB = Completer<HealthMedicationPlanSaveReceipt>();
+    var savedA = 0;
+    var savedB = 0;
+    await tester.pumpWidget(
+      subject(
+        initialDraft: _draft(),
+        onDraftSaved: (_) => pendingA.future,
+        onSaved: () async => savedA++,
+      ),
+    );
+    await tester.pumpAndSettle();
+    await _openReviewAndSave(tester, 'Criar plano');
+    await tester.pumpWidget(
+      subject(
+        initialDraft: _draft(),
+        onDraftSaved: (_) => pendingB.future,
+        onSaved: () async => savedB++,
+      ),
+    );
+    await tester.pumpAndSettle();
+    await _openReviewAndSave(tester, 'Criar plano');
+    final primary = find.byKey(const Key('health-medication-primary-action')).hitTestable();
+    expect(tester.widget<FilledButton>(primary).onPressed, isNull);
+    pendingA.completeError(StateError('synthetic old failure'));
+    await tester.pump();
+    expect(find.byKey(const Key('health-medication-save-error')), findsNothing);
+    expect(tester.widget<FilledButton>(primary).onPressed, isNull);
+    pendingB.complete(const HealthMedicationPlanSaveReceipt(planId: 'plan-b', version: 1));
+    await tester.pumpAndSettle();
+    expect(savedA, 0);
+    expect(savedB, 1);
+    expect(tester.widget<FilledButton>(primary).onPressed, isNotNull);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('equivalent source draft rebuild preserves unsaved medication edits', (tester) async {
+    await tester.pumpWidget(subject(initialDraft: _draft(validFrom: DateTime(2026, 9, 10))));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('health-medication-name')).hitTestable(),
+      'Edição sintética local',
+    );
+    await tester.pumpWidget(subject(initialDraft: _draft(validFrom: DateTime(2026, 9, 10))));
+    await tester.pumpAndSettle();
+    expect(_textField(tester, 'Nome do medicamento').controller!.text, 'Edição sintética local');
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'callback replacement retries the unchanged medication intention without an extra revision',
+    (tester) async {
+      final pending = Completer<HealthMedicationPlanSaveReceipt>();
+      final initial = _draft(validFrom: DateTime(2026, 9, 10));
+      final draftsA = <HealthMedicationPlanFormDraft>[];
+      final draftsB = <HealthMedicationPlanFormDraft>[];
+      var savedB = 0;
+      await tester.pumpWidget(
+        subject(
+          initialDraft: initial,
+          onDraftSaved: (draft) {
+            draftsA.add(draft);
+            return pending.future;
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+      await _openReviewAndSave(tester, 'Criar plano');
+      await tester.pumpWidget(
+        subject(
+          initialDraft: initial,
+          onDraftSaved: (draft) async {
+            draftsB.add(draft);
+            return const HealthMedicationPlanSaveReceipt(planId: 'plan-a', version: 1);
+          },
+          onSaved: () async => savedB++,
+        ),
+      );
+      await tester.pump();
+      pending.complete(const HealthMedicationPlanSaveReceipt(planId: 'plan-a', version: 1));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('health-medication-primary-action')).hitTestable());
+      await tester.pumpAndSettle();
+      expect(draftsB, hasLength(1));
+      expect(draftsB.single.requestId, draftsA.single.requestId);
+      expect(savedB, 1);
+      expect(tester.takeException(), isNull);
+    },
   );
 
   testWidgets('uses canonical form frame and locks child when editing', (tester) async {
