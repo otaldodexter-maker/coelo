@@ -14,6 +14,44 @@ import 'package:flutter_test/flutter_test.dart';
 import 'support/fake_notice_repository.dart';
 
 void main() {
+  for (final status in [NoticeStatus.scheduled, NoticeStatus.active]) {
+    testWidgets('publication feedback follows the server status $status', (tester) async {
+      final repository = _PublicationResultRepository(status);
+      PlatformNotice? saved;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: NoticeFormPage(
+              repository: repository,
+              noticeId: 'notice-publish',
+              onSaved: (notice) => saved = notice,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      for (var step = 0; step < 4; step++) {
+        await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+        await tester.pump();
+      }
+      await tester.tap(find.widgetWithText(FilledButton, 'Publicar aviso'));
+      await tester.pumpAndSettle();
+      expect(saved?.status, status);
+      expect(saved?.managementVersion, 2);
+      expect(
+        find.text(
+          status == NoticeStatus.scheduled
+              ? 'Publicação agendada: Comunicação em fila'
+              : 'Aviso publicado: Comunicação em fila',
+        ),
+        findsOneWidget,
+      );
+      if (status == NoticeStatus.scheduled) {
+        expect(find.text('Aviso publicado: Comunicação em fila'), findsNothing);
+      }
+    });
+  }
+
   testWidgets('validates and advances through the five notice wizard steps on mobile', (
     tester,
   ) async {
@@ -224,6 +262,50 @@ final class _OrderedNoticeRepository implements NoticeRepository {
     String? cursorId,
     int pageSize = 30,
   }) async => const NoticeAudienceOptionsPage(items: []);
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _PublicationResultRepository implements NoticeRepository {
+  _PublicationResultRepository(this.resultStatus) {
+    delegate.seed(_notice('notice-publish', 'Comunicação em fila'));
+  }
+  final NoticeStatus resultStatus;
+  final delegate = FakeNoticeRepository();
+
+  @override
+  Future<PlatformNotice> getById(String id) => delegate.getById(id);
+
+  @override
+  Future<NoticeAudienceOptionsPage> fetchAudienceOptions({
+    required NoticeAudienceDimension dimension,
+    String? search,
+    List<String> parentIds = const [],
+    String? cursorLabel,
+    String? cursorId,
+    int pageSize = 30,
+  }) async => const NoticeAudienceOptionsPage(items: []);
+
+  @override
+  Future<PlatformNotice> saveDraft(
+    NoticeDraft draft, {
+    required String requestId,
+    String? noticeId,
+    int? expectedVersion,
+  }) => delegate.saveDraft(
+    draft,
+    requestId: requestId,
+    noticeId: noticeId,
+    expectedVersion: expectedVersion,
+  );
+
+  @override
+  Future<PlatformNotice> publish(
+    PlatformNotice notice, {
+    required String requestId,
+    required int expectedVersion,
+  }) async => notice.copyWith(status: resultStatus, managementVersion: expectedVersion + 1);
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
