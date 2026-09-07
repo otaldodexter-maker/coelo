@@ -316,6 +316,8 @@ Exception _mapEnvelope(Map<String, dynamic> error) {
       'invalid-input',
       'Revise os dados enviados.',
     ),
+    'SAI_AUTH_REQUIRED' ||
+    'SAI_SESSION_INVALID' ||
     'SAI_PERMISSION_DENIED' ||
     'SAI_INTERNAL_CONTEXT_DENIED' ||
     'SAI_MEMBERSHIP_SUSPENDED' ||
@@ -364,6 +366,9 @@ Exception _mapError(PostgrestException error) {
   }
   if (error.code == '23505') {
     return const PlatformUserConflictException('identity', 'CPF ou e-mail já cadastrado.');
+  }
+  if (const {'42501', 'PGRST301', 'PGRST302', 'PGRST303'}.contains(error.code)) {
+    return const PlatformUserRuleException('unauthorized', 'Acesso não autorizado.');
   }
   return const PlatformUserRuleException('backend', 'Não foi possível concluir a operação.');
 }
