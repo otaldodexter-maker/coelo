@@ -4,12 +4,12 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../app/activity/superadmin_activity.dart';
+import '../../../../app/shell/superadmin_notice.dart';
 import '../../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../domain/unit_backend_commands.dart';
 import '../../domain/unit_directory.dart';
 import '../unit_directory_table_view.dart';
 import '../unit_directory_view_model.dart';
-import 'unit_file_actions.dart';
 
 enum UnitDirectoryDisplay { cards, table }
 
@@ -215,16 +215,28 @@ final class UnitDirectoryToolbar extends StatelessWidget {
                 onTableViewSelected: onTableViewChanged,
               ),
               const SizedBox(width: CoeloSpacing.space2),
-              UnitFileActions(
-                activityController: activityController,
-                backendCommands: backendCommands,
-                query: viewModel.query,
-                requestIdFactory: requestIdFactory,
-                groupByInstitution:
-                    display == UnitDirectoryDisplay.table &&
-                    tableView == UnitDirectoryTableView.grouped,
+              CoeloAdminFileActions(
                 compact: compactFiles,
-                viewLabel: display == UnitDirectoryDisplay.cards ? 'Cards' : tableView.label,
+                actions: [
+                  CoeloAdminFileAction(
+                    key: const Key('unit-files-import'),
+                    label: 'Importar',
+                    icon: Icons.upload_file_outlined,
+                    onPressed: () => _showDeferredFileNotice(context),
+                  ),
+                  CoeloAdminFileAction(
+                    key: const Key('unit-files-export-csv'),
+                    label: 'Exportar CSV',
+                    icon: Icons.table_rows_outlined,
+                    onPressed: () => _showDeferredFileNotice(context),
+                  ),
+                  CoeloAdminFileAction(
+                    key: const Key('unit-files-export-xlsx'),
+                    label: 'Exportar XLSX',
+                    icon: Icons.grid_on_outlined,
+                    onPressed: () => _showDeferredFileNotice(context),
+                  ),
+                ],
               ),
             ],
           ),
@@ -237,5 +249,9 @@ final class UnitDirectoryToolbar extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _showDeferredFileNotice(BuildContext context) {
+    showSuperadminNotice(context, 'Disponível depois do MVP', icon: Icons.info_outline_rounded);
   }
 }

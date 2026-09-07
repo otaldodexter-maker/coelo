@@ -478,7 +478,7 @@ final class _GroupToolbar extends StatelessWidget {
   }
 
   void _showUnavailable(BuildContext context) {
-    showSuperadminNotice(context, 'Indisponível nesta etapa', icon: Icons.info_outline_rounded);
+    showSuperadminNotice(context, 'Disponível depois do MVP', icon: Icons.info_outline_rounded);
   }
 }
 
