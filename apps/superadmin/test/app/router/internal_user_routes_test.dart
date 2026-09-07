@@ -70,6 +70,27 @@ void main() {
             : isEmpty,
       );
 
+      if (canRead) {
+        session.authorize(session.authContext!, sessionId: 'replacement-session');
+        await tester.pumpAndSettle();
+        final replacementPage = tester.widget<PlatformUserDirectoryPage>(
+          find.byType(PlatformUserDirectoryPage),
+        );
+        expect(replacementPage.key, isNot(page.key));
+        expect(paths, hasLength(4));
+        session.authorize(
+          const SuperadminAuthContext(
+            platformRoleCode: 'owner',
+            scopeKind: SuperadminAuthScopeKind.platform,
+            permissionCodes: {'platform.read'},
+            aal: 'aal1',
+          ),
+          sessionId: 'replacement-session',
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Acesso não autorizado'), findsOneWidget);
+        expect(paths, hasLength(4));
+      }
       session.signOut();
       await tester.pumpAndSettle();
       expect(find.byType(PlatformUserDirectoryPage), findsNothing);
