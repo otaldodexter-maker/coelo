@@ -22,6 +22,7 @@ void main() {
 
     final session = SuperadminSession();
     final router = createSuperadminRouter(
+      allowDevelopmentPreview: true,
       session: session,
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,

@@ -1,9 +1,10 @@
 ---
 title: Agenda institucional do Superadmin
 knowledge_id: superadmin-agenda
-source: specs/006-comunicacao-agenda.md
+source: specs/050-superadmin-agenda-backend.md
 status: validated
 generated_at: 2026-09-01
+updated_at: 2026-09-07
 audience: team
 surfaces: [superadmin, agenda, events, permissions, notifications]
 visibility: internal
@@ -12,11 +13,17 @@ review_owner: Coelo Product
 
 # Agenda institucional do Superadmin
 
+Fontes complementares: `specs/006-comunicacao-agenda.md` e
+`decisions/0029-superadmin-agenda-backend-authorization.md`.
+
 A Agenda institucional produtiva do recorte vigente existe exclusivamente no
 Superadmin. Admin e Principal não recebem telas ou rotas de Agenda nesta versão.
-A autorização aprovada cobre Flutter/Dart, UI/UX e fixtures determinísticas de
-`/dev`; persistência, autorização remota e entrega real de notificações continuam
-fora de escopo.
+A ADR 0029 supera a limitação anterior a Flutter/Dart, UI/UX e fixtures de
+`/dev`: o recorte aprovado inclui backend produtivo e integração no Superadmin,
+conforme a spec 050. Essa autorização não comprova implantação nem conclusão
+E2E. Rotas produtivas só deixam de ser fail-closed mediante evidência remota de
+autorização, isolamento e persistência. Entrega real por canal de notificação
+continua fora do contrato.
 
 A navegação oferece Calendário e Lista. Criar evento é subitem de Agenda, não
 ação preenchida no cabeçalho. A Lista web usa timeline com data lateral e cards;
@@ -43,8 +50,9 @@ reúne pedidos de publicação de quem pode criar, mas não publicar.
 
 O evento pode incluir perguntas opcionais de resposta curta ou Sim/Não junto à
 descrição. Toda pergunta adicionada exige título e não deve solicitar dados
-sensíveis. Persistência, respostas, retenção e autorização permanecem
-dependentes de contrato backend futuro.
+sensíveis. A spec 050 inclui persistência, respostas e autorização server-side;
+a retenção jurídica detalhada das respostas permanece pendente de contrato
+próprio.
 
 Na criação, o autor escolhe quando lembrar (publicação, 24 horas antes, 1 hora
 antes ou horário personalizado). A seleção de canais não integra o formulário
@@ -53,8 +61,8 @@ até contrato posterior aprovado.
 
 Perfis e Permissões é a fonte das capacidades de criar, editar próprios, editar
 todos, publicar, cancelar/restaurar, gerenciar respostas e sobrescrever conflito
-de reserva. A Agenda apenas apresenta o acesso efetivo; backend futuro deverá
-revalidar ator, tenant, contexto e recurso.
+de reserva. A Agenda apenas apresenta o acesso efetivo; o backend deve revalidar
+ator, tenant, contexto e recurso em cada leitura e escrita.
 
 Por isso, a Agenda não possui uma tela própria de permissões. Seu submenu termina
 em Aprovações e URLs antigas de permissões levam a Perfis e Permissões.
