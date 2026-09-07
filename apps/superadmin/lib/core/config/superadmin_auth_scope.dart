@@ -1,4 +1,8 @@
 import 'package:coelo_auth/coelo_auth.dart';
+import '../../features/groups/domain/group_detail.dart';
+import '../../features/groups/data/supabase_group_detail_repository.dart';
+import '../../features/units/domain/unit_detail.dart';
+import '../../features/units/data/supabase_unit_detail_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -112,6 +116,8 @@ final class SuperadminAuthScope {
     required this.accessProfileRepository,
     this.platformUserRepository,
     required this.groupDirectoryRepository,
+    this.groupDetailRepository = const UnavailableGroupDetailRepository(),
+    this.unitDetailRepository = const UnavailableUnitDetailRepository(),
     required this.unitDirectoryRepository,
     required this.unitBackendCommands,
     required this.structureMutationsEnabled,
@@ -158,6 +164,8 @@ final class SuperadminAuthScope {
   final AccessProfileRepository accessProfileRepository;
   final PlatformUserRepository? platformUserRepository;
   final GroupDirectoryRepository groupDirectoryRepository;
+  final GroupDetailRepository groupDetailRepository;
+  final UnitDetailRepository unitDetailRepository;
   final UnitDirectoryRepository unitDirectoryRepository;
   final UnitBackendCommandsGateway unitBackendCommands;
   final bool structureMutationsEnabled;
@@ -268,6 +276,8 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       accessProfileRepository: SupabaseAccessProfileRepository(client),
       platformUserRepository: platformUsers,
       groupDirectoryRepository: const UnavailableGroupDirectoryRepository(),
+      groupDetailRepository: SupabaseGroupDetailRepository(client),
+      unitDetailRepository: SupabaseUnitDetailRepository(client),
       unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
       unitBackendCommands: SupabaseUnitBackendCommandsGateway(client),
       // OQ-032/OQ-043: these CRUD repositories still target the legacy

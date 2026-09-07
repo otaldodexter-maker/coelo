@@ -11,6 +11,13 @@ abstract interface class GroupDetailRepository {
   Future<GroupDetail> fetchById(String groupId);
 }
 
+final class UnavailableGroupDetailRepository implements GroupDetailRepository {
+  const UnavailableGroupDetailRepository();
+  @override
+  Future<GroupDetail> fetchById(String groupId) async =>
+      throw const GroupDetailException(GroupDetailFailure.unavailable);
+}
+
 /// Only the physical fields authorized by spec 045; no inferred relationships.
 final class GroupDetail {
   const GroupDetail({

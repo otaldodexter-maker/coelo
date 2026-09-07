@@ -1,4 +1,6 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
+import '../features/groups/domain/group_detail.dart';
+import '../features/units/domain/unit_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -96,6 +98,8 @@ class SuperadminApp extends StatefulWidget {
     this.resetPassword = unavailableResetPassword,
     this.institutionDirectoryRepository = const UnavailableInstitutionDirectoryRepository(),
     this.groupDirectoryRepository = const UnavailableGroupDirectoryRepository(),
+    this.groupDetailRepository = const UnavailableGroupDetailRepository(),
+    this.unitDetailRepository = const UnavailableUnitDetailRepository(),
     this.activityDirectoryRepository = const UnavailableActivityDirectoryRepository(),
     this.activityCommandRepository = const UnavailableActivityCommandRepository(),
     this.assessmentRepository = const UnavailableAssessmentRepository(),
@@ -143,6 +147,8 @@ class SuperadminApp extends StatefulWidget {
   final ResetPasswordAction resetPassword;
   final InstitutionDirectoryRepository institutionDirectoryRepository;
   final GroupDirectoryRepository groupDirectoryRepository;
+  final GroupDetailRepository groupDetailRepository;
+  final UnitDetailRepository unitDetailRepository;
   final ActivityDirectoryRepository activityDirectoryRepository;
   final ActivityCommandRepository activityCommandRepository;
   final AssessmentRepository assessmentRepository;
@@ -210,6 +216,8 @@ class _SuperadminAppState extends State<SuperadminApp> {
       resetPassword: widget.resetPassword,
       institutionDirectoryRepository: widget.institutionDirectoryRepository,
       groupDirectoryRepository: widget.groupDirectoryRepository,
+      groupDetailRepository: widget.groupDetailRepository,
+      unitDetailRepository: widget.unitDetailRepository,
       activityDirectoryRepository: widget.activityDirectoryRepository,
       activityCommandRepository: widget.activityCommandRepository,
       assessmentRepository: widget.assessmentRepository,

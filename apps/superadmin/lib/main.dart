@@ -23,6 +23,8 @@ Future<void> main() async {
       unitBackendCommands: authScope.unitBackendCommands,
       structureMutationsEnabled: authScope.structureMutationsEnabled,
       groupDirectoryRepository: authScope.groupDirectoryRepository,
+      groupDetailRepository: authScope.groupDetailRepository,
+      unitDetailRepository: authScope.unitDetailRepository,
       activityDirectoryRepository: authScope.activityDirectoryRepository,
       activityCommandRepository: authScope.activityCommandRepository,
       assessmentRepository: authScope.assessmentRepository,

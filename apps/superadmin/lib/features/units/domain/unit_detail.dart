@@ -11,6 +11,13 @@ abstract interface class UnitDetailRepository {
   Future<UnitDetail> fetchById(String unitId);
 }
 
+final class UnavailableUnitDetailRepository implements UnitDetailRepository {
+  const UnavailableUnitDetailRepository();
+  @override
+  Future<UnitDetail> fetchById(String unitId) async =>
+      throw const UnitDetailException(UnitDetailFailure.unavailable);
+}
+
 final class UnitDetailType {
   const UnitDetailType({required this.id, required this.name});
   final String id;
