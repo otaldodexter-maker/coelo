@@ -614,11 +614,14 @@ AgendaRecurrence? _recurrence(Object? raw) {
   if (raw == null) return null;
   final json = _map(raw);
   final frequency = _enum(AgendaRecurrenceFrequency.values, _required(json, 'frequency'));
-  final interval = _integer(json['interval'], fallback: 1);
-  final until = _nullableDate(json['until']);
-  final count = json['occurrenceCount'] == null ? null : _integer(json['occurrenceCount']);
+  final interval = json.containsKey('interval') ? _positiveInteger(json['interval']) : 1;
+  final until = json['until'] == null ? null : _strictDate(json['until']).toLocal();
+  final count = json['occurrenceCount'] == null ? null : _positiveInteger(json['occurrenceCount']);
   if ((until == null) == (count == null)) throw const FormatException('Invalid recurrence end.');
-  final exceptions = _strings(json['exceptions']).map(DateTime.parse).toSet();
+  final exceptions =
+      (json.containsKey('exceptions') ? _requiredList(json['exceptions']) : const <Object?>[])
+          .map(_strictDate)
+          .toSet();
   return switch (frequency) {
     AgendaRecurrenceFrequency.daily => AgendaRecurrence.daily(
       interval: interval,
@@ -714,6 +717,16 @@ int _integer(Object? value, {int? fallback}) {
   if (parsed != null) return parsed;
   if (fallback != null) return fallback;
   throw const FormatException('Invalid Agenda integer.');
+}
+
+int _positiveInteger(Object? value) {
+  if (value is! int || value <= 0) throw const FormatException('Invalid Agenda positive integer.');
+  return value;
+}
+
+DateTime _strictDate(Object? value) {
+  if (value is! String) throw const FormatException('Invalid Agenda date type.');
+  return DateTime.tryParse(value) ?? (throw const FormatException('Invalid Agenda date.'));
 }
 
 DateTime _date(Map<String, Object?> value, String key) =>

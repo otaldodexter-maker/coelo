@@ -9,6 +9,101 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('recorrência preserva intervalo explícito, término e timezone das exceções', () async {
+    final client = _client(
+      (request) async => _json(request, {
+        'items': [
+          {
+            ..._eventJson(id: _eventId, revision: 1),
+            'recurrence': {
+              'frequency': 'weekly',
+              'interval': 2,
+              'until': '2026-11-30T23:00:00Z',
+              'occurrenceCount': null,
+              'exceptions': ['2026-09-17T00:00:00Z'],
+            },
+          },
+        ],
+      }),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    await repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 12));
+    expect(repository.errorMessage, isNull);
+    final recurrence = repository.items.single.recurrence!;
+    expect(recurrence.interval, 2);
+    expect(recurrence.until!.toUtc(), DateTime.utc(2026, 11, 30, 23));
+    expect(recurrence.exceptions.single, DateTime.utc(2026, 9, 17));
+    expect(recurrence.exceptions.single.isUtc, isTrue);
+  });
+
+  for (final frequency in AgendaRecurrenceFrequency.values) {
+    test(
+      'recorrência válida preserva frequência, quantidade e default: ${frequency.name}',
+      () async {
+        final client = _client(
+          (request) async => _json(request, {
+            'items': [
+              {
+                ..._eventJson(id: _eventId, revision: 1),
+                'recurrence': {
+                  'frequency': frequency.name,
+                  'occurrenceCount': 3,
+                  'until': null,
+                  'exceptions': <String>[],
+                },
+              },
+            ],
+          }),
+        );
+        addTearDown(client.dispose);
+        final repository = SupabaseAgendaRepository(client);
+        await repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2027, 3));
+        expect(repository.errorMessage, isNull);
+        expect(repository.items.single.recurrence!.interval, 1);
+        expect(repository.items.single.recurrence!.frequency, frequency);
+        expect(
+          repository.occurrencesBetween(DateTime.utc(2026, 9), DateTime.utc(2027, 3)),
+          hasLength(3),
+        );
+      },
+    );
+  }
+
+  for (final invalid in <String, Map<String, Object?>>{
+    'interval zero': {'frequency': 'daily', 'interval': 0, 'occurrenceCount': 3},
+    'interval negative': {'frequency': 'daily', 'interval': -1, 'occurrenceCount': 3},
+    'interval text': {'frequency': 'daily', 'interval': 'invalid', 'occurrenceCount': 3},
+    'interval numeric string': {'frequency': 'daily', 'interval': '2', 'occurrenceCount': 3},
+    'count zero': {'frequency': 'daily', 'interval': 1, 'occurrenceCount': 0},
+    'count negative': {'frequency': 'daily', 'interval': 1, 'occurrenceCount': -2},
+    'invalid until and count': {'frequency': 'daily', 'until': 'invalid', 'occurrenceCount': 3},
+    'exceptions object': {'frequency': 'daily', 'occurrenceCount': 3, 'exceptions': {}},
+  }.entries) {
+    test('recorrência inválida preserva snapshot sem expansão: ${invalid.key}', () async {
+      var corrupt = false;
+      final client = _client(
+        (request) async => _json(request, {
+          'items': [
+            {
+              ..._eventJson(id: _eventId, revision: corrupt ? 2 : 1),
+              if (corrupt) 'recurrence': invalid.value,
+            },
+          ],
+        }),
+      );
+      addTearDown(client.dispose);
+      final repository = SupabaseAgendaRepository(client);
+      await repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 10));
+      corrupt = true;
+      // Do not expand an invalid recurrence: debug asserts/release loops are the bug.
+      await repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 10));
+      expect(repository.errorMessage, 'A Agenda retornou dados inválidos.');
+      expect(repository.items.single.revision, 1);
+      expect(repository.isLoading, isFalse);
+    });
+  }
+
   test('comando malformado preserva leitura pendente e suas notificações', () async {
     var delayedRead = false;
     final delayed = Completer<Response>();
