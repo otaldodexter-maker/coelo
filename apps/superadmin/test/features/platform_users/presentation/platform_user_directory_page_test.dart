@@ -12,6 +12,62 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('server revocation removes an already loaded directory', (tester) async {
+    final repository = _LifecycleRepository.immediate('Contexto anterior');
+    await tester.pumpWidget(
+      _directoryApp(
+        key: const ValueKey('revoked-directory'),
+        repository: repository,
+        capability: PlatformUserCapability.auditor,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Contexto anterior Exclusivo'), findsWidgets);
+
+    repository.error = const PlatformUserRuleException('unauthorized', 'private detail');
+    await tester.enterText(find.byKey(const Key('platform-user-search')), 'busca anterior');
+    await tester.pump(const Duration(milliseconds: 301));
+    await tester.pumpAndSettle();
+    expect(find.text('Contexto anterior Exclusivo'), findsNothing);
+    expect(find.text('Acesso não autorizado'), findsOneWidget);
+    expect(find.byKey(const Key('platform-user-filter-toolbar')), findsNothing);
+    expect(find.byType(SuperadminListingPaginationFooter), findsNothing);
+    final calls = repository.queries.length;
+    await tester.pump(const Duration(seconds: 1));
+    expect(repository.queries, hasLength(calls));
+  });
+
+  testWidgets('server denial hides filters and does not offer a retry', (tester) async {
+    await tester.pumpWidget(
+      _directoryApp(
+        key: const ValueKey('server-denial'),
+        repository: _ScenarioRepository(
+          error: const PlatformUserRuleException('unauthorized', 'private detail'),
+        ),
+        capability: PlatformUserCapability.auditor,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Acesso não autorizado'), findsOneWidget);
+    expect(find.byKey(const Key('platform-user-filter-toolbar')), findsNothing);
+    expect(find.text('Tentar novamente'), findsNothing);
+    expect(find.text('private detail'), findsNothing);
+  });
+
+  testWidgets('read-only empty directory does not suggest preview creation', (tester) async {
+    await tester.pumpWidget(
+      _directoryApp(
+        key: const ValueKey('readonly-empty'),
+        repository: _ScenarioRepository(),
+        capability: PlatformUserCapability.auditor,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Nenhum usuário interno cadastrado'), findsOneWidget);
+    expect(find.textContaining('preview'), findsNothing);
+    expect(find.text('Não há usuários internos disponíveis neste contexto.'), findsOneWidget);
+  });
+
   testWidgets('renders canonical cards, files and opens edit directly', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -383,6 +439,7 @@ final class _LifecycleRepository implements PlatformUserRepository {
   final PlatformUserRecord _record;
   final bool _pending;
   final queries = <PlatformUserQuery>[];
+  Object? error;
   final _completion = Completer<PlatformUserPage>();
 
   void complete() {
@@ -399,6 +456,7 @@ final class _LifecycleRepository implements PlatformUserRepository {
   @override
   Future<PlatformUserPage> fetchPage(PlatformUserQuery query) {
     queries.add(query);
+    if (error case final failure?) return Future.error(failure);
     return _pending ? _completion.future : Future.value(_page());
   }
 
