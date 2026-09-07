@@ -29,6 +29,7 @@ Deno.test("media gateway validates final object metadata before linking", async 
   const sources = await Promise.all([
     Deno.readTextFile(new URL("./index.ts", import.meta.url)),
     Deno.readTextFile(new URL("./r2_s3.ts", import.meta.url)),
+    Deno.readTextFile(new URL("../_shared/r2_s3.ts", import.meta.url)),
   ]);
   const source = sources.join("\n");
 

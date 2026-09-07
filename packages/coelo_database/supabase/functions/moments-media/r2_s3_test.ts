@@ -6,6 +6,25 @@ import {
 
 import { MomentsR2Client, momentsR2Config } from "./r2_s3.ts";
 
+Deno.test("wrapper preserves sanitized asynchronous validation errors", async () => {
+  const client = new MomentsR2Client(momentsR2Config(environment), {
+    fetch: () => Promise.resolve(new Response(null)),
+  });
+  for (
+    const [operation, expected] of [
+      [() => client.presignGet("a/../b"), "moments_r2_invalid_key"],
+      [
+        () => client.presignPut("a/b", "image/webp", 901),
+        "moments_r2_invalid_expiry",
+      ],
+      [() => client.head("a/b"), "moments_r2_invalid_metadata"],
+    ] as const
+  ) {
+    const error = await assertRejects(operation, Error);
+    assertEquals(error.message, expected);
+  }
+});
+
 const environment = {
   MOMENTS_R2_ENDPOINT: "https://account.r2.cloudflarestorage.com",
   MOMENTS_R2_REGION: "auto",
@@ -60,3 +79,26 @@ Deno.test("HEAD and DELETE fail closed on R2 errors", async () => {
     "moments_r2_http_403",
   );
 });
+
+for (
+  const endpoint of [
+    "https://user:synthetic@account.r2.cloudflarestorage.com",
+    "https://account.r2.cloudflarestorage.com?unexpected=value",
+    "https://account.r2.cloudflarestorage.com#unexpected",
+  ]
+) {
+  Deno.test(`factory rejects endpoint component: ${new URL(endpoint).username ? "userinfo" : new URL(endpoint).search ? "query" : "fragment"}`, () => {
+    assertThrows(
+      () => momentsR2Config({ ...environment, MOMENTS_R2_ENDPOINT: endpoint }),
+      Error,
+      "moments_r2_invalid_endpoint",
+    );
+  });
+  Deno.test(`constructor validates endpoint independently: ${new URL(endpoint).username ? "userinfo" : new URL(endpoint).search ? "query" : "fragment"}`, () => {
+    assertThrows(
+      () => new MomentsR2Client({ ...momentsR2Config(environment), endpoint }),
+      Error,
+      "moments_r2_invalid_endpoint",
+    );
+  });
+}
