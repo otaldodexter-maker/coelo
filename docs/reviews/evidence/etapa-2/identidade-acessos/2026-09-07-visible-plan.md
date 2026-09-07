@@ -69,4 +69,9 @@ Resposta antiga, inclusive negação, não repovoa nem apaga o cache novo.
 O scope liga a limpeza às notificações efetivas da sessão; refresh equivalente
 não limpa. Testes: repository 24/24 + scope 12/12 = 36/36, analyzer de quatro
 arquivos sem problemas, revisão independente favorável. Sem SQL executado.
-O callback de dispose é extensão separada, ainda pendente neste incremento.
+Extensão separada de dispose: callback opcional executa clearSessionCache uma
+única vez, sem notify/signOut. Finally descarta listeners mesmo se cleanup
+falhar. Scope cria repository antes da sessão e injeta o callback. Testes
+combinados 48/48 (sessão 12 + scope 12 + repository 24), analyzer sem problemas
+e revisão aprovada. A prova inclui cache preenchido e resposta pendente no
+descarte. Não prova que o app descarte automaticamente uma sessão injetada.

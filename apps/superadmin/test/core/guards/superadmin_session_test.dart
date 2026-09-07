@@ -6,6 +6,34 @@ import 'package:coelo_superadmin/features/auth/domain/superadmin_auth_context.da
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('dispose runs cleanup once without notifying or signing out', () {
+    var cleanups = 0;
+    var notifications = 0;
+    final session = SuperadminSession(onDispose: () => cleanups++);
+    session.authorize(_context({'platform.read'}), sessionId: 'session-a');
+    session.addListener(() => notifications++);
+    session.dispose();
+    session.dispose();
+    expect(cleanups, 1);
+    expect(notifications, 0);
+    expect(() => session.addListener(() {}), throwsFlutterError);
+  });
+
+  test('cleanup failure still disposes listeners and is not repeated', () {
+    var cleanups = 0;
+    final session = SuperadminSession(
+      onDispose: () {
+        cleanups++;
+        throw StateError('cleanup failed');
+      },
+    );
+    session.addListener(() {});
+    expect(session.dispose, throwsStateError);
+    expect(() => session.addListener(() {}), throwsFlutterError);
+    session.dispose();
+    expect(cleanups, 1);
+  });
+
   test('first completed bootstrap invalidates another pending result', () {
     final session = SuperadminSession();
     addTearDown(session.dispose);

@@ -5,6 +5,7 @@ import 'package:coelo_auth/coelo_auth.dart';
 import 'package:coelo_superadmin/core/config/superadmin_auth_scope.dart';
 import 'package:coelo_superadmin/features/access_profiles/data/supabase_access_profile_repository.dart';
 import 'package:coelo_superadmin/features/platform_users/data/supabase_platform_user_repository.dart';
+import 'package:coelo_superadmin/features/platform_users/domain/platform_user.dart';
 import 'package:coelo_superadmin/features/activities/data/supabase_activity_command_repository.dart';
 import 'package:coelo_superadmin/features/activities/data/supabase_activity_directory_repository.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_command.dart';
@@ -38,11 +39,18 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
   test('internal directory cache follows authorization changes but not equal refresh', () async {
+    var holdResponse = false;
+    final started = Completer<void>();
+    final release = Completer<void>();
     final client = SupabaseClient(
       'https://example.supabase.co',
       'publishable-key',
-      httpClient: MockClient(
-        (request) async => Response(
+      httpClient: MockClient((request) async {
+        if (holdResponse) {
+          started.complete();
+          await release.future;
+        }
+        return Response(
           jsonEncode({
             'items': [
               {
@@ -57,8 +65,8 @@ void main() {
           200,
           headers: {'content-type': 'application/json'},
           request: request,
-        ),
-      ),
+        );
+      }),
     );
     addTearDown(client.dispose);
     final scope = await createSuperadminAuthScope(
@@ -83,6 +91,21 @@ void main() {
     expect(repository.profiles, isEmpty);
     await repository.fetchProfiles();
     scope.session.signOut();
+    expect(repository.profiles, isEmpty);
+    await repository.fetchProfiles();
+    holdResponse = true;
+    final response = repository.fetchProfiles();
+    final denied = expectLater(
+      response,
+      throwsA(
+        isA<PlatformUserRuleException>().having((error) => error.code, 'code', 'unauthorized'),
+      ),
+    );
+    await started.future;
+    scope.session.dispose();
+    expect(repository.profiles, isEmpty);
+    release.complete();
+    await denied;
     expect(repository.profiles, isEmpty);
   });
 

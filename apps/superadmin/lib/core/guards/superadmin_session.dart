@@ -10,7 +10,9 @@ final class SuperadminSession extends ChangeNotifier {
     bool isPasswordRecovery = false,
     Stream<bool>? authStateChanges,
     Stream<CoeloAuthSessionState>? authSessionStateChanges,
+    VoidCallback? onDispose,
   }) : _isAuthenticated = false,
+       _onDispose = onDispose,
        _authContext = null,
        _isPasswordRecovery = isPasswordRecovery {
     _authStateSubscription = authStateChanges?.distinct().listen(
@@ -24,6 +26,8 @@ final class SuperadminSession extends ChangeNotifier {
   }
 
   bool _isAuthenticated;
+  final VoidCallback? _onDispose;
+  bool _disposed = false;
   bool _isPasswordRecovery;
   SuperadminAuthContext? _authContext;
   String? _sessionId;
@@ -135,8 +139,14 @@ final class SuperadminSession extends ChangeNotifier {
 
   @override
   void dispose() {
-    _authStateSubscription?.cancel();
-    _authSessionStateSubscription?.cancel();
-    super.dispose();
+    if (_disposed) return;
+    _disposed = true;
+    try {
+      _onDispose?.call();
+    } finally {
+      _authStateSubscription?.cancel();
+      _authSessionStateSubscription?.cancel();
+      super.dispose();
+    }
   }
 }
