@@ -735,14 +735,30 @@ final class NoticeFormController extends ChangeNotifier {
       return saveAndPublish();
     }
 
+    final currentStatus = savedNotice?.status;
+    if (currentStatus != null &&
+        currentStatus != NoticeStatus.draft &&
+        currentStatus != NoticeStatus.scheduled) {
+      return _invalidPublicationState();
+    }
     final saved = await saveDraft();
     if (saved == null || _isDisposed) return null;
+    // Scheduled publication generations belong to the server. Submitting the
+    // draft-only publish command again is neither an edit nor a resume.
+    if (saved.status == NoticeStatus.scheduled) return saved;
+    if (saved.status != NoticeStatus.draft) return _invalidPublicationState();
     final intent = _PendingNoticePublish(
       requestId: _newRequestId(),
       notice: saved,
       draftFingerprint: _draftFingerprint(draft),
     );
     return _runPublishIntent(intent, applyFields: true);
+  }
+
+  PlatformNotice? _invalidPublicationState() {
+    errorMessage = 'Este aviso não pode ser publicado neste estado.';
+    notifyListeners();
+    return null;
   }
 
   Future<PlatformNotice?> _runPublishIntent(

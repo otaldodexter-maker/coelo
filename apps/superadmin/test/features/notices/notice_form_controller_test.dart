@@ -8,6 +8,65 @@ import 'package:flutter_test/flutter_test.dart';
 import 'support/fake_notice_repository.dart';
 
 void main() {
+  test('scheduled edit returns its saved generation without publishing again', () async {
+    final repository = _StatefulPublicationRepository(initialStatus: NoticeStatus.scheduled);
+    final controller = NoticeFormController(repository: repository, noticeId: 'notice-stateful');
+    addTearDown(controller.dispose);
+    await controller.ready;
+    controller.titleController.text = 'Edição agendada';
+    final result = await controller.saveAndPublish();
+    expect(result?.status, NoticeStatus.scheduled);
+    expect(result?.managementVersion, 2);
+    expect(repository.saveCalls, 1);
+    expect(repository.publishRequestIds, isEmpty);
+  });
+
+  for (final publishedStatus in [NoticeStatus.scheduled, NoticeStatus.active]) {
+    test(
+      'edited ambiguous publication reconciles $publishedStatus before further commands',
+      () async {
+        final repository = _StatefulPublicationRepository(
+          publicationStatus: publishedStatus,
+          dropFirstResponse: true,
+        );
+        final controller = NoticeFormController(
+          repository: repository,
+          noticeId: 'notice-stateful',
+        );
+        addTearDown(controller.dispose);
+        await controller.ready;
+        await expectLater(controller.saveAndPublish(), completion(isNull));
+        controller.titleController.text = 'Edição após timeout';
+        final result = await controller.saveAndPublish();
+        expect(repository.publishRequestIds, hasLength(2));
+        expect(repository.publishRequestIds[1], repository.publishRequestIds[0]);
+        if (publishedStatus == NoticeStatus.scheduled) {
+          expect(result?.status, NoticeStatus.scheduled);
+          expect(result?.managementVersion, 4);
+          expect(repository.saveCalls, 2);
+          expect(repository.item.title, 'Edição após timeout');
+        } else {
+          expect(result, isNull);
+          expect(repository.saveCalls, 1);
+          expect(controller.savedNotice?.status, NoticeStatus.active);
+          expect(controller.errorMessage, isNotNull);
+          expect(controller.titleController.text, 'Edição após timeout');
+        }
+      },
+    );
+  }
+
+  test('publish does not save or implicitly resume a paused notice', () async {
+    final repository = _StatefulPublicationRepository(initialStatus: NoticeStatus.paused);
+    final controller = NoticeFormController(repository: repository, noticeId: 'notice-stateful');
+    addTearDown(controller.dispose);
+    await controller.ready;
+    expect(await controller.saveAndPublish(), isNull);
+    expect(repository.saveCalls, 0);
+    expect(repository.publishRequestIds, isEmpty);
+    expect(controller.savedNotice?.status, NoticeStatus.paused);
+  });
+
   for (final version in [1, 0]) {
     test('create receipt requires the v2 initial version (received $version)', () async {
       final repository = _PendingSaveRepository();
@@ -283,7 +342,7 @@ void main() {
     expect(repository.publishRequestIds[1], repository.publishRequestIds[0]);
   });
 
-  test('reconciles an ambiguous publish before saving an edit', () async {
+  test('reconciles an active publication without submitting an invalid edit', () async {
     final repository = _PublishRetryRepository(ambiguousFirstPublish: true);
     final controller = NoticeFormController(repository: repository);
     addTearDown(controller.dispose);
@@ -294,16 +353,17 @@ void main() {
     controller.titleController.text = 'Aviso B';
     final published = await controller.saveAndPublish();
 
-    expect(published?.id, 'notice-1');
-    expect(published?.title, 'Aviso B');
-    expect(published?.status, NoticeStatus.active);
-    expect(published?.managementVersion, 4);
-    expect(repository.saveCalls, 2);
-    expect(repository.saveNoticeIds, [null, 'notice-1']);
-    expect(repository.saveExpectedVersions, [null, 2]);
-    expect(repository.publishRequestIds, hasLength(3));
+    expect(published, isNull);
+    expect(controller.savedNotice?.id, 'notice-1');
+    expect(controller.savedNotice?.status, NoticeStatus.active);
+    expect(controller.savedNotice?.managementVersion, 2);
+    expect(controller.titleController.text, 'Aviso B');
+    expect(controller.errorMessage, isNotNull);
+    expect(repository.saveCalls, 1);
+    expect(repository.saveNoticeIds, [null]);
+    expect(repository.saveExpectedVersions, [null]);
+    expect(repository.publishRequestIds, hasLength(2));
     expect(repository.publishRequestIds[1], repository.publishRequestIds[0]);
-    expect(repository.publishRequestIds[2], isNot(repository.publishRequestIds[0]));
   });
 
   test('clears a deterministic publish intent before retry', () async {
@@ -479,6 +539,72 @@ final class _PublishRetryRepository implements NoticeRepository {
     }
     _firstPublish = false;
     return published;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _StatefulPublicationRepository implements NoticeRepository {
+  _StatefulPublicationRepository({
+    NoticeStatus initialStatus = NoticeStatus.draft,
+    this.publicationStatus = NoticeStatus.scheduled,
+    this.dropFirstResponse = false,
+  }) : item = _notice('notice-stateful', 'Aviso').copyWith(status: initialStatus);
+
+  PlatformNotice item;
+  final NoticeStatus publicationStatus;
+  final bool dropFirstResponse;
+  final publishRequestIds = <String>[];
+  final receipts = <String, PlatformNotice>{};
+  int saveCalls = 0;
+
+  @override
+  Future<PlatformNotice> getById(String noticeId) async => item;
+
+  @override
+  Future<NoticeAudienceOptionsPage> fetchAudienceOptions({
+    required NoticeAudienceDimension dimension,
+    String? search,
+    List<String> parentIds = const [],
+    String? cursorLabel,
+    String? cursorId,
+    int pageSize = 30,
+  }) async => const NoticeAudienceOptionsPage(items: []);
+
+  @override
+  Future<PlatformNotice> saveDraft(
+    NoticeDraft draft, {
+    required String requestId,
+    String? noticeId,
+    int? expectedVersion,
+  }) async {
+    saveCalls++;
+    if (![NoticeStatus.draft, NoticeStatus.scheduled, NoticeStatus.paused].contains(item.status)) {
+      throw const NoticeValidationException();
+    }
+    if (expectedVersion != item.managementVersion) throw const NoticeConflictException();
+    return item = item.copyWith(
+      title: draft.title,
+      message: draft.message,
+      managementVersion: item.managementVersion + 1,
+    );
+  }
+
+  @override
+  Future<PlatformNotice> publish(
+    PlatformNotice notice, {
+    required String requestId,
+    required int expectedVersion,
+  }) async {
+    publishRequestIds.add(requestId);
+    if (receipts[requestId] case final receipt?) return receipt;
+    if (item.status != NoticeStatus.draft) throw const NoticeValidationException();
+    if (expectedVersion != item.managementVersion) throw const NoticeConflictException();
+    item = item.copyWith(status: publicationStatus, managementVersion: item.managementVersion + 1);
+    receipts[requestId] = item;
+    if (dropFirstResponse && receipts.length == 1) throw const NoticeUnavailableException();
+    return item;
   }
 
   @override
