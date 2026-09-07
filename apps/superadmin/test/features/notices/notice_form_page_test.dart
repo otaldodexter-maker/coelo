@@ -14,6 +14,40 @@ import 'package:flutter_test/flutter_test.dart';
 import 'support/fake_notice_repository.dart';
 
 void main() {
+  testWidgets('legacy image feedback explains unavailability and allows text conversion', (
+    tester,
+  ) async {
+    final repository = FakeNoticeRepository();
+    repository.seed(
+      _notice(
+        'image-notice',
+        'Aviso com imagem',
+      ).copyWith(contentFormat: NoticeContentFormat.image),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: NoticeFormPage(repository: repository, noticeId: 'image-notice'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pumpAndSettle();
+
+    const message =
+        'Este aviso usa uma imagem legada. '
+        'Imagens ainda não estão disponíveis neste formulário. '
+        'Converta para texto antes de salvar ou publicar.';
+    expect(find.text(message), findsOneWidget);
+    expect(find.textContaining('Supabase Storage'), findsNothing);
+    await _tapVisible(tester, find.text('Converter para texto'));
+    await tester.pumpAndSettle();
+    expect(find.text(message), findsNothing);
+    expect(find.text('Converter para texto'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final status in [NoticeStatus.scheduled, NoticeStatus.active]) {
     testWidgets('publication feedback follows the server status $status', (tester) async {
       final repository = _PublicationResultRepository(status);

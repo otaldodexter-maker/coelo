@@ -221,8 +221,9 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
       const SizedBox(height: CoeloSpacing.space4),
       if (_controller.contentFormat == NoticeContentFormat.image) ...[
         _errorBanner(
-          'Este aviso usa mídia legada. Novas imagens estão bloqueadas até a decisão '
-          'Supabase Storage × R2. Converta para texto antes de salvar ou publicar.',
+          'Este aviso usa uma imagem legada. '
+          'Imagens ainda não estão disponíveis neste formulário. '
+          'Converta para texto antes de salvar ou publicar.',
         ),
         const SizedBox(height: CoeloSpacing.space3),
         OutlinedButton.icon(

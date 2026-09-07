@@ -103,7 +103,10 @@ final class NoticeValidationException extends NoticeRepositoryException {
 
 final class NoticeMediaDecisionRequiredException extends NoticeRepositoryException {
   const NoticeMediaDecisionRequiredException()
-    : super('A publicação com imagem aguarda a decisão de armazenamento Supabase Storage × R2.');
+    : super(
+        'A publicação com imagem ainda não está disponível. '
+        'Converta o aviso para texto antes de publicar.',
+      );
 }
 
 final class NoticeUnavailableException extends NoticeRepositoryException {
