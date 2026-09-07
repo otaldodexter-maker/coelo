@@ -251,6 +251,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   String? _message;
   bool _review = false;
   bool _saving = false;
+  int _loadGeneration = 0;
 
   @override
   void initState() {
@@ -258,15 +259,36 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     _load();
   }
 
+  @override
+  void didUpdateWidget(covariant _ProductionFormResponse oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.api, widget.api) || oldWidget.occurrenceId != widget.occurrenceId) {
+      _load();
+    }
+  }
+
+  bool _isCurrent(int generation) => mounted && generation == _loadGeneration;
+
   Future<void> _load() async {
+    final generation = ++_loadGeneration;
     final api = widget.api;
     final occurrenceId = widget.occurrenceId;
+    setState(() {
+      _state = _ProductionResponseState.loading;
+      _occurrence = null;
+      _draft = null;
+      _answers.clear();
+      _message = null;
+      _review = false;
+      _saving = false;
+    });
     if (api == null || occurrenceId == null || occurrenceId.isEmpty) {
       setState(() => _state = _ProductionResponseState.unavailable);
       return;
     }
     try {
       final occurrence = await api.getOccurrenceForResponse(occurrenceId);
+      if (!_isCurrent(generation)) return;
       if (occurrence.draft == null && !occurrence.canEdit) {
         if (mounted) {
           setState(() {
@@ -289,7 +311,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
               ),
             ),
           );
-      if (!mounted) return;
+      if (!_isCurrent(generation)) return;
       setState(() {
         _occurrence = occurrence;
         _draft = draft;
@@ -306,7 +328,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         }
       });
     } on FormApiException catch (error) {
-      if (mounted) {
+      if (_isCurrent(generation)) {
         setState(() {
           _message = error.message;
           _state = error.kind == FormApiFailureKind.unauthorized
@@ -315,7 +337,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         });
       }
     } on Object {
-      if (mounted) {
+      if (_isCurrent(generation)) {
         setState(() {
           _message = 'Não foi possível carregar esta resposta agora.';
           _state = _ProductionResponseState.error;
@@ -666,6 +688,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   };
 
   Future<void> _pickDate(FormItem item) async {
+    final generation = _loadGeneration;
     final now = DateTime.now();
     final selected = await showDatePicker(
       context: context,
@@ -673,7 +696,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       firstDate: DateTime(now.year - 120),
       lastDate: DateTime(now.year + 20),
     );
-    if (selected != null && mounted) {
+    if (selected != null && _isCurrent(generation)) {
       setState(() => _setAnswer(item, FormAnswer.date(itemId: item.id, value: selected)));
     }
   }
@@ -715,6 +738,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     Future<FormResponseDraft> Function(FormsApi, FormCommand<FormResponseDraftPayload>) action, {
     bool submitted = false,
   }) async {
+    final generation = _loadGeneration;
     final api = widget.api;
     final occurrence = _occurrence;
     final draft = _draft;
@@ -737,7 +761,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
           ),
         ),
       );
-      if (!mounted) return;
+      if (!_isCurrent(generation)) return;
       setState(() {
         _draft = updated;
         _answers
@@ -749,11 +773,13 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
             : _ProductionResponseState.content;
       });
     } on FormApiException catch (error) {
-      if (mounted) setState(() => _message = error.message);
+      if (_isCurrent(generation)) setState(() => _message = error.message);
     } on Object {
-      if (mounted) setState(() => _message = 'Não foi possível salvar sua resposta agora.');
+      if (_isCurrent(generation)) {
+        setState(() => _message = 'Não foi possível salvar sua resposta agora.');
+      }
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (_isCurrent(generation)) setState(() => _saving = false);
     }
   }
 }
