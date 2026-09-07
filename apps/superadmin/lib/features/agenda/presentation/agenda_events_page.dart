@@ -653,7 +653,7 @@ final class _AgendaEventDetailPageState extends State<AgendaEventDetailPage> {
   @override
   void initState() {
     super.initState();
-    unawaited(widget.store.loadItem(widget.eventId));
+    if (!widget.unavailable) unawaited(widget.store.loadItem(widget.eventId));
   }
 
   @override
@@ -711,16 +711,12 @@ final class _AgendaEventDetailPageState extends State<AgendaEventDetailPage> {
     return AnimatedBuilder(
       animation: widget.store,
       builder: (context, _) {
+        final readStatus = widget.store.itemRead(widget.eventId);
+        final readPanel = _readPanel(readStatus);
+        if (readPanel != null) return _readFrame(readPanel, readStatus);
         final item = widget.store.itemById(widget.eventId);
         if (item == null) {
-          return CoeloStatePanel(
-            key: const Key('agenda-event-not-found'),
-            title: 'Item não encontrado',
-            message: 'O item solicitado não foi encontrado ou não pode ser revelado.',
-            icon: Icons.event_busy_rounded,
-            actionLabel: 'Voltar aos eventos',
-            onAction: widget.onBack,
-          );
+          return _readFrame(_readPanel(AgendaReadStatus.idle)!, AgendaReadStatus.idle);
         }
         return LayoutBuilder(
           builder: (context, constraints) {
@@ -812,6 +808,77 @@ final class _AgendaEventDetailPageState extends State<AgendaEventDetailPage> {
       },
     );
   }
+
+  Widget _readFrame(Widget panel, AgendaReadStatus status) => LayoutBuilder(
+    builder: (context, constraints) => Padding(
+      padding: EdgeInsets.all(
+        constraints.maxWidth < CoeloBreakpoints.medium.minWidth
+            ? CoeloSpacing.space4
+            : CoeloSpacing.space6,
+      ),
+      child: Column(
+        children: [
+          if (status != AgendaReadStatus.notFound && status != AgendaReadStatus.unauthorized)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: widget.onBack,
+                icon: const Icon(Icons.arrow_back_rounded),
+                label: const Text('Eventos'),
+              ),
+            ),
+          Expanded(child: panel),
+        ],
+      ),
+    ),
+  );
+
+  Widget? _readPanel(AgendaReadStatus status) => switch (status) {
+    AgendaReadStatus.ready => null,
+    AgendaReadStatus.loading => Semantics(
+      key: const Key('agenda-event-loading'),
+      label: 'Carregando item da Agenda',
+      liveRegion: true,
+      child: const CoeloStatePanel(
+        title: 'Carregando item',
+        message: '',
+        icon: Icons.event_outlined,
+        loading: true,
+      ),
+    ),
+    AgendaReadStatus.unauthorized => CoeloStatePanel(
+      key: const Key('agenda-event-unauthorized'),
+      title: 'Acesso ao item negado',
+      message: 'Você não tem permissão para consultar este item.',
+      icon: Icons.lock_outline,
+      actionLabel: 'Voltar aos eventos',
+      onAction: widget.onBack,
+    ),
+    AgendaReadStatus.notFound => CoeloStatePanel(
+      key: const Key('agenda-event-not-found'),
+      title: 'Item não encontrado',
+      message: 'O item solicitado não foi encontrado ou não pode ser revelado.',
+      icon: Icons.event_busy_rounded,
+      actionLabel: 'Voltar aos eventos',
+      onAction: widget.onBack,
+    ),
+    AgendaReadStatus.failure => CoeloStatePanel(
+      key: const Key('agenda-event-failure'),
+      title: 'Não foi possível carregar este item',
+      message: 'Tente novamente para consultar os dados atualizados.',
+      icon: Icons.error_outline,
+      actionLabel: 'Tentar novamente',
+      onAction: () => unawaited(widget.store.loadItem(widget.eventId)),
+    ),
+    AgendaReadStatus.idle => CoeloStatePanel(
+      key: const Key('agenda-event-idle'),
+      title: 'Atualize este item',
+      message: 'Consulte novamente os dados do evento.',
+      icon: Icons.event_outlined,
+      actionLabel: 'Atualizar item',
+      onAction: () => unawaited(widget.store.loadItem(widget.eventId)),
+    ),
+  };
 
   Widget _actions(AgendaItem item) {
     final colors = Theme.of(context).colorScheme;

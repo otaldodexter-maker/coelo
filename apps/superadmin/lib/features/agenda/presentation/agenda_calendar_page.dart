@@ -105,7 +105,7 @@ final class _AgendaCalendarPageState extends State<AgendaCalendarPage> {
           : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
           ? CoeloSpacing.space6
           : CoeloSpacing.space4;
-      final occurrences = _occurrences();
+      final readStatus = widget.store!.eventsRead;
       final toolbar = _AgendaToolbar(
         month: _month,
         view: _view,
@@ -121,8 +121,34 @@ final class _AgendaCalendarPageState extends State<AgendaCalendarPage> {
         onToday: () => _changeMonth(widget.store!.referenceDate),
         onPrevious: () => _changeMonth(DateTime(_month.year, _month.month - 1)),
         onNext: () => _changeMonth(DateTime(_month.year, _month.month + 1)),
+        enabled:
+            readStatus != AgendaReadStatus.loading && readStatus != AgendaReadStatus.unauthorized,
       );
 
+      if (readStatus != AgendaReadStatus.ready) {
+        // Keep at least the state panel padding and a touch target visible.
+        // A scaled toolbar may scroll, but never consumes the whole workspace.
+        final minimumPanelHeight =
+            CoeloSpacing.space1 * 2 +
+            CoeloSpacing.space8 * 2 +
+            MediaQuery.textScalerOf(context).scale(CoeloSize.touchMin);
+        final maximumToolbarHeight =
+            (constraints.maxHeight - CoeloSpacing.space4 - minimumPanelHeight).clamp(
+              0.0,
+              constraints.maxHeight,
+            );
+        return Padding(
+          padding: EdgeInsets.fromLTRB(inset, 0, inset, CoeloSpacing.space4),
+          child: CoeloAdminWorkspaceLayout(
+            toolbar: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: maximumToolbarHeight),
+              child: SingleChildScrollView(child: toolbar),
+            ),
+            body: _readPanel(readStatus),
+          ),
+        );
+      }
+      final occurrences = _occurrences();
       if ((mobile && _selectedDay != null) || _expandedDay) {
         return Padding(
           padding: EdgeInsets.fromLTRB(inset, 0, inset, CoeloSpacing.space4),
@@ -170,6 +196,42 @@ final class _AgendaCalendarPageState extends State<AgendaCalendarPage> {
       );
     },
   );
+
+  Widget _readPanel(AgendaReadStatus status) => switch (status) {
+    AgendaReadStatus.loading => Semantics(
+      key: const Key('agenda-calendar-loading'),
+      label: 'Carregando Agenda',
+      liveRegion: true,
+      child: const CoeloStatePanel(
+        title: 'Carregando Agenda',
+        message: '',
+        icon: Icons.event_outlined,
+        loading: true,
+      ),
+    ),
+    AgendaReadStatus.unauthorized => const CoeloStatePanel(
+      key: Key('agenda-calendar-unauthorized'),
+      title: 'Acesso à Agenda negado',
+      message: 'Você não tem permissão para consultar a Agenda.',
+      icon: Icons.lock_outline,
+    ),
+    AgendaReadStatus.failure => CoeloStatePanel(
+      key: const Key('agenda-calendar-failure'),
+      title: 'Não foi possível carregar a Agenda',
+      message: 'Tente novamente para consultar os eventos deste período.',
+      icon: Icons.error_outline,
+      actionLabel: 'Tentar novamente',
+      onAction: () => unawaited(_loadMonth()),
+    ),
+    _ => CoeloStatePanel(
+      key: const Key('agenda-calendar-idle'),
+      title: 'Atualize a Agenda',
+      message: 'Consulte novamente os eventos deste período.',
+      icon: Icons.event_outlined,
+      actionLabel: 'Atualizar Agenda',
+      onAction: () => unawaited(_loadMonth()),
+    ),
+  };
 
   List<AgendaOccurrence> _occurrences() {
     final start = DateTime(_month.year, _month.month);

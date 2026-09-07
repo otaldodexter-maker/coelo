@@ -3,12 +3,89 @@ import 'dart:convert';
 
 import 'package:coelo_superadmin/features/agenda/data/supabase_agenda_repository.dart';
 import 'package:coelo_superadmin/features/agenda/domain/agenda_models.dart';
+import 'package:coelo_superadmin/features/agenda/domain/agenda_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('estados de leitura isolam calendário de falha em solicitações', () async {
+    final client = _client(
+      (request) async => request.url.path.endsWith('superadmin_agenda_list')
+          ? _json(request, {
+              'items': [_eventJson(id: _eventId, revision: 1)],
+            })
+          : _json(request, 'invalid'),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    expect(repository.eventsRead, AgendaReadStatus.idle);
+    expect(repository.requestsRead, AgendaReadStatus.idle);
+    await repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 10));
+    await repository.loadRequests();
+    expect(repository.eventsRead, AgendaReadStatus.ready);
+    expect(repository.requestsRead, AgendaReadStatus.failure);
+    expect(repository.contextsRead, AgendaReadStatus.idle);
+  });
+
+  test('detalhes simultâneos mantêm estados independentes', () async {
+    final delayed = Completer<Response>();
+    Request? pending;
+    final client = _client((request) async {
+      final id = (jsonDecode(request.body) as Map<String, dynamic>)['p_event_id'] as String;
+      if (id == _eventId) {
+        pending = request;
+        return delayed.future;
+      }
+      return _json(request, _eventJson(id: id, revision: 1));
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    final first = repository.loadItem(_eventId);
+    await repository.loadItem(_secondEventId);
+    expect(repository.itemRead(_eventId), AgendaReadStatus.loading);
+    expect(repository.itemRead(_secondEventId), AgendaReadStatus.ready);
+    delayed.complete(_json(pending!, _eventJson(id: _eventId, revision: 1)));
+    await first;
+    expect(repository.itemRead(_eventId), AgendaReadStatus.ready);
+  });
+
+  test('detalhe não encontrado mantém estado final após invalidar leituras', () async {
+    final client = _client(
+      (request) async => Response(
+        '{"code":"P0002","message":"not found"}',
+        404,
+        headers: {'content-type': 'application/json'},
+        request: request,
+      ),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    await repository.loadItem(_eventId);
+    expect(repository.itemRead(_eventId), AgendaReadStatus.notFound);
+    expect(repository.isLoading, isFalse);
+  });
+
+  test('negação marca canais conhecidos e futuros; retry libera somente seu canal', () async {
+    var deny = true;
+    final client = _client(
+      (request) async => deny ? _denied(request) : _json(request, {'contexts': <Object?>[]}),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    await repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 10));
+    expect(repository.eventsRead, AgendaReadStatus.unauthorized);
+    expect(repository.contextsRead, AgendaReadStatus.unauthorized);
+    expect(repository.requestsRead, AgendaReadStatus.unauthorized);
+    expect(repository.itemRead(_eventId), AgendaReadStatus.unauthorized);
+    deny = false;
+    await repository.loadContexts();
+    expect(repository.contextsRead, AgendaReadStatus.ready);
+    expect(repository.eventsRead, AgendaReadStatus.unauthorized);
+    expect(repository.itemRead(_eventId), AgendaReadStatus.unauthorized);
+  });
+
   test('recorrência preserva intervalo explícito, término e timezone das exceções', () async {
     final client = _client(
       (request) async => _json(request, {
@@ -239,7 +316,10 @@ void main() {
     await repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 10));
     delayedRead = true;
     final loading = repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 10));
+    expect(repository.eventsRead, AgendaReadStatus.loading);
     expect(await repository.deleteDraft(_eventId), AgendaMutationResult.success);
+    expect(repository.eventsRead, AgendaReadStatus.idle);
+    expect(repository.itemRead(_eventId), AgendaReadStatus.notFound);
     delayed.complete(
       _json(pending!, {
         'items': [_eventJson(id: _eventId, revision: 1)],
@@ -248,6 +328,8 @@ void main() {
     await loading;
     expect(repository.items, isEmpty);
     expect(repository.isLoading, isFalse);
+    expect(repository.eventsRead, AgendaReadStatus.idle);
+    expect(repository.itemRead(_eventId), AgendaReadStatus.notFound);
   });
 
   test('detalhe não revelável remove a cópia previamente autorizada', () async {
