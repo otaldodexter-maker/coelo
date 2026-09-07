@@ -204,6 +204,43 @@ void main() {
     },
   );
 
+  for (final unsupported in ['attachments', 'child contexts']) {
+    test('does not silently send text after dropping requested $unsupported', () async {
+      var requests = 0;
+      final client = _client((request) async {
+        requests++;
+        return _json({
+          'ok': true,
+          'data': {
+            'message_id': 'message-2',
+            'body_text': 'Leia o contexto enviado.',
+            'message_type': 'text',
+            'created_at': '2026-09-07T12:01:00Z',
+            'author_name': 'Equipe Coelo',
+            'is_mine': true,
+            'attachments': <Object?>[],
+          },
+          'error': null,
+        }, request);
+      });
+      addTearDown(client.dispose);
+
+      await expectLater(
+        SupabaseChatRepository(client).sendMessage(
+          ChatSendMessageCommand(
+            conversationId: 'conversation-1',
+            body: 'Leia o contexto enviado.',
+            idempotencyKey: 'f4e6daaa-1544-4c8f-b2fe-27da5839e4f1',
+            attachmentIds: unsupported == 'attachments' ? ['attachment-1'] : const [],
+            childContextIds: unsupported == 'child contexts' ? ['context-1'] : const [],
+          ),
+        ),
+        throwsA(isA<ChatFailureException>()),
+      );
+      expect(requests, 0, reason: 'The text-only RPC cannot preserve this command.');
+    });
+  }
+
   test('markRead rejects a revoked membership returned in an HTTP 200 envelope', () async {
     final client = _client(
       (request) async => _json({
