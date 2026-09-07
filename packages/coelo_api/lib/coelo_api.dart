@@ -1,5 +1,7 @@
 library;
 
+export 'src/media/media_session.dart';
+
 export 'src/forms/form_definition_dto.dart';
 export 'src/forms/form_query_dtos.dart';
 export 'src/forms/form_editor_projection_dto.dart';
