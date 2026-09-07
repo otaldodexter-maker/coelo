@@ -44,29 +44,67 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
   PlatformUserRecord? _loadedRecord;
   bool _loading = false;
   Object? _loadError;
-  PlatformUserRecord? get _record =>
-      _loadedRecord ?? widget.repository.findById(widget.internalUserId);
+  int _loadGeneration = 0;
+  PlatformUserRecord? get _record => widget.repository is PlatformUserRemoteLoader
+      ? _loadedRecord
+      : widget.repository.findById(widget.internalUserId);
+  bool get _isUnauthorized =>
+      widget.capability == PlatformUserCapability.unauthorized ||
+      (_loadError is PlatformUserRuleException &&
+          (_loadError! as PlatformUserRuleException).code == 'unauthorized');
 
   @override
   void initState() {
     super.initState();
+    _startLoad();
+  }
+
+  @override
+  void didUpdateWidget(covariant PlatformUserDetailPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.repository, widget.repository) &&
+        oldWidget.internalUserId == widget.internalUserId &&
+        oldWidget.capability == widget.capability)
+      return;
+    _loadGeneration++;
+    _loadedRecord = null;
+    _loadError = null;
+    _loading = false;
+    _startLoad();
+  }
+
+  @override
+  void dispose() {
+    _loadGeneration++;
+    _loadedRecord = null;
+    super.dispose();
+  }
+
+  void _startLoad() {
+    if (widget.capability == PlatformUserCapability.unauthorized) return;
     final repository = widget.repository;
     if (repository is PlatformUserRemoteLoader) {
-      _loading = true;
       _load(repository as PlatformUserRemoteLoader);
     }
   }
 
   Future<void> _load(PlatformUserRemoteLoader loader) async {
+    final generation = ++_loadGeneration;
+    final id = widget.internalUserId;
+    setState(() {
+      _loadedRecord = null;
+      _loadError = null;
+      _loading = true;
+    });
     try {
-      final record = await loader.fetchById(widget.internalUserId);
-      if (!mounted) return;
+      final record = await loader.fetchById(id);
+      if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _loadedRecord = record;
         _loading = false;
       });
     } on Object catch (error) {
-      if (!mounted) return;
+      if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _loadError = error;
         _loading = false;
@@ -77,6 +115,7 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
   bool get _canManage => widget.capability == PlatformUserCapability.owner;
 
   bool _isProtectedLastOwner(PlatformUserRecord record) {
+    if (widget.repository is PlatformUserRemoteLoader) return false;
     if (record.profile.baseRole != PlatformUserRole.owner ||
         record.status != PlatformMembershipStatus.active) {
       return false;
@@ -102,7 +141,7 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
       onDestinationSelected: widget.onDestinationSelected,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          if (widget.capability == PlatformUserCapability.unauthorized) {
+          if (_isUnauthorized) {
             return const Padding(
               padding: EdgeInsets.all(CoeloSpacing.space6),
               child: CoeloStatePanel(
@@ -119,6 +158,18 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
                 title: 'Carregando usuário interno',
                 message: 'Aguarde enquanto o acesso é revalidado.',
                 loading: true,
+              ),
+            );
+          }
+          if (_loadError != null) {
+            return Padding(
+              padding: const EdgeInsets.all(CoeloSpacing.space6),
+              child: CoeloStatePanel(
+                title: 'Não foi possível carregar o usuário interno',
+                message: 'Tente novamente. Nenhuma alteração foi realizada.',
+                icon: Icons.error_outline,
+                actionLabel: 'Tentar novamente',
+                onAction: _startLoad,
               ),
             );
           }
