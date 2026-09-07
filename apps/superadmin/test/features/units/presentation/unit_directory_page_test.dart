@@ -3,8 +3,10 @@ import 'dart:ui';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/units/data/fake_unit_directory_repository.dart';
+import 'package:coelo_superadmin/features/units/domain/unit_backend_commands.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_directory.dart' as domain;
 import 'package:coelo_superadmin/features/units/presentation/unit_directory_page.dart';
+import 'package:coelo_superadmin/features/units/presentation/widgets/unit_directory_toolbar.dart';
 import 'package:coelo_superadmin/features/units/presentation/widgets/unit_status_presentation.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
@@ -284,31 +286,45 @@ void main() {
     expect(directoryTheme.scaffoldBackgroundColor, directoryTheme.colorScheme.surface);
   });
 
-  testWidgets('opens the unit CSV and XLSX import review dialog', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1440, 900));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    final institutions = FakeInstitutionDirectoryRepository();
+  for (final action in ['Importar', 'Exportar CSV', 'Exportar XLSX']) {
+    for (final withGateway in [false, true]) {
+      testWidgets(
+        'defers unit $action until after MVP without starting a file flow (gateway: $withGateway)',
+        (tester) async {
+          await tester.binding.setSurfaceSize(const Size(1440, 900));
+          addTearDown(() => tester.binding.setSurfaceSize(null));
+          final institutions = FakeInstitutionDirectoryRepository();
+          final gateway = _UnexpectedFileGateway();
 
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: UnitDirectoryPage(
-          repository: FakeUnitDirectoryRepository(institutions),
-          logout: () async => const LogoutResult.success(),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: CoeloTheme.light,
+              home: UnitDirectoryPage(
+                repository: FakeUnitDirectoryRepository(institutions),
+                backendCommands: withGateway ? gateway : null,
+                logout: () async => const LogoutResult.success(),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Importar'));
-    await tester.pumpAndSettle();
+          await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+          await tester.pumpAndSettle();
+          await tester.tap(find.text(action));
+          await tester.pumpAndSettle();
 
-    expect(find.text('Importar unidades'), findsOneWidget);
-    expect(find.textContaining('CSV ou XLSX'), findsOneWidget);
-    expect(find.byKey(const Key('unit-demo-file-picker')), findsOneWidget);
-  });
+          expect(find.text('Disponível depois do MVP'), findsOneWidget);
+          expect(find.text('Importar unidades'), findsNothing);
+          expect(find.byKey(const Key('unit-demo-file-picker')), findsNothing);
+          expect(find.textContaining('A exportação está em andamento'), findsNothing);
+          expect(gateway.calls, isEmpty);
+          final toolbar = tester.widget<UnitDirectoryToolbar>(find.byType(UnitDirectoryToolbar));
+          expect(toolbar.activityController.activities, isEmpty);
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
 
   testWidgets('uses exclusive status tabs and removes the status dropdown', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
@@ -478,3 +494,13 @@ Finder _unitDetailRows(String level) => find.byWidgetPredicate((widget) {
   final key = widget.key;
   return key is ValueKey<String> && key.value.startsWith('unit-detail-row-$level-');
 });
+
+class _UnexpectedFileGateway implements UnitBackendCommandsGateway {
+  final calls = <Symbol>[];
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    calls.add(invocation.memberName);
+    throw StateError('Deferred file action must not call a gateway');
+  }
+}

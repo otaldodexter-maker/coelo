@@ -183,29 +183,33 @@ void main() {
     }
   });
 
-  testWidgets('keeps file actions visible with honest unavailability', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1440, 900));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: GroupDirectoryPage(
-          repository: FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository()),
-          logout: () async => const LogoutResult.success(),
+  for (final action in ['Importar', 'Exportar CSV', 'Exportar XLSX']) {
+    testWidgets('keeps file action $action visible with honest unavailability', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: GroupDirectoryPage(
+            repository: FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository()),
+            logout: () async => const LogoutResult.success(),
+          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
-    expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
-    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
-    await tester.pumpAndSettle();
-    expect(find.text('Importar'), findsOneWidget);
-    expect(find.text('Exportar CSV'), findsOneWidget);
-    expect(find.text('Exportar XLSX'), findsOneWidget);
-    await tester.tap(find.text('Exportar XLSX'));
-    await tester.pumpAndSettle();
-    expect(find.text('Indisponível nesta etapa'), findsOneWidget);
-  });
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+      await tester.pumpAndSettle();
+      expect(find.text('Importar'), findsOneWidget);
+      expect(find.text('Exportar CSV'), findsOneWidget);
+      expect(find.text('Exportar XLSX'), findsOneWidget);
+      await tester.tap(find.text(action));
+      await tester.pumpAndSettle();
+      expect(find.text('Disponível depois do MVP'), findsOneWidget);
+      expect(find.byType(Dialog), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  }
 
   testWidgets('uses only dependent units after selecting an institution', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
@@ -248,7 +252,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Importar'));
     await tester.pumpAndSettle();
-    expect(find.text('Indisponível nesta etapa'), findsOneWidget);
+    expect(find.text('Disponível depois do MVP'), findsOneWidget);
     expect(
       find.textContaining(RegExp('sucesso|concluída|linhas', caseSensitive: false)),
       findsNothing,
