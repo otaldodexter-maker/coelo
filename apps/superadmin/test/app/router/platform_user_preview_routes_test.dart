@@ -73,6 +73,11 @@ void main() {
     expect(find.text('503'), findsOneWidget);
     expect(find.text('Usuários internos'), findsNothing);
 
+    router.go('/internal-users/unknown');
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, '/internal-users/unknown');
+    expect(find.text('503'), findsOneWidget);
+
     router.go(SuperadminRoutes.internalUserCreate);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
