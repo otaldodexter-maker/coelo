@@ -39,6 +39,8 @@ convites, mutações remotas e deploy Supabase permanecem fora deste incremento.
 - `flutter test test/app/router/platform_user_preview_routes_test.dart` — 6/6.
 - `flutter test test/features/auth/domain/coelo_auth_login_action_test.dart` — 8/8,
   incluindo corridas de sessão A→B, reautorização no mesmo ID e negação atual.
+- A mesma suíte foi ampliada para 10/10 com o caso de autorização concorrente
+  durante `auth.signOut()` e o caso divergente criado antes do cleanup.
 - Analyzer focado e `dart format` sem diagnósticos.
 
 ## Gates ainda abertos
