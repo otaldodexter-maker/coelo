@@ -5,9 +5,11 @@ import '../../../app/shell/superadmin_shell.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/location_catalog_reader.dart';
 import '../domain/location_catalog_writer.dart';
+import '../domain/location_selection_source.dart';
 import 'location_detail_panel.dart';
 import 'location_directory_panel.dart';
 import 'location_form_panel.dart';
+import 'location_institution_copy_panel.dart';
 import 'location_read_widgets.dart';
 
 /// Route target for the location catalog of one institution or unit.
@@ -36,6 +38,7 @@ final class LocationsPage extends StatefulWidget {
     this.writer = const UnavailableLocationCatalogWriter(),
     this.canCreate = false,
     this.canManage,
+    this.requestIdFactory,
     super.key,
   });
 
@@ -71,6 +74,8 @@ final class LocationsPage extends StatefulWidget {
   /// refusal. Pass it explicitly once the grants stop moving together.
   final bool? canManage;
 
+  final String Function()? requestIdFactory;
+
   @override
   State<LocationsPage> createState() => _LocationsPageState();
 }
@@ -79,6 +84,7 @@ final class _LocationsPageState extends State<LocationsPage> {
   String? _selected;
   bool _creating = false;
   LocationCatalogEntry? _editing;
+  bool _bringing = false;
 
   bool get _canManage => widget.canManage ?? widget.canCreate;
 
@@ -99,6 +105,7 @@ final class _LocationsPageState extends State<LocationsPage> {
       _selected = null;
       _creating = false;
       _editing = null;
+      _bringing = false;
       return;
     }
     if (oldWidget.selectedLocationId != widget.selectedLocationId) {
@@ -114,6 +121,7 @@ final class _LocationsPageState extends State<LocationsPage> {
     setState(() {
       _creating = false;
       _editing = null;
+      _bringing = false;
       _selected = item.id;
     });
     widget.onLocationOpened?.call(item.id);
@@ -124,6 +132,7 @@ final class _LocationsPageState extends State<LocationsPage> {
     setState(() {
       _creating = false;
       _editing = null;
+      _bringing = false;
       _selected = null;
     });
     widget.onLocationClosed?.call();
@@ -141,6 +150,16 @@ final class _LocationsPageState extends State<LocationsPage> {
         widget.canCreate &&
         widget.sessionAvailable &&
         !_creating &&
+        !_bringing &&
+        editing == null &&
+        selected == null;
+    // Bringing one down lands on a new location, so it must not compete with a
+    // form or a detail already on screen.
+    final canBring =
+        _canManage &&
+        widget.sessionAvailable &&
+        !_creating &&
+        !_bringing &&
         editing == null &&
         selected == null;
     return Theme(
@@ -152,6 +171,13 @@ final class _LocationsPageState extends State<LocationsPage> {
         currentDestination: widget.currentDestination,
         onDestinationSelected: widget.onDestinationSelected,
         actions: [
+          if (widget.scope is UnitLocationScope && canBring)
+            OutlinedButton.icon(
+              key: const Key('locations-bring-from-institution'),
+              onPressed: () => setState(() => _bringing = true),
+              icon: const Icon(Icons.south_rounded),
+              label: const Text('Trazer da instituição'),
+            ),
           if (canCreate)
             FilledButton.icon(
               key: const Key('locations-create'),
@@ -160,7 +186,17 @@ final class _LocationsPageState extends State<LocationsPage> {
               label: const Text('Novo local'),
             ),
         ],
-        child: _creating || editing != null
+        child: _bringing && widget.scope is UnitLocationScope
+            ? LocationInstitutionCopyPanel(
+                key: const Key('locations-bring-panel'),
+                target: widget.scope as UnitLocationScope,
+                source: CatalogLocationSelectionSource(widget.reader),
+                writer: widget.writer,
+                requestIdFactory: widget.requestIdFactory,
+                onCancel: () => setState(() => _bringing = false),
+                onCopied: _open,
+              )
+            : _creating || editing != null
             ? LocationFormPanel(
                 // The create form keeps the key it has always had; an edit gets
                 // its own so switching between two locations rebuilds the state
