@@ -913,8 +913,8 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Modelo salvo.')));
       if (current.id.isEmpty) {
-        setState(
-          () => _entry = RoutineModel(
+        setState(() {
+          _entry = RoutineModel(
             id: id,
             name: model.name,
             description: model.description,
@@ -926,8 +926,9 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
             institutionId: model.institutionId,
             originUnitId: model.originUnitId,
             canManage: _canManage,
-          ),
-        );
+          );
+          _saving = false;
+        });
       }
     } on FormatException catch (error) {
       if (mounted && _isCurrentCommand(generation, repository: repository, entry: current)) {
@@ -969,8 +970,8 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         context,
       ).showSnackBar(const SnackBar(content: Text('Rotina aplicada salva.')));
       if (current.id.isEmpty) {
-        setState(
-          () => _entry = RoutineApplication(
+        setState(() {
+          _entry = RoutineApplication(
             id: id,
             modelVersionId: application.modelVersionId,
             institutionId: application.institutionId,
@@ -989,8 +990,9 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
             visibility: application.visibility,
             assignees: application.assignees,
             canManage: application.canManage,
-          ),
-        );
+          );
+          _saving = false;
+        });
       }
     } on Object {
       if (mounted && _isCurrentCommand(generation, repository: repository, entry: current)) {
