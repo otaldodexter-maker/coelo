@@ -7,6 +7,7 @@ import '../../../shared/presentation/widgets/superadmin_listing_pagination_foote
 import '../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
 import '../domain/agenda_models.dart';
 import '../domain/agenda_repository.dart';
+import 'widgets/agenda_collection_read_panel.dart';
 
 enum _RequestKind { rsvp, acknowledgement, authorization }
 
@@ -218,7 +219,13 @@ final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
               ),
             ],
             const SizedBox(height: CoeloSpacing.space5),
-            if (compact)
+            if (!widget._localFixtures &&
+                (widget.store!.requestsRead != AgendaReadStatus.ready || _items.isEmpty))
+              AgendaCollectionReadPanel(
+                status: widget.store!.requestsRead,
+                onRetry: () => widget.store!.loadRequests(),
+              )
+            else if (compact)
               _RequestCardList(items: _items, onAnswer: widget._localFixtures ? _answer : null)
             else
               SizedBox(
@@ -229,17 +236,18 @@ final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
                 ),
               ),
             const SizedBox(height: CoeloSpacing.space4),
-            SuperadminListingPaginationFooter(
-              horizontalPadding: 0,
-              child: const CoeloAdminPagination(
-                currentPage: 1,
-                totalPages: 1,
-                onPrevious: null,
-                onNext: null,
-                pageSize: 8,
-                pageSizeOptions: [8, 20, 50, 100],
+            if (widget._localFixtures || widget.store!.requestsRead == AgendaReadStatus.ready)
+              SuperadminListingPaginationFooter(
+                horizontalPadding: 0,
+                child: const CoeloAdminPagination(
+                  currentPage: 1,
+                  totalPages: 1,
+                  onPrevious: null,
+                  onNext: null,
+                  pageSize: 8,
+                  pageSizeOptions: [8, 20, 50, 100],
+                ),
               ),
-            ),
           ],
         );
       },

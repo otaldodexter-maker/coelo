@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:coelo_superadmin/features/agenda/data/supabase_agenda_repository.dart';
 import 'package:coelo_superadmin/features/agenda/presentation/agenda_calendar_page.dart';
 import 'package:coelo_superadmin/features/agenda/presentation/agenda_events_page.dart';
+import 'package:coelo_superadmin/features/agenda/presentation/agenda_requests_page.dart';
+import 'package:coelo_superadmin/features/agenda/presentation/agenda_approvals_page.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,144 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
   setUpAll(_loadGoldenFonts);
+
+  for (final approvals in [false, true]) {
+    for (final state in ['loading', 'failure', 'unauthorized']) {
+      testWidgets('request collection approvals=$approvals exposes $state', (tester) async {
+        final semantics = tester.ensureSemantics();
+        try {
+          final pending = Completer<Response>();
+          final repository = await _repository(
+            tester,
+            (_) => state == 'loading'
+                ? pending.future
+                : Future.value(_error(state == 'failure' ? 'XX000' : '42501')),
+          );
+          addTearDown(() {
+            if (!pending.isCompleted) pending.complete(_json(<Object?>[]));
+          });
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: CoeloTheme.light,
+              home: Scaffold(
+                body: approvals
+                    ? AgendaApprovalsPage(store: repository)
+                    : AgendaRequestsPage.production(store: repository),
+              ),
+            ),
+          );
+          if (state == 'loading') {
+            await tester.pump();
+          } else {
+            await tester.pumpAndSettle();
+          }
+          expect(find.byKey(Key('agenda-collection-$state')), findsOneWidget);
+          if (state == 'loading') {
+            expect(find.bySemanticsLabel('Carregando retornos da Agenda'), findsOneWidget);
+          }
+          expect(
+            find.byKey(Key(approvals ? 'agenda-approvals-table' : 'agenda-requests-table')),
+            findsNothing,
+          );
+          expect(find.text('Tentar novamente'), state == 'failure' ? findsOneWidget : findsNothing);
+          expect(tester.takeException(), isNull);
+        } finally {
+          semantics.dispose();
+        }
+      });
+    }
+    testWidgets('request collection approvals=$approvals retries both readers', (tester) async {
+      var calls = 0;
+      final repository = await _repository(
+        tester,
+        (_) async => ++calls <= 2 ? _error('XX000') : _json(<Object?>[]),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: Scaffold(
+            body: approvals
+                ? AgendaApprovalsPage(store: repository)
+                : AgendaRequestsPage.production(store: repository),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(calls, 2);
+      await tester.tap(find.text('Tentar novamente'));
+      await tester.pumpAndSettle();
+      expect(calls, 4);
+      expect(find.byKey(const Key('agenda-collection-failure')), findsNothing);
+      expect(find.byKey(const Key('agenda-collection-empty')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('request collection states stay accessible across viewports and themes', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    for (final approvals in [false, true]) {
+      for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+        for (final theme in [CoeloTheme.light, CoeloTheme.dark]) {
+          for (final state in ['loading', 'failure', 'unauthorized']) {
+            await tester.pumpWidget(const SizedBox.shrink());
+            tester.view.physicalSize = Size(width, 1000);
+            final pending = Completer<Response>();
+            final repository = await _repository(
+              tester,
+              (_) => state == 'loading'
+                  ? pending.future
+                  : Future.value(_error(state == 'failure' ? 'XX000' : '42501')),
+            );
+            await tester.pumpWidget(
+              MaterialApp(
+                debugShowCheckedModeBanner: false,
+                theme: theme,
+                builder: (context, child) => MediaQuery(
+                  data: MediaQuery.of(
+                    context,
+                  ).copyWith(textScaler: TextScaler.linear(width == 375 ? 2 : 1)),
+                  child: RepaintBoundary(key: const Key('agenda-http-golden-root'), child: child!),
+                ),
+                home: Scaffold(
+                  body: approvals
+                      ? AgendaApprovalsPage(store: repository)
+                      : AgendaRequestsPage.production(store: repository),
+                ),
+              ),
+            );
+            if (state == 'loading') {
+              await tester.pump();
+            } else {
+              await tester.pumpAndSettle();
+            }
+            expect(tester.takeException(), isNull);
+            if (state == 'failure') {
+              final retry = find.widgetWithText(OutlinedButton, 'Tentar novamente');
+              await tester.ensureVisible(retry);
+              await tester.pumpAndSettle();
+              expect(retry.hitTestable(), findsOneWidget);
+              if ((width == 375 && theme.brightness == Brightness.dark) ||
+                  (width == 1440 && theme.brightness == Brightness.light)) {
+                await expectLater(
+                  find.byKey(const Key('agenda-http-golden-root')),
+                  matchesGoldenFile(
+                    'goldens/agenda_http_${approvals ? 'approvals' : 'requests'}_failure_${theme.brightness.name}_${width.toInt()}.png',
+                  ),
+                );
+              }
+            }
+            await tester.pumpWidget(const SizedBox.shrink());
+            if (!pending.isCompleted) pending.complete(_json(<Object?>[]));
+            await tester.pumpAndSettle();
+          }
+        }
+      }
+    }
+  });
 
   testWidgets('retry do calendário fica integralmente visível após scroll em tela baixa', (
     tester,
