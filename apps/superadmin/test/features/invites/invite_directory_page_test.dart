@@ -13,6 +13,84 @@ import 'package:flutter_test/flutter_test.dart';
 import 'invite_test_repository.dart';
 
 void main() {
+  for (final width in [375.0, 1100.0]) {
+    testWidgets('card rows preserve spacing at width $width', (tester) async {
+      await tester.binding.setSurfaceSize(Size(width, 1400));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final items = [for (var i = 0; i < 4; i++) testInvite(id: 'invite-$i')];
+      await tester.pumpWidget(
+        _app(
+          SingleChildScrollView(
+            child: InviteDirectoryCards(
+              items: items,
+              busyInviteId: null,
+              onCreate: () {},
+              onAction: (_, _) {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final create = tester.getRect(find.byKey(const Key('invite-create-card')));
+      final first = tester.getRect(find.byKey(const Key('invite-card-invite-0')));
+      final nextRow = tester.getRect(find.byKey(const Key('invite-card-invite-2')));
+      if (width == 375) {
+        expect(first.left, create.left);
+        expect(first.top - create.bottom, CoeloSpacing.space6);
+        expect(first.width, width);
+      } else {
+        expect(first.height, create.height);
+        expect(nextRow.left, create.left);
+        expect(nextRow.top - create.bottom, CoeloSpacing.space6);
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final textScale in [1.0, 2.0]) {
+    testWidgets('create card aligns with invitation row at text scale $textScale', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1100));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final invite = testInvite();
+      await tester.pumpWidget(
+        _app(
+          MediaQuery(
+            data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
+            child: SingleChildScrollView(
+              child: SizedBox(
+                width: 1100,
+                child: InviteDirectoryCards(
+                  items: [invite],
+                  busyInviteId: null,
+                  onCreate: () {},
+                  onOpen: (_) {},
+                  onAction: (_, _) {},
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final createRect = tester.getRect(find.byKey(const Key('invite-create-card')));
+      final inviteRect = tester.getRect(find.byKey(Key('invite-card-${invite.id}')));
+      expect(createRect.top, inviteRect.top);
+      expect(createRect.height, inviteRect.height);
+      expect(createRect.width, inviteRect.width);
+      expect(inviteRect.left - createRect.right, CoeloSpacing.space6);
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.byType(CoeloAdminExpandableStatusIndicator));
+      await tester.pumpAndSettle();
+      expect(
+        tester.getSize(find.byKey(const Key('invite-create-card'))).height,
+        tester.getSize(find.byKey(Key('invite-card-${invite.id}'))).height,
+      );
+      expect(find.text('Pendente'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('offers import and export file actions with explicit unavailable feedback', (
     tester,
   ) async {
