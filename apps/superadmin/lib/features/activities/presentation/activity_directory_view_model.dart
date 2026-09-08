@@ -143,11 +143,8 @@ final class ActivityDirectoryViewModel extends ChangeNotifier {
       final results = await Future.wait<Object>([
         _capture(() => _repository.fetchPage(value)),
         _capture(_repository.fetchFilterOptions),
-      ]);
+      ], eagerError: true);
       if (version != _requestVersion) return;
-      if (results.any((result) => result is ActivityDirectoryUnauthorizedException)) {
-        throw const ActivityDirectoryUnauthorizedException();
-      }
       final errors = results.whereType<Exception>();
       if (errors.isNotEmpty) throw errors.first;
       _page = results[0] as ActivityDirectoryResult;
@@ -179,6 +176,8 @@ final class ActivityDirectoryViewModel extends ChangeNotifier {
   Future<Object> _capture(Future<Object> Function() operation) async {
     try {
       return await operation();
+    } on ActivityDirectoryUnauthorizedException {
+      rethrow;
     } on Exception catch (error) {
       return error;
     }
