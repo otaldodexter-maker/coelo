@@ -58,3 +58,19 @@ externo. Produção, composição real e os gates completos de Circulares perman
 abertos. Esta correção restaura o contrato de isolamento existente: não cria
 decisão de produto nem conhecimento novo reutilizável; gate de memória sem novo
 artigo. Handoff ao Coordenador para rastreadores, sem promovê-los a E2E.
+
+## Delta: negação definitiva durante a resposta
+
+Revisão complementar confirmou que o adapter traduz `42501`/`PGRST301` para
+`CircularUnauthorized`, mas o leitor retinha o conteúdo e tratava a falha como
+retry transitório. Dois REDs reais — negação de saveDraft e de submit — passaram
+a GREEN com catch específico no detalhe. Somente a geração atual limpa detalhe,
+versão e leitor, reaproveitando a superfície de acesso negado sem retry. A falha
+é repropagada, nunca convertida em sucesso. Negação antiga não limpa B e
+`CircularUnavailable` conserva as respostas: duas contraprovas verdes.
+
+Verificação do delta: 15/15 detalhe; 112/112 não-golden de Circulares e
+PrincipalCirculares; analyzer dois arquivos sem issues; format, diff check e
+validador visual; revisão independente read-only sem bloqueantes. Sem mudança
+de política, backend, composição ou produção; memória continua no-op. É purge
+local depois da resposta de autorização, não comprovação de revogação remota.

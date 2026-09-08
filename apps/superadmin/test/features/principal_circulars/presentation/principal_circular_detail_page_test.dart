@@ -7,6 +7,86 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final denySubmit in [false, true]) {
+    testWidgets('${denySubmit ? 'submit' : 'saveDraft'} denial purges circular and answers', (
+      tester,
+    ) async {
+      final pending = Completer<CircularResponseSaveResult>();
+      final responses = _ResponseRepository(
+        pendingSave: denySubmit ? null : pending,
+        pendingSubmit: denySubmit ? pending : null,
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: PrincipalCircularDetailPage(
+            circularId: 'circular-1',
+            childContextId: 'child-1',
+            repository: _Repository(),
+            responseRepository: responses,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('circular-submit-responses')));
+      await tester.pump();
+      pending.completeError(const CircularUnauthorized());
+      await tester.pumpAndSettle();
+      expect(find.text('Você não tem acesso a esta Circular.'), findsOneWidget);
+      expect(find.text('Renovação'), findsNothing);
+      expect(find.text('A matrícula será renovada? *'), findsNothing);
+      expect(find.byIcon(Icons.radio_button_checked_rounded), findsNothing);
+      expect(find.byKey(const Key('circular-submit-responses')), findsNothing);
+      expect(find.text('Tentar novamente'), findsNothing);
+      if (!denySubmit) expect(responses.submittedExpectedVersion, isNull);
+    });
+  }
+
+  testWidgets('transient response failure preserves answers for explicit retry', (tester) async {
+    final pending = Completer<CircularResponseSaveResult>();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PrincipalCircularDetailPage(
+          circularId: 'circular-1',
+          childContextId: 'child-1',
+          repository: _Repository(),
+          responseRepository: _ResponseRepository(pendingSave: pending),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('circular-submit-responses')));
+    await tester.pump();
+    pending.completeError(const CircularUnavailable());
+    await tester.pumpAndSettle();
+    expect(find.text('Renovação'), findsOneWidget);
+    expect(find.byIcon(Icons.radio_button_checked_rounded), findsOneWidget);
+    expect(find.text('Não foi possível enviar. Tente novamente.'), findsOneWidget);
+    expect(find.text('Você não tem acesso a esta Circular.'), findsNothing);
+  });
+
+  testWidgets('old response denial cannot purge the replacement context', (tester) async {
+    final pending = Completer<CircularResponseSaveResult>();
+    final first = _ResponseRepository(pendingSave: pending);
+    Widget page(_ResponseRepository responses, String title) => MaterialApp(
+      home: PrincipalCircularDetailPage(
+        circularId: 'circular-1',
+        childContextId: 'child-1',
+        repository: _Repository(title: title),
+        responseRepository: responses,
+      ),
+    );
+    await tester.pumpWidget(page(first, 'Circular A'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('circular-submit-responses')));
+    await tester.pump();
+    await tester.pumpWidget(page(_ResponseRepository(), 'Circular B'));
+    await tester.pump();
+    pending.completeError(const CircularUnauthorized());
+    await tester.pumpAndSettle();
+    expect(find.text('Circular B'), findsOneWidget);
+    expect(find.text('Você não tem acesso a esta Circular.'), findsNothing);
+  });
+
   for (final changeChild in [false, true]) {
     testWidgets('reloads on isolated ${changeChild ? 'child context' : 'circular ID'} change', (
       tester,
