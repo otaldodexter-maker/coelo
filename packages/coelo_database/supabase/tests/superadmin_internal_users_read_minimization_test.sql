@@ -36,8 +36,11 @@ select set_config('request.jwt.claims',jsonb_build_object(
 set local role authenticated;
 select set_config('test.internal_users_read_payload',
   public.superadmin_internal_users_list(null,null,null,null,1,11)::text,true);
+select set_config('test.internal_users_read_actor',current_user,true);
+reset role;
 select ok(
-  current_setting('test.internal_users_read_payload')::jsonb ? 'items'
+  current_setting('test.internal_users_read_actor')='authenticated'
+  and current_setting('test.internal_users_read_payload')::jsonb ? 'items'
   and not (current_setting('test.internal_users_read_payload')::jsonb ? 'error'),
   'nominal internal Owner is authorized before testing payload minimization');
 select ok(
@@ -51,6 +54,5 @@ select ok(
   position('read-owner@invalid.test' in current_setting('test.internal_users_read_payload'))=0
   and position('r***@invalid.test' in current_setting('test.internal_users_read_payload'))>0,
   'list masks professional email in every payload branch, including invitation');
-reset role;
 select * from finish();
 rollback;
