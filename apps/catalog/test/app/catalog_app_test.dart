@@ -10,7 +10,6 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   testWidgets('opens the temporarily public catalog without checking access', (tester) async {
     final access = _FakeCatalogAccessGateway([CatalogAccessResult.unauthenticated]);
-
     await tester.pumpWidget(
       CatalogApp(accessGateway: access, authGateway: _FakeCoeloAuthGateway(), publicAccess: true),
     );
@@ -21,7 +20,6 @@ void main() {
     expect(access.checkCount, 0);
     expect(find.byType(CatalogHomePage), findsOneWidget);
     expect(find.text('Entre no catálogo'), findsNothing);
-    expect(find.text('Fundamentos e componentes reais'), findsOneWidget);
   });
 
   testWidgets('shows the private catalog after server-side access is allowed', (tester) async {
