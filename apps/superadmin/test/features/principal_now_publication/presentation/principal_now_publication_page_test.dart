@@ -117,7 +117,10 @@ void main() {
     expect(find.byType(AppBar), findsNothing);
     expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
     expect(find.byType(PrincipalPublicationStepNavigation), findsNothing);
-    expect(find.byKey(const Key('now-publication-progress')), findsOneWidget);
+    // The approved anatomy of 2026-08-31 opens with `Sua publicacao` and has no
+    // step control of any kind: no rail, and no progress bar standing in for one.
+    expect(find.text('Sua publicação'), findsOneWidget);
+    expect(find.byKey(const Key('now-publication-progress')), findsNothing);
     expect(find.byType(PrincipalPublicationActionFooter), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -667,9 +670,14 @@ void main() {
     expect(find.byType(PrincipalPublicationStepNavigation), findsNothing);
     expect(find.text('Continuar'), findsNothing);
     expect(find.text('Anterior'), findsNothing);
-    expect(find.byKey(const Key('now-publication-progress')), findsOneWidget);
+    expect(find.byKey(const Key('now-publication-progress')), findsNothing);
     expect(find.byKey(const Key('now-publication-close')), findsNothing);
+    expect(find.text('Sua publicação'), findsOneWidget);
     expect(find.text('Publicar no Agora'), findsOneWidget);
+    // The Owner approved a preview beside the editor on desktop. It shows the
+    // publication; it never navigates between steps.
+    expect(find.byKey(const Key('now-publication-desktop-preview')), findsOneWidget);
+    expect(find.text('Prévia do Agora'), findsOneWidget);
   });
 
   testWidgets('mantém mídia e detalhes na mesma rolagem', (tester) async {
@@ -710,7 +718,12 @@ void main() {
       expect(find.text('Música'), findsOneWidget);
       expect(find.text('Cortar'), findsOneWidget);
       expect(find.text('Capa'), findsOneWidget);
-      expect(find.byKey(const Key('now-publication-progress')), findsOneWidget);
+      expect(find.byKey(const Key('now-publication-progress')), findsNothing);
+      // The lateral preview follows the same 840 threshold Acontece uses.
+      expect(
+        find.byKey(const Key('now-publication-desktop-preview')),
+        size.width >= 840 ? findsOneWidget : findsNothing,
+      );
       expect(
         find.byKey(const Key('now-publication-zones')),
         size.width >= 600 ? findsOneWidget : findsNothing,

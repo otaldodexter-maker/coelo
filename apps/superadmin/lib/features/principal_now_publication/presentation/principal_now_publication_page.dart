@@ -373,53 +373,24 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
     widget.onCompleted?.call(publication);
   }
 
-  List<PrincipalPublicationStep> _progressSteps() {
-    final draft = controller.state.draft;
-    final issues = draft.validate(controller.context);
-    PrincipalPublicationStepStatus statusFor({required bool done, required bool failed}) => failed
-        ? PrincipalPublicationStepStatus.error
-        : done
-        ? PrincipalPublicationStepStatus.complete
-        : PrincipalPublicationStepStatus.incomplete;
-    final mediaFailed = issues.any(
-      (issue) => const {
-        NowPublicationIssue.mediaTypeUnsupported,
-        NowPublicationIssue.mediaTooLarge,
-        NowPublicationIssue.videoTooLong,
-        NowPublicationIssue.videoMetadataUnavailable,
-      }.contains(issue),
-    );
-    final scheduleFailed = issues.contains(NowPublicationIssue.scheduleMustBeFuture);
-    return [
-      PrincipalPublicationStep(
-        key: const Key('now-progress-media'),
-        label: 'Mídia',
-        status: statusFor(done: draft.media != null, failed: mediaFailed),
-      ),
-      PrincipalPublicationStep(
-        key: const Key('now-progress-details'),
-        label: 'Público e contexto',
-        status: statusFor(done: draft.audiences.isNotEmpty, failed: false),
-      ),
-      PrincipalPublicationStep(
-        key: const Key('now-progress-publication'),
-        label: 'Publicação',
-        status: statusFor(done: issues.isEmpty, failed: scheduleFailed),
-      ),
-    ];
-  }
-
-  /// Single-scroll composition of the approved Agora reference: media stage with
-  /// adjacent tools and a lean editorial column. No lateral wizard, because specs
-  /// 036 and 050 share only shell, right container, insets and responsive footer.
+  /// The anatomy the Owner approved on 2026-08-31, shared with Acontece and
+  /// Momentos: `Sua publicacao`, the surface name, media stage with adjacent
+  /// tools, a lean editorial column and the lateral preview on desktop.
+  ///
+  /// There is no step rail and no step counter: the composer has no steps to
+  /// count, so either would be a control describing a flow that does not exist.
   Widget _composerBody() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Text('Publicar no Agora', style: Theme.of(context).textTheme.headlineSmall),
-      const SizedBox(height: CoeloSpacing.space3),
-      PrincipalPublicationProgressBar(
-        barKey: const Key('now-publication-progress'),
-        steps: _progressSteps(),
+      Text('Sua publicação', style: Theme.of(context).textTheme.headlineSmall),
+      const SizedBox(height: CoeloSpacing.space1),
+      Text('Publicar no Agora', style: Theme.of(context).textTheme.titleMedium),
+      const SizedBox(height: CoeloSpacing.space1),
+      Text(
+        'Mídia vertical, texto curto e público. Sai do ar em 24 horas.',
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
       ),
       const SizedBox(height: CoeloSpacing.space5),
       LayoutBuilder(
@@ -453,7 +424,7 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
               ],
             );
           }
-          return Row(
+          final editor = Row(
             key: const Key('now-publication-zones'),
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -465,6 +436,22 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
                   key: const Key('now-publication-editorial-column'),
                   child: details,
                 ),
+              ),
+            ],
+          );
+          // The approved anatomy keeps a preview beside the editor on desktop,
+          // at the same 840 threshold and 320 width Acontece uses. It is a
+          // preview of the publication, not a step navigator.
+          if (constraints.maxWidth < 840) return editor;
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: editor),
+              const SizedBox(width: CoeloSpacing.space5),
+              SizedBox(
+                key: const Key('now-publication-desktop-preview'),
+                width: 320,
+                child: _NowPublicationPreview(controller: controller, onPick: _pickMedia),
               ),
             ],
           );
@@ -613,6 +600,50 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
   }
 }
 
+final class _NowPublicationPreview extends StatelessWidget {
+  const _NowPublicationPreview({required this.controller, required this.onPick});
+
+  final NowPublicationController controller;
+  final VoidCallback onPick;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
+      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      borderRadius: BorderRadius.circular(CoeloRadius.lg),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Prévia do Agora',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          AspectRatio(
+            aspectRatio: 9 / 16,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(CoeloRadius.md),
+              child: _MediaPreview(controller: controller, onPick: onPick, readOnly: true),
+            ),
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          Text(
+            'Disponível por 24 horas',
+            textAlign: TextAlign.center,
+            style: Theme.of(
+              context,
+            ).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 final class _MediaAndTools extends StatelessWidget {
   const _MediaAndTools({
     required this.controller,
@@ -682,14 +713,31 @@ final class _MediaAndTools extends StatelessWidget {
 }
 
 final class _MediaPreview extends StatelessWidget {
-  const _MediaPreview({required this.controller, required this.onPick});
+  const _MediaPreview({required this.controller, required this.onPick, this.readOnly = false});
   final NowPublicationController controller;
   final VoidCallback onPick;
+
+  /// The preview shows the publication; it never offers the picker a second
+  /// time, so the empty state is a caption rather than a second call to action.
+  final bool readOnly;
   @override
   Widget build(BuildContext context) {
     final media = controller.state.draft.media;
     if (media == null) {
       final enlargedText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
+      if (readOnly) {
+        return DecoratedBox(
+          decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerLow),
+          child: Center(
+            child: Text(
+              'Prévia sem mídia',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        );
+      }
       return _PrincipalInteractiveSurface(
         semanticLabel: 'Adicionar mídia ao Agora',
         onPressed: onPick,
