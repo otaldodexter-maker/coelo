@@ -1,0 +1,74 @@
+{
+    "id":  "A01DirectoryAuditRed",
+    "base":  {
+                 "profile":  "auth",
+                 "manifest":  "packages/coelo_database/replay/foundation-migrations.sha256",
+                 "manifest_sha256_crlf_utf8":  "4279e67c9651f4049329591b6e8aad82e3a9052506c1a4e16ba8bbb693249d59",
+                 "selected_canonical_count":  45,
+                 "boundary":  "20260901200206"
+             },
+    "target_version":  "20260907222911",
+    "canonical_additions":  [
+                                {
+                                    "file":  "20260831192831_activities_v2_actor_attribution.sql",
+                                    "sha256_crlf_utf8":  "ad10aa26bd2c7c797ef606f9ee9cc9038c02bba10543b9930d14d36b9ad383bf",
+                                    "canonical_union_position":  44
+                                },
+                                {
+                                    "file":  "20260831195118_activities_v2_actor_provenance_hardening.sql",
+                                    "sha256_crlf_utf8":  "31f54a5b8bc1c8dde45f60903ae0c5ef1651db580169a83aba37fc5487af50c8",
+                                    "canonical_union_position":  45
+                                },
+                                {
+                                    "file":  "20260831195944_activities_v2_actor_provenance_semantics.sql",
+                                    "sha256_crlf_utf8":  "19c3168014d7710b248da92100bb1b61528e9299150a54da74080315e8b99745",
+                                    "canonical_union_position":  46
+                                },
+                                {
+                                    "file":  "20260831203645_activities_v2_permissions_receipts.sql",
+                                    "sha256_crlf_utf8":  "84bfc497aae6e4d8ad950fc03035896d6b9246c42531823e32ce34817b0d02b5",
+                                    "canonical_union_position":  47
+                                },
+                                {
+                                    "file":  "20260831211945_activities_v2_internal_gateways.sql",
+                                    "sha256_crlf_utf8":  "443be75040ca103a7a6723aa90037359c11c1681afdc6a6361c2d81f667a6dfa",
+                                    "canonical_union_position":  48
+                                },
+                                {
+                                    "file":  "20260831231645_activities_v2_rls_grants.sql",
+                                    "sha256_crlf_utf8":  "0e156b3beb53ebbf1caca033908f0d6755f274b9fa9d38b26bcc4b7da7c65dc1",
+                                    "canonical_union_position":  49
+                                },
+                                {
+                                    "file":  "20260831234307_activities_v2_final_review_hardening.sql",
+                                    "sha256_crlf_utf8":  "01663a89c55e5de081aa97b808cec0329ae4af9dd6a24ef2d80c87d6c0ddc898",
+                                    "canonical_union_position":  50
+                                },
+                                {
+                                    "file":  "20260907222911_superadmin_activity_directory_v2_client_contract.sql",
+                                    "sha256_crlf_utf8":  "77b248f6d60661ebf1fff941107b8fd148d9e2a19e9c27d1b4f45be01571847f",
+                                    "canonical_union_position":  53
+                                }
+                            ],
+    "inherited_preflights":  [
+                                 {
+                                     "file":  "20260811151253_assert_function_execute_preflight.sql",
+                                     "sha256_crlf_utf8":  "718c2de052e9df29abc42642806d9a5e4d98c8964665453de6f14f0f8b61ab75",
+                                     "before":  "20260811151254_group_management_security.sql"
+                                 },
+                                 {
+                                     "file":  "20260811215452_access_profile_labels_replay_bridge.sql",
+                                     "sha256_crlf_utf8":  "d97e02796fcd5897707b5657b7a1c1df690f831e09ed98df6ed21886f75f9ef3",
+                                     "after":  "20260811215451_access_profile_management_v2.sql",
+                                     "before":  "20260812000847_audit_production.sql"
+                                 }
+                             ],
+    "extra_bridges":  [
+
+                      ],
+    "planned_counts":  {
+                           "canonical":  53,
+                           "preflight":  2,
+                           "total":  55
+                       }
+}

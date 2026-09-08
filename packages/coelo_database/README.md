@@ -253,6 +253,20 @@ a mesma função com somente quatro parênteses adicionados, no PostgreSQL17.6
 os hashes de origem/derivado; ainda não está integrado ao Prepare. Essa prova
 de parser não representa replay completo de uma base derivada.
 
+O diagnóstico `-NominalProfile A01DirectoryAuditRed` mantém a base54 e
+acrescenta somente a v1 `20260907222911`:55 arquivos, alvo nessa corretiva.
+A fixture97 preserva os89 anteriores e acrescenta oito verificações de
+auditoria. O replay produziu91PASS/6FAIL, somente nas asserções91–94/96–97:
+a v1 ainda não faz append de sucesso dos readers. Essa seleção não inclui
+uma correção posterior de auditoria nem representa GREEN final.
+
+```powershell
+& packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
+  -TargetVersion 20260907222911 `
+  -NominalProfile A01DirectoryAuditRed `
+  -TestPath packages/coelo_database/supabase/tests/superadmin_internal_activities_v2_directory_contract_test.sql
+```
+
 Nunca use
 `Prepare-SafeMigrationReplay.ps1` diretamente em operacoes normais, nem use o
 staging com `db push`, `migration repair` ou qualquer comando remoto. As
