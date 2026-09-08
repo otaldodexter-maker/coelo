@@ -766,6 +766,19 @@ final class _PersonStatusIndicatorState extends State<_PersonStatusIndicator> {
       onExit: (_) => setState(() => _hovered = false),
       child: FocusableActionDetector(
         onShowFocusHighlight: (value) => setState(() => _focused = value),
+        // It announces itself as a button, so Enter and Space have to work.
+        // Without this the chip was a keyboard stop that lit up, claimed to be
+        // pressable, and did nothing when pressed - which reads as a broken
+        // product to someone navigating by keyboard and is invisible to anyone
+        // using a mouse. Same defect, same fix, as the institution status chip.
+        actions: {
+          ActivateIntent: CallbackAction<ActivateIntent>(
+            onInvoke: (_) {
+              setState(() => _expandedByTap = !_expandedByTap);
+              return null;
+            },
+          ),
+        },
         child: Semantics(
           button: true,
           label: 'Status: ${widget.item.status.label}',
