@@ -389,6 +389,27 @@ select ok(not exists(select 1 from fauthor_results where label in('a_read_b','a_
 select set_config('request.jwt.claims','{"sub":"8f020000-0000-4000-8000-000000000101","session_id":"8f020000-0000-4000-8000-000000000201","aal":"aal2","role":"authenticated"}',true);
 
 -- Audit is mandatory for success, replay and identified denials, with no graph.
+-- Soft-deleted institutions cannot expose a draft snapshot, including receipts.
+-- These are sequential RED contracts, not proof of the two-connection races.
+update public.institutions set deleted_at=now() where id='8f020000-0000-4000-8000-000000000010';
+set local role authenticated;
+insert into fauthor_results values ('deleted_institution_read',public.superadmin_forms_editor_v2('8f020000-0000-4000-8000-000000000701'),null,current_user);
+insert into fauthor_results select 'deleted_institution_replay',public.superadmin_forms_save_draft_v2(request_id,0,payload),null,current_user from fauthor_cases where label='incomplete_1';
+insert into fauthor_results select 'deleted_institution_edit',public.superadmin_forms_save_draft_v2('8f020000-0000-4000-8000-000000000987',2,payload||'{"title":"Deleted target must not change"}'),null,current_user from fauthor_cases where label='incomplete_1';
+insert into fauthor_results select 'deleted_institution_create',public.superadmin_forms_save_draft_v2('8f020000-0000-4000-8000-000000000988',0,payload||'{"id":"8f020000-0000-4000-8000-000000000797"}'),null,current_user from fauthor_cases where label='incomplete_1';
+reset role;
+select is(body#>>'{error,code}','SAI_PERMISSION_DENIED',label||' denied') from fauthor_results where label like 'deleted_institution_%';
+select ok(not exists(select 1 from fauthor_results where label like 'deleted_institution_%' and body->'data' is distinct from 'null'::jsonb),'deleted institution exposes no snapshot');
+select is((select title from public.forms where id='8f020000-0000-4000-8000-000000000701'),'Changed','deleted institution leaves existing draft unchanged');
+select ok(not exists(select 1 from public.forms where id='8f020000-0000-4000-8000-000000000797'),'deleted institution create has no effect');
+select ok(not exists(select 1 from app_private.superadmin_internal_form_draft_receipts where request_id in('8f020000-0000-4000-8000-000000000987','8f020000-0000-4000-8000-000000000988')),'deleted institution creates no receipt');
+update public.institutions set deleted_at=null,status='inactive' where id='8f020000-0000-4000-8000-000000000010';
+set local role authenticated;
+insert into fauthor_results values ('inactive_institution_read',public.superadmin_forms_editor_v2('8f020000-0000-4000-8000-000000000701'),null,current_user);
+reset role;
+select is((select body->>'ok' from fauthor_results where label='inactive_institution_read'),'true','inactive is not silently treated as soft-deleted for draft reading');
+update public.institutions set status='active' where id='8f020000-0000-4000-8000-000000000010';
+
 select is((select count(*) from audit.audit_logs where action_code in('superadmin.forms.editor','superadmin.forms.draft.save') and outcome='success'),
  (select count(*) from fauthor_results where body->>'ok'='true'),'one audit for each successful nominal operation including replay');
 select is((select count(*) from fauthor_audit_capture c where c.operation_label=r.label),1::bigint,'exactly one correlated success audit for '||r.label)
