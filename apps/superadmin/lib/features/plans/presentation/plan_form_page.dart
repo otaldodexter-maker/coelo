@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -52,6 +53,8 @@ final class _PlanFormPageState extends State<PlanFormPage> {
   bool _capabilityError = false;
   bool _auditReasonError = false;
   String? _conflictMessage;
+  String? _pendingSaveRequestId;
+  String? _pendingSaveSignature;
   int _contextGeneration = 0;
   int _readGeneration = 0;
 
@@ -116,6 +119,8 @@ final class _PlanFormPageState extends State<PlanFormPage> {
     _capabilityError = false;
     _auditReasonError = false;
     _conflictMessage = null;
+    _pendingSaveRequestId = null;
+    _pendingSaveSignature = null;
     _loadState = widget.planId == null ? PlanDataState.ready : PlanDataState.loading;
     if (widget.planId != null) unawaited(_loadPlan());
   }
@@ -578,28 +583,44 @@ final class _PlanFormPageState extends State<PlanFormPage> {
         storageGb: int.parse(_storage.text),
         mediaGb: int.parse(_media.text),
       );
+      final draft = PlanDraft(
+        id: _original?.id ?? '',
+        name: _name.text.trim(),
+        code: _code.text.trim(),
+        description: _description.text.trim(),
+        status: _status,
+        features: Set.unmodifiable(_features),
+        limits: limits,
+      );
+      final reason = _reason.text.trim();
+      final signature = _saveSignature(draft, reason);
+      if (_pendingSaveSignature != signature) {
+        _pendingSaveRequestId = newPlanRequestId();
+        _pendingSaveSignature = signature;
+      }
+      final requestId = _pendingSaveRequestId!;
       final saved = await repository.save(
         PlanSaveCommand(
-          requestId: newPlanRequestId(),
+          requestId: requestId,
           expectedRevision: _original?.revision,
-          reason: _reason.text,
-          draft: PlanDraft(
-            id: _original?.id ?? '',
-            name: _name.text.trim(),
-            code: _code.text.trim(),
-            description: _description.text.trim(),
-            status: _status,
-            features: Set.unmodifiable(_features),
-            limits: limits,
-          ),
+          reason: reason,
+          draft: draft,
         ),
       );
       if (!isCurrent()) return;
+      if (_pendingSaveRequestId == requestId) {
+        _pendingSaveRequestId = null;
+        _pendingSaveSignature = null;
+      }
       _original = saved.plan;
       _linked = saved.linkedInstitutions;
       widget.onSaved?.call();
     } on PlanRepositoryException catch (error) {
       if (!isCurrent()) return;
+      if (error.kind != PlanRepositoryFailureKind.unavailable) {
+        _pendingSaveRequestId = null;
+        _pendingSaveSignature = null;
+      }
       setState(() {
         _conflictMessage = error.kind == PlanRepositoryFailureKind.conflict
             ? 'O plano mudou desde que esta edição começou. Seu draft foi preservado.'
@@ -609,6 +630,23 @@ final class _PlanFormPageState extends State<PlanFormPage> {
       if (isCurrent()) setState(() => _saving = false);
     }
   }
+
+  String _saveSignature(PlanDraft draft, String reason) => jsonEncode({
+    'id': draft.id,
+    'revision': _original?.revision,
+    'name': draft.name,
+    'code': draft.code,
+    'description': draft.description,
+    'status': draft.status.name,
+    'features': draft.features.map((feature) => feature.name).toList()..sort(),
+    'limits': {
+      'units': draft.limits.units,
+      'memberships': draft.limits.memberships,
+      'storageGb': draft.limits.storageGb,
+      'mediaGb': draft.limits.mediaGb,
+    },
+    'reason': reason,
+  });
 
   String? _required(String? value) =>
       value == null || value.trim().isEmpty ? 'Campo obrigatório' : null;

@@ -120,6 +120,44 @@ void main() {
     expect(code.enabled, isTrue);
     expect(code.controller!.text, isEmpty);
   });
+
+  testWidgets('transport retry reuses request ID until the save payload changes', (tester) async {
+    await _size(tester);
+    final repository = _RetryRepository();
+    await tester.pumpWidget(_app(repository, 'a'));
+    repository.reads['a']!.complete(_details('a'));
+    await tester.pumpAndSettle();
+
+    await _save(tester);
+    final firstRequestId = repository.commands.single.requestId;
+    repository.saveResults.single.completeError(
+      const PlanRepositoryException(PlanRepositoryFailureKind.unavailable, 'Resposta perdida.'),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Salvar plano'));
+    await tester.pump();
+    expect(repository.commands, hasLength(2));
+    expect(repository.commands[1].requestId, firstRequestId);
+    repository.saveResults[1].completeError(
+      const PlanRepositoryException(
+        PlanRepositoryFailureKind.unavailable,
+        'Resposta perdida novamente.',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('plan-audit-reason-field')),
+      'Nova intenção autorizada.',
+    );
+    await tester.tap(find.text('Salvar plano'));
+    await tester.pump();
+    expect(repository.commands, hasLength(3));
+    expect(repository.commands[2].requestId, isNot(firstRequestId));
+    repository.saveResults[2].complete(_details('a'));
+    await tester.pumpAndSettle();
+  });
 }
 
 Future<void> _size(WidgetTester tester) async {
@@ -127,7 +165,7 @@ Future<void> _size(WidgetTester tester) async {
   addTearDown(() => tester.binding.setSurfaceSize(null));
 }
 
-Widget _app(_Repository repository, String? id, {VoidCallback? onSaved}) => MaterialApp(
+Widget _app(PlanCatalogRepository repository, String? id, {VoidCallback? onSaved}) => MaterialApp(
   theme: CoeloTheme.light,
   home: Scaffold(
     body: PlanFormPage(repository: repository, planId: id, onSaved: onSaved),
@@ -167,6 +205,26 @@ final class _Repository implements PlanCatalogRepository {
   Future<PlanDetails> save(PlanSaveCommand command) {
     commands.add(command);
     return saveResult.future;
+  }
+
+  @override
+  Future<PlanPage> list(PlanQuery query) => throw UnimplementedError();
+}
+
+final class _RetryRepository implements PlanCatalogRepository {
+  final reads = <String, Completer<PlanDetails>>{};
+  final commands = <PlanSaveCommand>[];
+  final saveResults = <Completer<PlanDetails>>[];
+
+  @override
+  Future<PlanDetails> get(String planId) => (reads[planId] = Completer<PlanDetails>()).future;
+
+  @override
+  Future<PlanDetails> save(PlanSaveCommand command) {
+    commands.add(command);
+    final result = Completer<PlanDetails>();
+    saveResults.add(result);
+    return result.future;
   }
 
   @override
