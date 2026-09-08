@@ -1180,6 +1180,45 @@ void main() {
     }
   });
 
+  for (final brightness in Brightness.values) {
+    testWidgets('compact call footer remains reachable at text 200 $brightness', (tester) async {
+      final repository = FakeAttendanceRepository.seeded();
+      addTearDown(repository.dispose);
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.binding.setSurfaceSize(const Size(375, 900));
+      var returned = false;
+      await tester.pumpWidget(
+        _app(
+          AttendanceCallPage(
+            repository: repository,
+            callId: 'call-progress',
+            permissions: const AttendancePermissions.owner(),
+            logout: unavailableSuperadminLogout,
+            onBack: () => returned = true,
+          ),
+          brightness: brightness,
+          textScaler: const TextScaler.linear(2),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final action = find.widgetWithText(TextButton, 'Voltar para Assiduidade');
+      await tester.ensureVisible(action);
+      await tester.pumpAndSettle();
+      final viewport = tester.getRect(find.byKey(const Key('attendance-call-scroll')));
+      final button = tester.getRect(action);
+      expect(button.top, greaterThanOrEqualTo(viewport.top));
+      expect(button.bottom, lessThanOrEqualTo(viewport.bottom));
+      expect(action.hitTestable(), findsOneWidget);
+      await tester.tap(action);
+      expect(returned, isTrue);
+      await tester.ensureVisible(
+        find.byKey(const Key('attendance-participant-identity-participant-1')),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('call page expands the first pending routine supplied by the UI seam', (
     tester,
   ) async {
