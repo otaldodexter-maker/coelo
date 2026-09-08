@@ -24,13 +24,22 @@ final class NoticePreviewDialog extends StatefulWidget {
 
 final class _NoticePreviewDialogState extends State<NoticePreviewDialog> {
   bool _checked = false;
+  bool _closing = false;
 
   void _close({bool accept = false}) {
-    if (!mounted || widget.isContextCurrent?.call() == false) return;
+    if (!mounted || _closing || widget.isContextCurrent?.call() == false) return;
     final route = ModalRoute.of(context);
     if (route?.isCurrent != true) return;
-    if (accept) widget.onAccepted?.call();
-    if (route!.isCurrent) route.navigator?.pop();
+    _closing = true;
+    try {
+      if (accept) widget.onAccepted?.call();
+    } finally {
+      if (route!.isCurrent) {
+        route.navigator?.pop();
+      } else if (route.isActive) {
+        route.navigator?.removeRoute(route);
+      }
+    }
   }
 
   @override

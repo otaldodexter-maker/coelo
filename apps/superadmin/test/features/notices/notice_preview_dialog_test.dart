@@ -47,6 +47,7 @@ void main() {
 
   testWidgets('accept callback navigation is not popped by preview completion', (tester) async {
     final navigatorKey = GlobalKey<NavigatorState>();
+    var accepted = 0;
     await tester.pumpWidget(
       MaterialApp(
         navigatorKey: navigatorKey,
@@ -57,6 +58,7 @@ void main() {
                 context,
                 _notice(),
                 onAccepted: () {
+                  accepted++;
                   navigatorKey.currentState!.push(
                     MaterialPageRoute<void>(
                       builder: (_) => const Scaffold(body: Text('Destino da confirmação')),
@@ -72,9 +74,19 @@ void main() {
     );
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
+    final oldConfirm = tester
+        .widget<FilledButton>(find.widgetWithText(FilledButton, 'Confirmar'))
+        .onPressed!;
     await tester.tap(find.widgetWithText(FilledButton, 'Confirmar'));
     await tester.pumpAndSettle();
     expect(find.text('Destino da confirmação'), findsOneWidget);
+    navigatorKey.currentState!.pop();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('notice-preview-dialog')), findsNothing);
+    expect(find.text('Open'), findsOneWidget);
+    oldConfirm();
+    await tester.pumpAndSettle();
+    expect(accepted, 1);
     expect(tester.takeException(), isNull);
   });
 
