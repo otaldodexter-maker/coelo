@@ -24,7 +24,7 @@ final class MealPlanWizardPage extends StatefulWidget {
     this.mealPlanModelId,
     this.isTemplate = false,
     this.tenantId = '',
-    this.imageSelectionEnabled = true,
+    this.imageSelectionEnabled = false,
     super.key,
   });
 
