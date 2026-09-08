@@ -5,6 +5,28 @@ status: "669 PASS; 1 runtime SKIP; integração real aberta"
 generated_at: "2026-09-08"
 ---
 
+## Rerun após 0b55e919
+
+Em 2026-09-08, a seleção de **70 arquivos** do mesmo escopo terminou com
+**711 PASS e 1 SKIP**, exit0, runner52s. Runtime A01 foi explicitamente
+desabilitado (`COELO_A01_LOCAL_RUNTIME=0`), sem HTTP real. Esta rodada substitui
+a contagem anterior para este HEAD; não somar execuções sobrepostas.
+
+Uma tentativa anterior teve erro no seletor de separadores Windows, gerou lista
+vazia e iniciou a suite geral sem filtro. Foi interrompida após detecção, com
+resultado parcial não conclusivo (havia falha não diagnosticada fora da seleção
+pretendida); não é evidência de regressão completa. O comando corrigido normaliza
+caminhos e **recusa manifesto vazio antes de chamar Flutter**:
+
+```powershell
+$env:COELO_A01_LOCAL_RUNTIME = '0'
+$taskTests = @(rg --files test/features -g '*test.dart' -g '!*golden*' | Where-Object { $_.Replace('\','/') -match '^test/features/(agenda|activities|attendance|daily_routine|assessments|plans|meal_plans|support|audit|catalog|errors)/' })
+if ($taskTests.Count -eq 0) { throw 'Empty original-scope test manifest' }
+rtk proxy flutter test --no-pub @taskTests
+```
+
+Sem rebaseline, mudanças de produção ou promoção de gate E2E nesta rodada.
+
 # Resultado
 
 **669 testes PASS, 1 SKIP, exit0**, em69arquivos selecionados. O runner
