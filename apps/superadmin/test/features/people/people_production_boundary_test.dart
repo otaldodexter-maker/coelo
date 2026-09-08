@@ -29,6 +29,39 @@ void main() {
     expect(fileActions, isNot(contains('people-demo-file-picker')));
   });
 
+  test('RED: no invented person is compiled into the People form', () {
+    // The guard above scans for _Demo, "demonstrativ" and "não será persistido".
+    // None of those words appeared in the four invented people that shipped
+    // inside this form - Ana Souza, Caio Lima, Lia Coelo, Noah Coelo, each with
+    // a masked-looking document, e-mail and phone - so it passed green while
+    // they were a few lines away. Selecting one reached no view model and no
+    // RPC, which meant a silent loss for whoever tried to link somebody.
+    //
+    // A fixture does not have to call itself a fixture. This names the shape
+    // instead of the label.
+    final form = File('lib/features/people/presentation/person_form_page.dart').readAsStringSync();
+    for (final forbidden in const [
+      '_LinkCandidate',
+      '_adultLinkCandidates',
+      '_childLinkCandidates',
+      'searchableData',
+      'Ana Souza',
+      'Caio Lima',
+      'Lia Coelo',
+      'Noah Coelo',
+      '@ana.coelo',
+      'Turma Girassol',
+    ]) {
+      expect(form, isNot(contains(forbidden)), reason: forbidden);
+    }
+    // A masked document is still a document-shaped string in the source.
+    expect(
+      RegExp(r'\*{3}\.\d{3}\.\*{3}-\*{2}').hasMatch(form),
+      isFalse,
+      reason: 'a masked CPF pattern must not be written into the form',
+    );
+  });
+
   test('RED: People tests do not import the production fake repository', () {
     final peopleTests = Directory(
       'test/features/people',
