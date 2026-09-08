@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
@@ -6,11 +9,11 @@ enum FormsMediaState { content, notFound, unavailable }
 
 /// Protected media detail shared by production and `/dev` routes.
 ///
-/// The production constructor is deliberately fail-closed. The development
+/// Production reads require an authorized session and shared reader. The development
 /// constructor resolves only deterministic local metadata and never exposes a
 /// storage identifier or persistent read address.
 final class FormsMediaPage extends StatefulWidget {
-  const FormsMediaPage({required this.assetId, this.onBack, super.key})
+  const FormsMediaPage({required this.assetId, this.reader, this.session, this.onBack, super.key})
     : development = false,
       state = FormsMediaState.unavailable,
       onRequestTemporaryCopy = null;
@@ -20,12 +23,16 @@ final class FormsMediaPage extends StatefulWidget {
     this.state = FormsMediaState.content,
     this.onBack,
     this.onRequestTemporaryCopy,
+    this.reader,
+    this.session,
     super.key,
   }) : development = true;
 
   static const developmentPreviewAssetId = 'asset-form-photo-01';
 
   final String assetId;
+  final MediaReader? reader;
+  final MediaSession? session;
   final bool development;
   final FormsMediaState state;
   final VoidCallback? onBack;
@@ -35,8 +42,128 @@ final class FormsMediaPage extends StatefulWidget {
   State<FormsMediaPage> createState() => _FormsMediaPageState();
 }
 
-final class _FormsMediaPageState extends State<FormsMediaPage> {
+final class _FormsMediaPageState extends State<FormsMediaPage> with WidgetsBindingObserver {
   bool _previewVisible = false;
+  MediaReadState? _readState = MediaReadState.unavailable;
+  NetworkImage? _image;
+  DateTime? _expiresAt;
+  Timer? _expiry;
+  void Function()? _unregister;
+  int _generation = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _bind();
+  }
+
+  @override
+  void didUpdateWidget(covariant FormsMediaPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.assetId != widget.assetId ||
+        !identical(oldWidget.reader, widget.reader) ||
+        !identical(oldWidget.session, widget.session) ||
+        oldWidget.development != widget.development) {
+      _unregister?.call();
+      _unregister = null;
+      _previewVisible = false;
+      _bind();
+    }
+  }
+
+  void _bind() {
+    final generation = ++_generation;
+    unawaited(_clearImage());
+    _readState = MediaReadState.unavailable;
+    final session = widget.session;
+    if (widget.development || widget.reader == null || session == null || session.isInvalidated) {
+      return;
+    }
+    _unregister = session.registerPurge(() {
+      _generation++;
+      final purged = _clearImage();
+      if (mounted) setState(() => _readState = MediaReadState.unavailable);
+      return purged;
+    });
+    _readState = null;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && generation == _generation) unawaited(_read());
+    });
+  }
+
+  Future<void> _clearImage() async {
+    _expiry?.cancel();
+    _expiry = null;
+    _expiresAt = null;
+    final previous = _image;
+    _image = null;
+    if (previous != null) await previous.evict();
+  }
+
+  Future<void> _read() async {
+    final reader = widget.reader;
+    final session = widget.session;
+    if (!mounted ||
+        widget.development ||
+        reader == null ||
+        session == null ||
+        session.isInvalidated) {
+      return;
+    }
+    final generation = ++_generation;
+    unawaited(_clearImage());
+    setState(() => _readState = null);
+    try {
+      final result = await SessionMediaReader(
+        delegate: reader,
+        session: session,
+      ).read(MediaReadRequest(assetId: widget.assetId, rendition: MediaReadRendition.preview));
+      if (!mounted || generation != _generation) return;
+      final ticket = result.ticket;
+      setState(() {
+        _readState = result.state;
+        if (ticket != null) {
+          _image = NetworkImage(ticket.url.toString(), headers: ticket.headers);
+          _expiresAt = ticket.expiresAt;
+          _expiry = Timer(ticket.expiresAt.difference(DateTime.now().toUtc()), _expire);
+        }
+      });
+    } catch (error) {
+      if (!mounted || generation != _generation) return;
+      setState(
+        () => _readState = error is MediaTicketExpiredException
+            ? MediaReadState.expired
+            : MediaReadState.unavailable,
+      );
+    }
+  }
+
+  void _expire() {
+    if (!mounted) return;
+    _generation++;
+    unawaited(_clearImage());
+    setState(() => _readState = MediaReadState.expired);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final expiresAt = _expiresAt;
+    if (state == AppLifecycleState.resumed &&
+        expiresAt != null &&
+        !expiresAt.isAfter(DateTime.now().toUtc())) {
+      _expire();
+    }
+  }
+
+  @override
+  void dispose() {
+    _generation++;
+    _unregister?.call();
+    WidgetsBinding.instance.removeObserver(this);
+    unawaited(_clearImage());
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,10 +171,20 @@ final class _FormsMediaPageState extends State<FormsMediaPage> {
         ? _fixtureFor(widget.assetId)
         : null;
     final state = !widget.development
-        ? FormsMediaState.unavailable
+        ? _image == null
+              ? FormsMediaState.unavailable
+              : FormsMediaState.content
         : widget.state == FormsMediaState.content && fixture == null
         ? FormsMediaState.notFound
         : widget.state;
+    final image = _image;
+    final generation = _generation;
+    final canRetry =
+        !widget.development &&
+        widget.reader != null &&
+        widget.session?.isInvalidated == false &&
+        _readState != null &&
+        _readState != MediaReadState.available;
 
     return Material(
       color: Theme.of(context).colorScheme.surface,
@@ -75,22 +212,53 @@ final class _FormsMediaPageState extends State<FormsMediaPage> {
                 )
               else ...[
                 if (state == FormsMediaState.unavailable) ...[
-                  const CoeloStatePanel(
-                    key: Key('forms-media-unavailable'),
-                    icon: Icons.lock_outline_rounded,
-                    title: 'Mídia indisponível',
-                    message:
-                        'A leitura temporária e a autorização produtiva ainda não estão conectadas.',
-                  ),
+                  if (!widget.development)
+                    _MediaReadPanel(
+                      state: _readState,
+                      onRetry: canRetry
+                          ? () {
+                              if (mounted && generation == _generation) unawaited(_read());
+                            }
+                          : null,
+                    )
+                  else
+                    const CoeloStatePanel(
+                      key: Key('forms-media-unavailable'),
+                      icon: Icons.lock_outline_rounded,
+                      title: 'Mídia indisponível',
+                      message:
+                          'A leitura temporária e a autorização produtiva ainda não estão conectadas.',
+                    ),
                   const SizedBox(height: CoeloSpacing.space4),
                 ],
                 _ProtectedMediaSurface(
+                  preview: image == null
+                      ? null
+                      : Image(
+                          key: const Key('forms-media-preview'),
+                          image: image,
+                          fit: BoxFit.contain,
+                          semanticLabel: 'Imagem protegida da resposta',
+                          errorBuilder: (_, _, _) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (!mounted ||
+                                  generation != _generation ||
+                                  !identical(image, _image)) {
+                                return;
+                              }
+                              _generation++;
+                              unawaited(_clearImage());
+                              setState(() => _readState = MediaReadState.unavailable);
+                            });
+                            return const Text('Não foi possível exibir a imagem.');
+                          },
+                        ),
                   fixture: state == FormsMediaState.content ? fixture : null,
                   previewVisible: _previewVisible,
                   onTogglePreview: state == FormsMediaState.content
                       ? () => setState(() => _previewVisible = !_previewVisible)
                       : null,
-                  onRequestTemporaryCopy: state == FormsMediaState.content
+                  onRequestTemporaryCopy: widget.development && state == FormsMediaState.content
                       ? _requestTemporaryCopy
                       : null,
                 ),
@@ -145,12 +313,14 @@ final class _ProtectedMediaSurface extends StatelessWidget {
     required this.previewVisible,
     required this.onTogglePreview,
     required this.onRequestTemporaryCopy,
+    this.preview,
   });
 
   final _DevelopmentMediaFixture? fixture;
   final bool previewVisible;
   final VoidCallback? onTogglePreview;
   final VoidCallback? onRequestTemporaryCopy;
+  final Widget? preview;
 
   @override
   Widget build(BuildContext context) {
@@ -163,7 +333,20 @@ final class _ProtectedMediaSurface extends StatelessWidget {
         borderRadius: BorderRadius.circular(CoeloRadius.lg),
       ),
       padding: const EdgeInsets.all(CoeloSpacing.space4),
-      child: fixture == null
+      child: preview != null
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                preview!,
+                const SizedBox(height: CoeloSpacing.space4),
+                FilledButton.icon(
+                  onPressed: null,
+                  icon: const Icon(Icons.download_outlined),
+                  label: const Text('Preparar cópia temporária'),
+                ),
+              ],
+            )
+          : fixture == null
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -256,6 +439,35 @@ final class _ProtectedMediaSurface extends StatelessWidget {
             ),
     );
   }
+}
+
+final class _MediaReadPanel extends StatelessWidget {
+  const _MediaReadPanel({required this.state, this.onRetry});
+  final MediaReadState? state;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    liveRegion: true,
+    child: CoeloStatePanel(
+      key: Key('forms-media-${state?.name ?? 'loading'}'),
+      icon: Icons.lock_outline_rounded,
+      title: switch (state) {
+        null => 'Carregando mídia',
+        MediaReadState.processing => 'Mídia em processamento',
+        MediaReadState.expired => 'Acesso temporário expirado',
+        _ => 'Mídia indisponível',
+      },
+      message: switch (state) {
+        null => 'Verificando o acesso à imagem.',
+        MediaReadState.processing => 'A imagem está sendo preparada. Tente novamente em instantes.',
+        MediaReadState.expired => 'Solicite acesso novamente para visualizar a imagem.',
+        _ => 'A imagem não está disponível neste contexto.',
+      },
+      actionLabel: onRetry == null ? null : 'Tentar novamente',
+      onAction: onRetry,
+    ),
+  );
 }
 
 final class _Metadata extends StatelessWidget {
