@@ -125,6 +125,10 @@ C00 integrou sete lotes C01 até d058aeb7,100+40 testes locais passam; fonte vis
 
 Isolamento solicitado pelo Owner conferido: seis worktrees R01 e original separados, gitdirs próprios e branches corretas; evidência `R01-worktrees-verificadas.json`. Pasta histórica interna `.worktrees/finalizacao-telas-operacoes` não registrada e resolve original; preservada. C00 cwd nativo ainda original, comandos de escrita usam explicitamente e2-c00. Registro não prova atividade de todas as sessões nem ausência universal de escrita no original.
 
+## Registro R01 — 2026-09-08T14:33:36-03:00
+
+Leitura14:30: C01r22/C02r18/C03r3/C04r6/C05r3; fonte C05 futura14:48 recebida14:31 deve ser corrigida. Auth integrado c5c26477,70 testes C00/analyzer limpo, release I004 aceito. C05 I003 indicador/teste reservado, alvo48 preservado e transporteR2 distinguido de contrato Flutter. Relatório `etapa-2-operacao/reports/R01-checkpoint-1430.md`. Três rastreadores sincronizados sem novas certificações.
+
 ## Histórico preservado — anterior à R01
 
 ## Finalidade

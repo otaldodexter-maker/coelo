@@ -212,3 +212,7 @@ tenant, revogação ou auditoria foi dispensado.
 # Numeração duplicada de specs 020
 
 - Em 2026-08-03, o plano aprovado solicitou `specs/020-superadmin-attendance-prototype.md`, mas `specs/020-superadmin-health-care.md` já existia. Ambos foram preservados para não renumerar nem sobrescrever silenciosamente. Definir a numeração canônica numa revisão documental futura.
+
+## Avaliações — complemento técnico R01 2026-09-08T14:34:33-03:00
+
+No replay derivado I004, C03 confirmou SQL42702 em assessment_v2_validate_students por child_context_id ambíguo entre variável e coluna. C00 inspecionou predicado e I005 permite somente TEMP com expressão UUID do item já validado; registrar hashes/diff separados. Canônico/ledger continuam abertos, sem aprovação de pacote remoto ou remoção das negativas de domínio.

@@ -28,6 +28,16 @@ Este é o estado operacional atual. O histórico integral anterior está em [arq
 - /dev usa fixtures; sem /dev usa composição produtiva. Todo remoto é produção. MFA interno aceita AAL1 conforme ADR 0019. Admin, Principal e Site estão fora deste recorte de implementação.
 - ETA por ação: ainda não recalculada por dependências e execução; não somar estimativas antigas. A janela 36–60 h do plano anterior não é compromisso validado.
 
+## Atualização R01 — 2026-09-08T14:33:36-03:00
+
+Evento C03 2026-09-08T14:34:33-03:00: SQL42702 por child_context_id ambíguo confirmado; I005 autoriza segunda derivação TEMP específica, sem reparar arquivo canônico/ledger. Replay35aceites segue em execução, sem resultado final.
+
+Fonte: `etapa-2-operacao/reports/R01-checkpoint-1430.md`. C01/r22 integrado (117db5ff+3d889a17→44f9d844+c5c26477): resposta de recovery antiga não altera sessão nova nos cenários locais. C0018/18 SDK,25/25 pacote e27/27 consumidores; analyzer2arquivos limpo. Resolve RED r21 no fluxo updatePassword, sem certificar Auth remoto ou todos os caminhos externos do SDK. IDs auth.reset/auth.login/account.logout e dependência shell.load; o shorthand auth.logout do handoff corresponde ao ID canônico account.logout, sem criar ID novo.
+
+C02/r18 recebido14:28:33:55a457fa WIP SQL com authorize/redeem e64pgTAP não executados; revisão de proveniência/restauração de claims e replay pendentes. C03 janela local ainda ativa, revisão formalr3 última evidência13:45; mensagens de execução não viram resultado final. C04/r6 última evidência14:19, sem novo delta. C05/r3 **recebido14:31:26**, carimbo declarado14:48 é futuro e requer correção: Agora3419a89e51/51 comportamentais e14goldenFAIL; tabelas1ca99454 passam nos viewports largos,375 continua divergente. Suíte declarada877PASS/61goldenFAIL, recorte descrito no handoff, sem aprovação. Continuidade Claude ainda não ativada/comprovada.
+
+C05 I003 reserva indicador de status/teste, preservando alvo48 e sem sobreposição de interações.6fd676e2 é transporte R2 server-side, não API Flutter de upload; contrato de consumidor ainda aberto sob C02. Nenhuma nova certificação ou percentual. Última medição enumerada continua13:30;15:00 reconciliará IDs. Push deste lote em C00 separado de dev0bf9e039; sem execução remota/deploy.
+
 ## Sincronização R01 — leitura14:00 e eventos até 2026-09-08T14:25:04-03:00
 
 Fonte: `etapa-2-operacao/reports/R01-checkpoint-1400.md`. C00 único escritor. Handoffs processados C01/r21 (14:19), C02/r17 (14:18:58), C03/r3 (última entrega formal13:45; mensagens posteriores abaixo), C04/r6 (14:19), C05/r2 (**última evidência formal12:49**). Recebimento para revisão não é integração.
