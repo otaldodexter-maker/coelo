@@ -98,6 +98,7 @@ final class FormsOperationsPage extends StatefulWidget {
 final class _FormsOperationsPageState extends State<FormsOperationsPage> {
   late FormsOperationsState _state = widget.state;
   Object? _projection;
+  var _loadGeneration = 0;
 
   bool get _usesProductionApi => !widget.development && widget.api != null;
 
@@ -113,16 +114,30 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
     if (oldWidget.state != widget.state) _state = widget.state;
     if (oldWidget.api != widget.api ||
         oldWidget.formId != widget.formId ||
-        oldWidget.responseId != widget.responseId) {
+        oldWidget.responseId != widget.responseId ||
+        oldWidget.surface != widget.surface ||
+        oldWidget.development != widget.development) {
+      _loadGeneration++;
+      _projection = null;
+      _state = widget.state;
       if (_usesProductionApi) unawaited(_loadProduction());
     }
   }
 
+  @override
+  void dispose() {
+    _loadGeneration++;
+    super.dispose();
+  }
+
   Future<void> _loadProduction() async {
+    if (!mounted) return;
+    final generation = ++_loadGeneration;
     final api = widget.api;
-    if (api == null) return;
+    if (api == null || widget.development) return;
     final formId = widget.formId;
     final responseId = widget.responseId;
+    _projection = null;
     if ((widget.surface != FormsOperationsSurface.responseDetail && formId == null) ||
         (widget.surface == FormsOperationsSurface.responseDetail && responseId == null)) {
       setState(() => _state = FormsOperationsState.unavailable);
@@ -137,14 +152,14 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
         FormsOperationsSurface.files => api.listFileJobs(formId: formId!),
       };
       final value = await projection;
-      if (mounted) {
+      if (mounted && generation == _loadGeneration) {
         setState(() {
           _projection = value;
           _state = FormsOperationsState.content;
         });
       }
     } on FormApiException catch (error) {
-      if (mounted) {
+      if (mounted && generation == _loadGeneration) {
         setState(
           () => _state = error.kind == FormApiFailureKind.unauthorized
               ? FormsOperationsState.unauthorized
@@ -152,7 +167,9 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
         );
       }
     } on Object {
-      if (mounted) setState(() => _state = FormsOperationsState.error);
+      if (mounted && generation == _loadGeneration) {
+        setState(() => _state = FormsOperationsState.error);
+      }
     }
   }
 
@@ -282,7 +299,7 @@ final class _OperationsStatePanel extends StatelessWidget {
       ),
       FormsOperationsState.error => (
         'Não foi possível carregar',
-        'Os dados locais foram preservados. Tente novamente.',
+        'Não foi possível consultar os dados. Tente novamente.',
         Icons.error_outline_rounded,
         false,
       ),
@@ -292,8 +309,13 @@ final class _OperationsStatePanel extends StatelessWidget {
         Icons.lock_outline_rounded,
         false,
       ),
-      FormsOperationsState.content ||
-      FormsOperationsState.unavailable => throw StateError('Estado tratado fora deste painel.'),
+      FormsOperationsState.unavailable => (
+        'Operação indisponível',
+        'Não foi possível identificar o contexto autorizado desta operação.',
+        Icons.lock_outline_rounded,
+        false,
+      ),
+      FormsOperationsState.content => throw StateError('Estado tratado fora deste painel.'),
     };
     return CoeloStatePanel(
       key: Key('forms-operations-state-${state.name}'),
