@@ -12,6 +12,18 @@ family_count: 37
 
 ## Rodada de 2026-09-07 — backend local e integração em curso
 
+- Users48 foi executado: **45/45 pgTAP PASS**, exit0, pelo Eng1; cleanup
+  independente às22:00:48 BRT confirmou ausência dos recursos nominais.
+  Evidência integrada `2c7f369c`; não é deploy ou conexão Flutter real.
+  Seletor N01 no destino passou **77/77 Pester**, sem Docker do coordenador.
+- F-READ: base nominal revisada passa a **50 antes do reader** (Auth45+Forms2+
+  helper20260827235500+2preflights). AAL1 corrigido em9f31e88e,86TAP esperados
+  estaticamente; a spec039 exige auditoria de sucesso/negação no wrapper.
+  Correção nominal reader/testes autorizada à E2E4; GREEN futuro51 depende
+  desse pacote revisado. Não remover o guard de helper nem mudar MFA.
+- MediaReader/Session destino45/45 é somente contrato local. Decoder real,
+  catálogo/gateway, autorização/expiração R2 e prova produtiva seguem abertos.
+  Images binding é proposta auxiliar não habilitada; nenhum custo autorizado.
 - N01 diagnóstico nominal foi executado pelo Eng1 às 21:28 BRT: 50 canônicas
   +2 preflights reproduziram **42P01** em `20260812003000`, statement22,
   `public.notice_events`. Cleanup independente às 21:30:09 confirmou zero

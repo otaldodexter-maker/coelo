@@ -8,6 +8,14 @@ updated_at: "2026-09-07"
 
 # Perguntas abertas e conflitos
 
+## Decisões pendentes — Local interno em Formulários (2026-09-07)
+
+- Fonte específica aprovada: `docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md`, itens59–62,87–88,117–131. A aprovação posterior inclui Local interno única/múltipla escolha, catálogo visível, IDs estáveis e snapshot; supersede a exclusão anterior de localização no design de Forms de13/08. Não autoriza localização avulsa ou geolocalização.
+- **Escolha pendente do Owner:** ao publicar a versão, o autor fixa os IDs de opções catalogadas, ou configura um catálogo/escopo que resolve candidatos ao responder, inclusive locais novos? Ambas as alternativas ainda exigem autorização e visibilidade atuais; o contrato compartilhado `LocationSelection` não decide a política.
+- **Escolha pendente do Owner:** uma nova revisão de resposta pode conservar um local posteriormente revogado como valor histórico inalterado, ou todo reenvio exige referência atualmente autorizada/substituição (ou remoção se opcional)? Definir também o comportamento de campo obrigatório sem alternativa válida.
+- Histórico existente não deve ser apagado nem convertido em autorização. `docs/superpowers/specs/2026-08-13-superadmin-forms-end-to-end-design.md`, itens205,241–245,299–305,344,493–495, preserva versão e exige reautorização; revogação do vínculo do respondente não decide por analogia a revogação apenas do local.
+- Até decisão, preparar contratos/IDs/snapshots e demais fatias autorizadas; não implementar silenciosamente uma das duas políticas. Evidência de revisão independente: `docs/reviews/evidence/etapa-2/engenheiro-2/plano-e-revisoes-2026-09-07.md`, seção Locais/Formulários.
+
 ## Conflito documental reconciliado — chave de mídia (2026-09-07)
 
 - Fontes: `decisions/0032-mvp-private-media-r2.md` (ADR aprovada) e

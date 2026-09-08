@@ -14,14 +14,22 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "77589EB3EE47B3541378A091DC860C975A2912D0645E647EF05A35AFDABEA585"
-supabase_tracker_sha256: "999CBE0CE02F7014028EF29E32BE33228846E4D6BAE450315F18A8E39F243C36"
+flutter_tracker_sha256: "F66B1CDF7636C4FCC09B34C6C550A76AB3B62B44DE441887BA61CD7499AFDFAB"
+supabase_tracker_sha256: "1E9267E83A907845A278DD87E4936C825DB9173FBB13DA31B007F83471CFEF03"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
 
+- Avanço até22:12: Users SQL local45/45 e cleanup Eng1; Agenda/Operações
+  destino176/176; Comunicação90/90+Media45/45; Forms69/69; follow-ups
+  combinados202/202, sem somar cobertura duplicada. Pester77/77 no destino.
+  Nenhuma ação foi promovida a verified por essas evidências locais.
+- Locais em Forms tem duas políticas sem decisão aprovada, registradas em
+  `../open-questions.md`: seleção fixa/dinâmica e reenvio com opção revogada.
+  Isso não suspende outras telas. Mídia mantém R2 master e processamento
+  auxiliar proposto, sem habilitação paga/remote. Suporte OQ-028 segue aberto.
 - Integração Estruturas/F-READ UI até `18c00caa`: 249/249 em 18 suítes no
   destino, com NAV, D01 e goldens; contrato Locais9/9 Dart; analyzer11 sem
   issues. Auth R06/R07 até `f026e997`: outras sete suítes65/65, preservando

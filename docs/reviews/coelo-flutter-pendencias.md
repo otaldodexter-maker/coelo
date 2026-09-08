@@ -14,6 +14,15 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização até 22:12 BRT: Agenda/Operações até `9af82b70`, doze suítes
+  **176/176** no destino e analyzer10 sem issues. Comunicação até `d04c9b89`,
+  seis suítes **90/90**; MediaReader/Session **45/45 Dart**. Editor/Respostas
+  até `c4ea359c`, três suítes **69/69**. Não somar execuções sobrepostas.
+- Follow-ups integrados até `fe6467b0`: Settings P2 corrigido, Pessoas DTO/page,
+  E01 labels, Forms ramos/metadados, Para Você validade e Agenda coleções.
+  Dez suítes combinadas passaram **202/202** no destino; dois casos golden
+  compactos de Chamada passaram sem atualizar referências. Analyzer final
+  dos11 arquivos sem issues. Mantidos gates de backend e visual completo.
 - Atualização de destino às 21:55–21:59 BRT: cadeia Estruturas integrada até
   `18c00caa`, com NAV `0269a2fb`, invalidação D01 `ab1e18ef`, contrato Locais
   `86522d26` e lifecycle de Instituições/Pessoas. F-READ UI está em `ce320f55`.
