@@ -379,3 +379,14 @@ Front-end exige seus aceites de UI, estados, composição e regressão. Back-end
 
 
 > Integração focal 2026-09-08T16:52:41-03:00: C03/r15 somente profile-files.*, da11057a→e14ed9c0;24/24 C00 e analyzer3limpo. FE verified apenas profile-files.import/export pelo aceite de indisponibilidade aprovado; ambas adiadas. FE ativo0/194, FE adiado2/22; BE/E2E dessas ações continuam adiados, sem operação remota. Não amplia recebimento das demais entregas r14–r17.
+
+
+### Revisão de integração por subagentes — 2026-09-08T17:22:58-03:00
+
+Fonte: C00, revisão fixa C04cb9c7f3e/handoffs18–20; C03 candidatos6213f4c4/5bc29739; C02 edição5ead9407 e XLSX0b596c85. Recorte incremental de revisão, sem promoção, sem alterar denominadores. Não substitui o corte global anterior de sincronização dos handoffs.
+
+- `daily-routine.create` e `daily-routine.apply`: candidato5bc29739 retido; finally usa identidade antiga de _entry após sucesso substituir o objeto e pode manter saving. Solicitação nominal de RED/positivo e correção enviada C03. Configuração Avaliações6213f4c4 tem o mesmo defeito de identidade; corretivo91748191 relatado C03r21 ainda não revisado/integrado.
+- `locations.schedule`:15516da9 implementa disponibilidade semanal, não reservas datadas/recorrentes, consumidor e override justificado exigidos pela spec02/09. Não promover ação. `locations.copy`:ae7e8f5f e schedule têm assertion de contagem de recibos incompatível com fundação real (create_receipts + write_receipts). Pacote editar/status27236a5a também depende da fundação ainda candidata e fixture de capabilities. Três pacotes retidos até revisão/correção/replay nominal. Scratch com helpers Auth substituídos e corpos sem pre/postflight comprova somente comportamento isolado relatado, não autorização nem migrations completas; logs originais perdidos, SQL reconstruído preservado em C04-evidence. Não existe prova de necessidade de catálogo concorrente e isso não bloqueia escritas independentes de Instituições/Pessoas/Turmas.
+- Edição de respostas Forms5ead9407: revisão confirma delta de obrigatórios visíveis em form_edit_response, suiteGREEN56/56 no perfil fixado e cleanup; apta à integração local isolada, ainda não integrada neste registro. XLSX0b596c85:132/132 locais preservados; reter por dependênciasI003/históricas não canônicas e ciclo writer/R2/expiração/cleanup ainda incompleto. Sem certificado BE/E2E.
+
+C00 continua único escritor dos três rastreadores. Novos resultados não equivalem a testes em produção; não houve pacote remoto autorizado/aplicado.

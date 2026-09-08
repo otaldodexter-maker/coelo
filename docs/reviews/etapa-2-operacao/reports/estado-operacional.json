@@ -35,7 +35,7 @@
       "thread_id": "01a08197-7b62-73c1-9673-5fd40fa40452",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01",
       "branch": "codex/e2-r01-c01-identidade",
-      "instruction_revision": 8,
+      "instruction_revision": 9,
       "received_revision": 30,
       "integrated_revision": 3,
       "last_evidence": "2026-09-08T15:54:02-03:00",
@@ -66,7 +66,7 @@
       "thread_id": "01a0819a-f1f1-7421-95dd-d645ca9f5747",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
       "branch": "codex/e2-r01-c02-forms-midia",
-      "instruction_revision": 10,
+      "instruction_revision": 11,
       "received_revision": 29,
       "integrated_revision": 4,
       "last_evidence": "2026-09-08T16:06:28-03:00",
@@ -96,7 +96,7 @@
       "thread_id": "01a0819b-a12e-7110-88cb-99e51a82f384",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03",
       "branch": "codex/e2-r01-c03-operacoes",
-      "instruction_revision": 9,
+      "instruction_revision": 10,
       "received_revision": 13,
       "integrated_revision": 2,
       "last_evidence": "2026-09-08T16:00:42-03:00",
@@ -115,14 +115,16 @@
       "native_status": "active confirmed16:01 snapshot; later instantaneous activity not inferred",
       "last_evidence_basis": "fixed handoff read and deltas synchronized; review/integration separate",
       "latest_source_code_sha": "4c5af8ced8e51ae83e8102a1087b35442b71e7d6",
-      "latest_local_test_evidence": "C00 combined127/127PASS/analyzer4clean"
+      "latest_local_test_evidence": "C00 combined127/127PASS/analyzer4clean",
+      "continuity_automation_id": "c03-opera-o-at-06h",
+      "continuity_verification": "Reportednative r20:30min until09/09 06:00;failed-only;C00 scheduler inspection pending"
     },
     "C04": {
       "name": "E2 R01 C04 — Estruturas e pessoas",
       "thread_id": null,
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c04",
       "branch": "claude/e2-r01-c04-estruturas",
-      "instruction_revision": 9,
+      "instruction_revision": 10,
       "received_revision": 17,
       "integrated_revision": 0,
       "last_evidence": "2026-09-08T15:58:00-03:00",
@@ -148,7 +150,7 @@
       "thread_id": null,
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c05",
       "branch": "claude/e2-r01-c05-comunicacao",
-      "instruction_revision": 7,
+      "instruction_revision": 8,
       "received_revision": 10,
       "integrated_revision": 0,
       "last_evidence": "2026-09-08T15:54:48-03:00",
@@ -163,12 +165,12 @@
       "model_reported": "claude-opus-5",
       "external_session_id": "2a43a349-a639-4be5-aefc-1ff180d1fc7a",
       "id_verification": "reported harness ID; app identifier unverified",
-      "continuity_verification": "r5 reports CronCreate :07/:37, dispatch14:37, session-only/idle-only/7days/jitter3min; C00 cannot independently inspect",
+      "continuity_verification": "Reportedr14 replaces6a2a031f;:07/:37 session-only idle-only;not native C00 verified",
       "next_step": "I007 ordering/feed/chat-media;sharedcatalog SQL and roots dependent",
       "source_push_verified_sha": "cbbff86a366e50c4028a813b5a8c2cd863f9bb36",
       "net_code_delta": "none; e7985f31 reverted by1ec8efc4",
       "handoff_generated_at_reported": "2026-09-08T14:55:16-03:00",
-      "continuity_automation_id": "6a2a031f",
+      "continuity_automation_id": "f10b9942",
       "continuity_next_nominal_trigger": "2026-09-08T15:07:00-03:00;reported schedule, jitter up to3min"
     }
   },
@@ -499,7 +501,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T16:57:45-03:00",
+  "updated_at": "2026-09-08T17:05:59-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -770,11 +772,9 @@
     "Next poll16:00;formal17:40;closing09/09 preserved"
   ],
   "local_replay_lease": {
-    "status": "none granted;new SQL executions held pending C04 scratch preservation/release",
-    "executor": null,
-    "remote": false,
-    "scratch_id": "4bea596334959cb043dfae5eee68d853766c4705c3f3be0aac0fe0e937bf7c9c",
-    "scratch_observed": "same ID unpaused16:53;origin not proven;C00 guarded unpause did not execute"
+    "status": "none active;C04 scratch released",
+    "verified_at": "2026-09-08T17:21:46-03:00",
+    "evidence": "C04r20 admits unpause16:50;cleanup reported16:58;Docker ps -a empty C00 17:21;reconstructed SQL preserved,filesystem/log lost"
   },
   "last_delivery": {
     "branch": "origin/dev",
@@ -942,7 +942,7 @@
     "executor": "C01",
     "scope": "I005 Models31 after C02 release;manifest preparation only",
     "execution_granted": false,
-    "blocker": "C01 reports runner lacks exact51input nominal profile;C00 review needed before granting runtime"
+    "blocker": "Exact51input profile implemented and59toolingPASS;candidate/31TAP review and nominal runtime lease required"
   },
   "local_replay_history": [
     {
@@ -1016,5 +1016,60 @@
     "at": "2026-09-08T16:52:41-03:00",
     "I009_C03": "accepted and integrated",
     "writer": "C04 after safe dependency consumption;C03 does not re-edit"
+  },
+  "subagents": {
+    "owner_instruction_at": "2026-09-08T17:05:59-03:00",
+    "policy": "maximum available useful independent subagents;parents own Git/handoff;C00 soletracker/integrator",
+    "C00_capacity": {
+      "total": 4,
+      "parent": 1,
+      "workers": 3
+    },
+    "C00_active": [
+      "/root/models_replay_profile",
+      "/root/forms_sql_review",
+      "/root/client_integration_review"
+    ],
+    "shared_code_reservation": "Models tooling four paths delivered and released to C00;current three reviews read-only",
+    "confirmed": {
+      "C00": {
+        "workers": 3,
+        "status": "three first lots delivered;three next reviews dispatched",
+        "evidence_at": "2026-09-08T17:21:46-03:00"
+      },
+      "C01": {
+        "workers": 3,
+        "agents": [
+          "i008_auth_review",
+          "i008_sql_review",
+          "i008_tests_review"
+        ],
+        "evidence": "native I009/r35"
+      },
+      "C02": {
+        "workers": 3,
+        "agents": [
+          "multipart_engine",
+          "forms_operations_ui",
+          "operations_contract_review"
+        ],
+        "evidence": "native I011"
+      },
+      "C03": {
+        "workers": 3,
+        "agents": [
+          "assessments_saving_corrigenda",
+          "attendance_detail_guard",
+          "meal_plans_context_guard"
+        ],
+        "evidence": "native I010/r20;reused r21"
+      },
+      "C04": {
+        "status": "I010 published;new receipt pending;latest r20 acknowledges I009"
+      },
+      "C05": {
+        "status": "I008 published;new receipt pending;latest r14 acknowledges I007"
+      }
+    }
   }
 }

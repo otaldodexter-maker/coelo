@@ -644,3 +644,15 @@ Owner esclareceu expressamente: mais Claude e separação por camada eram uma id
 ### Integração focal Pessoas — 2026-09-08T16:52:41-03:00
 
 C03r15 somente profile-files.*: da11057a→e14ed9c0,24/24 e analyzer3 limpo C00. FE verified duas ações adiadas import/export; FEativo0/194,FEadiado2/22,BE/E2E sem promoção. Métricas auditadas FE121/219(111ativas/10adiadas),BE18/212; fonte reports/R01-people-files-1655-metricas.json. Publicação pendente; receipt posterior registra SHA real. Demais entregas novas aguardam leitura nominal; não declarar tudo sincronizado.
+
+
+### Subagentes solicitados pelo Owner — 2026-09-08T17:05:59-03:00
+
+Máxima concorrência útil instruída C00–C05, sem mudar ownership principal, horários ou autoridade de integração/trackers. C00 iniciou3subagentes nos3slots disponíveis; assignments nominais publicadas, Codex notificado e Claude deve confirmar leitura no handoff. Modelo/aplicativo das frentes R01 preservados. Registro de capacidade/IDs em estado-operacional.json.
+
+
+### Confirmação de paralelismo — 2026-09-08T17:21:46-03:00
+
+C00/C01/C02/C03 confirmaram quatro slots por tarefa, principal mais três subagentes. C00 concluiu três lotes e reutilizou os agentes para revisões independentes. C04I010 e C05I008 publicadas, recebimento ainda não comprovado. Claude usa continuidade local; C00 não tem wake nativo para Claude. Detalhes no estado operacional. Este ack operacional não afirma sincronização global de handoffs posteriores ao corte anterior.
+
+C04r20 assumiu unpause16:50 e cleanup16:58; Docker vazio confirmado. Timestamp20:09 sem fuso contradiz recebimento17:02; correção solicitada. C05r14 informou cron novo f10b9942. Nenhuma execução remota autorizada.

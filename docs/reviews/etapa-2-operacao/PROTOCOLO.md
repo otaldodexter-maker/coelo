@@ -126,3 +126,8 @@ Handoff é um checkpoint de entrega, não encerramento do trabalho. Após public
 ## Reservas operacionais — 2026-09-08T16:17:15-03:00
 
 Assignments C02 I008, C03 I009, C04 I008 e C05 I007 concedem arquivos nominais e prevalecem sobre esperas anteriores. Lease R01-LOCAL-XLSX-02 exclusiva C02 até release; outros executores/C00 não iniciam replay concorrente. Shell e auth_scope retornam à C00. Os dois caminhos People da I009 ficam temporariamente C03, excluídos de C04 até release. Nenhuma autorização remota nova.
+
+
+## Instrução do Owner — máximo de subagentes — 2026-09-08T17:05:59-03:00
+
+C00 abriu3subagentes nos3slots disponíveis: models_replay_profile (2runners/perfil/teste nominais, sem SQLruntime), forms_sql_review (somente leitura de candidatos) e client_integration_review (somente leitura de lotes). C01I009/C02I011/C03I010/C04I010/C05I008 propagam máxima concorrência útil e todas as reservas/leases. Pais continuam únicos escritores do Git/handoff em cada worktree; apenas C00 altera trackers. IDs/atividade efetivos devem constar no handoff, sem simular agentes criados.
