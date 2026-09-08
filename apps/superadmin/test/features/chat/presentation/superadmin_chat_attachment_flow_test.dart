@@ -182,7 +182,12 @@ void main() {
     expect(retry.onPressed, isNull, reason: 'retrying cannot help without a gateway');
   });
 
-  testWidgets('a denied upload purges the private chat state', (tester) async {
+  // What this proves is the denial itself: the thread is gone and nothing was
+  // sent. The attachment-specific purge in _clearAttachment is defence in depth
+  // and is not observable here, because the denial already tears the composer
+  // down and clears the selection. Removing that purge does not fail this case,
+  // so the name does not claim it does.
+  testWidgets('a denied upload tears down the private chat state', (tester) async {
     final repository = _AttachmentChatRepository(denyUpload: true);
     await pump(tester, repository: repository, picked: image());
 
