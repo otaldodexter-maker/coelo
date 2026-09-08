@@ -5,6 +5,29 @@ import 'package:flutter_test/flutter_test.dart';
 import 'identity_read_local_config.dart';
 
 void main() {
+  for (final expiry in [999, 1000, 4601]) {
+    test('rejects expired or overlong local token: $expiry', () {
+      final environment = _environment('Users49');
+      environment['COELO_IDENTITY_READER_JWT'] = _token(_reader('Users49')..['exp'] = expiry);
+      expect(() => IdentityReadLocalConfig(environment, nowSeconds: 1000), throwsFormatException);
+    });
+  }
+  test('negative token must retain the nominal actor and absent-session ID', () {
+    for (final claim in ['sub', 'session_id', 'role', 'aal']) {
+      final environment = _environment('Models50');
+      environment['COELO_IDENTITY_INVALID_SESSION_JWT'] = _token(
+        _reader('Models50')
+          ..['session_id'] = 'f2000000-0000-4000-8000-000000000099'
+          ..[claim] = 'wrong',
+      );
+      expect(() => IdentityReadLocalConfig(environment, nowSeconds: 1000), throwsFormatException);
+    }
+  });
+  test('reader token cannot double as negative-session token', () {
+    final environment = _environment('Users49');
+    environment['COELO_IDENTITY_INVALID_SESSION_JWT'] = environment['COELO_IDENTITY_READER_JWT']!;
+    expect(() => IdentityReadLocalConfig(environment, nowSeconds: 1000), throwsFormatException);
+  });
   for (final profile in ['Users49', 'Models50']) {
     test('$profile accepts its nominal loopback seed', () {
       final config = IdentityReadLocalConfig(_environment(profile), nowSeconds: 1000);

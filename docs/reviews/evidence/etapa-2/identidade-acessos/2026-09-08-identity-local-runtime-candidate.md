@@ -94,6 +94,9 @@ O transporte registra em memória apenas nomes das RPCs; não imprime respostas.
 
 Código compilado com opt-in forçado a0: 25 testes de guard PASS e um runtime
 SKIP, não PASS de integração. Analyzer dos dois diretórios: sem problemas.
+Complemento posterior: guard ampliado para 30/30 PASS, cobrindo os limites de
+expiração, claims do token negativo isoladamente e reutilização indevida do
+token positivo. Analyzer focal limpo; produção e runtime continuam intocados.
 Os testes de guard usaram tokens unsigned fictícios sem rede. RED de criação
 foi import/classe ausente, não bug de produto. Review account_review não apontou
 bloqueio estático para candidato; runtime real ainda pode revelar falhas.
