@@ -84,12 +84,23 @@ final class _PrincipalForYouPreviewPageState extends State<PrincipalForYouPrevie
       callback == null ? _feedback(fallback) : callback();
 
   Future<void> _showContextSelector() async {
-    if (_data.contexts.length < 2) return;
+    if (!mounted || _ownedOverlays.isNotEmpty || _data.contexts.length < 2) return;
     final generation = _overlayGeneration;
     final contexts = List<PrincipalForYouContext>.unmodifiable(_data.contexts);
     final navigator = Navigator.of(context);
-    final route = ModalBottomSheetRoute<PrincipalForYouContext>(
-      builder: (context) => _ContextSheet(contexts: contexts, selected: _activeContext),
+    final selectedContext = _activeContext;
+    late final ModalBottomSheetRoute<PrincipalForYouContext> route;
+    route = ModalBottomSheetRoute<PrincipalForYouContext>(
+      builder: (context) => !mounted || generation != _overlayGeneration
+          ? const SizedBox.shrink()
+          : _ContextSheet(
+              contexts: contexts,
+              selected: selectedContext,
+              onSelected: (item) {
+                if (!mounted || generation != _overlayGeneration || !route.isCurrent) return;
+                navigator.pop(item);
+              },
+            ),
       capturedThemes: InheritedTheme.capture(from: context, to: navigator.context),
       showDragHandle: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -117,10 +128,13 @@ final class _PrincipalForYouPreviewPageState extends State<PrincipalForYouPrevie
 
   void _dismissOwnedOverlays() {
     _overlayGeneration += 1;
-    for (final (navigator, route) in _ownedOverlays.toList(growable: false)) {
-      if (route.isActive) navigator.removeRoute(route);
-    }
+    final overlays = _ownedOverlays.toList(growable: false);
     _ownedOverlays.clear();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      for (final (navigator, route) in overlays) {
+        if (route.isActive) navigator.removeRoute(route);
+      }
+    });
   }
 
   @override
@@ -731,9 +745,10 @@ final class _ContextFact extends StatelessWidget {
 }
 
 final class _ContextSheet extends StatelessWidget {
-  const _ContextSheet({required this.contexts, required this.selected});
+  const _ContextSheet({required this.contexts, required this.selected, required this.onSelected});
   final List<PrincipalForYouContext> contexts;
   final PrincipalForYouContext? selected;
+  final ValueChanged<PrincipalForYouContext> onSelected;
 
   @override
   Widget build(BuildContext context) => Semantics(
@@ -765,7 +780,7 @@ final class _ContextSheet extends StatelessWidget {
             _ContextOption(
               item: item,
               selected: selected?.id == item.id,
-              onPressed: () => Navigator.of(context).pop(item),
+              onPressed: () => onSelected(item),
             ),
         ],
       ),

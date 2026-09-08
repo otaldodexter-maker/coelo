@@ -1,11 +1,51 @@
 import 'package:coelo_superadmin/features/principal_for_you/domain/principal_for_you_preview_data.dart';
 import 'package:coelo_superadmin/features/principal_for_you/presentation/principal_for_you_preview_page.dart';
+import 'package:coelo_superadmin/features/principal_for_you/presentation/widgets/coelo_principal_action_card.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final disposed in [false, true]) {
+    testWidgets('context option cannot close another route disposed=$disposed', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(375, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final navigator = GlobalKey<NavigatorState>();
+      Widget host(bool remove) => MaterialApp(
+        navigatorKey: navigator,
+        home: remove ? const Scaffold(body: Text('Origem')) : const PrincipalForYouPreviewPage(),
+      );
+      await tester.pumpWidget(host(false));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('principal-for-you-context-trigger')).first);
+      await tester.pumpAndSettle();
+      final option = find.ancestor(
+        of: find.text('Beatriz Silva'),
+        matching: find.byType(CoeloPrincipalActionCard),
+      );
+      final select = tester.widget<CoeloPrincipalActionCard>(option).onPressed;
+      navigator.currentState!.push(
+        MaterialPageRoute<void>(builder: (_) => const Scaffold(body: Text('Outra rota'))),
+      );
+      await tester.pumpAndSettle();
+      if (disposed) {
+        await tester.pumpWidget(host(true));
+        await tester.pumpAndSettle();
+      }
+      select();
+      await tester.pumpAndSettle();
+      expect(find.text('Outra rota'), findsOneWidget);
+      if (disposed) {
+        navigator.currentState!.pop();
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('principal-for-you-context-sheet')), findsNothing);
+        expect(find.text('Origem'), findsOneWidget);
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   Future<void> pumpPage(WidgetTester tester, Size size) async {
     await tester.binding.setSurfaceSize(size);
     addTearDown(() => tester.binding.setSurfaceSize(null));
