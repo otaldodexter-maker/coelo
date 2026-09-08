@@ -43,7 +43,7 @@
       "thread_id": "01a08197-7b62-73c1-9673-5fd40fa40452",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01",
       "branch": "codex/e2-r01-c01-identidade",
-      "instruction_revision": 16,
+      "instruction_revision": 18,
       "received_revision": 40,
       "integrated_revision": 3,
       "last_evidence": "2026-09-08T18:13:04-03:00",
@@ -61,7 +61,7 @@
       "source_push_verified_sha": "10f893a724c8f525aeaab94631091b532572a371",
       "latest_source_code_sha": "7779bbf20373f40a0e59d708b0ff126e2a2510f2",
       "latest_local_test_evidence": "Executor65PASS/5preexistinggoldenFAIL; READ107/107; no certification",
-      "instruction_acknowledgement": "I005 received/candidate prepared31asserts; I006 one shell test pending ack",
+      "instruction_acknowledgement": "I017 received native; sixpaths assigned RED in progress",
       "native_wait_cursor": "99796484-dd48-447d-b871-d48aaf0f06ae:10",
       "native_status": "active confirmed16:01 snapshot; later instantaneous activity not inferred",
       "continuity_automation_id": "e2-r01-c01-retomada-espa-ada",
@@ -75,15 +75,15 @@
       "thread_id": "01a0819a-f1f1-7421-95dd-d645ca9f5747",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
       "branch": "codex/e2-r01-c02-forms-midia",
-      "instruction_revision": 16,
-      "received_revision": 40,
+      "instruction_revision": 18,
+      "received_revision": 41,
       "integrated_revision": 4,
-      "last_evidence": "2026-09-08T19:38:23-03:00",
+      "last_evidence": "2026-09-08T19:53:11-03:00",
       "baseline": "6cb8ba15bae15f5a6129b0db6e740a66f8f82b3f",
       "worktree_verified_at": "2026-09-08T14:25:04-03:00",
       "handoff_present_at_preparation": false,
-      "accepted_revision": 40,
-      "last_evidence_basis": "C00 leu r40 incremental e reconciliou r36-r39; revisão/integracao separadas",
+      "accepted_revision": 41,
+      "last_evidence_basis": "C00 read entire new r41 section; r40previous synced; runtime193receipt afterward partial",
       "handoff_generated_at_reported": "2026-09-08T12:30:00-03:00",
       "handoff_sha256": "162216fe868a3b76b422c2d863e33df604596549ab57fc09cc1e2724c5173183",
       "next_step": "I01382 em revisão para lease; claim21 reserva focal pendente; Safety independente continua",
@@ -99,14 +99,14 @@
       "source_push_verified_sha": "fccaa2539ad7bce8580a4398b0e8cf9764531f9a",
       "native_wait_cursor": "40b4aa04-b1a8-471a-8896-64092527a62b:10",
       "native_status": "active confirmed16:01 snapshot; later instantaneous activity not inferred",
-      "handoff_commit": "31f4249aa306b43e9e52d173e0b8d889a9900b4f"
+      "handoff_commit": "dd21319b787bf42fe2e14bd49553a634678514d2"
     },
     "C03": {
       "name": "E2 R01 C03 — Operações",
       "thread_id": "01a0819b-a12e-7110-88cb-99e51a82f384",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03",
       "branch": "codex/e2-r01-c03-operacoes",
-      "instruction_revision": 13,
+      "instruction_revision": 15,
       "received_revision": 25,
       "integrated_revision": 2,
       "last_evidence": "2026-09-08T18:16:41-03:00",
@@ -514,7 +514,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T19:52:09-03:00",
+  "updated_at": "2026-09-08T20:13:44-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -836,19 +836,17 @@
     "Next poll16:00;formal17:40;closing09/09 preserved"
   ],
   "local_replay_lease": {
-    "id": "R01-LOCAL-FORMS-MEDIA-82-01",
-    "status": "released",
-    "executor": "C02",
-    "instruction": "R01-C02-I016",
-    "issued_at": "2026-09-08T19:45:50-03:00",
-    "code_sha": "60376a323c039b8c0eeaa5f4b6e6e7aa97713554",
-    "expected_assertions": 82,
-    "expected_source_migrations": 71,
-    "expected_effective_migrations": 73,
-    "remote": false,
-    "result": "82PASS;C00 log/hash/result and cleanup checked",
-    "released_at": "2026-09-08T19:52:09-03:00",
-    "evidence_dir": "C:/Users/adrie/AppData/Local/Temp/coelo-c02-media82-vuoxhew3"
+    "id": "R01-LOCAL-ACTIVITIES-46-01",
+    "status": "granted",
+    "executor": "C03",
+    "instruction": "I015",
+    "issued_at": "2026-09-08T20:10:38-03:00",
+    "code_sha": "1358e85262028adf059ed60cd9781041bfdf298d",
+    "expected_assertions": 46,
+    "expected_source_migrations": 54,
+    "expected_effective_migrations": 56,
+    "source": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-activities46-5w2p74bk/source",
+    "remote": false
   },
   "last_delivery": {
     "branch": "origin/dev",
@@ -1014,9 +1012,9 @@
   },
   "next_local_replay": {
     "executor": "C02",
-    "scope": "314fd92a XLSX172 proposed;needs review snapshot",
-    "execution_granted": false,
-    "blocker": "C01 Models nominal lease active;C02 candidate review pending"
+    "candidate": "c261afd314fc0993a839fb47374b3da859c19153",
+    "suite": 193,
+    "status": "fixture correction read; next lease after C03release/review"
   },
   "local_replay_history": [
     {
@@ -1169,7 +1167,7 @@
       "branch": "claude/e2-r01-c06-coordenacao",
       "baseline": "f0763a657ca6e5422cc42fa61c0c3c4ca724e129",
       "handoff_path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06\\docs\\reviews\\etapa-2-operacao\\handoffs\\C06.md",
-      "instruction_revision": 9,
+      "instruction_revision": 10,
       "received_revision": 10,
       "accepted_revision": 10,
       "status": "active-acknowledged",
@@ -1351,7 +1349,7 @@
     "health_evidence": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-docker-health-1855.json",
     "preservation_evidence": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-docker-preservation-1854.json"
   },
-  "coordinator_next_steps_docker": "No active lease; I01382 completed; ActivitiesI013 and claim193 await new fixed SHA review.",
+  "coordinator_next_steps_docker": "C03 exclusive Activities46; C02corrected193 queued.",
   "visual_review_c07": {
     "status": "shellcompactfixedc4a7feff; C05consumerfixes and golden review pending",
     "source": "C06r5 and C07 original reports",
@@ -1478,6 +1476,21 @@
       "result": "82PASS;C00 log/hash/result and cleanup checked",
       "released_at": "2026-09-08T19:52:09-03:00",
       "evidence_dir": "C:/Users/adrie/AppData/Local/Temp/coelo-c02-media82-vuoxhew3"
+    },
+    {
+      "id": "R01-LOCAL-XLSX-193-01",
+      "status": "released-failure",
+      "executor": "C02",
+      "instruction": "R01-C02-I017",
+      "issued_at": "2026-09-08T19:55:59-03:00",
+      "code_sha": "697c8aefb24c8f8cdc1ed39ee22f26c83d1f7522",
+      "expected_assertions": 193,
+      "expected_source_migrations": 69,
+      "expected_effective_migrations": 71,
+      "remote": false,
+      "result": "176executed:172PASS4FAIL;17notexecuted;fixture42501private schema at539",
+      "released_at": "2026-09-08T20:04:14-03:00",
+      "evidence_dir": "C:/Users/adrie/AppData/Local/Temp/coelo-c02-xlsx193-nn3f749b"
     }
   ],
   "next_reviewed_integration_batches": {
@@ -1512,7 +1525,8 @@
   "locations_selective_package": {
     "path": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-locations-selective-kb1cmka7",
     "sha256": "5f3e57585e2e3336255f0609122fea3f0073946955b5c252a7f9d0272458f22e",
-    "status": "prepared28files;not applied;C04 corrections and C00wiring pending"
+    "status": "integrated188cf2ba;266Flutter/36DTO PASS;analyzer2dirs clean;router/DI/per-action hints pending",
+    "integration_sha": "188cf2ba"
   },
   "c05_visual_review_1915": {
     "source": "5f10c0b7",
@@ -1550,5 +1564,63 @@
     "sql_candidate": "e94eecab5a247c5a0a0f5186ab1b85b812bf67c1",
     "sql_runtime": false,
     "sql_review": "requires I013 reauthorization after advisory wait, no runtime"
+  },
+  "auth_error_reservation": {
+    "owner": "C01",
+    "instruction": "I017",
+    "paths": [
+      "apps/superadmin/lib/features/auth/domain/logout_action.dart",
+      "apps/superadmin/lib/features/auth/domain/coelo_auth_login_action.dart",
+      "apps/superadmin/test/features/auth/domain/logout_action_test.dart",
+      "apps/superadmin/test/features/auth/domain/coelo_auth_login_action_test.dart",
+      "packages/coelo_auth/lib/src/supabase_coelo_auth_gateway.dart",
+      "packages/coelo_auth/test/coelo_auth_gateway_test.dart"
+    ],
+    "status": "integrated90de1968/f7230db9;122C00PASS/analyzer6clean;released",
+    "at": "2026-09-08T19:57:49-03:00"
+  },
+  "principal_toggle_reservation": {
+    "owner": "C05",
+    "supervisor": "C06",
+    "instruction": "C06I010",
+    "paths": [
+      "apps/superadmin/lib/features/principal_shared/presentation/principal_publication_frame.dart",
+      "apps/superadmin/test/features/principal_shared/presentation/principal_publication_frame_test.dart"
+    ],
+    "status": "granted-await-ack"
+  },
+  "audit_internal_reservation": {
+    "owner": "C03",
+    "instruction": "I014",
+    "migration": "20260908230039_superadmin_internal_audit_read_v2.sql",
+    "test": "superadmin_internal_audit_read_v2_test.sql",
+    "status": "local-authoring-only",
+    "remote": false,
+    "at": "2026-09-08T20:01:32-03:00"
+  },
+  "persona_secret_store_integration": {
+    "source": "cda706d4",
+    "integration": "1477ca3a",
+    "C00tests": "11Deno+18PesterPASS/0skip",
+    "remote": false
+  },
+  "forms_sql_integration_2000": {
+    "multipart172": "882c1655",
+    "media82": "b82157a4",
+    "verification": "4GitLF blobs match executed media82source",
+    "claim193": "not integrated; fixturefailed"
+  },
+  "tracker_sync_2005": {
+    "at": "2026-09-08T20:04:14-03:00",
+    "C02_full": 41,
+    "nominal": [
+      "C02I017failed193",
+      "C01I015SecretStore",
+      "C04Locations28+2fixes",
+      "C06r16/r17Auth/toggle",
+      "C03AuditP1/Activities1358prepared"
+    ],
+    "promotion": false,
+    "report": "reports/R01-delta-2005.md"
   }
 }

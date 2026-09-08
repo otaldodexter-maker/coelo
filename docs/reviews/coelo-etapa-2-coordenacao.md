@@ -696,3 +696,8 @@ Recibo 2026-09-08T19:06:21-03:00: entrega Git01c7648c verificada em origin/dev e
 Fonte: `etapa-2-operacao/reports/R01-delta-1915.md`. C02r40 sincronizado nos três rastreadores/inventário; Support/PersonasOffline/banner/toggle integrados e testados, sem promoção de conclusão. Docker operacional: Models34,Forms70,XLSX172 PASS e leases encerradas. C06I008 ack r13; leitura operacional r15, horário narrado futuro corrigido pelo corte de inspeção. Claude ativo, sem cobrança duplicada. Referência Agora31/08 preservada; Locais/candidatos posteriores em revisão. C00 único escritor, heartbeat ativo e fechamento09/09 05:30/06:00/07:40 mantidos. Última entrega Git comprovada01c7648c; novo push será conferido separadamente.
 
 Recibo Git 2026-09-08T19:47:02-03:00: entrega72121fb1 verificada emdev e C00; arquivos/evidências preservados, C00 limpa, sem produção. Fonte reports/R01-delta-1915.md.
+
+
+## Corte operacional 2026-09-08T20:07:04-03:00
+
+Fonte `etapa-2-operacao/reports/R01-delta-2005.md`: SecretStore1477ca3a,FormsSQL882c1655/b82157a4 eLocais188cf2ba integrados/testados; composiçãoC00pendente. C02r41sincronizado,claim193falhafixturnominalpreservada/leaseencerrada. C01I017Authprioritário,C03I014Auditnominalreservado,C06I010togglePrincipalpontual,C02I018schemaXLSXsem bloqueiogeral. Nenhumremoção/produção/conclusãopromovida. Corte eSHAs/evidênciasno relatório; próximo pushseráverificado.

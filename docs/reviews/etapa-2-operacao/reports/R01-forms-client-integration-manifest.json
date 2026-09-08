@@ -1,0 +1,336 @@
+{
+  "source": [
+    "C02 handoff r36-r40",
+    "C02 immutable Git commits",
+    "C00 current source and public media contracts"
+  ],
+  "status": "read-only-reviewed-integration-candidate; not-runtime-not-e2e",
+  "generated_at": "2026-09-08T19:58:02.9321704-03:00",
+  "baseline_c00": "b82157a4ed6fd4ce72d8526140c2e77f55a5a5d9",
+  "baseline_inspected": "b82157a4ed6fd4ce72d8526140c2e77f55a5a5d9",
+  "source_worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
+  "destination_worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-c00",
+  "batches": [
+    {
+      "name": "A-client-prerequisites",
+      "commits": [
+        {
+          "sha": "0d944c02c3e489a01a24d812ebd096d9c6450df4",
+          "subject": "fix(forms): omit absent anonymous media secrets",
+          "paths": [
+            "apps/superadmin/lib/features/forms/data/supabase_forms_api.dart",
+            "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        },
+        {
+          "sha": "8ebf74f9db0b79f807ee7ce1c9af7a099b706224",
+          "subject": "fix(forms): validate response receipt correlation and status",
+          "paths": [
+            "apps/superadmin/lib/features/forms/data/supabase_forms_api.dart",
+            "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        },
+        {
+          "sha": "2f4114d648fd613c1e83f0966626bfdec62a57dc",
+          "subject": "fix(forms): confirm submitted response revisions after local review",
+          "paths": [
+            "apps/superadmin/lib/features/forms/presentation/response/form_response_page.dart",
+            "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        }
+      ]
+    },
+    {
+      "name": "B-original-response-operations",
+      "commits": [
+        {
+          "sha": "e8cf32ebb068678867ae0d0b743a9c4e312fa145",
+          "subject": "fix(forms): discard stale operations context reads",
+          "paths": [
+            "apps/superadmin/lib/features/forms/presentation/operations/forms_operations_page.dart",
+            "apps/superadmin/test/features/forms/presentation/operations/forms_operations_context_test.dart"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        },
+        {
+          "sha": "3d9c07436c3bb08aa51e8224fb2f3b2b80f49507",
+          "subject": "feat(forms): render authorized operation projections",
+          "paths": [
+            "apps/superadmin/lib/features/forms/presentation/operations/forms_operations_page.dart",
+            "apps/superadmin/test/features/forms/presentation/operations/forms_operations_page_test.dart",
+            "apps/superadmin/test/features/forms/presentation/operations/forms_operations_projection_test.dart"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        },
+        {
+          "sha": "344e8d95ab73108b49495ff36d906f3f4d0ab6dc",
+          "subject": "feat(forms): use internal operational RPC envelopes",
+          "paths": [
+            "apps/superadmin/lib/features/forms/data/supabase_forms_api.dart",
+            "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        },
+        {
+          "sha": "23a2705813316df3f2defbb1da56c57cc0444524",
+          "subject": "test(forms): cover operational UI with real API adapter",
+          "paths": [
+            "apps/superadmin/test/features/forms/presentation/operations/forms_operations_api_integration_test.dart"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        },
+        {
+          "sha": "ffe8ae4c6e337682a5b47440aed9da27fe9a2010",
+          "subject": "feat(forms): carry original response graph and identity mode",
+          "paths": [
+            "packages/coelo_api/lib/src/forms/forms_api.dart",
+            "packages/coelo_api/test/forms/form_runtime_dtos_test.dart"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        },
+        {
+          "sha": "fb2f9d05f7c0cc6070a7568213bd3f59558ad3cd",
+          "subject": "feat(forms): decode and validate the submitted response graph",
+          "paths": [
+            "apps/superadmin/lib/features/forms/data/supabase_forms_api.dart",
+            "apps/superadmin/test/features/forms/data/forms_original_response_projection_test.dart",
+            "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        },
+        {
+          "sha": "91062c31bf60193fea959b7d0fe3bf4364e406ca",
+          "subject": "feat(forms): render original responses in their form context",
+          "paths": [
+            "apps/superadmin/lib/features/forms/data/supabase_forms_api.dart",
+            "apps/superadmin/lib/features/forms/presentation/operations/forms_operations_page.dart",
+            "apps/superadmin/test/features/forms/data/forms_original_response_projection_test.dart",
+            "apps/superadmin/test/features/forms/presentation/operations/forms_original_response_detail_test.dart",
+            "packages/coelo_api/lib/src/forms/forms_api.dart"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        }
+      ]
+    },
+    {
+      "name": "C-files-explicit-xlsx-download",
+      "commits": [
+        {
+          "sha": "c742e16a450a99b96c1c2cae008f8d2838f55267",
+          "subject": "fix(forms): bind export download tickets to job expiry and media session",
+          "paths": [
+            "apps/superadmin/lib/features/forms/data/form_export_download_resolver.dart",
+            "apps/superadmin/test/features/forms/data/form_export_download_resolver_test.dart"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        },
+        {
+          "sha": "b76964a3b1f14ab455366a233fb080b7518afdd2",
+          "subject": "feat(forms): read export command context with file jobs",
+          "paths": [
+            "apps/superadmin/lib/features/forms/data/forms_file_jobs_reader.dart",
+            "apps/superadmin/lib/features/forms/data/supabase_forms_api.dart",
+            "apps/superadmin/test/features/forms/data/forms_file_jobs_context_test.dart"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        },
+        {
+          "sha": "dbde43708c11b3cff26ffeb573bf35bcf3dd9376",
+          "subject": "feat(forms): request whole-form XLSX from authorized file context",
+          "paths": [
+            "apps/superadmin/lib/features/forms/presentation/operations/forms_operations_page.dart",
+            "apps/superadmin/test/features/forms/presentation/operations/forms_operations_api_integration_test.dart",
+            "apps/superadmin/test/features/forms/presentation/operations/forms_xlsx_request_test.dart"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        },
+        {
+          "sha": "a9d0bd428cfddb03c28ff3a1cc939fdefafbf79e",
+          "subject": "fix(forms): reauthorize explicit XLSX download and stale actions",
+          "paths": [
+            "apps/superadmin/lib/features/forms/presentation/operations/forms_operations_page.dart",
+            "apps/superadmin/test/features/forms/presentation/operations/forms_xlsx_download_test.dart"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        }
+      ]
+    },
+    {
+      "name": "D-forms-image-consumer",
+      "commits": [
+        {
+          "sha": "a28e9efab48daada09a8d03370da1a1d9fe199e3",
+          "subject": "feat(forms): consume shared media reader with session lifecycle",
+          "paths": [
+            "apps/superadmin/lib/features/forms/presentation/operations/forms_media_page.dart",
+            "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        },
+        {
+          "sha": "fa1ea1e33de17d1981d3592fd62ba8e67aa06e97",
+          "subject": "feat(forms): adapt shared media reads to the domain gateway",
+          "paths": [
+            "apps/superadmin/lib/features/forms/data/forms_media_reader.dart",
+            "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        }
+      ]
+    },
+    {
+      "name": "E-image-endpoint-local",
+      "commits": [
+        {
+          "sha": "3ae0d690569136363daf57c69f30a163fd2f5021",
+          "subject": "fix(forms): bound and validate media HTTP commands",
+          "paths": [
+            "packages/coelo_database/supabase/functions/form-media/index.ts",
+            "packages/coelo_database/supabase/functions/form-media/index_test.ts",
+            "packages/coelo_database/supabase/functions/form-media/media_contract.ts",
+            "packages/coelo_database/supabase/functions/form-media/media_contract_test.ts"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        },
+        {
+          "sha": "9b8c4a3a6b9a0fb94b508aa2f6933f73c81d0013",
+          "subject": "feat(forms): resolve internal media reads through private R2",
+          "paths": [
+            "packages/coelo_database/supabase/functions/form-media/index.ts",
+            "packages/coelo_database/supabase/functions/form-media/index_test.ts",
+            "packages/coelo_database/supabase/functions/form-media/media_contract.ts",
+            "packages/coelo_database/supabase/functions/form-media/media_contract_test.ts"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        },
+        {
+          "sha": "008ac85def68a4698bddbb4a67570630a9e466b5",
+          "subject": "fix(forms): keep media locator validation lint clean",
+          "paths": [
+            "packages/coelo_database/supabase/functions/form-media/media_contract.ts"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        }
+      ]
+    },
+    {
+      "name": "F-download-endpoint-local",
+      "commits": [
+        {
+          "sha": "7d3399392aa671c1e432688fd06ed90f42c28701",
+          "subject": "feat(forms): prepare private R2 export download gateway candidate",
+          "paths": [
+            "packages/coelo_database/supabase/functions/form-export-download/download_contract.ts",
+            "packages/coelo_database/supabase/functions/form-export-download/download_contract_test.ts",
+            "packages/coelo_database/supabase/functions/form-export-download/index.ts",
+            "packages/coelo_database/supabase/functions/form-export-download/index_test.ts"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        },
+        {
+          "sha": "13d3aef81a18f8bd4387e3a96096d008f128db58",
+          "subject": "fix(forms): bind export download keys to the artifact attempt",
+          "paths": [
+            "packages/coelo_database/supabase/functions/form-export-download/download_contract.ts",
+            "packages/coelo_database/supabase/functions/form-export-download/download_contract_test.ts",
+            "packages/coelo_database/supabase/functions/form-export-download/index_test.ts"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        }
+      ]
+    },
+    {
+      "name": "G-independent-overview-optional",
+      "commits": [
+        {
+          "sha": "3df41f949e1f4aee72a659e89c39b3e3aff9de52",
+          "subject": "fix(forms): correlate overview reads and discard stale results",
+          "paths": [
+            "apps/superadmin/lib/features/forms/presentation/overview/forms_overview_page.dart",
+            "apps/superadmin/test/features/forms/presentation/overview/forms_overview_page_test.dart"
+          ],
+          "mode": "whole-commit: Forms-only",
+          "verification": "static dependency mapping; no cherry-pick/apply/test executed"
+        }
+      ]
+    }
+  ],
+  "existing_dependencies": [
+    "coelo_api MediaSession/SessionMediaReader/MediaReadResult already in C00",
+    "forms DTO baseline equal to ffe8ae4c parent",
+    "c742e16a and e8cf32eb affected implementation baselines equal to C00",
+    "SupabaseFormsApi needs 0d944c02 and 8ebf74f9 before 344e8d95; include 2f4114d6 to keep submitted response edit coherent",
+    "form-media parent of 3ae0d690 equals C00 for all four paths",
+    "export download dependency pins ee1e64d0 equivalent already present via fe271f95; do not duplicate",
+    "R2Client shared signer already in C00; no shared gateway edits required",
+    "I010 1f38fa7a 70PASS source already preserved by C00 f1073f45",
+    "I005172 314fd92a source preserved by C00 f1073f45; do not include worker/schema changes here",
+    "I01360376a32 82PASS per C00 receipt; SQL integration owned by parent, excluded from this manifest"
+  ],
+  "excluded": [
+    "all care/medication/Safety commits",
+    "shared R2/media source edits",
+    "all SQL/migrations and replay",
+    "XLSX serializer/writer/multipart/claim commits",
+    "C02 handoff commits",
+    "dependency pin ee1e64d0 already present",
+    "remote apply/deploy/auth mutations",
+    "golden regeneration or approval"
+  ],
+  "central_reserved_paths": [
+    "apps/superadmin/lib/core/config/superadmin_auth_scope.dart",
+    "apps/superadmin/lib/main.dart",
+    "apps/superadmin/lib/app/superadmin_app.dart",
+    "apps/superadmin/lib/app/router/superadmin_router.dart"
+  ],
+  "blockers": [
+    "C00 root currently creates no MediaSession; add lifecycle tied to authorized session and invalidation revision; never permanent startup lifetime",
+    "Dedicated FormsMediaReader input required; do not route generic Chat reader or assume form_assets equals media_assets",
+    "Route responseDetail must forward formId; current C00 forwards only responseId",
+    "Files needs optional FormExportDownloadResolver + existing openDownloadUrl; endpoint source presently absent in C00 until batchF",
+    "Remote readiness of I010/I005/I013 and both functions not established; local82PASS does not authorize or prove remote deployment",
+    "Full XLSX worker still has schema/zero responses/failure/cleanup gates; explicit request+job+download does not close export action",
+    "FormsOperations golden remains FAIL; no golden promotion",
+    "Hierarchy/people operational RPCs outside delivered I010; retain unavailable states"
+  ],
+  "proportional_validation": [
+    "Dart coelo_api test/forms/form_runtime_dtos_test.dart",
+    "Flutter test/features/forms/data/supabase_forms_api_test.dart and forms_original_response_projection_test.dart and forms_file_jobs_context_test.dart",
+    "Flutter test/features/forms/presentation/operations functional tests excluding separate golden run",
+    "Flutter test/features/forms/data/form_export_download_resolver_test.dart and forms_media_reader_test.dart",
+    "Flutter response/form_response_page_test.dart for prerequisites 8ebf74f9+2f4114d6",
+    "Deno form-media index_test.ts/media_contract_test.ts with own deno.json --frozen (reported30PASS)",
+    "Deno form-export-download index_test.ts/download_contract_test.ts with own deno.json --frozen (reported14PASS)",
+    "New nominal router/composition behavior test proving formId correlation, Forms adapter dispatch, authorized-session creation and invalidation/logout/late response, explicit download only",
+    "Existing test/app/router/forms_fail_closed_routes_test.dart and forms_internal_directory_routes_test.dart; inspect outdated source-string assertions independently"
+  ],
+  "estimates": {
+    "remote": "unknown, nominal package authorization/readiness required",
+    "integration": "Git batches separated from central lifecycle implementation; first batch tests will calibrate runtime",
+    "mapping": "Completed bounded read-only map; no implementation estimate extrapolated from action counts"
+  }
+}

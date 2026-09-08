@@ -240,3 +240,8 @@ Registro C00 após revisão do dossiê C07 e abertura direta da referência de31
 5. A imagem aprovada estava somente em `.codex/generated_images`. C00 preserva uma cópia byte a byte em evidência versionada, hash SHA256 e096c855f13449f2a3d4e0b4a2cedb323af30c4cac3be7404755aa0d66ddc315. O vínculo externo deixa de ser o único meio de recuperação.
 
 Limite: revisão da anatomia do Agora não aprova os13 masters nem resolve os77 goldens históricos de Estruturas. Não modificar regras de produto, retenção ou mídia por inferência da imagem. ADR0032 continua sendo a fonte vigente para mídia privada, independentemente das referências históricas de backend da spec036.
+
+
+## R01 Audit: divergência histórica de realm, limite e exportação — 2026-09-08T20:01:32-03:00
+
+Inspeção C03 e C00: spec027/SQL20260812000847 e wrappers20260901190927 preservam autorização People/platform_memberships e AAL2/exportação real; spec039/ADR0019aditivo01/09 e AGENTS atuais exigem principal interno exclusivo, sessão real,AAL1 permitido MVP e exportação geral adiada. Esta precedência já aprovada orienta candidato local nominal, sem ponte ORentre realms ou retomada de exportação. NULLlimit passa pelo NOTBETWEEN e retira LIMIT; erro técnico a corrigir. Revogar3RPCscliente não autoriza apagar jobs/arquivos/workershistóricos. Estado remoto não foi inspecionado; pacote novo permanece sem autorização remota. Planos039×051 e semânticaassign/activate seguem em reconciliação separada, sem decisão implícita de produto.

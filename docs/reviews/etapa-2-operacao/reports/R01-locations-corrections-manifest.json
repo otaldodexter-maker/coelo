@@ -1,0 +1,66 @@
+{
+  "source": "C00 requested review of fixed C04 corrections",
+  "status": "prepared; source inspected, no tests executed",
+  "generated_at": "2026-09-08T19:55:14.262840-03:00",
+  "base_manifest": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7\\manifest.json",
+  "base_patch_sha256": "5f3e57585e2e3336255f0609122fea3f0073946955b5c252a7f9d0272458f22e",
+  "order_after_base": [
+    "8e39f349",
+    "adf5feb1"
+  ],
+  "steps": [
+    {
+      "sha": "8e39f349a78532aaa236ca81c049928c62a7be57",
+      "paths": [
+        "apps/superadmin/test/features/locations/location_institution_copy_test.dart"
+      ],
+      "patch": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7\\corrections-adf5feb1\\01-8e39f349.patch",
+      "sha256": "d4f15c6bb8e23d1d5ffe65a60abfc09ec86ad2299bb61fd5393bab6154f5c0f7",
+      "temp_apply_check_exit": 0,
+      "temp_apply_exit": 0
+    },
+    {
+      "sha": "adf5feb12bf0ca20fa6bc167c4100b5cb2e8ae2e",
+      "paths": [
+        "apps/superadmin/lib/features/locations/presentation/location_institution_copy_panel.dart",
+        "apps/superadmin/lib/features/locations/presentation/locations_page.dart",
+        "apps/superadmin/test/features/locations/location_edit_flow_test.dart",
+        "apps/superadmin/test/features/locations/location_institution_copy_test.dart"
+      ],
+      "patch": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7\\corrections-adf5feb1\\02-adf5feb1.patch",
+      "sha256": "76cf9bffe564ce4a6cba609b3430ed632bf849e1c41e7e4372ee1578e9c861bb",
+      "temp_apply_check_exit": 0,
+      "temp_apply_exit": 0
+    }
+  ],
+  "aggregate": {
+    "path": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7\\corrections-adf5feb1\\LOCATIONS-FIXES-ONLY.patch",
+    "sha256": "74e0cda9099c05ccf020b81b702f604a35d825bb7126f5fd05cdd0d5727c5547",
+    "c00_apply_check_exit": 1,
+    "c00_apply_check_output": "error: apps/superadmin/lib/features/locations/presentation/location_institution_copy_panel.dart: No such file or directory\nerror: apps/superadmin/lib/features/locations/presentation/locations_page.dart: No such file or directory\nerror: apps/superadmin/test/features/locations/location_edit_flow_test.dart: No such file or directory\nerror: apps/superadmin/test/features/locations/location_institution_copy_test.dart: No such file or directory\n"
+  },
+  "files": [
+    {
+      "path": "apps/superadmin/lib/features/locations/presentation/location_institution_copy_panel.dart",
+      "sha256": "a7e8ee45535a4a8e529c233c0eca1c3dc4e8206aa11c98d30d26ce28bef8ed38"
+    },
+    {
+      "path": "apps/superadmin/lib/features/locations/presentation/locations_page.dart",
+      "sha256": "8665cec89323de9f0c1c3aa7f75cc0138d1acd31d262724d7c398728f71c0369"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_edit_flow_test.dart",
+      "sha256": "d626522e2621899f9fb915abcf1cf3b01539a770c0ade60ae6b9ff79dd1a1abe"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_institution_copy_test.dart",
+      "sha256": "079244e35f676e0ae617594bf2b1d61dd6e5bf60ffa4cabe252a83aa736bb7c1"
+    }
+  ],
+  "bugs": {
+    "route_change": "clears creating/editing/bringing when selectedLocationId changes; targeted regression test",
+    "failed_or_pending_search": "clears selection/name/requestId on failure and disables confirm during loading; two regression tests"
+  },
+  "test_evidence": "Three regression tests plus one accessibility test present in immutable commits; C04r30 declares fixes closed, but focal execution counts/log not supplied in that handoff. No independent execution here.",
+  "capabilities": "No per-action delivery observed: LocationsPage still canManage fallback canCreate; UnitLocationsGate still only canCreate."
+}

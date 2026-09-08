@@ -1,0 +1,392 @@
+{
+  "source": "C04 fixed commits selected by C00 delegation; no worktree edited",
+  "status": "prepared",
+  "generated_at": "2026-09-08T19:13:32.969809-03:00",
+  "base": "615bd12dbebf975429c1c98c55467ed8cba96291",
+  "c00_observed_head": "e57a4107c96e32dc398fc58b6b502d24170782cb",
+  "root": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7",
+  "steps": [
+    {
+      "sha": "8d98766310f81d28fd586a7fd69f12189583b315",
+      "paths": [
+        "apps/superadmin/lib/features/locations/presentation/locations_page.dart",
+        "apps/superadmin/test/features/locations/location_read_panels_golden_test.dart",
+        "apps/superadmin/test/features/locations/locations_page_test.dart"
+      ],
+      "excluded": [],
+      "patch": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7\\patches\\01-8d987663.patch",
+      "sha256": "b936aaa7a063ce339ad98ecc29a1f687f6418f30bb3a7a4f7c6a40942f1554f0",
+      "check_exit": 0,
+      "check_output": "",
+      "temp_apply_exit": 0,
+      "temp_apply_output": ""
+    },
+    {
+      "sha": "567b399371c2c6d94fff41d7739dbe0fa1a50a15",
+      "paths": [
+        "apps/superadmin/lib/features/locations/presentation/location_selection_controller.dart",
+        "apps/superadmin/lib/features/locations/presentation/location_selection_field.dart",
+        "apps/superadmin/lib/features/locations/presentation/unit_locations_gate.dart",
+        "apps/superadmin/test/features/locations/location_selection_field_test.dart"
+      ],
+      "excluded": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart",
+        "apps/superadmin/lib/app/router/superadmin_routes.dart",
+        "packages/coelo_database/migrations/20260908031000_superadmin_location_catalog_v2.sql",
+        "apps/superadmin/test/features/locations/location_routes_test.dart"
+      ],
+      "patch": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7\\patches\\02-567b3993.patch",
+      "sha256": "236d5e5c08c60a7c6d87d7fdae1231b868a74fb298725a0288db2a3e1f8a4919",
+      "check_exit": 0,
+      "check_output": "",
+      "temp_apply_exit": 0,
+      "temp_apply_output": ""
+    },
+    {
+      "sha": "6f20738ce10c1b767c91e568236c7eb94efb378a",
+      "paths": [
+        "apps/superadmin/lib/features/locations/data/supabase_location_catalog_writer.dart",
+        "apps/superadmin/lib/features/locations/domain/location_catalog_writer.dart",
+        "apps/superadmin/lib/features/locations/presentation/location_form_panel.dart",
+        "apps/superadmin/lib/features/locations/presentation/locations_page.dart",
+        "apps/superadmin/lib/features/locations/presentation/unit_locations_gate.dart",
+        "apps/superadmin/test/features/locations/location_catalog_writer_test.dart",
+        "apps/superadmin/test/features/locations/location_form_panel_test.dart",
+        "packages/coelo_api/lib/src/locations/location_catalog_dto.dart"
+      ],
+      "excluded": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart",
+        "apps/superadmin/lib/app/superadmin_app.dart",
+        "apps/superadmin/lib/main.dart",
+        "packages/coelo_api/pubspec.lock"
+      ],
+      "patch": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7\\patches\\03-6f20738c.patch",
+      "sha256": "48c532d4a0d19c1412d490a22b3ba17c5b0432684c00db9260826855070234cf",
+      "check_exit": 0,
+      "check_output": "",
+      "temp_apply_exit": 0,
+      "temp_apply_output": ""
+    },
+    {
+      "sha": "e05495c27a8120c7d375e147b28bfc06d1680b94",
+      "paths": [
+        "apps/superadmin/lib/features/locations/presentation/location_detail_panel.dart",
+        "apps/superadmin/test/features/locations/location_detail_map_test.dart"
+      ],
+      "excluded": [],
+      "patch": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7\\patches\\04-e05495c2.patch",
+      "sha256": "35957ef97cc825a07eadec07dc6a2b45021565d5694e574a9b03b4032a71ed4b",
+      "check_exit": 0,
+      "check_output": "",
+      "temp_apply_exit": 0,
+      "temp_apply_output": ""
+    },
+    {
+      "sha": "7af78b4c3392ea496ce28d8cbbc9cd97bbbe78d6",
+      "paths": [
+        "apps/superadmin/lib/features/locations/data/supabase_location_catalog_writer.dart",
+        "apps/superadmin/lib/features/locations/domain/location_catalog_writer.dart",
+        "apps/superadmin/test/features/locations/location_catalog_commands_test.dart",
+        "apps/superadmin/test/features/locations/location_form_panel_test.dart",
+        "packages/coelo_api/lib/src/locations/location_catalog_dto.dart",
+        "packages/coelo_api/test/locations/location_write_commands_dto_test.dart",
+        "packages/coelo_domain/lib/src/locations/location_catalog_entry.dart"
+      ],
+      "excluded": [
+        "apps/superadmin/test/features/children/children_accessibility_test.dart",
+        "apps/superadmin/test/features/groups/presentation/group_location_selection_test.dart"
+      ],
+      "patch": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7\\patches\\05-7af78b4c.patch",
+      "sha256": "a907b4f71efdfd254d011ace7240b1939a1975c1e97abeea2812ea62e378b301",
+      "check_exit": 0,
+      "check_output": "",
+      "temp_apply_exit": 0,
+      "temp_apply_output": ""
+    },
+    {
+      "sha": "6717309f6052020d8fe2802e49dd11ec17dde690",
+      "paths": [
+        "apps/superadmin/lib/features/locations/presentation/location_detail_panel.dart",
+        "apps/superadmin/lib/features/locations/presentation/location_status_actions.dart",
+        "apps/superadmin/test/features/locations/location_read_fixtures.dart",
+        "apps/superadmin/test/features/locations/location_status_actions_test.dart"
+      ],
+      "excluded": [],
+      "patch": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7\\patches\\06-6717309f.patch",
+      "sha256": "b0bfd7695a91e43f8796351b1e774e4432304373ce78c0fca79f6ef5229571d5",
+      "check_exit": 0,
+      "check_output": "",
+      "temp_apply_exit": 0,
+      "temp_apply_output": ""
+    },
+    {
+      "sha": "c4c26b09193d1d410f237a52f4c7f0995be8b01e",
+      "paths": [
+        "apps/superadmin/lib/features/locations/presentation/location_detail_panel.dart",
+        "apps/superadmin/lib/features/locations/presentation/location_form_panel.dart",
+        "apps/superadmin/lib/features/locations/presentation/locations_page.dart",
+        "apps/superadmin/test/features/locations/location_edit_flow_test.dart"
+      ],
+      "excluded": [],
+      "patch": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7\\patches\\07-c4c26b09.patch",
+      "sha256": "b12dfced77492eb711138bcd6e0ca8b233f29ae0014047a71e7365973ed74d2b",
+      "check_exit": 0,
+      "check_output": "",
+      "temp_apply_exit": 0,
+      "temp_apply_output": ""
+    },
+    {
+      "sha": "9b076a1d5b321a8ab7bc3db4694580fb9103a5a6",
+      "paths": [
+        "apps/superadmin/lib/features/locations/presentation/location_copy_dialog.dart",
+        "apps/superadmin/lib/features/locations/presentation/location_detail_panel.dart",
+        "apps/superadmin/lib/features/locations/presentation/locations_page.dart",
+        "apps/superadmin/test/features/locations/location_copy_flow_test.dart"
+      ],
+      "excluded": [],
+      "patch": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7\\patches\\08-9b076a1d.patch",
+      "sha256": "0f2da0d648ed3748ae0310df107aa40b9b89da59ec30c7a0131fd724586cffff",
+      "check_exit": 0,
+      "check_output": "",
+      "temp_apply_exit": 0,
+      "temp_apply_output": ""
+    },
+    {
+      "sha": "d98a183736249d82a0876510ea0cbfef86c8f3d7",
+      "paths": [
+        "apps/superadmin/lib/features/locations/presentation/location_detail_panel.dart",
+        "apps/superadmin/lib/features/locations/presentation/location_schedule_section.dart",
+        "apps/superadmin/test/features/locations/location_schedule_section_test.dart"
+      ],
+      "excluded": [],
+      "patch": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7\\patches\\09-d98a1837.patch",
+      "sha256": "bedad29e7e454ec5c4b94eda1bb297035e8c593a4bce616b854c74d5abf8831d",
+      "check_exit": 0,
+      "check_output": "",
+      "temp_apply_exit": 0,
+      "temp_apply_output": ""
+    },
+    {
+      "sha": "9d4eb3e0d2026e47473539ce6e2a5f0042f85be8",
+      "paths": [
+        "apps/superadmin/lib/features/locations/presentation/location_institution_copy_panel.dart",
+        "apps/superadmin/lib/features/locations/presentation/locations_page.dart",
+        "apps/superadmin/test/features/locations/location_institution_copy_test.dart"
+      ],
+      "excluded": [],
+      "patch": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7\\patches\\10-9d4eb3e0.patch",
+      "sha256": "f6b317d308c78034d686db68b0d93009f9cf32b17e20407ed7c8970820ae9403",
+      "check_exit": 0,
+      "check_output": "",
+      "temp_apply_exit": 0,
+      "temp_apply_output": ""
+    }
+  ],
+  "paths": [
+    {
+      "path": "apps/superadmin/lib/features/locations/data/supabase_location_catalog_writer.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "213361930d555d1607ff5d7e9fad304a7265f998158e913965c8cbd02410bc5a"
+    },
+    {
+      "path": "apps/superadmin/lib/features/locations/domain/location_catalog_writer.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "78b1a460b54b3d69993084c7214440888cb66a9f92896a6be7f49924140c4fa9"
+    },
+    {
+      "path": "apps/superadmin/lib/features/locations/presentation/location_copy_dialog.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "17735d8ba7e8c64baa35e18edd0f6a4a8c14f395b1b5e0722e8360e7095dc0b1"
+    },
+    {
+      "path": "apps/superadmin/lib/features/locations/presentation/location_detail_panel.dart",
+      "base_exists": true,
+      "c00_exists": true,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "3bf17c4e234b5405147fcee60248b1347e70cda08f9acd3aedacd720f51f3a6b"
+    },
+    {
+      "path": "apps/superadmin/lib/features/locations/presentation/location_form_panel.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "a7a63bda6b7bdcd06b575e037d855574a781b1dd9299005c168833e14401c21f"
+    },
+    {
+      "path": "apps/superadmin/lib/features/locations/presentation/location_institution_copy_panel.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "d2786ed9783d5f7ba19060a17a2420c3c22927d8b7a1bd54d0bb6e87bb8ddbae"
+    },
+    {
+      "path": "apps/superadmin/lib/features/locations/presentation/location_schedule_section.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "699f307f3e87794108152a89c444f9fe1deb47b57a8afb9919b37b86079a8566"
+    },
+    {
+      "path": "apps/superadmin/lib/features/locations/presentation/location_selection_controller.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "4ae4d7c52adf17004a8d95ffd0ab7629ac7cf87ad3c4183f2a64aec81b05c5e5"
+    },
+    {
+      "path": "apps/superadmin/lib/features/locations/presentation/location_selection_field.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "2a81e2d311ab12d7b2787f1349a11f098e4a5e8814bdd259f98e0f4e7fd94c37"
+    },
+    {
+      "path": "apps/superadmin/lib/features/locations/presentation/location_status_actions.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "1141cf47e1bcbbd7b00831a7cd3db40cbdab01c758d524604220dcf83f0c1310"
+    },
+    {
+      "path": "apps/superadmin/lib/features/locations/presentation/locations_page.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "d2cd3a52cb86efceb2a6f510034df12873c7471636f40728be27d45e3f8f33a4"
+    },
+    {
+      "path": "apps/superadmin/lib/features/locations/presentation/unit_locations_gate.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "003d7d2771244cc4271957caccdd24b90b5dc4845ec34a2b4a160e19d3634ae9"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_catalog_commands_test.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "98f0e25578d7b4b6cfc3360e99ee4febb212ffb268a0ea065de77a06e8998421"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_catalog_writer_test.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "113e2dec70b17c88d85fd1d5e300f3e972b1c14b1e9c9b1033548bbf3713883f"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_copy_flow_test.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "4838d3addc78b553e4a3542fdd7d335c9dfc798bde5ac2fe881aadbc5a9bb289"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_detail_map_test.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "1078b812e7ec70a74893b310e53d88660c91fb735125561b9a2fd80f2acc0e4e"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_edit_flow_test.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "22d0b38a1442d7ebc811567223163df4daa997e7b5c233bab2610f3818eca338"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_form_panel_test.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "6489857b302e477df63ab9f48b666f07190d026ad1cae323e52949a400957a4f"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_institution_copy_test.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "7e256a5cc57441e37655e842e7549a63db5d93a7d0bd37fa431d58f41a797ceb"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_read_fixtures.dart",
+      "base_exists": true,
+      "c00_exists": true,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "dc19feac0e84b74b5a60d5109ca9e4ffb32bea02dcf3f272ad532e609ae6463d"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_read_panels_golden_test.dart",
+      "base_exists": true,
+      "c00_exists": true,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "78bda8f9d14e1133fc214ebacfdad56b366402e5b2297a4e5f1e28aff3bdb32b"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "5f1bf99f6d68584f375e43b813323369d175d8114e5ccb63c65051c5fa3afec1"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "711c697798f215f1acc9d93fe69a51a512d83d486f4d8acf1b0fef8f0356c9df"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_status_actions_test.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "197590d6362db0904edb4a779de5ece68dcb79d8eae2130fad0cb5f6442607e1"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/locations_page_test.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "3d7000b6e99f1928a10c79157b2ff82586aea9e9f734dc1f522391f7442b8a0f"
+    },
+    {
+      "path": "packages/coelo_api/lib/src/locations/location_catalog_dto.dart",
+      "base_exists": true,
+      "c00_exists": true,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "6eae18e19f2f6e5d54450b29c6d10997e1cf9151616e0559d10306e414f4ac43"
+    },
+    {
+      "path": "packages/coelo_api/test/locations/location_write_commands_dto_test.dart",
+      "base_exists": false,
+      "c00_exists": false,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "1638a51ad661e74e59ed1b498b1dfc60db4114a2cdf4f6f578aaad09992907a5"
+    },
+    {
+      "path": "packages/coelo_domain/lib/src/locations/location_catalog_entry.dart",
+      "base_exists": true,
+      "c00_exists": true,
+      "c00_equals_base_normalized": true,
+      "final_sha256": "2855ff8fc6801707bf5b0e483a148fb9ee677273026a77d034735a1b3476707a"
+    }
+  ],
+  "aggregate": {
+    "path": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7\\LOCATIONS-CODE-ONLY.patch",
+    "sha256": "5f3e57585e2e3336255f0609122fea3f0073946955b5c252a7f9d0272458f22e",
+    "c00_apply_check_exit": 0,
+    "c00_apply_check_output": ""
+  },
+  "selected_snapshot": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7\\selected",
+  "superseded_snapshot": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-locations-selective-kb1cmka7\\result",
+  "scope_note": "Mixed location_routes_test.dart excluded in full because it imports/tests CHILD; C00 adapts only its location cases with router wiring. All actual file edits only under this TEMP directory."
+}
