@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -197,7 +199,11 @@ class _SuperadminAppState extends State<SuperadminApp> {
     _preferencesController = UserPreferencesController(
       widget.userPreferencesRepository ?? SharedPreferencesUserPreferencesRepository(),
     )..addListener(_preferencesChanged);
-    _preferencesController.load();
+    unawaited(
+      _preferencesController.load().onError<Object>((error, stackTrace) {
+        // Settings renders the sanitized failure and offers retry.
+      }),
+    );
     _childSafetyController = ChildSafetyController(widget.childSafetyRepository);
     _router = createSuperadminRouter(
       session: _session,
@@ -249,8 +255,22 @@ class _SuperadminAppState extends State<SuperadminApp> {
     );
   }
 
-  void _setThemeMode(ThemeMode mode) {
-    _preferencesController.setThemeMode(mode);
+  Future<void> _setThemeMode(ThemeMode mode) async {
+    try {
+      await _preferencesController.setThemeMode(mode);
+    } on Object {
+      if (!mounted) return;
+      if (_preferencesController.loaded &&
+          (!_preferencesController.saveFailed ||
+              _preferencesController.preferences.themeMode != mode)) {
+        return;
+      }
+      final currentContext = _router.routerDelegate.navigatorKey.currentContext;
+      if (currentContext == null || !currentContext.mounted) return;
+      ScaffoldMessenger.maybeOf(currentContext)?.showSnackBar(
+        const SnackBar(content: Text('Não foi possível salvar as preferências neste dispositivo.')),
+      );
+    }
   }
 
   void _preferencesChanged() {

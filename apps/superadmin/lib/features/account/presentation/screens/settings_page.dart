@@ -27,6 +27,24 @@ class SettingsPage extends StatelessWidget {
     child: ListenableBuilder(
       listenable: controller,
       builder: (context, child) {
+        if (controller.loadFailed) {
+          return Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(CoeloSpacing.space5),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Não foi possível carregar as preferências deste dispositivo.'),
+                  const SizedBox(height: CoeloSpacing.space4),
+                  FilledButton(
+                    onPressed: () => _consumeReportedFailure(controller.load()),
+                    child: const Text('Tentar novamente'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
         if (!controller.loaded) return const Center(child: CircularProgressIndicator());
         return SingleChildScrollView(
           padding: const EdgeInsets.all(CoeloSpacing.space5),
@@ -37,6 +55,24 @@ class SettingsPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  if (controller.saveFailed) ...[
+                    Semantics(
+                      liveRegion: true,
+                      child: MaterialBanner(
+                        forceActionsBelow: true,
+                        content: const Text(
+                          'Não foi possível salvar as preferências neste dispositivo.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => _consumeReportedFailure(controller.retrySave()),
+                            child: const Text('Tentar salvar novamente'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: CoeloSpacing.space5),
+                  ],
                   _SettingsCard(
                     title: 'Aparência',
                     description: 'Escolha como o Coelo deve nascer neste dispositivo.',
@@ -93,7 +129,8 @@ class SettingsPage extends StatelessWidget {
                         ),
                       ],
                       selected: {controller.preferences.themeMode},
-                      onSelectionChanged: (selection) => controller.setThemeMode(selection.single),
+                      onSelectionChanged: (selection) =>
+                          _consumeReportedFailure(controller.setThemeMode(selection.single)),
                       showSelectedIcon: false,
                     ),
                   ),
@@ -131,7 +168,8 @@ class SettingsPage extends StatelessWidget {
                             Switch.adaptive(
                               key: const Key('settings-reduce-motion'),
                               value: controller.preferences.reduceMotion,
-                              onChanged: controller.setReduceMotion,
+                              onChanged: (value) =>
+                                  _consumeReportedFailure(controller.setReduceMotion(value)),
                             ),
                           ],
                         ),
@@ -146,6 +184,14 @@ class SettingsPage extends StatelessWidget {
       },
     ),
   );
+}
+
+Future<void> _consumeReportedFailure(Future<void> operation) async {
+  try {
+    await operation;
+  } on Object {
+    // The controller exposes a sanitized failure state for this screen.
+  }
 }
 
 class _SettingsCard extends StatelessWidget {

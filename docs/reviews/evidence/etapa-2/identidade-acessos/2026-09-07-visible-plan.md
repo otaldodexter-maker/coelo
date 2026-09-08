@@ -73,8 +73,11 @@ de ID isolada não autoriza preservar sessão desconhecida.
 ## Conta e Configurações
 
 `67b36bab` + follow-up obrigatório `beba812a`: carga inicial/dispose e retry
-após erro corrigidos com REDs; 9/9 locais, analyzer e review. Persistência real/reload,
-erros e ordenação de saves ainda abertos. Perfil produtivo continua 503 por
+após erro corrigidos com REDs. `9cd80347` serializa saves; `40d755b5` prova
+SharedPreferences real após reload em browser local com sessão sintética.
+R08 fecha falhas visíveis/retry na tela e três calls sites nominais: 29/29
+focais, 148/148 na regressão conjunta, 8 cenários de erro com texto 200%.
+Não confundir essas provas com autenticação real. Perfil produtivo continua 503 por
 contrato: self-read/self-edit interno exige gateway nominal, sem reaproveitar
 comando administrativo ou realm people. Avatar depende E2E3/R2; nenhuma capa
 da Conta aprovada. Senha autenticada não se confunde com recovery/reset.

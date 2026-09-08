@@ -9,18 +9,26 @@ final class UserPreferencesController extends ChangeNotifier {
   final UserPreferencesRepository repository;
   UserPreferences _preferences = const UserPreferences();
   bool _loaded = false;
+  bool _loadFailed = false;
+  bool _saveFailed = false;
   bool _disposed = false;
   Future<void>? _loading;
   Future<void> _saving = Future<void>.value();
 
   UserPreferences get preferences => _preferences;
   bool get loaded => _loaded;
+  bool get loadFailed => _loadFailed;
+  bool get saveFailed => _saveFailed;
 
   Future<void> load() {
     if (_disposed) return Future<void>.value();
     return _loading ??= _load().onError<Object>((error, stackTrace) {
       _loading = null;
-      if (!_disposed) Error.throwWithStackTrace(error, stackTrace);
+      if (!_disposed) {
+        _loadFailed = true;
+        notifyListeners();
+        Error.throwWithStackTrace(error, stackTrace);
+      }
     });
   }
 
@@ -29,6 +37,7 @@ final class UserPreferencesController extends ChangeNotifier {
     if (_disposed) return;
     _preferences = preferences;
     _loaded = true;
+    _loadFailed = false;
     notifyListeners();
   }
 
@@ -49,10 +58,30 @@ final class UserPreferencesController extends ChangeNotifier {
   }
 
   Future<void> _save(UserPreferences preferences) {
-    final saving = _saving.then((_) => repository.save(preferences));
+    final saving = _saving.then((_) async {
+      try {
+        await repository.save(preferences);
+        if (!_disposed && _saveFailed) {
+          _saveFailed = false;
+          notifyListeners();
+        }
+      } on Object {
+        if (!_disposed) {
+          _saveFailed = true;
+          notifyListeners();
+        }
+        rethrow;
+      }
+    });
     // Keep the queue usable after failure; the initiating caller still receives it.
     _saving = saving.onError<Object>((error, stackTrace) {});
     return saving;
+  }
+
+  Future<void> retrySave() async {
+    await load();
+    if (_disposed) return;
+    await _save(_preferences);
   }
 
   @override
