@@ -286,27 +286,11 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
                     ),
                   ),
               ];
-              return Column(
-                children: [
-                  for (var start = 0; start < cards.length; start += columns) ...[
-                    IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          for (var column = 0; column < columns; column++) ...[
-                            Expanded(
-                              child: start + column < cards.length
-                                  ? cards[start + column]
-                                  : const SizedBox.shrink(),
-                            ),
-                            if (column + 1 < columns) const SizedBox(width: CoeloSpacing.space6),
-                          ],
-                        ],
-                      ),
-                    ),
-                    if (start + columns < cards.length) const SizedBox(height: CoeloSpacing.space6),
-                  ],
-                ],
+              final cardWidth = (box.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
+              return Wrap(
+                spacing: CoeloSpacing.space6,
+                runSpacing: CoeloSpacing.space6,
+                children: [for (final card in cards) SizedBox(width: cardWidth, child: card)],
               );
             },
           )
