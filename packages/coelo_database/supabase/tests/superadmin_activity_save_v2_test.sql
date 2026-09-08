@@ -41,14 +41,14 @@ with source as (
   )) as function_definition
 )
 select ok(
-  pg_catalog.position('transaction_isolation' in function_definition)>0
-    and pg_catalog.position('readcommitted' in function_definition)>0,
+  pg_catalog.strpos(function_definition,'transaction_isolation')>0
+    and pg_catalog.strpos(function_definition,'readcommitted')>0,
   'aggregate rejects isolation levels that cannot refresh authorization after waits'
 ) from source;
 
 with source as (
-  select pg_catalog.substring(function_definition from pg_catalog.position(
-    'pg_catalog.pg_advisory_xact_lock' in function_definition
+  select pg_catalog.substr(function_definition,pg_catalog.strpos(
+    function_definition,'pg_catalog.pg_advisory_xact_lock'
   )) as locked_body
   from (
     select pg_catalog.lower(pg_catalog.regexp_replace(
@@ -59,16 +59,16 @@ with source as (
   ) definition
 )
 select ok(
-  pg_catalog.position('select*intostrictctxfromapp_private.activity_v2_require_context' in locked_body)>0
-    and pg_catalog.position('select*intostrictctxfromapp_private.activity_v2_require_context' in locked_body)
-      < pg_catalog.position('select*intoreceiptfromapp_private.superadmin_internal_activity_save_receipts' in locked_body)
-    and pg_catalog.position('isdistinctfromrow(initial_ctx.internal_identity_id' in locked_body)>0,
+  pg_catalog.strpos(locked_body,'select*intostrictctxfromapp_private.activity_v2_require_context')>0
+    and pg_catalog.strpos(locked_body,'select*intostrictctxfromapp_private.activity_v2_require_context')
+      < pg_catalog.strpos(locked_body,'select*intoreceiptfromapp_private.superadmin_internal_activity_save_receipts')
+    and pg_catalog.strpos(locked_body,'isdistinctfromrow(initial_ctx.internal_identity_id')>0,
   'aggregate revalidates the same internal context after the request lock and before receipt lookup'
 ) from source;
 
 with source as (
-  select pg_catalog.substring(function_definition from pg_catalog.position(
-    'pg_catalog.pg_advisory_xact_lock' in function_definition
+  select pg_catalog.substr(function_definition,pg_catalog.strpos(
+    function_definition,'pg_catalog.pg_advisory_xact_lock'
   )) as locked_body
   from (
     select pg_catalog.lower(pg_catalog.regexp_replace(
@@ -79,21 +79,21 @@ with source as (
   ) definition
 )
 select ok(
-  pg_catalog.position('pg_catalog.clock_timestamp()' in locked_body)>0
-    and pg_catalog.position('pg_catalog.clock_timestamp()' in locked_body)
-      < pg_catalog.position('select*intoreceiptfromapp_private.superadmin_internal_activity_save_receipts' in locked_body),
+  pg_catalog.strpos(locked_body,'pg_catalog.clock_timestamp()')>0
+    and pg_catalog.strpos(locked_body,'pg_catalog.clock_timestamp()')
+      < pg_catalog.strpos(locked_body,'select*intoreceiptfromapp_private.superadmin_internal_activity_save_receipts'),
   'aggregate checks session expiry against the wall clock before receipt replay'
 ) from source;
 
 with source as (
-  select function_definition,pg_catalog.substring(
-    locked_body from 1 for pg_catalog.position(
-      'select*intoreceiptfromapp_private.superadmin_internal_activity_save_receipts' in locked_body
+  select function_definition,pg_catalog.substr(
+    locked_body,1,pg_catalog.strpos(
+      locked_body,'select*intoreceiptfromapp_private.superadmin_internal_activity_save_receipts'
     )-1
   ) as before_receipt
   from (
-    select function_definition,pg_catalog.substring(function_definition from pg_catalog.position(
-      'pg_catalog.pg_advisory_xact_lock' in function_definition
+    select function_definition,pg_catalog.substr(function_definition,pg_catalog.strpos(
+      function_definition,'pg_catalog.pg_advisory_xact_lock'
     )) as locked_body
     from (
       select pg_catalog.lower(pg_catalog.regexp_replace(
@@ -110,11 +110,11 @@ select ok(
     and function_definition like '%activities.assign_people%'
     and function_definition like '%activities.manage_permissions%'
     and function_definition like '%activities.manage%'
-    and pg_catalog.position(
-      'foreachrequired_capabilityinarrayrequired_capabilitiesloop' in before_receipt
+    and pg_catalog.strpos(
+      before_receipt,'foreachrequired_capabilityinarrayrequired_capabilitiesloop'
     )>0
-    and pg_catalog.position(
-      'select*intostrictcapability_ctxfromapp_private.activity_v2_require_context' in before_receipt
+    and pg_catalog.strpos(
+      before_receipt,'select*intostrictcapability_ctxfromapp_private.activity_v2_require_context'
     )>0,
   'aggregate refreshes every applicable capability before receipt replay or mutation'
 ) from source;
