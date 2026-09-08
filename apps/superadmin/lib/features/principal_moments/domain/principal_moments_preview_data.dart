@@ -81,22 +81,53 @@ final class PrincipalMomentPreviewItem {
     required this.context,
     required this.time,
     required this.caption,
-    required this.likes,
-    required this.comments,
-    required this.shares,
-    required this.saves,
-    required this.imageIndex,
+    this.likes,
+    this.comments,
+    this.shares,
+    this.saves,
+    this.imageIndex = 0,
+    this.id,
+    this.media = const [],
   });
 
   final String author;
   final String context;
   final String time;
   final String caption;
-  final int likes;
-  final int comments;
-  final int shares;
-  final int saves;
+
+  /// Social counts are absent unless the authorised projection returned them.
+  /// The client never invents a zero: a count it was not given is not shown.
+  final int? likes;
+  final int? comments;
+  final int? shares;
+  final int? saves;
+
+  /// Fixture-only illustration index, ignored once real media arrives.
   final int imageIndex;
+
+  /// Server identifier. It addresses, it never authorises.
+  final String? id;
+
+  /// Ordered, opaque descriptors. The URL only ever comes from the gateway.
+  final List<PrincipalMomentsMediaDescriptor> media;
+}
+
+/// Opaque, viewer-bound reference to one stored asset. It carries no bucket and
+/// no object key, and expires on its own.
+final class PrincipalMomentsMediaDescriptor {
+  const PrincipalMomentsMediaDescriptor({
+    required this.readTicket,
+    required this.mimeType,
+    required this.displayOrder,
+    this.duration,
+  });
+
+  final String readTicket;
+  final String mimeType;
+  final int displayOrder;
+  final Duration? duration;
+
+  bool get isVideo => mimeType.startsWith('video/');
 }
 
 @immutable

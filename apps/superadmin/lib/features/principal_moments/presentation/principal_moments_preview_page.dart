@@ -510,7 +510,9 @@ final class _ActionRail extends StatelessWidget {
         icon: liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
         label: liked ? 'Descurtir' : 'Curtir',
         active: liked,
-        count: moment.likes + (liked ? 1 : 0),
+        // A count the projection never returned stays hidden; a local like does
+        // not turn absence into a number.
+        count: moment.likes == null ? null : moment.likes! + (liked ? 1 : 0),
         onPressed: onLike,
       ),
       _OverlayIcon(

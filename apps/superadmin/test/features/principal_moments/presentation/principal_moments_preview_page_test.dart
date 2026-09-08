@@ -453,6 +453,10 @@ const _refreshedMoment = PrincipalMomentPreviewItem(
 );
 
 final class _FakeMomentsFeedRepository implements PrincipalMomentsFeedRepository {
+  @override
+  Future<PrincipalMomentsMediaRead> resolveMedia(PrincipalMomentsMediaDescriptor media) =>
+      Future<PrincipalMomentsMediaRead>.error(const PrincipalMomentsFeedUnavailable());
+
   _FakeMomentsFeedRepository(this._load);
 
   final Future<List<PrincipalMomentPreviewItem>> Function(PrincipalMomentsFeedScope scope) _load;

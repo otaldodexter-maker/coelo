@@ -31,6 +31,22 @@ abstract interface class PrincipalMomentsFeedRepository {
   /// Implementations must fail closed. Client-side filtering is not an
   /// authorization boundary.
   Future<List<PrincipalMomentPreviewItem>> listVisibleMoments(PrincipalMomentsFeedScope scope);
+
+  /// Redeems one descriptor through the authorised gateway. The ticket is
+  /// single use and short lived, and the client never signs anything itself.
+  Future<PrincipalMomentsMediaRead> resolveMedia(PrincipalMomentsMediaDescriptor media);
+}
+
+final class PrincipalMomentsMediaRead {
+  const PrincipalMomentsMediaRead({
+    required this.signedUrl,
+    required this.mimeType,
+    required this.expiresIn,
+  });
+
+  final String signedUrl;
+  final String mimeType;
+  final Duration expiresIn;
 }
 
 /// Feature-local invalidation seam shared with the publication route.

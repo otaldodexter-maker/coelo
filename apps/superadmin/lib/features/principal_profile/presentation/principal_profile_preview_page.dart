@@ -1009,9 +1009,14 @@ final class _ProfileMomentCard extends StatelessWidget {
               Wrap(
                 spacing: CoeloSpacing.space3,
                 children: [
-                  _ProfileMetric(icon: Icons.favorite_border_rounded, value: moment.likes),
-                  _ProfileMetric(icon: Icons.chat_bubble_outline_rounded, value: moment.comments),
-                  _ProfileMetric(icon: Icons.share_outlined, value: moment.shares),
+                  // A metric the projection did not return is omitted, never
+                  // rendered as zero.
+                  if (moment.likes case final likes?)
+                    _ProfileMetric(icon: Icons.favorite_border_rounded, value: likes),
+                  if (moment.comments case final comments?)
+                    _ProfileMetric(icon: Icons.chat_bubble_outline_rounded, value: comments),
+                  if (moment.shares case final shares?)
+                    _ProfileMetric(icon: Icons.share_outlined, value: shares),
                 ],
               ),
             ],
