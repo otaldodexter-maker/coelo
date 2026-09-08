@@ -37,3 +37,16 @@ domain-only ou provas remotas. Os três goldens de Perfis continuam abertos
 conforme evidência de continuidade do detalhe; masters não foram atualizados.
 Sem SQL/remoto/mídia, não representa verified-e2e. Memória: restauração de
 contrato existente, nenhuma regra nova; rastreadores sob autoria do Coordenador.
+
+## Complemento nominal: create
+
+Reserva separada para os dois builders create de Perfis/Modelos. Dois REDs
+reais mantinham o nome digitado após redução; os oito casos anteriores passaram
+nessa rodada (8 PASS / 2 FAIL). Os builders agora usam a mesma invalidação por
+identidade/revisão, sem alterar callbacks/fallback ou habilitar comando.
+
+Regressão focal após correção: 21/21 PASS em editor (10), rotas normais,
+preview e diretórios por autorização. Analyzer de dois arquivos sem issues;
+format/diff check PASS; review realm_audit sem bloqueantes. Os dois casos novos
+verificam rascunho já digitado, não template pendente. Não somar esta execução
+à anterior de 169 como se fosse uma única rodada, nem promover a E2E.
