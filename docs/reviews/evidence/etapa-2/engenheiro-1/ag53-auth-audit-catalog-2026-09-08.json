@@ -1,0 +1,28 @@
+{
+  "probe": "agenda_auth_audit14",
+  "audit14": {
+    "oid": "22411",
+    "owner": "postgres",
+    "config": [
+      "search_path=\"\""
+    ],
+    "arguments": "p_internal_identity_id uuid, p_internal_auth_link_id uuid, p_internal_membership_id uuid, p_session_id uuid, p_permission_code text, p_aal text, p_action_code text, p_outcome audit_outcome, p_reason_code text, p_correlation_id uuid, p_institution_id uuid, p_object_type text, p_object_id uuid, p_after_json jsonb",
+    "volatility": "v",
+    "api_execute": {
+      "anon": false,
+      "service_role": false,
+      "authenticated": false
+    },
+    "return_type": "uuid",
+    "security_definer": true
+  },
+  "current_user": "postgres",
+  "auth_enum_oid": "17278",
+  "auth_enum_labels": [
+    "aal1",
+    "aal2",
+    "aal3"
+  ],
+  "server_version_num": 170006,
+  "auth_session_aal_type": "auth.aal_level"
+}
