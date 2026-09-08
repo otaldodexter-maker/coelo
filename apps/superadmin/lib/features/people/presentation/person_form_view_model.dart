@@ -151,7 +151,10 @@ final class PersonFormViewModel extends ChangeNotifier {
     if (pending != null) return pending;
     if (isReadOnly) return Future.error(const PersonDirectoryReadOnlyException());
     if ([firstName, lastName, displayName, legalName].any((value) => value.trim().isEmpty)) {
-      return Future.error(ArgumentError('Identity fields are required.'));
+      // An Exception, not an ArgumentError. An empty field is something a
+      // person does, not a bug, and Error is not caught by `on Exception` -
+      // which is exactly how this produced silence instead of a message.
+      return Future.error(const PersonFormIncompleteException());
     }
     // Capture before notifying: listeners can edit fields or reenter save.
     final draft = original == null
