@@ -138,7 +138,7 @@ void main() {
     expect(options.roles.single.institutionId, 'institution-1');
   });
 
-  test('maps the backend read-only SQLSTATE and message', () async {
+  test('legacy write retains the backend read-only SQLSTATE mapping', () async {
     final client = SupabaseClient(
       'https://example.supabase.co',
       'publishable-key',
@@ -159,7 +159,15 @@ void main() {
     addTearDown(client.dispose);
 
     expect(
-      () => SupabasePersonDirectoryRepository(client).fetchDetail('service-1'),
+      () => SupabasePersonDirectoryRepository(client).createDraft(
+        const PersonDraft(
+          type: PersonType.service,
+          firstName: 'Synthetic',
+          lastName: 'Service',
+          displayName: 'Synthetic service',
+          legalName: 'Synthetic service',
+        ),
+      ),
       throwsA(isA<PersonDirectoryReadOnlyException>()),
     );
   });
@@ -175,7 +183,7 @@ void main() {
           jsonEncode({
             'ok': true,
             'data': {
-              'id': 'person-1',
+              'id': '10000000-0000-4000-8000-000000000001',
               'first_name': 'Ana',
               'last_name': 'Lima',
               'display_name': 'Ana Lima',
@@ -198,8 +206,8 @@ void main() {
     addTearDown(client.dispose);
     final repository = SupabasePersonDirectoryRepository(client);
 
-    final first = await repository.fetchDetail('person-1');
-    final reloaded = await repository.fetchDetail('person-1');
+    final first = await repository.fetchDetail('10000000-0000-4000-8000-000000000001');
+    final reloaded = await repository.fetchDetail('10000000-0000-4000-8000-000000000001');
 
     expect(first.displayName, 'Ana Lima');
     expect(reloaded.authLink, AuthLinkStatus.linked);
@@ -210,7 +218,7 @@ void main() {
         predicate<Request>((item) {
           final body = jsonDecode(item.body) as Map<String, dynamic>;
           return item.url.path.endsWith('/rpc/superadmin_person_detail_v2') &&
-              body['p_person_id'] == 'person-1';
+              body['p_person_id'] == '10000000-0000-4000-8000-000000000001';
         }),
       ),
     );
