@@ -129,7 +129,10 @@ export async function handleFormExportDownloadRequest(
     }
     const signed = await dependencies.createR2(environment, signedAt)
       .presignGet(artifact.object_key, ttl);
-    const expiresAt = new Date(signedAt.getTime() + ttl * 1000);
+    // SigV4 serializes X-Amz-Date at whole-second precision.
+    const expiresAt = new Date(
+      Math.floor(signedAt.getTime() / 1000) * 1000 + ttl * 1000,
+    );
     if (
       !validSignedDownload(signed.url.toString()) ||
       expiresAt.getTime() <= dependencies.now().getTime()
