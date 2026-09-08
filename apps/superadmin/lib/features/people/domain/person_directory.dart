@@ -667,3 +667,13 @@ final class PersonDirectoryReadOnlyException implements Exception {
 final class PersonDirectoryUnavailableException implements Exception {
   const PersonDirectoryUnavailableException();
 }
+
+/// A save refused because the identity is not complete yet.
+///
+/// An Exception and not an Error, because an empty field is an ordinary thing
+/// for a person to do, not a programming mistake. It used to be an ArgumentError,
+/// which is an Error, so the screen's `on Exception` never caught it: saving an
+/// incomplete form produced no message at all and an unhandled async failure.
+final class PersonFormIncompleteException implements Exception {
+  const PersonFormIncompleteException();
+}

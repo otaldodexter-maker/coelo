@@ -392,7 +392,17 @@ final class _PersonFormPageState extends State<PersonFormPage> {
           const SnackBar(content: Text('A pessoa foi alterada em outra sessão. Recarregue.')),
         );
       }
-    } on Exception {
+    } on PersonFormIncompleteException {
+      if (mounted && canDeliver()) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Preencha os campos de identidade antes de salvar.')),
+        );
+      }
+    } on Object {
+      // Object, not Exception. The refusal above used to be an ArgumentError,
+      // which is an Error, so it fell straight through this catch: saving an
+      // incomplete form gave no message at all. Whatever arrives here, the
+      // person who pressed save gets an answer.
       if (mounted && canDeliver()) {
         ScaffoldMessenger.of(
           context,
