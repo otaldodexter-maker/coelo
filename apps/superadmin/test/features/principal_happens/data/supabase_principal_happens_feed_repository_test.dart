@@ -113,6 +113,124 @@ void main() {
     expect(read.signedUrl, 'https://signed.example/media');
     expect(read.expiresIn, const Duration(seconds: 60));
   });
+  for (final url in const [
+    'http://signed.example/asset',
+    'ftp://signed.example/asset',
+    'signed.example/asset',
+    '',
+  ]) {
+    test('refuses a redeemed ticket that is not an HTTPS URL: "$url"', () async {
+      final client = _client(
+        (request) async => http.Response(
+          jsonEncode({'signed_url': url, 'mime_type': 'image/jpeg', 'expires_in': 60}),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      );
+      addTearDown(client.dispose);
+      await expectLater(
+        SupabasePrincipalHappensFeedRepository(client).resolveMedia(
+          const PrincipalHappensMediaDescriptor(
+            readTicket: 'ticket',
+            mimeType: 'image/jpeg',
+            displayOrder: 0,
+          ),
+        ),
+        throwsA(isA<PrincipalHappensFeedUnavailable>()),
+      );
+    });
+  }
+
+  test('refuses a redeemed ticket without a media type', () async {
+    final client = _client(
+      (request) async => http.Response(
+        jsonEncode({
+          'signed_url': 'https://signed.example/asset',
+          'mime_type': '   ',
+          'expires_in': 60,
+        }),
+        200,
+        headers: {'content-type': 'application/json'},
+        request: request,
+      ),
+    );
+    addTearDown(client.dispose);
+    await expectLater(
+      SupabasePrincipalHappensFeedRepository(client).resolveMedia(
+        const PrincipalHappensMediaDescriptor(
+          readTicket: 'ticket',
+          mimeType: 'image/jpeg',
+          displayOrder: 0,
+        ),
+      ),
+      throwsA(isA<PrincipalHappensFeedUnavailable>()),
+    );
+  });
+
+  for (final code in const ['42501', 'PGRST301']) {
+    test('a denied feed query fails closed as unauthorized ($code)', () async {
+      final client = _client(
+        (request) async => http.Response(
+          jsonEncode({'code': code, 'message': 'denied', 'details': null, 'hint': null}),
+          403,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      );
+      addTearDown(client.dispose);
+      await expectLater(
+        SupabasePrincipalHappensFeedRepository(
+          client,
+        ).listVisiblePosts(const PrincipalHappensFeedScope(institutionId: 'institution-1')),
+        throwsA(isA<PrincipalHappensFeedUnauthorized>()),
+      );
+    });
+  }
+
+  test('any other database failure stays unavailable instead of unauthorized', () async {
+    final client = _client(
+      (request) async => http.Response(
+        jsonEncode({'code': '57014', 'message': 'timeout', 'details': null, 'hint': null}),
+        500,
+        headers: {'content-type': 'application/json'},
+        request: request,
+      ),
+    );
+    addTearDown(client.dispose);
+    await expectLater(
+      SupabasePrincipalHappensFeedRepository(
+        client,
+      ).listVisiblePosts(const PrincipalHappensFeedScope(institutionId: 'institution-1')),
+      throwsA(isA<PrincipalHappensFeedUnavailable>()),
+    );
+  });
+
+  test('a row missing a required field is refused instead of half rendered', () async {
+    final client = _client(
+      (request) async => http.Response(
+        jsonEncode([
+          {
+            'author_name': '  ',
+            'author_initials': 'EC',
+            'context_label': '3º ano A',
+            'published_at': DateTime.now().toUtc().toIso8601String(),
+            'media': const [],
+          },
+        ]),
+        200,
+        headers: {'content-type': 'application/json'},
+        request: request,
+      ),
+    );
+    addTearDown(client.dispose);
+    await expectLater(
+      SupabasePrincipalHappensFeedRepository(
+        client,
+      ).listVisiblePosts(const PrincipalHappensFeedScope(institutionId: 'institution-1')),
+      throwsA(isA<PrincipalHappensFeedUnavailable>()),
+    );
+  });
 }
 
 SupabaseClient _client(Future<http.Response> Function(http.Request request) handler) =>

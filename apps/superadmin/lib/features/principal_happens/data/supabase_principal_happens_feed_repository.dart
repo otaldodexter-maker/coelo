@@ -44,18 +44,23 @@ final class SupabasePrincipalHappensFeedRepository implements PrincipalHappensFe
         throw const PrincipalHappensFeedUnavailable();
       }
       final json = Map<String, dynamic>.from(response.data as Map);
-      final signedUrl = json['signed_url'] as String?;
+      // A redeemed ticket must come back as an HTTPS URL. Agora and Circulares
+      // already refuse anything else; Acontece was accepting any scheme.
+      final signedUrl = Uri.tryParse(json['signed_url']?.toString() ?? '');
       final mimeType = json['mime_type'] as String?;
       final expiresIn = json['expires_in'] as num?;
       if (signedUrl == null ||
+          signedUrl.scheme != 'https' ||
+          !signedUrl.hasAuthority ||
           mimeType == null ||
+          mimeType.trim().isEmpty ||
           expiresIn == null ||
           !expiresIn.isFinite ||
           expiresIn.toInt() <= 0) {
         throw const PrincipalHappensFeedUnavailable();
       }
       return PrincipalHappensMediaRead(
-        signedUrl: signedUrl,
+        signedUrl: signedUrl.toString(),
         mimeType: mimeType,
         expiresIn: Duration(seconds: expiresIn.toInt()),
       );

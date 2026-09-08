@@ -157,15 +157,9 @@ void main() {
     expect((action.decoration as BoxDecoration).color, CoeloTheme.light.colorScheme.primary);
   });
 
-  testWidgets('publish now card is semantic and exposes pressed state', (
-    tester,
-  ) async {
+  testWidgets('publish now card is semantic and exposes pressed state', (tester) async {
     var opened = false;
-    await pumpHappens(
-      tester,
-      size: const Size(1440, 1000),
-      onPublishNow: () => opened = true,
-    );
+    await pumpHappens(tester, size: const Size(1440, 1000), onPublishNow: () => opened = true);
 
     final card = find.byKey(const Key('principal-happens-publish-now-card'));
     final button = find.descendant(of: card, matching: find.byType(TextButton));
