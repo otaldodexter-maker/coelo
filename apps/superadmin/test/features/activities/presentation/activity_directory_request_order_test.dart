@@ -6,6 +6,65 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   for (final deniedPage in [false, true]) {
+    for (final lateFailure in [false, true]) {
+      test(
+        'denial clears immediately before sibling settles (page=$deniedPage error=$lateFailure)',
+        () async {
+          final first = _DeferredActivityLoad();
+          final second = _DeferredActivityLoad();
+          final viewModel = ActivityDirectoryViewModel(_OrderedActivityRepository([first, second]));
+          addTearDown(viewModel.dispose);
+          final initial = viewModel.load();
+          first.complete(
+            'previous',
+            filters: const ActivityFilterOptions(
+              institutions: [ActivityFilterOption(id: 'i', label: 'Institution')],
+              units: [ActivityFilterOption(id: 'u', label: 'Unit', parentId: 'i')],
+              groups: [ActivityFilterOption(id: 'g', label: 'Group', parentId: 'u')],
+            ),
+          );
+          await initial;
+          var finished = false;
+          final loading = viewModel.retry().then((_) => finished = true);
+          if (deniedPage) {
+            second.page.completeError(const ActivityDirectoryUnauthorizedException());
+          } else {
+            second.filters.completeError(const ActivityDirectoryUnauthorizedException());
+          }
+          await Future<void>.delayed(Duration.zero);
+          expect(viewModel.state, ActivityDirectoryLoadState.unauthorized);
+          expect(finished, isTrue);
+          expect(viewModel.visibleItems, isEmpty);
+          expect(viewModel.filterOptions.institutions, isEmpty);
+          expect(viewModel.filterOptions.units, isEmpty);
+          expect(viewModel.filterOptions.groups, isEmpty);
+          if (deniedPage) {
+            if (lateFailure) {
+              second.filters.completeError(const ActivityDirectoryUnavailableException());
+            } else {
+              second.filters.complete(const ActivityFilterOptions());
+            }
+          } else {
+            if (lateFailure) {
+              second.page.completeError(const ActivityDirectoryUnavailableException());
+            } else {
+              second.page.complete(
+                ActivityDirectoryResult(
+                  items: [_item('late')],
+                  totalCount: 1,
+                  page: 0,
+                  pageSize: 12,
+                ),
+              );
+            }
+          }
+          await loading;
+          await Future<void>.delayed(Duration.zero);
+          expect(viewModel.state, ActivityDirectoryLoadState.unauthorized);
+          expect(viewModel.visibleItems, isEmpty);
+        },
+      );
+    }
     test('authorization denial wins over another RPC failure (page=$deniedPage)', () async {
       final first = _DeferredActivityLoad();
       final second = _DeferredActivityLoad();
@@ -63,6 +122,40 @@ void main() {
     expect(viewModel.query.search, 'new query');
     expect(viewModel.visibleItems, isEmpty);
     expect(viewModel.state, ActivityDirectoryLoadState.loading);
+  });
+
+  test('stale denial does not clear newer authorized filter data', () async {
+    final first = _DeferredActivityLoad();
+    final second = _DeferredActivityLoad();
+    final viewModel = ActivityDirectoryViewModel(_OrderedActivityRepository([first, second]));
+    addTearDown(viewModel.dispose);
+    final initial = viewModel.load();
+    final newer = viewModel.setStatuses({ActivityStatus.active});
+    second.complete('authorized');
+    await newer;
+    first.filters.completeError(const ActivityDirectoryUnauthorizedException());
+    await initial;
+    expect(viewModel.state, ActivityDirectoryLoadState.success);
+    expect(viewModel.visibleItems.single.id, 'authorized');
+    first.page.completeError(const ActivityDirectoryUnavailableException());
+    await Future<void>.delayed(Duration.zero);
+    expect(viewModel.visibleItems.single.id, 'authorized');
+  });
+
+  test('denial after dispose does not notify or apply', () async {
+    final pending = _DeferredActivityLoad();
+    final viewModel = ActivityDirectoryViewModel(_OrderedActivityRepository([pending]));
+    var notifications = 0;
+    viewModel.addListener(() => notifications++);
+    final loading = viewModel.load();
+    expect(notifications, 1);
+    viewModel.dispose();
+    pending.page.completeError(const ActivityDirectoryUnauthorizedException());
+    await loading;
+    pending.filters.completeError(const ActivityDirectoryUnavailableException());
+    await Future<void>.delayed(Duration.zero);
+    expect(notifications, 1);
+    expect(viewModel.visibleItems, isEmpty);
   });
 
   test('does not apply or notify when a pending response completes after dispose', () async {
