@@ -44,6 +44,7 @@ Sem mudança produtiva, HTTP de rede, SQL, Docker ou produção nesta preparaç�
 | Criação, contexto | 77e9594: dois builders e descarte do draft; 21/21 focal | Template em voo na rota e comando real não comprovados |
 | Formulário, diálogos | 37abc763 e 471c99c8: impedir reload/callback após dispose; 45/45 regressão focal | Mesmo State, fluxo real e backend ainda não comprovados |
 | Adapter Models READ | 865d0090 detalhe; bdd6fe6c paginação; ca543993 template; 87/87 data/rotas na última rodada | Cache auxiliar de writes e contrato catálogo domain-only separados; nenhuma ampliação de grant |
+| Modelos create/update/duplicate/delete — envelopes | Reserva nominal após confronto único: dois REDs reais corrigidos; 169/169 data com 88 casos novos; analyzer/reviews sem bloqueios | Consumer local somente; prova UI/comando/persistência/reload e backend nominais abertos; sem alterar import/export |
 | Mídia consumidora/Auth M03 | ce2d9bee: parecer de proveniência, sem helper implementado | Contrato server-side de origem operacional; AAL sozinho não resolve OTP/recovery ambíguo; mídia pertence E2E3 |
 | P0 RLS/realm | Fatia três tabelas reservada ao Eng1 | Pacote nominal/replay/produção; não habilitar lote de tabelas por inferência |
 

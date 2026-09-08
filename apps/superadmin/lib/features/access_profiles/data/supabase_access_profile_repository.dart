@@ -170,21 +170,19 @@ final class SupabaseAccessProfileRepository
   );
 
   @override
-  Future<AccessProfileModel> createModel(String requestId, AccessProfileModelDraft draft) async =>
-      _modelFromReceipt(
-        await _modelRpc(
-          'superadmin_access_profile_model_create',
-          params: {'p_request_id': requestId, 'p_draft': draft.toJson()},
-        ),
+  Future<AccessProfileModel> createModel(String requestId, AccessProfileModelDraft draft) =>
+      _modelWriteRpc(
+        'superadmin_access_profile_model_create',
+        params: {'p_request_id': requestId, 'p_draft': draft.toJson()},
+        decode: _modelFromReceipt,
       );
 
   @override
-  Future<AccessProfileModel> updateModel(String requestId, AccessProfileModelDraft draft) async =>
-      _modelFromReceipt(
-        await _modelRpc(
-          'superadmin_access_profile_model_update',
-          params: {'p_request_id': requestId, 'p_draft': draft.toJson()},
-        ),
+  Future<AccessProfileModel> updateModel(String requestId, AccessProfileModelDraft draft) =>
+      _modelWriteRpc(
+        'superadmin_access_profile_model_update',
+        params: {'p_request_id': requestId, 'p_draft': draft.toJson()},
+        decode: _modelFromReceipt,
       );
 
   @override
@@ -194,7 +192,7 @@ final class SupabaseAccessProfileRepository
     required int expectedVersion,
     required String reason,
   }) async {
-    await _modelRpc(
+    await _modelWriteRpc<void>(
       'superadmin_access_profile_model_delete',
       params: {
         'p_request_id': requestId,
@@ -202,19 +200,24 @@ final class SupabaseAccessProfileRepository
         'p_expected_version': expectedVersion,
         'p_reason': reason.trim(),
       },
+      decode: (receipt) {
+        if (receipt['model_id'] != modelId ||
+            receipt['status'] != 'inactive' ||
+            receipt['version'] is! int ||
+            receipt['replayed'] is! bool) {
+          throw const FormatException();
+        }
+      },
     );
   }
 
   @override
-  Future<AccessProfileModel> duplicateModel(
-    String requestId,
-    AccessProfileModelDraft draft,
-  ) async => _modelFromReceipt(
-    await _modelRpc(
-      'superadmin_access_profile_model_duplicate',
-      params: {'p_request_id': requestId, 'p_draft': draft.toJson()},
-    ),
-  );
+  Future<AccessProfileModel> duplicateModel(String requestId, AccessProfileModelDraft draft) =>
+      _modelWriteRpc(
+        'superadmin_access_profile_model_duplicate',
+        params: {'p_request_id': requestId, 'p_draft': draft.toJson()},
+        decode: _modelFromReceipt,
+      );
 
   @override
   Future<AccessProfileModelExport> exportModels(AccessProfileDomain domain) async =>
@@ -294,6 +297,46 @@ final class SupabaseAccessProfileRepository
           'SAI_MFA_REQUIRED',
         }.contains(code)) {
           throw const AccessProfileUnauthorizedException();
+        }
+        throw const FormatException();
+      }
+      final data = envelope['data'];
+      if (envelope['ok'] != true || envelope['error'] != null || data is! Map) {
+        throw const FormatException();
+      }
+      return decode(Map<String, dynamic>.from(data));
+    } on AccessProfileException {
+      rethrow;
+    } catch (_) {
+      throw const AccessProfileException('Não foi possível concluir a operação. Tente novamente.');
+    }
+  }
+
+  // Model commands return an envelope containing the command receipt.
+  // Profiles list has a distinct raw payload and must not use this decoder.
+  Future<T> _modelWriteRpc<T>(
+    String functionName, {
+    required Map<String, dynamic> params,
+    required T Function(Map<String, dynamic>) decode,
+  }) async {
+    try {
+      final envelope = await _modelRpc(functionName, params: params);
+      if (envelope['ok'] == false) {
+        final error = envelope['error'];
+        final code = error is Map ? error['code'] : null;
+        if (const {
+          'SAI_AUTH_REQUIRED',
+          'SAI_SESSION_INVALID',
+          'SAI_INTERNAL_CONTEXT_DENIED',
+          'SAI_MEMBERSHIP_SUSPENDED',
+          'SAI_MEMBERSHIP_REVOKED',
+          'SAI_PERMISSION_DENIED',
+          'SAI_MFA_REQUIRED',
+        }.contains(code)) {
+          throw const AccessProfileUnauthorizedException();
+        }
+        if (code == 'SAI_CONCURRENT_CHANGE') {
+          throw const AccessProfileConflictException();
         }
         throw const FormatException();
       }

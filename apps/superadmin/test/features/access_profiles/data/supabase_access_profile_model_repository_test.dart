@@ -67,7 +67,11 @@ void main() {
     final calls = <Map<String, dynamic>>[];
     final client = _client((request, body) {
       calls.add({'path': request.url.path, 'body': body});
-      return {'model': _modelJson()};
+      return {
+        'ok': true,
+        'data': {'model': _modelJson(), 'model_id': 'model-1', 'version': 3, 'replayed': false},
+        'error': null,
+      };
     });
     addTearDown(client.dispose);
     final repository = SupabaseAccessProfileRepository(client);
@@ -105,6 +109,13 @@ void main() {
     final calls = <String, Map<String, dynamic>>{};
     final client = _client((request, body) {
       calls[request.url.path.split('/').last] = body;
+      if (request.url.path.endsWith('superadmin_access_profile_model_delete')) {
+        return {
+          'ok': true,
+          'data': {'model_id': 'model-1', 'status': 'inactive', 'version': 4, 'replayed': false},
+          'error': null,
+        };
+      }
       if (request.url.path.endsWith('models_export')) {
         return {
           'format_version': 'access-profile-models-v1',
