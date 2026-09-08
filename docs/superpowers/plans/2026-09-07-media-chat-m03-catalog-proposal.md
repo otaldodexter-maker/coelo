@@ -130,7 +130,9 @@ Variantes precisam de asset FK, perfil/rendição allowlisted, localização
 física opaca, MIME/checksum/bytes/dimensões verificados e unicidade por ativo/
 perfil; não carregar nova entidade proprietária.
 
-1. Prepare com JWT real reautoriza chat.internal.send/AAL e conversa.
+1. Prepare com JWT real reautoriza chat.internal.send e conversa, seguindo
+   a política AAL vigente do helper interno (adiamento MFA existente, sem
+   inventar exigência diferente nesta vertical).
 2. Reserva UUID de mensagem sem INSERT visível e ativo pending; idempotência
    por ator/request com hash completo de intenção. Nenhuma chave cliente.
 3. PUT temporário no transitório via gateway/credencial server-side.
@@ -146,6 +148,96 @@ perfil; não carregar nova entidade proprietária.
 
 As assinaturas RPC, hashes e locks deste fluxo são o próximo review técnico;
 este documento não se apresenta como DDL executável completo.
+
+## Boundary nominal de finalize para review
+
+Precedente local: `20260821112822_moments_publication_mvp.sql:554–680`
+separa authorize autenticado de finalize privilegiado com ticket opaco. Reusar
+o princípio, não sua identidade people nem sua verificação baseada em tamanho
+declarado/HEAD. Nenhum claim JWT sintético para representar ator interno.
+
+Assinaturas candidatas (nomes ainda sujeitos à reserva de migration):
+
+| Executor | RPC candidata | Responsabilidade |
+| --- | --- | --- |
+| authenticated, JWT real | prepare_chat_image_v1(uuid request_id, uuid conversation_id, jsonb declared_input) | Derivar ator/escopo, reservar ativo/sessão/mensagem invisível; devolver IDs opacos |
+| authenticated, JWT real | authorize_chat_image_finalize_v1(uuid upload_session_id) | Reautorizar; emitir ticket de operação vinculado à sessão/ator reais |
+| service_role somente | claim_chat_image_finalize_v1(uuid request_id, uuid upload_session_id, uuid ticket) | Consumir autorização, revalidar contexto persistido, reservar lease e devolver localizadores físicos somente ao gateway |
+| service_role somente | complete_chat_image_finalize_v1(uuid request_id, uuid upload_session_id, uuid lease_token, jsonb verified_outputs) | Revalidar contexto/lease, gravar provas verificadas e tornar ready atomicamente |
+
+Prepare aceita apenas nome de apresentação/MIME/bytes/checksum declarados e
+limitados; nunca bucket, key, owner ou instituição autoritativa. O gateway
+encaminha o bearer real para as RPCs autenticadas. O cliente não pode chamar
+complete com dimensões/checksum inventados: ACL exclusiva do executor servidor,
+sem grants de escrita na tabela. O gateway calcula outputs dos bytes relidos e
+normalizados, nunca copia campos finais do corpo do cliente.
+
+Ticket aleatório: armazenar somente hash, operação, upload_session, IDs reais
+de identity/auth-link/membership/auth-session, expiração e consumo. Claim e
+complete conferem correspondência integral; ticket roubado de outro ativo ou
+operação não serve. Claim retorna lease opaca com versão, prazo e receipt;
+retry idêntico não inicia outro processamento. Nenhuma transação SQL fica
+aberta enquanto o decoder/R2 executa.
+Lease expirada nunca é devolvida como utilizável: retry do claim informa
+expired; nova tentativa exige nova autorização e nova chave de claim. A versão
+é vinculada inequivocamente ao lease_token persistido e conferida em complete,
+sem aceitar versão implícita do cliente.
+
+No consumo privilegiado, um helper privado nominal deriva o contexto da sessão
+de upload persistida. Revalida auth session existente/não expirada, usuário,
+auth-link e membership correspondentes ativos, papel, permissão e escopo atuais,
+mais conversa ativa/não-read-only. IDs livres do gateway não autorizam. A
+referência de política é require_superadmin_internal_context(text), inclusive
+`20260901200206_defer_superadmin_internal_mfa_until_mvp_go_live.sql`; extrair
+núcleo comum ou mudar helper compartilhado exige reserva/review com E2E1.
+Não reintroduzir MFA por inferência: o helper vigente aceita aal1/aal2.
+
+Lock order a fechar com os writers de revogação de E2E1: intenção idempotente →
+sessões de upload em ordem UUID → ativos em ordem UUID → contexto autorizado
+em ordem fixa → receipt/audit. Send/finalize/discard devem compartilhar a mesma
+ordem; um SELECT isolado não resolve revogação concorrente. Revalidação final
+com locks compatíveis impede ready após revogação vencedora. O protocolo ainda
+não está fechado enquanto essa compatibilidade não for provada.
+
+Complete exige versão/token/lease vigentes e hash exato de outputs; replay de
+receipt também exige autorização atual. Escrita parcial no R2 nunca produz
+ready: registrar os objetos reservados para cleanup repetível, sem expirar
+masters amplamente. Send só consome conjunto integralmente ready, com bindings
+atômicos e recibo distinto do hash textual v2 já existente.
+
+Negativos adicionais: authenticated chamando complete; serviço sem ticket;
+ticket/session/lease adulterados; revogação authorize→claim e claim→complete;
+dois claims concorrentes; lease expirada; mesmo request com outputs divergentes;
+R2 parcialmente gravado; send/discard concorrentes. Ainda não executados.
+
+## Decoder: recomendação técnica pendente de decisão nominal
+
+Recomendação de review: Images binding como processador auxiliar, lendo stream
+privado e devolvendo bytes normalizados para R2. Não usar Images hosted/storage,
+URL pública, cache público ou redirecionamento ao bruto em caso de falha.
+Nenhuma configuração, dependência, custo ou recurso foi ativado.
+
+- Binding aceita stream, informa formato/dimensões via info e processa via
+  input/transform/output. Info/HEAD/magic bytes não comprovam decode completo.
+  Emulação local é baixa fidelidade; produção exige teste nominal autorizado
+  de alta fidelidade. [Cloudflare binding](https://developers.cloudflare.com/images/optimization/binding/)
+- WebP/PNG descartam metadata segundo documentação; JPEG exige metadata:none.
+  Orientação e perfil de cor são aplicados antes do descarte. Provar por
+  inspeção independente de fixtures EXIF/GPS/XMP/ICC, não só por flag booleana.
+  [Cloudflare metadata](https://developers.cloudflare.com/images/optimization/features/#metadata)
+- Decoder WASM RGBA integral de 36 MP precisa de 144 MB só para pixels, acima
+  dos 128 MB por isolate Worker; buffers/encoder ampliam consumo. Inferência
+  técnica: essa abordagem ingênua não suporta os limites aprovados. Não reduzir
+  limites Coelo silenciosamente para acomodá-la.
+  [Cloudflare memória](https://developers.cloudflare.com/workers/platform/limits/#memory)
+
+Antes do uso: fechar habilitação/custo nominal com Coordenador, limites exatos
+de bytes do serviço versus MiB Coelo, contagem de pixels/frames, arquivos
+truncados/disfarçados, transparência/orientação, limite de saída/checksum e
+fixtures reais. anim:false normaliza, não prova rejeição de GIF animado;
+allowlist deve rejeitar GIF/SVG reais antes. Política para outras animações não
+pode ser inventada. Decoder/scan são controles diferentes. A recomendação não
+conclui M03 nem autoriza teste remoto, --remote ou billing.
 
 ## Compatibilidade e segurança bloqueantes
 
