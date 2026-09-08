@@ -26,6 +26,22 @@ for code, executor in state['executors'].items():
     if path.exists():
         branch = subprocess.check_output(['git', '-C', str(path), 'branch', '--show-current'], text=True).strip()
         assert branch == executor['branch'], (code, branch)
+for code, coordinator in state.get('operational_coordinators', {}).items():
+    assert code not in {a['executor'] for a in assigned}, 'operational coordinator cannot own product actions'
+    assert coordinator['action_ids'] == []
+    assignment = (operation / f'assignments/{code}.md').read_text(encoding='utf8')
+    prompt = (operation / f'next-round/R01-{code}-prompt.md').read_text(encoding='utf8')
+    assert coordinator['path'] in assignment and coordinator['branch'] in prompt
+    path = Path(coordinator['path'])
+    assert path.is_dir(), (code, 'missing worktree')
+    branch = subprocess.check_output(['git', '-C', str(path), 'branch', '--show-current'], text=True).strip()
+    assert branch == coordinator['branch'], (code, branch)
+    handoff = Path(coordinator['handoff_path'])
+    assert handoff == path / f'docs/reviews/etapa-2-operacao/handoffs/{code}.md'
+    metadata = yaml.safe_load(handoff.read_text(encoding='utf8').split('---', 2)[1])
+    assert all(metadata.get(k) for k in ('source', 'status', 'generated_at'))
+    if coordinator['operational_ack'] is None:
+        assert coordinator['status'].startswith('prepared-')
 for path in operation.rglob('*.md'):
     content = path.read_text(encoding='utf8')
     assert content.startswith('---\n'), path
@@ -34,4 +50,4 @@ for path in operation.rglob('*.md'):
 assert not list((operation / 'handoffs').glob('C[0-9][0-9].md')), 'C00 must not fabricate executor handoffs'
 assert state['delivery_branch'] == 'dev'
 assert state['window_end'] == '2026-09-16T12:20:00-03:00'
-print('PASS: 219 IDs with one owner; five assignments/prompts; frontmatter; observed branches; no fabricated handoffs.')
+print('PASS: 219 IDs with five implementation owners; operational coordinators isolated; assignments/prompts/frontmatter/branches valid; bootstrap handoffs distinct from acknowledgements.')

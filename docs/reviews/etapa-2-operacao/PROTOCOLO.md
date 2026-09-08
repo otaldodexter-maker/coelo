@@ -131,3 +131,8 @@ Assignments C02 I008, C03 I009, C04 I008 e C05 I007 concedem arquivos nominais e
 ## Instrução do Owner — máximo de subagentes — 2026-09-08T17:05:59-03:00
 
 C00 abriu3subagentes nos3slots disponíveis: models_replay_profile (2runners/perfil/teste nominais, sem SQLruntime), forms_sql_review (somente leitura de candidatos) e client_integration_review (somente leitura de lotes). C01I009/C02I011/C03I010/C04I010/C05I008 propagam máxima concorrência útil e todas as reservas/leases. Pais continuam únicos escritores do Git/handoff em cada worktree; apenas C00 altera trackers. IDs/atividade efetivos devem constar no handoff, sem simular agentes criados.
+
+
+## Coordenação Claude C06 — 2026-09-08T17:29:41-03:00
+
+Owner incluiu E2 R01 C06 — Coordenador Claude. Worktree `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c06`, branch `claude/e2-r01-c06-coordenacao`, ID real ainda pendente. Assignment C06I001 na C00; resumo exclusivo `C:\Users\adrie\Documents\Coelo.worktrees\e2-r01-c06\docs\reviews\etapa-2-operacao\handoffs\C06.md`. Preparação r0 não é ack. Depois de r1 com operational_ack I001, C06 assume acompanhamento/retomadas C04/C05 e C00 lê seu resumo primeiro, mantendo acesso aos originais e responsabilidade exclusiva por integração, rastreadores e reservas/leases. Até ack, C00 cobre exceções; não há duas cobranças ativas. C06 usa ledger por executor/revisão/causa, máximo uma retomada por causa; encaminha decisões técnicas C00 sem inventar autorização. C04/C05 continuam seus próprios handoffs, commits e mecanismos de trabalho, consultam instruções operacionais C06 no limite de lote; código/política permanecem assignments C00. Sem ponte de teclado/API paga. Nenhuma nova conversa criada automaticamente. C06 não recebe action_ids e não altera denominadores.

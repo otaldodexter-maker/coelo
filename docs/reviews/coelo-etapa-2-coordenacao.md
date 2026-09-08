@@ -19,6 +19,10 @@ Este bloco prevalece operacionalmente. Todo conteúdo abaixo de **Histórico pre
 - Janela Owner: **08/09/2026 12:20 → 16/09/2026 12:20**, America/Sao_Paulo. Owner confirmou **dev como entrega e localhost ligado diretamente ao Supabase real**. Push de branch R01 é distinto de merge/dev, execução localhost e deploy/produção.
 - Preparação `2026-09-08T12:19:18-03:00`: inspeção Git, inventário e instruções; zero ação do produto promovida, zero pacote remoto aplicado. Critério de parada desta preparação: seis worktrees válidas,219 IDs com dono único, protocolo/prompts/automação verificados, ponto de retomada preservado.
 
+### C06 — delegação operacional Claude (2026-09-08T17:29:41-03:00)
+
+C06 está preparado em `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c06`, branch `claude/e2-r01-c06-coordenacao`, baseline `f0763a657ca6e5422cc42fa61c0c3c4ca724e129`. Nome: **E2 R01 C06 — Coordenador Claude**; ID pendente de abertura pelo Owner. Prompt `etapa-2-operacao/next-round/R01-C06-prompt.md`; handoff exclusivo `C:\Users\adrie\Documents\Coelo.worktrees\e2-r01-c06\docs\reviews\etapa-2-operacao\handoffs\C06.md`. Modelo r0 preparado não comprova recebimento. C06 só coordena operacionalmente C04/C05; 219 IDs continuam com os cinco executores. Após r1/ack I001, C00 consulta resumo C06, evita cobranças operacionais duplicadas e mantém originais para integrar/verificar. C00 segue único integrador/escritor; nenhuma transferência desse papel. Rotas/ledger no estado operacional/protocolo/assignment C06.
+
 ### Registro das conversas e ownership
 
 As cinco conversas não foram criadas automaticamente. O Owner abre a sessão na pasta e cola o prompt em `etapa-2-operacao/next-round/R01-CXX-prompt.md`. Primeiro handoff registra ID real/modelo e confirma I001. Não usar IDs das rodadas antigas.
@@ -43,7 +47,7 @@ Rastreadores sincronizados C01/r30, C02/r29, C03/r13, C04/r17, C05/r10; fontes/h
 
 Código C00local e14ed9c0 inclui Pessoas24/24/analyzer3 e o lote anterior86ba8570: shell3693d180/ec9826f3, seleçãof4f0105a eimports86ba8570.165PASS/4falhas estáticas anteriores; analyzer7limpo. Lote atual publicado em dev6eb23bd7 e C00, ls-remote confirmado2026-09-08T16:57:45-03:00; sem deploy/apply. Reservas C02I008/C03I009/C04I008/C05I007 e lease XLSX exclusiva C02. C00corrigiu contagem da source69migrations, não71. Personas Auth ainda sem pacote remoto concreto/aprovado/provisionado. Relatório R01-checkpoint-1600.md.
 
-Delta focal C03r15/Pessoas incorporado sem ampliar recebimento global de r14–r18. XLSX132/132 e edição56/56 relatados C02, pacotes ainda em revisão. Scratch C04 já não está pausado na inspeção16:53, origem da mudança desconhecida; novas leases SQL retidas até preservação/liberação.
+Delta focal C03r15/Pessoas incorporado sem ampliar recebimento global de r14–r18. XLSX132/132 e edição56/56 relatados C02, pacotes ainda em revisão. C04r20 assumiu unpause16:50 e cleanup16:58; Docker vazio confirmado17:21. Origem reconciliada; futuras leases exigem concessão nominal. Models candidato integrado5f1911a8 com suite43a900e0 e tooling6e1e2461; GREEN31 ainda não executado. Edição Forms integradaf0763a65 após revisão/56TAP local; sem aplicação remota.
 
 ### Ack inicial C01 — 2026-09-08T12:25:00-03:00
 

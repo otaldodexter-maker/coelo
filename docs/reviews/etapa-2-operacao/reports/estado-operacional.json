@@ -5,7 +5,7 @@
   "round": "R01",
   "writer": "01a0818b-2a34-7fa3-a9aa-f191fc91cc8d",
   "writer_active": true,
-  "code_baseline": "e14ed9c0",
+  "code_baseline": "f0763a65",
   "window_start": "2026-09-08T12:20:00-03:00",
   "window_end": "2026-09-16T12:20:00-03:00",
   "delivery_branch": "dev",
@@ -124,7 +124,7 @@
       "thread_id": null,
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c04",
       "branch": "claude/e2-r01-c04-estruturas",
-      "instruction_revision": 10,
+      "instruction_revision": 11,
       "received_revision": 17,
       "integrated_revision": 0,
       "last_evidence": "2026-09-08T15:58:00-03:00",
@@ -150,7 +150,7 @@
       "thread_id": null,
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c05",
       "branch": "claude/e2-r01-c05-comunicacao",
-      "instruction_revision": 8,
+      "instruction_revision": 9,
       "received_revision": 10,
       "integrated_revision": 0,
       "last_evidence": "2026-09-08T15:54:48-03:00",
@@ -1071,5 +1071,67 @@
         "status": "I008 published;new receipt pending;latest r14 acknowledges I007"
       }
     }
+  },
+  "operational_coordinators": {
+    "C06": {
+      "name": "E2 R01 C06 — Coordenador Claude",
+      "thread_id": null,
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c06",
+      "branch": "claude/e2-r01-c06-coordenacao",
+      "baseline": "f0763a657ca6e5422cc42fa61c0c3c4ca724e129",
+      "handoff_path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06\\docs\\reviews\\etapa-2-operacao\\handoffs\\C06.md",
+      "instruction_revision": 1,
+      "received_revision": null,
+      "accepted_revision": null,
+      "status": "prepared-awaiting-owner-open-and-ack",
+      "operational_ack": null,
+      "scope": [
+        "C04",
+        "C05"
+      ],
+      "action_ids": [],
+      "automation_id": null,
+      "created_at": "2026-09-08T17:29:41-03:00",
+      "bootstrap_commit": "2ed8513842a1d2f3f595645c7e868ad00662fefd",
+      "push_verified_at": "2026-09-08T17:34:14-03:00"
+    }
+  },
+  "operational_routing": {
+    "delegated_by_owner_at": "2026-09-08T17:29:41-03:00",
+    "C01": "C00",
+    "C02": "C00",
+    "C03": "C00",
+    "C04": "C06 after I001 ack;C00 material fallback before ack",
+    "C05": "C06 after I001 ack;C00 material fallback before ack",
+    "technical_authority": "C00",
+    "sole_tracker_writer": "C00",
+    "sole_integrator": "C00",
+    "dedup_key": [
+      "round",
+      "executor",
+      "source_revision",
+      "cause"
+    ],
+    "c06_summary_first": true,
+    "original_evidence_access": "retained by C00;read for code review/integration/discrepancies",
+    "coordination_epoch": "R01-C06-01",
+    "effective_at": null,
+    "source_cut_before_transfer": {
+      "global_tracker_sync": {
+        "C04": 17,
+        "C05": 10
+      },
+      "partial_operational_review": {
+        "C04": 20,
+        "C05": 14
+      },
+      "instruction_revisions": {
+        "C04": 11,
+        "C05": 9
+      },
+      "note": "Partial technical reviews are not full handoff synchronization;C06 records own fixed cut in r1"
+    },
+    "heartbeat_updated_at": "2026-09-08T17:34:14-03:00",
+    "heartbeat_id": "e2-r01-c00-acompanhamento-30-min"
   }
 }
