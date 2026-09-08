@@ -18,7 +18,9 @@ void main() {
         home: Theme(
           data: CoeloTheme.dark,
           child: AssessmentClosingDetailPage(
-            repository: _PageAssessmentRepository.immediate(_pageBook('book-a', 'Aluno A')),
+            repository: _PageAssessmentRepository.immediate(
+              _pageBook('book-a', 'Aluno A', status: AssessmentGradebookStatus.submitted),
+            ),
             gradebookId: 'book-a',
             logout: unavailableSuperadminLogout,
             onBack: () {},
@@ -34,6 +36,76 @@ void main() {
       Brightness.dark,
     );
   });
+
+  testWidgets('closing actions follow the backend state machine', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    for (final expectation in const [
+      (
+        status: AssessmentGradebookStatus.draft,
+        canReturn: false,
+        canReview: false,
+        canPublish: false,
+      ),
+      (
+        status: AssessmentGradebookStatus.submitted,
+        canReturn: true,
+        canReview: true,
+        canPublish: false,
+      ),
+      (
+        status: AssessmentGradebookStatus.reviewed,
+        canReturn: true,
+        canReview: false,
+        canPublish: true,
+      ),
+      (
+        status: AssessmentGradebookStatus.published,
+        canReturn: false,
+        canReview: false,
+        canPublish: false,
+      ),
+    ]) {
+      final status = expectation.status;
+      await tester.pumpWidget(
+        _app(
+          ValueKey(status),
+          _PageAssessmentRepository.immediate(
+            _pageBook(
+              'book-${status.name}',
+              'Aluno',
+              status: status,
+              studentState: AssessmentStudentState.complete,
+            ),
+          ),
+          'book-${status.name}',
+          closing: true,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Devolver')).onPressed !=
+            null,
+        expectation.canReturn,
+        reason: '${status.name} return',
+      );
+      expect(
+        tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Revisar')).onPressed !=
+            null,
+        expectation.canReview,
+        reason: '${status.name} review',
+      );
+      expect(
+        tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Publicar')).onPressed !=
+            null,
+        expectation.canPublish,
+        reason: '${status.name} publish',
+      );
+    }
+  });
+
   testWidgets('closing detail reloads when only gradebook ID changes', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -57,7 +129,9 @@ void main() {
       await tester.binding.setSurfaceSize(const Size(1440, 1000));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       final key = GlobalKey();
-      final a = _PageAssessmentRepository.immediate(_pageBook('book-a', 'Aluno A'));
+      final a = _PageAssessmentRepository.immediate(
+        _pageBook('book-a', 'Aluno A', status: AssessmentGradebookStatus.submitted),
+      );
       a.pendingTransition = Completer<AssessmentGradebook>();
       final b = _PageAssessmentRepository.immediate(_pageBook('book-b', 'Aluno B'));
       await tester.pumpWidget(_app(key, a, 'book-a', closing: true));
@@ -142,7 +216,9 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final key = GlobalKey();
-    final a = _PageAssessmentRepository.immediate(_pageBook('book-a', 'Aluno A'));
+    final a = _PageAssessmentRepository.immediate(
+      _pageBook('book-a', 'Aluno A', status: AssessmentGradebookStatus.submitted),
+    );
     final b = _PageAssessmentRepository.immediate(_pageBook('book-b', 'Aluno B'));
     await tester.pumpWidget(_app(key, a, 'book-a', closing: true));
     await tester.pumpAndSettle();
@@ -312,10 +388,15 @@ Widget _app(
         ),
 );
 
-AssessmentGradebook _pageBook(String id, String studentName) => AssessmentGradebook(
+AssessmentGradebook _pageBook(
+  String id,
+  String studentName, {
+  AssessmentGradebookStatus status = AssessmentGradebookStatus.draft,
+  AssessmentStudentState studentState = AssessmentStudentState.notStarted,
+}) => AssessmentGradebook(
   id: id,
   version: 1,
-  status: AssessmentGradebookStatus.draft,
+  status: status,
   context: const AssessmentContext.sample(),
   configuration: const AssessmentConfiguration(
     id: 'configuration-1',
@@ -329,7 +410,12 @@ AssessmentGradebook _pageBook(String id, String studentName) => AssessmentGradeb
     competencies: [],
   ),
   students: [
-    AssessmentStudentEntry(id: 'student-$id', childContextId: 'child-$id', name: studentName),
+    AssessmentStudentEntry(
+      id: 'student-$id',
+      childContextId: 'child-$id',
+      name: studentName,
+      state: studentState,
+    ),
   ],
 );
 

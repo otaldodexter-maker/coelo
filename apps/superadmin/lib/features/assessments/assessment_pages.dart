@@ -1901,6 +1901,11 @@ final class _AssessmentClosingDetailPageState extends State<AssessmentClosingDet
         }
         final book = state.gradebook;
         final colors = Theme.of(context).colorScheme;
+        final canReturn =
+            book.status == AssessmentGradebookStatus.submitted ||
+            book.status == AssessmentGradebookStatus.reviewed;
+        final canReview = book.status == AssessmentGradebookStatus.submitted;
+        final canPublish = book.status == AssessmentGradebookStatus.reviewed;
         return Padding(
           padding: const EdgeInsets.all(CoeloSpacing.space6),
           child: Column(
@@ -1962,7 +1967,9 @@ final class _AssessmentClosingDetailPageState extends State<AssessmentClosingDet
                 tertiaryAction: TextButton(onPressed: widget.onBack, child: const Text('Voltar')),
                 continuationActions: [
                   OutlinedButton(
-                    onPressed: () => _action(AssessmentClosingAction.returnToTeacher),
+                    onPressed: _controller.saving || !canReturn
+                        ? null
+                        : () => _action(AssessmentClosingAction.returnToTeacher),
                     style: ButtonStyle(
                       foregroundColor: WidgetStatePropertyAll(colors.error),
                       backgroundColor: WidgetStateProperty.resolveWith(
@@ -1978,7 +1985,9 @@ final class _AssessmentClosingDetailPageState extends State<AssessmentClosingDet
                     child: const Text('Devolver'),
                   ),
                   OutlinedButton(
-                    onPressed: () => _action(AssessmentClosingAction.review),
+                    onPressed: _controller.saving || !canReview
+                        ? null
+                        : () => _action(AssessmentClosingAction.review),
                     child: const Text('Revisar'),
                   ),
                   if (book.hasPending || _reviewEditsDirty)
@@ -1987,7 +1996,8 @@ final class _AssessmentClosingDetailPageState extends State<AssessmentClosingDet
                       child: const Text('Completar pendências'),
                     ),
                   FilledButton(
-                    onPressed: book.hasPending || _reviewEditsDirty
+                    onPressed:
+                        _controller.saving || !canPublish || book.hasPending || _reviewEditsDirty
                         ? null
                         : () => _action(AssessmentClosingAction.publish),
                     child: const Text('Publicar'),
