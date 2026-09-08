@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/agenda/data/agenda_prototype_store.dart';
 import 'package:coelo_superadmin/features/agenda/domain/agenda_models.dart';
+import 'package:coelo_superadmin/features/agenda/domain/agenda_repository.dart';
 import 'package:coelo_superadmin/features/agenda/presentation/agenda_event_form_page.dart';
+import 'package:coelo_superadmin/features/agenda/presentation/agenda_reservation_conflict_dialog.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -10,6 +14,127 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   AgendaPrototypeStore store() =>
       AgendaPrototypeStore.seeded(clock: () => DateTime(2026, 8, 3, 12));
+
+  testWidgets('reservation dialog preserves the local dark theme above root navigator', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Theme(
+          data: CoeloTheme.dark,
+          child: Builder(
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () => showAgendaReservationConflictOverrideDialog(context),
+                child: const Text('Abrir conflito'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Abrir conflito'));
+    await tester.pumpAndSettle();
+    expect(
+      Theme.of(
+        tester.element(find.byKey(const Key('agenda-reservation-override-dialog'))),
+      ).brightness,
+      Brightness.dark,
+    );
+  });
+
+  for (final stage in ['save', 'occurrence', 'publication']) {
+    testWidgets('pending $stage stops after form context changes', (tester) async {
+      final a = _PendingFormRepository(stage);
+      final b = store();
+      final saved = <String>[];
+      await tester.pumpWidget(
+        _app(store: a, eventId: 'routine-ballet', canPublish: false, onSaved: saved.add),
+      );
+      await _goToReview(tester);
+      final publish = tester
+          .widget<FilledButton>(find.byKey(const Key('agenda-wizard-publish')))
+          .onPressed!;
+      publish();
+      publish();
+      await tester.pump();
+      await tester.pump();
+      expect(a.saves, 1);
+      expect(a.occurrences, stage == 'save' ? 0 : 1);
+      expect(a.publications, stage == 'publication' ? 1 : 0);
+      final occurrenceCalls = a.occurrences;
+      final publicationCalls = a.publications;
+      await tester.pumpWidget(_app(store: b, eventId: 'event-parents', onSaved: saved.add));
+      a.pending.complete(AgendaMutationResult.success);
+      await tester.pumpAndSettle();
+      expect(saved, isEmpty);
+      expect(a.occurrences, occurrenceCalls);
+      expect(a.publications, publicationCalls);
+      expect(b.publicationRequests, isEmpty);
+      expect(find.text(b.itemById('event-parents')!.title), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('conflict dialog closes on context change without completing old save', (
+    tester,
+  ) async {
+    final a = _PendingFormRepository('save');
+    final b = store();
+    final saved = <String>[];
+    await tester.pumpWidget(_app(store: a, eventId: 'event-parents', onSaved: saved.add));
+    await _goToReview(tester);
+    await tester.tap(find.byKey(const Key('agenda-wizard-save-draft')));
+    a.pending.complete(AgendaMutationResult.reservationConflict);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('agenda-reservation-override-dialog')), findsOneWidget);
+    final navigator = Navigator.of(
+      tester.element(find.byKey(const Key('agenda-reservation-override-dialog'))),
+      rootNavigator: true,
+    );
+    unawaited(
+      navigator.push<void>(
+        MaterialPageRoute<void>(builder: (_) => const Scaffold(body: Text('Rota sentinela'))),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(_app(store: b, eventId: 'routine-ballet', onSaved: saved.add));
+    await tester.pumpAndSettle();
+    expect(find.text('Rota sentinela'), findsOneWidget);
+    navigator.pop();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('agenda-reservation-override-dialog')), findsNothing);
+    expect(a.saves, 1);
+    expect(saved, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('same form reloads fields when event ID changes', (tester) async {
+    final prototype = store();
+    await tester.pumpWidget(_app(store: prototype, eventId: 'event-parents'));
+    final a = prototype.itemById('event-parents')!;
+    final b = prototype.itemById('routine-ballet')!;
+    expect(find.text(a.title), findsOneWidget);
+    await tester.pumpWidget(_app(store: prototype, eventId: b.id));
+    await tester.pump();
+    expect(find.text(b.title), findsOneWidget);
+    expect(find.text(a.title), findsNothing);
+  });
+
+  testWidgets('repository swap resets draft edits and wizard step', (tester) async {
+    final a = store();
+    final b = store();
+    b.upsertItem(b.itemById('event-parents')!.copyWith(title: 'Evento B'));
+    await tester.pumpWidget(_app(store: a, eventId: 'event-parents'));
+    await tester.enterText(find.byType(CoeloFormTextField).first, 'Edição sensível A');
+    await _continue(tester);
+    await tester.pumpWidget(_app(store: b, eventId: 'event-parents'));
+    await tester.pump();
+    expect(find.text('Evento B'), findsOneWidget);
+    expect(find.text('Edição sensível A'), findsNothing);
+    expect(find.byKey(const Key('agenda-event-type')), findsOneWidget);
+  });
 
   testWidgets('dados básicos expõem nove tipos, contexto principal e audiência refinada', (
     tester,
@@ -370,7 +495,7 @@ void main() {
 }
 
 Widget _app({
-  required AgendaPrototypeStore store,
+  required AgendaRepository store,
   String? eventId,
   bool canPublish = true,
   bool actionsAvailable = true,
@@ -398,4 +523,58 @@ Future<void> _goToReview(WidgetTester tester) async {
   await _continue(tester);
   await _continue(tester);
   await _continue(tester);
+}
+
+final class _PendingFormRepository extends AgendaRepository {
+  _PendingFormRepository(this.stage);
+  final String stage;
+  final delegate = AgendaPrototypeStore.seeded(clock: () => DateTime(2026, 8, 3, 12));
+  final pending = Completer<AgendaMutationResult>();
+  int saves = 0, occurrences = 0, publications = 0;
+  @override
+  DateTime get referenceDate => delegate.referenceDate;
+  @override
+  List<AgendaItem> get items => delegate.items;
+  @override
+  List<AgendaContext> get contexts => delegate.contexts;
+  @override
+  AgendaItem? itemById(String id) => delegate.itemById(id);
+  @override
+  bool get supportsOccurrenceScopedEdits => true;
+  @override
+  String? get lastSavedItemId => 'routine-ballet';
+  @override
+  PermissionResolution resolveCapability(String contextId, AgendaCapability capability) =>
+      delegate.resolveCapability(contextId, capability);
+  @override
+  FutureOr<AgendaMutationResult> saveItem(
+    AgendaItem item, {
+    required String actorContextId,
+    String actorName = 'Owner Coelo',
+    bool overrideConflict = false,
+    String? reason,
+  }) {
+    saves++;
+    return stage == 'save' ? pending.future : AgendaMutationResult.success;
+  }
+
+  @override
+  FutureOr<AgendaMutationResult> recordOccurrenceEdit({
+    required String itemId,
+    required DateTime occurrenceStartsAt,
+    required AgendaOccurrenceEditScope scope,
+    required String actorName,
+  }) {
+    occurrences++;
+    return stage == 'occurrence' ? pending.future : AgendaMutationResult.success;
+  }
+
+  @override
+  FutureOr<AgendaMutationResult> requestPublication(String itemId, {required String requestedBy}) {
+    publications++;
+    return stage == 'publication' ? pending.future : AgendaMutationResult.success;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

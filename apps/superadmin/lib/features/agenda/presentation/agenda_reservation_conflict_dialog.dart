@@ -2,9 +2,22 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
-Future<String?> showAgendaReservationConflictOverrideDialog(BuildContext context) =>
-    showDialog<String>(
+Future<String?> showAgendaReservationConflictOverrideDialog(BuildContext context) => Navigator.of(
+  context,
+  rootNavigator: true,
+).push<String>(createAgendaReservationConflictOverrideRoute(context));
+
+DialogRoute<String> createAgendaReservationConflictOverrideRoute(BuildContext context) =>
+    DialogRoute<String>(
       context: context,
+      themes: InheritedTheme.capture(
+        from: context,
+        to: Navigator.of(context, rootNavigator: true).context,
+      ),
+      barrierColor:
+          DialogTheme.of(context).barrierColor ??
+          Theme.of(context).colorScheme.scrim.withValues(alpha: 0.54),
+      traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
       builder: (_) => const _AgendaReservationConflictOverrideDialog(),
     );
 
