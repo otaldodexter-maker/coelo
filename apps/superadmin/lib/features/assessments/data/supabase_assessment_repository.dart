@@ -233,7 +233,15 @@ final class SupabaseAssessmentRepository implements AssessmentRepository {
       final status = (error['http_status'] as num?)?.toInt();
       if (status == 401 ||
           status == 403 ||
-          code?.startsWith('SAI_') == true && code != 'SAI_CONCURRENT_CHANGE') {
+          const {
+            'SAI_AUTH_REQUIRED',
+            'SAI_SESSION_INVALID',
+            'SAI_INTERNAL_CONTEXT_DENIED',
+            'SAI_MEMBERSHIP_SUSPENDED',
+            'SAI_MEMBERSHIP_REVOKED',
+            'SAI_PERMISSION_DENIED',
+            'SAI_MFA_REQUIRED',
+          }.contains(code)) {
         throw const AssessmentUnauthorizedException();
       }
       if (status == 409 || code == 'SAI_CONCURRENT_CHANGE' || code == 'ASSESSMENT_INVALID_STATE') {

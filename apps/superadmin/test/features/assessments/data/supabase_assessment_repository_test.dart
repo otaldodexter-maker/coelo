@@ -159,5 +159,29 @@ void main() {
       repositoryFor('ASSESSMENT_INVALID_INPUT', 422).fetchClosingQueue(),
       throwsA(isA<AssessmentOfflineException>()),
     );
+    for (final code in ['SAI_INTERNAL_ERROR', 'SAI_UNKNOWN_ERROR']) {
+      await expectLater(
+        repositoryFor(code, 500).fetchClosingQueue(),
+        throwsA(isA<AssessmentOfflineException>()),
+      );
+    }
+    for (final code in [
+      'SAI_AUTH_REQUIRED',
+      'SAI_SESSION_INVALID',
+      'SAI_INTERNAL_CONTEXT_DENIED',
+      'SAI_MEMBERSHIP_SUSPENDED',
+      'SAI_MEMBERSHIP_REVOKED',
+      'SAI_PERMISSION_DENIED',
+      'SAI_MFA_REQUIRED',
+    ]) {
+      await expectLater(
+        repositoryFor(code, 0).fetchClosingQueue(),
+        throwsA(isA<AssessmentUnauthorizedException>()),
+      );
+    }
+    await expectLater(
+      repositoryFor('SAI_CONCURRENT_CHANGE', 409).fetchClosingQueue(),
+      throwsA(isA<AssessmentVersionConflictException>()),
+    );
   });
 }
