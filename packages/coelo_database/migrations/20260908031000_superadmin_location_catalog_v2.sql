@@ -6,7 +6,7 @@ set local statement_timeout='60s';
 set local search_path=public,pg_catalog;
 
 do $preflight$
-declare expected record; actual_oid oid; capability text; actual_columns text[];
+declare expected record; actual_oid oid; capability text; actual_columns text[]; actual_definition text;
 begin
   if current_user<>'postgres' then
     raise insufficient_privilege using message='location candidate requires postgres';
@@ -84,8 +84,26 @@ begin
     ('public.superadmin_create_activity_locations(uuid,uuid[],text,uuid)','1898ddd4ec4ea12373e1c13c55336774',true)
   ) v(signature,hash,client_execute) loop
     actual_oid:=to_regprocedure(expected.signature);
-    if actual_oid is null or md5(pg_get_functiondef(actual_oid))<>expected.hash then
+    if actual_oid is null then
       raise object_not_in_prerequisite_state using message='location legacy helper fingerprint drift';
+    end if;
+    actual_definition:=pg_get_functiondef(actual_oid);
+    if expected.signature='app_private.superadmin_create_activity_locations(uuid,uuid[],text,uuid)' then
+      -- Only this signature: remote/catalog and canonical prosrc are identical
+      -- after CRLF -> LF. Mixed EOL explains raw drift (evidence 25cd74a9).
+      -- Do not trim or normalize any other helper, especially options #4.
+      if md5(replace(actual_definition,E'\r\n',E'\n'))<>'3167d90039df952c9ae561f28486223c'
+        or (select pg_get_userbyid(proowner) from pg_proc where oid=actual_oid)<>'postgres' then
+        raise object_not_in_prerequisite_state using message='location legacy writer fingerprint drift';
+      end if;
+    elsif md5(actual_definition)<>expected.hash then
+      raise object_not_in_prerequisite_state using message='location legacy helper fingerprint drift';
+    end if;
+    if expected.signature='app_private.superadmin_get_activity_form_options(uuid)'
+      and not exists(select 1 from pg_proc where oid=actual_oid
+        and pg_get_userbyid(proowner)='postgres' and prosecdef and provolatile='s'
+        and proconfig=array['search_path=""']::text[]) then
+      raise object_not_in_prerequisite_state using message='location legacy options metadata drift';
     end if;
     if (select coalesce(array_agg(coalesce(r.rolname,'PUBLIC')::text||':'||a.privilege_type||':'||a.is_grantable::text order by r.rolname),'{}'::text[])
         from pg_proc p cross join lateral aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a
@@ -504,6 +522,7 @@ grant execute on function public.superadmin_location_create_v2(jsonb,uuid) to au
 -- Only fixed, reviewed catalog expressions are replaced; all other activity behavior remains.
 do $legacy_closure$
 declare change record; definition text; changed text; matches_count integer;
+  matched_block text; block_start integer;
 begin
   for change in select * from (values
     ('app_private.activity_management_payload(uuid)',
@@ -516,7 +535,7 @@ begin
       $pattern$coalesce\(\(select jsonb_agg\(distinct location.name order by location.name\).*?where unit_link.activity_id=activity.id and unit_link.status='active'\),'\[\]'::jsonb\)[[:space:]]+location_names$pattern$,
       $replacement$'[]'::jsonb location_names$replacement$),
     ('app_private.superadmin_get_activity_form_options(uuid)',
-      $pattern$'locations',coalesce\(\(select jsonb_agg\(jsonb_build_object\([[:space:]]*'id',location.id,'unit_id',location.unit_id,'name',location.name\) order by location.name\).*?and location.institution_id=p_institution_id and location.status='active'\),'\[\]'::jsonb\)$pattern$,
+      $pattern$'locations',coalesce\(\(select jsonb_agg\(jsonb_build_object\([[:space:]]*'id',location\.id,'unit_id',location\.unit_id,'name',location\.name\) order by location\.name\)[[:space:]]*from public\.activity_locations location where \(p_institution_id is null[[:space:]]*or location\.institution_id=p_institution_id\) and location\.status='active'\),'\[\]'::jsonb\)$pattern$,
       $replacement$'locations','[]'::jsonb$replacement$)
   ) v(signature,pattern,replacement) loop
     definition:=pg_get_functiondef(to_regprocedure(change.signature));
@@ -528,7 +547,22 @@ begin
     if changed=definition then
       raise object_not_in_prerequisite_state using message='location legacy closure made no change';
     end if;
+    if change.signature='app_private.superadmin_get_activity_form_options(uuid)' then
+      matched_block:=substring(definition from change.pattern);
+      block_start:=position(matched_block in definition);
+      if matched_block is null or block_start<1
+        or changed is distinct from
+          left(definition,block_start-1)||change.replacement||
+          substring(definition from block_start+length(matched_block))
+        or md5(changed)<>'2486e539f723d3f61cd9f29984efcbb2' then
+        raise object_not_in_prerequisite_state using message='location options cutover byte drift';
+      end if;
+    end if;
     execute changed;
+    if change.signature='app_private.superadmin_get_activity_form_options(uuid)'
+      and md5(pg_get_functiondef(to_regprocedure(change.signature)))<>'2486e539f723d3f61cd9f29984efcbb2' then
+      raise object_not_in_prerequisite_state using message='location options output fingerprint drift';
+    end if;
   end loop;
   for change in select unnest(array[
     'app_private.activity_management_payload(uuid)',

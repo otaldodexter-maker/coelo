@@ -118,6 +118,23 @@ correção automática. Nenhum dado real é lido pelo teste de vazio.
 | wrappers públicos de leitura | Preservar assinatura/ACL e demais payloads; nenhum bridge implícito. |
 | helper v2/receipt | Sem privilégios de cliente, RLS deny-by-default. |
 
+LOC-REMOTE-SNAPSHOT01 (2026-09-08): o snapshot remoto nominal de options usa
+ORNULL nos filtros de units/locations/groups/professionals e não inclui students.
+O fechamento candidato remove somente seu bloco locations, com padrão literal,
+uma ocorrência e preservação de todos os demais bytes. Não aceitar a definição
+histórica com students como alternativa equivalente. Pin raw de options65fe6408
+permanece obrigatório, com postgres/SD/stable/config vazio e ACL privada
+explícitos. Prefixo/sufixo ficam intactos e a saída raw deve ter MD5
+2486e539f723d3f61cd9f29984efcbb2. Suíte local compara dados não vazios de duas
+instituições com filtro NULL/A/B antes/depois; students é chave ausente.
+Somente o writer legado comprovadamente equivalente após
+CRLF→LF usa hash normalizado3167d90039df952c9ae561f28486223c; demais pins raw
+permanecem estritos. Fonte diagnóstica25cd74a9 e evidência
+`docs/reviews/evidence/etapa-2/estruturas/2026-09-08-location-remote-snapshot-cutover.md`.
+Snapshot local #4 é fixture nominal separada, não alteração de migration
+histórica ou implantação remota. Eng1 deve reservá-la no perfil antes do
+bootstrap/candidato; sua inclusão não está implícita no antigo perfilLOC50.
+
 ## REDs para seleção de replay
 
 LOC-ACL01 (2026-09-08): o probe local Auth47 do Engenheiro 1, commit
