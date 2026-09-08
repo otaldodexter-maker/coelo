@@ -1,11 +1,19 @@
 ---
 title: "F-AUTHOR01 — crosswalk nominal de rascunhos internos"
 source: "Reserva do Coordenador de 2026-09-07; spec 039; ADR 0019; spec Forms 2026-08-13:29-33; migrations canônicas inspecionadas"
-status: "proposed-awaiting-central-boundary-review"
+status: "technical-boundary-approved-local-package-under-review"
 generated_at: "2026-09-07"
 ---
 
 # Recorte e ordem
+
+Atualização: após `38041740`, o Coordenador fechou a fronteira técnica e reservou
+`20260908030000_superadmin_internal_form_drafts_v2.sql` local. Reader usa manage
+OU read explícitos; receipt mantém snapshot sanitizado original reautorizado;
+coexistência é guard por recurso, sem revoke global. A matriz efetiva e os
+ajustes de revisão estão em `2026-09-07-authoring-coexistence-matrix.md`.
+As alternativas propostas abaixo registram a análise que precedeu esse
+fechamento, não decisões ainda abertas. Nenhum SQL executado nesta frente.
 
 Preparar criação/salvamento e leitura de rascunhos de Formulários no realm
 interno do Superadmin, sem pessoa artificial. Primeiro fechar nomes e fronteira
