@@ -371,6 +371,39 @@ void main() {
     expect(find.text(_refreshedMoment.caption), findsNothing);
   });
 
+  testWidgets('a late feed from the previous context cannot replace the current one', (
+    tester,
+  ) async {
+    const otherScope = PrincipalMomentsFeedScope(institutionId: 'institution-outra');
+    final first = Completer<List<PrincipalMomentPreviewItem>>();
+    var call = 0;
+    final repository = _FakeMomentsFeedRepository((_) {
+      call++;
+      return call == 1
+          ? first.future
+          : Future<List<PrincipalMomentPreviewItem>>.value(const [_refreshedMoment]);
+    });
+
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    Widget app(PrincipalMomentsFeedScope current) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: PrincipalMomentsPreviewPage(feedRepository: repository, feedScope: current),
+    );
+
+    await tester.pumpWidget(app(scope));
+    await tester.pump();
+    await tester.pumpWidget(app(otherScope));
+    await tester.pumpAndSettle();
+    expect(find.text(_refreshedMoment.caption), findsOneWidget);
+
+    first.complete(const [_staleContextMoment]);
+    await tester.pumpAndSettle();
+
+    expect(find.text(_staleContextMoment.caption), findsNothing);
+    expect(find.text(_refreshedMoment.caption), findsOneWidget);
+  });
+
   testWidgets('does not render fixture trending content for a repository feed', (tester) async {
     final repository = _FakeMomentsFeedRepository((_) async => const [_refreshedMoment]);
 
@@ -394,6 +427,18 @@ void main() {
     });
   }
 }
+
+const _staleContextMoment = PrincipalMomentPreviewItem(
+  author: 'Colegio Anterior',
+  context: 'Contexto anterior',
+  time: 'Agora',
+  caption: 'Momento do contexto anterior.',
+  likes: 0,
+  comments: 0,
+  shares: 0,
+  saves: 0,
+  imageIndex: 0,
+);
 
 const _refreshedMoment = PrincipalMomentPreviewItem(
   author: 'Colégio Coelo',
