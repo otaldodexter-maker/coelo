@@ -15,12 +15,15 @@ supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
 flutter_tracker_sha256: "285266D664A92CFDD5CD328BB4A64F85BD8A33C3CC064C4C58F8FF032793839D"
-supabase_tracker_sha256: "A7F6EA7170FB8BFC55F35BDAE79566BE7246C6788CF27B482AD0FEDF69C6E863"
+supabase_tracker_sha256: "E9674B8CB018185B3FD44FC94CDAC77EB181804EEC1E24263B144926D6E189BC"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
+
+- Atualização02:53: dependênciasForms01/02 e guardSAFE versionados candidatos;
+  nenhuma migration executada por integraçãoGit, nenhuma promoção E2E.
 
 - Atualização02:47: ramosForms190/190 e Momentos79/79inclgoldens destino,
   analyzer3/gatevisual PASS; sem progresso artificial dos contadoresE2E.

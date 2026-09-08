@@ -10,6 +10,13 @@ family_count: 38
 
 # Pendências Coelo — Back-end
 
+- Atualização02:53: F-AUTHOR01 candidatos af7253ec/2bb45ff8/115acab1
+  integrados somente em arquivos, SQL+3fixtures idênticos a2aa27b25 por Git.
+  GuardSAFE6a797d69 também candidato preparado,39assertions nãoexecutadas;
+  dois corpos comparados/revisados sem ampliar publicação. Perfil nominal,
+  OID/owner/ACL/config antes/depois e execução exclusivaEng1 continuam gates.
+  SQL02 já versionado agora tem dependência01 na main, ainda sem prova real.
+
 - Atualização02:33: catálogo remoto nominal comparado pela E2 às05:28:22Z:
   helperLOC6 é EOL misto com definiçãoLF idêntica; helper4 muda ORNULL e remove
   students. Pattern da candidata só casa com fonte canônica, não remota.
