@@ -138,28 +138,47 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('uses the dashed publish now card and promotes its action on hover', (tester) async {
+  testWidgets('keeps the approved Publicar agora anatomy from the Principal baseline', (
+    tester,
+  ) async {
     await pumpHappens(tester, size: const Size(1440, 1000));
 
     final card = find.byKey(const Key('principal-happens-publish-now-card'));
-    expect(find.byKey(const Key('principal-happens-publish-now-dashed-border')), findsOneWidget);
-    expect(find.byKey(const Key('principal-happens-publish-now-action')), findsOneWidget);
+    expect(card, findsOneWidget);
+    // The Agora strip is a Principal surface: it never adopts the dashed
+    // administrative create-card anatomy of Instituicoes.
+    expect(find.byKey(const Key('principal-happens-publish-now-dashed-border')), findsNothing);
 
+    final outlined = tester.widget<OutlinedButton>(card);
+    final side = outlined.style!.side!.resolve(const <WidgetState>{})!;
+    expect(side.color, CoeloTheme.light.colorScheme.outlineVariant);
+    expect(side.style, BorderStyle.solid);
+
+    final action = tester.widget<CircleAvatar>(
+      find.byKey(const Key('principal-happens-publish-now-action')),
+    );
+    expect(action.backgroundColor, CoeloTheme.light.colorScheme.primary);
+    expect(action.foregroundColor, CoeloTheme.light.colorScheme.onPrimary);
+    expect(find.text('Publicar\nagora'), findsOneWidget);
+  });
+
+  testWidgets('publish now card keeps the filled action while hovered', (tester) async {
+    await pumpHappens(tester, size: const Size(1440, 1000));
+
+    final card = find.byKey(const Key('principal-happens-publish-now-card'));
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     addTearDown(mouse.removePointer);
     await mouse.addPointer();
     await mouse.moveTo(tester.getCenter(card));
     await tester.pump();
 
-    final action = tester.widget<DecoratedBox>(
+    final action = tester.widget<CircleAvatar>(
       find.byKey(const Key('principal-happens-publish-now-action')),
     );
-    expect((action.decoration as BoxDecoration).color, CoeloTheme.light.colorScheme.primary);
+    expect(action.backgroundColor, CoeloTheme.light.colorScheme.primary);
   });
 
-  testWidgets('publish now card is semantic and exposes pressed state', (
-    tester,
-  ) async {
+  testWidgets('publish now card is semantic and opens the composer', (tester) async {
     var opened = false;
     await pumpHappens(
       tester,
@@ -168,20 +187,10 @@ void main() {
     );
 
     final card = find.byKey(const Key('principal-happens-publish-now-card'));
-    final button = find.descendant(of: card, matching: find.byType(TextButton));
-    expect(button, findsOneWidget);
-
-    final semantics = tester.getSemantics(button);
+    final semantics = tester.getSemantics(card);
     expect(semantics.flagsCollection.isButton, isTrue);
     expect(semantics.flagsCollection.isEnabled, Tristate.isTrue);
 
-    tester.widget<TextButton>(button).statesController!.update(WidgetState.pressed, true);
-    await tester.pump();
-    final pressedAction = tester.widget<DecoratedBox>(
-      find.byKey(const Key('principal-happens-publish-now-action')),
-    );
-    expect((pressedAction.decoration as BoxDecoration).color, CoeloTheme.light.colorScheme.primary);
-    tester.widget<TextButton>(button).statesController!.update(WidgetState.pressed, false);
     await tester.tap(card);
     await tester.pump();
     expect(opened, isTrue);

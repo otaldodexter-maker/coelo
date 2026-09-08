@@ -9,7 +9,6 @@ import '../domain/principal_happens_preview_data.dart';
 import '../../principal_circulars/domain/circular_repository.dart';
 import '../../principal_circulars/domain/principal_happens_mixed_feed.dart';
 import '../../principal_circulars/presentation/principal_circular_surfaces.dart';
-import '../../principal_for_you/presentation/widgets/coelo_principal_action_card.dart';
 import '../../principal_shared/presentation/principal_global_navigation.dart';
 
 const _principalHappensNowCardKey = Key('principal-happens-now-card');
@@ -666,102 +665,36 @@ final class _PublishNowCard extends StatelessWidget {
   final VoidCallback onPressed;
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      child: CoeloPrincipalActionCard(
-        key: const Key('principal-happens-publish-now-card'),
-        onPressed: onPressed,
-        padding: EdgeInsets.zero,
-        decoration: WidgetStateProperty.resolveWith(
-          (_) => BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(CoeloRadius.md),
-          ),
-        ),
-        childBuilder: (context, states) {
-          final colors = Theme.of(context).colorScheme;
-          final active =
-              states.contains(WidgetState.hovered) ||
-              states.contains(WidgetState.focused) ||
-              states.contains(WidgetState.pressed);
-          return SizedBox.expand(
-            child: CustomPaint(
-              key: const Key('principal-happens-publish-now-dashed-border'),
-              painter: _DashedRoundedBorderPainter(
-                color: active ? colors.primary : colors.outlineVariant,
-                radius: CoeloRadius.md,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(CoeloSpacing.space2),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    DecoratedBox(
-                      key: const Key('principal-happens-publish-now-action'),
-                      decoration: BoxDecoration(
-                        color: active ? colors.primary : colors.surface,
-                        shape: BoxShape.circle,
-                      ),
-                      child: SizedBox(
-                        width: 44,
-                        height: 44,
-                        child: Icon(
-                          Icons.add_rounded,
-                          color: active ? colors.onPrimary : colors.primary,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: CoeloSpacing.space2),
-                    Text(
-                      'Publicar\nagora',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
+  Widget build(BuildContext context) => SizedBox(
+    width: width,
+    child: OutlinedButton(
+      key: const Key('principal-happens-publish-now-card'),
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.all(CoeloSpacing.space2),
+        side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
       ),
-    );
-  }
-}
-
-final class _DashedRoundedBorderPainter extends CustomPainter {
-  const _DashedRoundedBorderPainter({required this.color, required this.radius});
-
-  final Color color;
-  final double radius;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    const strokeWidth = 1.5;
-    const inset = strokeWidth / 2;
-    final path = Path()
-      ..addRRect(
-        RRect.fromRectAndRadius(
-          (Offset.zero & size).deflate(inset),
-          Radius.circular(radius > inset ? radius - inset : 0),
-        ),
-      );
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = strokeWidth
-      ..style = PaintingStyle.stroke;
-    for (final metric in path.computeMetrics()) {
-      for (var offset = 0.0; offset < metric.length; offset += 8) {
-        canvas.drawPath(metric.extractPath(offset, (offset + 4).clamp(0, metric.length)), paint);
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _DashedRoundedBorderPainter oldDelegate) =>
-      oldDelegate.color != color || oldDelegate.radius != radius;
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircleAvatar(
+            key: const Key('principal-happens-publish-now-action'),
+            radius: 22,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            child: const Icon(Icons.add_rounded),
+          ),
+          const SizedBox(height: CoeloSpacing.space2),
+          Text(
+            'Publicar\nagora',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 final class _NowCard extends StatelessWidget {
