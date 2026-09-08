@@ -2,6 +2,20 @@ import { createClient } from "@supabase/supabase-js";
 
 import { MomentsR2Client, momentsR2Config } from "./r2_s3.ts";
 
+/// Injected so the gateway is exercisable without booting the runtime or
+/// reaching Supabase. Production keeps the real environment and client.
+export type MomentsMediaDependencies = Readonly<{
+  envGet: (name: string) => string | undefined;
+  createClient: typeof createClient;
+}>;
+
+const productionDependencies: MomentsMediaDependencies = {
+  envGet: (name) => Deno.env.get(name),
+  createClient,
+};
+
+let dependencies: MomentsMediaDependencies = productionDependencies;
+
 type Json = Record<string, unknown>;
 const allowedMimeTypes = new Set([
   "image/jpeg",
@@ -13,7 +27,7 @@ const maximumBytes = 25 * 1024 * 1024;
 
 function allowedOrigins() {
   return new Set(
-    (Deno.env.get("MOMENTS_MEDIA_ALLOWED_ORIGINS") ?? "")
+    (dependencies.envGet("MOMENTS_MEDIA_ALLOWED_ORIGINS") ?? "")
       .split(",")
       .map((value) => value.trim())
       .filter(Boolean),
@@ -42,11 +56,11 @@ function environment() {
     "MOMENTS_R2_ACCESS_KEY_ID",
     "MOMENTS_R2_SECRET_ACCESS_KEY",
     "MOMENTS_R2_BUCKET",
-  ].map((name) => [name, Deno.env.get(name)]));
+  ].map((name) => [name, dependencies.envGet(name)]));
 }
 
 function requiredSecret(name: string) {
-  const value = Deno.env.get(name);
+  const value = dependencies.envGet(name);
   if (!value) throw new Error("server_secret_unavailable");
   return value;
 }
@@ -93,7 +107,11 @@ function mediaEnvelope(body: Json) {
   };
 }
 
-Deno.serve(async (request) => {
+export async function handleMomentsMediaRequest(
+  request: Request,
+  injected: MomentsMediaDependencies = productionDependencies,
+): Promise<Response> {
+  dependencies = injected;
   const origin = request.headers.get("origin");
   if (origin !== null && !allowedOrigins().has(origin)) {
     return reply(null, 403, { error: "origin_not_allowed" });
@@ -106,7 +124,7 @@ Deno.serve(async (request) => {
   try {
     const body = await request.json() as Json;
     const url = requiredSecret("SUPABASE_URL");
-    const admin = createClient(
+    const admin = dependencies.createClient(
       url,
       requiredSecret("SUPABASE_SERVICE_ROLE_KEY"),
       {
@@ -142,7 +160,7 @@ Deno.serve(async (request) => {
     if (!authorization?.startsWith("Bearer ")) {
       return reply(origin, 401, { error: "authentication_required" });
     }
-    const user = createClient(url, requiredSecret("SUPABASE_ANON_KEY"), {
+    const user = dependencies.createClient(url, requiredSecret("SUPABASE_ANON_KEY"), {
       global: { headers: { Authorization: authorization } },
       auth: { persistSession: false },
     });
@@ -152,7 +170,37 @@ Deno.serve(async (request) => {
     }
 
     if (body.action === "read") {
-      if (typeof body.asset_id !== "string") throw new Error("invalid_request");
+      // Two distinct readers, never interchangeable. A viewer redeems an opaque
+      // single-use ticket that the feed issued for them; an author addresses
+      // their own draft asset. Sending both is a malformed request, not a
+      // choice, so neither path can be used to probe the other.
+      const hasTicket = typeof body.read_ticket === "string" &&
+        body.read_ticket.length > 0;
+      const hasAsset = typeof body.asset_id === "string" && body.asset_id.length > 0;
+      if (hasTicket === hasAsset) throw new Error("invalid_request");
+
+      if (hasTicket) {
+        // Redeeming is service_role only and consumes the ticket, so a replay
+        // of the same token finds nothing.
+        const redeemed = await admin.rpc("redeem_moments_media_read_ticket", {
+          p_ticket: body.read_ticket,
+          p_viewer_auth_user_id: identity.data.user.id,
+        });
+        if (redeemed.error) {
+          return reply(origin, 403, { error: "media_read_denied" });
+        }
+        const descriptor = redeemed.data as Json;
+        if (typeof descriptor?.object_key !== "string") {
+          return reply(origin, 403, { error: "media_read_denied" });
+        }
+        const signed = await r2.presignGet(String(descriptor.object_key), 120);
+        return reply(origin, 200, {
+          signed_url: signed.url.toString(),
+          mime_type: descriptor.mime_type,
+          expires_in: 120,
+        });
+      }
+
       const authorized = await user.rpc("authorize_moments_media_read", {
         p_asset_id: body.asset_id,
       });
@@ -239,5 +287,11 @@ Deno.serve(async (request) => {
     return reply(origin, 422, {
       error: error instanceof Error ? error.message : "media_gateway_failure",
     });
+  } finally {
+    dependencies = productionDependencies;
   }
-});
+}
+
+if (import.meta.main) {
+  Deno.serve((request) => handleMomentsMediaRequest(request));
+}
