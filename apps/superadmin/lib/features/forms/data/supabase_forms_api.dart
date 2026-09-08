@@ -3,9 +3,10 @@ import 'package:coelo_domain/coelo_domain.dart';
 
 import 'forms_backend_gateway.dart';
 import 'forms_editor_context.dart';
+import 'forms_file_jobs_reader.dart';
 
 final class SupabaseFormsApi
-    implements FormsApi, FormsEditorContextApi, FormsResponseContextReader {
+    implements FormsApi, FormsEditorContextApi, FormsResponseContextReader, FormsFileJobsReader {
   const SupabaseFormsApi(this._backend, {FormCursorCodec cursorCodec = const FormCursorCodec()})
     : _cursorCodec = cursorCodec;
 
@@ -488,8 +489,36 @@ final class SupabaseFormsApi
     String? cursor,
     int limit = 25,
   }) => _internalOperation(() async {
+    final payload = await _fileJobsPayload(formId: formId, cursor: cursor, limit: limit);
+    return _operationalPage(payload, _fileJob, cursorKey: 'created_at', limit: limit);
+  });
+
+  @override
+  Future<FormsFileJobsContext> listFileJobsContext({
+    required String formId,
+    String? cursor,
+    int limit = 25,
+  }) => _internalOperation(() async {
+    final payload = await _fileJobsPayload(formId: formId, cursor: cursor, limit: limit);
+    final receivedFormId = _string(payload, 'form_id');
+    final version = payload['management_version'];
+    if (receivedFormId.isEmpty || receivedFormId != formId || version is! int || version < 1) {
+      throw const WireFormatException('Invalid file-jobs context.');
+    }
+    return FormsFileJobsContext(
+      formId: receivedFormId,
+      managementVersion: version,
+      page: _operationalPage(payload, _fileJob, cursorKey: 'created_at', limit: limit),
+    );
+  });
+
+  Future<Map<String, Object?>> _fileJobsPayload({
+    required String formId,
+    required String? cursor,
+    required int limit,
+  }) {
     final decoded = _decodeCursor(cursor);
-    final payload = await _internalRpc('superadmin_forms_file_jobs_v2', {
+    return _internalRpc('superadmin_forms_file_jobs_v2', {
       'p_query': {
         'form_id': formId,
         'cursor_created_at': decoded?.sortKey,
@@ -497,8 +526,7 @@ final class SupabaseFormsApi
         'limit': limit,
       },
     });
-    return _operationalPage(payload, _fileJob, cursorKey: 'created_at', limit: limit);
-  });
+  }
 
   @override
   Future<FormCursorPage<FormMonitorPerson>> anonymousParticipationLookup(
