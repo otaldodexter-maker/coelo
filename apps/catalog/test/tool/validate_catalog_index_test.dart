@@ -119,6 +119,19 @@ void main() {
     expect(result.diagnostics, isEmpty);
   });
 
+  test('requires the reference and cited tests of an approved document', () {
+    final entry = _validEntry()
+      ..['status'] = 'approved'
+      ..['publicFile'] = 'docs/missing-contract.md'
+      ..['tests'] = ['missing_test.dart'];
+    _writeEntries(indexFile, [entry]);
+
+    final result = validateCatalogIndex(indexFile: indexFile, repositoryRoot: repositoryRoot);
+
+    expect(result.diagnostics, contains(_diagnostic('missing-public-file', line: 1)));
+    expect(result.diagnostics, contains(_diagnostic('missing-test-file', line: 1)));
+  });
+
   test('reports a deprecated entry without a replacement', () {
     final entry = _validEntry()
       ..['status'] = 'deprecated'

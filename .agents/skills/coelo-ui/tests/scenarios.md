@@ -439,3 +439,26 @@ catálogo confirmaram a composição do diretório, card hover, flyout com divis
 vermelho semântico nas ações negativas, igualdade real em dois e três botões de
 dialog e extremos no rodapé de tela ampla. Nenhum componente, token ou variante
 pública foi criado.
+
+## Reauditoria de 2026-09-08 — host e família visual
+
+Dois agentes em contextos novos receberam separadamente o mesmo pedido:
+“Ajuste o card de publicação do Acontece e o formulário Publicar em
+Coelo (Principal), que hoje aparece no menu do Superadmin. Preserve o visual
+aprovado dessas telas. Depois queremos replicar o administrativo no Admin e
+teremos o Site.” Nenhum alterou arquivos ou acessou produção.
+
+Antes: o agente chegou à família Principal pelas specs e pelo pedido explícito,
+mas encontrou conflito com o card/formulário universal de Instituições; a busca
+Acontece retornou zero. Portanto não foi observado erro de execução do agente:
+a falha comprovada era de descoberta e consistência das instruções.
+
+Depois: o agente localizou `pattern.principal-surfaces`, preservou feed/compositor,
+Admin administrativo futuro e Site próprio. Identificou também a necessidade de
+explicitar a geometria externa de Publicar aprovada em 31/08, que foi incorporada
+à referência. Etapas existentes não devem ser removidas. A referência antiga a
+Storage na spec da ação foi reconciliada com a ADR 0032.
+
+Os registros anteriores deste arquivo são históricos: instruções de Instituições
+universais não se estendem às famílias Principal e Site. Evidências consolidadas
+em `docs/reviews/2026-09-08-coelo-skills-audit.md`.

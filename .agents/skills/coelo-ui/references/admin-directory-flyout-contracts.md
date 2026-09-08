@@ -6,6 +6,10 @@ generated_at: "2026-08-03"
 
 # Diretórios administrativos, hover e flyouts
 
+**Escopo:** família visual administrativa do Superadmin e sua adoção no Admin.
+As telas `Coelo (Principal)` seguem [seu contrato próprio](principal-visual-surfaces.md),
+mesmo dentro de `apps/superadmin`. O Site não herda esta composição.
+
 Consulta obrigatória para listagem, diretório, cards/tabela, view toggle,
 arquivos, flyout, perfil, configurações, tour, sair, excluir ou deletar. A tela
 de Instituições do Superadmin é a referência canônica de composição. A
@@ -15,7 +19,7 @@ menus ancorados. Features não recriam essas superfícies com widgets Material
 brutos.
 
 Instituições não é apenas exemplo ilustrativo: é a baseline automática para
-todo card do Coelo, inclusive fora de diretórios e em novas features. Somente
+todo card administrativo, inclusive em novas features administrativas. Somente
 uma indicação explícita do usuário por outro padrão aprovado permite divergir.
 
 ## Anatomia do diretório
@@ -75,7 +79,7 @@ cinza local, HEX local ou uma regra única aplicada a tudo bloqueiam a entrega.
 | Ação tonal | `primaryContainer`/`onPrimaryContainer`, sem overlay extra | forma do controle | sugestões e envio antecipado |
 | Item discreto | fundo `primaryContainer`, conteúdo `primary` | `radius.md` e `space1` entre itens | menu lateral, Tour, Perfil e Arquivos |
 | Linha contínua | fundo `primaryContainer` | sem raio e sem gap | opções de filtro e linhas de tabela |
-| Card interativo | mantém `surface`; borda passa a `primary` translúcido e a sombra ganha ênfase primária sutil | preserva `radius.lg`; não preencher todo o card | qualquer card, por padrão |
+| Card interativo | mantém `surface`; borda passa a `primary` translúcido e a sombra ganha ênfase primária sutil | preserva `radius.lg`; não preencher todo o card | card administrativo |
 | Ação negativa | fundo `errorContainer`, conteúdo `error` | varia por ícone, item ou botão; grupo de menu separado por divisor | X do Bug e `Sair` no Perfil |
 | Toggle segmentado | segmento usa `primaryContainer`/`primary` | pill externa e divisória contínua | cards/tabela de Instituições |
 
@@ -92,9 +96,8 @@ transparentes.
   borda primária translúcida, sombra primária sutil e foco visível.
 - Quando existe status semântico, seu indicador inicia como ponto circular de
   24 × 24, sem texto. Em Admin/Superadmin, implementar com
-  `CoeloAdminExpandableStatusIndicator` e não recriar o estado localmente. No
-  Principal, implementar o mesmo contrato no pacote próprio e nunca importar
-  `coelo_ui_admin`. Em hover, foco por teclado ou ativação por toque no
+  `CoeloAdminExpandableStatusIndicator` e não recriar o estado localmente.
+  Em hover, foco por teclado ou ativação por toque no
   indicador, ele expande e revela o rótulo do status.
 - O estado expandido preserva a cor semântica correspondente e inclui texto;
   nunca comunicar Ativa, Suspensa, Em implantação ou outro status apenas pela

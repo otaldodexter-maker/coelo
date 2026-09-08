@@ -1,0 +1,249 @@
+{
+  "audit_date": "2026-09-08",
+  "scope": "skills and local synthetic probes only",
+  "git_head": "19b8f57418c6bc5c8b6dad3057bfdc7eda63af12",
+  "skills": [
+    {
+      "name": "coelo-ui",
+      "path": ".agents\\skills\\coelo-ui\\SKILL.md",
+      "sha256": "e19273840da37d09cff19165162556efeea8605c582b822b895d2014143446e6",
+      "bytes": 18812,
+      "lines": 260,
+      "words": 2217,
+      "bundle_files": 20,
+      "document_provenance_present": true,
+      "default_prompt_mentions_skill": true,
+      "short_description_length": 38,
+      "markdown_local_links": 17,
+      "broken_markdown_local_links": []
+    },
+    {
+      "name": "coelo-tutor",
+      "path": ".agents\\skills\\coelo-tutor\\SKILL.md",
+      "sha256": "aa41054f4935fa3081b380ecf9efc5101bcb591ffaee0fb6c781824acd6b3f31",
+      "bytes": 4205,
+      "lines": 102,
+      "words": 639,
+      "bundle_files": 2,
+      "document_provenance_present": false,
+      "default_prompt_mentions_skill": true,
+      "short_description_length": 38,
+      "markdown_local_links": 0,
+      "broken_markdown_local_links": []
+    },
+    {
+      "name": "coelo-backend",
+      "path": ".agents\\skills\\coelo-supabase\\SKILL.md",
+      "sha256": "b6c7d9eb722d1f37dffa953ad11e4644e1b03c9736b0880e5c550dcbef12e409",
+      "bytes": 10490,
+      "lines": 198,
+      "words": 1409,
+      "bundle_files": 2,
+      "document_provenance_present": false,
+      "default_prompt_mentions_skill": true,
+      "short_description_length": 42,
+      "markdown_local_links": 0,
+      "broken_markdown_local_links": []
+    },
+    {
+      "name": "coelo-frontend",
+      "path": ".agents\\skills\\coelo-flutter-review\\SKILL.md",
+      "sha256": "493ca93efa0d9e0412ce3e9e74309979a3e2f1548de72cb99c2d4ce3c63808ab",
+      "bytes": 5332,
+      "lines": 112,
+      "words": 711,
+      "bundle_files": 2,
+      "document_provenance_present": false,
+      "default_prompt_mentions_skill": true,
+      "short_description_length": 41,
+      "markdown_local_links": 0,
+      "broken_markdown_local_links": []
+    },
+    {
+      "name": "coelo-knowledge",
+      "path": ".agents\\skills\\coelo-knowledge\\SKILL.md",
+      "sha256": "57818bc67895c1bf9d8242bf413edc996b0092c95c69687d83e9e4eca7adffce",
+      "bytes": 1152,
+      "lines": 26,
+      "words": 146,
+      "bundle_files": 6,
+      "document_provenance_present": false,
+      "default_prompt_mentions_skill": true,
+      "short_description_length": 41,
+      "markdown_local_links": 0,
+      "broken_markdown_local_links": []
+    }
+  ],
+  "ui_index": {
+    "entry_count": 79,
+    "duplicate_ids": 0,
+    "referenced_pattern_count": 18,
+    "missing_patterns": [
+      "pattern.advanced-color-picker"
+    ],
+    "missing_public_or_test_files": [
+      {
+        "id": "pattern.approved-superadmin-surfaces",
+        "path": "apps/superadmin/test/features/help_center/presentation/screens/help_center_page_golden_test.dart"
+      },
+      {
+        "id": "governance.deep-review-prompt-brief",
+        "path": ".agents/skills/coelo-ui/references/deep-review-prompt-brief.md"
+      },
+      {
+        "id": "governance.family-release-checkpoints",
+        "path": ".agents/skills/coelo-ui/references/deep-review-prompt-brief.md"
+      },
+      {
+        "id": "pattern.calendar-date-picker",
+        "path": ".agents/skills/coelo-ui/references/calendar-date-picker-contract.md"
+      }
+    ]
+  },
+  "tutor_copies_identical": true,
+  "trackers": [
+    {
+      "path": "docs\\reviews\\coelo-flutter-pendencias.md",
+      "bytes": 97462,
+      "lines": 263
+    },
+    {
+      "path": "docs\\reviews\\coelo-supabase-pendencias.md",
+      "bytes": 100691,
+      "lines": 263
+    },
+    {
+      "path": "docs\\reviews\\coelo-flutter-integrado-supabase-pendencias.md",
+      "bytes": 126636,
+      "lines": 263
+    }
+  ],
+  "knowledge_probes": [
+    {
+      "case": "valid_control",
+      "expected_valid": true,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": true
+    },
+    {
+      "case": "nonexistent_source_control",
+      "expected_valid": false,
+      "accepted": false,
+      "exit_code": 1,
+      "matches_expected": true
+    },
+    {
+      "case": "source_outside_repository",
+      "expected_valid": false,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": false
+    },
+    {
+      "case": "projection_as_own_source",
+      "expected_valid": false,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": false
+    },
+    {
+      "case": "directory_as_source",
+      "expected_valid": false,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": false
+    },
+    {
+      "case": "impossible_date",
+      "expected_valid": false,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": false
+    },
+    {
+      "case": "empty_surfaces",
+      "expected_valid": false,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": false
+    },
+    {
+      "case": "valid_yaml_block_list",
+      "expected_valid": true,
+      "accepted": false,
+      "exit_code": 1,
+      "matches_expected": false
+    },
+    {
+      "case": "benign_security_guidance",
+      "expected_valid": true,
+      "accepted": false,
+      "exit_code": 1,
+      "matches_expected": false
+    },
+    {
+      "case": "synthetic_unformatted_cpf",
+      "expected_valid": false,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": false
+    },
+    {
+      "case": "duplicate_id_control_baseline",
+      "expected_valid": true,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": true
+    },
+    {
+      "case": "duplicate_id_same_audience",
+      "expected_valid": false,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": false,
+      "expectation_basis": "audit proposal: unique id per audience; not an existing explicit rule"
+    },
+    {
+      "case": "search_fixture_draft",
+      "expected_valid": true,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": true
+    },
+    {
+      "case": "search_returns_draft",
+      "exit_code": 0,
+      "returned_article": true
+    },
+    {
+      "case": "search_fixture_deprecated",
+      "expected_valid": true,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": true
+    },
+    {
+      "case": "search_returns_deprecated",
+      "exit_code": 0,
+      "returned_article": true
+    },
+    {
+      "case": "search_fixture_validated",
+      "expected_valid": true,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": true
+    },
+    {
+      "case": "search_returns_validated",
+      "exit_code": 0,
+      "returned_article": true
+    },
+    {
+      "case": "audience_users_argument",
+      "exit_code": 1
+    }
+  ],
+  "temporary_fixtures_removed": true
+}

@@ -7,6 +7,13 @@
     "flutter-only": 5,
     "deferred-post-mvp": 22
   },
+  "layerCounts": {
+    "frontendApplicable": 219,
+    "backendApplicable": 212,
+    "integratedActiveApplicable": 187,
+    "backendNotApplicable": 7,
+    "integratedNotApplicable": 7
+  },
   "actions": [
     {
       "id": "auth.login",
@@ -2775,13 +2782,13 @@
       "scope": "mvp",
       "done": "SharedPreferences real provado em navegador com reinício/reload; corrida de preferências protegida.",
       "fe": "Fechar visual/acessibilidade e lifecycle restantes; preservar persistência local implementada.",
-      "be": "Preferências locais não exigem tabela/RPC Supabase; validar somente dependências reais da conta se a ação as consumir.",
+      "be": "Preferência local do cliente; nenhuma tabela, RPC ou persistência remota pertence a esta ação.",
       "evidence": "evidence/etapa-2/identidade-acessos/2026-09-07-settings-browser-persistence.md",
       "historicalFrontend": "audited",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification"
+      "backendStatus": "not-applicable",
+      "integratedStatus": "flutter-only"
     },
     {
       "id": "account.theme",
@@ -2790,13 +2797,13 @@
       "scope": "mvp",
       "done": "Tema persistido em SharedPreferences com prova de navegador/reload e proteção de notices obsoletos.",
       "fe": "Fechar visual/acessibilidade/reduced motion restantes sem refazer persistência.",
-      "be": "Tema é preferência local, sem backend Supabase obrigatório.",
+      "be": "Preferência local do cliente; nenhuma tabela, RPC ou persistência remota pertence a esta ação.",
       "evidence": "evidence/etapa-2/identidade-acessos/2026-09-07-settings-browser-persistence.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
       "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification"
+      "backendStatus": "not-applicable",
+      "integratedStatus": "flutter-only"
     },
     {
       "id": "account.mfa",

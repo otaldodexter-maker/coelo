@@ -2,7 +2,7 @@
 source: referência visual canônica e plano aprovado de Publicação do Acontece
 status: approved
 generated_at: 2026-08-20
-updated_at: 2026-08-31
+updated_at: 2026-09-08
 ---
 
 # Publicação do Acontece
@@ -32,7 +32,7 @@ Um post pertence ao tenant e à instituição, pode restringir unidade e turma e
 
 O consumo autorizado usa `happens.posts.read` e recebe apenas autor, contexto, legenda, horário e descritores de mídia ordenados. Contagens sociais e rótulos não pertencentes à projeção não são inventados pelo cliente. Cada descritor contém um ticket opaco e descartável, resolvido sob demanda pela Edge Function em URL assinada curta; falhas de mídia recarregam o feed para obter um novo ticket.
 
-Até seis JPG, PNG, WebP ou MP4 podem ser selecionados. O MVP usa a exceção temporária da ADR 0026: Storage privado, gateway server-side, validação de assinatura e sem URL pública.
+Até seis JPG, PNG, WebP ou MP4 podem ser selecionados. A ADR 0032 substitui a exceção histórica da ADR 0026: toda mídia nova usa R2 privado, com gateway server-side, metadados/autorização no Postgres e URL curta após reautorização; sem bucket público.
 
 ## Estados
 

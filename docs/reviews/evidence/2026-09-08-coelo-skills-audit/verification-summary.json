@@ -1,0 +1,81 @@
+{
+  "date": "2026-09-08",
+  "results": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "label": "ui-query",
+        "chunk_id": "24c942",
+        "wall_time_seconds": 3.4003211,
+        "exit_code": 0,
+        "original_token_count": 27,
+        "output": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\nquery-index.tests.ps1: PASS\r\n"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "label": "ui-contract",
+        "chunk_id": "73a89f",
+        "wall_time_seconds": 1.3733648999999999,
+        "exit_code": 0,
+        "original_token_count": 32,
+        "output": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\nsurface-interaction-contracts.tests.ps1: PASS\r\n"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "label": "index",
+        "chunk_id": "b33267",
+        "wall_time_seconds": 1.6869353,
+        "exit_code": 0,
+        "original_token_count": 30,
+        "output": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\nIndice Coelo UI valido: zero diagnostico.\n"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "label": "knowledge",
+        "chunk_id": "332afb",
+        "wall_time_seconds": 1.4902218999999999,
+        "exit_code": 0,
+        "original_token_count": 41,
+        "output": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\nPASS: 54 artigo(s) validado(s). Revisão humana de conteúdo continua necessária.\r\n"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "label": "diff",
+        "chunk_id": "7b9f66",
+        "wall_time_seconds": 0.4664889,
+        "exit_code": 0,
+        "original_token_count": 20,
+        "output": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings\n\n"
+      }
+    }
+  ],
+  "additional": {
+    "catalog_index_unit_tests": {
+      "passed": 12,
+      "failed": 0
+    },
+    "dart_analysis": "No issues found",
+    "knowledge_unit_tests": {
+      "passed": 12,
+      "skipped": 1,
+      "skip_reason": "Host does not allow test symlink creation"
+    },
+    "skill_entries_validated": 6,
+    "knowledge_articles_validated": 54,
+    "knowledge_probes": 19,
+    "package_boundaries": "zero diagnostics",
+    "catalog_sync": {
+      "before": 16,
+      "after": 14,
+      "remaining": "pre-existing source/example mismatches, not certified synchronized"
+    }
+  }
+}

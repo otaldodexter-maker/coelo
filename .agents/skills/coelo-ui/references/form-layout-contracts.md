@@ -6,6 +6,10 @@ generated_at: "2026-07-29"
 
 # Contrato de formulários de cadastro e edição
 
+**Escopo:** família visual administrativa do Superadmin e sua adoção no Admin.
+As telas `Coelo (Principal)` seguem [seu contrato próprio](principal-visual-surfaces.md),
+mesmo dentro de `apps/superadmin`. O Site não herda esta composição.
+
 Consulta obrigatória para formulário, cadastro, edição, input, campo, select,
 upload, avatar, color picker, wizard, step form ou rodapé de ações. Instituições
 no Superadmin é a referência canônica; autenticação é a referência do campo-base.
@@ -64,19 +68,23 @@ podem virar API genérica após proposta e aprovação.
 
 ## Conteúdo especializado
 
-- Avatar institucional: arquivo PNG, JPG ou WebP, máximo de 2 MB, com ajuste e
-  prévia circulares que produzem a composição visual 1:1. O arquivo de origem
-  não precisa chegar quadrado. Persistência privada segue o fluxo server-side
-  de mídia quando existir; esta correção permanece local e não cria integração.
+- Avatar/logo: distinguir origem e master conforme ADR 0032. Origem até
+  8 MiB e 25 MP, mínimo 256 × 256; master até 1024 × 1024 e 2 MiB. O ajuste
+  circular do avatar produz composição 1:1; a origem não precisa ser quadrada.
+  Logo pode preservar transparência e contenção; não impor máscara de avatar.
+  Validar limites no servidor; preview/crop local não comprova persistência R2.
 - Inserir ou trocar foto/avatar usa obrigatoriamente o fluxo do Perfil:
   `FilePicker` com `withData: true`, extensões PNG/JPG/JPEG/WebP e, após a
   escolha, `AvatarCropDialog` com título `Ajustar foto`, `X` vermelho,
   instrução, reset, recorte circular, zoom e `Cancelar`/`Aplicar` em 50/50.
   Não criar seletor `dart:html`, picker ou crop paralelo na feature.
 - Inserir ou trocar capa usa a mesma shell e hierarquia do ajuste de foto, mas
-  com janela de recorte retangular 16:9. No Superadmin, reutilizar
-  `CoverCropDialog`, que fixa essa proporção. Capa nunca reutiliza máscara
-  circular; uma nova proporção exige proposta e aprovação antes do código.
+  com recorte definido pela finalidade. A ADR 0032 exige 3:1 para capa
+  panorâmica, origem até 12 MiB/36 MP e mínimo 1200 × 400. O componente legado
+  `CoverCropDialog` usa 851:315; isso não satisfaz automaticamente a finalidade
+  panorâmica. Registrar essa dívida antes de conectar mídia real. Não converter
+  toda imagem de feed ou preview 16:9 em 3:1. Preservar a shell aprovada e
+  verificar a adaptação funcional/visual no recorte da integração.
 - Seletor de cor avançado: superfície neutra sem tint, área quadrada de
   saturação/valor, faixa contínua de matiz, amostras `Nova` e `Atual` e
   edição HSV, RGB e hexadecimal. Reutilizar

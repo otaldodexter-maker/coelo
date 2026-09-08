@@ -12,6 +12,10 @@ substitui specs de produto, ADRs nem o Design System.
 
 ## Timebox e lote
 
+O formato semanal abaixo só limita o trabalho quando esse lote for o recorte
+escolhido. Ordem, duração e continuidade já pedidas pelo usuário prevalecem;
+não reiniciar um lote de três horas para uma correção localizada de skill.
+
 - Teto de 3 horas: 0–20 min para escopo/evidências; 20–70 para inspeção visual
   e código; 70–130 para fontes, skill, índice e catálogo; 130–155 para pequenas
   correções aprovadas; 155–180 para verificação e relatório.

@@ -1,6 +1,10 @@
 ---
 name: coelo-backend
 description: Use when a Coelo task involves backend, Supabase, Postgres, Auth, RLS, RPCs, Edge Functions, Realtime, Cloudflare R2, Stream, Workers, Media Gateway, migrations, remote persistence, backend security, or backend completion.
+metadata:
+  source: "AGENTS.md; decisions/0032-mvp-private-media-r2.md; docs/reviews/coelo-supabase-pendencias.md"
+  status: "active"
+  generated_at: "2026-09-08"
 ---
 
 # Coelo Back-end
@@ -24,33 +28,28 @@ Tratar o backend Coelo como a soma dos provedores realmente usados pela ação:
 Uma ação sem mídia não precisa de Cloudflare. Uma ação com mídia ou exportação
 não pode ser `done` apenas porque o Supabase está verde.
 
-## Leitura e skills obrigatórias
+## Leitura por recorte
 
-Antes de analisar, estimar ou editar:
+Ler `AGENTS.md` e o [contrato de recorte](../coelo-flutter-supabase-review/references/review-scope.md).
+Para backend, usar `docs/reviews/coelo-supabase-pendencias.md`; a leitura integral
+é obrigatória na auditoria/conclusão ampla, e o recorte usa as linhas afetadas
+com cabeçalho e dependências. Consultar specs e ADRs da ação; mídia começa na
+ADR 0032. Não buscar credenciais ou acessar produção para explicar uma regra.
 
-1. Ler `AGENTS.md` e integralmente
-   `docs/reviews/coelo-supabase-pendencias.md`.
-2. Ler specs, ADRs, decisões e perguntas abertas da superfície; para mídia,
-   começar por `decisions/0032-mvp-private-media-r2.md`.
-3. Usar `coelo-knowledge` quando comportamento, domínio, segurança, UX ou
-   documentação observável mudar.
-4. Usar `rtk` em comandos com wrapper compatível.
-5. Para Supabase, usar a skill oficial `supabase`, o plugin oficial disponível
-   e `supabase-postgres-best-practices`; consultar documentação atual antes de
-   afirmações temporais ou implementação.
-6. Para Cloudflare, usar `cloudflare`; usar `wrangler` e
-   `cloudflare:workers-best-practices` quando houver Worker, binding, recurso ou
-   deploy. Se a tarefa envolver gerenciamento operacional de vários serviços
-   Cloudflare (deploy, DNS, rotas, KV, R2, Pages) em um fluxo único, usar também
-   `cloudflare-manager` como fallback para guiar a orquestração; manter a decisão
-   final em `cloudflare`, `wrangler` e `cloudflare:workers-best-practices` conforme
-   o objetivo técnico.
-7. Consultar `coelo-frontend-backend` para os limites da prova integrada. Ler
-   também os rastreadores de Front-end e integração quando a conclusão da tela
-   depender do cliente.
+- Supabase: carregar a skill oficial disponível; aplicar boas práticas Postgres
+  quando houver SQL/schema/RLS/desempenho. Conferir documentação primária atual
+  para APIs/comportamentos temporais utilizados.
+- Cloudflare: carregar a skill específica quando o provedor estiver em escopo;
+  `wrangler` para CLI/config/deploy e Workers para código do Worker. Gerenciamento
+  de vários serviços pode usar `cloudflare-manager`; não carregar tudo por nome.
+- `coelo-frontend-backend` somente quando a alteração ou conclusão atravessar
+  cliente e backend; backend isolado não ativa uma revisão de Front-end.
+- Usar `rtk` nos comandos e `coelo-knowledge` no gate de conhecimento durável.
+  Reutilizar contexto já lido; dependências não reiniciam a cadeia de skills.
 
-Review, auditoria e diagnóstico autorizam somente leitura. Mutation, migration,
-deploy, configuração ou recurso remoto exigem autorização para o ambiente e o
+Review, auditoria e diagnóstico sem pedido de correção são somente leitura.
+Correção local solicitada segue o recorte autorizado. Migration, deploy,
+configuração ou recurso remoto exigem autorização para o ambiente e o
 pacote exatos. O projeto Supabase `coelo` é produção; autorização anterior de
 outro pacote não se transfere. Todo recurso Supabase ou Cloudflare remoto do
 Coelo deve ser tratado como produção; não presumir DEV/homologação. Validar
@@ -60,8 +59,11 @@ revisado, serializado e com plano de recuperação.
 ## Segurança de credenciais
 
 - Nunca colocar `service_role`, secret key, token Cloudflare, credencial R2,
-  signing key, segredo de Worker ou URL temporária em Flutter, Astro, Git,
-  asset, log, evidência ou parâmetro permanente.
+  signing key ou segredo de Worker em Flutter, Astro, Git, asset, log ou evidência.
+  Não embutir, versionar, registrar ou persistir URLs temporárias como parâmetros
+  permanentes. O cliente privado pode consumir URL curta em runtime emitida
+  pelo gateway após reautorização, limitada a ator/recurso/operação/TTL. Site
+  não recebe mídia privada. Expiração exige nova autorização no servidor.
 - Guardar segredos somente no secret store do ambiente. Arquivos locais de
   segredo ficam ignorados; exemplos contêm apenas nomes e valores fictícios.
 - Token que apareceu em conversa, anexo, log ou diff é comprometido: não usar,
@@ -84,8 +86,8 @@ horários/evidências, usar `não calculável ainda` e registrar o próximo dado
 necessário.
 
 ```text
-Progresso geral conhecido — Concluído: 21,43% (3/14 unidades)
-Progresso geral conhecido — Restante: 78,57% (11/14 unidades)
+Progresso geral conhecido — Concluído: <IDs comprovados>/<IDs aplicáveis>
+Progresso geral conhecido — Restante: <IDs restantes>/<IDs aplicáveis>
 Tempo usado no trabalho geral concluído: ...
 Tempo estimado para finalizar o backlog geral: ...
 Progresso do recorte — Concluído: ...
@@ -116,21 +118,10 @@ cópia Stream sem remover o master R2.
 
 ## Contrato de abertura
 
-Se o usuário ainda não informou tempo, perguntar quanto quer investir. Se já
-definiu `Completa`, `todas as pendências` ou continuidade até conclusão, não
-perguntar novamente: inventariar, recalcular e prosseguir dentro da autoridade.
-
-| Nível | Inclui | Referência inicial por unidade simples |
-| --- | --- | --- |
-| `Básica` | Correção pequena, RED e teste local mínimo | 30–90 min |
-| `Intermediária` | Básica + contrato, autorização e negativas aplicáveis | 2–6 h |
-| `Avançada` | Intermediária + cross-tenant e remoto autorizado | 1–2 dias |
-| `Completa` | Avançada + regressão, auditoria, cleanup e fechamento | 2–5 dias |
-
-As faixas são somente referência pré-inventário. Reduzir o recorte quando o
-tempo não comportar o pacote seguro; nunca retirar testes, autorização ou
-cleanup para caber. Registrar objetivo, apps afetados, incluído/fora, ordem,
-parada, evidências e ETA por fatia.
+Usar o contrato de recorte: inferir o escopo já solicitado, informar pendências,
+ordem, parada, evidência e estimativa fundamentada. Não perguntar tempo por
+padrão, nem confundir duração com qualidade ou autorização. Ajustar o recorte
+quando houver limite informado, preservando segurança e os gates da conclusão.
 
 ## Políticas vigentes de mídia e exportação
 
@@ -168,9 +159,10 @@ parada, evidências e ETA por fatia.
 
 ## Execução e evidência
 
-Para cada item:
+Para cada item de implementação autorizado (diagnóstico permanece leitura):
 
-1. reproduzir o RED e nomear ator, tenant, recurso, capability e provedores;
+1. reproduzir o defeito ou definir o critério verificável da funcionalidade;
+   nomear ator, tenant, recurso, capability e provedores;
 2. rastrear schema, migration, grants, RLS, RPC/Edge/Worker, R2 e Stream;
 3. escrever o teste antes da correção e provar sucesso e negativas;
 4. fazer replay/cutover forward-only na ordem coordenada;
@@ -180,11 +172,14 @@ Para cada item:
    e ETA.
 
 Não habilitar RLS em lote sem policies e testes: a auditoria remota registrou
-34 tabelas `app_private` com RLS desabilitado, um P0 que exige correção fatiada.
+achados de RLS em `app_private`; consultar a evidência datada e o rastreador
+atual para a quantidade e estado. Não tratar contagem histórica como fato vivo.
 Não aplicar cauda de migrations em lote diante do drift de ledger.
 
 ## Estados e encerramento
 
+- `pending-verification`: certificado atual ainda ausente; não significa inexistência
+  de implementação. Consultar as evidências históricas antes de refazer código;
 - `audited`: inventariado e aberto;
 - `fail-closed`: seguro, porém indisponível;
 - `blocked-decision`/`blocked-environment`: depende de decisão ou ambiente;

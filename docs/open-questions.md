@@ -8,6 +8,29 @@ updated_at: "2026-09-08"
 
 # Perguntas abertas e conflitos
 
+## Auditoria das skills Coelo — reconciliação de 2026-09-08
+
+Correções autorizadas pelo Owner e registradas em
+`docs/reviews/2026-09-08-coelo-skills-audit.md`:
+
+- **UI-01 — contrato reconciliado:** origem de avatar/logo até 8 MiB, master
+  até 2 MiB e capa panorâmica 3:1 conforme ADR 0032, sem aplicar essa proporção
+  a todo feed/preview. **Dívida de implementação mantida:** `CoverCropDialog`
+  ainda produz 851:315. Validar/adaptar o crop ao conectar a finalidade
+  panorâmica em recorte próprio; esta correção de skill não mudou UI/goldens.
+- **UI-03 — resolvido:** referência de itens discretos e teste textual
+  convergem para `space1`, preservando divisores e outras famílias.
+- **BE-01 — resolvido:** cliente privado pode consumir URL temporária em runtime
+  após reautorização; segredos e URLs embutidas, persistidas como acesso
+  permanente ou logadas continuam proibidos. Site sem mídia privada.
+- **TUT-01 — resolvido:** progresso/revisão educativa são somente leitura;
+  memória de aula registra conteúdo novo/evidência, sem compreensão inventada.
+- **UI-04 — esclarecido pelo Owner:** administrativo Superadmin orienta Admin;
+  Principal conserva composição própria no mesmo host; Site terá estilo próprio.
+  Publicar mantém a geometria externa/rodapé aprovados na spec de 2026-08-20,
+  atualizada em 31/08, sem remover etapas. A referência antiga a Storage nessa
+  spec foi reconciliada com ADR 0032. Não há autorização nova de deploy.
+
 ## Contrato pendente — leitura produtiva da própria Conta (2026-09-08)
 
 - O design aprovado `2026-07-28-superadmin-profile-settings-design.md` define

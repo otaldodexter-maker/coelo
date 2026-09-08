@@ -6,12 +6,18 @@ generated_at: "2026-08-04"
 
 # Matriz de evidência dos estados interativos
 
-Esta matriz é um gate anterior ao código. Para cada estado solicitado ou
+**Escopo:** família visual administrativa do Superadmin e sua adoção no Admin.
+As telas `Coelo (Principal)` seguem [seu contrato próprio](principal-visual-surfaces.md),
+mesmo dentro de `apps/superadmin`. O Site não herda esta composição.
+
+Esta matriz organiza a evidência antes da alteração visual. Para cada estado solicitado ou
 alcançável no controle implementado, abrir a
 implementação real, o componente reutilizável, o teste comportamental e a
 evidência visual indicada. Um golden geral da página não substitui o golden do
-estado. Se a evidência do estado estiver ausente, parar e propor a referência;
-não completar a lacuna com Material default, memória ou aproximação.
+estado. Se faltar evidência de teste para um contrato já aprovado, registrar
+a lacuna e verificar o estado no recorte autorizado. Se faltar a definição
+visual, apresentar proposta antes de oficializar um padrão novo. Não usar
+Material default, memória ou aproximação como aprovação.
 
 ## Instituições: baseline de diretórios
 

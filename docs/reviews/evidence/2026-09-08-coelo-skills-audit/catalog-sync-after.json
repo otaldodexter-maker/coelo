@@ -3,6 +3,108 @@
   "diagnostics": [
     {
       "code": "source-example-fingerprint-mismatch",
+      "message": "O exemplo mudou sem atualização correspondente da fonte.",
+      "id": "pattern.media-adjustment",
+      "path": ".agents/skills/coelo-ui/references/form-layout-contracts.md"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "superadmin.advanced-color-picker",
+      "path": "apps/superadmin/lib/app/widgets/superadmin_advanced_color_picker_dialog.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "core.state-panel",
+      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.dialog-shell",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.pagination",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.file-actions",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.interactive-card",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.expandable-status-indicator",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.flyout",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "superadmin.form-action-footer",
+      "path": "apps/superadmin/lib/shared/presentation/widgets/superadmin_form_action_footer.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "O exemplo mudou sem atualização correspondente da fonte.",
+      "id": "governance.deep-review-prompt-brief",
+      "path": ".agents/skills/coelo-ui/references/deep-review-prompt-brief.md"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "O exemplo mudou sem atualização correspondente da fonte.",
+      "id": "governance.family-release-checkpoints",
+      "path": ".agents/skills/coelo-ui/references/deep-review-prompt-brief.md"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "O exemplo mudou sem atualização correspondente da fonte.",
+      "id": "pattern.calendar-date-picker",
+      "path": ".agents/skills/coelo-ui/references/calendar-date-picker-contract.md"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "core.date-range-picker",
+      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "core.date-range-field",
+      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "core.date-time-field",
+      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "superadmin.forms-editor",
+      "path": "apps/superadmin/lib/features/forms/presentation/editor/forms_editor_page.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
       "message": "A fonte mudou sem atualização do exemplo.",
       "id": "superadmin.forms-response",
       "path": "apps/superadmin/lib/features/forms/presentation/response/form_response_page.dart"
@@ -27,7 +129,7 @@
     },
     "pattern.media-adjustment": {
       "source": "811c9dc5",
-      "example": "712e6f9b"
+      "example": "ca84d94a"
     },
     "superadmin.advanced-color-picker": {
       "source": "873b6896",
@@ -239,7 +341,7 @@
     },
     "governance.deep-review-prompt-brief": {
       "source": "811c9dc5",
-      "example": "393db901"
+      "example": "da5df95f"
     },
     "pattern.form-frame-geometry": {
       "source": "811c9dc5",
@@ -271,7 +373,7 @@
     },
     "governance.family-release-checkpoints": {
       "source": "811c9dc5",
-      "example": "393db901"
+      "example": "c306fb6e"
     },
     "pattern.stable-route-content-transition": {
       "source": "811c9dc5",
@@ -295,7 +397,7 @@
     },
     "pattern.calendar-date-picker": {
       "source": "811c9dc5",
-      "example": "d4af37e7"
+      "example": "6d08642d"
     },
     "core.date-range-picker": {
       "source": "ef47c8ae",
@@ -309,6 +411,10 @@
       "source": "df92bb72",
       "example": "1e39b4d3"
     },
+    "pattern.coelo-time-picker": {
+      "source": "916a4860",
+      "example": "3b94910b"
+    },
     "superadmin.forms-editor": {
       "source": "813daad3",
       "example": "49f13ee9"
@@ -320,6 +426,10 @@
     "core.calendar-month": {
       "source": "cc058f2c",
       "example": "e648f413"
+    },
+    "pattern.principal-surfaces": {
+      "source": "811c9dc5",
+      "example": "62fd1cb6"
     }
   }
 }

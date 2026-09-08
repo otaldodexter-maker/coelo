@@ -31,7 +31,7 @@ function Write-Article {
 title: "Artigo de teste"
 knowledge_id: "test-capability"
 source: "AGENTS.md"
-status: "draft"
+status: "validated"
 generated_at: "2026-07-27"
 audience: "$Audience"
 surfaces: ["superadmin"]
@@ -90,11 +90,19 @@ try {
     }
   }
 
-  Write-Output 'PASS: validação, consulta e cenários da memória Coelo.'
+  & python -X utf8 (Join-Path $PSScriptRoot 'test_knowledge.py')
+  if ($LASTEXITCODE -ne 0) { throw 'Regressões de validação/busca falharam.' }
+  Write-Output 'PASS: validação e consulta; inventário de cenários conferido (não é simulação de agente).'
 }
 finally {
   if (Test-Path -LiteralPath $testRoot) {
-    Remove-Item -LiteralPath $testRoot -Recurse -Force
+    $resolvedTestRoot = [System.IO.Path]::GetFullPath($testRoot)
+    $expectedParent = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()).TrimEnd('\', '/')
+    if ((Split-Path -Parent $resolvedTestRoot) -ne $expectedParent -or
+        (Split-Path -Leaf $resolvedTestRoot) -notlike 'coelo-knowledge-tests-*') {
+      throw 'Cleanup fora da pasta temporária deste teste recusado.'
+    }
+    Remove-Item -LiteralPath $resolvedTestRoot -Recurse -Force
   }
 }
 

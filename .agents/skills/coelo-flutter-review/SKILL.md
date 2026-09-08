@@ -1,6 +1,10 @@
 ---
 name: coelo-frontend
 description: Use when a Coelo task reviews, audits, corrects, implements, estimates, or verifies front-end behavior in Flutter/Dart apps or the Astro site, including screens, routes, states, responsiveness, accessibility, architecture, tests, and app-specific completion.
+metadata:
+  source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; specs/050-principal-ui-ux-closure.md"
+  status: "active"
+  generated_at: "2026-09-08"
 ---
 
 # Coelo Front-end
@@ -22,23 +26,24 @@ Todo contrato nomeia os apps incluídos. Na Etapa 2 atual, o único app é
 `apps/superadmin`; “Coelo (Principal)” é o menu dentro dele. `apps/admin`,
 `apps/principal` e `apps/site` permanecem fora.
 
-## Dependências obrigatórias
+## Dependências por recorte
 
-Sempre ler `AGENTS.md`, `docs/reviews/coelo-flutter-pendencias.md` e usar:
+Ler `AGENTS.md` e o [contrato de recorte](../coelo-flutter-supabase-review/references/review-scope.md).
+Usar `docs/reviews/coelo-flutter-pendencias.md` conforme a profundidade do pedido:
+ação localizada usa cabeçalho, linhas afetadas e dependências; auditoria ou
+conclusão ampla exige leitura integral.
 
-1. `coelo-ui`, autoridade visual e de interação;
-2. `rtk`, para comandos com wrapper compatível;
-3. `ponytail`, para a menor solução que corrige a causa raiz;
-4. `test-driven-development` e `verification-before-completion`;
-5. `coelo-knowledge` quando houver conhecimento durável.
-
-Em Flutter/Dart, usar também `flutter-dart-code-review` e
-`flutter-build-responsive-layout`. Em Astro, usar `astro` e as ferramentas de
-browser/validação web aplicáveis. Quando houver Auth, persistência, Supabase,
-R2, Stream ou alegação ponta a ponta, usar `coelo-frontend-backend`.
-
-Consultar brevemente o rastreador integrado mesmo quando o backend estiver fora
-para registrar dependências sem certificá-las.
+- `coelo-ui` para composição e interação: distinguir família administrativa,
+  Principal hospedado no Superadmin e Site. Não impor Instituições a todo app.
+- `rtk` para comandos; `coelo-knowledge` para conhecimento durável.
+- Em Flutter/Dart, revisão de código carrega `flutter-dart-code-review`;
+  mudanças de layout carregam `flutter-build-responsive-layout`.
+- Em Astro, carregar `astro` e ferramentas web pertinentes.
+- Defeito funcional usa teste que reproduz a causa antes da correção e
+  verificação final. Mudança documental/visual simples usa checks proporcionais.
+- Usar `coelo-frontend-backend` quando contrato, alteração ou conclusão
+  atravessarem cliente e backend. Ajustar um rótulo numa tela de Auth não
+  inaugura auditoria Supabase. Registrar dependências conhecidas sem certificá-las.
 
 ## Progresso e limite de `verified`
 
@@ -52,11 +57,13 @@ ação chegou ao fim do Front-end; pode usar double fiel no teste, mas runtime
 normal não pode cair em fake/fixture. A falta do backend não rebaixa um
 `verified`; fica aberta no rastreador integrado.
 
-O rastreador atual mede 207 ações Flutter. Quando Astro entrar em escopo, criar
+Obter o denominador atual do inventário e rastreador da camada. Não manter
+contagens fixas na skill. `pending-verification` exige conferir evidências e
+não significa que a implementação inexiste. Quando Astro entrar em escopo, criar
 denominador explícito por app ou ampliar o rastreador de forma reconciliada;
 nunca somar apps diferentes silenciosamente.
 
-Sempre reportar progresso geral e do recorte separadamente, base de IDs,
+Quando medir progresso, reportar geral e recorte separadamente, base de IDs,
 evidência e horário. Tempo usado é medido; se faltar, escrever `não calculável
 ainda`.
 
@@ -74,25 +81,17 @@ Base do cálculo: action_ids/gates, app, evidência e horário.
 
 ## Contrato de abertura
 
-Se o usuário não informou tempo, perguntar. Se já definiu `Completa`, todas as
-pendências ou execução até terminar, não perguntar novamente. Antes da primeira
-edição, registrar apps, telas/subtelas/actions, objetivo, incluído/fora, ordem,
-critério de parada, evidências, nível e ETA recalculado.
-
-| Nível | Referência inicial | Limite |
-| --- | ---: | --- |
-| `Básica` | 30–90 min por ação simples | Não conclui tela. |
-| `Intermediária` | 2–6 h por ação/tela simples | Mínimo recomendado. |
-| `Avançada` | 1–2 dias por tela | Pode permanecer parcial. |
-| `Completa` | 2–5 dias por tela | Pode sustentar conclusão integral. |
-
-As faixas são referência pré-inventário, não promessa. Reduzir recorte em vez
-de remover testes, acessibilidade ou regressão.
+Registrar o recorte já solicitado, pendências, apps, família visual, ações,
+ordem, parada, evidências e estimativa do delta real. Não perguntar tempo por
+padrão nem aplicar faixas fixas por tela. Distinguir implementação faltante,
+verificação faltante e espera externa, reaproveitando código e testes existentes.
 
 ## Contratos Front-end de mídia e arquivos
 
-- O cliente chama apenas o Media Gateway; nunca recebe credencial R2, Stream,
-  secret key ou `service_role`.
+- O cliente chama apenas o Media Gateway; nunca recebe credencial permanente R2, Stream,
+  secret key ou `service_role`. URLs curtas de upload/playback/download podem
+  ser consumidas em runtime após reautorização pelo gateway, sem embutir em
+  código/assets, persistir como acesso permanente ou registrar em logs.
 - Agora prefere Stream pronto e usa MP4 temporário do R2 ou estado de
   processamento enquanto codifica; expiração não vira download nem tela presa.
 - Momentos e Acontece reproduzem R2 progressivamente; Stream é seletivo.
@@ -102,7 +101,8 @@ de remover testes, acessibilidade ou regressão.
 
 ## Execução e checkpoint
 
-Usar teste primeiro. Por `action_id`, provar listar, criar, detalhe, editar,
+Aplicar a verificação proporcional do contrato de recorte. Por `action_id`
+em escopo, provar listar, criar, detalhe, editar,
 publicar/ativar, excluir/revogar, arquivos, estados e reload visual quando
 aplicáveis. Validar mobile/desktop, light/dark, texto 200%, teclado, toque e
 foco. Atualizar o rastreador após correção, regressão, bloqueio ou ETA novo.

@@ -1,0 +1,230 @@
+{
+  "audit_date": "2026-09-08",
+  "scope": "skills and local synthetic probes only",
+  "git_head": "84985b5485247df6a8dc7270e33d18601aca0421",
+  "skills": [
+    {
+      "name": "coelo-ui",
+      "path": ".agents\\skills\\coelo-ui\\SKILL.md",
+      "sha256": "98bae00658a4361cafa5f07d85fdcffe1a3302d79d12ddbe007e2b685bb3afc7",
+      "bytes": 3787,
+      "lines": 59,
+      "words": 414,
+      "bundle_files": 24,
+      "document_provenance_present": true,
+      "default_prompt_mentions_skill": true,
+      "short_description_length": 38,
+      "markdown_local_links": 29,
+      "broken_markdown_local_links": []
+    },
+    {
+      "name": "coelo-tutor",
+      "path": ".agents\\skills\\coelo-tutor\\SKILL.md",
+      "sha256": "cd603da9d981218133b6ef9f53a91903f442a9f1908e3c30e1b89ebfce9586f6",
+      "bytes": 5569,
+      "lines": 124,
+      "words": 796,
+      "bundle_files": 2,
+      "document_provenance_present": true,
+      "default_prompt_mentions_skill": true,
+      "short_description_length": 38,
+      "markdown_local_links": 0,
+      "broken_markdown_local_links": []
+    },
+    {
+      "name": "coelo-backend",
+      "path": ".agents\\skills\\coelo-supabase\\SKILL.md",
+      "sha256": "34fde88f5a026604bd6e7586f828f1a1884a97583df66526b02d40c7823b9027",
+      "bytes": 10879,
+      "lines": 193,
+      "words": 1404,
+      "bundle_files": 2,
+      "document_provenance_present": true,
+      "default_prompt_mentions_skill": true,
+      "short_description_length": 42,
+      "markdown_local_links": 1,
+      "broken_markdown_local_links": []
+    },
+    {
+      "name": "coelo-frontend",
+      "path": ".agents\\skills\\coelo-flutter-review\\SKILL.md",
+      "sha256": "95e9369f27275fb7febe6c61c13591af64d1642a0dc29f683e04ea683b1f8b2e",
+      "bytes": 5908,
+      "lines": 112,
+      "words": 735,
+      "bundle_files": 2,
+      "document_provenance_present": true,
+      "default_prompt_mentions_skill": true,
+      "short_description_length": 41,
+      "markdown_local_links": 1,
+      "broken_markdown_local_links": []
+    },
+    {
+      "name": "coelo-knowledge",
+      "path": ".agents\\skills\\coelo-knowledge\\SKILL.md",
+      "sha256": "9af3b0a600fdfd4034ca2eec75deb7071ce80532367dc20816e470768daa7dd3",
+      "bytes": 2876,
+      "lines": 55,
+      "words": 370,
+      "bundle_files": 10,
+      "document_provenance_present": true,
+      "default_prompt_mentions_skill": true,
+      "short_description_length": 41,
+      "markdown_local_links": 0,
+      "broken_markdown_local_links": []
+    }
+  ],
+  "ui_index": {
+    "entry_count": 80,
+    "duplicate_ids": 0,
+    "referenced_pattern_count": 18,
+    "missing_patterns": [],
+    "missing_public_or_test_files": []
+  },
+  "tutor_copies_identical": false,
+  "trackers": [
+    {
+      "path": "docs\\reviews\\coelo-flutter-pendencias.md",
+      "bytes": 97997,
+      "lines": 263
+    },
+    {
+      "path": "docs\\reviews\\coelo-supabase-pendencias.md",
+      "bytes": 101010,
+      "lines": 263
+    },
+    {
+      "path": "docs\\reviews\\coelo-flutter-integrado-supabase-pendencias.md",
+      "bytes": 127171,
+      "lines": 263
+    }
+  ],
+  "knowledge_probes": [
+    {
+      "case": "valid_control",
+      "expected_valid": true,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": true
+    },
+    {
+      "case": "nonexistent_source_control",
+      "expected_valid": false,
+      "accepted": false,
+      "exit_code": 1,
+      "matches_expected": true
+    },
+    {
+      "case": "source_outside_repository",
+      "expected_valid": false,
+      "accepted": false,
+      "exit_code": 1,
+      "matches_expected": true
+    },
+    {
+      "case": "projection_as_own_source",
+      "expected_valid": false,
+      "accepted": false,
+      "exit_code": 1,
+      "matches_expected": true
+    },
+    {
+      "case": "directory_as_source",
+      "expected_valid": false,
+      "accepted": false,
+      "exit_code": 1,
+      "matches_expected": true
+    },
+    {
+      "case": "impossible_date",
+      "expected_valid": false,
+      "accepted": false,
+      "exit_code": 1,
+      "matches_expected": true
+    },
+    {
+      "case": "empty_surfaces",
+      "expected_valid": false,
+      "accepted": false,
+      "exit_code": 1,
+      "matches_expected": true
+    },
+    {
+      "case": "valid_yaml_block_list",
+      "expected_valid": true,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": true
+    },
+    {
+      "case": "benign_security_guidance",
+      "expected_valid": true,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": true
+    },
+    {
+      "case": "synthetic_unformatted_cpf",
+      "expected_valid": false,
+      "accepted": false,
+      "exit_code": 1,
+      "matches_expected": true
+    },
+    {
+      "case": "duplicate_id_control_baseline",
+      "expected_valid": true,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": true
+    },
+    {
+      "case": "duplicate_id_same_audience",
+      "expected_valid": false,
+      "accepted": false,
+      "exit_code": 1,
+      "matches_expected": true,
+      "expectation_basis": "audit proposal: unique id per audience; not an existing explicit rule"
+    },
+    {
+      "case": "search_fixture_draft",
+      "expected_valid": true,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": true
+    },
+    {
+      "case": "search_returns_draft",
+      "exit_code": 0,
+      "returned_article": false
+    },
+    {
+      "case": "search_fixture_deprecated",
+      "expected_valid": true,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": true
+    },
+    {
+      "case": "search_returns_deprecated",
+      "exit_code": 0,
+      "returned_article": false
+    },
+    {
+      "case": "search_fixture_validated",
+      "expected_valid": true,
+      "accepted": true,
+      "exit_code": 0,
+      "matches_expected": true
+    },
+    {
+      "case": "search_returns_validated",
+      "exit_code": 0,
+      "returned_article": true
+    },
+    {
+      "case": "audience_users_argument",
+      "exit_code": 0
+    }
+  ],
+  "temporary_fixtures_removed": true
+}

@@ -1,6 +1,10 @@
 ---
 name: coelo-frontend-backend
 description: Use when a Coelo review, audit, correction, implementation, estimate, or completion claim crosses Front-end and Back-end, including Flutter/Dart or Astro with Supabase/Postgres, Auth, Edge Functions, Cloudflare R2, Stream, Workers, Media Gateway, remote persistence, or end-to-end behavior.
+metadata:
+  source: "AGENTS.md; decisions/0032-mvp-private-media-r2.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md"
+  status: "active"
+  generated_at: "2026-09-08"
 ---
 
 # Coelo Front-end + Back-end
@@ -15,28 +19,21 @@ Controlar conclusão ponta a ponta sem substituir as autoridades de cada camada.
 E2E significa executar o fluxo real por todos os provedores que a ação usa; não
 significa somente Flutter → Supabase.
 
-## Dependências obrigatórias
+## Coordenação sem recursão
 
-Sempre:
+Ler `AGENTS.md` e o [contrato de recorte](references/review-scope.md).
+Coordenar `coelo-frontend` e `coelo-backend` nas partes afetadas, sem reiniciar
+suas dependências. Reutilizar contexto lido e carregar skills técnicas conforme
+a operação/provedor; `coelo-ui` decide a família visual e `coelo-knowledge`
+cuida da memória durável. Uma tarefa de uma camada não usa esta skill apenas
+por mencionar o nome de um provedor.
 
-1. ler `AGENTS.md`;
-2. usar `coelo-frontend`, `coelo-backend`, `coelo-ui`, `coelo-knowledge`,
-   `rtk`, `ponytail`, `test-driven-development` e
-   `verification-before-completion`;
-3. para Flutter, usar `flutter-dart-code-review` e
-   `flutter-build-responsive-layout`; para Astro, usar `astro`;
-4. para Supabase, usar o plugin oficial, `supabase` e
-   `supabase-postgres-best-practices`;
-5. para Cloudflare, usar `cloudflare`; quando houver Worker/config/deploy,
-   também `wrangler` e `cloudflare:workers-best-practices`;
-   para fluxo cruzado de Workers+R2+DNS+Pages no mesmo passo, usar
-   `cloudflare-manager` como fallback de orquestração.
-6. ler integralmente, nesta ordem, os rastreadores em `docs/reviews/`:
-   `coelo-flutter-pendencias.md`, `coelo-supabase-pendencias.md` e
-   `coelo-flutter-integrado-supabase-pendencias.md`.
-
-Os nomes dos arquivos dos rastreadores foram mantidos por compatibilidade;
-Front-end abrange Flutter/Dart e Astro, Back-end abrange Supabase e Cloudflare.
+Para conclusão ampla integrada, ler integralmente, nesta ordem, os rastreadores
+`coelo-flutter-pendencias.md`, `coelo-supabase-pendencias.md` e
+`coelo-flutter-integrado-supabase-pendencias.md` em `docs/reviews/`.
+Para ação específica, cruzar seus IDs, dependências, estados e evidências nos
+três, com os cabeçalhos de medição. Os nomes históricos não limitam Back-end
+somente a Supabase nem Front-end somente a Flutter.
 
 ## Recorte por app
 
@@ -60,7 +57,7 @@ Não somar os três denominadores. Preservar progresso de camada quando a cadeia
 integrada ainda estiver aberta. `ready-for-e2e` exige Front-end `verified` e
 Back-end `done` para a mesma ação.
 
-Sempre publicar progresso geral e do recorte, tempo usado medido, ETA e base de
+Quando medir progresso, publicar geral e recorte separadamente, tempo usado medido, ETA e base de
 cálculo. Se faltarem evidências/horários, usar `não calculável ainda`, sem falsa
 precisão.
 
@@ -95,12 +92,12 @@ rota `/dev`, golden ou teste isolado não comprovam isso.
 
 ## Contrato de abertura
 
-Se o usuário não informou tempo, perguntar. Se o pacote já é `Completa`, todas
-as pendências ou execução até terminar, não perguntar novamente. Inventariar
+Preservar recorte e autorizações já dados. Não perguntar tempo por padrão nem
+usar faixas fixas por tela como estimativa. Estimar o delta comprovado. Inventariar
 IDs e dependências antes da edição e registrar: apps/telas/ações, objetivo,
 incluído/fora, ownership, ordem, critério de parada, evidências, bloqueios e ETA.
 
-Review é leitura. Correção local não autoriza migration, recurso Cloudflare ou
+Review sem pedido de correção é leitura. Correção local não autoriza migration, recurso Cloudflare ou
 deploy. Todo remoto Coelo é produção e exige autorização explícita para o
 pacote nominal; não presumir DEV/homologação. Testar localmente, aplicar
 forward-only de forma serializada e registrar recuperação. Um bloqueio externo
@@ -115,6 +112,7 @@ tela/subtela/action_id e não por nome da conversa.
 
 No checkpoint, separar Front-end, Back-end Supabase, Back-end Cloudflare e
 prova integrada. Informar commits, testes com quantidade/resultado, primeiro
-gate aberto e ETA. Só declarar conclusão quando worktree estiver limpa, commits
-integrados, segredos ausentes, evidências preservadas e todos os gates do
-recorte realmente verdes.
+gate aberto e ETA. Declarar conclusão do recorte quando seus gates estiverem comprovados, com
+segredos ausentes e evidências preservadas. Commit, merge e deploy são etapas
+separadas quando solicitadas; mudanças alheias não bloqueiam relatar uma
+correção local verificada. Não confundir isso com integração ou publicação.

@@ -148,6 +148,9 @@ Assert-QueryContains -Query 'matriz evidencia visual estado flyout filtro hover 
 Assert-QueryContains -Query 'mobile tablet fundo base branco instagram airbnb superficie clara' `
     -ExpectedId 'foundation.mobile-surface-hierarchy'
 
+Assert-QueryContains -Query 'Acontece Publicar' -ExpectedId 'pattern.principal-surfaces'
+Assert-QueryContains -Query 'Principal Agora viewer' -ExpectedId 'pattern.principal-surfaces'
+
 $broadQuery = 'hover cinza reto flyout instituicoes card'
 $broadResult = & $queryScript -Query $broadQuery | ConvertFrom-Json
 $broadIds = @($broadResult.entries | ForEach-Object { $_.id })

@@ -52,10 +52,13 @@ Não inventar IDs nem incluir esse escopo em percentuais sem esse cruzamento.
 Não há percentual confiável de implementação completa. 104/219 local-green e
 3/38 famílias backend eram classificações históricas, não medições atuais do
 trabalho restante. O inventário não tem ações certificadas integralmente:
-Front-end 0/219; backend 0/214 normativas (Shell não exige backend próprio);
-E2E 0/189 ativas. Zero certificado não significa zero implementado.
+Front-end 0/219; backend 0/212 aplicáveis; E2E 0/187 ativas aplicáveis.
+As preferências locais `account.settings` e `account.theme`, além das cinco
+ações de shell, são não aplicáveis ao backend/integrado. Zero certificado não
+significa zero implementado.
 
-O denominador anterior 192 incluía três ações MFA do gate formal. Outras 22
+Com o gate formal de três ações MFA, o denominador integrado aplicável é 190.
+Outras 22
 operações reais de import/export são pós-MVP; não foram marcadas concluídas.
 A UI de indisponibilidade honesta continua sujeita a verificação.
 

@@ -21,12 +21,12 @@ if (-not (Test-Path -LiteralPath $referencePath)) {
   throw "Missing required surface interaction reference: $referencePath"
 }
 
-$reference = Get-Content -LiteralPath $referencePath -Raw
+$reference = Get-Content -LiteralPath $referencePath -Raw -Encoding utf8
 foreach ($expected in @(
   'colorScheme.surface',
   'colorScheme.primaryContainer',
   'CoeloRadius.md',
-  'CoeloSpacing.spaceHalf',
+  'CoeloSpacing.space1',
   'colorScheme.errorContainer',
   'CoeloRadius.full',
   'CoeloAdminMultiSelectFilter',
@@ -51,7 +51,7 @@ if (-not (Test-Path -LiteralPath $designSystemPath)) {
   throw "Missing required design system: $designSystemPath"
 }
 
-$designSystem = Get-Content -LiteralPath $designSystemPath -Raw
+$designSystem = Get-Content -LiteralPath $designSystemPath -Raw -Encoding utf8
 $tableSectionMatch = [regex]::Match(
   $reference,
   '(?ms)^## Tabela administrativa\r?\n(?<body>.*?)(?=^## |\z)'
@@ -79,7 +79,7 @@ foreach ($expected in @(
   Assert-Contains -Content $designSystem -Expected $expected -Source $designSystemPath -Label 'Design system administrative table contract'
 }
 
-$skill = Get-Content -LiteralPath $skillPath -Raw
+$skill = Get-Content -LiteralPath $skillPath -Raw -Encoding utf8
 Assert-Contains -Content $skill -Expected 'references/surface-interaction-contracts.md' -Source $skillPath -Label 'Coelo UI skill'
 Assert-Contains -Content $skill -Expected 'obrigatoriamente o' -Source $skillPath -Label 'Coelo UI skill routing'
 Assert-Contains -Content $skill -Expected 'popup' -Source $skillPath -Label 'Coelo UI skill routing'

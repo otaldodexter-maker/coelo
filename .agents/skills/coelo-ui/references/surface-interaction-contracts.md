@@ -6,6 +6,10 @@ generated_at: "2026-07-29"
 
 # Contratos de superfícies e interação
 
+**Escopo:** família visual administrativa do Superadmin e sua adoção no Admin.
+As telas `Coelo (Principal)` seguem [seu contrato próprio](principal-visual-surfaces.md),
+mesmo dentro de `apps/superadmin`. O Site não herda esta composição.
+
 Consulta obrigatória para popup, modal, dialog, overlay, hover, menu, filtro,
 close, dismiss ou “X”. Aplicar antes de escolher uma composição visual. Este
 contrato não aprova componentes públicos, APIs, variantes ou mudanças de domínio.
@@ -40,7 +44,7 @@ contrato não aprova componentes públicos, APIs, variantes ou mudanças de dom�
 - Itens discretos de navegação, menus, submenus e listas de ações usam
   `colorScheme.primaryContainer` no hover e foco visível,
   `colorScheme.primary` no conteúdo destacado, `CoeloRadius.md` e margem
-  vertical `CoeloSpacing.spaceHalf` entre itens.
+  vertical `CoeloSpacing.space1` entre itens.
 - O overlay ou splash adicional é transparente; não sobrepor camada cinza. O
   estado desabilitado não recebe hover.
 - Opções em filtros e tabelas densas são linhas contínuas: usam

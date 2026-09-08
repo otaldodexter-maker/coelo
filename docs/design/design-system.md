@@ -8,6 +8,7 @@ supplemental_source: "docs/superpowers/specs/2026-07-24-contextual-people-access
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-29"
+updated_at: "2026-09-08"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
@@ -18,6 +19,23 @@ generated_at: "2026-07-29"
 | --- | --- | --- |
 
 Documento operacional para Figma, Flutter/Dart, Admin, Superadmin, App e comunicação da marca.
+
+## Famílias visuais — esclarecimento do Owner em 2026-09-08
+
+Decisão registrada a partir do pedido explícito do Owner e da spec 050 aprovada:
+o Superadmin administrativo é a referência para o futuro Admin. As telas no
+menu `Coelo (Principal)`, como Acontece, Agora, Momentos e Publicar, já possuem
+identidade própria dentro de `apps/superadmin`; preservam feeds, navegação,
+viewers e compositores. Referências parciais, como a geometria externa e o
+rodapé de Publicar aprovados em 2026-08-31, permanecem; isso não impõe cards
+ou conteúdo administrativo nem autoriza remover etapas existentes. O Site
+Astro terá composição própria, sujeita à sua spec e aprovação visual.
+Compartilham marca, tokens e controles neutros compatíveis, não telas entre apps.
+
+As seções administrativas deste documento são limitadas a essa família visual.
+O host Superadmin não estende sua anatomia a toda rota. As specs 050 e 037
+preservam as composições do Principal. Mídia obedece à ADR 0032 por finalidade;
+limites de origem, master e crop não são intercambiáveis.
 
 # 1. Decisões oficiais do Design System
 
@@ -505,7 +523,7 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
 ## Padrão de formulário de cadastro e edição
 
 - Criar/Editar Instituição é a baseline automática e a verdade visual para
-  qualquer tela do Superadmin que crie ou edite uma entidade, incluindo
+  qualquer tela administrativa do Superadmin que crie ou edite uma entidade, incluindo
   refatoração, correção e novos widgets/seções. O domínio pode mudar conteúdo,
   etapas e validações; não muda sozinho a identidade visual.
 - Antes de implementar, consultar o código real de `InstitutionFormPage`,
@@ -559,8 +577,10 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
 - Formulários não usam faixas `surfaceContainer` ou cinza apenas para preencher
   espaço. Agrupamento vem de espaçamento, borda e hierarquia; aviso informativo
   pode usar `primaryContainer` quando seu significado justificar o destaque.
-- Foto de perfil institucional aceita PNG, JPG ou WebP de até 2 MB. A seleção
-  abre o ajuste circular aprovado do Perfil, que produz a composição visual 1:1;
+- Avatar/logo aceita origem JPEG, PNG ou WebP de até 8 MiB e 25 MP,
+  mínimo 256 × 256, conforme ADR 0032. Master tem teto de 1024 × 1024 e 2 MiB.
+  Logo pode preservar transparência; a máscara circular é própria do avatar.
+  A seleção do avatar abre o ajuste circular aprovado do Perfil, que produz a composição visual 1:1;
   o arquivo de origem não precisa chegar quadrado. Rejeitar formato ou limite
   inválido antes do ajuste e explicá-los junto ao controle.
 - Cor institucional aceita hexadecimal `#RRGGBB` e seleção visual por área
@@ -582,9 +602,13 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
   por `FilePicker` com bytes em memória, seguida do dialog neutro, `X` vermelho,
   reset, recorte circular, zoom e ações
   `Cancelar`/`Aplicar` em 50/50. Capa usa a mesma shell e interação, com
-  recorte retangular 16:9; nunca usa círculo. Outra proporção exige nova
-  decisão aprovada.
-  No Superadmin, usar `AvatarCropDialog` e `CoverCropDialog`, respectivamente.
+  recorte por finalidade: a capa panorâmica da ADR 0032 usa 3:1, origem
+  até 12 MiB/36 MP e mínimo 1200 × 400. O `CoverCropDialog` legado usa
+  851:315 e exige adaptação no recorte de integração panorâmica. Isso não
+  altera automaticamente imagens 16:9 do feed ou de previews.
+  No Superadmin, `AvatarCropDialog` é a referência do avatar. A shell de
+  `CoverCropDialog` é a referência de interação; verificar/adaptar sua saída
+  antes de usá-la para a finalidade panorâmica da ADR 0032.
 - O seletor de cores canônico usa superfície neutra, plano de
   saturação/valor, matiz contínua, amostras `Nova`/`Atual`, HSV, RGB e
   hexadecimal, com `Cancelar`/`Usar cor` em 50/50. Reutilizar o componente
@@ -934,20 +958,14 @@ fechamento e filtros; não cria componente público nem altera fluxos de domíni
   `surface` e `radius.lg`; hover/foco enfatizam somente borda e sombra na
   hierarquia primária. Não compor `Card` + `InkWell` local nem aceitar overlay
   Material cinza ou hover retangular.
-- A baseline de Instituições é automática para todo card do Coelo, seja
-  administrativo, informativo, de diretório ou de conteúdo. Em
-  Admin/Superadmin, usar `CoeloAdminInteractiveCard` no card clicável e
-  `CoeloAdminCreateAction.tile` no card de criação tracejado; card informativo
-  compartilha a anatomia, sem semântica de botão. Principal implementa o mesmo
-  contrato no próprio pacote e nunca importa `coelo_ui_admin`. Outra anatomia
-  exige que o usuário indique
-  explicitamente outro padrão aprovado. Quando houver status semântico, o
-  indicador começa circular em 24 × 24 e sem texto; essa é a dimensão visual,
-  não o alvo interativo, que permanece de pelo menos 48 × 48. Em Admin/Superadmin, usar
-  `CoeloAdminExpandableStatusIndicator`; no Principal, implementar o mesmo
-  contrato no pacote próprio, sem importar `coelo_ui_admin`. Hover, foco por
-  teclado ou toque no indicador o
-  expande para revelar o rótulo. Enter e Espaço permitem alternar a expansão;
+- A baseline de Instituições é automática para cards administrativos. Usar
+  `CoeloAdminInteractiveCard` no card clicável, `CoeloAdminCreateAction.tile`
+  no card de criação e a mesma anatomia sem semântica de botão no informativo.
+  Cards editoriais do Principal seguem suas specs e componentes próprios,
+  sem importar `coelo_ui_admin`. No card administrativo com status semântico,
+  usar `CoeloAdminExpandableStatusIndicator`: indicador visual de 24 × 24,
+  sem texto inicial, com alvo de pelo menos 48 × 48. Hover, foco ou toque
+  revelam o rótulo; Enter e Espaço alternam a expansão;
   o rótulo permanece legível com texto a 200% e negrito de acessibilidade,
   sem reduzir a escala solicitada. A cor segue o token semântico do status e o
   texto impede dependência exclusiva de cor. Com reduced motion, a expansão
@@ -1008,7 +1026,7 @@ As superfícies abaixo foram aprovadas em conjunto pelo Owner Coelo em
 2026-07-29. A matriz operacional completa e os caminhos dos goldens ficam em
 `.agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md`.
 Ela é obrigatória ao criar, refazer, refatorar, corrigir ou revisar qualquer
-UI do Superadmin. A referência se aplica em quatro escalas: estado interativo,
+UI administrativa do Superadmin. A referência se aplica em quatro escalas: estado interativo,
 componente/widget, composição de seção e arquitetura da página inteira. Mesmo
 quando não há widget idêntico para reutilizar, o conceito repetitivo e a
 hierarquia da família aprovada continuam obrigatórios.

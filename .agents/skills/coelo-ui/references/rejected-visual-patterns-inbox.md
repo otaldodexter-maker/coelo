@@ -6,6 +6,10 @@ generated_at: "2026-08-04"
 
 # Padrões visuais rejeitados
 
+**Escopo:** família visual administrativa do Superadmin e sua adoção no Admin.
+As telas `Coelo (Principal)` seguem [seu contrato próprio](principal-visual-surfaces.md),
+mesmo dentro de `apps/superadmin`. O Site não herda esta composição.
+
 Este arquivo preserva exemplos que o Owner Coelo classificou explicitamente
 como padrões que **nunca devem existir** no Coelo UI. Eles são evidência de
 regressão e não podem ser usados como baseline, inspiração, golden aprovado ou

@@ -243,9 +243,15 @@ CatalogIndexValidationResult validateCatalogIndex({
       );
     }
 
-    final validateExistence =
-        status == 'implemented' || status == 'deprecated' || status == 'catalog-stale';
     final publicFile = entry['publicFile'];
+    // An approved document is already a reference, unlike planned Dart code.
+    final approvedDocument =
+        status == 'approved' && publicFile is String && publicFile.toLowerCase().endsWith('.md');
+    final validateExistence =
+        status == 'implemented' ||
+        status == 'deprecated' ||
+        status == 'catalog-stale' ||
+        approvedDocument;
     if (publicFile is String) {
       _validatePath(
         path: publicFile,

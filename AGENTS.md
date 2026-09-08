@@ -145,19 +145,31 @@ canonicos:
 
 - **Coelo Front-end** (`coelo-frontend`): use
   `.agents/skills/coelo-flutter-review/SKILL.md` para Flutter/Dart nos apps
-  privados e Astro no Site, sempre com recorte explicito por app; leia
-  integralmente `docs/reviews/coelo-flutter-pendencias.md`.
+  privados e Astro no Site, sempre com recorte explicito por app; consulte
+  `docs/reviews/coelo-flutter-pendencias.md` conforme a profundidade abaixo.
 - **Coelo Back-end** (`coelo-backend`): use
   `.agents/skills/coelo-supabase/SKILL.md` para Supabase/Postgres e Cloudflare
-  R2/Stream/Workers; leia integralmente
-  `docs/reviews/coelo-supabase-pendencias.md`.
+  R2/Stream/Workers; consulte `docs/reviews/coelo-supabase-pendencias.md`
+  conforme a profundidade abaixo.
 - **Coelo Front-end + Back-end** (`coelo-frontend-backend`): use
   `.agents/skills/coelo-flutter-supabase-review/SKILL.md` quando a conclusao
-  cruzar cliente, Supabase ou Cloudflare; leia integralmente os tres
-  rastreadores, terminando por
+  cruzar cliente e backend; cruze os tres rastreadores, terminando por
   `docs/reviews/coelo-flutter-integrado-supabase-pendencias.md`.
 
+A profundidade segue
+`.agents/skills/coelo-flutter-supabase-review/references/review-scope.md`:
+auditoria ou conclusao ampla le integralmente os rastreadores das camadas;
+correcao localizada le cabecalhos, acoes, dependencias e evidencias afetadas;
+explicacao ou manutencao de skill/documentacao nao inicia auditoria do produto.
+Reutilize leituras; dependencias de skills nao reiniciam em ciclo. O recorte
+ja definido pelo usuario dispensa nova confirmacao ou pergunta de tempo.
+Estime o delta real apos inspecao, sem faixas fixas por tela ou contagem de
+acoes como substituto de horas. Seguranca e provas da conclusao permanecem.
+
 `coelo-ui` permanece a autoridade visual em qualquer revisao de Front-end.
+Distinguir app hospedeiro de familia visual: administrativo Superadmin orienta
+Admin; Coelo (Principal) preserva suas composicoes aprovadas mesmo dentro do
+Superadmin; Site tem composicao propria conforme spec aprovada.
 Atualize
 os rastreadores afetados no mesmo turno de cada correcao, regressao, bloqueio ou
 mudanca de estimativa. Tela aberta, `fail-closed`, `local-green`, rota `/dev`,

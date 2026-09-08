@@ -7,6 +7,9 @@ updated_at: "2026-09-08"
 action_count: 219
 family_count: 38
 active_mvp_action_count: 189
+active_e2e_action_count: 187
+client_only_mvp_action_count: 2
+backend_applicable_action_count: 212
 formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
@@ -18,8 +21,8 @@ Base auditada: dev 19b8f574, com correções documentais por código e evidênci
 
 Este é o estado operacional atual. O histórico integral anterior está em [arquivo de 08/09](archive/2026-09-08/). As classificações antigas foram preservadas no inventário JSON como históricas; não representam testes executados nesta revisão.
 
-- 219 action_ids únicos, 38 famílias: 189 ações no escopo ativo desta fase do MVP, algumas ainda dependentes de decisão ou evidência, três ações MFA no gate formal, 22 operações de import/export adiadas e cinco ações somente Flutter. O denominador anterior 192 incluía as três ações MFA. Nenhum item adiado foi contado como concluído.
-- Conclusão certificada no inventário: Front-end 0/219, backend 0/214 ações normativas e integração 0/189 ativas (também 0/192 incluindo o gate formal). Zero certificado não significa zero implementado. Não há percentual confiável do trabalho implementado: 104/219 local-green e 3/38 famílias eram classificações históricas sem reauditoria integral de aceites.
+- 219 action_ids únicos, 38 famílias: 189 ações no escopo ativo desta fase do MVP, das quais 187 usam backend/E2E e duas são preferências locais do cliente; há ainda três ações MFA no gate formal, 22 operações de import/export adiadas e cinco ações de shell somente Flutter. Nenhum item adiado foi contado como concluído.
+- Conclusão certificada no inventário: Front-end 0/219, backend 0/212 ações aplicáveis e integração 0/187 ativas (também 0/190 incluindo o gate formal). `account.settings`, `account.theme` e as cinco ações de shell são não aplicáveis ao backend/integrado. Zero certificado não significa zero implementado. Não há percentual confiável do trabalho implementado: 104/219 local-green e 3/38 famílias eram classificações históricas sem reauditoria integral de aceites.
 - pending-verification significa aceite completo ainda não certificado; não significa refazer o que está na coluna Feito. Abrir os commits/evidências antes de alterar código.
 - R2 privado é master; Supabase mantém catálogo, permissões e auditoria. Stream é cópia HOT seletiva conforme ADR 0032; Agora até 24 h. XLSX de todas as respostas do formulário é a única exportação real do MVP.
 - /dev usa fixtures; sem /dev usa composição produtiva. Todo remoto é produção. MFA interno aceita AAL1 conforme ADR 0019. Admin, Principal e Site estão fora deste recorte de implementação.
