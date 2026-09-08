@@ -256,10 +256,12 @@ class _SuperadminAppState extends State<SuperadminApp> {
   }
 
   Future<void> _setThemeMode(ThemeMode mode) async {
+    final operation = _preferencesController.setThemeMode(mode);
+    final intentRevision = _preferencesController.intentRevision;
     try {
-      await _preferencesController.setThemeMode(mode);
+      await operation;
     } on Object {
-      if (!mounted) return;
+      if (!mounted || _preferencesController.intentRevision != intentRevision) return;
       if (_preferencesController.loaded &&
           (!_preferencesController.saveFailed ||
               _preferencesController.preferences.themeMode != mode)) {

@@ -94,3 +94,13 @@ verificado, pipeline produtivo de Conta ou E2E completo.
 A prova browser de persistência anterior está no registro específico
 `2026-09-07-settings-browser-persistence.md`; falhas de armazenamento nesta
 fatia foram injetadas somente nos testes locais.
+
+## R08 P2 — identidade da tentativa, não valor do tema
+
+Revisão central reteve o incremento ao identificar Escuro A → Claro B →
+Escuro C: falha tardia de A passava na comparação por valor. RED reproduzido
+com três intenções e um único primeiro save pendente. O controller agora
+numera intenções de ambos os setters e de retrySave antes do await, sem
+alterar dispose ou a fila; o App correlaciona a conclusão com essa revisão.
+Uma escolha nova que retorna ao valor antigo não reabilita o erro obsoleto.
+30/30 focais PASS após a correção (App 4, demais 26).
