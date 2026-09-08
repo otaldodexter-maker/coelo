@@ -10,6 +10,15 @@ family_count: 38
 
 # Pendências Coelo — Back-end
 
+- Atualização02:29: probeLOC Auth47 reportou7existênciasPASS, divergência de
+  MD5 bruto só nas funções privadas form_options e create_activity_locations.
+  Pins vieram de catálogo remoto0b7ab89a; LF local contra RAW remoto não prova
+  diferença semântica. E2 compara somente catálogo remoto dessas duas funções,
+  read-only autorizado, sem mudar pins. EvidênciaEng1d119cef ainda em revisão.
+  F-AUTHOR preflight76ab retido após reviewEng2: chamadas nativas semtimeout
+  poderiam prender finally/lease; patch mínimo de timeout/cleanup reservado.
+  CHILD78e candidato passou reviewestático, preparo48/49 ainda não executado.
+
 - Atualização02:16: o segundo LOC50 compilou o CASE corrigido, mas parou
   com55000 `location legacy helper fingerprint drift`, antes de TAP.
   Eng1 informou ledger49 na evidência93304747; ainda sem validação central

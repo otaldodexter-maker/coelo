@@ -14,13 +14,17 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "3B4DEFF697ED8A67F634E6ABBF9A07850204A0471D0D5B34FFD3FBA99587D26A"
-supabase_tracker_sha256: "E8FD0B2A2CB8531C4B12423FB9E7E4D604A30E010EE6399575A5B9DE8DF9E053"
+flutter_tracker_sha256: "1F9C1F256A1E8927A96D7CCDA934B78A4A88C26806E70E4D4C33E64B3F2A54E4"
+supabase_tracker_sha256: "36A9095F74C493F6F6DD6D51160F9FA3085894B67486AC41F4A8EFF043283F6F"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
+
+- Atualização02:29: Respostas62/62 e AgendaDTO49/49 no destino/analyzer3.
+  LOC investiga dois fingerprints sem afirmar divergência semântica;
+  F-AUTHOR aguarda timeout seguro do preflight. Sem novos gates E2E completos.
 
 - Atualização02:23: Para Você/Agora/Publicação200/200 incluindo goldens,
   analyzer3 e gate visual local PASS após integração. M03/N01, persistência

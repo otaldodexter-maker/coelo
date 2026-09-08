@@ -14,6 +14,11 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização02:29: Respostas21efc6cc mostra uma seção por página, mantém
+  edição/autosave ao navegar e valida globalmente;62/62 destino. Agendaf8a04b3a
+  adiciona reader/DTO parcial isolado sem personIds ou conexão às rotas;
+  49/49 destino. Analyzer3 PASS. Banco e E2E continuam pendentes.
+
 - Atualização02:23: Para Você3e16dfec/5e762eb4 e Agora publicação/opções
   a6a51d10/080997f6 isolam callbacks/rotas de overlays e permitem rolagem
   do seletor em viewport curta. Três features200/200 no destino, incluindo
