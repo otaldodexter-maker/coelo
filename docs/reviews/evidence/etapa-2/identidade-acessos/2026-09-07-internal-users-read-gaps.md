@@ -1,11 +1,34 @@
 ---
 title: "Usuários internos — gaps nominais do payload de leitura"
 source: "Revisão estática root/realm_audit da migration 20260901210000; escopo original Identidade e Acessos"
-status: "nominal-forward-fix-static-reviewed; awaiting-green-replay"
+status: "local-green-replay; production-and-e2e-pending"
 generated_at: "2026-09-07"
+updated_at: "2026-09-08"
 ---
 
 ## Contrato deste registro
+
+Registro cronológico: os trechos de diagnóstico e espera abaixo preservam o
+estado de sua coleta. O resultado vigente está no fechamento local a seguir.
+
+## Fechamento local — Users49
+
+Engenheiro 1 executou Auth45 + migration Users + corretiva `27a0c3bb` + dois
+preflights (49 arquivos), preservando as fixtures de 45 e três asserts:
+**48/48 pgTAP PASS, exit 0**. Evidência lida integralmente em
+`docs/reviews/evidence/etapa-2/engenheiro-1/users49-green-2026-09-07.md`, commit
+`36964bbb937b7ea4c77b3a4e2b1d6ffbd631dfcd`, branch do executor.
+
+Execução `2026-09-08T02:53:50.8848955Z`, identidade local
+`coelo_safe_970e4991ff92475c951caa4a551c2`; cleanup independente
+`2026-09-08T02:55:41.7082440Z`: zero recursos próprios e staging ausente,
+recursos históricos preservados. Hash LF da corretiva conferido na prova:
+`1cddea65cd5394c727ae56d7c668a2a6e1a7783527c6703f49a9d04f4214e34a`.
+Review independente do executor sem bloqueantes. Nenhuma execução Docker ou
+SQL por esta frente. Não comprova produção, edição/convites, concorrência de
+versão, toda a paginação ou integração visual/E2E.
+
+## Diagnóstico inicial preservado
 
 Somente evidência, separada da fixture nominal de 45 asserts. Não altera SQL,
 RPC, grants, produção ou decisões de produto. Os achados foram enviados ao

@@ -20,7 +20,7 @@ Docker ou deploy por esta frente nesta retomada.
 | Passo | Camada / objeto | Estado e próximo gate |
 |---|---|---|
 | 1/6 Contrato/inventário | read/update/suspend internos | Recorte local listado; criação/convite não habilitados |
-| 2/6 Backend/negativas | RPCs profiles/list/detail e lifecycle | Eng1 confirmou fixture 45/45 PASS no replay Auth45+1+2=48; evidência integrada central 2c7f369c, cleanup 01:00:48 UTC. Minimização separada: Coordenador confirmou 1 PASS/2 FAIL; corretiva de duas funções em 27a0c3bb revisada estaticamente, GREEN nominal pendente |
+| 2/6 Backend/negativas | RPCs profiles/list/detail e lifecycle | Users49: Eng1 executou corretiva 27a0c3bb, fixtures originais 45+3 intactas, 48/48 PASS; prova 36964bbb, cleanup 02:55:41.7082440 UTC em 2026-09-08. Produção/E2E pendentes |
 | 3/6 Cliente/estados | scope/main/app/router/diretório | Composição readonly, negativa e limpeza de tela implementadas |
 | 4/6 Integração/reload | Sessão → RPC → UI | Cache/epoch ligados à sessão e dispose. Backend real aberto; mídia aguarda consumidor real da E2E3 |
 | 5/6 Regressão/visual | testes Flutter | Diretório 13/13; composição inicial combinada 32/32; visual real ainda aberto |
