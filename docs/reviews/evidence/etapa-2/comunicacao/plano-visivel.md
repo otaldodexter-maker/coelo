@@ -17,11 +17,11 @@ Os quadros posteriores preservam a cronologia, não substituem este checkpoint.
 
 | Superfície original | Última evidência desta frente | Próximo gate real / situação |
 | --- | --- | --- |
-| Chat/Conversas canônico e Mensagens | `cdb542a5`: 124 não-golden + 8 goldens candidatos; imagem explícita, sessão, teclado e motion; 40 cenários de conteúdo | Composição/gateway/catálogo M03, transporte real, autorização/reload; goldens históricos e revisão visual completa ainda abertos |
-| Avisos | 106 não-golden na fatia de feedback; 46 expectativas SQL preparadas, não executadas aqui | N01: replay nominal/ponte sob Eng1, geração/job/worker/auditoria e produção |
+| Chat/Conversas canônico e Mensagens | `86e4fdad`: retry de imagem vinculado à geração; 127 não-golden + 8 goldens do diálogo | Composição/gateway/catálogo M03, transporte real, autorização/reload; goldens históricos e revisão visual completa ainda abertos |
+| Avisos | `9abd4a74` + correção central `1165ee5c`: prévia vinculada à origem e confirmação once, 111 não-golden; 46 expectativas SQL não executadas aqui | N01: replay nominal/ponte sob Eng1, geração/job/worker/auditoria e produção |
 | Convites | `e4171bdb`/`72b24d25`: 61 não-golden; confirmação própria, callbacks obsoletos e purge de negação | OQ039/spec047 de emissão continuam pendentes; não habilitar default false; prova server-side/E2E aberta |
 | Circulares administrativas e menu | `38870d1`, `17c6286a`, `8f7d9c6d`: editor, reader, contexto e purge; 112 não-golden | Respostas/publicação/mídia reais, revogação/reload e regressão visual completa |
-| Acontece | `fb241618`/`8c2c7009`: publicação 55 testes; `bed43737`: galeria 33 funcionais + 10 goldens; `88fb2cf1`: prévia Circular no feed misto | Catálogo/gateway e mídia reais; 422 legado permanece recuperável; dez goldens do feed preexistentes abertos |
+| Acontece | `8b48d271`: header de contexto mede espaço real, 50 funcionais/16 matriz; galeria 10 goldens; `8c2c7009`: publicação 55 testes | Catálogo/gateway e mídia reais; 422 legado recuperável; dez goldens feed abertos, diferença desktop remanescente PublishNowCard sem autorização de rebaseline |
 | Agora | `a4c1943d`/`032badc1`: legenda reload e negação, 81 testes da feature | Master R2, HOT privado até 24h quando necessário, fallback, expiração só da cópia Stream e prova real |
 | Momentos | `5e53ea4f`: contexto; 86 funcionais/rota e 14 goldens naquela fatia; `6e7bc23b` transporte R2 comum | Catálogo/gateway, upload/reprodução real e promoção HOT por necessidade medida |
 | Para Você | `b543248e`: validade, 49 testes incluindo 13 goldens | Leitura/revogação/persistência real e conteúdo conectado |
