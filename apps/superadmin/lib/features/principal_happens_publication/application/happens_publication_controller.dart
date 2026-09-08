@@ -81,12 +81,7 @@ final class HappensPublicationController extends ChangeNotifier {
       );
     } on HappensPublicationUnauthorized {
       if (!_isCurrent(generation)) return;
-      _emit(
-        _state.copyWith(
-          phase: HappensPublicationPhase.unauthorized,
-          message: 'Você não pode publicar neste contexto.',
-        ),
-      );
+      _denyAccess();
     } on Exception {
       if (!_isCurrent(generation)) return;
       _emit(
@@ -107,7 +102,7 @@ final class HappensPublicationController extends ChangeNotifier {
   void setCaption(String value) => _edit(_state.draft.copyWith(caption: value));
 
   void setAutosave(bool value) {
-    if (_disposed || _operationInFlight) return;
+    if (!_canEdit) return;
     if (!value) _autosaveTimer?.cancel();
     _emit(_state.copyWith(autosave: value, phase: HappensPublicationPhase.editing));
     if (value) _scheduleAutosave();
@@ -123,7 +118,7 @@ final class HappensPublicationController extends ChangeNotifier {
       _edit(_state.draft.copyWith(publishAt: value, clearPublishAt: value == null));
 
   void addMedia(HappensMediaDraft media) {
-    if (_disposed || _operationInFlight) return;
+    if (!_canEdit) return;
     if (_state.draft.media.length >= 6) {
       _emit(_state.copyWith(message: 'Você pode adicionar até 6 mídias.'));
       return;
@@ -132,7 +127,7 @@ final class HappensPublicationController extends ChangeNotifier {
   }
 
   Future<void> removeMedia(int index) async {
-    if (_disposed || _operationInFlight) return;
+    if (!_canEdit) return;
     final generation = _loadGeneration;
     final media = _state.draft.media[index];
     _autosaveTimer?.cancel();
@@ -150,6 +145,9 @@ final class HappensPublicationController extends ChangeNotifier {
           clearFailureSource: true,
         ),
       );
+    } on HappensPublicationUnauthorized {
+      if (!_isCurrent(generation)) return;
+      _denyAccess();
     } on Exception {
       if (!_isCurrent(generation)) return;
       _emit(
@@ -169,7 +167,7 @@ final class HappensPublicationController extends ChangeNotifier {
   }
 
   void reorderMedia(int oldIndex, int newIndex) {
-    if (_disposed || _operationInFlight) return;
+    if (!_canEdit) return;
     final items = [..._state.draft.media];
     if (newIndex > oldIndex) newIndex -= 1;
     final item = items.removeAt(oldIndex);
@@ -210,12 +208,7 @@ final class HappensPublicationController extends ChangeNotifier {
       );
     } on HappensPublicationUnauthorized {
       if (!_isCurrent(generation)) return;
-      _emit(
-        _state.copyWith(
-          phase: HappensPublicationPhase.unauthorized,
-          message: 'Você não pode publicar neste contexto.',
-        ),
-      );
+      _denyAccess();
     } on Exception {
       if (!_isCurrent(generation)) return;
       _emit(
@@ -297,12 +290,7 @@ final class HappensPublicationController extends ChangeNotifier {
       );
     } on HappensPublicationUnauthorized {
       if (!_isCurrent(generation)) return null;
-      _emit(
-        _state.copyWith(
-          phase: HappensPublicationPhase.unauthorized,
-          message: 'Você não pode publicar neste contexto.',
-        ),
-      );
+      _denyAccess();
     } on Exception {
       if (!_isCurrent(generation)) return null;
       _emit(
@@ -322,7 +310,7 @@ final class HappensPublicationController extends ChangeNotifier {
   }
 
   void _edit(HappensPostDraft draft) {
-    if (_disposed || _operationInFlight) return;
+    if (!_canEdit) return;
     _emit(
       _state.copyWith(
         draft: draft,
@@ -340,6 +328,22 @@ final class HappensPublicationController extends ChangeNotifier {
     HappensPublicationPhase.failure => true,
     _ => false,
   };
+
+  bool get _canEdit =>
+      !_disposed && !_operationInFlight && _state.phase != HappensPublicationPhase.unauthorized;
+
+  void _denyAccess() {
+    _loadGeneration++;
+    _operationInFlight = false;
+    _autosaveTimer?.cancel();
+    _emit(
+      HappensPublicationState(
+        draft: HappensPostDraft(),
+        phase: HappensPublicationPhase.unauthorized,
+        message: 'Você não pode publicar neste contexto.',
+      ),
+    );
+  }
 
   void _scheduleAutosave() {
     _autosaveTimer?.cancel();

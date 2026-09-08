@@ -7,6 +7,58 @@ import 'package:coelo_superadmin/features/principal_happens_publication/domain/h
 
 void main() {
   group('HappensPublicationController', () {
+    for (final stage in ['load', 'save', 'prepare', 'finalize', 'publish', 'remove']) {
+      testWidgets('$stage denial purges draft and cannot restart autosave or editing', (
+        tester,
+      ) async {
+        final repository = _FailureRepository(denyAt: stage);
+        final controller =
+            HappensPublicationController(
+                repository: repository,
+                context: HappensPublicationContext.demo,
+                autosaveDelay: const Duration(seconds: 1),
+              )
+              ..setCaption('Conteúdo privado')
+              ..toggleAudience(HappensAudienceKind.families)
+              ..addMedia(_media('private'))
+              ..setPublishAt(DateTime.utc(2030))
+              ..setAutosave(true);
+        addTearDown(controller.dispose);
+        if (stage == 'load') {
+          await controller.load();
+        } else if (stage == 'remove') {
+          await controller.removeMedia(0);
+        } else if (stage == 'save') {
+          await controller.saveDraft();
+        } else {
+          expect(await controller.publish(), isNull);
+        }
+        expect(controller.state.phase, HappensPublicationPhase.unauthorized);
+        expect(controller.state.draft.caption, isEmpty);
+        expect(controller.state.draft.media, isEmpty);
+        expect(controller.state.draft.audiences, isEmpty);
+        expect(controller.state.draft.publishAt, isNull);
+        expect(controller.state.autosave, isFalse);
+        expect(controller.operationInFlight, isFalse);
+        final saveCalls = repository.saveCalls;
+        controller
+          ..setCaption('Callback antigo')
+          ..setAutosave(true)
+          ..toggleAudience(HappensAudienceKind.students)
+          ..setPublishAt(DateTime.utc(2031))
+          ..addMedia(_media('stale'))
+          ..reorderMedia(0, 1);
+        await controller.removeMedia(0);
+        await controller.saveDraft();
+        expect(await controller.publish(), isNull);
+        await tester.pump(const Duration(seconds: 3));
+        expect(repository.saveCalls, saveCalls);
+        expect(controller.state.phase, HappensPublicationPhase.unauthorized);
+        expect(controller.state.draft.caption, isEmpty);
+        expect(controller.state.draft.media, isEmpty);
+      });
+    }
+
     test('limits media to six items', () {
       final controller = HappensPublicationController(
         repository: InMemoryHappensPublicationRepository(),
@@ -290,17 +342,24 @@ final class _FailureRepository implements HappensPublicationRepository {
     this.failLoad = false,
     this.failRemove = false,
     this.failSecondUploadOnce = false,
+    this.denyAt,
   });
 
   final bool failLoad;
   final bool failRemove;
   final bool failSecondUploadOnce;
+  final String? denyAt;
+  void _deny(String stage) {
+    if (denyAt == stage) throw HappensPublicationUnauthorized();
+  }
+
   final Map<String, int> prepareCalls = {};
   var saveCalls = 0;
   var _secondUploadFailed = false;
 
   @override
   Future<HappensPostDraft?> loadDraft(HappensPublicationContext context) async {
+    _deny('load');
     if (failLoad) throw Exception('load_failed');
     return null;
   }
@@ -311,6 +370,7 @@ final class _FailureRepository implements HappensPublicationRepository {
     HappensPostDraft draft,
   ) async {
     saveCalls++;
+    _deny('save');
     return draft.copyWith(id: draft.id ?? 'draft-1', version: draft.version + 1);
   }
 
@@ -321,6 +381,7 @@ final class _FailureRepository implements HappensPublicationRepository {
     HappensMediaDraft media,
     int displayOrder,
   ) async {
+    _deny('prepare');
     prepareCalls.update(media.localId, (value) => value + 1, ifAbsent: () => 1);
     return HappensUploadIntent(
       assetId: 'asset-${media.localId}',
@@ -338,6 +399,7 @@ final class _FailureRepository implements HappensPublicationRepository {
     HappensUploadIntent intent,
     HappensMediaDraft media,
   ) async {
+    _deny('finalize');
     if (failSecondUploadOnce && media.localId == 'b' && !_secondUploadFailed) {
       _secondUploadFailed = true;
       throw Exception('upload_failed');
@@ -354,6 +416,7 @@ final class _FailureRepository implements HappensPublicationRepository {
 
   @override
   Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media) async {
+    _deny('remove');
     if (failRemove) throw Exception('remove_failed');
   }
 
@@ -361,11 +424,14 @@ final class _FailureRepository implements HappensPublicationRepository {
   Future<HappensPublication> publish(
     HappensPublicationContext context,
     HappensPostDraft draft,
-  ) async => HappensPublication(
-    id: draft.id!,
-    status: HappensPostStatus.published,
-    publishAt: DateTime.utc(2030),
-  );
+  ) async {
+    _deny('publish');
+    return HappensPublication(
+      id: draft.id!,
+      status: HappensPostStatus.published,
+      publishAt: DateTime.utc(2030),
+    );
+  }
 }
 
 final class _BlockingRepository implements HappensPublicationRepository {
