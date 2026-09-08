@@ -232,3 +232,363 @@ DateTime _timestamp(Object? value) {
 }
 
 Never _invalid() => throw const FormatException('Invalid location read response');
+
+/// The server denied the write; it never says whether the resource exists.
+final class LocationWriteDeniedException implements Exception {
+  const LocationWriteDeniedException();
+
+  @override
+  String toString() => 'Location write denied';
+}
+
+/// The payload does not satisfy the catalog contract.
+///
+/// Raised locally before transport whenever possible, and also for the
+/// server's own `SAI_INVALID_ARGUMENT`, so a client bug and a server refusal
+/// reach the caller the same way.
+final class LocationWriteRejectedException implements Exception {
+  const LocationWriteRejectedException();
+
+  @override
+  String toString() => 'Location write rejected';
+}
+
+/// The same request id was already used for a different payload.
+///
+/// Retrying with the identical payload is safe and returns the first result;
+/// changing the payload under the same id is a conflict, never a second
+/// location.
+final class LocationWriteConflictException implements Exception {
+  const LocationWriteConflictException();
+
+  @override
+  String toString() => 'Location write conflict';
+}
+
+/// What a consumer asks the catalog to create.
+///
+/// Status, ownership, provenance and audit belong to the server: this carries
+/// only what the actor typed plus the scope it typed it in.
+final class LocationWriteDraft {
+  const LocationWriteDraft({
+    required this.scope,
+    required this.kind,
+    required this.name,
+    required this.visibility,
+    this.description,
+    this.floor,
+    this.address,
+  });
+
+  final LocationScope scope;
+  final LocationKind kind;
+  final String name;
+  final LocationVisibility visibility;
+  final String? description;
+  final String? floor;
+  final Map<String, String?>? address;
+}
+
+/// Builds the create payload with exactly the nine keys the server accepts.
+///
+/// Every rule the server enforces is enforced here first, so a malformed draft
+/// fails without spending a round trip and without reaching a function that
+/// would refuse it anyway. This is convenience and honesty, never authority:
+/// the server validates the same payload again.
+Map<String, Object?> encodeLocationCreateV2(LocationWriteDraft draft) {
+  final institutionId = _writeUuid(draft.scope.institutionId);
+  final unitId = switch (draft.scope) {
+    InstitutionLocationScope() => null,
+    UnitLocationScope(:final unitId) => _writeUuid(unitId),
+  };
+  final name = _writeText(draft.name, 120);
+  if (name == null) throw const LocationWriteRejectedException();
+  final address = _writeAddress(draft.address);
+  if (draft.kind == LocationKind.external && address == null) {
+    throw const LocationWriteRejectedException();
+  }
+  return {
+    'scope_kind': draft.scope is UnitLocationScope ? 'unit' : 'institution',
+    'institution_id': institutionId,
+    'unit_id': unitId,
+    'name': name,
+    'description': _writeText(draft.description, 500),
+    'kind': draft.kind.name,
+    'floor': _writeText(draft.floor, 120),
+    'address': address,
+    'visibility': draft.visibility.name,
+  };
+}
+
+/// Reads the created location back, refusing anything outside the asked scope.
+LocationCatalogEntry decodeLocationCreateV2(
+  Object? value, {
+  required LocationScope requestedScope,
+}) {
+  final entry = _entry(_writeData(value));
+  final entryUnit = switch (entry.scope) {
+    InstitutionLocationScope() => null,
+    UnitLocationScope(:final unitId) => unitId,
+  };
+  final requestedUnit = switch (requestedScope) {
+    InstitutionLocationScope() => null,
+    UnitLocationScope(:final unitId) => unitId,
+  };
+  if (entry.scope.institutionId != requestedScope.institutionId || entryUnit != requestedUnit) {
+    _invalid();
+  }
+  return entry;
+}
+
+Object? _writeData(Object? value) {
+  final envelope = _map(value, const {'ok', 'data', 'error'});
+  if (envelope['ok'] == false) {
+    if (envelope['data'] != null) _invalid();
+    final error = _map(envelope['error'], const {
+      'code',
+      'message',
+      'correlation_id',
+      'http_status',
+    });
+    final code = error['code'];
+    if (code is! String || error['message'] is! String) _invalid();
+    _uuid(error['correlation_id']);
+    final status = _integer(error['http_status'], minimum: 400);
+    if (status > 599) _invalid();
+    if (const {
+      'SAI_AUTH_REQUIRED',
+      'SAI_SESSION_INVALID',
+      'SAI_INTERNAL_CONTEXT_DENIED',
+      'SAI_MEMBERSHIP_SUSPENDED',
+      'SAI_MEMBERSHIP_REVOKED',
+      'SAI_PERMISSION_DENIED',
+      'SAI_MFA_REQUIRED',
+    }.contains(code)) {
+      throw const LocationWriteDeniedException();
+    }
+    if (code == 'SAI_INVALID_ARGUMENT') throw const LocationWriteRejectedException();
+    if (code == 'SAI_CONCURRENT_CHANGE') throw const LocationWriteConflictException();
+    _invalid();
+  }
+  if (envelope['ok'] != true || envelope['error'] != null) _invalid();
+  return envelope['data'];
+}
+
+String _writeUuid(String value) {
+  if (!RegExp(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$').hasMatch(value)) {
+    throw const LocationWriteRejectedException();
+  }
+  return value;
+}
+
+/// Trims to null and refuses control characters, like the server does.
+String? _writeText(String? value, int limit) {
+  if (value == null) return null;
+  final trimmed = value.trim();
+  if (trimmed.isEmpty) return null;
+  if (trimmed.length > limit || RegExp(r'[\x00-\x1f\x7f]').hasMatch(trimmed)) {
+    throw const LocationWriteRejectedException();
+  }
+  return trimmed;
+}
+
+Map<String, Object?>? _writeAddress(Map<String, String?>? value) {
+  if (value == null) return null;
+  const allowed = {
+    'country',
+    'state',
+    'city',
+    'district',
+    'street',
+    'number',
+    'complement',
+    'postal_code',
+  };
+  final result = <String, Object?>{};
+  for (final entry in value.entries) {
+    if (!allowed.contains(entry.key)) throw const LocationWriteRejectedException();
+    final limit = entry.key == 'country'
+        ? 80
+        : (entry.key == 'number' || entry.key == 'postal_code' ? 64 : 240);
+    final text = _writeText(entry.value, 240);
+    if (text != null &&
+        (utf8.encode(text).length > limit ||
+            (entry.key == 'postal_code' && !RegExp(r'^[0-9]{8}$').hasMatch(text)))) {
+      throw const LocationWriteRejectedException();
+    }
+    result[entry.key] = text;
+  }
+  if (result['country'] != 'Brasil') throw const LocationWriteRejectedException();
+  return result;
+}
+
+/// Builds the edit payload.
+///
+/// It is byte-identical to the create payload on purpose: the server validates
+/// an edit with the very same normalizer, so a draft that would be refused on
+/// create is refused here too, for the same reason and with the same message.
+/// The owner fields travel and are compared server-side; a location is never
+/// re-parented, and sending a different owner is a rejection, not a move.
+Map<String, Object?> encodeLocationUpdateV2(LocationWriteDraft draft) =>
+    encodeLocationCreateV2(draft);
+
+/// Reads an edited location back.
+///
+/// Two things are checked that the caller cannot check for itself: that the
+/// answer is about the location that was asked about, and that the version
+/// actually moved. A server that echoed the old version would look like success
+/// while nothing had been written.
+LocationCatalogEntry decodeLocationUpdateV2(
+  Object? value, {
+  required String requestedId,
+  required int expectedVersion,
+}) {
+  final entry = _entry(_writeData(value));
+  if (entry.id != requestedId || entry.managementVersion <= expectedVersion) _invalid();
+  return entry;
+}
+
+/// The three states a place can be put in.
+///
+/// A place is available, temporarily unavailable, or retired. `draft` and
+/// `suspended` exist in the shared status enum because other records negotiate
+/// their way into existence; a room does not, so asking for either is rejected
+/// here rather than spending a round trip on a refusal.
+String encodeLocationStatusV2(LocationCatalogStatus status) => switch (status) {
+  LocationCatalogStatus.active => 'active',
+  LocationCatalogStatus.inactive => 'inactive',
+  LocationCatalogStatus.archived => 'archived',
+  LocationCatalogStatus.draft ||
+  LocationCatalogStatus.suspended => throw const LocationWriteRejectedException(),
+};
+
+/// Reads a status change back, refusing an answer that did not land on it.
+LocationCatalogEntry decodeLocationStatusV2(
+  Object? value, {
+  required String requestedId,
+  required LocationCatalogStatus requestedStatus,
+  required int expectedVersion,
+}) {
+  final entry = _entry(_writeData(value));
+  if (entry.id != requestedId ||
+      entry.status != requestedStatus ||
+      entry.managementVersion <= expectedVersion) {
+    _invalid();
+  }
+  return entry;
+}
+
+/// Builds the copy arguments.
+///
+/// A copy carries only where it is going and what it will be called; everything
+/// else comes from the source, server-side, so a copy cannot drift from what it
+/// copied. Crossing institutions is refused here as well as there: the caller
+/// learns immediately instead of learning after a round trip.
+Map<String, Object?> encodeLocationCopyV2({
+  required String sourceId,
+  required String sourceInstitutionId,
+  required LocationScope targetScope,
+  required String name,
+}) {
+  final resolvedName = _writeText(name, 120);
+  if (resolvedName == null) throw const LocationWriteRejectedException();
+  final institutionId = _writeUuid(targetScope.institutionId);
+  if (institutionId != _writeUuid(sourceInstitutionId)) {
+    throw const LocationWriteRejectedException();
+  }
+  return {
+    'p_source_location_id': _writeUuid(sourceId),
+    'p_scope_kind': targetScope is UnitLocationScope ? 'unit' : 'institution',
+    'p_institution_id': institutionId,
+    'p_unit_id': switch (targetScope) {
+      InstitutionLocationScope() => null,
+      UnitLocationScope(:final unitId) => _writeUuid(unitId),
+    },
+    'p_name': resolvedName,
+  };
+}
+
+/// Reads a copy back, refusing anything that is not a new row at the target.
+LocationCatalogEntry decodeLocationCopyV2(
+  Object? value, {
+  required String sourceId,
+  required LocationScope targetScope,
+}) {
+  final entry = _entry(_writeData(value));
+  final entryUnit = switch (entry.scope) {
+    InstitutionLocationScope() => null,
+    UnitLocationScope(:final unitId) => unitId,
+  };
+  final targetUnit = switch (targetScope) {
+    InstitutionLocationScope() => null,
+    UnitLocationScope(:final unitId) => unitId,
+  };
+  if (entry.id == sourceId ||
+      entry.scope.institutionId != targetScope.institutionId ||
+      entryUnit != targetUnit) {
+    _invalid();
+  }
+  return entry;
+}
+
+/// Builds the week, canonically ordered.
+///
+/// Order matters beyond tidiness: the server digests the normalized week to
+/// recognise a replay, so two clients that mean the same week must send the
+/// same bytes. Every rule the server enforces is enforced here first, and
+/// overlaps are refused rather than merged - an overlap means the operator lost
+/// track of one of the windows, and merging would hide that.
+List<Map<String, Object?>> encodeLocationScheduleV2(List<LocationScheduleWindow> windows) {
+  if (windows.length > 70) throw const LocationWriteRejectedException();
+  final ordered = [...windows]..sort();
+  for (var index = 1; index < ordered.length; index++) {
+    if (ordered[index].overlaps(ordered[index - 1])) {
+      throw const LocationWriteRejectedException();
+    }
+  }
+  return [
+    for (final window in ordered)
+      {
+        'weekday': window.weekday,
+        'starts_minute': window.startsMinute,
+        'ends_minute': window.endsMinute,
+      },
+  ];
+}
+
+/// Reads a week back, refusing one that is about another location.
+LocationSchedule decodeLocationScheduleV2(Object? value, {required String requestedId}) {
+  final data = _map(_writeData(value), const {'location_id', 'management_version', 'windows'});
+  final locationId = _uuid(data['location_id']);
+  if (locationId != requestedId) _invalid();
+  final rawWindows = data['windows'];
+  if (rawWindows is! List) _invalid();
+  final windows = <LocationScheduleWindow>[];
+  for (final raw in rawWindows) {
+    final window = _map(raw, const {'weekday', 'starts_minute', 'ends_minute'});
+    final LocationScheduleWindow parsed;
+    try {
+      parsed = LocationScheduleWindow(
+        weekday: _integer(window['weekday'], minimum: 0),
+        startsMinute: _integer(window['starts_minute'], minimum: 0),
+        endsMinute: _integer(window['ends_minute'], minimum: 1),
+      );
+    } on ArgumentError {
+      // A window the domain refuses to hold is a malformed response, not a
+      // caller mistake: nothing the caller sent could produce it.
+      _invalid();
+    }
+    // The catalog promises non-overlapping windows. Checking here means a
+    // server that broke that promise is caught at the boundary instead of
+    // becoming a schedule the screen quietly renders wrong.
+    if (windows.isNotEmpty && (parsed.compareTo(windows.last) <= 0 || parsed.overlaps(windows.last))) {
+      _invalid();
+    }
+    windows.add(parsed);
+  }
+  return LocationSchedule(
+    locationId: locationId,
+    managementVersion: _integer(data['management_version'], minimum: 1),
+    windows: windows,
+  );
+}

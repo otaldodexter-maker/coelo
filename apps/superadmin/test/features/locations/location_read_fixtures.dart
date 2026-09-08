@@ -17,6 +17,7 @@ LocationCatalogEntry locationFixture({
   String name = 'Sala de leitura',
   LocationKind kind = LocationKind.internal,
   LocationCatalogStatus status = LocationCatalogStatus.active,
+  int managementVersion = 1,
   Map<String, String?>? address,
 }) => LocationCatalogEntry(
   id: id,
@@ -30,7 +31,7 @@ LocationCatalogEntry locationFixture({
       (kind == LocationKind.external ? {'country': 'Brasil', 'city': 'Cidade exemplo'} : null),
   visibility: LocationVisibility.team,
   status: status,
-  managementVersion: 1,
+  managementVersion: managementVersion,
   createdAt: DateTime.utc(2026, 9, 7),
   updatedAt: DateTime.utc(2026, 9, 7, 12),
 );

@@ -3,9 +3,14 @@ import 'package:coelo_domain/locations.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_location_map_preview.dart';
 import '../domain/location_catalog_reader.dart';
+import '../domain/location_catalog_writer.dart';
+import 'location_copy_dialog.dart';
 import 'location_detail_controller.dart';
 import 'location_read_widgets.dart';
+import 'location_schedule_section.dart';
+import 'location_status_actions.dart';
 
 /// Isolated content; normal routing and authorization composition are not wired.
 class LocationDetailPanel extends StatefulWidget {
@@ -13,6 +18,10 @@ class LocationDetailPanel extends StatefulWidget {
     required this.id,
     required this.scope,
     required this.onBack,
+    this.writer,
+    this.onEdit,
+    this.onCopied,
+    this.requestIdFactory,
     this.reader = const UnavailableLocationCatalogReader(),
     this.sessionAvailable = false,
     this.contextRevision = 0,
@@ -24,6 +33,18 @@ class LocationDetailPanel extends StatefulWidget {
   final LocationCatalogReader reader;
   final bool sessionAvailable;
   final int contextRevision;
+
+  /// Opt-in. Without a writer the detail is exactly the read-only panel it was,
+  /// down to the pixel, and no control appears that the composition cannot back.
+  final LocationCatalogWriter? writer;
+
+  /// Opt-in. The panel does not own the form, so it asks the page to open it.
+  final ValueChanged<LocationCatalogEntry>? onEdit;
+
+  /// Opt-in. A copy is a new location, so the page decides where to go next.
+  final ValueChanged<LocationCatalogEntry>? onCopied;
+
+  final String Function()? requestIdFactory;
   @override
   State<LocationDetailPanel> createState() => _LocationDetailPanelState();
 }
@@ -69,6 +90,22 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
     super.dispose();
   }
 
+  Future<void> _copy(LocationCatalogEntry item) async {
+    final writer = widget.writer;
+    final onCopied = widget.onCopied;
+    if (writer == null || onCopied == null) return;
+    final created = await showDialog<LocationCatalogEntry>(
+      context: context,
+      builder: (context) => LocationCopyDialog(
+        source: item,
+        writer: writer,
+        requestIdFactory: widget.requestIdFactory,
+      ),
+    );
+    if (!mounted || created == null) return;
+    onCopied(created);
+  }
+
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: _controller,
@@ -97,7 +134,26 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
                         'Visibilidade': locationVisibilityLabel(item.visibility),
                         'Status': locationStatusLabel(item.status),
                       }),
-                      if (item.address case final address?)
+                      if (widget.writer case final writer?)
+                        LocationScheduleSection(
+                          entry: item,
+                          writer: writer,
+                          enabled: widget.sessionAvailable,
+                          requestIdFactory: widget.requestIdFactory,
+                          onPublished: () => unawaited(_controller.load()),
+                        ),
+                      if (widget.writer case final writer?)
+                        LocationStatusActions(
+                          entry: item,
+                          writer: writer,
+                          enabled: widget.sessionAvailable,
+                          requestIdFactory: widget.requestIdFactory,
+                          // The catalog moved, so what this panel holds is one
+                          // version behind. Reading again is cheaper than being
+                          // subtly wrong about the version the next command needs.
+                          onChanged: (_) => unawaited(_controller.load()),
+                        ),
+                      if (item.address case final address?) ...[
                         locationTextSection(context, 'Endereço próprio', {
                           'País': locationOptionalText(address['country']),
                           'CEP': locationOptionalText(address['postal_code']),
@@ -108,6 +164,24 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
                           'Número': locationOptionalText(address['number']),
                           'Complemento': locationOptionalText(address['complement']),
                         }),
+                        // Only an external location has an address of its own,
+                        // so only it gets a map. The preview is the shared
+                        // painted placeholder: no key, no network, no claim of
+                        // geographic authority over the stored address.
+                        if (item.kind == LocationKind.external)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+                            child: SuperadminLocationMapPreview(
+                              address: [
+                                address['street'],
+                                address['number'],
+                                address['district'],
+                                address['city'],
+                                address['state'],
+                              ].whereType<String>().where((part) => part.isNotEmpty).join(', '),
+                            ),
+                          ),
+                      ],
                     ] else
                       LocationReadStatePanel(state: _controller.state, prefix: 'location-detail'),
                   ],
@@ -121,6 +195,22 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
                   child: const Text('Voltar'),
                 ),
                 continuationActions: [
+                  if (widget.onCopied != null && widget.writer != null)
+                    if (_controller.data case final item?)
+                      OutlinedButton.icon(
+                        key: const Key('location-detail-copy'),
+                        onPressed: widget.sessionAvailable ? () => unawaited(_copy(item)) : null,
+                        icon: const Icon(Icons.copy_rounded),
+                        label: const Text('Duplicar'),
+                      ),
+                  if (widget.onEdit case final onEdit?)
+                    if (_controller.data case final item?)
+                      FilledButton.icon(
+                        key: const Key('location-detail-edit'),
+                        onPressed: widget.sessionAvailable ? () => onEdit(item) : null,
+                        icon: const Icon(Icons.edit_rounded),
+                        label: const Text('Editar local'),
+                      ),
                   OutlinedButton.icon(
                     key: const Key('location-detail-reload'),
                     onPressed: _controller.state == LocationReadState.loading
