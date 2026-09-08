@@ -32,10 +32,14 @@ void main() {
     ) async {
       await pumpComposer(tester, Size(width, 1000));
 
-      final zones = find.byKey(const Key('now-publication-zones'));
-      expect(zones, findsOneWidget, reason: 'a desktop width composes in zones, not stacked');
+      final composition = find.byKey(const Key('now-publication-zones'));
       expect(
-        tester.getSize(zones).width,
+        composition,
+        findsOneWidget,
+        reason: 'a desktop width puts the preview beside the editorial column',
+      );
+      expect(
+        tester.getSize(composition).width,
         lessThan(CoeloBreakpoints.large.minWidth),
         reason:
             'the frame caps the composer body below the large breakpoint, so a layout '

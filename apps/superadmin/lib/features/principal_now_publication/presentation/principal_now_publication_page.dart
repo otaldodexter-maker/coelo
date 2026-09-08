@@ -396,7 +396,10 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
       LayoutBuilder(
         builder: (context, constraints) {
           final enlargedText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
-          final stacked = constraints.maxWidth < CoeloBreakpoints.medium.minWidth || enlargedText;
+          // Below the medium breakpoint, or with enlarged text, the media stage
+          // gives room back to the tool rail beside it.
+          final compactStage =
+              constraints.maxWidth < CoeloBreakpoints.medium.minWidth || enlargedText;
           // There is deliberately no wide branch here. The frame caps the body
           // at 1120, below CoeloBreakpoints.large.minWidth (1200), so anything
           // keyed to `large` inside this builder is unreachable: it read as a
@@ -405,7 +408,7 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
           // own nominal review, not a branch smuggled in here.
           final stage = _MediaAndTools(
             controller: controller,
-            width: stacked ? 220 : 260,
+            width: compactStage ? 220 : 260,
             onPickMedia: _pickMedia,
             onText: _showTextEditor,
             onMusic: _pickAudio,
@@ -413,37 +416,25 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
             onCover: _showCoverEditor,
           );
           final details = _Details(controller: controller, captionController: captionController);
-          if (stacked) {
-            return Column(
-              key: const Key('now-publication-stacked'),
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                stage,
-                const SizedBox(height: CoeloSpacing.space5),
-                details,
-              ],
-            );
-          }
-          final editor = Row(
-            key: const Key('now-publication-zones'),
-            crossAxisAlignment: CrossAxisAlignment.start,
+          // One editorial column at every width, as the approved reference of
+          // 2026-08-31 shows: Midia with its own tool rail, then Texto, Publico
+          // e contexto, Agendamento and Opcoes. Splitting media and details into
+          // side-by-side zones was my invention and is not in the reference.
+          final editor = Column(
+            key: const Key('now-publication-editorial-column'),
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(flex: 4, child: stage),
-              const SizedBox(width: CoeloSpacing.space5),
-              Expanded(
-                flex: 5,
-                child: KeyedSubtree(
-                  key: const Key('now-publication-editorial-column'),
-                  child: details,
-                ),
-              ),
+              stage,
+              const SizedBox(height: CoeloSpacing.space5),
+              details,
             ],
           );
-          // The approved anatomy keeps a preview beside the editor on desktop,
-          // at the same 840 threshold and 320 width Acontece uses. It is a
-          // preview of the publication, not a step navigator.
+          // The preview sits beside the column on desktop, at the same 840
+          // threshold and 320 width Acontece uses. It previews the publication;
+          // it never navigates between steps.
           if (constraints.maxWidth < 840) return editor;
           return Row(
+            key: const Key('now-publication-zones'),
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(child: editor),
@@ -619,8 +610,15 @@ final class _NowPublicationPreview extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Prévia do Agora',
+            'Prévia da publicação',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: CoeloSpacing.space1),
+          Text(
+            'Assim será exibido no Agora.',
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: CoeloSpacing.space3),
           AspectRatio(

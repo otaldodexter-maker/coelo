@@ -677,13 +677,16 @@ void main() {
     // The Owner approved a preview beside the editor on desktop. It shows the
     // publication; it never navigates between steps.
     expect(find.byKey(const Key('now-publication-desktop-preview')), findsOneWidget);
-    expect(find.text('Prévia do Agora'), findsOneWidget);
+    expect(find.text('Prévia da publicação'), findsOneWidget);
   });
 
   testWidgets('mantém mídia e detalhes na mesma rolagem', (tester) async {
     await pumpPage(tester, const Size(1440, 1000));
 
-    expect(find.byKey(const Key('now-publication-zones')), findsOneWidget);
+    // One editorial column, with the preview beside it. The approved reference
+    // never splits media and details into side-by-side zones.
+    expect(find.byKey(const Key('now-publication-editorial-column')), findsOneWidget);
+    expect(find.byKey(const Key('now-publication-desktop-preview')), findsOneWidget);
     expect(find.byKey(const Key('now-media-stage')), findsOneWidget);
     expect(find.byKey(const Key('now-caption-field')), findsOneWidget);
     expect(find.byKey(const Key('now-context-surface')), findsOneWidget);
@@ -701,8 +704,9 @@ void main() {
   testWidgets('empilha mídia e detalhes em uma rolagem única no compacto', (tester) async {
     await pumpPage(tester, const Size(375, 900));
 
-    expect(find.byKey(const Key('now-publication-stacked')), findsOneWidget);
-    expect(find.byKey(const Key('now-publication-zones')), findsNothing);
+    expect(find.byKey(const Key('now-publication-editorial-column')), findsOneWidget);
+    // Below 840 the column stands alone: there is no room for the preview.
+    expect(find.byKey(const Key('now-publication-desktop-preview')), findsNothing);
     expect(find.byKey(const Key('now-media-stage')), findsOneWidget);
     await tester.ensureVisible(find.byKey(const Key('now-caption-field')));
     expect(find.byKey(const Key('now-caption-field')), findsOneWidget);
@@ -724,14 +728,8 @@ void main() {
         find.byKey(const Key('now-publication-desktop-preview')),
         size.width >= 840 ? findsOneWidget : findsNothing,
       );
-      expect(
-        find.byKey(const Key('now-publication-zones')),
-        size.width >= 600 ? findsOneWidget : findsNothing,
-      );
-      expect(
-        find.byKey(const Key('now-publication-stacked')),
-        size.width >= 600 ? findsNothing : findsOneWidget,
-      );
+      // The editorial column is the composition at every width.
+      expect(find.byKey(const Key('now-publication-editorial-column')), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   }
@@ -757,7 +755,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('now-media-stage')), findsOneWidget);
-      expect(find.byKey(const Key('now-publication-stacked')), findsOneWidget);
+      expect(find.byKey(const Key('now-publication-editorial-column')), findsOneWidget);
       await tester.ensureVisible(find.byKey(const Key('now-caption-field')));
       expect(find.byKey(const Key('now-caption-field')), findsOneWidget);
       expect(tester.takeException(), isNull);
