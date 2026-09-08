@@ -20,7 +20,7 @@ com 124 testes locais. Esses testes usam doubles, não este SQL.
 - `packages/coelo_database/migrations/20260908000049_superadmin_forms_directory_internal_read.sql`
   — Git blob `a40bfb84a9e782a539d1a76d8e1c49a9ead00076` (wrapper auditado).
 - `packages/coelo_database/supabase/tests/superadmin_forms_directory_internal_read_test.sql`
-  — Git blob `83c04f3270593cb2722069ffa687b080cce5fbba` (AAL vigente e auditoria).
+  — Git blob `abe0c8c2d835c9d9e577db965b33b301d0e79ad0` (AAL vigente, auditoria e separação RPC/TAP).
 
 Timestamp criado pela CLI Supabase 2.116.0 `migration new`, sem iniciar serviço.
 Arquivo movido para o diretório canônico por patch. Não aplicar toda a cauda de
@@ -111,6 +111,13 @@ preencher `suspended_at` conforme constraint. Root também conferiu a proteção
 último Owner e usou papel content no caso de revogação do AuthLink.
 Revisão adicional do wrapper auditado aprovada estaticamente, incluindo a
 limitação AAL ausente. `git diff --check` limpo; isso não executa SQL.
+
+Correção da revisão central da fixture: pgTAP não é chamado sob `authenticated`.
+Os quatro ensaios de exceção executam a RPC em blocos protegidos nesse papel,
+capturam SQLSTATE/mensagem em tabela temporária ou sentinela `NO_EXCEPTION`,
+e só emitem TAP após `RESET ROLE`. A fixture também confere o papel capturado.
+Não foram concedidos privilégios de pgTAP nem executadas RPCs como postgres.
+Varredura de todos os blocos `SET LOCAL ROLE` confirmou TAP fora desses blocos.
 
 Solicitado ao Coordenador o encaixe de RED em base sem endpoint e GREEN com o
 pacote nominal, somente após aprovação da cadeia local. Registrar saídas reais,
