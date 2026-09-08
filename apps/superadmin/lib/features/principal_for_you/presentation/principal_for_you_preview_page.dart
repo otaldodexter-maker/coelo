@@ -754,35 +754,38 @@ final class _ContextSheet extends StatelessWidget {
   Widget build(BuildContext context) => Semantics(
     namesRoute: true,
     label: 'Trocar contexto',
-    child: Padding(
-      key: const Key('principal-for-you-context-sheet'),
-      padding: const EdgeInsets.fromLTRB(
-        CoeloSpacing.space4,
-        CoeloSpacing.space2,
-        CoeloSpacing.space4,
-        CoeloSpacing.space5,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            'Trocar contexto',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: CoeloSpacing.space1),
-          Text(
-            'Escolha a visão geral ou aprofunde por criança e vínculo escolar.',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: CoeloSpacing.space3),
-          for (final item in contexts)
-            _ContextOption(
-              item: item,
-              selected: selected?.id == item.id,
-              onPressed: () => onSelected(item),
+    child: SingleChildScrollView(
+      primary: false,
+      child: Padding(
+        key: const Key('principal-for-you-context-sheet'),
+        padding: const EdgeInsets.fromLTRB(
+          CoeloSpacing.space4,
+          CoeloSpacing.space2,
+          CoeloSpacing.space4,
+          CoeloSpacing.space5,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Trocar contexto',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
             ),
-        ],
+            const SizedBox(height: CoeloSpacing.space1),
+            Text(
+              'Escolha a visão geral ou aprofunde por criança e vínculo escolar.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: CoeloSpacing.space3),
+            for (final item in contexts)
+              _ContextOption(
+                item: item,
+                selected: selected?.id == item.id,
+                onPressed: () => onSelected(item),
+              ),
+          ],
+        ),
       ),
     ),
   );
