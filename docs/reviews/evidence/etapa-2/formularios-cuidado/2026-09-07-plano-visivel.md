@@ -46,14 +46,15 @@ indicador. O arquivo é aberto no painel direito como alternativa disponível.
 
 ## Trabalho ativo e BD
 
-- Root: F-READ01 SQL/pgTAP após reader/injeção autorizados. Nenhum SQL executado.
+- Root: F-READ01 SQL/pgTAP nominal preparado e revisado estaticamente; nenhum SQL executado. Próxima fatia local: preservar configuração de imagens no editor e respeitar visibilidade condicional na validação de respostas.
 - forms_next_slice: precondições e negativas SAI/SQL, análise read-only concluída.
 - review_export_policy: reader aprovado após correção de offset; sem backend.
 - medication_roundtrip: revisão UI/composição read-only, sem achado bloqueante.
 - Engenheiro 2 (coordenação externa): crosswalk nominal de ator/DTO/RPC Forms;
   não é writer desta branch.
 
-Próximo gate: SQL/pgTAP do reader interno nominal de Formulários. MED-DEV01
+Próximo gate: replay exclusivo Eng1 do SQL/pgTAP nominal de Formulários;
+pacote e dependências em `2026-09-07-internal-directory-sql-package.md`. MED-DEV01
 foi entregue em 17812624; commit não encerra a vertical.
 Etapas 2/4 continuam abertas: planejar contrato não executa
 SQL nem comprova autorização, persistência ou produção.
