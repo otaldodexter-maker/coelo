@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import '../support/health_care_fixture_repository.dart';
 import 'package:coelo_superadmin/features/health_care/domain/health_care.dart';
+import 'package:coelo_superadmin/features/health_care/domain/health_care_repository.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_controller.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_medication_plan_directory_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -9,6 +12,131 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('clears medication cards when the authorized controller changes', (tester) async {
+    final a = _controllerFor('a');
+    final b = _controllerFor('b');
+    addTearDown(a.dispose);
+    addTearDown(b.dispose);
+    await tester.pumpWidget(_directory(a));
+    await tester.pumpAndSettle();
+    expect(find.text('Criança Demo A'), findsOneWidget);
+
+    await tester.pumpWidget(_directory(b));
+    expect(find.text('Criança Demo A'), findsNothing);
+    await tester.pumpAndSettle();
+    expect(find.text('Nenhum plano'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('never forwards old directory child IDs to the replacement controller', (
+    tester,
+  ) async {
+    final repositoryA = _DelayedDirectoryRepository();
+    final repositoryB = _DelayedDirectoryRepository();
+    final a = _controllerFor('a', repository: repositoryA);
+    final b = _controllerFor('b', repository: repositoryB);
+    addTearDown(a.dispose);
+    addTearDown(b.dispose);
+    final fixture = FixtureHealthCareRepository();
+    final oldPage = await fixture.fetchDirectory(const HealthCareDirectoryQuery(), actor: a.actor);
+    final newPage = await fixture.fetchDirectory(const HealthCareDirectoryQuery(), actor: b.actor);
+
+    await tester.pumpWidget(_directory(a));
+    await tester.pump();
+    await tester.pumpWidget(_directory(b));
+    repositoryB.directory.complete(newPage);
+    await tester.pump(const Duration(milliseconds: 200));
+    repositoryA.directory.complete(oldPage);
+    await tester.pumpAndSettle();
+    expect(repositoryA.childRequests, isEmpty);
+    expect(repositoryB.childRequests, ['child-demo-b']);
+    expect(find.text('Criança Demo A'), findsNothing);
+    expect(find.text('Não foi possível carregar'), findsNothing);
+  });
+
+  for (final failOldChild in [false, true]) {
+    testWidgets(
+      'ignores late child ${failOldChild ? 'failure' : 'success'} after controller replacement',
+      (tester) async {
+        final repositoryA = _DelayedDirectoryRepository(delayChild: true);
+        final a = _controllerFor('a', repository: repositoryA);
+        final b = _controllerFor('b');
+        addTearDown(a.dispose);
+        addTearDown(b.dispose);
+        final fixture = FixtureHealthCareRepository();
+        final oldPage = await fixture.fetchDirectory(
+          const HealthCareDirectoryQuery(),
+          actor: a.actor,
+        );
+        final oldChild = await fixture.findChild('child-demo-a', actor: a.actor);
+        await tester.pumpWidget(_directory(a));
+        repositoryA.directory.complete(oldPage);
+        await tester.pump();
+        expect(repositoryA.childRequests, ['child-demo-a']);
+        await tester.pumpWidget(_directory(b));
+        await tester.pump(const Duration(milliseconds: 200));
+        if (failOldChild) {
+          repositoryA.child.completeError(StateError('old context failure'));
+        } else {
+          repositoryA.child.complete(oldChild);
+        }
+        await tester.pumpAndSettle();
+        expect(find.text('Criança Demo A'), findsNothing);
+        expect(find.text('Nenhum plano'), findsOneWidget);
+        expect(find.text('Não foi possível carregar'), findsNothing);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets('switching to minimized context starts no sensitive queries', (tester) async {
+    final repositoryA = _DelayedDirectoryRepository();
+    final repositoryB = _DelayedDirectoryRepository();
+    final a = _controllerFor('a', repository: repositoryA);
+    final b = HealthCareController(
+      repositoryB,
+      actor: HealthCareActor(
+        id: 'minimized-b',
+        profile: HealthCareAccessProfile.minimized,
+        authorizedChildIds: const {'child-demo-b'},
+      ),
+    );
+    addTearDown(a.dispose);
+    addTearDown(b.dispose);
+    final oldPage = await FixtureHealthCareRepository().fetchDirectory(
+      const HealthCareDirectoryQuery(),
+      actor: a.actor,
+    );
+    await tester.pumpWidget(_directory(a));
+    await tester.pumpWidget(_directory(b));
+    repositoryA.directory.complete(oldPage);
+    await tester.pumpAndSettle();
+    expect(repositoryB.directoryRequests, 0);
+    expect(repositoryA.childRequests, isEmpty);
+    expect(repositoryB.childRequests, isEmpty);
+    expect(find.text('Resumo minimizado'), findsOneWidget);
+    expect(find.text('Criança Demo A'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('unmounted directory does not start child reads after its first await', (
+    tester,
+  ) async {
+    final repository = _DelayedDirectoryRepository();
+    final controller = _controllerFor('a', repository: repository);
+    addTearDown(controller.dispose);
+    final oldPage = await FixtureHealthCareRepository().fetchDirectory(
+      const HealthCareDirectoryQuery(),
+      actor: controller.actor,
+    );
+    await tester.pumpWidget(_directory(controller));
+    await tester.pumpWidget(const SizedBox.shrink());
+    repository.directory.complete(oldPage);
+    await tester.pumpAndSettle();
+    expect(repository.childRequests, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('lists medication plans as a sibling directory', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -184,4 +312,53 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+}
+
+Widget _directory(HealthCareController controller) => MaterialApp(
+  theme: CoeloTheme.light,
+  home: HealthMedicationPlanDirectoryPage(
+    controller: controller,
+    logout: unavailableSuperadminLogout,
+  ),
+);
+
+HealthCareController _controllerFor(String suffix, {HealthCareRepository? repository}) =>
+    HealthCareController(
+      repository ?? FixtureHealthCareRepository(),
+      actor: HealthCareActor(
+        id: 'reader-$suffix',
+        profile: HealthCareAccessProfile.sensitiveReader,
+        authorizedChildIds: {'child-demo-$suffix'},
+      ),
+    );
+
+final class _DelayedDirectoryRepository implements HealthCareRepository {
+  _DelayedDirectoryRepository({this.delayChild = false});
+  final bool delayChild;
+  final directory = Completer<HealthCareDirectoryPage>();
+  final child = Completer<HealthCareChild?>();
+  final childRequests = <String>[];
+  var directoryRequests = 0;
+  final _fixture = FixtureHealthCareRepository();
+
+  @override
+  HealthCareActor? get defaultActor => null;
+
+  @override
+  Future<HealthCareDirectoryPage> fetchDirectory(
+    HealthCareDirectoryQuery query, {
+    required HealthCareActor actor,
+  }) {
+    directoryRequests++;
+    return directory.future;
+  }
+
+  @override
+  Future<HealthCareChild?> findChild(String childId, {required HealthCareActor actor}) {
+    childRequests.add(childId);
+    return delayChild ? child.future : _fixture.findChild(childId, actor: actor);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
