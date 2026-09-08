@@ -13,6 +13,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('image selection is fail-closed until the private R2 gateway is composed', () {
+    final page = MealPlanWizardPage(
+      repository: DevelopmentMealPlanRepository(),
+      imageRepository: const UnavailableMealPlanImageRepository(),
+      onSaved: () {},
+      onCancel: () {},
+    );
+
+    expect(page.imageSelectionEnabled, isFalse);
+  });
+
   for (final destination in ['same', 'other', 'new']) {
     testWidgets('template editing preserves unknown fields only for $destination resource', (
       tester,
