@@ -12,7 +12,7 @@ declare
   action_code text:='superadmin.forms.'||p_operation;
   correlation uuid:=gen_random_uuid(); error_code text; result jsonb;
   allowed text[]; field_name text; page_limit integer:=25;
-  form_row public.forms; response_row public.form_responses;
+  form_row public.forms; response_row public.form_responses; version_row public.form_versions;
   v_form_id uuid; v_response_id uuid; v_application_id uuid; v_occurrence_id uuid; v_scope_id uuid;
   v_cursor_id uuid; cursor_time timestamptz; cursor_field text;
   starts_on date; ends_on date; v_scope_kind text;
@@ -159,6 +159,8 @@ begin
             order by case when form_row.identity_mode='identified' then submitted_at end,id limit 1) else null end)
         into result from visible vis;
     elsif p_operation='response_detail' then
+      select v.* into strict version_row from public.form_versions v
+        where v.id=response_row.form_version_id and v.form_id=form_row.id;
       if response_row.identity_mode is distinct from form_row.identity_mode
         or exists(select 1 from public.form_answers a
         left join public.form_items i on i.id=a.item_id and i.form_version_id=response_row.form_version_id
@@ -180,7 +182,9 @@ begin
         raise check_violation using detail='SAI_UNAVAILABLE';
       end if;
       result:=jsonb_build_object('id',response_row.id,'occurrence_id',response_row.occurrence_id,
-        'form_version_id',response_row.form_version_id,'identity_mode',response_row.identity_mode,
+        'form_id',form_row.id,'form_version_id',version_row.id,
+        'form_version_number',version_row.version_number,'form_version_state',version_row.state,
+        'identity_mode',response_row.identity_mode,
         'submitted_at',case when response_row.identity_mode='identified' then response_row.submitted_at else null end,
         'respondent_label',case when response_row.identity_mode='identified' then
           (select display_name from public.people where id=response_row.respondent_person_id) else null end,

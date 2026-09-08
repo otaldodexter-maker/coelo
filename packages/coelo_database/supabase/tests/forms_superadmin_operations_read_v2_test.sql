@@ -131,6 +131,9 @@ select ok(not exists(select 1 from op_results where label in ('anonymous_page1',
   and body::text~'(Synthetic responder|synthetic-no-real-secret|participation_id|respondent_person_id|created_at|updated_at)'),
   'anonymous response payloads contain no identity keys or secret anywhere');
 select is((select body#>>'{data,definition,sections,0,items,0,label}' from op_results where label='detail'),'Original question','detail uses submitted version graph');
+select is((select body#>>'{data,form_version_number}' from op_results where label='detail'),'1','original version number is returned without a guessed client value');
+select is((select body#>>'{data,form_version_state}' from op_results where label='detail'),'published','original publication state is explicit');
+select is((select body#>>'{data,form_id}' from op_results where label='detail'),pg_temp.op_id(210)::text,'original graph is correlated to its form');
 select is((select body#>>'{data,answers,0,text_value}' from op_results where label='detail'),'Synthetic answer 210-0','detail returns authorized typed content');
 select ok(not exists(select 1 from op_results where label='detail' and body::text like '%New question must not replace history%'),'working graph never replaces historical response');
 select ok(exists(select 1 from audit.audit_logs where action_code='superadmin.forms.responses' and outcome='success'
