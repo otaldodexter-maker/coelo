@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @(),
@@ -103,6 +103,7 @@ if ($NominalProfile) {
     'FReadDirectoryContractGreen' { 'replay\profiles\FReadDirectoryContractGreen\Resolve-FReadDirectoryContractGreen.ps1' }
     'ModelReadAuthorizationRed' { 'replay\profiles\ModelReadAuthorizationRed\Resolve-ModelReadAuthorizationRed.ps1' }
     'ModelReadAuthorizationGreen' { 'replay\profiles\ModelReadAuthorizationGreen\Resolve-ModelReadAuthorizationGreen.ps1' }
+    'ModelAal1PhasePolicy' { 'replay\profiles\ModelAal1PhasePolicy\Resolve-ModelAal1PhasePolicy.ps1' }
     'A01DirectoryAuditRed' { 'replay\profiles\A01DirectoryAuditRed\Resolve-A01DirectoryAuditRed.ps1' }
     'A01DirectoryAuditGreen' { 'replay\profiles\A01DirectoryAuditGreen\Resolve-A01DirectoryAuditGreen.ps1' }
     'FReadDirectoryContractRedDerived' { 'replay\profiles\FReadDirectoryContractRedDerived\Resolve-FReadDirectoryContractRedDerived.ps1' }
