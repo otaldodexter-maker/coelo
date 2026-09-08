@@ -1311,7 +1311,7 @@
   },
   "docker_recovery_1823": {
     "at": "2026-09-08T18:22:51-03:00",
-    "status": "operator-resumed-after-ack-only-completion; recovery-unproven",
+    "status": "handoff-received-engine-unavailable; C00 evaluating next safe path",
     "factory_reset": "Owner screenshots/logs confirm external reset;not executed byC00",
     "preserved_paths": [
       "C:/Users/adrie/AppData/Local/Docker/run.recovery-20260908-1820",
@@ -1325,7 +1325,12 @@
     "delegated_at": "2026-09-08T18:24:33-03:00",
     "scope": "recover local engine; no SQL/remotes; C00/subagents make no Docker mutations until handback",
     "native_cursor": "8595af92-fc69-405c-8db2-708727cd1d0c:1",
-    "last_intervention": "one for ack-only completed turn; no handoff or Docker processes at inspection"
+    "last_intervention": "one for ack-only completed turn; no handoff or Docker processes at inspection",
+    "handoff_path": "C:/Users/adrie/AppData/Local/Temp/coelo-support-docker-handoff.md",
+    "handoff_received_at": "2026-09-08T18:47:21-03:00",
+    "operator_release": "C00 acknowledged handback; support instructed no further mutations",
+    "evidence": "I00218:47:20: socket reparse rename fails; no daemon; Start-Service access denied",
+    "causal_limit": "admin/service necessity is operator hypothesis, not established prerequisite"
   },
   "coordinator_next_steps_docker": "Read compact native status of support thread; verify engine result without asking Owner to watch app; only then nominal replay lease. Do not duplicate recovery operations.",
   "visual_review_c07": {

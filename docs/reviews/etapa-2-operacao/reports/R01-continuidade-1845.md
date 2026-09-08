@@ -16,3 +16,8 @@ C01 I013 libera adapter privado local de personas em dois arquivos disjuntos, re
 C02 I012 registra revisão de integridade do grafo completo projetado no detalhe Forms I010. C03 I012 registra rota Support incorreta sob chooser e três bloqueios reais Activities: serializer pedagógico, participação all/selected e ordem de transição do grafo SQL. São achados de revisão; nenhuma execução SQL nem certificação nova. C03 confirmou encaminhamento da corrigenda Support ao subagente.
 
 C01 r43/multiselect e C02 r37 recebidos, mas ainda não integralmente sincronizados. Seis commits C03 aprovados em revisão estática focal, aguardando integração/testes. Os números do checkpoint17:40 e cortes oficiais posteriores permanecem; não transformar revisão parcial em conclusão.
+
+
+## Recibo Docker 2026-09-08T18:47:21-03:00
+
+Handoff próprio de apoio recebido: `C:/Users/adrie/AppData/Local/Temp/coelo-support-docker-handoff.md`, I00218:47:20. Engine indisponível comprovado pelo relato de version/info/ps sem daemon, socket reparse ainda falha no rename, Start-Service retorna acesso negado. Necessidade absoluta de admin/serviço é hipótese do apoio ainda não validada pela C00. Apoio instruído a encerrar mutações e devolver exclusividade à C00 para avaliar próximo caminho seguro. Replays continuam suspensos; trabalho independente segue.
