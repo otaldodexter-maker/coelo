@@ -206,6 +206,17 @@ void main() {
     expect(repository.exportRequests.single.idempotencyKey, '88888888-8888-4888-8888-888888888888');
   });
 
+  test('rejects a detail response for a different event id', () async {
+    final repository = _Repository()..detailResult = _detail('event-tampered');
+    final controller = AuditDirectoryController(repository: repository);
+    addTearDown(controller.dispose);
+
+    await controller.loadDetail('event-requested');
+
+    expect(controller.detail.state, AuditDetailLoadState.failure);
+    expect(controller.detail.value, isNull);
+  });
+
   test('debounces search and ignores stale page and detail responses', () async {
     final activePage = Completer<AuditPage>();
     final debouncedPage = Completer<AuditPage>();
