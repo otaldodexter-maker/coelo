@@ -13,6 +13,62 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final outcome in [
+    (status: MealPlanStatus.draft, isDraft: true, requiresReview: false),
+    (status: MealPlanStatus.inReview, isDraft: false, requiresReview: true),
+    (status: MealPlanStatus.published, isDraft: true, requiresReview: false),
+    (status: MealPlanStatus.published, isDraft: false, requiresReview: true),
+    (status: MealPlanStatus.published, isDraft: false, requiresReview: false),
+  ]) {
+    testWidgets('publication completion validates state $outcome', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final repository = _PendingMealPlanRepository(
+        publicationStatus: outcome.status,
+        publicationIsDraft: outcome.isDraft,
+        publicationRequiresReview: outcome.requiresReview,
+      );
+      var savedCount = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: MealPlanWizardPage(
+              repository: repository,
+              imageRepository: const UnavailableMealPlanImageRepository(),
+              imageSelectionEnabled: false,
+              onSaved: () => savedCount++,
+              onCancel: () {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextFormField).first, 'Cardápio publicado');
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await _selectAudienceOption(tester, 'Instituições', 'Colégio Coelo');
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await tester.enterText(find.byType(TextFormField).first, 'Arroz e feijão');
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await tester.tap(find.widgetWithText(FilledButton, 'Enviar e publicar'));
+      repository.pendingSave.complete(_plan('meal-a', 'Cardápio publicado'));
+      await tester.pumpAndSettle();
+      final valid =
+          outcome.status == MealPlanStatus.published && !outcome.isDraft && !outcome.requiresReview;
+      expect(savedCount, valid ? 1 : 0);
+      expect(repository.publishCalls, 1);
+      expect(
+        find.text('Não foi possível confirmar a publicação do cardápio.'),
+        valid ? findsNothing : findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   for (final publish in [false, true]) {
     testWidgets('meal plan command is single flight before rebuild publish=$publish', (
       tester,
@@ -442,11 +498,17 @@ Future<void> _selectAudienceOption(WidgetTester tester, String label, String opt
   await tester.pumpAndSettle();
 }
 
-MealPlan _plan(String id, String name) => MealPlan(
+MealPlan _plan(
+  String id,
+  String name, {
+  MealPlanStatus status = MealPlanStatus.draft,
+  bool isDraft = true,
+  bool requiresReview = false,
+}) => MealPlan(
   id: id,
   tenantId: 'dev-tenant',
   name: name,
-  status: MealPlanStatus.draft,
+  status: status,
   sourceType: MealPlanSourceType.global,
   scopeLevel: MealPlanScopeLevel.global,
   scopeId: 'dev-tenant',
@@ -463,8 +525,8 @@ MealPlan _plan(String id, String name) => MealPlan(
   priority: 0,
   conflictState: false,
   revision: 1,
-  isDraft: true,
-  requiresReview: false,
+  isDraft: isDraft,
+  requiresReview: requiresReview,
   createdBy: 'dev',
   updatedBy: 'dev',
 );
@@ -566,6 +628,14 @@ final class _ConflictMealPlanRepository extends _OrderedMealPlanRepository {
 }
 
 final class _PendingMealPlanRepository extends _OrderedMealPlanRepository {
+  _PendingMealPlanRepository({
+    this.publicationStatus = MealPlanStatus.published,
+    this.publicationIsDraft = false,
+    this.publicationRequiresReview = false,
+  });
+  final MealPlanStatus publicationStatus;
+  final bool publicationIsDraft;
+  final bool publicationRequiresReview;
   final pendingSave = Completer<MealPlan>();
   int saveCalls = 0;
   int reviewCalls = 0;
@@ -600,6 +670,12 @@ final class _PendingMealPlanRepository extends _OrderedMealPlanRepository {
   @override
   Future<MealPlan> publish(String mealPlanId, String requestId, int expectedRevision) async {
     publishCalls++;
-    return _plan(mealPlanId, 'Cardápio A');
+    return _plan(
+      mealPlanId,
+      'Cardápio A',
+      status: publicationStatus,
+      isDraft: publicationIsDraft,
+      requiresReview: publicationRequiresReview,
+    );
   }
 }
