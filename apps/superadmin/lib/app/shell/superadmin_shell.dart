@@ -1692,7 +1692,7 @@ class _ProfileSummary extends StatelessWidget {
   }
 }
 
-class _HeaderUtilityActions extends StatelessWidget {
+class _HeaderUtilityActions extends StatefulWidget {
   const _HeaderUtilityActions({
     required this.activityController,
     required this.currentScreen,
@@ -1704,6 +1704,40 @@ class _HeaderUtilityActions extends StatelessWidget {
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
 
   @override
+  State<_HeaderUtilityActions> createState() => _HeaderUtilityActionsState();
+}
+
+class _HeaderUtilityActionsState extends State<_HeaderUtilityActions> {
+  DialogRoute<SupportReportDraft>? _reportRoute;
+  var _reportGeneration = 0;
+
+  void _invalidateReport() {
+    _reportGeneration++;
+    final route = _reportRoute;
+    _reportRoute = null;
+    if (route != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (route.isActive) route.navigator?.removeRoute(route);
+      });
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _HeaderUtilityActions oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.currentScreen != widget.currentScreen ||
+        oldWidget.onBugReportSubmitted != widget.onBugReportSubmitted) {
+      _invalidateReport();
+    }
+  }
+
+  @override
+  void dispose() {
+    _invalidateReport();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
@@ -1711,14 +1745,25 @@ class _HeaderUtilityActions extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (onBugReportSubmitted != null)
+        if (widget.onBugReportSubmitted != null)
           IconButton(
             key: const Key('superadmin-report-bug'),
             tooltip: 'Reportar bug',
             onPressed: () async {
+              if (!mounted || _reportRoute != null) return;
+              final generation = _reportGeneration;
+              final submit = widget.onBugReportSubmitted;
+              if (submit == null) return;
+              bool isCurrent() => mounted && generation == _reportGeneration;
+              DialogRoute<SupportReportDraft>? openedRoute;
               final draft = await showSuperadminBugReportDialog(
                 context,
-                currentScreen: currentScreen,
+                currentScreen: widget.currentScreen,
+                isContextCurrent: isCurrent,
+                onRouteCreated: (route) {
+                  openedRoute = route;
+                  _reportRoute = route;
+                },
                 sections: {
                   for (final section in coeloSuperadminNavigation.where(
                     (node) => node.children.isNotEmpty,
@@ -1731,10 +1776,12 @@ class _HeaderUtilityActions extends StatelessWidget {
                   'Outros': const [],
                 },
               );
-              if (draft == null || !context.mounted) {
+              if (identical(_reportRoute, openedRoute)) _reportRoute = null;
+              if (draft == null || !isCurrent()) {
                 return;
               }
-              onBugReportSubmitted!(draft);
+              submit(draft);
+              if (!context.mounted || !isCurrent()) return;
               showSuperadminNotice(
                 context,
                 'Relato enviado com sucesso.',
@@ -1745,7 +1792,7 @@ class _HeaderUtilityActions extends StatelessWidget {
             icon: const Icon(Icons.bug_report_outlined),
           ),
         SuperadminActivityCenter(
-          controller: activityController,
+          controller: widget.activityController,
           buttonStyle: _headerUtilityButtonStyle(colors, hoverColor),
         ),
       ],
