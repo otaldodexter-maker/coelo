@@ -3,9 +3,12 @@ title: Benchmark de suporte e stories do ClassDojo
 knowledge_id: classdojo-support-benchmark
 source: docs/product/competitive-map.md
 status: validated
-generated_at: 2026-08-03
+generated_at: 2026-09-03
 audience: team
-surfaces: [superadmin, support, help-center]
+surfaces:
+  - superadmin
+  - support
+  - help-center
 visibility: internal
 review_owner: Coelo Product
 ---
@@ -15,17 +18,22 @@ review_owner: Coelo Product
 O ClassDojo é um benchmark útil para o Coelo em duas frentes: organização de
 conteúdo escolar e estrutura de central de ajuda.
 
-No produto, a separação entre Story da Turma e Story da Escola mostra uma regra
-boa de UX: mensagens precisam ter escopo explícito. O Story da Turma funciona
-como feed privado da turma; o Story da Escola funciona como quadro de avisos da
-escola inteira. A leitura de visualizações e a moderação de comentários ajudam a
-dar previsibilidade para famílias e equipe.
+No produto, a separação entre Story da Turma e Story da Escola mostra uma regra de
+UX de alta clareza: mensagem com alcance explícito.
 
-Na ajuda, o ClassDojo organiza artigos por tarefa concreta, como publicar,
-editar, programar e moderar postagens com mídia. Isso é um bom modelo para o
-Coelo porque reduz dependência de atendimento humano e facilita uma futura
-camada de IA para dúvidas operacionais.
+- **Story da Turma**: feed privado da turma, visível para pais daquela turma.
+- **Story da Escola**: quadro institucional com avisos da escola para pais de turmas ativas.
 
-O uso recomendado para o Coelo é como referência de princípios, não de
-interface: clareza de alcance, ajuda contextual e caminhos guiados para ações
-frequentes.
+As páginas de ajuda detalham fluxos como publicar, editar, programar, configurar
+eventos e moderar comentários por tipo de história, com guias separados para web e
+mobile. Isso reduz dependência do atendimento humano e ajuda a transformar dúvidas
+frequentes em produto.
+
+Além disso, há controles de comentários (habilitar/desabilitar, deletar postagens e
+comentários por permissão), além de estatísticas de visualização no School Story.
+
+Para o Coelo, o valor principal está no princípio:
+
+- regra de escopo por público,
+- clareza do ciclo de publicação,
+- e suporte “guiado por tarefa”, não apenas FAQ livre.

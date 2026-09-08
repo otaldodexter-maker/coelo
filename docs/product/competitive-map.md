@@ -38,6 +38,8 @@ Um detalhe estratégico importante: a própria Arco Educação lista ClassApp en
 | Agenda Edu | iOS/Android | Sim | Não informado | Comunicação digital, atendimento multicanal, pagamentos, matrícula, assinaturas, loja/hub, API, integrações ERP | SaaS mensal ou anual por aluno + taxas transacionais em pagamentos | Sem mensalidade pública exata; taxas qualitativas do módulo de pagamentos são públicas |
 | Diário Escola | iOS/Android | Sim | Sim | Comunicação, pedagógico, financeiro, matrículas, segurança, reconhecimento facial, “Chegando”, IA, cantina | SaaS consultivo; forte indício de cobrança por aluno; módulos independentes | Benchmark promocional público de R$ 0,16/aluno/dia |
 | ClassApp | iOS/Android | Sim | Não público como app dedicado; branding visual interno disponível | Comunicação, canais, calendário, momentos, formulários, arquivos, financeiro, matrícula, Cheguei, integrações, API | SaaS consultivo com planos Básico/Padrão/Avançado | Planos públicos sem valores monetários |
+| Layers Education | iOS/Android | Sim | Não informado | Agenda digital escolar com comunicação por leitura, pagamentos, atendimento por tema, eventos, enquetes, engajamento em tempo real e integração com +20 ERPs | SaaS consultivo; posicionamento para escolas parceiras | Sem preço público disponível |
+| isaac / Meu Isaac | iOS/Android | Sim | Não informado | Gestão financeira escolar (caixa, boletos, relatórios), suporte a renegociação, contrato digital para matrícula e comunicação de cobranças para responsáveis | Solução financeira para instituições + app responsável financeiro | Sem preço público consolidado nas páginas consultadas |
 | Meu Arco | iOS/Android | Sim | Não informado | Comunicação, matrícula, gestão, financeiro, materiais, dashboards, pedagógico, IA | Contrato consultivo, atrelado ao ecossistema Arco; bundle para escolas parceiras | Sem preço público; varia por contrato/perfil |
 
 Síntese baseada nas páginas oficiais, centrais de ajuda, páginas de integrações e lojas dos aplicativos. [8]
@@ -112,6 +114,14 @@ Em negócio, o ClassApp expõe três planos públicos — Básico, Padrão e Ava
 
 Quanto à stack provável, as evidências públicas permitem dizer que o ClassApp opera com API pública, camada web e mobile maduras e arquitetura claramente multi-tenant. Não há, porém, sinal público forte o bastante para cravar React Native, Flutter ou nativo; então a resposta honesta é: framework específico não identificável nas fontes primárias. [37]
 
+### Layers Education
+
+Links diretos pesquisados: home, recursos de comunicação, engajamento e integrações.
+
+A Layers destaca um posicionamento de “agenda escolar completa” com foco em comunicação, pagamentos, atendimentos por tema e engajamento de famílias em tempo real. Entre os diferenciais citados, aparecem confirmação de leitura, enquetes e integração com +20 sistemas de gestão.
+
+Ponto de atenção para o Coelo: o produto já trata integração com ERP como requisito central e não como camada opcional.
+
 ### Meu Arco
 
 Links diretos pesquisados: página do Meu Arco, acesso para responsáveis, apps Android/iOS, app de educadores e página institucional da Arco. [38]
@@ -125,6 +135,14 @@ Plataformas: o Meu Arco funciona em web e mobile, com app principal para famíli
 No modelo de negócio, o preço é consultivo e varia conforme contrato e perfil da instituição. O público-alvo é o universo de escolas parceiras da Arco/isaac, com forte aderência ao segmento privado. Em integrações, as fontes públicas falam bastante de login único e conexão entre soluções Arco, mas não exibem catálogo amplo de ERPs externos. Estratégicamente, vale notar que a própria Arco inclui ClassApp entre suas marcas; então, para o mercado, Meu Arco e ClassApp são melhor lidos como peças de um mesmo portfólio do que como dois concorrentes totalmente desvinculados. [42]
 
 Sobre stack provável, a evidência pública aponta para uma arquitetura fortemente integrada por APIs/camadas de ecossistema, com múltiplos apps e módulos web especializados. Fora isso, não há base pública sólida para inferir framework mobile ou backend. O que dá para afirmar com segurança é a alta integração com o stack comercial e financeiro ligado ao isaac/Arco. [43]
+
+### isaac / Meu Isaac
+
+Links diretos pesquisados: plataforma principal, página de gestão financeira, contrato digital e materiais de valor para escola.
+
+O isaac aparece como solução de gestão financeira escolar com foco em visibilidade de caixa, emissão/acompanhamento de pagamentos e redução de inadimplência, além de canal dedicado de apoio a responsáveis. No ponto de conversão, o contrato digital no app meu isaac substitui fluxo físico e reduz atrito de matrícula.
+
+No posicionamento atual, ele se conecta diretamente ao ecossistema Arco e ao Meu Arco para suporte financeiro e materiais, reforçando o padrão de solução especializada por domínio (financeiro primeiro, rotina depois).
 
 ### ClassDojo
 

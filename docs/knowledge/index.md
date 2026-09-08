@@ -4,7 +4,7 @@ knowledge_id: knowledge-index
 source: docs/knowledge/README.md
 status: validated
 generated_at: 2026-08-04
-updated_at: 2026-09-02
+updated_at: 2026-09-03
 audience: team
 surfaces:
   - documentation
@@ -34,7 +34,11 @@ review_owner: Coelo Owner
 | team | Suporte / Benchmark externo | [Benchmark de suporte e stories do ClassDojo](team/classdojo-support-benchmark.md) | validated | `docs/product/competitive-map.md` |
 | team | Superadmin / Locais, mapas e agendamentos | [Locais, mapas e agendamentos no Superadmin](team/superadmin-locations-maps-scheduling.md) | validated | `docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md` |
 | admin | Locais, mapas e reservas | [Gestão de locais, mapas e reservas](admin/superadmin-locations-maps-scheduling.md) | validated | `docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md` |
-
+| team | Produto / Benchmark externo | [Benchmark Agenda Edu](team/agendaedu-benchmark.md) | validated | `docs/product/competitive-map.md`; `docs/knowledge/team/agendaedu-benchmark.md` |
+| team | Produto / Benchmark externo | [Benchmark ClassApp](team/classapp-benchmark.md) | validated | `docs/product/competitive-map.md`; `docs/knowledge/team/classapp-benchmark.md` |
+| team | Produto / Benchmark externo | [Benchmark Meu Arco](team/arco-meu-arco-benchmark.md) | validated | `docs/product/competitive-map.md`; `docs/knowledge/team/arco-meu-arco-benchmark.md` |
+| team | Produto / Benchmark externo | [Benchmark Layers Education](team/layers-education-benchmark.md) | validated | `docs/product/competitive-map.md`; `docs/knowledge/team/layers-education-benchmark.md` |
+| team | Produto / Benchmark externo | [Benchmark isaac / Meu Isaac](team/isaac-benchmark.md) | validated | `docs/product/competitive-map.md`; `docs/knowledge/team/isaac-benchmark.md` |
 | team | Superadmin / Saúde e Cuidado | [Saúde e Cuidado centrados na criança](team/health-care.md) | validated | `specs/020-superadmin-health-care.md` |
 | admin | Saúde e Cuidado | [Operação de Saúde e Cuidado](admin/health-care.md) | validated | `specs/020-superadmin-health-care.md` |
 

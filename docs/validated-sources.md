@@ -16,3 +16,9 @@ Estas fontes foram usadas apenas para validar boas praticas atuais. Elas nao sob
 | Supabase Storage | [Supabase Storage access control](https://supabase.com/docs/guides/storage/security/access-control) | Referencia comparativa para controle de acesso de midia, sem alterar a decisao de R2. |
 | Cloudflare R2 | [Cloudflare R2 presigned URLs](https://developers.cloudflare.com/r2/api/s3/presigned-urls/) | Validacao do spike de URLs temporarias para midia privada em R2. |
 | Acessibilidade | [WCAG 2.2](https://www.w3.org/TR/WCAG22/) | Referencia de acessibilidade para design system, UI core e criterios futuros. |
+| Agenda Edu | [Agenda Edu](https://www.agendaedu.com/) | Fonte de referência de comunicação multicanal, pagamentos e integrações para agenda escolar. |
+| ClassApp | [ClassApp](https://www.classapp.com.br/) | Fonte de referência de comunicação escola-família e rotinas de matrícula/financeiro. |
+| Meu Arco | [Meu Arco](https://www.arcoeducacao.com.br/meu-arco) | Fonte de referência de plataforma integrada por ecossistema escolar. |
+| Layers Education | [Layers Education](https://layers.education/) | Fonte de referência de comunicação por tema, engajamento e integrações com ERPs. |
+| ClassDojo | [ClassDojo Help Center](https://help.classdojo.com/hc/pt-br/sections/29010925152525-Story-da-Turma) | Fonte de referência para escopo de notícias/fundos de sala e gestão de publicações/moderação. |
+| Isaac | [isaac](https://isaac.com.br/) | Fonte de referência para soluções financeiras escolares e contrato digital integrado. |
