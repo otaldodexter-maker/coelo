@@ -16,6 +16,7 @@ final class AccessProfileModelRepositoryAdapter
 
   @override
   Future<AccessProfilePage> fetchProfiles(AccessProfileQuery query) async {
+    final revision = _authorizationRevision?.call();
     var afterName = null as String?;
     var afterId = null as String?;
     var currentPage = const AccessProfileModelPage(items: []);
@@ -31,6 +32,7 @@ final class AccessProfileModelRepositoryAdapter
           afterId: afterId,
         ),
       );
+      _requireCurrentRevision(revision);
       if (page < query.page && currentPage.nextId == null) {
         return AccessProfilePage(
           items: const [],

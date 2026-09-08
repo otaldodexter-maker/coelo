@@ -41,3 +41,21 @@ de permissões vazias, grant novo ou ampliação de capacidades.
 Sem SQL, produção, deploy ou mídia. Não comprova verified-e2e. Memória: restaura
 contrato existente, sem decisão nova. Handoff ao Coordenador mantém rastreadores
 sob autoria exclusiva dele e preserva hunks Media/Session da E2E 3.
+
+## Complemento nominal: paginação
+
+Após RED real (4 PASS / 1 FAIL no arquivo de contexto), a reserva READ foi
+estendida a `fetchProfiles`: duas linhas capturam a revisão na entrada e
+verificam após cada página, antes de consumir cursor/count ou retornar.
+Writes e outros métodos permanecem intactos; nenhum novo hunk no router.
+
+O teste conserva a capability de leitura em ambos os contextos. Portanto prova
+continuidade da operação composta, não vazamento ou negação server-side. Os
+quatro controles cobrem revisão equivalente/alterada durante primeira/segunda
+página. Alteração interrompe sem chamada subsequente; equivalente mantém duas
+chamadas e resultado permitido. Contexto 7/7, com legados do adapter 12/12 PASS.
+Antes dos dois controles adicionais de segunda página, regressão data + rotas
+de invalidação do diretório/editor passou 83/83. Analyzer de dois arquivos PASS;
+format/diff check PASS; review realm_audit sem bloqueantes no delta de duas
+linhas. Não somar execuções nem declarar E2E. Template/cache de writes seguem
+fora deste complemento.
