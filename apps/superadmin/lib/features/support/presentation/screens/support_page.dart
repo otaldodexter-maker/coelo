@@ -46,6 +46,7 @@ class _SupportPageState extends State<SupportPage> {
   SupportFocusRestoreCallback? _restoreDetailOriginFocus;
   SupportDisplayMode _displayMode = SupportDisplayMode.kanban;
   int _controllerGeneration = 0;
+  bool _fullscreenDetailOpen = false;
 
   @override
   void didUpdateWidget(covariant SupportPage oldWidget) {
@@ -53,6 +54,14 @@ class _SupportPageState extends State<SupportPage> {
     if (!identical(oldWidget.controller, widget.controller)) {
       _controllerGeneration++;
       _restoreDetailOriginFocus = null;
+      _search.text = widget.controller.filters.search;
+      if (_fullscreenDetailOpen) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _fullscreenDetailOpen) {
+            Navigator.of(context, rootNavigator: true).pop();
+          }
+        });
+      }
     }
   }
 
@@ -222,24 +231,29 @@ class _SupportPageState extends State<SupportPage> {
   ) async {
     _restoreDetailOriginFocus = restoreFocus;
     widget.controller.selectTicket(ticket.id);
-    await showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
-      builder: (dialogContext) => _DraggableSupportDialog(
-        builder: (onDragUpdate, onMoveRequested, onResetRequested) => AnimatedBuilder(
-          animation: widget.controller,
-          builder: (context, _) => _details(
-            compact: true,
-            fallbackTicket: ticket,
-            onClose: () => Navigator.of(dialogContext).pop(),
-            onHeaderDragUpdate: onDragUpdate,
-            onHeaderMoveRequested: onMoveRequested,
-            onHeaderResetRequested: onResetRequested,
+    _fullscreenDetailOpen = true;
+    try {
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+        builder: (dialogContext) => _DraggableSupportDialog(
+          builder: (onDragUpdate, onMoveRequested, onResetRequested) => AnimatedBuilder(
+            animation: widget.controller,
+            builder: (context, _) => _details(
+              compact: true,
+              fallbackTicket: ticket,
+              onClose: () => Navigator.of(dialogContext).pop(),
+              onHeaderDragUpdate: onDragUpdate,
+              onHeaderMoveRequested: onMoveRequested,
+              onHeaderResetRequested: onResetRequested,
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } finally {
+      _fullscreenDetailOpen = false;
+    }
     if (mounted) {
       _closeDetails();
     }

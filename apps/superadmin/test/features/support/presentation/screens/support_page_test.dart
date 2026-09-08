@@ -317,6 +317,51 @@ void main() {
     expect(controller.selectedTicket?.id, 'SUP-001');
   });
 
+  testWidgets('expanded detail closes when the support controller is replaced', (tester) async {
+    final controllerA = SupportPrototypeController();
+    final controllerB = SupportPrototypeController(initialTickets: const []);
+    addTearDown(controllerA.dispose);
+    addTearDown(controllerB.dispose);
+    await _pump(tester, controllerA, const Size(1280, 900));
+
+    final card = find.byKey(const Key('support-card-SUP-001'));
+    await tester.tap(card);
+    await tester.pump(const Duration(milliseconds: 50));
+    await tester.tap(card);
+    await tester.pump(kDoubleTapTimeout);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('support-expanded-detail')), findsOneWidget);
+
+    await _pump(tester, controllerB, const Size(1280, 900));
+
+    expect(find.byKey(const Key('support-expanded-detail')), findsNothing);
+    expect(find.text('Camila Rocha'), findsNothing);
+    expect(controllerB.selectedTicket, isNull);
+  });
+
+  testWidgets('search field follows filters from a replacement support controller', (tester) async {
+    final controllerA = SupportPrototypeController();
+    final controllerB = SupportPrototypeController();
+    controllerB.updateFilters(SupportFilters(search: 'SUP-002'));
+    addTearDown(controllerA.dispose);
+    addTearDown(controllerB.dispose);
+    await _pump(tester, controllerA, const Size(1280, 900));
+    await tester.enterText(find.byKey(const Key('support-search')), 'SUP-001');
+    await tester.pump();
+
+    await _pump(tester, controllerB, const Size(1280, 900));
+
+    final search = tester.widget<TextField>(
+      find.descendant(
+        of: find.byKey(const Key('support-search')),
+        matching: find.byType(TextField),
+      ),
+    );
+    expect(search.controller?.text, 'SUP-002');
+    expect(find.byKey(const Key('support-card-SUP-001')), findsNothing);
+    expect(find.byKey(const Key('support-card-SUP-002')), findsOneWidget);
+  });
+
   testWidgets('restores a unique table target that reopens the same ticket with Enter', (
     tester,
   ) async {
