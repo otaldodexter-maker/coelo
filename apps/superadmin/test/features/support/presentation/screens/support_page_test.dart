@@ -156,6 +156,30 @@ void main() {
     expect(controller.tickets.first.assigneeIds, isEmpty);
   });
 
+  testWidgets('owner picker cannot change a replacement support controller', (tester) async {
+    final controllerA = SupportPrototypeController();
+    final controllerB = SupportPrototypeController();
+    addTearDown(controllerA.dispose);
+    addTearDown(controllerB.dispose);
+    await _pump(tester, controllerA, const Size(1280, 900));
+
+    await tester.tap(find.byKey(const Key('support-card-menu-SUP-001')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Mover para').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Em andamento'));
+    await tester.pumpAndSettle();
+    expect(find.text('Escolha o responsável'), findsOneWidget);
+
+    await _pump(tester, controllerB, const Size(1280, 900));
+    await tester.tap(find.text('Ana Souza · Suporte').last);
+    await tester.pumpAndSettle();
+
+    final replacementTicket = controllerB.tickets.firstWhere((ticket) => ticket.id == 'SUP-001');
+    expect(replacementTicket.status, SupportTicketStatus.newRequest);
+    expect(replacementTicket.assigneeIds, isEmpty);
+  });
+
   testWidgets('card menu is accessible and assigns a responsible with keyboard', (tester) async {
     final controller = SupportPrototypeController();
     addTearDown(controller.dispose);

@@ -45,9 +45,20 @@ class _SupportPageState extends State<SupportPage> {
   );
   SupportFocusRestoreCallback? _restoreDetailOriginFocus;
   SupportDisplayMode _displayMode = SupportDisplayMode.kanban;
+  int _controllerGeneration = 0;
+
+  @override
+  void didUpdateWidget(covariant SupportPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.controller, widget.controller)) {
+      _controllerGeneration++;
+      _restoreDetailOriginFocus = null;
+    }
+  }
 
   @override
   void dispose() {
+    _controllerGeneration++;
     _search.dispose();
     _readFilterFocusScopeNode.dispose();
     super.dispose();
@@ -281,15 +292,22 @@ class _SupportPageState extends State<SupportPage> {
   }
 
   Future<void> _requestStatus(SupportTicket ticket, SupportTicketStatus status) async {
+    final generation = _controllerGeneration;
+    final controller = widget.controller;
     if (status == SupportTicketStatus.inProgress && ticket.assigneeIds.isEmpty) {
       final ownerId = await _chooseOwner();
-      if (!mounted || ownerId == null) {
+      if (!_isCurrentController(generation, controller) || ownerId == null) {
         return;
       }
-      widget.controller.setAssignees(ticket.id, {ownerId});
+      controller.setAssignees(ticket.id, {ownerId});
     }
-    widget.controller.changeStatus(ticket.id, status);
+    if (_isCurrentController(generation, controller)) {
+      controller.changeStatus(ticket.id, status);
+    }
   }
+
+  bool _isCurrentController(int generation, SupportPrototypeController controller) =>
+      mounted && generation == _controllerGeneration && identical(controller, widget.controller);
 
   Future<void> _createSupport() async {
     final draft = await showSuperadminBugReportDialog(
