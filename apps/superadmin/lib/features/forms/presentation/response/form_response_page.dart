@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:coelo_api/coelo_api.dart';
@@ -255,6 +256,10 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   bool _saving = false;
   int _loadGeneration = 0;
   int _answerRevision = 0;
+  int _savedAnswerRevision = 0;
+  Timer? _autosaveTimer;
+  bool _autosavePaused = false;
+  final _invalidNumericIds = <String>{};
   ({_ResponseCommandKind kind, FormCommand<FormResponseDraftPayload> command, int answerRevision})?
   _pendingCommand;
 
@@ -274,7 +279,22 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
 
   bool _isCurrent(int generation) => mounted && generation == _loadGeneration;
 
+  VoidCallback _currentAction(VoidCallback action) {
+    final generation = _loadGeneration;
+    return () {
+      if (_isCurrent(generation)) action();
+    };
+  }
+
+  @override
+  void dispose() {
+    _autosaveTimer?.cancel();
+    _loadGeneration++;
+    super.dispose();
+  }
+
   Future<void> _load() async {
+    _autosaveTimer?.cancel();
     final generation = ++_loadGeneration;
     final api = widget.api;
     final occurrenceId = widget.occurrenceId;
@@ -287,6 +307,10 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       _review = false;
       _saving = false;
       _pendingCommand = null;
+      _answerRevision = 0;
+      _savedAnswerRevision = 0;
+      _autosavePaused = false;
+      _invalidNumericIds.clear();
     });
     if (api == null || occurrenceId == null || occurrenceId.isEmpty) {
       setState(() => _state = _ProductionResponseState.unavailable);
@@ -385,7 +409,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
                 title: 'Não foi possível abrir a resposta',
                 message: _message ?? 'Tente novamente mais tarde.',
                 actionLabel: 'Tentar novamente',
-                onAction: _load,
+                onAction: _currentAction(_load),
               ),
               _ProductionResponseState.submitted => _submittedView(context),
               _ProductionResponseState.content => _responseForm(context),
@@ -404,7 +428,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         title: 'Resposta enviada',
         message: 'Esta resposta foi confirmada pela fonte autorizada.',
         actionLabel: _occurrence!.canEdit ? 'Editar resposta' : null,
-        onAction: _occurrence!.canEdit && !_saving ? _editSubmittedResponse : null,
+        onAction: _occurrence!.canEdit && !_saving ? _currentAction(_editSubmittedResponse) : null,
       ),
       const SizedBox(height: CoeloSpacing.space4),
       _answerSummary(context),
@@ -460,12 +484,14 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
                         (_pendingCommand != null &&
                             _pendingCommand!.kind != _ResponseCommandKind.save)
                     ? null
-                    : _saveDraft,
+                    : _currentAction(_saveDraft),
                 child: const Text('Salvar rascunho'),
               ),
               FilledButton.icon(
                 key: const Key('form-response-review'),
-                onPressed: _saving || _pendingCommand != null ? null : _reviewResponse,
+                onPressed: _saving || _pendingCommand != null
+                    ? null
+                    : _currentAction(_reviewResponse),
                 icon: const Icon(Icons.fact_check_outlined),
                 label: const Text('Revisar resposta'),
               ),
@@ -485,7 +511,10 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
                 OutlinedButton(
                   onPressed: _saving || _pendingCommand != null
                       ? null
-                      : () => setState(() => _review = false),
+                      : _currentAction(() {
+                          setState(() => _review = false);
+                          _scheduleAutosave();
+                        }),
                   child: const Text('Voltar e editar'),
                 ),
                 FilledButton(
@@ -495,7 +524,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
                           (_pendingCommand != null &&
                               _pendingCommand!.kind != _ResponseCommandKind.submit)
                       ? null
-                      : _submit,
+                      : _currentAction(_submit),
                   child: Text(_saving ? 'Enviando…' : 'Enviar resposta'),
                 ),
               ],
@@ -527,6 +556,11 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   );
 
   Widget _itemField(BuildContext context, FormItem item) {
+    final generation = _loadGeneration;
+    void update(FormAnswer? answer) {
+      if (_isCurrent(generation)) _setAnswer(item, answer);
+    }
+
     if (item.kind == FormItemKind.information) {
       return CoeloStatePanel(
         icon: Icons.info_outline_rounded,
@@ -545,8 +579,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         initialValue: _textValue(item.id),
         minLines: 2,
         maxLines: 6,
-        onChanged: (value) => _setAnswer(
-          item,
+        onChanged: (value) => update(
           value.trim().isEmpty ? null : FormAnswer.shortText(itemId: item.id, value: value),
         ),
         validator: (_) => _requiredMessage(item),
@@ -556,7 +589,9 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         key: Key('form-response-item-${item.id}'),
         initialValue: _numberValue(item.id),
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        onChanged: (value) => _setNumericAnswer(item, value),
+        onChanged: (value) {
+          if (_isCurrent(generation)) _setNumericAnswer(item, value);
+        },
         validator: (_) => _requiredMessage(item),
         decoration: const InputDecoration(border: OutlineInputBorder()),
       ),
@@ -567,9 +602,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
             ChoiceChip(
               label: Text(option ? 'Sim' : 'Não'),
               selected: (_answers[item.id]?.value as FormYesNoValue?)?.value == option,
-              onSelected: (_) => setState(
-                () => _setAnswer(item, FormAnswer.yesNo(itemId: item.id, value: option)),
-              ),
+              onSelected: (_) => update(FormAnswer.yesNo(itemId: item.id, value: option)),
             ),
         ],
       ),
@@ -583,10 +616,8 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
               selected:
                   (_answers[item.id]?.value as FormChoiceValue?)?.optionIds.contains(option.id) ??
                   false,
-              onSelected: (_) => setState(
-                () =>
-                    _setAnswer(item, FormAnswer.singleChoice(itemId: item.id, optionId: option.id)),
-              ),
+              onSelected: (_) =>
+                  update(FormAnswer.singleChoice(itemId: item.id, optionId: option.id)),
             ),
         ],
       ),
@@ -600,16 +631,16 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
               selected:
                   (_answers[item.id]?.value as FormChoiceValue?)?.optionIds.contains(option.id) ??
                   false,
-              onSelected: (selected) => setState(() {
+              onSelected: (selected) {
+                if (!_isCurrent(generation)) return;
                 final selectedIds = {...?(_answers[item.id]?.value as FormChoiceValue?)?.optionIds};
                 selected ? selectedIds.add(option.id) : selectedIds.remove(option.id);
-                _setAnswer(
-                  item,
+                update(
                   selectedIds.isEmpty
                       ? null
                       : FormAnswer.multipleChoice(itemId: item.id, optionIds: selectedIds),
                 );
-              }),
+              },
             ),
         ],
       ),
@@ -624,13 +655,14 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
             ChoiceChip(
               label: Text('$value'),
               selected: (_answers[item.id]?.value as FormScaleValue?)?.value == value,
-              onSelected: (_) =>
-                  setState(() => _setAnswer(item, FormAnswer.scale(itemId: item.id, value: value))),
+              onSelected: (_) => update(FormAnswer.scale(itemId: item.id, value: value)),
             ),
         ],
       ),
       FormItemKind.date => OutlinedButton.icon(
-        onPressed: () => _pickDate(item),
+        onPressed: () {
+          if (_isCurrent(generation)) _pickDate(item);
+        },
         icon: const Icon(Icons.calendar_today_outlined),
         label: Text(_dateValue(item.id) ?? 'Selecionar data'),
       ),
@@ -693,6 +725,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   void _pruneHiddenAnswers() {
     final visible = _visibleItemIds;
     _answers.removeWhere((id, _) => !visible.contains(id));
+    _invalidNumericIds.removeWhere((id) => !visible.contains(id));
   }
 
   bool _hasAnswer(FormItem item) => switch (_answers[item.id]?.value) {
@@ -707,19 +740,81 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       item.isRequired && !_hasAnswer(item) ? 'Esta resposta é obrigatória.' : null;
 
   void _setAnswer(FormItem item, FormAnswer? answer) {
-    _answerRevision++;
+    if (!mounted || _state != _ProductionResponseState.content || _occurrence?.canEdit != true) {
+      return;
+    }
+    final before = _answersFingerprint();
     if (answer == null) {
       _answers.remove(item.id);
     } else {
       _answers[item.id] = answer;
     }
     _pruneHiddenAnswers();
+    if (before == _answersFingerprint()) return;
+    setState(() {
+      _answerRevision++;
+      if (_pendingCommand?.kind != _ResponseCommandKind.submit) _review = false;
+      if (!_autosavePaused) _message = 'Alterações ainda não salvas.';
+    });
+    _scheduleAutosave();
+  }
+
+  String _answersFingerprint() => jsonEncode({
+    for (final id in _answers.keys.toList()..sort())
+      id: FormAnswerDto.fromDomain(_answers[id]!).toJson(),
+  });
+
+  void _scheduleAutosave() {
+    _autosaveTimer?.cancel();
+    if (_state != _ProductionResponseState.content ||
+        _occurrence?.canEdit != true ||
+        _draft?.status != FormResponseDraftStatus.draft ||
+        _saving ||
+        _review ||
+        _autosavePaused ||
+        _invalidNumericIds.isNotEmpty ||
+        _pendingCommand != null ||
+        _answerRevision == _savedAnswerRevision) {
+      return;
+    }
+    final generation = _loadGeneration;
+    _autosaveTimer = Timer(const Duration(milliseconds: 800), () {
+      if (!_isCurrent(generation) ||
+          _review ||
+          _autosavePaused ||
+          _state != _ProductionResponseState.content ||
+          _occurrence?.canEdit != true) {
+        return;
+      }
+      unawaited(_sendDraft(_ResponseCommandKind.save, automatic: true));
+    });
   }
 
   void _setNumericAnswer(FormItem item, String raw) {
+    if (!mounted || _state != _ProductionResponseState.content || _occurrence?.canEdit != true) {
+      return;
+    }
     final value = raw.trim();
-    if (value.isEmpty) return _setAnswer(item, null);
     final normalized = value.replaceAll(',', '.');
+    final parsed = double.tryParse(normalized);
+    final valid =
+        value.isEmpty ||
+        (item.kind == FormItemKind.integer
+            ? int.tryParse(normalized) != null
+            : parsed != null &&
+                  parsed.isFinite &&
+                  (item.kind != FormItemKind.money || (parsed * 100).isFinite));
+    if (!valid) {
+      _autosaveTimer?.cancel();
+      setState(() {
+        _invalidNumericIds.add(item.id);
+        _answerRevision++;
+        if (_pendingCommand?.kind != _ResponseCommandKind.submit) _review = false;
+        _message = 'Revise os valores numéricos antes de salvar.';
+      });
+      return;
+    }
+    final repaired = _invalidNumericIds.remove(item.id);
     final answer = switch (item.kind) {
       FormItemKind.integer => switch (int.tryParse(normalized)) {
         final number? => FormAnswer.integer(itemId: item.id, value: number),
@@ -736,6 +831,10 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       _ => null,
     };
     _setAnswer(item, answer);
+    if (repaired && !_autosavePaused) {
+      setState(() => _message = 'Alterações ainda não salvas.');
+    }
+    _scheduleAutosave();
   }
 
   String _textValue(String itemId) => (_answers[itemId]?.value as FormShortTextValue?)?.value ?? '';
@@ -766,11 +865,22 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   }
 
   void _reviewResponse() {
+    if (_state != _ProductionResponseState.content ||
+        _occurrence?.canEdit != true ||
+        _saving ||
+        _pendingCommand != null) {
+      return;
+    }
     if (!_validate()) return;
+    _autosaveTimer?.cancel();
     setState(() => _review = true);
   }
 
   bool _validate() {
+    if (_invalidNumericIds.isNotEmpty) {
+      setState(() => _message = 'Revise os valores numéricos antes de salvar.');
+      return false;
+    }
     final visibleItemIds = _visibleItemIds;
     final unsupportedRequired = _occurrence!.version.sections
         .expand((section) => section.items)
@@ -811,24 +921,38 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   Future<void> _saveDraft() => _sendDraft(_ResponseCommandKind.save);
 
   Future<void> _submit() {
+    if (!_review && _pendingCommand?.kind != _ResponseCommandKind.submit) return Future.value();
     if (_pendingCommand?.kind != _ResponseCommandKind.submit && !_validate()) return Future.value();
     return _sendDraft(_ResponseCommandKind.submit);
   }
 
   Future<void> _editSubmittedResponse() => _sendDraft(_ResponseCommandKind.edit);
 
-  Future<void> _sendDraft(_ResponseCommandKind kind) async {
+  Future<void> _sendDraft(_ResponseCommandKind kind, {bool automatic = false}) async {
+    _autosaveTimer?.cancel();
     final generation = _loadGeneration;
     final api = widget.api;
     final occurrence = _occurrence;
     final draft = _draft;
     if (api == null || occurrence == null || draft == null || _saving) return;
+    if (!occurrence.canEdit || _state == _ProductionResponseState.unauthorized) return;
+    if (kind == _ResponseCommandKind.edit
+        ? _state != _ProductionResponseState.submitted
+        : _state != _ProductionResponseState.content) {
+      return;
+    }
     if (_pendingCommand != null && _pendingCommand!.kind != kind) return;
+    if (_pendingCommand == null && _invalidNumericIds.isNotEmpty) {
+      setState(() => _message = 'Revise os valores numéricos antes de salvar.');
+      return;
+    }
+    if (automatic && _autosavePaused) return;
+    if (!automatic) _autosavePaused = false;
     final submitted = kind == _ResponseCommandKind.submit;
     final answerRevision = _pendingCommand?.answerRevision ?? _answerRevision;
     setState(() {
       _saving = true;
-      _message = null;
+      _message = kind == _ResponseCommandKind.save ? 'Salvando rascunho…' : null;
     });
     try {
       final command =
@@ -856,12 +980,15 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       setState(() {
         _draft = updated;
         _pendingCommand = null;
+        _savedAnswerRevision = answerRevision;
         if (answerRevision == _answerRevision ||
             submitted ||
             updated.status == FormResponseDraftStatus.submitted) {
+          _invalidNumericIds.clear();
           _answers
             ..clear()
             ..addAll(updated.answers);
+          _savedAnswerRevision = _answerRevision;
         }
         _pruneHiddenAnswers();
         _review = false;
@@ -872,11 +999,17 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
             updated.status != FormResponseDraftStatus.submitted &&
             answerRevision != _answerRevision) {
           _message = 'Salvamento anterior confirmado. Há alterações locais ainda não salvas.';
+        } else if (kind == _ResponseCommandKind.save) {
+          _message = 'Rascunho salvo.';
         }
       });
     } on FormApiException catch (error) {
       if (_isCurrent(generation)) {
         setState(() {
+          _autosavePaused = true;
+          if (error.kind == FormApiFailureKind.unauthorized) {
+            _state = _ProductionResponseState.unauthorized;
+          }
           if (error.kind == FormApiFailureKind.validation ||
               error.kind == FormApiFailureKind.conflict) {
             _pendingCommand = null;
@@ -886,10 +1019,16 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       }
     } on Object {
       if (_isCurrent(generation)) {
-        setState(() => _message = 'Não foi possível salvar sua resposta agora.');
+        setState(() {
+          _autosavePaused = true;
+          _message = 'Não foi possível salvar sua resposta agora.';
+        });
       }
     } finally {
-      if (_isCurrent(generation)) setState(() => _saving = false);
+      if (_isCurrent(generation)) {
+        setState(() => _saving = false);
+        _scheduleAutosave();
+      }
     }
   }
 }
