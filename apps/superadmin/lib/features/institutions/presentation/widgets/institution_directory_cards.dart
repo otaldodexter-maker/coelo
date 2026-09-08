@@ -103,6 +103,21 @@ class _InstitutionCard extends StatefulWidget {
 class _InstitutionCardState extends State<_InstitutionCard> {
   bool _highlighted = false;
 
+  /// The focus node lives on the control that acts, which is the whole point.
+  /// This card used to wrap itself in a FocusableActionDetector for the visual
+  /// highlight while the InkWell below carried its own implicit focus: two stops
+  /// per card, the first inert. Eleven cards meant eleven keyboard stops that
+  /// looked focused and did nothing on Enter. The approved
+  /// CoeloAdminInteractiveCard has always used one node on the InkWell; this now
+  /// matches it.
+  final _focusNode = FocusNode(debugLabel: 'institution-card');
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -114,138 +129,137 @@ class _InstitutionCardState extends State<_InstitutionCard> {
       child: MouseRegion(
         onEnter: (_) => setState(() => _highlighted = true),
         onExit: (_) => setState(() => _highlighted = false),
-        child: FocusableActionDetector(
-          onShowFocusHighlight: (value) => setState(() => _highlighted = value),
-          child: TweenAnimationBuilder<double>(
-            key: Key('institution-card-surface-${item.id}'),
-            tween: Tween(begin: 0, end: _highlighted ? 1 : 0),
-            duration: _interactionDuration(context, CoeloMotion.standard),
-            curve: Curves.easeOutCubic,
-            builder: (context, progress, child) => Container(
-              decoration: BoxDecoration(
-                color: colors.surface,
-                borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                border: Border.all(
+        child: TweenAnimationBuilder<double>(
+          key: Key('institution-card-surface-${item.id}'),
+          tween: Tween(begin: 0, end: _highlighted ? 1 : 0),
+          duration: _interactionDuration(context, CoeloMotion.standard),
+          curve: Curves.easeOutCubic,
+          builder: (context, progress, child) => Container(
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(CoeloRadius.lg),
+              border: Border.all(
+                color: Color.lerp(
+                  colors.outlineVariant,
+                  colors.primary.withValues(alpha: 0.5),
+                  progress,
+                )!,
+                width: 1 + 0.5 * progress,
+              ),
+              boxShadow: [
+                BoxShadow(
                   color: Color.lerp(
-                    colors.outlineVariant,
-                    colors.primary.withValues(alpha: 0.5),
+                    colors.shadow.withValues(alpha: 0.03),
+                    colors.primary.withValues(alpha: 0.15),
                     progress,
                   )!,
-                  width: 1 + 0.5 * progress,
+                  blurRadius: 8 + 4 * progress,
+                  spreadRadius: 2 * progress,
+                  offset: Offset(0, 2 + 2 * progress),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.lerp(
-                      colors.shadow.withValues(alpha: 0.03),
-                      colors.primary.withValues(alpha: 0.15),
-                      progress,
-                    )!,
-                    blurRadius: 8 + 4 * progress,
-                    spreadRadius: 2 * progress,
-                    offset: Offset(0, 2 + 2 * progress),
-                  ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(CoeloRadius.lg),
+              child: InkWell(
+                focusNode: _focusNode,
+                onTap: widget.onPressed,
+                onFocusChange: (value) => setState(() => _highlighted = value),
                 borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                child: InkWell(
-                  onTap: widget.onPressed,
-                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: CoeloSpacing.space6,
-                      vertical: CoeloSpacing.space4,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            SizedBox.square(
-                              key: Key('institution-avatar-${item.id}'),
-                              dimension: 44,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: colors.secondaryContainer,
-                                  shape: BoxShape.circle,
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  item.initials,
-                                  style: DefaultTextStyle.of(
-                                    context,
-                                  ).style.copyWith(color: colors.onSecondaryContainer),
-                                ),
+                overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: CoeloSpacing.space6,
+                    vertical: CoeloSpacing.space4,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          SizedBox.square(
+                            key: Key('institution-avatar-${item.id}'),
+                            dimension: 44,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: colors.secondaryContainer,
+                                shape: BoxShape.circle,
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                item.initials,
+                                style: DefaultTextStyle.of(
+                                  context,
+                                ).style.copyWith(color: colors.onSecondaryContainer),
                               ),
                             ),
-                            const SizedBox(width: CoeloSpacing.space3),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    item.publicName,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                          ),
+                          const SizedBox(width: CoeloSpacing.space3),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.publicName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                  Text(
-                                    _location(item.district, item.city, item.state),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: colors.onSurfaceVariant,
-                                    ),
+                                ),
+                                Text(
+                                  _location(item.district, item.city, item.state),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colors.onSurfaceVariant,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: CoeloSpacing.space2),
-                            ExpandableInstitutionStatusIndicator(
-                              itemId: item.id,
-                              status: item.status,
-                            ),
-                          ],
+                          ),
+                          const SizedBox(width: CoeloSpacing.space2),
+                          ExpandableInstitutionStatusIndicator(
+                            itemId: item.id,
+                            status: item.status,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: CoeloSpacing.space4),
+                      const Divider(height: 1),
+                      const SizedBox(height: CoeloSpacing.space4),
+                      _CardDetailRow(
+                        first: _CardDetail(
+                          key: Key('institution-card-detail-type-${item.id}'),
+                          icon: Icons.category_outlined,
+                          label: 'Tipo',
+                          value: item.typeName ?? 'Não informado',
                         ),
-                        const SizedBox(height: CoeloSpacing.space4),
-                        const Divider(height: 1),
-                        const SizedBox(height: CoeloSpacing.space4),
-                        _CardDetailRow(
-                          first: _CardDetail(
-                            key: Key('institution-card-detail-type-${item.id}'),
-                            icon: Icons.category_outlined,
-                            label: 'Tipo',
-                            value: item.typeName ?? 'Não informado',
-                          ),
-                          second: _CardDetail(
-                            key: Key('institution-card-detail-plan-${item.id}'),
-                            icon: Icons.sell_outlined,
-                            label: 'Plano',
-                            value: item.planName ?? 'Sem plano',
-                          ),
+                        second: _CardDetail(
+                          key: Key('institution-card-detail-plan-${item.id}'),
+                          icon: Icons.sell_outlined,
+                          label: 'Plano',
+                          value: item.planName ?? 'Sem plano',
                         ),
-                        const SizedBox(height: CoeloSpacing.space3),
-                        _CardDetailRow(
-                          first: _CardDetail(
-                            key: Key('institution-card-detail-units-${item.id}'),
-                            icon: Icons.apartment_outlined,
-                            label: 'Unidades',
-                            value: '${item.unitsCount}',
-                          ),
-                          second: _CardDetail(
-                            key: Key('institution-card-detail-groups-${item.id}'),
-                            icon: Icons.groups_outlined,
-                            label: 'Turmas',
-                            value: '${item.groupsCount}',
-                          ),
+                      ),
+                      const SizedBox(height: CoeloSpacing.space3),
+                      _CardDetailRow(
+                        first: _CardDetail(
+                          key: Key('institution-card-detail-units-${item.id}'),
+                          icon: Icons.apartment_outlined,
+                          label: 'Unidades',
+                          value: '${item.unitsCount}',
                         ),
-                      ],
-                    ),
+                        second: _CardDetail(
+                          key: Key('institution-card-detail-groups-${item.id}'),
+                          icon: Icons.groups_outlined,
+                          label: 'Turmas',
+                          value: '${item.groupsCount}',
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

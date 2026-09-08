@@ -54,6 +54,18 @@ final class _ExpandableInstitutionStatusIndicatorState
       onExit: (_) => setState(() => _hovered = false),
       child: FocusableActionDetector(
         onShowFocusHighlight: (value) => setState(() => _focused = value),
+        // It announces itself as a button, so Enter and Space have to work.
+        // Without this the chip was a keyboard stop that lit up, claimed to be
+        // pressable, and did nothing when pressed - which is worse than not
+        // being reachable at all, because it looks like the product is broken.
+        actions: {
+          ActivateIntent: CallbackAction<ActivateIntent>(
+            onInvoke: (_) {
+              setState(() => _expandedByTap = !_expandedByTap);
+              return null;
+            },
+          ),
+        },
         child: Semantics(
           button: true,
           label: 'Status: ${widget.status.label}',
