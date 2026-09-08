@@ -199,7 +199,9 @@ export function parseFormMediaReadDescriptor(
     !UUID.test(data.institution_id) ||
     typeof data.form_id !== "string" || !UUID.test(data.form_id) ||
     data.bucket !== "coelo-media-prod" || typeof data.object_key !== "string" ||
-    /[\x00-\x20\x7f]/.test(data.object_key)
+    data.object_key.split("").some((character) =>
+      character.charCodeAt(0) <= 32 || character.charCodeAt(0) === 127
+    )
   ) {
     throw new Error("invalid_read_descriptor");
   }
