@@ -1,7 +1,7 @@
 ---
 title: "C07 — varredura nominal do padrão FocusableActionDetector: paradas de foco inertes no Superadmin"
 source: "leitura de código no baseline 4af42925 (worktree C07); defeito original provado em c07_institutions_directory_test.dart; contrato aprovado packages/coelo_ui_admin/lib/src/surface/coelo_admin_interactive_card.dart; pedido operacional da C06 de 2026-09-08T18:44-03:00"
-status: "evidence-survey"
+status: "evidence-survey;errata-2-medida"
 generated_at: "2026-09-08T18:52:00-03:00"
 timezone: "America/Sao_Paulo"
 ---
@@ -87,6 +87,38 @@ Nenhuma delas é minha para aplicar; entrego a sugestão para o dono decidir.
 | 14 | remover o detector e ligar o realce ao `TextButton.icon` por `onFocusChange` mais `focusNode`; o botão já ativa por Enter e Espaço |
 | 18 | mesma correção do 6 |
 | 19 | acrescentar ao detector os mesmos `shortcuts` e `actions` já presentes em `principal_publication_frame.dart:398`, e envolver o `Switch` em `ExcludeFocus` para eliminar a segunda parada |
+
+## Errata 2 — 2026-09-08T19:55: o caso 19 foi medido, e o gêmeo que chamei de correto também falha
+
+Medi o `CoeloAdminToggleField` com controle A/B contra o gêmeo
+`PrincipalPublicationToggleField`. Prova em `repro/toggle_field_keyboard_test.dart`, 10 casos, 5
+verdes e 5 vermelhos, `analyze` limpo.
+
+| Contrato | `CoeloAdminToggleField` (pacote) | `PrincipalPublicationToggleField` (gêmeo) |
+|---|---|---|
+| Enter na primeira parada de Tab | **falha** — `onChanged` chamado 0 vezes, `Switch` continua `false` | passa — `onChanged=[true]` |
+| Espaço na primeira parada | **falha** — 0 chamadas | passa |
+| Uma única parada de Tab | **falha** — 2 paradas: detector e `Switch` | **falha** — 2 paradas, as mesmas |
+| Toda parada responde a Enter | **falha** — parada 0 não ativa, parada 1 ativa | passa |
+| Semântica | passa — rótulo, `toggled`, `enabled` e ação de toque | passa |
+
+**Duas correções ao que este documento afirmava:**
+
+1. **São dois defeitos, não um.** O de **ativação** é só do pacote, e é o que a leitura já apontava.
+   O de **contagem de paradas** é **compartilhado**: o `Switch` interno é focalizável sob
+   `ExcludeSemantics` sem `ExcludeFocus`, então os dois expõem duas paradas de Tab em vez de uma.
+2. **O gêmeo não é totalmente correto.** Eu o classifiquei como OK-A com ressalva e o usei como
+   referência de correção. A medição mostra que a ressalva era um defeito real. A correção do pacote
+   deve copiar `shortcuts` e `actions` do gêmeo **e** acrescentar `ExcludeFocus` no `Switch` nos
+   **dois**.
+
+**Detalhe que só a medição revelou:** o teclado não está morto, está desalinhado. A segunda parada,
+o `Switch` sem nó semântico, **ativa** com Enter. Quem tabula duas vezes consegue; quem tabula uma
+vez vê o realce de foco e nada acontece.
+
+**Para leitor de tela não há prejuízo:** o nó publica rótulo, estado alternado, estado habilitado e
+ação de toque. É o mesmo padrão que medi no indicador de status de Instituições — prejuízo exclusivo
+do teclado físico.
 
 ## Limites honestos desta varredura
 
