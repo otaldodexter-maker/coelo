@@ -1,0 +1,202 @@
+{
+  "Identity": "coelo_safe_9b7246578068485594779a6fbae45",
+  "CheckedUtc": "2026-09-08T05:06:46.1285895+00:00",
+  "Rows": [
+    {
+      "name": "superadmin_foundation_v1",
+      "version": "20260623191021"
+    },
+    {
+      "name": "schema_boundaries_catalog_v1",
+      "version": "20260623203230"
+    },
+    {
+      "name": "institution_directory_foundation",
+      "version": "20260717151609"
+    },
+    {
+      "name": "institution_contact_directory_refinement",
+      "version": "20260720103023"
+    },
+    {
+      "name": "people_context_foundation",
+      "version": "20260720180000"
+    },
+    {
+      "name": "people_context_advisor_hardening",
+      "version": "20260720190000"
+    },
+    {
+      "name": "contextual_activities_foundation",
+      "version": "20260724120307"
+    },
+    {
+      "name": "contextual_activities_fk_index_hardening",
+      "version": "20260724122545"
+    },
+    {
+      "name": "contextual_authorization_core",
+      "version": "20260724152628"
+    },
+    {
+      "name": "family_authorizations_and_transfers",
+      "version": "20260724152707"
+    },
+    {
+      "name": "activity_governance_and_participation",
+      "version": "20260724152713"
+    },
+    {
+      "name": "contextual_chat_foundation",
+      "version": "20260724152722"
+    },
+    {
+      "name": "attendance_assiduity_foundation",
+      "version": "20260724152731"
+    },
+    {
+      "name": "contextual_domains_compatibility_hardening",
+      "version": "20260724161334"
+    },
+    {
+      "name": "contextual_domains_advisor_hardening",
+      "version": "20260724161706"
+    },
+    {
+      "name": "contextual_chat_lifecycle_hardening",
+      "version": "20260724162210"
+    },
+    {
+      "name": "contextual_chat_trigger_hardening",
+      "version": "20260724162604"
+    },
+    {
+      "name": "contextual_chat_audit_schema_hardening",
+      "version": "20260724162900"
+    },
+    {
+      "name": "remediate_schema_column_catalog_completeness",
+      "version": "20260727130433"
+    },
+    {
+      "name": "institution_profile_and_legal_representatives",
+      "version": "20260728172333"
+    },
+    {
+      "name": "cover_institution_legal_representative_membership_fk",
+      "version": "20260728203000"
+    },
+    {
+      "name": "unit_type_plan_foundation",
+      "version": "20260729140915"
+    },
+    {
+      "name": "superadmin_people_directory",
+      "version": "20260729141839"
+    },
+    {
+      "name": "profiles_permissions_governance",
+      "version": "20260729144440"
+    },
+    {
+      "name": "superadmin_people_directory_policy_hardening",
+      "version": "20260729153000"
+    },
+    {
+      "name": "child_context_lifecycle_trigger_hardening",
+      "version": "20260729153100"
+    },
+    {
+      "name": "access_profile_permission_matrix_metadata",
+      "version": "20260804205732"
+    },
+    {
+      "name": "institution_management_commands",
+      "version": "20260811125345"
+    },
+    {
+      "name": "assert_function_execute_preflight",
+      "version": "20260811151253"
+    },
+    {
+      "name": "group_management_security",
+      "version": "20260811151254"
+    },
+    {
+      "name": "activity_management_security",
+      "version": "20260811192514"
+    },
+    {
+      "name": "activity_management_commands",
+      "version": "20260811193838"
+    },
+    {
+      "name": "activity_aggregate_commands",
+      "version": "20260811194624"
+    },
+    {
+      "name": "activity_files_identity_commands",
+      "version": "20260811194840"
+    },
+    {
+      "name": "activity_file_workers",
+      "version": "20260811195042"
+    },
+    {
+      "name": "activity_management_hardening",
+      "version": "20260811195429"
+    },
+    {
+      "name": "activity_read_model_contract_hardening",
+      "version": "20260811200614"
+    },
+    {
+      "name": "activity_file_job_authorization",
+      "version": "20260811201830"
+    },
+    {
+      "name": "activity_template_commands_hardening",
+      "version": "20260811201945"
+    },
+    {
+      "name": "activity_options_minimization",
+      "version": "20260811202030"
+    },
+    {
+      "name": "access_profile_management_v2",
+      "version": "20260811215451"
+    },
+    {
+      "name": "access_profile_labels_replay_bridge",
+      "version": "20260811215452"
+    },
+    {
+      "name": "audit_production",
+      "version": "20260812000847"
+    },
+    {
+      "name": "harden_default_function_execute_privileges",
+      "version": "20260827214000"
+    },
+    {
+      "name": "superadmin_internal_auth_context",
+      "version": "20260827233000"
+    },
+    {
+      "name": "superadmin_internal_institution_list_filter",
+      "version": "20260827235500"
+    },
+    {
+      "name": "harden_superadmin_auth_context_denial_audit",
+      "version": "20260901124500"
+    },
+    {
+      "name": "defer_superadmin_internal_mfa_until_mvp_go_live",
+      "version": "20260901200206"
+    },
+    {
+      "name": "location_catalog_v2_capability_bootstrap_local",
+      "version": "20260908030959"
+    }
+  ]
+}
