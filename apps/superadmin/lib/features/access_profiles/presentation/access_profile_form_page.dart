@@ -168,12 +168,14 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
 
   Future<void> _requestExit() async {
     if (!_isDirty || await showInstitutionExitDialog(context, entityLabel: widget.entityLabel)) {
+      if (!mounted) return;
       widget.onCancel();
     }
   }
 
   Future<void> _requestDestination(String destination) async {
     if (!_isDirty || await showInstitutionExitDialog(context, entityLabel: widget.entityLabel)) {
+      if (!mounted) return;
       widget.onDestinationSelected?.call(destination);
     }
   }
