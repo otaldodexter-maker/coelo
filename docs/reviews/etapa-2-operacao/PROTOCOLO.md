@@ -37,6 +37,9 @@ C00 processa chave `(R01,CXX,revisão)`, grava received/accepted/integrated (est
 
 ## Ownership e reservas
 
+R01-C02-I004: decoder comum local `_shared/media_image_decoder.ts` e `_shared/media_image_decoder_test.ts` reservados ao C02, sem manifests/serviço remoto implícitos; limites na assignment viva.
+
+
 Às13:03, R01-C04-I002 concede a C04 somente hunks Locais/CHILD em superadmin_routes.dart, superadmin_router.dart e main.dart. Nenhum outro escritor altera esses três arquivos até release por SHA/ack. Também reservado candidato local20260908031000_superadmin_location_catalog_v2.sql de9e689374, sem produção/replay implícito. Detalhes na assignment viva.
 
 R01-C05-I002: golden não aprovado retém certificação visual, não implementação autorizada. Masters preservados, sem contornar classificador; capturas candidatas separadas e testes nominais para revisão C00. Ativar mecanismo local de continuidade disponível e reportar ID, sem presumir que Markdown acorda a sessão.

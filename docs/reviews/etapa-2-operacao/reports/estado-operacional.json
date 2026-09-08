@@ -53,7 +53,7 @@
       "thread_id": "01a0819a-f1f1-7421-95dd-d645ca9f5747",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
       "branch": "codex/e2-r01-c02-forms-midia",
-      "instruction_revision": 3,
+      "instruction_revision": 4,
       "received_revision": 6,
       "integrated_revision": 4,
       "last_evidence": "2026-09-08T13:03:51-03:00",
@@ -69,7 +69,7 @@
       "continuity_automation_id": "e2-r01-c02-retomada-30-min",
       "continuity_verification": "Native automation view and local TOML confirmed ACTIVE, 30min; actual dispatch not proven",
       "source_code_sha": "76a34dda11608b55ac31d855d1eddaf1993372ce",
-      "instruction_acknowledgement": "I003 confirmed",
+      "instruction_acknowledgement": "I003 confirmed;I004 pending",
       "integrated_code_shas": [
         "6fd676e2",
         "44465b0c"
@@ -225,7 +225,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T13:09:40-03:00",
+  "updated_at": "2026-09-08T13:12:29-03:00",
   "integration_history": [
     {
       "executor": "C01",
