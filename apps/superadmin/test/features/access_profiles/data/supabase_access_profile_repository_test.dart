@@ -8,6 +8,49 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('profile detail accepts canonical casing of a requested UUID', () async {
+    const id = 'aaaaaaaa-0000-4000-8000-000000000001';
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-test',
+      httpClient: MockClient(
+        (request) async => Response(
+          jsonEncode({..._profileJson, 'id': id}),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+    final profile = await SupabaseAccessProfileRepository(
+      client,
+    ).fetchDetail(AccessProfileDomain.platform, id.toUpperCase());
+    expect(profile.id, id);
+  });
+
+  test('profile detail rejects a different profile ID', () async {
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-test',
+      httpClient: MockClient(
+        (request) async => Response(
+          jsonEncode({..._profileJson, 'id': 'different-profile'}),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+    await expectLater(
+      SupabaseAccessProfileRepository(
+        client,
+      ).fetchDetail(AccessProfileDomain.platform, 'profile-1'),
+      throwsA(isA<AccessProfileException>()),
+    );
+  });
+
   for (final action in ['list', 'detail', 'template', 'capabilities', 'save', 'delete']) {
     test('sanitizes lost transport response for profile $action', () async {
       final client = SupabaseClient(

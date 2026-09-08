@@ -4,6 +4,21 @@ import 'package:coelo_superadmin/features/access_profiles/domain/access_profile_
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final wrongDomain in [false, true]) {
+    test('model detail rejects mismatched identity or domain wrongDomain=$wrongDomain', () async {
+      final source = _ModelRepository();
+      final adapter = AccessProfileModelRepositoryAdapter(source);
+      await expectLater(
+        adapter.fetchDetail(
+          wrongDomain ? AccessProfileDomain.platform : AccessProfileDomain.institution,
+          wrongDomain ? 'model-1' : 'different-model',
+        ),
+        throwsA(isA<AccessProfileException>()),
+      );
+      expect(source.catalogCalls, 0);
+    });
+  }
+
   test('maps cursor models to the canonical paged profile contract', () async {
     final source = _ModelRepository();
     final adapter = AccessProfileModelRepositoryAdapter(source);
@@ -93,6 +108,7 @@ void main() {
 }
 
 final class _ModelRepository implements AccessProfileModelRepository {
+  int catalogCalls = 0;
   AccessProfileModelQuery? lastQuery;
   AccessProfileModelDraft? updatedDraft;
   AccessProfileModelDraft? duplicatedDraft;
@@ -112,10 +128,10 @@ final class _ModelRepository implements AccessProfileModelRepository {
   Future<AccessProfileModel> fetchModel(String modelId) async => _model;
 
   @override
-  Future<List<AccessPermissionCatalogItem>> fetchPermissionCatalog() async => const [
-    _readCatalog,
-    _deleteCatalog,
-  ];
+  Future<List<AccessPermissionCatalogItem>> fetchPermissionCatalog() async {
+    catalogCalls++;
+    return const [_readCatalog, _deleteCatalog];
+  }
 
   @override
   Future<AccessProfileModel> createModel(String requestId, AccessProfileModelDraft draft) async =>

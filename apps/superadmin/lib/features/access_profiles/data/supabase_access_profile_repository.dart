@@ -60,7 +60,9 @@ final class SupabaseAccessProfileRepository
         'superadmin_access_profile_detail',
         params: {'p_domain': domain.databaseValue, 'p_profile_id': profileId},
       );
-      return AccessProfile.fromJson(domain, Map<String, dynamic>.from(response as Map));
+      final profile = AccessProfile.fromJson(domain, Map<String, dynamic>.from(response as Map));
+      if (profile.id.toLowerCase() != profileId.toLowerCase()) throw const FormatException();
+      return profile;
     } on PostgrestException catch (error) {
       throw _mapError(error);
     } catch (_) {
@@ -178,7 +180,11 @@ final class SupabaseAccessProfileRepository
   Future<AccessProfileModel> fetchModel(String modelId) async => _modelReadRpc(
     'superadmin_access_profile_model_detail',
     params: {'p_model_id': modelId},
-    decode: AccessProfileModel.fromJson,
+    decode: (data) {
+      final model = AccessProfileModel.fromJson(data);
+      if (model.id.toLowerCase() != modelId.toLowerCase()) throw const FormatException();
+      return model;
+    },
   );
 
   @override
