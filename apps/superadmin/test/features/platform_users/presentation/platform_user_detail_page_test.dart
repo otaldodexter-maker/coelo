@@ -9,6 +9,78 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('disposing the detail removes its dialog and preserves an unrelated dialog', (
+    tester,
+  ) async {
+    final repository = _RemoteRepository();
+    await tester.pumpWidget(_page(repository, capability: PlatformUserCapability.owner));
+    await tester.pumpAndSettle();
+    await _openSuspend(tester);
+    unawaited(
+      showDialog<void>(
+        context: tester.element(find.byType(PlatformUserDetailPage)),
+        builder: (_) => const AlertDialog(title: Text('Diálogo externo')),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(MaterialApp(theme: CoeloTheme.light, home: const SizedBox()));
+    await tester.pumpAndSettle();
+    expect(find.text('Confirmar ação', skipOffstage: false), findsNothing);
+    expect(find.text('Diálogo externo'), findsOneWidget);
+    expect(repository.suspensions, 0);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('context change removes the old action confirmation without sending it', (
+    tester,
+  ) async {
+    final first = _RemoteRepository();
+    final second = _RemoteRepository(name: 'Contexto B');
+    await tester.pumpWidget(_page(first, capability: PlatformUserCapability.owner));
+    await tester.pumpAndSettle();
+    await _openSuspend(tester);
+    expect(find.text('Confirmar ação'), findsOneWidget);
+    await tester.pumpWidget(_page(second, capability: PlatformUserCapability.owner));
+    await tester.pumpAndSettle();
+    expect(find.text('Confirmar ação'), findsNothing);
+    expect(first.suspensions, 0);
+    expect(second.suspensions, 0);
+  });
+
+  testWidgets('revocation discards the result of an already submitted action', (tester) async {
+    final repository = _RemoteRepository()..pendingSuspension = Completer<PlatformUserRecord>();
+    await tester.pumpWidget(_page(repository, capability: PlatformUserCapability.owner));
+    await tester.pumpAndSettle();
+    await _openSuspend(tester);
+    await tester.tap(find.text('Confirmar ação'));
+    await tester.pumpAndSettle();
+    expect(repository.suspensions, 1);
+    await tester.pumpWidget(_page(repository, capability: PlatformUserCapability.unauthorized));
+    await tester.pumpAndSettle();
+    repository.pendingSuspension!.complete(repository.cached);
+    await tester.pumpAndSettle();
+    expect(find.byType(SnackBar), findsNothing);
+    expect(find.text('Acesso não autorizado'), findsOneWidget);
+  });
+
+  testWidgets('pending action disables another submission until completion', (tester) async {
+    final repository = _RemoteRepository()..pendingSuspension = Completer<PlatformUserRecord>();
+    await tester.pumpWidget(_page(repository, capability: PlatformUserCapability.owner));
+    await tester.pumpAndSettle();
+    await _openSuspend(tester);
+    await tester.tap(find.text('Confirmar ação'));
+    await tester.pumpAndSettle();
+    final button = tester.widget<OutlinedButton>(find.byKey(const Key('platform-user-actions')));
+    expect(button.onPressed, isNull);
+    repository.pendingSuspension!.complete(repository.cached);
+    await tester.pumpAndSettle();
+    expect(repository.suspensions, 1);
+    expect(
+      tester.widget<OutlinedButton>(find.byKey(const Key('platform-user-actions'))).onPressed,
+      isNotNull,
+    );
+  });
+
   testWidgets('remote denial never renders a previously cached identity', (tester) async {
     final repository = _RemoteRepository()
       ..error = const PlatformUserRuleException('unauthorized', 'private detail');
@@ -88,6 +160,13 @@ void main() {
   });
 }
 
+Future<void> _openSuspend(WidgetTester tester) async {
+  await tester.tap(find.byKey(const Key('platform-user-actions')));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('Suspender acesso'));
+  await tester.pumpAndSettle();
+}
+
 Widget _page(
   _RemoteRepository repository, {
   PlatformUserCapability capability = PlatformUserCapability.auditor,
@@ -116,6 +195,14 @@ final class _RemoteRepository implements PlatformUserRepository, PlatformUserRem
   Object? error;
   bool missing = false;
   Completer<PlatformUserRecord?>? pending;
+  Completer<PlatformUserRecord>? pendingSuspension;
+  int suspensions = 0;
+
+  @override
+  Future<PlatformUserRecord> suspend(String id) async {
+    suspensions++;
+    return pendingSuspension?.future ?? cached;
+  }
 
   @override
   bool get isDemo => false;

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -45,6 +47,10 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
   bool _loading = false;
   Object? _loadError;
   int _loadGeneration = 0;
+  bool _actionPending = false;
+  final Set<DialogRoute<bool>> _ownedDialogs = {};
+
+  bool _isCurrent(int generation) => mounted && generation == _loadGeneration;
   PlatformUserRecord? get _record => widget.repository is PlatformUserRemoteLoader
       ? _loadedRecord
       : widget.repository.findById(widget.internalUserId);
@@ -68,6 +74,8 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
       return;
     }
     _loadGeneration++;
+    _dismissOwnedDialogs();
+    _actionPending = false;
     _loadedRecord = null;
     _loadError = null;
     _loading = false;
@@ -77,6 +85,7 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
   @override
   void dispose() {
     _loadGeneration++;
+    _dismissOwnedDialogs();
     _loadedRecord = null;
     super.dispose();
   }
@@ -441,7 +450,9 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
       onSelected: (action) => _confirmAction(record, action),
       builder: (context, controller) => OutlinedButton.icon(
         key: const Key('platform-user-actions'),
-        onPressed: () => controller.isOpen ? controller.close() : controller.open(),
+        onPressed: _actionPending
+            ? null
+            : () => controller.isOpen ? controller.close() : controller.open(),
         icon: const Icon(Icons.more_horiz_rounded),
         label: const Text('Ações'),
       ),
@@ -449,46 +460,47 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
   }
 
   Future<void> _confirmAction(PlatformUserRecord record, _InternalUserAction action) async {
-    final negative =
-        action == _InternalUserAction.revokeInvitation ||
-        action == _InternalUserAction.suspend ||
-        action == _InternalUserAction.revoke;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => CoeloAdminDialogShell(
-        title: _actionLabel(action),
-        body: Text(
-          '${_actionDescription(action, record.fullName)} Esta operação altera somente os dados fake desta demonstração e não executa Auth, e-mail ou persistência externa.',
-        ),
-        secondaryAction: OutlinedButton(
-          onPressed: () => Navigator.of(dialogContext).pop(false),
-          child: const Text('Cancelar'),
-        ),
-        primaryAction: FilledButton(
-          style: negative
-              ? FilledButton.styleFrom(
-                  backgroundColor: Theme.of(dialogContext).colorScheme.error,
-                  foregroundColor: Theme.of(dialogContext).colorScheme.onError,
-                )
-              : null,
-          onPressed: () => Navigator.of(dialogContext).pop(true),
-          child: Text(negative ? 'Confirmar ação' : 'Confirmar demonstração'),
-        ),
-      ),
-    );
-    if (confirmed != true) return;
+    if (_actionPending || !_canManage || _isUnauthorized || _loading) return;
+    final generation = _loadGeneration;
+    final repository = widget.repository;
+    setState(() => _actionPending = true);
     try {
-      await switch (action) {
-        _InternalUserAction.resendInvitation => widget.repository.resendInvitation(record.id),
-        _InternalUserAction.revokeInvitation => widget.repository.revokeInvitation(record.id),
-        _InternalUserAction.suspend => widget.repository.suspend(record.id),
-        _InternalUserAction.reactivate => widget.repository.reactivate(record.id),
-        _InternalUserAction.revoke => widget.repository.revoke(record.id),
-        _InternalUserAction.createReplacement => widget.repository.createReplacementMembership(
-          record.id,
+      final negative =
+          action == _InternalUserAction.revokeInvitation ||
+          action == _InternalUserAction.suspend ||
+          action == _InternalUserAction.revoke;
+      final confirmed = await _showConfirmation(
+        builder: (dialogContext) => CoeloAdminDialogShell(
+          title: _actionLabel(action),
+          body: Text(
+            '${_actionDescription(action, record.fullName)} Esta operação altera somente os dados fake desta demonstração e não executa Auth, e-mail ou persistência externa.',
+          ),
+          secondaryAction: OutlinedButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          primaryAction: FilledButton(
+            style: negative
+                ? FilledButton.styleFrom(
+                    backgroundColor: Theme.of(dialogContext).colorScheme.error,
+                    foregroundColor: Theme.of(dialogContext).colorScheme.onError,
+                  )
+                : null,
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(negative ? 'Confirmar ação' : 'Confirmar demonstração'),
+          ),
         ),
+      );
+      if (confirmed != true || !_isCurrent(generation)) return;
+      await switch (action) {
+        _InternalUserAction.resendInvitation => repository.resendInvitation(record.id),
+        _InternalUserAction.revokeInvitation => repository.revokeInvitation(record.id),
+        _InternalUserAction.suspend => repository.suspend(record.id),
+        _InternalUserAction.reactivate => repository.reactivate(record.id),
+        _InternalUserAction.revoke => repository.revoke(record.id),
+        _InternalUserAction.createReplacement => repository.createReplacementMembership(record.id),
       };
-      if (!mounted) return;
+      if (!mounted || !_isCurrent(generation)) return;
       setState(() {});
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -498,9 +510,34 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
         ),
       );
     } on PlatformUserRuleException catch (error) {
-      if (!mounted) return;
+      if (!mounted || !_isCurrent(generation)) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
+    } finally {
+      if (_isCurrent(generation)) setState(() => _actionPending = false);
     }
+  }
+
+  Future<bool?> _showConfirmation({required WidgetBuilder builder}) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final route = DialogRoute<bool>(context: context, builder: builder);
+    _ownedDialogs.add(route);
+    try {
+      unawaited(navigator.push<bool>(route));
+      return await route.completed;
+    } finally {
+      _ownedDialogs.remove(route);
+    }
+  }
+
+  void _dismissOwnedDialogs() {
+    final routes = _ownedDialogs.toList(growable: false);
+    _ownedDialogs.clear();
+    if (routes.isEmpty) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      for (final route in routes) {
+        if (route.isActive) route.navigator?.removeRoute(route);
+      }
+    });
   }
 
   Widget _notice(IconData icon, String title, String message) {
