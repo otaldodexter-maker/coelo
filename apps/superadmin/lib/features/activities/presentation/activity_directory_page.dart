@@ -159,7 +159,7 @@ final class ActivityDirectoryPage extends StatefulWidget {
 }
 
 final class _ActivityDirectoryPageState extends State<ActivityDirectoryPage> {
-  late final ActivityDirectoryViewModel _viewModel;
+  late ActivityDirectoryViewModel _viewModel;
   late final SuperadminActivityController _activityController;
   late final TextEditingController _searchController;
   ActivityDirectoryDisplay _display = ActivityDirectoryDisplay.cards;
@@ -173,6 +173,21 @@ final class _ActivityDirectoryPageState extends State<ActivityDirectoryPage> {
     _activityController = SuperadminActivityController();
     _searchController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) => _viewModel.load());
+  }
+
+  @override
+  void didUpdateWidget(covariant ActivityDirectoryPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.repository, widget.repository)) return;
+    final previous = _viewModel;
+    final replacement = ActivityDirectoryViewModel(widget.repository);
+    _viewModel = replacement;
+    _searchController.clear();
+    previous.dispose();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !identical(replacement, _viewModel)) return;
+      replacement.setPageSize(_display == ActivityDirectoryDisplay.cards ? 11 : 8);
+    });
   }
 
   @override
