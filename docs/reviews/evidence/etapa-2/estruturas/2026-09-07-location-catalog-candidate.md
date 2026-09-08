@@ -29,6 +29,19 @@ Principal ou Site; nenhuma permissão para execução remota.
 
 ## Handoff obrigatório
 
+LOC-ACL01, 2026-09-08: evidência Auth47 do Engenheiro 1 no commit
+`46a6077a4c8d9dc9a06c6643b03c80c7a21f3a97` confirmou nove entradas ACL
+não proprietárias no PostgreSQL 17.6, sem grant option; o único delta contra
+o candidato era `service_role:MAINTAIN:false`. Acrescentada somente essa
+entrada ao vetor exato. Guard estático reproduziu RED antes do ajuste e
+GREEN depois; nenhuma concessão ou revogação foi executada nesta tarefa.
+Fonte e SHA256 novo constam da ficha nominal. Probe iniciado em
+2026-09-08T03:48:17.3708297Z, identidade local
+`coelo_safe_c3e8951894af4fb198f46b7bba357`; cleanup independente às
+03:50:56.8629214Z confirmou zero recursos próprios. Os três controles LOC
+passaram, mas não exercitaram o candidato nem os contratos de negócio.
+Não confundir esse probe com replay completo, autorização remota ou E2E.
+
 LOC-LOCK01: novos guards estáticos reproduziram separadamente RED para CASE
 sem parênteses, ausência de contexto renovado após advisory e ausência de
 expiração por relógio real. Corrigidos no candidato novo, sem modificar

@@ -36,6 +36,10 @@ $requirements = [ordered]@{
 foreach ($entry in $requirements.GetEnumerator()) {
   if ($candidateSql -notmatch $entry.Value) { throw "RED LOC-CATALOG01: $($entry.Key)" }
 }
+$observedPg17Acl = "array['authenticated:SELECT:false','service_role:DELETE:false','service_role:INSERT:false','service_role:MAINTAIN:false','service_role:REFERENCES:false','service_role:SELECT:false','service_role:TRIGGER:false','service_role:TRUNCATE:false','service_role:UPDATE:false']"
+if (($candidateSql -replace '\s','').IndexOf($observedPg17Acl, [StringComparison]::Ordinal) -lt 0) {
+  throw 'RED LOC-ACL01: exact Auth47 observed PG17 ACL must include MAINTAIN and no invented grants.'
+}
 if ($candidateSql -match '(?im)^\s*(delete from|truncate)\s+public\.activity_locations') {
   throw 'RED LOC-CATALOG01: candidate must not clean existing catalog data.'
 }

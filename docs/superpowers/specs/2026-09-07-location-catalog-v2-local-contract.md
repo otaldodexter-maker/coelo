@@ -120,6 +120,20 @@ correção automática. Nenhum dado real é lido pelo teste de vazio.
 
 ## REDs para seleção de replay
 
+LOC-ACL01 (2026-09-08): o probe local Auth47 do Engenheiro 1, commit
+`46a6077a4c8d9dc9a06c6643b03c80c7a21f3a97`, observou PostgreSQL 17.6
+(`170006`), ator postgres e nove entradas ACL não proprietárias: SELECT para
+authenticated e DELETE/INSERT/MAINTAIN/REFERENCES/SELECT/TRIGGER/TRUNCATE/UPDATE
+para service_role, todas sem grant option. Evidência nominal:
+`docs/reviews/evidence/etapa-2/engenheiro-1/auth47-loc-profiles-probe-2026-09-08.md`
+e JSON adjacente `auth47-loc-profiles-catalog-2026-09-08.json`, no pacote do
+Engenheiro 1. O fingerprint candidato acrescenta somente
+`service_role:MAINTAIN:false`; continua exigindo igualdade exata, sem reparar
+ACL nem aceitar privilégios extras. Novo SHA256 da migration:
+`7C7CA4DA2AA4EECE06F386AEE9ADA7C52DB69EECD996BCA18ED434A922F90538`.
+O probe não executou bootstrap ou migration 31000; replay completo continua
+dependente de manifesto fechado e autorização nominal da coordenação.
+
 Ordem nominal: dependências existentes, bootstrap local
 `packages/coelo_database/tests/fixtures/location_catalog_v2_capability_bootstrap.sql`,
 candidato `20260908031000_superadmin_location_catalog_v2.sql` e somente então

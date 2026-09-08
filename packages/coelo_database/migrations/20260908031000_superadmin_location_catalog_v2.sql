@@ -70,7 +70,7 @@ begin
       left join pg_roles r on r.oid=a.grantee
       where c.oid='public.activity_locations'::regclass and a.grantee<>c.relowner)
     is distinct from array['authenticated:SELECT:false','service_role:DELETE:false',
-      'service_role:INSERT:false','service_role:REFERENCES:false','service_role:SELECT:false',
+      'service_role:INSERT:false','service_role:MAINTAIN:false','service_role:REFERENCES:false','service_role:SELECT:false',
       'service_role:TRIGGER:false','service_role:TRUNCATE:false','service_role:UPDATE:false'] then
     raise object_not_in_prerequisite_state using message='location table ACL drift';
   end if;
