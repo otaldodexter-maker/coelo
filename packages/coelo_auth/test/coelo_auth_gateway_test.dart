@@ -6,6 +6,221 @@ import 'package:coelo_auth/coelo_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  final boundaryFailures = <String, Object>{
+    'Exception': Exception('synthetic provider detail'),
+    'StateError': StateError('synthetic provider detail'),
+    'TypeError': TypeError(),
+    'Error': AssertionError('synthetic provider detail'),
+  };
+  for (final entry in boundaryFailures.entries) {
+    test('login persistence contains ${entry.key} and releases lock', () async {
+      final events = <String>[];
+      final persistence = _FakeSessionPersistence(
+        events: events,
+        failure: entry.value,
+      );
+      final gateway = SupabaseCoeloAuthGateway.test(
+        _FakeSupabaseAuthApi(signInSucceeds: true, events: events),
+        sessionPersistence: persistence,
+      );
+      final result = await gateway.signInWithPassword(
+        email: 'synthetic@example.invalid',
+        password: 'synthetic-password',
+        persistSession: false,
+      );
+      expect(result.isSuccess, isFalse);
+      expect(result.message, CoeloAuthSignInResult.genericFailureMessage);
+      expect(events, ['persistence:false']);
+      persistence.failure = null;
+      expect(
+        (await gateway.signInWithPassword(
+          email: 'synthetic@example.invalid',
+          password: 'synthetic-password',
+          persistSession: false,
+        )).isSuccess,
+        isTrue,
+      );
+    });
+
+    test('login API contains ${entry.key} and releases lock', () async {
+      final api = _FakeSupabaseAuthApi(
+        signInSucceeds: true,
+        signInException: entry.value,
+      );
+      final gateway = SupabaseCoeloAuthGateway.test(
+        api,
+        sessionPersistence: _FakeSessionPersistence(),
+      );
+      final result = await gateway.signInWithPassword(
+        email: 'synthetic@example.invalid',
+        password: 'synthetic-password',
+        persistSession: false,
+      );
+      expect(result.isSuccess, isFalse);
+      expect(result.message, CoeloAuthSignInResult.genericFailureMessage);
+      api.signInException = null;
+      expect(
+        (await gateway.signInWithPassword(
+          email: 'synthetic@example.invalid',
+          password: 'synthetic-password',
+          persistSession: false,
+        )).isSuccess,
+        isTrue,
+      );
+    });
+
+    test('recovery contains ${entry.key} with and without redirect', () async {
+      final gateway = SupabaseCoeloAuthGateway.test(
+        _FakeSupabaseAuthApi(passwordRecoveryException: entry.value),
+        sessionPersistence: _FakeSessionPersistence(),
+      );
+      for (final result in [
+        await gateway.requestPasswordRecovery(
+          email: 'synthetic@example.invalid',
+        ),
+        await gateway.requestPasswordRecoveryWithRedirect(
+          email: 'synthetic@example.invalid',
+          redirectTo: Uri.parse('http://127.0.0.1/reset-password'),
+        ),
+      ]) {
+        expect(result.isSuccess, isFalse);
+        expect(
+          result.message,
+          CoeloAuthPasswordRecoveryResult.genericFailureMessage,
+        );
+      }
+    });
+
+    test(
+      'password write contains ${entry.key} without cleanup or retry',
+      () async {
+        final events = <String>[];
+        final api = _FakeSupabaseAuthApi(
+          sessionState: const CoeloAuthSessionState.passwordRecovery(),
+          passwordUpdateException: entry.value,
+          events: events,
+        );
+        final gateway = SupabaseCoeloAuthGateway.test(
+          api,
+          sessionPersistence: _FakeSessionPersistence(),
+        );
+        final result = await gateway.updatePassword(
+          password: 'synthetic-password',
+        );
+        expect(result.isSuccess, isFalse);
+        expect(
+          result.message,
+          CoeloAuthPasswordUpdateResult.genericFailureMessage,
+        );
+        expect(events, ['update-password']);
+        expect(api.didSignOut, isFalse);
+        api.passwordUpdateException = null;
+        expect(
+          (await gateway.updatePassword(
+            password: 'new-synthetic-password',
+          )).isSuccess,
+          isTrue,
+        );
+      },
+    );
+
+    test('confirmed password distinguishes cleanup ${entry.key}', () async {
+      final events = <String>[];
+      final gateway = SupabaseCoeloAuthGateway.test(
+        _FakeSupabaseAuthApi(
+          sessionState: const CoeloAuthSessionState.passwordRecovery(),
+          signOutException: entry.value,
+          events: events,
+        ),
+        sessionPersistence: _FakeSessionPersistence(),
+      );
+      final result = await gateway.updatePassword(
+        password: 'synthetic-password',
+      );
+      expect(result.isSuccess, isFalse);
+      expect(
+        result.message,
+        'A senha foi alterada, mas não foi possível confirmar o encerramento da sessão.',
+      );
+      expect(events, ['update-password', 'sign-out']);
+    });
+  }
+
+  test(
+    'password update preserves a replacement session without cleanup',
+    () async {
+      final events = <String>[];
+      const replacement = CoeloAuthSessionState.authenticated(
+        sessionId: 'new-session',
+      );
+      late final _FakeSupabaseAuthApi api;
+      api = _FakeSupabaseAuthApi(
+        sessionState: const CoeloAuthSessionState.passwordRecovery(
+          sessionId: 'recovery-session',
+        ),
+        events: events,
+        beforePasswordUpdate: () async {
+          api.currentSessionState = replacement;
+        },
+      );
+      final gateway = SupabaseCoeloAuthGateway.test(
+        api,
+        sessionPersistence: _FakeSessionPersistence(),
+      );
+      final result = await gateway.updatePassword(
+        password: 'synthetic-password',
+      );
+      expect(result.isSuccess, isFalse);
+      expect(api.currentSessionState, replacement);
+      expect(events, ['update-password']);
+      expect(api.didSignOut, isFalse);
+    },
+  );
+
+  test(
+    'cleanup error preserves a concurrently replaced session and releases lock',
+    () async {
+      final events = <String>[];
+      const replacement = CoeloAuthSessionState.authenticated(
+        sessionId: 'new-session',
+      );
+      late final _FakeSupabaseAuthApi api;
+      api = _FakeSupabaseAuthApi(
+        sessionState: const CoeloAuthSessionState.passwordRecovery(
+          sessionId: 'recovery-session',
+        ),
+        events: events,
+        signInSucceeds: true,
+        beforeSignOut: () async {
+          api.currentSessionState = replacement;
+          throw StateError('synthetic cleanup detail');
+        },
+      );
+      final gateway = SupabaseCoeloAuthGateway.test(
+        api,
+        sessionPersistence: _FakeSessionPersistence(),
+      );
+      final result = await gateway.updatePassword(
+        password: 'synthetic-password',
+      );
+      expect(result.isSuccess, isFalse);
+      expect(
+        result.message,
+        'A senha foi alterada, mas não foi possível confirmar o encerramento da sessão.',
+      );
+      expect(api.currentSessionState, replacement);
+      expect(events, ['update-password', 'sign-out']);
+      expect(
+        (await gateway.signInWithPassword(
+          email: 'synthetic@example.invalid',
+          password: 'synthetic-password',
+          persistSession: false,
+        )).isSuccess,
+        isTrue,
+      );
+    },
+  );
+
   for (final fails in [false, true]) {
     test(
       'password update is single-flight and releases after failure=$fails',
@@ -454,6 +669,7 @@ final class _FakeSupabaseAuthApi implements CoeloSupabaseAuthApi {
     this.passwordUpdateException,
     this.signOutException,
     this.beforePasswordUpdate,
+    this.beforeSignOut,
   }) : currentSessionState =
            sessionState ??
            (isAuthenticated
@@ -469,11 +685,12 @@ final class _FakeSupabaseAuthApi implements CoeloSupabaseAuthApi {
   CoeloAuthSessionState currentSessionState;
 
   final bool signInSucceeds;
-  final Exception? signInException;
-  final Exception? passwordRecoveryException;
-  final Exception? passwordUpdateException;
-  final Exception? signOutException;
+  Object? signInException;
+  final Object? passwordRecoveryException;
+  Object? passwordUpdateException;
+  final Object? signOutException;
   final Future<void> Function()? beforePasswordUpdate;
+  final Future<void> Function()? beforeSignOut;
   final List<String>? events;
   bool didSignOut = false;
   String? lastRecoveryEmail;
@@ -518,6 +735,7 @@ final class _FakeSupabaseAuthApi implements CoeloSupabaseAuthApi {
   Future<void> signOut() async {
     events?.add('sign-out');
     didSignOut = true;
+    await beforeSignOut?.call();
     currentSessionState = const CoeloAuthSessionState.signedOut();
     if (signOutException case final exception?) {
       throw exception;
@@ -526,14 +744,16 @@ final class _FakeSupabaseAuthApi implements CoeloSupabaseAuthApi {
 }
 
 final class _FakeSessionPersistence implements CoeloAuthSessionPersistence {
-  _FakeSessionPersistence({this.events});
+  _FakeSessionPersistence({this.events, this.failure});
 
   final List<String>? events;
   bool? isEnabled;
+  Object? failure;
 
   @override
   Future<void> setPersistenceEnabled({required bool value}) async {
     isEnabled = value;
     events?.add('persistence:$value');
+    if (failure case final error?) throw error;
   }
 }
