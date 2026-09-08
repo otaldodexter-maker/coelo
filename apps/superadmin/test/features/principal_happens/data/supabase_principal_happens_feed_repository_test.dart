@@ -231,6 +231,73 @@ void main() {
       throwsA(isA<PrincipalHappensFeedUnavailable>()),
     );
   });
+  for (final sample in <({String name, Object? value, bool granted})>[
+    (name: 'omitido', value: null, granted: false),
+    (name: 'false', value: false, granted: false),
+    (name: 'concedido', value: true, granted: true),
+    // Qualquer coisa que nao seja `true` nega. Uma string "true" vinda de um
+    // encoder frouxo nao pode virar permissao.
+    (name: 'string true', value: 'true', granted: false),
+    (name: 'numero 1', value: 1, granted: false),
+  ]) {
+    test('can_remove vem da projecao autorizada (${sample.name})', () async {
+      final client = _client(
+        (request) async => http.Response(
+          jsonEncode([
+            {
+              'post_id': 'post-1',
+              'author_name': 'Equipe Coelo',
+              'author_initials': 'EC',
+              'context_label': '3º ano A',
+              'caption': 'Registro autorizado.',
+              'published_at': DateTime.now().toUtc().toIso8601String(),
+              'media': <Object?>[],
+              if (sample.value != null) 'can_remove': sample.value,
+            },
+          ]),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      );
+      addTearDown(client.dispose);
+
+      final posts = await SupabasePrincipalHappensFeedRepository(
+        client,
+      ).listVisiblePosts(const PrincipalHappensFeedScope(institutionId: 'institution-1'));
+
+      expect(posts.single.canRemove, sample.granted);
+    });
+  }
+
+  test('a remocao falha fechada sem chegar a rede', () async {
+    var requests = 0;
+    final client = _client((request) async {
+      requests++;
+      return http.Response(
+        '[]',
+        200,
+        headers: {'content-type': 'application/json'},
+        request: request,
+      );
+    });
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabasePrincipalHappensFeedRepository(client).removePost(
+        const PrincipalHappensRemoveCommand(
+          postId: 'post-1',
+          requestId: 'intent-1',
+          reason: 'Publicado por engano',
+        ),
+      ),
+      throwsA(isA<PrincipalHappensRemoveUnavailable>()),
+    );
+
+    // Nenhum nome de RPC pode ser adivinhado enquanto o comando autorizado nao
+    // existe: adivinhar daria 404 ou alcancaria uma superficie nao revisada.
+    expect(requests, 0);
+  });
 }
 
 SupabaseClient _client(Future<http.Response> Function(http.Request request) handler) =>
