@@ -53,6 +53,13 @@ final class SupabasePrincipalNowFeedRepository implements PrincipalNowFeedReposi
   }
 
   @override
+  Future<void> expireNow(PrincipalNowExpireCommand command) async {
+    // No authorised expiration command exists yet. Failing closed keeps the
+    // viewer honest instead of hiding an Agora the server still publishes.
+    throw const PrincipalNowExpireUnavailable();
+  }
+
+  @override
   Future<PrincipalNowMediaRead> resolveMedia({
     required PrincipalNowFeedScope scope,
     required String publicationId,
@@ -180,6 +187,9 @@ PrincipalNowFeedItem _itemFromJson(Map<String, dynamic> json, DateTime current) 
     caption: overlay.isNotEmpty ? overlay : caption,
     publishedAt: publishedAt,
     expiresAt: expiresAt,
+    // Absent while the projection does not publish it: the affordance stays
+    // hidden rather than guessing that this actor may expire anything.
+    canExpire: json['can_expire'] == true,
     cropScale: _requiredNumber(json, 'crop_scale', min: 1, max: 2),
     cropX: _requiredNumber(json, 'crop_x', min: -1, max: 1),
     cropY: _requiredNumber(json, 'crop_y', min: -1, max: 1),

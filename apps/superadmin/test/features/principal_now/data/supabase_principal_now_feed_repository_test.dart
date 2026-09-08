@@ -337,6 +337,82 @@ void main() {
     expect(rpcCalls, 2);
     expect(edgeTickets, ['ticket-active-consumed', 'ticket-active-renewed']);
   });
+
+  test('expiração manual falha fechada enquanto o comando autorizado não existe', () async {
+    var requests = 0;
+    final client = SupabaseClient(
+      'https://coelo.test',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        requests++;
+        return http.Response(
+          '[]',
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabasePrincipalNowFeedRepository(client, now: () => now).expireNow(
+        const PrincipalNowExpireCommand(
+          publicationId: 'active',
+          requestId: '00000000-0000-4000-8000-000000000001',
+          reason: 'Publicado por engano',
+        ),
+      ),
+      throwsA(isA<PrincipalNowExpireUnavailable>()),
+    );
+    expect(requests, 0, reason: 'nenhuma RPC de expiração pode ser inventada pelo cliente');
+  });
+
+  test('canExpire só é verdadeiro quando a projeção autorizada concede', () async {
+    final client = SupabaseClient(
+      'https://coelo.test',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => http.Response(
+          jsonEncode([
+            _row(
+              id: 'omitido',
+              publishedAt: now.subtract(const Duration(hours: 1)),
+              expiresAt: now.add(const Duration(hours: 23)),
+            ),
+            {
+              ..._row(
+                id: 'concedido',
+                publishedAt: now.subtract(const Duration(hours: 1)),
+                expiresAt: now.add(const Duration(hours: 23)),
+              ),
+              'can_expire': true,
+            },
+            {
+              ..._row(
+                id: 'texto',
+                publishedAt: now.subtract(const Duration(hours: 1)),
+                expiresAt: now.add(const Duration(hours: 23)),
+              ),
+              'can_expire': 'true',
+            },
+          ]),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+
+    final stories = await SupabasePrincipalNowFeedRepository(
+      client,
+      now: () => now,
+    ).listVisibleStories(scope);
+
+    expect(stories.map((story) => story.publicationId), ['omitido', 'concedido', 'texto']);
+    expect(stories.map((story) => story.canExpire), [false, true, false]);
+  });
 }
 
 Map<String, dynamic> _row({

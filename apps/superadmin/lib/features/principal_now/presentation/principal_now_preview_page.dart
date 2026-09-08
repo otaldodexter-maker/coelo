@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../principal_shared/presentation/principal_removal_dialog.dart';
 import '../domain/principal_now_feed_repository.dart';
 import '../domain/principal_now_preview_data.dart';
 
@@ -71,6 +73,8 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
   final _resolvedMedia =
       <({String publicationId, PrincipalNowMediaKind kind}), PrincipalNowMediaRead>{};
   final _resolvingMedia = <({String publicationId, PrincipalNowMediaKind kind})>{};
+  final _expireRequestIds = <String, String>{};
+  final _requestRandom = math.Random.secure();
 
   bool get _feedConfigurationInvalid =>
       (widget.feedRepository == null) != (widget.feedScope == null);
@@ -340,6 +344,77 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
     ).showSnackBar(const SnackBar(content: Text('Compartilhamento indisponível nesta prévia.')));
   }
 
+  /// The story the operator is looking at, and only when the authorised
+  /// projection already granted its expiration and gave it a server id. The
+  /// client never derives this permission.
+  PrincipalNowFeedItem? get _expirableStory {
+    if (widget.feedRepository == null) return null;
+    final items = _remoteItems;
+    if (items == null || _index < 0 || _index >= items.length) return null;
+    final item = items[_index];
+    if (!item.canExpire || item.publicationId.isEmpty) return null;
+    return item;
+  }
+
+  Future<void> _confirmExpireNow() async {
+    final repository = widget.feedRepository;
+    final item = _expirableStory;
+    if (repository == null || item == null) return;
+    final publicationId = item.publicationId;
+    // The story must not advance under the dialog, or the confirmed command
+    // would carry a publication the operator never chose.
+    _overlayPaused = true;
+    _syncProgress();
+    final reason = await askPrincipalRemovalReason(
+      context,
+      title: 'Expirar Agora',
+      description: 'O Agora de ${item.author} sai do ar para quem ainda podia ve-lo.',
+      dialogKey: const Key('principal-now-expire-dialog'),
+      reasonKey: const Key('principal-now-expire-reason'),
+      cancelKey: const Key('principal-now-expire-cancel'),
+      confirmKey: const Key('principal-now-expire-confirm'),
+    );
+    if (!mounted) return;
+    _overlayPaused = false;
+    _syncProgress();
+    if (reason == null) return;
+    final request = _feedRequest;
+    try {
+      await repository.expireNow(
+        PrincipalNowExpireCommand(
+          publicationId: publicationId,
+          requestId: _expireRequestIds.putIfAbsent(publicationId, _newRequestId),
+          reason: reason,
+        ),
+      );
+      if (!mounted || request != _feedRequest) return;
+      // Absence is proved by the server on the next read, never by hiding the
+      // story locally.
+      _expireRequestIds.remove(publicationId);
+      await _loadFeed();
+    } on PrincipalNowFeedUnauthorized {
+      if (mounted) _feedback('Voce nao pode expirar este Agora.');
+    } on PrincipalNowExpireUnavailable {
+      if (mounted) _feedback('Expiracao aguarda o comando autorizado.');
+    } on Object {
+      if (mounted) _feedback('Nao foi possivel expirar agora. Tente novamente.');
+    }
+  }
+
+  /// Real outcome of a real command, distinct from the preview placeholders
+  /// used by reply and share.
+  void _feedback(String message) =>
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+
+  String _newRequestId() {
+    final values = List<int>.generate(16, (_) => _requestRandom.nextInt(256));
+    values[6] = (values[6] & 0x0f) | 0x40;
+    values[8] = (values[8] & 0x3f) | 0x80;
+    final hex = values.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
+    return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}'
+        '-${hex.substring(16, 20)}-${hex.substring(20)}';
+  }
+
   void _reloadAfterPublication() => _loadFeed();
 
   Future<void> _loadFeed() async {
@@ -590,6 +665,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
         onNext: _next,
         onClose: _close,
         onOptions: _showOptions,
+        onExpire: _expirableStory == null ? null : _confirmExpireNow,
         onAudio: () => setState(() => _muted = !_muted),
         onLike: () => setState(() => _liked = !_liked),
         onShare: _share,
@@ -657,6 +733,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
                 onNext: _next,
                 onClose: _close,
                 onOptions: _showOptions,
+                onExpire: _expirableStory == null ? null : _confirmExpireNow,
                 onAudio: () => setState(() => _muted = !_muted),
                 onLike: () => setState(() => _liked = !_liked),
                 onShare: _share,
@@ -700,6 +777,7 @@ final class _StoryCard extends StatelessWidget {
     required this.onNext,
     required this.onClose,
     required this.onOptions,
+    required this.onExpire,
     required this.onAudio,
     required this.onLike,
     required this.onShare,
@@ -723,6 +801,10 @@ final class _StoryCard extends StatelessWidget {
   final VoidCallback onNext;
   final VoidCallback onClose;
   final VoidCallback onOptions;
+
+  /// Present only when the authorised projection granted expiration for the
+  /// story on screen. Absent means no affordance at all.
+  final VoidCallback? onExpire;
   final VoidCallback onAudio;
   final VoidCallback onLike;
   final VoidCallback onShare;
@@ -869,6 +951,15 @@ final class _StoryCard extends StatelessWidget {
                             tooltip: muted ? 'Ativar áudio' : 'Desativar áudio',
                             icon: muted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
                             onPressed: onAudio,
+                          ),
+                        // Expiration shows up only when the authorised
+                        // projection granted it for this actor and story.
+                        if (onExpire case final expire?)
+                          _ViewerIconButton(
+                            key: const Key('principal-now-expire'),
+                            tooltip: 'Expirar este Agora',
+                            icon: Icons.timer_off_outlined,
+                            onPressed: expire,
                           ),
                         _ViewerIconButton(
                           key: const Key('principal-now-options'),

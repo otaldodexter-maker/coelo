@@ -367,6 +367,10 @@ final class _FakeNowFeedRepository implements PrincipalNowFeedRepository {
   Future<List<PrincipalNowFeedItem>> listVisibleStories(PrincipalNowFeedScope scope) => list(scope);
 
   @override
+  Future<void> expireNow(PrincipalNowExpireCommand command) =>
+      Future<void>.error(const PrincipalNowExpireUnavailable());
+
+  @override
   Future<PrincipalNowMediaRead> resolveMedia({
     required PrincipalNowFeedScope scope,
     required String publicationId,

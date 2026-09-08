@@ -39,6 +39,7 @@ final class PrincipalNowFeedItem {
     required this.expiresAt,
     required this.media,
     this.audio,
+    this.canExpire = false,
     this.cropScale = 1,
     this.cropX = 0,
     this.cropY = 0,
@@ -55,6 +56,11 @@ final class PrincipalNowFeedItem {
   final DateTime expiresAt;
   final PrincipalNowMediaDescriptor media;
   final PrincipalNowMediaDescriptor? audio;
+
+  /// Whether the authorised projection says this actor may expire this Agora.
+  /// Decided by profile, hierarchy and RLS on the server; the client only
+  /// renders what was already granted and never derives it.
+  final bool canExpire;
   final double cropScale;
   final double cropX;
   final double cropY;
@@ -91,6 +97,29 @@ final class PrincipalNowMediaRead {
   final Duration expiresIn;
 }
 
+/// Manual expiration of one published Agora.
+///
+/// The command only addresses the publication and records intent. Authorization
+/// stays on the server, which re-derives actor, tenant, hierarchy and RLS.
+@immutable
+final class PrincipalNowExpireCommand {
+  const PrincipalNowExpireCommand({
+    required this.publicationId,
+    required this.requestId,
+    required this.reason,
+  }) : assert(publicationId != ''),
+       assert(requestId != '');
+
+  final String publicationId;
+
+  /// Preserved by the caller so a retry replays instead of expiring twice.
+  final String requestId;
+
+  /// Recorded with the expiration. Kept required so the audit trail never
+  /// depends on the operator remembering to send it.
+  final String reason;
+}
+
 abstract interface class PrincipalNowFeedRepository {
   /// Returns only publications authorized by the backend for [scope].
   Future<List<PrincipalNowFeedItem>> listVisibleStories(PrincipalNowFeedScope scope);
@@ -101,6 +130,11 @@ abstract interface class PrincipalNowFeedRepository {
     required String publicationId,
     required PrincipalNowMediaDescriptor media,
   });
+
+  /// Expires a published Agora logically. The server decides by profile,
+  /// hierarchy and RLS, keeps the tombstone and writes the audit entry; media
+  /// assets are marked, never purged here.
+  Future<void> expireNow(PrincipalNowExpireCommand command);
 }
 
 final class PrincipalNowFeedRefreshSignal extends ChangeNotifier {
@@ -124,4 +158,10 @@ final class PrincipalNowFeedUnauthorized extends PrincipalNowFeedFailure {
 
 final class PrincipalNowFeedUnavailable extends PrincipalNowFeedFailure {
   const PrincipalNowFeedUnavailable();
+}
+
+/// The authorised expiration command does not exist yet. Raised instead of
+/// pretending an Agora was taken off the air.
+final class PrincipalNowExpireUnavailable extends PrincipalNowFeedFailure {
+  const PrincipalNowExpireUnavailable();
 }
