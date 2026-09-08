@@ -2,8 +2,31 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../domain/platform_invite.dart';
+
+Future<bool> copyInviteLink(
+  BuildContext context,
+  Uri link, {
+  required bool Function() isContextCurrent,
+}) async {
+  if (!context.mounted || !isContextCurrent()) return false;
+  try {
+    await Clipboard.setData(ClipboardData(text: link.toString()));
+    return context.mounted && isContextCurrent();
+  } catch (_) {
+    if (context.mounted && isContextCurrent()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Não foi possível copiar o link. Tente novamente.'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
+    return false;
+  }
+}
 
 final class InviteStatusChip extends StatelessWidget {
   const InviteStatusChip({required this.status, super.key});
