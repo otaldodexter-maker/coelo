@@ -3,10 +3,25 @@ title: "Perguntas abertas e conflitos"
 source: "AGENTS.md; documentos oficiais, ADRs e specs citados em cada item"
 status: "open"
 generated_at: "2026-08-11"
-updated_at: "2026-09-07"
+updated_at: "2026-09-08"
 ---
 
 # Perguntas abertas e conflitos
+
+## Conflito pendente — principal de autorização em Planos (2026-09-08)
+
+- `specs/051-superadmin-plans-production.md`, seção Permissões e segurança,
+  exige pessoa global ativa; `specs/039-superadmin-internal-auth-session-context.md`
+  e ADR0019 proíbem ligar o principal interno a People e preveem transição
+  incremental por capability. A migração atual de Planos ainda usa People.
+- Confirmar nominalmente a transição dos readers de Planos para o principal
+  interno039, mantendo `platform.read` e scope plataforma, com catálogo e
+  vínculos institucionais somente leitura. Não substituir o get legado usado
+  pelo writer nem alterar silenciosamente o texto aprovado de051.
+- A proposta `2026-09-07-plans-read01-crosswalk.md` da E2E5 permanece análise,
+  sem SQL/grants/produção. `units_with_override=0` no legado é placeholder,
+  não contagem verificada; contrato final precisa cálculo comprovado ou
+  indisponibilidade explícita. As demais telas continuam independentes.
 
 ## Decisões pendentes — Local interno em Formulários (2026-09-07)
 

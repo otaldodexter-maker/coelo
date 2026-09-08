@@ -3,7 +3,7 @@ title: "Pendências Coelo — Front-end + Back-end"
 source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; Git dev 7b94428aa9861b68fcc81b335a98857b43de789f"
 status: "open"
 generated_at: "2026-08-26"
-updated_at: "2026-09-07"
+updated_at: "2026-09-08"
 action_count: 192
 historical_action_count: 214
 deferred_post_mvp_action_count: 22
@@ -14,14 +14,20 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "63F5F4E8FB65DCF4E3172A60B8C3EB0092FBE3179ADCE9E20936FAAEE7AB11F6"
-supabase_tracker_sha256: "061BEA0271B93F31A857EE29074A6FA9C90147BC23B54600972E8746FE389D11"
+flutter_tracker_sha256: "B375184FF62B98A94F82BB6A9E1903A531B65898EF9B1755B24D9D4F2EBE66EE"
+supabase_tracker_sha256: "9F62801C347CB435332FF54D1ABFDB5A92382B29C47FB52D8D5A674C60F93296"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
 
+- Em08/09 até00:10: **386/386 testes não-golden** em46arquivos no destino,
+  analyzer7 sem issues; Perfis/Modelos, Atividades, Cardápios e Circulares.
+  Users49 **48/48 SQL local** pelo Eng1; FREAD base derivada50 aplica, mas
+  fixture aborta após2FAIL porque não inclui reader. Nenhuma nova ação
+  ready/verified: execução real autorizada, Auth/R2 e revisão visual seguem
+  gates distintos. Feedback adicional por tarefa entregue ao Owner00:04.
 - Até23:55: Chat102/102, Models/Users/Agenda204/204, pacotes DTO142/142 e
  32/32, XLSX puro14/14 e Pester29/29 passaram no destino, em recortes
   diferentes e com sobreposição. Atividades ampliado ainda tem1 falha de

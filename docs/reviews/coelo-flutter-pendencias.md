@@ -3,7 +3,7 @@ title: "Pendências Coelo — Front-end por tela e ação"
 source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git HEAD cd1ea97c76695e4be72cd91882d65c9c235704a4"
 status: "open"
 generated_at: "2026-08-26"
-updated_at: "2026-09-07"
+updated_at: "2026-09-08"
 action_count: 219
 family_count: 38
 visual_program_count: 31
@@ -14,6 +14,13 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Em08/09 até00:10: Cardápios single-flight/estado confirmado `4ed14dbf`/
+  `7f74303a`, revisão de autorização Perfis/Modelos `4e9bb5ca`, teste compacto
+  Atividades `7c03d9e7` e Circulares `1ba7f1ca`/`6768af17` integrados após
+  review. **386/386 PASS em46 arquivos não-golden** no destino, analyzer7
+  sem issues. A falha funcional compacta foi corrigida no gesto do teste;
+  nove falhas visuais anteriores não foram reexecutadas nem rebaselineadas.
+  SQL Users48/48 é prova local separada, não certifica essas telas E2E.
 - Até23:55: Chat consumidor `b816bacb` + tema `4088685e`: **102/102**
   em13 suítes, analyzer9 sem issues;8 novos candidatos visuais, duas amostras
   inspecionadas, matriz completa aberta. Shell `6434f440`:11/11 e113/113

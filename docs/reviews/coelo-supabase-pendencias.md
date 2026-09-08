@@ -3,7 +3,7 @@ title: "Pendências Coelo — Back-end por tela e ação"
 source: "docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; decisions/0020-backend-authorization-application-security.md; specs aprovadas por dominio; auditoria consolidada em 2026-08-26; Git dev cd1ea97c e inventario remoto read-only em 2026-09-01"
 status: "living"
 generated_at: "2026-08-26"
-updated_at: "2026-09-07"
+updated_at: "2026-09-08"
 action_count: 219
 family_count: 38
 ---
@@ -12,6 +12,19 @@ family_count: 38
 
 ## Rodada de 2026-09-07 — backend local e integração em curso
 
+- Em08/09 até00:10: Users49 executado pelo Eng1, **48/48 pgTAP PASS**
+  (45 originais+3 minimização), cleanup02:55:41UTC, evidência `1db600ef`.
+  Corretiva `45974168` preserva ACL/Auth/audit; limitações multipágina,
+  concorrência e runtime permanecem. Nenhum recurso remoto alterado.
+- FREAD derivado50 `e9a021e6`: **39/39 Pester** no destino; replay Eng1
+  aplicou toda a base50, depois somente2TAP FAIL e aborto por reader ausente,
+  antes do plan117. Cleanup03:01:27UTC, evidência `950e34fe`. Autorizada
+  preparação do perfil separado GREEN derivado51, ainda sem execução.
+- LOC947 aprovado estaticamente após reauth/RC/clock; apenas preparação
+  nominal de base/bootstrap/perfil autorizada, não replay. F-AUTHORc8 precisa
+  também expiração real pós-wait. AG-READ01 pode preparar fixture nominal
+  com grants sintéticos rollback, sem inferir matriz produtiva. Planos051×039
+  tem divergência explícita de principal registrada em open-questions.
 - Até23:55: A01RED perfil/evidência integrados `8edac43a`, **29/29 Pester**
   no destino. V2 recebeu review e autorização condicional ao perfil GREEN55
   pinado/revisado; ainda sem resultado97GREEN. Users49 entra na fila Eng1;
