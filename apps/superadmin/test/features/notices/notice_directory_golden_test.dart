@@ -15,29 +15,37 @@ import 'support/fake_notice_repository.dart';
 void main() {
   setUpAll(_loadGoldenFonts);
 
-  testWidgets('matches the communication directory across canonical breakpoints', (tester) async {
-    for (final brightness in Brightness.values) {
-      for (final size in const [Size(375, 900), Size(768, 900), Size(1024, 900), Size(1440, 900)]) {
-        await _pumpGolden(tester, size, brightness: brightness);
-        await expectLater(
-          find.byKey(const Key('communication-directory-golden-root')),
-          matchesGoldenFile(
-            'goldens/communication_directory_${brightness.name}_${size.width.toInt()}.png',
-          ),
-        );
-      }
-    }
-  });
-
-  testWidgets('matches the communication directory at 200 percent text', (tester) async {
-    for (final size in const [Size(375, 1100), Size(1440, 1100)]) {
-      await _pumpGolden(tester, size, textScaler: const TextScaler.linear(2));
-      await expectLater(
-        find.byKey(const Key('communication-directory-golden-root')),
-        matchesGoldenFile('goldens/communication_directory_text_200_${size.width.toInt()}.png'),
+  // One case per viewport and theme: a single loop stops at the first mismatch
+  // and leaves the wider breakpoints unmeasured.
+  for (final brightness in Brightness.values) {
+    for (final size in const [Size(375, 900), Size(768, 900), Size(1024, 900), Size(1440, 900)]) {
+      testWidgets(
+        'matches the communication directory at ${size.width.toInt()} in ${brightness.name}',
+        (tester) async {
+          await _pumpGolden(tester, size, brightness: brightness);
+          await expectLater(
+            find.byKey(const Key('communication-directory-golden-root')),
+            matchesGoldenFile(
+              'goldens/communication_directory_${brightness.name}_${size.width.toInt()}.png',
+            ),
+          );
+        },
       );
     }
-  });
+  }
+
+  for (final size in const [Size(375, 1100), Size(1440, 1100)]) {
+    testWidgets(
+      'matches the communication directory at 200 percent text in ${size.width.toInt()}',
+      (tester) async {
+        await _pumpGolden(tester, size, textScaler: const TextScaler.linear(2));
+        await expectLater(
+          find.byKey(const Key('communication-directory-golden-root')),
+          matchesGoldenFile('goldens/communication_directory_text_200_${size.width.toInt()}.png'),
+        );
+      },
+    );
+  }
 
   testWidgets('captures empty, no-results, error and unauthorized communication states', (
     tester,

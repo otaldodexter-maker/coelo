@@ -10,27 +10,31 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   setUpAll(_loadGoldenFonts);
 
-  testWidgets('directory matches the approved responsive matrix', (tester) async {
-    for (final brightness in Brightness.values) {
-      for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+  // One case per viewport and theme: a single loop stops at the first mismatch
+  // and leaves the wider breakpoints unmeasured.
+  for (final brightness in Brightness.values) {
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      testWidgets('directory matches the approved matrix at ${width.toInt()} in ${brightness.name}', (
+        tester,
+      ) async {
         await _pump(tester, Size(width, 900), brightness: brightness);
         await expectLater(
           find.byKey(const Key('circular-directory-golden-root')),
           matchesGoldenFile('goldens/circular_directory_${brightness.name}_${width.toInt()}.png'),
         );
-      }
+      });
     }
-  });
+  }
 
-  testWidgets('directory remains usable at 200 percent text', (tester) async {
-    for (final width in [375.0, 1440.0]) {
+  for (final width in [375.0, 1440.0]) {
+    testWidgets('directory remains usable at 200 percent text in ${width.toInt()}', (tester) async {
       await _pump(tester, Size(width, 1100), textScaler: const TextScaler.linear(2));
       await expectLater(
         find.byKey(const Key('circular-directory-golden-root')),
         matchesGoldenFile('goldens/circular_directory_text_200_${width.toInt()}.png'),
       );
-    }
-  });
+    });
+  }
 }
 
 Future<void> _pump(
