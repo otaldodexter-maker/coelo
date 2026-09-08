@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/circulars/presentation/superadmin_circular_composer_page.dart';
 import 'package:coelo_superadmin/features/circulars/presentation/superadmin_circular_detail_page.dart';
 import 'package:coelo_superadmin/features/principal_circulars/application/circular_composer_controller.dart';
@@ -8,6 +10,59 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final swapRepository in [false, true]) {
+    testWidgets('detail clears old content on ${swapRepository ? 'repository' : 'ID'} change', (
+      tester,
+    ) async {
+      final repositoryA = _QueuedDetailRepository();
+      final repositoryB = swapRepository ? _QueuedDetailRepository() : repositoryA;
+      Widget page(CircularRepository repository, String id) => MaterialApp(
+        home: Scaffold(
+          body: SuperadminCircularDetailPage(circularId: id, repository: repository, onBack: () {}),
+        ),
+      );
+      await tester.pumpWidget(page(repositoryA, 'a'));
+      repositoryA.requests.single.complete(_detail('A'));
+      await tester.pumpAndSettle();
+      expect(find.text('Private A'), findsOneWidget);
+      await tester.pumpWidget(page(repositoryB, swapRepository ? 'a' : 'b'));
+      await tester.pump();
+      expect(find.text('Private A'), findsNothing);
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      repositoryB.requests.last.complete(_detail('B'));
+      await tester.pumpAndSettle();
+      expect(find.text('Private B'), findsOneWidget);
+    });
+  }
+
+  for (final oldFailure in [false, true]) {
+    testWidgets('detail ignores late ${oldFailure ? 'denial' : 'success'} from prior request', (
+      tester,
+    ) async {
+      final repository = _QueuedDetailRepository();
+      Widget page(String id) => MaterialApp(
+        home: Scaffold(
+          body: SuperadminCircularDetailPage(circularId: id, repository: repository, onBack: () {}),
+        ),
+      );
+      await tester.pumpWidget(page('a'));
+      await tester.pumpWidget(page('b'));
+      expect(repository.ids, ['a', 'b']);
+      repository.requests[1].complete(_detail('B'));
+      await tester.pumpAndSettle();
+      if (oldFailure) {
+        repository.requests[0].completeError(const CircularUnauthorized());
+      } else {
+        repository.requests[0].complete(_detail('A'));
+      }
+      await tester.pumpAndSettle();
+      expect(find.text('Private B'), findsOneWidget);
+      expect(find.text('Private A'), findsNothing);
+      expect(find.text('Circular indisponível'), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
     testWidgets('admin composer follows the approved responsive form at ${width.toInt()}px', (
       tester,
@@ -105,6 +160,34 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+}
+
+CircularDetail _detail(String label) => CircularDetail(
+  id: label,
+  revisionId: 'revision-$label',
+  title: 'Private $label',
+  authorName: 'Synthetic author',
+  contextLabel: 'Synthetic context',
+  publishedAt: DateTime.utc(2026, 9, 7),
+  status: CircularStatus.published,
+  responseState: CircularResponseState.unanswered,
+  blocks: const [],
+);
+
+final class _QueuedDetailRepository implements CircularRepository {
+  final ids = <String>[];
+  final requests = <Completer<CircularDetail>>[];
+
+  @override
+  Future<CircularDetail> getVisible(String circularId, {String? childContextId}) {
+    ids.add(circularId);
+    final request = Completer<CircularDetail>();
+    requests.add(request);
+    return request.future;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 final class _Repository implements CircularRepository {
