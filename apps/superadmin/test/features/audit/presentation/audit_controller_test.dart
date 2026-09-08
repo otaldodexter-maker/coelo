@@ -5,6 +5,125 @@ import 'package:coelo_superadmin/features/audit/presentation/audit_controller.da
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('search debounce cannot reuse the previous query cursor through next', () async {
+    final repository = _Repository()
+      ..pages.addAll([
+        _page(items: [_event('A')], nextCursor: 'cursor-A'),
+        _page(),
+        _page(),
+      ]);
+    final controller = AuditDirectoryController(repository: repository);
+    addTearDown(controller.dispose);
+    await controller.load();
+    final pending = controller.updateSearch('B');
+    await controller.next();
+    await pending;
+    expect(repository.queries.where((query) => query.search == 'B'), hasLength(1));
+    expect(repository.queries.last.cursor, isNull);
+    expect(controller.snapshot.pageNumber, 1);
+  });
+
+  test('denial cancels a queued search and explicit retry can recover', () async {
+    final repository = _Repository()
+      ..pages.add(_page(items: [_event('recovered')]))
+      ..detailError = const AuditUnauthorizedException();
+    final controller = AuditDirectoryController(repository: repository);
+    addTearDown(controller.dispose);
+    final search = controller.updateSearch('pending');
+    await controller.loadDetail('sensitive');
+    await search;
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+    expect(repository.queries, isEmpty);
+    expect(controller.snapshot.state, AuditLoadState.unauthorized);
+    repository.detailError = null;
+    await controller.retry();
+    expect(controller.snapshot.events.single.id, 'recovered');
+    expect(repository.queries.single.search, 'pending');
+  });
+
+  test('a stale denial cannot erase a newer authorized page', () async {
+    final old = Completer<AuditPage>();
+    final repository = _Repository()
+      ..pageFutures.add(old.future)
+      ..pages.add(_page(items: [_event('current')]));
+    final controller = AuditDirectoryController(repository: repository);
+    addTearDown(controller.dispose);
+    final pending = controller.load();
+    await controller.updateFilters(AuditQuery(search: 'current'));
+    old.completeError(const AuditUnauthorizedException());
+    await pending;
+    expect(controller.snapshot.events.single.id, 'current');
+    expect(controller.snapshot.state, AuditLoadState.content);
+  });
+
+  test(
+    'a second search after the first completes does not complete an old completer twice',
+    () async {
+      final repository = _Repository()..pages.addAll([_page(), _page()]);
+      final controller = AuditDirectoryController(repository: repository);
+      addTearDown(controller.dispose);
+      await controller.updateSearch('first');
+      await controller.updateSearch('second');
+      expect(repository.queries.map((query) => query.search), ['first', 'second']);
+    },
+  );
+
+  test('detail denial removes already visible audit page data', () async {
+    final repository = _Repository()
+      ..pages.add(_page(items: [_event('sensitive')]))
+      ..detailError = const AuditUnauthorizedException();
+    final controller = AuditDirectoryController(repository: repository);
+    addTearDown(controller.dispose);
+    await controller.load();
+    await controller.loadDetail('sensitive');
+    expect(controller.snapshot.state, AuditLoadState.unauthorized);
+    expect(controller.snapshot.events, isEmpty);
+    expect(controller.detail.value, isNull);
+  });
+
+  test('page denial invalidates a pending detail from the same scope', () async {
+    final page = Completer<AuditPage>();
+    final detail = Completer<AuditEventDetail>();
+    final repository = _Repository()
+      ..pageFutures.add(page.future)
+      ..detailFutures.add(detail.future);
+    final controller = AuditDirectoryController(repository: repository);
+    addTearDown(controller.dispose);
+    final pageLoad = controller.load();
+    final detailLoad = controller.loadDetail('sensitive');
+    page.completeError(const AuditUnauthorizedException());
+    await pageLoad;
+    detail.complete(_detail('sensitive'));
+    await detailLoad;
+    expect(controller.snapshot.state, AuditLoadState.unauthorized);
+    expect(controller.detail.value, isNull);
+    expect(controller.detail.state, AuditDetailLoadState.unauthorized);
+  });
+
+  test('detail denial invalidates a pending page from the same scope', () async {
+    final page = Completer<AuditPage>();
+    final repository = _Repository()
+      ..pageFutures.add(page.future)
+      ..detailError = const AuditUnauthorizedException();
+    final controller = AuditDirectoryController(repository: repository);
+    addTearDown(controller.dispose);
+    final pending = controller.load();
+    await controller.loadDetail('sensitive');
+    page.complete(_page(items: [_event('sensitive')]));
+    await pending;
+    expect(controller.snapshot.state, AuditLoadState.unauthorized);
+    expect(controller.snapshot.events, isEmpty);
+  });
+
+  test('disposed controller does not start a page or debounced search request', () async {
+    final repository = _Repository()..pages.addAll([_page(), _page()]);
+    final controller = AuditDirectoryController(repository: repository);
+    controller.dispose();
+    await controller.load();
+    await controller.updateSearch('disposed');
+    expect(repository.queries, isEmpty);
+  });
+
   test('loads content and follows the opaque server cursor', () async {
     final repository = _Repository()
       ..pages.addAll([

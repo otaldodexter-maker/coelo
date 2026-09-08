@@ -89,25 +89,33 @@ final class AuditDirectoryController extends ChangeNotifier {
   Future<void> retry() => _loadPage();
 
   Future<void> updateSearch(String value) {
+    if (_disposed) return Future.value();
     _pageGeneration += 1;
     _resetExportAttempt();
-    _searchDebounce?.cancel();
-    _searchCompleter?.complete();
+    _cancelSearchDebounce();
     final completer = Completer<void>();
     _searchCompleter = completer;
     _query = _query.withSearch(value);
     _resetDetail();
     _pageCursors = const [null];
     _pageIndex = 0;
+    _currentPage = null;
+    _snapshot = AuditDirectorySnapshot.loading(pageSize: _query.pageSize);
     _notify();
     _searchDebounce = Timer(const Duration(milliseconds: 250), () async {
-      await _loadPage();
-      if (!completer.isCompleted) completer.complete();
+      _searchDebounce = null;
+      try {
+        await _loadPage();
+      } finally {
+        if (identical(_searchCompleter, completer)) _searchCompleter = null;
+        if (!completer.isCompleted) completer.complete();
+      }
     });
     return completer.future;
   }
 
   Future<void> updateFilters(AuditQuery value) async {
+    if (_disposed) return;
     _cancelSearchDebounce();
     _resetExportAttempt();
     _query = value.withoutCursor();
@@ -117,6 +125,7 @@ final class AuditDirectoryController extends ChangeNotifier {
   }
 
   Future<void> next() async {
+    if (_disposed) return;
     if (!_snapshot.hasNext) return;
     final cursor = _currentPage?.nextCursor;
     if (cursor == null) return;
@@ -126,12 +135,14 @@ final class AuditDirectoryController extends ChangeNotifier {
   }
 
   Future<void> previous() async {
+    if (_disposed) return;
     if (_pageIndex == 0) return;
     _pageIndex -= 1;
     await _loadPage();
   }
 
   Future<void> loadDetail(String eventId) async {
+    if (_disposed) return;
     final generation = ++_detailGeneration;
     _detail = const AuditDetailSnapshot(AuditDetailLoadState.loading);
     _notify();
@@ -141,7 +152,7 @@ final class AuditDirectoryController extends ChangeNotifier {
       _detail = AuditDetailSnapshot(AuditDetailLoadState.content, value: value);
     } on AuditUnauthorizedException {
       if (generation != _detailGeneration) return;
-      _detail = const AuditDetailSnapshot(AuditDetailLoadState.unauthorized);
+      _invalidateDeniedReads();
     } on AuditNotFoundException {
       if (generation != _detailGeneration) return;
       _detail = const AuditDetailSnapshot(AuditDetailLoadState.notFound);
@@ -192,6 +203,7 @@ final class AuditDirectoryController extends ChangeNotifier {
   AuditPage? _currentPage;
 
   Future<void> _loadPage() async {
+    if (_disposed) return;
     final generation = ++_pageGeneration;
     _resetDetail();
     _snapshot = AuditDirectorySnapshot.loading(pageSize: _query.pageSize);
@@ -217,7 +229,7 @@ final class AuditDirectoryController extends ChangeNotifier {
       );
     } on AuditUnauthorizedException {
       if (generation != _pageGeneration) return;
-      _snapshot = _errorSnapshot(AuditLoadState.unauthorized);
+      _invalidateDeniedReads();
     } on AuditNotFoundException {
       if (generation != _pageGeneration) return;
       _snapshot = _errorSnapshot(AuditLoadState.notFound);
@@ -245,6 +257,22 @@ final class AuditDirectoryController extends ChangeNotifier {
     final completer = _searchCompleter;
     if (completer != null && !completer.isCompleted) completer.complete();
     _searchCompleter = null;
+  }
+
+  void _invalidateDeniedReads() {
+    // Directory and detail share one authorization scope. A current denial
+    // invalidates both generations before any sibling read can restore data.
+    final hadDetail = _detail.state != AuditDetailLoadState.idle;
+    _pageGeneration += 1;
+    _detailGeneration += 1;
+    _cancelSearchDebounce();
+    _pageCursors = const [null];
+    _pageIndex = 0;
+    _currentPage = null;
+    _snapshot = _errorSnapshot(AuditLoadState.unauthorized);
+    _detail = AuditDetailSnapshot(
+      hadDetail ? AuditDetailLoadState.unauthorized : AuditDetailLoadState.idle,
+    );
   }
 
   void _resetExportAttempt() {
