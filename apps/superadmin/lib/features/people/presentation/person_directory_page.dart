@@ -475,8 +475,7 @@ final class _PersonToolbar extends StatelessWidget {
                   onCardsSelected: () => viewModel.setLayout(PersonDirectoryLayout.cards),
                   onTableViewSelected: viewModel.setTableView,
                 ),
-                if (viewModel.state == PersonDirectoryLoadState.success &&
-                    (onImport != null || onExport != null)) ...[
+                if (viewModel.state == PersonDirectoryLoadState.success) ...[
                   const SizedBox(width: CoeloSpacing.space2),
                   PersonFileActions(
                     onImport: onImport,
