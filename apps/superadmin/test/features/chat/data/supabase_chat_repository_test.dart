@@ -8,6 +8,68 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  const assetId = '9b400000-0000-4000-8000-000000000001';
+  for (final sample in <({String name, Object? value, bool valid})>[
+    (name: 'legacy', value: null, valid: true),
+    (name: 'canonical', value: assetId.toUpperCase(), valid: true),
+    (name: 'empty', value: '', valid: false),
+    (name: 'malformed', value: 'not-an-asset', valid: false),
+    (name: 'wrong type', value: 42, valid: false),
+  ]) {
+    test('attachment distinguishes metadata id from canonical asset (${sample.name})', () async {
+      var requests = 0;
+      final client = _client((request) async {
+        requests++;
+        expect(request.url.path, endsWith('/rpc/superadmin_chat_thread_v2'));
+        return _json({
+          'ok': true,
+          'data': {
+            'items': [
+              {
+                'message_id': 'message-1',
+                'body_text': 'Anexo sintético',
+                'author_name': 'Equipe',
+                'is_mine': false,
+                'message_type': 'file',
+                'created_at': '2026-09-07T12:00:00Z',
+                'attachments': [
+                  {
+                    'id': 'legacy-metadata-id',
+                    if (sample.value != null) 'asset_id': sample.value,
+                    'file_name': 'imagem.jpg',
+                    'content_type': 'image/jpeg',
+                    'byte_size': 42,
+                    'download_url': 'https://untrusted.invalid/permanent',
+                    'object_key': 'must-not-be-used',
+                  },
+                ],
+              },
+            ],
+            'total': 1,
+            'has_more': false,
+            'next_cursor': null,
+          },
+          'error': null,
+        }, request);
+      });
+      addTearDown(client.dispose);
+      final pending = SupabaseChatRepository(
+        client,
+      ).fetchThread(const ChatThreadQuery(conversationId: 'conversation-1'));
+      if (!sample.valid) {
+        await expectLater(pending, throwsA(isA<ChatFailureException>()));
+        expect(requests, 1);
+        return;
+      }
+      final page = await pending;
+      final attachment = page.items.single.attachments.single;
+      expect(attachment.id, 'legacy-metadata-id');
+      expect(attachment.assetId, sample.value != null ? assetId : isNull);
+      expect(attachment.downloadUrl, isNull);
+      expect(requests, 1);
+    });
+  }
+
   test('fetches the inbox through the authorised typed cursor RPC only', () async {
     Request? captured;
     final client = _client((request) async {
