@@ -1,5 +1,10 @@
 import 'location_selection.dart';
 
+// The reservations contract rides this file's existing place in the package
+// barrel. Adding a line to lib/locations.dart would change an export surface
+// that is outside this executor's reservation; exporting from here does not.
+export 'location_reservations.dart';
+
 /// Classification only; none of these values grants access to a reader.
 enum LocationVisibility { team, guardians, students, all }
 
