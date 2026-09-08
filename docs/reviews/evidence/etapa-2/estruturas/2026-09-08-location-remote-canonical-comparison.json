@@ -1,0 +1,227 @@
+{
+  "source": "Authorized read-only Supabase catalog inspection; no business rows or function calls",
+  "generated_at": "2026-09-08",
+  "project_ref": "evvbomzejfijozbtgvpt",
+  "local_catalog_source_commit": "d119cef32661d066f005d8e6c49a589e8129026f",
+  "candidate_commit": "6b0cbb3009c7184896cfd2aebd6c7a7ca0fafe10",
+  "remote_rows": [
+    {
+      "observed_at": "2026-09-08 05:28:22.102187+00",
+      "actor": "postgres",
+      "server_version_num": "170006",
+      "search_path": "\"\\$user\", public, extensions",
+      "signature": "app_private.superadmin_create_activity_locations(uuid,uuid[],text,uuid)",
+      "oid": 55792,
+      "owner": "postgres",
+      "prosecdef": true,
+      "provolatile": "v",
+      "proconfig": [
+        "search_path=\"\""
+      ],
+      "definition_md5_raw": "886752274164d0d435c9df8ced18d896",
+      "definition_md5_lf": "3167d90039df952c9ae561f28486223c",
+      "source_md5_raw": "dc4ca3ec2143e7abaac16d6d5ad80d1d",
+      "source_md5_lf": "ccfc509321ae6d21eafb4082c4e53e58",
+      "acl": [
+        {
+          "grantee": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "definition_bytes_raw": 3275,
+      "definition_bytes_lf": 3221,
+      "source_crlf": 54,
+      "source_lf": 58,
+      "definition_crlf": 54,
+      "definition_lf": 64,
+      "canonical_source_file": "20260811194840_activity_files_identity_commands.sql",
+      "canonical_source_lf_chars": 2968,
+      "remote_source_lf_chars": 2968,
+      "source_equals_canonical_after_crlf_to_lf": true,
+      "sanitized_line_delta": []
+    },
+    {
+      "observed_at": "2026-09-08 05:28:22.102286+00",
+      "actor": "postgres",
+      "server_version_num": "170006",
+      "search_path": "\"\\$user\", public, extensions",
+      "signature": "app_private.superadmin_get_activity_form_options(uuid)",
+      "oid": 55748,
+      "owner": "postgres",
+      "prosecdef": true,
+      "provolatile": "s",
+      "proconfig": [
+        "search_path=\"\""
+      ],
+      "definition_md5_raw": "65fe6408f0f2c6b0c1c9d71a809f2d80",
+      "definition_md5_lf": "516a06602a96073317e495dbb9d5b040",
+      "source_md5_raw": "1f40c83ab7cbd772a9983a5e61138eb0",
+      "source_md5_lf": "08697eaa5c84dc2938b0c1ffaf6de056",
+      "acl": [
+        {
+          "grantee": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "definition_bytes_raw": 4026,
+      "definition_bytes_lf": 3970,
+      "source_crlf": 56,
+      "source_lf": 63,
+      "definition_crlf": 56,
+      "definition_lf": 69,
+      "canonical_source_file": "20260811200614_activity_read_model_contract_hardening.sql",
+      "canonical_source_lf_chars": 4778,
+      "remote_source_lf_chars": 3766,
+      "source_equals_canonical_after_crlf_to_lf": false,
+      "sanitized_line_delta": [
+        {
+          "side": "remote",
+          "line": 19,
+          "text": "    from public.units unit where (p_institution_id is null"
+        },
+        {
+          "side": "remote",
+          "line": 20,
+          "text": "      or unit.institution_id=p_institution_id) and unit.status<>'archived'),'[]'::jsonb),"
+        },
+        {
+          "side": "canonical",
+          "line": 19,
+          "text": "    from public.units unit where p_institution_id is not null"
+        },
+        {
+          "side": "canonical",
+          "line": 20,
+          "text": "      and unit.institution_id=p_institution_id and unit.status<>'archived'),'[]'::jsonb),"
+        },
+        {
+          "side": "remote",
+          "line": 23,
+          "text": "    from public.activity_locations location where (p_institution_id is null"
+        },
+        {
+          "side": "remote",
+          "line": 24,
+          "text": "      or location.institution_id=p_institution_id) and location.status='active'),'[]'::jsonb),"
+        },
+        {
+          "side": "canonical",
+          "line": 23,
+          "text": "    from public.activity_locations location where p_institution_id is not null"
+        },
+        {
+          "side": "canonical",
+          "line": 24,
+          "text": "      and location.institution_id=p_institution_id and location.status='active'),'[]'::jsonb),"
+        },
+        {
+          "side": "remote",
+          "line": 30,
+          "text": "    where (p_institution_id is null or group_record.institution_id=p_institution_id)"
+        },
+        {
+          "side": "canonical",
+          "line": 30,
+          "text": "    where p_institution_id is not null"
+        },
+        {
+          "side": "canonical",
+          "line": 31,
+          "text": "     and group_record.institution_id=p_institution_id"
+        },
+        {
+          "side": "remote",
+          "line": 37,
+          "text": "    where (p_institution_id is null or membership.institution_id=p_institution_id)"
+        },
+        {
+          "side": "canonical",
+          "line": 38,
+          "text": "    where p_institution_id is not null"
+        },
+        {
+          "side": "canonical",
+          "line": 39,
+          "text": "     and membership.institution_id=p_institution_id"
+        },
+        {
+          "side": "canonical",
+          "line": 42,
+          "text": "  'students',coalesce((select jsonb_agg(jsonb_build_object("
+        },
+        {
+          "side": "canonical",
+          "line": 43,
+          "text": "    'child_group_link_id',child_group.id,'child_id',person.id,"
+        },
+        {
+          "side": "canonical",
+          "line": 44,
+          "text": "    'group_id',child_group.group_id,'name',person.display_name,"
+        },
+        {
+          "side": "canonical",
+          "line": 45,
+          "text": "    'age',case when person.date_of_birth is null then null"
+        },
+        {
+          "side": "canonical",
+          "line": 46,
+          "text": "      else date_part('year',age(current_date,person.date_of_birth))::integer end,"
+        },
+        {
+          "side": "canonical",
+          "line": 47,
+          "text": "    'gender',profile.gender) order by person.display_name)"
+        },
+        {
+          "side": "canonical",
+          "line": 48,
+          "text": "    from public.child_group_links child_group"
+        },
+        {
+          "side": "canonical",
+          "line": 49,
+          "text": "    join public.child_unit_links child_unit on child_unit.id=child_group.child_unit_link_id"
+        },
+        {
+          "side": "canonical",
+          "line": 50,
+          "text": "    join public.child_contexts child_context on child_context.id=child_unit.child_context_id"
+        },
+        {
+          "side": "canonical",
+          "line": 51,
+          "text": "    join public.people person on person.id=child_context.child_person_id"
+        },
+        {
+          "side": "canonical",
+          "line": 52,
+          "text": "    left join public.person_profile_details profile on profile.person_id=person.id"
+        },
+        {
+          "side": "canonical",
+          "line": 53,
+          "text": "    where p_institution_id is not null"
+        },
+        {
+          "side": "canonical",
+          "line": 54,
+          "text": "     and child_context.institution_id=p_institution_id"
+        },
+        {
+          "side": "canonical",
+          "line": 55,
+          "text": "     and child_group.status='active' and child_unit.status='active'"
+        },
+        {
+          "side": "canonical",
+          "line": 56,
+          "text": "     and child_context.status='active'),'[]'::jsonb),"
+        }
+      ]
+    }
+  ]
+}
