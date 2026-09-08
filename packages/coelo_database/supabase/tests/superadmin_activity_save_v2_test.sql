@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(40);
+select plan(42);
 
 select has_function(
   'public',
@@ -288,6 +288,29 @@ select 'rollback_edit',public.superadmin_activity_save_v2(
   '8b200000-0000-4000-8000-000000000642')
 );
 
+insert into save_results
+select 'invalid_participation_key',public.superadmin_activity_save_v2(
+ '8b200000-0000-4000-8000-000000000815',null,0,false,
+ pg_temp.activity_save_payload(
+  '8b200000-0000-4000-8000-000000000010','8b200000-0000-4000-8000-000000000011',
+  '8b200000-0000-4000-8000-000000000012',null,'Mapa de participacao invalido'
+ ) || pg_catalog.jsonb_build_object(
+  'group_participation',
+  pg_catalog.jsonb_build_object('8b200000-0000-4000-8000-000000000014','all')
+ )
+);
+insert into save_results
+select 'invalid_participation_null',public.superadmin_activity_save_v2(
+ '8b200000-0000-4000-8000-000000000816',null,0,false,
+ pg_temp.activity_save_payload(
+  '8b200000-0000-4000-8000-000000000010','8b200000-0000-4000-8000-000000000011',
+  '8b200000-0000-4000-8000-000000000012',null,'Modo de participacao nulo'
+ ) || pg_catalog.jsonb_build_object(
+  'group_participation',
+  pg_catalog.jsonb_build_object('8b200000-0000-4000-8000-000000000012',null)
+ )
+);
+
 select set_config('request.jwt.claims',jsonb_build_object(
  'sub','8b200000-0000-4000-8000-000000000102','session_id','8b200000-0000-4000-8000-000000000202',
  'aal','aal1','role','authenticated')::text,true);
@@ -455,6 +478,28 @@ select ok((select count(*)=5 and bool_and(audit_log.outcome='success')
 select ok((select body#>>'{ok}'='true' and body#>>'{data,management_version}'='12'
  from save_results where label='selected_to_all'),
  'selected to all prunes participants before changing the group mode');
+select ok((select body#>>'{error,code}'='ACTIVITY_INVALID_INPUT'
+ from save_results where label='invalid_participation_key')
+ and not exists(
+  select 1 from app_private.superadmin_internal_activity_command_receipts
+  where request_id=app_private.activity_request_uuid(
+   'activity-save-create','8b200000-0000-4000-8000-000000000815'
+  )
+ ) and not exists(
+  select 1 from app_private.superadmin_internal_activity_save_receipts
+  where request_id='8b200000-0000-4000-8000-000000000815'
+ ),'group participation keys must match the requested group snapshot');
+select ok((select body#>>'{error,code}'='ACTIVITY_INVALID_INPUT'
+ from save_results where label='invalid_participation_null')
+ and not exists(
+  select 1 from app_private.superadmin_internal_activity_command_receipts
+  where request_id=app_private.activity_request_uuid(
+   'activity-save-create','8b200000-0000-4000-8000-000000000816'
+  )
+ ) and not exists(
+  select 1 from app_private.superadmin_internal_activity_save_receipts
+  where request_id='8b200000-0000-4000-8000-000000000816'
+ ),'group participation mode rejects JSON null before creating a child receipt');
 select ok(not exists(
  select 1
  from public.activity_group_participants participant
