@@ -1,0 +1,120 @@
+{
+  "source": "AuthOnly47 local replay pgTAP diagnostics",
+  "executed_utc": "2026-09-08T03:48:17.3708297Z",
+  "identity": "coelo_safe_c3e8951894af4fb198f46b7bba357",
+  "target": "20260901200206",
+  "base": {
+    "canonical": 45,
+    "preflight": 2
+  },
+  "diagnostics": [
+    {
+      "acl": [
+        {
+          "grantee": "authenticated",
+          "is_grantable": false,
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "service_role",
+          "is_grantable": false,
+          "privilege_type": "DELETE"
+        },
+        {
+          "grantee": "service_role",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "grantee": "service_role",
+          "is_grantable": false,
+          "privilege_type": "MAINTAIN"
+        },
+        {
+          "grantee": "service_role",
+          "is_grantable": false,
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "grantee": "service_role",
+          "is_grantable": false,
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "service_role",
+          "is_grantable": false,
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "grantee": "service_role",
+          "is_grantable": false,
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "grantee": "service_role",
+          "is_grantable": false,
+          "privilege_type": "UPDATE"
+        }
+      ],
+      "relation": "public.activity_locations",
+      "current_user": "postgres",
+      "server_version_num": 170006
+    },
+    {
+      "functions": [
+        {
+          "name": "superadmin_access_profiles_cursor",
+          "owner": "postgres",
+          "schema": "app_private",
+          "proconfig": [
+            "search_path=\"\""
+          ],
+          "prosecdef": true,
+          "public_acl": [],
+          "identity_arguments": "p_query text, p_domain text, p_status text, p_scope text, p_limit integer, p_after_name text, p_after_id uuid",
+          "authenticated_execute": false
+        },
+        {
+          "name": "superadmin_access_profiles_list",
+          "owner": "postgres",
+          "schema": "public",
+          "proconfig": [
+            "search_path=\"\""
+          ],
+          "prosecdef": false,
+          "public_acl": [],
+          "identity_arguments": "p_domain text, p_search text, p_status text, p_scope text, p_page integer, p_page_size integer",
+          "authenticated_execute": true
+        }
+      ]
+    },
+    {
+      "page1": {
+        "detail": "",
+        "sqlstate": "42501",
+        "failure_class": "acl-before-contract"
+      },
+      "page2": {
+        "detail": "",
+        "sqlstate": "42501",
+        "failure_class": "acl-before-contract"
+      },
+      "scopes": {
+        "detail": "",
+        "sqlstate": "42501",
+        "failure_class": "acl-before-contract"
+      },
+      "statuses": {
+        "detail": "",
+        "sqlstate": "42501",
+        "failure_class": "acl-before-contract"
+      }
+    }
+  ],
+  "acl_comparison_to_947": {
+    "extra": [
+      "service_role:MAINTAIN:false"
+    ],
+    "missing": []
+  }
+}

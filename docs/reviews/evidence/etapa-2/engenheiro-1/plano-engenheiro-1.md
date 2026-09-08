@@ -3,7 +3,7 @@ title: Plano de trabalho — Engenheiro 1
 source: Coordenador — Etapa 2 E2E; decisões do Owner; evidências locais desta tarefa
 status: em andamento
 generated: 2026-09-07
-updated: 2026-09-08T00:42:00-03:00
+updated: 2026-09-08T00:54:00-03:00
 ---
 
 # Engenheiro 1 — plano por tela, ação e backend
