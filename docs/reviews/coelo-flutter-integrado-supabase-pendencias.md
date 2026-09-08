@@ -14,14 +14,21 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "B375184FF62B98A94F82BB6A9E1903A531B65898EF9B1755B24D9D4F2EBE66EE"
-supabase_tracker_sha256: "9F62801C347CB435332FF54D1ABFDB5A92382B29C47FB52D8D5A674C60F93296"
+flutter_tracker_sha256: "791981A9E01690AF174CC8079C987A8B4312C0D03D17A6CE336408339D860F81"
+supabase_tracker_sha256: "41B9768066313A0A6FDF4ACFFE604861627A4E9D33523551BDD0E74DB1399151"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
 
+- Em08/09 até00:44: lotes cliente172/277/145/289/82 passaram no destino e
+  Pester332/332 passou, sem somar execuções sobrepostas. Eng1 confirmou SQL
+  Models38/38 e Atividades97/97 com cleanup. São provas de recortes locais;
+  zero nova promoção ready/verified. LOCUI retido por callback obsoleto e
+  status cortado a200%; Conta depende contrato nominal; M03 mantém gates
+  reais de proveniência, limite e decoder. Convites pertence à E2E3 conforme
+  anexo, corrigido explicitamente no feedback, não à E2E1.
 - Em08/09 até00:10: **386/386 testes não-golden** em46arquivos no destino,
   analyzer7 sem issues; Perfis/Modelos, Atividades, Cardápios e Circulares.
   Users49 **48/48 SQL local** pelo Eng1; FREAD base derivada50 aplica, mas

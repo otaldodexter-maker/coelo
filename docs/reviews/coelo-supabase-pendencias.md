@@ -12,6 +12,26 @@ family_count: 38
 
 ## Rodada de 2026-09-07 — backend local e integração em curso
 
+- Em08/09 até00:44: perfis Models/A01 `40f6dc27` passaram **332/332 Pester**
+  no destino, zero skip. Prova Eng1 `deed4ff6`: ModelsGREEN50 **38/38 TAP**
+  com ACL10, cleanup03:15:13UTC; A01GREEN55 v2 **97/97 TAP**, cleanup
+  03:18:51UTC. Marcador A01 não foi lido independentemente durante execução;
+  wrapper validou ownership/teardown. Sem deploy ou conclusão E2E.
+- F-AUTHOR2aa passou review temporal; closure encontrou fontes ausentes dos
+  tokens/helper de exportação, recuperadas como proveniência Git164500/
+  164600/171200. Só reconciliação de preparação local autorizada; nada
+  restaurado no canônico/mirror, nenhuma exportação legada/anônima habilitada.
+  Parser derivado e dependência G.deleted_at continuam gates explícitos.
+- LOC: suspeita MAINTAIN do PG17 no fingerprint ainda não é erro observado.
+  Probe nominal Auth45+2 e diagnóstico Perfis8 autorizados ao Eng1, sem
+  grant/revoke/corretiva. Bootstrap derivado115df2ca prepara apenas SET LOCAL
+  após BEGIN antes31000; pacote completo/replay ainda pendentes. FREAD51
+  derivado continua em preparação para gate próprio.
+- AG-READ01 permite fixture sintética de read e grant/deny de uma capability
+  real de mutação, rollback e sem comandos. personIds/labels sem vínculo
+  elegível provado ficam omitidos, indisponibilidade explícita sem lista vazia
+  fictícia nem alteração do público armazenado. M03 ainda sem guard nominal
+  de proveniência operacional, limite de lote ou decoder aprovado.
 - Em08/09 até00:10: Users49 executado pelo Eng1, **48/48 pgTAP PASS**
   (45 originais+3 minimização), cleanup02:55:41UTC, evidência `1db600ef`.
   Corretiva `45974168` preserva ACL/Auth/audit; limitações multipágina,

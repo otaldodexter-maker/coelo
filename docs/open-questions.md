@@ -8,6 +8,21 @@ updated_at: "2026-09-08"
 
 # Perguntas abertas e conflitos
 
+## Contrato pendente — leitura produtiva da própria Conta (2026-09-08)
+
+- O design aprovado `2026-07-28-superadmin-profile-settings-design.md` define
+  área pessoal e próprio acesso, mas mantém o contrato produtivo pendente.
+  Spec039 usa `platform.read` no bootstrap de saída restrita; isso não
+  autoriza automaticamente outra projeção cadastral self.
+- Confirmar capability e allowlist do reader sem ID-alvo do cliente. Nome e
+  sobrenome têm fundamento visual; e-mail profissional/celular do cadastro
+  interno não se confundem com e-mail de login/telefone verificado. Não
+  ampliar o bootstrap, criar grant por analogia ou inferir MFA por AAL.
+- Fechar estado explícito para cadastro ausente, sem criação automática,
+  fallback em People ou dados inventados. Self-edit, contato e avatar real
+  têm contratos separados. Crosswalk E2E1 ce893afe permanece proposta;
+  demais correções Auth/Acessos continuam independentes.
+
 ## Conflito pendente — principal de autorização em Planos (2026-09-08)
 
 - `specs/051-superadmin-plans-production.md`, seção Permissões e segurança,

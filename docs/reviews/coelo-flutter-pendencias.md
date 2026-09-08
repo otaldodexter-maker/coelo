@@ -14,6 +14,18 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Em08/09 até00:44: novos lotes no destino **172/172** Chat/Cardápios,
+  **277/277** Cuidado/Perfis, **145/145** Auditoria/Convites/rotas,
+  **289/289** Cuidado/Circulares e **82/82** criação Perfis/Convites;
+  analyzers5/5/6/4/4 sem issues. Há sobreposição, não somar cobertura.
+  Isolamento de contexto, retry e purge de negativa foram integrados;
+  goldens históricos de Cuidado/Perfis/Atividades continuam abertos.
+- LOC-READUI01 faabe918 recebeu review de código e amostras visuais, ainda
+  não integrado: retido por callback antigo quando cache reutiliza a mesma
+  instância. Clipping de Suspenso a200% confirmado no componente compartilhado;
+  correção nominal exclusiva E2E2 reservada. Provas59 são do autor, não destino.
+  Conta ce893afe continua proposta: capability self/projeção/cadastro ausente
+  não decididos; não habilitar writer/reader por analogia com bootstrap.
 - Em08/09 até00:10: Cardápios single-flight/estado confirmado `4ed14dbf`/
   `7f74303a`, revisão de autorização Perfis/Modelos `4e9bb5ca`, teste compacto
   Atividades `7c03d9e7` e Circulares `1ba7f1ca`/`6768af17` integrados após
