@@ -235,6 +235,8 @@ void main() {
     await tester.pumpWidget(_formApp(brightness: Brightness.light));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('activity-form-name')), 'Robótica');
+    await tester.ensureVisible(find.byKey(const Key('activity-form-continue')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('activity-form-continue')));
     await tester.pumpAndSettle();
     tester
