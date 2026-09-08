@@ -110,6 +110,74 @@ void main() {
     semantics.dispose();
   });
 
+  testWidgets('o toggle e uma unica parada de Tab, que aciona por Enter e Espaco', (tester) async {
+    var value = false;
+    var changes = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: StatefulBuilder(
+            builder: (context, setState) => PrincipalPublicationToggleField(
+              label: 'Salvar automaticamente',
+              value: value,
+              onChanged: (next) => setState(() {
+                value = next;
+                changes++;
+              }),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Primeira parada: aciona com Enter e com Espaco.
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+    expect(value, isTrue);
+    await tester.sendKeyEvent(LogicalKeyboardKey.space);
+    await tester.pump();
+    expect(value, isFalse);
+    expect(changes, 2);
+
+    // O Switch interno fica sob ExcludeSemantics: se ele tambem for focalizavel,
+    // o teclado passa duas vezes pela mesma linha e a segunda parada alterna sem
+    // no semantico. Parece intermitente para quem tabula uma vez so.
+    final stops = FocusScope.of(
+      tester.element(find.byType(PrincipalPublicationToggleField)),
+    ).traversalDescendants.where((node) => node.canRequestFocus && !node.skipTraversal).length;
+    expect(stops, 1, reason: 'a linha do toggle deve ser uma parada de Tab, nao duas');
+  });
+
+  testWidgets('desabilitado nao aciona nem recebe foco', (tester) async {
+    var changes = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: PrincipalPublicationToggleField(
+            label: 'Salvar automaticamente',
+            value: false,
+            onChanged: null,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+
+    expect(changes, 0);
+    final stops = FocusScope.of(
+      tester.element(find.byType(PrincipalPublicationToggleField)),
+    ).traversalDescendants.where((node) => node.canRequestFocus && !node.skipTraversal).length;
+    expect(stops, 0, reason: 'um toggle desabilitado nao entra na ordem de tabulacao');
+  });
+
   test('features do Principal não importam componentes administrativos', () {
     final directories = Directory('lib/features').listSync().whereType<Directory>().where(
       (directory) => directory.path.split(Platform.pathSeparator).last.startsWith('principal_'),
