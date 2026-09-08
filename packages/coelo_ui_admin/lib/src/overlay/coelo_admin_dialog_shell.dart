@@ -153,12 +153,15 @@ final class _DialogFooter extends StatelessWidget {
             ],
           );
         }
-        return Row(
-          children: [
-            Expanded(child: secondaryButton),
-            const SizedBox(width: CoeloSpacing.space3),
-            Expanded(child: primaryButton),
-          ],
+        return IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(child: secondaryButton),
+              const SizedBox(width: CoeloSpacing.space3),
+              Expanded(child: primaryButton),
+            ],
+          ),
         );
       },
     );

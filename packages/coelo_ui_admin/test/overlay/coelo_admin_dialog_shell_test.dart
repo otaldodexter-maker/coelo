@@ -5,6 +5,46 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final width in [768.0, 1024.0, 1440.0]) {
+    for (final scale in [1.0, 2.0]) {
+      testWidgets('row footer keeps multiline actions equal at $width text $scale', (tester) async {
+        await tester.binding.setSurfaceSize(Size(width, 900));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CoeloTheme.light,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
+              child: child!,
+            ),
+            home: Scaffold(
+              body: CoeloAdminDialogShell(
+                title: 'Imagem da conversa',
+                body: const Text('A imagem não está disponível.'),
+                primaryAction: FilledButton(
+                  key: const Key('retry'),
+                  onPressed: () {},
+                  child: const Text('Tentar novamente'),
+                ),
+                secondaryAction: OutlinedButton(
+                  key: const Key('close'),
+                  onPressed: () {},
+                  child: const Text('Fechar'),
+                ),
+              ),
+            ),
+          ),
+        );
+        final primary = tester.getRect(find.byKey(const Key('retry')));
+        final secondary = tester.getRect(find.byKey(const Key('close')));
+        expect(primary.height, secondary.height);
+        expect(primary.top, secondary.top);
+        expect(primary.width, secondary.width);
+        expect(primary.height, greaterThanOrEqualTo(CoeloSize.touchMin));
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
   testWidgets('uses the neutral bug-popup shell and equal two-action footer', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
