@@ -1,4 +1,5 @@
 ---
+updated_at: "2026-09-08"
 title: Páginas de erro do Superadmin
 knowledge_id: superadmin-error-pages
 source: docs/design/design-system.md
@@ -12,7 +13,7 @@ review_owner: Coelo Product
 
 # Páginas de erro do Superadmin
 
-O Superadmin possui páginas fullscreen para 403, 404, 500 e 503. Elas usam uma
+O Superadmin possui páginas fullscreen para 403, 404, 409, 500 e 503. Elas usam uma
 tela limpa, sem shell, menu ou cabeçalho, com fundo
 `colorScheme.primaryContainer`, conteúdo em `onPrimaryContainer` e uma única
 ação contextual. O 401 continua redirecionando para autenticação; o 429
@@ -27,3 +28,5 @@ Este padrão não substitui `CoeloStatePanel`, usado para estados dentro de uma
 superfície existente. O catálogo Coelo UI registra a referência em
 `pattern.error-pages`. Admin e Principal exigem specs consumidoras antes de
 adotar a composição.
+
+O conflito409 usa mensagem sanitizada e retorno ao início, sem repetição automática. Essa variante preserva a composição existente; conflitos dentro de formulário continuam contextuais. A conclusão assíncrona da ação mantém estado pendente, foco e isolamento ao trocar de contexto.

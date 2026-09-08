@@ -28,6 +28,18 @@ Este é o estado operacional atual. O histórico integral anterior está em [arq
 - /dev usa fixtures; sem /dev usa composição produtiva. Todo remoto é produção. MFA interno aceita AAL1 conforme ADR 0019. Admin, Principal e Site estão fora deste recorte de implementação.
 - ETA por ação: ainda não recalculada por dependências e execução; não somar estimativas antigas. A janela 36–60 h do plano anterior não é compromisso validado.
 
+## Sincronização R01 — leitura14:00 e eventos até 2026-09-08T14:25:04-03:00
+
+Fonte: `etapa-2-operacao/reports/R01-checkpoint-1400.md`. C00 único escritor. Handoffs processados C01/r21 (14:19), C02/r17 (14:18:58), C03/r3 (última entrega formal13:45; mensagens posteriores abaixo), C04/r6 (14:19), C05/r2 (**última evidência formal12:49**). Recebimento para revisão não é integração.
+
+- C01 r5/r6/r9/r13/r14/r15/r17 integrados na C00 até d058aeb7: duplicação de Modelos, exclusão de Perfis, diálogos de Usuários, idempotência de update/status, layout de Perfis/Convites e Erros409/ação assíncrona. C00 **100/100** regressão, **40/40** Erros/rotas e analyzer seis arquivos limpo. Goldens409 ainda sem masters aprovados; divergências históricas preservadas. r19/r20 Convites aguardam revisão (executor15/15 e25/25); r18 composição é WIP0PASS/7FAIL e r21 Auth externo é WIP10PASS/1FAIL, não integrados. Reserva I004 para corrigir Auth, sem atribuir vazamento remoto.
+- C02 XLSX: r13/r14 writer/paginação/redaction32/32 local; download r15/r16 14/14 com pins congelados, chave por ativo/tentativa. DDL r17 0ad0f58c **WIP**,37 asserts ainda não executados. Reautorização, snapshot consistente, lease, reconciliação, cleanup, limites físicos finais e ligação UI continuam abertos; não certificar Forms sem mídia.
+- C03 Assessments: mensagem relata Flutter1bfdde2f27/27, pendente consolidação do handoff. Replay abortou antes da fixture por parêntese ausente no SQL histórico20260901182838. I004 autoriza apenas derivado TEMP de um caractere; histórico/ledger/produção intactos. Fila inclui draft; negativa preservada e correção forward-only ainda sem reserva.
+- C04 r5/r6: CHILD/Locais e seções na navegação normal, seleção de local em Turma, falhas de diretórios sanitizadas; resultados do executor e limites no relatório. **Seleção sem persistência**; writes/mídia/SQL real abertos. C05 arquivos locais em alteração, sem novo handoff: não inferir entrega, inatividade ou conclusão.
+- Catálogo Supabase de produção consultado somente leitura14:07–14:11: três RPCs locais de Usuários update/status e duplicação de Modelos ausentes por nome; último ledger20260901200206. Não habilitar pela existência na branch. Consulta de catálogo não é teste mutante nem E2E.
+
+Última medição enumerada permanece `R01-checkpoint-1330-metricas.json`: FE parcial59/219 (52/194ativas,7/22adiadas,0/3gates); BE parcial10/212, SQL local5 IDs; remoto auditado0/212 e E2E0/187. Estes são números do corte13:30, **não medição nova14:00**. Novos IDs/evidências serão reconciliados nominalmente no relatório15:00; sem percentual de implementação. Nenhuma certificação nova: FE0/219,BE0/212,E2E0/187;7N/A BE/E2E. Commit, integração C00, push dev e produção continuam separados: última entrega dev0bf9e039; lote d058aeb7 ainda não entregue em dev.
+
 ## Sincronização R01 — leitura13:30
 
 Fonte central `etapa-2-operacao/reports/R01-checkpoint-1330.md` e `R01-checkpoint-1330-metricas.json`; C00 único escritor01a0818b-2a34-7fa3-a9aa-f191fc91cc8d. Revisões processadas: C01/r14 (13:44), C02/r12 (13:45:12), C03/r3 (13:45), C04/r4 (13:42), C05/r2 (**última evidência12:49**). Relatório13:00 permanece preservado. Mensagens posteriores aguardam próxima leitura de handoff.

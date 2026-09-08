@@ -119,6 +119,12 @@ C01 lotes8/10/11/12 integrados em7118f7e8 com63 testes e analyzer3arquivos. C04 
 
 Origin/dev avançou de84985b54 para **0bf9e0398574df9a8dc49c257bba1f586904889b**, junto da branch C00, por push atômico e conferência ls-remote. Trabalho local alheio permaneceu no checkout original dev84985b54; não foi forçado a sincronizar e localhost dessa pasta não foi atualizado. Nenhum apply/deploy manual; produção não verificada. Catálogos/SQL candidatos permanecem fora da entrega. Manifests Formsfe271f95681e10cedb1aa2e89931224229d68f2d preparados depois somente na C00, aguardando handlers. C03 I003 recebeu janela SQL local; C00 aguarda release antes de novo replay.
 
+## Registro R01 — 2026-09-08T14:25:04-03:00
+
+C00 integrou sete lotes C01 até d058aeb7,100+40 testes locais passam; fonte visual canônica e memória409 reconciliadas sem aprovação de golden. Três rastreadores sincronizados até C01r21/C02r17/C03r3/C04r6/C05r2; detalhes/SHAs/limites em `etapa-2-operacao/reports/R01-checkpoint-1400.md`. C03/C01 I004 publicadas por mensagem nativa, C04 I004 disponível na assignment; aguardam ack. C04 root ainda reservado até release explícito. C03 mantém replay local exclusivo; nenhuma nova autorização remota. dev permanece0bf9e039 neste registro.
+
+Isolamento solicitado pelo Owner conferido: seis worktrees R01 e original separados, gitdirs próprios e branches corretas; evidência `R01-worktrees-verificadas.json`. Pasta histórica interna `.worktrees/finalizacao-telas-operacoes` não registrada e resolve original; preservada. C00 cwd nativo ainda original, comandos de escrita usam explicitamente e2-c00. Registro não prova atividade de todas as sessões nem ausência universal de escrita no original.
+
 ## Histórico preservado — anterior à R01
 
 ## Finalidade

@@ -1,4 +1,5 @@
 ---
+updated_at: "2026-09-08"
 source: "docs/design/design-system.md; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md"
 status: "active"
 generated_at: "2026-07-29"
@@ -6,7 +7,7 @@ generated_at: "2026-07-29"
 
 # Contrato de páginas fullscreen de erro
 
-Use este contrato para error page, fullscreen error, 403, 404, 500, 503, rota
+Use este contrato para error page, fullscreen error, 403, 404, 409, 500, 503, rota
 não encontrada, acesso negado e indisponibilidade.
 
 ## Quando usar
@@ -24,6 +25,7 @@ não encontrada, acesso negado e indisponibilidade.
 - Código, divisor e mensagem centralizados; uma única ação abaixo.
 - 403: “Você não tem permissão para acessar esta área.” / “Voltar ao início”.
 - 404: “Não encontramos a página que você procura.” / “Voltar ao início”.
+- 409: “Esta ação não pode ser concluída no estado atual.” / “Voltar ao início”.
 - 500: “Não foi possível concluir esta ação.” / “Tentar novamente”.
 - 503: “O Coelo está temporariamente indisponível.” / “Tentar novamente”.
 - Destino ou retry são delegados ao app. Não inventar autorização no cliente.
@@ -42,3 +44,5 @@ não encontrada, acesso negado e indisponibilidade.
 
 Referência implementada: Superadmin. Admin e Principal exigem spec consumidora;
 não compartilhar telas entre apps.
+
+A variante409 é a extensão R01 do inventário aprovado; preservar conflitos contextuais na própria superfície. Callback assíncrono tem estado pendente e execução única; não criar retry automático.

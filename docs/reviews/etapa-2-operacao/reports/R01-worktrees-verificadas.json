@@ -1,0 +1,78 @@
+{
+  "source": "Git worktree list, rev-parse, branch, status; Owner question",
+  "status": "verified-git-isolation-not-session-activity",
+  "generated_at": "2026-09-08T14:25:04-03:00",
+  "worktrees": [
+    {
+      "executor": "original",
+      "path": "C:/Users/adrie/Documents/Coelo",
+      "toplevel": "C:/Users/adrie/Documents/Coelo",
+      "gitdir": "C:/Users/adrie/Documents/Coelo/.git",
+      "branch": "dev",
+      "head": "84985b5485247df6a8dc7270e33d18601aca0421",
+      "changed_paths": 51
+    },
+    {
+      "executor": "C00",
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-c00",
+      "toplevel": "C:/Users/adrie/Documents/Coelo.worktrees/e2-c00",
+      "gitdir": "C:/Users/adrie/Documents/Coelo/.git/worktrees/e2-c00",
+      "branch": "codex/e2-r01-c00-integration",
+      "head": "d058aeb73e5f207474f3ed6e7727a24a75e7cb52",
+      "changed_paths": 6
+    },
+    {
+      "executor": "C01",
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01",
+      "toplevel": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01",
+      "gitdir": "C:/Users/adrie/Documents/Coelo/.git/worktrees/e2-r01-c01",
+      "branch": "codex/e2-r01-c01-identidade",
+      "head": "9d5bb2e48632e7ba3555752366127d005bb09633",
+      "changed_paths": 1
+    },
+    {
+      "executor": "C02",
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
+      "toplevel": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
+      "gitdir": "C:/Users/adrie/Documents/Coelo/.git/worktrees/e2-r01-c02",
+      "branch": "codex/e2-r01-c02-forms-midia",
+      "head": "54214790547a0f221da497811d18d06bc76f701b",
+      "changed_paths": 3
+    },
+    {
+      "executor": "C03",
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03",
+      "toplevel": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03",
+      "gitdir": "C:/Users/adrie/Documents/Coelo/.git/worktrees/e2-r01-c03",
+      "branch": "codex/e2-r01-c03-operacoes",
+      "head": "1bfdde2fd2a5ab633335c9e297cff1b3b1d70bd3",
+      "changed_paths": 1
+    },
+    {
+      "executor": "C04",
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c04",
+      "toplevel": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c04",
+      "gitdir": "C:/Users/adrie/Documents/Coelo/.git/worktrees/e2-r01-c04",
+      "branch": "claude/e2-r01-c04-estruturas",
+      "head": "a614c82da38e23308025d3f4f8475c2ba3cf5d83",
+      "changed_paths": 6
+    },
+    {
+      "executor": "C05",
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c05",
+      "toplevel": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c05",
+      "gitdir": "C:/Users/adrie/Documents/Coelo/.git/worktrees/e2-r01-c05",
+      "branch": "claude/e2-r01-c05-comunicacao",
+      "head": "cbbff86a366e50c4028a813b5a8c2cd863f9bb36",
+      "changed_paths": 6
+    }
+  ],
+  "native_c00_cwd": "C:/Users/adrie/Documents/Coelo; every C00 mutation uses explicit workdir e2-c00",
+  "unregistered_historical_path": {
+    "path": "C:/Users/adrie/Documents/Coelo/.worktrees/finalizacao-telas-operacoes",
+    "has_own_git": false,
+    "resolved_toplevel": "C:/Users/adrie/Documents/Coelo",
+    "round_usage": "not referenced by current R01 prompts/assignments; preserved, not removed"
+  },
+  "limits": "Different commits and gitdirs confirm Git isolation. Metadata alone does not prove every command cwd or active session. Shared objects/refs are normal Git worktree behavior."
+}

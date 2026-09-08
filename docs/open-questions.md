@@ -26,6 +26,15 @@ Decisões de Forms/Locais, limite de anexos Chat, reader self da Conta, perfis g
 
 O documento visual docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md lista403/404/500/503; inventário e ordem Owner R01 incluem errors.409. Atribuição vigente autoriza sua extensão local, preservando família visual e mensagem sanitizada; atualização canônica será revisada com handoff. Callback assíncrono não prova retry produtivo: router atual navega ao início. C01 I002 pode preparar tela/contrato; wiring real permanece C00.
 
+Atualização14:25: extensão409/ação assíncrona integrada localmente em d058aeb7 e fonte canônica/projeção reconciliadas,40/40 testes C00 Erros/rotas. Goldens novos continuam pendentes de aprovação; retry real não certificado.
+
+## Reconciliação técnica R01 — 08/09 14:25
+
+- **Cadeia histórica de Avaliações:** `packages/coelo_database/migrations/20260901182838_superadmin_assessments_internal_v2.sql` contém um parêntese ausente em `superadmin_assessment_context_options`; C03 reproduziu42601 antes da fixture, C00 confirmou o trecho. Ledger remoto inspecionado termina20260901200206, mas o último registro por si não prova inclusão/bytes dessa migration. Decisão de reparo canônico/ledger permanece C00 após confronto nominal; I004 permite só derivado TEMP de um caractere para replay local, com hashes/diff. Não reescrever arquivo aplicado nem inferir autorização remota.
+- **Fila de fechamento:** mesma migration filtra `status <> 'published'` e inclui draft, enquanto o fluxo apresentado como diários enviados só permite review de submitted e return de submitted/reviewed. Preservar negativa que exclui draft e confrontar aceites antes da correção forward-only; nenhuma nova reserva de migration de fila emitida.
+- **Composição versus produção:** código local de Usuários update/status e duplicação de Modelos existe, porém consulta por nome de RPC no catálogo remoto14:07–14:11 não encontrou os três endpoints. A existência na branch não comprova aplicação. Preparar pacote nominal antes de habilitar esses fluxos; consulta somente leitura não é certificação BE/E2E.
+- **Goldens C04:** r5 agrega20 falhas, r6 relata18 no recorte posterior e mantém20 como bloqueio geral. Registrar recorte/arquivos antes de afirmar redução; I004 pede reconciliação, sem aprovar masters.
+
 ## Reconciliação técnica R01 — 08/09 12:46
 
 C02/r4 corrigiu a busca do catálogo: a fonte canônica é packages/coelo_database/migrations, onde public.media_assets existe desde20260820182000, acoplado a posts/owner_person_id de Acontece; Forms possui catálogos específicos. A hipótese anterior de ausência por busca no espelho supabase/migrations não procede. C00 conferiu a definição e concedeu somente candidato local I003 de evolução compatível conforme ADR0032; nenhum schema novo/produção aprovado por esta nota.

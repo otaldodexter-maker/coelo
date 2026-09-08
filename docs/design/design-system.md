@@ -819,14 +819,16 @@ para falhas de rota, permissão ou disponibilidade que ocupam toda a janela.
 
 | Parte | Padrão canônico |
 | --- | --- |
-| Códigos | 403, 404, 500 e 503. O 401 redireciona para autenticação e o 429 permanece contextual. |
+| Códigos | 403, 404, 409, 500 e 503. O 401 redireciona para autenticação e o 429 permanece contextual. |
 | Superfície | Tela limpa, sem shell, menu ou cabeçalho, em `colorScheme.primaryContainer` com conteúdo em `onPrimaryContainer`. Não usar vermelho como fundo: o erro é comunicado também por código e texto. |
 | Anatomia | Código, divisor e mensagem centralizados, seguidos por uma única ação contextual. Não adicionar ilustração, logo ou ícone sem nova aprovação. |
-| Conteúdo | 403: “Você não tem permissão para acessar esta área.”; 404: “Não encontramos a página que você procura.”; 500: “Não foi possível concluir esta ação.”; 503: “O Coelo está temporariamente indisponível.” |
-| Ação | “Voltar ao início” em 403/404; “Tentar novamente” em 500/503. O destino ou retry é delegado ao app. |
+| Conteúdo | 403: “Você não tem permissão para acessar esta área.”; 404: “Não encontramos a página que você procura.”; 409: “Esta ação não pode ser concluída no estado atual.”; 500: “Não foi possível concluir esta ação.”; 503: “O Coelo está temporariamente indisponível.” |
+| Ação | “Voltar ao início” em 403/404/409; “Tentar novamente” em 500/503. O destino ou retry é delegado ao app. |
 | Responsividade | Em janela ampla, código, divisor e mensagem ficam em linha. Em compact ou com texto ampliado, passam para coluna. Usar `LayoutBuilder`, `SafeArea`, scroll vertical, padding horizontal adaptativo de `spacing.10` (40 px) em amplo e `spacing.4` (16 px) em compact, padding vertical `spacing.8` (32 px) e largura máxima de leitura de 720 px. |
 | Acessibilidade | Anunciar “Erro {código}. {mensagem}” como uma única informação, sem duplicar os filhos. A ação mantém foco visível, teclado e alvo mínimo do tema. |
-| QA | Validar 375, 768, 1024 e 1440 px, light/dark, texto a 200%, ausência de overflow e goldens das quatro variantes. |
+| QA | Validar 375, 768, 1024 e 1440 px, light/dark, texto a 200%, ausência de overflow e goldens das variantes implementadas. |
+
+A extensão409 corresponde à ação errors.409 do inventário atribuído pelo Owner na R01 (08/09/2026), reconciliada em docs/open-questions.md. Preserva esta composição; não transforma conflito contextual em erro fullscreen nem autoriza repetir comandos. A ação aceita conclusão assíncrona, impede repetição enquanto pendente, trata falha com mensagem sanitizada e preserva foco/contexto.
 
 A primeira referência implementada é o Superadmin, documentada em
 `docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md`. Admin e

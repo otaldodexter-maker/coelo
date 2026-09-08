@@ -3,7 +3,7 @@ title: "Páginas de erro do Superadmin"
 source: "User-approved plan on 2026-07-28; docs/design/design-system.md; decisions/0011-flutter-routing-performance.md"
 status: "implemented"
 generated_at: "2026-07-28"
-updated_at: "2026-07-29"
+updated_at: "2026-09-08"
 ---
 
 # Páginas de erro do Superadmin
@@ -65,3 +65,9 @@ A ação fica abaixo do grupo e recebe foco visível pelo tema Coelo.
 Implementado em 2026-07-28 no Superadmin com tela local parametrizada, rota
 dinâmica de QA, fallback 404 do roteador e cobertura de widget, roteamento,
 responsividade, semântica e regressão visual.
+
+## Extensão R01 — 08/09/2026
+
+A decisão original acima registra as quatro variantes de julho. O inventário vigente e a atribuição do Owner R01 incluem errors.409; contradição registrada em docs/open-questions.md antes da implementação. A variante409 preserva a anatomia aprovada e exibe “Esta ação não pode ser concluída no estado atual.” com “Voltar ao início”. Erros contextuais continuam na própria superfície; não converter todo conflito em tela global.
+
+O callback passa a aceitar FutureOr<void>, com uma execução por callback vigente, estado pendente, falha sanitizada e foco preservado. Troca de contexto e dispose invalidam continuações anteriores. Isso não liga retry produtivo nem repete comandos automaticamente. Testes e imagens candidatas ficam nas evidências R01; goldens novos409 ainda precisam aprovação nominal, sem rebaseline automático. Os aceites originais de responsividade/acessibilidade permanecem para a nova variante.
