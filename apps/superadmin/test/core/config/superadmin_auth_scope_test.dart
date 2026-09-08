@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:coelo_auth/coelo_auth.dart';
 import 'package:coelo_superadmin/core/config/superadmin_auth_scope.dart';
+import 'package:coelo_superadmin/features/forms/data/supabase_superadmin_forms_directory_reader.dart';
 import 'package:coelo_superadmin/features/access_profiles/data/supabase_access_profile_repository.dart';
 import 'package:coelo_superadmin/features/platform_users/data/supabase_platform_user_repository.dart';
 import 'package:coelo_superadmin/features/platform_users/domain/platform_user.dart';
@@ -177,6 +178,7 @@ void main() {
     final recoveryResult = await scope.requestPasswordRecovery('owner@coelo.me');
 
     expect(didInitialize, isFalse);
+    expect(scope.formsDirectoryReader, isNull);
     expect(scope.session.isAuthenticated, isFalse);
     expect(result.isSuccess, isFalse);
     expect(result.message, UnavailableCoeloAuthGateway.defaultMessage);
@@ -223,6 +225,7 @@ void main() {
     addTearDown(scope.session.dispose);
 
     expect(initializedUrl, 'https://project.supabase.co');
+    expect(scope.formsDirectoryReader, isA<SupabaseSuperadminFormsDirectoryReader>());
     expect(initializedKey, 'sb_publishable_test');
     expect(initializedStorage, isA<ConditionalSupabaseLocalStorage>());
     expect(scope.session.isAuthenticated, isFalse);

@@ -165,7 +165,7 @@ import '../../features/meal_plans/data/dev/development_meal_plan_repository.dart
 import '../../features/meal_plans/presentation/meal_plan_directory_page.dart';
 import '../../features/meal_plans/presentation/meal_plan_wizard_page.dart';
 import '../../features/forms/presentation/directory/forms_directory_page.dart';
-import '../../features/forms/data/forms_editor_context.dart';
+import '../../features/forms/data/forms_directory_reader.dart';
 import '../../features/forms/presentation/directory/forms_schedule_dialog.dart';
 import '../../features/forms/presentation/overview/forms_overview_page.dart';
 import '../../features/forms/presentation/operations/forms_operations_page.dart';
@@ -258,6 +258,7 @@ GoRouter createSuperadminRouter({
   MealPlanImageRepository mealPlanImageRepository = const UnavailableMealPlanImageRepository(),
   String? authorizedMealPlanTenantId,
   FormsApi? formsApi,
+  FormsDirectoryReader? formsDirectoryReader,
   PrincipalRuntimeContextRepository principalRuntimeContextRepository =
       const UnavailablePrincipalRuntimeContextRepository(),
   PrincipalHappensFeedRepository? principalHappensFeedRepository,
@@ -1654,7 +1655,8 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.forms,
             name: SuperadminRoutes.formsName,
             builder: (context, state) => FormsDirectoryPage(
-              api: formsApi,
+              api: null,
+              reader: formsDirectoryReader,
               onCreate: () => context.goNamed(SuperadminRoutes.formCreateName),
               onOpen: (form) => context.goNamed(
                 SuperadminRoutes.formOverviewName,
@@ -1668,31 +1670,6 @@ GoRouter createSuperadminRouter({
                 SuperadminRoutes.formEditName,
                 pathParameters: {'formId': form.id},
               ),
-              onManageSchedules: (form) {
-                final productionApi = formsApi;
-                if (productionApi is FormsEditorContextApi) {
-                  final FormsApi api = productionApi!;
-                  final FormsEditorContextApi contextApi = api as FormsEditorContextApi;
-                  unawaited(
-                    showFormsProductionScheduleDialog(
-                      context: context,
-                      api: api,
-                      contextApi: contextApi,
-                      formId: form.id,
-                      formTitle: form.title,
-                    ),
-                  );
-                  return;
-                }
-                unawaited(
-                  showFormsScheduleDialog(
-                    context: context,
-                    initialValue: FormsScheduleDraft.empty(),
-                    unavailableReason:
-                        'A fonte autorizada para distribuir formulários não está disponível.',
-                  ),
-                );
-              },
             ),
           ),
           GoRoute(

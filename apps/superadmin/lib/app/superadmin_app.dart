@@ -50,6 +50,7 @@ import '../features/access_profiles/domain/access_profile.dart';
 import '../features/platform_users/domain/platform_user.dart';
 import '../features/groups/domain/group_directory.dart';
 import '../features/health_care/domain/medication_plan_repository.dart';
+import '../features/forms/data/forms_directory_reader.dart';
 import 'router/superadmin_router.dart';
 import 'theme/superadmin_theme_mode_scope.dart';
 
@@ -110,6 +111,7 @@ class SuperadminApp extends StatefulWidget {
     this.planCatalogRepository = const UnavailablePlanCatalogRepository(),
     this.agendaRepository,
     this.formsApi,
+    this.formsDirectoryReader,
     this.mealPlanRepository = const UnavailableMealPlanRepository(),
     this.mealPlanImageRepository = const UnavailableMealPlanImageRepository(),
     this.authorizedMealPlanTenantId,
@@ -156,6 +158,7 @@ class SuperadminApp extends StatefulWidget {
   final PlanCatalogRepository planCatalogRepository;
   final AgendaRepository? agendaRepository;
   final FormsApi? formsApi;
+  final FormsDirectoryReader? formsDirectoryReader;
   final MealPlanRepository mealPlanRepository;
   final MealPlanImageRepository mealPlanImageRepository;
   final String? authorizedMealPlanTenantId;
@@ -222,6 +225,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       planCatalogRepository: widget.planCatalogRepository,
       agendaRepository: widget.agendaRepository,
       formsApi: widget.formsApi,
+      formsDirectoryReader: widget.formsDirectoryReader,
       mealPlanRepository: widget.mealPlanRepository,
       mealPlanImageRepository: widget.mealPlanImageRepository,
       authorizedMealPlanTenantId: widget.authorizedMealPlanTenantId,
