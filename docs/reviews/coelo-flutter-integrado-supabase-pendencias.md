@@ -14,13 +14,17 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "2AE7EBB75600B8498854C39B8B51A09A5B08E07650EB36D0B82C35560C402390"
+flutter_tracker_sha256: "3B4DEFF697ED8A67F634E6ABBF9A07850204A0471D0D5B34FFD3FBA99587D26A"
 supabase_tracker_sha256: "E8FD0B2A2CB8531C4B12423FB9E7E4D604A30E010EE6399575A5B9DE8DF9E053"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
+
+- Atualização02:23: Para Você/Agora/Publicação200/200 incluindo goldens,
+  analyzer3 e gate visual local PASS após integração. M03/N01, persistência
+  e mídia real seguem abertos; não altera contadores ready/verified.
 
 - Atualização02:18: CHILD adapter/estado/pipeline38/38 e Cardápios roundtrip
   c6532889 com70/70 focais, analyzer4 PASS no destino. Sem wiring, SQL,

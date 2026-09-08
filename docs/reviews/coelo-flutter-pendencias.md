@@ -14,6 +14,12 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização02:23: Para Você3e16dfec/5e762eb4 e Agora publicação/opções
+  a6a51d10/080997f6 isolam callbacks/rotas de overlays e permitem rolagem
+  do seletor em viewport curta. Três features200/200 no destino, incluindo
+  goldens; analyzer3 e validador visual PASS. Sem PNG alterado ou mídia real;
+  não resolve os gates backend M03/N01 nem comprova E2E.
+
 - Atualização02:18: CHILD bb4a239d/f1fa37de/5a0c7aa2 integra adapter, estado
   e pipeline isolados;38/38 no destino. Troca de instituição/revisão/logout
   invalida resposta tardia, sem conexão às rotas. Cardápios c6532889 corrige
