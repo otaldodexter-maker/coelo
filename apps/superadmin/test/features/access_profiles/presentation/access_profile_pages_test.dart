@@ -15,6 +15,57 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final width in [375.0, 1440.0]) {
+    for (final scale in [1.0, 2.0]) {
+      testWidgets('card grid measures status without intrinsics at $width text $scale', (
+        tester,
+      ) async {
+        await tester.binding.setSurfaceSize(Size(width, 1400));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CoeloTheme.light,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
+              child: child!,
+            ),
+            home: AccessProfileDirectoryPage(
+              repository: FakeAccessProfileRepository(),
+              logout: unavailableSuperadminLogout,
+              onCreate: (_) {},
+              onOpen: (_, _) {},
+            ),
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(tester.takeException(), isNull);
+        if (find.byKey(const Key('create-access-profile-card')).evaluate().isEmpty) {
+          await tester.scrollUntilVisible(
+            find.byKey(const Key('create-access-profile-card')),
+            240,
+            scrollable: find
+                .descendant(
+                  of: find.byKey(const Key('access-profiles-scroll')),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+          );
+        }
+        final create = tester.getRect(find.byKey(const Key('create-access-profile-card')));
+        final first = tester.getRect(find.byType(CoeloAdminInteractiveCard).first);
+        expect(first.width, create.width);
+        if (width == 1440) {
+          expect(first.top, create.top);
+          expect(first.height, create.height);
+          expect(first.left - create.right, CoeloSpacing.space6);
+        } else {
+          expect(first.top - create.bottom, CoeloSpacing.space6);
+        }
+      });
+    }
+  }
+
   const repository = UnavailableAccessProfileRepository();
 
   testWidgets('directory reports unavailable without exposing successful profile actions', (
