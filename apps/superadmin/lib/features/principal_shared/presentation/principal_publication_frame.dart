@@ -380,10 +380,18 @@ final class _PrincipalPublicationToggleFieldState extends State<PrincipalPublica
                       ),
                     ),
                     const SizedBox(width: CoeloSpacing.space2),
-                    Switch(
-                      value: widget.value,
-                      onChanged: widget.onChanged,
-                      materialTapTargetSize: MaterialTapTargetSize.padded,
+                    // The row is one control: the detector above carries the
+                    // semantics, the shortcuts and the activation. Left
+                    // focusable, the Switch adds a second Tab stop under
+                    // ExcludeSemantics — it toggles, but with no semantic node,
+                    // so the keyboard reads as intermittent: one Tab highlights
+                    // and does nothing, two Tabs work.
+                    ExcludeFocus(
+                      child: Switch(
+                        value: widget.value,
+                        onChanged: widget.onChanged,
+                        materialTapTargetSize: MaterialTapTargetSize.padded,
+                      ),
                     ),
                   ],
                 ),
