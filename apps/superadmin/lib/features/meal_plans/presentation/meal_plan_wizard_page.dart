@@ -127,6 +127,14 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
       _commandGeneration++;
       _resetForLoad();
       _load();
+      return;
+    }
+    if (!identical(oldWidget.imageRepository, widget.imageRepository)) {
+      _commandGeneration++;
+      if (_saving) {
+        _saving = false;
+        _error = 'O contexto mudou. Revise os dados e tente novamente.';
+      }
     }
   }
 
