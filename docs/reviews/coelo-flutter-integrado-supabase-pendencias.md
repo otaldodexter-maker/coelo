@@ -14,14 +14,30 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "791981A9E01690AF174CC8079C987A8B4312C0D03D17A6CE336408339D860F81"
-supabase_tracker_sha256: "41B9768066313A0A6FDF4ACFFE604861627A4E9D33523551BDD0E74DB1399151"
+flutter_tracker_sha256: "8734766BA2637C0440B0E8345AB0BD7A291A77E6F6E3ED389FB17C5D2AFAACA3"
+supabase_tracker_sha256: "F8A9C375C9BCFE56E01419586066ED1975FBEAFEE9B9F80ACFEFEB7B085C82A6"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
 
+- Atualização01:03: FREAD local117/117 agora comprovado e cleanup confirmado;
+  shell/relato/continuação Perfis104/104 no destino, analyzer5 limpo.
+  Fluxo real pela tela continua pendente, assim como autoria/exports/R2.
+  LOC prepara perfil nominal final; Perfis READ conserva lacuna de alcance
+  do ator institucional, sem inventar catálogo global nem contador autenticável.
+- Em08/09 até00:57: **88/88** e **111/111** nos dois lotes cliente do destino,
+  analyzers sem issues e **41/41 Pester** FREAD derivado51. LOCUI agora
+  integrado com callback ligado à geração; clipping compartilhado continua
+  pendente. Acontece preserva draft em422 ambíguo e rejeita negativas tipadas.
+  São recortes locais, não novas ações ready/verified; Auth/R2/runtime e
+  avaliação visual completa continuam distintos.
+- Auth47: LOC deltaMAINTAIN comprovado, Perfis primeiro gateACL42501
+  comprovado, cleanup independente confirmado. FREAD51 em execução nominal;
+  Agenda fixture aprovada somente para futuro RED com manifesto fechado.
+  Atividades prepara roteiro Flutter→PostgREST local, sem inferir E2E dos97TAP.
+  Sete tarefas seguem apoiadas até03:20; consolidação/relatório até04:40BRT.
 - Em08/09 até00:44: lotes cliente172/277/145/289/82 passaram no destino e
   Pester332/332 passou, sem somar execuções sobrepostas. Eng1 confirmou SQL
   Models38/38 e Atividades97/97 com cleanup. São provas de recortes locais;

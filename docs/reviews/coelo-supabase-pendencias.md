@@ -12,6 +12,34 @@ family_count: 38
 
 ## Rodada de 2026-09-07 — backend local e integração em curso
 
+- Atualização01:03: FREAD derivado51 terminou **117/117 pgTAP PASS**, exit0,
+  evidência `b61eba6e`. Base51 inteira, reader/fixture imutáveis; cleanup
+  independente03:57:28.3829272UTC, sem recursos próprios. A derivação local
+  explícita de155005 continua distinta do histórico canônico; não prova
+  implantação, autoria, exportação ou E2E Flutter.
+- LOC final98d166d2 revisado: única entrada MAINTAIN corrigida, SHA bruto
+  7C7CA4DA2AA4EECE06F386AEE9ADA7C52DB69EECD996BCA18ED434A922F90538.
+  Preparação do perfil com bootstrap115df2ca liberada, SQL ainda não.
+  Eng2 localizou introdução de G.deleted_at em4a3cf887 sem DDL correspondente
+  no conjunto consultado;194256 só revoga ACL. Correção do consumidor exige
+  confronto com contrato, não coluna/ponte artificial ou troca por archived_at.
+- Em08/09 até00:57: prova Auth47 `60d2f111` lida e integrada. LOC3/3
+  confirma precondições; catálogo PG17.6 observou nove ACLs e único delta
+  `service_role:MAINTAIN:false` contra947, sem grant/revoke. Autorizada somente
+  inclusão nominal na fingerprint candidata, não replay LOC completo.
+  Perfis8 teve3PASS/5FAIL: quatro chamadas retornam42501 antes do contrato,
+  pois wrapper invoker chama cursor privado sem EXECUTE authenticated.
+  Não interpretar os cinco efeitos como bugs independentes de paginação/CSV.
+  Cleanup independente03:50:56.8629214UTC zerou apenas recursos próprios.
+- FREAD GREEN derivado51 `f29425a7`: **41/41 Pester** no destino,46.98s,
+  zero skip; execução LOCAL nominal liberada ao Eng1 com fixture117 imutável,
+  em andamento. O nome GREEN não é resultado SQL nem conclusão de tela.
+- AG-READ01 fixture `9ea04623` passou review estático como candidata RED;
+  no_plan exige contar TAP somente no runtime. Closure candidata53 do Eng2
+  foi lida, incluindo efeitos audit14/Activities e autor estrutural separado;
+  falta perfil pinado/revisado pelo Eng1. Nenhum SQL Agenda novo autorizado.
+  A01 próximo recorte é preparar runtime Flutter→PostgREST LOCAL com ator039,
+  sem conectar produção nem delegar Docker a outro operador.
 - Em08/09 até00:44: perfis Models/A01 `40f6dc27` passaram **332/332 Pester**
   no destino, zero skip. Prova Eng1 `deed4ff6`: ModelsGREEN50 **38/38 TAP**
   com ACL10, cleanup03:15:13UTC; A01GREEN55 v2 **97/97 TAP**, cleanup

@@ -14,6 +14,27 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização01:03: formulário Perfis `6a52f284`/`2bad94e7` impede reload e
+  callbacks após descarte; cabeçalho `ad558c6f` liga relatório à tela/handler
+  de origem e remove somente sua rota. Destino22/22 antes do incremento de
+  saída e104/104 shell/roteamento/continuação depois; analyzers2/5 limpos.
+  Relatório continua contrato local, sem prova de envio/persistência real.
+- Em08/09 até00:57: LOCUI `25239249` + correção de geração `7bcd7ccd`
+  integrados; o callback antigo não volta a abrir quando o cache reutiliza
+  a mesma instância. `locations.list` e a parte somente leitura de
+  `locations.detail-links` continuam parciais: sem rota/DI/RPC, mapa, foto ou
+  vínculos produtivos. Clipping do status a200% segue reservado à E2E2.
+- Lote de destino **88/88**: Modelos paginação/template, Cardápios status,
+  Locais controllers/painéis/novos candidatos golden e galeria Acontece.
+  Outro lote **111/111**: publicação Acontece e Cardápios, incluindo goldens
+  focais de publicação. Analyzers dos dois recortes sem issues; não somar
+  execuções sobrepostas nem promover aprovação visual/global ou E2E.
+- Acontece `d8544e83` entrou somente junto com `8fb939be`:401/403 permanecem
+  negativa definitiva;422 `media_delete_denied` é erro ambíguo recuperável,
+  preserva rascunho e permite retry explícito. Galeria `0d210cdd` invalida
+  rota/callbacks e resultados tardios; dez goldens históricos do feed seguem
+  fora deste lote. Cardápios `5a21e3dc` preserva status publicado na lista;
+  `a2512e3d` só confirma publicação do modelo após resposta `published`.
 - Em08/09 até00:44: novos lotes no destino **172/172** Chat/Cardápios,
   **277/277** Cuidado/Perfis, **145/145** Auditoria/Convites/rotas,
   **289/289** Cuidado/Circulares e **82/82** criação Perfis/Convites;
