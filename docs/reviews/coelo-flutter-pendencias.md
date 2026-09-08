@@ -14,6 +14,13 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização01:40: ContextPanel Acontece `b37a441d` mede cabeçalho real;
+ 16/16 testes de largura/tema/escala no destino PASS. Inspeção central da
+ imagem1440 e diferença isolada confirma remanescente no PublishNowCard,
+ sem promoção de PNG e sem resolver10 falhas históricas do feed. Avisos
+ `9abd4a74` retido por P2: prévia aceita permanece sob rota aberta pelo callback;
+ correção e contraprova Back solicitadas antes da integração.
+
 - Atualização01:35: Perfil/Circulares `1b6533bc`/`175acbf0` invalidam páginas
   e prévias ao trocar contexto; cabeçalho `50814957` substitui controller de
   atividades preservando ownership externo. Destino21/21 focais e analyzer3

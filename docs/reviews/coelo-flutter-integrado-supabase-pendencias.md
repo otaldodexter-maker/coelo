@@ -14,13 +14,17 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "02425CB395066CF02632C32938CE925EFAC6196EABB0840E48C5867C18D80F5C"
+flutter_tracker_sha256: "2E231CF5BC29110735D59AC54870F4E39820E6F0694EC90580FF9C75F6A50E44"
 supabase_tracker_sha256: "72823DD534DA068ABA5F9A3675882C928D983D2EC460E66ECADFF2C647FFC6C7"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
+
+- Atualização01:40: ContextPanel `b37a441d`,16/16 destino, sem rebaseline.
+ Avisos9abd retido por revisão P2 de ownership; nenhum SQL ou E2E promovido.
+ CHILD DTOa9a5974, F-AUTHOR02dbac e runtimes de identidade permanecem candidatos.
 
 - Atualização01:35: isolamento Perfil/Circulares e controller de atividades
   integrado em1b6533bc/175acbf0/50814957,21/21 focais e analyzer3 no destino.
