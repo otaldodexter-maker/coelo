@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../auth/domain/logout_action.dart';
@@ -163,6 +164,22 @@ final class _UnitDetailPageState extends State<UnitDetailPage> {
                           onPressed: widget.onOpenLocationCatalog,
                           icon: const Icon(Icons.place_outlined),
                           label: const Text('Mapa e locais'),
+                        ),
+                      // The Owner deferred exporting the people of a unit to
+                      // after the MVP. The promise was that the button stays
+                      // visible and says so, not that it disappears: an action
+                      // nobody can see is an action nobody can ask about. It
+                      // opens no picker, builds no file and calls no RPC.
+                      if (_controller.detail != null)
+                        OutlinedButton.icon(
+                          key: const Key('unit-people-export'),
+                          onPressed: () => showSuperadminNotice(
+                            context,
+                            'Disponível depois do MVP',
+                            icon: Icons.info_outline_rounded,
+                          ),
+                          icon: const Icon(Icons.groups_outlined),
+                          label: const Text('Exportar pessoas'),
                         ),
                       OutlinedButton.icon(
                         key: const Key('unit-detail-reload'),
