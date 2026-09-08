@@ -64,6 +64,8 @@ import '../../features/institutions/data/supabase_institution_directory_reposito
 import '../../features/institutions/domain/institution_directory_repository.dart';
 import '../../features/people/data/supabase_person_directory_repository.dart';
 import '../../features/people/domain/person_directory.dart';
+import '../../features/people/domain/person_detail_reader.dart';
+import '../../features/people/data/supabase_person_detail_reader.dart';
 import '../../features/people/domain/person_identity.dart';
 import '../../features/groups/domain/group_directory.dart';
 import '../../features/access_profiles/data/supabase_access_profile_repository.dart';
@@ -108,6 +110,7 @@ final class SuperadminAuthScope {
     required this.assessmentRepository,
     required this.assessmentMutationsEnabled,
     required this.personDirectoryRepository,
+    this.personDetailReader = const UnavailablePersonDetailReader(),
     this.personIdentityRepository = const UnavailablePersonIdentityRepository(),
     required this.accessProfileRepository,
     required this.groupDirectoryRepository,
@@ -154,6 +157,7 @@ final class SuperadminAuthScope {
   final AssessmentRepository assessmentRepository;
   final bool assessmentMutationsEnabled;
   final PersonDirectoryRepository personDirectoryRepository;
+  final PersonDetailReader personDetailReader;
   final PersonIdentityRepository personIdentityRepository;
   final AccessProfileRepository accessProfileRepository;
   final GroupDirectoryRepository groupDirectoryRepository;
@@ -261,6 +265,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       assessmentRepository: SupabaseAssessmentRepository(client),
       assessmentMutationsEnabled: enableAssessmentMutations,
       personDirectoryRepository: SupabasePersonDirectoryRepository(client),
+      personDetailReader: SupabasePersonDetailReader(client),
       personIdentityRepository: const UnavailablePersonIdentityRepository(),
       accessProfileRepository: SupabaseAccessProfileRepository(client),
       groupDirectoryRepository: const UnavailableGroupDirectoryRepository(),

@@ -67,3 +67,11 @@ a representação de leitura/filtro preserva `draft`, `active`, `inactive`,
 `suspended` (`Suspensa`) e `archived`. Status cadastral não substitui autorização
 nem se confunde com suspensão de vínculo. Isso não cria uma ação para mudar o
 status nem certifica implantação ou fluxo E2E.
+
+O detalhe de leitura da spec 046 usa `/people/:personId`, com Voltar e
+Recarregar, sem transformar o botão Editar em consulta. Identidade mínima e
+vínculos/contextos retornados são informativos; ausência no payload não prova
+ausência global. Vínculo Auth não concede autorização. A consulta não apresenta
+atividade, CPF, contato ou contadores legados. Dados anteriores são removidos
+ao recarregar, trocar pessoa/sessão, sair ou entrar em recuperação de senha.
+Esse recorte não libera comandos nem comprova E2E remoto.

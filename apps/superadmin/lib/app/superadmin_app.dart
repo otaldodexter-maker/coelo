@@ -28,6 +28,7 @@ import '../features/units/domain/unit_backend_commands.dart';
 import '../features/units/domain/unit_directory.dart';
 import '../features/people/data/supabase_person_directory_repository.dart';
 import '../features/people/domain/person_directory.dart';
+import '../features/people/domain/person_detail_reader.dart';
 import '../features/people/domain/person_identity.dart';
 import '../features/access_profiles/data/supabase_access_profile_repository.dart';
 import '../features/imports/domain/import_repository.dart';
@@ -103,6 +104,7 @@ class SuperadminApp extends StatefulWidget {
     this.assessmentRepository = const UnavailableAssessmentRepository(),
     this.assessmentMutationsEnabled = false,
     this.personDirectoryRepository = const UnavailablePersonDirectoryRepository(),
+    this.personDetailReader = const UnavailablePersonDetailReader(),
     this.personIdentityRepository = const UnavailablePersonIdentityRepository(),
     this.unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
     this.unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
@@ -150,6 +152,7 @@ class SuperadminApp extends StatefulWidget {
   final AssessmentRepository assessmentRepository;
   final bool assessmentMutationsEnabled;
   final PersonDirectoryRepository personDirectoryRepository;
+  final PersonDetailReader personDetailReader;
   final PersonIdentityRepository personIdentityRepository;
   final UnitDirectoryRepository unitDirectoryRepository;
   final UnitBackendCommandsGateway unitBackendCommands;
@@ -217,6 +220,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       assessmentRepository: widget.assessmentRepository,
       enableAssessmentMutations: widget.assessmentMutationsEnabled,
       personDirectoryRepository: widget.personDirectoryRepository,
+      personDetailReader: widget.personDetailReader,
       personIdentityRepository: widget.personIdentityRepository,
       unitDirectoryRepository: widget.unitDirectoryRepository,
       unitBackendCommands: widget.unitBackendCommands,

@@ -25,6 +25,22 @@ compatibilidade cliente; não altera SQL nem promove E2E.
 
 ## Objetivo e problema
 
+### Consulta Flutter somente leitura — PERS-READ01
+
+O recorte de consulta aprovado na Etapa 2 adiciona o deep link
+`/people/:personId` ao Superadmin. Sua dependência expõe somente o detalhe v2,
+sem listagem, opções ou comandos legados. A página mostra identidade mínima,
+status cadastral, classificação informativa de vínculo Auth e os vínculos
+institucionais adultos ou contextos infantis retornados. Não mostra atividade,
+contatos, CPF, contadores ou campos auxiliares do modelo legado.
+
+Os únicos controles da consulta são Voltar e Recarregar. Coleções vazias
+significam que nenhum item foi retornado na consulta autorizada, não ausência
+global de vínculos. Troca de pessoa/reader ou revisão da sessão invalida dados
+anteriores; logout/recovery remove a página protegida. O backend continua
+validando identidade, capability, escopo e recurso. Isso não libera create/edit,
+transferências, revogações ou mudança de status e não certifica implantação E2E.
+
 Migrar somente o detalhe e o reload de Pessoas para a identidade interna
 exclusiva da spec 039. O contrato precisa entregar a identidade global e os
 vínculos contextuais estritamente necessários ao formulário atual sem usar

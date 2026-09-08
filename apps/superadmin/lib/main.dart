@@ -30,6 +30,7 @@ Future<void> main() async {
       assessmentRepository: authScope.assessmentRepository,
       assessmentMutationsEnabled: authScope.assessmentMutationsEnabled,
       personDirectoryRepository: authScope.personDirectoryRepository,
+      personDetailReader: authScope.personDetailReader,
       personIdentityRepository: authScope.personIdentityRepository,
       accessProfileRepository: authScope.accessProfileRepository,
       importRepository: authScope.importRepository,
