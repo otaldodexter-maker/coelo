@@ -1,7 +1,7 @@
 ---
 title: "C07 — registro consolidado dos defeitos da rodada R01, por dono"
 source: "medições próprias de C07 no baseline 4af42925: sete arquivos de aceite reservados, três reproduções em C07-evidence/repro/, laudo das 61 divergências com duas erratas, varredura do padrão FocusableActionDetector e dossiê do Publicar no Agora; decisão R01-VISUAL-1835 e instruções R01-C07-I002/I003 da C00; pedido operacional da C06 de 2026-09-08T19:42-03:00"
-status: "evidence-registry"
+status: "evidence-registry;atualizado-1950"
 generated_at: "2026-09-08T19:40:00-03:00"
 timezone: "America/Sao_Paulo"
 ---
@@ -36,6 +36,12 @@ código, e a C00 negou a que pedi. Todos foram encaminhados pela C06 aos donos.
 | 14 | `_PageHeader` compacto desloca o título quando há ações | C00 | **corrigido** em `c4a7feff` | medido por mim antes |
 | 15 | `CoeloAdminToggleField` sem ativação por teclado | C00 | aberto | lido |
 | 16 | `principal_happens_publication_page.dart` com foco duplo | C05 | aberto | lido |
+| 17 | Sair não encerra a sessão local se `signOut` lançar `Error` | C01 | aberto | lido, verificado na fonte |
+| 18 | Sessão autenticada sem autorização sobrevive pelo mesmo motivo | C01 | aberto | lido, verificado na fonte |
+| 19 | Gateway de autenticação quebra o contrato de nunca lançar | C00/C01 | aberto | lido, verificado na fonte |
+| 20 | App não sobe se o bootstrap lançar `Error` | C00 | aberto | lido, estrutura verificada |
+| 21 | Salvar pessoa com campo vazio não dá retorno nenhum | C04 | aberto | lido, verificado na fonte |
+| 22 | 22 caminhos de carga travam a tela pelo mesmo padrão | C03, C04, C05 | aberto | lido |
 
 ## Defeitos medidos
 
@@ -201,8 +207,12 @@ focalizável. Mesma forma do card de Instituições.
 
 1. Os defeitos 12, 13, 15 e 16 são leitura de código sem execução. Merecem reprodução antes de
    virarem certificação.
-2. A varredura de `on Exception` em caminhos de carga está em andamento no momento desta escrita e
-   pode acrescentar itens. O defeito 1 é a primeira ocorrência conhecida dessa família.
+2. A varredura de `on Exception` foi concluída e está em
+   `C07-evidence/2026-09-08-varredura-on-exception.md`. Ela acrescentou os itens 17 a 22 e mostrou
+   que o defeito 1 é a ponta de uma família de **65 ocorrências em 31 arquivos**, com 22 travando
+   tela. O achado que reenquadra: a correção `fdf0972d` cobriu os quatro caminhos **menos**
+   alcançáveis, hoje ligados a repositórios indisponíveis, e deixou de fora os que estão ligados a
+   repositórios reais com casts crus.
 3. Nenhum item aqui certifica FE, BE ou E2E. São defeitos medidos ou lidos em cliente, com repositório
    duplo, sem backend real.
 4. Os 43 casos classificados como master desatualizado **não** são defeito e não estão neste
