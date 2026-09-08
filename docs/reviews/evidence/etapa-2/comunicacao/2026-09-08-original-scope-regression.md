@@ -46,6 +46,16 @@ foi solicitada à coordenação; nenhum PNG foi alterado ou promovido nesta aná
 
 # Gates preservados
 
+## Reexecução após as correções locais
+
+Em7115a6f7, root repetiu o mesmo lote Flutter:880/880 não-golden do escopo
+original + shell e55/55 rotas. Sem regressões nos deltas de Avisos, ContextPanel,
+Chatimage e ParaVocê. Aumento de34 testes sobre o checkpoint846 anterior.
+Validadores da base de conhecimento e seus cenários passaram, sem nova projeção.
+Diff desdee8bbad3c:22arquivos,zero apps/admin|principal|site,zero trackers oficiais,
+zero migrations ezeroPNG. Diff check passou. Esses resultados não resolvem os
+gates abaixo. Evidência browser local separada em2026-09-08-browser-local-smoke.md.
+
 M03: máximo de lote Chat pelo Owner, contrato AMR/proveniência server-side E1,
 decoder/entitlement, catálogo/locks e lease nominal. N01: diagnóstico local
 50+2 sob Eng1 não é ponte/green/aplicação remota. Convites mantém OQ039/spec047.
