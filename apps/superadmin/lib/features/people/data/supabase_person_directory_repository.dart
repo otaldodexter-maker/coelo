@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/person_directory.dart';
+import '../domain/person_detail_v2.dart';
 
 final class SupabasePersonDirectoryRepository implements PersonDirectoryRepository {
   const SupabasePersonDirectoryRepository(this._client);
@@ -65,20 +66,12 @@ final class SupabasePersonDirectoryRepository implements PersonDirectoryReposito
         'superadmin_person_detail_v2',
         params: {'p_person_id': personId},
       );
-      if (response is! Map) throw const PersonDirectoryUnavailableException();
-      final envelope = Map<String, dynamic>.from(response);
-      if (envelope['ok'] != true) {
-        final error = envelope['error'] is Map
-            ? Map<String, dynamic>.from(envelope['error'] as Map)
-            : const <String, dynamic>{};
-        final code = error['code'];
-        throw _mapInternalError(code is String ? code : null);
-      }
-      final data = envelope['data'];
-      if (data is! Map) throw const PersonDirectoryUnavailableException();
-      return PersonDirectoryItem.fromJson(Map<String, dynamic>.from(data));
+      return decodePersonDetailV2(response, requestedId: personId);
     } on PostgrestException catch (error) {
-      throw _mapError(error);
+      if (const {'42501', 'PGRST301', 'PGRST302'}.contains(error.code)) {
+        throw const PersonDirectoryUnauthorizedException();
+      }
+      throw const PersonDirectoryUnavailableException();
     } on PersonDirectoryUnauthorizedException {
       rethrow;
     } on PersonDirectoryUnavailableException {
@@ -114,14 +107,6 @@ final class SupabasePersonDirectoryRepository implements PersonDirectoryReposito
     }
   }
 }
-
-Exception _mapInternalError(String? code) => switch (code) {
-  'SAI_PERMISSION_DENIED' ||
-  'SAI_INTERNAL_CONTEXT_DENIED' ||
-  'SAI_SESSION_INVALID' ||
-  'SAI_MFA_REQUIRED' => const PersonDirectoryUnauthorizedException(),
-  _ => const PersonDirectoryUnavailableException(),
-};
 
 List<PersonFilterOption> _options(Object? raw) {
   final rows = raw as List<dynamic>? ?? const [];
