@@ -1,11 +1,33 @@
 ---
 title: "Modelos de Acesso — autorização antes de lookup"
 source: "Reserva local do Coordenador; spec 039 e aditivo MFA MVP; migrations 171731/193000; revisão realm_audit"
-status: "nominal-red-confirmed; corrective-static-reviewed-awaiting-green"
+status: "local-green-38-tap; production-and-e2e-pending"
 generated_at: "2026-09-07"
+updated_at: "2026-09-08"
 ---
 
 ## Recorte
+
+Registro cronológico: os checkpoints abaixo preservam seu estado de coleta.
+Resultado vigente: Engenheiro 1 registrou **38/38 pgTAP PASS, exit 0**, no
+commit `5ef2fc4e`, evidência
+`docs/reviews/evidence/etapa-2/engenheiro-1/models-read-green-2026-09-08.md`, lida
+integralmente pela E2E 1 na worktree do executor. A base RED49 emitiu 24 PASS /
+4 FAIL nas fixtures 11+17 (os dois gaps repetidos); GREEN50 acrescentou somente
+a corretiva `20260908021821`, repetiu 11+17 intactos e adicionou ACL10.
+
+Os dez asserts extras confirmaram helper, owner postgres, SECURITY DEFINER,
+STABLE, search_path vazio e EXECUTE efetivo negado a PUBLIC/anon/authenticated/
+service_role. As seis contraprovas domain-only passaram antes e depois.
+38 é contagem TAP, não 38 cenários distintos: a fixture 17 repete a 11.
+
+GREEN iniciou `2026-09-08T03:13:46.9549294Z`, identidade
+`coelo_safe_dfcbcbafabb74cb38dd3d1a5f196d`; cleanup independente
+`2026-09-08T03:15:13.8697189Z`: zero recursos próprios e staging ausente,
+recursos históricos preservados. Nenhuma execução SQL/Docker nesta frente,
+remoto ou promoção E2E. Não comprova matriz completa de tenants/roles ou UI.
+
+### Contrato preservado
 
 Somente leituras list/detail/catalog de Modelos no Superadmin e o helper de
 detalhe. Preservar autorização `${domain}.role_models.read`, Owner/escopo
