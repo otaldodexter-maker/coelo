@@ -1,9 +1,11 @@
+-- R01 C01 I011. Approved local test delta: edit persistence and isolated institution scope.
+-- File reservation does not authorize replay; C00 assigns a separate nominal lease.
 -- R01 C01 I005. Disposable coordinated replay only; never run in production.
 -- Base: ModelReadAuthorizationGreen + the reserved AAL1 phase policy candidate.
 -- Without the candidate, AAL1 success assertions are expected RED, not certified.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(31);
+select plan(34);
 
 select is(pg_get_function_arguments(
   'app_private.access_profile_require_model_action(text,text,boolean)'::regprocedure),
@@ -68,6 +70,27 @@ where r.code='auditor' and p.code='platform.role_models.create'
 on conflict(role_id,permission_id) do update
 set effect='allow',status='active',revoked_at=null;
 
+-- A separate legal institution-scoped Owner isolates scope from identity,
+-- Owner role, effective capability, AAL, session and link lifecycle failures.
+-- Direct local fixture only: this does not exercise the institution create UI.
+insert into public.institutions(id,public_name,slug,status) values
+  ('ca180000-0000-4000-8000-000000000001','C01 scoped Owner fixture','c01-model-aal1-scope','active');
+insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,
+  raw_app_meta_data,raw_user_meta_data) values
+  ('ca110000-0000-4000-8000-000000000005','authenticated','authenticated',
+    'c01-model-aal1-scoped-owner@invalid.test',now(),now(),now(),'{}','{}');
+insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after) values
+  ('ca120000-0000-4000-8000-000000000005','ca110000-0000-4000-8000-000000000005',now(),now(),'aal1',now()+interval '1 hour');
+insert into app_private.superadmin_internal_identities(id) values
+  ('ca130000-0000-4000-8000-000000000005');
+insert into app_private.superadmin_internal_auth_links(id,internal_identity_id,auth_user_id) values
+  ('ca140000-0000-4000-8000-000000000005','ca130000-0000-4000-8000-000000000005','ca110000-0000-4000-8000-000000000005');
+insert into app_private.superadmin_internal_memberships(
+  id,internal_identity_id,platform_role_id,scope_kind,scope_institution_id)
+select 'ca150000-0000-4000-8000-000000000005',
+  'ca130000-0000-4000-8000-000000000005',id,'institution','ca180000-0000-4000-8000-000000000001'
+from public.platform_roles where code='owner';
+
 -- Independent source fixtures keep duplicate/update diagnostics meaningful
 -- even when create is denied by the old secondary AAL2 gate.
 insert into public.access_profile_templates(id,domain,code,name,max_scope_kind,is_system,status) values
@@ -91,6 +114,10 @@ insert into c01_aal1_results values('create',public.superadmin_access_profile_mo
 insert into c01_aal1_results values('update',public.superadmin_access_profile_model_update(
   'ca170000-0000-4000-8000-000000000002',
   '{"id":"ca160000-0000-4000-8000-000000000001","name":"C01 source edited","expected_version":1,"capabilities":[{"code":"platform.read","effect":"allow"}],"reason":"C01 policy regression"}'));
+-- Independent RPC read after edit: compare literal expectations, never two
+-- nullable response fields that could both disappear after an error.
+insert into c01_aal1_results values('edit-reload',public.superadmin_access_profile_model_detail(
+  'ca160000-0000-4000-8000-000000000001'));
 insert into c01_aal1_results values('duplicate',public.superadmin_access_profile_model_duplicate(
   'ca170000-0000-4000-8000-000000000003',
   '{"source_model_id":"ca160000-0000-4000-8000-000000000001","name":"C01 AAL1 copy","reason":"C01 policy regression"}'));
@@ -111,6 +138,12 @@ select is(current_setting('test.c01_aal1_rpc_actor'),'authenticated','commands r
 select is((select result->>'ok' from c01_aal1_results where key='create'),'true','Owner AAL1 creates without People');
 select is((select result#>>'{data,model,name}' from c01_aal1_results where key='update'),
   'C01 source edited','Owner AAL1 edits an existing model');
+select is((select jsonb_build_object(
+    'ok',result->'ok','id',result#>'{data,id}',
+    'name',result#>'{data,name}','version',result#>'{data,version}')
+  from c01_aal1_results where key='edit-reload'),
+  '{"ok":true,"id":"ca160000-0000-4000-8000-000000000001","name":"C01 source edited","version":2}'::jsonb,
+  'a fresh authorized detail read proves the edit persisted on the original model');
 select is((select result->>'ok' from c01_aal1_results where key='duplicate'),'true','Owner AAL1 duplicates');
 select ok((select (result#>>'{data,model_id}')::uuid <> 'ca160000-0000-4000-8000-000000000001'::uuid
   from c01_aal1_results where key='duplicate'),'copy has a distinct identity');
@@ -143,6 +176,29 @@ select is((select count(*) from audit.audit_logs
 select is((select result#>>'{data,id}' from c01_aal1_results where key='reload'),
   (select result#>>'{data,model_id}' from c01_aal1_results where key='duplicate'),
   'a new authorized read reloads the persisted copy');
+
+-- Positive context control proves the next command is denied for its scope,
+-- not for missing Owner/capability/internal identity/session/link or AAL1.
+select set_config('request.jwt.claims',jsonb_build_object(
+  'sub','ca110000-0000-4000-8000-000000000005',
+  'session_id','ca120000-0000-4000-8000-000000000005',
+  'aal','aal1','role','authenticated')::text,true);
+select ok((select internal_identity_id='ca130000-0000-4000-8000-000000000005'::uuid
+    and platform_role_code='owner' and scope_kind='institution'
+    and scope_institution_id='ca180000-0000-4000-8000-000000000001'::uuid and aal='aal1'
+  from app_private.require_superadmin_internal_context('platform.role_models.create')),
+  'institution-scoped Owner has a valid AAL1 context and effective create capability');
+set local role authenticated;
+insert into c01_aal1_results values('institution-scope-denied',public.superadmin_access_profile_model_duplicate(
+  'ca170000-0000-4000-8000-000000000009',
+  '{"source_model_id":"ca160000-0000-4000-8000-000000000001","name":"C01 scoped Owner forbidden copy","reason":"C01 policy regression"}'));
+reset role;
+select is((select result#>>'{error,code}' from c01_aal1_results where key='institution-scope-denied'),
+  'SAI_PERMISSION_DENIED','an otherwise authorized Owner cannot duplicate models from institution scope');
+select set_config('request.jwt.claims',jsonb_build_object(
+  'sub','ca110000-0000-4000-8000-000000000001',
+  'session_id','ca120000-0000-4000-8000-000000000001',
+  'aal','aal1','role','authenticated')::text,true);
 
 -- Domain denial does not become authorization merely because AAL1 is accepted.
 update public.platform_role_permissions g set effect='deny'
