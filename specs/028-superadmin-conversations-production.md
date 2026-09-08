@@ -52,6 +52,15 @@ Supabase Storage. Até o gateway R2 validado (MIME real, tamanho, checksum,
 chave gerada no servidor, URL curta e auditoria) upload e download falham de
 forma segura.
 
+O consumidor de imagem aprovado em 2026-09-07 abre a visualização somente por
+ação explícita. `ChatAttachment.assetId` identifica o ativo canônico;
+`ChatAttachment.id` identifica o binding, e URL legada não serve de fallback.
+`MediaReader` solicita preview temporário e `MediaSession` delimita o contexto
+autorizado. Expiração, revogação ou troca de contexto descartam a visualização;
+nova tentativa é explícita e reautoriza. Eviction do cache Flutter não equivale
+a revogação server-side ou limpeza de cache HTTP. A interface opcional não
+habilita transporte de produção nem dispensa os gates R2/Auth.
+
 ## UX e acessibilidade
 
 - inbox, composer e thread têm loading, vazio, busca sem resultado, offline,

@@ -112,6 +112,8 @@ class SuperadminApp extends StatefulWidget {
     this.mealPlanImageRepository = const UnavailableMealPlanImageRepository(),
     this.authorizedMealPlanTenantId,
     this.chatRepository = const UnavailableChatRepository(),
+    this.mediaReader,
+    this.mediaSession,
     this.circularRepository = const UnavailableSuperadminCircularRepository(),
     this.inviteRepository = const UnavailableInviteRepository(),
     this.noticeRepository = const UnavailableNoticeRepository(),
@@ -157,6 +159,8 @@ class SuperadminApp extends StatefulWidget {
   final MealPlanImageRepository mealPlanImageRepository;
   final String? authorizedMealPlanTenantId;
   final ChatRepository chatRepository;
+  final MediaReader? mediaReader;
+  final MediaSession? mediaSession;
   final SuperadminCircularRepository circularRepository;
   final InviteRepository inviteRepository;
   final NoticeRepository noticeRepository;
@@ -222,6 +226,8 @@ class _SuperadminAppState extends State<SuperadminApp> {
       mealPlanImageRepository: widget.mealPlanImageRepository,
       authorizedMealPlanTenantId: widget.authorizedMealPlanTenantId,
       chatRepository: widget.chatRepository,
+      mediaReader: widget.mediaReader,
+      mediaSession: widget.mediaSession,
       circularRepository: widget.circularRepository,
       inviteRepository: widget.inviteRepository,
       noticeRepository: widget.noticeRepository,

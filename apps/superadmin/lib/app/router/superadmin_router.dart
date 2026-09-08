@@ -240,6 +240,8 @@ GoRouter createSuperadminRouter({
   PlanCatalogRepository planCatalogRepository = const UnavailablePlanCatalogRepository(),
   AgendaRepository? agendaRepository,
   ChatRepository chatRepository = const UnavailableChatRepository(),
+  MediaReader? mediaReader,
+  MediaSession? mediaSession,
   SuperadminCircularRepository circularRepository = const UnavailableSuperadminCircularRepository(),
   InviteRepository inviteRepository = const UnavailableInviteRepository(),
   NoticeRepository noticeRepository = const UnavailableNoticeRepository(),
@@ -2348,6 +2350,8 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => SuperadminChatPage(
               logout: logout,
               chatRepository: chatRepository,
+              mediaReader: mediaReader,
+              mediaSession: mediaSession,
               onBack: () {
                 final origin = state.uri.queryParameters['from'];
                 context.goNamed(switch (origin) {

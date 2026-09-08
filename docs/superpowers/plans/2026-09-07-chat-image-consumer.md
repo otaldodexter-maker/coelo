@@ -38,15 +38,15 @@ Interface: `SuperadminChatImageDialog(assetId: String, reader: MediaReader,
 session: MediaSession)`. Somente dependências reais; testes injetam reader
 determinístico em widget isolado, nunca no composition root normal.
 
-- [ ] RED: reader recebe apenas assetId/preview; pending não duplica chamada;
+- [x] RED: reader recebe apenas assetId/preview; pending não duplica chamada;
   available usa ticket validado; processing/expired/unavailable não exibem URL.
-- [ ] RED: session invalidada antes/durante/depois da leitura, resultado errado,
+- [x] RED: session invalidada antes/durante/depois da leitura, resultado errado,
   expiração e dispose não mantêm imagem; retry é explícito.
-- [ ] Implementar guarda de geração, SessionMediaReader, timer por expiresAt,
+- [x] Implementar guarda de geração, SessionMediaReader, timer por expiresAt,
   unregister purge e eviction do NetworkImage exato; não capturar URL em logs.
-- [ ] Usar shell neutro existente e retorno de foco da rota. Corpo com conteúdo
+- [x] Usar shell neutro existente e retorno de foco da rota. Corpo com conteúdo
   limitado pelos tokens; estados textuais seguros; sem overlay Material paralelo.
-- [ ] Executar teste focal e review independente antes de integrar consumidor.
+- [x] Executar teste focal e review independente antes de integrar consumidor.
 
 ## 2. Tile, página e composição
 
@@ -57,10 +57,10 @@ Interfaces aditivas: `MediaReader? mediaReader`, `MediaSession? mediaSession`.
 Tile só abre imagem com assetId canônico e sessão ativa. Se faltar transporte,
 ação permanece honestamente indisponível; anexo legado não vira ativo por ID.
 
-- [ ] RED: nenhuma leitura antes da ação; URI legada ignorada; botão/foco e
+- [x] RED: nenhuma leitura antes da ação; URI legada ignorada; botão/foco e
   dialog único; troca de contexto fecha preview antigo; falta de reader não
   seleciona fixture; página encaminha a dependência canônica.
-- [ ] Implementar ação Abrir imagem terciária na tile existente, ownership da
+- [x] Implementar ação Abrir imagem terciária na tile existente, ownership da
   rota e foco de retorno; remover somente o próprio diálogo ao trocar/dispor.
 - [ ] Acrescentar novos goldens candidatos nominais, sem sobrescrever histórico:
   claro/escuro, 375/768/1024/1440, texto 200%, loading/processing/expired/
@@ -72,3 +72,8 @@ ação permanece honestamente indisponível; anexo legado não vira ativo por ID
 
 Sem mutation remota, nova dependência, alteração Scope/main ou nova política
 de retenção. Campo Scope/main futuro será serializado pelo Coordenador.
+
+Checkpoint local: `docs/reviews/evidence/etapa-2/comunicacao/2026-09-07-chat-image-consumer.md`.
+82 testes Chat, três de composição e oito goldens candidatos verdes; matriz
+visual completa, transporte e produção ainda abertos. A reconstrução do App
+por key foi testada; Scope/main não foram modificados.

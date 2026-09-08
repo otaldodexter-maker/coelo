@@ -4,7 +4,7 @@ knowledge_id: superadmin-conversations-production
 source: specs/028-superadmin-conversations-production.md
 status: validated
 generated_at: 2026-08-11
-updated_at: 2026-09-03
+updated_at: 2026-09-07
 audience: team
 surfaces: [superadmin, conversations]
 visibility: internal
@@ -34,3 +34,10 @@ Eventos em tempo real são apenas sinais mínimos em canal privado; cada evento
 faz refetch autorizado. Anexos usam R2 privado, com metadados e autorização no
 Supabase. Sem Media Gateway validado, upload e download permanecem
 indisponíveis de modo seguro. Stream não é requisito do Chat no MVP.
+
+A visualização de imagem parte de ação explícita e `assetId` canônico, nunca
+do ID do binding ou de URL legada. `MediaReader` pede acesso temporário;
+`MediaSession` delimita o contexto e descarta resultados de sessões invalidadas.
+Retry reautoriza, sem polling. Eviction Flutter não revoga acesso no servidor
+nem comprova limpeza HTTP; a existência desses contratos não habilita por si
+o transporte real de produção.
