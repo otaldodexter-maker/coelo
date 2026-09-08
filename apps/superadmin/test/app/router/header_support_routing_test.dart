@@ -45,6 +45,14 @@ void main() {
         expect(report, findsOneWidget);
         await tester.tap(report);
         await tester.pumpAndSettle();
+        expect(find.byKey(const Key('superadmin-bug-other-subject')), findsNothing);
+        expect(
+          find.descendant(
+            of: find.byKey(const Key('superadmin-bug-screen')),
+            matching: find.text('Instituições'),
+          ),
+          findsOneWidget,
+        );
         await tester.enterText(
           find.byKey(const Key('superadmin-bug-description')),
           'Relato sintético de isolamento do cabeçalho.',
@@ -61,6 +69,10 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.byKey(const Key('superadmin-bug-report-dialog')), findsNothing);
         expect(provided.tickets, hasLength(development ? 0 : 1));
+        if (!development) {
+          expect(provided.tickets.single.menu, 'Estrutura');
+          expect(provided.tickets.single.screen, 'Instituições');
+        }
         await tester.pumpWidget(const SizedBox.shrink());
       },
     );

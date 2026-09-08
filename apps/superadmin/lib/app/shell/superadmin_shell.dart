@@ -206,7 +206,9 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                   onLogout: _handleLogout,
                   onDestinationSelected: widget.onDestinationSelected,
                   activityController: _activityController,
-                  currentScreen: widget.currentDestination,
+                  currentScreen:
+                      coeloNavigationNodeById(widget.currentDestination)?.label ??
+                      widget.currentDestination,
                   onBugReportSubmitted: widget.onBugReportSubmitted,
                 ),
                 onDrawerChanged: (open) => setState(() => _drawerOpen = open),
