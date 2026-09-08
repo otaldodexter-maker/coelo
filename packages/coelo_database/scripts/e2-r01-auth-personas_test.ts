@@ -644,6 +644,9 @@ Deno.test("SDK adapter uses Admin API with banned creation and never sends user 
                 user_metadata: {},
                 aud: "authenticated",
                 created_at: now.toISOString(),
+                banned_until: body.ban_duration === "none"
+                  ? null
+                  : "2099-01-01T00:00:00Z",
               }),
               { status: 200, headers: { "content-type": "application/json" } },
             ),
@@ -667,4 +670,276 @@ Deno.test("SDK adapter uses Admin API with banned creation and never sends user 
   assert.equal(requests[1].path, `/auth/v1/admin/users/${item.authUserId}`);
   assert.equal(requests[1].body.ban_duration, "none");
   validatePlan(p);
+});
+
+// The real SDK serializes requests; fetch and all account responses are
+// controlled here. These cases are not evidence of a remote Auth operation.
+function adminFixture(
+  item: Plan["personas"][number],
+  respond: (method: string) => Response,
+) {
+  const methods: string[] = [];
+  const paths: string[] = [];
+  const client = createClient(
+    "https://abcdefghijklmnopqrst.supabase.co",
+    "synthetic-service-key",
+    {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
+      global: {
+        fetch: (input, init) => {
+          const method = init?.method ?? "GET";
+          methods.push(method);
+          paths.push(new URL(String(input)).pathname);
+          return Promise.resolve(respond(method));
+        },
+      },
+    },
+  );
+  return { adapter: sdkAuthAdapter(client), item, methods, paths };
+}
+
+function adminUserResponse(
+  item: Plan["personas"][number],
+  fields: Record<string, unknown> = {},
+) {
+  return new Response(
+    JSON.stringify({
+      id: item.authUserId,
+      email: item.email,
+      app_metadata: {},
+      user_metadata: {},
+      aud: "authenticated",
+      created_at: now.toISOString(),
+      ...fields,
+    }),
+    { status: 200, headers: { "content-type": "application/json" } },
+  );
+}
+
+Deno.test("SDK correct ID with wrong or absent ban state cannot confirm a status change", async () => {
+  const item = plan().personas[0];
+  for (
+    const [banned, badFields] of [
+      [true, {}],
+      [true, { banned_until: null }],
+      [true, { banned_until: "2000-01-01T00:00:00Z" }],
+      [true, { banned_until: "not-a-date" }],
+      [true, { banned_until: "none" }],
+      [false, {}],
+      [false, { banned_until: "2099-01-01T00:00:00Z" }],
+      [false, { banned_until: "none" }],
+    ] as const
+  ) {
+    const fixture = adminFixture(
+      item,
+      () => adminUserResponse(item, badFields),
+    );
+    await assert.rejects(fixture.adapter.setBanned(item.authUserId, banned));
+    assert.deepEqual(fixture.methods, ["PUT", "GET"]);
+    assert(
+      fixture.paths.every((path) =>
+        path === `/auth/v1/admin/users/${item.authUserId}`
+      ),
+    );
+  }
+});
+
+Deno.test("SDK accepts a directly proven ban or unban without a redundant readback", async () => {
+  const item = plan().personas[0];
+  for (
+    const [banned, bannedUntil] of [
+      [true, "2099-01-01T00:00:00Z"],
+      [false, null],
+      [false, "2000-01-01T00:00:00Z"],
+    ] as const
+  ) {
+    const fixture = adminFixture(item, () =>
+      adminUserResponse(item, {
+        banned_until: bannedUntil,
+      }));
+    await fixture.adapter.setBanned(item.authUserId, banned);
+    assert.deepEqual(fixture.methods, ["PUT"]);
+  }
+});
+
+Deno.test("SDK reconciles missing status with one nominal readback and no repeated update", async () => {
+  const item = plan().personas[0];
+  for (const banned of [true, false]) {
+    const fixture = adminFixture(
+      item,
+      (method) =>
+        adminUserResponse(
+          item,
+          method === "GET"
+            ? { banned_until: banned ? "2099-01-01T00:00:00Z" : null }
+            : {},
+        ),
+    );
+    await fixture.adapter.setBanned(item.authUserId, banned);
+    assert.deepEqual(fixture.methods, ["PUT", "GET"]);
+    assert(
+      fixture.paths.every((path) =>
+        path === `/auth/v1/admin/users/${item.authUserId}`
+      ),
+    );
+  }
+});
+
+function ambiguousAdminResponse(mode: "throws" | "error"): Response {
+  if (mode === "throws") {
+    throw new Error("synthetic ambiguous transport failure");
+  }
+  return new Response(
+    JSON.stringify({ message: "synthetic ambiguous response" }),
+    {
+      status: 503,
+      headers: { "content-type": "application/json" },
+    },
+  );
+}
+
+Deno.test("SDK ambiguous updates reconcile by readback for both states without issuing a second mutation", async () => {
+  const item = plan().personas[0];
+  for (const mode of ["throws", "error"] as const) {
+    for (const banned of [true, false]) {
+      const fixture = adminFixture(item, (method) => {
+        if (method === "PUT") return ambiguousAdminResponse(mode);
+        return adminUserResponse(item, {
+          banned_until: banned ? "2099-01-01T00:00:00Z" : null,
+        });
+      });
+      await fixture.adapter.setBanned(item.authUserId, banned);
+      assert.deepEqual(fixture.methods, ["PUT", "GET"]);
+      assert(
+        fixture.paths.every((path) =>
+          path === `/auth/v1/admin/users/${item.authUserId}`
+        ),
+      );
+    }
+  }
+});
+
+Deno.test("SDK inconclusive readback never certifies ban or unban and never repeats the mutation", async () => {
+  const p = plan();
+  const item = p.personas[0];
+  for (const banned of [true, false]) {
+    for (
+      const readback of [
+        "wrong-id",
+        "missing-state",
+        "throws",
+        "error",
+      ] as const
+    ) {
+      const fixture = adminFixture(item, (method) => {
+        if (method === "PUT") return ambiguousAdminResponse("error");
+        if (readback === "throws" || readback === "error") {
+          return ambiguousAdminResponse(readback);
+        }
+        if (readback === "missing-state") return adminUserResponse(item);
+        return adminUserResponse(item, {
+          id: p.personas[1].authUserId,
+          banned_until: banned ? "2099-01-01T00:00:00Z" : null,
+        });
+      });
+      await assert.rejects(fixture.adapter.setBanned(item.authUserId, banned));
+      assert.deepEqual(fixture.methods, ["PUT", "GET"]);
+    }
+  }
+});
+
+Deno.test("SDK creation cannot claim its initial ban when create and nominal readback do not prove it", async () => {
+  const p = plan();
+  const item = p.personas[0];
+  const appMetadata = {
+    coelo_e2_package: PACKAGE,
+    coelo_e2_plan: p.id,
+    coelo_e2_persona: item.persona,
+  };
+  for (
+    const fields of [{}, { banned_until: null }, {
+      banned_until: "2000-01-01T00:00:00Z",
+    }]
+  ) {
+    const fixture = adminFixture(item, () =>
+      adminUserResponse(item, {
+        app_metadata: appMetadata,
+        ...fields,
+      }));
+    await assert.rejects(fixture.adapter.create({
+      id: item.authUserId,
+      email: item.email,
+      password: "synthetic-only-never-production",
+      appMetadata,
+    }));
+    assert.deepEqual(fixture.methods, ["POST", "GET"]);
+    assert.equal(fixture.paths[1], `/auth/v1/admin/users/${item.authUserId}`);
+  }
+});
+
+Deno.test("SDK initial ban readback must retain the exact ID email and admin ownership marker", async () => {
+  const p = plan();
+  const item = p.personas[0];
+  const appMetadata = {
+    coelo_e2_package: PACKAGE,
+    coelo_e2_plan: p.id,
+    coelo_e2_persona: item.persona,
+  };
+  for (
+    const mismatch of [
+      { id: p.personas[1].authUserId },
+      { email: p.personas[1].email },
+      { app_metadata: { ...appMetadata, coelo_e2_plan: roleA } },
+    ]
+  ) {
+    const fixture = adminFixture(item, (method) =>
+      adminUserResponse(item, {
+        app_metadata: appMetadata,
+        ...(method === "GET"
+          ? { banned_until: "2099-01-01T00:00:00Z", ...mismatch }
+          : {}),
+      }));
+    await assert.rejects(fixture.adapter.create({
+      id: item.authUserId,
+      email: item.email,
+      password: "synthetic-only-never-production",
+      appMetadata,
+    }));
+    assert.deepEqual(fixture.methods, ["POST", "GET"]);
+  }
+});
+
+Deno.test("SDK reconciles an incomplete or ambiguous create using one owned banned account readback", async () => {
+  const p = plan();
+  const item = p.personas[0];
+  const appMetadata = {
+    coelo_e2_package: PACKAGE,
+    coelo_e2_plan: p.id,
+    coelo_e2_persona: item.persona,
+  };
+  for (const mode of ["missing-state", "throws", "error"] as const) {
+    const fixture = adminFixture(item, (method) => {
+      if (method === "POST" && mode !== "missing-state") {
+        return ambiguousAdminResponse(mode);
+      }
+      return adminUserResponse(item, {
+        app_metadata: appMetadata,
+        ...(method === "GET" ? { banned_until: "2099-01-01T00:00:00Z" } : {}),
+      });
+    });
+    const result = await fixture.adapter.create({
+      id: item.authUserId,
+      email: item.email,
+      password: "synthetic-only-never-production",
+      appMetadata,
+    });
+    assert.equal(result.id, item.authUserId);
+    assert.equal(result.email, item.email);
+    assert.deepEqual(result.appMetadata, appMetadata);
+    assert.deepEqual(fixture.methods, ["POST", "GET"]);
+  }
 });
