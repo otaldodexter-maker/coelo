@@ -29,10 +29,23 @@ SharedPreferences real ou reload no navegador.
 ## Pendências preservadas
 
 Persistência/reload real, ordenação de gravações concorrentes, tratamento de
-falhas de gravação e retry após falha da carga continuam fora deste incremento.
-Chamadas iniciadas após dispose não publicam estado, mas ainda podem iniciar
-leitura. Não declarar o controller integralmente resiliente a falhas nem
+falhas de gravação continuam fora deste incremento.
+Não declarar o controller integralmente resiliente a falhas nem
 Configurações verified-e2e.
+
+## Follow-up P2 da revisão central
+
+A revisão central identificou que o cache de `_loading` conservava Future
+rejeitado. Dois REDs reproduziram retry bloqueado e erro tardio após dispose.
+O handler agora limpa a referência em falha; mantém leitura compartilhada
+enquanto pendente e cache após sucesso. Falha live continua propagada com
+stack para o chamador; falha após dispose é encerrada sem evento/erro tardio.
+Chamadas depois de dispose não iniciam leitura ou gravação.
+
+Regressão atual: 9/9 (controller 5, SettingsPage 3, repository 1), analyzer
+sem diagnósticos. Inclui primeira carga falha → segunda funciona → ambos os
+setters salvam; duas cargas pendentes compartilham leitura; cache de sucesso;
+dispose com erro sem notificação ou erro não tratado naquele fluxo.
 
 Knowledge: nenhuma decisão nova de produto; preserva o contrato canônico já
 projetado em `docs/knowledge/team/superadmin-profile-settings.md`.
