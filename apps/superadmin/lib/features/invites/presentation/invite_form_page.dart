@@ -60,6 +60,9 @@ final class _InviteFormPageState extends State<InviteFormPage> {
   var _optionsEpoch = 0;
   bool _refreshingOptions = false;
   String? _issueRequestId;
+  int _contextRevision = 0;
+
+  bool _isCurrent(int revision) => mounted && revision == _contextRevision;
 
   @override
   void initState() {
@@ -68,7 +71,36 @@ final class _InviteFormPageState extends State<InviteFormPage> {
   }
 
   @override
+  void didUpdateWidget(covariant InviteFormPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.repository, widget.repository)) {
+      _contextRevision++;
+      _optionsEpoch++;
+      _searchDebounce?.cancel();
+      _options = const InviteFormOptions(scopes: [], profiles: [], recipients: []);
+      _scope = null;
+      _profile = null;
+      _recipient = null;
+      _recipientMode = InviteRecipientMode.person;
+      _channels = {};
+      _expiresInHours = 48;
+      _step = 0;
+      _furthestStep = 0;
+      _errorSteps.clear();
+      _submitting = false;
+      _result = null;
+      _issueRequestId = null;
+      _contextSearchController.clear();
+      _recipientSearchController.clear();
+      _emailController.clear();
+      unawaited(_loadOptions());
+    }
+  }
+
+  @override
   void dispose() {
+    _contextRevision++;
+    _optionsEpoch++;
     _searchDebounce?.cancel();
     _contextSearchController.dispose();
     _recipientSearchController.dispose();
@@ -179,6 +211,12 @@ final class _InviteFormPageState extends State<InviteFormPage> {
   }
 
   Future<void> _issue() async {
+    if (_submitting ||
+        _result != null ||
+        _refreshingOptions ||
+        _optionsState != _OptionsState.ready) {
+      return;
+    }
     if (!_stepValid(0) || !_stepValid(1) || !_stepValid(2)) {
       setState(() {
         _errorSteps
@@ -191,6 +229,7 @@ final class _InviteFormPageState extends State<InviteFormPage> {
       });
       return;
     }
+    final revision = _contextRevision;
     setState(() => _submitting = true);
     try {
       final result = await widget.repository.issue(
@@ -205,22 +244,24 @@ final class _InviteFormPageState extends State<InviteFormPage> {
           expiresInHours: _expiresInHours,
         ),
       );
-      if (mounted) {
+      if (_isCurrent(revision)) {
         setState(() {
           _result = result;
           _issueRequestId = null;
         });
       }
     } on InviteConflictException {
+      if (!_isCurrent(revision)) return;
       _issueRequestId = null;
-      if (mounted) _feedback('Este convite já foi processado com dados diferentes.', error: true);
+      _feedback('Este convite já foi processado com dados diferentes.', error: true);
     } on InviteUnauthorizedException {
+      if (!_isCurrent(revision)) return;
       _issueRequestId = null;
-      if (mounted) _feedback('Sua autorização mudou. Recarregue e tente novamente.', error: true);
+      _feedback('Sua autorização mudou. Recarregue e tente novamente.', error: true);
     } on Object {
-      if (mounted) _feedback('Não foi possível emitir o convite.', error: true);
+      if (_isCurrent(revision)) _feedback('Não foi possível emitir o convite.', error: true);
     } finally {
-      if (mounted) setState(() => _submitting = false);
+      if (_isCurrent(revision)) setState(() => _submitting = false);
     }
   }
 
