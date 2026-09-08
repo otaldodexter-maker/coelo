@@ -1,3 +1,4 @@
+import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/features/access_profiles/domain/access_profile.dart';
 import 'package:coelo_superadmin/features/access_profiles/presentation/access_profile_form_page.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
@@ -7,6 +8,59 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final destination in [false, true]) {
+    for (final disposed in [false, true]) {
+      testWidgets('exit confirmation lifetime: destination=$destination disposed=$disposed', (
+        tester,
+      ) async {
+        await tester.binding.setSurfaceSize(const Size(1440, 1000));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        var cancellations = 0;
+        final destinations = <String>[];
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CoeloTheme.light,
+            home: AccessProfileFormPage(
+              repository: _Repository(),
+              domain: AccessProfileDomain.platform,
+              profileId: 'model',
+              logout: unavailableSuperadminLogout,
+              onCancel: () => cancellations++,
+              onDestinationSelected: destinations.add,
+              onSaved: (_) {},
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.widgetWithText(CoeloFormTextField, 'Nome do perfil'),
+          'Nome revisado',
+        );
+        await tester.pump();
+        if (destination) {
+          tester.widget<SuperadminShell>(find.byType(SuperadminShell)).onDestinationSelected!(
+            'dashboard',
+          );
+        } else {
+          await tester.tap(find.byKey(const Key('access-profile-cancel')));
+        }
+        await tester.pumpAndSettle();
+        expect(find.text('Sair sem salvar?'), findsOneWidget);
+        if (disposed) {
+          await tester.pumpWidget(
+            MaterialApp(theme: CoeloTheme.light, home: const Text('Outro contexto')),
+          );
+          await tester.pumpAndSettle();
+          expect(find.byType(AccessProfileFormPage), findsNothing);
+        }
+        await tester.tap(find.text('Sair sem salvar'));
+        await tester.pumpAndSettle();
+        expect(cancellations, !disposed && !destination ? 1 : 0);
+        expect(destinations, !disposed && destination ? ['dashboard'] : isEmpty);
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
   for (final disposed in [false, true]) {
     testWidgets('conflict reload respects form lifetime: disposed=$disposed', (tester) async {
       await tester.binding.setSurfaceSize(const Size(1440, 1000));

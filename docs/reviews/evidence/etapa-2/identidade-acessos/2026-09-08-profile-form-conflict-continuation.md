@@ -29,3 +29,21 @@ enviada, backend, produção nem E2E. Os três goldens de Perfis previamente
 vermelhos continuam pendentes; não houve rebaseline nem alegação de correção
 visual. Gate de memória: no-op, pois restaura comportamento existente e não
 introduz decisão de produto. Coordenador recebe o handoff para os rastreadores.
+
+## Continuação equivalente: confirmação de saída
+
+Nova reserva nominal do Coordenador agrupou os guards de `_requestExit` e
+`_requestDestination`. RED antes da correção: 4 PASS / 2 FAIL na suite de seis
+casos. Confirmar após dispose acionava onCancel uma vez (esperado zero) ou
+enviava destino antigo (esperado nenhum). Os dois controles montados e os
+dois testes anteriores de conflito passavam.
+
+Foram adicionados somente dois guards mounted antes dos callbacks existentes.
+Dirty, destino, diálogo compartilhado, router, payload e request IDs não mudam.
+O teste de destino chama o callback público do Shell; não equivale a um clique
+real no menu nem a E2E. Não cobre substituição dentro da mesma State.
+
+Após a correção, seis arquivos (continuação, páginas, detalhe, rotas de Perfis,
+revisão de autorização do diretório e autorização de editores) passaram:
+45/45. Analyzer do formulário e teste: sem problemas. Review account_review
+aprovou reprodução e guards mínimos. Nenhum rebaseline ou alteração remota.
