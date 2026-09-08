@@ -3,20 +3,9 @@ import {
   authorizedOperationsRequest,
   operationsBearerToken,
 } from "./auth_contract.ts";
-import {
-  opaqueArtifactPath,
-  streamCsv,
-  streamXlsx,
-  streamZip,
-  type ZipMediaSource,
-} from "./export_contract.ts";
-import {
-  multipartArtifactConfig,
-  uploadAdaptiveArtifact,
-} from "./multipart_export.ts";
+import { opaqueArtifactPath, streamXlsx } from "./export_contract.ts";
 import { MultipartS3Client, multipartS3Config } from "./multipart_s3.ts";
 import {
-  createSnapshotMedia,
   createSnapshotRows,
   type SnapshotPageLoader,
 } from "./snapshot_paging.ts";
@@ -39,8 +28,17 @@ type Snapshot = {
   has_more: boolean;
   next_cursor?: string | null;
 };
-function serviceKey(): string {
-  const configured = Deno.env.get("SUPABASE_SECRET_KEYS") ?? "";
+export type FormOperationsDependencies = Readonly<{
+  environment: () => Record<string, string | undefined>;
+  createClient: typeof createClient;
+}>;
+const productionDependencies: FormOperationsDependencies = {
+  environment: () => Deno.env.toObject(),
+  createClient,
+};
+
+function serviceKey(environment: Record<string, string | undefined>): string {
+  const configured = environment.SUPABASE_SECRET_KEYS ?? "";
   if (configured.startsWith("{")) {
     try {
       const values = JSON.parse(configured) as Record<string, string>;
@@ -50,7 +48,7 @@ function serviceKey(): string {
     }
   }
   return configured.split(",").map((value) => value.trim()).find(Boolean) ??
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    environment.SUPABASE_SERVICE_ROLE_KEY ?? "";
 }
 
 function reply(status: number, body: Json): Response {
@@ -63,10 +61,6 @@ function reply(status: number, body: Json): Response {
       "referrer-policy": "no-referrer",
     },
   });
-}
-
-function extensionForMime(mime: string): string {
-  return mime === "image/png" ? "png" : mime === "image/webp" ? "webp" : "jpg";
 }
 
 function snapshotPageLoader(
@@ -82,22 +76,6 @@ function snapshotPageLoader(
     if (result.error || !result.data) throw new Error("export_snapshot_failed");
     return result.data as Snapshot;
   };
-}
-
-async function* streamMedia(
-  client: SupabaseClient,
-  loader: SnapshotPageLoader,
-): AsyncIterable<ZipMediaSource> {
-  for await (const asset of createSnapshotMedia(loader)) {
-    const result = await client.storage.from(BUCKET).download(
-      asset.storage_path,
-    );
-    if (result.error) throw new Error("media_download_failed");
-    yield {
-      name: `${asset.asset_id}.${extensionForMime(asset.mime_type)}`,
-      source: new Uint8Array(await result.data.arrayBuffer()),
-    };
-  }
 }
 
 function readableBytes(
@@ -120,10 +98,11 @@ function readableBytes(
   });
 }
 
-async function cleanupExpiredStorage(
+function cleanupExpiredStorage(
   client: SupabaseClient,
   jobId: string,
   workerId: string,
+  environment: Record<string, string | undefined>,
 ): Promise<number> {
   return cleanupExpiredItems({
     jobId,
@@ -141,7 +120,7 @@ async function cleanupExpiredStorage(
     },
     abortMultipart: async (bucket, path, uploadId) => {
       const multipart = new MultipartS3Client(
-        multipartS3Config(Deno.env.toObject()),
+        multipartS3Config(environment),
       );
       await multipart.abort(bucket, path, uploadId);
     },
@@ -160,16 +139,20 @@ async function cleanupExpiredStorage(
   });
 }
 
-Deno.serve(async (request) => {
+export async function handleFormOperationsRequest(
+  request: Request,
+  dependencies: FormOperationsDependencies = productionDependencies,
+): Promise<Response> {
   if (request.method !== "POST") {
     return reply(405, { error: "method_not_allowed" });
   }
-  const url = Deno.env.get("SUPABASE_URL") ?? "";
-  const key = serviceKey();
+  const environment = dependencies.environment();
+  const url = environment.SUPABASE_URL ?? "";
+  const key = serviceKey(environment);
   const authorization = request.headers.get("authorization") ?? "";
   let operationsToken = "";
   try {
-    operationsToken = operationsBearerToken(Deno.env.toObject());
+    operationsToken = operationsBearerToken(environment);
   } catch {
     return reply(503, { error: "service_unavailable" });
   }
@@ -179,17 +162,16 @@ Deno.serve(async (request) => {
   ) {
     return reply(401, { error: "unauthorized" });
   }
-  const client = createClient(url, key, { auth: { persistSession: false } });
+  const client = dependencies.createClient(url, key, {
+    auth: { persistSession: false },
+  });
   const workerId = `form-operations-${crypto.randomUUID()}`;
   const claimed = await client.rpc("form_worker_claim", {
     p_worker_id: workerId,
     p_lease_seconds: 600,
     p_job_kinds: [
       ...OPERATIONAL_JOB_KINDS,
-      "export_csv",
       "export_xlsx",
-      "export_zip",
-      "export_anonymous_participation",
       "cleanup_uploads",
       "cleanup_artifacts",
     ],
@@ -221,10 +203,11 @@ Deno.serve(async (request) => {
         client,
         String(job.id),
         workerId,
+        environment,
       );
       return reply(200, { processed: true, job_id: job.id, items: itemCount });
     }
-    if (!isExportJob) {
+    if (job.job_kind !== "export_xlsx") {
       throw new Error("unsupported_job_kind");
     }
     const started = await client.rpc("form_worker_begin_export", {
@@ -238,86 +221,20 @@ Deno.serve(async (request) => {
       createSnapshotRows(loader, { maxRows: MAX_ROWS_PER_LEASE });
     let streamedRowCount = 0;
     for await (const _row of rowsFactory()) streamedRowCount++;
-    let streamedMediaCount = 0;
-    let contentType: string;
+    const contentType =
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     let artifactByteLength = 0;
-    if (
-      job.job_kind === "export_csv" ||
-      job.job_kind === "export_anonymous_participation"
-    ) {
-      contentType = "text/csv; charset=utf-8";
-    } else if (job.job_kind === "export_xlsx") {
-      contentType =
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-    } else {
-      contentType = "application/zip";
-      for await (const _asset of createSnapshotMedia(loader)) {
-        streamedMediaCount++;
-      }
-      const artifactId = crypto.randomUUID();
-      artifactPath = opaqueArtifactPath(artifactId);
-      const adaptiveConfig = multipartArtifactConfig(Deno.env.toObject());
-      const multipartClient = new MultipartS3Client(
-        multipartS3Config(Deno.env.toObject()),
-      );
-      const adaptive = await uploadAdaptiveArtifact({
-        jobId: String(job.id),
-        workerId,
-        fileJobId,
-        bucket: BUCKET,
-        proposedPath: artifactPath,
-        contentType,
-        source: streamZip({
-          workbook: streamXlsx(rowsFactory),
-          manifest: {
-            generated_at: String(job.created_at),
-            response_row_count: streamedRowCount,
-            media_count: streamedMediaCount,
-          },
-          media: streamMedia(client, loader),
-        }),
-        ...adaptiveConfig,
-        rpc: async (call) => {
-          const result = await client.rpc(call.name, call.params);
-          if (result.error) throw new Error(`${call.name}_failed`);
-          return result.data;
-        },
-        standardUpload: async (path, uploadBytes, uploadContentType) => {
-          const result = await client.storage.from(BUCKET).upload(
-            path,
-            uploadBytes,
-            {
-              contentType: uploadContentType,
-              upsert: false,
-              cacheControl: "no-store",
-            },
-          );
-          if (result.error) throw new Error("artifact_upload_failed");
-          standardArtifactUploaded = true;
-        },
-        s3: multipartClient,
-      });
-      artifactPath = adaptive.artifactPath;
-      artifactByteLength = adaptive.byteLength;
-    }
-    if (job.job_kind !== "export_zip") {
-      const artifactId = crypto.randomUUID();
-      artifactPath = opaqueArtifactPath(artifactId);
-      const source = job.job_kind === "export_xlsx"
-        ? streamXlsx(rowsFactory)
-        : streamCsv(rowsFactory);
-      const uploaded = await client.storage.from(BUCKET).upload(
-        artifactPath,
-        readableBytes(source, (byteLength) => artifactByteLength += byteLength),
-        {
-          contentType,
-          upsert: false,
-          cacheControl: "no-store",
-        },
-      );
-      if (uploaded.error) throw new Error("artifact_upload_failed");
-      standardArtifactUploaded = true;
-    }
+    artifactPath = opaqueArtifactPath(crypto.randomUUID());
+    const uploaded = await client.storage.from(BUCKET).upload(
+      artifactPath,
+      readableBytes(
+        streamXlsx(rowsFactory),
+        (byteLength) => artifactByteLength += byteLength,
+      ),
+      { contentType, upsert: false, cacheControl: "no-store" },
+    );
+    if (uploaded.error) throw new Error("artifact_upload_failed");
+    standardArtifactUploaded = true;
     const completed = await client.rpc("form_worker_complete_export", {
       p_job_id: job.id,
       p_worker_id: workerId,
@@ -326,7 +243,7 @@ Deno.serve(async (request) => {
       p_artifact_byte_length: artifactByteLength!,
       p_manifest: {
         row_count: streamedRowCount,
-        media_count: streamedMediaCount,
+        media_count: 0,
       },
     });
     if (completed.error) throw new Error("export_complete_failed");
@@ -355,4 +272,8 @@ Deno.serve(async (request) => {
     }
     return reply(500, { error: "job_failed" });
   }
-});
+}
+
+if (import.meta.main) {
+  Deno.serve((request) => handleFormOperationsRequest(request));
+}
