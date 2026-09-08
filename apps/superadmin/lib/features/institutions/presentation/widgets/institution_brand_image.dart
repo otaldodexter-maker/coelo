@@ -157,14 +157,13 @@ class _InstitutionBrandImageState extends State<InstitutionBrandImage> {
   }
 
   Widget _retry() => _wrap(
-    Semantics(
-      button: true,
-      label: 'Recarregar imagem',
-      child: IconButton(
-        key: const Key('institution-brand-image-retry'),
-        onPressed: () => unawaited(_load()),
-        icon: const Icon(Icons.refresh_rounded),
-      ),
+    // The label belongs on the button itself. Wrapping it in a Semantics parent
+    // leaves the tappable node unlabelled, which is what a screen reader reads.
+    IconButton(
+      key: const Key('institution-brand-image-retry'),
+      tooltip: 'Recarregar imagem',
+      onPressed: () => unawaited(_load()),
+      icon: const Icon(Icons.refresh_rounded, semanticLabel: 'Recarregar imagem'),
     ),
     key: const Key('institution-brand-image-expired'),
   );

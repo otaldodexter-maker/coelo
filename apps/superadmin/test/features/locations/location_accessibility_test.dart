@@ -2,7 +2,9 @@ import 'package:coelo_domain/locations.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/locations/domain/location_catalog_writer.dart';
 import 'package:coelo_superadmin/features/locations/presentation/location_directory_panel.dart';
+import 'package:coelo_superadmin/features/locations/domain/location_selection_source.dart';
 import 'package:coelo_superadmin/features/locations/presentation/location_form_panel.dart';
+import 'package:coelo_superadmin/features/locations/presentation/location_selection_field.dart';
 import 'package:coelo_superadmin/features/locations/presentation/locations_map_section.dart';
 import 'package:coelo_superadmin/features/locations/presentation/locations_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -147,6 +149,87 @@ void main() {
     await expectLater(tester, meetsGuideline(textContrastGuideline));
     handle.dispose();
   });
+  testWidgets('the location selection field meets tap size, labelling and contrast', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final source = _ReadySelectionSource();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: LocationSelectionField(
+              scope: scopeA,
+              source: source,
+              sessionAvailable: true,
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+    await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+    await expectLater(tester, meetsGuideline(textContrastGuideline));
+    handle.dispose();
+  });
+
+  testWidgets('the one-off mode keeps its limit readable', (tester) async {
+    final handle = tester.ensureSemantics();
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final source = _ReadySelectionSource();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: LocationSelectionField(
+              scope: scopeA,
+              source: source,
+              sessionAvailable: true,
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Pontual'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('location-selection-one-off-limit')), findsOneWidget);
+    await expectLater(tester, meetsGuideline(textContrastGuideline));
+    await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+    handle.dispose();
+  });
+}
+
+/// Answers immediately with one selectable option.
+final class _ReadySelectionSource implements LocationSelectionSource {
+  @override
+  Future<LocationSelectionOptions> fetchOptions(LocationSelectionRequest request) async =>
+      LocationSelectionOptions(
+        options: const [
+          LocationReferenceSnapshot(
+            id: locationA,
+            scope: scopeA,
+            kind: LocationKind.internal,
+            label: 'Sala de leitura',
+          ),
+        ],
+      );
+
+  @override
+  Future<LocationResolvedSnapshot> resolveSnapshot({
+    required String id,
+    required LocationScope scope,
+  }) => Future.error(const LocationSelectionUnavailableException());
 }
 
 String locationScopeLabelForTest(LocationScope scope) =>

@@ -169,4 +169,30 @@ void main() {
     expect(find.byKey(const Key('fallback-icon')), findsOneWidget);
     expect(find.textContaining('Exception'), findsNothing);
   });
+
+  testWidgets('the retry control is announced and large enough to hit', (tester) async {
+    final handle = tester.ensureSemantics();
+    final reader = _ControlledReader();
+    await tester.pumpWidget(host(reader: reader));
+    await tester.pump();
+    reader.results.single.complete(_decode({'state': 'expired', 'ticket': null}));
+    await tester.pumpAndSettle();
+
+    expect(find.bySemanticsLabel('Recarregar imagem'), findsOneWidget);
+    await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+    await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+    handle.dispose();
+  });
+
+  testWidgets('the processing note stays readable', (tester) async {
+    final handle = tester.ensureSemantics();
+    final reader = _ControlledReader();
+    await tester.pumpWidget(host(reader: reader));
+    await tester.pump();
+    reader.results.single.complete(_decode({'state': 'processing', 'ticket': null}));
+    await tester.pumpAndSettle();
+
+    await expectLater(tester, meetsGuideline(textContrastGuideline));
+    handle.dispose();
+  });
 }
