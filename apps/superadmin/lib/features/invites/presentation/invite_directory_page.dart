@@ -4,13 +4,13 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/platform_invite.dart';
 import 'invite_directory_widgets.dart';
+import 'invite_presentation_support.dart';
 import 'invite_request_id.dart';
 
 final class InviteDirectoryPage extends StatefulWidget {
@@ -254,8 +254,12 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
         primaryAction: FilledButton.icon(
           key: const Key('invite-resend-copy-link'),
           onPressed: () async {
-            await Clipboard.setData(ClipboardData(text: link.toString()));
-            if (dialogContext.mounted) Navigator.of(dialogContext).pop();
+            final copied = await copyInviteLink(
+              dialogContext,
+              link,
+              isContextCurrent: () => _isCurrentCommand(generation, repository),
+            );
+            if (copied && dialogContext.mounted) Navigator.of(dialogContext).pop();
           },
           icon: const Icon(Icons.content_copy_rounded),
           label: const Text('Copiar link'),
