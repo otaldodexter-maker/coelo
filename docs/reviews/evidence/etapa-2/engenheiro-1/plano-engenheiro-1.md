@@ -3,7 +3,7 @@ title: Plano de trabalho — Engenheiro 1
 source: Coordenador — Etapa 2 E2E; decisões do Owner; evidências locais desta tarefa
 status: em andamento
 generated: 2026-09-07
-updated: 2026-09-07T22:53:09-03:00
+updated: 2026-09-07T22:58:32-03:00
 ---
 
 # Engenheiro 1 — plano por tela, ação e backend
@@ -24,8 +24,8 @@ PASSOS: 1/6 delimitar contrato e dependências; 2/6 reproduzir e registrar basel
 | Usuários internos | Contrato SQL de leitura / edição / status / revogação; replay 20260901210000 | 6/6 — validado no BD local | Replay Auth45 + Users + dois preflights; RPCs internos, memberships, auth-links, receipts e auditoria | root; fixture E2E2 e0efd98e revisada centralmente | 48 arquivos; fixture LF f19fe516 conferida em disco; 45/45 pgTAP PASS, exit0, cleanup independente zerado às 22:00:48 BRT. Não houve grant novo | Entregar evidência; token de concorrência e prova da tela Flutter permanecem recortes separados |
 | Formulários | F-READ: FormsApi.listDirectory / forms.list interno | 6/6 — RED de dependência registrado; funcional pendente | Base50 preparada; 42601 na criação de form_item_config_valid da migration20260813155005, antes de target/fixture | root; writer/review do harness; E2E4 fixture897ee8f7 | 131/131 Pester PASS; replay exit1, zero pgTAP; cleanup independente zerado às22:32:52 BRT. Reader fora da base50 | GREEN51 estático160/160 e parse4/4; materialização derivada específica autorizada para preparar/provar parser, sem editar canônico; replay derivado depende de liberação nominal |
 | Atividades | A01: contrato do diretório v2 e seletor fechado | 6/6 — RED funcional reproduzido | Replay real Auth45 + sete Activities v2 = 52 canônicas + dois preflights; RPCs de diretório e opções | root; writer/reviewer do harness; fixture E2E5 e927c417 | Harness104/104 Pester PASS. Base54 aplicada; fixture exata executou89pgTAP:47FAIL/42PASS, exit1. Cleanup independente zero às22:13:47 BRT. Corretiva ausente do pacote | E2E5 entregar corretiva nominal com hash/review; nenhuma conclusão E2E ou adaptação silenciosa da baseline |
-| Usuários internos | Usersmin: minimização da projeção READ | 6/6 — RED funcional entregue | Base48 aplicada integralmente; fixture3 independente de Users45 | root; fixture E2E2 a763c6f9; review replay_manifest | 1PASS autorização,2FAIL minimização; três TAP completos, sem ACL/aborto, cleanup zero às22:49:31 BRT | E2E2 preparar corretiva nominal e regressão; nenhum E2E concluído |
-| Modelos de permissões | READ: detalhe / lista / catálogo | 3/6 — perfil nominal49 autorizado para preparação | Auth45 + 20260901170731 + 20260901193000 = 47 canônicas + dois preflights; nenhum replay | replay_manifest; root; E2E1 | Hashes e pré-requisitos conferidos; fixture11 separada; possível RED na ordem entre lookup e autorização do detalhe inexistente | Preparar perfil49/testes/review e RED11 serial conforme reserva central; sem cleanup ou bridge extra |
+| Usuários internos | Usersmin: minimização da projeção READ | 6/6 — RED funcional entregue | Base48 aplicada integralmente; fixture3 independente de Users45 | root; fixture E2E1 a763c6f9; review replay_manifest | 1PASS autorização,2FAIL minimização; três TAP completos, sem ACL/aborto, cleanup zero às22:49:31 BRT | E2E1 preparar corretiva nominal e regressão; nenhum E2E concluído |
+| Modelos de permissões | READ: detalhe / lista / catálogo | 6/6 — RED funcional entregue | Auth45 + 170731/193000 + dois preflights =49; base aplicada integralmente | root; writer/review do harness; fixture E2E1 fa3acdba | 187/187 Pester PASS;11TAP:9PASS/2FAIL5,7 porlookup antesautorização; cleanup zero às22:56:41 BRT | E2E1 preparar corretiva nominal; nenhuma conclusão E2E de tela |
 
 ## Limites e rastreabilidade
 
