@@ -172,12 +172,20 @@ function xmlEscape(value: string): string {
 }
 
 function xmlValue(xml: string, element: string): string | undefined {
-  const match = xml.match(
-    new RegExp(`<${element}[^>]*>([\\s\\S]*?)<\\/${element}>`, "i"),
-  );
-  return match?.[1]?.replaceAll("&quot;", '"').replaceAll("&apos;", "'")
+  const matches = [...xml.matchAll(
+    new RegExp(`<${element}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${element}>`, "gi"),
+  )];
+  if (matches.length !== 1) return undefined;
+  return matches[0][1].replaceAll("&quot;", '"').replaceAll("&apos;", "'")
     .replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("&amp;", "&");
 }
+
+const validEtag = (etag: string) =>
+  etag.length <= 1024 && /^"[\x21\x23-\x7e]+"$/.test(etag);
+
+// Only locally constructed errors may leave the transport. Provider bodies,
+// URLs and fetch error messages can contain signed capabilities.
+class MultipartTransportError extends Error {}
 
 export class MultipartS3Client {
   readonly #fetch: (request: Request) => Promise<Response>;
@@ -204,8 +212,12 @@ export class MultipartS3Client {
       "",
       contentType,
     );
-    const uploadId = xmlValue(await response.text(), "UploadId")?.trim();
+    if (/<Error(?:\s|>)/i.test(response.xml)) {
+      throw new Error("multipart_s3_initiate_error");
+    }
+    const uploadId = xmlValue(response.xml, "UploadId");
     if (!uploadId) throw new Error("multipart_s3_missing_upload_id");
+    this.#validateUpload(uploadId);
     return { uploadId };
   }
 
@@ -229,6 +241,7 @@ export class MultipartS3Client {
     );
     const etag = response.headers.get("etag")?.trim();
     if (!etag) throw new Error("multipart_s3_missing_etag");
+    if (!validEtag(etag)) throw new Error("multipart_s3_invalid_etag");
     return { partNumber, etag };
   }
 
@@ -247,7 +260,7 @@ export class MultipartS3Client {
       ordered.some((part, index) =>
         !Number.isInteger(part.partNumber) || part.partNumber < 1 ||
         part.partNumber > 10000 ||
-        !part.etag.trim() ||
+        !validEtag(part.etag) ||
         (index > 0 && part.partNumber === ordered[index - 1].partNumber)
       )
     ) {
@@ -268,12 +281,15 @@ export class MultipartS3Client {
       body,
       "application/xml",
     );
-    const responseXml = await response.text();
-    const errorCode = xmlValue(responseXml, "Code")?.trim();
-    if (/<Error(?:\s|>)/i.test(responseXml) && errorCode) {
-      throw new Error(`multipart_s3_complete_${errorCode}`);
+    const responseXml = response.xml;
+    if (/<Error(?:\s|>)/i.test(responseXml)) {
+      throw new Error("multipart_s3_complete_error");
     }
-    return { etag: xmlValue(responseXml, "ETag")?.trim() || undefined };
+    const etag = xmlValue(responseXml, "ETag");
+    if (!etag || !validEtag(etag)) {
+      throw new Error("multipart_s3_invalid_etag");
+    }
+    return { etag };
   }
 
   async abort(bucket: string, key: string, uploadId: string): Promise<void> {
@@ -281,8 +297,7 @@ export class MultipartS3Client {
     try {
       await this.#request("DELETE", bucket, key, { uploadId }, "");
     } catch (error) {
-      // Supabase may already have applied its 24-hour multipart expiration.
-      // A missing upload is the desired terminal state for cleanup.
+      // A missing upload is already the desired terminal state for cleanup.
       if (
         error instanceof Error && error.message === "multipart_s3_http_404"
       ) return;
@@ -291,7 +306,9 @@ export class MultipartS3Client {
   }
 
   #validateUpload(uploadId: string): void {
-    if (!uploadId.trim()) throw new Error("multipart_s3_invalid_upload_id");
+    if (!/^[A-Za-z0-9+/_=.-]{1,1024}$/.test(uploadId)) {
+      throw new Error("multipart_s3_invalid_upload_id");
+    }
   }
 
   async #request(
@@ -301,7 +318,10 @@ export class MultipartS3Client {
     query: Readonly<Record<string, string>>,
     body: string | Uint8Array,
     contentType?: string,
-  ): Promise<Response> {
+  ): Promise<{ headers: Headers; xml: string }> {
+    // Capture before the first await: the signature and transmitted bytes must
+    // describe the same immutable payload even when the caller reuses a buffer.
+    const payload = typeof body === "string" ? body : Uint8Array.from(body);
     const url = objectUrl(this.config, bucket, key);
     for (const [name, value] of Object.entries(query)) {
       url.searchParams.set(name, value);
@@ -310,21 +330,73 @@ export class MultipartS3Client {
       this.config,
       method,
       url,
-      body,
+      payload,
       this.#now(),
       contentType,
     );
-    const request = new Request(url, {
-      method,
-      headers,
-      body: method === "DELETE"
-        ? undefined
-        : typeof body === "string"
-        ? body
-        : Uint8Array.from(body),
+    const controller = new AbortController();
+    let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+    const cancelReader = () => {
+      void reader?.cancel().catch(() => {});
+    };
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const deadline = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => {
+        controller.abort();
+        cancelReader();
+        reject(new MultipartTransportError("multipart_s3_timeout"));
+      }, 30_000);
     });
-    const response = await this.#fetch(request);
-    if (!response.ok) throw new Error(`multipart_s3_http_${response.status}`);
-    return response;
+    try {
+      return await Promise.race([
+        deadline,
+        (async () => {
+          const request = new Request(url, {
+            method,
+            headers,
+            redirect: "error",
+            signal: controller.signal,
+            body: method === "DELETE" ? undefined : payload,
+          });
+          const response = await this.#fetch(request);
+          if (controller.signal.aborted) {
+            void response.body?.cancel().catch(() => {});
+            throw new MultipartTransportError("multipart_s3_timeout");
+          }
+          reader = response.body?.getReader();
+          if (!response.ok) {
+            cancelReader();
+            throw new MultipartTransportError(
+              `multipart_s3_http_${response.status}`,
+            );
+          }
+          const decoder = new TextDecoder("utf-8", { fatal: true });
+          let size = 0;
+          let xml = "";
+          while (reader) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            size += value.byteLength;
+            if (size > 64 * 1024) {
+              throw new MultipartTransportError(
+                "multipart_s3_response_too_large",
+              );
+            }
+            xml += decoder.decode(value, { stream: true });
+          }
+          xml += decoder.decode();
+          if (/<!DOCTYPE|<!ENTITY/i.test(xml)) {
+            throw new MultipartTransportError("multipart_s3_invalid_xml");
+          }
+          return { headers: response.headers, xml };
+        })(),
+      ]);
+    } catch (error) {
+      cancelReader();
+      if (error instanceof MultipartTransportError) throw error;
+      throw new Error("multipart_s3_transport_error");
+    } finally {
+      clearTimeout(timer);
+    }
   }
 }
