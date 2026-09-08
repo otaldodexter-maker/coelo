@@ -15,6 +15,48 @@ export type ExportSubmission = {
 
 export type ExportRow = Record<string, string>;
 
+/** Date support requires a verified UTC codec; no implicit date/string conversion. */
+export type XlsxCellValue = string | number | boolean;
+export type XlsxRow = Readonly<Record<string, XlsxCellValue>>;
+export type XlsxOptions = Readonly<{ columns: readonly string[] }>;
+
+function explicitXlsxColumns(
+  options?: XlsxOptions,
+): readonly string[] | undefined {
+  if (options === undefined) return undefined;
+  if (
+    !Array.isArray(options.columns) || !options.columns.length ||
+    options.columns.some((column) => typeof column !== "string") ||
+    new Set(options.columns).size !== options.columns.length
+  ) {
+    throw new Error("invalid_xlsx_columns");
+  }
+  if (options.columns.length > 512) throw new Error("xlsx_column_limit");
+  return Object.freeze([...options.columns]);
+}
+
+function xlsxCellValue(value: XlsxCellValue): XlsxCellValue {
+  if (typeof value === "string") return neutralizeSpreadsheetFormula(value);
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  throw new Error("invalid_xlsx_cell_value");
+}
+
+function validateXlsxRow(row: XlsxRow, columns?: ReadonlySet<string>): void {
+  for (const [key, value] of Object.entries(row)) {
+    if (columns && !columns.has(key)) throw new Error("xlsx_column_mismatch");
+    xlsxCellValue(value);
+  }
+}
+
+function xlsxRowCell(row: XlsxRow, column: string): XlsxCellValue {
+  return Object.hasOwn(row, column) ? row[column] : "";
+}
+
+function isMediaLink(value: XlsxCellValue): value is string {
+  return typeof value === "string" && value.startsWith("/forms/media/");
+}
+
 export function opaqueArtifactPath(artifactId: string): string {
   return `${artifactId.slice(0, 2)}/${artifactId}`;
 }
@@ -95,19 +137,26 @@ export async function* streamCsv(
   }
 }
 
-export function encodeXlsx(rows: ExportRow[]): Uint8Array {
-  const headers = [...new Set(rows.flatMap((row) => Object.keys(row)))];
+export function encodeXlsx(
+  rows: readonly XlsxRow[],
+  options?: XlsxOptions,
+): Uint8Array {
+  const columns = explicitXlsxColumns(options);
+  const known = columns && new Set(columns);
+  for (const row of rows) validateXlsxRow(row, known);
+  const headers = columns ??
+    [...new Set(rows.flatMap((row) => Object.keys(row)))];
   const matrix = [
-    headers,
+    [...headers],
     ...rows.map((row) =>
-      headers.map((header) => neutralizeSpreadsheetFormula(row[header] ?? ""))
+      headers.map((header) => xlsxCellValue(xlsxRowCell(row, header)))
     ),
   ];
   const worksheet = XLSX.utils.aoa_to_sheet(matrix);
   rows.forEach((row, rowIndex) => {
     headers.forEach((header, columnIndex) => {
-      const value = row[header] ?? "";
-      if (!value.startsWith("/forms/media/")) return;
+      const value = xlsxRowCell(row, header);
+      if (!isMediaLink(value)) return;
       const address = XLSX.utils.encode_cell({
         r: rowIndex + 1,
         c: columnIndex,
@@ -310,15 +359,23 @@ async function* storedZipEntries(
 }
 
 export async function* streamXlsx(
-  rowsFactory: () => AsyncIterable<ExportRow>,
+  rowsFactory: () => AsyncIterable<XlsxRow>,
   outputChunkBytes = 256 * 1024,
+  options?: XlsxOptions,
 ): AsyncIterable<Uint8Array> {
   if (!Number.isSafeInteger(outputChunkBytes) || outputChunkBytes < 1024) {
     throw new Error("invalid_xlsx_output_chunk_size");
   }
-  const headers: string[] = [];
-  const knownHeaders = new Set<string>();
-  for await (const row of rowsFactory()) {
+  const columns = explicitXlsxColumns(options);
+  const headers: string[] = columns ? [...columns] : [];
+  const knownHeaders = new Set<string>(headers);
+  const checkedRows = async function* () {
+    for await (const row of rowsFactory()) {
+      validateXlsxRow(row, columns ? knownHeaders : undefined);
+      yield row;
+    }
+  };
+  for await (const row of checkedRows()) {
     for (const header of Object.keys(row)) {
       if (!knownHeaders.has(header)) {
         if (headers.length >= 512) throw new Error("xlsx_column_limit");
@@ -329,8 +386,14 @@ export async function* streamXlsx(
   }
   if (!headers.length) throw new Error("empty_export");
 
-  const cell = (reference: string, value: string) => {
-    const safe = neutralizeSpreadsheetFormula(value);
+  const cell = (reference: string, value: XlsxCellValue) => {
+    const safe = xlsxCellValue(value);
+    if (typeof safe === "number") {
+      return `<c r="${reference}" t="n"><v>${safe}</v></c>`;
+    }
+    if (typeof safe === "boolean") {
+      return `<c r="${reference}" t="b"><v>${safe ? 1 : 0}</v></c>`;
+    }
     return `<c r="${reference}" t="inlineStr"><is><t xml:space="preserve">${
       xmlText(safe)
     }</t></is></c>`;
@@ -348,14 +411,14 @@ export async function* streamXlsx(
       }</row>`,
     );
     let rowNumber = 2;
-    for await (const row of rowsFactory()) {
+    for await (const row of checkedRows()) {
       yield textEncoder.encode(
         `<row r="${rowNumber}">${
           headers.map((header, column) => {
-            const value = row[header] ?? "";
+            const value = xlsxRowCell(row, header);
             return cell(
               `${excelColumn(column)}${rowNumber}`,
-              value.startsWith("/forms/media/") ? "Ver foto" : value,
+              isMediaLink(value) ? "Ver foto" : value,
             );
           }).join("")
         }</row>`,
@@ -365,9 +428,9 @@ export async function* streamXlsx(
     yield textEncoder.encode("</sheetData><hyperlinks>");
     rowNumber = 2;
     let relationshipId = 1;
-    for await (const row of rowsFactory()) {
+    for await (const row of checkedRows()) {
       for (let column = 0; column < headers.length; column++) {
-        if ((row[headers[column]] ?? "").startsWith("/forms/media/")) {
+        if (isMediaLink(xlsxRowCell(row, headers[column]))) {
           yield textEncoder.encode(
             `<hyperlink ref="${
               excelColumn(column)
@@ -386,10 +449,10 @@ export async function* streamXlsx(
         '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">',
     );
     let relationshipId = 1;
-    for await (const row of rowsFactory()) {
+    for await (const row of checkedRows()) {
       for (const header of headers) {
-        const value = row[header] ?? "";
-        if (value.startsWith("/forms/media/")) {
+        const value = xlsxRowCell(row, header);
+        if (isMediaLink(value)) {
           yield textEncoder.encode(
             `<Relationship Id="rId${relationshipId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="${
               xmlAttribute(value)

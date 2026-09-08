@@ -9,10 +9,176 @@ import {
   streamCsv,
   streamXlsx,
   streamZip,
+  type XlsxOptions,
+  type XlsxRow,
 } from "./export_contract.ts";
 import * as XLSX from "xlsx";
 import { unzipSync } from "fflate";
 import { createSnapshotRows } from "./snapshot_paging.ts";
+
+for (const encoder of ["buffer", "stream"]) {
+  const encode = async (rows: readonly XlsxRow[], options?: XlsxOptions) => {
+    if (encoder === "buffer") return encodeXlsx(rows, options);
+    const chunks: Uint8Array[] = [];
+    for await (
+      const chunk of streamXlsx(
+        () => ({
+          async *[Symbol.asyncIterator]() {
+            for (const row of rows) yield row;
+          },
+        }),
+        1024,
+        options,
+      )
+    ) chunks.push(chunk);
+    return concatenate(chunks);
+  };
+
+  Deno.test(`${encoder} XLSX sparse columns never read inherited object properties`, async () => {
+    const bytes = await encode([{}, { constructor: "own value" }], {
+      columns: ["constructor", "toString", "__proto__"],
+    });
+    const sheet = XLSX.read(bytes, { type: "array" }).Sheets.Respostas;
+    assertEquals(XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" }), [
+      ["constructor", "toString", "__proto__"],
+      ["", "", ""],
+      ["own value", "", ""],
+    ]);
+  });
+
+  Deno.test(`${encoder} XLSX uses explicit columns for sparse rows and header-only workbooks`, async () => {
+    const cases: XlsxRow[][] = [[], [{ second: "B" }, { first: "A" }]];
+    for (const rows of cases) {
+      const workbook = XLSX.read(
+        await encode(rows, { columns: ["first", "second"] }),
+        { type: "array" },
+      );
+      assertEquals(workbook.SheetNames, ["Respostas"]);
+      const matrix = XLSX.utils.sheet_to_json(workbook.Sheets.Respostas, {
+        header: 1,
+        defval: "",
+      });
+      assertEquals(
+        matrix,
+        rows.length
+          ? [["first", "second"], ["", "B"], ["A", ""]]
+          : [["first", "second"]],
+      );
+      assertEquals(
+        XLSX.utils.sheet_to_json(workbook.Sheets.Respostas).length,
+        rows.length,
+      );
+    }
+  });
+
+  Deno.test(`${encoder} XLSX preserves numbers and booleans while protecting strings`, async () => {
+    const rows = [{
+      number: -12.5,
+      yes: true,
+      no: false,
+      text: "=1+1",
+      numericText: "00042",
+      link: "/forms/media/asset",
+      zero: 0,
+    }];
+    const bytes = await encode(rows, { columns: Object.keys(rows[0]) });
+    const sheet =
+      XLSX.read(bytes, { type: "array", cellDates: true }).Sheets.Respostas;
+    assertEquals([sheet.A2.t, sheet.A2.v], ["n", -12.5]);
+    assertEquals([sheet.B2.t, sheet.B2.v], ["b", true]);
+    assertEquals([sheet.C2.t, sheet.C2.v], ["b", false]);
+    assertEquals([sheet.D2.t, sheet.D2.v, sheet.D2.f], [
+      "s",
+      "'=1+1",
+      undefined,
+    ]);
+    assertEquals([sheet.E2.t, sheet.E2.v], ["s", "00042"]);
+    assertEquals(sheet.F2.l?.Target, "/forms/media/asset");
+    assertEquals([sheet.G2.t, sheet.G2.v], ["n", 0]);
+  });
+
+  Deno.test(`${encoder} XLSX rejects invalid columns and invalid typed cells`, async () => {
+    for (
+      const columns of [
+        [],
+        ["a", "a"],
+        ["a", 1],
+        Array.from({ length: 513 }, (_, i) => String(i)),
+      ]
+    ) {
+      await assertRejects(
+        () => encode([], { columns: columns as string[] }),
+        Error,
+      );
+    }
+    await assertRejects(
+      () => encode([{ unlisted: "value" }], { columns: ["a"] }),
+      Error,
+      "xlsx_column_mismatch",
+    );
+    for (
+      const value of [
+        NaN,
+        Infinity,
+        -Infinity,
+        new Date(NaN),
+        new Date("2026-09-08T06:04:05.678Z"),
+        {},
+        null,
+      ]
+    ) {
+      await assertRejects(
+        () => encode([{ a: value } as unknown as XlsxRow], { columns: ["a"] }),
+        Error,
+        "invalid_xlsx_cell_value",
+      );
+    }
+  });
+
+  Deno.test(`${encoder} XLSX preserves legacy discovery and empty defaults without options`, async () => {
+    const rows: XlsxRow[] = [{ second: "B" }, { first: "A" }];
+    const sheet =
+      XLSX.read(await encode(rows), { type: "array" }).Sheets.Respostas;
+    assertEquals(XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" }), [
+      ["second", "first"],
+      ["B", ""],
+      ["", "A"],
+    ]);
+    if (encoder === "buffer") {
+      const blank = XLSX.read(await encode([]), { type: "array" });
+      assertEquals(
+        XLSX.utils.sheet_to_json(blank.Sheets.Respostas, { header: 1 }),
+        [],
+      );
+    } else {
+      await assertRejects(() => encode([]), Error, "empty_export");
+    }
+  });
+}
+
+Deno.test("stream XLSX snapshots explicit column order before asynchronous row reads", async () => {
+  const columns = ["a", "b"];
+  const chunks: Uint8Array[] = [];
+  for await (
+    const chunk of streamXlsx(
+      () => ({
+        async *[Symbol.asyncIterator]() {
+          await Promise.resolve();
+          columns.reverse();
+          yield { a: "A", b: "B" };
+        },
+      }),
+      1024,
+      { columns },
+    )
+  ) chunks.push(chunk);
+  const sheet =
+    XLSX.read(concatenate(chunks), { type: "array" }).Sheets.Respostas;
+  assertEquals(XLSX.utils.sheet_to_json(sheet, { header: 1 }), [["a", "b"], [
+    "A",
+    "B",
+  ]]);
+});
 
 for (const changed of ["B", "a longer changed response"]) {
   Deno.test(`XLSX rejects changed worksheet bytes between measurement and write: ${changed.length}`, async () => {
