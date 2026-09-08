@@ -996,9 +996,12 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   FormDefinition _localDefinition() => FormDefinition(
     id: _definition?.id ?? '',
     institutionId: _institutionId ?? '',
-    kind: FormKind.form,
-    identityMode: FormIdentityMode.identified,
-    responseUnit: FormResponseUnit.person,
+    kind: _definition?.kind ?? FormKind.form,
+    identityMode: _definition?.identityMode ?? FormIdentityMode.identified,
+    responseUnit: _definition?.responseUnit ?? FormResponseUnit.person,
+    description: _definition?.description,
+    status: _definition?.status ?? FormStatus.draft,
+    managementVersion: _definition?.managementVersion ?? 0,
     title: _title.text.trim(),
     sections: [
       for (var sectionIndex = 0; sectionIndex < _sections.length; sectionIndex++)
@@ -1025,6 +1028,14 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                 isRequired: _sections[sectionIndex].questions[questionIndex].required,
                 conditions: _sections[sectionIndex].questions[questionIndex].loadedConditions,
                 config: FormItemConfig(
+                  decimalPlaces:
+                      _sections[sectionIndex].questions[questionIndex].loadedConfig.decimalPlaces,
+                  scaleMin: _sections[sectionIndex].questions[questionIndex].loadedConfig.scaleMin,
+                  scaleMax: _sections[sectionIndex].questions[questionIndex].loadedConfig.scaleMax,
+                  scaleMinLabel:
+                      _sections[sectionIndex].questions[questionIndex].loadedConfig.scaleMinLabel,
+                  scaleMaxLabel:
+                      _sections[sectionIndex].questions[questionIndex].loadedConfig.scaleMaxLabel,
                   allowCamera:
                       _sections[sectionIndex].questions[questionIndex].loadedConfig.allowCamera,
                   allowExisting:
