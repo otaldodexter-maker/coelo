@@ -8,6 +8,8 @@ import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_superadmin/features/support/presentation/view_models/support_prototype_controller.dart';
+import 'package:coelo_superadmin/features/principal_shared/presentation/principal_preview_app_bar.dart';
+import 'package:coelo_superadmin/features/principal_shared/presentation/principal_global_navigation.dart';
 
 import '../../support/activities/fake_activity_directory_repository.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
@@ -266,9 +268,7 @@ void main() {
     }
   });
 
-  testWidgets('keeps non-immersive Principal previews inside the shell content surface', (
-    tester,
-  ) async {
+  testWidgets('keeps Principal previews in their approved standalone composition', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final session = SuperadminSession();
@@ -291,19 +291,25 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
 
-      final sidebar = find.byKey(const Key('superadmin-sidebar'));
-      final content = find.byKey(const Key('superadmin-floating-content'));
-      expect(sidebar, findsOneWidget, reason: route);
-      expect(content, findsOneWidget, reason: route);
+      expect(router.routeInformationProvider.value.uri.path, route);
+      expect(find.byKey(const Key('superadmin-persistent-shell')), findsNothing, reason: route);
+      expect(find.byKey(const Key('superadmin-sidebar')), findsNothing, reason: route);
       expect(
-        tester.getRect(content).left,
-        greaterThan(tester.getRect(sidebar).right),
+        find.byKey(const Key('superadmin-chat-launcher-surface')),
+        findsNothing,
+        reason: route,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is PrincipalPreviewAppBar || widget is PrincipalGlobalHeader,
+        ),
+        route == SuperadminRoutes.devPrincipalMoments ? findsNothing : findsOneWidget,
         reason: route,
       );
     }
   });
 
-  testWidgets('keeps Principal routes in one responsive shell surface at 100 and 200 percent', (
+  testWidgets('keeps standalone Principal bounds and chrome at 100 and 200 percent', (
     tester,
   ) async {
     addTearDown(tester.view.reset);
@@ -340,8 +346,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 500));
 
         final shell = find.byKey(const Key('superadmin-persistent-shell'));
-        expect(shell, findsOneWidget, reason: '$width px at ${textScale * 100}%');
-        final initialShellState = tester.state(shell);
+        expect(shell, findsNothing, reason: '$width px at ${textScale * 100}%');
 
         for (final route in routes) {
           router.go(route.path);
@@ -349,8 +354,15 @@ void main() {
           await tester.pump(const Duration(milliseconds: 500));
 
           final reason = '${route.path} at $width px and ${textScale * 100}%';
-          expect(shell, findsOneWidget, reason: reason);
-          expect(tester.state(shell), same(initialShellState), reason: reason);
+          expect(router.routeInformationProvider.value.uri.path, route.path, reason: reason);
+          expect(shell, findsNothing, reason: reason);
+          expect(find.byKey(const Key('superadmin-sidebar')), findsNothing, reason: reason);
+          expect(find.byKey(const Key('superadmin-mobile-menu')), findsNothing, reason: reason);
+          expect(
+            find.byKey(const Key('superadmin-chat-launcher-surface')),
+            findsNothing,
+            reason: reason,
+          );
           expect(tester.takeException(), isNull, reason: reason);
 
           final pageContent = find.byKey(route.contentKey);
@@ -361,18 +373,33 @@ void main() {
           expect(contentRect.right, lessThanOrEqualTo(width), reason: reason);
           expect(contentRect.bottom, lessThanOrEqualTo(1200), reason: reason);
 
-          if (width >= CoeloBreakpoints.expanded.minWidth) {
-            final sidebar = find.byKey(const Key('superadmin-sidebar'));
-            final surface = find.byKey(const Key('superadmin-floating-content'));
-            expect(sidebar, findsOneWidget, reason: reason);
-            expect(surface, findsOneWidget, reason: reason);
-            final sidebarRect = tester.getRect(sidebar);
-            final surfaceRect = tester.getRect(surface);
-            expect(surfaceRect.left, greaterThan(sidebarRect.right), reason: reason);
-            expect(contentRect.left, greaterThanOrEqualTo(surfaceRect.left), reason: reason);
-            expect(contentRect.top, greaterThanOrEqualTo(surfaceRect.top), reason: reason);
-            expect(contentRect.right, lessThanOrEqualTo(surfaceRect.right), reason: reason);
-            expect(contentRect.bottom, lessThanOrEqualTo(surfaceRect.bottom), reason: reason);
+          final immersive = route.path == SuperadminRoutes.devPrincipalMoments;
+          expect(
+            find.byWidgetPredicate(
+              (widget) => widget is PrincipalPreviewAppBar || widget is PrincipalGlobalHeader,
+            ),
+            immersive ? findsNothing : findsOneWidget,
+            reason: reason,
+          );
+          if (immersive) {
+            expect(contentRect, Offset.zero & Size(width, 1200), reason: reason);
+            expect(find.byKey(const Key('principal-global-dock')), findsNothing, reason: reason);
+            expect(
+              find.byKey(const Key('principal-global-messages')),
+              findsNothing,
+              reason: reason,
+            );
+          } else if (const {
+            SuperadminRoutes.devPrincipalHappens,
+            SuperadminRoutes.devPrincipalForYou,
+            SuperadminRoutes.devPrincipalProfile,
+          }.contains(route.path)) {
+            expect(find.byKey(const Key('principal-global-dock')), findsOneWidget, reason: reason);
+            expect(
+              find.byKey(const Key('principal-global-messages')),
+              findsOneWidget,
+              reason: reason,
+            );
           }
         }
       }
