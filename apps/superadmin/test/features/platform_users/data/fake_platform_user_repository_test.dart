@@ -74,6 +74,7 @@ void main() {
         (record) => !record.profile.isOwner && record.status != PlatformMembershipStatus.revoked,
       );
       final institutionIds = catalog.institutionIds.toList()..sort();
+      expect(institutionIds, isNotEmpty);
 
       final updated = await repository.update(
         target.id,
@@ -87,7 +88,7 @@ void main() {
       );
 
       expect(updated.membership.scopeIds, institutionIds);
-      expect(updated.membership.scopeIds, hasLength(12));
+      expect(updated.membership.scopeIds, hasLength(catalog.institutionIds.length));
     });
 
     test('filters own masked identity, profile, membership and scope', () async {
