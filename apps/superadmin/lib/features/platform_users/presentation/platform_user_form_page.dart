@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -81,6 +83,8 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   bool _dirty = false;
   double _footerHeight = 0;
   int _contextRevision = 0;
+  bool _confirmingCancel = false;
+  final Set<DialogRoute<dynamic>> _ownedDialogs = {};
 
   bool _isCurrent(int revision) => mounted && revision == _contextRevision;
 
@@ -124,6 +128,8 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
         oldWidget.internalUserId != widget.internalUserId ||
         oldWidget.capability != widget.capability) {
       _contextRevision++;
+      _dismissOwnedDialogs();
+      _confirmingCancel = false;
       for (final controller in _textControllers) {
         controller.clear();
       }
@@ -224,6 +230,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   @override
   void dispose() {
     _contextRevision++;
+    _dismissOwnedDialogs();
     for (final controller in _textControllers) {
       controller.dispose();
     }
@@ -560,8 +567,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     final revision = _contextRevision;
     final file = await pickInstitutionLogo();
     if (file == null || !mounted || !_isCurrent(revision)) return;
-    final adjusted = await showDialog<AvatarCropResult>(
-      context: context,
+    final adjusted = await _showOwnedDialog<AvatarCropResult>(
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()?.scrim ?? Colors.black54,
       builder: (context) => AvatarCropDialog(bytes: file.bytes),
     );
@@ -934,28 +940,60 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   }
 
   Future<void> _cancel() async {
+    if (_saving || _confirmingCancel) return;
     final revision = _contextRevision;
     final onCancel = widget.onCancel;
     if (!_dirty) {
       onCancel?.call();
       return;
     }
-    final discard = await showDialog<bool>(
+    _confirmingCancel = true;
+    try {
+      final discard = await _showOwnedDialog<bool>(
+        builder: (context) => CoeloAdminDialogShell(
+          title: 'Descartar alterações?',
+          body: const Text('O rascunho local será descartado.'),
+          secondaryAction: OutlinedButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Continuar editando'),
+          ),
+          primaryAction: FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Descartar'),
+          ),
+        ),
+      );
+      if (discard == true && _isCurrent(revision)) onCancel?.call();
+    } finally {
+      if (_isCurrent(revision)) _confirmingCancel = false;
+    }
+  }
+
+  Future<T?> _showOwnedDialog<T>({required WidgetBuilder builder, Color? barrierColor}) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final route = DialogRoute<T>(
       context: context,
-      builder: (context) => CoeloAdminDialogShell(
-        title: 'Descartar alterações?',
-        body: const Text('O rascunho local será descartado.'),
-        secondaryAction: OutlinedButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('Continuar editando'),
-        ),
-        primaryAction: FilledButton(
-          onPressed: () => Navigator.of(context).pop(true),
-          child: const Text('Descartar'),
-        ),
-      ),
+      builder: builder,
+      barrierColor: barrierColor ?? Theme.of(context).dialogTheme.barrierColor ?? Colors.black54,
     );
-    if (discard == true && _isCurrent(revision)) onCancel?.call();
+    _ownedDialogs.add(route);
+    try {
+      unawaited(navigator.push<T>(route));
+      return await route.completed;
+    } finally {
+      _ownedDialogs.remove(route);
+    }
+  }
+
+  void _dismissOwnedDialogs() {
+    final routes = _ownedDialogs.toList(growable: false);
+    _ownedDialogs.clear();
+    if (routes.isEmpty) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      for (final route in routes) {
+        if (route.isActive) route.navigator?.removeRoute(route);
+      }
+    });
   }
 }
 

@@ -9,6 +9,46 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final dispose in [false, true]) {
+    testWidgets('discard confirmation leaves with its form: dispose=$dispose', (tester) async {
+      final repository = _Repository('A');
+      var canceled = 0;
+      await tester.pumpWidget(_app(repository, onCancel: () => canceled++));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('platform-user-first-name')), 'Novo nome');
+      await tester.tap(find.text('Cancelar'));
+      await tester.pumpAndSettle();
+      expect(find.text('Descartar alterações?'), findsOneWidget);
+      await tester.pumpWidget(
+        dispose
+            ? MaterialApp(theme: CoeloTheme.light, home: const SizedBox())
+            : _app(repository, capability: PlatformUserCapability.unauthorized),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Descartar alterações?'), findsNothing);
+      expect(canceled, 0);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('repeated cancel requests open only one discard confirmation', (tester) async {
+    final repository = _Repository('A');
+    var canceled = 0;
+    await tester.pumpWidget(_app(repository, onCancel: () => canceled++));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('platform-user-first-name')), 'Novo nome');
+    final cancel = tester
+        .widget<TextButton>(find.widgetWithText(TextButton, 'Cancelar'))
+        .onPressed!;
+    cancel();
+    cancel();
+    await tester.pumpAndSettle();
+    expect(find.text('Descartar alterações?', skipOffstage: false), findsOneWidget);
+    await tester.tap(find.text('Descartar'));
+    await tester.pumpAndSettle();
+    expect(canceled, 1);
+  });
+
   testWidgets('a denied editor never starts remote catalog or detail reads', (tester) async {
     final repository = _Repository('A');
     await tester.pumpWidget(_app(repository, capability: PlatformUserCapability.unauthorized));
@@ -78,6 +118,7 @@ Widget _app(
   _Repository repository, {
   PlatformUserCapability capability = PlatformUserCapability.owner,
   ValueChanged<PlatformUserRecord>? onUpdated,
+  VoidCallback? onCancel,
 }) => MaterialApp(
   theme: CoeloTheme.light,
   home: PlatformUserFormPage(
@@ -86,6 +127,7 @@ Widget _app(
     internalUserId: repository.record.id,
     logout: unavailableSuperadminLogout,
     onUpdated: onUpdated,
+    onCancel: onCancel,
   ),
 );
 
