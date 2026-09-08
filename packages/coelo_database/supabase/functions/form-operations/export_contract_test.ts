@@ -18,7 +18,213 @@ import {
 } from "./export_contract.ts";
 import * as XLSX from "xlsx";
 import { unzipSync } from "fflate";
-import { createSnapshotRows } from "./snapshot_paging.ts";
+import {
+  createSnapshotRows,
+  createVersionedXlsxSheets,
+  parseXlsxSnapshotSchema,
+  parseXlsxSubmission,
+} from "./snapshot_paging.ts";
+
+for (const encoder of ["stream", "buffer"] as const) {
+  const workbook = async (label: string, value: string) => {
+    const columns = [{ key: "answer", label }];
+    if (encoder === "buffer") {
+      return encodeXlsxWorkbook([{
+        name: "Respostas v1",
+        columns,
+        rows: [{ answer: value }],
+      }]);
+    }
+    const chunks: Uint8Array[] = [];
+    for await (
+      const chunk of streamXlsxWorkbook([{
+        name: "Respostas v1",
+        columns,
+        rows: async function* () {
+          yield { answer: value };
+        },
+      }])
+    ) chunks.push(chunk);
+    const bytes = new Uint8Array(
+      chunks.reduce((size, chunk) => size + chunk.length, 0),
+    );
+    let offset = 0;
+    for (const chunk of chunks) {
+      bytes.set(chunk, offset);
+      offset += chunk.length;
+    }
+    return bytes;
+  };
+  Deno.test(`${encoder} v2 literal media-looking text is never a legacy hyperlink`, async () => {
+    const literal = "/forms/media/not-a-uuid?token=literal";
+    const bytes = await workbook("Question", literal);
+    const cell = XLSX.read(bytes, { type: "array" }).Sheets["Respostas v1"].A2;
+    assertEquals(cell.v, literal);
+    assertEquals(cell.l, undefined);
+  });
+  Deno.test(`${encoder} v2 OOXML preserves literal escapes controls labels and option text`, async () => {
+    const texts = [
+      "literal _x0041_ _x0001_ _x005F_",
+      "prefix\u0001\u000b\r\t\nsuffix",
+      'A & <B> "C" 😀',
+      "controls:" +
+      Array.from({ length: 32 }, (_, n) => String.fromCharCode(n)).join(""),
+    ];
+    for (const text of texts) {
+      const bytes = await workbook(text, text);
+      const sheet = XLSX.read(bytes, { type: "array" }).Sheets["Respostas v1"];
+      assertEquals(sheet.A1.v, text);
+      assertEquals(sheet.A2.v, text);
+      const xml = new TextDecoder().decode(
+        unzipSync(bytes)["xl/worksheets/sheet1.xml"],
+      );
+      assertEquals(
+        // The XML document must contain escaped, never raw, control characters.
+        // deno-lint-ignore no-control-regex
+        /[\u0000-\u0008\u000b\u000c\u000e-\u001f\ufffe\uffff]/.test(xml),
+        false,
+      );
+      if (text.includes("\r")) assertEquals(xml.includes("_x000D_"), true);
+      if (text.includes("\t")) assertEquals(xml.includes("_x0009_"), false);
+      if (text.includes("\n")) assertEquals(xml.includes("_x000A_"), false);
+    }
+  });
+  Deno.test(`${encoder} v2 rejects lone surrogates instead of changing content`, async () => {
+    for (const invalid of ["lone\ud800", "lone\udc00"]) {
+      await assertRejects(
+        () => workbook("Question", invalid),
+        Error,
+        "invalid_xlsx_text",
+      );
+      await assertRejects(
+        () => workbook(invalid, "Answer"),
+        Error,
+        "invalid_xlsx_text",
+      );
+    }
+  });
+  Deno.test(`${encoder} v2 rejects unsupported noncharacters before emitting workbook bytes`, async () => {
+    for (const invalid of ["unsupported\ufffe", "unsupported\uffff"]) {
+      for (const header of [false, true]) {
+        const label = header ? invalid : "Question";
+        const value = header ? "Answer" : invalid;
+        if (encoder === "buffer") {
+          await assertRejects(
+            () => workbook(label, value),
+            Error,
+            "invalid_xlsx_text",
+          );
+        } else {
+          let emitted = 0;
+          await assertRejects(
+            async () => {
+              for await (
+                const _chunk of streamXlsxWorkbook([{
+                  name: "Respostas v1",
+                  columns: [{ key: "answer", label }],
+                  rows: async function* () {
+                    yield { answer: value };
+                  },
+                }])
+              ) emitted++;
+            },
+            Error,
+            "invalid_xlsx_text",
+          );
+          assertEquals(emitted, 0);
+        }
+      }
+    }
+  });
+}
+
+for (const encoder of ["stream", "buffer"] as const) {
+  Deno.test(`${encoder} v2 typed choices and text preserve their original content`, async () => {
+    const id = (n: number) =>
+      `8c021000-0000-4000-8000-${String(n).padStart(12, "0")}`;
+    const question = "Question _x0041_\u0001";
+    const option = "/forms/media/literal-option?token=text";
+    const text = "Answer _x0001_\r\u000b 😀";
+    const schema = parseXlsxSnapshotSchema({
+      formId: id(1),
+      formTitle: "Form",
+      versions: [{
+        versionId: id(2),
+        versionNumber: 1,
+        state: "published",
+        conditions: [],
+        sections: [{
+          sectionId: id(3),
+          title: "Section",
+          description: null,
+          position: 0,
+          items: [
+            {
+              itemId: id(4),
+              kind: "single_choice",
+              label: question,
+              helpText: null,
+              position: 0,
+              required: false,
+              config: {},
+              options: [{ optionId: id(6), label: option, position: 0 }],
+            },
+            {
+              itemId: id(5),
+              kind: "short_text",
+              label: "Text",
+              helpText: null,
+              position: 1,
+              required: false,
+              config: {},
+              options: [],
+            },
+          ],
+        }],
+      }],
+    });
+    const submission = parseXlsxSubmission({
+      responseId: id(7),
+      occurrenceId: id(8),
+      versionId: id(2),
+      metadata: { form_id: id(1), identity_mode: "anonymous" },
+      answers: [
+        { itemId: id(4), values: [{ kind: "choice", optionId: id(6) }] },
+        { itemId: id(5), values: [{ kind: "text", value: text }] },
+      ],
+    }, schema);
+    const sheets = createVersionedXlsxSheets(schema, async function* () {
+      yield submission;
+    });
+    let bytes: Uint8Array;
+    if (encoder === "buffer") {
+      const collected = [];
+      for (const sheet of sheets) {
+        const rows = [];
+        for await (const row of sheet.rows()) rows.push(row);
+        collected.push({ ...sheet, rows });
+      }
+      bytes = encodeXlsxWorkbook(collected);
+    } else {
+      const chunks = [];
+      for await (const chunk of streamXlsxWorkbook(sheets)) chunks.push(chunk);
+      bytes = new Uint8Array(chunks.reduce((n, chunk) => n + chunk.length, 0));
+      let offset = 0;
+      for (const chunk of chunks) {
+        bytes.set(chunk, offset);
+        offset += chunk.length;
+      }
+    }
+    const book = XLSX.read(bytes, { type: "array" });
+    assertEquals(book.Sheets["Respostas v1"].I1.v, `${question} [${id(4)}]`);
+    assertEquals(book.Sheets["Respostas v1"].I2.v, option);
+    assertEquals(book.Sheets["Respostas v1"].I2.l, undefined);
+    assertEquals(book.Sheets["Respostas v1"].J2.v, text);
+    assertEquals(book.Sheets["Valores v1"].J2.v, question);
+    assertEquals(book.Sheets["Valores v1"].M2.v, option);
+    assertEquals(book.Sheets["Valores v1"].M2.l, undefined);
+  });
+}
 
 Deno.test("versioned workbook preserves separate schemas, typed cells and absolute private links", async () => {
   const link = xlsxMediaLink(
