@@ -384,9 +384,11 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
     if (answers.map((answer) => answer.itemId).toSet().length != answers.length) {
       throw const WireFormatException('Response detail contains duplicate answers.');
     }
+    final summary = _responseSummary(payload);
     return FormResponseDetail(
-      summary: _responseSummary(payload),
+      summary: summary,
       answers: {for (final answer in answers) answer.itemId: answer},
+      originalVersion: _originalResponseVersion(payload, summary, answers),
     );
   });
 
@@ -775,12 +777,69 @@ FormResponseSummary _responseSummary(Map<String, Object?> payload) {
     id: _string(payload, 'id'),
     occurrenceId: _string(payload, 'occurrence_id'),
     formVersionId: _string(payload, 'form_version_id'),
+    identityMode: identityMode,
     submittedAt: identityMode == FormIdentityMode.anonymous
         ? null
         : _nullableDateTime(payload['submitted_at']),
     respondentLabel: identityMode == FormIdentityMode.anonymous
         ? null
         : payload['respondent_label'] as String?,
+  );
+}
+
+FormVersion? _originalResponseVersion(
+  Map<String, Object?> payload,
+  FormResponseSummary summary,
+  List<FormAnswer> answers,
+) {
+  if (payload['definition'] == null) return null;
+  final definition = FormDefinitionDto.fromJson(_map(payload['definition'])).toDomain();
+  final rawNumber = payload['form_version_number'];
+  if (rawNumber is! num || !rawNumber.isFinite || rawNumber != rawNumber.truncateToDouble()) {
+    throw const WireFormatException('Original response version number must be an integer.');
+  }
+  final number = _integer(payload, 'form_version_number');
+  final state = _string(payload, 'form_version_state');
+  if (definition.id != _string(payload, 'form_id') ||
+      definition.identityMode != summary.identityMode ||
+      number <= 0 ||
+      !const {'working', 'published', 'superseded'}.contains(state)) {
+    throw const WireFormatException('Original response version correlation is invalid.');
+  }
+  final sections = <String>{};
+  final items = <String, FormItem>{};
+  final options = <String>{};
+  for (final section in definition.sections) {
+    if (!sections.add(section.id)) {
+      throw const WireFormatException('Original response graph contains duplicate sections.');
+    }
+    for (final item in section.items) {
+      if (items.containsKey(item.id) || item.options.any((option) => !options.add(option.id))) {
+        throw const WireFormatException(
+          'Original response graph contains duplicate items or options.',
+        );
+      }
+      items[item.id] = item;
+    }
+  }
+  for (final answer in answers) {
+    final item = items[answer.itemId];
+    if (item == null || item.kind.name != answer.kind.name) {
+      throw const WireFormatException('Answer does not belong to the original question.');
+    }
+    if (answer.value case FormChoiceValue(:final optionIds)) {
+      final allowed = item.options.map((option) => option.id).toSet();
+      if (!allowed.containsAll(optionIds)) {
+        throw const WireFormatException('Answer contains an option outside the original question.');
+      }
+    }
+  }
+  return FormVersion(
+    id: summary.formVersionId,
+    formId: definition.id,
+    number: number,
+    sections: definition.sections,
+    isPublished: state != 'working',
   );
 }
 

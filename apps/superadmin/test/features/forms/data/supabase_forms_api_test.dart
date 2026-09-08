@@ -688,10 +688,10 @@ void main() {
             FormAnswer.shortText(itemId: 'item-1', value: 'Resposta autorizada'),
           ).toJson(),
         ],
-        'definition': {'original_version': true},
       });
       final detail = await SupabaseFormsApi(backend).getResponseDetail('response-1');
       expect(detail.summary.formVersionId, 'version-1');
+      expect(detail.originalVersion, isNull);
       expect(
         FormAnswerDto.fromDomain(detail.answers['item-1']!).toJson()['text_value'],
         'Resposta autorizada',
