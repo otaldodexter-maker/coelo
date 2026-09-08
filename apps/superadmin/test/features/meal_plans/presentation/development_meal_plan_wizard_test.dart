@@ -789,6 +789,69 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  for (final isTemplate in [false, true]) {
+    testWidgets('tenant switch invalidates pending ${isTemplate ? 'model' : 'meal plan'} save', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final repository = _PendingTenantMealPlanRepository();
+      var savedCount = 0;
+
+      Widget page(String tenantId) => MaterialApp(
+        home: Scaffold(
+          body: MealPlanWizardPage(
+            repository: repository,
+            imageRepository: const UnavailableMealPlanImageRepository(),
+            tenantId: tenantId,
+            imageSelectionEnabled: false,
+            isTemplate: isTemplate,
+            onSaved: () => savedCount++,
+            onCancel: () {},
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(page('tenant-a'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextFormField).first, 'Conteúdo do tenant A');
+      if (!isTemplate) {
+        await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+        await tester.pump();
+      }
+      await _selectAudienceOption(
+        tester,
+        isTemplate ? 'Instituição do modelo' : 'Instituições',
+        'Colégio Coelo',
+      );
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      if (!isTemplate) {
+        await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+        await tester.pump();
+      }
+      await tester.enterText(find.byType(TextFormField).first, 'Arroz e feijão');
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+      await tester.pump();
+
+      await tester.pumpWidget(page('tenant-b'));
+      await tester.pump();
+      if (isTemplate) {
+        repository.pendingTemplateSave.complete(_model('model-a'));
+      } else {
+        repository.pendingMealPlanSave.complete(_plan('meal-a', 'Conteúdo do tenant A'));
+      }
+      await tester.pump();
+
+      expect(savedCount, 0);
+      expect(find.text('Conteúdo do tenant A'), findsNothing);
+      expect(find.byType(LinearProgressIndicator), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('load fails closed when repository returns another meal plan id', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -874,6 +937,20 @@ MealPlan _plan(
   sourceTemplateId: sourceTemplateId,
   sourceTemplateVersion: sourceTemplateVersion,
   sourceTemplateName: sourceTemplateName,
+);
+
+MealPlanTemplate _model(String id) => MealPlanTemplate(
+  id: id,
+  tenantId: 'tenant-a',
+  institutionId: 'tenant-a',
+  name: 'Conteúdo do tenant A',
+  planVariant: MealPlanPlanVariant.complete,
+  audienceSegment: MealPlanAudienceSegment.students,
+  status: 'draft',
+  version: 1,
+  payload: const {},
+  createdAt: DateTime(2026, 9, 8),
+  updatedAt: DateTime(2026, 9, 8),
 );
 
 class _OrderedMealPlanRepository implements MealPlanRepository {
@@ -1192,4 +1269,16 @@ final class _PendingMealPlanRepository extends _OrderedMealPlanRepository {
       requiresReview: publicationRequiresReview,
     );
   }
+}
+
+final class _PendingTenantMealPlanRepository extends _OrderedMealPlanRepository {
+  final pendingMealPlanSave = Completer<MealPlan>();
+  final pendingTemplateSave = Completer<MealPlanTemplate>();
+
+  @override
+  Future<MealPlan> createOrUpdateDraft(MealPlanDraft draft) => pendingMealPlanSave.future;
+
+  @override
+  Future<MealPlanTemplate> saveTemplate(MealPlanTemplateDraft draft, {required bool publish}) =>
+      pendingTemplateSave.future;
 }
