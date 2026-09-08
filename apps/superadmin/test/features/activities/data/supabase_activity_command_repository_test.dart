@@ -97,6 +97,42 @@ void main() {
     expect(result.unitId, 'unit-1');
   });
 
+  test('rejects a model response bound to another institution', () async {
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => Response(
+          jsonEncode({
+            'id': 'template-created-1',
+            'institution_id': 'institution-tampered',
+            'unit_id': 'unit-1',
+            'name': 'Física',
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseActivityCommandRepository(client).createTemplate(
+        const ActivityTemplateCreateCommand(
+          requestId: 'template-create-request-2',
+          institutionId: 'institution-1',
+          unitId: 'unit-1',
+          name: 'Física',
+          description: 'Ciências exatas',
+          taxonomyId: 'taxonomy-exact-sciences',
+          governance: ActivityGovernance.mandatory,
+        ),
+      ),
+      throwsA(isA<ActivityCommandUnavailableException>()),
+    );
+  });
+
   test('maps internal model authorization denial', () async {
     final client = SupabaseClient(
       'https://example.supabase.co',

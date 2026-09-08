@@ -49,11 +49,23 @@ final class SupabaseActivityCommandRepository implements ActivityCommandReposito
           },
         ),
       );
+      final id = response['id'];
+      final institutionId = response['institution_id'];
+      final unitId = response['unit_id'];
+      final name = response['name'];
+      if (id is! String ||
+          id.trim().isEmpty ||
+          institutionId is! String ||
+          institutionId != command.institutionId ||
+          unitId != command.unitId ||
+          name is! String) {
+        throw const ActivityCommandUnavailableException();
+      }
       return ActivityTemplateCreateResult(
-        id: response['id'] as String,
-        institutionId: response['institution_id'] as String,
-        unitId: response['unit_id'] as String?,
-        name: response['name'] as String,
+        id: id,
+        institutionId: institutionId,
+        unitId: unitId as String?,
+        name: name,
       );
     } on PostgrestException catch (error) {
       throw _mapError(error);
