@@ -3,6 +3,137 @@ import 'package:coelo_domain/coelo_domain.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('response projections', () {
+    const legacySummary = FormResponseSummary(
+      id: 'response-1',
+      occurrenceId: 'occurrence-1',
+      formVersionId: 'version-1',
+    );
+
+    test('keeps identified and absent historical graph defaults', () {
+      final answers = {'answer-1': FormAnswer.integer(itemId: 'answer-1', value: 42)};
+      final detail = FormResponseDetail(summary: legacySummary, answers: answers);
+      answers.clear();
+
+      expect(legacySummary.identityMode, FormIdentityMode.identified);
+      expect(detail.originalVersion, isNull);
+      expect((detail.answers['answer-1']!.value as FormIntegerValue).value, 42);
+      expect(() => detail.answers.clear(), throwsUnsupportedError);
+    });
+
+    test('carries anonymous identity explicitly without identifying metadata', () {
+      const summary = FormResponseSummary(
+        id: 'anonymous-response',
+        occurrenceId: 'occurrence-1',
+        formVersionId: 'version-1',
+        identityMode: FormIdentityMode.anonymous,
+      );
+
+      expect(summary.identityMode, FormIdentityMode.anonymous);
+      expect(summary.respondentLabel, isNull);
+      expect(summary.submittedAt, isNull);
+    });
+
+    test('preserves the historical graph and freezes nested condition choices', () {
+      final optionIds = {'option-old'};
+      final definition = FormDefinition(
+        id: 'form-1',
+        institutionId: 'institution-1',
+        kind: FormKind.form,
+        identityMode: FormIdentityMode.identified,
+        responseUnit: FormResponseUnit.person,
+        title: 'Historical form',
+        sections: [
+          FormSection(
+            id: 'section-old',
+            title: 'Original section',
+            description: 'Original description',
+            position: 2,
+            items: [
+              FormItem(
+                id: 'question-old',
+                kind: FormItemKind.singleChoice,
+                label: 'Original question',
+                helpText: 'Original help',
+                position: 3,
+                isRequired: true,
+                config: const FormItemConfig(minSelections: 1, maxSelections: 1),
+                options: const [
+                  FormOption(id: 'option-old', label: 'Original option', position: 4),
+                ],
+                conditions: [
+                  FormCondition.choice(sourceItemId: 'source-old', optionIds: optionIds),
+                  const FormCondition.yesNo(sourceItemId: 'yes-no-old', expected: false),
+                ],
+              ),
+            ],
+          ),
+        ],
+      );
+      final decoded = FormDefinitionDto.fromJson(
+        FormDefinitionDto.fromDomain(definition).toJson(),
+      ).toDomain();
+      final original = FormVersion(
+        id: 'version-1',
+        formId: decoded.id,
+        number: 1,
+        sections: decoded.sections,
+        isPublished: true,
+      );
+      final detail = FormResponseDetail(
+        summary: legacySummary,
+        answers: const {},
+        originalVersion: original,
+      );
+      original.sections.single.items.single.conditions.first.optionIds.clear();
+      final historical = detail.originalVersion!;
+      final section = historical.sections.single;
+      final item = section.items.single;
+
+      expect(
+        (historical.id, historical.formId, historical.number, historical.isPublished),
+        ('version-1', 'form-1', 1, true),
+      );
+      expect((section.title, section.position), ('Original section', 2));
+      expect(section.description, 'Original description');
+      expect(
+        (item.label, item.position, item.kind),
+        ('Original question', 3, FormItemKind.singleChoice),
+      );
+      expect(item.helpText, 'Original help');
+      expect(item.isRequired, isTrue);
+      expect((item.config.minSelections, item.config.maxSelections), (1, 1));
+      expect(item.options.single.label, 'Original option');
+      expect(item.options.single.position, 4);
+      expect(item.conditions.first.sourceItemId, 'source-old');
+      expect(item.conditions.first.optionIds, {'option-old'});
+      expect(item.conditions.last.kind, FormConditionKind.yesNo);
+      expect(item.conditions.last.expectedYesNo, isFalse);
+      expect(() => historical.sections.clear(), throwsUnsupportedError);
+      expect(() => section.items.clear(), throwsUnsupportedError);
+      expect(() => item.options.clear(), throwsUnsupportedError);
+      expect(() => item.conditions.clear(), throwsUnsupportedError);
+      expect(() => item.conditions.first.optionIds.add('forged'), throwsUnsupportedError);
+    });
+
+    test('rejects a historical version belonging to a different response version', () {
+      expect(
+        () => FormResponseDetail(
+          summary: legacySummary,
+          answers: const {},
+          originalVersion: FormVersion(
+            id: 'other-version',
+            formId: 'form-1',
+            number: 2,
+            sections: const [],
+            isPublished: true,
+          ),
+        ),
+        throwsArgumentError,
+      );
+    });
+  });
+
   test('application DTO round-trips independent schedules and their versions', () {
     final application = FormApplication(
       id: 'application-1',

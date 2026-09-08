@@ -197,21 +197,76 @@ final class FormResponseSummary {
     required this.id,
     required this.occurrenceId,
     required this.formVersionId,
+    this.identityMode = FormIdentityMode.identified,
     this.submittedAt,
     this.respondentLabel,
   });
   final String id;
   final String occurrenceId;
   final String formVersionId;
+  final FormIdentityMode identityMode;
   final DateTime? submittedAt;
   final String? respondentLabel;
 }
 
 final class FormResponseDetail {
-  FormResponseDetail({required this.summary, required Map<String, FormAnswer> answers})
-    : answers = Map.unmodifiable(answers);
+  FormResponseDetail({
+    required this.summary,
+    required Map<String, FormAnswer> answers,
+    FormVersion? originalVersion,
+  }) : answers = Map.unmodifiable(answers),
+       originalVersion = _snapshotOriginalVersion(originalVersion, summary.formVersionId);
   final FormResponseSummary summary;
   final Map<String, FormAnswer> answers;
+
+  /// The definition as answered, absent for adapters that do not supply history.
+  final FormVersion? originalVersion;
+}
+
+FormVersion? _snapshotOriginalVersion(FormVersion? version, String expectedId) {
+  if (version == null) return null;
+  if (version.id != expectedId) {
+    throw ArgumentError.value(version.id, 'originalVersion.id', 'Must match the response version');
+  }
+  // Domain lists are immutable; choice conditions additionally need a copied set.
+  return FormVersion(
+    id: version.id,
+    formId: version.formId,
+    number: version.number,
+    isPublished: version.isPublished,
+    sections: [
+      for (final section in version.sections)
+        FormSection(
+          id: section.id,
+          title: section.title,
+          description: section.description,
+          position: section.position,
+          items: [
+            for (final item in section.items)
+              FormItem(
+                id: item.id,
+                kind: item.kind,
+                label: item.label,
+                helpText: item.helpText,
+                position: item.position,
+                isRequired: item.isRequired,
+                config: item.config,
+                options: item.options,
+                conditions: [
+                  for (final condition in item.conditions)
+                    if (condition.kind == FormConditionKind.choice)
+                      FormCondition.choice(
+                        sourceItemId: condition.sourceItemId,
+                        optionIds: Set.unmodifiable(condition.optionIds),
+                      )
+                    else
+                      condition,
+                ],
+              ),
+          ],
+        ),
+    ],
+  );
 }
 
 enum FormFileJobStatus { pending, processing, succeeded, partial, failed, expired }
