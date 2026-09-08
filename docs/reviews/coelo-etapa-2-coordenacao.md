@@ -28,8 +28,8 @@ As cinco conversas não foram criadas automaticamente. O Owner abre a sessão na
 | C01 | `E2 R01 C01 — Identidade e acesso` | 44 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01` | `codex/e2-r01-c01-identidade` | 01a08197-7b62-73c1-9673-5fd40fa40452; I001/r5 recebido; r3 integrado |
 | C02 | `E2 R01 C02 — Forms mídia e cuidado` | 32 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02` | `codex/e2-r01-c02-forms-midia` | 01a0819a-f1f1-7421-95dd-d645ca9f5747; I003 pendente; r4 integrado |
 | C03 | `E2 R01 C03 — Operações` | 68 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03` | `codex/e2-r01-c03-operacoes` | 01a0819b-a12e-7110-88cb-99e51a82f384; I002 pendente; r2 integrado |
-| C04 | `E2 R01 C04 — Estruturas e pessoas` | 47 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c04` | `claude/e2-r01-c04-estruturas` | ID/ack pendentes |
-| C05 | `E2 R01 C05 — Comunicação e Principal` | 28 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c05` | `claude/e2-r01-c05-comunicacao` | ID/ack pendentes |
+| C04 | `E2 R01 C04 — Estruturas e pessoas` | 47 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c04` | `claude/e2-r01-c04-estruturas` | e0191513-6656-4f3e-a0e8-753dd70bb590 (Claude informado); I002 pendente |
+| C05 | `E2 R01 C05 — Comunicação e Principal` | 28 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c05` | `claude/e2-r01-c05-comunicacao` | 2a43a349-a639-4be5-aefc-1ff180d1fc7a (Claude informado); I002 pendente |
 
 ### Disponibilidade confirmada — 2026-09-08T12:23:42-03:00
 
@@ -37,7 +37,7 @@ Seis worktrees conferidas pelo Git. C01/C03/C04/C05 partem de `479d1bd1771b13e0c
 
 ### Contagem e última evidência
 
-Inventário vigente:219 IDs únicos/38 famílias; classificação operacional194 ativas(189mvp+5shell),22 adiadas,3 gates; nenhum ID sem dono/duplicado. FE219 aplicáveis; BE212 normativas(187ativas+3gate+22adiadas),7N/A; E2E187ativas,3gates e22adiadas separados,7N/A. Frontend certificado0/219,Backend0/212,E2E0/187; IDs certificados: nenhum. Verificação de camada R01:17/219 IDs FE auditados parcialmente (2Auth,4Forms,5Atividades,4READ,2Convites), incluindo falhas visuais, sem certificar critérios completos; BE real0/212,E2E0/187; histórico não foi zerado. Implementação e testes faltantes estão separados nas colunas Feito/FE/BE do inventário, sem percentual inventado.
+Inventário vigente:219 IDs únicos/38 famílias; classificação operacional194 ativas(189mvp+5shell),22 adiadas,3 gates; nenhum ID sem dono/duplicado. FE219 aplicáveis; BE212 normativas(187ativas+3gate+22adiadas),7N/A; E2E187ativas,3gates e22adiadas separados,7N/A. Frontend certificado0/219,Backend0/212,E2E0/187; IDs certificados: nenhum. Verificação de camada R01:41/219 IDs FE parcialmente auditados conforme checkpoint13:00, incluindo falhas e WIP, incluindo falhas visuais, sem certificar critérios completos; BE real0/212,E2E0/187; histórico não foi zerado. Implementação e testes faltantes estão separados nas colunas Feito/FE/BE do inventário, sem percentual inventado.
 
 Última evidência de preparação: `2026-09-08T12:19:18-03:00`. Últimas entregas: C01/r3 integrado12:34:18; C02/r4 fonte12:39:42. C01 recebido/aceito5 e integrado3 e C02 recebido/aceito/integrado4; C03/r2 recebido/aceito/integrado2, C04/C05 sem handoff recebido. Os três rastreadores sincronizados a essas revisões sem promoção de ações. Testes locais de cliente/SDK/Deno executados; nenhuma nova prova UI normal com backend real, SQL ou produção. Evidências históricas até08/09 permanecem com seus próprios horários e ambientes.
 
@@ -99,6 +99,14 @@ C02/r4 e C03/r2 integrados conforme reports/R01-C02-C03-integracao-1246.md: R249
 ### Recebimento C01/r5
 
 C01/r5 recebido em12:49:18, fonte12:47:00: Convites7779bbf na fila de revisão visual C00, integrado somente até r3/Auth. Executor relata65PASS/5goldenFAIL, com as mesmas diferenças em baseline anterior (9 imagens); nenhum golden aprovado. IDs invites.list/create auditados parcialmente; READ internal-users.list e access-models.list/filter/detail revalidado107/107 local sem mudança de código. Capturas locais1440 light/dark estão na .dart_tool C01 e precisam inspeção C00 antes de integrar. Próximo lote C01 Erros/Conta; decisões Perfis/personas seguem C00. Nenhuma promoção FE/BE/E2E.
+
+### Checkpoint13:00 vigente
+
+Relatório `etapa-2-operacao/reports/R01-checkpoint-1300.md`; revisões C01r8,C02r6,C03r2,C04r2,C05r2 sincronizadas antes de publicar. Integradas C01r3,C02r4,C03r2; demais em revisão/WIP.41 IDs FE parcialmente auditados,6 contratos BE,zero conclusão promovida. C04 sessão Claude e0191513-6656-4f3e-a0e8-753dd70bb590, CronCreate e50dd60a :13/:43 relatado; C05 harness2a43a349-a639-4be5-aefc-1ff180d1fc7a, loop ainda inativo na última evidência. Não são IDs nativos do Codex. C04/C05 I002 publicadas13:03, confirmação pendente do mecanismo local.
+
+Router/routes/main estão exclusivamente C04 para hunks Locais/CHILD até release; C00 mantém demais contratos. C05 implementação Agora/Notices prossegue sem atualizar masters automaticamente. Classificador Claude recusou update-goldens, sem contorno. C00 prioriza perfil SQL nominal e personas, fila de revisão e entrega segura dev; nenhuma produção nova autorizada. Horário real e limitações estão no relatório.
+
+C01/r8 fonte13:09 recebida antes de publicar: formulário556bedba entregue para revisão,5/5 focais+19/19 regressão parcial anterior; três goldens iguais aoHEAD. Suíte ampla interrompida exit1:211 é progresso, nunca211/211final. Diretório IntrinsicHeight e overlays continuam abertos; nenhuma integração/promoção deste lote.
 
 ## Histórico preservado — anterior à R01
 

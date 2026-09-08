@@ -1,6 +1,6 @@
 {
   "source": "automation_update create/update/view + local automation.toml",
-  "status": "configured-not-fired",
+  "status": "heartbeat-fired",
   "generated_at": "2026-09-08T12:19:18-03:00",
   "timezone": "America/Sao_Paulo",
   "id": "e2-r01-c00-acompanhamento-30-min",
@@ -8,11 +8,11 @@
   "enabled": true,
   "wakeup_minutes": 10,
   "executor_poll_minutes": 30,
-  "next_calculated_tick": "2026-09-08T12:30:00-03:00",
+  "next_calculated_tick": "2026-09-08T13:10:00-03:00",
   "next_three_calculated_ticks": [
-    "2026-09-08T12:30:00-03:00",
-    "2026-09-08T12:40:00-03:00",
-    "2026-09-08T12:50:00-03:00"
+    "2026-09-08T13:10:00-03:00",
+    "2026-09-08T13:20:00-03:00",
+    "2026-09-08T13:30:00-03:00"
   ],
   "next_run_at_from_api": null,
   "limitation": "One heartbeat per thread; nextRunAt not exposed by view. Schedule calculation is not proof of wakeup; app/host availability and current turn may delay.",
@@ -29,6 +29,7 @@
     "coordena-o-coelo-50min": "already PAUSED",
     "etapa-2-acompanhamento-hor-rio": "not found locally"
   },
-  "claude": "unverified until executor opens session; no Codex-to-Claude wake bridge",
-  "updated_at": "2026-09-08T12:28:13-03:00"
+  "claude": "C04 CronCreate e50dd60a :13/:43 reported, not independently verified; C05 loop inactive in r2, I002 requests activation",
+  "updated_at": "2026-09-08T12:28:13-03:00",
+  "last_observed_dispatch": "2026-09-08T13:00:51-03:00"
 }
