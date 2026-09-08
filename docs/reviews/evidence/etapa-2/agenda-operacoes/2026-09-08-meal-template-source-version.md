@@ -5,6 +5,18 @@ status: "correção local verificada; persistência real pendente"
 generated_at: "2026-09-08"
 ---
 
+## Complemento de verificação — troca, remoção e mesma referência
+
+Após `1975630`, três testes adicionais exercitaram o seletor pelo widget e o
+draft resultante: troca para alternativa v4 copia prato v4 e referência/versão
+v4; limpar remove referência/versão sem apagar o conteúdo histórico; escolher
+novamente a mesma referência mantém prato/versão v1 apesar do catálogo v2.
+Os três passaram na primeira execução: são cobertura de comportamento
+existente, não três novos bugs corrigidos. Nenhum código produtivo foi alterado.
+Suite completa do wizard: **36 PASS**, analyzer PASS e review independente
+`agenda_ui_contract` sem blocker. A troca usa conteúdo do catálogo; refresh de
+detalhe e persistência reais não foram testados.
+
 # Recorte
 
 Superadmin, criar a partir de modelo e editar cardápio com origem histórica.

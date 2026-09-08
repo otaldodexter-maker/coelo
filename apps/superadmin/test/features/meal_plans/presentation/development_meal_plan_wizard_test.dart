@@ -13,6 +13,73 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final selection in ['replace', 'clear', 'retain']) {
+    testWidgets('source template selection $selection preserves matching content and version', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final repository = _SourceTemplateRepository(
+        editing: true,
+        missing: false,
+        includeAlternative: true,
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: MealPlanWizardPage(
+              repository: repository,
+              imageRepository: const UnavailableMealPlanImageRepository(),
+              imageSelectionEnabled: false,
+              mealPlanId: 'existing-plan',
+              onSaved: () {},
+              onCancel: () {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final field = find.byWidgetPredicate(
+        (widget) => widget is CoeloAdminSingleSelectField<String> && widget.label == 'Modelo-base',
+      );
+      await tester.tap(find.descendant(of: field, matching: find.text('Modelo histórico')));
+      await tester.pumpAndSettle();
+      final option = switch (selection) {
+        'replace' => 'Modelo v4',
+        'clear' => 'Criar sem modelo',
+        _ => 'Modelo histórico',
+      };
+      await tester.tap(find.text(option).last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await _selectAudienceOption(tester, 'Instituições', 'Colégio Coelo');
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      final expectedDish = selection == 'replace' ? 'Prato detalhe v4' : 'Prato histórico v1';
+      expect(find.text(expectedDish), findsOneWidget);
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+      await tester.pumpAndSettle();
+      expect(repository.savedDrafts, hasLength(1));
+      final draft = repository.savedDrafts.single;
+      expect(draft.sourceTemplateId, switch (selection) {
+        'replace' => 'alternative-template',
+        'clear' => null,
+        _ => 'source-template',
+      });
+      expect(draft.sourceTemplateVersion, switch (selection) {
+        'replace' => 4,
+        'clear' => null,
+        _ => 1,
+      });
+      expect(draft.menu.single.dishName, expectedDish);
+      expect(tester.takeException(), isNull);
+    });
+  }
   for (final editing in [false, true]) {
     for (final missing in [false, true]) {
       testWidgets('source template version survives page editing=$editing missing=$missing', (
@@ -748,11 +815,16 @@ class _OrderedMealPlanRepository implements MealPlanRepository {
 }
 
 final class _SourceTemplateRepository extends _OrderedMealPlanRepository {
-  _SourceTemplateRepository({required this.editing, required this.missing});
+  _SourceTemplateRepository({
+    required this.editing,
+    required this.missing,
+    this.includeAlternative = false,
+  });
   final bool editing, missing;
+  final bool includeAlternative;
   final savedDrafts = <MealPlanDraft>[];
-  MealPlanTemplate _template(int version) => MealPlanTemplate(
-    id: 'source-template',
+  MealPlanTemplate _template(int version, {String id = 'source-template'}) => MealPlanTemplate(
+    id: id,
     name: 'Modelo v$version',
     planVariant: MealPlanPlanVariant.complete,
     audienceSegment: MealPlanAudienceSegment.students,
@@ -772,8 +844,17 @@ final class _SourceTemplateRepository extends _OrderedMealPlanRepository {
   );
   @override
   Future<MealPlanPage> fetchTemplatePage(MealPlanListFilter filter) async => MealPlanPage(
-    items: missing ? [] : [_template(2).toDirectoryItem()],
-    total: missing ? 101 : 1,
+    items: missing
+        ? []
+        : [
+            _template(2).toDirectoryItem(),
+            if (includeAlternative) _template(4, id: 'alternative-template').toDirectoryItem(),
+          ],
+    total: missing
+        ? 101
+        : includeAlternative
+        ? 2
+        : 1,
     limit: filter.pageSize,
     offset: filter.offset,
   );
