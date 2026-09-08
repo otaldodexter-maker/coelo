@@ -30,8 +30,10 @@ final class ImportRepositoryUnauthorizedException implements Exception {
   const ImportRepositoryUnauthorizedException();
 }
 
-final class UnavailableImportRepository implements ImportRepository {
+final class UnavailableImportRepository implements ImportRepository, ImportExecutionCapabilities {
   const UnavailableImportRepository();
+  @override
+  Set<ImportEntity> get supportedImportEntities => const <ImportEntity>{};
   Future<T> _unavailable<T>() => Future<T>.error(const ImportRepositoryUnavailableException());
   @override
   Future<List<ImportJob>> fetchJobs() => _unavailable();

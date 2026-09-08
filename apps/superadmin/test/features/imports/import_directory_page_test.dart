@@ -25,7 +25,7 @@ void main() {
     expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
   });
 
-  testWidgets('renders unavailable separately from an authorized empty history', (tester) async {
+  testWidgets('renders deferred imports without offering a retry', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
@@ -38,9 +38,10 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Importações indisponíveis'), findsOneWidget);
+    expect(find.text('Importações adiadas'), findsOneWidget);
+    expect(find.textContaining('disponíveis depois do MVP'), findsOneWidget);
     expect(find.text('Nova importação'), findsOneWidget);
-    expect(find.text('Tentar novamente'), findsOneWidget);
+    expect(find.text('Tentar novamente'), findsNothing);
   });
 
   testWidgets('renders unauthorized alone without toolbar or creation', (tester) async {

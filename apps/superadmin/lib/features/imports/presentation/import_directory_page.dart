@@ -6,6 +6,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
+import '../../../app/shell/superadmin_notice.dart';
 
 import '../domain/import_job.dart';
 import '../domain/import_repository.dart';
@@ -32,10 +33,18 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
   var _loadGeneration = 0;
   Timer? _searchDebounce;
 
+  bool get _executionAvailable =>
+      widget.repository is! ImportExecutionCapabilities ||
+      (widget.repository as ImportExecutionCapabilities).supportedImportEntities.isNotEmpty;
+
   @override
   void initState() {
     super.initState();
-    _load();
+    if (_executionAvailable) {
+      _load();
+    } else {
+      _loading = false;
+    }
   }
 
   @override
@@ -106,6 +115,10 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
       builder: (_) => const _ImportDialog(),
     );
     if (mounted && choice != null) widget.onNewImport(choice);
+  }
+
+  void _showDeferred() {
+    showSuperadminNotice(context, 'Disponível depois do MVP', icon: Icons.info_outline_rounded);
   }
 
   @override
@@ -203,6 +216,23 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
   );
 
   Widget _content() {
+    if (!_executionAvailable) {
+      return Column(
+        children: [
+          _create(),
+          const SizedBox(height: CoeloSpacing.space4),
+          const Expanded(
+            child: CoeloStatePanel(
+              title: 'Importações adiadas',
+              message:
+                  'Importação e exportação reais estarão disponíveis depois do MVP. '
+                  'Nenhum arquivo será selecionado ou processado nesta etapa.',
+              icon: Icons.schedule_outlined,
+            ),
+          ),
+        ],
+      );
+    }
     if (_loading) return const Center(child: CircularProgressIndicator());
     if (_failed) {
       return Column(
@@ -319,10 +349,12 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
 
   Widget _create() => CoeloAdminCreateAction(
     label: 'Nova importação',
-    description: 'Envie um arquivo para validação',
+    description: _executionAvailable
+        ? 'Envie um arquivo para validação'
+        : 'Disponível depois do MVP',
     icon: Icons.upload_file_outlined,
     variant: CoeloAdminCreateActionVariant.banner,
-    onPressed: _newImport,
+    onPressed: _executionAvailable ? _newImport : _showDeferred,
   );
   void _previousPage() {
     setState(() => _index--);

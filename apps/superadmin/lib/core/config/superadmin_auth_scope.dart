@@ -23,7 +23,6 @@ import '../../features/activities/data/supabase_activity_command_repository.dart
 import '../../features/activities/data/supabase_activity_directory_repository.dart';
 import '../../features/assessments/assessment.dart';
 import '../../features/assessments/data/supabase_assessment_repository.dart';
-import '../../features/imports/data/supabase_import_repository.dart';
 import '../../features/imports/domain/import_repository.dart';
 import '../../features/agenda/data/supabase_agenda_repository.dart';
 import '../../features/agenda/domain/agenda_repository.dart';
@@ -311,7 +310,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       // people-based realm. Keep production mutations fail-closed until the
       // internal v2 directory and command gateways exist.
       structureMutationsEnabled: false,
-      importRepository: SupabaseImportRepository(client),
+      importRepository: const UnavailableImportRepository(),
       planCatalogRepository: SupabasePlanCatalogRepository(client),
       agendaRepository: SupabaseAgendaRepository(client),
       chatRepository: SupabaseChatRepository(client),
