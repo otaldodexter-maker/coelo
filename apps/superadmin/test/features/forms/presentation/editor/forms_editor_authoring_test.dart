@@ -9,6 +9,38 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final replacement in ['api', 'page']) {
+    testWidgets('retained institution callback cannot select after $replacement replacement', (
+      tester,
+    ) async {
+      final first = _Api(manage: true)..allowCatalog = true;
+      Widget app(_Api api) => MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(body: FormsEditorPage.authoring(authoringApi: api)),
+      );
+      await tester.pumpWidget(app(first));
+      await tester.pumpAndSettle();
+      final obsoleteSelect = tester
+          .widget<TextButton>(find.widgetWithText(TextButton, 'Institution 1'))
+          .onPressed!;
+      if (replacement == 'api') {
+        await tester.pumpWidget(app(_Api(manage: true)..allowCatalog = true));
+      } else {
+        await tester.tap(find.text('Próximas instituições'));
+      }
+      await tester.pumpAndSettle();
+      obsoleteSelect();
+      await tester.pumpAndSettle();
+      final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+      expect(tester.widget<OutlinedButton>(save).onPressed, isNull);
+      final currentName = replacement == 'api' ? 'Institution 1' : 'Institution 21';
+      await tester.tap(find.widgetWithText(TextButton, currentName));
+      await tester.pumpAndSettle();
+      expect(tester.widget<OutlinedButton>(save).onPressed, isNotNull);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   for (final create in [true, false]) {
     testWidgets('nominal authoring create=$create fits 375px and 200 percent text', (tester) async {
       tester.view.physicalSize = const Size(375, 900);

@@ -228,60 +228,85 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     }
   }
 
-  Widget _creationInstitutionPicker() => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      CoeloFormTextField(
-        controller: _institutionSearch,
-        labelText: 'Buscar instituição',
-        prefixIcon: Icons.search_rounded,
-        onChanged: (_) => setState(() {
-          _institutionQueryGeneration++;
-          _institutionPage = null;
-        }),
-        enabled: !_loading && _pendingAuthoringSave == null,
-      ),
-      Wrap(
-        spacing: CoeloSpacing.space2,
-        children: [
-          OutlinedButton(
-            onPressed: !_loading && _pendingAuthoringSave == null
-                ? () => _loadAuthoringInstitutions(widget.authoringApi!, _contextGeneration)
-                : null,
-            child: const Text('Buscar instituições'),
-          ),
-          if (_institutionPage?.hasMore == true)
+  Widget _creationInstitutionPicker() {
+    final generation = _contextGeneration;
+    final queryGeneration = _institutionQueryGeneration;
+    final api = widget.authoringApi!;
+    final page = _institutionPage;
+    bool current() =>
+        _isCurrentContext(generation) &&
+        queryGeneration == _institutionQueryGeneration &&
+        identical(page, _institutionPage) &&
+        identical(api, widget.authoringApi) &&
+        !_loading &&
+        _pendingAuthoringSave == null &&
+        _definition == null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CoeloFormTextField(
+          controller: _institutionSearch,
+          labelText: 'Buscar instituição',
+          prefixIcon: Icons.search_rounded,
+          onChanged: (_) {
+            if (!current()) return;
+            setState(() {
+              _institutionQueryGeneration++;
+              _institutionPage = null;
+            });
+          },
+          enabled: !_loading && _pendingAuthoringSave == null,
+        ),
+        Wrap(
+          spacing: CoeloSpacing.space2,
+          children: [
             OutlinedButton(
               onPressed: !_loading && _pendingAuthoringSave == null
-                  ? () => _loadAuthoringInstitutions(
-                      widget.authoringApi!,
-                      _contextGeneration,
-                      cursor: _institutionPage!.nextCursor,
-                    )
+                  ? () {
+                      if (current()) _loadAuthoringInstitutions(api, generation);
+                    }
                   : null,
-              child: const Text('Próximas instituições'),
+              child: const Text('Buscar instituições'),
             ),
-        ],
-      ),
-      Wrap(
-        spacing: CoeloSpacing.space2,
-        children: [
-          for (final institution in _institutionPage?.items ?? const <FormsAuthoringInstitution>[])
-            TextButton(
-              onPressed: !_loading && _pendingAuthoringSave == null
-                  ? () => setState(() {
-                      _creationInstitution = institution;
-                      _institutionId = institution.id;
-                      _feedback = null;
-                    })
-                  : null,
-              child: Text(institution.publicName),
-            ),
-        ],
-      ),
-      const SizedBox(height: CoeloSpacing.space4),
-    ],
-  );
+            if (_institutionPage?.hasMore == true)
+              OutlinedButton(
+                onPressed: !_loading && _pendingAuthoringSave == null
+                    ? () {
+                        if (current()) {
+                          _loadAuthoringInstitutions(api, generation, cursor: page!.nextCursor);
+                        }
+                      }
+                    : null,
+                child: const Text('Próximas instituições'),
+              ),
+          ],
+        ),
+        Wrap(
+          spacing: CoeloSpacing.space2,
+          children: [
+            for (final institution
+                in _institutionPage?.items ?? const <FormsAuthoringInstitution>[])
+              TextButton(
+                onPressed: !_loading && _pendingAuthoringSave == null
+                    ? () {
+                        if (!current() || !page!.items.any((item) => item.id == institution.id)) {
+                          return;
+                        }
+                        setState(() {
+                          _creationInstitution = institution;
+                          _institutionId = institution.id;
+                          _feedback = null;
+                        });
+                      }
+                    : null,
+                child: Text(institution.publicName),
+              ),
+          ],
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+      ],
+    );
+  }
 
   bool _isCurrentContext(int generation) => mounted && generation == _contextGeneration;
 
