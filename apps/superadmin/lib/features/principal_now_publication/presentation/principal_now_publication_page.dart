@@ -101,7 +101,7 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
 
   void _synchronizeLoadedDraft() {
     final caption = controller.state.draft.caption;
-    if (captionController.text != caption && !captionController.selection.isValid) {
+    if (captionController.text != caption) {
       captionController.value = TextEditingValue(
         text: caption,
         selection: TextSelection.collapsed(offset: caption.length),
