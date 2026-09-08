@@ -1233,6 +1233,56 @@ revoke all on function app_private.form_worker_multipart_xlsx_r2_v1(jsonb,text,j
 revoke all on function public.form_worker_multipart_xlsx_r2_v1(jsonb,text,jsonb) from public,anon,authenticated;
 grant execute on function public.form_worker_multipart_xlsx_r2_v1(jsonb,text,jsonb) to service_role;
 
+-- C00 I016: preserve the shared queue contract and the existing attempts CHECK.
+-- Exhausted jobs retain their state, lease and artifacts for reconciliation.
+create or replace function app_private.form_claim_worker_job(
+  p_worker_id text,
+  p_lease_seconds integer default 60,
+  p_job_kinds text[] default null
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare job_row app_private.form_worker_jobs;
+begin
+  if nullif(btrim(p_worker_id), '') is null or p_lease_seconds not between 10 and 600 then
+    raise invalid_parameter_value using message = 'valid worker id and lease required';
+  end if;
+  update app_private.form_worker_jobs job
+     set state = 'processing',
+         attempts = attempts + 1,
+         lease_owner = p_worker_id,
+         lease_expires_at = now() + make_interval(secs => p_lease_seconds)
+   where job.id = (
+     select candidate.id
+       from app_private.form_worker_jobs candidate
+      where (
+        (candidate.state in ('pending', 'failed') and candidate.available_at <= now())
+        or (candidate.state = 'processing' and candidate.lease_expires_at < now())
+      )
+        and candidate.attempts < 20
+        and (p_job_kinds is null or candidate.job_kind = any(p_job_kinds))
+      order by candidate.available_at, candidate.created_at, candidate.id
+      limit 1
+      for update skip locked
+   )
+  returning * into job_row;
+  if job_row.id is null then return null; end if;
+  return jsonb_build_object(
+    'id', job_row.id,
+    'job_kind', job_row.job_kind,
+    'aggregate_id', job_row.aggregate_id,
+    'payload', job_row.payload_jsonb,
+    'progress', job_row.progress_jsonb,
+    'attempts', job_row.attempts,
+    'created_at', job_row.created_at,
+    'lease_expires_at', job_row.lease_expires_at
+  );
+end;
+$$;
+
 -- WIP: worker failure, physical cleanup and R2 writer integration
 -- follow in this reserved candidate before a complete packet is proposed.
 commit;

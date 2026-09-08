@@ -503,6 +503,100 @@ select lives_ok($$select public.form_worker_complete_cleanup('8c021000-0000-4000
 reset role;
 select is((select state from public.form_file_jobs where id=pg_temp.xlsx_id(720)),'expired','legacy job expires after nominal cleanup');
 
+-- Candidate claim regression. The shared function change requires its nominal
+-- C00 reservation; this fixture does not classify exhausted uploads as failed.
+insert into app_private.form_worker_jobs(id,job_kind,state,attempts,available_at,lease_owner,lease_expires_at)
+select pg_temp.xlsx_id(41000+n),'generate_occurrences',
+  case n when 0 then 'pending' when 1 then 'failed' else 'processing' end,20,now()-interval '3 days',
+  case when n=2 then 'synthetic-exhausted-owner' else null end,
+  case when n=2 then now()-interval '1 day' else null end from generate_series(0,2) n;
+insert into app_private.form_worker_jobs(id,job_kind,state,attempts,available_at)
+select pg_temp.xlsx_id(41010+n),'generate_occurrences','pending',0,now()-interval '2 days'+make_interval(secs=>n)
+from generate_series(0,2) n;
+create temporary table xlsx_claim_before as
+select jsonb_agg(to_jsonb(w) order by id) body from app_private.form_worker_jobs w
+where id in(select pg_temp.xlsx_id(41000+n) from generate_series(0,2) n);
+create temporary table xlsx_claim_artifacts_before as
+select jsonb_build_object(
+  'files',(select jsonb_agg(to_jsonb(j) order by id) from public.form_file_jobs j),
+  'assets',(select jsonb_agg(to_jsonb(a) order by id) from public.media_assets a),
+  'uploads',(select jsonb_agg(to_jsonb(u) order by id) from app_private.form_multipart_uploads u),
+  'parts',(select jsonb_agg(to_jsonb(p) order by multipart_upload_id,part_number) from app_private.form_multipart_parts p),
+  'snapshot',(select jsonb_agg(to_jsonb(s) order by file_job_id,sequence_number) from app_private.form_xlsx_snapshot_rows s),
+  'audit',(select count(*) from audit.audit_logs)) body;
+create temporary table xlsx_claim_results(n integer primary key,body jsonb);
+grant insert,select on xlsx_claim_results to service_role;
+grant execute on function pg_temp.xlsx_id(integer) to service_role;
+set local role service_role;
+select lives_ok($$insert into xlsx_claim_results select n,
+  app_private.form_claim_worker_job('synthetic-claim-worker',60,array['generate_occurrences'])
+  from generate_series(0,2) n$$,'three exhausted states do not poison later eligible jobs');
+reset role;
+select is((select body->>'id' from xlsx_claim_results where n=position),pg_temp.xlsx_id(41010+position)::text,
+  'claim skips exhausted states and returns eligible queue position '||position) from generate_series(0,2) position;
+set local role service_role;
+select is(app_private.form_claim_worker_job('synthetic-claim-worker',60,array['generate_occurrences']),null::jsonb,
+  'only exhausted jobs and active leases return no new claim');
+reset role;
+select is((select jsonb_agg(to_jsonb(w) order by id) from app_private.form_worker_jobs w
+  where id in(select pg_temp.xlsx_id(41000+n) from generate_series(0,2) n)),(select body from xlsx_claim_before),
+  'skipping exhausted work preserves complete state and prior lease');
+select is(jsonb_build_object(
+  'files',(select jsonb_agg(to_jsonb(j) order by id) from public.form_file_jobs j),
+  'assets',(select jsonb_agg(to_jsonb(a) order by id) from public.media_assets a),
+  'uploads',(select jsonb_agg(to_jsonb(u) order by id) from app_private.form_multipart_uploads u),
+  'parts',(select jsonb_agg(to_jsonb(p) order by multipart_upload_id,part_number) from app_private.form_multipart_parts p),
+  'snapshot',(select jsonb_agg(to_jsonb(s) order by file_job_id,sequence_number) from app_private.form_xlsx_snapshot_rows s),
+  'audit',(select count(*) from audit.audit_logs)),(select body from xlsx_claim_artifacts_before),
+  'queue selection grants no cleanup and changes no artifact, receipt, snapshot or audit');
+insert into app_private.form_worker_jobs(id,job_kind,state,attempts,available_at)
+values(pg_temp.xlsx_id(41020),'reconcile_audience','pending',19,now()-interval '1 day');
+set local role service_role;
+insert into xlsx_claim_results values(20,app_private.form_claim_worker_job('synthetic-final-attempt',60,array['reconcile_audience']));
+select is((select body->>'attempts' from xlsx_claim_results where n=20),'20','last permitted attempt still receives its lease');
+select is(app_private.form_claim_worker_job('synthetic-other-worker',60,array['reconcile_audience']),null::jsonb,
+  'active last lease cannot be stolen');
+select lives_ok($$select app_private.form_finish_worker_job(pg_temp.xlsx_id(41020),'synthetic-final-attempt')$$,
+  'current owner can finish an active twentieth attempt');
+reset role;
+select is((select state from app_private.form_worker_jobs where id=pg_temp.xlsx_id(41020)),'succeeded',
+  'claim limit does not prevent normal lease completion');
+insert into app_private.form_worker_jobs(id,job_kind,state,attempts,available_at)
+values(pg_temp.xlsx_id(41021),'reconcile_audience','pending',19,now()-interval '1 day');
+set local role service_role;
+insert into xlsx_claim_results values(21,app_private.form_claim_worker_job('synthetic-last-expired',60,array['reconcile_audience']));
+reset role;
+update app_private.form_worker_jobs set lease_expires_at=now()-interval '1 second' where id=pg_temp.xlsx_id(41021);
+set local role service_role;
+select is(app_private.form_claim_worker_job('synthetic-no-attempt-21',60,array['reconcile_audience']),null::jsonb,
+  'expired twentieth attempt never increments to twenty-one');
+reset role;
+select is((select attempts from app_private.form_worker_jobs where id=pg_temp.xlsx_id(41021)),20,'exhaustion never resets or increments the existing counter');
+select ok(not has_function_privilege('authenticated','app_private.form_claim_worker_job(text,integer,text[])','execute'),
+  'claim remains inaccessible to user clients');
+select ok(has_function_privilege('service_role','app_private.form_claim_worker_job(text,integer,text[])','execute'),
+  'claim retains its nominal service grant');
+
+-- Exercise the public worker boundary with a real internally requested R2 job,
+-- then the mixed queue. The older legacy sentinel must survive the R2 filter.
+insert into app_private.form_worker_jobs(id,job_kind,state,attempts,available_at)
+values(pg_temp.xlsx_id(41030),'generate_occurrences','pending',0,now()-interval '30 days'),
+  (pg_temp.xlsx_id(41031),'export_xlsx_r2_v1','failed',20,now()-interval '45 days');
+set local role service_role;
+insert into xlsx_claim_results values(30,public.form_worker_claim('synthetic-r2-claim',60,array['export_xlsx_r2_v1']));
+reset role;
+select is((select body->>'id' from xlsx_claim_results where n=30),(select id::text from app_private.form_worker_jobs
+  where aggregate_id=(select (body#>>'{data,id}')::uuid from xlsx_request_results where label='empty') and job_kind='export_xlsx_r2_v1'),
+  'public claim selects actual requested R2 job after skipping exhausted R2 work');
+select is((select body->>'job_kind' from xlsx_claim_results where n=30),'export_xlsx_r2_v1','filtered claim preserves R2 kind');
+select is((select body->>'attempts' from xlsx_claim_results where n=30),'1','actual R2 request gets its first attempt');
+select is((select state from app_private.form_worker_jobs where id=pg_temp.xlsx_id(41030)),'pending','R2 kind filter does not claim older legacy work');
+set local role service_role;
+insert into xlsx_claim_results values(31,public.form_worker_claim('synthetic-mixed-claim',60,null));
+reset role;
+select is((select body->>'id' from xlsx_claim_results where n=31),pg_temp.xlsx_id(41030)::text,'mixed queue skips exhaustion and preserves eligible ordering');
+select is((select attempts from app_private.form_worker_jobs where id=pg_temp.xlsx_id(41031)),20,'exhausted R2 counter stays unchanged through filtered and mixed claim');
+
 set constraints all immediate;
 select * from finish();
 rollback;
