@@ -15,6 +15,54 @@ void main() {
     byteSize: 100,
     downloadUrl: Uri.parse('https://legacy.invalid/never-follow'),
   );
+  for (final control in ['footer', 'header']) {
+    for (final change in ['covered', 'disposed']) {
+      testWidgets('image $control close cannot affect another route after $change', (tester) async {
+        final navigator = GlobalKey<NavigatorState>();
+        final session = MediaSession();
+        Widget host(bool disposed) => MaterialApp(
+          navigatorKey: navigator,
+          home: Scaffold(
+            body: disposed
+                ? const Text('Origem')
+                : SuperadminChatAttachmentTile(
+                    attachment: canonicalImage,
+                    state: SuperadminChatAttachmentState.ready,
+                    mediaReader: _Reader(),
+                    mediaSession: session,
+                  ),
+          ),
+        );
+        await tester.pumpWidget(host(false));
+        await tester.tap(find.text('Abrir imagem'));
+        await tester.pumpAndSettle();
+        final close = control == 'footer'
+            ? tester
+                  .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Fechar'))
+                  .onPressed!
+            : tester
+                  .widget<IconButton>(
+                    find.byWidgetPredicate(
+                      (widget) => widget is IconButton && widget.tooltip == 'Fechar',
+                    ),
+                  )
+                  .onPressed!;
+        navigator.currentState!.push(
+          MaterialPageRoute<void>(builder: (_) => const Scaffold(body: Text('Outra rota'))),
+        );
+        await tester.pumpAndSettle();
+        if (change == 'disposed') {
+          await tester.pumpWidget(host(true));
+          await tester.pumpAndSettle();
+        }
+        close();
+        await tester.pumpAndSettle();
+        expect(find.text('Outra rota'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
   testWidgets('image route honors reduced motion and keyboard open close focus', (tester) async {
     final reader = _Reader();
     await tester.pumpWidget(
