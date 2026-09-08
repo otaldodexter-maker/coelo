@@ -322,6 +322,12 @@ Widget _goldenApp({
       repository: repository ?? FakeInstitutionDirectoryRepository(),
       logout: _logout,
       onConversationsOpen: onConversationsOpen,
+      // The reference depicts an actor who may create and may report a bug.
+      // Both controls are offered only when the composition provides them, so
+      // omitting the callbacks rendered a different screen than the one the
+      // master captures.
+      onCreate: () {},
+      onBugReportSubmitted: (_) {},
     ),
   );
 }
