@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/superadmin_app.dart';
 import 'core/config/superadmin_auth_scope.dart';
+import 'features/children/data/supabase_child_directory_reader.dart';
+import 'features/children/presentation/child_directory_controller.dart';
+import 'features/locations/data/supabase_location_catalog_reader.dart';
+import 'features/locations/domain/location_catalog_reader.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +30,8 @@ Future<void> main() async {
       groupDirectoryRepository: authScope.groupDirectoryRepository,
       groupDetailRepository: authScope.groupDetailRepository,
       unitDetailRepository: authScope.unitDetailRepository,
+      locationCatalogReader: _locationCatalogReader(),
+      childDirectoryRead: _childDirectoryRead(),
       activityDirectoryRepository: authScope.activityDirectoryRepository,
       activityCommandRepository: authScope.activityCommandRepository,
       assessmentRepository: authScope.assessmentRepository,
@@ -59,4 +66,28 @@ Future<void> main() async {
       nowPublicationRepository: authScope.nowPublicationRepository,
     ),
   );
+}
+
+/// Production reader for the location catalog.
+///
+/// The auth scope owns Supabase initialization but does not expose its client,
+/// so the reader is built from the initialized instance here and falls back to
+/// the unavailable reader when there is none. Failing closed is the point: a
+/// missing backend must never look like an empty catalog.
+LocationCatalogReader _locationCatalogReader() {
+  try {
+    return SupabaseLocationCatalogReader(Supabase.instance.client);
+  } on Object {
+    return const UnavailableLocationCatalogReader();
+  }
+}
+
+/// Production read for the authorized children directory, same rule.
+ChildDirectoryRead _childDirectoryRead() {
+  try {
+    final reader = SupabaseChildDirectoryReader(Supabase.instance.client);
+    return reader.fetchPage;
+  } on Object {
+    return unavailableChildDirectoryRead;
+  }
 }
