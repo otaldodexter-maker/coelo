@@ -824,6 +824,39 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('activity-card-activity-10')), findsOneWidget);
   });
+
+  testWidgets('repository swap replaces a pending model options request', (tester) async {
+    final pageKey = GlobalKey();
+    final repositoryA = _DelayedTemplateRepository();
+    final repositoryB = _TemplateOptionsRepository();
+
+    Widget app(ActivityDirectoryRepository repository) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: ActivityDirectoryPage(
+        key: pageKey,
+        repository: repository,
+        logout: () async => const LogoutResult.success(),
+        onCreate: () {},
+        onView: (_) {},
+        onCreateFromTemplate: (_) {},
+      ),
+    );
+
+    await tester.pumpWidget(app(repositoryA));
+    await tester.pump();
+    await tester.pump();
+    await tester.pump();
+    expect(find.byKey(const Key('activity-templates-loading')), findsOneWidget);
+
+    await tester.pumpWidget(app(repositoryB));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.byKey(const Key('activity-template-template-1')), findsOneWidget);
+
+    repositoryA.complete();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('activity-template-template-1')), findsOneWidget);
+  });
 }
 
 enum _DirectoryScenario { empty, failure, unauthorized }

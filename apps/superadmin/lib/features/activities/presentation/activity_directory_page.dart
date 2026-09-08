@@ -304,34 +304,62 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
   String _templateOrigin = 'Todas';
   _ActivityStatusTab _templateStatus = _ActivityStatusTab.all;
   int _templatePage = 0;
+  int _templateLoadGeneration = 0;
 
   bool get _templatesEnabled =>
       widget.onCreateFromTemplate != null || widget.onDuplicateTemplate != null;
 
   @override
+  void didUpdateWidget(covariant _ActivityDirectoryContent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.repository, widget.repository)) return;
+    _templateLoadGeneration++;
+    _templateOptions = null;
+    _templatesLoading = false;
+    _templatesFailed = false;
+    _templatesRequested = false;
+    _selectedTemplateTaxonomyIds.clear();
+    _templateSearchController.clear();
+    _templateSearch = '';
+    _templateOrigin = 'Todas';
+    _templateStatus = _ActivityStatusTab.all;
+    _templatePage = 0;
+  }
+
+  @override
   void dispose() {
+    _templateLoadGeneration++;
     _templateSearchController.dispose();
     super.dispose();
   }
 
   Future<bool> _loadTemplates({String? institutionId}) async {
+    final generation = ++_templateLoadGeneration;
+    final repository = widget.repository;
     _templatesRequested = true;
     setState(() {
       _templatesLoading = true;
       _templatesFailed = false;
     });
     try {
-      final options = await widget.repository.fetchTemplateOptions(institutionId: institutionId);
-      if (!mounted) return false;
+      final options = await repository.fetchTemplateOptions(institutionId: institutionId);
+      if (!_isCurrentTemplateLoad(generation, repository)) return false;
       setState(() => _templateOptions = options);
       return true;
     } catch (_) {
-      if (mounted) setState(() => _templatesFailed = true);
+      if (_isCurrentTemplateLoad(generation, repository)) {
+        setState(() => _templatesFailed = true);
+      }
       return false;
     } finally {
-      if (mounted) setState(() => _templatesLoading = false);
+      if (_isCurrentTemplateLoad(generation, repository)) {
+        setState(() => _templatesLoading = false);
+      }
     }
   }
+
+  bool _isCurrentTemplateLoad(int generation, ActivityDirectoryRepository repository) =>
+      mounted && generation == _templateLoadGeneration && identical(repository, widget.repository);
 
   Future<void> _duplicateTemplate(
     ActivityTemplateOption template,
