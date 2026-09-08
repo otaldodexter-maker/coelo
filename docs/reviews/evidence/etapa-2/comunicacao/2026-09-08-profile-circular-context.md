@@ -36,8 +36,22 @@ Critério local: itens, cursor e prévia não atravessam contexto; não promover
 
 # Limites e memória
 
+## Incremento — consumidor no feed de Acontece
+
+O limite de ownership do FeedCard registrado abaixo foi corrigido no incremento
+seguinte: três REDs item/callback/dispose, geração e rota própria também no card.
+O modo contextualPreview=false continua direto, sem preview recursivo. A troca
+de callback invalida conservadoramente a prévia; closures recriadas pelo
+consumidor também contam como troca, não como prova de mudança de autorização.
+Teste adicional do widget real de feed misto confirma troca para o feed B,
+fechamento da prévia e rejeição de read capturado de A, com repositories fakes.
+172/172 não-golden de Circulares/Perfil/Acontece, 19/19 goldens Circulares,
+analyzer três arquivos, format/diff/visual e review read-only passaram.
+Isso não fecha os baselines históricos do Perfil/feed nem gates de backend.
+
 PrincipalCircularFeedCard fora da aba ainda não recebe automaticamente ownership
-de contexto/rota; isso continua recorte aberto, não coberto por esta entrega.
+de contexto/rota na primeira entrega; esse limite histórico foi resolvido pelo
+incremento acima, sem afirmar reautorização server-side ou E2E.
 Não houve leitura de dados privados, envio ou mutation real. Memória no-op:
 restaura regra existente, sem nova política. Evidência enviada ao Coordenador,
 writer exclusivo dos rastreadores oficiais.

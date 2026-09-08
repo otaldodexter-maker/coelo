@@ -329,7 +329,7 @@ final class _PrincipalProfileCircularsTabState extends State<PrincipalProfileCir
   }
 }
 
-final class PrincipalCircularFeedCard extends StatelessWidget {
+final class PrincipalCircularFeedCard extends StatefulWidget {
   const PrincipalCircularFeedCard({
     required this.item,
     required this.onOpen,
@@ -342,10 +342,69 @@ final class PrincipalCircularFeedCard extends StatelessWidget {
   final bool contextualPreview;
 
   @override
+  State<PrincipalCircularFeedCard> createState() => _PrincipalCircularFeedCardState();
+}
+
+final class _PrincipalCircularFeedCardState extends State<PrincipalCircularFeedCard> {
+  var _generation = 0;
+  DialogRoute<void>? _previewRoute;
+
+  void _invalidate() {
+    _generation++;
+    final route = _previewRoute;
+    _previewRoute = null;
+    if (route == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (route.isActive) route.navigator?.removeRoute(route);
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant PrincipalCircularFeedCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.item != widget.item ||
+        oldWidget.onOpen != widget.onOpen ||
+        oldWidget.contextualPreview != widget.contextualPreview) {
+      _invalidate();
+    }
+  }
+
+  @override
+  void dispose() {
+    _invalidate();
+    super.dispose();
+  }
+
+  Future<void> _activate(int generation) async {
+    if (!mounted || generation != _generation || _previewRoute != null) return;
+    final onOpen = widget.onOpen;
+    if (!widget.contextualPreview) {
+      onOpen();
+      return;
+    }
+    bool current() => mounted && generation == _generation;
+    DialogRoute<void>? openedRoute;
+    await _openCircularPreview(
+      context,
+      item: widget.item,
+      onRead: () {
+        if (current()) onOpen();
+      },
+      isContextCurrent: current,
+      onRouteCreated: (route) {
+        openedRoute = route;
+        _previewRoute = route;
+      },
+    );
+    if (identical(_previewRoute, openedRoute)) _previewRoute = null;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    void activate() =>
-        contextualPreview ? _openCircularPreview(context, item: item, onRead: onOpen) : onOpen();
+    final item = widget.item;
+    final generation = _generation;
+    void activate() => _activate(generation);
     return _InteractiveSurface(
       semanticLabel: 'Circular ${item.title}',
       onPressed: activate,
