@@ -9,7 +9,7 @@ source:
 status: diagnóstico inicial preservado; probe Auth47 observado e perfil LOC50 em preparação autorizada
 generated: 2026-09-08
 generated_at_utc: 2026-09-08T03:34:02Z
-updated_at_utc: 2026-09-08T04:20:00Z
+updated_at_utc: 2026-09-08T04:11:18Z
 scope: diagnóstico nominal local, sem alteração de SQL, Git ou Docker
 ---
 
