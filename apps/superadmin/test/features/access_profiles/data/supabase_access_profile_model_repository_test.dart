@@ -22,16 +22,24 @@ void main() {
           'p_after_id': null,
         });
         return {
-          'items': [_modelJson(includeCapabilities: false)],
-          'next_cursor': {'name': 'Gestão escolar', 'id': 'model-2'},
+          'ok': true,
+          'data': {
+            'items': [_modelJson(includeCapabilities: false)],
+            'next_cursor': {'name': 'Gestão escolar', 'id': 'model-2'},
+          },
+          'error': null,
         };
       }
       if (request.url.path.endsWith('superadmin_access_permission_catalog')) {
         return {
-          'items': [_catalogJson],
+          'ok': true,
+          'data': {
+            'items': [_catalogJson],
+          },
+          'error': null,
         };
       }
-      return _modelJson();
+      return {'ok': true, 'data': _modelJson(), 'error': null};
     });
     addTearDown(client.dispose);
     final repository = SupabaseAccessProfileRepository(client);

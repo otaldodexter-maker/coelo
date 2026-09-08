@@ -144,7 +144,7 @@ final class SupabaseAccessProfileRepository
 
   @override
   Future<AccessProfileModelPage> fetchModels(AccessProfileModelQuery query) async {
-    final response = await _modelRpc(
+    return _modelReadRpc(
       'superadmin_access_profile_models_cursor',
       params: {
         'p_query': query.search.trim().isEmpty ? null : query.search.trim(),
@@ -155,13 +155,18 @@ final class SupabaseAccessProfileRepository
         'p_after_name': query.afterName,
         'p_after_id': query.afterId,
       },
+      decode: (data) {
+        if (data['items'] is! List) throw const FormatException();
+        return AccessProfileModelPage.fromJson(data);
+      },
     );
-    return AccessProfileModelPage.fromJson(response);
   }
 
   @override
-  Future<AccessProfileModel> fetchModel(String modelId) async => AccessProfileModel.fromJson(
-    await _modelRpc('superadmin_access_profile_model_detail', params: {'p_model_id': modelId}),
+  Future<AccessProfileModel> fetchModel(String modelId) async => _modelReadRpc(
+    'superadmin_access_profile_model_detail',
+    params: {'p_model_id': modelId},
+    decode: AccessProfileModel.fromJson,
   );
 
   @override
@@ -255,11 +260,53 @@ final class SupabaseAccessProfileRepository
 
   @override
   Future<List<AccessPermissionCatalogItem>> fetchPermissionCatalog() async {
-    final response = await _modelRpc('superadmin_access_permission_catalog');
-    final rows = response['items'] as List<dynamic>? ?? const [];
-    return rows
-        .map((row) => AccessPermissionCatalogItem.fromJson(Map<String, dynamic>.from(row as Map)))
-        .toList(growable: false);
+    return _modelReadRpc(
+      'superadmin_access_permission_catalog',
+      decode: (data) {
+        final rows = data['items'];
+        if (rows is! List) throw const FormatException();
+        return rows
+            .map(
+              (row) => AccessPermissionCatalogItem.fromJson(Map<String, dynamic>.from(row as Map)),
+            )
+            .toList(growable: false);
+      },
+    );
+  }
+
+  Future<T> _modelReadRpc<T>(
+    String functionName, {
+    Map<String, dynamic>? params,
+    required T Function(Map<String, dynamic>) decode,
+  }) async {
+    try {
+      final envelope = await _modelRpc(functionName, params: params);
+      if (envelope['ok'] == false) {
+        final error = envelope['error'];
+        final code = error is Map ? error['code'] : null;
+        if (const {
+          'SAI_AUTH_REQUIRED',
+          'SAI_SESSION_INVALID',
+          'SAI_INTERNAL_CONTEXT_DENIED',
+          'SAI_MEMBERSHIP_SUSPENDED',
+          'SAI_MEMBERSHIP_REVOKED',
+          'SAI_PERMISSION_DENIED',
+          'SAI_MFA_REQUIRED',
+        }.contains(code)) {
+          throw const AccessProfileUnauthorizedException();
+        }
+        throw const FormatException();
+      }
+      final data = envelope['data'];
+      if (envelope['ok'] != true || envelope['error'] != null || data is! Map) {
+        throw const FormatException();
+      }
+      return decode(Map<String, dynamic>.from(data));
+    } on AccessProfileException {
+      rethrow;
+    } catch (_) {
+      throw const AccessProfileException('Não foi possível concluir a operação. Tente novamente.');
+    }
   }
 
   Future<Map<String, dynamic>> _modelRpc(
