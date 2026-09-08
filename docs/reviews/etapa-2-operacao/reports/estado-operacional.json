@@ -514,7 +514,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T19:47:02-03:00",
+  "updated_at": "2026-09-08T19:49:29-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -1522,5 +1522,14 @@
     "instruction": "I016",
     "scope": "app_private.form_claim_worker_job candidate.attempts<20 inside existing I005 candidate + nominal tests",
     "runtime": false
+  },
+  "partial_C03_r29": {
+    "at": "2026-09-08T19:49:29-03:00",
+    "handoff_sha": "516bb96b1409d51ebc40dd29557a11a0adccf0ed",
+    "audit_export_integration": "8842bb30",
+    "C00_test": "27PASS; analyzer2clean",
+    "full_revision_cut": 25,
+    "sql_candidate": "e94eecab5a247c5a0a0f5186ab1b85b812bf67c1",
+    "sql_runtime": false
   }
 }

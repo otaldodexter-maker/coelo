@@ -2696,15 +2696,17 @@
       "family": "audit",
       "screen": "Auditoria / Exportar",
       "scope": "deferred-post-mvp",
-      "done": "Botão informativo já integrado35a08f29; sem job/poll/download/URL.",
+      "done": "Botão informativo já integrado35a08f29; sem job/poll/download/URL. C03cf2cf0e7→C008842bb30: startExport/fetchExportStatus recusam localmente sem chamada Edge; política de exportação geral adiada preservada. C0027/27 adapter+página PASS.",
       "fe": "Conferir botão visível e mensagem de indisponibilidade; nenhuma chamada de arquivo/job. Não implementar a operação real nesta rodada. R01/16h: C03r11:50 testes funcionais passam;6 goldens divergem4,86–14,84%;2 cenários auth_session passam. DTO minimiza dados; não significa fluxo remoto pronto.",
       "be": "Operação real fora do MVP. Preservar legado sem executar, remover ou habilitar jobs. R01/16h: Helper legado current_person_id ainda impede afirmar cutover interno; export permanece adiada e sem efeitos.",
-      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md",
+      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/reports/R01-delta-1915.md (C03r29 nominal)",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
       "backendStatus": "deferred-post-mvp",
-      "integratedStatus": "deferred-post-mvp"
+      "integratedStatus": "deferred-post-mvp",
+      "lastEvidenceAt": "2026-09-08T19:49:29-03:00",
+      "lastSyncedHandoff": "C03/r29 nominal; full cut remains r25"
     },
     {
       "id": "support.create",
@@ -3340,5 +3342,5 @@
       "integratedStatus": "pending-verification"
     }
   ],
-  "updatedAt": "2026-09-08T19:42:45-03:00"
+  "updatedAt": "2026-09-08T19:49:29-03:00"
 }
