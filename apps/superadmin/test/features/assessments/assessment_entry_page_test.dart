@@ -9,6 +9,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('closing decision inherits local dark theme', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Theme(
+          data: CoeloTheme.dark,
+          child: AssessmentClosingDetailPage(
+            repository: _PageAssessmentRepository.immediate(_pageBook('book-a', 'Aluno A')),
+            gradebookId: 'book-a',
+            logout: unavailableSuperadminLogout,
+            onBack: () {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Revisar'));
+    await tester.pumpAndSettle();
+    expect(
+      Theme.of(tester.element(find.byKey(const Key('assessment-closing-reason')))).brightness,
+      Brightness.dark,
+    );
+  });
   testWidgets('closing detail reloads when only gradebook ID changes', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));

@@ -178,6 +178,14 @@ final class _AgendaApprovalsPageState extends State<AgendaApprovalsPage> {
     if (!local && store?.requestsRead != AgendaReadStatus.ready) return;
     final route = DialogRoute<void>(
       context: context,
+      themes: InheritedTheme.capture(
+        from: context,
+        to: Navigator.of(context, rootNavigator: true).context,
+      ),
+      barrierColor:
+          DialogTheme.of(context).barrierColor ??
+          Theme.of(context).colorScheme.scrim.withValues(alpha: 0.54),
+      traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
       builder: (dialogContext) => _ApprovalDecisionDialog(
         item: item,
         onDecide: (status, reason) async {
