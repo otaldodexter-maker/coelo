@@ -315,6 +315,10 @@ PrincipalHappensMediaRead _videoRead(PrincipalHappensMediaDescriptor media) =>
     );
 
 final class _FeedRepository implements PrincipalHappensFeedRepository {
+  @override
+  Future<void> removePost(PrincipalHappensRemoveCommand command) =>
+      Future<void>.error(const PrincipalHappensRemoveUnavailable());
+
   _FeedRepository(this.load, {this.resolve});
 
   final Future<List<PrincipalPostPreviewItem>> Function() load;

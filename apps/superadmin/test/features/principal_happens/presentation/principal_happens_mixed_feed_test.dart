@@ -208,6 +208,10 @@ final class _MixedRepository implements PrincipalMixedFeedRepository {
 
 final class _MediaRepository implements PrincipalHappensFeedRepository {
   @override
+  Future<void> removePost(PrincipalHappensRemoveCommand command) =>
+      Future<void>.error(const PrincipalHappensRemoveUnavailable());
+
+  @override
   Future<PrincipalHappensMediaRead> resolveMedia(PrincipalHappensMediaDescriptor media) async =>
       const PrincipalHappensMediaRead(
         signedUrl: 'https://example.test/media.jpg',
@@ -249,6 +253,10 @@ PrincipalHappensFeedPage _mixedPage(String caption) => PrincipalHappensFeedPage(
 );
 
 final class _ProductiveRepository implements PrincipalHappensFeedRepository {
+  @override
+  Future<void> removePost(PrincipalHappensRemoveCommand command) =>
+      Future<void>.error(const PrincipalHappensRemoveUnavailable());
+
   _ProductiveRepository(this.posts);
 
   final Future<List<PrincipalPostPreviewItem>> posts;

@@ -119,6 +119,10 @@ final class _ContextRepository implements PrincipalRuntimeContextRepository {
 }
 
 final class _RecordingFeedRepository implements PrincipalHappensFeedRepository {
+  @override
+  Future<void> removePost(PrincipalHappensRemoveCommand command) =>
+      Future<void>.error(const PrincipalHappensRemoveUnavailable());
+
   PrincipalHappensFeedScope? lastScope;
 
   @override

@@ -105,6 +105,8 @@ final class PrincipalPostPreviewItem {
     required this.time,
     required this.initials,
     required this.body,
+    this.id,
+    this.canRemove = false,
     this.media = const [],
     this.mediaIndices = const [],
     this.likes,
@@ -112,6 +114,15 @@ final class PrincipalPostPreviewItem {
     this.shares,
     this.likedBy,
   });
+
+  /// Server identifier for the post. An id addresses, it never authorises: the
+  /// command revalidates actor, scope and capability.
+  final String? id;
+
+  /// Whether the authorised projection says this actor may remove this post.
+  /// Decided by profile, hierarchy and RLS on the server; the client only
+  /// renders what the projection already granted, and never derives it.
+  final bool canRemove;
   final String author;
   final String context;
   final String time;

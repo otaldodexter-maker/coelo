@@ -146,6 +146,10 @@ void main() {
 }
 
 final class _VideoGoldenRepository implements PrincipalHappensFeedRepository {
+  @override
+  Future<void> removePost(PrincipalHappensRemoveCommand command) =>
+      Future<void>.error(const PrincipalHappensRemoveUnavailable());
+
   const _VideoGoldenRepository();
 
   @override

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -114,6 +115,8 @@ final class PrincipalHappensPreviewPage extends StatefulWidget {
 }
 
 final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPreviewPage> {
+  final _removalRequestIds = <String, String>{};
+  final _requestRandom = math.Random.secure();
   final _likedPosts = <int>{};
   final _savedPosts = <int>{};
   List<PrincipalPostPreviewItem>? _remotePosts;
@@ -140,6 +143,48 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
       _loadFeed();
     }
   }
+
+  String _newRequestId() {
+    final values = List<int>.generate(16, (_) => _requestRandom.nextInt(256));
+    values[6] = (values[6] & 0x0f) | 0x40;
+    values[8] = (values[8] & 0x3f) | 0x80;
+    final hex = values.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
+    return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}'
+        '-${hex.substring(16, 20)}-${hex.substring(20)}';
+  }
+
+  Future<void> _confirmRemovePost(PrincipalPostPreviewItem post) async {
+    final repository = widget.feedRepository;
+    final postId = post.id;
+    if (repository == null || postId == null || !post.canRemove) return;
+    final reason = await _askRemovalReason(post);
+    if (!mounted || reason == null) return;
+    final request = _feedRequest;
+    try {
+      await repository.removePost(
+        PrincipalHappensRemoveCommand(
+          postId: postId,
+          requestId: _removalRequestIds.putIfAbsent(postId, _newRequestId),
+          reason: reason,
+        ),
+      );
+      if (!mounted || request != _feedRequest) return;
+      // The removal is confirmed by reloading, never by hiding the row locally.
+      _removalRequestIds.remove(postId);
+      await _loadFeed();
+    } on PrincipalHappensFeedUnauthorized {
+      if (mounted) _feedback('Voce nao pode remover esta publicacao.');
+    } on PrincipalHappensRemoveUnavailable {
+      if (mounted) _feedback('Remocao aguarda o comando autorizado.');
+    } on Object {
+      if (mounted) _feedback('Nao foi possivel remover agora. Tente novamente.');
+    }
+  }
+
+  Future<String?> _askRemovalReason(PrincipalPostPreviewItem post) => showDialog<String>(
+    context: context,
+    builder: (context) => _RemovePostDialog(post: post),
+  );
 
   Future<void> _loadFeed() async {
     final mixedRepository = widget.mixedFeedRepository;
@@ -193,6 +238,12 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
         _feedLoading = false;
       });
     }
+  }
+
+  /// Real outcome of a real command. Distinct from the prototype placeholder,
+  /// which promises a future experience and would be a lie here.
+  void _feedback(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _prototypeMessage(String label) {
@@ -323,6 +374,7 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
                           : _savedPosts.add(index);
                     }),
                     onPrototypeAction: _prototypeMessage,
+                    onRemovePost: widget.feedRepository == null ? null : _confirmRemovePost,
                     onOpenGallery: _galleryOpener(),
                     embedded: widget.embedded,
                   ),
@@ -374,6 +426,7 @@ final class _Feed extends StatelessWidget {
     required this.onSave,
     required this.onPrototypeAction,
     required this.onOpenGallery,
+    this.onRemovePost,
     required this.embedded,
   });
 
@@ -396,6 +449,7 @@ final class _Feed extends StatelessWidget {
   final ValueChanged<int> onLike;
   final ValueChanged<int> onSave;
   final ValueChanged<String> onPrototypeAction;
+  final ValueChanged<PrincipalPostPreviewItem>? onRemovePost;
   final ValueChanged<PrincipalPostPreviewItem> onOpenGallery;
   final bool embedded;
 
@@ -491,6 +545,7 @@ final class _Feed extends StatelessWidget {
     onSave: () => onSave(index),
     onAction: onPrototypeAction,
     onOpenGallery: () => onOpenGallery(post),
+    onRemove: onRemovePost == null ? null : () => onRemovePost!(post),
   );
 }
 
@@ -870,6 +925,7 @@ final class _PostCard extends StatelessWidget {
     required this.onSave,
     required this.onAction,
     required this.onOpenGallery,
+    this.onRemove,
     super.key,
   });
   final int index;
@@ -883,6 +939,7 @@ final class _PostCard extends StatelessWidget {
   final VoidCallback onSave;
   final ValueChanged<String> onAction;
   final VoidCallback onOpenGallery;
+  final VoidCallback? onRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -928,11 +985,25 @@ final class _PostCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                IconButton(
-                  tooltip: 'Mais opções da publicação',
-                  onPressed: () => onAction('Opções da publicação'),
-                  icon: const Icon(Icons.more_horiz_rounded),
-                ),
+                // Removal shows up only when the authorised projection granted
+                // it for this actor and a real command is wired. The client
+                // never derives the permission.
+                if (post.canRemove && post.id != null && onRemove != null)
+                  IconButton(
+                    key: Key('principal-happens-remove-post-$index'),
+                    tooltip: 'Remover publicação',
+                    color: scheme.error,
+                    hoverColor: scheme.errorContainer,
+                    focusColor: scheme.errorContainer,
+                    onPressed: onRemove,
+                    icon: const Icon(Icons.delete_outline_rounded),
+                  )
+                else
+                  IconButton(
+                    tooltip: 'Mais opções da publicação',
+                    onPressed: () => onAction('Opções da publicação'),
+                    icon: const Icon(Icons.more_horiz_rounded),
+                  ),
               ],
             ),
             if (post.media.isNotEmpty || post.mediaIndices.isNotEmpty) ...[
@@ -1838,4 +1909,84 @@ final class _BirthdayRow extends StatelessWidget {
       ],
     ),
   );
+}
+
+final class _RemovePostDialog extends StatefulWidget {
+  const _RemovePostDialog({required this.post});
+
+  final PrincipalPostPreviewItem post;
+
+  @override
+  State<_RemovePostDialog> createState() => _RemovePostDialogState();
+}
+
+final class _RemovePostDialogState extends State<_RemovePostDialog> {
+  // The dialog owns the controller so it outlives the awaited route and is
+  // disposed only when the route is gone.
+  final _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_refresh);
+  }
+
+  @override
+  void dispose() {
+    _controller
+      ..removeListener(_refresh)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _refresh() => setState(() {});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final reason = _controller.text.trim();
+    return AlertDialog(
+      key: const Key('principal-happens-remove-dialog'),
+      title: const Text('Remover publicacao'),
+      content: SizedBox(
+        width: 420,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('A publicacao de ${widget.post.author} deixa de aparecer no feed.'),
+            const SizedBox(height: CoeloSpacing.space3),
+            TextField(
+              key: const Key('principal-happens-remove-reason'),
+              controller: _controller,
+              autofocus: true,
+              maxLength: 240,
+              decoration: const InputDecoration(
+                labelText: 'Motivo',
+                helperText: 'Fica registrado na auditoria.',
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          key: const Key('principal-happens-remove-cancel'),
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancelar'),
+        ),
+        FilledButton(
+          key: const Key('principal-happens-remove-confirm'),
+          // The reason is required, so the audit trail never depends on the
+          // operator remembering to fill it in.
+          onPressed: reason.isEmpty ? null : () => Navigator.of(context).pop(reason),
+          style: FilledButton.styleFrom(
+            backgroundColor: colors.error,
+            foregroundColor: colors.onError,
+          ),
+          child: const Text('Remover'),
+        ),
+      ],
+    );
+  }
 }

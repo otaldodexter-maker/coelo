@@ -35,6 +35,13 @@ final class SupabasePrincipalHappensFeedRepository implements PrincipalHappensFe
   }
 
   @override
+  Future<void> removePost(PrincipalHappensRemoveCommand command) async {
+    // No authorised removal command exists yet. Failing closed keeps the feed
+    // honest instead of hiding a post the server still publishes.
+    throw const PrincipalHappensRemoveUnavailable();
+  }
+
+  @override
   Future<PrincipalHappensMediaRead> resolveMedia(PrincipalHappensMediaDescriptor media) async {
     try {
       final response = await _client.functions.invoke(
@@ -89,7 +96,12 @@ PrincipalPostPreviewItem _postFromJson(Map<String, dynamic> json) {
           })
           .toList(growable: false)
         ..sort((a, b) => a.displayOrder.compareTo(b.displayOrder));
+  final id = (json['post_id'] as String?)?.trim();
   return PrincipalPostPreviewItem(
+    // Absent while the projection does not publish them: the affordance stays
+    // hidden rather than guessing that this actor may remove anything.
+    id: id == null || id.isEmpty ? null : id,
+    canRemove: json['can_remove'] == true,
     author: author,
     context: context,
     time: _relativeTime(publishedAt),
