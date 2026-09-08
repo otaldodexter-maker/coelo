@@ -7,6 +7,43 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final imageKind in [FormItemKind.photo, FormItemKind.gallery]) {
+    for (final visible in [false, true]) {
+      testWidgets('$imageKind required attachment follows visible=$visible', (tester) async {
+        final api = _ResponseApi(kind: FormItemKind.yesNo, conditionalImageKind: imageKind);
+        await tester.binding.setSurfaceSize(const Size(1000, 1100));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        await tester.pumpWidget(
+          MaterialApp(
+            home: FormResponsePage(api: api, occurrenceId: 'occurrence-1'),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(ChoiceChip, visible ? 'Sim' : 'Não'));
+        await tester.pumpAndSettle();
+        expect(find.text('Anexo indisponível'), visible ? findsOneWidget : findsNothing);
+        await tester.tap(find.byKey(const Key('form-response-review')));
+        await tester.pumpAndSettle();
+        expect(find.text('Revisão da resposta'), visible ? findsNothing : findsOneWidget);
+        expect(
+          find.text(
+            'Este formulário exige anexo e o envio protegido ainda não está disponível nesta superfície.',
+          ),
+          visible ? findsOneWidget : findsNothing,
+        );
+        if (!visible) {
+          await tester.tap(find.byKey(const Key('form-response-submit')));
+          await tester.pumpAndSettle();
+          expect(api.submitCommand?.payload.answers.keys, ['item-1']);
+          expect(find.text('Resposta enviada'), findsOneWidget);
+        } else {
+          expect(api.submitCommand, isNull);
+        }
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
   testWidgets('date picker result from an old context cannot populate the new response', (
     tester,
   ) async {
@@ -254,12 +291,14 @@ final class _ResponseApi implements FormsApi {
     this.saveGate,
     this.label = 'Como foi o acolhimento?',
     this.kind = FormItemKind.shortText,
+    this.conditionalImageKind,
   });
 
   final Future<void>? loadGate;
   final Future<void>? saveGate;
   final String label;
   final FormItemKind kind;
+  final FormItemKind? conditionalImageKind;
   final List<String> requestedOccurrences = [];
   int openCalls = 0;
   FormCommand<FormResponseDraftPayload>? saveCommand;
@@ -292,6 +331,15 @@ final class _ResponseApi implements FormsApi {
             position: 0,
             items: [
               FormItem(id: 'item-1', kind: kind, label: label, position: 0, isRequired: true),
+              if (conditionalImageKind case final imageKind?)
+                FormItem(
+                  id: 'image-1',
+                  kind: imageKind,
+                  label: 'Conditional image',
+                  position: 1,
+                  isRequired: true,
+                  conditions: const [FormCondition.yesNo(sourceItemId: 'item-1', expected: true)],
+                ),
             ],
           ),
         ],
