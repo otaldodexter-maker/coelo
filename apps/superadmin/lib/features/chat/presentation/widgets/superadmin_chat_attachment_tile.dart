@@ -107,6 +107,7 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
     final navigator = Navigator.of(context);
     final route = DialogRoute<void>(
       context: context,
+      animationStyle: MediaQuery.disableAnimationsOf(context) ? AnimationStyle.noAnimation : null,
       themes: InheritedTheme.capture(from: context, to: navigator.context),
       barrierColor:
           DialogTheme.of(context).barrierColor ??
