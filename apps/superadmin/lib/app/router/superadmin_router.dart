@@ -2209,25 +2209,29 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.profiles,
             name: SuperadminRoutes.profilesName,
-            builder: (context, state) => AccessProfileDirectoryPage(
-              repository: accessProfileRepository,
-              logout: logout,
-              onCreate: (domain) => context.goNamed(
-                SuperadminRoutes.profileCreateName,
-                pathParameters: {'domain': domain.databaseValue},
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, _) => AccessProfileDirectoryPage(
+                key: ValueKey('profiles-${session.authorizationInvalidationRevision}'),
+                repository: accessProfileRepository,
+                logout: logout,
+                onCreate: (domain) => context.goNamed(
+                  SuperadminRoutes.profileCreateName,
+                  pathParameters: {'domain': domain.databaseValue},
+                ),
+                onOpen: (domain, profileId) => context.goNamed(
+                  SuperadminRoutes.profileEditName,
+                  pathParameters: {'domain': domain.databaseValue, 'profileId': profileId},
+                ),
+                directoryKind: AccessProfileDirectoryKind.profiles,
+                onDirectoryKindSelected: (kind) {
+                  if (kind == AccessProfileDirectoryKind.templates) {
+                    context.goNamed(SuperadminRoutes.profileModelsName);
+                  }
+                },
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
               ),
-              onOpen: (domain, profileId) => context.goNamed(
-                SuperadminRoutes.profileEditName,
-                pathParameters: {'domain': domain.databaseValue, 'profileId': profileId},
-              ),
-              directoryKind: AccessProfileDirectoryKind.profiles,
-              onDirectoryKindSelected: (kind) {
-                if (kind == AccessProfileDirectoryKind.templates) {
-                  context.goNamed(SuperadminRoutes.profileModelsName);
-                }
-              },
-              onDestinationSelected: (destination) =>
-                  _navigateFromPersistentShell(context, destination),
             ),
           ),
           GoRoute(
@@ -2235,29 +2239,33 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.profileModelsName,
             builder: (context, state) => productionAccessProfileModelScreens == null
                 ? _unavailableCompositionRootRoute(context)
-                : AccessProfileDirectoryPage(
-                    repository: productionAccessProfileModelScreens,
-                    logout: logout,
-                    title: 'Perfis e permissões',
-                    subtitle: 'Gerencie perfis e modelos de acesso em uma única central.',
-                    currentDestination: 'profiles',
-                    createActionLabel: 'Criar modelo de perfil',
-                    directoryKind: AccessProfileDirectoryKind.templates,
-                    onDirectoryKindSelected: (kind) {
-                      if (kind == AccessProfileDirectoryKind.profiles) {
-                        context.goNamed(SuperadminRoutes.profilesName);
-                      }
-                    },
-                    onCreate: (domain) => context.goNamed(
-                      SuperadminRoutes.profileModelCreateName,
-                      pathParameters: {'domain': domain.databaseValue},
+                : ListenableBuilder(
+                    listenable: session,
+                    builder: (context, _) => AccessProfileDirectoryPage(
+                      key: ValueKey('profile-models-${session.authorizationInvalidationRevision}'),
+                      repository: productionAccessProfileModelScreens,
+                      logout: logout,
+                      title: 'Perfis e permissões',
+                      subtitle: 'Gerencie perfis e modelos de acesso em uma única central.',
+                      currentDestination: 'profiles',
+                      createActionLabel: 'Criar modelo de perfil',
+                      directoryKind: AccessProfileDirectoryKind.templates,
+                      onDirectoryKindSelected: (kind) {
+                        if (kind == AccessProfileDirectoryKind.profiles) {
+                          context.goNamed(SuperadminRoutes.profilesName);
+                        }
+                      },
+                      onCreate: (domain) => context.goNamed(
+                        SuperadminRoutes.profileModelCreateName,
+                        pathParameters: {'domain': domain.databaseValue},
+                      ),
+                      onOpen: (domain, modelId) => context.goNamed(
+                        SuperadminRoutes.profileModelEditName,
+                        pathParameters: {'domain': domain.databaseValue, 'modelId': modelId},
+                      ),
+                      onDestinationSelected: (destination) =>
+                          _navigateFromPersistentShell(context, destination),
                     ),
-                    onOpen: (domain, modelId) => context.goNamed(
-                      SuperadminRoutes.profileModelEditName,
-                      pathParameters: {'domain': domain.databaseValue, 'modelId': modelId},
-                    ),
-                    onDestinationSelected: (destination) =>
-                        _navigateFromPersistentShell(context, destination),
                   ),
           ),
           GoRoute(
