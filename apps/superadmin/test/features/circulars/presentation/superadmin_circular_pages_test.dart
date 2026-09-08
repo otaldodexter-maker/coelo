@@ -10,6 +10,143 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('question field follows identity after removal and external prompt update', (
+    tester,
+  ) async {
+    final controller = _composer(_ComposerRepository(), 'A');
+    addTearDown(controller.dispose);
+    controller.addQuestion(CircularQuestionKind.singleChoice);
+    controller.addQuestion(CircularQuestionKind.singleChoice);
+    final questions = controller.draft.blocks.whereType<CircularQuestionBlock>().toList();
+    controller.updateQuestion(questions.first.id, prompt: 'Pergunta A');
+    controller.updateQuestion(questions.last.id, prompt: 'Pergunta B');
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SuperadminCircularComposerPage(
+            controller: controller,
+            onCancel: () {},
+            onPickFiles: () async {},
+          ),
+        ),
+      ),
+    );
+    expect(find.text('Pergunta A'), findsOneWidget);
+    expect(find.text('Pergunta B'), findsOneWidget);
+    controller.removeQuestion(questions.first.id);
+    await tester.pump();
+    expect(find.text('Pergunta A'), findsNothing);
+    expect(find.text('Pergunta B'), findsOneWidget);
+    controller.updateQuestion(questions.last.id, prompt: 'Pergunta B revisada');
+    await tester.pump();
+    expect(find.text('Pergunta B'), findsNothing);
+    expect(find.text('Pergunta B revisada'), findsOneWidget);
+  });
+  for (final removePage in [false, true]) {
+    testWidgets(
+      'late publication cannot finish ${removePage ? 'disposed' : 'replacement'} editor',
+      (tester) async {
+        final repositoryA = _ComposerRepository()..pendingPublish = Completer<CircularSaveResult>();
+        final repositoryB = _ComposerRepository();
+        final controllerA = _composer(repositoryA, 'A');
+        final controllerB = _composer(repositoryB, 'B');
+        addTearDown(controllerA.dispose);
+        addTearDown(controllerB.dispose);
+        var finishedA = 0;
+        var finishedB = 0;
+        Widget page(CircularComposerController controller, VoidCallback finished) => MaterialApp(
+          home: Scaffold(
+            body: SuperadminCircularComposerPage(
+              controller: controller,
+              onCancel: () {},
+              onPickFiles: () async {},
+              onPublished: finished,
+            ),
+          ),
+        );
+        await tester.pumpWidget(page(controllerA, () => finishedA++));
+        await tester.tap(find.byKey(const Key('circular-publish')));
+        await tester.pumpAndSettle();
+        expect(repositoryA.publishTimes, hasLength(1));
+        await tester.pumpWidget(
+          removePage ? const SizedBox.shrink() : page(controllerB, () => finishedB++),
+        );
+        repositoryA.pendingPublish!.complete(_published);
+        await tester.pumpAndSettle();
+        expect(finishedA, 0);
+        expect(finishedB, 0);
+        expect(repositoryB.publishTimes, isEmpty);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets('schedule chosen for the previous controller never schedules replacement', (
+    tester,
+  ) async {
+    final picker = Completer<DateTime?>();
+    final repositoryA = _ComposerRepository();
+    final repositoryB = _ComposerRepository();
+    final controllerA = _composer(repositoryA, 'A');
+    final controllerB = _composer(repositoryB, 'B');
+    addTearDown(controllerA.dispose);
+    addTearDown(controllerB.dispose);
+    Widget page(CircularComposerController controller) => MaterialApp(
+      home: Scaffold(
+        body: SuperadminCircularComposerPage(
+          controller: controller,
+          onCancel: () {},
+          onPickFiles: () async {},
+          onChooseSchedule: () => picker.future,
+        ),
+      ),
+    );
+    await tester.pumpWidget(page(controllerA));
+    await tester.ensureVisible(find.text('Escolher data e hora'));
+    await tester.tap(find.text('Escolher data e hora'));
+    await tester.pumpWidget(page(controllerB));
+    picker.complete(DateTime.now().add(const Duration(days: 1)));
+    await tester.pumpAndSettle();
+    expect(find.text('Alterar agendamento'), findsNothing);
+    await tester.tap(find.byKey(const Key('circular-publish')));
+    await tester.pumpAndSettle();
+    expect(repositoryB.publishTimes, [null]);
+    expect(repositoryA.publishTimes, isEmpty);
+  });
+
+  testWidgets('replacement controller owns visible fields and subsequent save', (tester) async {
+    final repositoryA = _ComposerRepository();
+    final repositoryB = _ComposerRepository();
+    final controllerA = _composer(repositoryA, 'A');
+    final controllerB = _composer(repositoryB, 'B');
+    addTearDown(controllerA.dispose);
+    addTearDown(controllerB.dispose);
+    Widget page(CircularComposerController controller) => MaterialApp(
+      home: Scaffold(
+        body: SuperadminCircularComposerPage(
+          controller: controller,
+          onCancel: () {},
+          onPickFiles: () async {},
+        ),
+      ),
+    );
+    await tester.pumpWidget(page(controllerA));
+    await tester.pumpWidget(page(controllerB));
+    String field(String key) => tester
+        .widget<EditableText>(
+          find.descendant(of: find.byKey(Key(key)), matching: find.byType(EditableText)),
+        )
+        .controller
+        .text;
+    expect(field('circular-title'), 'Título B');
+    expect(field('circular-body'), 'Texto B');
+    await tester.enterText(find.byKey(const Key('circular-title')), 'B editado');
+    await tester.tap(find.byKey(const Key('circular-save-draft')));
+    await tester.pumpAndSettle();
+    expect(repositoryB.savedDrafts.single.title, 'B editado');
+    expect(controllerA.draft.title, 'Título A');
+    expect(repositoryA.savedDrafts, isEmpty);
+  });
   for (final swapRepository in [false, true]) {
     testWidgets('detail clears old content on ${swapRepository ? 'repository' : 'ID'} change', (
       tester,
@@ -173,6 +310,68 @@ CircularDetail _detail(String label) => CircularDetail(
   responseState: CircularResponseState.unanswered,
   blocks: const [],
 );
+
+CircularComposerController _composer(_ComposerRepository repository, String label) =>
+    CircularComposerController(
+      repository: repository,
+      scope: CircularScope(institutionId: 'institution-$label'),
+      initialDraft: CircularDraft(
+        id: 'circular-$label',
+        title: 'Título $label',
+        blocks: [CircularTextBlock(id: 'text-$label', text: 'Texto $label')],
+        audiences: const {CircularAudienceKind.families},
+        expectedVersion: 1,
+      ),
+    );
+
+const _published = CircularSaveResult(
+  id: 'circular-A',
+  revisionId: 'revision-2',
+  version: 3,
+  status: CircularStatus.published,
+);
+
+final class _ComposerRepository implements CircularRepository {
+  final savedDrafts = <CircularDraft>[];
+  final publishTimes = <DateTime?>[];
+  Completer<CircularSaveResult>? pendingPublish;
+  @override
+  Future<CircularSaveResult> saveDraft({
+    required String requestId,
+    required CircularScope scope,
+    required CircularDraft draft,
+  }) async {
+    savedDrafts.add(draft);
+    return CircularSaveResult(
+      id: draft.id,
+      revisionId: 'revision-1',
+      version: 2,
+      status: CircularStatus.draft,
+    );
+  }
+
+  @override
+  Future<CircularSaveResult> publish({
+    required String requestId,
+    required String circularId,
+    required int expectedVersion,
+    DateTime? publishAt,
+  }) async {
+    publishTimes.add(publishAt);
+    return pendingPublish?.future ??
+        Future.value(
+          CircularSaveResult(
+            id: circularId,
+            revisionId: 'revision-2',
+            version: 3,
+            status: CircularStatus.published,
+          ),
+        );
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 final class _QueuedDetailRepository implements CircularRepository {
   final ids = <String>[];
