@@ -242,6 +242,8 @@ final class _ProductionFormResponse extends StatefulWidget {
   State<_ProductionFormResponse> createState() => _ProductionFormResponseState();
 }
 
+enum _ResponseCommandKind { save, submit, edit }
+
 final class _ProductionFormResponseState extends State<_ProductionFormResponse> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, FormAnswer> _answers = {};
@@ -253,6 +255,8 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   bool _saving = false;
   int _loadGeneration = 0;
   int _answerRevision = 0;
+  ({_ResponseCommandKind kind, FormCommand<FormResponseDraftPayload> command, int answerRevision})?
+  _pendingCommand;
 
   @override
   void initState() {
@@ -282,6 +286,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       _message = null;
       _review = false;
       _saving = false;
+      _pendingCommand = null;
     });
     if (api == null || occurrenceId == null || occurrenceId.isEmpty) {
       setState(() => _state = _ProductionResponseState.unavailable);
@@ -399,10 +404,14 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         title: 'Resposta enviada',
         message: 'Esta resposta foi confirmada pela fonte autorizada.',
         actionLabel: _occurrence!.canEdit ? 'Editar resposta' : null,
-        onAction: _occurrence!.canEdit ? _editSubmittedResponse : null,
+        onAction: _occurrence!.canEdit && !_saving ? _editSubmittedResponse : null,
       ),
       const SizedBox(height: CoeloSpacing.space4),
       _answerSummary(context),
+      if (_message case final message?) ...[
+        const SizedBox(height: CoeloSpacing.space3),
+        Text(message, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+      ],
     ],
   );
 
@@ -446,12 +455,17 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
             children: [
               OutlinedButton(
                 key: const Key('form-response-save-draft'),
-                onPressed: _saving ? null : _saveDraft,
+                onPressed:
+                    _saving ||
+                        (_pendingCommand != null &&
+                            _pendingCommand!.kind != _ResponseCommandKind.save)
+                    ? null
+                    : _saveDraft,
                 child: const Text('Salvar rascunho'),
               ),
               FilledButton.icon(
                 key: const Key('form-response-review'),
-                onPressed: _saving ? null : _reviewResponse,
+                onPressed: _saving || _pendingCommand != null ? null : _reviewResponse,
                 icon: const Icon(Icons.fact_check_outlined),
                 label: const Text('Revisar resposta'),
               ),
@@ -469,12 +483,19 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
               runSpacing: CoeloSpacing.space2,
               children: [
                 OutlinedButton(
-                  onPressed: _saving ? null : () => setState(() => _review = false),
+                  onPressed: _saving || _pendingCommand != null
+                      ? null
+                      : () => setState(() => _review = false),
                   child: const Text('Voltar e editar'),
                 ),
                 FilledButton(
                   key: const Key('form-response-submit'),
-                  onPressed: _saving ? null : _submit,
+                  onPressed:
+                      _saving ||
+                          (_pendingCommand != null &&
+                              _pendingCommand!.kind != _ResponseCommandKind.submit)
+                      ? null
+                      : _submit,
                   child: Text(_saving ? 'Enviando…' : 'Enviar resposta'),
                 ),
               ],
@@ -787,50 +808,54 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     return fieldsValid;
   }
 
-  Future<void> _saveDraft() => _sendDraft((api, command) => api.saveResponseDraft(command));
+  Future<void> _saveDraft() => _sendDraft(_ResponseCommandKind.save);
 
   Future<void> _submit() {
-    if (!_validate()) return Future.value();
-    return _sendDraft((api, command) => api.submitResponse(command), submitted: true);
+    if (_pendingCommand?.kind != _ResponseCommandKind.submit && !_validate()) return Future.value();
+    return _sendDraft(_ResponseCommandKind.submit);
   }
 
-  Future<void> _editSubmittedResponse() =>
-      _sendDraft((api, command) => api.editResponse(command), submitted: false);
+  Future<void> _editSubmittedResponse() => _sendDraft(_ResponseCommandKind.edit);
 
-  Future<void> _sendDraft(
-    Future<FormResponseDraft> Function(FormsApi, FormCommand<FormResponseDraftPayload>) action, {
-    bool submitted = false,
-  }) async {
+  Future<void> _sendDraft(_ResponseCommandKind kind) async {
     final generation = _loadGeneration;
     final api = widget.api;
     final occurrence = _occurrence;
     final draft = _draft;
-    if (api == null || occurrence == null || draft == null) return;
-    final answerRevision = _answerRevision;
+    if (api == null || occurrence == null || draft == null || _saving) return;
+    if (_pendingCommand != null && _pendingCommand!.kind != kind) return;
+    final submitted = kind == _ResponseCommandKind.submit;
+    final answerRevision = _pendingCommand?.answerRevision ?? _answerRevision;
     setState(() {
       _saving = true;
       _message = null;
     });
     try {
-      final updated = await action(
-        api,
-        FormCommand(
-          requestId: _newResponseRequestId(),
-          expectedVersion: draft.managementVersion,
-          payload: FormResponseDraftPayload(
-            occurrenceId: occurrence.occurrence.id,
-            responseId: draft.id,
-            participationId: occurrence.participationId,
-            answers: const FormAnswerNormalizer().normalize(
-              answers: _answers,
-              visibleItemIds: _visibleItemIds,
+      final command =
+          _pendingCommand?.command ??
+          FormCommand(
+            requestId: _newResponseRequestId(),
+            expectedVersion: draft.managementVersion,
+            payload: FormResponseDraftPayload(
+              occurrenceId: occurrence.occurrence.id,
+              responseId: draft.id,
+              participationId: occurrence.participationId,
+              answers: const FormAnswerNormalizer().normalize(
+                answers: _answers,
+                visibleItemIds: _visibleItemIds,
+              ),
             ),
-          ),
-        ),
-      );
+          );
+      _pendingCommand = (kind: kind, command: command, answerRevision: answerRevision);
+      final updated = await switch (kind) {
+        _ResponseCommandKind.save => api.saveResponseDraft(command),
+        _ResponseCommandKind.submit => api.submitResponse(command),
+        _ResponseCommandKind.edit => api.editResponse(command),
+      };
       if (!_isCurrent(generation)) return;
       setState(() {
         _draft = updated;
+        _pendingCommand = null;
         if (answerRevision == _answerRevision ||
             submitted ||
             updated.status == FormResponseDraftStatus.submitted) {
@@ -843,9 +868,22 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         _state = submitted || updated.status == FormResponseDraftStatus.submitted
             ? _ProductionResponseState.submitted
             : _ProductionResponseState.content;
+        if (!submitted &&
+            updated.status != FormResponseDraftStatus.submitted &&
+            answerRevision != _answerRevision) {
+          _message = 'Salvamento anterior confirmado. Há alterações locais ainda não salvas.';
+        }
       });
     } on FormApiException catch (error) {
-      if (_isCurrent(generation)) setState(() => _message = error.message);
+      if (_isCurrent(generation)) {
+        setState(() {
+          if (error.kind == FormApiFailureKind.validation ||
+              error.kind == FormApiFailureKind.conflict) {
+            _pendingCommand = null;
+          }
+          _message = error.message;
+        });
+      }
     } on Object {
       if (_isCurrent(generation)) {
         setState(() => _message = 'Não foi possível salvar sua resposta agora.');

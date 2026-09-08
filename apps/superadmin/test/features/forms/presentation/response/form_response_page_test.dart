@@ -7,6 +7,103 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets(
+    'lost save replay preserves newer answers and the next intent uses the confirmed version',
+    (tester) async {
+      final api = _ResponseApi(lostConfirmation: 'save');
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: FormResponsePage(api: api, occurrenceId: 'occurrence-1'),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final field = find.byKey(const Key('form-response-item-item-1'));
+      final save = find.byKey(const Key('form-response-save-draft'));
+      await tester.enterText(field, 'Original answer');
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<FilledButton>(find.byKey(const Key('form-response-review'))).onPressed,
+        isNull,
+      );
+      await tester.enterText(field, 'New local answer');
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      expect(find.text('New local answer'), findsOneWidget);
+      expect(
+        find.text('Salvamento anterior confirmado. Há alterações locais ainda não salvas.'),
+        findsOneWidget,
+      );
+      expect(identical(api.confirmationCalls[0].$2, api.confirmationCalls[1].$2), isTrue);
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      expect(api.confirmationCalls.last.$2.expectedVersion, 2);
+      expect(
+        api.confirmationCalls.last.$2.requestId,
+        isNot(api.confirmationCalls.first.$2.requestId),
+      );
+      expect(
+        api.confirmationCalls.last.$2.payload.answers['item-1']?.value,
+        isA<FormShortTextValue>().having((value) => value.value, 'new intent', 'New local answer'),
+      );
+    },
+  );
+
+  for (final operation in ['save', 'submit', 'edit']) {
+    testWidgets('lost $operation confirmation retries the exact committed command', (tester) async {
+      final api = _ResponseApi(lostConfirmation: operation);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: FormResponsePage(api: api, occurrenceId: 'occurrence-1'),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('form-response-item-item-1')), 'Original answer');
+      Future<void> invoke() async {
+        if (operation == 'save') {
+          await tester.tap(find.byKey(const Key('form-response-save-draft')));
+        } else if (operation == 'submit') {
+          await tester.tap(find.byKey(const Key('form-response-submit')));
+        } else {
+          await tester.tap(find.text('Editar resposta'));
+        }
+        await tester.pumpAndSettle();
+      }
+
+      if (operation != 'save') {
+        await tester.tap(find.byKey(const Key('form-response-review')));
+        await tester.pumpAndSettle();
+        if (operation == 'edit') {
+          await tester.tap(find.byKey(const Key('form-response-submit')));
+          await tester.pumpAndSettle();
+        }
+      }
+      await invoke();
+      expect(find.text('Confirmation lost'), findsOneWidget);
+      if (operation == 'submit') {
+        expect(
+          tester
+              .widget<OutlinedButton>(find.byKey(const Key('form-response-save-draft')))
+              .onPressed,
+          isNull,
+        );
+      }
+      await invoke();
+      final commands = api.confirmationCalls
+          .where((call) => call.$1 == operation)
+          .map((call) => call.$2)
+          .toList();
+      expect(commands.length, 2);
+      expect(identical(commands[0], commands[1]), isTrue);
+      expect(find.text('Conflict after duplicate request'), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   for (final kind in [FormItemKind.shortText, FormItemKind.multipleChoice]) {
     testWidgets('empty loaded $kind does not satisfy a required answer', (tester) async {
       final api = _ResponseApi(
@@ -593,6 +690,7 @@ final class _ResponseApi implements FormsApi {
     this.items,
     this.initialAnswers = const {},
     this.receiptAnswers,
+    this.lostConfirmation,
   });
 
   final Future<void>? loadGate;
@@ -604,6 +702,39 @@ final class _ResponseApi implements FormsApi {
   final List<FormItem>? items;
   final Map<String, FormAnswer> initialAnswers;
   final Map<String, FormAnswer>? receiptAnswers;
+  final String? lostConfirmation;
+  final confirmationCalls = <(String, FormCommand<FormResponseDraftPayload>)>[];
+  final _confirmed = <String, FormResponseDraft>{};
+  int? _remoteVersion;
+  bool _lostOnce = false;
+
+  FormResponseDraft _commitWithLostConfirmation(
+    String operation,
+    FormCommand<FormResponseDraftPayload> command,
+  ) {
+    confirmationCalls.add((operation, command));
+    if (_confirmed[command.requestId] case final receipt?) return receipt;
+    if (_remoteVersion != null && command.expectedVersion != _remoteVersion) {
+      throw const FormApiException(FormApiFailureKind.conflict, 'Conflict after duplicate request');
+    }
+    final receipt = FormResponseDraft(
+      id: command.payload.responseId,
+      occurrenceId: command.payload.occurrenceId,
+      status: operation == 'submit'
+          ? FormResponseDraftStatus.submitted
+          : FormResponseDraftStatus.draft,
+      answers: command.payload.answers,
+      managementVersion: command.expectedVersion + 1,
+    );
+    _remoteVersion = receipt.managementVersion;
+    _confirmed[command.requestId] = receipt;
+    if (!_lostOnce) {
+      _lostOnce = true;
+      throw const FormApiException(FormApiFailureKind.unavailable, 'Confirmation lost');
+    }
+    return receipt;
+  }
+
   final List<String> requestedOccurrences = [];
   int openCalls = 0;
   FormCommand<FormResponseDraftPayload>? saveCommand;
@@ -670,6 +801,7 @@ final class _ResponseApi implements FormsApi {
   @override
   Future<FormResponseDraft> saveResponseDraft(FormCommand<FormResponseDraftPayload> command) async {
     saveCommand = command;
+    if (lostConfirmation == 'save') return _commitWithLostConfirmation('save', command);
     if (saveGate != null) await saveGate;
     return FormResponseDraft(
       id: command.payload.responseId,
@@ -683,6 +815,7 @@ final class _ResponseApi implements FormsApi {
   @override
   Future<FormResponseDraft> submitResponse(FormCommand<FormResponseDraftPayload> command) async {
     submitCommand = command;
+    if (lostConfirmation == 'submit') return _commitWithLostConfirmation('submit', command);
     if (submitGate != null) await submitGate;
     return FormResponseDraft(
       id: 'response-1',
@@ -696,6 +829,7 @@ final class _ResponseApi implements FormsApi {
   @override
   Future<FormResponseDraft> editResponse(FormCommand<FormResponseDraftPayload> command) async {
     editCommand = command;
+    if (lostConfirmation == 'edit') return _commitWithLostConfirmation('edit', command);
     return FormResponseDraft(
       id: 'response-1',
       occurrenceId: command.payload.occurrenceId,
