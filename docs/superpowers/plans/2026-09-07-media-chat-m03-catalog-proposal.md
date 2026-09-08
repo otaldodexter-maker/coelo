@@ -108,8 +108,11 @@ gerados para DROP. Não remover check global MIME: a primeira fatia é subconjun
   simples INSERT privilegiado não é política de reuso.
 - Nenhum cliente pode escrever diretamente. Ativo precisa de sessão do ator
   e conversa, integralmente finalizada. Atomicidade send+binding impede
-  mensagem visível com arquivo incompleto. Delete de mensagem remove binding,
-  não objeto; cleanup confere TODOS os usos e retenção antes de remover.
+  mensagem visível com arquivo incompleto. Não assumir remoção do binding ao
+  apagar/arquivar mensagem: soft-delete não dispara cascade e o receipt de
+  comando referencia messages com ON DELETE RESTRICT. Um comando futuro de
+  desvinculação precisa preservar receipts e retenção; não faz parte desta
+  primeira fatia. Cleanup confere TODOS os usos antes de remover um objeto.
 
 Metadata física dos anexos novos vem do JOIN autorizado ao catálogo no RPC.
 Ramo legacy continua com sua projeção existente. Nunca retornar bucket/key
@@ -192,12 +195,13 @@ referência de política é require_superadmin_internal_context(text), inclusive
 núcleo comum ou mudar helper compartilhado exige reserva/review com E2E1.
 Não reintroduzir MFA por inferência: o helper vigente aceita aal1/aal2.
 
-Lock order a fechar com os writers de revogação de E2E1: intenção idempotente →
-sessões de upload em ordem UUID → ativos em ordem UUID → contexto autorizado
-em ordem fixa → receipt/audit. Send/finalize/discard devem compartilhar a mesma
-ordem; um SELECT isolado não resolve revogação concorrente. Revalidação final
-com locks compatíveis impede ready após revogação vencedora. O protocolo ainda
-não está fechado enquanto essa compatibilidade não for provada.
+Não adotar a ordem anterior intenção → upload → ativo → contexto como protocolo
+fechado. O parecer Engenheiro 2 de 22:32 BRT encontrou restrições parciais dos
+writers que devem ser conciliadas antes de escolher a ordem total. O envio
+textual existente começa por conversa antes de request/receipt; suspensão
+interna bloqueia membership antes de auth_link. Advisory criado somente pelo
+M03 não cerca revogadores. O protocolo abaixo é candidato, não garantia de
+ausência de deadlock ou de atomicidade com o provedor Auth.
 
 Complete exige versão/token/lease vigentes e hash exato de outputs; replay de
 receipt também exige autorização atual. Escrita parcial no R2 nunca produz
@@ -209,6 +213,109 @@ Negativos adicionais: authenticated chamando complete; serviço sem ticket;
 ticket/session/lease adulterados; revogação authorize→claim e claim→complete;
 dois claims concorrentes; lease expirada; mesmo request com outputs divergentes;
 R2 parcialmente gravado; send/discard concorrentes. Ainda não executados.
+
+## Conciliação concorrente nominal — parecer de 22:32 BRT
+
+Fontes locais conferidas: U=`20260901210000_superadmin_internal_users_directory.sql`
+linhas 459–527 e 580–618; P=`20260811215451_access_profile_management_v2.sql`
+linhas 721–738; C=`20260901101500_superadmin_internal_chat_v2.sql` linhas
+90–98 e 284–317. Parecer completo preservado no main em
+`docs/reviews/evidence/etapa-2/engenheiro-2/plano-e-revisoes-2026-09-07.md:285`.
+
+### Resolver e fronteiras de autorização
+
+Candidato privado `require_chat_image_upload_actor_v1(upload_session_id)`:
+carregar somente as cinco âncoras persistidas (auth_user, auth_session,
+internal_identity, internal_auth_link, internal_membership). Não selecionar a
+membership ativa mais recente nem aceitar substituição de link para um upload
+anterior. Derivar papel/escopo/capability atuais e a instituição da conversa;
+conferir sessão exata, usuário confirmado e validade atual. O tipo de contexto
+existente não traz versões nem instituição resolvida; não pressupor esses dados.
+
+O helper JWT vigente é STABLE e não bloqueia linhas; não transplantar sua
+volatilidade nem fabricar JWT/GUC no executor privilegiado. A assinatura e
+origem AAL do adaptador persistido dependem da revisão E2E1; preservar AAL1/AAL2.
+Após qualquer espera por bloqueio, reler o estado sob snapshot apropriado e
+conferir ticket/lease com clock_timestamp, não timestamp do início da transação.
+
+### Restrições e ordem candidata de M03
+
+| Recurso / writer existente | Restrição para complete, send e discard |
+| --- | --- |
+| Conversa / envio textual C | Adquirir conversa antes do request/receipt de Chat; nenhum caminho M03 pode adquirir receipt textual e depois esperar conversa |
+| Membership e auth_link / suspensão U | Membership original antes de auth_link original; bloqueio de leitura conflitante com UPDATE de status, não apenas KEY SHARE |
+| Profile interno e scopes / edição U | M03 não precisa ler nem bloquear profile pessoal; membership cerca esse writer nominal de scopes. Não adicionar profile depois de membership |
+| Role/grants / atualização P | Bloqueio conflitante no role antes da leitura final dos grants cerca P nominal; não prova exclusão de todo INSERT/DML filho nem protege predicado ausente universalmente |
+| Contexto infantil / trigger | Não acrescentar lock infantil após conversa; autorização interna não depende de participante infantil |
+| Auth users/sessions / GoTrue | Ordem e barreiras ainda sem prova local; posição no protocolo depende da revisão E2E1, não de advisory Coelo |
+
+Proposta parcial para os novos comandos: resolver referências sem autorizar
+por elas → conversa → intenção idempotente nominal → sessões de upload por
+UUID → ativos por UUID → membership → auth_link → role/grants/escopo →
+revalidação final → mutação e receipt → auditoria. A posição das barreiras
+Auth e qualquer inversão identificada no review continuam bloqueantes. Leitura
+inicial é apenas descoberta; conferir novamente todas as referências depois
+de bloquear, sem permitir troca do conjunto descoberto. A imutabilidade das
+âncoras e da conversa na sessão deve ser constraint/trigger, não convenção.
+
+Namespaces de intenção/receipt de upload/claim/complete/discard não reutilizam
+o hash textual v2. O novo send deve fechar assinatura e idempotência por ator,
+request, conversa, texto e conjunto ordenado de uploads. Se consumir receipt
+compartilhado de Chat, seguir conversa → request → receipt; não chamar o envio
+textual com anexos depois de já persistir uma mensagem vazia. Mapear os recursos
+comuns reais antes de concluir se existe ciclo de deadlock. Não adquirir os
+advisories de governança last-owner/realm sem necessidade demonstrada.
+
+### Linearização dos três comandos
+
+- Complete: transação curta, lease/token/versão e autorização atuais, outputs
+  exatos para os objetos reservados, ready + receipt + auditoria atômicos. Não
+  faz decode/R2 mantendo locks. Replay reautoriza antes de devolver receipt.
+- Send: mesma disciplina de sessão/ativo, conjunto inteiro ready e pertencente
+  à reserva da mensagem/conversa/ator, então mensagem + bindings + consumed_at
+  + receipt atômicos. Ready prévio não autoriza envio após revogação.
+- Discard autenticado: só reserva ainda não consumida e sem bindings. No mesmo
+  protocolo, marcar descarte e invalidar lease antes de agendar cleanup. Se
+  send venceu, discard nega e não desvincula mensagem. Se discard venceu,
+  complete/send negam; outputs externos tardios não podem virar ready. Um
+  delete físico R2 ocorre fora da transação, com rechecagem de usos e objetos
+  nominais; falha é repetível. Rechecagem seguida de delete não basta: estado
+  persistido de descarte deve impedir qualquer novo binding durante todo o
+  delete externo, inclusive por futuro comando de reuso. Esse comando não
+  pode reativar um ativo cujo cleanup já foi autorizado. Política/assinatura do cleanup de sistema após
+  expiração precisa pacote próprio, não reutiliza sessão humana expirada.
+
+Revogação que efetivamente conclui primeiro deve impedir complete/send.
+Se complete vence as barreiras e confirma primeiro, ready precede a revogação;
+não apagar esse histórico retroativamente. Suspender e reativar antes do
+complete pode envolver política de versões distinta de autorização atual:
+registrar isso como questão técnica aberta para Auth/Coordenador, sem escolher
+silenciosamente invalidação permanente nem reutilização automática de lease.
+
+### Matriz local de duas conexões — preparada, NÃO executada
+
+Todas as linhas usam fixtures sintéticas e duas conexões A/B, com barreiras
+determinísticas e timeouts limitados. Não usar sleep como prova de ordenação.
+Eng1 continua único operador do perfil/replay; esta proposta não cria runner.
+
+| Corrida | Ordem A vence / ordem B vence | Oráculos obrigatórios |
+| --- | --- | --- |
+| Revogar sessão, auth_link ou membership × complete/send | Revogador confirma antes da checagem final / comando segura barreira antes do revogador | Negação sem novo efeito na primeira; efeito anterior à revogação na segunda; nenhum ator/link substituído |
+| Trocar papel ou reduzir escopo × complete/send | Writer U confirma antes / depois das barreiras M03 | Reavaliar contexto original e instituição real; não usar snapshot de grant |
+| Grant deny/revoke ou role inativo × complete/send | Writer P confirma antes / depois | Capability atual; provar writer nominal e documentar limite do DML fora dele |
+| Conversa read-only × complete/send | Lifecycle confirma antes / comando segura conversa antes | Nenhum envio após mudança vencedora; ausência de inversão com linha infantil |
+| Lease expira durante espera | A mantém lock até prazo passar, B retoma | B usa relógio atual e não torna ready; receipt não revive lease |
+| Dois claims do mesmo request | A confirma / A aborta | Uma lease utilizável, replay exato; payload divergente nega |
+| Dois completes / complete × discard | A confirma / B confirma primeiro | Uma transição válida; outputs divergentes negados; descarte invalida lease |
+| Send × discard | Send confirma / discard confirma | No primeiro, binding e receipt preservados; no segundo, zero mensagem/binding |
+| Replay após revogação ou substituição de membership | Novo contexto ativo diferente do original | Sem receipt autorizado por identidade substituta e sem nova escrita |
+| R2 parcial ou tardio após descarte | Saída incompleta / saída chega após invalidar lease | Zero ready indevido; cleanup somente objetos reservados e sem usos |
+| Cleanup autorizado × tentativa de novo binding | Delete R2 pendente com ativo descartado | Inserção/reuso negados durante e após o delete; não deixar binding apontar para objeto removido |
+
+Para cada execução futura observar SQLSTATE/envelope, status do ativo/sessão,
+mensagem, binding, consumed_at, receipt, auditoria e ausência de deadlock. Antes
+de rodar, fechar fixtures nominais Auth, nomes de RPC e hashes do pacote. Não
+contabilizar esta matriz como testes ou prova de concorrência executados.
 
 ## Decoder: recomendação técnica pendente de decisão nominal
 
