@@ -10,6 +10,11 @@ family_count: 38
 
 # Pendências Coelo — Back-end
 
+- Atualização01:48: LOC50 falhou42601 no DOpreflight do target31000 após49
+  anteriores, zeroTAP; cleanup04:44:41UTC confirmado pelo Eng1. E2 corrige
+  somente parentetizaçãoCASE; novo pin/review antesreplay. AG53 independente
+  autorizado, resultado ainda não recebido. Falha de parse não prova ACL.
+
 - Gate01:40: Eng1 autorizado executar exclusivamente LOCAL LOC50 e depois
   AG53 do snapshot6cd030f4, com três fixtures LOC e duas AG nominais. Pins50/53
   conferidos independentemente;488 Pester PASS do autor. Execução/resultado SQL

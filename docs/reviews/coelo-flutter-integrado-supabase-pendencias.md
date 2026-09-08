@@ -14,13 +14,18 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "39D48176DBDE4C5D3C0B5B613BFE795B1657CE13EECBF31ECA83237A3C7E7FB7"
-supabase_tracker_sha256: "888BE3EE88A9AA1BBEE9B7B0516D06CA233CD339B9AE25B1E8284F3B46216C87"
+flutter_tracker_sha256: "1A8805987DBF33A1E2BE8DB812D5B50775225B31ECBB0CEA1F50FAC48EF98926"
+supabase_tracker_sha256: "2C30A18CF511A85FE5A5CBDB001AE9AFF3D2E37FE6A7A1D80CE10A504938507A"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
+
+- Atualização01:48: CHILD DTOeb6ff0bd/API171PASS/analyzer3 destino, sem wiring.
+  LOC50 abortou compilação42601 antesTAP, correção mínima em autoria. Autosave
+  Respostas aprovado após conferir ownership explícito no prompt original;
+  cliente em implementação, nenhum gate SQL/segredo anônimo ampliado.
 
 - Atualização01:44: Avisos `a24993e8`/`bbed5f18`,28/28 form/dialog no destino;
   revisão P2 encerrada no cliente, sem promoção de N01/backend/E2E.

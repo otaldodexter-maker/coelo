@@ -14,6 +14,10 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização01:48: CHILD-READ01 DTO mínimo `eb6ff0bd` integrado após revisão;
+  pacoteAPI171/171 no destino e analyzer3 PASS. Contrato candidato, sem SQL,
+  adapter/estado ligados, UI ou hierarquia completa; não promove E2E.
+
 - Atualização01:44: P2 de prévia Avisos corrigido e integrado conjuntamente
   `a24993e8`/`bbed5f18`; fechamento remove somente a rota própria, mesmo após
   callback navegar, e impede dupla aceitação. Destino28/28 form/dialog PASS.
