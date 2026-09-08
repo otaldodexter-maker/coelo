@@ -1,5 +1,5 @@
 -- C02 / I005 LOCAL WIP. Rollback-only synthetic catalog/job tests.
--- Authorization, worker and token scenarios follow when the reserved RPCs exist.
+-- Worker/capture/reconciliation tests follow when those reserved RPCs exist.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
@@ -129,6 +129,98 @@ select ok(not has_table_privilege('authenticated','app_private.form_xlsx_snapsho
 select ok(not has_table_privilege('service_role','app_private.form_xlsx_snapshot_rows','select'),'worker uses nominal RPC instead of direct snapshot grants');
 select ok((select relrowsecurity and relforcerowsecurity from pg_class where oid='app_private.form_xlsx_snapshot_rows'::regclass),'snapshot table has forced deny-by-default RLS');
 select ok(not has_function_privilege('authenticated','app_private.forms_xlsx_complete_guard_v1()','execute'),'client cannot call private guard');
+
+-- Real SQL privilege/context boundaries, using synthetic Supabase Auth rows.
+insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after)
+select pg_temp.xlsx_id(n+100),pg_temp.xlsx_id(n),now(),now(),'aal2',now()+interval '1 hour'
+from unnest(array[101,102]) n;
+insert into public.platform_role_permissions(role_id,permission_id,effect,status)
+select r.id,p.id,'allow','active' from public.platform_roles r cross join public.platform_permissions p
+where r.code='operations' and p.code='forms.responses.export'
+on conflict(role_id,permission_id) do update set effect='allow',status='active',revoked_at=null;
+create temporary table xlsx_download_results(label text primary key,body jsonb);
+grant select,insert on xlsx_download_results to authenticated,service_role;
+select set_config('request.jwt.claims',jsonb_build_object('sub',pg_temp.xlsx_id(101),'session_id',pg_temp.xlsx_id(201),'aal','aal2','role','authenticated')::text,true);
+set local role authenticated;
+insert into xlsx_download_results values('grant1',public.superadmin_form_authorize_xlsx_download_v2('8c021000-0000-4000-8000-000000000700'));
+insert into xlsx_download_results values('grant2',public.superadmin_form_authorize_xlsx_download_v2('8c021000-0000-4000-8000-000000000700'));
+reset role;
+select is((select body->>'ok' from xlsx_download_results where label='grant1'),'true','current owner gets opaque one-use grant');
+select is((select body#>>'{data,job_id}' from xlsx_download_results where label='grant2'),pg_temp.xlsx_id(700)::text,'grant correlates requested job');
+select ok(not exists(select 1 from app_private.form_file_download_tokens where token_hash=(select body#>>'{data,download_token}' from xlsx_download_results where label='grant2')),'raw token is never stored');
+select is((select count(*) from app_private.form_file_download_tokens where file_job_id=pg_temp.xlsx_id(700) and actor_internal_identity_id=pg_temp.xlsx_id(301) and consumed_at is null),1::bigint,'only latest grant stays active');
+
+select set_config('request.jwt.claims','{"role":"service_role"}',true);
+set local role service_role;
+insert into xlsx_download_results select 'superseded',public.form_redeem_xlsx_download_r2_v1((body#>>'{data,download_token}')::uuid) from xlsx_download_results where label='grant1';
+insert into xlsx_download_results select 'redeemed',public.form_redeem_xlsx_download_r2_v1((body#>>'{data,download_token}')::uuid) from xlsx_download_results where label='grant2';
+insert into xlsx_download_results select 'replayed',public.form_redeem_xlsx_download_r2_v1((body#>>'{data,download_token}')::uuid) from xlsx_download_results where label='grant2';
+reset role;
+select is((select body from xlsx_download_results where label='superseded'),null::jsonb,'previous grant cannot be redeemed');
+select is((select body->>'asset_id' from xlsx_download_results where label='redeemed'),pg_temp.xlsx_id(800)::text,'redeem returns current artifact attempt');
+select is((select body->>'provider' from xlsx_download_results where label='redeemed'),'r2','redeem emits R2 catalog contract');
+select is((select body->>'object_key' from xlsx_download_results where label='redeemed'),'tenants/'||pg_temp.xlsx_id(10)::text||'/exports/forms/'||pg_temp.xlsx_id(700)::text||'/'||pg_temp.xlsx_id(800)::text||'/responses.xlsx','redeem key is opaque and bound to attempt');
+select is((select body from xlsx_download_results where label='replayed'),null::jsonb,'token replay fails closed');
+select is(current_setting('request.jwt.claims')::jsonb,'{"role":"service_role"}'::jsonb,'successful reauthorization restores worker JWT claims');
+select is(nullif(current_setting('request.jwt.claim.sub',true),''),null::text,'successful reauthorization clears temporary subject');
+
+select set_config('request.jwt.claims',jsonb_build_object('sub',pg_temp.xlsx_id(102),'session_id',pg_temp.xlsx_id(202),'aal','aal2','role','authenticated')::text,true);
+set local role authenticated;
+insert into xlsx_download_results values('other_owner',public.superadmin_form_authorize_xlsx_download_v2('8c021000-0000-4000-8000-000000000700'));
+reset role;
+select is((select body#>>'{error,code}' from xlsx_download_results where label='other_owner'),'SAI_PERMISSION_DENIED','same tenant capability cannot take another owner export');
+
+select set_config('request.jwt.claims',jsonb_build_object('sub',pg_temp.xlsx_id(101),'session_id',pg_temp.xlsx_id(201),'aal','aal2','role','authenticated')::text,true);
+set local role authenticated;
+insert into xlsx_download_results values('before_revoke',public.superadmin_form_authorize_xlsx_download_v2('8c021000-0000-4000-8000-000000000700'));
+reset role;
+update app_private.superadmin_internal_memberships set status='suspended' where id=pg_temp.xlsx_id(501);
+select set_config('request.jwt.claims','{"role":"service_role"}',true);
+set local role service_role;
+insert into xlsx_download_results select 'after_revoke',public.form_redeem_xlsx_download_r2_v1((body#>>'{data,download_token}')::uuid) from xlsx_download_results where label='before_revoke';
+reset role;
+select is((select body from xlsx_download_results where label='after_revoke'),null::jsonb,'revoked membership between issue and redeem blocks metadata');
+select is(current_setting('request.jwt.claims')::jsonb,'{"role":"service_role"}'::jsonb,'denied reauthorization restores worker JWT claims');
+select is(nullif(current_setting('request.jwt.claim.sub',true),''),null::text,'denied reauthorization clears temporary subject');
+select ok((select consumed_at is not null from app_private.form_file_download_tokens where token_hash=encode(extensions.digest(convert_to((select body#>>'{data,download_token}' from xlsx_download_results where label='before_revoke'),'UTF8'),'sha256'),'hex')),'denied token is consumed exactly once');
+update app_private.superadmin_internal_memberships set status='active' where id=pg_temp.xlsx_id(501);
+
+select set_config('request.jwt.claims',jsonb_build_object('sub',pg_temp.xlsx_id(101),'session_id',pg_temp.xlsx_id(201),'aal','aal2','role','authenticated')::text,true);
+set local role authenticated;
+insert into xlsx_download_results values('before_logout',public.superadmin_form_authorize_xlsx_download_v2('8c021000-0000-4000-8000-000000000700'));
+reset role;
+delete from auth.sessions where id=pg_temp.xlsx_id(201);
+select set_config('request.jwt.claims','{"role":"service_role"}',true);
+set local role service_role;
+insert into xlsx_download_results select 'after_logout',public.form_redeem_xlsx_download_r2_v1((body#>>'{data,download_token}')::uuid) from xlsx_download_results where label='before_logout';
+reset role;
+select is((select body from xlsx_download_results where label='after_logout'),null::jsonb,'deleted session invalidates issued grant without blocking logout');
+insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after)
+values(pg_temp.xlsx_id(203),pg_temp.xlsx_id(101),now(),now(),'aal2',now()+interval '1 hour');
+select set_config('request.jwt.claims',jsonb_build_object('sub',pg_temp.xlsx_id(101),'session_id',pg_temp.xlsx_id(203),'aal','aal2','role','authenticated')::text,true);
+set local role authenticated;
+insert into xlsx_download_results values('new_session',public.superadmin_form_authorize_xlsx_download_v2('8c021000-0000-4000-8000-000000000700'));
+reset role;
+select set_config('request.jwt.claims','{"role":"service_role"}',true);
+set local role service_role;
+insert into xlsx_download_results select 'new_session_redeemed',public.form_redeem_xlsx_download_r2_v1((body#>>'{data,download_token}')::uuid) from xlsx_download_results where label='new_session';
+reset role;
+select is((select body->>'job_id' from xlsx_download_results where label='new_session_redeemed'),pg_temp.xlsx_id(700)::text,'owner can reauthorize completed job from a new valid session');
+
+update app_private.superadmin_internal_memberships set scope_institution_id=pg_temp.xlsx_id(20) where id=pg_temp.xlsx_id(501);
+select set_config('request.jwt.claims',jsonb_build_object('sub',pg_temp.xlsx_id(101),'session_id',pg_temp.xlsx_id(203),'aal','aal2','role','authenticated')::text,true);
+set local role authenticated;
+insert into xlsx_download_results values('wrong_tenant',public.superadmin_form_authorize_xlsx_download_v2('8c021000-0000-4000-8000-000000000700'));
+reset role;
+select is((select body#>>'{error,code}' from xlsx_download_results where label='wrong_tenant'),'SAI_PERMISSION_DENIED','new institution scope cannot download old tenant export');
+select ok(exists(select 1 from audit.audit_logs where action_code='superadmin.forms.export.download.redeem' and outcome='success' and object_id=pg_temp.xlsx_id(700) and actor_internal_identity_id=pg_temp.xlsx_id(301)),'successful delivery authorization is audited against real internal identity and job');
+select ok(exists(select 1 from audit.audit_logs where action_code='superadmin.forms.export.download.redeem' and outcome='denied' and object_id=pg_temp.xlsx_id(700)),'revoked delivery is audited without raw token');
+select ok(has_function_privilege('authenticated','public.superadmin_form_authorize_xlsx_download_v2(uuid)','execute'),'user may request grant');
+select ok(not has_function_privilege('service_role','public.superadmin_form_authorize_xlsx_download_v2(uuid)','execute'),'service key is not an internal user');
+select ok(not has_function_privilege('anon','public.superadmin_form_authorize_xlsx_download_v2(uuid)','execute'),'anonymous cannot request grant');
+select ok(has_function_privilege('service_role','public.form_redeem_xlsx_download_r2_v1(uuid)','execute'),'only worker boundary redeems grant');
+select ok(not has_function_privilege('authenticated','public.form_redeem_xlsx_download_r2_v1(uuid)','execute'),'client cannot redeem catalog locator directly');
+select ok(not has_function_privilege('service_role','app_private.forms_xlsx_context_from_session_v1(uuid,uuid,uuid,uuid,text,uuid)','execute'),'worker cannot select an arbitrary internal session context');
 set constraints all immediate;
 select * from finish();
 rollback;
