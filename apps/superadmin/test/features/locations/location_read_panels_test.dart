@@ -9,6 +9,55 @@ import 'package:flutter_test/flutter_test.dart';
 import 'location_read_fixtures.dart';
 
 void main() {
+  for (final table in [false, true]) {
+    testWidgets('cached identical object cannot revive old open table=$table', (tester) async {
+      final reader = ControlledLocationReader();
+      var opens = 0;
+      final cached = locationPage();
+      Widget app(int revision) => MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: LocationDirectoryPanel(
+            scope: scopeA,
+            reader: reader,
+            sessionAvailable: true,
+            contextRevision: revision,
+            onOpen: (_) => opens++,
+          ),
+        ),
+      );
+      await tester.pumpWidget(app(0));
+      reader.directories.last.result.complete(cached);
+      await tester.pumpAndSettle();
+      if (table) {
+        await tester.tap(find.byKey(const Key('location-view-table')));
+        reader.directories.last.result.complete(cached);
+        await tester.pumpAndSettle();
+      }
+      VoidCallback capture() {
+        if (table) {
+          final callback = tester
+              .widget<CoeloAdminResizableTable<LocationCatalogEntry>>(
+                find.byType(CoeloAdminResizableTable<LocationCatalogEntry>),
+              )
+              .onRowPressed!;
+          return () => callback(cached.items.single);
+        }
+        return tester
+            .widget<CoeloAdminInteractiveCard>(find.byType(CoeloAdminInteractiveCard))
+            .onPressed!;
+      }
+
+      final oldOpen = capture();
+      await tester.pumpWidget(app(1));
+      reader.directories.last.result.complete(cached);
+      await tester.pumpAndSettle();
+      oldOpen();
+      expect(opens, 0);
+      capture()();
+      expect(opens, 1);
+    });
+  }
   testWidgets('directory revision clears data and invalidates captured open callback', (
     tester,
   ) async {

@@ -26,6 +26,9 @@ final class LocationDirectoryController extends ChangeNotifier {
   LocationDirectoryResult? _data;
   LocationReadState get state => _state;
   LocationDirectoryResult? get data => _data;
+
+  /// Snapshot used by rendered callbacks, including when a reader reuses objects.
+  int get readGeneration => _epoch;
   int get page => _page;
   int get pageSize => _pageSize;
   String get search => _search;
