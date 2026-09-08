@@ -221,10 +221,14 @@ Nenhuma configuração, dependência, custo ou recurso foi ativado.
   input/transform/output. Info/HEAD/magic bytes não comprovam decode completo.
   Emulação local é baixa fidelidade; produção exige teste nominal autorizado
   de alta fidelidade. [Cloudflare binding](https://developers.cloudflare.com/images/optimization/binding/)
-- WebP/PNG descartam metadata segundo documentação; JPEG exige metadata:none.
+- WebP/PNG descartam metadata segundo documentação geral. JPEG exige
+  metadata:none na API geral, mas esse campo NÃO consta de ImageTransform ou
+  ImageOutputOptions do binding: não forçar o campo JavaScript nem afirmar
+  JPEG saneado pelo binding. Avaliar saída WebP/PNG permitida pela ADR.
   Orientação e perfil de cor são aplicados antes do descarte. Provar por
   inspeção independente de fixtures EXIF/GPS/XMP/ICC, não só por flag booleana.
   [Cloudflare metadata](https://developers.cloudflare.com/images/optimization/features/#metadata)
+  e [tipos oficiais do binding](https://github.com/cloudflare/workerd/blob/main/types/defines/images.d.ts).
 - Decoder WASM RGBA integral de 36 MP precisa de 144 MB só para pixels, acima
   dos 128 MB por isolate Worker; buffers/encoder ampliam consumo. Inferência
   técnica: essa abordagem ingênua não suporta os limites aprovados. Não reduzir
@@ -238,6 +242,13 @@ fixtures reais. anim:false normaliza, não prova rejeição de GIF animado;
 allowlist deve rejeitar GIF/SVG reais antes. Política para outras animações não
 pode ser inventada. Decoder/scan são controles diferentes. A recomendação não
 conclui M03 nem autoriza teste remoto, --remote ou billing.
+
+Parecer adicional Engenheiro 2 recebido em 2026-09-07 22:11 BRT distingue
+explicitamente cf.image/API geral do binding. Seu inventário GET não comprovou
+entitlement: consulta de plano falhou por autenticação. Pricing e tutorial R2
+também divergem em pré-requisito Free/Paid. Nenhuma franquia/plano habilitado
+está garantido; a decisão nominal continua aberta. Limites do fornecedor (20 MB,
+lado/pixels/formato) devem ser reconciliados sem reduzir os da ADR por inferência.
 
 ## Compatibilidade e segurança bloqueantes
 
