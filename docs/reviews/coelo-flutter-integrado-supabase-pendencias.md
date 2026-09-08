@@ -14,13 +14,16 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "1A8805987DBF33A1E2BE8DB812D5B50775225B31ECBB0CEA1F50FAC48EF98926"
+flutter_tracker_sha256: "EB95DC4E3C4CCB50EAB0BEAE400F7D5626BBF83AEFC3BBCA6E92C3E90F07E8D9"
 supabase_tracker_sha256: "2C30A18CF511A85FE5A5CBDB001AE9AFF3D2E37FE6A7A1D80CE10A504938507A"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
+
+- Atualização01:55: Care/Chat f245e989/e363f9ee/ad18af87 integrados após review;
+  87/87 focais/analyzer2 no destino. Sem alteração backend ou mídia real.
 
 - Atualização01:48: CHILD DTOeb6ff0bd/API171PASS/analyzer3 destino, sem wiring.
   LOC50 abortou compilação42601 antesTAP, correção mínima em autoria. Autosave

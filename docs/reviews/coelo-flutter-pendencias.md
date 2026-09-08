@@ -14,6 +14,11 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização01:55: Care `f245e989` impede cinco escritas iniciadas após
+  dispose; Chat `e363f9ee`/`ad18af87` protege retry e fechamento da rota própria.
+  Destino87/87 nos três arquivos focais e analyzer2 PASS. Regras clínicas,
+  mídia real, autorização e E2E não certificados por esses testes locais.
+
 - Atualização01:48: CHILD-READ01 DTO mínimo `eb6ff0bd` integrado após revisão;
   pacoteAPI171/171 no destino e analyzer3 PASS. Contrato candidato, sem SQL,
   adapter/estado ligados, UI ou hierarquia completa; não promove E2E.
