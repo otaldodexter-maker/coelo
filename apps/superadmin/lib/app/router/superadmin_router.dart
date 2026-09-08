@@ -330,7 +330,10 @@ GoRouter createSuperadminRouter({
       cachedAccessProfileModelPreviewRepository ??= FakeAccessProfileRepository();
   final productionAccessProfileModelScreens =
       accessProfileRepository is AccessProfileModelRepository
-      ? AccessProfileModelRepositoryAdapter(accessProfileRepository as AccessProfileModelRepository)
+      ? AccessProfileModelRepositoryAdapter(
+          accessProfileRepository as AccessProfileModelRepository,
+          authorizationRevision: () => session.authorizationInvalidationRevision,
+        )
       : null;
   DevelopmentInviteRepository? cachedInvitePreviewRepository;
   DevelopmentInviteRepository invitePreviewRepository() =>
