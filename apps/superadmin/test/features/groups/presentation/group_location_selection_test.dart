@@ -97,7 +97,10 @@ void main() {
       'lib/features/groups/data/supabase_group_directory_repository.dart',
     ).readAsStringSync();
     expect(form.contains('LocationSelectionField'), isFalse);
-    expect(form.contains('_location'), isFalse);
+    // Precisely the held selection, not the section that draws the step:
+    // `_locationSection` legitimately stays, and a bare '_location' matches it.
+    expect(form.contains('LocationSelection? _location'), isFalse);
+    expect(form.contains('_location ='), isFalse);
     expect(form.contains('group-location-not-persisted-'), isTrue);
     expect(adapter.toLowerCase().contains('location'), isFalse);
   });
