@@ -20,10 +20,11 @@ não são somadas. Nenhuma ação desta retomada foi promovida a verified-e2e.
 | Configurações | Persistência local real no browser e correções de load/save/ABA, integração central | Validação final sob sessão real e regressão de destino |
 | Usuários internos READ | Users49: 48/48 pgTAP, prova Eng1 36964bbb; evidência reconciliada 586d6861 | Publicação nominal, fluxo real, visual e E2E; edição/convites não habilitados por READ |
 | Modelos READ SQL | Models50: 38/38 TAP incluindo ACL10, prova Eng1 5ef2fc4e; 1d314a42 | Produção e cadeia real; contagem inclui testes repetidos 11 dentro de 17 |
-| Perfis READ SQL | b11c3c3e: fixture plan8 aprovada central, sem alteração de helper/grants | Replay Auth45+2 exclusivo Eng1; possível ACL-before-contract, não presumir cinco falhas funcionais |
+| Perfis READ SQL | b11c3c3e executado Auth47 pelo Eng1: 3 PASS/5 FAIL decorrentes de ACL-before-contract; fea97b2b proposta | Decisão canônica de escopo/contagem antes da corretiva nominal; não são cinco bugs independentes |
 | Diretórios Perfis/Modelos | 24529b5b: revisão de autorização; 149/149 regressão histórica | Backend real/visual/reload |
 | Detalhe e rotas | 6e06a9ed continuidade de recurso/delete; 8bd6bc8b quatro builders; 169/169 naquela rodada | Troca de path/save pendente e validação produtiva ainda não reivindicadas |
 | Criação, contexto | 77e9594: dois builders e descarte do draft; 21/21 focal | Template em voo na rota e comando real não comprovados |
+| Formulário, diálogos | 37abc763 e 471c99c8: impedir reload/callback após dispose; 45/45 regressão focal | Mesmo State, fluxo real e backend ainda não comprovados |
 | Adapter Models READ | 865d0090 detalhe; bdd6fe6c paginação; ca543993 template; 87/87 data/rotas na última rodada | Cache auxiliar de writes e contrato catálogo domain-only separados; nenhuma ampliação de grant |
 | Mídia consumidora/Auth M03 | ce2d9bee: parecer de proveniência, sem helper implementado | Contrato server-side de origem operacional; AAL sozinho não resolve OTP/recovery ambíguo; mídia pertence E2E3 |
 | P0 RLS/realm | Fatia três tabelas reservada ao Eng1 | Pacote nominal/replay/produção; não habilitar lote de tabelas por inferência |

@@ -1,7 +1,7 @@
 ---
 title: "Perfis — diagnóstico nominal de leitura interna e paginação"
 source: "Reserva LOCAL do Coordenador em 2026-09-08; spec 018; ADR 0019/spec 039; inspeção da composição e migrations 20260729144440/20260811215451"
-status: "diagnostic-fixture-static-reviewed; awaiting-nominal-replay"
+status: "nominal-replay-red; acl-before-contract"
 generated_at: "2026-09-08"
 ---
 
@@ -53,3 +53,24 @@ poderá ser proposta após o RED nominal e nova reserva do Coordenador.
 Review independente `account_review`: sem bloqueios estáticos; plano 8
 conferido, NULL após erro não aborta as asserções seguintes. Execução pendente.
 Gate de memória: no-op; nenhuma decisão de produto nova ou promoção E2E.
+
+## Resultado nominal — Auth47
+
+Evidência final do Engenheiro 1 lida integralmente:
+`engenheiro-1/auth47-loc-profiles-probe-2026-09-08.md`.
+Base Auth45 + dois preflights; sem Models/Forms extras. Fixture original
+b11c3c3e com o hash LF acima preservado. Execução iniciou em
+2026-09-08T03:48:17.3708297Z. Perfis: 3 PASS de precondições e 5 FAIL (#4–8),
+sem aborto; quatro chamadas com SQLSTATE 42501 / acl-before-contract.
+O lote também tinha LOC, cujos três controles não pertencem a esta frente.
+
+Catálogo confirma wrapper público SECURITY INVOKER/authenticated EXECUTE e
+cursor privado SECURITY DEFINER/sem EXECUTE authenticated. Ambos são owner
+postgres, search_path vazio e PUBLIC ACL vazio. Bootstrap interno Owner AAL1
+e ausência de ponte people passaram. Paginação/CSV ainda não foram alcançados.
+
+Identidade isolada `coelo_safe_c3e8951894af4fb198f46b7bba357`; cleanup
+independente 2026-09-08T03:50:56.8629214Z: zero containers, volumes e redes
+próprios, staging ausente e staging histórico preservado. Sem grant corretivo,
+mutação remota ou promoção E2E. Proposta posterior fea97b2b aguarda contrato
+canônico de escopo e contagem antes de SQL, conforme decisão do Coordenador.
