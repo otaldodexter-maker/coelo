@@ -223,3 +223,7 @@ No replay derivado I004, C03 confirmou SQL42702 em assessment_v2_validate_studen
 ## Avaliações — decisão de preparação local 2026-09-08T14:41:51-03:00
 
 C00 consultou produção em transação read-only: versão20260901182838 tem0 registros no ledger; context_options/closing_queue/validate_students ausentes. Não há prova de aplicação desse candidato; o último timestamp geral20260901200206 não significa uma cadeia contínua. I006 autoriza C03 corrigir somente os três defeitos locais no arquivo candidato existente, preservando fonte3da039be e commits anteriores, sem reparar ledger ou banco remoto. Próxima prova deve usar bytes canônicos do commit corrigido e perfil nominal declarado, removendo derivações TEMP. Aplicação remota futura exige pacote nominal autorizado e forward-only. Resultado I00534/35 é prova local com duas pré-condições derivadas, ainda não candidato canônico aprovado.
+
+## Lacuna de cobertura Circulares — 2026-09-08T15:45:15-03:00
+
+C05/r7 cruzou specs037/050 e rotas /circulars, /circulars/new, /circulars/:circularId/read e /circulars/:circularId/edit. O inventário associa Circulares à aba principal.profile-view, sem representação explícita das quatro superfícies. C00 deve reconciliar decomposição/ownership/denominador com as fontes antes de concluir cobertura; nenhum ID novo ou exclusão aprovado aqui. Composição de principal-chat/Perfil/Momentos/ParaVocê relatada pelo executor ainda requer conferência C00. Fonte: docs/reviews/etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md.
