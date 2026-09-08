@@ -98,12 +98,40 @@ void main() {
       isNull,
     );
   });
+
+  test('DEV reload preserves explicit participation and scoped participant count', () async {
+    final store = DevActivitySessionStore.empty();
+    final created = await DevActivityCommandRepository(store: store).save(
+      _command(
+        'selected',
+        participation: ActivityParticipation.selected,
+        participants: const [
+          ActivityCommandParticipant(
+            groupId: 'institution-1-group-1',
+            childGroupLinkId: 'child-in-group',
+            belongs: true,
+          ),
+          ActivityCommandParticipant(
+            groupId: 'institution-1-group-1',
+            childGroupLinkId: 'child-excluded',
+            belongs: false,
+          ),
+        ],
+      ),
+    );
+
+    final group = store.detail(created.activityId)!.groups.single;
+    expect(group.participation, ActivityParticipation.selected);
+    expect(group.participantCount, 1);
+  });
 }
 
 ActivitySaveCommand _command(
   String requestId, {
   String? activityId,
   int expectedVersion = 0,
+  ActivityParticipation participation = ActivityParticipation.all,
+  List<ActivityCommandParticipant> participants = const [],
   String name = 'Robótica',
 }) => ActivitySaveCommand(
   requestId: requestId,
@@ -118,6 +146,8 @@ ActivitySaveCommand _command(
   institutionId: 'institution-1',
   unitIds: const {'institution-1-unit-1'},
   groupIds: const {'institution-1-group-1'},
+  groupParticipation: {'institution-1-group-1': participation},
+  participants: participants,
   assignments: const [],
   identity: const ActivityCommandIdentity(
     kind: ActivityIdentityKind.initials,

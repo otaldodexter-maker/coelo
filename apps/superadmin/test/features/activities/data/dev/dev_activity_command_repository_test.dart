@@ -48,6 +48,18 @@ void main() {
     );
   });
 
+  test('participation mode is part of the idempotency fingerprint', () async {
+    final repository = DevActivityCommandRepository(store: DevActivitySessionStore.empty());
+    await repository.save(_command('request-participation'));
+
+    await expectLater(
+      repository.save(
+        _command('request-participation', participation: ActivityParticipation.selected),
+      ),
+      throwsA(isA<ActivityCommandConflictException>()),
+    );
+  });
+
   test('failure and unauthorized modes stay fail-closed', () async {
     await expectLater(
       DevActivityCommandRepository(
@@ -77,6 +89,7 @@ ActivitySaveCommand _command(
   String requestId, {
   String? activityId,
   int expectedVersion = 0,
+  ActivityParticipation participation = ActivityParticipation.all,
   Map<String, Object?> pedagogicalConfiguration = const {'enabled': true, 'model': 'gradeOnly'},
 }) => ActivitySaveCommand(
   requestId: requestId,
@@ -94,6 +107,7 @@ ActivitySaveCommand _command(
   institutionId: 'institution-1',
   unitIds: const {'institution-1-unit-1'},
   groupIds: const {'institution-1-group-1'},
+  groupParticipation: {'institution-1-group-1': participation},
   assignments: const [],
   identity: const ActivityCommandIdentity(
     kind: ActivityIdentityKind.initials,

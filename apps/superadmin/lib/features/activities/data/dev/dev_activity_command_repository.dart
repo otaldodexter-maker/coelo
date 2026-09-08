@@ -107,6 +107,9 @@ final class DevActivityCommandRepository implements ActivityCommandRepository {
     },
     'unit_ids': command.unitIds.toList()..sort(),
     'group_ids': command.groupIds.toList()..sort(),
+    'group_participation': {
+      for (final entry in command.groupParticipation.entries) entry.key: entry.value.databaseValue,
+    },
     'assignments': [
       for (final assignment in command.assignments)
         {

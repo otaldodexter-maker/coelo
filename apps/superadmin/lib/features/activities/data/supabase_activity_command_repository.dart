@@ -119,6 +119,7 @@ bool _supportsAggregateSave(ActivitySaveCommand command) {
   return command.governance == ActivityGovernance.optional &&
       command.templateId == null &&
       command.unitId == null &&
+      _hasExplicitGroupParticipation(command) &&
       (command.handleStem == null || command.handleStem!.trim().isEmpty) &&
       command.taxonomyOtherDescription.trim().isEmpty &&
       _isSupportedDisabledPedagogicalConfiguration(pedagogical) &&
@@ -132,6 +133,11 @@ bool _supportsAggregateSave(ActivitySaveCommand command) {
       command.identity.imageName == null &&
       command.identity.imageBytes == null;
 }
+
+bool _hasExplicitGroupParticipation(ActivitySaveCommand command) =>
+    command.groupParticipation.length == command.groupIds.length &&
+    command.groupIds.every((groupId) => command.groupParticipation.containsKey(groupId)) &&
+    command.participants.every((participant) => command.groupIds.contains(participant.groupId));
 
 const _disabledPedagogicalConfiguration = <String, Object?>{
   'enabled': false,
@@ -169,11 +175,18 @@ bool _isSupportedDisabledPedagogicalConfiguration(Map<String, Object?> value) {
 Map<String, Object?> _activitySavePayload(ActivitySaveCommand command) {
   final groupIds = command.groupIds.toList()..sort();
   final unitIds = command.unitIds.toList()..sort();
-  final participants = command.participants.toList()
-    ..sort((left, right) {
-      final groupOrder = left.groupId.compareTo(right.groupId);
-      return groupOrder != 0 ? groupOrder : left.childGroupLinkId.compareTo(right.childGroupLinkId);
-    });
+  final participants =
+      command.participants
+          .where(
+            (item) => command.groupParticipation[item.groupId] == ActivityParticipation.selected,
+          )
+          .toList()
+        ..sort((left, right) {
+          final groupOrder = left.groupId.compareTo(right.groupId);
+          return groupOrder != 0
+              ? groupOrder
+              : left.childGroupLinkId.compareTo(right.childGroupLinkId);
+        });
   final assignments = command.assignments.toList()
     ..sort((left, right) {
       final groupOrder = (left.groupId ?? '').compareTo(right.groupId ?? '');
@@ -193,10 +206,7 @@ Map<String, Object?> _activitySavePayload(ActivitySaveCommand command) {
     'unit_ids': unitIds,
     'group_ids': groupIds,
     'group_participation': {
-      for (final groupId in groupIds)
-        groupId: participants.any((item) => item.groupId == groupId && !item.belongs)
-            ? 'selected'
-            : 'all',
+      for (final groupId in groupIds) groupId: command.groupParticipation[groupId]!.databaseValue,
     },
     'participants': [
       for (final participant in participants)

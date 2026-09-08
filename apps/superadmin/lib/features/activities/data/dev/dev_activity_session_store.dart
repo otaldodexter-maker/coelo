@@ -69,9 +69,11 @@ final class DevActivitySessionStore {
             name: id,
             unitName: command.unitIds.firstOrNull ?? '',
             status: ActivityStatus.active,
-            participation: ActivityParticipation.all,
+            participation: command.groupParticipation[id] ?? ActivityParticipation.all,
             assigneeCount: command.assignments.length,
-            participantCount: command.participants.length,
+            participantCount: command.participants
+                .where((participant) => participant.groupId == id && participant.belongs)
+                .length,
           ),
       ],
       taxonomyId: command.taxonomyId,

@@ -97,6 +97,62 @@ void main() {
     expect(captured!.url.path, endsWith('/rpc/superadmin_activity_save_v2'));
   });
 
+  test('preserves explicit group participation and omits links for all mode', () async {
+    Request? captured;
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        captured = request;
+        return Response(
+          jsonEncode({
+            'ok': true,
+            'data': {
+              'activity_id': 'activity-created-1',
+              'management_version': 6,
+              'status': 'draft',
+              'correlation_id': 'correlation-1',
+              'replayed': false,
+            },
+            'error': null,
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+
+    await SupabaseActivityCommandRepository(client).save(_saveCommandWithParticipation);
+
+    final body = jsonDecode(captured!.body) as Map<String, dynamic>;
+    final payload = body['p_payload'] as Map<String, dynamic>;
+    expect(payload['group_participation'], {'group-all': 'all', 'group-selected': 'selected'});
+    expect(payload['participants'], [
+      {'group_id': 'group-selected', 'child_group_link_id': 'child-selected', 'belongs': true},
+    ]);
+  });
+
+  test('fails closed when a selected group has no explicit participation mode', () async {
+    var requestCount = 0;
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        requestCount++;
+        return Response('{}', 200, request: request);
+      }),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseActivityCommandRepository(client).save(_saveCommandMissingParticipation),
+      throwsA(isA<ActivityCommandUnavailableException>()),
+    );
+    expect(requestCount, 0);
+  });
+
   test('rejects an edit response bound to another activity id', () async {
     final client = SupabaseClient(
       'https://example.supabase.co',
@@ -347,6 +403,58 @@ const _unsupportedSaveCommand = ActivitySaveCommand(
   institutionId: 'institution-1',
   unitIds: {'unit-1'},
   groupIds: {},
+  assignments: [],
+  identity: ActivityCommandIdentity(
+    kind: ActivityIdentityKind.initials,
+    initials: 'NA',
+    color: '#D63C00',
+    icon: 'activity',
+  ),
+);
+
+const _saveCommandWithParticipation = ActivitySaveCommand(
+  requestId: '8b200000-0000-4000-8000-000000000904',
+  intent: ActivityCommandIntent.saveDraft,
+  name: 'Natacao',
+  description: '',
+  taxonomyId: 'taxonomy-1',
+  taxonomyOtherDescription: '',
+  governance: ActivityGovernance.optional,
+  institutionId: 'institution-1',
+  unitIds: {'unit-1'},
+  groupIds: {'group-selected', 'group-all'},
+  groupParticipation: {
+    'group-selected': ActivityParticipation.selected,
+    'group-all': ActivityParticipation.all,
+  },
+  participants: [
+    ActivityCommandParticipant(groupId: 'group-all', childGroupLinkId: 'child-all', belongs: true),
+    ActivityCommandParticipant(
+      groupId: 'group-selected',
+      childGroupLinkId: 'child-selected',
+      belongs: true,
+    ),
+  ],
+  assignments: [],
+  identity: ActivityCommandIdentity(
+    kind: ActivityIdentityKind.initials,
+    initials: 'NA',
+    color: '#D63C00',
+    icon: 'activity',
+  ),
+);
+
+const _saveCommandMissingParticipation = ActivitySaveCommand(
+  requestId: '8b200000-0000-4000-8000-000000000905',
+  intent: ActivityCommandIntent.saveDraft,
+  name: 'Natacao',
+  description: '',
+  taxonomyId: 'taxonomy-1',
+  taxonomyOtherDescription: '',
+  governance: ActivityGovernance.optional,
+  institutionId: 'institution-1',
+  unitIds: {'unit-1'},
+  groupIds: {'group-1'},
   assignments: [],
   identity: ActivityCommandIdentity(
     kind: ActivityIdentityKind.initials,
