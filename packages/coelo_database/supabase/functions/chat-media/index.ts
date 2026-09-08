@@ -164,7 +164,9 @@ export async function handleChatMediaRequest(
         });
       }
       case "read": {
-        if (typeof body.read_ticket !== "string" || body.read_ticket.length < 1) {
+        // Trimmed: a blank token is never an opaque ticket, and answering 503
+        // for it would report a client bug as a server pendency.
+        if (typeof body.read_ticket !== "string" || body.read_ticket.trim().length < 1) {
           return reply(origins, origin, 400, { error: "invalid_request" });
         }
         // Needs redeem_chat_media_read_ticket. Reading is deliberately ticket

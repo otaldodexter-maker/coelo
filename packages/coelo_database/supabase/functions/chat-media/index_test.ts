@@ -194,6 +194,24 @@ Deno.test("every operation whose contract is missing says so with a named reason
   }
 });
 
+Deno.test("a malformed read ticket is a bad request, not a missing service", async () => {
+  // 503 says the service is not there yet; 400 says the caller sent nonsense.
+  // Collapsing the two would hide a client bug behind a server pendency for as
+  // long as the branch stays unimplemented.
+  for (const ticket of ["", " ", null, 42, undefined]) {
+    const response = await handleChatMediaRequest(
+      post({ action: "read", read_ticket: ticket }),
+      dependencies,
+    );
+    assertEquals(
+      response.status,
+      400,
+      `read_ticket ${JSON.stringify(ticket)} must be refused as invalid_request`,
+    );
+    assertEquals(await response.json(), { error: "invalid_request" });
+  }
+});
+
 Deno.test("the object key carries no file name and no person", () => {
   const key = chatAttachmentObjectKey(conversation, asset);
   assertStringIncludes(key, conversation);
