@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:coelo_superadmin/features/activities/data/supabase_activity_command_repository.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_command.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
+import 'package:coelo_superadmin/features/activities/presentation/activity_pedagogical_configuration_draft.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:http/testing.dart';
@@ -58,6 +59,42 @@ void main() {
     expect(result.activityId, 'activity-created-1');
     expect(result.managementVersion, 6);
     expect(result.status, ActivityStatus.draft);
+  });
+
+  test('accepts the disabled pedagogical draft emitted by the real form mapper', () async {
+    Request? captured;
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        captured = request;
+        return Response(
+          jsonEncode({
+            'ok': true,
+            'data': {
+              'activity_id': 'activity-created-1',
+              'management_version': 6,
+              'status': 'draft',
+              'correlation_id': 'correlation-1',
+              'replayed': false,
+            },
+            'error': null,
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+    final command = _saveCommandWithPedagogical(
+      const ActivityPedagogicalConfigurationDraft.disabled().toJson(),
+    );
+
+    await SupabaseActivityCommandRepository(client).save(command);
+
+    expect(captured, isNotNull);
+    expect(captured!.url.path, endsWith('/rpc/superadmin_activity_save_v2'));
   });
 
   test('rejects an edit response bound to another activity id', () async {
@@ -340,3 +377,20 @@ const _editSaveCommand = ActivitySaveCommand(
     icon: 'activity',
   ),
 );
+
+ActivitySaveCommand _saveCommandWithPedagogical(Map<String, Object?> pedagogicalConfiguration) =>
+    ActivitySaveCommand(
+      requestId: _saveCommand.requestId,
+      intent: _saveCommand.intent,
+      name: _saveCommand.name,
+      description: _saveCommand.description,
+      taxonomyId: _saveCommand.taxonomyId,
+      taxonomyOtherDescription: _saveCommand.taxonomyOtherDescription,
+      governance: _saveCommand.governance,
+      institutionId: _saveCommand.institutionId,
+      unitIds: _saveCommand.unitIds,
+      groupIds: _saveCommand.groupIds,
+      assignments: _saveCommand.assignments,
+      identity: _saveCommand.identity,
+      pedagogicalConfiguration: pedagogicalConfiguration,
+    );

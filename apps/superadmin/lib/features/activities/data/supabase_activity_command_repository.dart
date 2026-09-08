@@ -121,8 +121,7 @@ bool _supportsAggregateSave(ActivitySaveCommand command) {
       command.unitId == null &&
       (command.handleStem == null || command.handleStem!.trim().isEmpty) &&
       command.taxonomyOtherDescription.trim().isEmpty &&
-      pedagogical.length == 1 &&
-      pedagogical['enabled'] == false &&
+      _isSupportedDisabledPedagogicalConfiguration(pedagogical) &&
       command.expectedAssessmentVersion == null &&
       command.assessmentChangeJustification.trim().isEmpty &&
       command.identity.kind == ActivityIdentityKind.initials &&
@@ -132,6 +131,39 @@ bool _supportsAggregateSave(ActivitySaveCommand command) {
       !command.identity.preserveExisting &&
       command.identity.imageName == null &&
       command.identity.imageBytes == null;
+}
+
+const _disabledPedagogicalConfiguration = <String, Object?>{
+  'enabled': false,
+  'model': 'none',
+  'periodicity': null,
+  'validity_start': null,
+  'validity_end': null,
+  'timezone': 'America/Sao_Paulo',
+  'grade_scale': null,
+  'competency_scale': null,
+  'concept_levels': <Object?>[],
+  'periods': <Object?>[],
+  'instruments': <Object?>[],
+  'taxonomy_version_id': null,
+  'categories': <Object?>[],
+  'recovery_rule': 'none',
+  'template_id': null,
+  'template_version': null,
+  'expected_version': null,
+  'used_by_results': false,
+  'change_justification': '',
+};
+
+bool _isSupportedDisabledPedagogicalConfiguration(Map<String, Object?> value) {
+  if (value.length == 1) return value['enabled'] == false;
+  if (value.length != _disabledPedagogicalConfiguration.length) return false;
+  for (final entry in _disabledPedagogicalConfiguration.entries) {
+    if (!value.containsKey(entry.key) || jsonEncode(value[entry.key]) != jsonEncode(entry.value)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 Map<String, Object?> _activitySavePayload(ActivitySaveCommand command) {
