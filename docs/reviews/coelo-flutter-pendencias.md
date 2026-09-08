@@ -390,3 +390,8 @@ Fonte: C00, revisão fixa C04cb9c7f3e/handoffs18–20; C03 candidatos6213f4c4/5b
 - Edição de respostas Forms5ead9407: revisão confirma delta de obrigatórios visíveis em form_edit_response, suiteGREEN56/56 no perfil fixado e cleanup; apta à integração local isolada, ainda não integrada neste registro. XLSX0b596c85:132/132 locais preservados; reter por dependênciasI003/históricas não canônicas e ciclo writer/R2/expiração/cleanup ainda incompleto. Sem certificado BE/E2E.
 
 C00 continua único escritor dos três rastreadores. Novos resultados não equivalem a testes em produção; não houve pacote remoto autorizado/aplicado.
+
+
+### Bloqueios novos Comunicação — 2026-09-08T17:24:56-03:00
+
+Revisão estática C00/subagente dos candidatos C05 fixados5f0e7e29 (sem alteração até4c058d36): reter20260908190652_superadmin_notices_sort_v2 e20260908190654_superadmin_moments_feed_v2. ACL de Notices revoga famílias inteiras preservando somente directory; precisa preservar operações existentes. Ordenação ascendente com id descendente e predicado de tuple ascendente duplica/omite empates. Leitura por ticket de Momentos precisa revalidar acesso atual (sessão, membership/capability, publicação/audiência/vínculo), além de person_auth_link/asset ready. Contrato de realm interno Superadmin ainda não comprovado pelo helper People legado. Achados encaminhados na assignment C05I008, confirmação pendente. Candidatos não integrados/aplicados; nenhuma regressão atribuída à produção. Sem promoção ou mudança de denominador; atualização incremental de bloqueios, não sincronização global de handoffs.
