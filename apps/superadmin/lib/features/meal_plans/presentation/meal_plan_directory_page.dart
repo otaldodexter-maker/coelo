@@ -63,6 +63,8 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
   int _total = 0;
   int _requestedVersion = 1;
   int _actionGeneration = 0;
+  String? _publishOperationKey;
+  String? _publishOperationId;
 
   MealPlanStatus? _statusFilter;
   MealPlanSourceType? _sourceFilter;
@@ -83,6 +85,8 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
     if (identical(oldWidget.repository, widget.repository)) return;
     _requestedVersion += 1;
     _actionGeneration += 1;
+    _publishOperationKey = null;
+    _publishOperationId = null;
     _search.clear();
     _institution.clear();
     _unit.clear();
@@ -605,6 +609,12 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
   }
 
   Future<void> _publish(MealPlan item) async {
+    final operationKey = '${item.id}:${item.revision}:${item.tenantId}:${item.institutionId ?? ''}';
+    if (_publishOperationKey != operationKey) {
+      _publishOperationKey = operationKey;
+      _publishOperationId = _requestId();
+    }
+    final operationId = _publishOperationId!;
     await _runActionWithFeedback(
       preflight: (repository) async {
         final conflicts = await _resolveLocalConflicts(repository, item);
@@ -612,10 +622,37 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
       },
       preflightFailureMessage:
           'N\u00e3o \u00e9 poss\u00edvel publicar com conflito n\u00e3o resolvido.',
-      action: (repository) => repository.publish(item.id, _requestId(), item.revision),
+      action: (repository) async {
+        try {
+          final published = await repository.publish(item.id, operationId, item.revision);
+          if (published.id != item.id ||
+              published.tenantId != item.tenantId ||
+              published.institutionId != item.institutionId ||
+              published.status != MealPlanStatus.published ||
+              published.isDraft ||
+              published.requiresReview) {
+            throw const MealPlanValidationException(
+              'A confirmação da publicação não corresponde ao cardápio solicitado.',
+            );
+          }
+          _clearPublishOperation(operationKey);
+          return published;
+        } on MealPlanUnavailableException {
+          rethrow;
+        } on MealPlanRepositoryException {
+          _clearPublishOperation(operationKey);
+          rethrow;
+        }
+      },
       successMessage: 'Card\u00e1pio publicado.',
       refresh: true,
     );
+  }
+
+  void _clearPublishOperation(String operationKey) {
+    if (_publishOperationKey != operationKey) return;
+    _publishOperationKey = null;
+    _publishOperationId = null;
   }
 
   Future<List<MealPlanConflict>> _resolveLocalConflicts(

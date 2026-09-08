@@ -122,6 +122,57 @@ void main() {
     expect(repositoryB.publishCalls, 1);
   });
 
+  for (final mismatch in ['id', 'tenant', 'institution', 'status']) {
+    testWidgets('publish rejects a mismatched $mismatch response', (tester) async {
+      final item = _plan(id: 'plan-a', name: 'Cardápio A');
+      final repository = _DirectoryRepository(
+        item: item,
+        publishResult: _plan(
+          id: mismatch == 'id' ? 'plan-b' : item.id,
+          name: 'Cardápio confirmado',
+          tenantId: mismatch == 'tenant' ? 'tenant-b' : item.tenantId,
+          institutionId: mismatch == 'institution' ? 'institution-b' : item.institutionId,
+          status: mismatch == 'status' ? MealPlanStatus.inReview : MealPlanStatus.published,
+          isDraft: false,
+          requiresReview: false,
+        ),
+      );
+
+      await tester.pumpWidget(_app(repository: repository));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Ações'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Publicar'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Cardápio publicado.'), findsNothing);
+      expect(
+        find.text('A confirmação da publicação não corresponde ao cardápio solicitado.'),
+        findsOneWidget,
+      );
+    });
+  }
+
+  testWidgets('uncertain publish retry reuses the same operation id', (tester) async {
+    final repository = _DirectoryRepository(
+      item: _plan(id: 'plan-a', name: 'Cardápio A'),
+      unavailablePublishes: 1,
+    );
+
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+    for (var attempt = 0; attempt < 2; attempt++) {
+      await tester.tap(find.byTooltip('Ações'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Publicar'));
+      await tester.pumpAndSettle();
+    }
+
+    expect(repository.publishRequestIds, hasLength(2));
+    expect(repository.publishRequestIds.toSet(), hasLength(1));
+    expect(repository.filters, hasLength(2));
+  });
+
   testWidgets('matches the Cards and Table directory contract at every breakpoint', (tester) async {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     for (final size in const [
@@ -219,12 +270,21 @@ Widget _app({
 );
 
 final class _DirectoryRepository implements MealPlanRepository {
-  _DirectoryRepository({required this.item, this.onFetch, this.conflictCheck});
+  _DirectoryRepository({
+    required this.item,
+    this.onFetch,
+    this.conflictCheck,
+    this.publishResult,
+    this.unavailablePublishes = 0,
+  });
 
   final MealPlan item;
   final Future<MealPlanPage> Function(MealPlanListFilter, MealPlan)? onFetch;
   final Future<List<MealPlanConflict>> Function()? conflictCheck;
+  final MealPlan? publishResult;
+  int unavailablePublishes;
   final List<MealPlanListFilter> filters = [];
+  final List<String> publishRequestIds = [];
   int conflictChecks = 0;
   int publishCalls = 0;
 
@@ -253,7 +313,21 @@ final class _DirectoryRepository implements MealPlanRepository {
   @override
   Future<MealPlan> publish(String mealPlanId, String requestId, int expectedRevision) async {
     publishCalls += 1;
-    return item;
+    publishRequestIds.add(requestId);
+    if (unavailablePublishes > 0) {
+      unavailablePublishes -= 1;
+      throw const MealPlanUnavailableException('Resultado incerto.');
+    }
+    return publishResult ??
+        _plan(
+          id: item.id,
+          name: item.name,
+          tenantId: item.tenantId,
+          institutionId: item.institutionId,
+          status: MealPlanStatus.published,
+          isDraft: false,
+          requiresReview: false,
+        );
   }
 
   @override
@@ -263,12 +337,20 @@ final class _DirectoryRepository implements MealPlanRepository {
 MealPlanPage _page(MealPlan item, MealPlanListFilter filter, {int total = 1}) =>
     MealPlanPage(items: [item], total: total, limit: filter.pageSize, offset: filter.offset);
 
-MealPlan _plan({required String id, required String name}) => MealPlan(
+MealPlan _plan({
+  required String id,
+  required String name,
+  String tenantId = 'tenant',
+  String? institutionId = 'institution',
+  MealPlanStatus status = MealPlanStatus.inReview,
+  bool isDraft = false,
+  bool requiresReview = true,
+}) => MealPlan(
   id: id,
-  tenantId: 'tenant',
-  institutionId: 'institution',
+  tenantId: tenantId,
+  institutionId: institutionId,
   name: name,
-  status: MealPlanStatus.inReview,
+  status: status,
   sourceType: MealPlanSourceType.institution,
   scopeLevel: MealPlanScopeLevel.institution,
   scopeId: 'institution',
@@ -291,8 +373,8 @@ MealPlan _plan({required String id, required String name}) => MealPlan(
   priority: 10,
   conflictState: false,
   revision: 1,
-  isDraft: false,
-  requiresReview: true,
+  isDraft: isDraft,
+  requiresReview: requiresReview,
   createdBy: 'admin',
   updatedBy: 'admin',
   planVariant: MealPlanPlanVariant.complete,
