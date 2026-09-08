@@ -465,3 +465,6 @@ Fonte: `etapa-2-operacao/reports/R01-continuidade-1845.md`, assignments C02/C03 
 ## Recibo incremental C00 — 2026-09-08T19:00:55-03:00
 
 Fonte `etapa-2-operacao/reports/R01-delta-1855.md`: C01I012/r43 seletor acessível integrado6749ed07; seis commitsC03r26–27 integrados428e14b7/357a275b/5f0163c1/9936a858/60d43c00/15b6a2dd (155testesclientePASS). HeadercompactoC00c4a7feff RED8→GREEN8; shared8PASS e regressão14PASS, analyzerlimpo. Activities1c7a0e13 sótransportamodo; adapter/SQL aindaabertos. IDs e provas nominais no relatório; nenhumstatusconcluído promovido. Dockerrecuperado18:53:45, engine29.7.2 comprovado; Models34 leaseexclusivaC01 resultadoaindapendente. Remotos/produção não alterados. Cortes integraisC01r40/C02r35/C03r25/C04r20/C05r15 mantidos comestesdeltasparciais; C02r38/C03novoslotessãorecebidos,nãointegralmentesincronizados.
+
+
+Recibo 2026-09-08T19:05:18-03:00: Models34I014PASS34/34 confirmadoC00porloghash65da155c…ecleanup0;lease encerrada. Ações access-models.create/edit/duplicate continuam semcertificaçãoFE/BE/E2E completa. Nova lease localC02I01070 concedida,resultado pendente;nãoéremoto. CommitentregaGit01c7648c confirmadoemorigin/dev/C00,semdeploy.

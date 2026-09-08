@@ -686,3 +686,6 @@ Owner saiu; acompanhamento automático confirmado ativo. Fonte `etapa-2-operacao
 ## Integração e dependências — 2026-09-08T19:00:55-03:00
 
 Fonte `etapa-2-operacao/reports/R01-delta-1855.md`: oito cherry-picks e dois commitsC00 integrados/testados; rastreadores/inventário recebem deltasnominais sempromoção. Dockerrecuperado18:53,leaseexclusivaC01Models34,I014. C02I013mediareader reservado,I01065aguardarevisão. C03contrato/router1c7a0e13 liberadospara consumo nominal; Support5596emrevisão. C06I006/C07I003 publicados: trêstestescamposreservados,Instituiçõesvermelhorealpermanece,C04corrige. Horáriosfechamentopreservados; referências/SHAs/logs norelatorio.
+
+
+Recibo 2026-09-08T19:06:21-03:00: entrega Git01c7648c verificada em origin/dev e C00, sem deploy. Models34 passou34/34; C00 conferiu log e cleanup. Nova lease exclusiva C02 I01070 concedida. C01 recebeu I015 para SecretStore local; C06 recebeu I007, definindo banner compartilhado com C00 e indicador de status de Instituições com C04. Fontes e evidências em reports/R01-delta-1855.md.

@@ -43,7 +43,7 @@
       "thread_id": "01a08197-7b62-73c1-9673-5fd40fa40452",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01",
       "branch": "codex/e2-r01-c01-identidade",
-      "instruction_revision": 14,
+      "instruction_revision": 15,
       "received_revision": 40,
       "integrated_revision": 3,
       "last_evidence": "2026-09-08T18:13:04-03:00",
@@ -75,7 +75,7 @@
       "thread_id": "01a0819a-f1f1-7421-95dd-d645ca9f5747",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
       "branch": "codex/e2-r01-c02-forms-midia",
-      "instruction_revision": 13,
+      "instruction_revision": 14,
       "received_revision": 35,
       "integrated_revision": 4,
       "last_evidence": "2026-09-08T17:27:00-03:00",
@@ -836,17 +836,16 @@
     "Next poll16:00;formal17:40;closing09/09 preserved"
   ],
   "local_replay_lease": {
-    "id": "R01-LOCAL-MODELS-AAL1-02",
+    "id": "R01-LOCAL-FORMS-READ-01",
     "status": "granted-exclusive",
-    "executor": "C01",
-    "instruction": "R01-C01-I014",
-    "issued_at": "2026-09-08T18:56:37-03:00",
-    "profile": "ModelAal1PhasePolicy",
-    "target": "20260908182839",
-    "expected_assertions": 34,
-    "test_sha256": "8b45891dc1110e13c052a1cb7ba24d74dc10259186b0d19be41aec2a13bc072e",
-    "remote": false,
-    "previous_resources": "docker ps0/volumes0 verified18:53:45"
+    "executor": "C02",
+    "instruction": "R01-C02-I014",
+    "issued_at": "2026-09-08T19:05:18-03:00",
+    "code_sha": "1f38fa7a8eca5b68862ada33ed4b06a888f4323f",
+    "expected_assertions": 70,
+    "expected_source_migrations": 70,
+    "expected_effective_migrations": 72,
+    "remote": false
   },
   "last_delivery": {
     "branch": "origin/dev",
@@ -1167,11 +1166,11 @@
       "branch": "claude/e2-r01-c06-coordenacao",
       "baseline": "f0763a657ca6e5422cc42fa61c0c3c4ca724e129",
       "handoff_path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06\\docs\\reviews\\etapa-2-operacao\\handoffs\\C06.md",
-      "instruction_revision": 6,
-      "received_revision": 9,
-      "accepted_revision": 9,
+      "instruction_revision": 7,
+      "received_revision": 10,
+      "accepted_revision": 10,
       "status": "active-acknowledged",
-      "operational_ack": "I006 pending; source r9 read",
+      "operational_ack": "I005/I006 confirmedr10; dispatchC07/C04/C05 proven",
       "scope": [
         "C04",
         "C05",
@@ -1182,12 +1181,12 @@
       "created_at": "2026-09-08T17:29:41-03:00",
       "bootstrap_commit": "2ed8513842a1d2f3f595645c7e868ad00662fefd",
       "push_verified_at": "2026-09-08T17:34:14-03:00",
-      "last_evidence": "2026-09-08T18:51:29-03:00",
+      "last_evidence": "2026-09-08T19:05:18-03:00",
       "automation_schedule": ":21/:51 America/Sao_Paulo;session-only idle-only;reported",
-      "source_commit": "cc477f65ab8727587ff56cc95dc512f2c94f1349",
+      "source_commit": "b3d15b299648a8dc8e935109150aa34db65fd0e1",
       "c07_receipt_evidence": "C06r5 confirms C07 supervision, I003/I004 correction and RTK dispatch18:22-18:23",
       "next_nominal_tick": "2026-09-08T18:51:00-03:00",
-      "last_proven_tick": "2026-09-08T17:59:00-03:00",
+      "last_proven_tick": "2026-09-08T18:57:00-03:00",
       "timestamp_discrepancy": "r4 text18:10 versus commit18:03:39; preserve both, receipt uses actual read time"
     }
   },
@@ -1242,12 +1241,12 @@
     "report": "reports/R01-checkpoint-1740.md"
   },
   "last_verified_delivery": {
-    "sha": "775bd511702aae66990f3e665972b0869a0fa285",
+    "sha": "01c7648c1a8bbb3c47b9863830fa3a8a4a4cd86e",
     "refs": [
       "origin/dev",
       "origin/codex/e2-r01-c00-integration"
     ],
-    "verified_at": "2026-09-08T18:34:33-03:00",
+    "verified_at": "2026-09-08T19:05:18-03:00",
     "deploy": false
   },
   "validation_fronts": {
@@ -1289,7 +1288,7 @@
     "path": "packages/coelo_database/supabase/tests/access_profile_models_aal1_phase_policy_test.sql",
     "instruction": "R01-C01-I011",
     "status": "integrated;released-by-C01;awaiting-Docker",
-    "lease": "R01-LOCAL-MODELS-AAL1-02 granted; resultpending",
+    "lease": "R01-LOCAL-MODELS-AAL1-02 completed34PASS/released",
     "at": "2026-09-08T18:10:21-03:00",
     "code_sha": "ffb79806e0566a18078d6537559044730b869c26",
     "integration_sha": "fafce1f6"
@@ -1348,7 +1347,7 @@
     "health_evidence": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-docker-health-1855.json",
     "preservation_evidence": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-docker-preservation-1854.json"
   },
-  "coordinator_next_steps_docker": "Read compact native status of support thread; verify engine result without asking Owner to watch app; only then nominal replay lease. Do not duplicate recovery operations.",
+  "coordinator_next_steps_docker": "Docker recovered; C01 Models34 completed and released; C02 I01070 exclusive lease granted. No parallel Docker recovery or replay.",
   "visual_review_c07": {
     "status": "shellcompactfixedc4a7feff; C05consumerfixes and golden review pending",
     "source": "C06r5 and C07 original reports",
@@ -1413,5 +1412,43 @@
     "test": "forms_superadmin_media_read_r2_v1_test.sql",
     "status": "granted-local-authoring-only",
     "remote": false
+  },
+  "replay_receipts_1900": [
+    {
+      "id": "R01-LOCAL-MODELS-AAL1-02",
+      "status": "released",
+      "executor": "C01",
+      "instruction": "R01-C01-I014",
+      "issued_at": "2026-09-08T18:56:37-03:00",
+      "profile": "ModelAal1PhasePolicy",
+      "target": "20260908182839",
+      "expected_assertions": 34,
+      "test_sha256": "8b45891dc1110e13c052a1cb7ba24d74dc10259186b0d19be41aec2a13bc072e",
+      "remote": false,
+      "previous_resources": "docker ps0/volumes0 verified18:53:45",
+      "result": "34/34PASS;loghashverifiedC00;cleanup0 independentlyconfirmed",
+      "released_at": "2026-09-08T19:05:18-03:00",
+      "log": "C:/Users/adrie/AppData/Local/Temp/coelo-c01-models34-replay-20260908-1857.log"
+    }
+  ],
+  "next_reviewed_integration_batches": {
+    "support": [
+      "722dd5ed",
+      "17fb20cc",
+      "5596c1e9"
+    ],
+    "personasOffline": [
+      "ee05b949",
+      "ba9b020b",
+      "00297839",
+      "dcb9ab4d"
+    ],
+    "status": "read-only review passed;C00 integration/tests pending"
+  },
+  "central_banner_reservation": {
+    "owner": "C00",
+    "path": "apps/superadmin/lib/shared/presentation/widgets/superadmin_directory_create_banner.dart",
+    "status": "review and TEMP patch in progress",
+    "at": "2026-09-08T19:06:21-03:00"
   }
 }
