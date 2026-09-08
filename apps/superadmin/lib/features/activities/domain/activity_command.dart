@@ -86,6 +86,7 @@ final class ActivitySaveCommand {
     this.unitId,
     required this.unitIds,
     required this.groupIds,
+    this.groupParticipation = const {},
     required this.assignments,
     this.participants = const [],
     required this.identity,
@@ -115,6 +116,7 @@ final class ActivitySaveCommand {
   final String? unitId;
   final Set<String> unitIds;
   final Set<String> groupIds;
+  final Map<String, ActivityParticipation> groupParticipation;
   final List<ActivityCommandAssignment> assignments;
   final List<ActivityCommandParticipant> participants;
   final ActivityCommandIdentity identity;
