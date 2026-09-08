@@ -60,6 +60,9 @@ final class AccessProfileModelRepositoryAdapter
     final revision = _authorizationRevision?.call();
     final model = await _models.fetchModel(profileId);
     _requireCurrentRevision(revision);
+    if (model.id.toLowerCase() != profileId.toLowerCase() || model.domain != domain) {
+      throw const AccessProfileException('Não foi possível carregar o modelo de acesso.');
+    }
     final catalog = await _models.fetchPermissionCatalog();
     _requireCurrentRevision(revision);
     _details[model.id] = model;

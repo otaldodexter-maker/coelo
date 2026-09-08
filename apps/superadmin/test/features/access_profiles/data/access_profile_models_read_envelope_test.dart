@@ -9,6 +9,19 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('Models READ accepts the canonical casing of a requested UUID', () async {
+    const id = 'aaaaaaaa-0000-4000-8000-000000000001';
+    final model = await _repository(_success({..._model, 'id': id})).fetchModel(id.toUpperCase());
+    expect(model.id, id);
+  });
+
+  test('Models READ detail rejects a different model ID', () async {
+    await expectLater(
+      _repository(_success({..._model, 'id': 'different-model'})).fetchModel('nominal-model'),
+      throwsA(isA<AccessProfileException>()),
+    );
+  });
+
   test('Models READ list unwraps the real SQL envelope and cursor', () async {
     final repository = _repository(
       _success({
