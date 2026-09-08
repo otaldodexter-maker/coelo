@@ -554,6 +554,29 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
     );
   }
 
+  VoidCallback _responseCallback(
+    FormCursorPage<FormResponseSummary> projection,
+    FormResponseSummary summary,
+  ) {
+    final formId = widget.formId;
+    final generation = _loadGeneration;
+    return () {
+      if (!mounted ||
+          _state != FormsOperationsState.content ||
+          generation != _loadGeneration ||
+          formId == null ||
+          formId != widget.formId ||
+          widget.surface != FormsOperationsSurface.responses ||
+          !identical(projection, _projection)) {
+        return;
+      }
+      context.goNamed(
+        SuperadminRoutes.formResponseDetailName,
+        pathParameters: {'formId': formId, 'responseId': summary.id},
+      );
+    };
+  }
+
   Widget _productionContent() => KeyedSubtree(
     key: Key('forms-operations-production-${widget.surface.name}'),
     child: switch (_projection) {
@@ -570,10 +593,7 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
             _AuthorizedResponse(
               summary: summary,
               anonymous: widget.anonymous,
-              onPressed: () => context.goNamed(
-                SuperadminRoutes.formResponseDetailName,
-                pathParameters: {'formId': widget.formId!, 'responseId': summary.id},
-              ),
+              onPressed: _responseCallback(value, summary),
             ),
           _pagination(value.nextCursor),
         ],
