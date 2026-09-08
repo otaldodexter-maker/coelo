@@ -4,9 +4,11 @@ import '../domain/access_profile_model.dart';
 /// Reuses the canonical profile screens for profile-model CRUD.
 final class AccessProfileModelRepositoryAdapter
     implements AccessProfileRepository, AccessProfileDuplicator {
-  AccessProfileModelRepositoryAdapter(this._models);
+  AccessProfileModelRepositoryAdapter(this._models, {int Function()? authorizationRevision})
+    : _authorizationRevision = authorizationRevision;
 
   final AccessProfileModelRepository _models;
+  final int Function()? _authorizationRevision;
   final Map<String, AccessProfileModel> _details = {};
 
   @override
@@ -53,10 +55,19 @@ final class AccessProfileModelRepositoryAdapter
 
   @override
   Future<AccessProfile> fetchDetail(AccessProfileDomain domain, String profileId) async {
+    final revision = _authorizationRevision?.call();
     final model = await _models.fetchModel(profileId);
-    _details[model.id] = model;
+    _requireCurrentRevision(revision);
     final catalog = await _models.fetchPermissionCatalog();
+    _requireCurrentRevision(revision);
+    _details[model.id] = model;
     return _toProfile(model, catalog: catalog);
+  }
+
+  void _requireCurrentRevision(int? revision) {
+    if (_authorizationRevision?.call() != revision) {
+      throw const AccessProfileUnauthorizedException();
+    }
   }
 
   @override
