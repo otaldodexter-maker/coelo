@@ -66,7 +66,7 @@ begin
   data := jsonb_build_object('id',pg_temp.media_id(n),'institution_id',pg_temp.media_id(10),
     'form_id',pg_temp.media_id(210),'owner_person_id',pg_temp.media_id(100),
     'catalog_kind','form-image','media_purpose','question-image','storage_provider','r2',
-    'bucket_id','coelo-media-prod','mime_type','image/png','byte_size',100,
+    'bucket_id','coelo-media-prod','mime_type','image/png','byte_size',null,
     'original_name','','upload_request_id','synthetic-'||n,'status','pending') || patch;
   data := jsonb_build_object('object_key',
     'tenants/'||(data->>'institution_id')||'/forms/form/'||(data->>'form_id')||'/'
@@ -87,6 +87,8 @@ end;
 $$;
 
 select lives_ok($$select pg_temp.media_insert(1000)$$,'identified author catalog and typed binding persist');
+select is((select byte_size from public.media_assets where id=pg_temp.media_id(1000)),null::bigint,
+  'pending catalog does not misrepresent declared source size as measured master bytes');
 select lives_ok($$select pg_temp.media_insert(1001,jsonb_build_object('form_id',pg_temp.media_id(230),
   'owner_person_id',null,'owner_internal_identity_id',pg_temp.media_id(110)),530)$$,
   'internal author uses internal identity without artificial People');
@@ -120,11 +122,11 @@ select throws_ok($$select pg_temp.media_insert(1017,jsonb_build_object('catalog_
 select throws_ok($$select pg_temp.media_insert(1018,jsonb_build_object('pixel_width',100))$$,
   '23514',null,'half-present dimensions cannot pass a nullable CHECK');
 select throws_ok($$select pg_temp.media_insert(1019,jsonb_build_object('byte_size',10485761))$$,
-  '23514',null,'source exceeds ADR0032 photo limit');
+  '23514',null,'unmeasured oversized bytes cannot enter the master catalog');
 select throws_ok($$select pg_temp.media_insert(1020,jsonb_build_object('mime_type','video/mp4'))$$,
   '23514',null,'Forms image purpose cannot admit video');
 select throws_ok($$select pg_temp.media_insert(1021,jsonb_build_object('status','ready',
-  'checksum_sha256',repeat('a',64),'pixel_width',100,'pixel_height',100))$$,
+  'byte_size',100,'checksum_sha256',repeat('a',64),'pixel_width',100,'pixel_height',100))$$,
   '23514','media_catalog_original_required','ready cannot precede verified original');
 select throws_ok($$update public.media_assets set catalog_kind='legacy-happens' where id=pg_temp.media_id(1000)$$,
   '23514','media_catalog_origin_immutable','new catalog cannot be downgraded into legacy commands');
@@ -136,7 +138,7 @@ select lives_ok($$
     byte_size,checksum_sha256,pixel_width,pixel_height)
   select id,'original',bucket_id,object_key,mime_type,100,repeat('a',64),100,100
   from public.media_assets where id=pg_temp.media_id(1000);
-  update public.media_assets set status='ready',checksum_sha256=repeat('a',64),pixel_width=100,pixel_height=100
+  update public.media_assets set status='ready',byte_size=100,checksum_sha256=repeat('a',64),pixel_width=100,pixel_height=100
   where id=pg_temp.media_id(1000);
   set constraints all immediate;
   set constraints all deferred;

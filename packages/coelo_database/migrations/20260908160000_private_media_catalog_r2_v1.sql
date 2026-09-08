@@ -14,9 +14,10 @@ alter table public.media_assets
   add column pixel_height integer,
   alter column post_id drop not null,
   alter column owner_person_id drop not null,
-  add constraint media_assets_catalog_shape_ck check (
+  alter column byte_size drop not null,
+  add constraint media_assets_catalog_shape_ck check ((
     (catalog_kind = 'legacy-happens'
-      and post_id is not null and owner_person_id is not null
+      and post_id is not null and owner_person_id is not null and byte_size is not null
       and form_id is null and source_form_asset_id is null
       and owner_internal_identity_id is null and media_purpose is null
       and pixel_width is null and pixel_height is null)
@@ -26,7 +27,7 @@ alter table public.media_assets
       and storage_provider = 'r2' and bucket_id = 'coelo-media-prod'
       and original_name = '' and media_purpose is not null
       and mime_type in ('image/jpeg','image/png','image/webp')
-      and byte_size between 1 and 10485760
+      and (byte_size is null or byte_size between 1 and 4194304)
       and (
         (media_purpose = 'question-image' and source_form_asset_id is null
           and num_nonnulls(owner_person_id,owner_internal_identity_id) = 1)
@@ -39,9 +40,11 @@ alter table public.media_assets
         or (pixel_width between 1 and 2560 and pixel_height between 1 and 2560))
       and (status <> 'ready' or (checksum_sha256 is not null
         and pixel_width is not null and pixel_height is not null
-        and byte_size <= 4194304))
+        and byte_size is not null))
+      and (status <> 'pending' or (byte_size is null and checksum_sha256 is null
+        and pixel_width is null and pixel_height is null))
     )
-  );
+  ) is true);
 
 create index media_assets_form_fk_idx on public.media_assets(form_id) where form_id is not null;
 create unique index media_assets_form_source_uidx on public.media_assets(source_form_asset_id)
