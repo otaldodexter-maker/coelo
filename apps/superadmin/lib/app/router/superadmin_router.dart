@@ -948,7 +948,9 @@ GoRouter createSuperadminRouter({
                   onDestinationSelected: (destination) => developmentPreview
                       ? _navigateFromDevelopmentShell(context, destination)
                       : _navigateFromPersistentShell(context, destination),
-                  onBugReportSubmitted: productionSupportController?.submitReport,
+                  onBugReportSubmitted: developmentPreview
+                      ? developmentSupportController.submitReport
+                      : productionSupportController?.submitReport,
                   canAccessCapability: (capability) => switch (capability) {
                     'attendance.create' => developmentPreview,
                     'activities.create' => developmentPreview,
