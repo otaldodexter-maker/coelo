@@ -7,6 +7,55 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final width in [375.0, 800.0]) {
+    for (final scale in [1.0, 2.0]) {
+      testWidgets('context sheet remains selectable at $width x 600 text=$scale', (tester) async {
+        await tester.binding.setSurfaceSize(Size(width, 600));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CoeloTheme.light,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
+              child: child!,
+            ),
+            home: const PrincipalForYouPreviewPage(),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final trigger = find.byKey(const Key('principal-for-you-context-trigger')).first;
+        await tester.ensureVisible(trigger);
+        await tester.tap(trigger);
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        final option = find.text('Lucas Silva');
+        await tester.ensureVisible(option);
+        await tester.pumpAndSettle();
+        await tester.tap(option);
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('principal-for-you-context-sheet')), findsNothing);
+        expect(find.text('Lucas Silva'), findsWidgets);
+        await tester.ensureVisible(trigger);
+        await tester.tap(trigger);
+        await tester.pumpAndSettle();
+        final options = find.descendant(
+          of: find.byKey(const Key('principal-for-you-context-sheet')),
+          matching: find.byType(TextButton),
+        );
+        tester.widget<TextButton>(options.first).focusNode!.requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pumpAndSettle();
+        expect(tester.widget<TextButton>(options.at(1)).focusNode!.hasFocus, isTrue);
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('principal-for-you-context-sheet')), findsNothing);
+        expect(find.text('Beatriz Silva'), findsWidgets);
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
   for (final disposed in [false, true]) {
     testWidgets('context option cannot close another route disposed=$disposed', (tester) async {
       await tester.binding.setSurfaceSize(const Size(375, 900));
