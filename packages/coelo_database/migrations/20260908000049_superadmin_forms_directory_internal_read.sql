@@ -1,4 +1,4 @@
--- F-READ01. New read-only SAI boundary; legacy Forms commands remain unchanged.
+-- F-READ01. New audited SAI directory; legacy Forms commands remain unchanged.
 begin;
 
 do $preflight$
@@ -10,6 +10,8 @@ begin
   if pg_catalog.to_regprocedure('app_private.require_superadmin_internal_context(text)') is null
     or pg_catalog.to_regtype('app_private.superadmin_internal_context') is null
     or pg_catalog.to_regprocedure('app_private.superadmin_internal_error_envelope(text,uuid)') is null
+    or pg_catalog.to_regprocedure('app_private.audit_append_superadmin_internal(uuid,uuid,uuid,uuid,text,text,text,public.audit_outcome,text,uuid,uuid,text,uuid)') is null
+    or pg_catalog.to_regprocedure('app_private.audit_superadmin_internal_denial_if_identified(text,text,text,uuid,uuid)') is null
     or pg_catalog.to_regclass('public.forms') is null
     or pg_catalog.to_regclass('public.form_occurrences') is null
     or pg_catalog.to_regclass('public.platform_permissions') is null then
@@ -33,7 +35,7 @@ $preflight$;
 create function app_private.superadmin_forms_directory_v2(p_query jsonb default '{}'::jsonb)
 returns jsonb
 language plpgsql
-stable
+volatile
 security definer
 set search_path = ''
 as $function$
@@ -56,6 +58,8 @@ declare
   allowed_values text[];
   values_array text[];
 begin
+  -- Only authorization and projection are caught. Audit failures must escape.
+  begin
   -- The guard must run before any cast or query derived from client input.
   select * into strict ctx from app_private.require_superadmin_internal_context('forms.read');
   if ctx.scope_kind is null or ctx.scope_kind not in ('platform','institution')
@@ -192,18 +196,29 @@ begin
       (select pg_catalog.jsonb_build_object('updated_at',updated_at,'id',id) from visible order by updated_at,id limit 1)
       else null end
   ) into result from visible;
-  return pg_catalog.jsonb_build_object('ok',true,'data',result,'error',null);
 exception
   when invalid_parameter_value or invalid_text_representation or datetime_field_overflow or invalid_datetime_format or numeric_value_out_of_range then
-    return app_private.superadmin_internal_error_envelope('SAI_INVALID_ARGUMENT',correlation);
+    error_code := 'SAI_INVALID_ARGUMENT';
   when others then
     get stacked diagnostics error_code = pg_exception_detail;
+    -- Normalize technical/unknown details before they can enter the audit log.
+    error_code := app_private.superadmin_internal_error_envelope(error_code,correlation) #>> '{error,code}';
+  end;
+  if error_code is not null then
+    perform app_private.audit_superadmin_internal_denial_if_identified(
+      'forms.read','superadmin.forms.directory',error_code,correlation);
     return app_private.superadmin_internal_error_envelope(error_code,correlation);
+  end if;
+  perform app_private.audit_append_superadmin_internal(
+    ctx.internal_identity_id,ctx.internal_auth_link_id,ctx.internal_membership_id,
+    ctx.session_id,'forms.read',ctx.aal,'superadmin.forms.directory','success',null,
+    correlation,case when ctx.scope_kind='institution' then ctx.scope_institution_id else null end);
+  return pg_catalog.jsonb_build_object('ok',true,'data',result,'error',null);
 end
 $function$;
 
 create function public.superadmin_forms_directory_v2(p_query jsonb default '{}'::jsonb)
-returns jsonb language sql stable security definer set search_path='' as $function$
+returns jsonb language sql volatile security definer set search_path='' as $function$
   select app_private.superadmin_forms_directory_v2(p_query);
 $function$;
 
