@@ -14,13 +14,16 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "2E231CF5BC29110735D59AC54870F4E39820E6F0694EC90580FF9C75F6A50E44"
+flutter_tracker_sha256: "39D48176DBDE4C5D3C0B5B613BFE795B1657CE13EECBF31ECA83237A3C7E7FB7"
 supabase_tracker_sha256: "888BE3EE88A9AA1BBEE9B7B0516D06CA233CD339B9AE25B1E8284F3B46216C87"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
+
+- Atualização01:44: Avisos `a24993e8`/`bbed5f18`,28/28 form/dialog no destino;
+  revisão P2 encerrada no cliente, sem promoção de N01/backend/E2E.
 
 - Atualização01:40: ContextPanel `b37a441d`,16/16 destino, sem rebaseline.
  Avisos9abd retido por revisão P2 de ownership; nenhum SQL ou E2E promovido.

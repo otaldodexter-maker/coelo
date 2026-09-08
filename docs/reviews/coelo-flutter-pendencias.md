@@ -14,6 +14,11 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização01:44: P2 de prévia Avisos corrigido e integrado conjuntamente
+  `a24993e8`/`bbed5f18`; fechamento remove somente a rota própria, mesmo após
+  callback navegar, e impede dupla aceitação. Destino28/28 form/dialog PASS.
+  N01/materialização e autorização real continuam abertos.
+
 - Atualização01:40: ContextPanel Acontece `b37a441d` mede cabeçalho real;
  16/16 testes de largura/tema/escala no destino PASS. Inspeção central da
  imagem1440 e diferença isolada confirma remanescente no PublishNowCard,
