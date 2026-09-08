@@ -365,10 +365,206 @@ const xlsxMime =
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 type RpcCall = { name: string; params: Record<string, unknown> };
 
+Deno.test("R2 reports only closed representation diagnostics without failing or cleaning the job", async () => {
+  for (const failure of ["number", "empty", "provider"]) {
+    const fixture = r2WriterFixture();
+    if (failure === "empty") {
+      fixture.transform((call, data) =>
+        call.name === "form_worker_begin_xlsx_r2_v1"
+          ? {
+            ...fixture.prepared,
+            snapshot_schema: {
+              formId: institutionId,
+              formTitle: "Empty",
+              versions: [],
+            },
+            snapshot_row_count: 0,
+          }
+          : data
+      );
+    }
+    if (failure === "number") {
+      fixture.prepared.snapshot_schema.versions[0].sections[0].items[0].kind =
+        "decimal";
+      fixture.page.submissions[0].answers[0].values = [{
+        kind: "decimal",
+        value: "9007199254740993",
+      }];
+    }
+    const dependencies = failure === "provider"
+      ? {
+        ...fixture.dependencies,
+        createR2: () => ({
+          put: () => Promise.reject(new Error(sensitiveError)),
+        }),
+      }
+      : fixture.dependencies;
+    const response = await handleFormOperationsRequest(request(), dependencies);
+    assertEquals(response.status, 503);
+    assertEquals(await response.json(), {
+      error: failure === "number"
+        ? "xlsx_number_unrepresentable"
+        : failure === "empty"
+        ? "zero_respostas_aberto"
+        : "export_completion_unknown",
+    });
+    assertEquals(
+      fixture.calls.some((call) =>
+        /fail|cleanup|delete|finish/.test(call.name)
+      ),
+      false,
+    );
+  }
+});
+
+Deno.test("R2 v2 seals historical sheets and exports media only as absolute protected links", async () => {
+  const fixture = r2WriterFixture();
+  const galleryId = "88888888-8888-4888-8888-888888888888";
+  const version2Id = "99999999-9999-4999-8999-999999999999";
+  const schema = structuredClone(fixture.prepared.snapshot_schema);
+  schema.versions[0].sections[0].items.push({
+    ...schema.versions[0].sections[0].items[0],
+    itemId: galleryId,
+    kind: "gallery",
+    position: 1,
+  });
+  schema.versions.push({
+    ...schema.versions[0],
+    versionId: version2Id,
+    versionNumber: 2,
+    sections: [{
+      ...schema.versions[0].sections[0],
+      sectionId: institutionId,
+      items: [{
+        ...schema.versions[0].sections[0].items[0],
+        itemId: version2Id.replace("999999999999", "999999999998"),
+        label: "Never answered",
+        position: 0,
+      }],
+    }],
+  });
+  const first = {
+    ...fixture.page.submissions[0],
+    answers: [...fixture.page.submissions[0].answers, {
+      itemId: galleryId,
+      values: [{ kind: "media", assetId }],
+    }],
+  };
+  const second = {
+    ...fixture.page.submissions[0],
+    responseId: version2Id,
+    versionId: version2Id,
+    answers: [],
+  };
+  fixture.transform((call, data) => {
+    if (call.name === "form_worker_begin_xlsx_r2_v1") {
+      return {
+        ...fixture.prepared,
+        snapshot_schema: schema,
+        snapshot_row_count: 2,
+      };
+    }
+    if (call.name === "form_worker_xlsx_snapshot_r2_v1") {
+      return {
+        ...fixture.page,
+        next_cursor: "2",
+        submissions: [first, second],
+      };
+    }
+    return data;
+  });
+  const dependencies = {
+    ...fixture.dependencies,
+    environment: () => ({
+      ...fixture.dependencies.environment(),
+      COELO_FORMS_WEB_ORIGIN: "https://superadmin.example.test",
+    }),
+  };
+  assertEquals(
+    (await handleFormOperationsRequest(request(), dependencies)).status,
+    200,
+  );
+  const book = XLSX.read(fixture.uploaded[0], { type: "array" });
+  assertEquals(book.SheetNames, ["Respostas v1", "Mídias v1", "Respostas v2"]);
+  assertEquals(XLSX.utils.sheet_to_json(book.Sheets["Respostas v1"]).length, 1);
+  assertEquals(
+    book.Sheets["Respostas v2"].I1.v,
+    `Never answered [99999999-9999-4999-8999-999999999998]`,
+  );
+  const media = book.Sheets["Mídias v1"];
+  assertEquals(media.M2.v, "Ver mídia");
+  assertEquals(
+    media.M2.l?.Target,
+    `https://superadmin.example.test/forms/media/${assetId}`,
+  );
+  assertEquals(media.G2.v, "");
+  assertEquals(media.H2.v, "");
+  for (
+    const origin of [undefined, "https://superadmin.example.test?token=secret"]
+  ) {
+    fixture.uploaded.length = 0;
+    assertEquals(
+      (await handleFormOperationsRequest(request(), {
+        ...dependencies,
+        environment: () => ({
+          ...fixture.dependencies.environment(),
+          COELO_FORMS_WEB_ORIGIN: origin,
+        }),
+      })).status,
+      503,
+    );
+    assertEquals(fixture.uploaded.length, 0);
+  }
+});
+
+Deno.test("R2 v2 refuses absent graph, crossed form, hash mismatch and unresolved empty criterion", async () => {
+  for (
+    const patch of [{ snapshot_schema: undefined }, { form_id: assetId }, {
+      snapshot_schema_sha256: "invalid",
+    }, {
+      snapshot_schema: {
+        formId: institutionId,
+        formTitle: "Empty",
+        versions: [],
+      },
+      snapshot_row_count: 0,
+    }]
+  ) {
+    const fixture = r2WriterFixture();
+    fixture.transform((call, data) =>
+      call.name === "form_worker_begin_xlsx_r2_v1"
+        ? { ...fixture.prepared, ...patch }
+        : data
+    );
+    assertEquals(
+      (await handleFormOperationsRequest(request(), fixture.dependencies))
+        .status,
+      503,
+    );
+    assertEquals(fixture.uploaded.length, 0);
+    assertEquals(
+      fixture.calls.some((call) => call.name === "form_worker_fail_export"),
+      false,
+    );
+  }
+  const fixture = r2WriterFixture();
+  fixture.transform((call, data) =>
+    call.name === "form_worker_xlsx_snapshot_r2_v1"
+      ? { ...fixture.page, snapshot_schema_sha256: "b".repeat(64) }
+      : data
+  );
+  assertEquals(
+    (await handleFormOperationsRequest(request(), fixture.dependencies)).status,
+    503,
+  );
+  assertEquals(fixture.uploaded.length, 0);
+});
+
 function r2WriterFixture() {
   const calls: RpcCall[] = [];
   const uploaded: Uint8Array[] = [];
   const prepared = {
+    form_id: institutionId,
     job_id: fileId,
     worker_job_id: id,
     attempt: 3,
@@ -379,24 +575,50 @@ function r2WriterFixture() {
     object_key: objectKey,
     mime_type: xlsxMime,
     expires_at: "2026-09-09T20:00:00Z",
-    snapshot_format_version: 1,
+    snapshot_format_version: 2,
+    snapshot_schema_sha256: "a".repeat(64),
+    snapshot_schema: {
+      formId: institutionId,
+      formTitle: "Synthetic form",
+      versions: [{
+        versionId: assetId,
+        versionNumber: 1,
+        state: "published",
+        sections: [{
+          sectionId: fileId,
+          title: "Section",
+          description: null,
+          position: 0,
+          items: [{
+            itemId: id,
+            kind: "short_text",
+            label: "Synthetic",
+            helpText: null,
+            position: 0,
+            required: false,
+            config: {},
+            options: [],
+          }],
+        }],
+        conditions: [],
+      }],
+    },
     snapshot_row_count: 1,
   };
   const page = {
     kind: "xlsx",
-    snapshot_format_version: 1,
+    snapshot_format_version: 2,
+    snapshot_schema_sha256: "a".repeat(64),
     has_more: false,
     next_cursor: "1",
     submissions: [{
       responseId: id,
       occurrenceId: id,
-      versionId: id,
-      metadata: { identity_mode: "anonymous", respondent: "" },
+      versionId: assetId,
+      metadata: { form_id: institutionId, identity_mode: "anonymous" },
       answers: [{
         itemId: id,
-        question: "Synthetic",
-        values: ["=synthetic"],
-        multiValued: false,
+        values: [{ kind: "text", value: "=synthetic" }],
       }],
     }],
   };
@@ -496,8 +718,11 @@ Deno.test("R2 XLSX writer uploads a valid private workbook and persists measured
   assertEquals(response.status, 200);
   assertEquals(uploaded.length, 1);
   const workbook = XLSX.read(uploaded[0], { type: "array" });
-  assertEquals(workbook.SheetNames, ["Respostas"]);
-  assertEquals(XLSX.utils.sheet_to_json(workbook.Sheets.Respostas).length, 1);
+  assertEquals(workbook.SheetNames, ["Respostas v1"]);
+  assertEquals(
+    XLSX.utils.sheet_to_json(workbook.Sheets["Respostas v1"]).length,
+    1,
+  );
   const completed = calls.find((call) =>
     call.name === "form_worker_complete_xlsx_r2_v1"
   );
@@ -549,7 +774,7 @@ Deno.test("R2 writer rejects every crossed begin field and expired preparation",
       { provider: "storage" },
       { bucket: "public" },
       { mime_type: "application/zip" },
-      { snapshot_format_version: 2 },
+      { snapshot_format_version: 1 },
       { snapshot_row_count: -1 },
       { expires_at: "2020-01-01T00:00:00Z" },
     ]
@@ -577,7 +802,7 @@ Deno.test("R2 writer rejects wrong snapshot format, cursor, count and malformed 
   for (
     const delta of [
       { kind: "csv" },
-      { snapshot_format_version: 2 },
+      { snapshot_format_version: 1 },
       { next_cursor: "2" },
       { has_more: true },
       { submissions: [] },
@@ -783,7 +1008,10 @@ Deno.test("R2 writer reads sealed numeric pages with exact total across every XL
   );
   assertEquals(response.status, 200);
   const workbook = XLSX.read(fixture.uploaded[0], { type: "array" });
-  assertEquals(XLSX.utils.sheet_to_json(workbook.Sheets.Respostas).length, 251);
+  assertEquals(
+    XLSX.utils.sheet_to_json(workbook.Sheets["Respostas v1"]).length,
+    251,
+  );
 });
 
 Deno.test("R2 writer refuses duplicate response IDs and runtime page authorization failure", async () => {
@@ -821,9 +1049,7 @@ Deno.test("R2 XLSX writer streams a real multipart workbook and records the whol
     responseId: `55555555-5555-4555-8555-${String(index).padStart(12, "0")}`,
     answers: [{
       itemId: id,
-      question: "Synthetic",
-      values: ["x".repeat(30000)],
-      multiValued: false,
+      values: [{ kind: "text", value: "x".repeat(30000) }],
     }],
   }));
   let snapshot: Record<string, unknown> | null = null;
@@ -914,7 +1140,10 @@ Deno.test("R2 XLSX writer streams a real multipart workbook and records the whol
   }
   assertEquals([...bytes.slice(0, 4)], [80, 75, 3, 4]);
   const workbook = XLSX.read(bytes, { type: "array" });
-  assertEquals(XLSX.utils.sheet_to_json(workbook.Sheets.Respostas).length, 180);
+  assertEquals(
+    XLSX.utils.sheet_to_json(workbook.Sheets["Respostas v1"]).length,
+    180,
+  );
   const completed = fixture.calls.find((call) =>
     call.name === "form_worker_complete_xlsx_r2_v1"
   );

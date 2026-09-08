@@ -17,9 +17,83 @@ export type ExportRow = Record<string, string>;
 
 /** A Gregorian calendar day, without a time or timezone. Generic Date is not accepted. */
 export type XlsxCivilDate = Readonly<{ kind: "date"; value: string }>;
-export type XlsxCellValue = string | number | boolean | XlsxCivilDate;
+export type XlsxMediaLink = Readonly<{ kind: "media"; target: string }>;
+export type XlsxCellValue =
+  | string
+  | number
+  | boolean
+  | XlsxCivilDate
+  | XlsxMediaLink;
 export type XlsxRow = Readonly<Record<string, XlsxCellValue>>;
 export type XlsxOptions = Readonly<{ columns: readonly string[] }>;
+export type XlsxColumn = Readonly<{ key: string; label: string }>;
+export type XlsxWorkbookSheet = Readonly<
+  {
+    name: string;
+    columns: readonly XlsxColumn[];
+    rows: () => AsyncIterable<XlsxRow>;
+  }
+>;
+
+export function xlsxMediaLink(origin: string, assetId: string): XlsxMediaLink {
+  let url: URL;
+  try {
+    url = new URL(origin);
+  } catch {
+    throw new Error("invalid_xlsx_media_origin");
+  }
+  if (
+    url.protocol !== "https:" || url.origin !== origin || url.username ||
+    url.password
+  ) throw new Error("invalid_xlsx_media_origin");
+  if (
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      assetId,
+    )
+  ) throw new Error("invalid_xlsx_media_asset");
+  return Object.freeze({
+    kind: "media",
+    target: `${origin}/forms/media/${assetId}`,
+  });
+}
+
+function mediaTarget(value: XlsxCellValue): string | undefined {
+  return typeof value === "object" && value.kind === "media"
+    ? value.target
+    : isMediaLink(value)
+    ? value
+    : undefined;
+}
+
+function workbookSheets<
+  T extends { name: string; columns: readonly XlsxColumn[] },
+>(sheets: readonly T[]): readonly T[] {
+  const names = new Set<string>();
+  if (!Array.isArray(sheets) || !sheets.length) {
+    throw new Error("invalid_xlsx_sheets");
+  }
+  return Object.freeze(sheets.map((sheet: T) => {
+    if (
+      typeof sheet.name !== "string" || !sheet.name || sheet.name.length > 31 ||
+      /[\\/?*\[\]:]/.test(sheet.name) || names.has(sheet.name.toLowerCase())
+    ) throw new Error("invalid_xlsx_sheets");
+    names.add(sheet.name.toLowerCase());
+    if (
+      !Array.isArray(sheet.columns) ||
+      sheet.columns.some((column) =>
+        !column || typeof column.key !== "string" ||
+        typeof column.label !== "string"
+      )
+    ) throw new Error("invalid_xlsx_columns");
+    explicitXlsxColumns({ columns: sheet.columns.map((column) => column.key) });
+    return Object.freeze({
+      ...sheet,
+      columns: Object.freeze(
+        sheet.columns.map((column) => Object.freeze({ ...column })),
+      ),
+    });
+  }));
+}
 
 export function xlsxCivilDate(value: string): XlsxCivilDate {
   if (
@@ -68,6 +142,19 @@ function xlsxCellValue(value: XlsxCellValue): XlsxCellValue {
   if (typeof value === "string") return neutralizeSpreadsheetFormula(value);
   if (typeof value === "boolean") return value;
   if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (
+    value !== null && typeof value === "object" && !(value instanceof Date) &&
+    !Array.isArray(value) && Object.keys(value).length === 2 &&
+    value.kind === "media" && typeof value.target === "string"
+  ) {
+    try {
+      const url = new URL(value.target);
+      const asset = url.pathname.slice("/forms/media/".length);
+      const checked = xlsxMediaLink(url.origin, asset);
+      if (checked.target === value.target) return checked;
+    } catch { /* return only the sanitized contract error below */ }
+    throw new Error("invalid_xlsx_media_link");
+  }
   if (
     value !== null && typeof value === "object" && !Array.isArray(value) &&
     !(value instanceof Date) &&
@@ -188,8 +275,10 @@ export function encodeXlsx(
     ...rows.map((row) =>
       headers.map((header) => {
         const value = xlsxCellValue(xlsxRowCell(row, header));
-        return typeof value === "object"
+        return typeof value === "object" && value.kind === "date"
           ? { t: "n", v: civilDateSerial(value), z: civilDateFormat }
+          : typeof value === "object"
+          ? "Ver mídia"
           : value;
       })
     ),
@@ -198,13 +287,16 @@ export function encodeXlsx(
   rows.forEach((row, rowIndex) => {
     headers.forEach((header, columnIndex) => {
       const value = xlsxRowCell(row, header);
-      if (!isMediaLink(value)) return;
+      const target = mediaTarget(value);
+      if (!target) return;
       const address = XLSX.utils.encode_cell({
         r: rowIndex + 1,
         c: columnIndex,
       });
-      worksheet[address].v = "Ver foto";
-      worksheet[address].l = { Target: value };
+      worksheet[address].v = typeof value === "object"
+        ? "Ver mídia"
+        : "Ver foto";
+      worksheet[address].l = { Target: target };
     });
   });
   const workbook = XLSX.utils.book_new();
@@ -214,6 +306,36 @@ export function encodeXlsx(
     bookType: "xlsx",
     compression: true,
   }) as Uint8Array;
+}
+
+export function encodeXlsxWorkbook(
+  sheets: readonly Readonly<
+    { name: string; columns: readonly XlsxColumn[]; rows: readonly XlsxRow[] }
+  >[],
+): Uint8Array {
+  const workbook = XLSX.utils.book_new();
+  for (const sheet of workbookSheets(sheets)) {
+    const keys = sheet.columns.map((column) => column.key);
+    const single = XLSX.read(encodeXlsx(sheet.rows, { columns: keys }), {
+      type: "array",
+      cellNF: true,
+    });
+    const worksheet = single.Sheets.Respostas;
+    sheet.columns.forEach((column, index) => {
+      worksheet[XLSX.utils.encode_cell({ r: 0, c: index })] = {
+        t: "s",
+        v: neutralizeSpreadsheetFormula(column.label),
+      };
+    });
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheet.name);
+  }
+  return new Uint8Array(
+    XLSX.write(workbook, {
+      type: "array",
+      bookType: "xlsx",
+      compression: true,
+    }),
+  );
 }
 
 type ByteSource = Uint8Array | AsyncIterable<Uint8Array>;
@@ -400,14 +522,11 @@ async function* storedZipEntries(
   yield end;
 }
 
-export async function* streamXlsx(
+async function xlsxArchiveEntries(
   rowsFactory: () => AsyncIterable<XlsxRow>,
-  outputChunkBytes = 256 * 1024,
   options?: XlsxOptions,
-): AsyncIterable<Uint8Array> {
-  if (!Number.isSafeInteger(outputChunkBytes) || outputChunkBytes < 1024) {
-    throw new Error("invalid_xlsx_output_chunk_size");
-  }
+  labels?: readonly string[],
+): Promise<RepeatableArchiveEntry[]> {
   const columns = explicitXlsxColumns(options);
   const headers: string[] = columns ? [...columns] : [];
   const knownHeaders = new Set<string>(headers);
@@ -420,7 +539,7 @@ export async function* streamXlsx(
   };
   for await (const row of checkedRows()) {
     hasCivilDates ||= Object.values(row).some((value) =>
-      typeof value === "object"
+      typeof value === "object" && value.kind === "date"
     );
     for (const header of Object.keys(row)) {
       if (!knownHeaders.has(header)) {
@@ -434,12 +553,13 @@ export async function* streamXlsx(
 
   const cell = (reference: string, value: XlsxCellValue) => {
     const safe = xlsxCellValue(value);
-    if (typeof safe === "object") {
+    if (typeof safe === "object" && safe.kind === "date") {
       if (!hasCivilDates) throw new Error("xlsx_snapshot_changed");
       return `<c r="${reference}" s="1" t="n"><v>${
         civilDateSerial(safe)
       }</v></c>`;
     }
+    if (typeof safe === "object") return cell(reference, "Ver mídia");
     if (typeof safe === "number") {
       return `<c r="${reference}" t="n"><v>${safe}</v></c>`;
     }
@@ -458,7 +578,9 @@ export async function* streamXlsx(
     );
     yield textEncoder.encode(
       `<row r="1">${
-        headers.map((header, column) => cell(`${excelColumn(column)}1`, header))
+        headers.map((header, column) =>
+          cell(`${excelColumn(column)}1`, labels?.[column] ?? header)
+        )
           .join("")
       }</row>`,
     );
@@ -482,7 +604,7 @@ export async function* streamXlsx(
     let relationshipId = 1;
     for await (const row of checkedRows()) {
       for (let column = 0; column < headers.length; column++) {
-        if (isMediaLink(xlsxRowCell(row, headers[column]))) {
+        if (mediaTarget(xlsxRowCell(row, headers[column]))) {
           yield textEncoder.encode(
             `<hyperlink ref="${
               excelColumn(column)
@@ -504,10 +626,11 @@ export async function* streamXlsx(
     for await (const row of checkedRows()) {
       for (const header of headers) {
         const value = xlsxRowCell(row, header);
-        if (isMediaLink(value)) {
+        const target = mediaTarget(value);
+        if (target) {
           yield textEncoder.encode(
             `<Relationship Id="rId${relationshipId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="${
-              xmlAttribute(value)
+              xmlAttribute(target)
             }" TargetMode="External"/>`,
           );
           relationshipId++;
@@ -565,6 +688,106 @@ export async function* streamXlsx(
       ),
     });
   }
+  return entries;
+}
+
+export async function* streamXlsx(
+  rowsFactory: () => AsyncIterable<XlsxRow>,
+  outputChunkBytes = 256 * 1024,
+  options?: XlsxOptions,
+): AsyncIterable<Uint8Array> {
+  if (!Number.isSafeInteger(outputChunkBytes) || outputChunkBytes < 1024) {
+    throw new Error("invalid_xlsx_output_chunk_size");
+  }
+  yield* storedZipEntries(
+    await xlsxArchiveEntries(rowsFactory, options),
+    outputChunkBytes,
+  );
+}
+
+export async function* streamXlsxWorkbook(
+  requested: readonly XlsxWorkbookSheet[],
+  outputChunkBytes = 256 * 1024,
+): AsyncIterable<Uint8Array> {
+  if (!Number.isSafeInteger(outputChunkBytes) || outputChunkBytes < 1024) {
+    throw new Error("invalid_xlsx_output_chunk_size");
+  }
+  const sheets = workbookSheets(requested);
+  const entries: RepeatableArchiveEntry[] = [];
+  let styles: RepeatableArchiveEntry | undefined;
+  for (let i = 0; i < sheets.length; i++) {
+    const sheet = sheets[i];
+    const parts = await xlsxArchiveEntries(sheet.rows, {
+      columns: sheet.columns.map((column) => column.key),
+    }, sheet.columns.map((column) => column.label));
+    for (const part of parts) {
+      if (part.name === "xl/styles.xml") styles = part;
+      if (part.name.startsWith("xl/worksheets/")) {
+        entries.push({
+          ...part,
+          name: part.name.replace("sheet1.xml", `sheet${i + 1}.xml`),
+        });
+      }
+    }
+  }
+  const repeat = (value: string) =>
+    async function* () {
+      yield textEncoder.encode(value);
+    };
+  const relationshipsNamespace =
+    "http://schemas.openxmlformats.org/package/2006/relationships";
+  entries.unshift(
+    {
+      name: "[Content_Types].xml",
+      source: repeat(
+        '<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+          sheets.map((_, i) =>
+            `<Override PartName="/xl/worksheets/sheet${
+              i + 1
+            }.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`
+          ).join("") +
+          (styles
+            ? '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'
+            : "") +
+          "</Types>",
+      ),
+    },
+    {
+      name: "_rels/.rels",
+      source: repeat(
+        `<Relationships xmlns="${relationshipsNamespace}"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`,
+      ),
+    },
+    {
+      name: "xl/workbook.xml",
+      source: repeat(
+        '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>' +
+          sheets.map((sheet, i) =>
+            `<sheet name="${xmlAttribute(sheet.name)}" sheetId="${
+              i + 1
+            }" r:id="rId${i + 1}"/>`
+          ).join("") + "</sheets></workbook>",
+      ),
+    },
+    {
+      name: "xl/_rels/workbook.xml.rels",
+      source: repeat(
+        `<Relationships xmlns="${relationshipsNamespace}">` +
+          sheets.map((_, i) =>
+            `<Relationship Id="rId${
+              i + 1
+            }" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${
+              i + 1
+            }.xml"/>`
+          ).join("") +
+          (styles
+            ? '<Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
+            : "") +
+          "</Relationships>",
+      ),
+    },
+  );
+  if (styles) entries.push(styles);
   yield* storedZipEntries(entries, outputChunkBytes);
 }
 
