@@ -192,7 +192,14 @@ final class _PersonDirectoryContentState extends State<_PersonDirectoryContent> 
             return ListView(
               key: const Key('people-directory-scroll'),
               padding: EdgeInsets.all(horizontalPadding),
-              children: [_PersonResults(viewModel: widget.viewModel, onCreate: null, onEdit: null)],
+              children: [
+                _PersonResults(
+                  viewModel: widget.viewModel,
+                  searchController: widget.searchController,
+                  onCreate: null,
+                  onEdit: null,
+                ),
+              ],
             );
           }
           return Stack(
@@ -218,6 +225,7 @@ final class _PersonDirectoryContentState extends State<_PersonDirectoryContent> 
                   const SizedBox(height: CoeloSpacing.space4),
                   _PersonResults(
                     viewModel: widget.viewModel,
+                    searchController: widget.searchController,
                     onCreate: widget.onCreate,
                     onEdit: widget.onEdit,
                   ),
@@ -435,10 +443,7 @@ final class _PersonToolbar extends StatelessWidget {
         ),
         if (viewModel.query.hasActiveFilters)
           TextButton.icon(
-            onPressed: () {
-              searchController.clear();
-              viewModel.clearFilters();
-            },
+            onPressed: () => clearPeopleFilters(searchController, viewModel),
             icon: const Icon(Icons.filter_alt_off_outlined),
             label: const Text('Limpar filtros'),
           ),
@@ -493,9 +498,27 @@ final class _PersonToolbar extends StatelessWidget {
   );
 }
 
+/// One definition of what "Limpar filtros" means, because the screen offers it
+/// twice and the two used to differ: the toolbar cleared the search field and
+/// the no-results panel did not, so the same label produced two results and one
+/// of them left a term visible in a box that no longer filtered anything.
+void clearPeopleFilters(
+  TextEditingController searchController,
+  PersonDirectoryViewModel viewModel,
+) {
+  searchController.clear();
+  viewModel.clearFilters();
+}
+
 final class _PersonResults extends StatelessWidget {
-  const _PersonResults({required this.viewModel, required this.onCreate, required this.onEdit});
+  const _PersonResults({
+    required this.viewModel,
+    required this.searchController,
+    required this.onCreate,
+    required this.onEdit,
+  });
   final PersonDirectoryViewModel viewModel;
+  final TextEditingController searchController;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onEdit;
 
@@ -522,7 +545,7 @@ final class _PersonResults extends StatelessWidget {
           message: 'Revise a busca ou os filtros aplicados.',
           icon: Icons.search_off_rounded,
           actionLabel: 'Limpar filtros',
-          onAction: viewModel.clearFilters,
+          onAction: () => clearPeopleFilters(searchController, viewModel),
         );
       case PersonDirectoryLoadState.failure:
         state = CoeloStatePanel(

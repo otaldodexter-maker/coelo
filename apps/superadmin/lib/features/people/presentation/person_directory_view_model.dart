@@ -257,6 +257,14 @@ final class PersonDirectoryViewModel extends ChangeNotifier {
           : PersonDirectoryLoadState.empty;
     } on PersonDirectoryUnauthorizedException {
       if (version == _requestVersion) {
+        // Revocation is the one case where the query itself is cleared, and it
+        // is deliberate: the filters name institutions, units and groups the
+        // actor may no longer be allowed to see, so leaving them on screen
+        // would keep describing a scope that was just taken away. Pinned by
+        // 'revocation clears loaded people, filters and sensitive query state'.
+        //
+        // An ordinary failure is not that, and used to do the same thing. See
+        // the catch below.
         _query = PersonDirectoryQuery(pageSize: value.pageSize);
         _page = PersonDirectoryPage(
           items: const [],
@@ -271,7 +279,13 @@ final class PersonDirectoryViewModel extends ChangeNotifier {
       // load that throws and leaves the spinner on screen is a silent hang.
     } on Object {
       if (version == _requestVersion) {
-        _query = PersonDirectoryQuery(pageSize: value.pageSize);
+        // The query survives an ordinary failure. Resetting it here meant the
+        // retry asked a different question from the one the operator asked,
+        // while the search field still showed their term: the whole directory
+        // came back under an apparently active search. Nothing about a timeout
+        // makes the filters sensitive, so nothing about it justifies discarding
+        // them. The three sibling directories only assign their query in
+        // setters, never in a catch.
         _page = PersonDirectoryPage(
           items: const [],
           totalCount: 0,
