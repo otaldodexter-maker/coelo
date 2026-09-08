@@ -3,9 +3,44 @@ title: "E2E 1 — passos por tela e camada"
 source: "recorte do Coordenador E2E; trabalho local da branch codex/e2e-identidade-acessos"
 status: "in-progress"
 generated_at: "2026-09-07"
+updated_at: "2026-09-08"
 ---
 
 # Plano visível
+
+## Checkpoint vigente — 2026-09-08
+
+O histórico abaixo não substitui este corte; contagens de execuções diferentes
+não são somadas. Nenhuma ação desta retomada foi promovida a verified-e2e.
+
+| Recorte original | Evidência local entregue | Primeiro gate aberto |
+|---|---|---|
+| Auth/login/recovery/sessão | R06/R07 e c0a199fd; regressões SDK/HTTP e integração central | Sessão real, revogação persistida, reload e negativos no pacote nominal |
+| Conta self-read/self-edit | ce893afe: crosswalk proposto, review sem bloqueantes como desenho | Owner definir capacidade self, contatos/projeção e cadastro ausente; sem SQL/wiring; edição exige allowlist própria |
+| Configurações | Persistência local real no browser e correções de load/save/ABA, integração central | Validação final sob sessão real e regressão de destino |
+| Usuários internos READ | Users49: 48/48 pgTAP, prova Eng1 36964bbb; evidência reconciliada 586d6861 | Publicação nominal, fluxo real, visual e E2E; edição/convites não habilitados por READ |
+| Modelos READ SQL | Models50: 38/38 TAP incluindo ACL10, prova Eng1 5ef2fc4e; 1d314a42 | Produção e cadeia real; contagem inclui testes repetidos 11 dentro de 17 |
+| Perfis READ SQL | b11c3c3e: fixture plan8 aprovada central, sem alteração de helper/grants | Replay Auth45+2 exclusivo Eng1; possível ACL-before-contract, não presumir cinco falhas funcionais |
+| Diretórios Perfis/Modelos | 24529b5b: revisão de autorização; 149/149 regressão histórica | Backend real/visual/reload |
+| Detalhe e rotas | 6e06a9ed continuidade de recurso/delete; 8bd6bc8b quatro builders; 169/169 naquela rodada | Troca de path/save pendente e validação produtiva ainda não reivindicadas |
+| Criação, contexto | 77e9594: dois builders e descarte do draft; 21/21 focal | Template em voo na rota e comando real não comprovados |
+| Adapter Models READ | 865d0090 detalhe; bdd6fe6c paginação; ca543993 template; 87/87 data/rotas na última rodada | Cache auxiliar de writes e contrato catálogo domain-only separados; nenhuma ampliação de grant |
+| Mídia consumidora/Auth M03 | ce2d9bee: parecer de proveniência, sem helper implementado | Contrato server-side de origem operacional; AAL sozinho não resolve OTP/recovery ambíguo; mídia pertence E2E3 |
+| P0 RLS/realm | Fatia três tabelas reservada ao Eng1 | Pacote nominal/replay/produção; não habilitar lote de tabelas por inferência |
+
+Visual permanece aberto: Usuários teve quatro unidades golden falhando na
+execução ampliada; Perfis teve três (diretório/tabela, hover, formulário).
+Masters intocados; divergência não é autorização para rebaseline nem para
+restaurar affordances bloqueadas. Detalhes nas evidências de cada recorte.
+
+Próxima ordem: resultado Profiles ACL nominal → corretiva exclusivamente após
+reserva e negativos; diagnósticos independentes de formulário/contratos →
+review/commits → integração central → pacote de produção/execução real.
+Sem ETA de entrega remota enquanto contrato/lease e replay condicionam o gate.
+Trabalho local independente continua; uma decisão aberta não encerra toda a
+vertical. Não houve SQL/Docker/produção executados por esta frente.
+
+## Histórico dos recortes
 
 Somente Superadmin. Remoto é produção e permanece read-only sem lease.
 Um único writer: agente principal. Subagentes fazem inspeção e review sem
