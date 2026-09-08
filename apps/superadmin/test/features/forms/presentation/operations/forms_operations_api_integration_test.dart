@@ -201,6 +201,8 @@ void main() {
     (tester) async {
       final backend = _RpcBackend(
         (_, _) => _ok({
+          'form_id': _formA,
+          'management_version': 7,
           'items': [
             {
               'id': 'job-ready',
@@ -246,7 +248,7 @@ void main() {
         tester
             .widget<FilledButton>(find.widgetWithText(FilledButton, 'Exportar respostas em XLSX'))
             .onPressed,
-        isNull,
+        isNotNull,
       );
     },
   );
