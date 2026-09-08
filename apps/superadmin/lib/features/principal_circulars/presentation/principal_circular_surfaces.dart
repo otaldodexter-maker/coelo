@@ -153,6 +153,9 @@ final class _PrincipalProfileCircularsTabState extends State<PrincipalProfileCir
   Object? _error;
   var _loading = true;
   var _loadingMore = false;
+  var _generation = 0;
+  var _previewGeneration = 0;
+  DialogRoute<void>? _previewRoute;
 
   @override
   void initState() {
@@ -160,21 +163,94 @@ final class _PrincipalProfileCircularsTabState extends State<PrincipalProfileCir
     _load(reset: true);
   }
 
+  @override
+  void didUpdateWidget(covariant PrincipalProfileCircularsTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final before = oldWidget.scope;
+    final after = widget.scope;
+    if (!identical(oldWidget.repository, widget.repository) ||
+        before.institutionId != after.institutionId ||
+        before.unitId != after.unitId ||
+        before.groupId != after.groupId ||
+        before.activityId != after.activityId) {
+      _load(reset: true);
+    } else if (oldWidget.onOpen != widget.onOpen) {
+      _dismissPreview();
+    }
+  }
+
+  void _dismissPreview() {
+    _previewGeneration++;
+    final route = _previewRoute;
+    _previewRoute = null;
+    if (route == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (route.isActive) route.navigator?.removeRoute(route);
+    });
+  }
+
+  @override
+  void dispose() {
+    _generation++;
+    _dismissPreview();
+    super.dispose();
+  }
+
+  Future<void> _openPreview(CircularSummary item, int generation) async {
+    if (!mounted ||
+        generation != _generation ||
+        _loading ||
+        _error != null ||
+        _previewRoute != null ||
+        !_items.contains(item)) {
+      return;
+    }
+    final previewGeneration = _previewGeneration;
+    final onOpen = widget.onOpen;
+    bool current() =>
+        mounted && generation == _generation && previewGeneration == _previewGeneration;
+    DialogRoute<void>? openedRoute;
+    await _openCircularPreview(
+      context,
+      item: item,
+      onRead: () {
+        if (current()) onOpen(item.id);
+      },
+      isContextCurrent: current,
+      onRouteCreated: (route) {
+        openedRoute = route;
+        _previewRoute = route;
+      },
+    );
+    if (identical(_previewRoute, openedRoute)) _previewRoute = null;
+  }
+
   Future<void> _load({required bool reset}) async {
+    if (!mounted || (!reset && (_loading || _loadingMore || _cursor == null || _error != null))) {
+      return;
+    }
+    if (reset) {
+      _generation++;
+      _dismissPreview();
+    }
+    final generation = _generation;
+    final repository = widget.repository;
+    final scope = widget.scope;
+    final cursor = reset ? null : _cursor;
     setState(() {
       if (reset) {
+        _items.clear();
+        _cursor = null;
         _loading = true;
+        _loadingMore = false;
         _error = null;
       } else {
         _loadingMore = true;
       }
     });
     try {
-      final page = await widget.repository.listProfile(
-        widget.scope,
-        cursor: reset ? null : _cursor,
-      );
-      if (!mounted) return;
+      final page = await repository.listProfile(scope, cursor: cursor);
+      if (!mounted || generation != _generation) return;
       setState(() {
         if (reset) _items.clear();
         _items.addAll(page.items);
@@ -183,8 +259,13 @@ final class _PrincipalProfileCircularsTabState extends State<PrincipalProfileCir
         _loadingMore = false;
       });
     } on Object catch (error) {
-      if (!mounted) return;
+      if (!mounted || generation != _generation) return;
+      if (error is CircularUnauthorized) _dismissPreview();
       setState(() {
+        if (error is CircularUnauthorized) {
+          _items.clear();
+          _cursor = null;
+        }
         _error = error;
         _loading = false;
         _loadingMore = false;
@@ -197,6 +278,7 @@ final class _PrincipalProfileCircularsTabState extends State<PrincipalProfileCir
     if (_loading) {
       return const Center(key: Key('circulars-loading'), child: CircularProgressIndicator());
     }
+    final generation = _generation;
     if (_error case final error?) {
       return _CircularState(
         icon: error is CircularUnauthorized ? Icons.lock_outline_rounded : Icons.cloud_off_outlined,
@@ -204,7 +286,11 @@ final class _PrincipalProfileCircularsTabState extends State<PrincipalProfileCir
             ? 'Você não tem acesso a estas Circulares.'
             : 'Não foi possível carregar as Circulares.',
         actionLabel: error is CircularUnauthorized ? null : 'Tentar novamente',
-        onAction: error is CircularUnauthorized ? null : () => _load(reset: true),
+        onAction: error is CircularUnauthorized
+            ? null
+            : () {
+                if (mounted && generation == _generation) _load(reset: true);
+              },
       );
     }
     if (_items.isEmpty) {
@@ -223,7 +309,11 @@ final class _PrincipalProfileCircularsTabState extends State<PrincipalProfileCir
         if (index == _items.length) {
           return Center(
             child: OutlinedButton(
-              onPressed: _loadingMore ? null : () => _load(reset: false),
+              onPressed: _loadingMore
+                  ? null
+                  : () {
+                      if (mounted && generation == _generation) _load(reset: false);
+                    },
               child: Text(_loadingMore ? 'Carregando…' : 'Carregar mais'),
             ),
           );
@@ -232,8 +322,7 @@ final class _PrincipalProfileCircularsTabState extends State<PrincipalProfileCir
         return _PrincipalCircularCard(
           key: Key('profile-circular-${item.id}'),
           item: item,
-          onOpen: () =>
-              _openCircularPreview(context, item: item, onRead: () => widget.onOpen(item.id)),
+          onOpen: () => _openPreview(item, generation),
         );
       },
     );
@@ -494,80 +583,92 @@ Future<void> _openCircularPreview(
   BuildContext context, {
   required CircularSummary item,
   required VoidCallback onRead,
+  bool Function()? isContextCurrent,
+  ValueChanged<DialogRoute<void>>? onRouteCreated,
 }) async {
+  if (!context.mounted || isContextCurrent?.call() == false) return;
   if (MediaQuery.sizeOf(context).width < CoeloBreakpoints.large.minWidth) {
     onRead();
     return;
   }
-  await showDialog<void>(
+  final navigator = Navigator.of(context, rootNavigator: true);
+  late final DialogRoute<void> route;
+  void close({bool read = false}) {
+    if (!context.mounted || isContextCurrent?.call() == false || !route.isCurrent) return;
+    navigator.pop();
+    if (read) onRead();
+  }
+
+  route = DialogRoute<void>(
     context: context,
+    themes: InheritedTheme.capture(from: context, to: navigator.context),
+    animationStyle: MediaQuery.disableAnimationsOf(context) ? AnimationStyle.noAnimation : null,
+    traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
     barrierColor: Colors.black54,
-    builder: (dialogContext) => Dialog(
-      key: const Key('principal-circular-preview-dialog'),
-      backgroundColor: Theme.of(dialogContext).colorScheme.surface,
-      surfaceTintColor: Colors.transparent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.lg)),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 640, maxHeight: 720),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                CoeloSpacing.space4,
-                CoeloSpacing.space3,
-                CoeloSpacing.space2,
-                CoeloSpacing.space2,
-              ),
-              child: Row(
+    builder: (dialogContext) => isContextCurrent?.call() == false
+        ? const SizedBox.shrink()
+        : Dialog(
+            key: const Key('principal-circular-preview-dialog'),
+            backgroundColor: Theme.of(dialogContext).colorScheme.surface,
+            surfaceTintColor: Colors.transparent,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.lg)),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 640, maxHeight: 720),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: Text(
-                      'Prévia da Circular',
-                      style: Theme.of(dialogContext).textTheme.titleLarge,
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      CoeloSpacing.space4,
+                      CoeloSpacing.space3,
+                      CoeloSpacing.space2,
+                      CoeloSpacing.space2,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Prévia da Circular',
+                            style: Theme.of(dialogContext).textTheme.titleLarge,
+                          ),
+                        ),
+                        IconButton(
+                          key: const Key('principal-circular-preview-close'),
+                          tooltip: 'Fechar prévia',
+                          color: Theme.of(dialogContext).colorScheme.error,
+                          onPressed: close,
+                          icon: const Icon(Icons.close_rounded),
+                        ),
+                      ],
                     ),
                   ),
-                  IconButton(
-                    key: const Key('principal-circular-preview-close'),
-                    tooltip: 'Fechar prévia',
-                    color: Theme.of(dialogContext).colorScheme.error,
-                    onPressed: () => Navigator.of(dialogContext).pop(),
-                    icon: const Icon(Icons.close_rounded),
+                  Divider(height: 1, color: Theme.of(dialogContext).colorScheme.outlineVariant),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      key: const Key('principal-circular-preview-scroll'),
+                      padding: const EdgeInsets.all(CoeloSpacing.space4),
+                      child: PrincipalCircularFeedCard(
+                        item: item,
+                        contextualPreview: false,
+                        onOpen: () => close(read: true),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(CoeloSpacing.space4),
+                    child: FilledButton(
+                      key: const Key('principal-circular-preview-read'),
+                      onPressed: () => close(read: true),
+                      child: const Text('Ler circular'),
+                    ),
                   ),
                 ],
               ),
             ),
-            Divider(height: 1, color: Theme.of(dialogContext).colorScheme.outlineVariant),
-            Expanded(
-              child: SingleChildScrollView(
-                key: const Key('principal-circular-preview-scroll'),
-                padding: const EdgeInsets.all(CoeloSpacing.space4),
-                child: PrincipalCircularFeedCard(
-                  item: item,
-                  contextualPreview: false,
-                  onOpen: () {
-                    Navigator.of(dialogContext).pop();
-                    onRead();
-                  },
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(CoeloSpacing.space4),
-              child: FilledButton(
-                key: const Key('principal-circular-preview-read'),
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                  onRead();
-                },
-                child: const Text('Ler circular'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
+          ),
   );
+  onRouteCreated?.call(route);
+  await navigator.push(route);
 }
 
 final class _Metadata extends StatelessWidget {
