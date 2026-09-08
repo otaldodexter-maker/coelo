@@ -59,6 +59,9 @@ $bootstrapSql = Read-NominalCandidateFile 'tests/fixtures/location_catalog_v2_ca
 if ($bootstrapSql -notmatch 'module_label' -or $bootstrapSql -notmatch 'screen_label' -or $bootstrapSql -notmatch 'action_label') {
   throw 'RED LOC-TAP01: bootstrap must explicitly supply required permission labels.'
 }
+if ($candidateSql -notmatch "is distinct from \(case when expected\.client_execute then array\['authenticated:EXECUTE:false'\] else '\{\}'::text\[\] end\) then") {
+  throw 'RED LOC-PARSE02: legacy helper ACL CASE must be parenthesized exactly; no ACL semantic change.'
+}
 if ($candidateSql -match "length\(text_value\)>case") {
   throw 'RED LOC-LOCK01: CASE expression in PLpgSQL condition must be parenthesized.'
 }
