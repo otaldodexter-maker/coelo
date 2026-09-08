@@ -9,6 +9,33 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  for (final ttl in [0, -1, 0.5]) {
+    test('rejects a media ticket with unusable TTL $ttl', () async {
+      final client = _client(
+        (request) async => http.Response(
+          jsonEncode({
+            'signed_url': 'https://signed.example/expired',
+            'mime_type': 'image/jpeg',
+            'expires_in': ttl,
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      );
+      addTearDown(client.dispose);
+      await expectLater(
+        SupabasePrincipalHappensFeedRepository(client).resolveMedia(
+          const PrincipalHappensMediaDescriptor(
+            readTicket: 'expired',
+            mimeType: 'image/jpeg',
+            displayOrder: 0,
+          ),
+        ),
+        throwsA(isA<PrincipalHappensFeedUnavailable>()),
+      );
+    });
+  }
   test('maps only the minimal feed projection and preserves media order', () async {
     late Map<String, dynamic> requestBody;
     final client = _client((request) async {

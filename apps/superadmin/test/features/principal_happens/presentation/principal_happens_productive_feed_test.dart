@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:coelo_superadmin/features/principal_happens/domain/principal_happens_feed_repository.dart';
 import 'package:coelo_superadmin/features/principal_happens/domain/principal_happens_preview_data.dart';
@@ -19,6 +21,55 @@ void main() {
         home: PrincipalHappensPreviewPage(feedRepository: repository, feedScope: scope),
       ),
     );
+  }
+
+  for (final change in ['expiry', 'context', 'dispose']) {
+    testWidgets('resolved image and decoded cache are removed on $change', (tester) async {
+      const provider = NetworkImage('https://coelo.invalid/synthetic-cache-ticket');
+      final decoded = await tester.runAsync(() async {
+        final result = Completer<ui.Image>();
+        ui.decodeImageFromPixels(
+          Uint8List.fromList(List.filled(64, 255)),
+          4,
+          4,
+          ui.PixelFormat.rgba8888,
+          result.complete,
+        );
+        return result.future;
+      });
+      PaintingBinding.instance.imageCache.putIfAbsent(
+        provider,
+        () => OneFrameImageStreamCompleter(Future.value(ImageInfo(image: decoded!))),
+      );
+      final repository = _FeedRepository(
+        () async => [_galleryPost],
+        resolve: (_) async => const PrincipalHappensMediaRead(
+          signedUrl: 'https://coelo.invalid/synthetic-cache-ticket',
+          mimeType: 'image/png',
+          expiresIn: Duration(seconds: 60),
+        ),
+      );
+      await pumpFeed(tester, repository);
+      await tester.pumpAndSettle();
+      final image = find.byWidgetPredicate((widget) => widget is Image && widget.image == provider);
+      expect(image, findsOneWidget);
+      expect(PaintingBinding.instance.imageCache.statusForKey(provider).keepAlive, isTrue);
+      if (change == 'expiry') {
+        await tester.pump(const Duration(seconds: 61));
+      } else if (change == 'context') {
+        await pumpFeed(tester, _FeedRepository(() async => []));
+      } else {
+        await tester.pumpWidget(const SizedBox.shrink());
+      }
+      await tester.pumpAndSettle();
+      expect(image, findsNothing);
+      final cached = PaintingBinding.instance.imageCache.statusForKey(provider);
+      expect(cached.pending, isFalse);
+      expect(cached.keepAlive, isFalse);
+      expect(cached.live, isFalse);
+      expect(repository.resolvedTickets, hasLength(1));
+      expect(tester.takeException(), isNull);
+    });
   }
 
   testWidgets('disposing feed removes only its gallery below another route', (tester) async {

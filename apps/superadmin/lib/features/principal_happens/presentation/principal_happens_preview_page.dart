@@ -1369,11 +1369,68 @@ final class _AuthorizedMedia extends StatefulWidget {
   State<_AuthorizedMedia> createState() => _AuthorizedMediaState();
 }
 
-final class _AuthorizedMediaState extends State<_AuthorizedMedia> {
-  late Future<PrincipalHappensMediaRead> _read = _resolve();
+final class _AuthorizedMediaState extends State<_AuthorizedMedia> with WidgetsBindingObserver {
+  late Future<PrincipalHappensMediaRead?> _read = _resolve();
   var _resolveGeneration = 0;
+  NetworkImage? _image;
+  Timer? _expiry;
+  DateTime? _expiresAt;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  Future<void> _clearImage() async {
+    _expiry?.cancel();
+    _expiry = null;
+    _expiresAt = null;
+    final previous = _image;
+    _image = null;
+    if (previous != null) await previous.evict();
+  }
+
+  PrincipalHappensMediaRead _accept(PrincipalHappensMediaRead read, int generation) {
+    if (!mounted || generation != _resolveGeneration || read.expiresIn <= Duration.zero) {
+      throw const PrincipalHappensFeedUnavailable();
+    }
+    if (!read.mimeType.startsWith('video/')) _image = NetworkImage(read.signedUrl);
+    _expiresAt = DateTime.now().toUtc().add(read.expiresIn);
+    _expiry = Timer(read.expiresIn, _expire);
+    return read;
+  }
+
+  void _expire() {
+    if (!mounted) return;
+    _resolveGeneration++;
+    unawaited(_clearImage());
+    setState(() {
+      _read = Future.value(null);
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final expiresAt = _expiresAt;
+    if (state == AppLifecycleState.resumed &&
+        expiresAt != null &&
+        !expiresAt.isAfter(DateTime.now().toUtc())) {
+      _expire();
+    }
+  }
+
+  @override
+  void dispose() {
+    _resolveGeneration++;
+    WidgetsBinding.instance.removeObserver(this);
+    unawaited(_clearImage());
+    super.dispose();
+  }
 
   Future<PrincipalHappensMediaRead> _resolve() {
+    final generation = ++_resolveGeneration;
+    unawaited(_clearImage());
     final repository = widget.repository;
     if (repository == null) {
       return Future.error(const PrincipalHappensFeedUnavailable());
@@ -1381,7 +1438,6 @@ final class _AuthorizedMediaState extends State<_AuthorizedMedia> {
     final current = widget.isContextCurrent;
     if (current != null) {
       final media = widget.media;
-      final generation = ++_resolveGeneration;
       final result = Completer<PrincipalHappensMediaRead>();
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         try {
@@ -1392,14 +1448,14 @@ final class _AuthorizedMediaState extends State<_AuthorizedMedia> {
           if (!mounted || generation != _resolveGeneration || !current()) {
             throw const PrincipalHappensFeedUnavailable();
           }
-          result.complete(read);
+          result.complete(_accept(read, generation));
         } on Object catch (error, stack) {
           result.completeError(error, stack);
         }
       });
       return result.future;
     }
-    return repository.resolveMedia(widget.media);
+    return repository.resolveMedia(widget.media).then((read) => _accept(read, generation));
   }
 
   @override
@@ -1412,7 +1468,7 @@ final class _AuthorizedMediaState extends State<_AuthorizedMedia> {
   }
 
   @override
-  Widget build(BuildContext context) => FutureBuilder<PrincipalHappensMediaRead>(
+  Widget build(BuildContext context) => FutureBuilder<PrincipalHappensMediaRead?>(
     future: _read,
     builder: (context, snapshot) {
       if (snapshot.connectionState != ConnectionState.done) {
@@ -1474,8 +1530,8 @@ final class _AuthorizedMediaState extends State<_AuthorizedMedia> {
           ),
         );
       }
-      return Image.network(
-        read.signedUrl,
+      return Image(
+        image: _image!,
         key: ValueKey(widget.media.readTicket),
         fit: widget.fit,
         semanticLabel: 'Registro da comunidade escolar',
