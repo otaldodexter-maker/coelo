@@ -9,6 +9,7 @@ import '../domain/location_catalog_writer.dart';
 import 'location_copy_dialog.dart';
 import 'location_detail_controller.dart';
 import 'location_read_widgets.dart';
+import 'location_schedule_section.dart';
 import 'location_status_actions.dart';
 
 /// Isolated content; normal routing and authorization composition are not wired.
@@ -133,6 +134,14 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
                         'Visibilidade': locationVisibilityLabel(item.visibility),
                         'Status': locationStatusLabel(item.status),
                       }),
+                      if (widget.writer case final writer?)
+                        LocationScheduleSection(
+                          entry: item,
+                          writer: writer,
+                          enabled: widget.sessionAvailable,
+                          requestIdFactory: widget.requestIdFactory,
+                          onPublished: () => unawaited(_controller.load()),
+                        ),
                       if (widget.writer case final writer?)
                         LocationStatusActions(
                           entry: item,
