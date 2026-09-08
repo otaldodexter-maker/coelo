@@ -257,7 +257,7 @@ void main() {
     expect(api.calls, 0);
   });
 
-  testWidgets('production directory reaches schedule dialog without faking integration', (
+  testWidgets('production directory cannot distribute through the legacy API alone', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
@@ -278,23 +278,9 @@ void main() {
     router.go('/forms');
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip('Ações do formulário Pesquisa das famílias'));
-    await tester.pumpAndSettle();
-    expect(find.text('Agendamentos'), findsWidgets);
-    expect(find.text('Duplicar'), findsNothing);
-
-    await tester.tap(find.text('Agendamentos').last);
-    await tester.pumpAndSettle();
-
-    expect(find.byType(CoeloAdminDialogShell), findsOneWidget);
-    expect(
-      find.text('A fonte autorizada para distribuir formulários não está disponível.'),
-      findsOneWidget,
-    );
-    expect(
-      tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Salvar')).onPressed,
-      isNull,
-    );
+    expect(find.byType(CoeloAdminDialogShell), findsNothing);
+    expect(find.byKey(const Key('forms-directory-card-form-1')), findsNothing);
+    expect(router.routeInformationProvider.value.uri.path, '/forms');
   });
 }
 
@@ -350,6 +336,13 @@ final class _TripwireFormsApi implements FormsApi {
         id: responseId,
         occurrenceId: 'occurrence-1',
         formVersionId: 'version-1',
+      ),
+      originalVersion: FormVersion(
+        id: 'version-1',
+        formId: 'form-1',
+        number: 1,
+        isPublished: true,
+        sections: const [],
       ),
       answers: const {},
     );

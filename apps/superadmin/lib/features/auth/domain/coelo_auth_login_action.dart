@@ -8,6 +8,8 @@ LoginAction createCoeloAuthLoginAction({
   required CoeloAuthLifecycleGateway auth,
   required SuperadminAuthContextGateway authContext,
   required SuperadminSession session,
+  Future<bool> Function()? prepareAuthorization,
+  void Function()? onAuthorizationCommitted,
 }) {
   // The action outlives a login screen, including browser-history remounts.
   var inProgress = false;
@@ -27,8 +29,23 @@ LoginAction createCoeloAuthLoginAction({
         final authenticatedState = auth.currentSessionState;
         final expectedRevision = session.authorizationInvalidationRevision;
         final context = await authContext.bootstrap();
+        var mediaPrepared = prepareAuthorization == null;
+        final beforePurge = auth.currentSessionState;
+        if (context != null &&
+            session.authorizationInvalidationRevision == expectedRevision &&
+            authenticatedState.kind == CoeloAuthSessionKind.authenticated &&
+            authenticatedState.sessionId != null &&
+            beforePurge.kind == CoeloAuthSessionKind.authenticated &&
+            beforePurge.sessionId == authenticatedState.sessionId) {
+          try {
+            mediaPrepared = await prepareAuthorization?.call() ?? true;
+          } catch (_) {
+            mediaPrepared = false;
+          }
+        }
         final latestState = auth.currentSessionState;
         final authorized =
+            mediaPrepared &&
             context != null &&
             authenticatedState.kind == CoeloAuthSessionKind.authenticated &&
             authenticatedState.sessionId != null &&
@@ -53,6 +70,15 @@ LoginAction createCoeloAuthLoginAction({
           if (winningAuthorization || recoveryArrivedDuringBootstrap) {
             return const LoginResult.failure(CoeloAuthSignInResult.genericFailureMessage);
           }
+          if (latestState.sessionId != null &&
+              latestState.sessionId != authenticatedState.sessionId) {
+            // A replacement credential may still be awaiting its own bootstrap.
+            // Retire only this stale local context; never revoke the new token.
+            if (session.authorizationInvalidationRevision == expectedRevision) {
+              session.signOut();
+            }
+            return const LoginResult.failure(CoeloAuthSignInResult.genericFailureMessage);
+          }
           final cleanupRevision = session.authorizationInvalidationRevision;
           try {
             await auth.signOut();
@@ -65,6 +91,7 @@ LoginAction createCoeloAuthLoginAction({
           }
           return const LoginResult.failure(CoeloAuthSignInResult.genericFailureMessage);
         }
+        onAuthorizationCommitted?.call();
         return const LoginResult.success();
       }
 

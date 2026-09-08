@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:coelo_api/coelo_api.dart';
 
 import '../core/config/superadmin_app_config.dart';
+import '../core/config/superadmin_media_scope.dart';
 import '../core/guards/superadmin_session.dart';
 import '../features/activities/domain/activity_command.dart';
 import '../features/activities/domain/activity_directory.dart';
@@ -120,6 +121,8 @@ class SuperadminApp extends StatefulWidget {
     this.agendaRepository,
     this.formsApi,
     this.formsDirectoryReader,
+    this.formsMediaReader,
+    this.formsMediaScope,
     this.mealPlanRepository = const UnavailableMealPlanRepository(),
     this.mealPlanImageRepository = const UnavailableMealPlanImageRepository(),
     this.authorizedMealPlanTenantId,
@@ -172,6 +175,8 @@ class SuperadminApp extends StatefulWidget {
   final AgendaRepository? agendaRepository;
   final FormsApi? formsApi;
   final FormsDirectoryReader? formsDirectoryReader;
+  final MediaReader? formsMediaReader;
+  final SuperadminMediaScope? formsMediaScope;
   final MealPlanRepository mealPlanRepository;
   final MealPlanImageRepository mealPlanImageRepository;
   final String? authorizedMealPlanTenantId;
@@ -248,6 +253,8 @@ class _SuperadminAppState extends State<SuperadminApp> {
       agendaRepository: widget.agendaRepository,
       formsApi: widget.formsApi,
       formsDirectoryReader: widget.formsDirectoryReader,
+      formsMediaReader: widget.formsMediaReader,
+      formsMediaScope: widget.formsMediaScope,
       mealPlanRepository: widget.mealPlanRepository,
       mealPlanImageRepository: widget.mealPlanImageRepository,
       authorizedMealPlanTenantId: widget.authorizedMealPlanTenantId,

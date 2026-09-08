@@ -10,6 +10,7 @@ import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import '../../core/guards/superadmin_session.dart';
+import '../../core/config/superadmin_media_scope.dart';
 import '../../core/config/superadmin_app_config.dart';
 import '../../core/config/superadmin_auth_scope.dart' show UnavailableMealPlanImageRepository;
 import '../../core/platform/open_download.dart';
@@ -270,6 +271,8 @@ GoRouter createSuperadminRouter({
   String? authorizedMealPlanTenantId,
   FormsApi? formsApi,
   FormsDirectoryReader? formsDirectoryReader,
+  MediaReader? formsMediaReader,
+  SuperadminMediaScope? formsMediaScope,
   PrincipalRuntimeContextRepository principalRuntimeContextRepository =
       const UnavailablePrincipalRuntimeContextRepository(),
   PrincipalHappensFeedRepository? principalHappensFeedRepository,
@@ -610,9 +613,17 @@ GoRouter createSuperadminRouter({
         .toList(growable: false);
   }
 
+  final formsAuthorization = formsMediaScope == null
+      ? session
+      : Listenable.merge([session, formsMediaScope]);
+  Widget withFormsAuthorization(Widget Function() build) => ListenableBuilder(
+    listenable: formsAuthorization,
+    builder: (context, child) => session.isAuthenticated ? build() : const SizedBox.shrink(),
+  );
+
   return GoRouter(
     initialLocation: SuperadminRoutes.login,
-    refreshListenable: session,
+    refreshListenable: formsAuthorization,
     errorBuilder: (context, state) => SuperadminErrorScreen(
       kind: SuperadminErrorKind.notFound,
       onAction: () => context.goNamed(SuperadminRoutes.homeName),
@@ -1776,8 +1787,13 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.formMonitor,
             name: SuperadminRoutes.formMonitorName,
-            builder: (context, state) =>
-                FormsOperationsPage.monitor(api: formsApi, formId: state.pathParameters['formId']),
+            builder: (context, state) => withFormsAuthorization(
+              () => FormsOperationsPage.monitor(
+                key: ValueKey('monitor-${state.uri}-${session.authorizationInvalidationRevision}'),
+                api: formsApi,
+                formId: state.pathParameters['formId'],
+              ),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.formRespond,
@@ -1787,31 +1803,52 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.formResponses,
             name: SuperadminRoutes.formResponsesName,
-            builder: (context, state) => FormsOperationsPage.responses(
-              api: formsApi,
-              formId: state.pathParameters['formId'],
+            builder: (context, state) => withFormsAuthorization(
+              () => FormsOperationsPage.responses(
+                key: ValueKey(
+                  'responses-${state.uri}-${session.authorizationInvalidationRevision}',
+                ),
+                api: formsApi,
+                formId: state.pathParameters['formId'],
+              ),
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.formResponseDetail,
             name: SuperadminRoutes.formResponseDetailName,
-            builder: (context, state) => FormsOperationsPage.responseDetail(
-              api: formsApi,
-              responseId: state.pathParameters['responseId'],
+            builder: (context, state) => withFormsAuthorization(
+              () => FormsOperationsPage.responseDetail(
+                key: ValueKey('response-${state.uri}-${session.authorizationInvalidationRevision}'),
+                formId: state.pathParameters['formId'],
+                api: formsApi,
+                responseId: state.pathParameters['responseId'],
+              ),
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.formFiles,
             name: SuperadminRoutes.formFilesName,
-            builder: (context, state) =>
-                FormsOperationsPage.files(api: formsApi, formId: state.pathParameters['formId']),
+            builder: (context, state) => withFormsAuthorization(
+              () => FormsOperationsPage.files(
+                key: ValueKey('files-${state.uri}-${session.authorizationInvalidationRevision}'),
+                api: formsApi,
+                formId: state.pathParameters['formId'],
+                downloadResolver: formsMediaScope?.downloadResolver,
+                openDownloadUrl: openDownloadUrl,
+              ),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.formMedia,
             name: SuperadminRoutes.formMediaName,
-            builder: (context, state) => FormsMediaPage(
-              assetId: state.pathParameters['assetId']!,
-              onBack: () => context.goNamed(SuperadminRoutes.formsName),
+            builder: (context, state) => withFormsAuthorization(
+              () => FormsMediaPage(
+                key: ValueKey('media-${state.uri}-${session.authorizationInvalidationRevision}'),
+                reader: formsMediaReader,
+                session: formsMediaScope?.current,
+                assetId: state.pathParameters['assetId']!,
+                onBack: () => context.goNamed(SuperadminRoutes.formsName),
+              ),
             ),
           ),
           GoRoute(

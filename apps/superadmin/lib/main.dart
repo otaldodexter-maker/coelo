@@ -39,6 +39,8 @@ Future<void> main() async {
       agendaRepository: authScope.agendaRepository,
       formsApi: authScope.formsApi,
       formsDirectoryReader: authScope.formsDirectoryReader,
+      formsMediaReader: authScope.formsMediaReader,
+      formsMediaScope: authScope.formsMediaScope,
       mealPlanRepository: authScope.mealPlanRepository,
       mealPlanImageRepository: authScope.mealPlanImageRepository,
       authorizedMealPlanTenantId: authScope.authorizedMealPlanTenantId,

@@ -14,6 +14,114 @@ void main() {
     keepSessionOpen: false,
   );
 
+  test('authorization waits for media purge before committing the session', () async {
+    final auth = _FakeCoeloAuthGateway();
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+    final started = Completer<void>();
+    final purge = Completer<bool>();
+    var committed = false;
+    final action = createCoeloAuthLoginAction(
+      auth: auth,
+      authContext: _FakeSuperadminAuthContextGateway(),
+      session: session,
+      prepareAuthorization: () {
+        started.complete();
+        return purge.future;
+      },
+      onAuthorizationCommitted: () {
+        expect(session.isAuthenticated, isTrue);
+        committed = true;
+      },
+    );
+    final pending = action(request);
+    await started.future;
+    expect(session.isAuthenticated, isFalse);
+    expect(committed, isFalse);
+    purge.complete(true);
+    expect((await pending).isSuccess, isTrue);
+    expect(committed, isTrue);
+  });
+
+  test('credential replacement during media purge cannot authorize old bootstrap', () async {
+    final auth = _FakeCoeloAuthGateway();
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+    final started = Completer<void>();
+    final purge = Completer<bool>();
+    var committed = false;
+    final action = createCoeloAuthLoginAction(
+      auth: auth,
+      authContext: _FakeSuperadminAuthContextGateway(),
+      session: session,
+      prepareAuthorization: () {
+        started.complete();
+        return purge.future;
+      },
+      onAuthorizationCommitted: () => committed = true,
+    );
+    final pending = action(request);
+    await started.future;
+    auth.sessionId = _sessionB;
+    purge.complete(true);
+    expect((await pending).isSuccess, isFalse);
+    expect(session.isAuthenticated, isFalse);
+    expect(committed, isFalse);
+    expect(auth.signOutCalls, 0);
+    expect(auth.currentSessionState.sessionId, _sessionB);
+  });
+
+  for (final throwsError in [false, true]) {
+    test('failed media purge denies authorization safely (throws=$throwsError)', () async {
+      final auth = _FakeCoeloAuthGateway();
+      final session = SuperadminSession();
+      addTearDown(session.dispose);
+      var committed = false;
+      final action = createCoeloAuthLoginAction(
+        auth: auth,
+        authContext: _FakeSuperadminAuthContextGateway(),
+        session: session,
+        prepareAuthorization: () async {
+          if (throwsError) throw StateError('private capability');
+          return false;
+        },
+        onAuthorizationCommitted: () => committed = true,
+      );
+      final result = await action(request);
+      expect(result.isSuccess, isFalse);
+      expect(result.message, CoeloAuthSignInResult.genericFailureMessage);
+      expect(session.isAuthenticated, isFalse);
+      expect(committed, isFalse);
+      expect(auth.signOutCalls, 1);
+    });
+  }
+
+  test('obsolete bootstrap cannot purge the winning authorization', () async {
+    final auth = _FakeCoeloAuthGateway();
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+    final context = _PendingSuperadminAuthContextGateway();
+    var purgeCalls = 0;
+    final action = createCoeloAuthLoginAction(
+      auth: auth,
+      authContext: context,
+      session: session,
+      prepareAuthorization: () async {
+        purgeCalls++;
+        return true;
+      },
+    );
+    final pending = action(request);
+    await context.started.future;
+    auth.sessionId = _sessionB;
+    session.authorize(_context, sessionId: _sessionB);
+    context.completeAuthorized();
+    expect((await pending).isSuccess, isFalse);
+    expect(purgeCalls, 0);
+    expect(auth.signOutCalls, 0);
+    expect(session.sessionId, _sessionB);
+  });
+
   test('forwards credentials to Coelo auth and signs the session in on success', () async {
     final auth = _FakeCoeloAuthGateway();
     final session = SuperadminSession();
@@ -92,7 +200,7 @@ void main() {
     expect(session.authContext, isNull);
   });
 
-  test('revokes when the credential session changes during internal bootstrap', () async {
+  test('preserves replacement credentials still awaiting internal bootstrap', () async {
     final auth = _FakeCoeloAuthGateway();
     final session = SuperadminSession();
     final context = _PendingSuperadminAuthContextGateway();
@@ -106,7 +214,8 @@ void main() {
     final result = await resultFuture;
 
     expect(result.isSuccess, isFalse);
-    expect(auth.signOutCalls, 1);
+    expect(auth.signOutCalls, 0);
+    expect(auth.currentSessionState.sessionId, _sessionB);
     expect(session.isAuthenticated, isFalse);
   });
 

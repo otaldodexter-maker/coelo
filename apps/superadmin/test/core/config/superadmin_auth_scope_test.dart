@@ -427,7 +427,8 @@ void main() {
     addTearDown(scope.session.dispose);
     expect(scope.session.isAuthenticated, isFalse);
     expect(scope.session.authContext, isNull);
-    expect(auth.signOutCalls, 1);
+    expect(auth.signOutCalls, 0);
+    expect(auth.currentSessionState.sessionId, _sessionB);
   });
 
   test('exposes password recovery through the configured auth gateway', () async {

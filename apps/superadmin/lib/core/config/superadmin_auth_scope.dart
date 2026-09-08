@@ -84,6 +84,9 @@ import '../../features/safety/domain/child_safety_contract.dart';
 import '../../features/student_tracking/domain/student_tracking.dart';
 import '../guards/superadmin_session.dart';
 import 'superadmin_app_config.dart';
+import 'superadmin_media_scope.dart';
+import '../../features/forms/data/form_export_download_resolver.dart';
+import '../../features/forms/data/forms_media_reader.dart';
 
 typedef SupabaseInitializer =
     Future<SupabaseClient> Function({
@@ -144,6 +147,8 @@ final class SuperadminAuthScope {
     this.authorizedMealPlanTenantId,
     required this.formsApi,
     this.formsDirectoryReader,
+    this.formsMediaReader,
+    this.formsMediaScope,
     this.principalRuntimeContextRepository,
     this.principalHappensFeedRepository,
     this.principalMixedFeedRepository,
@@ -193,6 +198,8 @@ final class SuperadminAuthScope {
   final String? authorizedMealPlanTenantId;
   final FormsApi? formsApi;
   final FormsDirectoryReader? formsDirectoryReader;
+  final MediaReader? formsMediaReader;
+  final SuperadminMediaScope? formsMediaScope;
   final PrincipalRuntimeContextRepository? principalRuntimeContextRepository;
   final PrincipalHappensFeedRepository? principalHappensFeedRepository;
   final PrincipalMixedFeedRepository? principalMixedFeedRepository;
@@ -241,11 +248,13 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
     final authContext = createAuthContextGateway(client);
     final initialState = auth.currentSessionState;
     final platformUsers = SupabasePlatformUserRepository(client);
+    SuperadminMediaScope? ownedMediaScope;
     final session = SuperadminSession(
       isPasswordRecovery: initialState.isPasswordRecovery,
       authSessionStateChanges: auth.authSessionStateChanges,
       onDispose: () {
         try {
+          ownedMediaScope?.dispose();
           platformUsers.clearSessionCache();
         } finally {
           if (auth is SupabaseCoeloAuthGateway) unawaited(auth.dispose());
@@ -253,11 +262,25 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       },
     );
     ownedSession = session;
+    final formsMediaScope = SuperadminMediaScope(
+      session: session,
+      downloadGateway: SupabaseFormExportDownloadGateway(client),
+    );
+    ownedMediaScope = formsMediaScope;
     if (initialState.kind == CoeloAuthSessionKind.authenticated) {
       final expectedRevision = session.authorizationInvalidationRevision;
       final initialContext = await authContext.bootstrap();
+      var mediaPrepared = false;
+      final beforePurge = auth.currentSessionState;
+      if (initialContext != null &&
+          session.authorizationInvalidationRevision == expectedRevision &&
+          beforePurge.kind == CoeloAuthSessionKind.authenticated &&
+          beforePurge.sessionId == initialState.sessionId) {
+        mediaPrepared = await formsMediaScope.prepareAuthorization();
+      }
       final latestState = auth.currentSessionState;
       final authorized =
+          mediaPrepared &&
           initialContext != null &&
           initialState.sessionId != null &&
           latestState.sessionId == initialState.sessionId &&
@@ -267,12 +290,15 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
             sessionId: initialState.sessionId!,
             expectedInvalidationRevision: expectedRevision,
           );
+      if (authorized) formsMediaScope.authorizationCommitted();
       final recoveryArrivedDuringBootstrap =
           latestState.isPasswordRecovery &&
           latestState.sessionId != null &&
           session.isPasswordRecovery &&
           session.authorizationInvalidationRevision != expectedRevision;
-      if (!authorized && !recoveryArrivedDuringBootstrap) {
+      final credentialsReplaced =
+          latestState.sessionId != null && latestState.sessionId != initialState.sessionId;
+      if (!authorized && !recoveryArrivedDuringBootstrap && !credentialsReplaced) {
         try {
           await auth.signOut();
         } on Exception {
@@ -284,7 +310,13 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
     session.addListener(platformUsers.clearSessionCache);
     return SuperadminAuthScope(
       session: session,
-      login: createCoeloAuthLoginAction(auth: auth, authContext: authContext, session: session),
+      login: createCoeloAuthLoginAction(
+        auth: auth,
+        authContext: authContext,
+        session: session,
+        prepareAuthorization: formsMediaScope.prepareAuthorization,
+        onAuthorizationCommitted: formsMediaScope.authorizationCommitted,
+      ),
       logout: createCoeloAuthLogoutAction(auth: auth, session: session),
       requestPasswordRecovery: createCoeloAuthPasswordRecoveryAction(
         auth: auth,
@@ -328,6 +360,8 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       mealPlanImageRepository: SupabaseMealPlanImageRepository(client),
       formsApi: SupabaseFormsApi(formsBackend),
       formsDirectoryReader: SupabaseSuperadminFormsDirectoryReader(formsBackend),
+      formsMediaReader: FormsMediaReader(gateway: formsBackend),
+      formsMediaScope: formsMediaScope,
       principalRuntimeContextRepository: SupabasePrincipalRuntimeContextRepository(client),
       principalHappensFeedRepository: SupabasePrincipalHappensFeedRepository(client),
       principalMixedFeedRepository: SupabasePrincipalMixedFeedRepository(client),
