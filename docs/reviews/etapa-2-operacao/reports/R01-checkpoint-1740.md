@@ -48,3 +48,6 @@ Código testado C00até d9861117. Devúltimoconfirmado6eb23bd7;push do novo lote
 Janela final16/09 12:20. **Risco elevado;ETA final desconhecida.** Lotescliente observados4–9min epreparaçãopersonas41min não são previsão doapp. C02estima15–30min para próximolote;C05estima2–3h remoções/2–4hChat,condicionais,não somadas. Integração/testes do lote227PASSconcluídos;documentação consome estecheckpoint. Testesreais eesperaexterna não têm ETA comprovada.
 
 Caminho determinante:Auth/realm+catálogomídia→writers/gateways/contratos→composição→cenáriosautorizados→UIreal/reload/negativas. Menor ação para reduzir risco:publicar o lote testado e fechar uma cadeia nominal deForms/mídia com personas,enquantoC07 resolveaceitesvisuais independentes. Não dividir horas artificialmente entreexecutores.
+
+
+**Recibo de entrega 2026-09-08T17:56:56-03:00:** push atômico e ls-remote confirmaram origin/dev e origin/codex/e2-r01-c00-integration em `c96d625c473b0b8453b1c9c3d90c14c414f4fb30`. O lote de14commits/testes227/análise13 e SQLlocalModels/Forms está entregue em Git. Nenhuma migration/deploy remoto ou atualização do localhost foi feita. Este recibo substitui o estado anterior de push pendente.

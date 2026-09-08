@@ -30,9 +30,11 @@
     },
     {
       "id": "2026-09-08T17:40:00-03:00-checkpoint",
-      "status": "report-written-awaiting-push",
+      "status": "report-published",
       "actual_report_written_at": "2026-09-08T17:50:22-03:00",
-      "report": "reports/R01-checkpoint-1740.md"
+      "report": "reports/R01-checkpoint-1740.md",
+      "delivery_sha": "c96d625c473b0b8453b1c9c3d90c14c414f4fb30",
+      "actual_published_at": "2026-09-08T17:56:56-03:00"
     }
   ],
   "executors": {
@@ -1172,5 +1174,14 @@
       "C05": 15
     },
     "report": "reports/R01-checkpoint-1740.md"
+  },
+  "last_verified_delivery": {
+    "sha": "c96d625c473b0b8453b1c9c3d90c14c414f4fb30",
+    "branches": [
+      "dev",
+      "codex/e2-r01-c00-integration"
+    ],
+    "verified_at": "2026-09-08T17:56:56-03:00",
+    "deploy": false
   }
 }
