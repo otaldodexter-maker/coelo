@@ -211,6 +211,39 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('new call ignores completion from repository A after a swap to B', (tester) async {
+    final repositoryA = FakeAttendanceRepository.seeded()..createGate = Completer<void>();
+    final repositoryB = FakeAttendanceRepository.seeded();
+    addTearDown(repositoryA.dispose);
+    addTearDown(repositoryB.dispose);
+    var created = 0;
+
+    Widget page(AttendanceRepository repository) => _app(
+      AttendanceNewCallPage(
+        repository: repository,
+        permissions: const AttendancePermissions.owner(),
+        logout: unavailableSuperadminLogout,
+        onCancel: () {},
+        onCreated: (_) => created += 1,
+      ),
+    );
+
+    await tester.pumpWidget(page(repositoryA));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Chamada'));
+    await tester.pump();
+    expect(repositoryA.createCallCount, 1);
+
+    await tester.pumpWidget(page(repositoryB));
+    await tester.pumpAndSettle();
+    repositoryA.createGate!.complete();
+    await tester.pumpAndSettle();
+
+    expect(created, 0);
+    expect(repositoryB.createCallCount, 0);
+    expect(find.text('Contexto da chamada'), findsOneWidget);
+  });
+
   testWidgets('new call keeps the form and exposes retryable command failure', (tester) async {
     final repository = FakeAttendanceRepository.seeded()
       ..createCallError = const AttendanceUnavailableException();
