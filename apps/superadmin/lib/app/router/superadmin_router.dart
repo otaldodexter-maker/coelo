@@ -1263,15 +1263,17 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.unitDetailName,
             builder: (context, state) => ListenableBuilder(
               listenable: session,
-              builder: (context, child) => UnitDetailPage(
-                key: ValueKey(session.authorizationInvalidationRevision),
-                repository: unitDetailRepository,
-                id: state.pathParameters['unitId']!,
-                logout: logout,
-                onBack: () => context.goNamed(SuperadminRoutes.unitsName),
-                onDestinationSelected: (destination) =>
-                    _navigateFromPersistentShell(context, destination),
-              ),
+              builder: (context, child) => !session.isAuthenticated || session.isPasswordRecovery
+                  ? const SizedBox.shrink()
+                  : UnitDetailPage(
+                      key: ValueKey(session.authorizationInvalidationRevision),
+                      repository: unitDetailRepository,
+                      id: state.pathParameters['unitId']!,
+                      logout: logout,
+                      onBack: () => context.goNamed(SuperadminRoutes.unitsName),
+                      onDestinationSelected: (destination) =>
+                          _navigateFromPersistentShell(context, destination),
+                    ),
             ),
           ),
           GoRoute(
@@ -1335,15 +1337,17 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.groupDetailName,
             builder: (context, state) => ListenableBuilder(
               listenable: session,
-              builder: (context, child) => GroupDetailPage(
-                key: ValueKey(session.authorizationInvalidationRevision),
-                repository: groupDetailRepository,
-                id: state.pathParameters['groupId']!,
-                logout: logout,
-                onBack: () => context.goNamed(SuperadminRoutes.groupsName),
-                onDestinationSelected: (destination) =>
-                    _navigateFromPersistentShell(context, destination),
-              ),
+              builder: (context, child) => !session.isAuthenticated || session.isPasswordRecovery
+                  ? const SizedBox.shrink()
+                  : GroupDetailPage(
+                      key: ValueKey(session.authorizationInvalidationRevision),
+                      repository: groupDetailRepository,
+                      id: state.pathParameters['groupId']!,
+                      logout: logout,
+                      onBack: () => context.goNamed(SuperadminRoutes.groupsName),
+                      onDestinationSelected: (destination) =>
+                          _navigateFromPersistentShell(context, destination),
+                    ),
             ),
           ),
           GoRoute(
