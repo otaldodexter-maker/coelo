@@ -1729,6 +1729,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
   }
 
   Map<String, Object?> get _templatePayload => {
+    if (widget.isTemplate && _originalTemplate != null) ..._originalTemplate!.payload,
     'menu': _isSimple ? <Object?>[] : _meals.map((meal) => meal.toEntry().toJson()).toList(),
     'simpleImage': _simpleImage?.toJson(),
     'simpleImageAlt': _simpleImageAlt.text.trim(),

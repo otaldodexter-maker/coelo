@@ -13,6 +13,61 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final destination in ['same', 'other', 'new']) {
+    testWidgets('template editing preserves unknown fields only for $destination resource', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final repository = _TemplateUnknownFieldsRepository();
+      Widget page(String? id) => MaterialApp(
+        home: Scaffold(
+          body: MealPlanWizardPage(
+            repository: repository,
+            imageRepository: const UnavailableMealPlanImageRepository(),
+            imageSelectionEnabled: false,
+            isTemplate: true,
+            mealPlanModelId: id,
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      );
+      await tester.pumpWidget(page('model-a'));
+      await tester.pumpAndSettle();
+      if (destination != 'same') {
+        await tester.pumpWidget(page(destination == 'other' ? 'model-b' : null));
+        await tester.pumpAndSettle();
+      }
+      if (destination == 'new') {
+        await tester.enterText(find.byType(TextFormField).first, 'Modelo novo');
+      }
+      await _selectAudienceOption(tester, 'Instituição do modelo', 'Colégio Coelo');
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await tester.enterText(find.byType(TextFormField).first, 'Prato alterado');
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+      await tester.pumpAndSettle();
+      expect(repository.savedDrafts, hasLength(1));
+      final draft = repository.savedDrafts.single;
+      expect(
+        draft.id,
+        destination == 'same'
+            ? 'model-a'
+            : destination == 'other'
+            ? 'model-b'
+            : null,
+      );
+      expect(
+        draft.payload['futureField'],
+        destination == 'new' ? null : {'resource': destination == 'same' ? 'model-a' : 'model-b'},
+      );
+      expect((draft.payload['menu'] as List).single['dishName'], 'Prato alterado');
+      expect(tester.takeException(), isNull);
+    });
+  }
   for (final selection in ['replace', 'clear', 'retain']) {
     testWidgets('source template selection $selection preserves matching content and version', (
       tester,
@@ -873,6 +928,39 @@ final class _SourceTemplateRepository extends _OrderedMealPlanRepository {
   Future<MealPlan> createOrUpdateDraft(MealPlanDraft draft) async {
     savedDrafts.add(draft);
     return _plan(draft.mealPlanId ?? 'created-plan', draft.name);
+  }
+}
+
+final class _TemplateUnknownFieldsRepository extends _OrderedMealPlanRepository {
+  final savedDrafts = <MealPlanTemplateDraft>[];
+  @override
+  Future<MealPlanTemplate> getTemplateById(String id) async => MealPlanTemplate(
+    id: id,
+    name: 'Modelo $id',
+    planVariant: MealPlanPlanVariant.complete,
+    audienceSegment: MealPlanAudienceSegment.students,
+    status: 'draft',
+    version: 2,
+    payload: {
+      'menu': [
+        {
+          ...MealPlanMenuEntry.empty().toJson(),
+          'dishName': 'Prato original',
+          'weekdays': [1, 2, 3, 4, 5],
+        },
+      ],
+      'futureField': {'resource': id},
+    },
+    createdAt: DateTime(2026, 9, 1),
+    updatedAt: DateTime(2026, 9, 1),
+  );
+  @override
+  Future<MealPlanTemplate> saveTemplate(
+    MealPlanTemplateDraft draft, {
+    required bool publish,
+  }) async {
+    savedDrafts.add(draft);
+    return getTemplateById(draft.id ?? 'new-model');
   }
 }
 
