@@ -64,6 +64,16 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
   @override
   void initState() {
     super.initState();
+    search.text = widget.controller.query.search;
+    if (widget.controller.state == ChildSafetyLoadState.loading) widget.controller.load();
+  }
+
+  @override
+  void didUpdateWidget(covariant SafetyLandingPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller == widget.controller) return;
+    search.text = widget.controller.query.search;
+    _footerHeight = 0;
     if (widget.controller.state == ChildSafetyLoadState.loading) widget.controller.load();
   }
 
@@ -475,6 +485,20 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
     record = widget.controller.fetchChild(widget.childId);
     dataVersion = widget.controller.dataVersion;
     widget.controller.addListener(_controllerChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant ChildSecurityPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final controllerChanged = oldWidget.controller != widget.controller;
+    if (controllerChanged) {
+      oldWidget.controller.removeListener(_controllerChanged);
+      widget.controller.addListener(_controllerChanged);
+    }
+    if (controllerChanged || oldWidget.childId != widget.childId) {
+      record = widget.controller.fetchChild(widget.childId);
+      dataVersion = widget.controller.dataVersion;
+    }
   }
 
   void _controllerChanged() {
