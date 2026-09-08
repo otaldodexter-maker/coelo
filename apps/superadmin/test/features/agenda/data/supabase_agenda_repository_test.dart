@@ -10,6 +10,89 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  Map<String, Object?> contextRow(
+    String id,
+    String level,
+    String? parent, {
+    String institution = 'institution-a',
+  }) => {
+    'id': id,
+    'name': id,
+    'level': level,
+    'institution_id': institution,
+    'parent_id': parent,
+    'granted_capabilities': <String>[],
+    'restricted_capabilities': <String>[],
+  };
+  final root = contextRow('institution-a', 'institution', null);
+  test('aceita hierarquia completa fora de ordem sem cruzar instituições', () async {
+    final client = _client(
+      (request) async => _json(request, {
+        'contexts': [
+          contextRow('group-a', 'group', 'unit-a'),
+          contextRow('activity-unit', 'activity', 'unit-a'),
+          contextRow('activity-root', 'activity', 'institution-a'),
+          contextRow('unit-a', 'unit', 'institution-a'),
+          root,
+          contextRow('institution-b', 'institution', null, institution: 'institution-b'),
+        ],
+      }),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    await repository.loadContexts();
+    expect(repository.contextsRead, AgendaReadStatus.ready);
+    expect(repository.contexts, hasLength(6));
+  });
+  final invalidContexts = <String, List<Map<String, Object?>>>{
+    'duplicate': [root, root],
+    'self parent': [root, contextRow('unit-a', 'unit', 'unit-a')],
+    'missing parent': [root, contextRow('group-a', 'group', 'missing')],
+    'cross institution': [
+      root,
+      contextRow('unit-a', 'unit', 'institution-a', institution: 'institution-b'),
+    ],
+    'cycle': [
+      root,
+      contextRow('unit-a', 'unit', 'group-a'),
+      contextRow('group-a', 'group', 'unit-a'),
+    ],
+    'root mismatched': [contextRow('wrong-id', 'institution', null)],
+    'root with parent': [contextRow('institution-a', 'institution', 'unit-a')],
+    'activity under group': [
+      root,
+      contextRow('unit-a', 'unit', 'institution-a'),
+      contextRow('group-a', 'group', 'unit-a'),
+      contextRow('activity-a', 'activity', 'group-a'),
+    ],
+    'group under institution': [root, contextRow('group-a', 'group', 'institution-a')],
+    'numeric id': [
+      {...root, 'id': 42},
+    ],
+    'numeric parent': [
+      root,
+      {...contextRow('unit-a', 'unit', 'institution-a'), 'parent_id': 42},
+    ],
+  };
+  for (final invalid in invalidContexts.entries) {
+    test('rejeita hierarquia inválida sem aplicá-la: ${invalid.key}', () async {
+      var corrupt = false;
+      final client = _client(
+        (request) async => _json(request, {
+          'contexts': corrupt ? invalid.value : [root],
+        }),
+      );
+      addTearDown(client.dispose);
+      final repository = SupabaseAgendaRepository(client);
+      await repository.loadContexts();
+      expect(repository.contextsRead, AgendaReadStatus.ready);
+      corrupt = true;
+      await repository.loadContexts();
+      expect(repository.contextsRead, AgendaReadStatus.failure);
+      expect(repository.contexts.map((value) => value.id), ['institution-a']);
+    });
+  }
+
   test('estados de leitura isolam calendário de falha em solicitações', () async {
     final client = _client(
       (request) async => request.url.path.endsWith('superadmin_agenda_list')

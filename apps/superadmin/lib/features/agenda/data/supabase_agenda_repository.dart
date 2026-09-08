@@ -95,16 +95,17 @@ final class SupabaseAgendaRepository extends AgendaRepository {
         .map((value) {
           final context = _map(value);
           return AgendaContext(
-            id: _required(context, 'id'),
-            name: _required(context, 'name'),
+            id: _contextString(context['id']),
+            name: _contextString(context['name']),
             level: _enum(AgendaContextLevel.values, _required(context, 'level')),
-            institutionId: _required(context, 'institution_id'),
-            parentId: context['parent_id']?.toString(),
+            institutionId: _contextString(context['institution_id']),
+            parentId: context['parent_id'] == null ? null : _contextString(context['parent_id']),
             grantedCapabilities: _agendaCapabilities(context['granted_capabilities']),
             restrictedCapabilities: _agendaCapabilities(context['restricted_capabilities']),
           );
         })
         .toList(growable: false);
+    _validateContextHierarchy(contexts);
     return () => _contexts = contexts;
   });
 
@@ -719,6 +720,44 @@ DateTime _monthOccurrence(DateTime current, int baseDay, int interval) {
 Map<String, Object?> _map(Object? value) {
   if (value is Map) return Map<String, Object?>.from(value);
   throw const FormatException('Invalid Agenda payload.');
+}
+
+String _contextString(Object? value) {
+  if (value is! String || value.trim().isEmpty) {
+    throw const FormatException('Invalid Agenda context field.');
+  }
+  return value.trim();
+}
+
+void _validateContextHierarchy(List<AgendaContext> contexts) {
+  final byId = <String, AgendaContext>{};
+  for (final context in contexts) {
+    if (byId.containsKey(context.id)) {
+      throw const FormatException('Duplicate Agenda context.');
+    }
+    byId[context.id] = context;
+  }
+  for (final context in contexts) {
+    if (context.level == AgendaContextLevel.institution) {
+      if (context.parentId != null || context.id != context.institutionId) {
+        throw const FormatException('Invalid Agenda institution root.');
+      }
+      continue;
+    }
+    final parent = byId[context.parentId];
+    if (parent == null || parent.institutionId != context.institutionId) {
+      throw const FormatException('Invalid Agenda context parent.');
+    }
+    // Allowed edges strictly decrease in level, so cycles cannot be admitted.
+    final validParent = switch (context.level) {
+      AgendaContextLevel.unit => parent.level == AgendaContextLevel.institution,
+      AgendaContextLevel.group => parent.level == AgendaContextLevel.unit,
+      AgendaContextLevel.activity =>
+        parent.level == AgendaContextLevel.institution || parent.level == AgendaContextLevel.unit,
+      AgendaContextLevel.institution => false,
+    };
+    if (!validParent) throw const FormatException('Invalid Agenda context hierarchy.');
+  }
 }
 
 List<Object?> _list(Object? value) => value is List ? List<Object?>.from(value) : const <Object?>[];
