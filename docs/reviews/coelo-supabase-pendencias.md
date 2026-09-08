@@ -10,6 +10,13 @@ family_count: 38
 
 # Pendências Coelo — Back-end
 
+- Gate01:40: Eng1 autorizado executar exclusivamente LOCAL LOC50 e depois
+  AG53 do snapshot6cd030f4, com três fixtures LOC e duas AG nominais. Pins50/53
+  conferidos independentemente;488 Pester PASS do autor. Execução/resultado SQL
+  ainda não recebidos. Cleanup independente entre perfis; nenhum remoto,
+  alteração de grants, replayF-AUTHOR ou HTTPA01 autorizado por este gate.
+
+
 ## Rodada de 2026-09-07 — backend local e integração em curso
 
 - Atualização01:16: AG53 proposta743591df lida/revisada,53pins conferidos;

@@ -15,7 +15,7 @@ supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
 flutter_tracker_sha256: "2E231CF5BC29110735D59AC54870F4E39820E6F0694EC90580FF9C75F6A50E44"
-supabase_tracker_sha256: "72823DD534DA068ABA5F9A3675882C928D983D2EC460E66ECADFF2C647FFC6C7"
+supabase_tracker_sha256: "888BE3EE88A9AA1BBEE9B7B0516D06CA233CD339B9AE25B1E8284F3B46216C87"
 ---
 
 # Pendências Coelo — Front-end + Back-end
