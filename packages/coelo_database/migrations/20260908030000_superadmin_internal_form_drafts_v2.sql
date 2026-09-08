@@ -1596,6 +1596,10 @@ begin
       or (ctx.scope_kind='institution' and (ctx.scope_institution_id is null or f.institution_id is distinct from ctx.scope_institution_id)) then
       raise insufficient_privilege using detail='SAI_INTERNAL_CONTEXT_DENIED';
     end if;
+    if not exists(select 1 from auth.sessions s where s.id=initial_ctx.session_id and s.user_id=initial_ctx.auth_user_id
+      and (s.not_after is null or s.not_after>pg_catalog.clock_timestamp())) then
+      raise insufficient_privilege using detail='SAI_SESSION_INVALID';
+    end if;
     if f.id is null or f.created_by_internal_identity_id is null or f.status<>'draft'
       or f.first_published_at is not null or f.published_version_id is not null
       or exists(select 1 from public.form_versions v where v.form_id=f.id and (v.state<>'working' or v.published_at is not null))
@@ -1667,6 +1671,10 @@ begin
       or (ctx.scope_kind='institution' and (ctx.scope_institution_id is null or target_institution is distinct from ctx.scope_institution_id)) then
       raise insufficient_privilege using detail='SAI_INTERNAL_CONTEXT_DENIED';
     end if;
+    if not exists(select 1 from auth.sessions s where s.id=initial_ctx.session_id and s.user_id=initial_ctx.auth_user_id
+      and (s.not_after is null or s.not_after>pg_catalog.clock_timestamp())) then
+      raise insufficient_privilege using detail='SAI_SESSION_INVALID';
+    end if;
     select * into receipt from app_private.superadmin_internal_form_draft_receipts where request_id=p_request_id;
     if receipt.request_id is not null then
       if receipt.actor_internal_identity_id is distinct from ctx.internal_identity_id
@@ -1693,6 +1701,10 @@ begin
       or ctx.aal is null or ctx.aal not in ('aal1','aal2') or ctx.scope_kind is null or ctx.scope_kind not in ('platform','institution')
       or (ctx.scope_kind='institution' and (ctx.scope_institution_id is null or target_institution is distinct from ctx.scope_institution_id)) then
       raise insufficient_privilege using detail='SAI_INTERNAL_CONTEXT_DENIED';
+    end if;
+    if not exists(select 1 from auth.sessions s where s.id=initial_ctx.session_id and s.user_id=initial_ctx.auth_user_id
+      and (s.not_after is null or s.not_after>pg_catalog.clock_timestamp())) then
+      raise insufficient_privilege using detail='SAI_SESSION_INVALID';
     end if;
     if f.id is not null then
       if f.institution_id is distinct from target_institution or f.created_by_internal_identity_id is null or f.status<>'draft'
