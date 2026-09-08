@@ -736,6 +736,59 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('an image repository swap unlocks a pending save in the same route', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _PendingMealPlanRepository();
+    final imageRepositoryA = UnavailableMealPlanImageRepository();
+    final imageRepositoryB = UnavailableMealPlanImageRepository();
+    var savedCount = 0;
+
+    Widget page(MealPlanImageRepository imageRepository) => MaterialApp(
+      home: Scaffold(
+        body: MealPlanWizardPage(
+          repository: repository,
+          imageRepository: imageRepository,
+          tenantId: 'dev-tenant',
+          imageSelectionEnabled: false,
+          onSaved: () => savedCount++,
+          onCancel: () {},
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(page(imageRepositoryA));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField).first, 'Cardápio em andamento');
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+    await _selectAudienceOption(tester, 'Instituições', 'Colégio Coelo');
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+    await tester.enterText(find.byType(TextFormField).first, 'Arroz e feijão');
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+    await tester.pump();
+
+    await tester.pumpWidget(page(imageRepositoryB));
+    await tester.pump();
+    repository.pendingSave.complete(_plan('meal-a', 'Cardápio em andamento'));
+    await tester.pump();
+
+    expect(savedCount, 0);
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+    expect(
+      tester
+          .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Salvar rascunho'))
+          .onPressed,
+      isNotNull,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('load fails closed when repository returns another meal plan id', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
