@@ -237,6 +237,202 @@ void main() {
     ),
   );
 
+  for (final editing in [false, true]) {
+    testWidgets('${editing ? 'edit' : 'create'} without a save handler cannot report success', (
+      tester,
+    ) async {
+      var navigations = 0;
+      await tester.pumpWidget(
+        subject(
+          medicationId: editing ? 'plan-a' : null,
+          initialDraft: _draft(),
+          onSaved: () async => navigations++,
+        ),
+      );
+      await tester.pumpAndSettle();
+      await _openReviewAndSave(tester, editing ? 'Salvar alterações' : 'Criar plano');
+      await tester.pumpAndSettle();
+
+      expect(navigations, 0);
+      expect(find.bySemanticsLabel('Salvar plano de medicação está indisponível.'), findsOneWidget);
+      expect(find.text('Dipirona'), findsWidgets);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  MedicationPlanEditSnapshot snapshot({
+    String planId = 'plan-a',
+    String childId = 'child-a',
+    String? differentContext,
+  }) => MedicationPlanEditSnapshot(
+    planId: planId,
+    childPersonId: childId,
+    timezone: 'America/Sao_Paulo',
+    schedules: const [],
+    scopeKind: differentContext == 'scope' ? 'home' : 'institution',
+    institutionId: differentContext == 'institution' ? 'institution-b' : 'institution-a',
+    unitId: differentContext == 'unit' ? 'unit-b' : 'unit-a',
+    groupId: differentContext == 'group' ? 'group-b' : 'group-a',
+    childContextId: differentContext == 'childContext' ? 'context-b' : 'context-a',
+  );
+
+  for (final mismatch in [
+    'plan',
+    'snapshotPlan',
+    'child',
+    'scope',
+    'institution',
+    'unit',
+    'group',
+    'childContext',
+  ]) {
+    testWidgets(
+      'an edit receipt with another $mismatch preserves the pending intention for retry',
+      (tester) async {
+        var navigations = 0;
+        final submitted = <HealthMedicationPlanFormDraft>[];
+        final originalSnapshot = snapshot();
+        await tester.pumpWidget(
+          subject(
+            medicationId: 'plan-a',
+            initialDraft: _draft(editSnapshot: originalSnapshot),
+            onSaved: () async => navigations++,
+            onDraftSaved: (draft) async {
+              submitted.add(draft);
+              final invalid = submitted.length == 1;
+              return HealthMedicationPlanSaveReceipt(
+                planId: invalid && mismatch == 'plan' ? 'plan-b' : 'plan-a',
+                version: 1,
+                editSnapshot: invalid
+                    ? snapshot(
+                        planId: mismatch == 'snapshotPlan' ? 'plan-b' : 'plan-a',
+                        childId: mismatch == 'child' ? 'child-b' : 'child-a',
+                        differentContext: mismatch,
+                      )
+                    : originalSnapshot,
+              );
+            },
+          ),
+        );
+        await tester.pumpAndSettle();
+        await _openReviewAndSave(tester, 'Salvar alterações');
+        await tester.pumpAndSettle();
+
+        expect(navigations, 0);
+        expect(find.byKey(const Key('health-medication-save-error')), findsOneWidget);
+        expect(find.text('Dipirona'), findsWidgets);
+        await tester.tap(find.widgetWithText(FilledButton, 'Tentar novamente'));
+        await tester.pumpAndSettle();
+
+        expect(submitted, hasLength(2));
+        expect(submitted.last, same(submitted.first));
+        expect(submitted.last.planId, 'plan-a');
+        expect(submitted.last.editSnapshot, same(originalSnapshot));
+        expect(navigations, 1);
+        expect(find.byKey(const Key('health-medication-save-error')), findsNothing);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  for (final withContext in [false, true]) {
+    testWidgets(
+      'creation accepts a server plan ID with a matching ${withContext ? 'context' : 'child'} snapshot',
+      (tester) async {
+        var navigations = 0;
+        final submitted = <HealthMedicationPlanFormDraft>[];
+        await tester.pumpWidget(
+          subject(
+            initialDraft: _draft(
+              editSnapshot: withContext ? snapshot(planId: 'draft-context') : null,
+            ),
+            onSaved: () async => navigations++,
+            onDraftSaved: (draft) async {
+              submitted.add(draft);
+              return HealthMedicationPlanSaveReceipt(
+                planId: 'server-created-plan',
+                version: 1,
+                editSnapshot: snapshot(
+                  planId: 'server-created-plan',
+                  childId: !withContext && submitted.length == 1 ? 'child-b' : 'child-a',
+                  differentContext: withContext && submitted.length == 1 ? 'childContext' : null,
+                ),
+              );
+            },
+          ),
+        );
+        await tester.pumpAndSettle();
+        await _openReviewAndSave(tester, 'Criar plano');
+        await tester.pumpAndSettle();
+        expect(navigations, 0);
+        expect(find.byKey(const Key('health-medication-save-error')), findsOneWidget);
+
+        await tester.tap(find.widgetWithText(FilledButton, 'Tentar novamente'));
+        await tester.pumpAndSettle();
+        expect(submitted.last, same(submitted.first));
+        expect(submitted.last.planId, isNull);
+        expect(navigations, 1);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets(
+    'a late receipt from the previous snapshot context cannot navigate or change the new draft',
+    (tester) async {
+      final pending = Completer<HealthMedicationPlanSaveReceipt>();
+      var navigations = 0;
+      final submitted = <HealthMedicationPlanFormDraft>[];
+      Future<void> onSaved() async {
+        navigations++;
+      }
+
+      Future<HealthMedicationPlanSaveReceipt> save(HealthMedicationPlanFormDraft draft) {
+        submitted.add(draft);
+        if (submitted.length == 1) return pending.future;
+        return Future.value(
+          HealthMedicationPlanSaveReceipt(
+            planId: 'plan-a',
+            version: 1,
+            editSnapshot: draft.editSnapshot,
+          ),
+        );
+      }
+
+      await tester.pumpWidget(
+        subject(
+          medicationId: 'plan-a',
+          initialDraft: _draft(editSnapshot: snapshot()),
+          onSaved: onSaved,
+          onDraftSaved: save,
+        ),
+      );
+      await tester.pumpAndSettle();
+      await _openReviewAndSave(tester, 'Salvar alterações');
+      await tester.pumpWidget(
+        subject(
+          medicationId: 'plan-a',
+          initialDraft: _draft(editSnapshot: snapshot(differentContext: 'childContext')),
+          onSaved: onSaved,
+          onDraftSaved: save,
+        ),
+      );
+      pending.complete(
+        HealthMedicationPlanSaveReceipt(planId: 'plan-a', version: 9, editSnapshot: snapshot()),
+      );
+      await tester.pumpAndSettle();
+      expect(navigations, 0);
+      expect(find.byKey(const Key('health-medication-save-error')), findsNothing);
+      await _openReviewAndSave(tester, 'Salvar alterações');
+      await tester.pumpAndSettle();
+      expect(submitted.last.editSnapshot!.childContextId, 'context-b');
+      expect(submitted.last.expectedVersion, 0);
+      expect(submitted.last.requestId, isNot(submitted.first.requestId));
+      expect(navigations, 1);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   for (final changed in [false, true]) {
     testWidgets(
       'snapshot source ${changed ? 'changes reset' : 'equivalent values preserve'} unsaved medication edits',

@@ -232,6 +232,13 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
     if (_saving) return;
     final generation = ++_commandGeneration;
     final onSaved = widget.onSaved;
+    if (widget.onDraftSaved == null) {
+      setState(() {
+        _saveError = 'Salvar plano de medicação está indisponível.';
+        _retrySave = false;
+      });
+      return;
+    }
     final validityError = _validityError;
     if (validityError != null) {
       setState(() {
@@ -303,8 +310,9 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
         _draftChangedAfterSubmission = false;
         final receipt = await onDraftSaved(draft);
         if (!_isCurrentCommand(generation)) return;
-        _awaitingSavedNavigation = !_draftChangedAfterSubmission && _matchesCurrentDraft(draft);
+        final matchesCurrent = !_draftChangedAfterSubmission && _matchesCurrentDraft(draft);
         _applyReceipt(receipt, draft);
+        _awaitingSavedNavigation = matchesCurrent;
         _pendingSubmission = null;
         _draftChangedAfterSubmission = false;
         _requestWasSubmitted = _requestId == draft.requestId;
@@ -354,9 +362,23 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
     HealthMedicationPlanSaveReceipt receipt,
     HealthMedicationPlanFormDraft submitted,
   ) {
+    final snapshot = receipt.editSnapshot;
+    final original = submitted.editSnapshot;
+    if (receipt.planId.trim().isEmpty ||
+        (submitted.planId != null && receipt.planId != submitted.planId) ||
+        (snapshot != null &&
+            (snapshot.planId != receipt.planId ||
+                snapshot.childPersonId != submitted.childId ||
+                (original != null &&
+                    (snapshot.scopeKind != original.scopeKind ||
+                        snapshot.institutionId != original.institutionId ||
+                        snapshot.unitId != original.unitId ||
+                        snapshot.groupId != original.groupId ||
+                        snapshot.childContextId != original.childContextId))))) {
+      throw StateError('Medication receipt does not match the submitted plan context.');
+    }
     _persistedPlanId = receipt.planId;
     _expectedVersion = receipt.version;
-    final snapshot = receipt.editSnapshot;
     if (snapshot == null) return;
     _editSnapshot = snapshot;
     final firstSchedule = snapshot.schedules.firstOrNull;
