@@ -8,6 +8,41 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  for (final entry in {
+    'published': MealPlanStatus.published,
+    'active': MealPlanStatus.published,
+    'draft': MealPlanStatus.draft,
+    'archived': MealPlanStatus.archived,
+  }.entries) {
+    test('template directory preserves ${entry.key} status from RPC', () async {
+      final client = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-key',
+        httpClient: MockClient(
+          (request) async => Response(
+            jsonEncode({
+              'items': [
+                {'id': 'template-1', 'name': 'Modelo', 'status': entry.key},
+              ],
+              'total': 1,
+              'limit': 20,
+              'offset': 0,
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          ),
+        ),
+      );
+      addTearDown(client.dispose);
+      final page = await SupabaseMealPlanRepository(
+        client,
+      ).fetchTemplatePage(const MealPlanListFilter());
+      expect(page.items.single.status, entry.value);
+      expect(page.items.single.isDraft, entry.key == 'draft');
+      expect(page.items.single.isTemplate, isTrue);
+    });
+  }
   test('serializes generated request id and calendar dates exactly', () async {
     Request? captured;
     final client = SupabaseClient(
