@@ -1097,7 +1097,7 @@ final class _LegacyAssessmentConfigurationPrototypeState
         ).showSnackBar(const SnackBar(content: Text('Não foi possível salvar. Tente novamente.')));
       }
     } finally {
-      if (_isCurrentCommand(generation, repository, activityId, value)) {
+      if (_isCurrentCommandContext(generation, repository, activityId)) {
         setState(() => _saving = false);
       }
     }
@@ -1109,11 +1109,18 @@ final class _LegacyAssessmentConfigurationPrototypeState
     String activityId,
     AssessmentConfiguration value,
   ) =>
+      _isCurrentCommandContext(generation, repository, activityId) &&
+      identical(value, _configuration);
+
+  bool _isCurrentCommandContext(
+    int generation,
+    AssessmentRepository repository,
+    String activityId,
+  ) =>
       mounted &&
       generation == _commandGeneration &&
       identical(repository, widget.repository) &&
-      activityId == widget.activityId &&
-      identical(value, _configuration);
+      activityId == widget.activityId;
 
   @override
   Widget build(BuildContext context) => SuperadminShell(
