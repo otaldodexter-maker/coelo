@@ -1463,15 +1463,14 @@ final class _ReviewSection extends StatelessWidget {
           title: '${original.membershipCount} vínculos impactados',
           value:
               draft.permissions.any((permission) => permission.selected && permission.requiresMfa)
-              ? 'O perfil inclui permissões que exigem MFA.'
-              : 'Nenhuma permissão selecionada exige MFA adicional.',
+              ? 'Há permissões com indicação de MFA. No Superadmin, a exigência fica para o gate formal do MVP.'
+              : 'Nenhuma permissão selecionada tem indicação de MFA.',
         ),
         if (review.isSensitive) ...[
           const SizedBox(height: CoeloSpacing.space4),
           const CoeloStatePanel(
             title: 'Alteração sensível',
-            message:
-                'O servidor revalidará MFA, autoridade, escopo e concorrência antes de salvar.',
+            message: 'O servidor revalidará autoridade, escopo e concorrência antes de salvar.',
             icon: Icons.gpp_maybe_outlined,
           ),
         ],
