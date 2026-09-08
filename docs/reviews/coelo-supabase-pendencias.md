@@ -30,6 +30,8 @@ Este é o estado operacional atual. O histórico integral anterior está em [arq
 
 ## Atualização R01 — 2026-09-08T14:33:36-03:00
 
+Entrega confirmada 2026-09-08T14:35:41-03:00: `origin/dev` e branch C00 em `d4924a2c34eb9cbb90e20caf8d4f90fb0215f9f6` por push atômico fast-forward e ls-remote. Inclui lotes de cliente revistos até Auth r22 e os manifests históricos sem handler de form-export-download; esses manifests não ativam função nem certificam pacote XLSX. Checkout original dev84985b54 preservado; sem deploy ou mutação Supabase/Cloudflare executados por C00. Este registro posterior prevalece sobre estados pending-dev anteriores.
+
 Evento C03 2026-09-08T14:34:33-03:00: SQL42702 por child_context_id ambíguo confirmado; I005 autoriza segunda derivação TEMP específica, sem reparar arquivo canônico/ledger. Replay35aceites segue em execução, sem resultado final.
 
 Fonte: `etapa-2-operacao/reports/R01-checkpoint-1430.md`. C01/r22 integrado (117db5ff+3d889a17→44f9d844+c5c26477): resposta de recovery antiga não altera sessão nova nos cenários locais. C0018/18 SDK,25/25 pacote e27/27 consumidores; analyzer2arquivos limpo. Resolve RED r21 no fluxo updatePassword, sem certificar Auth remoto ou todos os caminhos externos do SDK. IDs auth.reset/auth.login/account.logout e dependência shell.load; o shorthand auth.logout do handoff corresponde ao ID canônico account.logout, sem criar ID novo.

@@ -23,3 +23,7 @@ Revisão por flutter-dart-code-review aplicada: endpoint deriva mesmo prefixo do
 C01 release I004 aceito; C00 único escritor gateway/teste após este ack. C03 mantém lease local, sem replay C00 concorrente. C05 novo contrato disponível em assignment, mecanismo nativo Claude pendente, arquivo sozinho não acorda sessão. Risco/ETA total mantidos: backend nominal, mídia e UI real dependem de contratos e cenários autorizados. Nenhum prazo desconhecido foi preenchido.
 
 Evento C03 2026-09-08T14:34:33-03:00: SQL42702 confirmado por diagnóstico privado no replay local; I005 publicada para derivação TEMP específica, sem alteração histórica. Fixture35aceites ainda sem resultado final.
+
+Entrega confirmada 2026-09-08T14:35:41-03:00: `origin/dev` e branch C00 em `d4924a2c34eb9cbb90e20caf8d4f90fb0215f9f6` por push atômico fast-forward e ls-remote. Inclui lotes de cliente revistos até Auth r22 e os manifests históricos sem handler de form-export-download; esses manifests não ativam função nem certificam pacote XLSX. Checkout original dev84985b54 preservado; sem deploy ou mutação Supabase/Cloudflare executados por C00. Este registro posterior prevalece sobre estados pending-dev anteriores.
+
+Continuidade C01: heartbeat e2-r01-c01-retomada-espa-ada ACTIVE confirmado por ferramenta nativa e TOML, destino C01, minutos00/30. Fuso operacional America/Sao_Paulo; próximo horário nominal15:00 calculado da agenda, não campo de disparo fornecido pelo serviço. Primeira execução ainda não observada. Não substitui o heartbeat central nem concede edição dos rastreadores.

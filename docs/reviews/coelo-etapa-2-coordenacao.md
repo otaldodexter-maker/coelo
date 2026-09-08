@@ -129,6 +129,9 @@ Isolamento solicitado pelo Owner conferido: seis worktrees R01 e original separa
 
 Leitura14:30: C01r22/C02r18/C03r3/C04r6/C05r3; fonte C05 futura14:48 recebida14:31 deve ser corrigida. Auth integrado c5c26477,70 testes C00/analyzer limpo, release I004 aceito. C05 I003 indicador/teste reservado, alvo48 preservado e transporteR2 distinguido de contrato Flutter. Relatório `etapa-2-operacao/reports/R01-checkpoint-1430.md`. Três rastreadores sincronizados sem novas certificações.
 
+
+Entrega confirmada 2026-09-08T14:35:41-03:00: `origin/dev` e branch C00 em `d4924a2c34eb9cbb90e20caf8d4f90fb0215f9f6` por push atômico fast-forward e ls-remote. Inclui lotes de cliente revistos até Auth r22 e os manifests históricos sem handler de form-export-download; esses manifests não ativam função nem certificam pacote XLSX. Checkout original dev84985b54 preservado; sem deploy ou mutação Supabase/Cloudflare executados por C00. Este registro posterior prevalece sobre estados pending-dev anteriores.
+
 ## Histórico preservado — anterior à R01
 
 ## Finalidade

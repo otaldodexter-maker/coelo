@@ -46,7 +46,11 @@
       "latest_local_test_evidence": "Executor65PASS/5preexistinggoldenFAIL; READ107/107; no certification",
       "instruction_acknowledgement": "I004 complete; release accepted by C00",
       "native_wait_cursor": "99796484-dd48-447d-b871-d48aaf0f06ae:4",
-      "native_status": "active at14:29 native snapshot"
+      "native_status": "active at14:29 native snapshot",
+      "continuity_automation_id": "e2-r01-c01-retomada-espa-ada",
+      "continuity_verification": "Native view + local TOML verified ACTIVE heartbeat, target C01, :00/:30; actual dispatch not observed",
+      "continuity_timezone": "America/Sao_Paulo",
+      "continuity_next_nominal_trigger": "2026-09-08T15:00:00-03:00; calculated from saved schedule, not server next-run field"
     },
     "C02": {
       "name": "E2 R01 C02 — Forms mídia e cuidado",
@@ -162,13 +166,13 @@
       "executor": "C01",
       "revision": 5,
       "sha": "7779bbf20373f40a0e59d708b0ff126e2a2510f2",
-      "status": "integrated-C00;local-tests-pass;pending-dev;not-certified"
+      "status": "delivered-origin-dev;not-certified"
     },
     {
       "executor": "C01",
       "revision": 6,
       "sha": "3a4d136f4f80e75405fb41d710be6f03133bace8",
-      "status": "integrated-C00;local-tests-pass;pending-dev;not-certified"
+      "status": "delivered-origin-dev;not-certified"
     },
     {
       "executor": "C02",
@@ -210,19 +214,19 @@
       "executor": "C01",
       "revision": 9,
       "sha": "8146bf682fd8a12fd4f899c6b652bbe9da123e3e",
-      "status": "integrated-C00;local-tests-pass;pending-dev;not-certified"
+      "status": "delivered-origin-dev;not-certified"
     },
     {
       "executor": "C01",
       "revision": 13,
       "sha": "a003303c9fea84e65b9df9dc0565c461fda5cecd",
-      "status": "integrated-C00;local-tests-pass;pending-dev;not-certified"
+      "status": "delivered-origin-dev;not-certified"
     },
     {
       "executor": "C01",
       "revision": 14,
       "sha": "841715cf659446261e730c9a8b9c179cb5551701",
-      "status": "integrated-C00;local-tests-pass;pending-dev;not-certified"
+      "status": "delivered-origin-dev;not-certified"
     },
     {
       "executor": "C02",
@@ -312,7 +316,7 @@
       "executor": "C01",
       "revision": 21,
       "sha": "117db5ff6223a52f81bb0a85378595d82bf552c6",
-      "status": "integrated-with-GREEN-r22;70C00-tests-pass;pending-dev"
+      "status": "delivered-origin-dev;not-certified"
     },
     {
       "executor": "C02",
@@ -490,72 +494,81 @@
       "revision": 13,
       "source": "a003303c9fea84e65b9df9dc0565c461fda5cecd",
       "destination": "5b3a6c44e4bf3b7763221dddc32c98015159c031",
-      "status": "integrated-C00;pending-dev;not-production-certified",
-      "report": "reports/R01-checkpoint-1400.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-checkpoint-1400.md",
+      "delivery_sha": "d4924a2c34eb9cbb90e20caf8d4f90fb0215f9f6"
     },
     {
       "executor": "C01",
       "revision": 14,
       "source": "841715cf659446261e730c9a8b9c179cb5551701",
       "destination": "a529f84cbbf058fc5c9720151d50dc1d3a70f263",
-      "status": "integrated-C00;pending-dev;not-production-certified",
-      "report": "reports/R01-checkpoint-1400.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-checkpoint-1400.md",
+      "delivery_sha": "d4924a2c34eb9cbb90e20caf8d4f90fb0215f9f6"
     },
     {
       "executor": "C01",
       "revision": 15,
       "source": "c4820ac695d6933edb7514cef71fda984214f0e9",
       "destination": "37bf8451502eaa917745581961ab22811523590f",
-      "status": "integrated-C00;pending-dev;not-production-certified",
-      "report": "reports/R01-checkpoint-1400.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-checkpoint-1400.md",
+      "delivery_sha": "d4924a2c34eb9cbb90e20caf8d4f90fb0215f9f6"
     },
     {
       "executor": "C01",
       "revision": 17,
       "source": "78d8a5d043694901340a69ef94e430e0cb7e1387",
       "destination": "bac0c8ea266cb2450a527a55869e50b7b54170cb",
-      "status": "integrated-C00;pending-dev;not-production-certified",
-      "report": "reports/R01-checkpoint-1400.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-checkpoint-1400.md",
+      "delivery_sha": "d4924a2c34eb9cbb90e20caf8d4f90fb0215f9f6"
     },
     {
       "executor": "C01",
       "revision": 9,
       "source": "8146bf682fd8a12fd4f899c6b652bbe9da123e3e",
       "destination": "6c2d034509c72186b45a9b8d05a3d3702a562612",
-      "status": "integrated-C00;pending-dev;not-production-certified",
-      "report": "reports/R01-checkpoint-1400.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-checkpoint-1400.md",
+      "delivery_sha": "d4924a2c34eb9cbb90e20caf8d4f90fb0215f9f6"
     },
     {
       "executor": "C01",
       "revision": 5,
       "source": "7779bbf20373f40a0e59d708b0ff126e2a2510f2",
       "destination": "1f5c42ae080d8fcfc65b9b2f6b68abc884763c95",
-      "status": "integrated-C00;pending-dev;not-production-certified",
-      "report": "reports/R01-checkpoint-1400.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-checkpoint-1400.md",
+      "delivery_sha": "d4924a2c34eb9cbb90e20caf8d4f90fb0215f9f6"
     },
     {
       "executor": "C01",
       "revision": 6,
       "source": "3a4d136f4f80e75405fb41d710be6f03133bace8",
       "destination": "d058aeb73e5f207474f3ed6e7727a24a75e7cb52",
-      "status": "integrated-C00;pending-dev;not-production-certified",
-      "report": "reports/R01-checkpoint-1400.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-checkpoint-1400.md",
+      "delivery_sha": "d4924a2c34eb9cbb90e20caf8d4f90fb0215f9f6"
     },
     {
       "executor": "C01",
       "revision": 21,
       "source": "117db5ff",
       "destination": "44f9d844",
-      "status": "integrated-C00;70tests-pass;pending-dev",
-      "report": "reports/R01-checkpoint-1430.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-checkpoint-1430.md",
+      "delivery_sha": "d4924a2c34eb9cbb90e20caf8d4f90fb0215f9f6"
     },
     {
       "executor": "C01",
       "revision": 22,
       "source": "3d889a17",
       "destination": "c5c26477",
-      "status": "integrated-C00;70tests-pass;pending-dev",
-      "report": "reports/R01-checkpoint-1430.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-checkpoint-1430.md",
+      "delivery_sha": "d4924a2c34eb9cbb90e20caf8d4f90fb0215f9f6"
     }
   ],
   "last_delta_processed_at": "2026-09-08T14:33:36-03:00",
@@ -575,8 +588,8 @@
   },
   "last_delivery": {
     "branch": "origin/dev",
-    "sha": "0bf9e0398574df9a8dc49c257bba1f586904889b",
-    "verified_at": "2026-09-08T13:58:23-03:00",
+    "sha": "d4924a2c34eb9cbb90e20caf8d4f90fb0215f9f6",
+    "verified_at": "2026-09-08T14:35:41-03:00",
     "method": "atomic fast-forward push + ls-remote",
     "original_local_dev": "84985b5485247df6a8dc7270e33d18601aca0421; dirty checkout preserved",
     "deploy": "not executed by C00; production state not verified"
@@ -588,6 +601,6 @@
       "form-export-download/deno.json",
       "form-export-download/deno.lock"
     ],
-    "state": "C00 only, not yet dev; same pins as current form-media"
+    "state": "manifest-only delivered in dev; no download handler or new RPC deployed"
   }
 }
