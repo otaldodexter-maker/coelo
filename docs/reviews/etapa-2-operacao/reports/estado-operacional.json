@@ -203,8 +203,9 @@
       "executor": "C04",
       "revision": 2,
       "sha": "023f19ea94978dde50edd79d693980f9badba5a7",
-      "status": "integrated-local;push-pending",
-      "destination": "f4f0105a"
+      "status": "delivered-origin-dev;not-certified",
+      "destination": "f4f0105a",
+      "delivery_sha": "028a3ee7184791ea7f3ac52dace473eabd5b43a6"
     },
     {
       "executor": "C04",
@@ -498,7 +499,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T16:24:59-03:00",
+  "updated_at": "2026-09-08T16:27:18-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -719,32 +720,36 @@
       "revision": 30,
       "source": "d4ab599c",
       "destination": "3693d180",
-      "status": "integrated-local;push-pending",
-      "report": "etapa-2-operacao/reports/R01-checkpoint-1600.md"
+      "status": "delivered-origin-dev;not-certified",
+      "report": "etapa-2-operacao/reports/R01-checkpoint-1600.md",
+      "delivery_sha": "028a3ee7184791ea7f3ac52dace473eabd5b43a6"
     },
     {
       "executor": "C01",
       "revision": 30,
       "source": "5e0e0ae6",
       "destination": "ec9826f3",
-      "status": "integrated-local;push-pending",
-      "report": "etapa-2-operacao/reports/R01-checkpoint-1600.md"
+      "status": "delivered-origin-dev;not-certified",
+      "report": "etapa-2-operacao/reports/R01-checkpoint-1600.md",
+      "delivery_sha": "028a3ee7184791ea7f3ac52dace473eabd5b43a6"
     },
     {
       "executor": "C04",
       "revision": 2,
       "source": "023f19ea",
       "destination": "f4f0105a",
-      "status": "integrated-local;push-pending",
-      "report": "etapa-2-operacao/reports/R01-checkpoint-1600.md"
+      "status": "delivered-origin-dev;not-certified",
+      "report": "etapa-2-operacao/reports/R01-checkpoint-1600.md",
+      "delivery_sha": "028a3ee7184791ea7f3ac52dace473eabd5b43a6"
     },
     {
       "executor": "C03",
       "revision": 13,
       "source": "63828681",
       "destination": "86ba8570",
-      "status": "integrated-local;push-pending",
-      "report": "etapa-2-operacao/reports/R01-checkpoint-1600.md"
+      "status": "delivered-origin-dev;not-certified",
+      "report": "etapa-2-operacao/reports/R01-checkpoint-1600.md",
+      "delivery_sha": "028a3ee7184791ea7f3ac52dace473eabd5b43a6"
     }
   ],
   "last_delta_processed_at": "2026-09-08T15:50:03-03:00",
@@ -770,11 +775,11 @@
   },
   "last_delivery": {
     "branch": "origin/dev",
-    "sha": "e9e615706ec1d24602a3753e2678ecc809e96dd8",
-    "verified_at": "2026-09-08T15:51:42-03:00",
-    "method": "atomic push + ls-remote; shared media upload client and documents; no remote data changes",
-    "original_local_dev": "84985b5485247df6a8dc7270e33d18601aca0421; dirty checkout preserved",
-    "deploy": "not executed by C00; production state not verified"
+    "sha": "028a3ee7184791ea7f3ac52dace473eabd5b43a6",
+    "verified_at": "2026-09-08T16:27:18-03:00",
+    "method": "atomic push C00+dev;ls-remote exact both refs",
+    "original_local_dev": "84985b5485247df6a8dc7270e33d18601aca0421;dirty original preserved",
+    "deploy": "not executed;production state not certified"
   },
   "prepared_dependency": {
     "sha": "fe271f95681e10cedb1aa2e89931224229d68f2d",

@@ -1,6 +1,6 @@
 ---
 source: "Handoffs fixados C01r30/C02r29/C03r13/C04r17/C05r10; C00 Git/testes; estado-operacional.json"
-status: "checkpoint;local-integration;push-pending;not-certified"
+status: "checkpoint;delivered-origin-dev;not-certified"
 generated_at: "2026-09-08T16:24:59-03:00"
 timezone: "America/Sao_Paulo"
 ---
@@ -51,3 +51,6 @@ Gate de memória: nenhuma política nova aprovada; fontes/perguntas preservadas,
 
 
 Registro operacional posterior ao corte — 2026-09-08T16:25:54-03:00: C02 relatou início da lease com69migrations e hash do runner idêntico; resultado ainda pendente. Esse aviso de execução não sincroniza o conteúdo completo de r30.
+
+
+Recibo de publicação — 2026-09-08T16:27:18-03:00: código/documentação028a3ee7184791ea7f3ac52dace473eabd5b43a6 publicado atomicamente em origin/dev e origin/codex/e2-r01-c00-integration; ls-remote confirmou ambas as pontas. Atualiza o estado push-pending do corte; nenhum deploy ou aplicação remota de dados.
