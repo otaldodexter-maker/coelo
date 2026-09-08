@@ -22,6 +22,16 @@ updated_at: "2026-09-08"
 
 Decisões de Forms/Locais, limite de anexos Chat, reader self da Conta, perfis globais, Suporte e clínicas permanecem nas respectivas perguntas canônicas. Nenhum pacote remoto novo foi autorizado por esta reconciliação.
 
+## Erros409 — recorte R01
+
+O documento visual docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md lista403/404/500/503; inventário e ordem Owner R01 incluem errors.409. Atribuição vigente autoriza sua extensão local, preservando família visual e mensagem sanitizada; atualização canônica será revisada com handoff. Callback assíncrono não prova retry produtivo: router atual navega ao início. C01 I002 pode preparar tela/contrato; wiring real permanece C00.
+
+## Reconciliação técnica R01 — 08/09 12:46
+
+C02/r4 corrigiu a busca do catálogo: a fonte canônica é packages/coelo_database/migrations, onde public.media_assets existe desde20260820182000, acoplado a posts/owner_person_id de Acontece; Forms possui catálogos específicos. A hipótese anterior de ausência por busca no espelho supabase/migrations não procede. C00 conferiu a definição e concedeu somente candidato local I003 de evolução compatível conforme ADR0032; nenhum schema novo/produção aprovado por esta nota.
+
+Atividades: C03 relata save fail-closed apesar dos comandos v2 sequenciais; encadeá-los no cliente deixaria sucesso parcial. A spec014 exige criação atômica. I002 permite preparar RPC agregado transacional local create/edit/publish com autorização por suboperação, rollback e versão/idempotência; integração depende de revisão/teste, sem ampliar produto.
+
 ## Auditoria das skills Coelo — reconciliação de 2026-09-08
 
 Correções autorizadas pelo Owner e registradas em

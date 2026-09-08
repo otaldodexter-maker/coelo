@@ -25,9 +25,9 @@ As cinco conversas não foram criadas automaticamente. O Owner abre a sessão na
 
 | Executor | Nome exato | IDs | Worktree | Branch | Registro |
 |---|---|---|---|---|---|
-| C01 | `E2 R01 C01 — Identidade e acesso` | 44 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01` | `codex/e2-r01-c01-identidade` | 01a08197-7b62-73c1-9673-5fd40fa40452; I001/r3 integrado |
-| C02 | `E2 R01 C02 — Forms mídia e cuidado` | 32 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02` | `codex/e2-r01-c02-forms-midia` | 01a0819a-f1f1-7421-95dd-d645ca9f5747; I002/r3 recebido |
-| C03 | `E2 R01 C03 — Operações` | 68 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03` | `codex/e2-r01-c03-operacoes` | 01a0819b-a12e-7110-88cb-99e51a82f384; I001/r2 recebido |
+| C01 | `E2 R01 C01 — Identidade e acesso` | 44 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01` | `codex/e2-r01-c01-identidade` | 01a08197-7b62-73c1-9673-5fd40fa40452; I001/r5 recebido; r3 integrado |
+| C02 | `E2 R01 C02 — Forms mídia e cuidado` | 32 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02` | `codex/e2-r01-c02-forms-midia` | 01a0819a-f1f1-7421-95dd-d645ca9f5747; I003 pendente; r4 integrado |
+| C03 | `E2 R01 C03 — Operações` | 68 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03` | `codex/e2-r01-c03-operacoes` | 01a0819b-a12e-7110-88cb-99e51a82f384; I002 pendente; r2 integrado |
 | C04 | `E2 R01 C04 — Estruturas e pessoas` | 47 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c04` | `claude/e2-r01-c04-estruturas` | ID/ack pendentes |
 | C05 | `E2 R01 C05 — Comunicação e Principal` | 28 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c05` | `claude/e2-r01-c05-comunicacao` | ID/ack pendentes |
 
@@ -37,9 +37,9 @@ Seis worktrees conferidas pelo Git. C01/C03/C04/C05 partem de `479d1bd1771b13e0c
 
 ### Contagem e última evidência
 
-Inventário vigente:219 IDs únicos/38 famílias; classificação operacional194 ativas(189mvp+5shell),22 adiadas,3 gates; nenhum ID sem dono/duplicado. FE219 aplicáveis; BE212 normativas(187ativas+3gate+22adiadas),7N/A; E2E187ativas,3gates e22adiadas separados,7N/A. Frontend certificado0/219,Backend0/212,E2E0/187; IDs certificados: nenhum. Verificação de camada R01:2/219 IDs FE auditados parcialmente no lote Auth (auth.login/auth.reset), sem certificar critérios completos; BE real0/212,E2E0/187; histórico não foi zerado. Implementação e testes faltantes estão separados nas colunas Feito/FE/BE do inventário, sem percentual inventado.
+Inventário vigente:219 IDs únicos/38 famílias; classificação operacional194 ativas(189mvp+5shell),22 adiadas,3 gates; nenhum ID sem dono/duplicado. FE219 aplicáveis; BE212 normativas(187ativas+3gate+22adiadas),7N/A; E2E187ativas,3gates e22adiadas separados,7N/A. Frontend certificado0/219,Backend0/212,E2E0/187; IDs certificados: nenhum. Verificação de camada R01:17/219 IDs FE auditados parcialmente (2Auth,4Forms,5Atividades,4READ,2Convites), incluindo falhas visuais, sem certificar critérios completos; BE real0/212,E2E0/187; histórico não foi zerado. Implementação e testes faltantes estão separados nas colunas Feito/FE/BE do inventário, sem percentual inventado.
 
-Última evidência de preparação: `2026-09-08T12:19:18-03:00`. Últimas entregas: C01/r3 integrado12:34:18; C02/r3 fonte12:34:24 corrigida. C01 recebido/aceito/integrado3 e C02 recebido/aceito3 integrado0; C03/r2 recebido integrado0, C04/C05 sem handoff recebido. Os três rastreadores sincronizados a essas revisões sem promoção de ações. Nenhum novo teste UI/SQL/produção nesta preparação. Evidências históricas até08/09 permanecem com seus próprios horários e ambientes.
+Última evidência de preparação: `2026-09-08T12:19:18-03:00`. Últimas entregas: C01/r3 integrado12:34:18; C02/r4 fonte12:39:42. C01 recebido/aceito5 e integrado3 e C02 recebido/aceito/integrado4; C03/r2 recebido/aceito/integrado2, C04/C05 sem handoff recebido. Os três rastreadores sincronizados a essas revisões sem promoção de ações. Testes locais de cliente/SDK/Deno executados; nenhuma nova prova UI normal com backend real, SQL ou produção. Evidências históricas até08/09 permanecem com seus próprios horários e ambientes.
 
 ### Ack inicial C01 — 2026-09-08T12:25:00-03:00
 
@@ -51,7 +51,7 @@ Handoff R01/C01/r1, fonte12:22:29−03:00, recebido/aceito como contrato de aber
 2. C01 trabalha sessão/contratos internos, libera lease auth scope/shell no primeiro lote; C00 controla router/barrels/roots e migrations nominais, sem múltiplos escritores.
 3. C02 recupera `f84d1dd7` e `97769124`; C03 recupera view `ca4c82ab`; C04 revisa snapshot `9e689374`. Todos candidatos retidos até prova, não entrega nova. Demais commits em branches antigas podem ter cherry-picks equivalentes; comparar patch-id/diff.
 4. `07e6e837` preserva material de benchmark e revisão Eng2 fora de dev; não integrar branch inteira. Consultar evidência Eng2 por `git show 07e6e837:docs/reviews/evidence/etapa-2/engenheiro-2/plano-e-revisoes-2026-09-07.md` se precisar de proveniência; material de marketing fora de escopo.
-5. C00 recebe/revisa/testa/integra lotes aptos incrementalmente, publica SHA novo e acknowledgements. C01 lote Auth integrado em2dd5a9bc, pendente entrega dev; C02 código76a34dda na fila para revisão/testes proporcionais. Push origin permitido nas branches nominais; integração em dev autorizada, preservando trabalho original alheio. Nenhum deploy implícito.
+5. C00 recebe/revisa/testa/integra lotes aptos incrementalmente, publica SHA novo e acknowledgements. C01 lote Auth integrado em2dd5a9bc, pendente entrega dev; C02 R26fd676e2/Forms44465b0c e C03 harnessdb3dd9e9 integrados; nenhuma outra entrega de código pendente destes handoffs. Push origin permitido nas branches nominais; integração em dev autorizada, preservando trabalho original alheio. Nenhum deploy implícito.
 
 ### Decisões, reservas, ambiente e ETA
 
@@ -91,6 +91,14 @@ C02/r3 fonte12:34:24−03:00 recebida/aceita para revisão, I002 confirmada; có
 ### Recebimento C03/r2
 
 C03/r2 recebida, última evidência12:36:00−03:00: código445ee6e2 corrige apenas toque/rolagem no harness mobile; revisão C00 pendente, integrado0. Executor relata73/73 focais e156 PASS/9 cenários golden FAIL. IDs auditados visualmente: activities.list/create/detail/edit/location; publish/assessment ainda não nominais. Hipótese do C03: masters anteriores a workflow de6 etapas/shell atual; C00 ainda precisa revisar evidências visuais, nenhuma aprovação de golden. Sete IDs mantidos pending-verification; bloqueio visual retém somente fechamento dependente. C03 segue runtime/comandos/Avaliações. Push informado em mensagem1d6fae2f, ainda pendente no texto do handoff; conferir remoto antes de integrar.
+
+### Integração e reservas vigentes — 2026-09-08T12:46:31−03:00
+
+C02/r4 e C03/r2 integrados conforme reports/R01-C02-C03-integracao-1246.md: R249/49+4/4,Forms102/102+DTO15/15 C00; nove goldens Atividades continuam abertos. Baseline de código db3dd9e9. Rastreadores C01/r3,C02/r4,C03/r2; nenhuma promoção. C02 I003 tem dois arquivos SQL nominais de catálogo; C03 I002 dois arquivos de save transacional, todos locais, sem migração histórica/runner/remoto. Escrita R2 comum continua C00; demais mídia C02. Dev ainda aguarda entrega segura, sem deploy.
+
+### Recebimento C01/r5
+
+C01/r5 recebido em12:49:18, fonte12:47:00: Convites7779bbf na fila de revisão visual C00, integrado somente até r3/Auth. Executor relata65PASS/5goldenFAIL, com as mesmas diferenças em baseline anterior (9 imagens); nenhum golden aprovado. IDs invites.list/create auditados parcialmente; READ internal-users.list e access-models.list/filter/detail revalidado107/107 local sem mudança de código. Capturas locais1440 light/dark estão na .dart_tool C01 e precisam inspeção C00 antes de integrar. Próximo lote C01 Erros/Conta; decisões Perfis/personas seguem C00. Nenhuma promoção FE/BE/E2E.
 
 ## Histórico preservado — anterior à R01
 

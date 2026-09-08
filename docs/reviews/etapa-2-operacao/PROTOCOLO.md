@@ -37,6 +37,15 @@ C00 processa chave `(R01,CXX,revisão)`, grava received/accepted/integrated (est
 
 ## Ownership e reservas
 
+Reserva R01-C01-I002 (08/09 12:50): C01 escreve `apps/superadmin/lib/features/errors/presentation/screens/superadmin_error_screen.dart`, inclusive onAction FutureOr compatível, e testes próprios; router/composition root continuam C00. Retry real exige consumidor nominal seguro, não mutação genérica repetida.
+
+
+Reserva SQL R01-C03-I002 (08/09 12:43): C03 escreve candidato `packages/coelo_database/migrations/20260908154257_superadmin_activity_save_v2.sql` e teste `packages/coelo_database/supabase/tests/superadmin_activity_save_v2_test.sql`; apenas save transacional Atividades create/edit/publish, sem histórico/runner/remoto. Nome gerado por CLI em TEMP C00; detalhes na assignment viva.
+
+
+Reserva SQL R01-C02-I003 (08/09 12:41:19−03:00): C02 escreve somente o candidato local `packages/coelo_database/migrations/20260908160000_private_media_catalog_r2_v1.sql` e `packages/coelo_database/supabase/tests/private_media_catalog_r2_v1_test.sql`. Evolução compatível do catálogo existente conforme ADR0032; nenhuma aplicação remota. Limites completos na assignment viva C02. C04/C05 não alteram esses arquivos nem constroem catálogo paralelo.
+
+
 Release recebido em 08/09 12:30:25−03:00: C01 devolve auth scope e shell sem alterações; C00 retoma esses dois arquivos. `packages/coelo_auth` foi devolvido também às12:34:18−03:00 após integrar1fd7f9ec em2dd5a9bc e testes C00; R01-SHARED-01 encerrada, os arquivos passam a C00. Esta atualização prevalece sobre a concessão inicial R01-SHARED-01 da tabela.
 
 
@@ -47,8 +56,9 @@ Arquivos de domínio pertencem à assignment. Um arquivo compartilhado tem um es
 | Reserva R01 | Escritor atual | Limite e entrega |
 |---|---|---|
 | `apps/superadmin/lib/app/router/superadmin_router.dart`; `apps/superadmin/lib/main.dart`; composition roots não listados | C00 | Executores entregam delta mínimo no handoff; C00 integra ou concede reserva nominal antes da edição. |
-| `apps/superadmin/lib/core/config/superadmin_auth_scope.dart`; `apps/superadmin/lib/app/shell/superadmin_shell.dart`; `packages/coelo_auth/` | C01, lease R01-SHARED-01 | Primeiro lote de sessão/shell; liberar por SHA + handoff, ou renovação explícita C00. Não usar para writes de outras frentes. |
-| `packages/coelo_api/lib/src/media/`; `packages/coelo_database/supabase/functions/_shared/media_image_contract.ts` e seu teste; `packages/coelo_database/supabase/functions/moments-media/r2_s3.ts` e seu teste; `packages/coelo_database/supabase/functions/_shared/r2_s3.ts` e `_shared/r2_s3_test.ts` (I002) | C02, lease R01-MEDIA-01 | Núcleo comum já existente; preservar consumidores C04/C05, publicar contrato no primeiro lote. |
+| `apps/superadmin/lib/core/config/superadmin_auth_scope.dart`; `apps/superadmin/lib/app/shell/superadmin_shell.dart`; `packages/coelo_auth/` | C00; R01-SHARED-01 encerrada | C01 devolveu após integração2dd5a9bc; nova edição exige reserva. |
+| `packages/coelo_api/lib/src/media/`; `packages/coelo_database/supabase/functions/_shared/media_image_contract.ts` e seu teste; `packages/coelo_database/supabase/functions/moments-media/r2_s3.ts` e seu teste | C02, lease R01-MEDIA-01 | Núcleo comum já existente; preservar consumidores C04/C05, publicar contrato no primeiro lote. |
+| `packages/coelo_database/supabase/functions/_shared/r2_s3.ts` e `_shared/r2_s3_test.ts` | C00 após release C02 | Contrato v2 integrado6fd676e2; C02/C04/C05 consomem, nova escrita exige reserva. |
 | Barrel exports `packages/coelo_api/lib/coelo_api.dart`, `packages/coelo_domain/lib/coelo_domain.dart`; tokens/componentes UI centrais; manifests/lockfiles compartilhados | C00 | Propor export/delta no handoff; nenhuma edição concorrente. |
 | Migrations históricas, runner/replay/foundation manifests | C00 | Reserva nominal por arquivo antes de mudar. Autores podem preparar SQL candidato e teste dentro de domínio reservado, sem aplicar remoto. |
 | Novas migrations | Reserva nominal C00 antes de criar | Informar nome, dependências, domínio e IDs no primeiro handoff; C00 concede nome/arquivo por vez. Não renomear ou repinar para mascarar drift. Trabalho independente continua. |
@@ -59,7 +69,7 @@ Lease cobre somente arquivos existentes nomeados e domínio; alteração transve
 
 ## Contrato mínimo de mídia já disponível — R01-MEDIA-01/v1
 
-Candidato v2 recebido C02/r3 em código76a34dda: `R2Client.get(key,maxBytes)` retorna bytes com limite server-side e `put(key,bytes,mimeType)` escreve server-side, preservando API anterior. Ainda na fila de revisão/teste C00, não integrado no baseline publicado. Escrita dos dois arquivos `_shared/r2_s3` transferida temporariamente a C00 para essa revisão; restante do lease de mídia segue C02. Consumidores aguardam SHA integrado para usar métodos novos, sem criar transporte concorrente.
+Candidato v2 recebido C02/r3 em código76a34dda: `R2Client.get(key,maxBytes)` retorna bytes com limite server-side e `put(key,bytes,mimeType)` escreve server-side, preservando API anterior. Integrado e testado na C00 como6fd676e2 às12:46,49/49+4/4 e lint. Escrita dos dois arquivos `_shared/r2_s3` transferida temporariamente a C00 para essa revisão; restante do lease de mídia segue C02. Consumidores podem usar6fd676e2 para os métodos novos após sincronização coordenada, sem criar transporte concorrente.
 
 
 Atualização C02/r1 recebida em 2026-09-08T12:28:13−03:00: o wrapper Moments delega a `_shared/r2_s3.ts`, transporte comum com presignPut/presignGet/head/delete, TTL 1–900 segundos. C02 recebe também os dois arquivos comuns pela I002 para extensão compatível GET limitado/PUT server-side; C04/C05 consomem o contrato sem criar gateway concorrente. Forms `form-media` e XLSX `form-operations` ainda usam Supabase Storage legado: migração para R2 requer catálogo/autorização nominal, não apenas troca de bucket. Validador de métricas não é decoder nem prova MIME/checksum. 40/40 Deno sintéticos relatados, sem certificação de ação. A ausência dos nomes de tabelas ADR na busca não prova ausência de catálogo ou autorização.

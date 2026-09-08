@@ -5,7 +5,7 @@
   "round": "R01",
   "writer": "01a0818b-2a34-7fa3-a9aa-f191fc91cc8d",
   "writer_active": true,
-  "code_baseline": "6cb8ba15bae15f5a6129b0db6e740a66f8f82b3f",
+  "code_baseline": "db3dd9e9",
   "window_start": "2026-09-08T12:20:00-03:00",
   "window_end": "2026-09-16T12:20:00-03:00",
   "delivery_branch": "dev",
@@ -18,53 +18,62 @@
       "thread_id": "01a08197-7b62-73c1-9673-5fd40fa40452",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01",
       "branch": "codex/e2-r01-c01-identidade",
-      "instruction_revision": 1,
-      "received_revision": 3,
+      "instruction_revision": 2,
+      "received_revision": 5,
       "integrated_revision": 3,
-      "last_evidence": "2026-09-08T12:30:23-03:00",
+      "last_evidence": "2026-09-08T12:47:00-03:00",
       "baseline": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
       "worktree_verified_at": "2026-09-08T12:23:42-03:00",
       "handoff_present_at_preparation": true,
-      "accepted_revision": 3,
-      "handoff_sha256": "09ad925b0d15f125f773bb6a497129328ca3733beb328448d188b89bca4899b9",
-      "next_step": "Users/Models/Invites independent domain; shared lease released",
+      "accepted_revision": 5,
+      "handoff_sha256": "8e6d59e20f9d3e93f6358aa0d5c882b8b026e84821695cae76b95fc5a4790866",
+      "next_step": "Errors/account local; Invite7779bbf pending C00 visual review",
       "eta_first_batch": "implementation 30–60min conditional on reproduced race; tests15–30min after local runtime; handoff5–10min; not total ETA",
       "last_evidence_basis": "handoff r3; C00 local verification 12:34:18",
       "local_test_evidence": "C00 SDK/remount11/11 and coelo_auth25/25; C01 expanded155/155 and analyzer clean",
       "source_code_sha": "1fd7f9ecd8805379ca4d24b09000f4abcff041af",
       "integrated_code_sha": "2dd5a9bc",
-      "source_push_verified_sha": "10f893a724c8f525aeaab94631091b532572a371"
+      "source_push_verified_sha": "10f893a724c8f525aeaab94631091b532572a371",
+      "latest_source_code_sha": "7779bbf20373f40a0e59d708b0ff126e2a2510f2",
+      "latest_local_test_evidence": "Executor65PASS/5preexistinggoldenFAIL; READ107/107; no certification",
+      "instruction_acknowledgement": "I002 pending"
     },
     "C02": {
       "name": "E2 R01 C02 — Forms mídia e cuidado",
       "thread_id": "01a0819a-f1f1-7421-95dd-d645ca9f5747",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
       "branch": "codex/e2-r01-c02-forms-midia",
-      "instruction_revision": 2,
-      "received_revision": 3,
-      "integrated_revision": 0,
-      "last_evidence": "2026-09-08T12:34:24-03:00",
+      "instruction_revision": 3,
+      "received_revision": 4,
+      "integrated_revision": 4,
+      "last_evidence": "2026-09-08T12:39:42-03:00",
       "baseline": "6cb8ba15bae15f5a6129b0db6e740a66f8f82b3f",
       "worktree_verified_at": "2026-09-08T12:23:42-03:00",
       "handoff_present_at_preparation": false,
-      "accepted_revision": 3,
+      "accepted_revision": 4,
       "last_evidence_basis": "handoff r3 with corrected timestamp",
       "handoff_generated_at_reported": "2026-09-08T12:30:00-03:00",
-      "handoff_sha256": "d8082dd6c7e480a1e1026bc9765e1191d6024552bfdfdd0f182555c2c564f3c1",
-      "next_step": "C00 review queued R2 commit; C02 independent Forms recovery and catalog inspection",
-      "local_test_evidence": "Executor49/49 Deno+4/4 static Moments; FormsWIP102/102+DTO15/15; mediaDart45/45; preflight71/71 mocked",
+      "handoff_sha256": "2b308f35fbb6d9e27c50fb3c3d276ee91f4d2ebcc3c89e5975d453932a2963b9",
+      "next_step": "I003 local media catalog candidate/test; independent Forms HTTP; confirm I003",
+      "local_test_evidence": "C00 R249/49 + static4/4 + lint; Forms editor102/102 + DTO15/15",
       "continuity_automation_id": "e2-r01-c02-retomada-30-min",
       "continuity_verification": "Native automation view and local TOML confirmed ACTIVE, 30min; actual dispatch not proven",
-      "source_code_sha": "76a34dda11608b55ac31d855d1eddaf1993372ce"
+      "source_code_sha": "76a34dda11608b55ac31d855d1eddaf1993372ce",
+      "instruction_acknowledgement": "I003 pending",
+      "integrated_code_shas": [
+        "6fd676e2",
+        "44465b0c"
+      ],
+      "source_push_verified_sha": "fccaa2539ad7bce8580a4398b0e8cf9764531f9a"
     },
     "C03": {
       "name": "E2 R01 C03 — Operações",
       "thread_id": "01a0819b-a12e-7110-88cb-99e51a82f384",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03",
       "branch": "codex/e2-r01-c03-operacoes",
-      "instruction_revision": 1,
+      "instruction_revision": 2,
       "received_revision": 2,
-      "integrated_revision": 0,
+      "integrated_revision": 2,
       "last_evidence": "2026-09-08T12:36:00-03:00",
       "baseline": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
       "worktree_verified_at": "2026-09-08T12:23:42-03:00",
@@ -74,7 +83,9 @@
       "source_code_sha": "445ee6e2",
       "local_test_evidence": "C03 focal73/73; broad156PASS/9goldenFAIL; no golden approved",
       "next_step": "Independent activities runtime and assessments; C00 review nominal visual evidence and harness",
-      "instruction_acknowledgement": "I001 confirmed"
+      "instruction_acknowledgement": "I002 pending",
+      "integrated_code_sha": "db3dd9e9",
+      "source_push_verified_sha": "1d6fae2ffdc38284f31a46263851d318d2ea4d83"
     },
     "C04": {
       "name": "E2 R01 C04 — Estruturas e pessoas",
@@ -107,20 +118,10 @@
   "remote_test_leases": [],
   "integration_queue": [
     {
-      "executor": "C02",
-      "revision": 3,
-      "sha": "76a34dda11608b55ac31d855d1eddaf1993372ce",
-      "status": "received-awaiting-code-review-and-C00-tests",
-      "files": [
-        "_shared/r2_s3.ts",
-        "_shared/r2_s3_test.ts"
-      ]
-    },
-    {
-      "executor": "C03",
-      "revision": 2,
-      "sha": "445ee6e2",
-      "status": "received-test-harness-awaiting-review;9golden-failures-retained"
+      "executor": "C01",
+      "revision": 5,
+      "sha": "7779bbf20373f40a0e59d708b0ff126e2a2510f2",
+      "status": "received-awaiting-visual-code-review;5existing-golden-failures"
     }
   ],
   "automation_id": "e2-r01-c00-acompanhamento-30-min",
@@ -137,7 +138,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T12:34:18-03:00",
+  "updated_at": "2026-09-08T12:49:18-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -146,6 +147,34 @@
       "destination": "2dd5a9bc",
       "status": "local-verified-awaiting-delivery-dev",
       "report": "reports/R01-C01-auth-integracao.md"
+    },
+    {
+      "executor": "C02",
+      "revision": 3,
+      "source": "76a34dda",
+      "destination": "6fd676e2",
+      "status": "local-verified-awaiting-delivery-dev"
+    },
+    {
+      "executor": "C02",
+      "revision": 4,
+      "source": "98a2f5fa",
+      "destination": "44465b0c",
+      "status": "local-verified-awaiting-delivery-dev"
+    },
+    {
+      "executor": "C03",
+      "revision": 2,
+      "source": "445ee6e2",
+      "destination": "db3dd9e9",
+      "status": "harness-integrated-known-golden-failures-awaiting-delivery-dev"
     }
+  ],
+  "last_delta_processed_at": "2026-09-08T12:46:31-03:00",
+  "coordinator_next_steps": [
+    "Nominalize Auth test personas against actual catalog/ledger, no mutation before package authorization",
+    "Review Activity visual candidates against approved sources; no automatic golden updates",
+    "Review SQL candidates when new handoffs arrive",
+    "Deliver reviewed integration branch safely to dev preserving dirty original checkout"
   ]
 }
