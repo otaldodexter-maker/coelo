@@ -7,6 +7,292 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  Future<void> open(
+    WidgetTester tester,
+    _ResponseApi api, {
+    String occurrence = 'occurrence-1',
+  }) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: FormResponsePage(api: api, occurrenceId: occurrence),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('response autosave debounces edits and does not save hydration', (tester) async {
+    final api = _ResponseApi();
+    await open(tester, api);
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.saveCalls, isEmpty);
+    final field = find.byKey(const Key('form-response-item-item-1'));
+    await tester.enterText(field, 'First');
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.enterText(field, 'Latest');
+    await tester.pump(const Duration(milliseconds: 799));
+    expect(api.saveCalls, isEmpty);
+    await tester.pump(const Duration(milliseconds: 1));
+    await tester.pump();
+    expect(api.saveCalls, hasLength(1));
+    expect(
+      api.saveCalls.single.payload.answers['item-1']!.value,
+      isA<FormShortTextValue>().having((value) => value.value, 'answer', 'Latest'),
+    );
+    expect(find.text('Rascunho salvo.'), findsOneWidget);
+  });
+
+  testWidgets('response autosave saves incomplete draft without submitting', (tester) async {
+    final api = _ResponseApi();
+    await open(tester, api);
+    final field = find.byKey(const Key('form-response-item-item-1'));
+    await tester.enterText(field, 'Temporary');
+    await tester.enterText(field, '');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.saveCalls, hasLength(1));
+    expect(api.saveCalls.single.payload.answers, isEmpty);
+    expect(api.submitCommand, isNull);
+  });
+
+  testWidgets('response autosave serializes local edits during receipt wait', (tester) async {
+    final gate = Completer<void>();
+    final api = _ResponseApi(saveGate: gate.future);
+    await open(tester, api);
+    final field = find.byKey(const Key('form-response-item-item-1'));
+    await tester.enterText(field, 'First');
+    await tester.pump(const Duration(milliseconds: 800));
+    expect(api.saveCalls, hasLength(1));
+    await tester.enterText(field, 'Later');
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.saveCalls, hasLength(1));
+    gate.complete();
+    await tester.pump();
+    expect(find.text('Rascunho salvo.'), findsNothing);
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.saveCalls, hasLength(2));
+    expect(api.saveCalls.last.expectedVersion, 2);
+    expect(find.text('Later'), findsOneWidget);
+  });
+
+  for (final replacement in ['api', 'occurrence', 'dispose']) {
+    testWidgets('response autosave rejects retained callback after $replacement', (tester) async {
+      final first = _ResponseApi();
+      await open(tester, first);
+      final field = find.byKey(const Key('form-response-item-item-1'));
+      final retained = tester.widget<TextFormField>(field).onChanged!;
+      await tester.enterText(field, 'Obsolete answer');
+      final next = replacement == 'api' ? _ResponseApi() : first;
+      if (replacement == 'dispose') {
+        await tester.pumpWidget(const SizedBox());
+      } else {
+        await open(
+          tester,
+          next,
+          occurrence: replacement == 'occurrence' ? 'occurrence-2' : 'occurrence-1',
+        );
+      }
+      retained('Obsolete callback');
+      await tester.pump(const Duration(seconds: 2));
+      expect(first.saveCalls, isEmpty);
+      expect(next.saveCalls, isEmpty);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('response autosave is paused in review and submit stays explicit', (tester) async {
+    final api = _ResponseApi();
+    await open(tester, api);
+    await tester.enterText(find.byKey(const Key('form-response-item-item-1')), 'Reviewed answer');
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 3));
+    expect(api.saveCalls, isEmpty);
+    expect(api.submitCommand, isNull);
+    await tester.tap(find.byKey(const Key('form-response-submit')));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.submitCommand, isNotNull);
+    expect(api.saveCalls, isEmpty);
+  });
+
+  for (final failure in [FormApiFailureKind.conflict, FormApiFailureKind.unauthorized]) {
+    testWidgets('response autosave pauses after $failure', (tester) async {
+      final api = _ResponseApi()..saveFailure = failure;
+      await open(tester, api);
+      final field = find.byKey(const Key('form-response-item-item-1'));
+      await tester.enterText(field, 'Unconfirmed answer');
+      await tester.pump(const Duration(milliseconds: 800));
+      await tester.pump();
+      if (failure == FormApiFailureKind.conflict) {
+        await tester.enterText(field, 'Later edit');
+      } else {
+        expect(field, findsNothing);
+      }
+      await tester.pump(const Duration(seconds: 3));
+      expect(api.saveCalls, hasLength(1));
+      expect(find.text('Rascunho salvo.'), findsNothing);
+    });
+  }
+
+  testWidgets('response autosave lost confirmation requires manual replay before later save', (
+    tester,
+  ) async {
+    final api = _ResponseApi(lostConfirmation: 'save');
+    await open(tester, api);
+    final field = find.byKey(const Key('form-response-item-item-1'));
+    await tester.enterText(field, 'Committed answer');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    await tester.enterText(field, 'Later answer');
+    await tester.pump(const Duration(seconds: 3));
+    expect(api.saveCalls, hasLength(1));
+    expect(find.text('Rascunho salvo.'), findsNothing);
+    await tester.tap(find.byKey(const Key('form-response-save-draft')));
+    await tester.pump();
+    expect(identical(api.saveCalls.first, api.saveCalls.last), isTrue);
+    expect(find.text('Rascunho salvo.'), findsNothing);
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.saveCalls, hasLength(3));
+    expect(api.saveCalls.last.expectedVersion, 2);
+    expect(find.text('Rascunho salvo.'), findsOneWidget);
+  });
+
+  for (final raw in ['-', 'NaN', 'Infinity']) {
+    testWidgets('response autosave preserves numeric draft while invalid input is $raw', (
+      tester,
+    ) async {
+      final api = _ResponseApi(
+        kind: FormItemKind.decimal,
+        initialAnswers: {'item-1': FormAnswer.decimal(itemId: 'item-1', value: 12)},
+      );
+      await open(tester, api);
+      final field = find.byKey(const Key('form-response-item-item-1'));
+      await tester.enterText(field, raw);
+      await tester.pump(const Duration(seconds: 2));
+      expect(tester.takeException(), isNull);
+      expect(api.saveCalls, isEmpty);
+      await tester.tap(find.byKey(const Key('form-response-save-draft')));
+      await tester.pump();
+      expect(api.saveCalls, isEmpty);
+      await tester.enterText(field, '14,5');
+      await tester.pump(const Duration(milliseconds: 800));
+      await tester.pump();
+      expect(api.saveCalls, hasLength(1));
+      expect(
+        api.saveCalls.single.payload.answers['item-1']!.value,
+        isA<FormDecimalValue>().having((value) => value.value, 'number', 14.5),
+      );
+    });
+  }
+
+  for (final replaceContext in [false, true]) {
+    testWidgets('retained submit cannot bypass fresh review after context change=$replaceContext', (
+      tester,
+    ) async {
+      final first = _ResponseApi();
+      await open(tester, first);
+      final field = find.byKey(const Key('form-response-item-item-1'));
+      await tester.enterText(field, 'Reviewed A');
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('form-response-review')));
+      await tester.pump();
+      final oldSubmit = tester
+          .widget<FilledButton>(find.byKey(const Key('form-response-submit')))
+          .onPressed!;
+      final next = replaceContext ? _ResponseApi() : first;
+      if (replaceContext) await open(tester, next, occurrence: 'occurrence-2');
+      await tester.enterText(field, 'Unreviewed B');
+      await tester.pump();
+      oldSubmit();
+      await tester.pump();
+      expect(next.submitCommand, isNull);
+      // A current explicit review followed by send remains available.
+      await tester.tap(find.byKey(const Key('form-response-review')));
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('form-response-submit')));
+      await tester.pump();
+      expect(next.submitCommand, isNotNull);
+    });
+  }
+
+  testWidgets('response autosave clears invalid numeric state when its branch is hidden', (
+    tester,
+  ) async {
+    final api = _ResponseApi(
+      items: [
+        FormItem(id: 'root', kind: FormItemKind.yesNo, label: 'Root', position: 0),
+        FormItem(
+          id: 'number',
+          kind: FormItemKind.integer,
+          label: 'Number',
+          position: 1,
+          conditions: const [FormCondition.yesNo(sourceItemId: 'root', expected: true)],
+        ),
+      ],
+    );
+    await open(tester, api);
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Sim'));
+    await tester.pump();
+    await tester.enterText(find.byKey(const Key('form-response-item-number')), '1.5');
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.saveCalls, isEmpty);
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Não'));
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.saveCalls.single.payload.answers.keys, ['root']);
+  });
+
+  testWidgets('confirmed submission clears transient invalid numeric edit before reopening', (
+    tester,
+  ) async {
+    final gate = Completer<void>();
+    final api = _ResponseApi(kind: FormItemKind.decimal, submitGate: gate.future);
+    await open(tester, api);
+    final field = find.byKey(const Key('form-response-item-item-1'));
+    await tester.enterText(field, '12');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('form-response-submit')));
+    await tester.pump();
+    await tester.enterText(field, '-');
+    gate.complete();
+    await tester.pumpAndSettle();
+    expect(find.text('Resposta enviada'), findsOneWidget);
+    await tester.tap(find.text('Editar resposta'));
+    await tester.pump();
+    expect(api.editCommand, isNotNull);
+  });
+
+  testWidgets('response autosave feedback fits 375px at 200 percent text', (tester) async {
+    tester.view.physicalSize = const Size(375, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final api = _ResponseApi();
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: Scaffold(
+          body: FormResponsePage(api: api, occurrenceId: 'occurrence-1'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('form-response-item-item-1')), 'Synthetic answer');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.saveCalls, hasLength(1));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
     'lost save replay preserves newer answers and the next intent uses the confirmed version',
     (tester) async {
@@ -29,8 +315,9 @@ void main() {
         isNull,
       );
       await tester.enterText(field, 'New local answer');
+      await tester.pump();
       await tester.tap(save);
-      await tester.pumpAndSettle();
+      await tester.pump();
       expect(find.text('New local answer'), findsOneWidget);
       expect(
         find.text('Salvamento anterior confirmado. Há alterações locais ainda não salvas.'),
@@ -286,8 +573,10 @@ void main() {
     );
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(ChoiceChip, 'Sim'));
-    await tester.pumpAndSettle();
+    // Keep this manual-save regression before the new autosave debounce.
+    await tester.pump();
     await tester.enterText(find.byKey(const Key('form-response-item-leaf')), 'Obsolete branch');
+    await tester.pump();
     await tester.tap(find.byKey(const Key('form-response-save-draft')));
     await tester.pump();
     expect(api.saveCommand?.payload.answers.keys, ['root', 'leaf']);
@@ -703,6 +992,7 @@ final class _ResponseApi implements FormsApi {
   final Map<String, FormAnswer> initialAnswers;
   final Map<String, FormAnswer>? receiptAnswers;
   final String? lostConfirmation;
+  FormApiFailureKind? saveFailure;
   final confirmationCalls = <(String, FormCommand<FormResponseDraftPayload>)>[];
   final _confirmed = <String, FormResponseDraft>{};
   int? _remoteVersion;
@@ -738,6 +1028,7 @@ final class _ResponseApi implements FormsApi {
   final List<String> requestedOccurrences = [];
   int openCalls = 0;
   FormCommand<FormResponseDraftPayload>? saveCommand;
+  final saveCalls = <FormCommand<FormResponseDraftPayload>>[];
   FormCommand<FormResponseDraftPayload>? submitCommand;
   FormCommand<FormResponseDraftPayload>? editCommand;
 
@@ -801,6 +1092,8 @@ final class _ResponseApi implements FormsApi {
   @override
   Future<FormResponseDraft> saveResponseDraft(FormCommand<FormResponseDraftPayload> command) async {
     saveCommand = command;
+    saveCalls.add(command);
+    if (saveFailure != null) throw FormApiException(saveFailure!, 'Save denied');
     if (lostConfirmation == 'save') return _commitWithLostConfirmation('save', command);
     if (saveGate != null) await saveGate;
     return FormResponseDraft(
@@ -808,7 +1101,7 @@ final class _ResponseApi implements FormsApi {
       occurrenceId: command.payload.occurrenceId,
       status: FormResponseDraftStatus.draft,
       answers: receiptAnswers ?? command.payload.answers,
-      managementVersion: 2,
+      managementVersion: command.expectedVersion + 1,
     );
   }
 
