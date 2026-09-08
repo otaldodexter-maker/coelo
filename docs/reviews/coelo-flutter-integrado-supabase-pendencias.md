@@ -14,13 +14,19 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "99EEF0CC8126AD788247722B3A3DF56CA2DB8F32F530AD44F8DB432CE9587ED4"
+flutter_tracker_sha256: "6EBC54DCA2AC3032FB2BC1622B8A0D1CC419FDD4AE70443C14AB653D15F1D773"
 supabase_tracker_sha256: "72823DD534DA068ABA5F9A3675882C928D983D2EC460E66ECADFF2C647FFC6C7"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
+
+- Atualização01:32: adapter Locais `4328741a` e versão de modelo Cardápios
+  `682d4483` integrados após revisão independente e leitura central; destino
+  88/88 Locais e60/60 Cardápios, analyzer3 PASS. Sem SQL, HTTP ou ligação de
+  rotas; nenhum estado ready/verified alterado. CHILD-READ01 limitado a
+  contrato/DTO/testes; detalhe046/hierarquia completa não ampliados.
 
 - Atualização01:16: status compartilhado129/129 pacote e115/115 consumidores
   no destino; DS/projeção reconciliam visual24/alvo48. Validador de memória

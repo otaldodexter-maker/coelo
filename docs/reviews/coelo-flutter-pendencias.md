@@ -14,6 +14,13 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização01:32: `locations.list`/`locations.detail-links` ganham adapter
+  READ v2 estrito `4328741a` (fonte64ec7a6), sem rota/DI ativada; destino88/88
+  Locais PASS. Cardápios preserva versão histórica e versão do detalhe copiado
+  em `682d4483` (fontea5ad81d), inclusive origem ausente da primeira página;
+  destino60/60 data/wizard/directory PASS. Analyzer3 limpo. Autorização real,
+  persistência/reload e E2E continuam pendentes; não é paginação completa.
+
 - Atualização01:16: status compartilhado a0be1abe integrado após review e
   amostras visuais; destino129/129 no pacote e115/115 Locais/Atividades/
   Usuários/Unidades, analyzer2 limpo, validador visual exit0. Suspenso integral
