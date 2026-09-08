@@ -1,7 +1,7 @@
 ---
 title: "C07 — laudo das 61 divergências visuais da C05 no commit fixado cea29b1f (código de 7810e7c5)"
 source: "failures/ gerados por flutter test em C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c07 (17:46–17:50, código cea29b1f = 7810e7c5); seis laudos de subagentes somente-leitura revisados por C07; specs/050-principal-ui-ux-closure.md; specs/036-principal-now-publication-mvp.md; docs/superpowers/plans/2026-09-01-principal-ui-ux-closure.md; docs/superpowers/specs/2026-08-20-coelo-happens-publication-design.md; .agents/skills/coelo-ui/references (C00); git log dos masters e dos arquivos de feature"
-status: "evidence-review;errata-1"
+status: "evidence-review;errata-1;errata-2"
 generated_at: "2026-09-08T18:20:00-03:00"
 timezone: "America/Sao_Paulo"
 ---
@@ -341,3 +341,115 @@ escrito "não localizei aprovação nos caminhos X, Y e Z" em vez de tratar a au
 como ausência de aprovação — que é exatamente o erro que o próprio AGENTS.md adverte ("Falta de
 resultado no índice não significa ausência de implementação"). A busca cobriu
 `.agents/skills/coelo-ui/references` e `docs/reviews`, mas não `docs/superpowers/specs/`.
+
+---
+
+## Errata 2 — 2026-09-08T19:00-03:00: os 4 casos de Comunicações e formulário saem de D
+
+Busca dirigida em `docs/superpowers/specs/` (66), `docs/superpowers/plans/` (78),
+`docs/superpowers/checkpoints/`, `specs/`, `decisions/` (34 ADRs), `docs/knowledge/`,
+`docs/design/design-system.md` e as 18 referências de `coelo-ui` na C00 — o caminho que a Errata 1
+mostrou que eu não havia coberto. **Conferi na fonte cada citação abaixo antes de reclassificar.**
+
+### Caso do formulário — de D para DEFEITO (regressão da baseline aprovada)
+
+`notice_form_initial_mobile_light_375`, 37,69 %. `d4374e39` moveu o rodapé para dentro da rolagem no
+compacto, em `superadmin_form_frame.dart`. **Não há fonte que aprove isso, e há três fontes
+posteriores ao master que exigem o contrário:**
+
+1. `docs/superpowers/plans/2026-08-05-superadmin-health-care-ui-correction.md`, linha 149 — o plano
+   que **criou** o `SuperadminFormFrame`, derivado de spec com `status: "approved"`:
+   "Keep the measured SuperadminFormActionFooter below the scroll area."
+2. `docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md`
+   (`status: "approved-design"`, `updated_at: 2026-08-31`), linha 129: "**Rodapé universal:** aplicar
+   o rodapé de Criar/Editar Instituição a todas as criações e edições atingidas por esta etapa."
+3. `docs/superpowers/specs/2026-09-01-superadmin-communication-finish-design.md`
+   (`status: "approved"`), linha 21: "Criar/Editar Instituição é a baseline dos formulários e de
+   seus rodapés."
+
+**Agravante de alcance:** `institution_form_page.dart:317` consome o mesmo `SuperadminFormFrame`.
+`d4374e39` alterou **a própria baseline dos anexos 31–32**, o que explica o golden aprovado
+`institution_form_create_light_375.png` falhar hoje, e o mesmo em Unidades.
+
+**Origem do commit:** corpo vazio, sem citar fonte. O único motivador visível no diff é um teste de
+widget de Saúde e Cuidado que passou a alcançar Continuar — ou seja, a composição aprovada foi
+alterada para destravar um teste.
+
+**Contra-argumento examinado e descartado:** `form-layout-contracts.md` diz que em mobile as demais
+ações continuam acessíveis sem cobrir conteúdo permanentemente. Não serve como aprovação: a busca
+histórica mostra que essa frase é de 2026-07-27, **anterior** ao master de 2026-08-20, que foi
+produzido sob esse mesmo texto com rodapé fixo.
+
+### Caso do indicador de status — divide-se em dois vereditos
+
+**(a) Alvo de 48 px: APROVADO, mas com o impacto de layout declarado NÃO aprovado.** A correção
+`a0be1abe` nasceu do plano `docs/superpowers/plans/2026-09-08-location-shared-status-accessibility.md`
+(`status: "approved-local-implementation"`), que já dizia, linhas 21-22, que a caixa interativa maior
+pode mudar ocupação de layout e que isso seria reportado, não mascarado. A evidência correspondente
+registra que não se declara aprovação visual integral dos consumidores. Logo os diffs de 4,88–7,50 %
+**não são indeterminados**: são efeito colateral conhecido e admitido por escrito de uma correção
+aprovada. O caminho é rebaseline visual pelo Owner, não decisão do zero.
+
+*Ressalva de cronologia que eu quase deixei passar:* o texto do design-system que distingue
+"dimensão visual 24 × 24" de "alvo interativo 48 × 48" **não é fonte prévia** — a busca histórica
+mostra que ele foi escrito pelo próprio `a0be1abe`. Um commit não se autoriza citando a documentação
+que ele mesmo escreveu.
+
+**(b) Mover o indicador para a linha de descritores: REJEITADO por fonte posterior — de D para
+DEFEITO.** `116231bd` (C05) tirou o indicador da linha do título no card compacto de Comunicações.
+Nenhuma fonte aprova; três exigem o oposto:
+
+- `docs/superpowers/specs/2026-08-05-superadmin-notices-mvp-design.md`
+  (`status: "approved-design"`, `updated_at: 2026-08-31`), linhas 76-79: "A lista compacta mobile e a
+  tabela reutilizam **literalmente** as anatomias correspondentes de Instituições, incluindo
+  alinhamento horizontal e vertical, baseline tipográfica, alturas, paddings, gaps, estados..."
+- `2026-09-01-superadmin-communication-finish-design.md` (`status: "approved"`), linha 21:
+  "Instituições é a baseline obrigatória para toolbar, ações de arquivo, criação, tabela, **cards** e
+  paginação."
+- `docs/knowledge/team/superadmin-notices-mvp.md` (`status: validated`): "Toolbar, filtros, respiro,
+  tabela, status e paginação reutilizam literalmente Instituições."
+
+**Fato de código que fecha:** Instituições mantém o indicador na linha do título
+(`institution_directory_cards.dart:209`), e Turmas faz igual. Comunicações é o **único** consumidor
+que moveu. `116231bd` tocou 2 arquivos e nenhuma documentação.
+
+### O achado que decide a implementação, e corrige uma retratação da C05
+
+A doutrina aprovada mais próxima sobre como construir 24 visual com 48 de alvo está em
+`docs/superpowers/specs/2026-07-21-superadmin-import-activity-theme-prototype-design.md`
+(`status: "approved"`), linha 46:
+
+> O indicador de status da atividade é um único círculo centralizado dentro de uma **área interativa
+> invisível** de pelo menos 48 px; não haverá um círculo decorativo externo.
+
+**Área interativa invisível** não é `ConstrainedBox(minWidth: 48)` no fluxo de layout, que consome
+48 px de largura. É alvo sobreposto, que não rouba largura. Isso importa muito:
+
+1. A implementação de `a0be1abe` diverge dessa doutrina, e é a causa raiz de **todos** os 375
+   quebrados nos consumidores, não só Comunicações.
+2. A proposta original da C05 na r3 — preservar a área de toque ampliada sem reservar largura de
+   layout quando o indicador está colapsado — estava **certa**, e a retratação dela na r5, de que um
+   alvo de 48 × 48 precisa mesmo de 48 px de largura, contradiz a fonte aprovada.
+3. Corrigir no componente devolve o layout de **todos** os consumidores sem mover nada e sem golden
+   novo, e torna `116231bd` desnecessário.
+
+Ressalva honesta: essa spec fala do indicador de Atividades no protótipo e não nomeia o componente
+compartilhado. É a doutrina aprovada mais próxima que existe, não uma regra escrita para este
+componente. Registro como evidência forte, não como decisão fechada — quem decide é a C00 com o
+Owner.
+
+### Resumo corrigido do laudo, após as duas erratas
+
+| Classe | Original | Errata 1 | Errata 2 |
+|---|---|---|---|
+| A — master desatualizado | 38 | 43 | 43 |
+| D — precisa decisão | 22 | 17 | **13** |
+| Defeito a corrigir | 0 | 0 | **4** |
+| C — ambiente | 0 | 0 | 0 |
+| assertiva desatualizada | 1 | 1 | 1 |
+
+Os 13 D restantes são todos de Publicar no Agora, sob investigação separada. Os 4 defeitos novos
+são: o rodapé do formulário no compacto (`superadmin_form_frame.dart`, dono C00, atinge os
+consumidores de formulário e derruba a baseline aprovada dos anexos 31–32) e os 3 casos de 375 de
+Comunicações, cuja causa raiz é o alvo que consome largura, com o agravante da mudança de posição
+não aprovada.
