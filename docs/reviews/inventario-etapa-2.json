@@ -1012,7 +1012,7 @@
       "scope": "mvp",
       "done": "Fundação v2 de backend e cliente local implementados; listagem A01 possui prova própria. Não estender a prova de listagem aos comandos/avaliação.",
       "fe": "Revalidar o aceite específico desta ação: Seis etapas/goldens; depois replay pgTAP, erro antes do command e E2E remoto.",
-      "be": "Conferir contrato específico detalhe/comando/avaliação, runtime e persistência. Reusar a fundação v2 existente.",
+      "be": "Conferir contrato específico detalhe/comando/avaliação, runtime e persistência. Reusar a fundação v2 existente. Revisão C00 I013: reautorizar depois da espera advisory e usar relógio real antes do replay/receipt; corretivo nominal requerido.42asserts preparados não cobrem revogação durante espera.",
       "evidence": "commit32516e63; evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01/C00 2026-09-08T19:00:55-03:00 1c7a0e13: Contrato e router preservam modo explícito groupParticipation. Adapter/SQL corretivos ainda pendentes; não resolve sozinho criação/edição. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
@@ -1042,7 +1042,7 @@
       "scope": "mvp",
       "done": "Fundação v2 de backend e cliente local implementados; listagem A01 possui prova própria. Não estender a prova de listagem aos comandos/avaliação.",
       "fe": "Revalidar o aceite específico desta ação: Editar/salvar/falhar/abandonar sem sucesso parcial.",
-      "be": "Conferir contrato específico detalhe/comando/avaliação, runtime e persistência. Reusar a fundação v2 existente.",
+      "be": "Conferir contrato específico detalhe/comando/avaliação, runtime e persistência. Reusar a fundação v2 existente. Revisão C00 I013: reautorizar depois da espera advisory e usar relógio real antes do replay/receipt; corretivo nominal requerido.42asserts preparados não cobrem revogação durante espera.",
       "evidence": "commit32516e63; evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r25 fd791a81 rejeita save result divergente. Revisão estática C00 sem defeito novo, mas retido: depende0dbdba5e e candidatoSQLb9a58002 ainda não revisados/integrados. Testeadapter8PASS relatado pelo C03 inclui escopoModelo, não nova certificação.; R01/C00 2026-09-08T19:00:55-03:00 1c7a0e13: Contrato e router preservam modo explícito groupParticipation. Adapter/SQL corretivos ainda pendentes; não resolve sozinho criação/edição. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
@@ -1057,7 +1057,7 @@
       "scope": "mvp",
       "done": "Fundação v2 de backend e cliente local implementados; listagem A01 possui prova própria. Não estender a prova de listagem aos comandos/avaliação.",
       "fe": "Revalidar o aceite específico desta ação: Publicar/cancelar/falhar/repetir e estado após reload.",
-      "be": "Conferir contrato específico detalhe/comando/avaliação, runtime e persistência. Reusar a fundação v2 existente.",
+      "be": "Conferir contrato específico detalhe/comando/avaliação, runtime e persistência. Reusar a fundação v2 existente. Revisão C00 I013: reautorizar depois da espera advisory e usar relógio real antes do replay/receipt; corretivo nominal requerido.42asserts preparados não cobrem revogação durante espera.",
       "evidence": "commit32516e63; evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r25 fd791a81 rejeita save result divergente. Revisão estática C00 sem defeito novo, mas retido: depende0dbdba5e e candidatoSQLb9a58002 ainda não revisados/integrados. Testeadapter8PASS relatado pelo C03 inclui escopoModelo, não nova certificação.",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
@@ -3342,5 +3342,5 @@
       "integratedStatus": "pending-verification"
     }
   ],
-  "updatedAt": "2026-09-08T19:49:29-03:00"
+  "updatedAt": "2026-09-08T19:50:49-03:00"
 }

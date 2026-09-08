@@ -106,7 +106,7 @@
       "thread_id": "01a0819b-a12e-7110-88cb-99e51a82f384",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03",
       "branch": "codex/e2-r01-c03-operacoes",
-      "instruction_revision": 12,
+      "instruction_revision": 13,
       "received_revision": 25,
       "integrated_revision": 2,
       "last_evidence": "2026-09-08T18:16:41-03:00",
@@ -514,7 +514,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T19:49:29-03:00",
+  "updated_at": "2026-09-08T19:50:49-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -1242,12 +1242,12 @@
     "report": "reports/R01-checkpoint-1740.md"
   },
   "last_verified_delivery": {
-    "sha": "72121fb1a07854f351a0d85cd258e3277ab41840",
+    "sha": "422583a35629b1b08d8fc4acb58447379c1024b8",
     "refs": [
       "origin/dev",
       "origin/codex/e2-r01-c00-integration"
     ],
-    "verified_at": "2026-09-08T19:47:02-03:00",
+    "verified_at": "2026-09-08T19:50:49-03:00",
     "deploy": false
   },
   "validation_fronts": {
@@ -1530,6 +1530,7 @@
     "C00_test": "27PASS; analyzer2clean",
     "full_revision_cut": 25,
     "sql_candidate": "e94eecab5a247c5a0a0f5186ab1b85b812bf67c1",
-    "sql_runtime": false
+    "sql_runtime": false,
+    "sql_review": "requires I013 reauthorization after advisory wait, no runtime"
   }
 }
