@@ -22,7 +22,7 @@ final class AuditActor {
 
   final String? id;
   final String displayName;
-  final String roleCode;
+  final String? roleCode;
 }
 
 final class AuditInstitution {

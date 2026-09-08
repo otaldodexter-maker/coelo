@@ -1,12 +1,65 @@
+import 'dart:io';
+
 import 'package:coelo_superadmin/features/audit/presentation/widgets/audit_actor_summary.dart';
 import 'package:coelo_superadmin/features/audit/presentation/widgets/audit_safe_diff.dart';
 import 'package:coelo_superadmin/features/audit/presentation/widgets/audit_timeline.dart';
 import 'package:coelo_superadmin/features/audit/domain/audit.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  setUpAll(_loadGoldenFonts);
+  for (final dark in [false, true]) {
+    testWidgets('auth-session actor has no invented role at 200 percent dark=$dark', (
+      tester,
+    ) async {
+      tester.view
+        ..devicePixelRatio = 1
+        ..physicalSize = const Size(375, 900);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      final event = AuditEvent(
+        id: 'session-event',
+        actor: const AuditActor(id: null, displayName: 'Sessão autenticada', roleCode: null),
+        actionCode: 'auth.bootstrap',
+        resourceType: null,
+        resourceId: null,
+        outcome: AuditOutcome.denied,
+        origin: 'admin_ui',
+        context: const AuditContext(kind: 'platform'),
+        occurredAt: DateTime.utc(2026, 9, 8),
+      );
+      await tester.pumpWidget(
+        _app(
+          Column(
+            children: [
+              const AuditActorSummary(
+                actorName: 'Sessão autenticada',
+                actorRole: null,
+                actorContext: 'Plataforma',
+              ),
+              AuditTimeline(events: [event], onSelected: (_) {}),
+            ],
+          ),
+          dark: dark,
+          textScale: 2,
+        ),
+      );
+      expect(find.text('Sessão autenticada'), findsNWidgets(2));
+      expect(find.bySemanticsLabel('Ator Sessão autenticada, Plataforma'), findsOneWidget);
+      expect(find.textContaining('null'), findsNothing);
+      expect(find.text('system'), findsNothing);
+      expect(find.text('owner'), findsNothing);
+      expect(tester.takeException(), isNull);
+      await expectLater(
+        find.byType(Scaffold),
+        matchesGoldenFile('goldens/audit_auth_session_${dark ? 'dark' : 'light'}_375_200.png'),
+      );
+    });
+  }
+
   testWidgets('actor summary identifies actor, role and trusted context', (tester) async {
     await tester.pumpWidget(
       _app(
@@ -109,6 +162,7 @@ void main() {
 }
 
 Widget _app(Widget child, {bool dark = false, double textScale = 1}) => MaterialApp(
+  debugShowCheckedModeBanner: false,
   theme: CoeloTheme.light,
   darkTheme: CoeloTheme.dark,
   themeMode: dark ? ThemeMode.dark : ThemeMode.light,
@@ -122,3 +176,16 @@ Widget _app(Widget child, {bool dark = false, double textScale = 1}) => Material
     ),
   ),
 );
+
+Future<void> _loadGoldenFonts() async {
+  final nunitoSans = FontLoader('Nunito Sans')
+    ..addFont(rootBundle.load('assets/brand/NunitoSans-VariableFont.ttf'));
+  await nunitoSans.load();
+  final flutterArtifacts = File(Platform.resolvedExecutable).parent.parent.parent;
+  final materialIcons = File(
+    '${flutterArtifacts.path}/material_fonts/MaterialIcons-Regular.otf',
+  ).readAsBytesSync();
+  final loader = FontLoader('MaterialIcons')
+    ..addFont(Future.value(ByteData.sublistView(materialIcons)));
+  await loader.load();
+}

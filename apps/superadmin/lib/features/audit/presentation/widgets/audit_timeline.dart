@@ -70,7 +70,7 @@ final class _TimelineEvent extends StatelessWidget {
         ),
         const SizedBox(height: CoeloSpacing.space3),
         Text(event.actor.displayName),
-        Text(event.actor.roleCode, style: theme.textTheme.bodySmall),
+        if (event.actor.roleCode case final role?) Text(role, style: theme.textTheme.bodySmall),
         const SizedBox(height: CoeloSpacing.space3),
         const Divider(height: 1),
         const SizedBox(height: CoeloSpacing.space3),

@@ -158,11 +158,17 @@ AuditEvent _event(Map<String, Object?> json) => AuditEvent(
   occurredAt: _date(json, 'occurred_at'),
 );
 
-AuditActor _actor(Map<String, Object?> json) => AuditActor(
-  id: _optionalString(json['id']),
-  displayName: _string(json, 'display_name'),
-  roleCode: _string(json, 'role_code'),
-);
+AuditActor _actor(Map<String, Object?> json) {
+  final isSession = json['kind'] == 'auth_session';
+  if (isSession && (json['id'] != null || json['role_code'] != null)) {
+    throw const AuditUnavailableException();
+  }
+  return AuditActor(
+    id: _optionalString(json['id']),
+    displayName: _string(json, 'display_name'),
+    roleCode: isSession ? null : _string(json, 'role_code'),
+  );
+}
 
 AuditInstitution _institution(Map<String, Object?> json) =>
     AuditInstitution(id: _string(json, 'id'), name: _string(json, 'name'));

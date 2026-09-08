@@ -98,7 +98,7 @@ final class _AuditDetailContent extends StatelessWidget {
             actorName: event.actor.displayName,
             actorRole: event.actor.id == null
                 ? event.actor.roleCode
-                : '${event.actor.roleCode} · ${event.actor.id}',
+                : [?event.actor.roleCode, event.actor.id!].join(' · '),
             actorContext: event.context.id == null
                 ? event.context.kind
                 : '${event.context.kind}: ${event.context.id}',
