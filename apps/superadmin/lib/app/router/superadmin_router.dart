@@ -122,6 +122,7 @@ import '../../features/institutions/data/fake_institution_directory_repository.d
 import '../../features/institutions/data/supabase_institution_directory_repository.dart';
 import 'package:coelo_domain/locations.dart';
 import '../../features/locations/domain/location_catalog_reader.dart';
+import '../../features/locations/domain/location_selection_source.dart';
 import '../../features/locations/presentation/locations_page.dart';
 import '../../features/locations/presentation/unit_locations_gate.dart';
 import '../../features/institutions/domain/institution_directory_repository.dart';
@@ -290,6 +291,9 @@ GoRouter createSuperadminRouter({
   bool allowDevelopmentPreview = SuperadminAppConfig.allowDevelopmentPreview,
   required ValueChanged<ThemeMode> onThemeModeChanged,
 }) {
+  // Built once: consumers compare the source by identity to decide whether to
+  // reload, so a new instance per build would re-read on every frame.
+  final locationSelectionSource = CatalogLocationSelectionSource(locationCatalogReader);
   final accessHealthFixtures = DevelopmentAccessHealthFixtureCatalog.standard();
   final resolvedChildSafetyController =
       childSafetyController ?? ChildSafetyController(const UnavailableChildSafetyRepository());
@@ -1452,6 +1456,9 @@ GoRouter createSuperadminRouter({
                     repository: groupRepository,
                     initialInstitutionId: state.uri.queryParameters['institutionId'],
                     initialUnitId: state.uri.queryParameters['unitId'],
+                    locationSelectionSource: locationSelectionSource,
+                    sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
+                    contextRevision: session.authorizationInvalidationRevision,
                     logout: logout,
                     onCancel: () => _returnToOr(context, state, SuperadminRoutes.groupsName),
                     onSaved: (result) =>
@@ -1469,6 +1476,9 @@ GoRouter createSuperadminRouter({
                 : GroupFormPage(
                     repository: groupRepository,
                     groupId: state.pathParameters['groupId'],
+                    locationSelectionSource: locationSelectionSource,
+                    sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
+                    contextRevision: session.authorizationInvalidationRevision,
                     logout: logout,
                     onCancel: () => _returnToOr(context, state, SuperadminRoutes.groupsName),
                     onSaved: (result) =>

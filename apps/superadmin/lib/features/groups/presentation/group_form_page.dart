@@ -10,6 +10,11 @@ import '../../support/domain/support_ticket.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import 'package:coelo_domain/locations.dart';
+
+import '../../locations/domain/location_catalog_reader.dart';
+import '../../locations/domain/location_selection_source.dart';
+import '../../locations/presentation/location_selection_field.dart';
 import '../domain/group_directory.dart';
 
 enum GroupFormSaveResult { created, updated }
@@ -119,6 +124,9 @@ final class GroupFormPage extends StatefulWidget {
     this.initialUnitId,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
+    this.locationSelectionSource,
+    this.sessionAvailable = false,
+    this.contextRevision = 0,
     super.key,
   });
 
@@ -131,6 +139,13 @@ final class GroupFormPage extends StatefulWidget {
   final String? initialUnitId;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
+
+  /// Offers the catalogued locations of the unit this group belongs to.
+  ///
+  /// Absent by default: without it the step renders exactly as before.
+  final LocationSelectionSource? locationSelectionSource;
+  final bool sessionAvailable;
+  final int contextRevision;
 
   @override
   State<GroupFormPage> createState() => _GroupFormPageState();
@@ -149,6 +164,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   List<GroupDirectoryFilterOption> _typeOptions = const [];
   GroupDirectoryFilterOption? _selectedInstitution;
   GroupDirectoryFilterOption? _selectedUnit;
+  LocationSelection? _location;
   late GroupStatus _status;
   bool _inheritAppearance = true;
   bool _inheritAccess = true;
@@ -673,6 +689,10 @@ final class _GroupFormPageState extends State<GroupFormPage> {
             _fieldGrid(_prototypeFields()),
             const SizedBox(height: CoeloSpacing.space5),
             _activitySection(),
+            if (widget.locationSelectionSource != null) ...[
+              const SizedBox(height: CoeloSpacing.space5),
+              _locationSection(),
+            ],
           ],
         ),
       ),
@@ -907,6 +927,44 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     'group_local' => 'Turma',
     _ => 'Unidade',
   };
+
+  /// Location of the group, chosen from the unit's catalog or written once.
+  ///
+  /// The catalog belongs to the unit, so without a unit there is nothing to
+  /// offer and the step says so instead of showing an empty picker.
+  Widget _locationSection() {
+    final unit = _selectedUnit;
+    if (unit == null) {
+      return Text(
+        'Escolha a unidade da turma para selecionar um local do catálogo dela.',
+        key: const Key('group-location-needs-unit'),
+        style: Theme.of(context).textTheme.bodyMedium,
+      );
+    }
+    final institutionId = unit.institutionId;
+    if (institutionId == null || !validLocationId(unit.id) || !validLocationId(institutionId)) {
+      // A unit is chosen but it carries no catalog identifier, which is the
+      // case in the local prototype. Saying "choose a unit" here would be
+      // wrong, so the step says what is actually missing.
+      return Text(
+        'O catálogo de locais desta unidade ainda não está disponível.',
+        key: const Key('group-location-unavailable'),
+        style: Theme.of(context).textTheme.bodyMedium,
+      );
+    }
+    return LocationSelectionField(
+      key: Key('group-location-${unit.id}'),
+      scope: LocationScope.unit(institutionId: institutionId, unitId: unit.id),
+      source: widget.locationSelectionSource!,
+      sessionAvailable: widget.sessionAvailable,
+      contextRevision: widget.contextRevision,
+      initialSelection: _location,
+      onChanged: (selection) {
+        _location = selection;
+        _markDirty();
+      },
+    );
+  }
 
   Widget _activitySection() {
     final accent = _parseColor(_primaryColorController.text);
