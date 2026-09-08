@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @()
@@ -87,6 +87,7 @@ if ($NominalProfile) {
     'A01DirectoryContractRed' { 'profiles\A01DirectoryContractRed\Resolve-A01DirectoryContractRed.ps1' }
     'FReadDirectoryContractRed' { 'profiles\FReadDirectoryContractRed\Resolve-FReadDirectoryContractRed.ps1' }
     'FReadDirectoryContractGreen' { 'profiles\FReadDirectoryContractGreen\Resolve-FReadDirectoryContractGreen.ps1' }
+    'ModelReadAuthorizationRed' { 'profiles\ModelReadAuthorizationRed\Resolve-ModelReadAuthorizationRed.ps1' }
   }
   $nominalResolver = Join-Path $preflightRoot $nominalResolverRelative
   $nominalCursor = Get-Item -LiteralPath $nominalResolver -Force -ErrorAction Stop

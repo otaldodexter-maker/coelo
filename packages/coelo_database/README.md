@@ -231,6 +231,20 @@ canônica continua sujeita ao `42601` histórico descrito acima. Sua execução
 não foi realizada. O tratamento de uma base local derivada é um pacote
 nominal separado, com hashes e aprovação próprios.
 
+O perfil `-NominalProfile ModelReadAuthorizationRed` fixa Auth45 e as duas
+migrations de Modelos `20260901170731`/`20260901193000`, mais os preflights:
+49 arquivos, alvo `20260901200206`. O replay nominal aplicou a base completa;
+a fixture `access_profile_models_read_authorization_test.sql` registrou
+9 PASS e 2 FAIL por lookup anterior à autorização do detalhe inexistente.
+Não inclui corretiva futura, cleanup de labels ou bridge adicional.
+
+```powershell
+& packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
+  -TargetVersion 20260901200206 `
+  -NominalProfile ModelReadAuthorizationRed `
+  -TestPath packages/coelo_database/supabase/tests/access_profile_models_read_authorization_test.sql
+```
+
 Nunca use
 `Prepare-SafeMigrationReplay.ps1` diretamente em operacoes normais, nem use o
 staging com `db push`, `migration repair` ou qualquer comando remoto. As

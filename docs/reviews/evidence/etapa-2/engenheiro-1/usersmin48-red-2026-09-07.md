@@ -58,4 +58,4 @@ A análise estática localiza as causas: seleção/count não exige auth-link, e
 
 Verificação independente às `2026-09-08T01:49:31.1206583Z`: **zero containers, volumes e redes próprios; staging ausente**. O staging histórico `coelo_safe_af5bdf571cff41309f5b6845b713a` foi preservado.
 
-A próxima fatia é a corretiva nominal da E2E2, com hash/review e novo teste local autorizado. Nenhuma correção SQL, mutação remota, grant, ledger ou deploy foi executado; este RED não altera a entrega Users45 anterior nem conclui E2E de tela. Plano próprio atualizado; rastreadores centrais continuam sob autoria do Coordenador. Nenhuma regra nova de produto foi criada nem projeção de conhecimento de atividade.
+A próxima fatia é a corretiva nominal da E2E1, com hash/review e novo teste local autorizado. Nenhuma correção SQL, mutação remota, grant, ledger ou deploy foi executado; este RED não altera a entrega Users45 anterior nem conclui E2E de tela. Plano próprio atualizado; rastreadores centrais continuam sob autoria do Coordenador. Nenhuma regra nova de produto foi criada nem projeção de conhecimento de atividade.
