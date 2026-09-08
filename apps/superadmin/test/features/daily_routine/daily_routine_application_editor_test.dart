@@ -1,11 +1,53 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/daily_routine/daily_routine.dart';
 import 'package:coelo_superadmin/features/daily_routine/daily_routine_form_sections.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('ignores a late application load after the editor context changes', (tester) async {
+    final repository = _DelayedRoutineRepository();
+
+    Future<void> pumpEditor(String entryId) => tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: DailyRoutineWizardPage(
+          repository: repository,
+          logout: unavailableSuperadminLogout,
+          entryId: entryId,
+          entryKind: RoutineEntryKind.application,
+        ),
+      ),
+    );
+
+    await pumpEditor('application-a');
+    await pumpEditor('application-b');
+
+    repository.complete('application-b', startsAt: '10:00');
+    await tester.pump();
+    expect(
+      tester
+          .widget<CoeloFormTextField>(find.byKey(const Key('daily-routine-application-starts-at')))
+          .controller
+          .text,
+      '10:00',
+    );
+
+    repository.complete('application-a', startsAt: '08:00');
+    await tester.pump();
+    expect(
+      tester
+          .widget<CoeloFormTextField>(find.byKey(const Key('daily-routine-application-starts-at')))
+          .controller
+          .text,
+      '10:00',
+    );
+  });
+
   testWidgets('does not surface application creation without an authorized context', (
     tester,
   ) async {
@@ -52,6 +94,27 @@ void main() {
     expect(repository.revertedApplicationId, 'application-id');
   });
 
+  testWidgets('persists the newly selected inheritance mode', (tester) async {
+    final repository = _RoutineRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: DailyRoutineWizardPage(
+          repository: repository,
+          logout: unavailableSuperadminLogout,
+          entryId: 'application-id',
+          entryKind: RoutineEntryKind.application,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('daily-routine-inheritance-toggle')));
+    await tester.pumpAndSettle();
+
+    expect(repository.savedApplication?.inheritanceMode, RoutineInheritanceMode.inherited);
+  });
+
   testWidgets('renders scheduled fields and never exposes raw scope identifiers', (tester) async {
     final repository = _RoutineRepository();
     await tester.pumpWidget(
@@ -74,7 +137,7 @@ void main() {
   });
 }
 
-final class _RoutineRepository implements RoutineRepository {
+class _RoutineRepository implements RoutineRepository {
   RoutineApplication? savedApplication;
   String? revertedApplicationId;
 
@@ -144,4 +207,28 @@ final class _RoutineRepository implements RoutineRepository {
     required String requestId,
     required List<RoutineAnswerCorrection> corrections,
   }) async => throw UnimplementedError();
+}
+
+final class _DelayedRoutineRepository extends _RoutineRepository {
+  final _requests = <String, Completer<RoutineApplication>>{};
+
+  @override
+  Future<RoutineApplication> fetchApplication(String id) =>
+      _requests.putIfAbsent(id, Completer<RoutineApplication>.new).future;
+
+  void complete(String id, {required String startsAt}) {
+    _requests[id]!.complete(
+      RoutineApplication(
+        id: id,
+        modelVersionId: 'model-version-$id',
+        institutionId: 'institution-$id',
+        status: RoutineApplicationStatus.draft,
+        inheritanceMode: RoutineInheritanceMode.inherited,
+        effectiveVersion: 1,
+        expectedVersion: 0,
+        startsAt: startsAt,
+        canManage: true,
+      ),
+    );
+  }
 }

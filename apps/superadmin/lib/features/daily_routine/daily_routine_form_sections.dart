@@ -56,6 +56,8 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
   var _applicationInheritance = RoutineInheritanceMode.inherited;
   var _applicationVisibility = 'institution';
   var _canManage = false;
+  var _loadGeneration = 0;
+  var _commandGeneration = 0;
 
   @override
   void initState() {
@@ -71,12 +73,15 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         oldWidget.entryKind != widget.entryKind ||
         oldWidget.duplicateFromModelId != widget.duplicateFromModelId ||
         oldWidget.applicationFromModelId != widget.applicationFromModelId) {
+      _commandGeneration += 1;
       _load();
     }
   }
 
   @override
   void dispose() {
+    _loadGeneration += 1;
+    _commandGeneration += 1;
     _name.dispose();
     _description.dispose();
     _modelInstitutionId.dispose();
@@ -89,20 +94,40 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
   }
 
   Future<void> _load() async {
+    final generation = ++_loadGeneration;
+    final repository = widget.repository;
+    final entryId = widget.entryId;
+    final entryKind = widget.entryKind;
+    final duplicateFromModelId = widget.duplicateFromModelId;
+    final applicationFromModelId = widget.applicationFromModelId;
     setState(() {
       _loading = true;
+      _saving = false;
       _error = null;
     });
     try {
-      final id = widget.entryId;
-      final entry = id == null
-          ? await _newEntry()
-          : switch (widget.entryKind) {
-              RoutineEntryKind.model => await widget.repository.fetchModel(id),
-              RoutineEntryKind.application => await widget.repository.fetchApplication(id),
-              RoutineEntryKind.launch => await widget.repository.fetchLaunch(id),
+      final entry = entryId == null
+          ? await _newEntry(
+              repository: repository,
+              entryKind: entryKind,
+              duplicateFromModelId: duplicateFromModelId,
+              applicationFromModelId: applicationFromModelId,
+            )
+          : switch (entryKind) {
+              RoutineEntryKind.model => await repository.fetchModel(entryId),
+              RoutineEntryKind.application => await repository.fetchApplication(entryId),
+              RoutineEntryKind.launch => await repository.fetchLaunch(entryId),
             };
-      if (!mounted) return;
+      if (!_isCurrentLoad(
+        generation,
+        repository: repository,
+        entryId: entryId,
+        entryKind: entryKind,
+        duplicateFromModelId: duplicateFromModelId,
+        applicationFromModelId: applicationFromModelId,
+      )) {
+        return;
+      }
       _bind(entry);
       setState(() {
         _entry = entry;
@@ -115,7 +140,16 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         _loading = false;
       });
     } on Object catch (error) {
-      if (!mounted) return;
+      if (!_isCurrentLoad(
+        generation,
+        repository: repository,
+        entryId: entryId,
+        entryKind: entryKind,
+        duplicateFromModelId: duplicateFromModelId,
+        applicationFromModelId: applicationFromModelId,
+      )) {
+        return;
+      }
       setState(() {
         _error = error;
         _loading = false;
@@ -123,10 +157,41 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     }
   }
 
-  Future<Object> _newEntry() async {
-    final duplicateId = widget.duplicateFromModelId;
+  bool _isCurrentLoad(
+    int generation, {
+    required RoutineRepository repository,
+    required String? entryId,
+    required RoutineEntryKind entryKind,
+    required String? duplicateFromModelId,
+    required String? applicationFromModelId,
+  }) =>
+      mounted &&
+      generation == _loadGeneration &&
+      identical(repository, widget.repository) &&
+      entryId == widget.entryId &&
+      entryKind == widget.entryKind &&
+      duplicateFromModelId == widget.duplicateFromModelId &&
+      applicationFromModelId == widget.applicationFromModelId;
+
+  bool _isCurrentCommand(
+    int generation, {
+    required RoutineRepository repository,
+    required Object entry,
+  }) =>
+      mounted &&
+      generation == _commandGeneration &&
+      identical(repository, widget.repository) &&
+      identical(entry, _entry);
+
+  Future<Object> _newEntry({
+    required RoutineRepository repository,
+    required RoutineEntryKind entryKind,
+    required String? duplicateFromModelId,
+    required String? applicationFromModelId,
+  }) async {
+    final duplicateId = duplicateFromModelId;
     if (duplicateId != null) {
-      final source = await widget.repository.fetchModel(duplicateId);
+      final source = await repository.fetchModel(duplicateId);
       return RoutineModel(
         id: '',
         name: '${source.name} (cópia)',
@@ -141,9 +206,9 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         canManage: source.canManage,
       );
     }
-    final applicationModelId = widget.applicationFromModelId;
+    final applicationModelId = applicationFromModelId;
     if (applicationModelId != null) {
-      final source = await widget.repository.fetchModel(applicationModelId);
+      final source = await repository.fetchModel(applicationModelId);
       return RoutineApplication(
         id: '',
         modelVersionId: '${source.id}:v${source.version}',
@@ -156,9 +221,9 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         canManage: source.canManage,
       );
     }
-    return switch (widget.entryKind) {
+    return switch (entryKind) {
       RoutineEntryKind.model => () async {
-        final capability = await widget.repository.fetchPage(
+        final capability = await repository.fetchPage(
           const RoutineDirectoryQuery(kind: RoutineEntryKind.model, pageSize: 1),
         );
         return RoutineModel(
@@ -821,6 +886,8 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
 
   Future<void> _saveModel() async {
     final current = _entry! as RoutineModel;
+    final repository = widget.repository;
+    final generation = ++_commandGeneration;
     final model = RoutineModel(
       id: current.id,
       name: _name.text.trim(),
@@ -838,10 +905,11 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     try {
       model.validate();
       setState(() => _saving = true);
-      final id = await widget.repository.saveModel(
+      final id = await repository.saveModel(
         model,
         requestId: 'save-model-${DateTime.now().microsecondsSinceEpoch}',
       );
+      if (!_isCurrentCommand(generation, repository: repository, entry: current)) return;
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Modelo salvo.')));
       if (current.id.isEmpty) {
@@ -862,22 +930,26 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         );
       }
     } on FormatException catch (error) {
-      if (mounted) {
+      if (mounted && _isCurrentCommand(generation, repository: repository, entry: current)) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
       }
     } on Object {
-      if (mounted) {
+      if (mounted && _isCurrentCommand(generation, repository: repository, entry: current)) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Nao foi possivel salvar o modelo.')));
       }
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (_isCurrentCommand(generation, repository: repository, entry: current)) {
+        setState(() => _saving = false);
+      }
     }
   }
 
   Future<void> _saveApplication() async {
     final current = _entry! as RoutineApplication;
+    final repository = widget.repository;
+    final generation = ++_commandGeneration;
     final application = _applicationDraft(current);
     if (application.modelVersionId.isEmpty || application.institutionId.isEmpty) {
       ScaffoldMessenger.of(
@@ -887,10 +959,11 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     }
     setState(() => _saving = true);
     try {
-      final id = await widget.repository.saveApplication(
+      final id = await repository.saveApplication(
         application,
         requestId: 'save-application-${DateTime.now().microsecondsSinceEpoch}',
       );
+      if (!_isCurrentCommand(generation, repository: repository, entry: current)) return;
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
@@ -920,58 +993,73 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         );
       }
     } on Object {
-      if (mounted) {
+      if (mounted && _isCurrentCommand(generation, repository: repository, entry: current)) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Nao foi possivel salvar a rotina aplicada.')));
       }
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (mounted && _isCurrentCommand(generation, repository: repository, entry: current)) {
+        setState(() => _saving = false);
+      }
     }
   }
 
   Future<void> _saveApplicationMode(RoutineInheritanceMode mode) async {
     final current = _entry! as RoutineApplication;
-    final updated = _applicationDraft(current);
+    final repository = widget.repository;
+    final generation = ++_commandGeneration;
     setState(() {
       _applicationInheritance = mode;
       _saving = true;
     });
+    final updated = _applicationDraft(current);
     try {
-      await widget.repository.saveApplication(
+      await repository.saveApplication(
         updated,
         requestId: 'save-application-${DateTime.now().microsecondsSinceEpoch}',
       );
+      if (!_isCurrentCommand(generation, repository: repository, entry: current)) return;
+      setState(() => _saving = false);
       await _load();
     } on Object {
-      if (mounted) {
+      if (!mounted) return;
+      if (_isCurrentCommand(generation, repository: repository, entry: current)) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Nao foi possivel alterar a heranca.')));
       }
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (_isCurrentCommand(generation, repository: repository, entry: current)) {
+        setState(() => _saving = false);
+      }
     }
   }
 
   Future<void> _resetInheritance() async {
     final application = _entry! as RoutineApplication;
+    final repository = widget.repository;
+    final generation = ++_commandGeneration;
     setState(() => _saving = true);
     try {
-      await widget.repository.revertApplicationCustomization(
+      await repository.revertApplicationCustomization(
         applicationId: application.id,
         expectedVersion: application.expectedVersion,
         requestId: 'revert-application-${DateTime.now().microsecondsSinceEpoch}',
       );
+      if (!_isCurrentCommand(generation, repository: repository, entry: application)) return;
+      setState(() => _saving = false);
       await _load();
     } on Object {
-      if (mounted) {
+      if (mounted && _isCurrentCommand(generation, repository: repository, entry: application)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Nao foi possivel reverter a personalizacao.')),
         );
       }
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (_isCurrentCommand(generation, repository: repository, entry: application)) {
+        setState(() => _saving = false);
+      }
     }
   }
 }
