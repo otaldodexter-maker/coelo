@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -119,6 +121,7 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
   Object? _feedError;
   var _feedLoading = false;
   var _feedRequest = 0;
+  DialogRoute<void>? _galleryRoute;
 
   @override
   void initState() {
@@ -144,6 +147,7 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
     final repository = widget.feedRepository;
     final scope = widget.feedScope;
     final request = ++_feedRequest;
+    _dismissGallery();
     setState(() {
       _remotePosts = null;
       _mixedItems = null;
@@ -206,19 +210,68 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
   }
 
   Future<void> _openGallery(PrincipalPostPreviewItem post) async {
+    if (!mounted || _feedLoading || _feedError != null || _galleryRoute != null) return;
+    final request = _feedRequest;
+    bool isCurrent() => mounted && request == _feedRequest;
     final originFocus = FocusManager.instance.primaryFocus;
-    await showDialog<void>(
+    final repository = widget.mediaRepository ?? widget.feedRepository;
+    final share = widget.onShareMedia;
+    final save = widget.onSaveMedia;
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final route = DialogRoute<void>(
       context: context,
+      themes: InheritedTheme.capture(from: context, to: navigator.context),
+      animationStyle: MediaQuery.disableAnimationsOf(context) ? AnimationStyle.noAnimation : null,
+      traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
       barrierColor: Colors.black.withValues(alpha: .72),
-      builder: (context) => _HappensGallery(
-        post: post,
-        repository: widget.mediaRepository ?? widget.feedRepository,
-        onReload: _loadFeed,
-        onShare: widget.onShareMedia,
-        onSave: widget.onSaveMedia,
-      ),
+      builder: (context) => !isCurrent()
+          ? const SizedBox.shrink()
+          : _HappensGallery(
+              post: post,
+              repository: repository,
+              isContextCurrent: isCurrent,
+              onReload: () {
+                if (isCurrent()) _loadFeed();
+              },
+              onShare: share == null
+                  ? null
+                  : () {
+                      if (isCurrent()) share();
+                    },
+              onSave: save == null
+                  ? null
+                  : () {
+                      if (isCurrent()) save();
+                    },
+            ),
     );
-    if (originFocus?.canRequestFocus ?? false) originFocus!.requestFocus();
+    _galleryRoute = route;
+    await navigator.push(route);
+    if (identical(_galleryRoute, route)) _galleryRoute = null;
+    if (isCurrent() && (originFocus?.canRequestFocus ?? false)) originFocus!.requestFocus();
+  }
+
+  void _dismissGallery() {
+    final route = _galleryRoute;
+    _galleryRoute = null;
+    if (route == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (route.isActive) route.navigator?.removeRoute(route);
+    });
+  }
+
+  ValueChanged<PrincipalPostPreviewItem> _galleryOpener() {
+    final request = _feedRequest;
+    return (post) {
+      if (mounted && request == _feedRequest) _openGallery(post);
+    };
+  }
+
+  @override
+  void dispose() {
+    _feedRequest++;
+    _dismissGallery();
+    super.dispose();
   }
 
   @override
@@ -270,7 +323,7 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
                           : _savedPosts.add(index);
                     }),
                     onPrototypeAction: _prototypeMessage,
-                    onOpenGallery: _openGallery,
+                    onOpenGallery: _galleryOpener(),
                     embedded: widget.embedded,
                   ),
                 ),
@@ -1079,6 +1132,7 @@ final class _HappensGallery extends StatefulWidget {
     required this.onReload,
     required this.onShare,
     required this.onSave,
+    required this.isContextCurrent,
   });
 
   final PrincipalPostPreviewItem post;
@@ -1086,6 +1140,7 @@ final class _HappensGallery extends StatefulWidget {
   final VoidCallback onReload;
   final VoidCallback? onShare;
   final VoidCallback? onSave;
+  final bool Function() isContextCurrent;
 
   @override
   State<_HappensGallery> createState() => _HappensGalleryState();
@@ -1145,6 +1200,7 @@ final class _HappensGalleryState extends State<_HappensGallery> {
                             ? _AuthorizedMedia(
                                 media: widget.post.media[_index],
                                 repository: widget.repository,
+                                isContextCurrent: widget.isContextCurrent,
                                 onReload: widget.onReload,
                                 onVideoUnavailable: () => Navigator.of(context).pop(),
                                 fit: BoxFit.contain,
@@ -1299,6 +1355,7 @@ final class _AuthorizedMedia extends StatefulWidget {
     required this.onReload,
     this.onVideoUnavailable,
     this.fit = BoxFit.cover,
+    this.isContextCurrent,
   });
 
   final PrincipalHappensMediaDescriptor media;
@@ -1306,6 +1363,7 @@ final class _AuthorizedMedia extends StatefulWidget {
   final VoidCallback onReload;
   final VoidCallback? onVideoUnavailable;
   final BoxFit fit;
+  final bool Function()? isContextCurrent;
 
   @override
   State<_AuthorizedMedia> createState() => _AuthorizedMediaState();
@@ -1313,11 +1371,33 @@ final class _AuthorizedMedia extends StatefulWidget {
 
 final class _AuthorizedMediaState extends State<_AuthorizedMedia> {
   late Future<PrincipalHappensMediaRead> _read = _resolve();
+  var _resolveGeneration = 0;
 
   Future<PrincipalHappensMediaRead> _resolve() {
     final repository = widget.repository;
     if (repository == null) {
       return Future.error(const PrincipalHappensFeedUnavailable());
+    }
+    final current = widget.isContextCurrent;
+    if (current != null) {
+      final media = widget.media;
+      final generation = ++_resolveGeneration;
+      final result = Completer<PrincipalHappensMediaRead>();
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        try {
+          if (!mounted || generation != _resolveGeneration || !current()) {
+            throw const PrincipalHappensFeedUnavailable();
+          }
+          final read = await repository.resolveMedia(media);
+          if (!mounted || generation != _resolveGeneration || !current()) {
+            throw const PrincipalHappensFeedUnavailable();
+          }
+          result.complete(read);
+        } on Object catch (error, stack) {
+          result.completeError(error, stack);
+        }
+      });
+      return result.future;
     }
     return repository.resolveMedia(widget.media);
   }

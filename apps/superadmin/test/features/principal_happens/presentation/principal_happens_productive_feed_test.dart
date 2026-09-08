@@ -21,6 +21,104 @@ void main() {
     );
   }
 
+  testWidgets('disposing feed removes only its gallery below another route', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(768, 1024));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final navigator = GlobalKey<NavigatorState>();
+    final repository = _FeedRepository(
+      () async => [_galleryPost],
+      resolve: (media) async => _videoRead(media),
+    );
+    Widget host(bool active) => MaterialApp(
+      navigatorKey: navigator,
+      theme: CoeloTheme.light,
+      home: active
+          ? PrincipalHappensPreviewPage(feedRepository: repository, feedScope: scope)
+          : const Scaffold(body: Text('Origem')),
+    );
+    await tester.pumpWidget(host(true));
+    await tester.pumpAndSettle();
+    final media = find.byKey(const Key('principal-happens-media-post-0'));
+    await tester.ensureVisible(media);
+    await tester.tap(media);
+    await tester.pumpAndSettle();
+    unawaited(
+      navigator.currentState!.push(
+        DialogRoute<void>(
+          context: navigator.currentContext!,
+          builder: (_) => const Dialog(child: Text('Outra rota')),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(host(false));
+    await tester.pumpAndSettle();
+    expect(find.text('Outra rota'), findsOneWidget);
+    navigator.currentState!.pop();
+    await tester.pumpAndSettle();
+    expect(find.text('Origem'), findsOneWidget);
+    expect(find.byKey(const Key('principal-happens-gallery')), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('context swap closes gallery and rejects its pending media result', (tester) async {
+    final pending = Completer<PrincipalHappensMediaRead>();
+    var reads = 0;
+    final first = _FeedRepository(
+      () async => [_galleryPost],
+      resolve: (media) {
+        reads++;
+        return reads == 1 ? Future.value(_videoRead(media)) : pending.future;
+      },
+    );
+    await pumpFeed(tester, first);
+    await tester.pumpAndSettle();
+    final media = find.byKey(const Key('principal-happens-media-post-0'));
+    await tester.ensureVisible(media);
+    await tester.tap(media);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(reads, 2);
+    await pumpFeed(tester, _FeedRepository(() async => const []));
+    await tester.pump();
+    pending.complete(
+      const PrincipalHappensMediaRead(
+        signedUrl: 'https://coelo.invalid/obsolete-gallery-image',
+        mimeType: 'image/png',
+        expiresIn: Duration(seconds: 60),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('principal-happens-gallery')), findsNothing);
+    expect(find.text('Tudo em dia por aqui'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Image &&
+            widget.image is NetworkImage &&
+            (widget.image as NetworkImage).url == 'https://coelo.invalid/obsolete-gallery-image',
+      ),
+      findsNothing,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('context swap before gallery build does not redeem old media again', (tester) async {
+    final first = _FeedRepository(
+      () async => [_galleryPost],
+      resolve: (media) async => _videoRead(media),
+    );
+    await pumpFeed(tester, first);
+    await tester.pumpAndSettle();
+    final media = find.byKey(const Key('principal-happens-media-post-0'));
+    await tester.ensureVisible(media);
+    await tester.tap(media);
+    await pumpFeed(tester, _FeedRepository(() async => const []));
+    await tester.pumpAndSettle();
+    expect(first.resolvedTickets, hasLength(1));
+    expect(find.byKey(const Key('principal-happens-gallery')), findsNothing);
+  });
+
   testWidgets('keeps Agora visible while the productive feed loads', (tester) async {
     final completer = Completer<List<PrincipalPostPreviewItem>>();
     await pumpFeed(tester, _FeedRepository(() => completer.future));
@@ -146,6 +244,24 @@ void main() {
     expect(repository.resolvedTickets, ['ticket-1', 'ticket-2']);
   });
 }
+
+const _galleryPost = PrincipalPostPreviewItem(
+  author: 'Equipe A',
+  context: 'Contexto A',
+  time: 'Agora',
+  initials: 'EA',
+  body: 'Registro A',
+  media: [
+    PrincipalHappensMediaDescriptor(readTicket: 'ticket-a', mimeType: 'video/mp4', displayOrder: 0),
+  ],
+);
+
+PrincipalHappensMediaRead _videoRead(PrincipalHappensMediaDescriptor media) =>
+    PrincipalHappensMediaRead(
+      signedUrl: 'https://coelo.invalid/${media.readTicket}',
+      mimeType: media.mimeType,
+      expiresIn: const Duration(seconds: 60),
+    );
 
 final class _FeedRepository implements PrincipalHappensFeedRepository {
   _FeedRepository(this.load, {this.resolve});
