@@ -12,6 +12,40 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   setUpAll(_loadGoldenFonts);
 
+  testWidgets('keeps scaled support toolbar and pagination usable', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    for (final width in [375.0, 1440.0]) {
+      for (final brightness in [Brightness.light, Brightness.dark]) {
+        tester.view.physicalSize = Size(width, 900);
+        final controller = SupportPrototypeController(clock: () => DateTime(2026, 7, 27, 12));
+        final scale = width == 375 ? 2.0 : 1.5;
+        await tester.pumpWidget(
+          _goldenApp(controller, brightness, textScaler: TextScaler.linear(scale)),
+        );
+        await tester.pumpAndSettle();
+        final suffix = '${brightness.name}_${width.toInt()}_text${(scale * 100).toInt()}';
+        expect(tester.takeException(), isNull);
+        await expectLater(
+          find.byKey(const Key('support-golden-root')),
+          matchesGoldenFile('goldens/support_kanban_$suffix.png'),
+        );
+        await tester.ensureVisible(find.byKey(const Key('support-view-toggle-table')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('support-view-toggle-table')));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        await expectLater(
+          find.byKey(const Key('support-golden-root')),
+          matchesGoldenFile('goldens/support_table_$suffix.png'),
+        );
+        await tester.pumpWidget(const SizedBox.shrink());
+        controller.dispose();
+      }
+    }
+  });
+
   testWidgets('matches support kanban, table, and detail references', (tester) async {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -54,7 +88,11 @@ void main() {
   });
 }
 
-Widget _goldenApp(SupportPrototypeController controller, Brightness brightness) {
+Widget _goldenApp(
+  SupportPrototypeController controller,
+  Brightness brightness, {
+  TextScaler textScaler = TextScaler.noScaling,
+}) {
   return MaterialApp(
     debugShowCheckedModeBanner: false,
     theme: CoeloTheme.light,
@@ -64,9 +102,7 @@ Widget _goldenApp(SupportPrototypeController controller, Brightness brightness) 
     builder: (context, child) => RepaintBoundary(
       key: const Key('support-golden-root'),
       child: MediaQuery(
-        data: MediaQuery.of(
-          context,
-        ).copyWith(disableAnimations: true, textScaler: TextScaler.noScaling),
+        data: MediaQuery.of(context).copyWith(disableAnimations: true, textScaler: textScaler),
         child: child!,
       ),
     ),

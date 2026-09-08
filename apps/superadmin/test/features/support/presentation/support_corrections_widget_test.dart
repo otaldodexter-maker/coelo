@@ -9,6 +9,50 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('keyboard reaches the scrolled compact support view control', (tester) async {
+    for (final theme in [CoeloTheme.light, CoeloTheme.dark]) {
+      final controller = SupportPrototypeController(initialTickets: _tickets(12));
+      addTearDown(controller.dispose);
+      await _pump(
+        tester,
+        controller,
+        size: const Size(375, 900),
+        theme: theme,
+        textScaler: const TextScaler.linear(2),
+      );
+      final table = find.byKey(const Key('support-view-toggle-table'));
+      expect(table.hitTestable(), findsNothing);
+      await tester.tap(find.byKey(const Key('support-search')));
+      await tester.pumpAndSettle();
+      for (var step = 0; step < 20 && !Focus.of(tester.element(table)).hasFocus; step++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pumpAndSettle();
+      }
+      expect(Focus.of(tester.element(table)).hasFocus, isTrue);
+      expect(table.hitTestable(), findsOneWidget);
+      final readScope = FocusScope.of(tester.element(find.byKey(const Key('support-read-filter'))));
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.shiftLeft);
+      for (var step = 0; step < 10 && !readScope.hasFocus; step++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pumpAndSettle();
+      }
+      expect(readScope.hasFocus, isTrue);
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+      expect(readScope.hasFocus, isFalse);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.shiftLeft);
+      for (var step = 0; step < 20 && !Focus.of(tester.element(table)).hasFocus; step++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pumpAndSettle();
+      }
+      expect(Focus.of(tester.element(table)).hasFocus, isTrue);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('support-ticket-table')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    }
+  });
+
   testWidgets('offers create actions in kanban and table with table pagination', (tester) async {
     final controller = SupportPrototypeController(initialTickets: _tickets(12));
     addTearDown(controller.dispose);
@@ -157,6 +201,8 @@ void main() {
       disableAnimations: true,
     );
 
+    await tester.ensureVisible(find.byKey(const Key('support-view-toggle-table')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('support-view-toggle-table')));
     await tester.pumpAndSettle();
 
@@ -225,6 +271,8 @@ Future<void> _expectResponsiveSupportMatrix(
         reason: '${theme.brightness} at $width px and ${textScaler.scale(10) / 10}x text',
       );
 
+      await tester.ensureVisible(find.byKey(const Key('support-view-toggle-table')));
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('support-view-toggle-table')));
       await tester.pumpAndSettle();
       expect(
@@ -234,6 +282,23 @@ Future<void> _expectResponsiveSupportMatrix(
       );
       expect(find.byKey(const Key('support-create-table')), findsOneWidget);
       expect(find.byKey(const Key('support-pagination')), findsOneWidget);
+      final compactNext = find.byKey(const Key('coelo-admin-pagination-next'));
+      final next = compactNext.evaluate().isNotEmpty
+          ? compactNext
+          : find.byKey(const Key('coelo-admin-pagination-page-2'));
+      final nextRect = tester.getRect(next);
+      expect(
+        next.hitTestable(),
+        findsOneWidget,
+        reason:
+            '${theme.brightness} width=$width scale=${textScaler.scale(10) / 10} rect=$nextRect',
+      );
+      expect(nextRect.top, greaterThanOrEqualTo(0));
+      expect(nextRect.bottom, lessThanOrEqualTo(900));
+      await tester.tap(next);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('coelo-admin-table-row-background-SUP-010')), findsOneWidget);
+      expect(tester.takeException(), isNull);
     }
   }
 }
