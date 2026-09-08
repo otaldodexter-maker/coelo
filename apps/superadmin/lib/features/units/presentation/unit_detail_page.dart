@@ -15,6 +15,7 @@ final class UnitDetailPage extends StatefulWidget {
     required this.logout,
     required this.onBack,
     this.onDestinationSelected,
+    this.onOpenLocationCatalog,
     super.key,
   });
   final UnitDetailRepository repository;
@@ -22,6 +23,10 @@ final class UnitDetailPage extends StatefulWidget {
   final LogoutAction logout;
   final VoidCallback onBack;
   final ValueChanged<String>? onDestinationSelected;
+
+  /// Opens the catalog of this unit; absent when no route is composed for the
+  /// caller, and then no control is offered.
+  final VoidCallback? onOpenLocationCatalog;
   @override
   State<UnitDetailPage> createState() => _UnitDetailPageState();
 }
@@ -152,6 +157,13 @@ final class _UnitDetailPageState extends State<UnitDetailPage> {
                       child: const Text('Voltar'),
                     ),
                     continuationActions: [
+                      if (widget.onOpenLocationCatalog != null && _controller.detail != null)
+                        OutlinedButton.icon(
+                          key: const Key('unit-detail-locations'),
+                          onPressed: widget.onOpenLocationCatalog,
+                          icon: const Icon(Icons.place_outlined),
+                          label: const Text('Mapa e locais'),
+                        ),
                       OutlinedButton.icon(
                         key: const Key('unit-detail-reload'),
                         onPressed: _controller.state == UnitDetailState.loading
