@@ -1,10 +1,28 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { R2Client, type R2Config, validateR2Config } from "../_shared/r2_s3.ts";
 import {
   authorizedOperationsRequest,
   operationsBearerToken,
 } from "./auth_contract.ts";
-import { opaqueArtifactPath, streamXlsx } from "./export_contract.ts";
-import { MultipartS3Client, multipartS3Config } from "./multipart_s3.ts";
+import {
+  type ExportSubmission,
+  opaqueArtifactPath,
+  streamXlsx,
+} from "./export_contract.ts";
+import {
+  MultipartS3Client,
+  multipartS3Config,
+  sha256Hex,
+} from "./multipart_s3.ts";
+import {
+  type ArtifactDigest,
+  multipartArtifactConfig,
+  type MultipartAttemptScope,
+  type MultipartPersistenceAdapter,
+  type MultipartSnapshot,
+  uploadAdaptiveArtifact,
+  validateMultipartSnapshot,
+} from "./multipart_export.ts";
 import {
   createSnapshotRows,
   type SnapshotPageLoader,
@@ -55,6 +73,14 @@ type Snapshot = {
 export type FormOperationsDependencies = Readonly<{
   environment: () => Record<string, string | undefined>;
   createClient: typeof createClient;
+  now?: () => Date;
+  createR2?: (config: R2Config) => Pick<R2Client, "put">;
+  createMultipart?: (
+    config: R2Config,
+  ) => Pick<
+    MultipartS3Client,
+    "initiate" | "uploadPart" | "complete" | "abort"
+  >;
 }>;
 const productionDependencies: FormOperationsDependencies = {
   environment: () => Deno.env.toObject(),
@@ -124,6 +150,315 @@ function readableBytes(
       await iterator.return?.();
     },
   });
+}
+
+const XLSX_MIME =
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+const R2_EXPORT_BUCKET = "coelo-transient-prod";
+const uuid = (value: unknown): value is string =>
+  typeof value === "string" &&
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+    .test(value);
+const jsonObject = (value: unknown): value is Json =>
+  !!value && typeof value === "object" && !Array.isArray(value);
+const checksum = (value: unknown): value is string =>
+  typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
+
+function validSubmission(value: unknown): value is ExportSubmission {
+  if (
+    !jsonObject(value) || !uuid(value.responseId) ||
+    !uuid(value.occurrenceId) ||
+    !uuid(value.versionId) || !jsonObject(value.metadata) ||
+    !Object.values(value.metadata).every((field) =>
+      typeof field === "string"
+    ) ||
+    !Array.isArray(value.answers)
+  ) return false;
+  const ids = new Set<string>();
+  return value.answers.every((answer) => {
+    if (
+      !jsonObject(answer) || !uuid(answer.itemId) || ids.has(answer.itemId) ||
+      typeof answer.question !== "string" ||
+      typeof answer.multiValued !== "boolean" ||
+      !Array.isArray(answer.values) || !answer.values.every((field) =>
+        typeof field === "string"
+      )
+    ) return false;
+    ids.add(answer.itemId);
+    return true;
+  });
+}
+
+async function writeR2Xlsx(
+  client: SupabaseClient,
+  job: Json,
+  workerId: string,
+  environment: Record<string, string | undefined>,
+  dependencies: FormOperationsDependencies,
+): Promise<void> {
+  const now = dependencies.now ?? (() => new Date());
+  if (
+    !uuid(job.id) || !uuid(job.aggregate_id) ||
+    !Number.isSafeInteger(job.attempts) || Number(job.attempts) < 1
+  ) {
+    throw new Error("export_begin_invalid");
+  }
+  const params = Object.freeze({
+    p_job_id: job.id,
+    p_worker_id: workerId,
+    p_file_job_id: job.aggregate_id,
+  });
+  const rpc = async (name: string, values: Json): Promise<unknown> => {
+    const result = await client.rpc(name, values);
+    if (result.error) throw new Error("r2_export_rpc_failed");
+    return result.data;
+  };
+  const begun = await rpc("form_worker_begin_xlsx_r2_v1", params);
+  if (
+    !jsonObject(begun) || begun.job_id !== job.aggregate_id ||
+    begun.worker_job_id !== job.id ||
+    begun.attempt !== job.attempts || !uuid(begun.asset_id) ||
+    !uuid(begun.institution_id) ||
+    begun.provider !== "r2" || begun.bucket !== R2_EXPORT_BUCKET ||
+    begun.mime_type !== XLSX_MIME ||
+    begun.object_key !==
+      `tenants/${begun.institution_id}/exports/forms/${job.aggregate_id}/${begun.asset_id}/responses.xlsx` ||
+    begun.snapshot_format_version !== 1 ||
+    !Number.isSafeInteger(begun.snapshot_row_count) ||
+    Number(begun.snapshot_row_count) < 0 ||
+    typeof begun.expires_at !== "string" ||
+    !Number.isFinite(Date.parse(begun.expires_at)) ||
+    Date.parse(begun.expires_at) <= now().getTime()
+  ) throw new Error("export_begin_invalid");
+  const prepared = Object.freeze({ ...begun });
+  const scope: MultipartAttemptScope = Object.freeze({
+    jobId: job.id,
+    workerId,
+    fileJobId: job.aggregate_id,
+    attempt: job.attempts as number,
+    assetId: begun.asset_id,
+    bucket: R2_EXPORT_BUCKET,
+    objectPath: begun.object_key as string,
+    snapshotFormatVersion: 1,
+    snapshotRowCount: begun.snapshot_row_count as number,
+  });
+  const wireScope = Object.freeze({
+    worker_job_id: scope.jobId,
+    worker_id: scope.workerId,
+    file_job_id: scope.fileJobId,
+    attempt: scope.attempt,
+    asset_id: scope.assetId,
+    bucket: scope.bucket,
+    object_key: scope.objectPath,
+    snapshot_format_version: scope.snapshotFormatVersion,
+    snapshot_row_count: scope.snapshotRowCount,
+  });
+  const sameWireScope = (value: unknown) =>
+    jsonObject(value) &&
+    Object.keys(value).length === Object.keys(wireScope).length &&
+    Object.entries(wireScope).every(([key, field]) => value[key] === field);
+  const artifactConfig = multipartArtifactConfig(environment);
+  const fresh = () => {
+    if (Date.parse(prepared.expires_at as string) <= now().getTime()) {
+      throw new Error("export_expired");
+    }
+  };
+  const multipartRpc = async (operation: string, payload: Json = {}) => {
+    if (operation !== "reconcile") fresh();
+    const result = await rpc("form_worker_multipart_xlsx_r2_v1", {
+      p_scope: wireScope,
+      p_operation: operation,
+      p_payload: payload,
+    });
+    if (operation !== "reconcile") fresh();
+    return result;
+  };
+  const multipartSnapshot = (
+    value: unknown,
+    uploadId?: string,
+  ): MultipartSnapshot | null => {
+    if (value === null) return null;
+    if (
+      !jsonObject(value) || !sameWireScope(value.scope) ||
+      (uploadId !== undefined && value.upload_id !== uploadId)
+    ) throw new Error("export_multipart_receipt_invalid");
+    return validateMultipartSnapshot(
+      {
+        ...value,
+        scope,
+        ...(value.checksum_sha256 == null
+          ? { checksum_sha256: undefined }
+          : {}),
+      },
+      { bucket: scope.bucket, partSizeBytes: artifactConfig.partSizeBytes },
+      scope,
+    );
+  };
+  const persistence: MultipartPersistenceAdapter = {
+    scope,
+    authorize: async () => {
+      const result = await multipartRpc("authorize");
+      if (
+        !jsonObject(result) || result.authorized !== true ||
+        !sameWireScope(result.scope)
+      ) throw new Error("export_authorization_invalid");
+    },
+    snapshot: async () => multipartSnapshot(await multipartRpc("snapshot")),
+    begin: async (_scope, uploadId) => {
+      const result = multipartSnapshot(
+        await multipartRpc("begin", { upload_id: uploadId }),
+        uploadId,
+      );
+      if (
+        !result || result.state !== "initiated" || result.parts.length !== 0 ||
+        result.next_part_number !== 1 || result.uploaded_bytes !== 0
+      ) throw new Error("export_multipart_receipt_invalid");
+    },
+    recordPart: async (_scope, uploadId, part) => {
+      const result = multipartSnapshot(
+        await multipartRpc("record_part", { upload_id: uploadId, ...part }),
+        uploadId,
+      );
+      const saved = result?.parts.at(-1);
+      if (
+        !result || result.state !== "uploading" ||
+        result.next_part_number !== part.part_number + 1 ||
+        !saved ||
+        Object.entries(part).some(([key, value]) =>
+          (saved as unknown as Json)[key] !== value
+        )
+      ) throw new Error("export_multipart_receipt_invalid");
+    },
+    complete: async (_scope, uploadId, digest) => {
+      const result = multipartSnapshot(
+        await multipartRpc("complete", {
+          upload_id: uploadId,
+          byte_length: digest.byteLength,
+          checksum_sha256: digest.checksumSha256,
+        }),
+        uploadId,
+      );
+      if (
+        !result || result.state !== "completed" ||
+        result.uploaded_bytes !== digest.byteLength ||
+        result.checksum_sha256 !== digest.checksumSha256
+      ) throw new Error("export_multipart_receipt_invalid");
+    },
+    reconcile: async (_scope, uploadId, digest) =>
+      multipartSnapshot(
+        await multipartRpc("reconcile", {
+          upload_id: uploadId,
+          byte_length: digest.byteLength,
+          checksum_sha256: digest.checksumSha256,
+        }),
+        uploadId,
+      ),
+  };
+  const pageDigests = new Map<string, string>();
+  const rowsFactory = () => {
+    const seen = new Set<string>();
+    const load: SnapshotPageLoader = async (cursor) => {
+      fresh();
+      const after = cursor === null ? 0 : Number(cursor);
+      if (!Number.isSafeInteger(after) || after < 0) {
+        throw new Error("export_snapshot_invalid");
+      }
+      const value = structuredClone(
+        await rpc("form_worker_xlsx_snapshot_r2_v1", {
+          ...params,
+          p_asset_id: scope.assetId,
+          p_after_sequence: after,
+          p_limit: PAGE_SIZE,
+        }),
+      );
+      fresh();
+      if (
+        !jsonObject(value) || value.kind !== "xlsx" ||
+        value.snapshot_format_version !== scope.snapshotFormatVersion ||
+        !Array.isArray(value.submissions) ||
+        value.submissions.length > PAGE_SIZE ||
+        !value.submissions.every(validSubmission)
+      ) throw new Error("export_snapshot_invalid");
+      const next = after + value.submissions.length;
+      if (
+        next > scope.snapshotRowCount ||
+        value.has_more !== (next < scope.snapshotRowCount) ||
+        value.next_cursor !==
+          (value.submissions.length ? String(next) : null) ||
+        (value.has_more && value.submissions.length === 0)
+      ) throw new Error("export_snapshot_invalid");
+      for (const submission of value.submissions) {
+        if (seen.has(submission.responseId)) {
+          throw new Error("export_snapshot_invalid");
+        }
+        seen.add(submission.responseId);
+      }
+      const digest = await sha256Hex(JSON.stringify(value));
+      const previous = pageDigests.get(String(after));
+      if (previous !== undefined && previous !== digest) {
+        throw new Error("xlsx_snapshot_changed");
+      }
+      pageDigests.set(String(after), digest);
+      return value as Snapshot;
+    };
+    return createSnapshotRows(load, { maxRows: MAX_ROWS_PER_LEASE });
+  };
+  const config = validateR2Config({
+    endpoint: environment.COELO_R2_ENDPOINT ?? "",
+    region: environment.COELO_R2_REGION ?? "auto",
+    accessKeyId: environment.COELO_R2_ACCESS_KEY_ID ?? "",
+    secretAccessKey: environment.COELO_R2_SECRET_ACCESS_KEY ?? "",
+    bucket: scope.bucket,
+  });
+  const r2 = dependencies.createR2?.(config) ?? new R2Client(config);
+  const multipart = dependencies.createMultipart?.(config) ??
+    new MultipartS3Client(config);
+  const artifact = await uploadAdaptiveArtifact({
+    ...scope,
+    proposedPath: scope.objectPath,
+    contentType: XLSX_MIME,
+    source: streamXlsx(rowsFactory),
+    ...artifactConfig,
+    persistence,
+    rpc: () => Promise.reject(new Error("legacy_multipart_not_allowed")),
+    standardUpload: (path, bytes, mime) => r2.put(path, bytes, mime),
+    s3: multipart,
+  });
+  if (
+    !checksum(artifact.checksumSha256) ||
+    artifact.artifactPath !== scope.objectPath || artifact.byteLength < 1
+  ) throw new Error("export_measurement_invalid");
+  const digest: ArtifactDigest = {
+    byteLength: artifact.byteLength,
+    checksumSha256: artifact.checksumSha256,
+  };
+  const validReceipt = (value: unknown, state: string) =>
+    jsonObject(value) && value.state === state &&
+    value.job_id === scope.fileJobId && value.asset_id === scope.assetId &&
+    value.byte_length === digest.byteLength &&
+    value.checksum_sha256 === digest.checksumSha256;
+  try {
+    fresh();
+    const result = await rpc("form_worker_complete_xlsx_r2_v1", {
+      ...params,
+      p_asset_id: scope.assetId,
+      p_actual_byte_length: digest.byteLength,
+      p_actual_checksum_sha256: digest.checksumSha256,
+    });
+    if (
+      !validReceipt(result, "succeeded") ||
+      (result as Json).expires_at !== prepared.expires_at
+    ) throw new Error("export_completion_unknown");
+  } catch {
+    const result = await rpc("form_worker_reconcile_xlsx_r2_v1", {
+      p_job_id: scope.jobId,
+      p_file_job_id: scope.fileJobId,
+      p_asset_id: scope.assetId,
+    });
+    if (!validReceipt(result, "committed")) {
+      throw new Error("export_completion_unknown");
+    }
+  }
 }
 
 function cleanupExpiredStorage(
@@ -211,6 +546,7 @@ async function processFormOperationsRequest(
     p_job_kinds: [
       ...OPERATIONAL_JOB_KINDS,
       "export_xlsx",
+      "export_xlsx_r2_v1",
       "cleanup_uploads",
       "cleanup_artifacts",
     ],
@@ -246,6 +582,10 @@ async function processFormOperationsRequest(
         environment,
       );
       return reply(200, { processed: true, job_id: job.id, items: itemCount });
+    }
+    if (job.job_kind === "export_xlsx_r2_v1") {
+      await writeR2Xlsx(client, job, workerId, environment, dependencies);
+      return reply(200, { processed: true, job_id: job.id });
     }
     if (job.job_kind !== "export_xlsx") {
       throw new Error("unsupported_job_kind");
@@ -290,6 +630,11 @@ async function processFormOperationsRequest(
     if (completed.error) throw new Error("export_complete_failed");
     return reply(200, { processed: true, job_id: job.id });
   } catch (error) {
+    if (job.job_kind === "export_xlsx_r2_v1") {
+      // R2 failures retain the lease and attempt for reconciliation. The legacy
+      // failure RPC and Storage deletion cannot operate on the R2 catalog.
+      return reply(503, { error: "export_completion_unknown" });
+    }
     if (completionAttempted) {
       // A dropped response or SDK error does not prove SQL rollback. Preserve
       // the artifact and persisted state until a nominal reconciliation; the
