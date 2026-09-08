@@ -50,6 +50,7 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
   String? _error;
   bool _deleting = false;
   String? _pendingDeleteRequestId;
+  int _loadRevision = 0;
 
   @override
   void initState() {
@@ -58,14 +59,29 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
     _load();
   }
 
+  @override
+  void didUpdateWidget(covariant AccessProfileDetailPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.repository, widget.repository) ||
+        oldWidget.domain != widget.domain ||
+        oldWidget.profileId != widget.profileId) {
+      _profile = null;
+      _error = null;
+      _deleting = false;
+      _pendingDeleteRequestId = null;
+      _load();
+    }
+  }
+
   Future<void> _load() async {
+    final revision = ++_loadRevision;
     try {
       final profile = await widget.repository.fetchDetail(widget.domain, widget.profileId);
-      if (mounted) setState(() => _profile = profile);
+      if (mounted && revision == _loadRevision) setState(() => _profile = profile);
     } on AccessProfileException catch (error) {
-      if (mounted) setState(() => _error = error.message);
+      if (mounted && revision == _loadRevision) setState(() => _error = error.message);
     } on Object {
-      if (mounted) {
+      if (mounted && revision == _loadRevision) {
         setState(() => _error = 'Não foi possível carregar o perfil.');
       }
     }
@@ -78,11 +94,15 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
   }
 
   Future<void> _delete() async {
-    if (_deleting) return;
+    if (_deleting || _profile == null) return;
+    final revision = _loadRevision;
+    final repository = widget.repository;
+    final onDeleted = widget.onDeleted;
+    bool isCurrent() => mounted && revision == _loadRevision;
     final profile = _profile!;
     AccessProfilePage page;
     try {
-      page = await widget.repository.fetchProfiles(
+      page = await repository.fetchProfiles(
         AccessProfileQuery(
           domain: profile.domain,
           pageSize: 100,
@@ -90,12 +110,12 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
         ),
       );
     } on AccessProfileException catch (error) {
-      if (mounted) {
+      if (mounted && isCurrent()) {
         showSuperadminNotice(context, error.message, icon: Icons.error_outline_rounded);
       }
       return;
     }
-    if (!mounted) return;
+    if (!mounted || !isCurrent()) return;
     final options = [
       const _ReplacementOption(null, 'Sem substituto'),
       ...page.items
@@ -104,64 +124,70 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
     ];
     var replacement = options.first;
     final reasonController = TextEditingController();
+    TransitionRoute<dynamic>? confirmationRoute;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) => CoeloAdminDialogShell(
-          title: 'Excluir perfil',
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                profile.membershipCount > 0
-                    ? 'Os ${profile.membershipCount} vínculos serão realocados na mesma transação.'
-                    : 'Esta ação remove o perfil permanentemente.',
-              ),
-              const SizedBox(height: CoeloSpacing.space4),
-              CoeloAdminSingleSelectField(
-                label: 'Perfil substituto',
-                value: replacement,
-                options: options,
-                optionLabel: (value) => value.label,
-                onChanged: (value) => setDialogState(() => replacement = value),
-              ),
-              const SizedBox(height: CoeloSpacing.space4),
-              CoeloFormTextField(
-                controller: reasonController,
-                labelText: 'Motivo da exclusão',
-                prefixIcon: Icons.notes_rounded,
-                maxLines: 1,
-                onChanged: (_) => setDialogState(() {}),
-              ),
-            ],
-          ),
-          secondaryAction: OutlinedButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancelar'),
-          ),
-          primaryAction: FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              foregroundColor: Theme.of(context).colorScheme.onError,
+      builder: (dialogContext) {
+        confirmationRoute = ModalRoute.of(dialogContext) as TransitionRoute<dynamic>?;
+        return StatefulBuilder(
+          builder: (context, setDialogState) => CoeloAdminDialogShell(
+            title: 'Excluir perfil',
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  profile.membershipCount > 0
+                      ? 'Os ${profile.membershipCount} vínculos serão realocados na mesma transação.'
+                      : 'Esta ação remove o perfil permanentemente.',
+                ),
+                const SizedBox(height: CoeloSpacing.space4),
+                CoeloAdminSingleSelectField(
+                  label: 'Perfil substituto',
+                  value: replacement,
+                  options: options,
+                  optionLabel: (value) => value.label,
+                  onChanged: (value) => setDialogState(() => replacement = value),
+                ),
+                const SizedBox(height: CoeloSpacing.space4),
+                CoeloFormTextField(
+                  controller: reasonController,
+                  labelText: 'Motivo da exclusão',
+                  prefixIcon: Icons.notes_rounded,
+                  maxLines: 1,
+                  onChanged: (_) => setDialogState(() {}),
+                ),
+              ],
             ),
-            onPressed:
-                reasonController.text.trim().isEmpty ||
-                    (profile.membershipCount > 0 && replacement.id == null)
-                ? null
-                : () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Excluir e realocar'),
+            secondaryAction: OutlinedButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Cancelar'),
+            ),
+            primaryAction: FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.error,
+                foregroundColor: Theme.of(context).colorScheme.onError,
+              ),
+              onPressed:
+                  reasonController.text.trim().isEmpty ||
+                      (profile.membershipCount > 0 && replacement.id == null)
+                  ? null
+                  : () => Navigator.of(dialogContext).pop(true),
+              child: const Text('Excluir e realocar'),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
-    if (confirmed != true) {
+    // The route may still render its text field during the reverse transition.
+    await confirmationRoute?.completed;
+    if (!isCurrent() || confirmed != true) {
       reasonController.dispose();
       return;
     }
     _pendingDeleteRequestId ??= _newRequestId();
     if (mounted) setState(() => _deleting = true);
     try {
-      await widget.repository.deleteAndReassign(
+      await repository.deleteAndReassign(
         requestId: _pendingDeleteRequestId!,
         domain: profile.domain,
         profileId: profile.id,
@@ -169,14 +195,16 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
         replacementProfileId: replacement.id,
         reason: reasonController.text.trim(),
       );
-      _pendingDeleteRequestId = null;
-      if (mounted) widget.onDeleted();
+      if (isCurrent()) {
+        _pendingDeleteRequestId = null;
+        onDeleted();
+      }
     } on AccessProfileException catch (error) {
-      if (mounted) {
+      if (mounted && isCurrent()) {
         showSuperadminNotice(context, error.message, icon: Icons.error_outline_rounded);
       }
     } finally {
-      if (mounted) setState(() => _deleting = false);
+      if (isCurrent()) setState(() => _deleting = false);
       reasonController.dispose();
     }
   }
