@@ -304,6 +304,61 @@ void main() {
     expect(find.text('tenant-a@coelo.test'), findsNothing);
   });
 
+  testWidgets('revoking command permission removes the pending confirmation', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _RecordingInviteRepository([testInvite()]);
+    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository, allowCommands: true)));
+    await tester.pumpAndSettle();
+    _flyout(tester).onSelected(InviteRowAction.revoke);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('invite-revoke-dialog')), findsOneWidget);
+    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository)));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('invite-revoke-dialog')), findsNothing);
+    expect(repository.revokes, isEmpty);
+    expect(repository.queries, hasLength(1));
+  });
+
+  testWidgets('revoking command permission discards the pending resend link', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _DeferredResendRepository();
+    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository, allowCommands: true)));
+    await tester.pumpAndSettle();
+    _flyout(tester).onSelected(InviteRowAction.resend);
+    await tester.pump();
+    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository)));
+    repository.pending.complete(
+      InviteCommandResult(
+        invite: repository.invite,
+        replayed: false,
+        link: Uri.parse('https://stale.example/invite'),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byKey(const Key('invite-resend-link')), findsNothing);
+    expect(find.textContaining('Reenvio solicitado'), findsNothing);
+  });
+
+  testWidgets('revoke confirmation is single-flight before a frame', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _RecordingInviteRepository([testInvite()]);
+    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository, allowCommands: true)));
+    await tester.pumpAndSettle();
+    final flyout = _flyout(tester);
+    flyout.onSelected(InviteRowAction.revoke);
+    flyout.onSelected(InviteRowAction.revoke);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('invite-revoke-dialog'), skipOffstage: false), findsOneWidget);
+    await tester.tap(find.byKey(const Key('invite-revoke-confirm')));
+    await tester.pumpAndSettle();
+    expect(repository.revokes, hasLength(1));
+    expect(find.byKey(const Key('invite-revoke-dialog'), skipOffstage: false), findsNothing);
+  });
+
   testWidgets('repository swap dismisses an owned revoke dialog without commanding B', (
     tester,
   ) async {
