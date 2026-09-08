@@ -245,6 +245,14 @@ Não inclui corretiva futura, cleanup de labels ou bridge adicional.
   -TestPath packages/coelo_database/supabase/tests/access_profile_models_read_authorization_test.sql
 ```
 
+A fixture local `forms_config_validator_parser_test.sql`, em AuthOnly47,
+reproduziu `42601` no CREATE original de `form_item_config_valid` e compilou
+a mesma função com somente quatro parênteses adicionados, no PostgreSQL17.6
+(3/3 pgTAP PASS). O conversor específico em
+`replay/profiles/FReadDirectoryContractRedDerived/` preserva a origem e fixa
+os hashes de origem/derivado; ainda não está integrado ao Prepare. Essa prova
+de parser não representa replay completo de uma base derivada.
+
 Nunca use
 `Prepare-SafeMigrationReplay.ps1` diretamente em operacoes normais, nem use o
 staging com `db push`, `migration repair` ou qualquer comando remoto. As
