@@ -709,3 +709,6 @@ Recibo Git 2026-09-08T20:14:41-03:00: push atômico e ls-remote confirmaram `e55
 ## R01 recibo operacional — 2026-09-08T20:32:58-03:00
 
 23 commits Forms integrados e verificados localmente; mapa de SHAs e critérios abertos em [relatório2035](etapa-2-operacao/reports/R01-delta-2035.md). Trackers sincronizados com C02r43 e deltas nominais. C00 retém composição/integração. C03 I015 encerrou com fixture falha6/46; C02 I019 detém próxima lease exclusiva193. C06I010 ack confirmado por r18, I011 publicado para próximos limites de lote. Heartbeat nativo ACTIVE reconferido, fuso São Paulo, disparos nominais a cada dez minutos; próximo20:40, não confirmação de execução futura. Autoridade e fechamento05:30/06:00/07:40 inalterados.
+
+
+Entrega confirmada 2026-09-08T20:36:22-03:00: `8b1e95c6d29ac59ad00d9b43c5b4a354da9c86c2` em dev e C00, push atômico/ls-remote; produção inalterada. Próximo lote central: Forms DI e testes de segunda sessão. Revisões read-only em andamento para candidatos XLSX v2 TS911c6afe/SQL98fe1083; C03 I016 retém lease local46.
