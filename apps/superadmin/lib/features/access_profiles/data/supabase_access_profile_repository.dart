@@ -48,6 +48,8 @@ final class SupabaseAccessProfileRepository
       );
     } on PostgrestException catch (error) {
       throw _mapError(error);
+    } catch (_) {
+      throw const AccessProfileException('Não foi possível concluir a operação. Tente novamente.');
     }
   }
 
@@ -61,6 +63,8 @@ final class SupabaseAccessProfileRepository
       return AccessProfile.fromJson(domain, Map<String, dynamic>.from(response as Map));
     } on PostgrestException catch (error) {
       throw _mapError(error);
+    } catch (_) {
+      throw const AccessProfileException('Não foi possível concluir a operação. Tente novamente.');
     }
   }
 
@@ -74,6 +78,8 @@ final class SupabaseAccessProfileRepository
       return AccessProfile.fromJson(domain, Map<String, dynamic>.from(response as Map));
     } on PostgrestException catch (error) {
       throw _mapError(error);
+    } catch (_) {
+      throw const AccessProfileException('Não foi possível concluir a operação. Tente novamente.');
     }
   }
 
@@ -90,6 +96,8 @@ final class SupabaseAccessProfileRepository
           .toList(growable: false);
     } on PostgrestException catch (error) {
       throw _mapError(error);
+    } catch (_) {
+      throw const AccessProfileException('Não foi possível concluir a operação. Tente novamente.');
     }
   }
 
@@ -113,6 +121,8 @@ final class SupabaseAccessProfileRepository
       return AccessProfile.fromJson(draft.domain, Map<String, dynamic>.from(response as Map));
     } on PostgrestException catch (error) {
       throw _mapError(error);
+    } catch (_) {
+      throw const AccessProfileException('Não foi possível concluir a operação. Tente novamente.');
     }
   }
 
@@ -139,6 +149,8 @@ final class SupabaseAccessProfileRepository
       );
     } on PostgrestException catch (error) {
       throw _mapError(error);
+    } catch (_) {
+      throw const AccessProfileException('Não foi possível concluir a operação. Tente novamente.');
     }
   }
 

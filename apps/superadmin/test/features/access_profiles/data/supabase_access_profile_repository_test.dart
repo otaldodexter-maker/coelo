@@ -8,6 +8,55 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  for (final action in ['list', 'detail', 'template', 'capabilities', 'save', 'delete']) {
+    test('sanitizes lost transport response for profile $action', () async {
+      final client = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-test',
+        httpClient: MockClient((request) async {
+          throw ClientException('synthetic-private-detail', request.url);
+        }),
+      );
+      addTearDown(client.dispose);
+      await expectLater(
+        _invoke(SupabaseAccessProfileRepository(client), action),
+        throwsA(
+          isA<AccessProfileException>().having(
+            (error) => error.message,
+            'message',
+            'Não foi possível concluir a operação. Tente novamente.',
+          ),
+        ),
+      );
+    });
+  }
+
+  for (final code in ['42501', '40001']) {
+    test('preserves typed profile command rejection $code', () async {
+      final client = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-test',
+        httpClient: MockClient(
+          (request) async => Response(
+            jsonEncode({'code': code, 'message': 'synthetic-private-detail'}),
+            code == '42501' ? 403 : 409,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          ),
+        ),
+      );
+      addTearDown(client.dispose);
+      await expectLater(
+        _invoke(SupabaseAccessProfileRepository(client), 'save'),
+        throwsA(
+          code == '42501'
+              ? isA<AccessProfileUnauthorizedException>()
+              : isA<AccessProfileConflictException>(),
+        ),
+      );
+    });
+  }
+
   test('production repository uses only the five guarded RPC contracts', () async {
     final paths = <String>[];
     final client = SupabaseClient(
@@ -83,6 +132,37 @@ void main() {
       throwsA(isA<AccessProfileUnavailableException>()),
     );
   });
+}
+
+Future<void> _invoke(SupabaseAccessProfileRepository repository, String action) async {
+  switch (action) {
+    case 'list':
+      await repository.fetchProfiles(const AccessProfileQuery());
+    case 'detail':
+      await repository.fetchDetail(AccessProfileDomain.platform, 'profile-1');
+    case 'template':
+      await repository.fetchTemplate(AccessProfileDomain.platform);
+    case 'capabilities':
+      await repository.fetchPrincipalCapabilities();
+    case 'save':
+      await repository.save(
+        requestId: '00000000-0000-4000-8000-000000000001',
+        expectedVersion: 1,
+        reason: 'Teste sintético',
+        draft: AccessProfile.fromJson(AccessProfileDomain.platform, _profileJson),
+      );
+    case 'delete':
+      await repository.deleteAndReassign(
+        requestId: '00000000-0000-4000-8000-000000000002',
+        domain: AccessProfileDomain.platform,
+        profileId: 'profile-1',
+        expectedVersion: 1,
+        replacementProfileId: null,
+        reason: 'Teste sintético',
+      );
+    default:
+      throw ArgumentError.value(action);
+  }
 }
 
 const _profileJson = <String, Object?>{
