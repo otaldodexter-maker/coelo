@@ -8,6 +8,9 @@ param(
 
   [switch]$AuthOnly,
 
+  [ValidateSet('N01PrerequisitesRed')]
+  [string]$NominalProfile,
+
   [string[]]$AdditionalMigration = @()
 )
 
@@ -19,6 +22,9 @@ $preflightRoot = Join-Path $packageRoot 'replay'
 $foundationManifestPath = Join-Path $preflightRoot 'foundation-migrations.sha256'
 $destinationRoot = [IO.Path]::GetFullPath($DestinationMigrationsRoot)
 
+if ($NominalProfile -and ($FoundationOnly -or $AuthOnly -or $AdditionalMigration.Count -gt 0)) {
+  throw 'nominal replay cannot be combined with FoundationOnly, AuthOnly or AdditionalMigration'
+}
 if ($FoundationOnly -and $AuthOnly) {
   throw 'foundation-only and Auth-only replay profiles are mutually exclusive'
 }
@@ -75,6 +81,22 @@ $preflight = @(Get-ChildItem -LiteralPath $preflightFull -File -Filter '*.sql' |
 $foundationManifestHash = $null
 $additionalCanonical = @()
 $foundationBoundaryVersion = $null
+if ($NominalProfile) {
+  $nominalResolver = Join-Path $preflightRoot 'profiles\N01PrerequisitesRed\Resolve-N01PrerequisitesRed.ps1'
+  $nominalCursor = Get-Item -LiteralPath $nominalResolver -Force -ErrorAction Stop
+  if ($nominalCursor.PSIsContainer) { throw 'nominal replay resolver must be a file' }
+  while ($null -ne $nominalCursor) {
+    if (($nominalCursor.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+      throw "nominal replay resolver contains a reparse point: $($nominalCursor.FullName)"
+    }
+    $nominalCursor = if ($nominalCursor.PSIsContainer) { $nominalCursor.Parent } else { $nominalCursor.Directory }
+  }
+  $nominal = & $nominalResolver
+  $canonical = @($nominal.Canonical)
+  $preflight = @($nominal.Preflight)
+  $additionalCanonical = @($nominal.Additional)
+  $foundationManifestHash = $nominal.ManifestHash
+}
 if ($AdditionalMigration.Count -gt 0 -and -not ($FoundationOnly -or $AuthOnly)) {
   throw 'additional migrations require FoundationOnly or AuthOnly'
 }
@@ -230,7 +252,10 @@ if ($generated.Count -ne ($canonical.Count + $preflight.Count)) {
 $preflightHashes = @($preflight | ForEach-Object {
   "$(($_.BaseName))=$(Get-FileSha256 $_.FullName)"
 }) -join ','
-$profile = if ($FoundationOnly) {
+$profile = if ($NominalProfile) {
+  $NominalProfile
+}
+elseif ($FoundationOnly) {
   'foundation'
 }
 elseif ($AuthOnly) {
@@ -239,7 +264,7 @@ elseif ($AuthOnly) {
 else {
   'full'
 }
-$manifestEvidence = if ($FoundationOnly -or $AuthOnly) {
+$manifestEvidence = if ($FoundationOnly -or $AuthOnly -or $NominalProfile) {
   "; manifest_sha256=$foundationManifestHash"
 }
 else {

@@ -1,0 +1,60 @@
+{
+    "id":  "N01PrerequisitesRed",
+    "base":  {
+                 "profile":  "auth",
+                 "manifest":  "packages/coelo_database/replay/foundation-migrations.sha256",
+                 "manifest_sha256_crlf_utf8":  "4279e67c9651f4049329591b6e8aad82e3a9052506c1a4e16ba8bbb693249d59",
+                 "selected_canonical_count":  45,
+                 "inherited_preflight_count":  2,
+                 "boundary":  "20260901200206"
+             },
+    "target_version":  "20260901200206",
+    "canonical_additions":  [
+                                {
+                                    "file":  "20260812002900_notices_status_values.sql",
+                                    "sha256_crlf_utf8":  "c2416311dc7cdf259990b68d795f486d3fdbb61e86285ed23c7676942dce390c",
+                                    "canonical_union_position":  42
+                                },
+                                {
+                                    "file":  "20260812003000_notices_production.sql",
+                                    "sha256_crlf_utf8":  "b520ee080a51ec44b78ee577aa1997465cda8a3aeeef267419c812667fe55d26",
+                                    "canonical_union_position":  43
+                                },
+                                {
+                                    "file":  "20260820212340_notice_publication_worker_runtime.sql",
+                                    "sha256_crlf_utf8":  "e0174219975bdf15a297ce7c94c2d1946e44148c6f067012e157715e635c1ac2",
+                                    "canonical_union_position":  44
+                                },
+                                {
+                                    "file":  "20260820220500_notice_publication_receipts_versioning.sql",
+                                    "sha256_crlf_utf8":  "e565a14a00b1456586fc3e5cd3f6283c1602c8ffb3f90d724796fb37e5ba4f0f",
+                                    "canonical_union_position":  45
+                                },
+                                {
+                                    "file":  "20260901185008_superadmin_internal_notices_v2.sql",
+                                    "sha256_crlf_utf8":  "a34878248f142f22cb6637349d223683a79f2e9782b501a3c84c2a29e5a0a963",
+                                    "canonical_union_position":  49
+                                }
+                            ],
+    "inherited_preflights":  [
+                                 {
+                                     "file":  "20260811151253_assert_function_execute_preflight.sql",
+                                     "sha256_crlf_utf8":  "718c2de052e9df29abc42642806d9a5e4d98c8964665453de6f14f0f8b61ab75",
+                                     "before":  "20260811151254_group_management_security.sql"
+                                 },
+                                 {
+                                     "file":  "20260811215452_access_profile_labels_replay_bridge.sql",
+                                     "sha256_crlf_utf8":  "d97e02796fcd5897707b5657b7a1c1df690f831e09ed98df6ed21886f75f9ef3",
+                                     "after":  "20260811215451_access_profile_management_v2.sql",
+                                     "before":  "20260812000847_audit_production.sql"
+                                 }
+                             ],
+    "extra_bridges":  [
+
+                      ],
+    "planned_counts":  {
+                           "canonical":  50,
+                           "preflight":  2,
+                           "total":  52
+                       }
+}
