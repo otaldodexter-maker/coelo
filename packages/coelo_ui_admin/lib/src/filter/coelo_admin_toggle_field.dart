@@ -1,5 +1,6 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Canonical boolean field for administrative Coelo forms.
 final class CoeloAdminToggleField extends StatefulWidget {
@@ -24,6 +25,8 @@ final class _CoeloAdminToggleFieldState extends State<CoeloAdminToggleField> {
   bool _hovered = false;
   bool _focused = false;
 
+  void _toggle() => widget.onChanged?.call(!widget.value);
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -35,17 +38,29 @@ final class _CoeloAdminToggleFieldState extends State<CoeloAdminToggleField> {
       label: widget.label,
       toggled: widget.value,
       enabled: enabled,
-      onTap: enabled ? () => widget.onChanged!(!widget.value) : null,
+      onTap: enabled ? _toggle : null,
       child: ExcludeSemantics(
         child: MouseRegion(
           onEnter: enabled ? (_) => setState(() => _hovered = true) : null,
-          onExit: enabled ? (_) => setState(() => _hovered = false) : null,
+          onExit: (_) => setState(() => _hovered = false),
           child: FocusableActionDetector(
             enabled: enabled,
+            shortcuts: const <ShortcutActivator, Intent>{
+              SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+              SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+            },
+            actions: <Type, Action<Intent>>{
+              ActivateIntent: CallbackAction<ActivateIntent>(
+                onInvoke: (_) {
+                  _toggle();
+                  return null;
+                },
+              ),
+            },
             onShowFocusHighlight: (value) => setState(() => _focused = value),
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: enabled ? () => widget.onChanged!(!widget.value) : null,
+              onTap: enabled ? _toggle : null,
               child: AnimatedContainer(
                 duration: CoeloMotion.fast,
                 constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
@@ -93,10 +108,12 @@ final class _CoeloAdminToggleFieldState extends State<CoeloAdminToggleField> {
                       data: theme.switchTheme.copyWith(
                         overlayColor: const WidgetStatePropertyAll(Colors.transparent),
                       ),
-                      child: Switch(
-                        value: widget.value,
-                        onChanged: widget.onChanged,
-                        materialTapTargetSize: MaterialTapTargetSize.padded,
+                      child: ExcludeFocus(
+                        child: Switch(
+                          value: widget.value,
+                          onChanged: enabled ? (_) => _toggle() : null,
+                          materialTapTargetSize: MaterialTapTargetSize.padded,
+                        ),
                       ),
                     ),
                   ],

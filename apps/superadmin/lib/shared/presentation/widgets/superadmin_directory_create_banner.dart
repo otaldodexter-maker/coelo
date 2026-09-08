@@ -103,51 +103,52 @@ class _DashedAction extends StatefulWidget {
 }
 
 class _DashedActionState extends State<_DashedAction> {
-  bool _highlighted = false;
+  bool _hovered = false;
+  bool _focused = false;
+
+  bool get _highlighted => _hovered || _focused;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return MouseRegion(
-      onEnter: (_) => setState(() => _highlighted = true),
-      onExit: (_) => setState(() => _highlighted = false),
-      child: FocusableActionDetector(
-        onShowFocusHighlight: (value) => setState(() => _highlighted = value),
-        child: TweenAnimationBuilder<double>(
-          key: widget.surfaceKey,
-          tween: Tween(begin: 0, end: _highlighted ? 1 : 0),
-          duration: _interactionDuration(context, CoeloMotion.standard),
-          curve: Curves.easeOutCubic,
-          builder: (context, progress, child) => Container(
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(CoeloRadius.lg),
-              boxShadow: progress == 0
-                  ? const []
-                  : [
-                      BoxShadow(
-                        color: colors.primary.withValues(alpha: 0.15 * progress),
-                        blurRadius: 12 * progress,
-                        spreadRadius: 2 * progress,
-                        offset: Offset(0, 4 * progress),
-                      ),
-                    ],
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: TweenAnimationBuilder<double>(
+        key: widget.surfaceKey,
+        tween: Tween(begin: 0, end: _highlighted ? 1 : 0),
+        duration: _interactionDuration(context, CoeloMotion.standard),
+        curve: Curves.easeOutCubic,
+        builder: (context, progress, child) => Container(
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(CoeloRadius.lg),
+            boxShadow: progress == 0
+                ? const []
+                : [
+                    BoxShadow(
+                      color: colors.primary.withValues(alpha: 0.15 * progress),
+                      blurRadius: 12 * progress,
+                      spreadRadius: 2 * progress,
+                      offset: Offset(0, 4 * progress),
+                    ),
+                  ],
+          ),
+          child: CustomPaint(
+            foregroundPainter: _DashedBorderPainter(
+              color: Color.lerp(colors.outlineVariant, colors.primary, progress)!,
             ),
-            child: CustomPaint(
-              foregroundPainter: _DashedBorderPainter(
-                color: Color.lerp(colors.outlineVariant, colors.primary, progress)!,
-              ),
-              child: Material(
-                color: Theme.of(context).scaffoldBackgroundColor,
+            child: Material(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              borderRadius: BorderRadius.circular(CoeloRadius.lg),
+              child: InkWell(
+                onTap: widget.onPressed,
+                onFocusChange: (value) => setState(() => _focused = value),
                 borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                child: InkWell(
-                  onTap: widget.onPressed,
-                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                  child: Padding(
-                    padding: const EdgeInsets.all(CoeloSpacing.space4),
-                    child: Center(child: widget.builder(_highlighted)),
-                  ),
+                overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                child: Padding(
+                  padding: const EdgeInsets.all(CoeloSpacing.space4),
+                  child: Center(child: widget.builder(_highlighted)),
                 ),
               ),
             ),
