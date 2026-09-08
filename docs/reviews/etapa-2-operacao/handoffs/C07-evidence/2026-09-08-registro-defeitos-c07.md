@@ -1,7 +1,7 @@
 ---
 title: "C07 — registro consolidado dos defeitos da rodada R01, por dono"
 source: "medições próprias de C07 no baseline 4af42925: sete arquivos de aceite reservados, três reproduções em C07-evidence/repro/, laudo das 61 divergências com duas erratas, varredura do padrão FocusableActionDetector e dossiê do Publicar no Agora; decisão R01-VISUAL-1835 e instruções R01-C07-I002/I003 da C00; pedido operacional da C06 de 2026-09-08T19:42-03:00"
-status: "evidence-registry;atualizado-1950"
+status: "evidence-registry;atualizado-2005"
 generated_at: "2026-09-08T19:40:00-03:00"
 timezone: "America/Sao_Paulo"
 ---
@@ -15,6 +15,32 @@ não envelhecer.
 **Convenção:** "medido" significa que existe teste ou medição minha com valor; "lido" significa
 leitura de código sem execução. Nenhum defeito aqui foi corrigido por mim — não tenho reserva de
 código, e a C00 negou a que pedi. Todos foram encaminhados pela C06 aos donos.
+
+## Estado em 2026-09-08T20:05 — o que fechou, e como eu sei
+
+**Distinção que governa esta seção:** "verificado por mim" significa que li o commit ou medi;
+"declarado" significa que o dono ou a coordenação informou e eu **não** confirmei. Um registro que
+apaga essa diferença vale metade.
+
+| Item | Estado | Como eu sei |
+|---|---|---|
+| 15 e 15b — toggle central | corrigido em  | **verificado por mim**: li o diff e ele traz / com  **e**  no , ou seja, cobre os **dois** defeitos que medi. Não medi a correção |
+| 8 — banner Criar compartilhado | corrigido no mesmo  | verificado por leitura do diff; o resultado RED4→GREEN4 é **declarado**, não medido por mim |
+| 1 — Acompanhamento trava | corrigido em  da C04 | **declarado**; confirmei apenas que o commit existe e toca o arquivo certo |
+| 2 e 3 — retry e  de Pessoas | corrigidos em  | **declarado**; confirmei que o commit toca os dois arquivos |
+| 21 — salvar pessoa incompleta sem retorno | corrigido em  | **declarado**; o título do commit descreve exatamente o defeito que relatei |
+| 6, 4 e 5 — foco em Instituições e Pessoas | corrigidos em  | **declarado**; confirmei que o commit toca  |
+| 14 —  | corrigido em  | **declarado**; minha reprodução roda contra baseline anterior |
+| 17, 18 e 19 — sessão e gateway de Auth | encaminhados à C01 como  | **declarado**; sem correção observada por mim |
+| Governança da referência aprovada | **resolvido** | **verificado por mim**: a imagem está em git na branch de integração, e o blob tem SHA256 , idêntico ao original byte a byte |
+| 12, 13, 16, 20, 22 | abertos | sem correção observada |
+
+**O que ainda me falta, e é a diferença entre relatar e certificar:** nenhuma dessas correções foi
+**medida por mim**. Elas estão em branches que não são o meu baseline . Quando a C00
+publicar o baseline conjunto, reexecuto os meus sete arquivos de aceite e as quatro reproduções e
+digo, por medição própria, quais vermelhos ficaram verdes. Até lá, os vermelhos do meu lote
+continuam vermelhos **porque o baseline é anterior à correção** — isso é baseline, não regressão, e
+não deve ser lido como suíte quebrada no fechamento.
 
 ## Quadro geral
 
