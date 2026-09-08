@@ -27,6 +27,7 @@ final class SuperadminCircularDetailPage extends StatefulWidget {
 final class _SuperadminCircularDetailPageState extends State<SuperadminCircularDetailPage> {
   CircularDetail? _detail;
   Object? _error;
+  var _loadGeneration = 0;
 
   @override
   void initState() {
@@ -34,16 +35,26 @@ final class _SuperadminCircularDetailPageState extends State<SuperadminCircularD
     _load();
   }
 
+  @override
+  void didUpdateWidget(covariant SuperadminCircularDetailPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.circularId != widget.circularId ||
+        !identical(oldWidget.repository, widget.repository)) {
+      _load();
+    }
+  }
+
   Future<void> _load() async {
+    final generation = ++_loadGeneration;
     setState(() {
       _detail = null;
       _error = null;
     });
     try {
       final detail = await widget.repository.getVisible(widget.circularId);
-      if (mounted) setState(() => _detail = detail);
+      if (mounted && generation == _loadGeneration) setState(() => _detail = detail);
     } on Object catch (error) {
-      if (mounted) setState(() => _error = error);
+      if (mounted && generation == _loadGeneration) setState(() => _error = error);
     }
   }
 
