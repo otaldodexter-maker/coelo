@@ -26,20 +26,11 @@ final class SharedPreferencesUserPreferencesRepository implements UserPreference
   static const _reduceMotionKey = 'coelo.superadmin.reduce-motion';
   SharedPreferencesAsync? _preferences;
 
-  SharedPreferencesAsync? get _store {
-    final existing = _preferences;
-    if (existing != null) return existing;
-    try {
-      return _preferences = SharedPreferencesAsync();
-    } on StateError {
-      return null;
-    }
-  }
+  SharedPreferencesAsync get _store => _preferences ??= SharedPreferencesAsync();
 
   @override
   Future<UserPreferences> load() async {
     final preferences = _store;
-    if (preferences == null) return const UserPreferences();
     final themeName = await preferences.getString(_themeKey);
     final themeMode = ThemeMode.values.where((mode) => mode.name == themeName).firstOrNull;
     return UserPreferences(
@@ -51,7 +42,6 @@ final class SharedPreferencesUserPreferencesRepository implements UserPreference
   @override
   Future<void> save(UserPreferences preferences) async {
     final store = _store;
-    if (store == null) return;
     await Future.wait([
       store.setString(_themeKey, preferences.themeMode.name),
       store.setBool(_reduceMotionKey, preferences.reduceMotion),
