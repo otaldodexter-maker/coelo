@@ -14,21 +14,22 @@ import '../../notices/support/fake_notice_repository.dart';
 void main() {
   final now = DateTime.utc(2026, 8, 21, 12);
 
-  PlatformNotice communication(CommunicationType type) => PlatformNotice(
-    type: type,
-    id: type.name,
-    title: type == CommunicationType.forYou ? 'Orientação real' : 'Popup indevido',
-    message: 'Conteúdo vindo de Comunicações.',
-    priority: NoticePriority.important,
-    status: NoticeStatus.active,
-    startsAt: now.subtract(const Duration(hours: 1)),
-    endsAt: now.add(const Duration(hours: 1)),
-    audience: NoticeAudience.everyone,
-    audienceLabel: 'Todos',
-    behavior: NoticeBehavior.dismissible,
-    targetDevice: NoticeTargetDevice.all,
-    reach: 1,
-  );
+  PlatformNotice communication(CommunicationType type, {DateTime? endsAt, DateTime? startsAt}) =>
+      PlatformNotice(
+        type: type,
+        id: type.name,
+        title: type == CommunicationType.forYou ? 'Orientação real' : 'Popup indevido',
+        message: 'Conteúdo vindo de Comunicações.',
+        priority: NoticePriority.important,
+        status: NoticeStatus.active,
+        startsAt: startsAt ?? now.subtract(const Duration(hours: 1)),
+        endsAt: endsAt ?? now.add(const Duration(hours: 1)),
+        audience: NoticeAudience.everyone,
+        audienceLabel: 'Todos',
+        behavior: NoticeBehavior.dismissible,
+        targetDevice: NoticeTargetDevice.all,
+        reach: 1,
+      );
 
   Future<void> pumpRoute(WidgetTester tester, NoticeRepository repository) async {
     await tester.pumpWidget(
@@ -42,6 +43,127 @@ void main() {
       ),
     );
   }
+
+  testWidgets('expires a visible highlight without reopening the hub', (tester) async {
+    var current = now;
+    final repository = _ControlledNoticeRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalForYouRoutePage(
+          repository: repository,
+          supportingData: PrincipalForYouPreviewData.demo,
+          now: () => current,
+        ),
+      ),
+    );
+    repository.page.complete(
+      NoticePage(
+        items: [
+          communication(CommunicationType.forYou, endsAt: now.add(const Duration(seconds: 1))),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Orientação real'), findsOneWidget);
+    current = now.add(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(find.text('Orientação real'), findsNothing);
+    expect(find.byKey(const Key('principal-for-you-empty')), findsOneWidget);
+    expect(find.text('Atalhos essenciais'), findsOneWidget);
+    expect(repository.calls, 1);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('an authorized active item observes its start boundary', (tester) async {
+    var current = now;
+    final repository = _ControlledNoticeRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalForYouRoutePage(
+          repository: repository,
+          supportingData: PrincipalForYouPreviewData.demo,
+          now: () => current,
+        ),
+      ),
+    );
+    repository.page.complete(
+      NoticePage(
+        items: [
+          communication(CommunicationType.forYou, startsAt: now.add(const Duration(seconds: 1))),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Orientação real'), findsNothing);
+    current = now.add(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(find.text('Orientação real'), findsOneWidget);
+    expect(repository.calls, 1);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('old validity timer cannot replace a pending context load', (tester) async {
+    var current = now;
+    final first = _ControlledNoticeRepository();
+    final second = _ControlledNoticeRepository();
+    DateTime clock() => current;
+    Widget route(NoticeRepository repository) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: PrincipalForYouRoutePage(
+        repository: repository,
+        supportingData: PrincipalForYouPreviewData.demo,
+        now: clock,
+      ),
+    );
+    await tester.pumpWidget(route(first));
+    first.page.complete(
+      NoticePage(
+        items: [
+          communication(CommunicationType.forYou, endsAt: now.add(const Duration(seconds: 1))),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(route(second));
+    current = now.add(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.byKey(const Key('principal-for-you-loading')), findsOneWidget);
+    expect(find.text('Orientação real'), findsNothing);
+    second.page.complete(const NoticePage(items: []));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('principal-for-you-empty')), findsOneWidget);
+    expect(first.calls, 1);
+    expect(second.calls, 1);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump(const Duration(hours: 2));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('disposing cancels an armed validity timer', (tester) async {
+    final repository = _ControlledNoticeRepository();
+    await pumpRoute(tester, repository);
+    repository.page.complete(NoticePage(items: [communication(CommunicationType.forYou)]));
+    await tester.pumpAndSettle();
+    expect(find.text('Orientação real'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+    expect(tester.takeException(), isNull);
+    expect(repository.calls, 1);
+  });
+
+  testWidgets('an already expired result uses the empty hub state', (tester) async {
+    final repository = _ControlledNoticeRepository();
+    await pumpRoute(tester, repository);
+    repository.page.complete(
+      NoticePage(items: [communication(CommunicationType.forYou, endsAt: now)]),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Orientação real'), findsNothing);
+    expect(find.byKey(const Key('principal-for-you-empty')), findsOneWidget);
+  });
 
   testWidgets('loads Communications through repository and excludes popup notices', (tester) async {
     final repository = FakeNoticeRepository()
