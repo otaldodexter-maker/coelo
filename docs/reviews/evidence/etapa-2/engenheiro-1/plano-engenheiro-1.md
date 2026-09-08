@@ -3,7 +3,7 @@ title: Plano de trabalho — Engenheiro 1
 source: Coordenador — Etapa 2 E2E; decisões do Owner; evidências locais desta tarefa
 status: em andamento
 generated: 2026-09-07
-updated: 2026-09-08T00:11:00-03:00
+updated: 2026-09-08T00:20:00-03:00
 ---
 
 # Engenheiro 1 — plano por tela, ação e backend
@@ -25,8 +25,8 @@ PASSOS: 1/6 delimitar contrato e dependências; 2/6 reproduzir e registrar basel
 | Formulários | F-READ: FormsApi.listDirectory / forms.list interno | 6/6 — RED de dependência registrado; funcional pendente | Base50 preparada; 42601 na criação de form_item_config_valid da migration20260813155005, antes de target/fixture | root; writer/review do harness; E2E4 fixture897ee8f7 | 131/131 Pester PASS; replay exit1, zero pgTAP; cleanup independente zerado às22:32:52 BRT. Reader fora da base50 | Parser3/3PASS emPostgreSQL17.6 e conversor17/17PASS,cleanup23:06:19BRT; origemintacta,derivado06b71570...; RED50Derived aplicou50;fixture2TAP/2FAIL,aborto função ausente linha8;cleanup zero00:01:27BRT. PróximoGREEN51derivado depende pacote nominal |
 | Atividades | A01: contrato do diretório v2 e seletor fechado | 6/6 — RED funcional reproduzido | Replay real Auth45 + sete Activities v2 = 52 canônicas + dois preflights; RPCs de diretório e opções | root; writer/reviewer do harness; fixture E2E5 e927c417 | Harness104/104 Pester PASS. Base54 aplicada; fixture exata executou89pgTAP:47FAIL/42PASS, exit1. Cleanup independente zero às22:13:47 BRT. Corretiva ausente do pacote | E2E5 entregar corretiva nominal com hash/review; nenhuma conclusão E2E ou adaptação silenciosa da baseline |
 | Usuários internos | Usersmin: minimização da projeção READ | 6/6 — RED funcional entregue | Base48 aplicada integralmente; fixture3 independente de Users45 | root; fixture E2E1 a763c6f9; review replay_manifest | 1PASS autorização,2FAIL minimização; três TAP completos, sem ACL/aborto, cleanup zero às22:49:31 BRT | Users49GREEN: corretiva21644 aplicada,45+3intactos=48PASS,exit0;cleanup zero23:55:41BRT. Evidência users49-green; concorrência/tela fora do recorte |
-| Modelos de permissões | READ: detalhe / lista / catálogo | 6/6 — RED funcional entregue | Auth45 + 170731/193000 + dois preflights =49; base aplicada integralmente | root; writer/review do harness; fixture E2E1 fa3acdba | 187/187 Pester PASS;11TAP:9PASS/2FAIL5,7 porlookup antesautorização; cleanup zero às22:56:41 BRT | Perfil50 preparado/revisado,332PesterPASS; executar11+17 antes/depois eACL10 noGREEN, root serial |
-| Atividades | A01: auditoria de leitura do diretório/opções v2 | 6/6 — RED funcional entregue | Base55 aplicada com v1; leituras ainda sem append de sucesso | root; writer/review do harness; fixture97 E2E5 ee212cb5 | 233PesterPASS do writer,root29focaisPASS;97TAP:91PASS/6FAIL91–94,96–97;cleanup zero23:22:12 BRT | GREEN55 preparado/revisado,332PesterPASS; v1histórica preservada e negativos recíprocos. Execução97 após Modelos |
+| Modelos de permissões | READ: detalhe / lista / catálogo | 6/6 — RED funcional entregue | Auth45 + 170731/193000 + dois preflights =49; base aplicada integralmente | root; writer/review do harness; fixture E2E1 fa3acdba | 187/187 Pester PASS;11TAP:9PASS/2FAIL5,7 porlookup antesautorização; cleanup zero às22:56:41 BRT | ModelRED49:24PASS/4FAIL em28; GREEN50:38/38PASS, incl.owner/ACL10;cleanup zero00:15:13BRT. Evidência models-read-green, semE2EFlutter |
+| Atividades | A01: auditoria de leitura do diretório/opções v2 | 6/6 — RED funcional entregue | Base55 aplicada com v1; leituras ainda sem append de sucesso | root; writer/review do harness; fixture97 E2E5 ee212cb5 | 233PesterPASS do writer,root29focaisPASS;97TAP:91PASS/6FAIL91–94,96–97;cleanup zero23:22:12 BRT | A01GREEN55:v2aplicada,97/97PASS,exit0;cleanup zero00:18:51BRT. V1histórica preservada; E2EFlutter fora do recorte |
 
 ## Limites e rastreabilidade
 
