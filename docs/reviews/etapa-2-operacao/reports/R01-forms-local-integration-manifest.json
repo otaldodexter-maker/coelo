@@ -1,0 +1,54 @@
+{
+  "source": "reviewed immutable Git blobs and R01-media-replay-manifest plus I005132/I01070",
+  "status": "local code preservation; not remote authorization; canonical historical CASE difference retained",
+  "files": [
+    {
+      "source_sha": "9f21b99f",
+      "path": "packages/coelo_database/migrations/20260820164500_forms_export_download_authorization.sql",
+      "blob": "3cc60a7a0fcf1cb8b5a7f717e74d64be12877c26",
+      "sha256_lf": "a4cc76ca918192e138b3e07f0f0f88bebd38f59f71254620f392298cb98120bb"
+    },
+    {
+      "source_sha": "fa3b2d29",
+      "path": "packages/coelo_database/migrations/20260820164600_forms_export_download_capability_hardening.sql",
+      "blob": "8fe7c323e404306d67f10db6941ca89770903411",
+      "sha256_lf": "5bcb6f4b3405f4d21bb277122cec3bb3d0c81cb5ae56b4b612ff908473f972f2"
+    },
+    {
+      "source_sha": "79d73d41",
+      "path": "packages/coelo_database/migrations/20260908160000_private_media_catalog_r2_v1.sql",
+      "blob": "6aa26440569ea5899fae8007a59a9cc23adadc1e",
+      "sha256_lf": "af3cd856fe32b955702d6db9db5d2323b83adcd7bed3f55c86196731fae77186"
+    },
+    {
+      "source_sha": "0b596c85",
+      "path": "packages/coelo_database/migrations/20260908170000_forms_xlsx_private_r2_v1.sql",
+      "blob": "3c6f30e7470403db1e82a6cfce46d3e392d45dad",
+      "sha256_lf": "aa3999593fa63f1450abcd55901443b6fddd309cc718c6f11d2dc6c4ce28c103"
+    },
+    {
+      "source_sha": "1f38fa7a",
+      "path": "packages/coelo_database/migrations/20260908195512_forms_superadmin_operations_read_v2.sql",
+      "blob": "e1af437a4e8838841aa10ea0ea4cae198f1ed5ab",
+      "sha256_lf": "2dc08e1179472f334e8ac0cbaea67f8d52d2d3af87ce6f02946d0d3f96f3e9c3"
+    },
+    {
+      "source_sha": "79d73d41",
+      "path": "packages/coelo_database/supabase/tests/private_media_catalog_r2_v1_test.sql",
+      "blob": "63a37d59b7774484931aad8e0fbc6161dbf4e92e",
+      "sha256_lf": "3b2f9233e0a790306810aa1d2542c894e10ee4e6ea7fd0cc6f24a29fa2c659b9"
+    },
+    {
+      "source_sha": "0b596c85",
+      "path": "packages/coelo_database/supabase/tests/forms_xlsx_private_r2_v1_test.sql",
+      "blob": "af01eedc656e2afcb6d18301d61f80538450fe1f",
+      "sha256_lf": "10e8e70aed1038213dbf30761b910abeb5fe7ab8379dc48986aaf6e82f462d18"
+    },
+    {
+      "source_sha": "1f38fa7a",
+      "path": "packages/coelo_database/supabase/tests/forms_superadmin_operations_read_v2_test.sql",
+      "blob": "3cf084cb18fb3c315355b52107cce645ccd7860b",
+      "sha256_lf": "a9a5b2e43a2c79bd674d5753c187a9655d8234e00463b4bc5c23abd5251664f7"
+    }
+  ]
+}
