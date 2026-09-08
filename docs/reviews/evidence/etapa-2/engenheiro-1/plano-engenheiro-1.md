@@ -3,7 +3,7 @@ title: Plano de trabalho — Engenheiro 1
 source: Coordenador — Etapa 2 E2E; decisões do Owner; evidências locais desta tarefa
 status: em andamento
 generated: 2026-09-07
-updated: 2026-09-07T23:08:16-03:00
+updated: 2026-09-07T23:24:25-03:00
 ---
 
 # Engenheiro 1 — plano por tela, ação e backend
@@ -26,6 +26,7 @@ PASSOS: 1/6 delimitar contrato e dependências; 2/6 reproduzir e registrar basel
 | Atividades | A01: contrato do diretório v2 e seletor fechado | 6/6 — RED funcional reproduzido | Replay real Auth45 + sete Activities v2 = 52 canônicas + dois preflights; RPCs de diretório e opções | root; writer/reviewer do harness; fixture E2E5 e927c417 | Harness104/104 Pester PASS. Base54 aplicada; fixture exata executou89pgTAP:47FAIL/42PASS, exit1. Cleanup independente zero às22:13:47 BRT. Corretiva ausente do pacote | E2E5 entregar corretiva nominal com hash/review; nenhuma conclusão E2E ou adaptação silenciosa da baseline |
 | Usuários internos | Usersmin: minimização da projeção READ | 6/6 — RED funcional entregue | Base48 aplicada integralmente; fixture3 independente de Users45 | root; fixture E2E1 a763c6f9; review replay_manifest | 1PASS autorização,2FAIL minimização; três TAP completos, sem ACL/aborto, cleanup zero às22:49:31 BRT | E2E1 preparar corretiva nominal e regressão; nenhum E2E concluído |
 | Modelos de permissões | READ: detalhe / lista / catálogo | 6/6 — RED funcional entregue | Auth45 + 170731/193000 + dois preflights =49; base aplicada integralmente | root; writer/review do harness; fixture E2E1 fa3acdba | 187/187 Pester PASS;11TAP:9PASS/2FAIL5,7 porlookup antesautorização; cleanup zero às22:56:41 BRT | E2E1 preparar corretiva nominal; nenhuma conclusão E2E de tela |
+| Atividades | A01: auditoria de leitura do diretório/opções v2 | 6/6 — RED funcional entregue | Base55 aplicada com v1; leituras ainda sem append de sucesso | root; writer/review do harness; fixture97 E2E5 ee212cb5 | 233PesterPASS do writer,root29focaisPASS;97TAP:91PASS/6FAIL91–94,96–97;cleanup zero23:22:12 BRT | E2E5 entregar corretiva nominal de auditoria;89originaisPASS não concluem E2E |
 
 ## Limites e rastreabilidade
 

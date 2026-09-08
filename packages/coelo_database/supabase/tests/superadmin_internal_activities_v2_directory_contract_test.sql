@@ -339,5 +339,76 @@ select ok(exists(select 1 from audit.audit_logs where permission_code='activitie
  and actor_internal_identity_id in ('8a200000-0000-4000-8000-000000000304','8a200000-0000-4000-8000-000000000306')),
  'identified denials preserve minimized audit');
 
+-- A01 follow-up: keep all original 89 assertions and exercise read-success
+-- audit plus fail-stop behavior when the actual append is unavailable.
+set local role authenticated;
+select set_config('request.jwt.claims',jsonb_build_object(
+ 'sub','8a200000-0000-4000-8000-000000000102','session_id','8a200000-0000-4000-8000-000000000202',
+ 'aal','aal2','role','authenticated')::text,true);
+insert into directory_contract_results values
+ ('audit_success_sql_role',to_jsonb(current_user::text)),
+ ('audit_directory',public.superadmin_activity_directory_v2('{}',11,0,'name',true)),
+ ('audit_options',pg_temp.directory_filter_options_result());
+reset role;
+select is((select body#>>'{}' from directory_contract_results where label='audit_success_sql_role'),
+ 'authenticated','success audit calls use authenticated SQL role');
+select ok(r.body->>'ok'='true' and exists (
+ select 1 from audit.audit_logs a
+ where a.correlation_id::text=r.body#>>'{data,correlation_id}'
+   and a.action_code=case r.label when 'audit_directory' then 'activity.directory' else 'activity.filter_options' end
+   and a.permission_code='activities.read' and a.outcome='success'
+   and a.actor_kind='superadmin_internal'
+   and a.actor_internal_identity_id='8a200000-0000-4000-8000-000000000302'
+   and a.actor_internal_auth_link_id='8a200000-0000-4000-8000-000000000402'
+   and a.actor_internal_membership_id='8a200000-0000-4000-8000-000000000502'
+   and a.institution_id='8a200000-0000-4000-8000-000000000010'
+   and a.session_id_hash is not null), 'successful read has correlated internal audit: '||r.label)
+from directory_contract_results r where label in ('audit_directory','audit_options') order by label;
+select ok(exists (
+ select 1 from audit.audit_logs a
+ where a.correlation_id::text=r.body#>>'{data,correlation_id}'
+   and a.after_json = jsonb_build_object('row_count',case r.label when 'audit_directory' then 2 else 8 end)
+   and a.object_id is null
+   and a.before_json is null
+   and a.after_json::text !~ 'Tenant|Robótica|Turma|request.jwt|auth_user|session_id|description|search'),
+ 'successful read audit contains only minimized counts: '||r.label)
+from directory_contract_results r where label in ('audit_directory','audit_options') order by label;
+
+create function pg_temp.reject_activity_read_success_audit() returns trigger
+language plpgsql as $$
+begin
+ if new.permission_code='activities.read' and new.outcome='success'
+   and new.action_code in ('activity.directory','activity.filter_options') then
+   raise exception using errcode='P0001',message='A01_AUDIT_FAILURE';
+ end if;
+ return new;
+end $$;
+create trigger a01_reject_activity_read_success_audit before insert on audit.audit_logs
+for each row execute function pg_temp.reject_activity_read_success_audit();
+
+set local role authenticated;
+insert into directory_contract_results values ('audit_failure_sql_role',to_jsonb(current_user::text));
+do $$
+declare action text; response jsonb;
+begin
+ foreach action in array array['directory','options'] loop
+  begin
+   response := case action when 'directory' then public.superadmin_activity_directory_v2('{}',11,0,'name',true)
+     else pg_temp.directory_filter_options_result() end;
+   insert into directory_contract_results values ('audit_failure_'||action,response);
+  exception when others then
+   insert into directory_contract_results values ('audit_failure_'||action,
+     jsonb_build_object('raised',sqlstate,'message',sqlerrm,'data',null));
+  end;
+ end loop;
+end $$;
+reset role;
+select is((select body#>>'{}' from directory_contract_results where label='audit_failure_sql_role'),
+ 'authenticated','append-failure calls use authenticated SQL role');
+select is(body,jsonb_build_object('raised','P0001','message','A01_AUDIT_FAILURE','data',null),
+ 'append failure propagates without a data or success envelope: '||label)
+from directory_contract_results where label in ('audit_failure_directory','audit_failure_options') order by label;
+drop trigger a01_reject_activity_read_success_audit on audit.audit_logs;
+
 select * from finish();
 rollback;
