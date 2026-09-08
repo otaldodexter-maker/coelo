@@ -2259,16 +2259,22 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.profileModelCreateName,
             builder: (context, state) => productionAccessProfileModelScreens == null
                 ? _unavailableCompositionRootRoute(context)
-                : AccessProfileFormPage(
-                    repository: productionAccessProfileModelScreens,
-                    logout: logout,
-                    domain: _accessProfileDomain(state.pathParameters['domain']),
-                    entityLabel: 'modelo de perfil',
-                    currentDestination: 'profiles',
-                    onCancel: () => context.goNamed(SuperadminRoutes.profileModelsName),
-                    onSaved: (_) => context.goNamed(SuperadminRoutes.profileModelsName),
-                    onDestinationSelected: (destination) =>
-                        _navigateFromPersistentShell(context, destination),
+                : ListenableBuilder(
+                    listenable: session,
+                    builder: (context, _) => AccessProfileFormPage(
+                      key: ValueKey(
+                        'model-create-${state.pathParameters}-${session.authorizationInvalidationRevision}',
+                      ),
+                      repository: productionAccessProfileModelScreens,
+                      logout: logout,
+                      domain: _accessProfileDomain(state.pathParameters['domain']),
+                      entityLabel: 'modelo de perfil',
+                      currentDestination: 'profiles',
+                      onCancel: () => context.goNamed(SuperadminRoutes.profileModelsName),
+                      onSaved: (_) => context.goNamed(SuperadminRoutes.profileModelsName),
+                      onDestinationSelected: (destination) =>
+                          _navigateFromPersistentShell(context, destination),
+                    ),
                   ),
           ),
           GoRoute(
@@ -2330,14 +2336,20 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.profileCreate,
             name: SuperadminRoutes.profileCreateName,
-            builder: (context, state) => AccessProfileFormPage(
-              repository: accessProfileRepository,
-              logout: logout,
-              domain: _accessProfileDomain(state.pathParameters['domain']),
-              onCancel: () => context.goNamed(SuperadminRoutes.profilesName),
-              onSaved: (_) => context.goNamed(SuperadminRoutes.profilesName),
-              onDestinationSelected: (destination) =>
-                  _navigateFromPersistentShell(context, destination),
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, _) => AccessProfileFormPage(
+                key: ValueKey(
+                  'profile-create-${state.pathParameters}-${session.authorizationInvalidationRevision}',
+                ),
+                repository: accessProfileRepository,
+                logout: logout,
+                domain: _accessProfileDomain(state.pathParameters['domain']),
+                onCancel: () => context.goNamed(SuperadminRoutes.profilesName),
+                onSaved: (_) => context.goNamed(SuperadminRoutes.profilesName),
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
+              ),
             ),
           ),
           GoRoute(

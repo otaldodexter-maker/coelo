@@ -9,6 +9,7 @@ import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/features/auth/domain/superadmin_auth_context.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
@@ -17,8 +18,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
   for (final models in [false, true]) {
-    for (final editing in [false, true]) {
-      for (final loaded in [true, false]) {
+    for (final mode in ['detail', 'edit', 'create']) {
+      final editing = mode != 'detail';
+      final creating = mode == 'create';
+      for (final loaded in creating ? [true] : [true, false]) {
         var permitted = true;
         var calls = 0;
         Completer<void>? nextGate;
@@ -54,71 +57,79 @@ void main() {
           }),
         );
         tearDownAll(client.dispose);
-        testWidgets(
-          '${models ? "Models" : "Profiles"} ${editing ? "edit" : "detail"} rejects old data with loaded=$loaded',
-          (tester) async {
-            await tester.binding.setSurfaceSize(const Size(1440, 900));
-            addTearDown(() => tester.binding.setSurfaceSize(null));
-            permitted = true;
-            calls = 0;
-            final oldResponse = loaded ? null : Completer<void>();
-            nextGate = oldResponse;
-            final session = SuperadminSession()..authorize(_full, sessionId: 'nominal');
-            final router = createSuperadminRouter(
-              session: session,
-              login: unavailableSuperadminLogin,
-              logout: unavailableSuperadminLogout,
-              requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-              accessProfileRepository: SupabaseAccessProfileRepository(client),
-              onThemeModeChanged: (_) {},
-            );
-            addTearDown(router.dispose);
-            addTearDown(session.dispose);
-            router.go(
-              '/${models ? "profile-models" : "profiles"}/platform/model${editing ? "/edit" : ""}',
-            );
-            await tester.pumpWidget(
-              MaterialApp.router(theme: CoeloTheme.light, routerConfig: router),
-            );
-            if (loaded) {
-              await tester.pumpAndSettle();
-              expect(find.text('Snapshot anterior'), findsWidgets);
-            } else {
-              await tester.pump();
-              expect(calls, 1);
-            }
-            final previousCalls = calls;
-            session.authorize(_full, sessionId: 'nominal');
-            if (loaded) {
-              await tester.pumpAndSettle();
-            } else {
-              await tester.pump();
-            }
-            expect(calls, previousCalls);
-            permitted = false;
-            final denial = Completer<void>();
-            nextGate = denial;
-            session.authorize(_reduced, sessionId: 'nominal');
-            await tester.pump();
-            await tester.pump();
-            final oldVisible = find.text('Snapshot anterior').evaluate().isNotEmpty;
-            denial.complete();
-            oldResponse?.complete();
-            nextGate = null;
+        testWidgets('${models ? "Models" : "Profiles"} $mode rejects old data with loaded=$loaded', (
+          tester,
+        ) async {
+          await tester.binding.setSurfaceSize(const Size(1440, 900));
+          addTearDown(() => tester.binding.setSurfaceSize(null));
+          permitted = true;
+          calls = 0;
+          final oldResponse = loaded ? null : Completer<void>();
+          nextGate = oldResponse;
+          final session = SuperadminSession()..authorize(_full, sessionId: 'nominal');
+          final router = createSuperadminRouter(
+            session: session,
+            login: unavailableSuperadminLogin,
+            logout: unavailableSuperadminLogout,
+            requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+            accessProfileRepository: SupabaseAccessProfileRepository(client),
+            onThemeModeChanged: (_) {},
+          );
+          addTearDown(router.dispose);
+          addTearDown(session.dispose);
+          router.go(
+            creating
+                ? '/${models ? "profile-models" : "profiles"}/new/platform'
+                : '/${models ? "profile-models" : "profiles"}/platform/model${editing ? "/edit" : ""}',
+          );
+          await tester.pumpWidget(
+            MaterialApp.router(theme: CoeloTheme.light, routerConfig: router),
+          );
+          if (loaded) {
             await tester.pumpAndSettle();
-            expect(session.isAuthenticated, isTrue);
-            expect(oldVisible, isFalse);
-            expect(find.text('Snapshot anterior'), findsNothing);
-            expect(calls, previousCalls + 1);
-            expect(
-              find.text(
-                editing ? 'Não foi possível abrir o perfil' : 'Não foi possível carregar o perfil',
-              ),
-              findsOneWidget,
-            );
-            expect(tester.takeException(), isNull);
-          },
-        );
+            if (creating) {
+              await tester.enterText(
+                find.widgetWithText(CoeloFormTextField, 'Nome do perfil'),
+                'Snapshot anterior',
+              );
+              await tester.pump();
+            }
+            expect(find.text('Snapshot anterior'), findsWidgets);
+          } else {
+            await tester.pump();
+            expect(calls, 1);
+          }
+          final previousCalls = calls;
+          session.authorize(_full, sessionId: 'nominal');
+          if (loaded) {
+            await tester.pumpAndSettle();
+          } else {
+            await tester.pump();
+          }
+          expect(calls, previousCalls);
+          permitted = false;
+          final denial = Completer<void>();
+          nextGate = denial;
+          session.authorize(_reduced, sessionId: 'nominal');
+          await tester.pump();
+          await tester.pump();
+          final oldVisible = find.text('Snapshot anterior').evaluate().isNotEmpty;
+          denial.complete();
+          oldResponse?.complete();
+          nextGate = null;
+          await tester.pumpAndSettle();
+          expect(session.isAuthenticated, isTrue);
+          expect(oldVisible, isFalse);
+          expect(find.text('Snapshot anterior'), findsNothing);
+          expect(calls, previousCalls + 1);
+          expect(
+            find.text(
+              editing ? 'Não foi possível abrir o perfil' : 'Não foi possível carregar o perfil',
+            ),
+            findsOneWidget,
+          );
+          expect(tester.takeException(), isNull);
+        });
       }
     }
   }
