@@ -12,7 +12,9 @@ precondições e 5 FAIL nas expectativas #4–8, decorrentes de quatro chamadas
 capturadas com SQLSTATE 42501, classificadas `acl-before-contract`.
 O wrapper público é SECURITY INVOKER com EXECUTE para authenticated; o cursor
 privado é SECURITY DEFINER sem esse EXECUTE. Não houve aborto nem grant de
-contorno. O artefato final nominal do operador ainda será reconciliado.
+contorno. O artefato final nominal foi reconciliado no checkpoint
+`2026-09-08-profiles-internal-read-contract.md`: Auth47 isolado com cleanup,
+sem Models/Forms ou escrita remota.
 
 Objetivo: permitir a leitura nominal de Perfis pelo principal interno, com o
 contrato paginado consumido pelo cliente. Estes resultados não comprovam
@@ -87,6 +89,57 @@ Adicionar em fixture nominal separada:
 
 A matriz de ACL também confere owner, SECURITY DEFINER, STABLE, search_path e
 privilégios efetivos, inclusive ausência de grant indireto indevido.
+
+## Contrato técnico do consumidor (preparação offline)
+
+Assinatura preservada com seis argumentos nomeados: `p_domain text,
+p_search text, p_status text, p_scope text, p_page integer, p_page_size integer`.
+O cliente converte página base 0 para base 1, apara a busca nas bordas,
+envia filtros vazios como null e conjuntos como CSV. Seu tamanho padrão é 11
+(cards) ou 8 (tabela); o legado SQL aceita null como 10 e limita tamanho a
+1–100. Preservar a normalização server-side, sem tratar parâmetros do cliente
+como autoridade de acesso.
+
+Sucesso é JSON cru com `domain`, `items`, `total`, `page`, `page_size` e
+`demo:false`, não `{ok,data,error}`. O consumidor usa o domínio da query,
+não valida o domain retornado. Cada item serve `id`, `code`, `name`,
+`description`, `status`, `max_scope_kind`, `version`, `is_system` e
+`membership_count`; no ramo institution inclui `institution_id`, inclusive
+null para perfil global. Não precisa devolver memberships nominais, People,
+email, catálogo de permissões ou auditoria detalhada no list.
+
+Preservar o protocolo de erro: o consumidor converte PostgREST 42501 em
+AccessProfileUnauthorizedException. Um erro 200 envelopado como Models seria
+interpretado como página vazia. Alterar esse protocolo exigiria reserva
+coordenada de cliente/contrato; não está autorizado nesta proposta.
+
+CSV significa união dentro de status/escopo e interseção entre filtros.
+Total é calculado após filtros e antes de limit/offset. Ordenação é
+lower(name),id antes da paginação. Página excedente mantém total e página,
+com items vazio; filtro sem resultado tem total zero. O cliente não executa
+esses filtros nem recalcula contadores: testes do consumidor não provam SQL.
+
+Na futura fixture separada, incluir dois perfis de nome igual e IDs distintos;
+um perfil sem vínculos; outro com múltiplos vínculos e múltiplas permissões,
+sem multiplicar count por join de permissões. Incluir membership ativa sem
+auth-link e ativa com auth-link, além de suspensa/revogada/legada excluídas.
+Para ator global, incluir perfis institution globais e locais A/B com
+assignments ativos, inativos e expirados. Não preencher resultados esperados
+do ator institution antes da decisão. Asserir presença de membership_count
+além do valor: o default zero do parser pode esconder uma chave incorreta.
+
+`access_profiles_list_contract_test.dart` cobre em memória os seis argumentos,
+filtros vazios, base de páginas, precedência e zero de membership_count,
+identidade global/local recebida, página excedente, erro 42501 e exclusão de
+Principal desta RPC. Resultado: **8/8 PASS**, analyzer focal sem problemas.
+Não produz autenticação real, HTTP de rede, SQL, prova de contagem server-side
+ou aprovação de visibilidade. São testes de caracterização do consumidor
+existente, sem alteração de comportamento produtivo e sem ciclo RED de fix.
+
+Review independente realm_audit confirmou assinatura, payload cru,
+membership_count, CSV e risco de multiplicação por join. A lacuna de produto
+continua sendo o alcance do ator institution. Nenhum SQL foi escrito ou
+executado nesta preparação.
 
 ## Limites e execução
 

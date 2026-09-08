@@ -17,8 +17,19 @@ Regressão funcional conjunta mais recente, HEAD e35c32f2: todos os arquivos
 `*_test.dart` sob test/features/auth, access_profiles e platform_users,
 excluindo `*golden*`: 303/303 PASS, exit0. Não inclui router/core guard/Conta,
 goldens, runtime HTTP ou produção; não somar com as rodadas focais abaixo.
-O candidato runtime e35c32f2 compila com 25 guards PASS e um SKIP forçado,
-aguardando seed/porta/janela nominal de Eng1 para Users49 e Models50 separadas.
+O candidato runtime foi ampliado em b6238e5a: 36 guards + 4 testes dos
+manifestos = 40 PASS, um runtime SKIP forçado e analyzer limpo. Distingue
+sessão inexistente, negação de escopo/domínio e membership realmente revogada.
+Manifestos são JSON declarativos, não SQL executável; ainda aguardam
+seed/porta/janela nominal de Eng1 para Users49 e Models50 separadas.
+O cenário revogado retorna antes de montar UI; não comprova remoção visual
+contínua após revogação. Não confundir JWT igual entre fases com prova de
+execução histórica da fase inicial.
+
+Perfis READ recebeu contrato técnico e oito testes de consumidor em memória:
+8/8 PASS focal; diretório de testes data completo 81/81 PASS; analyzer focal
+limpo. Prova argumentos/envelope/parsing, não autorização ou contagem SQL.
+Sem mudança produtiva, HTTP de rede, SQL, Docker ou produção nesta preparação.
 
 | Recorte original | Evidência local entregue | Primeiro gate aberto |
 |---|---|---|
@@ -27,7 +38,7 @@ aguardando seed/porta/janela nominal de Eng1 para Users49 e Models50 separadas.
 | Configurações | Persistência local real no browser e correções de load/save/ABA, integração central | Validação final sob sessão real e regressão de destino |
 | Usuários internos READ | Users49: 48/48 pgTAP, prova Eng1 36964bbb; evidência reconciliada 586d6861 | Publicação nominal, fluxo real, visual e E2E; edição/convites não habilitados por READ |
 | Modelos READ SQL | Models50: 38/38 TAP incluindo ACL10, prova Eng1 5ef2fc4e; 1d314a42 | Produção e cadeia real; contagem inclui testes repetidos 11 dentro de 17 |
-| Perfis READ SQL | b11c3c3e executado Auth47 pelo Eng1: 3 PASS/5 FAIL decorrentes de ACL-before-contract; fea97b2b proposta | Decisão canônica de escopo/contagem antes da corretiva nominal; não são cinco bugs independentes |
+| Perfis READ SQL | b11c3c3e executado Auth47 pelo Eng1: 3 PASS/5 FAIL decorrentes de ACL-before-contract; proposta técnica e contrato de consumidor | Contagem/READ reconciliados; decisão pendente somente de visibilidade/agregação do ator institution antes da corretiva nominal |
 | Diretórios Perfis/Modelos | 24529b5b: revisão de autorização; 149/149 regressão histórica | Backend real/visual/reload |
 | Detalhe e rotas | 6e06a9ed continuidade de recurso/delete; 8bd6bc8b quatro builders; 169/169 naquela rodada | Troca de path/save pendente e validação produtiva ainda não reivindicadas |
 | Criação, contexto | 77e9594: dois builders e descarte do draft; 21/21 focal | Template em voo na rota e comando real não comprovados |
