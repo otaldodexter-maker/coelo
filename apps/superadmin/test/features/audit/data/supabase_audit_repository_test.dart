@@ -212,6 +212,24 @@ void main() {
     expect(detail.integrity.verified, isTrue);
   });
 
+  test('fetchDetail rejects a response for a different event id', () async {
+    final repository = SupabaseAuditRepository(
+      _client(
+        (request) async => Response(
+          jsonEncode(_sessionEvent()),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+
+    await expectLater(
+      repository.fetchDetail('event-requested'),
+      throwsA(isA<AuditValidationException>()),
+    );
+  });
+
   test('startExport sends the same server-side query and idempotency id', () async {
     late Request capturedRequest;
     final repository = SupabaseAuditRepository(

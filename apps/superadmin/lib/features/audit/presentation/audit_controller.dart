@@ -149,6 +149,9 @@ final class AuditDirectoryController extends ChangeNotifier {
     try {
       final value = await _repository.fetchDetail(eventId);
       if (generation != _detailGeneration) return;
+      if (value.event.id != eventId) {
+        throw const AuditValidationException();
+      }
       _detail = AuditDetailSnapshot(AuditDetailLoadState.content, value: value);
     } on AuditUnauthorizedException {
       if (generation != _detailGeneration) return;

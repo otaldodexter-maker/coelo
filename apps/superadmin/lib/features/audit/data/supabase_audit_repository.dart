@@ -61,13 +61,15 @@ final class SupabaseAuditRepository implements AuditRepository {
       );
       if (response == null) throw const AuditNotFoundException();
       final payload = _map(response);
-      return AuditEventDetail(
+      final detail = AuditEventDetail(
         event: _event(payload),
         before: _objectMap(payload['before']),
         after: _objectMap(payload['after']),
         reason: _optionalString(payload['reason']),
         integrity: _integrity(_map(payload['integrity'])),
       );
+      if (detail.event.id != eventId) throw const AuditValidationException();
+      return detail;
     } catch (error) {
       throw _mapError(error);
     }
