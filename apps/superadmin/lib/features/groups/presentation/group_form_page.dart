@@ -10,11 +10,9 @@ import '../../support/domain/support_ticket.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
-import 'package:coelo_domain/locations.dart';
 
 import '../../locations/domain/location_catalog_reader.dart';
 import '../../locations/domain/location_selection_source.dart';
-import '../../locations/presentation/location_selection_field.dart';
 import '../domain/group_directory.dart';
 
 enum GroupFormSaveResult { created, updated }
@@ -164,7 +162,6 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   List<GroupDirectoryFilterOption> _typeOptions = const [];
   GroupDirectoryFilterOption? _selectedInstitution;
   GroupDirectoryFilterOption? _selectedUnit;
-  LocationSelection? _location;
   late GroupStatus _status;
   bool _inheritAppearance = true;
   bool _inheritAccess = true;
@@ -952,17 +949,20 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         style: Theme.of(context).textTheme.bodyMedium,
       );
     }
-    return LocationSelectionField(
-      key: Key('group-location-${unit.id}'),
-      scope: LocationScope.unit(institutionId: institutionId, unitId: unit.id),
-      source: widget.locationSelectionSource!,
-      sessionAvailable: widget.sessionAvailable,
-      contextRevision: widget.contextRevision,
-      initialSelection: _location,
-      onChanged: (selection) {
-        _location = selection;
-        _markDirty();
-      },
+    // The picker is deliberately not rendered yet. A group's location has no
+    // persistence path: superadmin_group_save takes an explicit allow-list of
+    // keys and location is not one of them, so a chosen place was accepted by
+    // the screen, held in local state, and dropped on save without a word. That
+    // is the same silent loss as a disabled field, except it costs the operator
+    // the work of choosing first.
+    //
+    // The step says what is true instead. When the command learns to carry a
+    // location, this becomes the picker again and nothing else here changes.
+    return Text(
+      'Escolher um local para a turma ainda não é salvo. O catálogo da unidade '
+      '${unit.label} já existe e pode ser consultado em Mapa e locais.',
+      key: Key('group-location-not-persisted-${unit.id}'),
+      style: Theme.of(context).textTheme.bodyMedium,
     );
   }
 

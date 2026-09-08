@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:coelo_domain/locations.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/groups/data/fake_group_directory_repository.dart';
@@ -78,5 +80,25 @@ void main() {
     expect(find.byKey(const Key('group-location-needs-unit')), findsNothing);
     expect(source.requests, isEmpty);
     expect(find.byType(LocationSelectionField), findsNothing);
+  });
+
+  test('a chosen location has nowhere to go, so the form does not ask for one', () {
+    // superadmin_group_save takes an explicit allow-list of payload keys and
+    // location is not among them, so the picker that used to stand here held a
+    // choice in local state and dropped it on save without a word. The step now
+    // says that instead of collecting work it will discard.
+    //
+    // Two files prove it together: the form no longer holds the selection, and
+    // the adapter has no location key to send.
+    final form = File(
+      'lib/features/groups/presentation/group_form_page.dart',
+    ).readAsStringSync();
+    final adapter = File(
+      'lib/features/groups/data/supabase_group_directory_repository.dart',
+    ).readAsStringSync();
+    expect(form.contains('LocationSelectionField'), isFalse);
+    expect(form.contains('_location'), isFalse);
+    expect(form.contains('group-location-not-persisted-'), isTrue);
+    expect(adapter.toLowerCase().contains('location'), isFalse);
   });
 }
