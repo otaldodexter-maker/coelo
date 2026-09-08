@@ -10,6 +10,96 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final action in ['Texto', 'Cortar', 'Texto fechar', 'Áudio confirmar', 'Áudio remover']) {
+    final tool = action.startsWith('Áudio') ? 'Música' : action.split(' ').first;
+    for (final change in ['covered', 'dispose']) {
+      testWidgets('$action overlay cannot affect another route after $change', (tester) async {
+        await tester.binding.setSurfaceSize(const Size(768, 1024));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        final navigator = GlobalKey<NavigatorState>();
+        final repository = InMemoryNowPublicationRepository();
+        Widget host(bool disposed) => MaterialApp(
+          navigatorKey: navigator,
+          home: disposed
+              ? const Scaffold(body: Text('Origem'))
+              : PrincipalNowPublicationPage.demo(
+                  repository: repository,
+                  audioPicker: () async => NowAudioDraft(
+                    localId: 'audio',
+                    name: 'audio.mp3',
+                    mimeType: 'audio/mpeg',
+                    bytes: Uint8List.fromList([2]),
+                  ),
+                  mediaPicker: () async => NowMediaDraft.image(
+                    localId: 'test',
+                    name: 'test.png',
+                    mimeType: 'image/png',
+                    bytes: Uint8List.fromList([1]),
+                  ),
+                ),
+        );
+        await tester.pumpWidget(host(false));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Adicionar mídia'));
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.byTooltip(tool));
+        await tester.tap(find.byTooltip(tool));
+        await tester.pumpAndSettle();
+        final controller =
+            tester
+                    .widget<AnimatedBuilder>(
+                      find.byWidgetPredicate(
+                        (widget) =>
+                            widget is AnimatedBuilder &&
+                            widget.animation is NowPublicationController,
+                        skipOffstage: false,
+                      ),
+                    )
+                    .animation
+                as NowPublicationController;
+        final draft = controller.state.draft;
+        final VoidCallback finish;
+        if (action == 'Texto fechar') {
+          finish = tester
+              .widget<IconButton>(find.widgetWithIcon(IconButton, Icons.close_rounded))
+              .onPressed!;
+        } else if (action == 'Áudio remover') {
+          finish = tester
+              .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Remover'))
+              .onPressed!;
+        } else {
+          finish = tester
+              .widget<FilledButton>(
+                find.widgetWithText(
+                  FilledButton,
+                  action == 'Áudio confirmar' ? 'Confirmar direitos' : 'Concluir',
+                ),
+              )
+              .onPressed!;
+        }
+        navigator.currentState!.push(
+          MaterialPageRoute<void>(builder: (_) => const Scaffold(body: Text('Outra rota'))),
+        );
+        await tester.pumpAndSettle();
+        if (change == 'dispose') {
+          await tester.pumpWidget(host(true));
+          await tester.pumpAndSettle();
+        }
+        finish();
+        await tester.pumpAndSettle();
+        expect(find.text('Outra rota'), findsOneWidget);
+        expect(controller.state.draft, same(draft));
+        if (change == 'dispose') {
+          navigator.currentState!.pop();
+          await tester.pumpAndSettle();
+          expect(find.text('Origem'), findsOneWidget);
+          expect(find.text('Concluir'), findsNothing);
+        }
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
   testWidgets('embedded publication uses only the canonical form surface', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));

@@ -125,8 +125,13 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
   }
 
   Future<T?> _showOwnedDialog<T>({required WidgetBuilder builder}) async {
+    final generation = _overlayGeneration;
     final navigator = Navigator.of(context, rootNavigator: true);
-    final route = DialogRoute<T>(context: context, builder: builder);
+    final route = DialogRoute<T>(
+      context: context,
+      builder: (context) =>
+          mounted && generation == _overlayGeneration ? builder(context) : const SizedBox.shrink(),
+    );
     final entry = (navigator, route as Route<dynamic>);
     _ownedOverlays.add(entry);
     try {
@@ -142,9 +147,11 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
     required WidgetBuilder builder,
     required Color backgroundColor,
   }) async {
+    final generation = _overlayGeneration;
     final navigator = Navigator.of(context);
     final route = ModalBottomSheetRoute<T>(
-      builder: builder,
+      builder: (context) =>
+          mounted && generation == _overlayGeneration ? builder(context) : const SizedBox.shrink(),
       capturedThemes: InheritedTheme.capture(from: context, to: navigator.context),
       backgroundColor: backgroundColor,
       showDragHandle: true,
@@ -163,10 +170,34 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
 
   void _dismissOwnedOverlays() {
     _overlayGeneration += 1;
-    for (final (navigator, route) in _ownedOverlays.toList(growable: false)) {
-      if (route.isActive) navigator.removeRoute(route);
-    }
+    final overlays = _ownedOverlays.toList(growable: false);
     _ownedOverlays.clear();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      for (final (navigator, route) in overlays) {
+        if (route.isActive) navigator.removeRoute(route);
+      }
+    });
+  }
+
+  bool _isCurrentOverlay(
+    BuildContext overlayContext,
+    int generation,
+    NowPublicationController requestedController,
+  ) =>
+      mounted &&
+      overlayContext.mounted &&
+      generation == _overlayGeneration &&
+      identical(requestedController, controller) &&
+      ModalRoute.of(overlayContext)?.isCurrent == true;
+
+  void _closeOverlay(
+    BuildContext overlayContext,
+    int generation,
+    NowPublicationController requestedController,
+  ) {
+    if (_isCurrentOverlay(overlayContext, generation, requestedController)) {
+      ModalRoute.of(overlayContext)?.navigator?.pop();
+    }
   }
 
   Future<void> _pickMedia() async {
@@ -432,6 +463,7 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
     await _showOwnedDialog<void>(
       builder: (context) => _NowDialog(
         title: 'Texto sobre a mídia',
+        onClose: () => _closeOverlay(context, generation, requestedController),
         body: CoeloFormTextField(
           fieldKey: const Key('now-overlay-field'),
           controller: text,
@@ -440,13 +472,16 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
           prefixIcon: Icons.text_fields_rounded,
           maxLength: 60,
           onChanged: (value) {
-            if (generation == _overlayGeneration && identical(requestedController, controller)) {
+            if (_isCurrentOverlay(context, generation, requestedController)) {
               requestedController.setOverlayText(value);
             }
           },
         ),
         actions: [
-          FilledButton(onPressed: () => Navigator.pop(context), child: const Text('Concluir')),
+          FilledButton(
+            onPressed: () => _closeOverlay(context, generation, requestedController),
+            child: const Text('Concluir'),
+          ),
         ],
       ),
     );
@@ -504,15 +539,13 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
                   min: min,
                   max: max,
                   onChanged: (next) {
+                    if (!_isCurrentOverlay(context, generation, requestedController)) return;
                     current.value = next;
-                    if (generation == _overlayGeneration &&
-                        identical(requestedController, controller)) {
-                      onChanged(next);
-                    }
+                    onChanged(next);
                   },
                 ),
                 FilledButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => _closeOverlay(context, generation, requestedController),
                   child: const Text('Concluir'),
                 ),
               ],
@@ -530,6 +563,7 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
     await _showOwnedDialog<void>(
       builder: (context) => _NowDialog(
         title: 'Usar áudio próprio',
+        onClose: () => _closeOverlay(context, generation, requestedController),
         body: const Text('Confirme que você tem autorização para usar este áudio.'),
         actions: [
           OutlinedButton(
@@ -538,19 +572,17 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
               side: BorderSide(color: Theme.of(context).colorScheme.error),
             ),
             onPressed: () {
-              if (generation == _overlayGeneration && identical(requestedController, controller)) {
-                requestedController.removeAudio();
-              }
-              Navigator.pop(context);
+              if (!_isCurrentOverlay(context, generation, requestedController)) return;
+              requestedController.removeAudio();
+              _closeOverlay(context, generation, requestedController);
             },
             child: const Text('Remover'),
           ),
           FilledButton(
             onPressed: () {
-              if (generation == _overlayGeneration && identical(requestedController, controller)) {
-                requestedController.confirmAudioRights(true);
-              }
-              Navigator.pop(context);
+              if (!_isCurrentOverlay(context, generation, requestedController)) return;
+              requestedController.confirmAudioRights(true);
+              _closeOverlay(context, generation, requestedController);
             },
             child: const Text('Confirmar direitos'),
           ),
@@ -1234,11 +1266,17 @@ final class _PublicationFooter extends StatelessWidget {
 }
 
 final class _NowDialog extends StatelessWidget {
-  const _NowDialog({required this.title, required this.body, required this.actions});
+  const _NowDialog({
+    required this.title,
+    required this.body,
+    required this.actions,
+    required this.onClose,
+  });
 
   final String title;
   final Widget body;
   final List<Widget> actions;
+  final VoidCallback onClose;
 
   @override
   Widget build(BuildContext context) {
@@ -1274,7 +1312,7 @@ final class _NowDialog extends StatelessWidget {
                       ),
                       overlayColor: const WidgetStatePropertyAll(Colors.transparent),
                     ),
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: onClose,
                     icon: const Icon(Icons.close_rounded),
                   ),
                 ],
