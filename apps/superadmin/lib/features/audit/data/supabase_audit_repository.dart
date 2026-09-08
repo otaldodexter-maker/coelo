@@ -14,7 +14,7 @@ final class SupabaseAuditRepository implements AuditRepository {
   @override
   Future<AuditPage> fetchPage(AuditQuery query) async {
     try {
-      final payload = _map(
+      final payload = _successPayload(
         await _client.rpc<Object?>(
           'audit_list_events_for_superadmin',
           params: {
@@ -60,7 +60,7 @@ final class SupabaseAuditRepository implements AuditRepository {
         params: {'p_event_id': eventId},
       );
       if (response == null) throw const AuditNotFoundException();
-      final payload = _map(response);
+      final payload = _successPayload(response);
       final detail = AuditEventDetail(
         event: _event(payload),
         before: _objectMap(payload['before']),
@@ -150,6 +150,30 @@ Exception _mapError(Object error) {
 Map<String, Object?> _map(Object? value) {
   if (value case Map<Object?, Object?> map) return Map<String, Object?>.from(map);
   throw const AuditUnavailableException();
+}
+
+Map<String, Object?> _successPayload(Object? value) {
+  final payload = _map(value);
+  if (payload['ok'] is! bool) return payload;
+  if (payload['ok'] == true) return _map(payload['data']);
+
+  final error = _map(payload['error']);
+  final code = error['code'];
+  if (code is! String) throw const AuditUnavailableException();
+  switch (code) {
+    case 'SAI_AUTH_REQUIRED':
+    case 'SAI_SESSION_INVALID':
+    case 'SAI_INTERNAL_CONTEXT_DENIED':
+    case 'SAI_MEMBERSHIP_SUSPENDED':
+    case 'SAI_MEMBERSHIP_REVOKED':
+    case 'SAI_PERMISSION_DENIED':
+    case 'SAI_MFA_REQUIRED':
+      throw const AuditUnauthorizedException();
+    case 'SAI_INVALID_ARGUMENT':
+      throw const AuditValidationException();
+    default:
+      throw const AuditUnavailableException();
+  }
 }
 
 Map<String, Object?> _objectMap(Object? value) => value == null ? const {} : _map(value);
