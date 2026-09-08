@@ -215,7 +215,7 @@ void main() {
             'author_initials': 'EC',
             'context_label': '3º ano A',
             'published_at': DateTime.now().toUtc().toIso8601String(),
-            'media': const [],
+            'media': const <Map<String, dynamic>>[],
           },
         ]),
         200,
