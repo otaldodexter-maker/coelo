@@ -9,6 +9,83 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  for (final operation in ['update', 'status']) {
+    for (final change in ['none', 'draft', 'session']) {
+      test('$operation retry after a lost response respects change=$change', () async {
+        final commandBodies = <Map<String, dynamic>>[];
+        final client = SupabaseClient(
+          'https://example.supabase.co',
+          'publishable-key',
+          httpClient: MockClient((request) async {
+            final isCommand =
+                request.url.path.endsWith('superadmin_internal_user_update') ||
+                request.url.path.endsWith('superadmin_internal_user_change_status');
+            if (isCommand) {
+              commandBodies.add(jsonDecode(request.body) as Map<String, dynamic>);
+              if (commandBodies.length == 1) throw ClientException('synthetic lost response');
+            }
+            final payload = request.url.path.endsWith('superadmin_internal_user_profiles')
+                ? {
+                    'items': [_profileJson],
+                  }
+                : _recordJson;
+            return Response(
+              jsonEncode(payload),
+              200,
+              headers: {'content-type': 'application/json'},
+              request: request,
+            );
+          }),
+        );
+        addTearDown(client.dispose);
+        final repository = SupabasePlatformUserRepository(client);
+        final current = (await repository.fetchById(_identityId))!;
+        Future<PlatformUserRecord> command({bool changed = false}) => operation == 'status'
+            ? changed
+                  ? repository.reactivate(_identityId)
+                  : repository.suspend(_identityId)
+            : repository.update(
+                _identityId,
+                PlatformUserDraft(
+                  identity: changed
+                      ? current.identity.copyWith(jobTitle: 'Novo cargo sintético')
+                      : current.identity,
+                  profile: current.profile,
+                  scope: current.scope,
+                  scopeIds: current.membership.scopeIds,
+                ),
+              );
+        await expectLater(
+          command(),
+          throwsA(
+            isA<PlatformUserRuleException>()
+                .having((error) => error.code, 'code', 'backend')
+                .having(
+                  (error) => error.message,
+                  'sanitized message',
+                  isNot(contains('synthetic lost response')),
+                ),
+          ),
+        );
+        if (change == 'session') {
+          repository.clearSessionCache();
+          await repository.fetchById(_identityId);
+        }
+        await command(changed: change == 'draft');
+        await command(changed: change == 'draft');
+        expect(commandBodies, hasLength(3));
+        expect(
+          commandBodies[1]['p_request_id'],
+          change == 'none'
+              ? commandBodies[0]['p_request_id']
+              : isNot(commandBodies[0]['p_request_id']),
+        );
+        expect(commandBodies[2]['p_request_id'], isNot(commandBodies[1]['p_request_id']));
+        expect(commandBodies[1]['p_expected_version'], commandBodies[0]['p_expected_version']);
+      });
+    }
+  }
+
   for (final operation in ['profiles', 'list', 'detail', 'status']) {
     for (final oldDenial in [false, true]) {
       test('late $operation response denial=$oldDenial preserves the new cache', () async {
