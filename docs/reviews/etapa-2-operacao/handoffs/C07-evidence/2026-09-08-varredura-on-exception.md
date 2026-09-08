@@ -215,3 +215,67 @@ só o contrato observável, então continua válido qualquer que seja a forma da
 Duas linhas medidas, das 22 que travam: Acompanhamento e Atividades. As demais continuam leitura.
 Atividades vale mais que Acompanhamento na ordem de consequência, porque Acompanhamento está hoje
 ligado a um repositório `Unavailable` e Atividades não.
+
+---
+
+## Medição 2 — Segurança da criança, 2026-09-08T20:53
+
+Terceira linha da família convertida em fato medido. Prova em
+`repro/child_safety_error_hang_test.dart`. Mesmo método: fora da árvore, cópia temporária para
+executar, remoção, worktree conferida limpa. `analyze` limpo.
+
+| Caso | Resultado | Medido |
+|---|---|---|
+| **Controle** — `Exception` comum | **verde** | vai para erro com mensagem, como esperado |
+| `Error` de decodificação na carga | **vermelho** | `load()` **propaga** `_TypeError: type 'int' is not a subtype of type 'String' in type cast` em vez de virar estado |
+| Falha anunciada e retry recupera | **vermelho** | mesma propagação; os ouvintes nunca recebem aviso de erro |
+| Página montada | **vermelho** | `CircularProgressIndicator` **continua na árvore** depois da falha: esqueleto sem retry |
+
+A tela presa esconde do operador o estado real das autorizações de retirada de uma criança.
+
+## O achado colateral, que pode ser pior que o alvo
+
+Verifiquei os dois pontos na fonte.
+
+**O produtor concreto de `Error` está no decodificador de opções, não no de diretório.**
+`child_safety_response_decoder.dart`, linhas 84 a 88, usa conversões **cruas** em quatro campos —
+`internal_id`, `child_context_id`, `institution_id` e `unit_id`, todos `as String?` — enquanto o
+**mesmo arquivo** tem ajudantes defensivos (`_string`, `_map`, `_list`, `_nullableString`) usados no
+resto. Basta a consulta devolver um desses campos como número para sair `TypeError`.
+
+**E o caminho que consome isso falha em silêncio.** `safety_pages.dart:1132`, no formulário de
+autorização de retirada, faz:
+
+```
+try   { options = await controller.searchChildren(...) }
+on Exception { error = 'Não foi possível buscar crianças.' }
+finally      { searching = false }
+```
+
+Um `Error` atravessa o `on Exception`, mas o `finally` **desliga o indicador de busca assim mesmo**.
+Resultado observável: o spinner some, a mensagem de erro **não** aparece, e a lista de opções fica
+vazia ou com o conteúdo velho. **A busca "termina" fingindo que não encontrou ninguém.**
+
+Isso é diferente, e em certo sentido pior, que a tela presa: presa é visivelmente quebrada; esta
+parece funcionar e dá uma resposta errada plausível, num formulário que autoriza quem pode retirar
+uma criança.
+
+Registro também, a favor do código: `_loadInitialContext` (linha 887) captura corretamente o
+`ChildSafetyNotFoundException` previsto. É só o `Error` que passa direto. E os decodificadores de
+diretório e de registro **são defensivos**, sem cast cru — ali o `Error` só viria da pilha do cliente
+Supabase, o que é plausível mas indireto.
+
+**Correção mínima, nos três pontos:** trocar `on Exception` por `on Object`, mantendo antes as
+capturas de exceção específica, em `child_safety_controller.dart:146`, `safety_pages.dart:887` e
+`safety_pages.dart:1132`. E, na origem, trocar as quatro conversões cruas do decodificador pelos
+ajudantes defensivos que o próprio arquivo já tem — isso elimina o produtor concreto, em vez de só
+tratar o sintoma.
+
+Não escrevi assertiva para os pontos 887 e 1132; são leitura verificada por mim na fonte, e caberiam
+no mesmo arquivo se houver interesse em fechar o macrotema.
+
+## Estado da família após esta medição
+
+Três linhas medidas das 22 que travam: Acompanhamento, Atividades e Segurança da criança. As duas
+últimas estão ligadas a repositórios reais. Restam Avaliações e os três compositores do Principal
+como próximos candidatos por consequência.
