@@ -299,6 +299,20 @@ void main() {
       expect(tester.takeException(), isNull, reason: '${configuration.$1}px');
     }
   });
+
+  testWidgets('controller swap preserves the active cards page size', (tester) async {
+    final repositoryA = _AuditRepository(page: _page());
+    final repositoryB = _AuditRepository(page: _page());
+    await _pump(tester, width: 1440, repository: repositoryA);
+
+    await tester.tap(find.byKey(const Key('audit-view-cards')));
+    await tester.pumpAndSettle();
+    expect(repositoryA.queries.last.pageSize, 11);
+
+    await _pump(tester, width: 1440, repository: repositoryB);
+
+    expect(repositoryB.queries.last.pageSize, 11);
+  });
 }
 
 final class _AuditRepository implements AuditRepository {
