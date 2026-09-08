@@ -35,10 +35,15 @@ final class RoutineDirectoryController extends ChangeNotifier {
     try {
       final page = await _repository.fetchPage(_query);
       if (serial != _requestSerial) return;
+      final hasFilters = [
+        _query.search,
+        _query.status,
+        _query.institutionId,
+        _query.unitId,
+        _query.groupId,
+      ].any((value) => value != null && value.trim().isNotEmpty);
       final status = page.items.isEmpty
-          ? (_query.search.trim().isEmpty
-                ? RoutineDirectoryStatus.empty
-                : RoutineDirectoryStatus.noResults)
+          ? (hasFilters ? RoutineDirectoryStatus.noResults : RoutineDirectoryStatus.empty)
           : RoutineDirectoryStatus.data;
       _state = RoutineDirectoryViewState(status: status, page: page);
     } on RoutineRepositoryException catch (error) {

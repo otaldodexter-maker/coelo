@@ -94,6 +94,24 @@ void main() {
     expect(controller.state.status, RoutineDirectoryStatus.noResults);
   });
 
+  test('blank filters do not turn an empty directory into no-results', () async {
+    final controller = RoutineDirectoryController(
+      FakeRoutineRepository(pageLoader: (_) async => page(const [])),
+    );
+    addTearDown(controller.dispose);
+    await controller.load(
+      query: const RoutineDirectoryQuery(
+        kind: RoutineEntryKind.model,
+        search: ' ',
+        status: '',
+        institutionId: ' ',
+        unitId: '',
+        groupId: ' ',
+      ),
+    );
+    expect(controller.state.status, RoutineDirectoryStatus.empty);
+  });
+
   test('stale response cannot replace a newer authorized result', () async {
     final first = Completer<RoutineDirectoryPage>();
     final second = Completer<RoutineDirectoryPage>();
@@ -112,4 +130,23 @@ void main() {
     expect(controller.state.status, RoutineDirectoryStatus.data);
     expect(controller.state.page?.items.single.id, 'model-a');
   });
+
+  for (final query in const [
+    RoutineDirectoryQuery(kind: RoutineEntryKind.model, status: 'active'),
+    RoutineDirectoryQuery(kind: RoutineEntryKind.model, institutionId: 'institution-a'),
+    RoutineDirectoryQuery(kind: RoutineEntryKind.application, unitId: 'unit-a'),
+    RoutineDirectoryQuery(kind: RoutineEntryKind.launch, groupId: 'group-a'),
+  ]) {
+    test(
+      'structural filter is no-results: ${query.status ?? query.institutionId ?? query.unitId ?? query.groupId}',
+      () async {
+        final controller = RoutineDirectoryController(
+          FakeRoutineRepository(pageLoader: (_) async => page(const [])),
+        );
+        addTearDown(controller.dispose);
+        await controller.load(query: query);
+        expect(controller.state.status, RoutineDirectoryStatus.noResults);
+      },
+    );
+  }
 }
