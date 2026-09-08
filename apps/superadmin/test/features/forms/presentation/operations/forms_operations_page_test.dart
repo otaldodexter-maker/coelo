@@ -29,6 +29,7 @@ void main() {
     expect(tester.widget<FilterChip>(find.widgetWithText(FilterChip, 'Anônimas')).selected, isTrue);
     expect(find.text('Marina Souza'), findsNothing);
     expect(find.text('Resposta anônima'), findsWidgets);
+    expect(find.textContaining('Enviada em'), findsNothing);
 
     await tester.tap(find.byKey(const Key('forms-cursor-next')));
     await tester.pump();
@@ -132,7 +133,7 @@ void main() {
     expect(store.accessExpired, isTrue);
   });
 
-  testWidgets('upload, acesso temporário e exportação alteram a fixture local', (tester) async {
+  testWidgets('upload local preserva exportações honestamente indisponíveis', (tester) async {
     await _pump(tester, const FormsOperationsPage.files(development: true));
 
     await tester.tap(find.widgetWithText(TextButton, 'Cancelar'));
@@ -143,13 +144,24 @@ void main() {
     await tester.pump();
     expect(find.text('Acesso temporário solicitado'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(OutlinedButton, 'CSV'));
-    await tester.pump();
-    expect(find.text('Exportação CSV adicionada à fila local'), findsOneWidget);
+    for (final format in ['CSV', 'XLSX', 'ZIP']) {
+      expect(
+        tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, format)).onPressed,
+        isNull,
+      );
+    }
+    expect(find.textContaining('CSV e ZIP indisponíveis'), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Baixar exportação job-103'));
-    await tester.pump();
-    expect(find.text('Download local preparado para job-103'), findsOneWidget);
+    expect(
+      tester
+          .widget<IconButton>(
+            find.byWidgetPredicate(
+              (widget) => widget is IconButton && widget.tooltip == 'Baixar exportação job-103',
+            ),
+          )
+          .onPressed,
+      isNull,
+    );
   });
 
   testWidgets('retry do erro restaura o conteúdo local', (tester) async {
