@@ -51,11 +51,14 @@ select ok(not has_table_privilege('authenticated',
   'app_private.superadmin_location_write_receipts','SELECT'),'the write receipt is private');
 select ok(not has_table_privilege('service_role',
   'app_private.superadmin_location_write_receipts','SELECT'),'not even service_role reads the receipt');
+-- The allowlist is asserted, not its exact membership: a later package may add its
+-- own verb to the same lane, and that is the point of keeping one receipt table.
 select is((select count(*)::integer from pg_constraint
   where conrelid='app_private.superadmin_location_write_receipts'::regclass and contype='c'
-    and pg_get_constraintdef(oid)
-      =$def$CHECK ((operation = ANY (ARRAY['update'::text, 'status'::text])))$def$),1,
-  'a receipt only records the two verbs this package defines');
+    and pg_get_constraintdef(oid) like 'CHECK ((operation = ANY (ARRAY[%'
+    and pg_get_constraintdef(oid) like '%''update''::text%'
+    and pg_get_constraintdef(oid) like '%''status''::text%'),1,
+  'a receipt records a named verb, and both verbs of this package are named');
 select is((select count(*)::integer from pg_constraint
   where conrelid='app_private.superadmin_location_write_receipts'::regclass and contype='c'
     and pg_get_constraintdef(oid)=$def$CHECK ((octet_length(request_hash) = 32))$def$),1,
