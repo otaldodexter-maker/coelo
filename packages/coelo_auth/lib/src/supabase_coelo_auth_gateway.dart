@@ -47,6 +47,8 @@ final class SupabaseCoeloAuthGateway extends CoeloAuthLifecycleGateway {
 
   final CoeloSupabaseAuthApi _api;
   final CoeloAuthSessionPersistence _sessionPersistence;
+  // Credential changes share the SDK session across screen remounts.
+  bool _credentialOperationInProgress = false;
 
   @override
   Stream<CoeloAuthSessionState> get authSessionStateChanges =>
@@ -60,6 +62,12 @@ final class SupabaseCoeloAuthGateway extends CoeloAuthLifecycleGateway {
     required String password,
     required bool persistSession,
   }) async {
+    if (_credentialOperationInProgress) {
+      return const CoeloAuthSignInResult.failure(
+        CoeloAuthSignInResult.genericFailureMessage,
+      );
+    }
+    _credentialOperationInProgress = true;
     try {
       await _sessionPersistence.setPersistenceEnabled(value: persistSession);
       final didAuthenticate = await _api.signInWithPassword(
@@ -80,6 +88,8 @@ final class SupabaseCoeloAuthGateway extends CoeloAuthLifecycleGateway {
       return const CoeloAuthSignInResult.failure(
         CoeloAuthSignInResult.genericFailureMessage,
       );
+    } finally {
+      _credentialOperationInProgress = false;
     }
   }
 
@@ -116,11 +126,13 @@ final class SupabaseCoeloAuthGateway extends CoeloAuthLifecycleGateway {
   Future<CoeloAuthPasswordUpdateResult> updatePassword({
     required String password,
   }) async {
-    if (!_api.currentSessionState.isPasswordRecovery) {
+    if (_credentialOperationInProgress ||
+        !_api.currentSessionState.isPasswordRecovery) {
       return const CoeloAuthPasswordUpdateResult.failure(
         CoeloAuthPasswordUpdateResult.genericFailureMessage,
       );
     }
+    _credentialOperationInProgress = true;
     try {
       await _api.updatePassword(password: password);
       await _api.signOut();
@@ -133,6 +145,8 @@ final class SupabaseCoeloAuthGateway extends CoeloAuthLifecycleGateway {
       return const CoeloAuthPasswordUpdateResult.failure(
         CoeloAuthPasswordUpdateResult.genericFailureMessage,
       );
+    } finally {
+      _credentialOperationInProgress = false;
     }
   }
 
