@@ -7,6 +7,57 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final change in ['callback', 'covered', 'dispose']) {
+    testWidgets('obsolete options cannot create or navigate after $change', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(375, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final navigator = GlobalKey<NavigatorState>();
+      var oldCalls = 0;
+      var newCalls = 0;
+      void oldCreate() => oldCalls++;
+      void newCreate() => newCalls++;
+      Widget host({bool updated = false, bool disposed = false}) => MaterialApp(
+        navigatorKey: navigator,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          child: child!,
+        ),
+        home: disposed
+            ? const Scaffold(body: Text('Origem'))
+            : PrincipalNowPreviewPage(onCreate: updated ? newCreate : oldCreate),
+      );
+      await tester.pumpWidget(host());
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Opções do Agora'));
+      await tester.pumpAndSettle();
+      final create = tester
+          .widget<FilledButton>(find.widgetWithText(FilledButton, 'Publicar no Agora'))
+          .onPressed!;
+      if (change == 'callback') {
+        await tester.pumpWidget(host(updated: true));
+      } else {
+        navigator.currentState!.push(
+          MaterialPageRoute<void>(builder: (_) => const Scaffold(body: Text('Outra rota'))),
+        );
+        await tester.pumpAndSettle();
+        if (change == 'dispose') await tester.pumpWidget(host(disposed: true));
+      }
+      await tester.pumpAndSettle();
+      create();
+      await tester.pumpAndSettle();
+      expect(oldCalls, 0);
+      expect(newCalls, 0);
+      if (change != 'callback') expect(find.text('Outra rota'), findsOneWidget);
+      if (change == 'dispose') {
+        navigator.currentState!.pop();
+        await tester.pumpAndSettle();
+        expect(find.text('Origem'), findsOneWidget);
+        expect(find.text('Opções deste Agora'), findsNothing);
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   Future<void> pumpNow(
     WidgetTester tester, {
     Size size = const Size(375, 900),

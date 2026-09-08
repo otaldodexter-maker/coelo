@@ -62,6 +62,8 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
   var _holding = false;
   var _focusPaused = false;
   var _overlayPaused = false;
+  ModalBottomSheetRoute<bool>? _optionsRoute;
+  var _optionsGeneration = 0;
   var _feedLoading = false;
   var _feedRequest = 0;
   PrincipalNowFeedFailure? _feedFailure;
@@ -124,6 +126,12 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
   @override
   void didUpdateWidget(covariant PrincipalNowPreviewPage oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.feedRepository != widget.feedRepository ||
+        oldWidget.feedScope != widget.feedScope ||
+        oldWidget.data != widget.data ||
+        oldWidget.onCreate != widget.onCreate) {
+      _dismissOptions();
+    }
     if (oldWidget.refreshSignal != widget.refreshSignal) {
       oldWidget.refreshSignal?.removeListener(_reloadAfterPublication);
       widget.refreshSignal?.addListener(_reloadAfterPublication);
@@ -153,6 +161,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
 
   @override
   void dispose() {
+    _dismissOptions();
     widget.refreshSignal?.removeListener(_reloadAfterPublication);
     _feedRequest += 1;
     _progressController
@@ -235,46 +244,73 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
   }
 
   Future<void> _showOptions() async {
+    if (!mounted || _optionsRoute != null) return;
+    final generation = _optionsGeneration;
+    final onCreate = widget.onCreate;
+    final navigator = Navigator.of(context);
     _overlayPaused = true;
     _syncProgress();
-    final createRequested = await showModalBottomSheet<bool>(
-      context: context,
+    late final ModalBottomSheetRoute<bool> route;
+    route = ModalBottomSheetRoute<bool>(
+      isScrollControlled: false,
+      capturedThemes: InheritedTheme.capture(from: context, to: navigator.context),
       backgroundColor: Theme.of(context).colorScheme.surface,
       showDragHandle: true,
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CoeloSpacing.space5,
-            0,
-            CoeloSpacing.space5,
-            CoeloSpacing.space6,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text('Opções deste Agora', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: CoeloSpacing.space3),
-              const Text('Conteúdo institucional privado e temporário.'),
-              if (widget.onCreate != null) ...[
-                const SizedBox(height: CoeloSpacing.space5),
-                FilledButton.icon(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  icon: const Icon(Icons.add_rounded),
-                  label: const Text('Publicar no Agora'),
+      builder: (context) => !mounted || generation != _optionsGeneration
+          ? const SizedBox.shrink()
+          : SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  CoeloSpacing.space5,
+                  0,
+                  CoeloSpacing.space5,
+                  CoeloSpacing.space6,
                 ),
-              ],
-            ],
-          ),
-        ),
-      ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text('Opções deste Agora', style: Theme.of(context).textTheme.titleLarge),
+                    const SizedBox(height: CoeloSpacing.space3),
+                    const Text('Conteúdo institucional privado e temporário.'),
+                    if (onCreate != null) ...[
+                      const SizedBox(height: CoeloSpacing.space5),
+                      FilledButton.icon(
+                        onPressed: () {
+                          if (mounted && generation == _optionsGeneration && route.isCurrent) {
+                            navigator.pop(true);
+                          }
+                        },
+                        icon: const Icon(Icons.add_rounded),
+                        label: const Text('Publicar no Agora'),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
     );
-    if (!mounted) return;
+    _optionsRoute = route;
+    final createRequested = await navigator.push(route);
+    if (!mounted || generation != _optionsGeneration) return;
+    if (identical(_optionsRoute, route)) _optionsRoute = null;
     _overlayPaused = false;
     _syncProgress();
     if (createRequested ?? false) {
-      widget.onCreate?.call();
+      onCreate?.call();
     }
+  }
+
+  void _dismissOptions() {
+    _optionsGeneration++;
+    final route = _optionsRoute;
+    _optionsRoute = null;
+    _overlayPaused = false;
+    if (route == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (route.isActive) route.navigator?.removeRoute(route);
+      if (mounted) _syncProgress();
+    });
   }
 
   void _sendReply() {
