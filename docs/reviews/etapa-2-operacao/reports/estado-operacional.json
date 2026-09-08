@@ -75,18 +75,18 @@
       "thread_id": "01a0819a-f1f1-7421-95dd-d645ca9f5747",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
       "branch": "codex/e2-r01-c02-forms-midia",
-      "instruction_revision": 18,
-      "received_revision": 41,
+      "instruction_revision": 19,
+      "received_revision": 43,
       "integrated_revision": 4,
-      "last_evidence": "2026-09-08T19:53:11-03:00",
+      "last_evidence": "2026-09-08T20:21:55-03:00",
       "baseline": "6cb8ba15bae15f5a6129b0db6e740a66f8f82b3f",
       "worktree_verified_at": "2026-09-08T14:25:04-03:00",
       "handoff_present_at_preparation": false,
-      "accepted_revision": 41,
-      "last_evidence_basis": "C00 read entire new r41 section; r40previous synced; runtime193receipt afterward partial",
+      "accepted_revision": 43,
+      "last_evidence_basis": "C00 read full new r42 and r43; callback10dca5bc nominal delta afterward",
       "handoff_generated_at_reported": "2026-09-08T12:30:00-03:00",
       "handoff_sha256": "162216fe868a3b76b422c2d863e33df604596549ab57fc09cc1e2724c5173183",
-      "next_step": "I01382 em revisão para lease; claim21 reserva focal pendente; Safety independente continua",
+      "next_step": "I019 corrected193 local replay; I018 schema implementation independent",
       "local_test_evidence": "C00 R249/49 + static4/4 + lint; Forms editor102/102 + DTO15/15",
       "continuity_automation_id": "e2-r01-c02-retomada-30-min",
       "continuity_verification": "Native automation view and local TOML confirmed ACTIVE, 30min; actual dispatch not proven",
@@ -99,14 +99,14 @@
       "source_push_verified_sha": "fccaa2539ad7bce8580a4398b0e8cf9764531f9a",
       "native_wait_cursor": "40b4aa04-b1a8-471a-8896-64092527a62b:10",
       "native_status": "active confirmed16:01 snapshot; later instantaneous activity not inferred",
-      "handoff_commit": "dd21319b787bf42fe2e14bd49553a634678514d2"
+      "handoff_commit": "4fb650bbf1fda8db6b611f4d18df0217579fdb86"
     },
     "C03": {
       "name": "E2 R01 C03 — Operações",
       "thread_id": "01a0819b-a12e-7110-88cb-99e51a82f384",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03",
       "branch": "codex/e2-r01-c03-operacoes",
-      "instruction_revision": 15,
+      "instruction_revision": 16,
       "received_revision": 25,
       "integrated_revision": 2,
       "last_evidence": "2026-09-08T18:16:41-03:00",
@@ -206,13 +206,15 @@
       "executor": "C02",
       "revision": 5,
       "sha": "0d944c02c3e489a01a24d812ebd096d9c6450df4",
-      "status": "pending-code-review"
+      "status": "integrated-local-verified;DI-E2E-open",
+      "destination": "2be71e291aa0db1f84405cd2e88af75ec5be41af"
     },
     {
       "executor": "C02",
       "revision": 5,
       "sha": "3ae0d690569136363daf57c69f30a163fd2f5021",
-      "status": "pending-handler-security-review"
+      "status": "integrated-local-verified;DI-E2E-open",
+      "destination": "a91ee7c0e0ba2ea34facb77e4ccb24485ffa8576"
     },
     {
       "executor": "C04",
@@ -364,13 +366,15 @@
       "executor": "C02",
       "revision": 15,
       "sha": "7d3399392aa671c1e432688fd06ed90f42c28701",
-      "status": "candidate-not-deployable;new-SQL-required"
+      "status": "integrated-local-verified;DI-E2E-open",
+      "destination": "ee7364b6a998e8c5d35aea36a31e43a78bc3b8aa"
     },
     {
       "executor": "C02",
       "revision": 16,
       "sha": "13d3aef81a18f8bd4387e3a96096d008f128db58",
-      "status": "candidate-key-by-asset;14PASS-frozen"
+      "status": "integrated-local-verified;DI-E2E-open",
+      "destination": "4f02d3149159cc5573d5884b6a14b9b7b9908726"
     },
     {
       "executor": "C02",
@@ -514,7 +518,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T20:14:41-03:00",
+  "updated_at": "2026-09-08T20:34:28-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -825,27 +829,39 @@
       "analyze": "2 files PASS C00;log coelo-c00-attendance-1818-analyze.log",
       "push": "pending",
       "production": "unchanged"
+    },
+    {
+      "at": "2026-09-08T20:32:58-03:00",
+      "executor": "C02",
+      "manifest": "reports/R01-forms-client-integrated-2035.json",
+      "source_commits": 23,
+      "frontend_tests": 314,
+      "dto_tests": 8,
+      "deno_tests": [
+        30,
+        16
+      ],
+      "production": false
     }
   ],
-  "last_delta_processed_at": "2026-09-08T19:42:45-03:00",
+  "last_delta_processed_at": "2026-09-08T20:32:58-03:00",
   "coordinator_next_steps": [
-    "Review C02 I007 upload contract when ready",
-    "Replay fixed XLSX;prepare concrete Auth personas package",
-    "Review C04/C05 visuals and queue; C04root release accepted",
-    "Resolve Planos039/051 conflict before SQL reservation",
-    "Next poll16:00;formal17:40;closing09/09 preserved"
+    "Implement Forms DI with renewable media lifetime, authorization revision keys and formId route correlation; preserve FormsTest without writes",
+    "Review corrected Activities46 fixture and serialized next replay after C02 release",
+    "Review C04/C05 nominal visual and status fixes; no blanket golden approval",
+    "Review C02 schema v2 contract and remaining upload bridge; no remote authorization"
   ],
   "local_replay_lease": {
-    "id": "R01-LOCAL-ACTIVITIES-46-01",
+    "id": "R01-LOCAL-ACTIVITIES-46-02",
     "status": "granted",
     "executor": "C03",
-    "instruction": "I015",
-    "issued_at": "2026-09-08T20:10:38-03:00",
-    "code_sha": "1358e85262028adf059ed60cd9781041bfdf298d",
+    "instruction": "I016",
+    "issued_at": "2026-09-08T20:34:28-03:00",
+    "code_sha": "36b52394480c0786f4df074365514555e9646eaf",
     "expected_assertions": 46,
+    "source_template": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-activities46-5w2p74bk/source",
     "expected_source_migrations": 54,
     "expected_effective_migrations": 56,
-    "source": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-activities46-5w2p74bk/source",
     "remote": false
   },
   "last_delivery": {
@@ -1070,6 +1086,49 @@
       "previous_release": "C02 Forms56 released;C04 scratch cleanup;Docker0 now",
       "result": "31/31PASS;exit0;log checkedC00;cleanupzero",
       "released_at": "2026-09-08T17:41:00-03:00"
+    },
+    {
+      "id": "R01-LOCAL-ACTIVITIES-46-01",
+      "status": "closed-fixture-failure",
+      "executor": "C03",
+      "instruction": "I015",
+      "issued_at": "2026-09-08T20:10:38-03:00",
+      "code_sha": "1358e85262028adf059ed60cd9781041bfdf298d",
+      "expected_assertions": 46,
+      "expected_source_migrations": 54,
+      "expected_effective_migrations": 56,
+      "source": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-activities46-5w2p74bk/source",
+      "remote": false,
+      "ended_observed_at": "2026-09-08T20:26:42-03:00",
+      "executed_assertions": 6,
+      "unreached_assertions": 40,
+      "error": "42601 qualified POSITION special syntax",
+      "cleanup_c00_verified_at": "2026-09-08T20:26:42-03:00",
+      "receipt_source": "executor reconstructed native output, not raw full log",
+      "receipt_path": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-activities46-5w2p74bk/runtime-result.json",
+      "receipt_sha256": "e8e13e89480af986788e4017118f04ea347d5507a788de363c14101f26248cc2",
+      "raw_process_start_end": "unknown",
+      "corrected_candidate": "36b52394480c0786f4df074365514555e9646eaf"
+    },
+    {
+      "id": "R01-LOCAL-XLSX-193-02",
+      "status": "closed-pass",
+      "executor": "C02",
+      "instruction": "I019",
+      "issued_at": "2026-09-08T20:26:42-03:00",
+      "code_sha": "c261afd314fc0993a839fb47374b3da859c19153",
+      "expected_assertions": 193,
+      "expected_source_migrations": 69,
+      "expected_effective_migrations": 71,
+      "source_template": "C:/Users/adrie/AppData/Local/Temp/coelo-c02-xlsx172-haps4sj4/source",
+      "remote": false,
+      "assertions_passed": 193,
+      "started_at": "2026-09-08T20:29:06.4539541-03:00",
+      "ended_at": "2026-09-08T20:30:43.6124373-03:00",
+      "exit_code": 0,
+      "evidence_path": "C:/Users/adrie/AppData/Local/Temp/coelo-c02-xlsx193-fixed-j85u7u3d",
+      "log_sha256": "52873e6fa52ea31baf26af73aba3bd620db4764bbb229c0025953683e66df74d",
+      "cleanup_c00_verified_at": "2026-09-08T20:34:28-03:00"
     }
   ],
   "r02_planning": {
@@ -1167,9 +1226,9 @@
       "branch": "claude/e2-r01-c06-coordenacao",
       "baseline": "f0763a657ca6e5422cc42fa61c0c3c4ca724e129",
       "handoff_path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06\\docs\\reviews\\etapa-2-operacao\\handoffs\\C06.md",
-      "instruction_revision": 10,
-      "received_revision": 10,
-      "accepted_revision": 10,
+      "instruction_revision": 11,
+      "received_revision": 18,
+      "accepted_revision": 18,
       "status": "active-acknowledged",
       "operational_ack": "I005/I006 confirmedr10; dispatchC07/C04/C05 proven",
       "scope": [
@@ -1182,14 +1241,15 @@
       "created_at": "2026-09-08T17:29:41-03:00",
       "bootstrap_commit": "2ed8513842a1d2f3f595645c7e868ad00662fefd",
       "push_verified_at": "2026-09-08T17:34:14-03:00",
-      "last_evidence": "2026-09-08T19:05:18-03:00",
+      "last_evidence": "2026-09-08T20:00:00-03:00",
       "automation_schedule": ":21/:51 America/Sao_Paulo;session-only idle-only;reported",
       "source_commit": "b3d15b299648a8dc8e935109150aa34db65fd0e1",
       "c07_receipt_evidence": "C06r5 confirms C07 supervision, I003/I004 correction and RTK dispatch18:22-18:23",
       "next_nominal_tick": "2026-09-08T18:51:00-03:00",
       "last_proven_tick": "2026-09-08T18:57:00-03:00",
       "timestamp_discrepancy": "r4 text18:10 versus commit18:03:39; preserve both, receipt uses actual read time",
-      "instruction_acknowledgement": "I008 accepted r13/33c74c3b; I009 pending next material ack"
+      "instruction_acknowledgement": "I010 confirmed r18 sections94–97; I011 awaiting next operational ack",
+      "last_evidence_basis": "r18 native dispatch receipt; timestamp claims preserved separately"
     }
   },
   "operational_routing": {
@@ -1307,8 +1367,8 @@
       40,
       50
     ],
-    "verified_at": "2026-09-08T19:42:45-03:00",
-    "next_nominal_tick": "2026-09-08T19:50:00-03:00",
+    "verified_at": "2026-09-08T20:32:58-03:00",
+    "next_nominal_tick": "2026-09-08T20:40:00-03:00",
     "prompt": "Native view + TOML verified; closing09/09 05:30/06:00/07:40 preserved"
   },
   "tracker_sync_1815": {
@@ -1622,5 +1682,29 @@
     ],
     "promotion": false,
     "report": "reports/R01-delta-2005.md"
+  },
+  "tracker_sync_2035": {
+    "at": "2026-09-08T20:32:58-03:00",
+    "C02_full": 43,
+    "nominal": [
+      "C02 response callback10dca5bc",
+      "C03 Activities46 fixture failure and corrected36b52394",
+      "C06 r18 operational ackI010"
+    ],
+    "promotion": false,
+    "report": "reports/R01-delta-2035.md"
+  },
+  "forms_claim193_integration": {
+    "at": "2026-09-08T20:34:28-03:00",
+    "sources": [
+      "697c8aef",
+      "c261afd3"
+    ],
+    "destinations": [
+      "a0d6720421b994638d3fe9d80fe1a3262afd2ad8",
+      "448bb3dad45e32d7522856697a75b60a698706ba"
+    ],
+    "assertions": 193,
+    "remote": false
   }
 }

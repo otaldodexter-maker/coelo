@@ -1,0 +1,122 @@
+{
+  "source": [
+    "C02 immutable commits",
+    "C00 independent reviews and runtime"
+  ],
+  "status": "integrated-local-verified;composition-and-e2e-open",
+  "generated_at": "2026-09-08T20:32:58-03:00",
+  "baseline_before": "7333cc2f",
+  "code_head": "85123991a4ee5a558fe9df039000c0303c8039d5",
+  "commits": [
+    {
+      "source": "0d944c02c3e489a01a24d812ebd096d9c6450df4",
+      "integrated": "2be71e291aa0db1f84405cd2e88af75ec5be41af"
+    },
+    {
+      "source": "8ebf74f9db0b79f807ee7ce1c9af7a099b706224",
+      "integrated": "1c3f3794062ca02de04ed504367168d84414ef0b"
+    },
+    {
+      "source": "2f4114d648fd613c1e83f0966626bfdec62a57dc",
+      "integrated": "6fc63b96a1baaa6ff9886913727538641d0bdfe2"
+    },
+    {
+      "source": "e8cf32ebb068678867ae0d0b743a9c4e312fa145",
+      "integrated": "e1d7d41e0c54f955aec39ea42ddc73ed7c7c49d2"
+    },
+    {
+      "source": "3d9c07436c3bb08aa51e8224fb2f3b2b80f49507",
+      "integrated": "1e7f7ef27d48fee1a287ec5b5e1f5f0de2f2af2c"
+    },
+    {
+      "source": "344e8d95ab73108b49495ff36d906f3f4d0ab6dc",
+      "integrated": "858c95cbcfb25c88319a315a909036e00e6f460d"
+    },
+    {
+      "source": "23a2705813316df3f2defbb1da56c57cc0444524",
+      "integrated": "7c13fd91af1ea28c620dfa9c81c6aff8a1a64d04"
+    },
+    {
+      "source": "ffe8ae4c6e337682a5b47440aed9da27fe9a2010",
+      "integrated": "f0b2622b13b393a7dea78bb6bd18478eb8ba9f6f"
+    },
+    {
+      "source": "fb2f9d05f7c0cc6070a7568213bd3f59558ad3cd",
+      "integrated": "8be1733e17e60f2af05814c5dc91a8389628a113"
+    },
+    {
+      "source": "91062c31bf60193fea959b7d0fe3bf4364e406ca",
+      "integrated": "f37a95743c2e399e259ab4f334c904a1d4a78c53"
+    },
+    {
+      "source": "c742e16a450a99b96c1c2cae008f8d2838f55267",
+      "integrated": "1eda3454fca5edd2dc17e8125536ef29b3d0495b"
+    },
+    {
+      "source": "b76964a3b1f14ab455366a233fb080b7518afdd2",
+      "integrated": "1901057d851229372658e74f0382df03efc78235"
+    },
+    {
+      "source": "dbde43708c11b3cff26ffeb573bf35bcf3dd9376",
+      "integrated": "8e5daedd5f9d6b5e3d3d80fe070e21a1354daf17"
+    },
+    {
+      "source": "a9d0bd428cfddb03c28ff3a1cc939fdefafbf79e",
+      "integrated": "66b10bd69e33e866b1c555fa6b0d96e5587f0d7a"
+    },
+    {
+      "source": "a28e9efab48daada09a8d03370da1a1d9fe199e3",
+      "integrated": "64d064ecb7c7cf995c52810a4277f31c497cbc0a"
+    },
+    {
+      "source": "fa1ea1e33de17d1981d3592fd62ba8e67aa06e97",
+      "integrated": "71502ce0f2678bf87ac8a7827deb21d99183d3f0"
+    },
+    {
+      "source": "3ae0d690569136363daf57c69f30a163fd2f5021",
+      "integrated": "a91ee7c0e0ba2ea34facb77e4ccb24485ffa8576"
+    },
+    {
+      "source": "9b8c4a3a6b9a0fb94b508aa2f6933f73c81d0013",
+      "integrated": "584a32cdb7a1422d36adb45def534b5b352df741"
+    },
+    {
+      "source": "008ac85def68a4698bddbb4a67570630a9e466b5",
+      "integrated": "29f5605de9f81b5411276b6adb6f2b44bccf0965"
+    },
+    {
+      "source": "7d3399392aa671c1e432688fd06ed90f42c28701",
+      "integrated": "ee7364b6a998e8c5d35aea36a31e43a78bc3b8aa"
+    },
+    {
+      "source": "13d3aef81a18f8bd4387e3a96096d008f128db58",
+      "integrated": "4f02d3149159cc5573d5884b6a14b9b7b9908726"
+    },
+    {
+      "source": "10dca5bcf33e28c2cfd31c27cf8facb33c7c79f8",
+      "integrated": "6c6db0228f7a4881c55d06a32759f23a30a86161"
+    },
+    {
+      "source": "f0475414b0553058e9c7f0e262e472d162a55cfd",
+      "integrated": "85123991a4ee5a558fe9df039000c0303c8039d5"
+    }
+  ],
+  "tests": {
+    "flutter_distinct": 314,
+    "dto_distinct": 8,
+    "deno_media": 30,
+    "deno_download": 16,
+    "analyzer": "no issues"
+  },
+  "logs": [
+    {
+      "path": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-forms-client-20260908-2028.log",
+      "sha256": "b0ea23eb3dcad97a7b2818da44ef6bafb8d6ce23264a5d9bba69b57bb8f073bb"
+    },
+    {
+      "path": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c00-forms-analyze-20260908-2030.log",
+      "sha256": "a377e297881abb9ae08f2f9477e516b60fa975e9eb5b9c04699d973dd88db3bd"
+    }
+  ],
+  "remote_applied": false
+}

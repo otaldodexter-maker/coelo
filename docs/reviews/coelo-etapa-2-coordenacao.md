@@ -704,3 +704,8 @@ Fonte `etapa-2-operacao/reports/R01-delta-2005.md`: SecretStore1477ca3a,FormsSQL
 
 
 Recibo Git 2026-09-08T20:14:41-03:00: push atômico e ls-remote confirmaram `e55143ff64204ff02b576b7d01fe7b6fbb2d7eca` em dev e C00. Inclui as integrações verificadas de SecretStore, Auth, SQL Forms e componentes Locais, além dos rastreadores e reservas. C00 limpa; sem deploy ou mutação remota. Lease local Atividades46 em andamento, resultado pendente.
+
+
+## R01 recibo operacional — 2026-09-08T20:32:58-03:00
+
+23 commits Forms integrados e verificados localmente; mapa de SHAs e critérios abertos em [relatório2035](etapa-2-operacao/reports/R01-delta-2035.md). Trackers sincronizados com C02r43 e deltas nominais. C00 retém composição/integração. C03 I015 encerrou com fixture falha6/46; C02 I019 detém próxima lease exclusiva193. C06I010 ack confirmado por r18, I011 publicado para próximos limites de lote. Heartbeat nativo ACTIVE reconferido, fuso São Paulo, disparos nominais a cada dez minutos; próximo20:40, não confirmação de execução futura. Autoridade e fechamento05:30/06:00/07:40 inalterados.

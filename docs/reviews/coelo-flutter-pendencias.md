@@ -502,3 +502,15 @@ C02r41 integral sincronizado; deltas nominais SecretStore, Locais, AuthC06 eAudi
 ## Recibo Auth I017 — 2026-09-08T20:13:44-03:00
 
 C01/r47 recebido e revisão focal concluída. Gatewaybfb0e148→C0090de1968; ações8adc4c33→f7230db9. C00 executou47/47 testes do pacote e75/75 do cliente, total122distintos; análise dos seisarquivos sem problemas. LogsTEMPcoelo-c00-auth-package-2012.log,coelo-c00-auth-client-2012.log,coelo-c00-auth-2012-analyze.log. Error nasfronteiras agora produzresultado seguro; senhaconfirmada/cleanupfalho édistinguido semsucesso ouretry, guard de sessão nova preservado. Seispaths liberados. NenhumAuth remoto/E2E. C01I018 passa aos aceitesFE restantes de account.settings/theme, reutilizando provaSharedPreferenceslocal.
+
+
+## Corte nominal C00 — 2026-09-08T20:32:58-03:00
+
+C02 até r43 integralmente lido, mais corrigenda callback `10dca5bc`; 23 commits Forms integrados localmente conforme [relatório2035](etapa-2-operacao/reports/R01-delta-2035.md) e manifesto de SHAs. C00: 314 Flutter, 8 DTO, 30 Deno mídia e 16 Deno download PASS; analyzer limpo. IDs: forms.respond/monitor/responses/response-detail/responses.export/resolve-file/download/expire-file. Composição, purge/segunda sessão, upload, XLSX completo, goldens e E2E continuam abertos. Safety7aede603 e schemaI018 são recebidos/candidatos, não certificados.
+
+Activities I015: 6/46 executados antes de erro42601 da fixture; 40 não atingidos, sem certificação funcional. Receipt reconstruído da saída nativa identificado como tal; hashes conferidos, horários exatos desconhecidos. Candidato corrigido36b52394 aguarda replay. C02 I019 recebeu lease exclusiva193 fixo c261afd3, sem schema novo/SQL concorrente. C06r18 confirma I010; fila visual recebida sem aprovação. Nenhuma promoção de conclusão, nenhum remoto aplicado; percentuais17:40 conservam corte histórico.
+
+
+### Recibo posterior I019 — 2026-09-08T20:34:28-03:00
+
+C02 c261afd3: **193/193 pgTAP PASS**, exit0,20:29:06.4539541–20:30:43.6124373−03:00. C00 conferiu log52873e6f…6df74d, manifesto6ad0ad0a…bb0492, result d1bec508…a30673 e Docker vazio. Evidência TEMP coelo-c02-xlsx193-fixed-j85u7u3d. Perfil69/71 e runner13734326 preservados.193 inclui172; não somar. Claim697c8aef+c261afd3 integrado por C00 após revisão e prova; schema I018 não incluído, sem aplicação remota. Lease encerrada; C03 I016 recebeu repetição nominal46 com fixture corrigida36b52394.
