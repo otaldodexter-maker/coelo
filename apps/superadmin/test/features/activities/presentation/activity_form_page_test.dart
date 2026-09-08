@@ -553,6 +553,18 @@ void main() {
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('activity-form-name')), 'Robótica');
+    final continueButton = find.byKey(const Key('activity-form-continue'));
+    final formScrollable = find.descendant(
+      of: find.byKey(const Key('activity-form-scroll')),
+      matching: find.byType(Scrollable),
+    ).first;
+    await tester.scrollUntilVisible(continueButton, 250, scrollable: formScrollable);
+    await tester.pumpAndSettle();
+    // The compact footer scrolls with the form; expose the whole button,
+    // not only its leading edge at the viewport boundary.
+    await tester.drag(formScrollable, const Offset(0, -200));
+    await tester.pumpAndSettle();
+    expect(continueButton.hitTestable(), findsOneWidget);
     await tester.tap(find.byKey(const Key('activity-form-continue')));
     await tester.pumpAndSettle();
     tester
@@ -561,8 +573,11 @@ void main() {
         )
         .onChanged('institution-1');
     await tester.pump();
-    await tester.tap(find.byKey(const Key('activity-unit-institution-1-unit-1')));
-    await tester.ensureVisible(find.byKey(const Key('activity-unit-institution-1-unit-1')));
+    final unit = find.byKey(const Key('activity-unit-institution-1-unit-1'));
+    await tester.ensureVisible(unit);
+    await tester.pumpAndSettle();
+    expect(unit.hitTestable(), findsOneWidget);
+    await tester.tap(unit);
     await tester.pumpAndSettle();
     await tester.pump();
 
