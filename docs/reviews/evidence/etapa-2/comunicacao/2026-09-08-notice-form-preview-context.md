@@ -34,3 +34,14 @@ Testes usam dados sintéticos locais. Não provam Supabase, R2, publicação rea
 RLS ou E2E. N01 depende do diagnóstico nominal conduzido pelo operador exclusivo
 do Coordenador; nenhuma operação remota executada nesta fatia. Conhecimento
 durável não mudou: correção do lifecycle existente, sem artigo novo de memória.
+
+# Complemento da revisão central
+
+O commit9abd4a74 preservava o destino aberto por onAccepted, mas deixava a
+prévia abaixo dele. A revisão central apontou P2: voltar permitia confirmar
+novamente. Novo RED comprovou a prévia após Back. O guard _closing agora
+impede reentrância e finally remove a rota própria quando o callback navega,
+ou faz pop quando ela ainda é a atual; jamais remove o destino por pop cego.
+Teste retorna do destino, verifica ausência da prévia e invoca callback antigo
+sem segunda confirmação. 15 testes da prévia passaram; analyzer2 sem issues.
+Revisão independente retificou a aprovação anterior e aprovou o complemento.
