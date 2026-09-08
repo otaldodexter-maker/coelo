@@ -124,6 +124,179 @@ class Harness implements AuthAdapter, SecretStore, PrivateBindingsAdapter {
   }
 }
 
+// Controlled adapter contract, not a PostgreSQL implementation: activation
+// requires a live capability catalog; terminal proof inspects nominal bindings.
+class LifecycleHarness extends Harness {
+  roleActive = true;
+  catalogAvailable = true;
+  revocationAudits = 0;
+  verifiedRevokedIds: readonly string[] = [];
+  lifecycle = new Map<string, { status: string; version: number }>();
+  constructor(p: Plan) {
+    super();
+    for (const item of p.personas) {
+      if (item.internalIdentityId) {
+        this.lifecycle.set(item.authUserId, { status: "active", version: 1 });
+      }
+    }
+  }
+  override verifyActive(_plan: Plan) {
+    this.calls.push("verify-active");
+    return Promise.resolve(
+      this.roleActive && this.catalogAvailable &&
+        [...this.lifecycle.values()].every((value) =>
+          value.status === "active" && value.version === 1
+        ),
+    );
+  }
+  override revokeOwned(p: Plan, ids: readonly string[]) {
+    this.calls.push("revoke-private");
+    this.revokedIds = [...ids];
+    for (const id of ids) {
+      const item = p.personas.find((candidate) => candidate.authUserId === id);
+      assert(item, "only nominal package accounts may be revoked");
+      if (item.persona === "global") continue;
+      const current = this.lifecycle.get(id)!;
+      if (current.status === "revoked" && current.version === 2) continue;
+      assert.deepEqual(current, { status: "active", version: 1 });
+      this.lifecycle.set(id, { status: "revoked", version: 2 });
+      this.revocationAudits++;
+    }
+    return Promise.resolve();
+  }
+  override verifyRevoked(p: Plan, ids: readonly string[]) {
+    this.calls.push("verify-revoked");
+    this.verifiedRevokedIds = [...ids];
+    return Promise.resolve(ids.every((id) => {
+      const item = p.personas.find((candidate) => candidate.authUserId === id);
+      if (!item) return false;
+      if (item.persona === "global") return !this.lifecycle.has(id);
+      const current = this.lifecycle.get(id);
+      return current?.status === "revoked" && current.version === 2;
+    }));
+  }
+}
+
+Deno.test("controlled adapter: inactive role blocks activation but cannot block terminal cleanup and its retry", async () => {
+  const p = plan();
+  const h = new LifecycleHarness(p);
+  await provisionAuth(p, { auth: h, secrets: h }, { apply: true });
+  await activateAuth(p, h, h, h, { apply: true });
+  h.roleActive = false;
+  h.catalogAvailable = false;
+  await assert.rejects(
+    activateAuth(p, h, h, h, { apply: true }),
+    /PRIVATE_BINDINGS_VERIFICATION/,
+  );
+  h.calls = [];
+  const outcome = await closePersonas(p, h, h, h, { apply: true });
+  assert.equal(
+    outcome,
+    "internal-access-revoked-auth-banned-session-cleanup-c00-required",
+  );
+  assert.deepEqual(
+    [...h.lifecycle.values()],
+    Array(4).fill({ status: "revoked", version: 2 }),
+  );
+  assert.deepEqual([...h.banned.values()], Array(5).fill(true));
+  assert.equal(h.revocationAudits, 4);
+  assert(
+    h.calls.indexOf("verify-revoked") <
+      h.calls.findIndex((call) => call.startsWith("ban:")),
+  );
+  h.calls = [];
+  assert.equal(await closePersonas(p, h, h, h, { apply: true }), outcome);
+  assert.equal(h.revocationAudits, 4);
+  assert.deepEqual([...h.banned.values()], Array(5).fill(true));
+  assert(!h.calls.some((call) => /^(create|activate|reserve):/.test(call)));
+});
+
+Deno.test("controlled adapter: scenario cleanup proves only the target despite unrelated catalog and lifecycle drift", async () => {
+  const p = plan();
+  const h = new LifecycleHarness(p);
+  await provisionAuth(p, { auth: h, secrets: h }, { apply: true });
+  await activateAuth(p, h, h, h, { apply: true });
+  h.roleActive = false;
+  h.catalogAvailable = false;
+  h.lifecycle.set(p.personas[0].authUserId, {
+    status: "suspended",
+    version: 3,
+  });
+  h.calls = [];
+  const outcome = await revokeScenario(p, h, h, h, { apply: true });
+  assert.equal(
+    outcome,
+    "revoked-persona-only-awaiting-ui-and-session-verification",
+  );
+  assert.deepEqual(h.verifiedRevokedIds, [p.personas[3].authUserId]);
+  assert.deepEqual(h.revokedIds, [p.personas[3].authUserId]);
+  assert.deepEqual(h.calls.filter((call) => call.startsWith("ban:")), [
+    `ban:${p.personas[3].authUserId}`,
+  ]);
+  assert.deepEqual(h.lifecycle.get(p.personas[0].authUserId), {
+    status: "suspended",
+    version: 3,
+  });
+  assert.deepEqual([...h.banned.values()], [false, false, false, true, false]);
+  await revokeScenario(p, h, h, h, { apply: true });
+  assert.equal(h.revocationAudits, 1);
+});
+
+Deno.test("SQL artifact separates terminal revocation proof from full active scenario verification", () => {
+  const p = plan();
+  // Static contract inspection only: actual SQL predicates still need C00's
+  // authorized database replay, including role and permission drift fixtures.
+  for (const state of ["active", "scenario-revoked", "revoked"] as const) {
+    const sql = privateVerifySql(p, state);
+    const payload = sql.match(/jsonb_array_elements\('([^']+)'::jsonb\)/)?.[1];
+    assert(payload);
+    const rows: { persona: string; status: string; version: number }[] = JSON
+      .parse(payload);
+    const targets = rows.filter((row) => row.status === "revoked");
+    assert.equal(
+      targets.length,
+      state === "active" ? 0 : state === "revoked" ? 5 : 1,
+    );
+    if (state === "scenario-revoked") {
+      assert.equal(targets[0].persona, "revoked");
+    }
+    assert(targets.every((row) => row.version === 2));
+    assert.match(
+      sql,
+      /count\(\*\)=5 and bool_and\(auth_owned and no_people_link and private_bindings\)/,
+    );
+    assert(sql.includes(`'revocationVerified',${state !== "active"}`));
+    assert(
+      sql.includes(
+        `count(*) filter(where revocation_target)=${
+          state === "revoked" ? 5 : 1
+        }`,
+      ),
+    );
+    assert.match(
+      sql,
+      /bool_and\(auth_owned and no_people_link and private_bindings\) filter\(where revocation_target\)/,
+    );
+    const activeCatalog = sql.slice(
+      sql.indexOf("and (item->>'status'='revoked' or ("),
+      sql.indexOf(
+        "and not exists(select 1 from app_private.superadmin_internal_auth_links other",
+      ),
+    );
+    assert(activeCatalog.startsWith("and (item->>'status'='revoked' or ("));
+    assert(activeCatalog.includes("r.status='active'"));
+    assert(activeCatalog.includes("i.status='active'"));
+    assert(
+      activeCatalog.includes(
+        "p.code='institution.update' and p.status='active'",
+      ),
+    );
+    assert(
+      activeCatalog.includes("p.code='platform.read' and p.status='active'"),
+    );
+  }
+});
+
 Deno.test("revocation scenario targets only revoked and never the other four accounts", async () => {
   const p = plan();
   const h = new Harness();
