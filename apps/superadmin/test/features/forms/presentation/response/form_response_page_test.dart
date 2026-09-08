@@ -485,7 +485,22 @@ void main() {
     expect(find.text('Resposta enviada'), findsOneWidget);
     await tester.tap(find.text('Editar resposta'));
     await tester.pump();
-    expect(api.editCommand, isNotNull);
+    expect(api.editCommand, isNull);
+    expect(
+      tester
+          .widget<EditableText>(find.descendant(of: field, matching: find.byType(EditableText)))
+          .controller
+          .text,
+      '12.0',
+    );
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('form-response-submit')));
+    await tester.pumpAndSettle();
+    expect(
+      api.editCommand!.payload.answers['item-1'],
+      api.submitCommand!.payload.answers['item-1'],
+    );
   });
 
   testWidgets('response autosave feedback fits 375px at 200 percent text', (tester) async {
@@ -558,6 +573,61 @@ void main() {
     },
   );
 
+  testWidgets('editing a submitted response changes nothing until review and confirmation', (
+    tester,
+  ) async {
+    final api = _ResponseApi();
+    await open(tester, api);
+    final field = find.byKey(const Key('form-response-item-item-1'));
+    await tester.enterText(field, 'Resposta enviada original');
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('form-response-submit')));
+    await tester.pumpAndSettle();
+    final saveCount = api.saveCalls.length;
+    await tester.tap(find.text('Editar resposta'));
+    await tester.pumpAndSettle();
+    expect(api.editCommand, isNull);
+    expect(field, findsOneWidget);
+    expect(find.byKey(const Key('form-response-save-draft')), findsNothing);
+    await tester.enterText(field, 'Resposta revisada');
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.editCommand, isNull);
+    expect(api.saveCalls.length, saveCount);
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('form-response-submit')));
+    await tester.pumpAndSettle();
+    expect(
+      api.editCommand!.payload.answers['item-1']!.value,
+      isA<FormShortTextValue>().having((value) => value.value, 'revision', 'Resposta revisada'),
+    );
+    expect(find.text('Resposta enviada'), findsOneWidget);
+    expect(find.textContaining('Resposta revisada'), findsOneWidget);
+  });
+
+  testWidgets('cancelling a local submitted revision restores the confirmed answers', (
+    tester,
+  ) async {
+    final api = _ResponseApi();
+    await open(tester, api);
+    final field = find.byKey(const Key('form-response-item-item-1'));
+    await tester.enterText(field, 'Resposta confirmada');
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('form-response-submit')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Editar resposta'));
+    await tester.pumpAndSettle();
+    await tester.enterText(field, 'Rascunho local descartado');
+    await tester.tap(find.text('Cancelar edição'));
+    await tester.pumpAndSettle();
+    expect(api.editCommand, isNull);
+    expect(find.text('Resposta enviada'), findsOneWidget);
+    expect(find.textContaining('Resposta confirmada'), findsOneWidget);
+    expect(find.textContaining('Rascunho local descartado'), findsNothing);
+  });
+
   for (final operation in ['save', 'submit', 'edit']) {
     testWidgets('lost $operation confirmation retries the exact committed command', (tester) async {
       final api = _ResponseApi(lostConfirmation: operation);
@@ -573,10 +643,8 @@ void main() {
       Future<void> invoke() async {
         if (operation == 'save') {
           await tester.tap(find.byKey(const Key('form-response-save-draft')));
-        } else if (operation == 'submit') {
-          await tester.tap(find.byKey(const Key('form-response-submit')));
         } else {
-          await tester.tap(find.text('Editar resposta'));
+          await tester.tap(find.byKey(const Key('form-response-submit')));
         }
         await tester.pumpAndSettle();
       }
@@ -586,6 +654,14 @@ void main() {
         await tester.pumpAndSettle();
         if (operation == 'edit') {
           await tester.tap(find.byKey(const Key('form-response-submit')));
+          await tester.pumpAndSettle();
+          await tester.tap(find.text('Editar resposta'));
+          await tester.pumpAndSettle();
+          await tester.enterText(
+            find.byKey(const Key('form-response-item-item-1')),
+            'Revised answer',
+          );
+          await tester.tap(find.byKey(const Key('form-response-review')));
           await tester.pumpAndSettle();
         }
       }
@@ -1199,8 +1275,14 @@ void main() {
     expect(find.text('Resposta enviada'), findsOneWidget);
     await tester.tap(find.text('Editar resposta'));
     await tester.pumpAndSettle();
+    expect(api.editCommand, isNull);
+    expect(find.byKey(const Key('form-response-save-draft')), findsNothing);
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('form-response-submit')));
+    await tester.pumpAndSettle();
     expect(api.editCommand?.expectedVersion, 3);
-    expect(find.byKey(const Key('form-response-save-draft')), findsOneWidget);
+    expect(find.text('Resposta enviada'), findsOneWidget);
   });
 
   testWidgets('autosave exposes one real state and reacts to editing', (tester) async {
@@ -1287,7 +1369,7 @@ final class _ResponseApi implements FormsApi {
     final receipt = FormResponseDraft(
       id: command.payload.responseId,
       occurrenceId: command.payload.occurrenceId,
-      status: operation == 'submit'
+      status: operation == 'submit' || operation == 'edit'
           ? FormResponseDraftStatus.submitted
           : FormResponseDraftStatus.draft,
       answers: command.payload.answers,
@@ -1411,7 +1493,7 @@ final class _ResponseApi implements FormsApi {
     return FormResponseDraft(
       id: 'response-1',
       occurrenceId: command.payload.occurrenceId,
-      status: FormResponseDraftStatus.draft,
+      status: FormResponseDraftStatus.submitted,
       answers: command.payload.answers,
       managementVersion: command.expectedVersion + 1,
     );

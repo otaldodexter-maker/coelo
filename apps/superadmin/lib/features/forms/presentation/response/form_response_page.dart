@@ -539,16 +539,24 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
             spacing: CoeloSpacing.space2,
             runSpacing: CoeloSpacing.space2,
             children: [
-              OutlinedButton(
-                key: const Key('form-response-save-draft'),
-                onPressed:
-                    _saving ||
-                        (_pendingCommand != null &&
-                            _pendingCommand!.kind != _ResponseCommandKind.save)
-                    ? null
-                    : _currentAction(_saveDraft),
-                child: const Text('Salvar rascunho'),
-              ),
+              if (_draft?.status == FormResponseDraftStatus.submitted)
+                OutlinedButton(
+                  onPressed: _saving || _pendingCommand != null
+                      ? null
+                      : _currentAction(_cancelSubmittedEdit),
+                  child: const Text('Cancelar edição'),
+                )
+              else
+                OutlinedButton(
+                  key: const Key('form-response-save-draft'),
+                  onPressed:
+                      _saving ||
+                          (_pendingCommand != null &&
+                              _pendingCommand!.kind != _ResponseCommandKind.save)
+                      ? null
+                      : _currentAction(_saveDraft),
+                  child: const Text('Salvar rascunho'),
+                ),
               FilledButton.icon(
                 key: const Key('form-response-review'),
                 onPressed: _saving || _pendingCommand != null
@@ -583,11 +591,16 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
                   key: const Key('form-response-submit'),
                   onPressed:
                       _saving ||
-                          (_pendingCommand != null &&
-                              _pendingCommand!.kind != _ResponseCommandKind.submit)
+                          (_pendingCommand != null && _pendingCommand!.kind != _confirmationKind)
                       ? null
                       : _currentAction(_submit),
-                  child: Text(_saving ? 'Enviando…' : 'Enviar resposta'),
+                  child: Text(
+                    _saving
+                        ? 'Enviando…'
+                        : _confirmationKind == _ResponseCommandKind.edit
+                        ? 'Confirmar alterações'
+                        : 'Enviar resposta',
+                  ),
                 ),
               ],
             ),
@@ -847,7 +860,10 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     if (before == _answersFingerprint()) return;
     setState(() {
       _answerRevision++;
-      if (_pendingCommand?.kind != _ResponseCommandKind.submit) _review = false;
+      if (_pendingCommand?.kind != _ResponseCommandKind.submit &&
+          _pendingCommand?.kind != _ResponseCommandKind.edit) {
+        _review = false;
+      }
       if (!_autosavePaused) _message = 'Alterações ainda não salvas.';
     });
     _scheduleAutosave();
@@ -1002,15 +1018,51 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         : 'Responda às perguntas obrigatórias visíveis antes de revisar.';
   }
 
-  Future<void> _saveDraft() => _sendDraft(_ResponseCommandKind.save);
+  Future<void> _saveDraft() => _draft?.status == FormResponseDraftStatus.draft
+      ? _sendDraft(_ResponseCommandKind.save)
+      : Future.value();
+
+  _ResponseCommandKind get _confirmationKind => _draft?.status == FormResponseDraftStatus.submitted
+      ? _ResponseCommandKind.edit
+      : _ResponseCommandKind.submit;
 
   Future<void> _submit() {
-    if (!_review && _pendingCommand?.kind != _ResponseCommandKind.submit) return Future.value();
-    if (_pendingCommand?.kind != _ResponseCommandKind.submit && !_validate()) return Future.value();
-    return _sendDraft(_ResponseCommandKind.submit);
+    final kind = _confirmationKind;
+    if (!_review && _pendingCommand?.kind != kind) return Future.value();
+    if (_pendingCommand?.kind != kind && !_validate()) return Future.value();
+    return _sendDraft(kind);
   }
 
-  Future<void> _editSubmittedResponse() => _sendDraft(_ResponseCommandKind.edit);
+  void _editSubmittedResponse() {
+    if (_state != _ProductionResponseState.submitted ||
+        _occurrence?.canEdit != true ||
+        _saving ||
+        _pendingCommand != null) {
+      return;
+    }
+    setState(() {
+      _state = _ProductionResponseState.content;
+      _review = false;
+      _message = 'Revise e confirme as alterações para atualizar a resposta enviada.';
+    });
+  }
+
+  void _cancelSubmittedEdit() {
+    if (_draft?.status != FormResponseDraftStatus.submitted || _saving || _pendingCommand != null) {
+      return;
+    }
+    _autosaveTimer?.cancel();
+    setState(() {
+      _answers
+        ..clear()
+        ..addAll(_draft!.answers);
+      _invalidNumericIds.clear();
+      _answerRevision = _savedAnswerRevision;
+      _review = false;
+      _message = null;
+      _state = _ProductionResponseState.submitted;
+    });
+  }
 
   Future<void> _sendDraft(_ResponseCommandKind kind, {bool automatic = false}) async {
     _autosaveTimer?.cancel();
@@ -1020,9 +1072,9 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     final draft = _draft;
     if (api == null || occurrence == null || draft == null || _saving) return;
     if (!occurrence.canEdit || _state == _ProductionResponseState.unauthorized) return;
-    if (kind == _ResponseCommandKind.edit
-        ? _state != _ProductionResponseState.submitted
-        : _state != _ProductionResponseState.content) {
+    if (_state != _ProductionResponseState.content ||
+        (kind == _ResponseCommandKind.save && draft.status != FormResponseDraftStatus.draft) ||
+        (kind == _ResponseCommandKind.edit && draft.status != FormResponseDraftStatus.submitted)) {
       return;
     }
     if (_pendingCommand != null && _pendingCommand!.kind != kind) return;
@@ -1032,7 +1084,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     }
     if (automatic && _autosavePaused) return;
     if (!automatic) _autosavePaused = false;
-    final submitted = kind == _ResponseCommandKind.submit;
+    final submitted = kind == _ResponseCommandKind.submit || kind == _ResponseCommandKind.edit;
     final answerRevision = _pendingCommand?.answerRevision ?? _answerRevision;
     setState(() {
       _saving = true;
