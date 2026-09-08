@@ -6,6 +6,78 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('stale preview confirmation cannot accept or close another route', (tester) async {
+    var current = true;
+    var accepted = 0;
+    final navigatorKey = GlobalKey<NavigatorState>();
+    await tester.pumpWidget(
+      MaterialApp(
+        navigatorKey: navigatorKey,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => FilledButton(
+              onPressed: () => showNoticePreview(
+                context,
+                _notice(),
+                isContextCurrent: () => current,
+                onAccepted: () => accepted++,
+              ),
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    final oldConfirm = tester
+        .widget<FilledButton>(find.widgetWithText(FilledButton, 'Confirmar'))
+        .onPressed!;
+    current = false;
+    navigatorKey.currentState!.push(
+      MaterialPageRoute<void>(builder: (_) => const Scaffold(body: Text('Outra rota'))),
+    );
+    await tester.pumpAndSettle();
+    oldConfirm();
+    await tester.pumpAndSettle();
+    expect(accepted, 0);
+    expect(find.text('Outra rota'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('accept callback navigation is not popped by preview completion', (tester) async {
+    final navigatorKey = GlobalKey<NavigatorState>();
+    await tester.pumpWidget(
+      MaterialApp(
+        navigatorKey: navigatorKey,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => FilledButton(
+              onPressed: () => showNoticePreview(
+                context,
+                _notice(),
+                onAccepted: () {
+                  navigatorKey.currentState!.push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const Scaffold(body: Text('Destino da confirmação')),
+                    ),
+                  );
+                },
+              ),
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Confirmar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Destino da confirmação'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('uses an administrative card instead of a popup for non-notice types', (
     tester,
   ) async {

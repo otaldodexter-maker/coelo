@@ -37,6 +37,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
   bool _previewCheckboxChecked = false;
   NoticeTargetDevice _previewDevice = NoticeTargetDevice.web;
   int _commandGeneration = 0;
+  DialogRoute<void>? _previewRoute;
 
   @override
   void initState() {
@@ -50,6 +51,9 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
     if (oldWidget.noticeId != widget.noticeId ||
         !identical(oldWidget.repository, widget.repository)) {
       _commandGeneration++;
+      _dismissPreview();
+      _previewCheckboxChecked = false;
+      _previewDevice = NoticeTargetDevice.web;
       _controller.dispose();
       _controller = _createController();
     }
@@ -61,6 +65,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
   @override
   void dispose() {
     _commandGeneration++;
+    _dismissPreview();
     _controller.dispose();
     super.dispose();
   }
@@ -871,8 +876,37 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
   bool _isCurrentCommand(int generation, NoticeFormController controller) =>
       mounted && generation == _commandGeneration && identical(controller, _controller);
 
-  Future<void> _onPreview() =>
-      showNoticePreview(context, _controller.previewNotice, onAccepted: null);
+  void _dismissPreview() {
+    final route = _previewRoute;
+    _previewRoute = null;
+    if (route == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (route.isActive) route.navigator?.removeRoute(route);
+    });
+  }
+
+  Future<void> _onPreview() async {
+    if (!mounted ||
+        _previewRoute != null ||
+        _controller.isLoading ||
+        _controller.loadFailure != null) {
+      return;
+    }
+    final generation = _commandGeneration;
+    final controller = _controller;
+    bool current() => _isCurrentCommand(generation, controller);
+    DialogRoute<void>? openedRoute;
+    await showNoticePreview(
+      context,
+      controller.previewNotice,
+      isContextCurrent: current,
+      onRouteCreated: (route) {
+        openedRoute = route;
+        _previewRoute = route;
+      },
+    );
+    if (identical(_previewRoute, openedRoute)) _previewRoute = null;
+  }
 
   void _showFeedback(String message) {
     if (!mounted) return;

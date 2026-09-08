@@ -14,6 +14,40 @@ import 'package:flutter_test/flutter_test.dart';
 import 'support/fake_notice_repository.dart';
 
 void main() {
+  for (final change in ['repository-denied', 'notice-id', 'dispose']) {
+    testWidgets('form preview is removed after $change context change', (tester) async {
+      final repository = FakeNoticeRepository()
+        ..seed(_notice('notice-a', 'Prévia privada A'))
+        ..seed(_notice('notice-b', 'Comunicação B'));
+      final denied = _DeniedLoadNoticeRepository();
+      Widget host(bool changed) => MaterialApp(
+        home: Scaffold(
+          body: changed && change == 'dispose'
+              ? const Text('Origem')
+              : NoticeFormPage(
+                  repository: changed && change == 'repository-denied' ? denied : repository,
+                  noticeId: changed && change == 'notice-id' ? 'notice-b' : 'notice-a',
+                ),
+        ),
+      );
+      await tester.pumpWidget(host(false));
+      await tester.pumpAndSettle();
+      for (var step = 0; step < 4; step++) {
+        await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
+        await tester.pump();
+      }
+      await _tapVisible(tester, find.text('Ver popup final'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('notice-preview-dialog')), findsOneWidget);
+      await tester.pumpWidget(host(true));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('notice-preview-dialog')), findsNothing);
+      expect(find.text('Prévia privada A'), findsNothing);
+      if (change == 'repository-denied') expect(find.text('Sem permissão'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('legacy image feedback explains unavailability and allows text conversion', (
     tester,
   ) async {

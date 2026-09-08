@@ -7,10 +7,16 @@ import 'communication_type_badge.dart';
 import 'notice_popup_preview.dart';
 
 final class NoticePreviewDialog extends StatefulWidget {
-  const NoticePreviewDialog({required this.notice, this.onAccepted, super.key});
+  const NoticePreviewDialog({
+    required this.notice,
+    this.onAccepted,
+    this.isContextCurrent,
+    super.key,
+  });
 
   final PlatformNotice notice;
   final VoidCallback? onAccepted;
+  final bool Function()? isContextCurrent;
 
   @override
   State<NoticePreviewDialog> createState() => _NoticePreviewDialogState();
@@ -18,6 +24,14 @@ final class NoticePreviewDialog extends StatefulWidget {
 
 final class _NoticePreviewDialogState extends State<NoticePreviewDialog> {
   bool _checked = false;
+
+  void _close({bool accept = false}) {
+    if (!mounted || widget.isContextCurrent?.call() == false) return;
+    final route = ModalRoute.of(context);
+    if (route?.isCurrent != true) return;
+    if (accept) widget.onAccepted?.call();
+    if (route!.isCurrent) route.navigator?.pop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +41,7 @@ final class _NoticePreviewDialogState extends State<NoticePreviewDialog> {
         key: const Key('communication-card-preview'),
         title: 'Prévia administrativa',
         body: CommunicationPreviewCard(notice: notice),
-        primaryAction: FilledButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Fechar'),
-        ),
+        primaryAction: FilledButton(onPressed: _close, child: const Text('Fechar')),
       );
     }
     final fullscreen = notice.popupSize == NoticePopupSize.fullscreen;
@@ -39,13 +50,14 @@ final class _NoticePreviewDialogState extends State<NoticePreviewDialog> {
       device: notice.targetDevice,
       checkboxChecked: _checked,
       onCheckboxChanged: notice.behavior == NoticeBehavior.checkboxConfirmation
-          ? (value) => setState(() => _checked = value)
+          ? (value) {
+              if (mounted && widget.isContextCurrent?.call() != false) {
+                setState(() => _checked = value);
+              }
+            }
           : null,
-      onClose: () => Navigator.of(context).pop(),
-      onPrimaryPressed: () {
-        if (notice.behavior != NoticeBehavior.dismissible) widget.onAccepted?.call();
-        Navigator.of(context).pop();
-      },
+      onClose: _close,
+      onPrimaryPressed: () => _close(accept: notice.behavior != NoticeBehavior.dismissible),
     );
 
     if (fullscreen) {
@@ -108,8 +120,24 @@ Future<void> showNoticePreview(
   BuildContext context,
   PlatformNotice notice, {
   VoidCallback? onAccepted,
-}) => showDialog<void>(
-  context: context,
-  barrierColor: Colors.black54,
-  builder: (_) => NoticePreviewDialog(notice: notice, onAccepted: onAccepted),
-);
+  bool Function()? isContextCurrent,
+  ValueChanged<DialogRoute<void>>? onRouteCreated,
+}) {
+  final navigator = Navigator.of(context, rootNavigator: true);
+  final route = DialogRoute<void>(
+    context: context,
+    themes: InheritedTheme.capture(from: context, to: navigator.context),
+    animationStyle: MediaQuery.disableAnimationsOf(context) ? AnimationStyle.noAnimation : null,
+    traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
+    barrierColor: Colors.black54,
+    builder: (_) => isContextCurrent?.call() == false
+        ? const SizedBox.shrink()
+        : NoticePreviewDialog(
+            notice: notice,
+            onAccepted: onAccepted,
+            isContextCurrent: isContextCurrent,
+          ),
+  );
+  onRouteCreated?.call(route);
+  return navigator.push(route);
+}
