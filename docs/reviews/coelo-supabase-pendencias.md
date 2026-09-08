@@ -12,6 +12,15 @@ family_count: 37
 
 ## Rodada de 2026-09-07 — backend local e integração em curso
 
+- Transporte compartilhado R2 M02 integrado em `e0a00bc8`: testes Deno do
+  destino 29/29, sem acesso de rede ou recurso remoto. MediaSession integrada
+  em `c50ae4a8`: teste Dart focado 9/9; ainda não prova consumidor/gateway real.
+  SQL preparado Avisos `14e7fa09`/`4b2195f4` ficou fora deste lote cliente.
+- A01 RED está retido por precondições: Foundation67 inclui Chatv2 sem o
+  predecessor que cria chat_attachment_metadata. Teste A01 também precisava
+  separar duas colunas TAP e usar authenticated nas negativas; frente5
+  entregou correção `cdbcb46d`, ainda sem execução SQL. Eng1 delimita a base
+  nominal; não mascarar esse problema com skip, grants ou ponte ad hoc.
 - Mídia: o conflito derivado de domínios foi reconciliado com a ADR 0032:
   `communication/chat-message` e `profiles/principal-context`. Spec e
   open-questions registram a correção; não há migration/deploy por esse ajuste.

@@ -14,14 +14,19 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "517BC9EC7BF0865B9289CF0AC0C79CBE09EBCFF69FFE506613D3D7AC4586E13F"
-supabase_tracker_sha256: "438FF1E8877396A02A7DE94F1DE69739BE648551A22E37630C8AC0327D43775C"
+flutter_tracker_sha256: "E6431D35BB64C77422EE3AD53DFDAD12F9C753B2A16345954ADF05D8F015A0DF"
+supabase_tracker_sha256: "2A81EEB3AEA6BB1A57714846AE75F33D34BF7DD29D4AFA962CD56FD098097D4D"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
 
+- Comunicação: prefixo cliente integrado até `d671ab0e`, 84/84 testes Flutter,
+  analyzer cinco arquivos sem issues; MediaSession 9/9 Dart e M02 29/29 Deno
+  no destino. Nenhum destes resultados promove Chat/Avisos/Mídia a E2E.
+  N01 SQL preparado ficou fora desse lote; jobs, autorização agendada e
+  gateway/consumidor/R2 real continuam gates separados.
 - Gate documental de mídia reconciliado: Chat usa domínio `communication`
   e Perfil contextual usa `profiles`, conforme ADR 0032. M03 começa por
   contratos/REDs nominais; essa correção não certifica gateway, R2 ou E2E.

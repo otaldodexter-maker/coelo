@@ -14,6 +14,10 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Comunicação integrada até `d671ab0e`: sete suítes focadas Chat/Avisos no
+  destino passaram, 84/84, com analyzer dos cinco arquivos sem issues.
+  Cobrem negação, respostas tardias, versão de criação e replay/publicação
+  agendada no cliente; não certificam jobs, mídia ou sessão produtiva.
 - Recorte vigente: cinco frentes E2E do Superadmin até 03:20 de 08/09;
   coordenação consolida continuamente, com fechamento previsto até 04:40 BRT.
   Sem ampliação de produto, mensagens administrativas repetidas ou parada por commit.
