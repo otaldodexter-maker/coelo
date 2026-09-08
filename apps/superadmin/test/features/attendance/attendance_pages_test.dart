@@ -1200,6 +1200,50 @@ void main() {
     expect(find.text('Música · Turma Sol'), findsNothing);
   });
 
+  testWidgets('correction dialog does not write through a replacement repository', (tester) async {
+    final repositoryA = FakeAttendanceRepository.seeded();
+    final repositoryB = FakeAttendanceRepository.seeded();
+    addTearDown(repositoryA.dispose);
+    addTearDown(repositoryB.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repositoryA,
+          callId: 'call-completed',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Corrigir chamada'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Ajuste conferido');
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repositoryB,
+          callId: 'call-completed',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Registrar correção'));
+    await tester.pumpAndSettle();
+
+    final callA = await repositoryA.fetchCall('call-completed');
+    final callB = await repositoryB.fetchCall('call-completed');
+    expect(callA!.revisions, isEmpty);
+    expect(callB!.revisions, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('participant list preserves Coelo radius and clipping', (tester) async {
     final repository = FakeAttendanceRepository.seeded();
     addTearDown(repository.dispose);

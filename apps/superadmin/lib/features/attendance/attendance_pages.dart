@@ -820,7 +820,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
             continuationActions: [
               if (concluded && call.participants.isNotEmpty)
                 OutlinedButton.icon(
-                  onPressed: () => _showCorrection(context, call),
+                  onPressed: () => _showCorrection(call),
                   icon: const Icon(Icons.history_rounded),
                   label: const Text('Corrigir chamada'),
                 )
@@ -1102,61 +1102,90 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
       identical(repository, widget.repository) &&
       callId == widget.callId;
 
-  Future<void> _showCorrection(BuildContext context, AttendanceCall call) async {
-    final reason = TextEditingController();
-    var state = call.participants.first.state;
-    await showDialog<void>(
+  Future<void> _showCorrection(AttendanceCall call) async {
+    final repository = widget.repository;
+    final callId = widget.callId;
+    final commandGeneration = _commandGeneration;
+    final correction = await showDialog<({AttendancePresenceState state, String reason})>(
       context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) => CoeloAdminDialogShell(
-          title: 'Corrigir chamada',
-          body: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CoeloAdminSingleSelectField<AttendancePresenceState>(
-                label: 'Novo estado de ${call.participants.first.name}',
-                value: state,
-                options: AttendancePresenceState.values
-                    .where((item) => item != AttendancePresenceState.unmarked)
-                    .toList(),
-                optionLabel: (value) => value.label,
-                onChanged: (value) => setDialogState(() => state = value),
-              ),
-              const SizedBox(height: CoeloSpacing.space4),
-              CoeloFormTextField(
-                controller: reason,
-                labelText: 'Motivo da correção',
-                prefixIcon: Icons.edit_note_outlined,
-              ),
-            ],
-          ),
-          secondaryAction: OutlinedButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancelar'),
-          ),
-          primaryAction: FilledButton(
-            onPressed: () async {
-              if (reason.text.trim().isEmpty) return;
-              final succeeded = await _applyCall(
-                () => widget.repository.correctParticipant(
-                  callId: call.id,
-                  participantId: call.participants.first.id,
-                  state: state,
-                  reason: reason.text.trim(),
-                  expectedVersion: call.version,
-                ),
-              );
-              if (dialogContext.mounted && succeeded) {
-                Navigator.of(dialogContext).pop();
-              }
-            },
-            child: const Text('Registrar correção'),
-          ),
-        ),
+      builder: (_) => _AttendanceCorrectionDialog(participant: call.participants.first),
+    );
+    if (correction == null || !mounted) return;
+    if (commandGeneration != _commandGeneration ||
+        !identical(repository, widget.repository) ||
+        callId != widget.callId) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('O contexto mudou. Reabra a correção para continuar.')),
+      );
+      return;
+    }
+    await _applyCall(
+      () => repository.correctParticipant(
+        callId: call.id,
+        participantId: call.participants.first.id,
+        state: correction.state,
+        reason: correction.reason,
+        expectedVersion: call.version,
       ),
     );
-    reason.dispose();
   }
+}
+
+final class _AttendanceCorrectionDialog extends StatefulWidget {
+  const _AttendanceCorrectionDialog({required this.participant});
+
+  final AttendanceParticipant participant;
+
+  @override
+  State<_AttendanceCorrectionDialog> createState() => _AttendanceCorrectionDialogState();
+}
+
+final class _AttendanceCorrectionDialogState extends State<_AttendanceCorrectionDialog> {
+  final _reason = TextEditingController();
+  late var _state = widget.participant.state;
+
+  @override
+  void dispose() {
+    _reason.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminDialogShell(
+    title: 'Corrigir chamada',
+    body: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CoeloAdminSingleSelectField<AttendancePresenceState>(
+          label: 'Novo estado de ${widget.participant.name}',
+          value: _state,
+          options: AttendancePresenceState.values
+              .where((item) => item != AttendancePresenceState.unmarked)
+              .toList(),
+          optionLabel: (value) => value.label,
+          onChanged: (value) => setState(() => _state = value),
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+        CoeloFormTextField(
+          controller: _reason,
+          labelText: 'Motivo da correção',
+          prefixIcon: Icons.edit_note_outlined,
+        ),
+      ],
+    ),
+    secondaryAction: OutlinedButton(
+      onPressed: () => Navigator.of(context).pop(),
+      child: const Text('Cancelar'),
+    ),
+    primaryAction: FilledButton(
+      onPressed: () {
+        final reason = _reason.text.trim();
+        if (reason.isEmpty) return;
+        Navigator.of(context).pop((state: _state, reason: reason));
+      },
+      child: const Text('Registrar correção'),
+    ),
+  );
 }
 
 class _AttendanceCommandErrorBanner extends StatelessWidget {
