@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @(),
@@ -96,7 +96,11 @@ if ($NominalProfile) {
       $RunAuthLifecycle -or $RunActivityV2Concurrency) {
     throw 'nominal replay cannot be combined with other replay profiles, additions, Auth lifecycle or concurrency'
   }
-  $nominalResolver = Join-Path $packageRoot 'replay\profiles\N01PrerequisitesRed\Resolve-N01PrerequisitesRed.ps1'
+  $nominalResolverRelative = switch ($NominalProfile) {
+    'N01PrerequisitesRed' { 'replay\profiles\N01PrerequisitesRed\Resolve-N01PrerequisitesRed.ps1' }
+    'A01DirectoryContractRed' { 'replay\profiles\A01DirectoryContractRed\Resolve-A01DirectoryContractRed.ps1' }
+  }
+  $nominalResolver = Join-Path $packageRoot $nominalResolverRelative
   Assert-NoReparseAncestors $nominalResolver
   Assert-NoReparseAncestors (Split-Path -Parent $nominalResolver)
   $null = & $nominalResolver -TargetVersion $TargetVersion

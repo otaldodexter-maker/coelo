@@ -182,6 +182,27 @@ registre esse erro comprova o pré-requisito ausente; não valida Avisos ponta a
   -NominalProfile N01PrerequisitesRed
 ```
 
+Para o RED do contrato do diretório de Atividades,
+`-NominalProfile A01DirectoryContractRed` seleciona Auth45 e as sete migrations
+Activities v2 entre `20260831192831` e `20260831234307`, mais os dois preflights:
+54 arquivos, alvo `20260901200206`. O descriptor fechado fica em
+`replay/profiles/A01DirectoryContractRed/profile.json`; os mesmos guards
+nominais preservam hashes, nomes, contagem, alvo e confinamento.
+
+A base não inclui a corretiva `20260907222911` nem pontes adicionais.
+A fixture do contrato deve ser conferida pelo hash aprovado, executar os RPCs
+como `authenticated` e emitir TAP depois de `RESET ROLE`. O replay da base
+e o resultado desse teste são evidências distintas; a ausência de
+`superadmin_activity_filter_options_v2` e os demais desvios do contrato
+são o RED funcional esperado antes da corretiva.
+
+```powershell
+& packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
+  -TargetVersion 20260901200206 `
+  -NominalProfile A01DirectoryContractRed `
+  -TestPath packages/coelo_database/supabase/tests/superadmin_internal_activities_v2_directory_contract_test.sql
+```
+
 Nunca use
 `Prepare-SafeMigrationReplay.ps1` diretamente em operacoes normais, nem use o
 staging com `db push`, `migration repair` ou qualquer comando remoto. As
