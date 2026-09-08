@@ -35,7 +35,7 @@ passo 6 não significa que a tela chegou ao fim dos seis passos. Nenhum novo
 | Agenda | Criar/editar/lifecycle / `agenda.create`, `agenda.edit` | 6/6 cache e parser de recorrência local | Cliente; RPCs simuladas, nenhum BD | root + `activities_contract_read` | Cache `e86f275`; parser com 8 REDs e regressão 96/96 verde | Estados UI; validação e persistência reais no backend |
 | Agenda | Formulário/contexto/continuações | 6/6 local; evidência agenda-form-context | Cliente; repository fake | root + `agenda_ui_contract` | 2REDcontexto+1REDtema intermediário;35regressões PASS e1sentinela final PASS | Persistência/reload/autorização reais e protocolo de resultados parciais |
 | Agenda | Continuação não confirmada após save | 6/6 local `e92a345` | Cliente; sem BD | root + `agenda_ui_contract` | 4RED;31regressões e4adversariais finais PASS; sem sucesso/retry cego | Atomicidade backend da spec050 continua aberta |
-| Agenda | Readers list/get/contexts 039 | 2/6 fixture RED candidata `a3b76f5` | Fixture SQL não executada e crosswalk refinado | root + `activities_sql_review` | Negativas, projeção fechada, audiência pessoal omitida, audit14 e grants sintéticos revisados | Manifesto e replay nominal Eng1; nenhum reader novo implementado |
+| Agenda | Readers list/get/contexts 039 | 2/6 candidata corretiva após RED53 | Migration 20260908045531; root autor, Eng1 operador | root + `activities_sql_review` | RED real3c644398: catálogo10PASS e contrato114=21PASS93FAIL; candidata review estático aprovado | GREEN nominal Eng1; cliente parcial/039 e remoto ainda pendentes |
 | Agenda | Contexto e acesso / `agenda.permissions` | 6/6 pacote local do parser | Cliente; `public.superadmin_agenda_contexts` código lido, RPC simulada | root + `activities_contract_read` review | 9 REDs; 46 repository finais; 124 regressões antes dois negativos finais | Autorização/persistência reais; construtor injetado fora deste parser |
 | Agenda | Solicitações e Aprovações | 6/6 pacotes `374da66`, `871e262`, `bc4432b` | Cliente; duas RPCs simuladas; guards de contexto e rota | root + reviews read-only | Estados de leitura; 7 RED lifecycle/navegação, 9 testes novos e 68 regressões finais PASS | Decisões, autorização e reload reais |
 | Atividades | Busca/filtros/diretório / `activities.list` | 6/6 negação imediata `d309d62` | Cliente ViewModel; nenhum BD | root + reviews read-only | 39 testes verdes; negação não espera RPC irmão pendente | BD/E2E abertos |
@@ -84,9 +84,9 @@ acima. O escopo original não foi reduzido a Agenda/Atividades.
 - Assiduidade/Chamada: OQ040 e spec048 draft bloqueiam contrato funcional SQL;
   depende decisão Owner sobre capacidades/AAL/escopo/DTO/cutover. Não restaurar
   cadeia histórica nem criar ponte people para o ator interno.
-- Próxima fatia SQL: AG-READ01 depende manifesto fechado e autorização de replay Eng1.
+- Próxima fatia SQL: AG-READ01 tem candidata corretiva reservada após RED53; depende perfil e GREEN Eng1.
   Demais superfícies originais continuam em execução; sem ETA remoto fictício.
-  AG-READ01 contém fixture candidata, não reader implementado nem teste SQL executado.
+  AG-READ01 tem readers candidatos não executados; fixture RED executada somente pelo Eng1, sem promoção E2E.
 
 Evidências dos commits: `2026-09-07-deferred-exports.md` e
 `2026-09-07-agenda-cache-safety.md` neste diretório.

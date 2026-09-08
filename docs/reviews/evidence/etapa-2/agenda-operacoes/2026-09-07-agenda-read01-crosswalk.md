@@ -1,12 +1,61 @@
 ---
 title: "AG-READ01 — crosswalk e proposta de fixture interna de leitura"
 source: "ADR0029; specs006/050/039; migrations20260901183836/20260901193717; política20260901200206; reserva Coordenador 2026-09-07"
-status: "proposta local; sem corretiva SQL nem execução"
+status: "contrato nominal reservado para corretiva após RED53; sem execução pelo root"
 generated_at: "2026-09-07"
 updated_at: "2026-09-08"
 ---
 
 # Recorte autorizado
+
+## Gate de implementação — 2026-09-08
+
+O Coordenador reservou a corretiva nominal dos três READs após o Eng1 reportar
+base53 aplicada, catálogo Auth/audit14 10 PASS e fixture a3b:114 TAP,
+21 PASS/93 FAIL sem aborto. As três primeiras falhas são ausência dos readers;
+não são 93 bugs independentes. Cleanup independente informado em04:48:47UTC.
+Relatório formal do operador será vinculado ao handoff; root não executou SQL.
+
+Contrato fechado **antes de codificar**: exatamente as três assinaturas da
+tabela abaixo, envelopes e bounds já definidos; busca literal, paginação antes
+do agregado, total independente; instituição só restringe scope039. Cada
+entrada chama `require_superadmin_internal_context('agenda.read')` vigente,
+sem AAL2 adicional, People como ator ou grant de papel de produto.
+EXECUTE dos três novos wrappers será somente authenticated, como a fixture
+exige; isso não atribui capability a ninguém. Helpers novos privados exclusivos
+de leitura, se necessários, ficam sem EXECUTE para roles API/PUBLIC. Nenhuma
+substituição dos helpers039/Activities ou comandos legados.
+
+Eventos exigem coerência estrutural do contexto e instituição em list/get.
+Atividade com origem presente exige unidade real na mesma instituição; grupo
+exige unidade real na mesma instituição. Catálogo contexts e referências de
+audience usam somente hierarquias ativas. Leitura de evento histórico não ganha
+filtro de status do contexto por inferência. Audience pessoal omitida com flag
+false, sem array pessoal fictício, conforme decisão nominal anterior.
+
+DTO fechado conforme allowlists abaixo: recurrence somente escalares tipados e
+exceptions de datas, questions id/title/type, reminders strings. Nenhum objeto
+JSON desconhecido ou resposta/autor atravessa o reader. Forma histórica inválida
+que não possa ser projetada com segurança causa erro genérico sem SQLERRM,
+não resposta parcial silenciosa. Histórico só no detalhe e no mesmo tenant.
+
+Negativas039 preservam helper de envelope039; erros Agenda400/404 têm mensagem
+fixa nominal. Denial audit recebe somente instituição confiável do contexto
+institucional, nunca filtro ou instituição de recurso B; contexto não resolvido
+usa NULL. Audit14 de sucesso fica fora do catch e recebe somente row_count,
+correlação e identidade/sessão do contexto. Falha de append propaga.
+
+Ordem: este contrato → migration forward-only → review SQL independente →
+hashes e fixture a3b intacta → GREEN nominal pelo Eng1 sob gate central. Não
+conectar ainda cliente ao novo reader nem habilitar escrita/reservas/mídia.
+ETA da preparação/review: 25–45 minutos; replay e E2E dependem do operador.
+
+Review estático da candidata encontrou dois ajustes de compatibilidade antes
+do handoff: busca preserva trim e título **ou descrição** do legado, agora
+literal por strpos; datas de recurrence/exceptions validadas pelo PostgreSQL
+são emitidas em JSON ISO de timestamptz, não como string de entrada potencialmente
+incompatível com Dart. Fixture a3b permanece byte a byte intacta; esses casos
+adicionais ainda não têm evidência runtime separada.
 
 Superadmin: `agenda.view`, parcela de leitura de `agenda.detail` e contexto de
 `agenda.permissions`. Somente list/get/contexts; não requests, responses,
