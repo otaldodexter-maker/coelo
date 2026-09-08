@@ -1244,6 +1244,43 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('failed correction keeps its draft open and retries successfully', (tester) async {
+    final repository = _FailOnceCorrectionRepository();
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repository,
+          callId: 'call-completed',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Corrigir chamada'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Motivo preservado');
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Registrar correção'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Corrigir chamada'), findsAtLeastNWidgets(2));
+    expect(find.text('Motivo preservado'), findsOneWidget);
+    expect(repository.attempts, 1);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Registrar correção'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Corrigir chamada'), findsOneWidget);
+    expect(repository.attempts, 2);
+    final call = await repository.fetchCall('call-completed');
+    expect(call!.revisions.single.reason, 'Motivo preservado');
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('participant list preserves Coelo radius and clipping', (tester) async {
     final repository = FakeAttendanceRepository.seeded();
     addTearDown(repository.dispose);
@@ -1388,6 +1425,40 @@ Widget _app(
   ),
   home: child,
 );
+
+final class _FailOnceCorrectionRepository implements AttendanceRepository {
+  final FakeAttendanceRepository _delegate = FakeAttendanceRepository.seeded();
+  var attempts = 0;
+
+  void dispose() => _delegate.dispose();
+
+  @override
+  Future<AttendanceCall?> fetchCall(String callId) => _delegate.fetchCall(callId);
+
+  @override
+  Future<AttendanceCall> correctParticipant({
+    required String callId,
+    required String participantId,
+    required AttendancePresenceState state,
+    required String reason,
+    required int expectedVersion,
+  }) {
+    attempts++;
+    if (attempts == 1) {
+      return Future.error(const AttendanceVersionConflictException());
+    }
+    return _delegate.correctParticipant(
+      callId: callId,
+      participantId: participantId,
+      state: state,
+      reason: reason,
+      expectedVersion: expectedVersion,
+    );
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 final class _EmptyAttendanceRepository implements AttendanceRepository {
   @override

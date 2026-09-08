@@ -671,6 +671,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
   var _commandInFlight = false;
   var _loadGeneration = 0;
   var _commandGeneration = 0;
+  var _contextGeneration = 0;
 
   @override
   void initState() {
@@ -691,6 +692,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
     _call = null;
     _lastBulkReceipt = null;
     _loading = true;
+    _contextGeneration++;
     _commandGeneration++;
     _commandInFlight = false;
     _loadCall();
@@ -735,6 +737,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
   @override
   void dispose() {
     _loadGeneration++;
+    _contextGeneration++;
     _commandGeneration++;
     for (final controller in _notes.values) {
       controller.dispose();
@@ -1105,36 +1108,50 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
   Future<void> _showCorrection(AttendanceCall call) async {
     final repository = widget.repository;
     final callId = widget.callId;
-    final commandGeneration = _commandGeneration;
-    final correction = await showDialog<({AttendancePresenceState state, String reason})>(
+    final contextGeneration = _contextGeneration;
+    await showDialog<void>(
       context: context,
-      builder: (_) => _AttendanceCorrectionDialog(participant: call.participants.first),
-    );
-    if (correction == null || !mounted) return;
-    if (commandGeneration != _commandGeneration ||
-        !identical(repository, widget.repository) ||
-        callId != widget.callId) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('O contexto mudou. Reabra a correção para continuar.')),
-      );
-      return;
-    }
-    await _applyCall(
-      () => repository.correctParticipant(
-        callId: call.id,
-        participantId: call.participants.first.id,
-        state: correction.state,
-        reason: correction.reason,
-        expectedVersion: call.version,
+      builder: (_) => _AttendanceCorrectionDialog(
+        participant: call.participants.first,
+        onSubmit: (state, reason) async {
+          if (!_isCurrentCorrectionContext(contextGeneration, repository, callId)) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('O contexto mudou. Reabra a correção para continuar.'),
+              ),
+            );
+            return false;
+          }
+          return _applyCall(
+            () => repository.correctParticipant(
+              callId: call.id,
+              participantId: call.participants.first.id,
+              state: state,
+              reason: reason,
+              expectedVersion: call.version,
+            ),
+          );
+        },
       ),
     );
   }
+
+  bool _isCurrentCorrectionContext(
+    int generation,
+    AttendanceRepository repository,
+    String callId,
+  ) =>
+      mounted &&
+      generation == _contextGeneration &&
+      identical(repository, widget.repository) &&
+      callId == widget.callId;
 }
 
 final class _AttendanceCorrectionDialog extends StatefulWidget {
-  const _AttendanceCorrectionDialog({required this.participant});
+  const _AttendanceCorrectionDialog({required this.participant, required this.onSubmit});
 
   final AttendanceParticipant participant;
+  final Future<bool> Function(AttendancePresenceState state, String reason) onSubmit;
 
   @override
   State<_AttendanceCorrectionDialog> createState() => _AttendanceCorrectionDialogState();
@@ -1143,11 +1160,25 @@ final class _AttendanceCorrectionDialog extends StatefulWidget {
 final class _AttendanceCorrectionDialogState extends State<_AttendanceCorrectionDialog> {
   final _reason = TextEditingController();
   late var _state = widget.participant.state;
+  var _submitting = false;
 
   @override
   void dispose() {
     _reason.dispose();
     super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final reason = _reason.text.trim();
+    if (reason.isEmpty || _submitting) return;
+    setState(() => _submitting = true);
+    final succeeded = await widget.onSubmit(_state, reason);
+    if (!mounted) return;
+    if (succeeded) {
+      Navigator.of(context).pop();
+      return;
+    }
+    setState(() => _submitting = false);
   }
 
   @override
@@ -1174,16 +1205,12 @@ final class _AttendanceCorrectionDialogState extends State<_AttendanceCorrection
       ],
     ),
     secondaryAction: OutlinedButton(
-      onPressed: () => Navigator.of(context).pop(),
+      onPressed: _submitting ? null : () => Navigator.of(context).pop(),
       child: const Text('Cancelar'),
     ),
     primaryAction: FilledButton(
-      onPressed: () {
-        final reason = _reason.text.trim();
-        if (reason.isEmpty) return;
-        Navigator.of(context).pop((state: _state, reason: reason));
-      },
-      child: const Text('Registrar correção'),
+      onPressed: _submitting ? null : _submit,
+      child: Text(_submitting ? 'Registrando...' : 'Registrar correção'),
     ),
   );
 }
