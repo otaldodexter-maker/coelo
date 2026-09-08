@@ -27,7 +27,7 @@ Deno.test("R2 artifact binds the requested job, institution, purpose and private
     state: "ready",
     purpose: "forms-responses-export",
     object_key:
-      `tenants/${institutionId}/exports/forms/${jobId}/responses.xlsx`,
+      `tenants/${institutionId}/exports/forms/${jobId}/${assetId}/responses.xlsx`,
     expires_at: "2026-09-08T19:00:00Z",
   };
   assertEquals(r2ExportArtifact(valid, jobId)?.object_key, valid.object_key);
@@ -36,6 +36,12 @@ Deno.test("R2 artifact binds the requested job, institution, purpose and private
       { ...valid, job_id: assetId },
       { ...valid, institution_id: assetId },
       { ...valid, asset_id: null },
+      { ...valid, asset_id: institutionId },
+      {
+        ...valid,
+        object_key:
+          `tenants/${institutionId}/exports/forms/${jobId}/responses.xlsx`,
+      },
       { ...valid, provider: "supabase" },
       { ...valid, state: "pending" },
       { ...valid, state: "deleted" },

@@ -122,7 +122,7 @@ export function r2ExportArtifact(
     artifact.purpose !== "forms-responses-export" ||
     artifact.state !== "ready" ||
     artifact.object_key !==
-      `tenants/${artifact.institution_id}/exports/forms/${jobId}/responses.xlsx` ||
+      `tenants/${artifact.institution_id}/exports/forms/${jobId}/${artifact.asset_id}/responses.xlsx` ||
     typeof artifact.expires_at !== "string"
   ) return null;
   return {
