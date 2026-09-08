@@ -14,13 +14,19 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "8734766BA2637C0440B0E8345AB0BD7A291A77E6F6E3ED389FB17C5D2AFAACA3"
-supabase_tracker_sha256: "F8A9C375C9BCFE56E01419586066ED1975FBEAFEE9B9F80ACFEFEB7B085C82A6"
+flutter_tracker_sha256: "99EEF0CC8126AD788247722B3A3DF56CA2DB8F32F530AD44F8DB432CE9587ED4"
+supabase_tracker_sha256: "72823DD534DA068ABA5F9A3675882C928D983D2EC460E66ECADFF2C647FFC6C7"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
+
+- Atualização01:16: status compartilhado129/129 pacote e115/115 consumidores
+  no destino; DS/projeção reconciliam visual24/alvo48. Validador de memória
+  mantém11erros só em benchmarks alheios, suíte do gate PASS. AG53 e preflight
+  seguro F-AUTHOR64 autorizados para preparação, não execução. Novos
+  candidatos aguardam integração; nenhuma ação ready/verified promovida.
 
 - Atualização01:03: FREAD local117/117 agora comprovado e cleanup confirmado;
   shell/relato/continuação Perfis104/104 no destino, analyzer5 limpo.

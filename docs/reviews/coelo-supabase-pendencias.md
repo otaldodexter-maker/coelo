@@ -12,6 +12,14 @@ family_count: 38
 
 ## Rodada de 2026-09-07 — backend local e integração em curso
 
+- Atualização01:16: AG53 proposta743591df lida/revisada,53pins conferidos;
+  implementação do perfil fechado liberada, sem SQL. F-AUTHOR64 proposta
+  19990960 depende de preflight isolado com cron globalmenteoff antesjobs.
+  Preparo da alternativa mesma instância/restart/push-local foi autorizado;
+  primeiro preflight não copia/aplica64. Execução exige gate separado.
+  ResetCLI recria volume e perdeALTERSYSTEM, portanto não comprova cronoff.
+  Nenhum remoto ou job sentinela autorizado.
+
 - Atualização01:03: FREAD derivado51 terminou **117/117 pgTAP PASS**, exit0,
   evidência `b61eba6e`. Base51 inteira, reader/fixture imutáveis; cleanup
   independente03:57:28.3829272UTC, sem recursos próprios. A derivação local

@@ -14,6 +14,13 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização01:16: status compartilhado a0be1abe integrado após review e
+  amostras visuais; destino129/129 no pacote e115/115 Locais/Atividades/
+  Usuários/Unidades, analyzer2 limpo, validador visual exit0. Suspenso integral
+  a200%, visual24/alvo48 e teclado/negrito;30 candidatos novos preservam30
+  anteriores. Onze falhas históricas dos consumidores não foram resolvidas
+  nem rebaselineadas por esse lote.
+
 - Atualização01:03: formulário Perfis `6a52f284`/`2bad94e7` impede reload e
   callbacks após descarte; cabeçalho `ad558c6f` liga relatório à tela/handler
   de origem e remove somente sua rota. Destino22/22 antes do incremento de
