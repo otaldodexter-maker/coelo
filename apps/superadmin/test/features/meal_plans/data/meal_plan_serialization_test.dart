@@ -8,6 +8,100 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('template canonical camelCase metadata wins over conflicting legacy aliases', () {
+    final template = MealPlanTemplate.fromJson({
+      'id': 'template-1',
+      'tenantId': 'tenant-a',
+      'tenant_id': 'tenant-b',
+      'institutionId': 'institution-a',
+      'institution_id': 'institution-b',
+      'planVariant': 'simple',
+      'plan_variant': 'complete',
+      'audienceSegment': 'all',
+      'audience_segment': 'students',
+      'createdAt': '2026-08-01T10:00:00Z',
+      'created_at': '2020-01-01T00:00:00Z',
+      'updatedAt': '2026-09-01T11:00:00Z',
+      'updated_at': '2020-01-01T00:00:00Z',
+    });
+    expect(template.tenantId, 'tenant-a');
+    expect(template.institutionId, 'institution-a');
+    expect(template.planVariant, MealPlanPlanVariant.simple);
+    expect(template.audienceSegment, MealPlanAudienceSegment.all);
+    expect(template.createdAt, DateTime.utc(2026, 8, 1, 10));
+    expect(template.updatedAt, DateTime.utc(2026, 9, 1, 11));
+  });
+  for (final operation in ['list', 'get', 'save']) {
+    for (final camelCase in [true, false]) {
+      test('template $operation preserves RPC metadata camelCase=$camelCase', () async {
+        final payload = <String, Object?>{
+          'id': 'template-1',
+          'name': 'Modelo sintético',
+          'status': 'published',
+          'version': 3,
+          camelCase ? 'tenantId' : 'tenant_id': 'tenant-a',
+          camelCase ? 'institutionId' : 'institution_id': 'institution-a',
+          camelCase ? 'planVariant' : 'plan_variant': 'simple',
+          camelCase ? 'audienceSegment' : 'audience_segment': 'staff',
+          camelCase ? 'createdAt' : 'created_at': '2026-08-01T10:00:00Z',
+          camelCase ? 'updatedAt' : 'updated_at': '2026-09-01T11:00:00Z',
+          'payload': <String, Object?>{},
+        };
+        final client = SupabaseClient(
+          'https://meal-plans.invalid',
+          'test-anon-key',
+          httpClient: MockClient((request) async {
+            expect(request.url.pathSegments.last, 'meal_plan_template_$operation');
+            return Response(
+              jsonEncode(
+                operation == 'list'
+                    ? {
+                        'items': [payload],
+                        'total': 1,
+                      }
+                    : payload,
+              ),
+              200,
+              headers: {'content-type': 'application/json'},
+              request: request,
+            );
+          }),
+        );
+        addTearDown(client.dispose);
+        final repository = SupabaseMealPlanRepository(client);
+        if (operation == 'list') {
+          final item = (await repository.fetchTemplatePage(
+            const MealPlanListFilter(),
+          )).items.single;
+          expect(item.tenantId, 'tenant-a');
+          expect(item.institutionId, 'institution-a');
+          expect(item.planVariant, MealPlanPlanVariant.simple);
+          expect(item.audienceSegment, MealPlanAudienceSegment.staff);
+          expect(item.startDate, DateTime.utc(2026, 8, 1, 10));
+          expect(item.endDate, DateTime.utc(2026, 9, 1, 11));
+        } else {
+          final item = operation == 'get'
+              ? await repository.getTemplateById('template-1')
+              : await repository.saveTemplate(
+                  const MealPlanTemplateDraft(
+                    id: 'template-1',
+                    name: 'Modelo sintético',
+                    planVariant: MealPlanPlanVariant.simple,
+                    audienceSegment: MealPlanAudienceSegment.staff,
+                    payload: {},
+                  ),
+                  publish: true,
+                );
+          expect(item.tenantId, 'tenant-a');
+          expect(item.institutionId, 'institution-a');
+          expect(item.planVariant, MealPlanPlanVariant.simple);
+          expect(item.audienceSegment, MealPlanAudienceSegment.staff);
+          expect(item.createdAt, DateTime.utc(2026, 8, 1, 10));
+          expect(item.updatedAt, DateTime.utc(2026, 9, 1, 11));
+        }
+      });
+    }
+  }
   for (final entry in {
     'published': MealPlanStatus.published,
     'active': MealPlanStatus.published,

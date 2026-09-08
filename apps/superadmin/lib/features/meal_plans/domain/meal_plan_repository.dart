@@ -496,24 +496,24 @@ final class MealPlanTemplate {
   });
   factory MealPlanTemplate.fromJson(Map<String, Object?> j) => MealPlanTemplate(
     id: j['id'].toString(),
-    tenantId: j['tenant_id'] as String?,
-    institutionId: j['institution_id'] as String?,
+    tenantId: (j['tenantId'] ?? j['tenant_id']) as String?,
+    institutionId: (j['institutionId'] ?? j['institution_id']) as String?,
     name: (j['name'] as String?) ?? 'Sem nome',
     planVariant: _enumByName(
       MealPlanPlanVariant.values,
-      j['plan_variant'],
+      j['planVariant'] ?? j['plan_variant'],
       MealPlanPlanVariant.complete,
     ),
     audienceSegment: _enumByName(
       MealPlanAudienceSegment.values,
-      j['audience_segment'],
+      j['audienceSegment'] ?? j['audience_segment'],
       MealPlanAudienceSegment.students,
     ),
     status: (j['status'] as String?) ?? 'draft',
     version: _int(j['version']) ?? 1,
     payload: _map(j['payload']),
-    createdAt: _date(j['created_at'] ?? DateTime.now()),
-    updatedAt: _date(j['updated_at'] ?? DateTime.now()),
+    createdAt: _date(j['createdAt'] ?? j['created_at'] ?? DateTime.now()),
+    updatedAt: _date(j['updatedAt'] ?? j['updated_at'] ?? DateTime.now()),
   );
   final String id, name, status;
   final String? tenantId, institutionId;
