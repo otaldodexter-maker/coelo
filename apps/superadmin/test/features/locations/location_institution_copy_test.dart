@@ -333,6 +333,28 @@ void main() {
     });
   });
 
+  group('accessibility', () {
+    testWidgets('the panel meets tap size, labelling and contrast in both states', (tester) async {
+      final handle = tester.ensureSemantics();
+      // Both states matter: the list before anything is chosen, and the panel
+      // after, when the name field and the enabled action appear.
+      await openWith(tester, [option(locationB, 'Quadra')]);
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
+
+      await tester.tap(find.byKey(const Key('location-institution-copy-option')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(MenuItemButton, 'Quadra'));
+      await tester.pumpAndSettle();
+
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
+      handle.dispose();
+    });
+  });
+
   group('the page offers it only where it means something', () {
     late ControlledLocationReader reader;
     setUp(() => reader = ControlledLocationReader());
