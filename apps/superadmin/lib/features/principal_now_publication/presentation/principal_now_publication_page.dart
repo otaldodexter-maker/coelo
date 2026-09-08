@@ -426,14 +426,15 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
         builder: (context, constraints) {
           final enlargedText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
           final stacked = constraints.maxWidth < CoeloBreakpoints.medium.minWidth || enlargedText;
-          final wide = constraints.maxWidth >= CoeloBreakpoints.large.minWidth;
+          // There is deliberately no wide branch here. The frame caps the body
+          // at 1120, below CoeloBreakpoints.large.minWidth (1200), so anything
+          // keyed to `large` inside this builder is unreachable: it read as a
+          // third layout that never rendered. A wider stage needs the frame's
+          // width contract changed first, which is a visual decision with its
+          // own nominal review, not a branch smuggled in here.
           final stage = _MediaAndTools(
             controller: controller,
-            width: stacked
-                ? 220
-                : wide
-                ? 320
-                : 260,
+            width: stacked ? 220 : 260,
             onPickMedia: _pickMedia,
             onText: _showTextEditor,
             onMusic: _pickAudio,
@@ -456,10 +457,10 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
             key: const Key('now-publication-zones'),
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(flex: wide ? 5 : 4, child: stage),
+              Expanded(flex: 4, child: stage),
               const SizedBox(width: CoeloSpacing.space5),
               Expanded(
-                flex: wide ? 4 : 5,
+                flex: 5,
                 child: KeyedSubtree(
                   key: const Key('now-publication-editorial-column'),
                   child: details,

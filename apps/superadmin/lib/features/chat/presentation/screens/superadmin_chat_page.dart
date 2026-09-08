@@ -899,9 +899,19 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
                     ),
-                    child: _body(),
+                    // The outline is painted in front of the content, not
+                    // behind it. The inbox pagination footer sits flush with
+                    // the card edge and blurs its own backdrop, which erased
+                    // the 1 px line wherever the two overlapped.
+                    child: DecoratedBox(
+                      position: DecorationPosition.foreground,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                      ),
+                      child: _body(),
+                    ),
                   ),
                 ),
               ],
