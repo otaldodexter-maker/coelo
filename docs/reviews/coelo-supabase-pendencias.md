@@ -10,6 +10,23 @@ family_count: 38
 
 # Pendências Coelo — Back-end
 
+## Fechamento operacional de 2026-09-08 — denominador vigente
+
+- Inventário canônico: **219 ações / 38 famílias**. O avanço backend local por
+  família permanece **7,89% (3/38)**; 35/38 famílias não fecharam o gate local.
+- Conclusão Back-end estrita `done`: **0,00% (0/219 ações; 0/38 famílias)**.
+  Não há ação `remote-green`; nenhum teste local, SQL candidato ou
+  `fail-closed` foi promovido a `done`.
+- Os denominadores históricos 228/37 e 229 do projeto permanecem somente como
+  registros de checkpoints anteriores. Para a Etapa 2 atual, usar 219 ações e
+  38 famílias e separar Front-end, Back-end e integração.
+- Locais `9e689374`, autoria Forms `f84d1dd7`/`97769124` e os demais pacotes
+  candidatos estão publicados em branches remotas, mas permanecem fora de
+  `dev` por gates vermelhos ou não executados. Nenhuma migration, DDL/DML,
+  Auth, Worker, R2 ou configuração remota foi aplicada nesta consolidação.
+- Relatório por tela/subtela/provedor e próximos gates:
+  `evidence/etapa-2/coordenador/fechamento-etapa-2-2026-09-08.md`.
+
 - Atualização02:53: F-AUTHOR01 candidatos af7253ec/2bb45ff8/115acab1
   integrados somente em arquivos, SQL+3fixtures idênticos a2aa27b25 por Git.
   GuardSAFE6a797d69 também candidato preparado,39assertions nãoexecutadas;

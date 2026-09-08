@@ -12,6 +12,24 @@ visual_program_accepted_count: 0
 
 # Pendências Coelo — Front-end por tela e ação
 
+## Fechamento operacional de 2026-09-08 — denominador vigente
+
+- Matriz canônica: **219 ações / 38 famílias**. A contagem direta das 219
+  linhas resulta em 104 `local-green`, 64 `audited` (62 simples e duas
+  `audited/fail-closed`), 37 `blocked-decision`, duas `blocked-supabase` e
+  12 `not-reviewed`.
+- Avanço técnico local: **47,49% (104/219)**; restante fora de `local-green`:
+  **52,51% (115/219)**. Conclusão Front-end estrita `verified`:
+  **0,00% (0/219)**.
+- Os valores históricos 105/207, 102/207 e 0/207 continuam como fotografias
+  anteriores, mas não são o percentual vigente após a inclusão de Locais.
+- Acontece recebeu no `dev` o lifecycle de ticket/cache em `50473bd8`; gate
+  fresco 16/16 e analyzer sem issues. Agenda `ca4c82ab`, Forms `f84d1dd7` e
+  seus resultados vermelhos continuam preservados em branches remotas, sem
+  promoção artificial.
+- Relatório por tela/subtela/backend e próximos gates:
+  `evidence/etapa-2/coordenador/fechamento-etapa-2-2026-09-08.md`.
+
 ## Rodada de 2026-09-07 — integração incremental em curso
 
 - Atualização02:47: Forms a4d8be57/c0b20ccd preserva ramos por opção e

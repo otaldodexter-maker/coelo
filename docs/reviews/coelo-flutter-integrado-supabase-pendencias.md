@@ -1,6 +1,6 @@
 ---
 title: "Pendências Coelo — Front-end + Back-end"
-source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; Git dev 7b94428aa9861b68fcc81b335a98857b43de789f"
+source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; consolidação Git de 2026-09-08"
 status: "open"
 generated_at: "2026-08-26"
 updated_at: "2026-09-08"
@@ -14,11 +14,27 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "285266D664A92CFDD5CD328BB4A64F85BD8A33C3CC064C4C58F8FF032793839D"
-supabase_tracker_sha256: "E9674B8CB018185B3FD44FC94CDAC77EB181804EEC1E24263B144926D6E189BC"
+flutter_tracker_sha256: "04DA45FD346FAD71D00854D38F4ACCB62A26C7AADD84C797BFD278EE1AB0C1DA"
+supabase_tracker_sha256: "A0BF867D7614F4FB4B3F8BBC6EA5838BAD6B96AC01BC17F4A135FE003618C376"
 ---
 
 # Pendências Coelo — Front-end + Back-end
+
+## Fechamento operacional de 2026-09-08 — estado integrado vigente
+
+- Escopo integrado do MVP: **192 ações**; 22 ações de import/export geral são
+  `deferred-post-mvp` e cinco gates são somente Flutter.
+- `ready-for-e2e`: **0,00% (0/192)**. `verified-e2e`:
+  **0,00% (0/192)**. Nenhuma ação possui simultaneamente Front-end `verified`,
+  Back-end `done` e a prova real UI→provedores→persistência→reload.
+- Indicadores de camada, que não devem ser somados: Front-end técnico local
+  **47,49% (104/219)**; Front-end estrito **0/219**; Back-end técnico local
+  **7,89% (3/38 famílias)**; Back-end estrito **0/219**.
+- Todas as branches da rodada foram publicadas. As worktrees geridas pelo Codex
+  estão limpas; as worktrees próprias em `.worktrees/` foram removidas após
+  confirmar que os HEADs locais e remotos eram idênticos.
+- A matriz completa de 38 telas/famílias, subtelas e primeiro gate pendente está
+  em `evidence/etapa-2/coordenador/fechamento-etapa-2-2026-09-08.md`.
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
 
