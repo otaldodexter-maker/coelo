@@ -8,6 +8,14 @@ updated_at: "2026-09-08"
 
 # Plano por tela
 
+Checkpoint focal posterior a `4132c0aa`: `7cb636ef` corrige negação e cache de
+Momentos (79/79 publicação, incluindo goldens); `76a14d73` corrige duração de
+ticket, expiração e cache Acontece (56/56 funcionais + 10/10 goldens de galeria).
+Chat manteve código existente: 73/73 diálogo/tile/composição reexecutados.
+Referências por cenário e gates reais em
+`2026-09-08-media-lifecycle-handoff.md`. Nenhum PNG ou recurso remoto alterado;
+o lote amplo 898 não foi repetido. A tabela preserva também evidências anteriores.
+
 ## Posição atual — escopo original integral
 
 O Owner reiterou que o escopo original não deve ser esquecido. Cada fatia
