@@ -22,7 +22,7 @@ Os quadros posteriores preservam a cronologia, não substituem este checkpoint.
 | Convites | `e4171bdb`/`72b24d25`: 61 não-golden; confirmação própria, callbacks obsoletos e purge de negação | OQ039/spec047 de emissão continuam pendentes; não habilitar default false; prova server-side/E2E aberta |
 | Circulares administrativas e menu | `38870d1`, `17c6286a`, `8f7d9c6d`: editor, reader, contexto e purge; 112 não-golden | Respostas/publicação/mídia reais, revogação/reload e regressão visual completa |
 | Acontece | `8b48d271`: header de contexto mede espaço real, 50 funcionais/16 matriz; galeria 10 goldens; `8c2c7009`: publicação 55 testes | Catálogo/gateway e mídia reais; 422 legado recuperável; dez goldens feed abertos, diferença desktop remanescente PublishNowCard sem autorização de rebaseline |
-| Agora | `a4c1943d`/`032badc1`: legenda reload e negação, 81 testes da feature | Master R2, HOT privado até 24h quando necessário, fallback, expiração só da cópia Stream e prova real |
+| Agora | `1a14784d`: ownership dos editores, 91 testes; `f353fee2`/`9219e02e`: opções, geração de mídia e purge, 59 testes de prévia, ambos incluindo goldens | Master R2, HOT privado até 24h quando necessário, fallback, expiração só da cópia Stream e prova real |
 | Momentos | `5e53ea4f`: contexto; 86 funcionais/rota e 14 goldens naquela fatia; `6e7bc23b` transporte R2 comum | Catálogo/gateway, upload/reprodução real e promoção HOT por necessidade medida |
 | Para Você | `d9942d88`/`7115a6f7`: seletor por origem e scroll em pouca altura, 55 testes incluindo 13 goldens, Tab/Enter e toque | Leitura/revogação/persistência real e conteúdo conectado |
 | Perfil/preview do menu | `19c6d6c7`/`88fb2cf1`: aba Circulares, cursor/contexto/prévia; lote 172 não-golden e 19 goldens Circulares | Avatar/capa/gateway, autorização real e revisão dos dez goldens completos obsoletos; não restaurar seguidores públicos |
@@ -47,6 +47,13 @@ comprovada. Nenhuma proibição nova de OTP/magiclink foi aprovada. O gate exige
 contrato server-side e prova dos fluxos admitidos, sem ampliar lease/credenciais.
 
 ## Histórico das fatias
+
+Checkpoint em `9219e02e`: 898/898 não-golden no escopo original e shell,
+55/55 rotas; cinco testes novos de negação/contexto sobre os 893 anteriores.
+API de mídia 45/45 e Deno 40/40 reexecutados em `f3f994fa`, antes dessa última
+correção Flutter. Smoke adicional das superfícies em
+`2026-09-08-browser-remaining-surfaces.md`; servidor local encerrado, aba
+fechada e viewport restaurada. Nenhuma prova substitui os gates reais da tabela.
 
 Checkpoint de regressão independente root em `e8bbad3c`: 846/846 testes
 não-golden das superfícies originais + shell; 55/55 roteamento; 45/45

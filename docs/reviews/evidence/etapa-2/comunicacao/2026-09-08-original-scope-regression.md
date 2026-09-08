@@ -74,3 +74,13 @@ Diff desde `e8bbad3c`: 28 arquivos, zero apps proibidos, trackers oficiais,
 migrations e PNG. Varredura heurística do diff por chave secret Supabase,
 private key, access key AWS e JWT longo: zero ocorrências; não substitui um
 scanner completo de segredos. `.env` e `.env.local` continuam ignorados.
+
+## Checkpoint após negação e geração de mídia do Agora
+
+Em `9219e02e`, o mesmo lote não-golden passou novamente: 898/898; rotas 55/55.
+A feature
+Agora isolada passou 59/59 incluindo goldens, cobrindo também quatro REDs
+efetivamente reproduzidos de resgate/negação e resposta privada entre contextos.
+O diff desde `e8bbad3c` passou a 31 arquivos, sem caminhos proibidos ou PNG;
+a mesma varredura heurística retornou zero ocorrências. Validador de memória
+e seus cenários passaram. Nenhum gate remoto foi promovido.
