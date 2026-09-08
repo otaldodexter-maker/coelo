@@ -57,6 +57,7 @@ indicador. O arquivo é aberto no painel direito como alternativa disponível.
 - Editor: ramo Se Sim agora integra payload, reload, cópias, preview e contagem; 14 novos testes. Verificação final e handoff em curso; goldens mantêm cinco diferenças conhecidas, sem atualização de imagens. Evidência `2026-09-07-editor-yes-no-branch-roundtrip.md`.
 - Autoria interna: crosswalk `38041740` recebeu fechamento técnico central para reader manage OR read, save manage, receipt privado reautorizado e guard por recurso da população draft nunca publicada. Inventário efetivo de acessos legados em curso antes do pacote local `20260908030000`; execução SQL segue exclusiva Eng1.
 - review_export_policy: reader aprovado após correção de offset; sem backend.
+- Exportação XLSX: colisões de títulos/IDs/metadados corrigidas no gerador puro; três REDs e 14/14 GREEN, incluindo páginas esparsas e reabertura dos dois encoders. Cabeçalhos agora têm namespaces e ID da pergunta. Review aprovado; sem SQL, worker runtime ou R2. Evidência `2026-09-07-xlsx-column-identity.md`; não E2E.
 - medication_roundtrip: revisão UI/composição read-only, sem achado bloqueante.
 - Engenheiro 2 (coordenação externa): crosswalk nominal de ator/DTO/RPC Forms;
   não é writer desta branch.
