@@ -15,6 +15,10 @@ deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
 ---
 
+> Sincronização incremental C00 2026-09-08T18:16:41-03:00: C01/r40 e C03/r25; demais cortes globais C02/r35, C04/r20, C05/r15. [Delta e evidências](etapa-2-operacao/reports/R01-delta-1815.md). FE/BE/E2E sem promoção; teste34 ainda sem runtime.
+
+
+
 > Sincronização C00 2026-09-08T16:24:59-03:00: C01/r30, C02/r29, C03/r13, C04/r17, C05/r10. 63linhas e inventário reconciliados; fontes/limites em [etapa-2-operacao/reports/R01-checkpoint-1600.md](etapa-2-operacao/reports/R01-checkpoint-1600.md). Handoffs posteriores não incluídos. Implementação, testes, revisão e integração separados; nenhuma certificação nova.
 
 
@@ -417,3 +421,32 @@ Aliases não viramIDs:locations.edit/status/copy são suboperações de location
 | C04 | institutions.list | r18:hipótese harness/header é proposta,sem aprovação automática de golden. Novos fluxosLocais ainda dependem baseline/revisão específica;não bloquear outros domínios pela discussão de tabela. |
 | C05 | chat.attach momentos.view principal.profile-view momentos.remove | 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual. |
 | C05 | notices.list momentos.view | SQL5f0e7e29 retido porACL/cursor/envelope/schema/realm/reautorização/audiênciadesconhecida/store eplansTAP incorretos. C05r15 aceitouachados e corrige;sem replay. Fontes completas na assignmentI009. |
+
+
+## R01-delta-1815 — 2026-09-08T18:16:41-03:00
+
+
+
+C01 recebido até r40 (d69bdd5c,18:13:04), C03 até r25 (2e1562bd); cortes C02r35/C04r20/C05r15 mantidos. Revisões novas não implicam conclusão; o relatório17:40 preserva seu corte histórico. C06r4 é resumo operacional, não nova certificação dos originais. RTK ack C01r40/C03r25 confirmado.
+
+- `daily-routine.create,daily-routine.edit,daily-routine.apply`: 5bc29739+2a01c785 integrados como0a01769f+ee2efb40. C00:7/7 testes application_editor e análise2arquivos sem problemas; logTEMP coelo-c00-daily-routine-1815.log/-analyze.log. IDs reais retornados liberam segundo save; isolamento A→B mantido. Backend produtivo unavailable e E2E continuam abertos.
+- `activities.list`: C03r23–25:7b097502 catálogo/modelos, e76dca91 escopo de resposta; e76dca91 integrado40edad7f, teste C00 em andamento neste recibo. d2ea1f36 já na fila, sem promoção.
+- `activities.edit,activities.publish`: C03r25 fd791a81 rejeita save result divergente. Revisão estática C00 sem defeito novo, mas retido: depende0dbdba5e e candidatoSQLb9a58002 ainda não revisados/integrados. Testeadapter8PASS relatado pelo C03 inclui escopoModelo, não nova certificação.
+- `activities.detail`: C03r24 f9e681f8 rejeita subjectAbout divergente,147testes não-golden relatados/sobrepostos; aguarda integração.
+- `attendance.correct`: C03r23 b592dc4b corrige perda de draft de6504610a;65testes relatados. Par ainda RETIDO: C00 encontrou lookup ScaffoldMessenger usando context da página descartada no ramo em que mounted=false. Correção e cenário dialog sobrevivendo dispose pedidos nominalmente C03. Sem afirmar reprodução runtime desse achado estático.
+- `attendance.mark,attendance.finish`: C03r25 dcd34924 valida call.id/receipt.callId;68testes não-golden relatados/sobrepostos. Revisão estática sem defeito novo; integração depende parAttendance retido. attendance.detail no handoff é alias de superfície, não action_idnovo.
+- `attendance.dashboard`: C03r24 b7082644 evita leituras apósdispose;7controller/10dashboard relatados, revisão em andamento.
+- `daily-routine.list`: C03r24 36c44dc4 preserva page size11/8;14focais/34ampliados relatados, revisão em andamento.
+- `plans.list`: C03r23 52f2075f usa identidade do repository;36não-golden relatados, revisão em andamento.
+- `access-models.create,access-models.edit,access-models.duplicate`: C01r38–40:31/31pgTAP local já PASS naI010/log8f45584b, cleanup0; teste34 ffb79806 integradofafce1f6, hash8b45891d, NÃOexecutado. Novo reloadedição literal/controleOwnerinstitution/negaçãoescopo. Docker npipe indisponível18:15, diagnóstico C00; sem nova lease ou remoto. 31PASS não prova tenantA/B nem E2E.
+
+C03r23 NO-DELTA: assessments.closing/reopen/detail14PASS relatados e imports/profile-files14PASS relatados. C03r24 meal-plans.list4PASS relatados, zero diff. Nenhum teste sobreposto somado nem status promovido. Compromisso: corrigir comportamento e integrar; não encerrar por volume de testes.
+
+
+### Recibo posterior de integração 2026-09-08T18:22:51-03:00
+
+Atualiza a retenção registrada acima: C03 reproduziu o defeito de contexto descartado e entregou69324bc4. C00 revisou o delta de uma guarda e integrou Attendance6504610a→4de7b59f, b592dc4b→a141b430, dcd34924→c33e4160 e69324bc4→a2388ec8. Teste pós-integração attendance_pages_test **45/45 PASS**, incluindo contexto removido semRPC/exceção, falha/retry e respostaIDdivergente. Análise proporcional registrada no log coelo-c00-attendance-1818-analyze.log, cujo resultado deve ser conferido antes do push. Isso libera a retenção de código desse conjunto; conclusão FE/BE/E2E continua pending-verification.
+
+Atividadesmodelo40edad7f: testeadapter C00 **4/4 PASS**, análise2arquivos sem problemas. São quatro testes da base integrada, distintos dos oito relatados no branch C03 que incluem save ainda retido. Rotina0a01769f+ee2efb40 permanece7PASS/análise2PASS. Os logs nominais ficam em C:/Users/adrie/AppData/Local/Temp/coelo-c00-activity-model-1815.log, coelo-c00-daily-routine-1815.log e coelo-c00-attendance-1818.log, com arquivos -analyze.log correspondentes. Sem promoção ou execução remota.
+
+Docker: Owner enviou telas de erro1920 nos sockets sailor-ingest.sock e SecretsEngine/engine.sock e de factory reset concluído. C00 não executou factory reset; conferiu processos encerrados, driverafunixRUNNING e tagsAF_UNIX0x80000023. Remove-Item do socket falhou sem apagar. Diretórios de sockets foram preservados por renomeação nominal; último SecretsEngine foi conferido por inode12384898975887798 e substituído por diretório vazio. Boot em verificação; leaseSQL permanece não concedida. Nenhum arquivo Coelo, worktree ou recurso remoto alterado pela recuperação.

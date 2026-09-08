@@ -669,3 +669,10 @@ C04r20 assumiu unpause16:50 e cleanup16:58; Docker vazio confirmado. Timestamp20
 ### R01-ALL-RTK-1808 — 2026-09-08T18:08:11-03:00
 
 Owner reforçou continuidade e RTK até fechamento 09/09 05:30–06:00, feedback/prompts 07:40. Instrução publicada em protocolo e assignments C01–C07. C06r4 lida; C07 ID real observado por C06 `local_3b1f7fb1-731c-4ba9-bae5-1657903ca22f`, ack próprio pendente. C06I004 corrige a atribuição equivocada dos cherry-picks de preparação C00 fdf0972d/4af42925 à sessão C07. Baseline autorizado preservado; nenhuma reversão ou infração C07 comprovada. Relatório 17:40 mantém seu corte fixado, sem promover novos handoffs a conclusão.
+
+
+### Recuperação Docker delegada — 2026-09-08T18:24:33-03:00
+
+Por pedido explícito do Owner, operador exclusivo de recuperação local passa à tarefa **Apoiar C00 em tarefas rápidas**, ID `01a082d8-0d41-71b0-95a3-72240507e254`. Envio nativo confirmado; ack operacional/conclusão ainda pendentes. C00 e subagentes deixam de operar Docker até devolução. Imagens, tentativas, paths de preservação e fontes foram repassados. Apoio não executaSQL, remotos, reset/reinstalação/remoção de volumes nem alterações do projeto; deve restaurar engine por menor mudança reversível e reportar prova. C00 acompanhará estado nativo compacto e resultado, sem depender de o Owner ver a janela. Banco local continua sem lease. Frentes independentes e horários05:30/06:00/07:40 mantidos.
+
+Análise Attendance pós-integração confirmou **2arquivos sem problemas**;45testesPASS já registrados. Não há novo certificado de ação. Fontes do diagnóstico: logs locais minimizados e relato correspondente no repositório Docker [issue536](https://github.com/docker/desktop-feedback/issues/536). Não incluir conversas brutas/segredos nos documentos.

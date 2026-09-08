@@ -10,7 +10,7 @@
   "window_end": "2026-09-16T12:20:00-03:00",
   "delivery_branch": "dev",
   "runtime_target": "localhost normal + real Supabase; remote mutable scenarios require nominal authorization",
-  "last_poll": "2026-09-08T17:42:54-03:00",
+  "last_poll": "2026-09-08T18:16:41-03:00",
   "processed_events": [
     {
       "id": "2026-09-08T13:00:00-03:00-checkpoint",
@@ -44,9 +44,9 @@
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01",
       "branch": "codex/e2-r01-c01-identidade",
       "instruction_revision": 11,
-      "received_revision": 37,
+      "received_revision": 40,
       "integrated_revision": 3,
-      "last_evidence": "2026-09-08T17:30:00-03:00",
+      "last_evidence": "2026-09-08T18:13:04-03:00",
       "baseline": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
       "worktree_verified_at": "2026-09-08T14:25:04-03:00",
       "handoff_present_at_preparation": true,
@@ -106,10 +106,10 @@
       "thread_id": "01a0819b-a12e-7110-88cb-99e51a82f384",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03",
       "branch": "codex/e2-r01-c03-operacoes",
-      "instruction_revision": 10,
-      "received_revision": 22,
+      "instruction_revision": 11,
+      "received_revision": 25,
       "integrated_revision": 2,
-      "last_evidence": "2026-09-08T17:27:52-03:00",
+      "last_evidence": "2026-09-08T18:16:41-03:00",
       "baseline": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
       "worktree_verified_at": "2026-09-08T14:25:04-03:00",
       "handoff_present_at_preparation": false,
@@ -514,7 +514,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T18:10:21-03:00",
+  "updated_at": "2026-09-08T18:24:33-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -774,6 +774,57 @@
       "status": "delivered-origin-dev;FE-deferred-import-export-verified",
       "report": "etapa-2-operacao/reports/R01-people-files-integracao-1655.md",
       "delivery_sha": "6eb23bd79b45f30017d493597a3946cac6dfdb3d"
+    },
+    {
+      "at": "2026-09-08T18:16:41-03:00",
+      "executor": "C03",
+      "source_shas": [
+        "5bc29739",
+        "2a01c785",
+        "e76dca91"
+      ],
+      "integration_shas": [
+        "0a01769f",
+        "ee2efb40",
+        "40edad7f"
+      ],
+      "daily_tests": "7PASS/analyze2PASS",
+      "activity_tests": "running",
+      "push": "pending",
+      "production": "unchanged"
+    },
+    {
+      "at": "2026-09-08T18:16:41-03:00",
+      "executor": "C01",
+      "source_shas": [
+        "ffb79806"
+      ],
+      "integration_shas": [
+        "fafce1f6"
+      ],
+      "tests": "34 not executed;31 previousPASS",
+      "push": "pending",
+      "production": "unchanged"
+    },
+    {
+      "at": "2026-09-08T18:22:51-03:00",
+      "executor": "C03",
+      "source_shas": [
+        "6504610a",
+        "b592dc4b",
+        "dcd34924",
+        "69324bc4"
+      ],
+      "integration_shas": [
+        "4de7b59f",
+        "a141b430",
+        "c33e4160",
+        "a2388ec8"
+      ],
+      "tests": "45PASS C00",
+      "analyze": "2 files PASS C00;log coelo-c00-attendance-1818-analyze.log",
+      "push": "pending",
+      "production": "unchanged"
     }
   ],
   "last_delta_processed_at": "2026-09-08T15:50:03-03:00",
@@ -785,8 +836,9 @@
     "Next poll16:00;formal17:40;closing09/09 preserved"
   ],
   "local_replay_lease": {
-    "status": "none active;Models31 released",
-    "verified_at": "2026-09-08T17:42:54-03:00"
+    "status": "none active;Models34 waiting Docker engine",
+    "verified_at": "2026-09-08T18:16:41-03:00",
+    "evidence": "docker ps npipe dockerDesktopLinuxEngine not found; no database started"
   },
   "last_delivery": {
     "branch": "origin/dev",
@@ -1223,9 +1275,11 @@
     "writer": "C01",
     "path": "packages/coelo_database/supabase/tests/access_profile_models_aal1_phase_policy_test.sql",
     "instruction": "R01-C01-I011",
-    "status": "granted-awaiting-code-sha",
+    "status": "integrated;released-by-C01;awaiting-Docker",
     "lease": "not-granted",
-    "at": "2026-09-08T18:10:21-03:00"
+    "at": "2026-09-08T18:10:21-03:00",
+    "code_sha": "ffb79806e0566a18078d6537559044730b869c26",
+    "integration_sha": "fafce1f6"
   },
   "heartbeat_verification": {
     "id": "e2-r01-c00-acompanhamento-30-min",
@@ -1242,5 +1296,34 @@
     "verified_at": "2026-09-08T18:10:21-03:00",
     "next_nominal_tick": "2026-09-08T18:20:00-03:00",
     "prompt": "updated includes C07/C06I004/RTK/safe closing; actual tick not yet proven"
-  }
+  },
+  "tracker_sync_1815": {
+    "at": "2026-09-08T18:16:41-03:00",
+    "C01": 40,
+    "C03": 25,
+    "others_unchanged": {
+      "C02": 35,
+      "C04": 20,
+      "C05": 15
+    },
+    "report": "reports/R01-delta-1815.md",
+    "promotion": false
+  },
+  "docker_recovery_1823": {
+    "at": "2026-09-08T18:22:51-03:00",
+    "status": "delegated-exclusive-operator-awaiting-ack",
+    "factory_reset": "Owner screenshots/logs confirm external reset;not executed byC00",
+    "preserved_paths": [
+      "C:/Users/adrie/AppData/Local/Docker/run.recovery-20260908-1820",
+      "C:/Users/adrie/AppData/Local/docker-secrets-engine.recovery-20260908-1821",
+      "C:/Users/adrie/AppData/Local/docker-secrets-engine.recovery-20260908-1823"
+    ],
+    "lease": "none",
+    "primary_report": "reports/R01-delta-1815.md",
+    "operator_thread_id": "01a082d8-0d41-71b0-95a3-72240507e254",
+    "operator_title": "Apoiar C00 em tarefas rápidas",
+    "delegated_at": "2026-09-08T18:24:33-03:00",
+    "scope": "recover local engine; no SQL/remotes; C00/subagents make no Docker mutations until handback"
+  },
+  "coordinator_next_steps_docker": "Read compact native status of support thread; verify engine result without asking Owner to watch app; only then nominal replay lease. Do not duplicate recovery operations."
 }
