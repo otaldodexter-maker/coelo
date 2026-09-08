@@ -272,8 +272,9 @@ O perfil `-NominalProfile FReadDirectoryContractRedDerived` mantém os mesmos
 com quatro parênteses e hash derivado06b71570bbb25c84efe5efed6a6d1f2416a33a5a6fdf71bc20b4776d01833dfe.
 A origem permanece intacta e os outros49 inputs são copiados sem alteração.
 O Prepare confere recibo único, hashes, destino, bytes e origem antes dessas
-cópias. A preparação passou272Pester (39específicos e233regressões); execução
-completa ainda depende da liberação nominal do Coordenador. O reader futuro
+cópias. A preparação passou272Pester (39específicos e233regressões); o replay
+local aplicou50arquivos e a fixture abortou após2TAP/2FAIL por função ausente.
+O reader futuro
 não pertence a esse RED; não é evidência E2E de Formulários.
 
 Nunca use
