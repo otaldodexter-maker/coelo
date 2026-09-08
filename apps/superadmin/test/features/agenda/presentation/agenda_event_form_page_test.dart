@@ -77,6 +77,58 @@ void main() {
     });
   }
 
+  for (final stage in ['occurrence', 'publication']) {
+    for (final throwsError in [false, true]) {
+      testWidgets('failed $stage cannot announce a fully saved event (throws=$throwsError)', (
+        tester,
+      ) async {
+        final repository = _PendingFormRepository(stage);
+        final saved = <String>[];
+        await tester.pumpWidget(
+          _app(store: repository, eventId: 'routine-ballet', canPublish: false, onSaved: saved.add),
+        );
+        await _goToReview(tester);
+        final publishCallback = tester
+            .widget<FilledButton>(find.byKey(const Key('agenda-wizard-publish')))
+            .onPressed!;
+        await tester.tap(find.byKey(const Key('agenda-wizard-publish')));
+        await tester.pump();
+        await tester.pump();
+        expect(repository.saves, 1);
+        expect(repository.occurrences, 1);
+        expect(repository.publications, stage == 'publication' ? 1 : 0);
+        if (throwsError) {
+          repository.pending.completeError(Exception('private transport detail'));
+        } else {
+          repository.pending.complete(AgendaMutationResult.unavailable);
+        }
+        await tester.pumpAndSettle();
+        expect(saved, isEmpty);
+        expect(find.textContaining('O evento foi salvo, mas'), findsOneWidget);
+        expect(
+          tester.widget<FilledButton>(find.byKey(const Key('agenda-wizard-publish'))).onPressed,
+          isNull,
+        );
+        expect(
+          tester
+              .widget<OutlinedButton>(find.byKey(const Key('agenda-wizard-save-draft')))
+              .onPressed,
+          isNull,
+        );
+        expect(repository.saves, 1);
+        expect(find.textContaining('private transport detail'), findsNothing);
+        publishCallback();
+        await tester.pump();
+        expect(repository.saves, 1);
+        expect(
+          tester.widget<TextButton>(find.widgetWithText(TextButton, 'Cancelar')).onPressed,
+          isNotNull,
+        );
+        if (stage == 'occurrence') expect(repository.publications, 0);
+      });
+    }
+  }
+
   testWidgets('conflict dialog closes on context change without completing old save', (
     tester,
   ) async {

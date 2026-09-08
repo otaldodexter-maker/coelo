@@ -101,6 +101,8 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
   String? _feedback;
   int _step = 0;
   bool _saving = false;
+  bool _completionFailed = false;
+  String? _completionOperation;
   DialogRoute<String>? _conflictRoute;
 
   AgendaItem? get _existing =>
@@ -219,13 +221,18 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
   }
 
   Future<void> _save(AgendaItemStatus requestedStatus) async {
-    if (_saving || !widget.actionsAvailable) return;
+    if (_saving || _completionFailed || !widget.actionsAvailable) return;
+    _completionOperation = null;
     setState(() => _saving = true);
     try {
       await _saveCurrent(requestedStatus);
     } on Exception {
       if (mounted) {
-        setState(() => _feedback = 'Não foi possível concluir o evento agora. Tente novamente.');
+        if (_completionOperation case final operation?) {
+          _showPartialFailure(operation);
+        } else {
+          setState(() => _feedback = 'Não foi possível concluir o evento agora. Tente novamente.');
+        }
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -342,21 +349,32 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
     if (result == AgendaMutationResult.success) {
       final savedItemId = store.lastSavedItemId ?? id;
       if (existing?.recurrence != null) {
-        await store.recordOccurrenceEdit(
+        _completionOperation = 'o registro da edição da recorrência';
+        final occurrenceResult = await store.recordOccurrenceEdit(
           itemId: savedItemId,
           occurrenceStartsAt: existing!.startsAt,
           scope: occurrenceEditScope,
           actorName: 'Owner Coelo',
         );
         if (!mounted) return;
+        if (occurrenceResult != AgendaMutationResult.success) {
+          _showPartialFailure('o registro da edição da recorrência');
+          return;
+        }
       }
       if (requestedStatus == AgendaItemStatus.published && !canPublish) {
-        await store.requestPublication(
+        _completionOperation = 'a solicitação de publicação';
+        final publicationResult = await store.requestPublication(
           savedItemId,
           requestedBy: 'Usuário local sem permissão de publicação',
         );
         if (!mounted) return;
+        if (publicationResult != AgendaMutationResult.success) {
+          _showPartialFailure('a solicitação de publicação');
+          return;
+        }
       }
+      _completionOperation = null;
       widget.onSaved(savedItemId);
       return;
     }
@@ -374,6 +392,15 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
           'Não foi possível salvar o evento agora. Nenhuma alteração foi confirmada.',
         AgendaMutationResult.success => null,
       };
+    });
+  }
+
+  void _showPartialFailure(String operation) {
+    setState(() {
+      _completionFailed = true;
+      _feedback =
+          'O evento foi salvo, mas não foi possível confirmar $operation. '
+          'Reabra o evento para verificar seu estado antes de tentar novamente.';
     });
   }
 
@@ -495,14 +522,14 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
           else ...[
             OutlinedButton(
               key: const Key('agenda-wizard-save-draft'),
-              onPressed: widget.actionsAvailable && !_saving
+              onPressed: widget.actionsAvailable && !_saving && !_completionFailed
                   ? () => _save(AgendaItemStatus.draft)
                   : null,
               child: const Text('Salvar rascunho'),
             ),
             FilledButton(
               key: const Key('agenda-wizard-publish'),
-              onPressed: widget.actionsAvailable && !_saving
+              onPressed: widget.actionsAvailable && !_saving && !_completionFailed
                   ? () => _save(AgendaItemStatus.published)
                   : null,
               child: Text(widget.canPublish ? 'Publicar' : 'Solicitar publicação'),
