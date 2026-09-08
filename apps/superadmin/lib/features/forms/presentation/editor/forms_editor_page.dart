@@ -533,24 +533,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         itemBuilder: (context, index) => Padding(
           key: ValueKey(_section.questions[index].id),
           padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
-          child: _QuestionCard(
-            index: index,
-            question: _section.questions[index],
-            expanded: _expandedQuestionId == _section.questions[index].id,
-            canMoveUp: index > 0,
-            canMoveDown: index < _section.questions.length - 1,
-            onToggle: () => setState(() {
-              _expandedQuestionId = _expandedQuestionId == _section.questions[index].id
-                  ? null
-                  : _section.questions[index].id;
-            }),
-            onMoveUp: () => _moveQuestion(index, index - 1),
-            onMoveDown: () => _moveQuestion(index, index + 1),
-            onMoveToSection: () => _showMoveQuestionDialog(index),
-            onDuplicate: () => _duplicateQuestion(index),
-            onDelete: () => _confirmDeleteQuestion(index),
-            onChanged: _markChanged,
-          ),
+          child: _questionTree(_section.questions, index),
         ),
       ),
       CoeloAdminCreateAction(
@@ -565,6 +548,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
 
   Widget _preview() {
     final colors = Theme.of(context).colorScheme;
+    final questions = _flattenQuestions(_section.questions).toList();
     return Container(
       key: const Key('forms-editor-preview'),
       padding: const EdgeInsets.all(CoeloSpacing.space4),
@@ -596,15 +580,17 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           const SizedBox(height: CoeloSpacing.space1),
           Text('Seção ${_selectedSection + 1} de ${_sections.length} · ${_section.title}'),
           const SizedBox(height: CoeloSpacing.space4),
-          for (var index = 0; index < _section.questions.length; index++) ...[
+          for (var index = 0; index < questions.length; index++) ...[
             Text(
-              '${index + 1}. ${_section.questions[index].label.text}'
-              '${_section.questions[index].required ? ' *' : ''}',
+              '${index + 1}. ${questions[index].label.text}'
+              '${questions[index].required ? ' *' : ''}',
               style: Theme.of(context).textTheme.labelLarge,
             ),
+            if (questions[index].loadedConditions.isNotEmpty)
+              Text('Pergunta condicionada', style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: CoeloSpacing.space2),
-            _PreviewAnswer(kind: _section.questions[index].kind),
-            if (index < _section.questions.length - 1) const SizedBox(height: CoeloSpacing.space4),
+            _PreviewAnswer(kind: questions[index].kind),
+            if (index < questions.length - 1) const SizedBox(height: CoeloSpacing.space4),
           ],
         ],
       ),
@@ -851,11 +837,70 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     });
   }
 
-  void _moveQuestion(int from, int to) {
-    if (to < 0 || to >= _section.questions.length) return;
+  Widget _questionTree(List<_EditorQuestionDraft> siblings, int index, {bool nested = false}) {
+    final question = siblings[index];
+    return _QuestionCard(
+      key: ValueKey('forms-question-card-${question.id}'),
+      index: index,
+      question: question,
+      expanded: _expandedQuestionId == question.id,
+      canMoveUp: index > 0,
+      canMoveDown: index < siblings.length - 1,
+      canDrag: !nested,
+      onToggle: () => setState(() {
+        _expandedQuestionId = _expandedQuestionId == question.id ? null : question.id;
+      }),
+      onMoveUp: () => _moveQuestionIn(siblings, index, index - 1),
+      onMoveDown: () => _moveQuestionIn(siblings, index, index + 1),
+      onMoveToSection: nested ? null : () => _showMoveQuestionDialog(index),
+      onDuplicate: () => _duplicateQuestionIn(siblings, index),
+      onDelete: () => _confirmDeleteQuestion(index, siblings: siblings),
+      onChanged: () => setState(() => _feedback = null),
+      branchPanel:
+          question.kind == FormItemKind.yesNo &&
+              question.branchEnabled &&
+              (_expandedQuestionId == question.id || question.branchQuestions.isNotEmpty)
+          ? _BranchPanel(
+              question: question,
+              onAdd: () => setState(() {
+                question.branchQuestions.add(
+                  _EditorQuestionDraft(
+                    id: _newRequestId(),
+                    kind: FormItemKind.shortText,
+                    label: 'Pergunta do ramo ${question.branchQuestions.length + 1}',
+                    required: false,
+                    loadedConditions: [
+                      FormCondition.yesNo(sourceItemId: question.id, expected: true),
+                    ],
+                  ),
+                );
+                _feedback = null;
+              }),
+              onDelete: (index) =>
+                  _confirmDeleteQuestion(index, siblings: question.branchQuestions),
+              children: Column(
+                children: [
+                  for (
+                    var childIndex = 0;
+                    childIndex < question.branchQuestions.length;
+                    childIndex++
+                  )
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+                      child: _questionTree(question.branchQuestions, childIndex, nested: true),
+                    ),
+                ],
+              ),
+            )
+          : null,
+    );
+  }
+
+  void _moveQuestionIn(List<_EditorQuestionDraft> siblings, int from, int to) {
+    if (to < 0 || to >= siblings.length) return;
     setState(() {
-      final value = _section.questions.removeAt(from);
-      _section.questions.insert(to, value);
+      final value = siblings.removeAt(from);
+      siblings.insert(to, value);
       _feedback = null;
     });
   }
@@ -869,18 +914,19 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     });
   }
 
-  void _duplicateQuestion(int index) {
-    final copy = _section.questions[index].copy(id: 'question-${_nextId++}');
+  void _duplicateQuestionIn(List<_EditorQuestionDraft> siblings, int index) {
+    final copy = siblings[index].copy(id: _newRequestId());
     setState(() {
-      _section.questions.insert(index + 1, copy);
+      siblings.insert(index + 1, copy);
       _expandedQuestionId = copy.id;
       _feedback = null;
     });
   }
 
-  Future<void> _confirmDeleteQuestion(int index) async {
+  Future<void> _confirmDeleteQuestion(int index, {List<_EditorQuestionDraft>? siblings}) async {
     final generation = _contextGeneration;
-    final question = _section.questions[index];
+    final questions = siblings ?? _section.questions;
+    final question = questions[index];
     final delete = await _showOwnedDialog<bool>(
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
       builder: (context) => CoeloAdminDialogShell(
@@ -901,7 +947,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       ),
     );
     if (delete != true || !_isCurrentContext(generation)) return;
-    final removed = _section.questions.removeAt(index);
+    final removed = questions.removeAt(index);
     removed.dispose();
     setState(() {
       _expandedQuestionId = _section.questions.firstOrNull?.id;
@@ -1010,78 +1056,46 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           title: _sections[sectionIndex].title,
           description: _sections[sectionIndex].description,
           position: sectionIndex,
-          items: [
-            for (
-              var questionIndex = 0;
-              questionIndex < _sections[sectionIndex].questions.length;
-              questionIndex++
-            )
-              FormItem(
-                id: _sections[sectionIndex].questions[questionIndex].id,
-                kind: _sections[sectionIndex].questions[questionIndex].kind,
-                label: _sections[sectionIndex].questions[questionIndex].label.text.trim(),
-                helpText:
-                    _sections[sectionIndex].questions[questionIndex].details.text.trim().isEmpty
-                    ? null
-                    : _sections[sectionIndex].questions[questionIndex].details.text.trim(),
-                position: questionIndex,
-                isRequired: _sections[sectionIndex].questions[questionIndex].required,
-                conditions: _sections[sectionIndex].questions[questionIndex].loadedConditions,
-                config: FormItemConfig(
-                  decimalPlaces:
-                      _sections[sectionIndex].questions[questionIndex].loadedConfig.decimalPlaces,
-                  scaleMin: _sections[sectionIndex].questions[questionIndex].loadedConfig.scaleMin,
-                  scaleMax: _sections[sectionIndex].questions[questionIndex].loadedConfig.scaleMax,
-                  scaleMinLabel:
-                      _sections[sectionIndex].questions[questionIndex].loadedConfig.scaleMinLabel,
-                  scaleMaxLabel:
-                      _sections[sectionIndex].questions[questionIndex].loadedConfig.scaleMaxLabel,
-                  allowCamera:
-                      _sections[sectionIndex].questions[questionIndex].loadedConfig.allowCamera,
-                  allowExisting:
-                      _sections[sectionIndex].questions[questionIndex].loadedConfig.allowExisting,
-                  maxImages:
-                      _sections[sectionIndex].questions[questionIndex].loadedConfig.maxImages,
-                  minValue: num.tryParse(
-                    _sections[sectionIndex].questions[questionIndex].minimum.text.trim().replaceAll(
-                      ',',
-                      '.',
-                    ),
-                  ),
-                  maxValue: num.tryParse(
-                    _sections[sectionIndex].questions[questionIndex].maximum.text.trim().replaceAll(
-                      ',',
-                      '.',
-                    ),
-                  ),
-                  currency:
-                      _sections[sectionIndex].questions[questionIndex].kind == FormItemKind.money
-                      ? 'BRL'
-                      : null,
-                ),
-                options: [
-                  for (
-                    var optionIndex = 0;
-                    optionIndex < _sections[sectionIndex].questions[questionIndex].options.length;
-                    optionIndex++
-                  )
-                    FormOption(
-                      id:
-                          _sections[sectionIndex]
-                              .questions[questionIndex]
-                              .optionIds[_sections[sectionIndex]
-                              .questions[questionIndex]
-                              .options[optionIndex]]!,
-                      label: _sections[sectionIndex]
-                          .questions[questionIndex]
-                          .options[optionIndex]
-                          .text
-                          .trim(),
-                      position: optionIndex,
-                    ),
-                ],
-              ),
-          ],
+          items: _sectionItemDefinitions(_sections[sectionIndex]),
+        ),
+    ],
+  );
+
+  List<FormItem> _sectionItemDefinitions(_EditorSectionDraft section) {
+    final questions = _flattenQuestions(section.questions).toList();
+    return [
+      for (var index = 0; index < questions.length; index++)
+        _itemDefinition(questions[index], index),
+    ];
+  }
+
+  FormItem _itemDefinition(_EditorQuestionDraft question, int position) => FormItem(
+    id: question.id,
+    kind: question.kind,
+    label: question.label.text.trim(),
+    helpText: question.details.text.trim().isEmpty ? null : question.details.text.trim(),
+    position: position,
+    isRequired: question.required,
+    conditions: question.loadedConditions,
+    config: FormItemConfig(
+      decimalPlaces: question.loadedConfig.decimalPlaces,
+      scaleMin: question.loadedConfig.scaleMin,
+      scaleMax: question.loadedConfig.scaleMax,
+      scaleMinLabel: question.loadedConfig.scaleMinLabel,
+      scaleMaxLabel: question.loadedConfig.scaleMaxLabel,
+      allowCamera: question.loadedConfig.allowCamera,
+      allowExisting: question.loadedConfig.allowExisting,
+      maxImages: question.loadedConfig.maxImages,
+      minValue: num.tryParse(question.minimum.text.trim().replaceAll(',', '.')),
+      maxValue: num.tryParse(question.maximum.text.trim().replaceAll(',', '.')),
+      currency: question.kind == FormItemKind.money ? 'BRL' : null,
+    ),
+    options: [
+      for (var index = 0; index < question.options.length; index++)
+        FormOption(
+          id: question.optionIds[question.options[index]]!,
+          label: question.options[index].text.trim(),
+          position: index,
         ),
     ],
   );
@@ -1147,7 +1161,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
             id: section.id,
             title: section.title,
             description: section.description ?? '',
-            questions: [for (final item in section.items) _questionDraft(item)],
+            questions: _hydrateQuestions(section.items),
           ),
       ]);
     if (_sections.isEmpty) _sections.addAll(_neutralSections());
@@ -1155,6 +1169,32 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     _title.text = definition.title;
     _selectedSection = 0;
     _expandedQuestionId = _sections.first.questions.firstOrNull?.id;
+  }
+
+  List<_EditorQuestionDraft> _hydrateQuestions(List<FormItem> items) {
+    final roots = <_EditorQuestionDraft>[];
+    final ancestors = <_EditorQuestionDraft>[];
+    for (final item in items) {
+      final draft = _questionDraft(item);
+      final condition = item.conditions.length == 1 ? item.conditions.single : null;
+      final parentIndex =
+          condition?.kind == FormConditionKind.yesNo && condition?.expectedYesNo == true
+          ? ancestors.indexWhere(
+              (parent) => parent.id == condition!.sourceItemId && parent.kind == FormItemKind.yesNo,
+            )
+          : -1;
+      if (parentIndex >= 0) {
+        final parent = ancestors[parentIndex];
+        parent.branchQuestions.add(draft);
+        parent.branchEnabled = true;
+        ancestors.removeRange(parentIndex + 1, ancestors.length);
+      } else {
+        roots.add(draft);
+        ancestors.clear();
+      }
+      ancestors.add(draft);
+    }
+    return roots;
   }
 
   _EditorQuestionDraft _questionDraft(FormItem item) {
@@ -1493,6 +1533,15 @@ String _newRequestId() {
 
 enum _DateRule { free, from, until, range }
 
+Iterable<_EditorQuestionDraft> _flattenQuestions(Iterable<_EditorQuestionDraft> questions) sync* {
+  for (final question in questions) {
+    yield question;
+    if (question.kind == FormItemKind.yesNo) {
+      yield* _flattenQuestions(question.branchQuestions);
+    }
+  }
+}
+
 final class _EditorSectionDraft {
   _EditorSectionDraft({
     required this.id,
@@ -1507,12 +1556,13 @@ final class _EditorSectionDraft {
   final List<_EditorQuestionDraft> questions;
 
   _EditorSectionDraft copy({required String id, required String suffix}) {
+    final allQuestions = _flattenQuestions(questions).toList();
     final itemIds = {
-      for (var index = 0; index < questions.length; index++)
-        questions[index].id: '$id-question-$index',
+      for (var index = 0; index < allQuestions.length; index++)
+        allQuestions[index].id: '$id-question-$index',
     };
     final optionIds = {
-      for (final question in questions)
+      for (final question in allQuestions)
         for (var index = 0; index < question.options.length; index++)
           question.optionIds[question.options[index]]!: '${itemIds[question.id]}-option-$index',
     };
@@ -1590,6 +1640,21 @@ final class _EditorQuestionDraft {
     Map<String, String> itemIdMap = const {},
     Map<String, String> optionIdMap = const {},
   }) {
+    final subtree = _flattenQuestions([this]).toList();
+    final copiedItemIds = {
+      ...itemIdMap,
+      for (final question in subtree)
+        question.id: itemIdMap[question.id] ?? (question == this ? id : _newRequestId()),
+      this.id: id,
+    };
+    final copiedOptionIds = {
+      ...optionIdMap,
+      for (final question in subtree)
+        for (var index = 0; index < question.options.length; index++)
+          question.optionIds[question.options[index]]!:
+              optionIdMap[question.optionIds[question.options[index]]!] ??
+              '${copiedItemIds[question.id]}-option-$index',
+    };
     final value = _EditorQuestionDraft(
       id: id,
       kind: kind,
@@ -1601,13 +1666,13 @@ final class _EditorQuestionDraft {
         for (final condition in loadedConditions)
           switch (condition.kind) {
             FormConditionKind.yesNo => FormCondition.yesNo(
-              sourceItemId: itemIdMap[condition.sourceItemId] ?? condition.sourceItemId,
+              sourceItemId: copiedItemIds[condition.sourceItemId] ?? condition.sourceItemId,
               expected: condition.expectedYesNo!,
             ),
             FormConditionKind.choice => FormCondition.choice(
-              sourceItemId: itemIdMap[condition.sourceItemId] ?? condition.sourceItemId,
+              sourceItemId: copiedItemIds[condition.sourceItemId] ?? condition.sourceItemId,
               optionIds: {
-                for (final optionId in condition.optionIds) optionIdMap[optionId] ?? optionId,
+                for (final optionId in condition.optionIds) copiedOptionIds[optionId] ?? optionId,
               },
             ),
           },
@@ -1622,11 +1687,19 @@ final class _EditorQuestionDraft {
       ..maximum.text = maximum.text;
     value.replaceOptions([
       for (var index = 0; index < options.length; index++)
-        FormOption(id: '$id-option-$index', label: options[index].text, position: index),
+        FormOption(
+          id: copiedOptionIds[optionIds[options[index]]!]!,
+          label: options[index].text,
+          position: index,
+        ),
     ]);
     value.branchQuestions.addAll([
       for (var index = 0; index < branchQuestions.length; index++)
-        branchQuestions[index].copy(id: '$id-branch-$index'),
+        branchQuestions[index].copy(
+          id: copiedItemIds[branchQuestions[index].id] ?? _newRequestId(),
+          itemIdMap: copiedItemIds,
+          optionIdMap: copiedOptionIds,
+        ),
     ]);
     return value;
   }
@@ -1725,7 +1798,8 @@ final class _SectionNavigation extends StatelessWidget {
               child: Semantics(
                 button: true,
                 selected: index == selectedIndex,
-                label: '${sections[index].title}, ${sections[index].questions.length} perguntas',
+                label:
+                    '${sections[index].title}, ${_flattenQuestions(sections[index].questions).length} perguntas',
                 child: OutlinedButton(
                   onPressed: () => onSelected(index),
                   style: OutlinedButton.styleFrom(
@@ -1755,7 +1829,7 @@ final class _SectionNavigation extends StatelessWidget {
                           children: [
                             Text(sections[index].title),
                             Text(
-                              '${sections[index].questions.length} perguntas',
+                              '${_flattenQuestions(sections[index].questions).length} perguntas',
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
@@ -1780,6 +1854,7 @@ final class _SectionNavigation extends StatelessWidget {
 
 final class _QuestionCard extends StatefulWidget {
   const _QuestionCard({
+    super.key,
     required this.index,
     required this.question,
     required this.expanded,
@@ -1792,6 +1867,8 @@ final class _QuestionCard extends StatefulWidget {
     required this.onDuplicate,
     required this.onDelete,
     required this.onChanged,
+    this.canDrag = true,
+    this.branchPanel,
   });
 
   final int index;
@@ -1802,10 +1879,12 @@ final class _QuestionCard extends StatefulWidget {
   final VoidCallback onToggle;
   final VoidCallback onMoveUp;
   final VoidCallback onMoveDown;
-  final VoidCallback onMoveToSection;
+  final VoidCallback? onMoveToSection;
   final VoidCallback onDuplicate;
   final VoidCallback onDelete;
   final VoidCallback onChanged;
+  final bool canDrag;
+  final Widget? branchPanel;
 
   @override
   State<_QuestionCard> createState() => _QuestionCardState();
@@ -1835,13 +1914,14 @@ final class _QuestionCardState extends State<_QuestionCard> {
                     constraints.maxWidth < 620 || MediaQuery.textScalerOf(context).scale(1) > 1.3;
                 final identity = Row(
                   children: [
-                    ReorderableDragStartListener(
-                      index: widget.index,
-                      child: const Tooltip(
-                        message: 'Arrastar pergunta',
-                        child: Icon(Icons.drag_indicator_rounded),
+                    if (widget.canDrag)
+                      ReorderableDragStartListener(
+                        index: widget.index,
+                        child: const Tooltip(
+                          message: 'Arrastar pergunta',
+                          child: Icon(Icons.drag_indicator_rounded),
+                        ),
                       ),
-                    ),
                     const SizedBox(width: CoeloSpacing.space2),
                     _KindIcon(kind: widget.question.kind),
                     const SizedBox(width: CoeloSpacing.space2),
@@ -1929,6 +2009,8 @@ final class _QuestionCardState extends State<_QuestionCard> {
             Divider(height: 1, color: colors.outlineVariant),
             Padding(padding: const EdgeInsets.all(CoeloSpacing.space4), child: _configuration()),
           ],
+          if (!widget.expanded && widget.branchPanel != null)
+            Padding(padding: const EdgeInsets.all(CoeloSpacing.space3), child: widget.branchPanel),
         ],
       ),
     );
@@ -2051,7 +2133,11 @@ final class _QuestionCardState extends State<_QuestionCard> {
             widget.onChanged();
           },
         ),
-        if (widget.question.branchEnabled) ...[
+        if (widget.branchPanel != null) ...[
+          const SizedBox(height: CoeloSpacing.space3),
+          widget.branchPanel!,
+        ],
+        if (widget.question.branchEnabled && widget.question.kind != FormItemKind.yesNo) ...[
           const SizedBox(height: CoeloSpacing.space3),
           _BranchPanel(
             question: widget.question,
@@ -2161,11 +2247,17 @@ final class _QuestionCardState extends State<_QuestionCard> {
 }
 
 final class _BranchPanel extends StatelessWidget {
-  const _BranchPanel({required this.question, required this.onAdd, required this.onDelete});
+  const _BranchPanel({
+    required this.question,
+    required this.onAdd,
+    required this.onDelete,
+    this.children,
+  });
 
   final _EditorQuestionDraft question;
   final VoidCallback onAdd;
   final ValueChanged<int> onDelete;
+  final Widget? children;
 
   @override
   Widget build(BuildContext context) {
@@ -2186,7 +2278,9 @@ final class _BranchPanel extends StatelessWidget {
           ),
           const SizedBox(height: CoeloSpacing.space2),
           const Text('Perguntas do ramo permanecem vinculadas a esta resposta.'),
-          if (question.branchQuestions.isNotEmpty) ...[
+          if (children != null)
+            children!
+          else if (question.branchQuestions.isNotEmpty) ...[
             const SizedBox(height: CoeloSpacing.space3),
             for (var index = 0; index < question.branchQuestions.length; index++) ...[
               Container(
