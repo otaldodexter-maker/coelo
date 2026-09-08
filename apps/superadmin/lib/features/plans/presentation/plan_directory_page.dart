@@ -47,7 +47,7 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
   @override
   void didUpdateWidget(covariant PlanDirectoryPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.repository != widget.repository) {
+    if (!identical(oldWidget.repository, widget.repository)) {
       _repositoryVersion += 1;
       _loadedPage = null;
       unawaited(_load());
@@ -89,13 +89,17 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
     setState(() => _dataState = PlanDataState.loading);
     try {
       final page = await repository.list(_query);
-      if (!mounted || repository != widget.repository || loadVersion != _loadVersion) return;
+      if (!mounted || !identical(repository, widget.repository) || loadVersion != _loadVersion) {
+        return;
+      }
       setState(() {
         _loadedPage = page;
         _dataState = PlanDataState.ready;
       });
     } on PlanRepositoryException catch (error) {
-      if (!mounted || repository != widget.repository || loadVersion != _loadVersion) return;
+      if (!mounted || !identical(repository, widget.repository) || loadVersion != _loadVersion) {
+        return;
+      }
       setState(() {
         _dataState = error.kind == PlanRepositoryFailureKind.unauthorized
             ? PlanDataState.unauthorized

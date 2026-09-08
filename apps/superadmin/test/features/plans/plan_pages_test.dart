@@ -58,6 +58,26 @@ void main() {
     expect(find.text('coelo-essential · Ativo'), findsNothing);
   });
 
+  testWidgets('directory reloads when a distinct equal repository replaces the current one', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final first = _EqualListPlanCatalogRepository(_planNamed('Plano A'));
+    final second = _EqualListPlanCatalogRepository(_planNamed('Plano B'));
+
+    await tester.pumpWidget(_app(PlanDirectoryPage(repository: first)));
+    await tester.pumpAndSettle();
+    expect(find.text('Plano A'), findsOneWidget);
+
+    await tester.pumpWidget(_app(PlanDirectoryPage(repository: second)));
+    await tester.pumpAndSettle();
+
+    expect(second.listCalls, 1);
+    expect(find.text('Plano B'), findsOneWidget);
+    expect(find.text('Plano A'), findsNothing);
+  });
+
   testWidgets(
     'archive confirmation keeps its required reason visible and mutates only when confirmed',
     (tester) async {
@@ -635,3 +655,38 @@ final class _RecordingPlanCatalogRepository implements PlanCatalogRepository {
     return delegate.save(command);
   }
 }
+
+final class _EqualListPlanCatalogRepository implements PlanCatalogRepository {
+  _EqualListPlanCatalogRepository(this.plan);
+
+  final PlanCatalog plan;
+  var listCalls = 0;
+
+  @override
+  Future<PlanPage> list(PlanQuery query) async {
+    listCalls++;
+    return PlanPage(items: [plan], totalItems: 1, page: query.page, pageSize: query.pageSize);
+  }
+
+  @override
+  Future<PlanDetails> get(String planId) => throw UnimplementedError();
+
+  @override
+  Future<PlanDetails> save(PlanSaveCommand command) => throw UnimplementedError();
+
+  @override
+  bool operator ==(Object other) => other is _EqualListPlanCatalogRepository;
+
+  @override
+  int get hashCode => 0;
+}
+
+PlanCatalog _planNamed(String name) => PlanCatalog(
+  id: name.toLowerCase().replaceAll(' ', '-'),
+  name: name,
+  code: name.toLowerCase().replaceAll(' ', '-'),
+  description: 'Catálogo manual para teste de contexto.',
+  status: PlanStatus.active,
+  features: const {PlanFeature.agenda},
+  limits: const PlanLimits(units: 1, memberships: 1, storageGb: 1, mediaGb: 1),
+);
