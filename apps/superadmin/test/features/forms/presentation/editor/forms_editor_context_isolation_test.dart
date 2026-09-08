@@ -10,6 +10,69 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final kind in FormKind.values) {
+    for (final discard in [false, true]) {
+      testWidgets('loaded metadata survives $kind title edit discard=$discard', (tester) async {
+        final api = _EditorApi(
+          formKind: kind,
+          identityMode: FormIdentityMode.anonymous,
+          responseUnit: FormResponseUnit.childFamilyContext,
+          description: 'Approved intention',
+          status: FormStatus.published,
+        );
+        await tester.pumpWidget(_app(api, 'form-1'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byWidget(_title(tester)), 'Changed title');
+        if (discard) await _discard(tester);
+        await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+        await tester.pumpAndSettle();
+        final command = api.savedCommands.single;
+        expect(command.payload.kind, kind);
+        expect(command.payload.identityMode, FormIdentityMode.anonymous);
+        expect(command.payload.responseUnit, FormResponseUnit.childFamilyContext);
+        expect(command.payload.description, 'Approved intention');
+        expect(command.payload.status, FormStatus.published);
+        expect(command.payload.managementVersion, command.expectedVersion);
+        expect(const FormDefinitionValidator().validate(command.payload), isEmpty);
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
+  for (final kind in [FormItemKind.scale, FormItemKind.decimal, FormItemKind.money]) {
+    testWidgets('loaded $kind noneditable configuration survives title edit', (tester) async {
+      final config = kind == FormItemKind.scale
+          ? const FormItemConfig(
+              scaleMin: 1,
+              scaleMax: 5,
+              scaleMinLabel: 'Low',
+              scaleMaxLabel: 'High',
+            )
+          : FormItemConfig(
+              minValue: 0,
+              maxValue: 10,
+              decimalPlaces: 2,
+              currency: kind == FormItemKind.money ? 'BRL' : null,
+            );
+      final api = _EditorApi(itemKind: kind, itemConfig: config);
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byWidget(_title(tester)), 'Changed title');
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+      await tester.pumpAndSettle();
+      final saved = api.savedCommands.single.payload.sections.first.items.single.config;
+      expect(saved.scaleMin, config.scaleMin);
+      expect(saved.scaleMax, config.scaleMax);
+      expect(saved.scaleMinLabel, config.scaleMinLabel);
+      expect(saved.scaleMaxLabel, config.scaleMaxLabel);
+      expect(saved.decimalPlaces, config.decimalPlaces);
+      expect(saved.currency, config.currency);
+      expect(saved.minValue, config.minValue);
+      expect(saved.maxValue, config.maxValue);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   for (final action in [
     'title',
     'discard',
@@ -683,6 +746,11 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
     this.itemKind = FormItemKind.shortText,
     this.itemConfig = const FormItemConfig(),
     this.firstItems,
+    this.formKind = FormKind.form,
+    this.identityMode = FormIdentityMode.identified,
+    this.responseUnit = FormResponseUnit.person,
+    this.description,
+    this.status = FormStatus.draft,
   });
   final String title;
   final String? savedTitle;
@@ -696,6 +764,11 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
   final FormItemKind itemKind;
   final FormItemConfig itemConfig;
   final List<FormItem>? firstItems;
+  final FormKind formKind;
+  final FormIdentityMode identityMode;
+  final FormResponseUnit responseUnit;
+  final String? description;
+  final FormStatus status;
   final requestedForms = <String>[];
   final savedCommands = <FormCommand<FormDefinition>>[];
 
@@ -725,9 +798,11 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
     id: id,
     institutionId: 'institution-1',
     title: confirmedTitle ?? title,
-    kind: FormKind.form,
-    identityMode: FormIdentityMode.identified,
-    responseUnit: FormResponseUnit.person,
+    kind: formKind,
+    identityMode: identityMode,
+    responseUnit: responseUnit,
+    description: description,
+    status: status,
     managementVersion: version,
     sections: [
       FormSection(
@@ -746,14 +821,15 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
               ),
             ],
       ),
-      FormSection(
-        id: 'section-2',
-        title: 'Section B',
-        position: 1,
-        items: [
-          FormItem(id: 'item-2', kind: FormItemKind.shortText, label: 'Question B', position: 0),
-        ],
-      ),
+      if (formKind != FormKind.quickPoll)
+        FormSection(
+          id: 'section-2',
+          title: 'Section B',
+          position: 1,
+          items: [
+            FormItem(id: 'item-2', kind: FormItemKind.shortText, label: 'Question B', position: 0),
+          ],
+        ),
     ],
   );
 
