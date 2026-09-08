@@ -90,7 +90,8 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
 
   void _loadInitial() {
     final query = widget.controller.query;
-    if (query.pageSize == 8) {
+    final pageSize = _display == AuditDirectoryDisplay.cards ? 11 : 8;
+    if (query.pageSize == pageSize) {
       widget.controller.load();
       return;
     }
@@ -106,7 +107,7 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
         institutionId: query.institutionId,
         from: query.from,
         to: query.to,
-        pageSize: 8,
+        pageSize: pageSize,
       ),
     );
   }
