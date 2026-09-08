@@ -46,7 +46,7 @@ indicador. O arquivo é aberto no painel direito como alternativa disponível.
 
 ## Trabalho ativo e BD
 
-- Root: F-READ01 SQL/pgTAP nominal preparado na origem em `21792181`, ainda não integrado nem executado no destino; revisão central reteve helper400 e expectativa MFA obsoleta. Imagens no editor e visibilidade condicional corrigidas localmente: 99/99 informados, analyzer 4 arquivos, review aprovado; goldens continuam abertos. Evidência `2026-09-07-image-config-and-conditional-response.md`.
+- Root: F-READ01 SQL/pgTAP em consolidação seletiva, com follow-ups de AAL1 e auditoria revisados; replay nominal50/51 pendente no Eng1, não produção. Imagens no editor e visibilidade condicional corrigidas localmente: 99/99 informados, analyzer 4 arquivos, review aprovado; goldens continuam abertos. Evidência `2026-09-07-image-config-and-conditional-response.md`.
 - Editor: preservação de opções/condições carregadas corrigida; 106/106 na regressão ampliada, analyzer 2 arquivos e review aprovados. Evidência `2026-09-07-editor-branch-preservation.md`; não conclui criação visual de ramos nem backend.
 - Responder: descarte de valores ocultos, ancestrais e recibos corrigidos; regressão 113/113, analyzer 2 arquivos e review aprovados. Evidência `2026-09-07-response-hidden-branches.md`; persistência/E2E permanecem abertas.
 - Editor: metadados e configuração carregados preservados; regressão 120/120, analyzer 2 arquivos e review aprovados. Evidência `2026-09-07-editor-loaded-metadata.md`; rascunho incompleto e integração permanecem abertos.
@@ -57,7 +57,8 @@ indicador. O arquivo é aberto no painel direito como alternativa disponível.
 - Engenheiro 2 (coordenação externa): crosswalk nominal de ator/DTO/RPC Forms;
   não é writer desta branch.
 
-Próximo gate: SQL/pgTAP do reader interno nominal de Formulários. MED-DEV01
+Próximo gate: replay exclusivo Eng1 do SQL/pgTAP nominal de Formulários;
+pacote e dependências em `2026-09-07-internal-directory-sql-package.md`. MED-DEV01
 foi entregue em 17812624; commit não encerra a vertical.
 Etapas 2/4 continuam abertas: planejar contrato não executa
 SQL nem comprova autorização, persistência ou produção.
