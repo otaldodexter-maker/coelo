@@ -122,6 +122,10 @@ final class SupabaseMealPlanRepository implements MealPlanRepository {
         '409' || 'P0003' || '22023' => MealPlanConflictException(e.message),
         _ => MealPlanUnavailableException(e.message),
       };
+    } on AuthException {
+      throw const MealPlanUnauthorizedException();
+    } on Exception {
+      throw const MealPlanUnavailableException();
     }
   }
 
