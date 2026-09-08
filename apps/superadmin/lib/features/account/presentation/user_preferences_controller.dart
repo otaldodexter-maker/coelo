@@ -15,7 +15,13 @@ final class UserPreferencesController extends ChangeNotifier {
   UserPreferences get preferences => _preferences;
   bool get loaded => _loaded;
 
-  Future<void> load() => _loading ??= _load();
+  Future<void> load() {
+    if (_disposed) return Future<void>.value();
+    return _loading ??= _load().onError<Object>((error, stackTrace) {
+      _loading = null;
+      if (!_disposed) Error.throwWithStackTrace(error, stackTrace);
+    });
+  }
 
   Future<void> _load() async {
     final preferences = await repository.load();
