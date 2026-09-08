@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertRejects } from "@std/assert";
 import {
   encodeCsv,
   encodeXlsx,
@@ -13,6 +13,27 @@ import {
 import * as XLSX from "xlsx";
 import { unzipSync } from "fflate";
 import { createSnapshotRows } from "./snapshot_paging.ts";
+
+for (const changed of ["B", "a longer changed response"]) {
+  Deno.test(`XLSX rejects changed worksheet bytes between measurement and write: ${changed.length}`, async () => {
+    let pass = 0;
+    const rows = () => ({
+      async *[Symbol.asyncIterator]() {
+        pass++;
+        yield { answer: pass >= 5 ? changed : "A" };
+      },
+    });
+    await assertRejects(
+      async () => {
+        for await (const _chunk of streamXlsx(rows)) {
+          /* consume actual archive */
+        }
+      },
+      Error,
+      "xlsx_snapshot_changed",
+    );
+  });
+}
 
 Deno.test("paged duplicate titles survive both XLSX encoders with sparse rows and safe cells", async () => {
   const rowsFactory = () =>

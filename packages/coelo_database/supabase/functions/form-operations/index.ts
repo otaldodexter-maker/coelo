@@ -74,7 +74,11 @@ function snapshotPageLoader(
       p_limit: PAGE_SIZE,
     });
     if (result.error || !result.data) throw new Error("export_snapshot_failed");
-    return result.data as Snapshot;
+    const snapshot = result.data as Snapshot;
+    if (snapshot.kind !== "xlsx") {
+      throw new Error("export_snapshot_kind_invalid");
+    }
+    return snapshot;
   };
 }
 
