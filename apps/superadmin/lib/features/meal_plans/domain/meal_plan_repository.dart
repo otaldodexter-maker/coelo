@@ -511,7 +511,7 @@ final class MealPlanTemplate {
     ),
     status: (j['status'] as String?) ?? 'draft',
     version: _int(j['version']) ?? 1,
-    payload: _map(j['payload']),
+    payload: _readMealPlanTemplatePayload(j['payload']),
     createdAt: _date(j['createdAt'] ?? j['created_at'] ?? DateTime.now()),
     updatedAt: _date(j['updatedAt'] ?? j['updated_at'] ?? DateTime.now()),
   );
@@ -579,14 +579,38 @@ final class MealPlanTemplateDraft {
   final Map<String, Object?> payload;
   final int expectedVersion;
   Map<String, Object?> toJson() => {
+    ..._readMealPlanTemplatePayload(payload),
     'requestId': requestId,
+    'id': id,
     'tenantId': tenantId,
     'institutionId': institutionId,
     'name': name,
     'planVariant': planVariant.name,
     'audienceSegment': audienceSegment.name,
-    'payload': payload,
   };
+}
+
+// SQL stores the whole command as payload. Read one unambiguous historical
+// wrapper, preserving opaque fields; never infer identity from its contents.
+Map<String, Object?> _readMealPlanTemplatePayload(Object? raw) {
+  if (raw == null) return const {};
+  const contentKeys = {'menu', 'simpleImage', 'simpleImageAlt', 'simpleNotes'};
+  const invalid = MealPlanUnavailableException('O conteúdo do modelo não pôde ser validado.');
+  if (raw is! Map || raw.keys.any((key) => key is! String)) throw invalid;
+  final outer = Map<String, Object?>.from(raw);
+  if (!outer.containsKey('payload')) return outer;
+  final nested = outer['payload'];
+  if (contentKeys.any(outer.containsKey) ||
+      nested is! Map ||
+      nested.keys.any((key) => key is! String) ||
+      nested.containsKey('payload') ||
+      !contentKeys.any(nested.containsKey)) {
+    throw invalid;
+  }
+  final inner = Map<String, Object?>.from(nested);
+  outer.remove('payload');
+  if (inner.keys.any(outer.containsKey)) throw invalid;
+  return {...outer, ...inner};
 }
 
 final class MealPlanAudienceOption {
