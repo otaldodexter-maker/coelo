@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'dart:typed_data';
+
+import 'package:coelo_api/coelo_api.dart';
+import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' show ClientException;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -10,9 +14,15 @@ import '../domain/chat_repository.dart';
 /// It never queries a chat table directly. Conversation ids from the client are
 /// passed only to RPCs that recompute the caller's authorised scope.
 final class SupabaseChatRepository implements ChatRepository {
-  const SupabaseChatRepository(this._client);
+  const SupabaseChatRepository(this._client, {SessionMediaUploader? attachmentUploader})
+    : _attachmentUploader = attachmentUploader;
 
   final SupabaseClient _client;
+
+  /// Approved common upload core, injected by the composition root once an
+  /// authorised chat gateway exists. While it is null the action stays honestly
+  /// unavailable instead of inventing a transport.
+  final SessionMediaUploader? _attachmentUploader;
 
   @override
   Future<int> fetchUnreadTotal() async {
@@ -98,10 +108,47 @@ final class SupabaseChatRepository implements ChatRepository {
   Future<ChatAttachment> uploadAttachment(ChatAttachmentUploadCommand command) async {
     final issue = ChatAttachmentPolicy.validate(command.draft);
     if (issue != null) throw ChatAttachmentRejectedException(issue);
-    // The authorised chat-media gateway does not exist yet, and the client must
-    // never sign or address the bucket itself. Failing closed keeps the surface
-    // honest instead of inventing a transport.
-    throw const ChatAttachmentUnavailableException();
+    final uploader = _attachmentUploader;
+    // No authorised chat gateway yet: the client must never sign or address the
+    // bucket itself, so the action stays unavailable rather than faked.
+    if (uploader == null) throw const ChatAttachmentUnavailableException();
+
+    final bytes = Uint8List.fromList(command.draft.bytes);
+    final source = MediaUploadSource(
+      bytes: bytes,
+      mimeType: command.draft.mediaType,
+      // Declared only. The server measures the stored object and decides.
+      checksumSha256: sha256.convert(bytes).toString(),
+    );
+    final MediaUploadResult result;
+    try {
+      result = await uploader.upload(
+        // The caller owns both intents so a retry replays instead of duplicating.
+        requestId: command.idempotencyKey,
+        finalizeRequestId: command.finalizeIdempotencyKey,
+        source: source,
+      );
+    } on ChatAttachmentUnavailableException {
+      rethrow;
+    } on Object {
+      source.clear();
+      rethrow;
+    }
+    source.clear();
+
+    final receipt = result.receipt;
+    // Only a measured READY receipt becomes an attachment. processing, expired
+    // and unavailable are reported as such; none of them is a stored file.
+    if (result.state != MediaUploadState.ready || receipt == null) {
+      throw const ChatAttachmentUnavailableException();
+    }
+    return ChatAttachment(
+      id: result.assetId,
+      assetId: result.assetId,
+      fileName: command.draft.fileName,
+      mediaType: receipt.mimeType,
+      byteSize: receipt.byteLength,
+    );
   }
 
   @override
@@ -153,6 +200,9 @@ final class SupabaseChatRepository implements ChatRepository {
 
 ChatConversationSummary _conversation(Map<String, dynamic> json) => ChatConversationSummary(
   id: _string(json, 'conversation_id'),
+  institutionId: (json['institution_id'] as String?)?.trim().isEmpty ?? true
+      ? null
+      : json['institution_id'] as String,
   title: json['title'] as String? ?? '',
   preview: json['latest_message_text'] as String? ?? '',
   contextLabel: json['scope_kind'] as String? ?? '',

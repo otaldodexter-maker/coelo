@@ -54,9 +54,14 @@ final class ChatConversationSummary {
     required this.unreadCount,
     required this.updatedAt,
     required this.isReadOnly,
+    this.institutionId,
   });
 
   final String id;
+
+  /// Institution the conversation belongs to, as projected by the inbox RPC.
+  /// It correlates an upload target; it never authorises one.
+  final String? institutionId;
   final String title;
   final String preview;
   final String contextLabel;
@@ -258,12 +263,22 @@ final class ChatAttachmentUploadCommand {
     required this.conversationId,
     required this.draft,
     required this.idempotencyKey,
+    required this.finalizeIdempotencyKey,
   }) : assert(conversationId != ''),
-       assert(idempotencyKey != '');
+       assert(idempotencyKey != ''),
+       assert(finalizeIdempotencyKey != ''),
+       assert(idempotencyKey != finalizeIdempotencyKey);
 
   final String conversationId;
   final ChatAttachmentDraft draft;
+
+  /// Intent id for preparing the upload.
   final String idempotencyKey;
+
+  /// Distinct intent id for finalising it. The shared upload core requires both
+  /// to be real identifiers, so a retry replays each step instead of creating a
+  /// second asset.
+  final String finalizeIdempotencyKey;
 }
 
 abstract interface class ChatRepository {

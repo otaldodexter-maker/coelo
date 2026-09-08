@@ -86,6 +86,8 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   int _attachmentGeneration = 0;
   ChatAttachmentDraft? _attachmentDraft;
   ChatAttachment? _attachmentAsset;
+  String? _attachmentRequestId;
+  String? _attachmentFinalizeRequestId;
   var _attachmentPhase = _AttachmentPhase.idle;
   String? _attachmentMessage;
   var _attachmentRetryable = false;
@@ -331,6 +333,8 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     _attachmentGeneration++;
     _attachmentDraft = null;
     _attachmentAsset = null;
+    _attachmentRequestId = null;
+    _attachmentFinalizeRequestId = null;
     _attachmentPhase = _AttachmentPhase.idle;
     _attachmentMessage = null;
     _attachmentRetryable = false;
@@ -375,6 +379,8 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     setState(() {
       _attachmentDraft = draft;
       _attachmentAsset = null;
+      _attachmentRequestId = _requestId();
+      _attachmentFinalizeRequestId = _requestId();
       _attachmentPhase = _AttachmentPhase.uploading;
       _attachmentMessage = null;
     });
@@ -392,7 +398,8 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         ChatAttachmentUploadCommand(
           conversationId: conversationId,
           draft: draft,
-          idempotencyKey: _requestId(),
+          idempotencyKey: _attachmentRequestId ?? _requestId(),
+          finalizeIdempotencyKey: _attachmentFinalizeRequestId ?? _requestId(),
         ),
       );
       if (!_isCurrentAttachment(generation, requestedRepository, conversationId)) return;
