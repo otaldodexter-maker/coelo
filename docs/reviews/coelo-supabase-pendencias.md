@@ -30,6 +30,8 @@ Este é o estado operacional atual. O histórico integral anterior está em [arq
 
 ## Checkpoint R01 — 15:00 (consolidado 2026-09-08T15:02:23-03:00)
 
+Publicação verificada às2026-09-08T15:04:03-03:00: push atômico + ls-remote confirmaram **origin/dev=e564d33991d41bf9ccd6c56e513469658b64552d**, com os quatro lotes de cliente revistos e este checkpoint. Não inclui candidatos SQL. C00 também estava nesse SHA no push; registro posterior pode avançar só documentação C00. Originaldev84985b54 preservado; nenhum deploy/produção certificado. Este recibo prevalece sobre os estados anteriores de push pendente.
+
 Fonte `etapa-2-operacao/reports/R01-checkpoint-1500.md` e JSON de métricas/IDs/critérios/evidências. C00 único escritor. Sincronizado C01/r24 (14:50), C02/r20 (14:49:32), C03/r5 (recebido14:53), C04/r7 (última evidência14:38), C05/r5 (14:55:16). Deltas pós-r20 C02 recebidos por mensagem estão identificados como ainda não consolidados/testados.
 
 Verificação parcial FE91/219 (83/194ativas,8/22adiadas,0/3gates); BE15/212 (12IDs com SQL local;0runtime remoto), com7N/A. Conclusão FE0/219,BE0/212,E2E0/187: nenhum ID novo certificado, sem percentual de implementação. Testes de uma parte não substituem aceites integrais; pending-verification não significa ausência de implementação.

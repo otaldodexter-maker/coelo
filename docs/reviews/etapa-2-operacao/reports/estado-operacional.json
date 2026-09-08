@@ -21,10 +21,12 @@
     },
     {
       "id": "2026-09-08T15:00:00-03:00-checkpoint",
-      "status": "report-written-publication-pending",
+      "status": "report-published",
       "actual_started_at": "2026-09-08T14:58:56-03:00",
       "report": "reports/R01-checkpoint-1500.md",
-      "actual_report_written_at": "2026-09-08T15:02:23-03:00"
+      "actual_report_written_at": "2026-09-08T15:02:23-03:00",
+      "delivery_sha": "e564d33991d41bf9ccd6c56e513469658b64552d",
+      "actual_published_at": "2026-09-08T15:04:03-03:00"
     }
   ],
   "executors": {
@@ -313,13 +315,13 @@
       "executor": "C01",
       "revision": 19,
       "sha": "fc09ffddb3817055696099460242335c5c1afc01",
-      "status": "integrated-C00;tests-pass;pending-dev"
+      "status": "delivered-origin-dev;not-certified"
     },
     {
       "executor": "C01",
       "revision": 20,
       "sha": "ec442c4ceedd958304dac79c580f4017090471e6",
-      "status": "integrated-C00;tests-pass;pending-dev"
+      "status": "delivered-origin-dev;not-certified"
     },
     {
       "executor": "C01",
@@ -367,7 +369,7 @@
       "executor": "C04",
       "revision": 5,
       "sha": "93a1536db54291b3443fa4b6f4396e0dd76dcf44",
-      "status": "integrated-C00;tests-pass;pending-dev"
+      "status": "delivered-origin-dev;not-certified"
     },
     {
       "executor": "C04",
@@ -650,55 +652,59 @@
       "revision": 19,
       "source": "fc09ffdd",
       "destination": "16052b51",
-      "status": "integrated-C00;tests-pass;pending-dev",
-      "report": "reports/R01-checkpoint-1500.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-checkpoint-1500.md",
+      "delivery_sha": "e564d33991d41bf9ccd6c56e513469658b64552d"
     },
     {
       "executor": "C01",
       "revision": 20,
       "source": "ec442c4c",
       "destination": "4436174e",
-      "status": "integrated-C00;tests-pass;pending-dev",
-      "report": "reports/R01-checkpoint-1500.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-checkpoint-1500.md",
+      "delivery_sha": "e564d33991d41bf9ccd6c56e513469658b64552d"
     },
     {
       "executor": "C03",
       "revision": 4,
       "source": "1bfdde2f",
       "destination": "aa960d54",
-      "status": "integrated-C00;tests-pass;pending-dev",
-      "report": "reports/R01-checkpoint-1500.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-checkpoint-1500.md",
+      "delivery_sha": "e564d33991d41bf9ccd6c56e513469658b64552d"
     },
     {
       "executor": "C04",
       "revision": 5,
       "source": "93a1536d",
       "destination": "c3ce3127",
-      "status": "integrated-C00;tests-pass;pending-dev",
-      "report": "reports/R01-checkpoint-1500.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-checkpoint-1500.md",
+      "delivery_sha": "e564d33991d41bf9ccd6c56e513469658b64552d"
     }
   ],
   "last_delta_processed_at": "2026-09-08T15:02:23-03:00",
   "coordinator_next_steps": [
-    "Review C02 handlers and C04 client lots; keep WIP separate",
-    "Prepare nominal Auth personas packet using read-only catalog evidence; no remote mutation authorization",
-    "Await C03 local replay release before C02 XLSX replay",
-    "Reconcile next measured ID set at15:00; no inferred completion",
-    "Next periodic compact poll14:30; no redundant status messages"
+    "Analyze C02r21 minimum upload proposal4files and Locais catalog-purpose gap",
+    "Replay XLSX with fixture fix after checkpoint;no active lease",
+    "Review/integrate queue C04/C05 and C01r23/r24;root release required",
+    "Prepare concrete Auth personas package, not yet authorized remotely",
+    "Next compact poll15:30 and formal report17:40; preserve closing09/09"
   ],
   "local_replay_lease": {
     "executor": "C00",
     "issued_at": "2026-09-08T14:53:11-03:00",
     "scope": "XLSX fixed55a457fa+14a1bcbe helper-only;64asserts",
-    "release": "C00 released after cleanup verified14:55",
+    "release": "C00 released after cleanup14:55;no local replay running",
     "remote": false,
     "previous_release": "C03 canonical35PASS; released14:52",
     "result": "49PASS then fixture lifecycle abort;overallFAIL"
   },
   "last_delivery": {
     "branch": "origin/dev",
-    "sha": "d4924a2c34eb9cbb90e20caf8d4f90fb0215f9f6",
-    "verified_at": "2026-09-08T14:35:41-03:00",
+    "sha": "e564d33991d41bf9ccd6c56e513469658b64552d",
+    "verified_at": "2026-09-08T15:04:03-03:00",
     "method": "atomic fast-forward push + ls-remote",
     "original_local_dev": "84985b5485247df6a8dc7270e33d18601aca0421; dirty checkout preserved",
     "deploy": "not executed by C00; production state not verified"

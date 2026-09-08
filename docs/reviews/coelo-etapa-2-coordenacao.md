@@ -147,6 +147,9 @@ Lotes C0016052b51/4436174e/aa960d54:61/61 testes; c3ce3127:37/37 diretórios. An
 
 C04 cria Locais no cliente (create_v2 já existe no candidato), edição/persistência/replay restantes; C05 card375 preserva alvo48 e devolve componente central sem alterações. Goldens novos/antigos aguardam revisão nominal. Contrato mínimo de leitura/lifetime publicado; upload/HTTP, decoder, XLSX completo e cenários Auth reais permanecem abertos. Risco da janela8dias elevado, ETA total desconhecida; menor ação: finalizar contrato mínimo de upload/pacote Auth revisável e reduzir fila de integração antes da UI real. Não somar tempos paralelos.
 
+
+Publicação verificada às2026-09-08T15:04:03-03:00: push atômico + ls-remote confirmaram **origin/dev=e564d33991d41bf9ccd6c56e513469658b64552d**, com os quatro lotes de cliente revistos e este checkpoint. Não inclui candidatos SQL. C00 também estava nesse SHA no push; registro posterior pode avançar só documentação C00. Originaldev84985b54 preservado; nenhum deploy/produção certificado. Este recibo prevalece sobre os estados anteriores de push pendente.
+
 ## Histórico preservado — anterior à R01
 
 ## Finalidade
