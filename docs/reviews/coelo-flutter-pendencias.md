@@ -14,6 +14,11 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização01:59: parser de metadados Cardápios `cbdc90c3` e controles do
+  seletor `845f461a` integrados;48/48 serialização/wizard e analyzer2 no destino.
+  CamelCase canônico com fallback snake_case preservado; seleção não prova
+  persistência/autorização. Roundtrip payload e96aed ainda aguardando integração.
+
 - Atualização01:55: Care `f245e989` impede cinco escritas iniciadas após
   dispose; Chat `e363f9ee`/`ad18af87` protege retry e fechamento da rota própria.
   Destino87/87 nos três arquivos focais e analyzer2 PASS. Regras clínicas,
