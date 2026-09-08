@@ -67,7 +67,9 @@ final class _FormsOverviewPageState extends State<FormsOverviewPage> {
   @override
   void didUpdateWidget(covariant FormsOverviewPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.formId != widget.formId || !identical(oldWidget.api, widget.api)) {
+    if (oldWidget.formId != widget.formId ||
+        !identical(oldWidget.api, widget.api) ||
+        oldWidget.development != widget.development) {
       unawaited(_load());
     }
   }
@@ -79,6 +81,7 @@ final class _FormsOverviewPageState extends State<FormsOverviewPage> {
   }
 
   Future<void> _load() async {
+    final generation = ++_loadGeneration;
     if (widget.development) {
       if (!mounted) return;
       setState(() {
@@ -89,15 +92,15 @@ final class _FormsOverviewPageState extends State<FormsOverviewPage> {
     }
     final api = widget.api;
     final formId = widget.formId;
-    final generation = ++_loadGeneration;
     if (api == null) {
       if (!mounted || generation != _loadGeneration) return;
-      setState(
-        () => _failure = const FormApiException(
+      setState(() {
+        _overview = null;
+        _failure = const FormApiException(
           FormApiFailureKind.unavailable,
           'O serviço de Formulários não está disponível.',
-        ),
-      );
+        );
+      });
       return;
     }
     setState(() {
@@ -106,14 +109,28 @@ final class _FormsOverviewPageState extends State<FormsOverviewPage> {
     });
     try {
       final result = await api.getOverview(formId);
-      if (_isCurrentLoad(generation, api, formId)) setState(() => _overview = result);
+      if (!_isCurrentLoad(generation, api, formId)) return;
+      if (result.definition.id.toLowerCase() != formId.toLowerCase()) {
+        throw const FormatException('Overview does not match the requested form.');
+      }
+      setState(() => _overview = result);
     } on FormApiException catch (error) {
       if (_isCurrentLoad(generation, api, formId)) setState(() => _failure = error);
+    } on Object {
+      if (_isCurrentLoad(generation, api, formId)) {
+        setState(
+          () => _failure = const FormApiException(
+            FormApiFailureKind.unavailable,
+            'Não foi possível carregar os dados do formulário.',
+          ),
+        );
+      }
     }
   }
 
   bool _isCurrentLoad(int generation, FormsApi api, String formId) =>
       mounted &&
+      !widget.development &&
       generation == _loadGeneration &&
       identical(api, widget.api) &&
       formId == widget.formId;

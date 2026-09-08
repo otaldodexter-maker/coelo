@@ -123,6 +123,106 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
   });
 
+  Widget page(FormsApi? api, {bool development = false}) => MaterialApp(
+    theme: CoeloTheme.light,
+    home: Scaffold(
+      body: FormsOverviewPage(api: api, formId: 'form-dev-02', development: development),
+    ),
+  );
+
+  testWidgets('overview rejects a different form and retries the requested ID', (tester) async {
+    final api = _OrderedOverviewApi();
+    await tester.pumpWidget(page(api));
+    api.forId('form-dev-02').complete(_overview('foreign-form', 'Conteúdo de outro formulário'));
+    await tester.pumpAndSettle();
+    expect(find.text('Conteúdo de outro formulário'), findsNothing);
+    expect(find.byKey(const Key('forms-overview-metrics')), findsNothing);
+    expect(find.text('Não foi possível carregar o formulário'), findsOneWidget);
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pump();
+    api.forId('form-dev-02').complete(_overview('form-dev-02', 'Formulário solicitado'));
+    await tester.pumpAndSettle();
+    expect(find.text('Formulário solicitado'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('unexpected overview failure is contained and retry recovers', (tester) async {
+    final api = _OrderedOverviewApi();
+    await tester.pumpWidget(page(api));
+    api.forId('form-dev-02').completeError(StateError('Sensitive backend detail'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.textContaining('Sensitive backend detail'), findsNothing);
+    expect(find.text('Não foi possível carregar o formulário'), findsOneWidget);
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pump();
+    api.forId('form-dev-02').complete(_overview('form-dev-02', 'Recuperado'));
+    await tester.pumpAndSettle();
+    expect(find.text('Recuperado'), findsOneWidget);
+  });
+
+  for (final lateFailure in [false, true]) {
+    testWidgets(
+      'overview mode switch ignores late production ${lateFailure ? 'error' : 'content'}',
+      (tester) async {
+        final api = _OrderedOverviewApi();
+        await tester.pumpWidget(page(api));
+        final pending = api.forId('form-dev-02');
+        await tester.pumpWidget(page(api, development: true));
+        await tester.pumpAndSettle();
+        expect(find.text('Enquete rápida sobre transporte'), findsOneWidget);
+        if (lateFailure) {
+          pending.completeError(StateError('Obsolete failure'));
+        } else {
+          pending.complete(_overview('form-dev-02', 'Conteúdo anterior'));
+        }
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        expect(find.text('Enquete rápida sobre transporte'), findsOneWidget);
+        expect(find.text('Conteúdo anterior'), findsNothing);
+
+        await tester.pumpWidget(page(api));
+        await tester.pump();
+        expect(find.text('Enquete rápida sobre transporte'), findsNothing);
+        expect(find.byKey(const Key('forms-overview-metrics')), findsNothing);
+        expect(api.forId('form-dev-02'), isNot(same(pending)));
+        api.forId('form-dev-02').complete(_overview('form-dev-02', 'Nova leitura autorizada'));
+        await tester.pumpAndSettle();
+        expect(find.text('Nova leitura autorizada'), findsOneWidget);
+      },
+    );
+  }
+
+  testWidgets('replacing the API for the same form cannot display the old authorized result', (
+    tester,
+  ) async {
+    final oldApi = _OrderedOverviewApi();
+    final newApi = _OrderedOverviewApi();
+    await tester.pumpWidget(page(oldApi));
+    await tester.pumpWidget(page(newApi));
+    newApi
+        .forId('form-dev-02')
+        .completeError(
+          const FormApiException(FormApiFailureKind.unauthorized, 'Sem acesso ao contexto atual.'),
+        );
+    await tester.pumpAndSettle();
+    oldApi.forId('form-dev-02').complete(_overview('form-dev-02', 'Dados do contexto anterior'));
+    await tester.pumpAndSettle();
+    expect(find.text('Acesso não autorizado'), findsOneWidget);
+    expect(find.text('Dados do contexto anterior'), findsNothing);
+    expect(find.text('Tentar novamente'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('unexpected result after overview disposal is ignored', (tester) async {
+    final api = _OrderedOverviewApi();
+    await tester.pumpWidget(page(api));
+    await tester.pumpWidget(const SizedBox.shrink());
+    api.forId('form-dev-02').completeError(StateError('Obsolete failure'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('route A cannot overwrite route B when responses finish out of order', (
     tester,
   ) async {
