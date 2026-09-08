@@ -279,6 +279,7 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
           ),
         ),
       );
+      if (!mounted) return;
       if (reload == true) await _reloadReferencePreservingDraft();
     } on AccessProfileException catch (error) {
       if (mounted) {
