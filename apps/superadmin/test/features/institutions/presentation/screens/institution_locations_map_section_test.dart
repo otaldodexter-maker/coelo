@@ -1,6 +1,7 @@
 import 'package:coelo_domain/locations.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
+import 'package:coelo_superadmin/features/institutions/domain/institution_record.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/screens/institution_form_page.dart';
 import 'package:coelo_superadmin/features/locations/domain/location_catalog_reader.dart';
 import 'package:coelo_superadmin/features/locations/presentation/locations_map_section.dart';
@@ -120,13 +121,27 @@ void main() {
   });
 
   testWidgets('editing an institution reads its own catalog in the address step', (tester) async {
+    // This test used to open an id the fake repository does not hold. The form
+    // rendered not-found, the section never mounted, and the assertion was an
+    // `every` over an empty list - true, and evidence of nothing.
+    //
+    // The demo records are keyed by slugs like demo-institution-aurora, and the
+    // form refuses to build a catalog scope from anything that is not a real
+    // identifier - correctly, since a malformed owner must never become a read.
+    // So exercising the editing path at all needs a record whose id is one.
     await tester.binding.setSurfaceSize(const Size(1440, 1400));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final reader = _RecordingReader();
     await tester.pumpWidget(
       app(
         InstitutionFormPage(
-          repository: FakeInstitutionDirectoryRepository(),
+          repository: FakeInstitutionDirectoryRepository(
+            records: [
+              InstitutionRecord.fromDirectoryItem(
+                demoInstitutionDirectoryItems.first,
+              ).copyWith(id: _institutionA),
+            ],
+          ),
           institutionId: _institutionA,
           logout: _logout,
           onCancel: () {},
@@ -137,14 +152,20 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await goToAddressStep(tester);
 
-    // The fake repository has no record with this id, so the form reports its
-    // own not-found state; what matters here is that a malformed owner never
-    // becomes a catalog read.
+    final section = find.byType(LocationsMapSection);
+    await tester.ensureVisible(section);
+    await tester.pumpAndSettle();
+    expect(section, findsOneWidget);
+    expect(reader.directories, isNotEmpty);
     expect(
       reader.directories.every((request) => request.scope.institutionId == _institutionA),
       isTrue,
     );
+    // An editing form has an owner, so the placeholder that stands in for a
+    // missing one must be gone.
+    expect(find.byKey(const Key('locations-map-section-before-owner')), findsNothing);
   });
 
   testWidgets('a malformed institution id never becomes a catalog read', (tester) async {

@@ -24,6 +24,7 @@ final class UnitDirectoryStates extends StatelessWidget {
       ),
       UnitDirectoryLoadState.failure => _withCreateAction(
         _MessageCard(
+          key: const Key('unit-directory-failure'),
           icon: Icons.error_outline,
           message: 'Não foi possível carregar as unidades. Tente novamente.',
           actionLabel: 'Tentar novamente',
@@ -31,17 +32,20 @@ final class UnitDirectoryStates extends StatelessWidget {
         ),
       ),
       UnitDirectoryLoadState.unauthorized => const _MessageCard(
+        key: Key('unit-directory-unauthorized'),
         icon: Icons.lock_outline,
         message: 'Você não tem permissão para ver as unidades.',
       ),
       UnitDirectoryLoadState.empty => _withCreateAction(
         const _MessageCard(
+          key: Key('unit-directory-empty'),
           icon: Icons.apartment_outlined,
           message: 'Ainda não há unidades cadastradas.',
         ),
       ),
       UnitDirectoryLoadState.noResults => _withCreateAction(
         const _MessageCard(
+          key: Key('unit-directory-no-results'),
           icon: Icons.search_off_outlined,
           message: 'Nenhuma unidade encontrada com estes filtros.',
         ),
@@ -61,7 +65,17 @@ final class UnitDirectoryStates extends StatelessWidget {
 }
 
 final class _MessageCard extends StatelessWidget {
-  const _MessageCard({required this.icon, required this.message, this.actionLabel, this.onAction});
+  // Keyed so each state has a selector that a copy change cannot break. Every
+  // test of these states was bound to the Portuguese text, which meant one
+  // wording change would have broken six of them at once and left the actions
+  // with nothing stable to point at.
+  const _MessageCard({
+    required this.icon,
+    required this.message,
+    this.actionLabel,
+    this.onAction,
+    super.key,
+  });
 
   final IconData icon;
   final String message;
