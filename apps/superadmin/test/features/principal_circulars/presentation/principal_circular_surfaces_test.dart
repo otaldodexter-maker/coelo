@@ -8,6 +8,170 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  Future<void> pumpProfile(
+    WidgetTester tester,
+    _Repository repository, {
+    CircularScope scope = const CircularScope(institutionId: 'institution-1'),
+    ValueChanged<String>? onOpen,
+  }) => tester.pumpWidget(
+    MaterialApp(
+      home: Scaffold(
+        body: PrincipalProfileCircularsTab(
+          repository: repository,
+          scope: scope,
+          onOpen: onOpen ?? (_) {},
+        ),
+      ),
+    ),
+  );
+
+  testWidgets('profile clears items and cursor when repository changes', (tester) async {
+    final first = _Repository(
+      () async => PrincipalCursorPage(
+        items: [_summary],
+        nextCursor: CircularCursor(publishedAt: DateTime.utc(2026), itemId: 'old-cursor'),
+      ),
+    );
+    final pending = Completer<PrincipalCursorPage<CircularSummary>>();
+    final second = _Repository(() => pending.future);
+    await pumpProfile(tester, first);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('profile-circular-circular-1')), findsOneWidget);
+    await pumpProfile(tester, second);
+    expect(find.byKey(const Key('profile-circular-circular-1')), findsNothing);
+    expect(second.cursors, [null]);
+    pending.complete(const PrincipalCursorPage(items: [], nextCursor: null));
+    await tester.pumpAndSettle();
+    expect(find.text('Nenhuma Circular publicada por aqui.'), findsOneWidget);
+  });
+
+  testWidgets('equivalent profile scope does not reload and pagination is single flight', (
+    tester,
+  ) async {
+    final pending = Completer<PrincipalCursorPage<CircularSummary>>();
+    var calls = 0;
+    final repository = _Repository(
+      () => ++calls == 1
+          ? Future.value(
+              PrincipalCursorPage(
+                items: [_summary],
+                nextCursor: CircularCursor(publishedAt: DateTime.utc(2026), itemId: 'next'),
+              ),
+            )
+          : pending.future,
+    );
+    await pumpProfile(tester, repository, scope: CircularScope(institutionId: 'institution-1'));
+    await tester.pumpAndSettle();
+    await pumpProfile(tester, repository, scope: CircularScope(institutionId: 'institution-1'));
+    await tester.pumpAndSettle();
+    expect(calls, 1);
+    final loadMore = tester
+        .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Carregar mais'))
+        .onPressed!;
+    loadMore();
+    loadMore();
+    expect(calls, 2);
+    pending.complete(const PrincipalCursorPage(items: [], nextCursor: null));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('profile-circular-circular-1')), findsOneWidget);
+  });
+
+  testWidgets('pagination denial closes profile preview and cannot reload from stale callback', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.reset);
+    final pending = Completer<PrincipalCursorPage<CircularSummary>>();
+    var calls = 0;
+    final repository = _Repository(
+      () => ++calls == 1
+          ? Future.value(
+              PrincipalCursorPage(
+                items: [_summary],
+                nextCursor: CircularCursor(publishedAt: DateTime.utc(2026), itemId: 'next'),
+              ),
+            )
+          : pending.future,
+    );
+    final opened = <String>[];
+    await pumpProfile(tester, repository, onOpen: opened.add);
+    await tester.pumpAndSettle();
+    final loadMore = tester
+        .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Carregar mais'))
+        .onPressed!;
+    loadMore();
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('profile-circular-circular-1')));
+    await tester.pumpAndSettle();
+    final read = tester
+        .widget<FilledButton>(find.byKey(const Key('principal-circular-preview-read')))
+        .onPressed!;
+    pending.completeError(const CircularUnauthorized());
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('principal-circular-preview-dialog')), findsNothing);
+    expect(find.text('Você não tem acesso a estas Circulares.'), findsOneWidget);
+    read();
+    loadMore();
+    await tester.pumpAndSettle();
+    expect(calls, 2);
+    expect(opened, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final fails in [false, true]) {
+    testWidgets('profile ignores old pending page after scope changes: failure=$fails', (
+      tester,
+    ) async {
+      final pending = Completer<PrincipalCursorPage<CircularSummary>>();
+      var calls = 0;
+      final repository = _Repository(
+        () => ++calls == 1
+            ? pending.future
+            : Future.value(const PrincipalCursorPage(items: [], nextCursor: null)),
+      );
+      await pumpProfile(tester, repository);
+      await pumpProfile(
+        tester,
+        repository,
+        scope: const CircularScope(institutionId: 'institution-2'),
+      );
+      await tester.pump();
+      if (fails) {
+        pending.completeError(const CircularUnauthorized());
+      } else {
+        pending.complete(PrincipalCursorPage(items: [_summary], nextCursor: null));
+      }
+      await tester.pumpAndSettle();
+      expect(calls, 2);
+      expect(find.byKey(const Key('profile-circular-circular-1')), findsNothing);
+      expect(find.text('Nenhuma Circular publicada por aqui.'), findsOneWidget);
+    });
+  }
+
+  testWidgets('profile scope swap closes preview and blocks captured read', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.reset);
+    final first = _Repository(() async => PrincipalCursorPage(items: [_summary], nextCursor: null));
+    final second = _Repository(() async => const PrincipalCursorPage(items: [], nextCursor: null));
+    final opened = <String>[];
+    await pumpProfile(tester, first, onOpen: opened.add);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('profile-circular-circular-1')));
+    await tester.pumpAndSettle();
+    final read = tester
+        .widget<FilledButton>(find.byKey(const Key('principal-circular-preview-read')))
+        .onPressed!;
+    await pumpProfile(tester, second, onOpen: opened.add);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('principal-circular-preview-dialog')), findsNothing);
+    read();
+    await tester.pumpAndSettle();
+    expect(opened, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('profile tabs preserve Acontece Momentos Circulares Sobre order', (tester) async {
     await tester.binding.setSurfaceSize(const Size(375, 240));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -151,12 +315,17 @@ final _summary = CircularSummary(
 final class _Repository implements CircularRepository {
   _Repository(this.list);
   final Future<PrincipalCursorPage<CircularSummary>> Function() list;
+  final cursors = <CircularCursor?>[];
   @override
   Future<PrincipalCursorPage<CircularSummary>> listProfile(
     CircularScope scope, {
     CircularCursor? cursor,
     int limit = 20,
-  }) => list();
+  }) {
+    cursors.add(cursor);
+    return list();
+  }
+
   @override
   Future<CircularDraft?> loadDraft(CircularScope scope) => throw UnimplementedError();
   @override
