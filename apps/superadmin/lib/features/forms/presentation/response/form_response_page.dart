@@ -252,6 +252,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   bool _review = false;
   bool _saving = false;
   int _loadGeneration = 0;
+  int _answerRevision = 0;
 
   @override
   void initState() {
@@ -318,6 +319,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         _answers
           ..clear()
           ..addAll(draft.answers);
+        _pruneHiddenAnswers();
         _state = draft.status == FormResponseDraftStatus.submitted
             ? _ProductionResponseState.submitted
             : occurrence.canEdit
@@ -406,6 +408,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
 
   Widget _responseForm(BuildContext context) {
     final occurrence = _occurrence!;
+    final visibleItemIds = _visibleItemIds;
     return Form(
       key: _formKey,
       child: Column(
@@ -427,7 +430,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
             ],
             const SizedBox(height: CoeloSpacing.space3),
             for (final item in section.items)
-              if (_isVisible(item)) ...[
+              if (visibleItemIds.contains(item.id)) ...[
                 _itemField(context, item),
                 const SizedBox(height: CoeloSpacing.space4),
               ],
@@ -491,7 +494,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         children: [
           for (final section in _occurrence!.version.sections)
             for (final item in section.items)
-              if (item.kind != FormItemKind.information)
+              if (item.kind != FormItemKind.information && _isVisible(item))
                 if (_answers[item.id] case final FormAnswer answer)
                   Padding(
                     padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
@@ -631,25 +634,57 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     );
   }
 
-  bool _isVisible(FormItem item) => item.conditions.every((condition) {
-    final answer = _answers[condition.sourceItemId]?.value;
-    return switch ((condition.kind, answer)) {
-      (FormConditionKind.yesNo, FormYesNoValue(:final value)) => value == condition.expectedYesNo,
-      (FormConditionKind.choice, FormChoiceValue(:final optionIds)) =>
-        optionIds.intersection(condition.optionIds).isNotEmpty,
-      _ => false,
+  Set<String> get _visibleItemIds {
+    final items =
+        _occurrence?.version.sections.expand((section) => section.items).toList() ?? <FormItem>[];
+    final visible = {
+      for (final item in items)
+        if (item.conditions.isEmpty) item.id,
     };
-  });
+    var changed = true;
+    // Grow only from visible sources: hidden ancestors and malformed cycles
+    // cannot activate a branch using residual answers from an earlier state.
+    while (changed) {
+      changed = false;
+      final sourceAnswers = {
+        for (final item in items)
+          if (visible.contains(item.id) &&
+              item.kind != FormItemKind.information &&
+              _answers.containsKey(item.id))
+            item.id: _answers[item.id]!,
+      };
+      for (final item in items) {
+        if (!visible.contains(item.id) &&
+            const FormVisibilityEvaluator().isVisible(
+              conditions: item.conditions,
+              answers: sourceAnswers,
+            )) {
+          visible.add(item.id);
+          changed = true;
+        }
+      }
+    }
+    return visible;
+  }
+
+  bool _isVisible(FormItem item) => _visibleItemIds.contains(item.id);
+
+  void _pruneHiddenAnswers() {
+    final visible = _visibleItemIds;
+    _answers.removeWhere((id, _) => !visible.contains(id));
+  }
 
   String? _requiredMessage(FormItem item) =>
       item.isRequired && _answers[item.id] == null ? 'Esta resposta é obrigatória.' : null;
 
   void _setAnswer(FormItem item, FormAnswer? answer) {
+    _answerRevision++;
     if (answer == null) {
       _answers.remove(item.id);
     } else {
       _answers[item.id] = answer;
     }
+    _pruneHiddenAnswers();
   }
 
   void _setNumericAnswer(FormItem item, String raw) {
@@ -707,12 +742,13 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   }
 
   bool _validate() {
+    final visibleItemIds = _visibleItemIds;
     final unsupportedRequired = _occurrence!.version.sections
         .expand((section) => section.items)
         .any(
           (item) =>
               item.isRequired &&
-              _isVisible(item) &&
+              visibleItemIds.contains(item.id) &&
               (item.kind == FormItemKind.photo || item.kind == FormItemKind.gallery),
         );
     if (unsupportedRequired) {
@@ -744,6 +780,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     final occurrence = _occurrence;
     final draft = _draft;
     if (api == null || occurrence == null || draft == null) return;
+    final answerRevision = _answerRevision;
     setState(() {
       _saving = true;
       _message = null;
@@ -758,16 +795,24 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
             occurrenceId: occurrence.occurrence.id,
             responseId: draft.id,
             participationId: occurrence.participationId,
-            answers: _answers,
+            answers: const FormAnswerNormalizer().normalize(
+              answers: _answers,
+              visibleItemIds: _visibleItemIds,
+            ),
           ),
         ),
       );
       if (!_isCurrent(generation)) return;
       setState(() {
         _draft = updated;
-        _answers
-          ..clear()
-          ..addAll(updated.answers);
+        if (answerRevision == _answerRevision ||
+            submitted ||
+            updated.status == FormResponseDraftStatus.submitted) {
+          _answers
+            ..clear()
+            ..addAll(updated.answers);
+        }
+        _pruneHiddenAnswers();
         _review = false;
         _state = submitted || updated.status == FormResponseDraftStatus.submitted
             ? _ProductionResponseState.submitted

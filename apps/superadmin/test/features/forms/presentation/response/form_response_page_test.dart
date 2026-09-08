@@ -7,6 +7,212 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('submitted summary shows the confirmed receipt, not edits during submit', (
+    tester,
+  ) async {
+    final pending = Completer<void>();
+    final api = _ResponseApi(submitGate: pending.future);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FormResponsePage(api: api, occurrenceId: 'occurrence-1'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('form-response-item-item-1')), 'Confirmed answer');
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('form-response-submit')));
+    await tester.pump();
+    await tester.enterText(find.byKey(const Key('form-response-item-item-1')), 'Unconfirmed edit');
+    pending.complete();
+    await tester.pumpAndSettle();
+    expect(find.text('Resposta enviada'), findsOneWidget);
+    expect(find.textContaining('Confirmed answer'), findsOneWidget);
+    expect(find.textContaining('Unconfirmed edit'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final fromReceipt in [false, true]) {
+    testWidgets('residual hidden answers are removed from ${fromReceipt ? 'receipt' : 'load'}', (
+      tester,
+    ) async {
+      final residual = {
+        'root': FormAnswer.yesNo(itemId: 'root', value: false),
+        'leaf': FormAnswer.shortText(itemId: 'leaf', value: 'Residual hidden answer'),
+      };
+      final api = _ResponseApi(
+        initialAnswers: fromReceipt ? {'root': residual['root']!} : residual,
+        receiptAnswers: fromReceipt ? residual : null,
+        items: [
+          FormItem(
+            id: 'leaf',
+            kind: FormItemKind.shortText,
+            label: 'Leaf',
+            position: 0,
+            conditions: const [FormCondition.yesNo(sourceItemId: 'root', expected: true)],
+          ),
+          FormItem(id: 'root', kind: FormItemKind.yesNo, label: 'Root', position: 1),
+        ],
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: FormResponsePage(api: api, occurrenceId: 'occurrence-1'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      if (fromReceipt) {
+        await tester.tap(find.byKey(const Key('form-response-save-draft')));
+        await tester.pumpAndSettle();
+      }
+      expect(find.textContaining('Residual hidden answer'), findsNothing);
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Sim'));
+      await tester.pumpAndSettle();
+      final field = tester.widget<TextFormField>(find.byKey(const Key('form-response-item-leaf')));
+      expect(field.initialValue, isEmpty);
+      await tester.tap(find.byKey(const Key('form-response-save-draft')));
+      await tester.pumpAndSettle();
+      expect(api.saveCommand?.payload.answers.keys, ['root']);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('late branch save receipt preserves newer hidden-branch intent', (tester) async {
+    final pending = Completer<void>();
+    final api = _ResponseApi(
+      saveGate: pending.future,
+      items: [
+        FormItem(id: 'root', kind: FormItemKind.yesNo, label: 'Root', position: 0),
+        FormItem(
+          id: 'leaf',
+          kind: FormItemKind.shortText,
+          label: 'Leaf',
+          position: 1,
+          conditions: const [FormCondition.yesNo(sourceItemId: 'root', expected: true)],
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FormResponsePage(api: api, occurrenceId: 'occurrence-1'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Sim'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('form-response-item-leaf')), 'Obsolete branch');
+    await tester.tap(find.byKey(const Key('form-response-save-draft')));
+    await tester.pump();
+    expect(api.saveCommand?.payload.answers.keys, ['root', 'leaf']);
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Não'));
+    await tester.pump();
+    pending.complete();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('form-response-item-leaf')), findsNothing);
+    expect(tester.widget<ChoiceChip>(find.widgetWithText(ChoiceChip, 'Não')).selected, isTrue);
+    await tester.tap(find.byKey(const Key('form-response-save-draft')));
+    await tester.pumpAndSettle();
+    expect(api.saveCommand?.expectedVersion, 2);
+    expect(api.saveCommand?.payload.answers.keys, ['root']);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final nested in [false, true]) {
+    testWidgets('hidden branch values leave review and commands nested=$nested', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1000, 1400));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final api = _ResponseApi(
+        items: [
+          FormItem(id: 'root', kind: FormItemKind.yesNo, label: 'Root', position: 0),
+          if (nested)
+            FormItem(
+              id: 'middle',
+              kind: FormItemKind.yesNo,
+              label: 'Middle',
+              position: 1,
+              conditions: const [FormCondition.yesNo(sourceItemId: 'root', expected: true)],
+            ),
+          FormItem(
+            id: 'leaf',
+            kind: FormItemKind.shortText,
+            label: 'Leaf',
+            position: nested ? 2 : 1,
+            conditions: [
+              FormCondition.yesNo(sourceItemId: nested ? 'middle' : 'root', expected: true),
+            ],
+          ),
+        ],
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: FormResponsePage(api: api, occurrenceId: 'occurrence-1'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Sim').first);
+      await tester.pumpAndSettle();
+      if (nested) {
+        await tester.tap(find.widgetWithText(ChoiceChip, 'Sim').last);
+        await tester.pumpAndSettle();
+      }
+      await tester.enterText(
+        find.byKey(const Key('form-response-item-leaf')),
+        'Hidden sensitive answer',
+      );
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Não').first);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('form-response-item-leaf')), findsNothing);
+      await tester.tap(find.byKey(const Key('form-response-save-draft')));
+      await tester.pumpAndSettle();
+      expect(api.saveCommand?.payload.answers.keys, ['root']);
+      await tester.tap(find.byKey(const Key('form-response-review')));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Hidden sensitive answer'), findsNothing);
+      await tester.tap(find.byKey(const Key('form-response-submit')));
+      await tester.pumpAndSettle();
+      expect(api.submitCommand?.payload.answers.keys, ['root']);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('one matching branch condition is enough, consistent with the domain', (
+    tester,
+  ) async {
+    final api = _ResponseApi(
+      items: [
+        FormItem(
+          id: 'root',
+          kind: FormItemKind.multipleChoice,
+          label: 'Root',
+          position: 0,
+          options: const [
+            FormOption(id: 'a', label: 'A', position: 0),
+            FormOption(id: 'b', label: 'B', position: 1),
+          ],
+        ),
+        FormItem(
+          id: 'leaf',
+          kind: FormItemKind.shortText,
+          label: 'Leaf',
+          position: 1,
+          conditions: const [
+            FormCondition.choice(sourceItemId: 'root', optionIds: {'a'}),
+            FormCondition.choice(sourceItemId: 'root', optionIds: {'b'}),
+          ],
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FormResponsePage(api: api, occurrenceId: 'occurrence-1'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilterChip, 'A'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('form-response-item-leaf')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final imageKind in [FormItemKind.photo, FormItemKind.gallery]) {
     for (final visible in [false, true]) {
       testWidgets('$imageKind required attachment follows visible=$visible', (tester) async {
@@ -289,16 +495,24 @@ final class _ResponseApi implements FormsApi {
   _ResponseApi({
     this.loadGate,
     this.saveGate,
+    this.submitGate,
     this.label = 'Como foi o acolhimento?',
     this.kind = FormItemKind.shortText,
     this.conditionalImageKind,
+    this.items,
+    this.initialAnswers = const {},
+    this.receiptAnswers,
   });
 
   final Future<void>? loadGate;
   final Future<void>? saveGate;
+  final Future<void>? submitGate;
   final String label;
   final FormItemKind kind;
   final FormItemKind? conditionalImageKind;
+  final List<FormItem>? items;
+  final Map<String, FormAnswer> initialAnswers;
+  final Map<String, FormAnswer>? receiptAnswers;
   final List<String> requestedOccurrences = [];
   int openCalls = 0;
   FormCommand<FormResponseDraftPayload>? saveCommand;
@@ -329,18 +543,22 @@ final class _ResponseApi implements FormsApi {
             id: 'section-1',
             title: 'Cuidado',
             position: 0,
-            items: [
-              FormItem(id: 'item-1', kind: kind, label: label, position: 0, isRequired: true),
-              if (conditionalImageKind case final imageKind?)
-                FormItem(
-                  id: 'image-1',
-                  kind: imageKind,
-                  label: 'Conditional image',
-                  position: 1,
-                  isRequired: true,
-                  conditions: const [FormCondition.yesNo(sourceItemId: 'item-1', expected: true)],
-                ),
-            ],
+            items:
+                items ??
+                [
+                  FormItem(id: 'item-1', kind: kind, label: label, position: 0, isRequired: true),
+                  if (conditionalImageKind case final imageKind?)
+                    FormItem(
+                      id: 'image-1',
+                      kind: imageKind,
+                      label: 'Conditional image',
+                      position: 1,
+                      isRequired: true,
+                      conditions: const [
+                        FormCondition.yesNo(sourceItemId: 'item-1', expected: true),
+                      ],
+                    ),
+                ],
           ),
         ],
       ),
@@ -366,7 +584,7 @@ final class _ResponseApi implements FormsApi {
       id: command.payload.responseId,
       occurrenceId: command.payload.occurrenceId,
       status: FormResponseDraftStatus.draft,
-      answers: command.payload.answers,
+      answers: receiptAnswers ?? command.payload.answers,
       managementVersion: 2,
     );
   }
@@ -374,6 +592,7 @@ final class _ResponseApi implements FormsApi {
   @override
   Future<FormResponseDraft> submitResponse(FormCommand<FormResponseDraftPayload> command) async {
     submitCommand = command;
+    if (submitGate != null) await submitGate;
     return FormResponseDraft(
       id: 'response-1',
       occurrenceId: command.payload.occurrenceId,
@@ -399,7 +618,7 @@ final class _ResponseApi implements FormsApi {
     id: 'response-$occurrenceId',
     occurrenceId: occurrenceId,
     status: FormResponseDraftStatus.draft,
-    answers: const {},
+    answers: initialAnswers,
     managementVersion: version,
   );
 
