@@ -9,6 +9,296 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  Future<void> open(WidgetTester tester, _Api api, {String id = 'form-a'}) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: FormsEditorPage.authoring(authoringApi: api, formId: id),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  Finder title(String value) => find.byWidgetPredicate(
+    (widget) => widget is TextFormField && widget.controller?.text == value,
+  );
+
+  testWidgets('authoring autosave debounces edits but never saves hydration', (tester) async {
+    final api = _Api(manage: true);
+    await open(tester, api);
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.commands, isEmpty);
+    await tester.enterText(title('Authorized title'), 'First edit');
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.enterText(title('First edit'), 'Latest edit');
+    await tester.pump(const Duration(milliseconds: 799));
+    expect(api.commands, isEmpty);
+    await tester.pump(const Duration(milliseconds: 1));
+    await tester.pump();
+    expect(api.commands, hasLength(1));
+    expect(api.commands.single.payload.title, 'Latest edit');
+    expect(api.commands.single.expectedVersion, 1);
+    expect(find.text('Rascunho salvo.'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 3));
+    expect(api.commands, hasLength(1));
+  });
+
+  testWidgets('authoring autosave serializes edits made while a save is in flight', (tester) async {
+    final api = _Api(manage: true)..saveWait = Completer<void>();
+    await open(tester, api);
+    await tester.enterText(title('Authorized title'), 'First edit');
+    await tester.pump(const Duration(milliseconds: 800));
+    expect(api.commands, hasLength(1));
+    await tester.enterText(title('First edit'), 'Later edit');
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.commands, hasLength(1));
+    api.saveWait!.complete();
+    await tester.pump();
+    expect(find.text('Rascunho salvo.'), findsNothing);
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.commands, hasLength(2));
+    expect(api.commands.last.payload.title, 'Later edit');
+    expect(api.commands.last.expectedVersion, 2);
+    expect(api.commands.last.requestId, isNot(api.commands.first.requestId));
+    expect(find.text('Rascunho salvo.'), findsOneWidget);
+  });
+
+  testWidgets('authoring autosave observes structure and question edits', (tester) async {
+    final api = _Api(manage: true);
+    await open(tester, api);
+    await tester.tap(find.byTooltip('Duplicar seção'));
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.commands, hasLength(1));
+    expect(api.commands.single.payload.sections, hasLength(2));
+    final question = find
+        .byWidgetPredicate(
+          (widget) => widget is TextFormField && widget.controller?.text == 'Question A — cópia',
+        )
+        .first;
+    await tester.ensureVisible(question);
+    await tester.enterText(question, 'Changed question');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.commands, hasLength(2));
+    expect(api.commands.last.payload.sections.last.items.first.label, 'Changed question');
+  });
+
+  testWidgets('authoring autosave pauses during discard and does not save discarded edits', (
+    tester,
+  ) async {
+    final api = _Api(manage: true);
+    await open(tester, api);
+    await tester.enterText(title('Authorized title'), 'Discard me');
+    final cancel = find.widgetWithText(TextButton, 'Cancelar');
+    await tester.ensureVisible(cancel);
+    await tester.tap(cancel);
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.commands, isEmpty);
+    await tester.tap(find.widgetWithText(FilledButton, 'Descartar'));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.commands, isEmpty);
+    expect(find.text('Authorized title'), findsOneWidget);
+  });
+
+  for (final failure in [FormApiFailureKind.unavailable, FormApiFailureKind.conflict]) {
+    testWidgets('authoring autosave pauses after $failure until explicit save', (tester) async {
+      final api = _Api(manage: true)..saveFailure = failure;
+      await open(tester, api);
+      await tester.enterText(title('Authorized title'), 'Unconfirmed edit');
+      await tester.pump(const Duration(milliseconds: 800));
+      await tester.pump();
+      expect(api.commands, hasLength(1));
+      await tester.enterText(title('Unconfirmed edit'), 'Later edit');
+      await tester.pump(const Duration(seconds: 5));
+      expect(api.commands, hasLength(1));
+      expect(find.text('Rascunho salvo.'), findsNothing);
+      api.saveFailure = null;
+      final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+      await tester.ensureVisible(save);
+      await tester.tap(save);
+      await tester.pump();
+      expect(api.commands, hasLength(2));
+      expect(
+        identical(api.commands.first, api.commands.last),
+        failure == FormApiFailureKind.unavailable,
+      );
+      await tester.pump(const Duration(milliseconds: 800));
+      await tester.pump();
+      expect(api.commands.last.payload.title, 'Later edit');
+    });
+  }
+
+  for (final replacement in ['dispose', 'api', 'form']) {
+    testWidgets('authoring autosave cancels on $replacement before debounce', (tester) async {
+      final api = _Api(manage: true);
+      await open(tester, api);
+      await tester.enterText(title('Authorized title'), 'Obsolete edit');
+      if (replacement == 'dispose') {
+        await tester.pumpWidget(const SizedBox());
+      } else {
+        await open(
+          tester,
+          replacement == 'api' ? _Api(manage: true) : api,
+          id: replacement == 'form' ? 'new-form' : 'form-a',
+        );
+      }
+      await tester.pump(const Duration(seconds: 2));
+      expect(api.commands, isEmpty);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('manual save consumes pending autosave timer once', (tester) async {
+    final api = _Api(manage: true);
+    await open(tester, api);
+    await tester.enterText(title('Authorized title'), 'Manual edit');
+    final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.commands, hasLength(1));
+  });
+
+  testWidgets('authoring autosave ignores selection-only controller changes', (tester) async {
+    final api = _Api(manage: true);
+    await open(tester, api);
+    tester.widget<TextFormField>(title('Authorized title')).controller!.selection =
+        const TextSelection.collapsed(offset: 2);
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.commands, isEmpty);
+  });
+
+  testWidgets('authoring autosave resumes when discard is declined', (tester) async {
+    final api = _Api(manage: true);
+    await open(tester, api);
+    await tester.enterText(title('Authorized title'), 'Keep edit');
+    final cancel = find.widgetWithText(TextButton, 'Cancelar');
+    await tester.ensureVisible(cancel);
+    await tester.tap(cancel);
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.commands, isEmpty);
+    await tester.tap(find.text('Continuar editando'));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.commands.single.payload.title, 'Keep edit');
+  });
+
+  testWidgets('authoring autosave does not retry revoked capability', (tester) async {
+    final api = _Api(manage: true)..saveFailure = FormApiFailureKind.unauthorized;
+    await open(tester, api);
+    await tester.enterText(title('Authorized title'), 'Denied edit');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 5));
+    expect(api.commands, hasLength(1));
+    expect(find.text('Denied edit'), findsNothing);
+    expect(
+      tester
+          .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Salvar rascunho'))
+          .onPressed,
+      isNull,
+    );
+    await open(tester, _Api(manage: false));
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.commands, hasLength(1));
+  });
+
+  testWidgets('authoring autosave allows an incomplete quick poll draft', (tester) async {
+    final api = _Api(manage: true)..quickPoll = true;
+    await open(tester, api);
+    await tester.enterText(title('Authorized title'), 'Draft with two questions');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.commands, hasLength(1));
+    expect(api.commands.single.payload.kind, FormKind.quickPoll);
+    expect(api.commands.single.payload.sections.single.items, hasLength(2));
+  });
+
+  testWidgets('authoring autosave resumes dirty creation after slow catalog search', (
+    tester,
+  ) async {
+    final api = _Api(manage: true)..allowCatalog = true;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(body: FormsEditorPage.authoring(authoringApi: api)),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Institution 1'));
+    await tester.pumpAndSettle();
+    final name = find.byWidgetPredicate(
+      (widget) => widget is TextField && widget.decoration?.labelText == 'Nome do formulário',
+    );
+    await tester.enterText(name, 'New draft');
+    api.catalogWait = Completer<void>();
+    await tester.tap(find.text('Buscar instituições'));
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.commands, isEmpty);
+    api.catalogWait!.complete();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.commands, hasLength(1));
+    expect(api.commands.single.payload.title, 'New draft');
+  });
+
+  testWidgets('autosave retry replays a committed receipt after confirmation is lost', (
+    tester,
+  ) async {
+    final api = _Api(manage: true)..loseCommittedReceipt = true;
+    await open(tester, api);
+    await tester.enterText(title('Authorized title'), 'Committed edit');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.remoteVersion, 2);
+    expect(find.text('Rascunho salvo.'), findsNothing);
+    await tester.enterText(title('Committed edit'), 'Next edit');
+    await tester.pump(const Duration(seconds: 3));
+    expect(api.commands, hasLength(1));
+    final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pump();
+    expect(identical(api.commands.first, api.commands.last), isTrue);
+    expect(find.text('Rascunho salvo.'), findsNothing);
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.commands, hasLength(3));
+    expect(api.commands.last.expectedVersion, 2);
+    expect(api.remoteVersion, 3);
+    expect(find.text('Rascunho salvo.'), findsOneWidget);
+  });
+
+  testWidgets('autosave denial while delete dialog is open cannot remove local question', (
+    tester,
+  ) async {
+    final api = _Api(manage: true)..saveFailure = FormApiFailureKind.unauthorized;
+    await open(tester, api);
+    await tester.enterText(title('Authorized title'), 'Pending title');
+    final delete = find.byTooltip('Excluir pergunta').first;
+    await tester.ensureVisible(delete);
+    await tester.tap(delete);
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.commands, hasLength(1));
+    await tester.tap(find.widgetWithText(FilledButton, 'Excluir pergunta'));
+    await tester.pumpAndSettle();
+    api.saveFailure = null;
+    await tester.tap(find.text('Revalidar acesso'));
+    await tester.pumpAndSettle();
+    expect(find.text('Question A'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final replacement in ['api', 'page']) {
     testWidgets('retained institution callback cannot select after $replacement replacement', (
       tester,
@@ -338,11 +628,16 @@ final class _Api implements FormsAuthoringApi {
   final reads = <String>[];
   var catalogReads = 0;
   var failSave = false;
+  var quickPoll = false;
+  var loseCommittedReceipt = false;
+  var remoteVersion = 1;
+  final receipts = <String, FormDefinition>{};
   FormApiFailureKind? saveFailure;
   var allowCatalog = false;
   var singleCandidate = false;
   FormApiFailureKind? catalogFailure;
   Completer<void>? readWait;
+  Completer<void>? catalogWait;
   Completer<void>? saveWait;
   final commands = <FormCommand<FormDefinition>>[];
   @override
@@ -353,7 +648,7 @@ final class _Api implements FormsAuthoringApi {
       definition: FormDefinition(
         id: formId,
         institutionId: 'institution-a',
-        kind: FormKind.form,
+        kind: quickPoll ? FormKind.quickPoll : FormKind.form,
         identityMode: FormIdentityMode.identified,
         responseUnit: FormResponseUnit.person,
         title: 'Authorized title',
@@ -395,6 +690,7 @@ final class _Api implements FormsAuthoringApi {
     FormsAuthoringInstitutionQuery query,
   ) async {
     catalogReads++;
+    await catalogWait?.future;
     if (catalogFailure != null) throw FormApiException(catalogFailure!, 'Acesso negado');
     if (singleCandidate) {
       return FormsAuthoringInstitutionPage(
@@ -419,11 +715,23 @@ final class _Api implements FormsAuthoringApi {
   Future<FormDefinition> saveDraft(FormCommand<FormDefinition> command) async {
     commands.add(command);
     await saveWait?.future;
+    if (receipts[command.requestId] case final receipt?) return receipt;
+    if (loseCommittedReceipt && command.expectedVersion != remoteVersion) {
+      throw const FormApiException(FormApiFailureKind.conflict, 'Conflito de versão');
+    }
     if (saveFailure != null) throw FormApiException(saveFailure!, 'Acesso negado');
     if (failSave) throw const FormApiException(FormApiFailureKind.unavailable, 'Resposta incerta');
-    return FormDefinitionDto.fromJson({
+    final saved = FormDefinitionDto.fromJson({
       ...FormDefinitionDto.fromDomain(command.payload).toJson(),
       'management_version': command.expectedVersion + 1,
     }).toDomain();
+    if (loseCommittedReceipt) {
+      remoteVersion = saved.managementVersion;
+      receipts[command.requestId] = saved;
+      if (receipts.length == 1) {
+        throw const FormApiException(FormApiFailureKind.unavailable, 'Confirmação perdida');
+      }
+    }
+    return saved;
   }
 }
