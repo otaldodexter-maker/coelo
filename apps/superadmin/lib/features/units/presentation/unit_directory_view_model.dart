@@ -128,7 +128,9 @@ final class UnitDirectoryViewModel extends ChangeNotifier {
       if (version == _requestVersion) {
         _state = UnitDirectoryLoadState.unauthorized;
       }
-    } on Exception {
+      // Anything else, including an Error, has to reach the failure state: a
+      // load that throws and leaves the spinner on screen is a silent hang.
+    } on Object {
       if (version == _requestVersion) {
         _state = UnitDirectoryLoadState.failure;
       }
