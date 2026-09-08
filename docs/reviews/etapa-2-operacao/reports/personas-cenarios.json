@@ -1,0 +1,64 @@
+{
+  "source": "Owner R01; ADR0019; spec039",
+  "status": "scenario-manifest-only-not-provisioned",
+  "generated_at": "2026-09-08T12:19:18-03:00",
+  "environment": "local isolated first; remote production unapproved",
+  "auth_accounts_created": false,
+  "tenants_created": false,
+  "personas": [
+    {
+      "code": "R01-OWNER-SYN",
+      "realm": "internal",
+      "scope": "platform",
+      "purpose": "bootstrap e comandos aprovados, AAL1 vigente"
+    },
+    {
+      "code": "R01-OP-A",
+      "realm": "internal",
+      "scope": "institution A",
+      "purpose": "permitido em A; negar B"
+    },
+    {
+      "code": "R01-OP-B",
+      "realm": "internal",
+      "scope": "institution B",
+      "purpose": "permitido em B; negar A"
+    },
+    {
+      "code": "R01-NO-CAP",
+      "realm": "internal",
+      "scope": "institution A",
+      "purpose": "capability ausente"
+    },
+    {
+      "code": "R01-REVOKED",
+      "realm": "internal",
+      "scope": "institution A",
+      "purpose": "revogar sessão/link/membership em cenário isolado"
+    },
+    {
+      "code": "R01-GLOBAL",
+      "realm": "global",
+      "scope": "tenant A",
+      "purpose": "negar RPC interno; nunca vincular principal interno a People"
+    }
+  ],
+  "scenarios": [
+    "allowed A",
+    "allowed B",
+    "cross-tenant A->B/B->A",
+    "unknown/existing forged ID without oracle",
+    "missing capability",
+    "revoked session/auth link/membership",
+    "concurrent version/request-id replay",
+    "normal UI reload after write",
+    "media expired/revoked/invalid MIME/checksum",
+    "audit and cleanup"
+  ],
+  "authorization_required": [
+    "nominal production project and package",
+    "synthetic scenario and cleanup",
+    "time window and one executor"
+  ],
+  "secrets": "Generate only in ignored environment secret store, never in this manifest"
+}

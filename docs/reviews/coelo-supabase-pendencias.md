@@ -28,6 +28,14 @@ Este é o estado operacional atual. O histórico integral anterior está em [arq
 - /dev usa fixtures; sem /dev usa composição produtiva. Todo remoto é produção. MFA interno aceita AAL1 conforme ADR 0019. Admin, Principal e Site estão fora deste recorte de implementação.
 - ETA por ação: ainda não recalculada por dependências e execução; não somar estimativas antigas. A janela 36–60 h do plano anterior não é compromisso validado.
 
+## Sincronização R01 — C00/I001
+
+Writer único: `01a0818b-2a34-7fa3-a9aa-f191fc91cc8d` na worktree C00. Baseline recuperado `6cb8ba15bae15f5a6129b0db6e740a66f8f82b3f`; sincronizado em `2026-09-08T12:19:18-03:00` com o protocolo/ownership, sem nova certificação. C01–C05: revisão recebida0/integrada0; nenhuma evidência R01 de execução recebida. A última evidência histórica continua a indicada por ação; preparação não é reauditoria runtime.
+
+FE, BE e E2E têm aceites independentes conforme ordem do Owner/skills atuais. Referências remotas/E2E nas pendências FE legadas indicam dependência integrada, não requisito adicional para certificar o cliente. Registrar crosswalk nominal ao revisar cada ação. Contradições de Planos/Catálogo e denominadores históricos estão em `docs/open-questions.md`, seção R01; nenhuma mudança silenciosa de ID/aplicabilidade.
+
+Ambiente R01 atualizado em `2026-09-08T12:20:45-03:00`: Docker29.7.2 responde pela CLI, sem containers ativos. Falha inicial de engine superada; replays/ações continuam sem nova prova.
+
 ## Pacotes preservados e gates transversais
 
 - Agenda: reader f8a04b3a/controller 4daeafb9 integrados. View ca4c82ab preservado; tentativa bbb9379d revertida por fe6f6b51 após quatro diferenças golden. Corrigir somente o delta visual antes de reintegrar.

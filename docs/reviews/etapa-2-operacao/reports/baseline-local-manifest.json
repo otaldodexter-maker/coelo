@@ -1,0 +1,879 @@
+{
+  "source": "Owner R01; approved skills audit 2026-09-08; existing worktree",
+  "status": "preserved-selective-copy",
+  "generated_at": "2026-09-08T12:07:37.506845-03:00",
+  "base": "84985b5485247df6a8dc7270e33d18601aca0421",
+  "files": [
+    {
+      "path": ".agents/skills/coelo-flutter-review/SKILL.md",
+      "sha256": "95e9369f27275fb7febe6c61c13591af64d1642a0dc29f683e04ea683b1f8b2e",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-flutter-supabase-review/SKILL.md",
+      "sha256": "bc6af70d089913811ed370af05d6ce213a412c1fd26d64118a29168fd889a87c",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-flutter-supabase-review/references/review-scope.md",
+      "sha256": "830eec95ef8c7af131b343dea14131685b474b8987d2053eee46968eb0003ac5",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-knowledge/SKILL.md",
+      "sha256": "9af3b0a600fdfd4034ca2eec75deb7071ce80532367dc20816e470768daa7dd3",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-knowledge/scripts/Search-CoeloKnowledge.ps1",
+      "sha256": "64c3d5e775f4daa297932170d93fdd5b77aaebe652a28ce4628b0a907ec79229",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-knowledge/scripts/Test-CoeloKnowledge.ps1",
+      "sha256": "50378f02c95706ccec3671544a9cec521c7dfe7c7d827e51298318c55674bea3",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-knowledge/scripts/coelo_knowledge.py",
+      "sha256": "6ed85f789a20f1691d872c9281c9aea782bb2df8eb69f397ef950db72be34839",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-knowledge/scripts/requirements.txt",
+      "sha256": "0969da99a0bc2a1b71ed50584560f4588a37567ac63af3ddbaf3c4617ca5621a",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-knowledge/tests/Test-CoeloKnowledge.ps1",
+      "sha256": "9ab356290b08c5bd0143cb38a3f9385b1855a7f3494860d5a91a4d21751e5829",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-knowledge/tests/test_knowledge.py",
+      "sha256": "959a227d968d25762554409bf6192e853b9ba894e7aba6e0b0d09361dc9f805c",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-supabase/SKILL.md",
+      "sha256": "34fde88f5a026604bd6e7586f828f1a1884a97583df66526b02d40c7823b9027",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-tutor/SKILL.md",
+      "sha256": "cd603da9d981218133b6ef9f53a91903f442a9f1908e3c30e1b89ebfce9586f6",
+      "incorporated": false
+    },
+    {
+      "path": ".agents/skills/coelo-ui/SKILL.md",
+      "sha256": "98bae00658a4361cafa5f07d85fdcffe1a3302d79d12ddbe007e2b685bb3afc7",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-ui/references/admin-directory-flyout-contracts.md",
+      "sha256": "b3f45adafc0b4f51ca1053df58c4380013917accbcc8b5b3d1bfbae2233a4c4d",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-ui/references/administrative-ui-workflow.md",
+      "sha256": "05092decd9270af2079f5fb94439ab4e3ba280529963c5858aea974dacb7b7ab",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md",
+      "sha256": "4c404de4e1ada3948ac2c3902a3503db7648443dee7d291b28a5a576ddcaf941",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-ui/references/calendar-date-picker-contract.md",
+      "sha256": "80e1b623b949bdb0e81ccb8d396f4e8f0f1dd36348507142ecad2079dadcab71",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-ui/references/deep-review-prompt-brief.md",
+      "sha256": "8f483471cb4b82da38a4b4f870a472999006115d67bc14a558ee742c664a08a3",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-ui/references/form-layout-contracts.md",
+      "sha256": "1c4f0e940705617d207f31257b6770e4cd47d71d711b0ae3757b14639c81f864",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md",
+      "sha256": "d25b8071f6f9a8805672d68b412048b7876f42915462fa40fecaefd207829bb1",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-ui/references/principal-visual-surfaces.md",
+      "sha256": "a7f28ef2a5bcd13e9fd7a2e51ffc613912d38d6fb36c198f90c5fbd66219d6bc",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md",
+      "sha256": "ab2fa67279b9cb428e1fd2c1dafd2d110b2391ffff0f4f5e16250d1872224d19",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-ui/references/surface-interaction-contracts.md",
+      "sha256": "45b705f1eb995f209bcd2d6e0a95076f47e788bc6a3eacd1f62ff032f359a52f",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-ui/references/weekly-superadmin-ui-review.md",
+      "sha256": "93abb5d26535207cdb48296118f128c8fe364c2d799b71822bd83bde984122ec",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-ui/tests/query-index.tests.ps1",
+      "sha256": "90d4186f1776deeab0b7ee249bef50ed0b970ffee76d344204023e8f32ae706a",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-ui/tests/scenarios.md",
+      "sha256": "82b68650fd1ddc443fc13fb8f87efe8ad8c7b9e0f34f2e24559bfd2d979fd98b",
+      "incorporated": true
+    },
+    {
+      "path": ".agents/skills/coelo-ui/tests/surface-interaction-contracts.tests.ps1",
+      "sha256": "7fed324316c5e2bbf3de4818cb313c0bbdbdf0f092c1cbdc057018be1cb63f70",
+      "incorporated": true
+    },
+    {
+      "path": ".claude/launch.json",
+      "sha256": "d2956a0c3e23a1674264cb4b6b7f61c4dc7d21430f16015a53ba3fb018ac1ce1",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/cloudflare-manager/SKILL.md",
+      "sha256": "12eabf7c57bd99df04b22c5e3b7099fd61ba7ca13d6b5572ed7cb41a603d7067",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/cloudflare-manager/scripts/install-cloudflare-manager.sh",
+      "sha256": "d5558cd419c8d46bdc958064cb97f963d1ea793866414c025906ec15033512ed",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-flutter-review/SKILL.md",
+      "sha256": "95e9369f27275fb7febe6c61c13591af64d1642a0dc29f683e04ea683b1f8b2e",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-flutter-review/agents/openai.yaml",
+      "sha256": "30ef4cbfc67b6ae6420a5659e8e3b621807d2befa28fe987098f4c9c08c4388e",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-flutter-supabase-review/SKILL.md",
+      "sha256": "bc6af70d089913811ed370af05d6ce213a412c1fd26d64118a29168fd889a87c",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-flutter-supabase-review/agents/openai.yaml",
+      "sha256": "414dacc50d27a86640d1c2026d00101f689a9efb5f9529d31806b6fd3036c6b0",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-flutter-supabase-review/references/review-scope.md",
+      "sha256": "830eec95ef8c7af131b343dea14131685b474b8987d2053eee46968eb0003ac5",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-knowledge/SKILL.md",
+      "sha256": "9af3b0a600fdfd4034ca2eec75deb7071ce80532367dc20816e470768daa7dd3",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-knowledge/agents/openai.yaml",
+      "sha256": "7586dfe26ab861a38977002b56a68f69e4b5362293641c2e6c9dc60a62d933c1",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-knowledge/scripts/Search-CoeloKnowledge.ps1",
+      "sha256": "64c3d5e775f4daa297932170d93fdd5b77aaebe652a28ce4628b0a907ec79229",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-knowledge/scripts/Test-CoeloKnowledge.ps1",
+      "sha256": "50378f02c95706ccec3671544a9cec521c7dfe7c7d827e51298318c55674bea3",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-knowledge/scripts/coelo_knowledge.py",
+      "sha256": "6ed85f789a20f1691d872c9281c9aea782bb2df8eb69f397ef950db72be34839",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-knowledge/scripts/requirements.txt",
+      "sha256": "0969da99a0bc2a1b71ed50584560f4588a37567ac63af3ddbaf3c4617ca5621a",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-knowledge/tests/Test-CoeloKnowledge.ps1",
+      "sha256": "9ab356290b08c5bd0143cb38a3f9385b1855a7f3494860d5a91a4d21751e5829",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-knowledge/tests/skill-scenarios.json",
+      "sha256": "5d4735d3d82408dadc92127960f83f282e96df6ea02adc27caab713c279dd64a",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-knowledge/tests/test_knowledge.py",
+      "sha256": "959a227d968d25762554409bf6192e853b9ba894e7aba6e0b0d09361dc9f805c",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-supabase/SKILL.md",
+      "sha256": "34fde88f5a026604bd6e7586f828f1a1884a97583df66526b02d40c7823b9027",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-supabase/agents/openai.yaml",
+      "sha256": "ebdae96d019132a9c2c084a74516eab17e93620de9e4db09b545ea006fb87a93",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-tutor/SKILL.md",
+      "sha256": "cd603da9d981218133b6ef9f53a91903f442a9f1908e3c30e1b89ebfce9586f6",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-tutor/agents/openai.yaml",
+      "sha256": "6c156369d4727fe126cd694f8a2a253769bfb7db52b44c6c93bd0cc10455557c",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/SKILL.md",
+      "sha256": "98bae00658a4361cafa5f07d85fdcffe1a3302d79d12ddbe007e2b685bb3afc7",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/agents/openai.yaml",
+      "sha256": "6f478ba1d800b08ae516427ee964d937682e8f298eae5817d34814ba1d3451a9",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/access-profiles-superadmin.md",
+      "sha256": "e8419abb1a80a84f78f16aa75c7358b2c124af18d74a85dfa555767f337de496",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/admin-directory-flyout-contracts.md",
+      "sha256": "b3f45adafc0b4f51ca1053df58c4380013917accbcc8b5b3d1bfbae2233a4c4d",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/administrative-ui-workflow.md",
+      "sha256": "05092decd9270af2079f5fb94439ab4e3ba280529963c5858aea974dacb7b7ab",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/approved-superadmin-visual-baselines.md",
+      "sha256": "4c404de4e1ada3948ac2c3902a3503db7648443dee7d291b28a5a576ddcaf941",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/calendar-date-picker-contract.md",
+      "sha256": "80e1b623b949bdb0e81ccb8d396f4e8f0f1dd36348507142ecad2079dadcab71",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/coelo-time-picker.md",
+      "sha256": "5e57e27cadd193b43e8be27b32ac80fafe2e10d5311d9be399f67a3955be92ff",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/component-proposal.md",
+      "sha256": "ecd1e121d752951da3314a1ba2ebc63689f28173cf51712acccb7539c6dc2966",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/deep-review-prompt-brief.md",
+      "sha256": "8f483471cb4b82da38a4b4f870a472999006115d67bc14a558ee742c664a08a3",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/directory-linear-tabs-contract.md",
+      "sha256": "bd2e10e7e488c3f93a1897596d4830001968dbfa50ac4234c2681198527d1cc4",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/error-page-contracts.md",
+      "sha256": "c3116003bb9cce1e3ad025f5669fac1237434ba2c07e603fef52789d89b643ab",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/form-layout-contracts.md",
+      "sha256": "1c4f0e940705617d207f31257b6770e4cd47d71d711b0ae3757b14639c81f864",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/interactive-state-evidence-matrix.md",
+      "sha256": "d25b8071f6f9a8805672d68b412048b7876f42915462fa40fecaefd207829bb1",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/package-boundaries.md",
+      "sha256": "0756f7286aef60002aaa172547bc20a3b36eea4baa2ef74f1bea27d4985e8267",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/principal-visual-surfaces.md",
+      "sha256": "a7f28ef2a5bcd13e9fd7a2e51ffc613912d38d6fb36c198f90c5fbd66219d6bc",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/rejected-visual-patterns-inbox.md",
+      "sha256": "ab2fa67279b9cb428e1fd2c1dafd2d110b2391ffff0f4f5e16250d1872224d19",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/surface-interaction-contracts.md",
+      "sha256": "45b705f1eb995f209bcd2d6e0a95076f47e788bc6a3eacd1f62ff032f359a52f",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/verification.md",
+      "sha256": "93fd7b7128b58f3bad30723ab784c9bb717a338abbc71886e7eff8011c63cb8e",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/references/weekly-superadmin-ui-review.md",
+      "sha256": "93abb5d26535207cdb48296118f128c8fe364c2d799b71822bd83bde984122ec",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/scripts/query-index.ps1",
+      "sha256": "7e4cb83be597c2cfc5be655b4f4da9c74937817470ebdadca7f74175c200192a",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/tests/query-index.tests.ps1",
+      "sha256": "90d4186f1776deeab0b7ee249bef50ed0b970ffee76d344204023e8f32ae706a",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/tests/scenarios.md",
+      "sha256": "82b68650fd1ddc443fc13fb8f87efe8ad8c7b9e0f34f2e24559bfd2d979fd98b",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/coelo-ui/tests/surface-interaction-contracts.tests.ps1",
+      "sha256": "7fed324316c5e2bbf3de4818cb313c0bbdbdf0f092c1cbdc057018be1cb63f70",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/dart-add-unit-test/SKILL.md",
+      "sha256": "38fa1bb7cacc553c39b786155ade5853bd3827fe25a2d67cbf8fb80f8fbaf5a3",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/dart-build-cli-app/SKILL.md",
+      "sha256": "87ee0d396e730c8079196a4b8d2a6cf088496917db3ea863041780bbad91e9c0",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/dart-collect-coverage/SKILL.md",
+      "sha256": "12bbbebbb8b5c82a99102182eef0902b814cc7c3a10914519d6804ebd7c8d3c8",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/dart-fix-runtime-errors/SKILL.md",
+      "sha256": "cc2e53250e01d7d25251219d20bb1a5b573a45c4822dd58c990fa43ea5c68925",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/dart-generate-test-mocks/SKILL.md",
+      "sha256": "7c18113d70a0c2bcb60c8e3c77b84611537f0ab5e1753673f7aadc280f668f22",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/dart-migrate-to-checks-package/SKILL.md",
+      "sha256": "b474b1079215d8d332c0afaa4fef99c2a192a1a66093312a298214824d2fec31",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/dart-resolve-package-conflicts/SKILL.md",
+      "sha256": "edafbfd9476abd2162af8b8b846623141905005e0572d8d862fe3dbc6cccee9b",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/dart-run-static-analysis/SKILL.md",
+      "sha256": "398ff879eba5fedf3d2f3d4b77a62456a6b6af6274336f8e03a15af2a166b042",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/dart-setup-ffi-assets/SKILL.md",
+      "sha256": "7f3bdb67fd5d3e88dabed28d2213db5f83d98ef8eb7034ad0b8226e34347b2f1",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/dart-use-ffigen/SKILL.md",
+      "sha256": "1c40a9f989363f2635e9ecb9519ad50fea40f9edf254790c476cfb556f65479a",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/dart-use-pattern-matching/SKILL.md",
+      "sha256": "efbeb1938ca536c7ab68d4a7bff54846cd0867a02b574095b00cff2c3d1260c6",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/flutter-add-integration-test/SKILL.md",
+      "sha256": "307d0357160434dee6002869747f839fa4fd05c7c62814fce6d8fa44d52a359a",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/flutter-add-widget-preview/SKILL.md",
+      "sha256": "7bad7face30abb74f84b7e56693ebc6c2dd12b756b26443507714259645792ec",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/flutter-add-widget-test/SKILL.md",
+      "sha256": "ecc36bea2093a9f4f004f86f09aa9601930edd8321160a7dd3748af6e7ef9479",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/flutter-apply-architecture-best-practices/SKILL.md",
+      "sha256": "4839a3093e3080700c0eb561294038d13ca6c524a29371cd1c4f11dcca2184d9",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/flutter-build-responsive-layout/SKILL.md",
+      "sha256": "6733d25bf90c451936c16b5233ab2dbe5d99fd94c2ac94c2186598cc82fa2366",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/flutter-dart-code-review/SKILL.md",
+      "sha256": "4d7074762efced2631735c1ef05c742c97c77cec8300e443cfb320a8cb2f155f",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/flutter-fix-layout-issues/SKILL.md",
+      "sha256": "4696e36718f865e80cda6b35e53dd2c10132d8d3273db916e38a4a3977575b58",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/flutter-implement-json-serialization/SKILL.md",
+      "sha256": "8162db52536cf6cecc81536ad23fec58b18249112f3c8d2c842083716d2eea57",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/flutter-setup-declarative-routing/SKILL.md",
+      "sha256": "00f81f26decf370733e7193d326ecef0d8b9441500bb169c75dd9a812e5aa7d3",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/flutter-setup-localization/SKILL.md",
+      "sha256": "6b1b847557f6b602552f574dfc994f7372ccd5b667599c44fc820b865b0cdc3e",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/flutter-use-http-package/SKILL.md",
+      "sha256": "a5d3556f98554810083ad511ec49aaf8d9b93b0852f1b2e717996d78bd000002",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/marketing-psychology/SKILL.md",
+      "sha256": "f02e4fe8370d629d914032f5f8a3a988e2825e5bdae08215cf08cfb4ff07de73",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/marketing-psychology/evals/evals.json",
+      "sha256": "0048b391dc56b7b73b5b3fa42ea05158949cced630d771d5dbb92869465e6260",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ponytail/SKILL.md",
+      "sha256": "e575026e2a6dffe408b10e6f7acc7ed47c83d71fc69f9c0d3880115f3f6c6aa7",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/product-marketing/SKILL.md",
+      "sha256": "f80b9813bf97b35a757b0eb811231b7a7915b01a90969ab1b1d0df33ab97184d",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/product-marketing/evals/evals.json",
+      "sha256": "9e331ee1d206ebe81ca0d573795a4fbeff1a16811e893b421d2961455b8c692d",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/rtk/SKILL.md",
+      "sha256": "daf4ed7411f661cee79d576ee2596750a4959ad0493c1fb428e837598f908da1",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/rtk/SKILL.toon",
+      "sha256": "3f994da1306ec85be8204db6e624afcdb3aef5e28ddd553006992a08df5585d6",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/rtk/agents/openai.yaml",
+      "sha256": "4b4a8311965cf6259f5c51676f897c3d970d52b0d3e5b428ab8eb56d768ea36d",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/rtk/evals/evals.json",
+      "sha256": "1aa6175a43ef0908b69f8a52dc1ad6103a7dc04e4655ca19bef66e7afea3c284",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/rtk/references/commands-and-config.md",
+      "sha256": "e128b6bce45fbf1f520fad1897a6c174e92606d5ced58ef9240935b22d2ee7c9",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/rtk/references/install-and-verify.md",
+      "sha256": "17e943da857cf334d876da7ffb05e5b074c0c2b786b5a00c9d62689e8a9d90be",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/rtk/references/platform-init.md",
+      "sha256": "874f962535e9eb5b3def09151b595b5aba7c178417a4c8485a27336b0eaf8bd9",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/rtk/references/troubleshooting.md",
+      "sha256": "99deb3341e6bb0ef4e59f351d88240aaf0746d1c5b5bb908ab8a3e5e760a7cee",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/rtk/scripts/check-status.sh",
+      "sha256": "8264e6ea6098633ffcb2acf9b592c6c5776e4661dbab7626724cdd912be53d7c",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/rtk/scripts/init-agent.sh",
+      "sha256": "8a3f3ef55125c72fc92953118b0180d0320705425457ae4ecb95ef4b455d0103",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/rtk/scripts/install.sh",
+      "sha256": "a76a4b83bc05d9554da0734c8ad5ea3479dcac8d103486f834f16565693c94bc",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/rtk/skill-autoresearch-rtk/SKILL.md.baseline",
+      "sha256": "3ad09559e24f030eb3d6ba8b5024c518610a6f9e7486a9c5ba89c336b44c6a34",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/rtk/skill-autoresearch-rtk/changelog.md",
+      "sha256": "d75cc7b452ecfba39b30646203c82c3539ad67a6d11cc3d1a1a955c120111c43",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/rtk/skill-autoresearch-rtk/dashboard.html",
+      "sha256": "eeaae7706bc362e6c5461c4b2731e5bd82408b9721ce767149e29322496bd261",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/rtk/skill-autoresearch-rtk/results.json",
+      "sha256": "c0cf8c7b5e1e6569e61995280e7685852bcddba6f0a8ab3877e59eb460464b23",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/rtk/skill-autoresearch-rtk/results.tsv",
+      "sha256": "0a65da484eb63bf40adec5886b60ac1d2845134e01ab66d268f36cae0a3bceaa",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/SKILL.md",
+      "sha256": "b4f16d368d4c22972e2523c9f5bf7e24f1d6230224899b18ff7d6001b10c6bf4",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/charts.csv",
+      "sha256": "b754c0efffcf54cb889114a9314be1d5af6ceebe65c4c436d713b52018e752c9",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/colors.csv",
+      "sha256": "4cc0df2785f340b8bd0ace50bd4068dc13a7c4c6fa4d9d2723271244ce904614",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/icons.csv",
+      "sha256": "351fe61ba45b8146c66de6ea7d67297654639d79a94f537b4d0bad570058c28f",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/landing.csv",
+      "sha256": "010e1e46db271b94e0af6f18973bea86ddba62feeccd62aeeaa6ed40e2ae2db1",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/products.csv",
+      "sha256": "5359e3037dcb84e99c792ea13dd44f5b78ab6a53557afb309cf19140512aaf5b",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/react-performance.csv",
+      "sha256": "904c8afcda229629545912dde0e8ac37503757131f0169f80b016f1f58c4fd3f",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/stacks/astro.csv",
+      "sha256": "ad18dae3ab6d148d37d144592df80dc1825b6c9e86d9d2d68fdda77434206a37",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/stacks/flutter.csv",
+      "sha256": "e470e6bc2bcd8562667cc764d1e1afb0be0a30ca4dc9ec12fa18b19d46f156bd",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/stacks/html-tailwind.csv",
+      "sha256": "1f004891dd189f6bc2a7717401e3100244326e7e2f3963a79bf7b2349d85e091",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/stacks/jetpack-compose.csv",
+      "sha256": "6c8fd4b0391c342c12b0af15610cd5becbeccaef0bbe8dcfc01d928c3195d93e",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/stacks/nextjs.csv",
+      "sha256": "06a8e8c13bd44696c6ebb4cb6c4d8dea440e3de8cce77616512529ed29258f0c",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/stacks/nuxt-ui.csv",
+      "sha256": "05d6e74501b2b6a636faed32450622759f49a5bcafad971f5f4e7eba0eb7be71",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/stacks/nuxtjs.csv",
+      "sha256": "f7a3f2d9542856d00199f85c6c023b7c284cc698e2e6e12d61afce2edacb24d6",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/stacks/react-native.csv",
+      "sha256": "a08ca77fcf6b6d9531982dce465366296013bfcf12d2938ac72ad57cf0c4f085",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/stacks/react.csv",
+      "sha256": "b6e3eb0e4c9c01bd00ffb951d5ca224a19d488b4544c75436f48cf92ff12bf45",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/stacks/shadcn.csv",
+      "sha256": "395c2e415ef6f48a474acccdc8eb2c7258a6ed751a5037ba171a2d8823e02ded",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/stacks/svelte.csv",
+      "sha256": "bc8d158994a8bdf412830a9dd5e5a5534edd2f367a6e50e0ebd4d76f592dfa3f",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/stacks/swiftui.csv",
+      "sha256": "e87cb9eee208bb753bdab96d4a261c7f830c4317ee90ec098316b248fc32be85",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/stacks/vue.csv",
+      "sha256": "9b793c3f4eec85f77a758c09322f2b62f3b3ca549bb713ccf0849ef885934395",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/styles.csv",
+      "sha256": "ad3c3236134d833bda01a2faf31ddeaaa1dbd5005fa430dec571fa91b26e5fea",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/typography.csv",
+      "sha256": "64695e05ac335ba534aff396c4ba9241c642f80ea53b424251d2669b71c4772b",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/ui-reasoning.csv",
+      "sha256": "58fc52fff69f62709f8c7dd460de6f6693699ea820f24287f3301a427c2b554e",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/ux-guidelines.csv",
+      "sha256": "1870ee048f2a2bdd60709f8f7adf7f3b6dcad560bc005c8b2915a8ac8639820d",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/data/web-interface.csv",
+      "sha256": "10bfc24e09a6a15db8309e6ef9b6881e1d4af97dffb7c99418aefb8e30df7d54",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/scripts/core.py",
+      "sha256": "5459d1f04eea03dfb913742d0c03edc5065ac67f6227e4807fa87699662588cb",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/scripts/design_system.py",
+      "sha256": "4da1d341f3c7749df51b51db4a543a48a427c3c746eb0e9882a1ab86acf3bb54",
+      "incorporated": false
+    },
+    {
+      "path": ".claude/skills/ui-ux-pro-max/scripts/search.py",
+      "sha256": "a449e57060ef5134e98e62fd11f6e240153afd68c27dab89cbb72a3ce55f1498",
+      "incorporated": false
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "56f8d46e3b5dea8baa6b95736983abf92fd8172096a2d7a42c0fade4111ded59",
+      "incorporated": true
+    },
+    {
+      "path": "apps/catalog/assets/catalog-sync-report.json",
+      "sha256": "91ef0abd9f6f15e24163ba8fc88a0568dd8b22cf03574faae945c77823fd22aa",
+      "incorporated": true
+    },
+    {
+      "path": "apps/catalog/assets/coelo-ui.index.jsonl",
+      "sha256": "247c90ab9091ae553a16370d323438aeafdaf0941ad380fd2051aac07f4706e6",
+      "incorporated": true
+    },
+    {
+      "path": "apps/catalog/test/tool/validate_catalog_index_test.dart",
+      "sha256": "c32d8df4a7caa38d7da14379b41e866be42164d7906eb9f5836861850d737b95",
+      "incorporated": true
+    },
+    {
+      "path": "apps/catalog/tool/validate_catalog_index.dart",
+      "sha256": "4de748ebdadbfb587ffbf0da81f140efb78977099ecb3988dd5f6c4236077cc1",
+      "incorporated": true
+    },
+    {
+      "path": "docs/design/design-system.md",
+      "sha256": "5dd7f69bacdc05f632526f8d92960b0763c21d6f898f237f3defd5e1ffc61c1b",
+      "incorporated": true
+    },
+    {
+      "path": "docs/knowledge/README.md",
+      "sha256": "f1519d384ed5c6a49c906872b5c5a0781c4760610fe1b57479037508d9f6bbd3",
+      "incorporated": true
+    },
+    {
+      "path": "docs/knowledge/team/coelo-review-scope.md",
+      "sha256": "b977ce7c757a2fb00937a47c19308c0ccc38648022ca1c7395c09ed6722b2361",
+      "incorporated": true
+    },
+    {
+      "path": "docs/knowledge/team/coelo-visual-families.md",
+      "sha256": "adedea715768ab5986684e1e95b75dfa45cb4ca1d3fede22a1e91bbe106bc1ca",
+      "incorporated": true
+    },
+    {
+      "path": "docs/learning/curriculum.md",
+      "sha256": "d24cc0ae27043550c014061cf1de1570f37098d48824d825d187a474e1c4eaad",
+      "incorporated": false
+    },
+    {
+      "path": "docs/open-questions.md",
+      "sha256": "83ceee63b2a641eba85d0f6c0d71387c333ff9914a91745064bc49c605ce202c",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/2026-09-08-coelo-skills-audit.md",
+      "sha256": "62b341377280e37085472bb0e02e3339415df5054624690af89e6dd000fd1803",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/coelo-flutter-integrado-supabase-pendencias.md",
+      "sha256": "3157dd5eb78b91f3dcce235dc094fd4a9cc201f82846dd47ab573904a0db609e",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/coelo-flutter-pendencias.md",
+      "sha256": "dec6a2832640c60020e7b28d6b45f4f39cca2e5dc368941837975f3b62ce5eb7",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/coelo-supabase-pendencias.md",
+      "sha256": "fb92e7c9d69ba2751097801c22685421f5b968fad98474537976e745cafb4d4e",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/evidence/2026-09-08-coelo-skills-audit/after-corrections.json",
+      "sha256": "0b41db5f762c1262f96e82bde90f2eb8400686b3b86135098234aca5cd734fa7",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/evidence/2026-09-08-coelo-skills-audit/before-corrections.json",
+      "sha256": "6b847ea0f799050bef810125cfb2660a2ea5875c219d529086088ff5ece622db",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/evidence/2026-09-08-coelo-skills-audit/catalog-index-before.jsonl",
+      "sha256": "307fe428113152c05d091d2cf6ff00586100ec8bade8c3d8eff43ac7674946a2",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/evidence/2026-09-08-coelo-skills-audit/catalog-sync-after.json",
+      "sha256": "57c8a10dd64936a9bac758ee39b3416e794cddd383210b1efbd402bd08569970",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/evidence/2026-09-08-coelo-skills-audit/catalog-sync-before.json",
+      "sha256": "54403a611a92ac13b91c4398941804ead9d5d5b50b6408b041f6aef6432ef503",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/evidence/2026-09-08-coelo-skills-audit/catalog-sync-final.json",
+      "sha256": "56524387904dcafba0f16706dda361a69536fb4a4b2ec0a550e0f06c552e74a9",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/evidence/2026-09-08-coelo-skills-audit/catalog-sync-observed.json",
+      "sha256": "f9754006f494fe5b48d33f3ff449e2b27368fa0a270a3293740c91c795071170",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/evidence/2026-09-08-coelo-skills-audit/check_skills.py",
+      "sha256": "2c2bdcefd68904f5ce91a84981e6a5a1e31a966964b6be39d2eea0036b23e900",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/evidence/2026-09-08-coelo-skills-audit/results.json",
+      "sha256": "b3f23f559375a20067cab66876581182e95776829fc7883e476d38b33393139e",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/evidence/2026-09-08-coelo-skills-audit/verification-summary.json",
+      "sha256": "024be9097c86e69e6fe9491a0e737daf997933c0f1ba5c16ab1449bcf687eddf",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/evidence/etapa-2/coordenador/reconciliacao-pendencias-2026-09-08.md",
+      "sha256": "a9c7b8faf82a7aa1f6c9ea1ea49141b20c77d55e1d08f49829e74aa47224aecf",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/inventario-etapa-2.json",
+      "sha256": "62c494433391702ae69ee69292d0ec7bce4fcfb9948ae2111387636ca9c1a868",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/reconcile-trackers.cjs",
+      "sha256": "f6601a096e439d1fa8a999628a50dd269d27665059e136a623004e22ce01f4db",
+      "incorporated": true
+    },
+    {
+      "path": "docs/reviews/validate-trackers.cjs",
+      "sha256": "f28c252f93163f76c30bcfca3da24775074623dbfb29b080bbc9c91abfc4fcd6",
+      "incorporated": true
+    },
+    {
+      "path": "docs/superpowers/specs/2026-07-14-coelo-tutor-design.md",
+      "sha256": "b7d03222ca320aedcd3cd769cbcb712fa95d438c178320bc67c36665054ca7a8",
+      "incorporated": false
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-20-coelo-happens-publication-design.md",
+      "sha256": "b6d91f2b687c393f0c333ffe5b739f5da6b23784aa02bfb236e1fdea9cb48793",
+      "incorporated": true
+    }
+  ],
+  "rationale": "Approved local skills corrections and their visual-index/knowledge validation dependencies, plus action tracker reconciliation. Catalog changes are inherited tooling dependencies, not new app scope. Tutor/learning/Claude configuration remain only in original checkout."
+}

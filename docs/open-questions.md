@@ -8,6 +8,18 @@ updated_at: "2026-09-08"
 
 # Perguntas abertas e conflitos
 
+## Reconciliação operacional R01 — 2026-09-08
+
+- **Resolvido por ordem do Owner:** trechos de `docs/reviews/coelo-etapa-2-coordenacao.md` listavam múltiplos writers e outro trecho já centralizava. Na R01 somente C00 integra/escreve os três rastreadores; histórico preservado, sem operacionalizar IDs antigos.
+- **Denominadores históricos:** coordenação antiga cita229/207/202 e37 famílias. Inventário vigente tem219 IDs/38 famílias, FE219, BE212 normativas, E2E187 ativas. Classes operacionais194 ativas incluem5 shell cliente; inventário mantém189mvp+5flutter-only+3gate+22adiadas. Não somar medidas. Catálogo ainda exige análise de aplicabilidade, não desconto automático.
+- **Planos:** `plans.activate` sugere ativação, spec051 aprova arquivar/restaurar; `plans.assign` sugere write, spec051 limita vínculos à leitura. Proposta de crosswalk: preservar IDs históricos e mapear activate a restaurar/arquivar, assign a vínculos read-only ou retirar write por decisão nominal. Ainda não aprovado; C03 não inventa atribuição/cobrança. Conflito de identidade People051 versus interno039 permanece conforme seção específica acima.
+- **Catálogo:** tracker BE exige genericamente persistência/tenant/RLS para `catalog.list/validate/sync/publish`; `CatalogHostPage` no Superadmin hospeda URL configurada, e validação/sync são ferramentas do catálogo de componentes. C03 deve provar provider/contrato por ação e propor N/A onde cabível. Não criar backend só para satisfazer texto genérico, nem remover IDs antes de evidência/reconciliação C00.
+- **Família visual:** Principal no host Superadmin conserva spec050, viewers e compositores; administrativo orienta Admin. Owner e coelo-ui atuais resolvem a orientação antiga que generalizava Instituições. Referências parciais externas de Publicar continuam.
+- **Limite de camada:** algumas linhas FE exigem remoto/E2E para verified (ex.: notices.list, acontece.feed, agora.view, momentos.view). A ordem do Owner/skills atuais prevalece: registrar dependência BE/E2E separadamente, preservando todos os critérios próprios FE; nenhuma promoção automática. C00/execuções por ID devem substituir redação ambígua à medida que aceites nominais forem revisados.
+- **Operação:** Docker inicialmente inacessível em08/09; rechecagem em 2026-09-08T12:20:45-03:00 confirmou Server29.7.2 e nenhum container ativo. Bloqueio de engine removido; ainda falta executar replays nominais, sem inferir SQL ausente. Claude não tem sessão/ID/mecanismo de continuidade confirmado. Aplicativo Codex aceita um heartbeat por tarefa; agenda unificada de10min consulta executores só a cada30min. Essas lacunas não bloqueiam trabalho local independente.
+
+Decisões de Forms/Locais, limite de anexos Chat, reader self da Conta, perfis globais, Suporte e clínicas permanecem nas respectivas perguntas canônicas. Nenhum pacote remoto novo foi autorizado por esta reconciliação.
+
 ## Auditoria das skills Coelo — reconciliação de 2026-09-08
 
 Correções autorizadas pelo Owner e registradas em

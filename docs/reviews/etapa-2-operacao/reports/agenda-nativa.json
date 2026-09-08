@@ -1,0 +1,33 @@
+{
+  "source": "automation_update create/update/view + local automation.toml",
+  "status": "configured-not-fired",
+  "generated_at": "2026-09-08T12:19:18-03:00",
+  "timezone": "America/Sao_Paulo",
+  "id": "e2-r01-c00-acompanhamento-30-min",
+  "target_thread_id": "01a0818b-2a34-7fa3-a9aa-f191fc91cc8d",
+  "enabled": true,
+  "wakeup_minutes": 10,
+  "executor_poll_minutes": 30,
+  "next_calculated_tick": "2026-09-08T12:20:00-03:00",
+  "next_three_calculated_ticks": [
+    "2026-09-08T12:20:00-03:00",
+    "2026-09-08T12:30:00-03:00",
+    "2026-09-08T12:40:00-03:00"
+  ],
+  "next_run_at_from_api": null,
+  "limitation": "One heartbeat per thread; nextRunAt not exposed by view. Schedule calculation is not proof of wakeup; app/host availability and current turn may delay.",
+  "events": [
+    "2026-09-08T13:00:00-03:00",
+    "2026-09-08T15:00:00-03:00",
+    "2026-09-08T17:40:00-03:00",
+    "2026-09-09T05:30:00-03:00",
+    "2026-09-09T06:00:00-03:00",
+    "2026-09-09T07:40:00-03:00"
+  ],
+  "old_automations": {
+    "checkpoint-coelo-rc-40min": "PAUSED by C00",
+    "coordena-o-coelo-50min": "already PAUSED",
+    "etapa-2-acompanhamento-hor-rio": "not found locally"
+  },
+  "claude": "unverified until executor opens session; no Codex-to-Claude wake bridge"
+}

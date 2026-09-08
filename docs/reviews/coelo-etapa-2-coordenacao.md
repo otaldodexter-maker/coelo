@@ -3,10 +3,67 @@ title: "Coelo — Coordenação da Etapa 2"
 source: "Conversa Coordenar Etapa 2 do Coelo; seis conversas delegadas; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md"
 status: "active"
 generated_at: "2026-09-01"
-updated_at: "2026-09-01"
+updated_at: "2026-09-08"
 ---
 
 # Coelo — Coordenação da Etapa 2
+
+## Operação vigente — E2 R01 C00 (2026-09-08)
+
+Este bloco prevalece operacionalmente. Todo conteúdo abaixo de **Histórico preservado — anterior à R01** retrata rodadas antigas, inclusive números, IDs, owners, autorizações e agendas. Não removê-lo nem utilizá-lo como ordem atual.
+
+- Coordenador: **E2 R01 C00 — Coordenador geral**; ID real `01a0818b-2a34-7fa3-a9aa-f191fc91cc8d`; nome aplicado/verificado via ferramenta nativa. Único escritor/integrador confirmado pela ordem do Owner nesta tarefa; nenhuma transferência.
+- Worktree C00: `C:/Users/adrie/Documents/Coelo.worktrees/e2-c00`; branch `codex/e2-r01-c00-integration`. A tarefa nativa ainda tem cwd cadastrado no checkout original; todos os comandos de escrita usam C00 explicitamente. O app não permite à tarefa transferir a si mesma. Não criar outra conversa por esse motivo.
+- Baseline original: `84985b5485247df6a8dc7270e33d18601aca0421` (`dev`/origin/dev observado). Base recuperada seletiva: `6cb8ba15bae15f5a6129b0db6e740a66f8f82b3f`. Manifesto local em `etapa-2-operacao/reports/baseline-local-manifest.json` identifica arquivos/herança/hashes. Commit operacional R01 será o HEAD que contém PROTOCOLO/assignments; publicá-lo e criar executores a partir dele.
+- 55 arquivos herdados compõem correções aprovadas de skills, governança/visual e ferramentas de índice necessárias, mais reconciliação dos rastreadores. Não são implementação nova de app; correções Tutor/learning/config Claude permanecem somente no checkout original. Relatório de auditoria preservado relata tarefa de origem e não certifica íntegra desse pacote parcial na C00.
+- Janela Owner: **08/09/2026 12:20 → 16/09/2026 12:20**, America/Sao_Paulo. Owner confirmou **dev como entrega e localhost ligado diretamente ao Supabase real**. Push de branch R01 é distinto de merge/dev, execução localhost e deploy/produção.
+- Preparação `2026-09-08T12:19:18-03:00`: inspeção Git, inventário e instruções; zero ação do produto promovida, zero pacote remoto aplicado. Critério de parada desta preparação: seis worktrees válidas,219 IDs com dono único, protocolo/prompts/automação verificados, ponto de retomada preservado.
+
+### Registro das conversas e ownership
+
+As cinco conversas não foram criadas automaticamente. O Owner abre a sessão na pasta e cola o prompt em `etapa-2-operacao/next-round/R01-CXX-prompt.md`. Primeiro handoff registra ID real/modelo e confirma I001. Não usar IDs das rodadas antigas.
+
+| Executor | Nome exato | IDs | Worktree | Branch | Registro |
+|---|---|---|---|---|---|
+| C01 | `E2 R01 C01 — Identidade e acesso` | 44 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01` | `codex/e2-r01-c01-identidade` | ID/ack pendentes |
+| C02 | `E2 R01 C02 — Forms, mídia e cuidado` | 32 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02` | `codex/e2-r01-c02-forms-midia` | ID/ack pendentes |
+| C03 | `E2 R01 C03 — Operações` | 68 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03` | `codex/e2-r01-c03-operacoes` | ID/ack pendentes |
+| C04 | `E2 R01 C04 — Estruturas e pessoas` | 47 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c04` | `claude/e2-r01-c04-estruturas` | ID/ack pendentes |
+| C05 | `E2 R01 C05 — Comunicação e Principal` | 28 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c05` | `claude/e2-r01-c05-comunicacao` | ID/ack pendentes |
+
+### Contagem e última evidência
+
+Inventário vigente:219 IDs únicos/38 famílias; classificação operacional194 ativas(189mvp+5shell),22 adiadas,3 gates; nenhum ID sem dono/duplicado. FE219 aplicáveis; BE212 normativas(187ativas+3gate+22adiadas),7N/A; E2E187ativas,3gates e22adiadas separados,7N/A. Frontend certificado0/219,Backend0/212,E2E0/187; IDs certificados: nenhum. Verificação runtime de camada nesta R01:0 ações, pois a preparação foi documental; histórico não foi zerado. Implementação e testes faltantes estão separados nas colunas Feito/FE/BE do inventário, sem percentual inventado.
+
+Última evidência de preparação: `2026-09-08T12:19:18-03:00`. Última evidência dos executores R01: nenhuma; received/accepted/integrated=0. Os três rastreadores sincronizados somente ao baseline recuperado e ao protocolo C00/I001. Nenhum novo teste UI/SQL/produção nesta preparação. Evidências históricas até08/09 permanecem com seus próprios horários e ambientes.
+
+### Fila inicial e dependências
+
+1. C02 publica contrato mínimo de mídia/crosswalk cedo; leitura M03 existente já documentada no PROTOCOLO. C04/C05 consomem; C04 publica Locais/IDs/snapshot para C02/C03.
+2. C01 trabalha sessão/contratos internos, libera lease auth scope/shell no primeiro lote; C00 controla router/barrels/roots e migrations nominais, sem múltiplos escritores.
+3. C02 recupera `f84d1dd7` e `97769124`; C03 recupera view `ca4c82ab`; C04 revisa snapshot `9e689374`. Todos candidatos retidos até prova, não entrega nova. Demais commits em branches antigas podem ter cherry-picks equivalentes; comparar patch-id/diff.
+4. `07e6e837` preserva material de benchmark e revisão Eng2 fora de dev; não integrar branch inteira. Consultar evidência Eng2 por `git show 07e6e837:docs/reviews/evidence/etapa-2/engenheiro-2/plano-e-revisoes-2026-09-07.md` se precisar de proveniência; material de marketing fora de escopo.
+5. C00 recebe/revisa/testa/integra lotes aptos incrementalmente, publica SHA novo e acknowledgements. Fila de entregas R01 aptas: vazia até handoff real. Push origin permitido nas branches nominais; integração em dev autorizada, preservando trabalho original alheio. Nenhum deploy implícito.
+
+### Decisões, reservas, ambiente e ETA
+
+Contradições registradas em `docs/open-questions.md`, seção R01: writers antigos/denominadores/famílias visuais resolvidos pela ordem vigente; Planos e Catálogo requerem crosswalk/evidência; critérios FE não dependem de BE/E2E. Perguntas materiais já abertas: Conta self, perfis globais, Forms/Locais, limite de anexos Chat e contratos clínicos/Suporte. Não pedir aprovação geral que já existe, nem inventar novas políticas.
+
+Reservas e release: PROTOCOLO tabela R01-SHARED-01(C01),R01-MEDIA-01(C02),router/roots/barrels/migrations centrais(C00). Authorizations remotas R01: nenhuma nominal registrada; janela global e localhost real não criam permissão irrestrita de mutação. Personas/cenários preparados em `reports/personas-cenarios.json`, **sem contas Auth/tenants criados**. C00 deve validar pacote/cenário concreto e pedir autorização nominal só quando reviewable; testes mutantes serializados por lease.
+
+Docker: consulta inicial falhou; após o Owner mostrar Engine running, a CLI confirmou Docker Server29.7.2 e `docker ps` vazio com exit0 em 2026-09-08T12:20:45-03:00. Bloqueio de engine removido; replays nominais ainda não executados. Não resetar dados/WSL/config. Credenciais não foram lidas/copied. Flutter/Dart/Node/Python presentes; localhost produtivo ainda não iniciado por esta preparação.
+
+ETA implementação/testes por executor: desconhecida até primeiro lote; integração depende de delta/teste e contratos, documentação operacional preparada. Espera externa: decisões nominais/produção e runtime local. Caminhos que podem determinar término: Auth/realm039 → gateways/SQL nominais → consumidores/runtime → prova remota/E2E; em paralelo catálogo/transporte de mídia C02 → consumidores C04/C05 e Forms/XLSX. Risco da janela: ainda não quantificável, elevado enquanto ambiente, contratos e primeiros lotes não forem calibrados. Menor mitigação: abrir executores, liberar contrato de mídia e obter um primeiro fluxo nominal completo por frente, sem refazer os READs já implementados.
+
+### Agenda nativa e renovação
+
+Heartbeat único ativo/verificado: `e2-r01-c00-acompanhamento-30-min`, anexado ao ID C00, fuso America/Sao_Paulo. Plataforma recusou múltiplos heartbeats por tarefa; consolidado em despertar10min com consulta executores apenas30min. Próximos ticks calculados pela regra: próximo minuto múltiplo de10; `reports/agenda-nativa.json` registra horário calculado/limitação. API de view confirma cartão, mas não retorna nextRunAt: não afirmar execução futura garantida. Eventos08/09:13:00,15:00,17:40;09/09:05:30,06:00,07:40. Atrasos registrados com hora real; estado idempotente em `reports/estado-operacional.json`.
+
+Automação antiga `checkpoint-coelo-rc-40min` foi pausada via ferramenta para remover writer concorrente; `coordena-o-coelo-50min` já estava pausada. ID histórico `etapa-2-acompanhamento-hor-rio` não existe no inventário local atual. Não inventar que está ativo. Nenhuma ponte Codex–Claude disponível: sessões Claude devem registrar mecanismo nativo local e ID no handoff; arquivo não acorda sessão. Até sessões abertas,IDs reais/continuidade dos cinco permanecem pendentes.
+
+Fechamento09/09:05:30 fechar com segurança;06:00 suspender novos lotes; até07:40 entregar feedback/prompts R02 com SHAs/WIP/limites. Remover somente worktrees limpas/sem sessão/preservadas/integração comprovada. Renovação C00 requer transferência explícita e acknowledgement do sucessor, com heartbeat antigo desativado. Nenhuma limpeza ou branch removida nesta preparação.
+
+## Histórico preservado — anterior à R01
 
 ## Finalidade
 

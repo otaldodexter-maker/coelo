@@ -1,0 +1,89 @@
+---
+title: "Protocolo compartilhado E2 R01"
+source: "Owner R01; docs/reviews/coelo-etapa-2-coordenacao.md; docs/reviews/inventario-etapa-2.json; AGENTS.md"
+status: "active"
+generated_at: "2026-09-08T12:19:18-03:00"
+timezone: "America/Sao_Paulo"
+---
+
+# Protocolo R01 — revisão 1
+
+Autoridade: C00, tarefa `01a0818b-2a34-7fa3-a9aa-f191fc91cc8d`, é o único integrador e escritor dos três rastreadores oficiais. Esta ordem do Owner prevalece sobre instruções antigas de múltiplos escritores ou atualização direta pelos executores. Histórico permanece no documento de coordenação, explicitamente histórico.
+
+## Contrato e janela
+
+- Objetivo: concluir Superadmin ponta a ponta reaproveitando implementação/evidências. Apenas `apps/superadmin` e suas dependências; “Coelo (Principal)” é seu menu. Não implementar Admin, Principal ou Site.
+- Janela Owner: **08/09/2026 12:20 → 16/09/2026 12:20**, America/Sao_Paulo (UTC−03:00). Preparação antes das 12:20 não altera início da janela.
+- Rodada R01: execução até fechamento seguro 09/09 05:30; entregas finais até06:00; a partir de06:00 novas atribuições suspensas; feedback e prompts R02 até07:40, mesmo com bloqueios.
+- Incluído agora: preparação recuperável, ownership, continuidade, integração incremental e provas proporcionais. ETA total desconhecida até calibrar os primeiros lotes; não usar 36–60h histórico nem dividir horas por cinco.
+- Destino de entrega autorizado pelo Owner: `dev`. C00 publica primeiro sua branch de integração; integração em dev exige preservar o checkout alheio e conferir ponta remota, sem force-push. Não equivale a deploy.
+- Localhost deve usar a composição normal e Supabase real. `/dev` e fixtures são ferramentas locais, sem certificação E2E.
+
+## Fontes e leitura
+
+AGENTS.md, RTK.md e skills coelo-frontend, coelo-backend, coelo-frontend-backend, coelo-ui, coelo-knowledge, ponytail e rtk. C00 leu integralmente os três rastreadores na ordem FE → BE → integrado; campos idênticos foram cruzados sem perda com a camada já lida. Executores leem cabeçalhos, suas ações, dependências e evidências; auditoria ampla da camada exige seu rastreador integral. Carregar referências conforme ação e reutilizar contexto.
+
+Use flutter-dart-code-review ao revisar Dart; skill oficial Supabase e supabase-postgres-best-practices para SQL/RLS/Supabase; plugin Cloudflare com sua skill cloudflare; cloudflare-manager só para gerenciamento pertinente. Se caminho da skill estiver ausente, descobrir a instalação real, sem inventar carregamento. As orientações técnicas não criam arquitetura, cobertura arbitrária ou dispensa dos aceites Coelo. Tutor somente por explicação didática pedida pelo Owner.
+
+Antes de mudar código, registrar no próprio handoff objetivo, incluído/fora, IDs, pendências conhecidas, ordem, parada, evidências e ETA fundamentada. Escopo já autorizado não exige reconfirmação por ação. Procurar código/spec/ADR/evidência antes de implementar. `pending-verification` nunca significa código ausente.
+
+## Arquivos e protocolo de entrega
+
+Fonte operacional viva: `C:/Users/adrie/Documents/Coelo.worktrees/e2-c00/docs/reviews/etapa-2-operacao/PROTOCOLO.md` e `assignments/CXX.md` **diretamente na C00**; cópias locais podem estar antigas. Cada executor escreve seu código/testes e, como único documento operacional de entrega, `docs/reviews/etapa-2-operacao/handoffs/CXX.md` na própria worktree. Não editar assignments, coordenação, relatórios centrais, inventário ou rastreadores. Propostas de documentação/spec e deltas vão no handoff. Evidências técnicas minimizadas de testes podem acompanhar código; não copiar conversas, segredos, tokens ou logs brutos.
+
+Handoff obrigatório: rodada; nome/ID real da conversa; revisão monotônica; última instrução processada; timestamp com fuso; branch; baseline; SHAs de código; estado/ponta do push; action_ids; arquivos; testes, resultado e ambiente; evidências; bloqueios; primeiro critério ainda aberto; próximo passo; ETA separada e fundamentada; proposta de delta FE/BE/E2E por ID. Registrar processo/sessão/horário de teste/build em andamento, quando houver, sem credenciais. Revisão nova no mesmo turno de correção, regressão, bloqueio ou ETA. Separar commit de código do commit posterior de handoff para evitar SHA circular.
+
+C00 processa chave `(R01,CXX,revisão)`, grava received/accepted/integrated (estados distintos) na assignment e revisões sincronizadas nos rastreadores. Recebido não significa aprovado. Nunca processar duas vezes a mesma revisão. Handoff ausente = evidência ausente, não tarefa parada. Cada Markdown derivado exige frontmatter source/status/generated_at.
+
+## Ownership e reservas
+
+`assignments/ownership.json` expande os 219 IDs, um dono por ID, sem duplicados ou sem dono. Classificação operacional: 194 ativas (189 `mvp` +5 shell somente cliente), 22 adiadas,3 gates formais; N/A é anotado por camada para sete ações, não exclui seu trabalho FE. IDs de Planos/Catálogo com dúvida permanecem rastreáveis, sem retirar denominadores por conveniência.
+
+Arquivos de domínio pertencem à assignment. Um arquivo compartilhado tem um escritor por vez, mesmo em branches distintas:
+
+| Reserva R01 | Escritor atual | Limite e entrega |
+|---|---|---|
+| `apps/superadmin/lib/app/router/superadmin_router.dart`; `apps/superadmin/lib/main.dart`; composition roots não listados | C00 | Executores entregam delta mínimo no handoff; C00 integra ou concede reserva nominal antes da edição. |
+| `apps/superadmin/lib/core/config/superadmin_auth_scope.dart`; `apps/superadmin/lib/app/shell/superadmin_shell.dart`; `packages/coelo_auth/` | C01, lease R01-SHARED-01 | Primeiro lote de sessão/shell; liberar por SHA + handoff, ou renovação explícita C00. Não usar para writes de outras frentes. |
+| `packages/coelo_api/lib/src/media/`; `packages/coelo_database/supabase/functions/_shared/media_image_contract.ts` e seu teste; `packages/coelo_database/supabase/functions/moments-media/r2_s3.ts` e seu teste | C02, lease R01-MEDIA-01 | Núcleo comum já existente; preservar consumidores C04/C05, publicar contrato no primeiro lote. |
+| Barrel exports `packages/coelo_api/lib/coelo_api.dart`, `packages/coelo_domain/lib/coelo_domain.dart`; tokens/componentes UI centrais; manifests/lockfiles compartilhados | C00 | Propor export/delta no handoff; nenhuma edição concorrente. |
+| Migrations históricas, runner/replay/foundation manifests | C00 | Reserva nominal por arquivo antes de mudar. Autores podem preparar SQL candidato e teste dentro de domínio reservado, sem aplicar remoto. |
+| Novas migrations | Reserva nominal C00 antes de criar | Informar nome, dependências, domínio e IDs no primeiro handoff; C00 concede nome/arquivo por vez. Não renomear ou repinar para mascarar drift. Trabalho independente continua. |
+| Gateway server-side por domínio (`form-media`, `form-operations`: C02; `happens-media`, `moments-media`, `now-media`, `circular-media`: C05) | Dono indicado, exceto auxiliares comuns C02 | Reutilizar entradas existentes; não construir gateway universal concorrente. |
+| Testes globais de rotas/shell, pacotes centrais UI, arquivos não cobertos | C00 até reserva nominal | Executores podem criar testes focados de sua feature. |
+
+Lease cobre somente arquivos existentes nomeados e domínio; alteração transversal nova precisa nome/reserva, não permissão genérica. Transferir após release do escritor e acknowledgement C00. Bloqueio retém só as ações dependentes.
+
+## Contrato mínimo de mídia já disponível — R01-MEDIA-01/v1
+
+Fontes: ADR0032; `packages/coelo_api/lib/src/media/media_read_contract.dart`, `media_reader.dart`, `media_session.dart`; evidência `docs/reviews/evidence/etapa-2/comunicacao/2026-09-07-media-m03-read-contract.md`.
+
+- `MediaReadRequest(assetId, rendition)` envia UUID e `original|preview`; IDs de attachments legados não se tornam asset IDs por suposição.
+- `MediaReader.read` retorna `MediaReadResult`: available/processing/expired/unavailable; somente available tem ticket temporário HTTPS, expiresAt e headers. `SessionMediaReader` confere correlação do ativo, expiração e invalidação de sessão; não é transporte HTTP nem autorização.
+- Consumidor revalida ticket no uso, purga ticket/bytes em logout, revogação, mudança de contexto e resposta obsoleta. Não logar/persistir URLs/headers; não prometer revogação instantânea de URL já emitida.
+- Gateway reautoriza ator, sessão, tenant, ownership, entidade e finalidade em cada operação. Upload completo prepare/finalize/discard, transporte, catálogo e validação real de bytes precisam crosswalk do C02: esta publicação não inventa essas assinaturas nem afirma que estão completas.
+- R2 privado guarda master; Postgres guarda catálogo/permissões/vínculos/auditoria. Mesma plataforma sem nome de app na chave. C02 anuncia mudança compatível ou migração coordenada aos consumidores antes de exigir nova API.
+- Forms inclui imagens/perguntas/respostas/anexos e um XLSX com as respostas do formulário no R2 privado. Nunca dar Forms por completo sem mídia exigida. Demais import/export: botão acessível e indisponibilidade honesta, sem picker/parser/job/arquivo/RPC/persistência.
+- Chat usa R2; Acontece e Momentos R2 com Stream por necessidade medida; Agora R2 master e Stream HOT quando necessário por até24h, removendo somente a cópia Stream. PDF nunca Stream.
+
+## Qualidade, métricas e produção
+
+FE verified: composição normal sem fallback fake, UI/estados, validação, navegação, foco/teclado/toque, responsividade, acessibilidade, tema, contrato repository/gateway e regressão. Pode ser certificado sem backend, usando double fiel em teste. BE done: contrato/validação/sessão/capability/tenant/ownership/RLS/grants/persistência/idempotência/auditoria/negativas/reload e todos os provedores aplicáveis no remoto autorizado, sem exigir UI. E2E: UI normal → backend real e provedores → persistência/reload → negativas aplicáveis e auditoria/cleanup. Tela aberta, fail-closed, local-green, fixture ou golden isolado não certifica E2E.
+
+Separar quatro medições: ações efetivamente auditadas (inclusive falhas), conclusão FE, BE e E2E. Numerador, denominador, IDs, critérios, data e evidências sempre explícitos. Não somar percentuais nem inventar implementação %. Fonte inicial 0/219 FE,0/212 BE normativas aplicáveis,0/187 E2E ativas; escopo ativo backend187, gate3,adiadas22 separados. Nenhuma promoção nesta preparação. Ausência de evidência de auditoria nominal R01 significa 0 ações reauditoradas em runtime nesta rodada, não zero histórico implementado.
+
+Preservar famílias coelo-ui administrativas e Principal, inclusive referências parciais aprovadas em Publicar. Não atualizar goldens automaticamente. Componentizar se ajudar agora e for barato; refatoração ampla pode virar dívida explícita sem adiar comportamento, segurança ou acessibilidade necessária.
+
+Todo remoto Coelo é produção. Só C00 coordena/aplica pacote nominal já autorizado, revisado, testado localmente, forward-only e serializado, com recuperação. Coordenação não se autoaprova. Autorização anterior não se transfere a pacote novo. Nenhum executor faz migrations/deploy/config remotos. UI mutante requer cenário/personas/janela nominalmente autorizados e registrados. Só usar personas sintéticas e tenants A/B isolados; catálogo/claims/ID enviado pelo cliente não autoriza. Segredos fora de Git/bundle/log/URL permanente; não copiar credenciais entre worktrees. Guardar evidências minimizadas.
+
+## Continuidade, checkpoints e integração
+
+Executores continuam lotes independentes sem pedir confirmação por ação. Publicam handoffs às12:50,14:50,17:30 e quando houver mudança material. C00 confere aproximadamente às :00/:30 apenas revisões novas, snapshots compactos de tarefas, commits novos e dependências/fila. Intervir só por decisão/dependência que muda próximo passo, conflito, falha de coordenação, ociosidade comprovada com passo executável ou fechamento. Verificar teste/build/ferramenta antes de chamar parado; uma retomada por causa/revisão, investigar se não resolve. Não mandar continue a tarefa ativa nem reler conversas inteiras.
+
+Codex: acompanhamento/retomada pelas ferramentas nativas quando houver IDs. Claude: assignment versionada, consultada por mecanismo nativo da própria sessão, se disponível; registrar mecanismo/ID/cadência e limites. Markdown sozinho não acorda sessão. Sem ponte de teclado, integração inventada ou API paga.
+
+Heartbeat único da C00, ID `e2-r01-c00-acompanhamento-30-min`: despertar de10min para alcançar :40; consultas aos executores somente :00/:30 ou evento devido. Demais despertares silenciosos. 13:00,15:00,17:40 em08/09: feedback ao Owner e relatório datado com deltas, quatro medições, implementado/verificado/falta implementar/falta testar, bloqueios/owner/próximo passo, SHAs/integração/push/produção separados, ETA por dependências e risco/menor mitigação. Sem handoff novo usar “última evidência às HH:MM”. Registrar atraso real se app não disparar pontualmente. Não prometer acordar com app/host desligado. Nenhuma configuração nativa Claude foi verificada ainda.
+
+Revisar e integrar lotes aptos continuamente: confirmar baseline/SHAs/files/reservas/diff/testes, separar WIP, aplicar somente commits de código aptos, executar regressão proporcional no destino, registrar SHA origem→destino e acknowledgement, publicar baseline. Executores não fazem merge; commits/push pequenos nas próprias branches em `origin` são autorizados, sem force-push/dev. C00 publica branch de integração e entrega dev sem misturar trabalho externo. Antes de cada operação confira árvore/index e arquivos nominais; proibidos reset --hard, clean, stash global, add -A ou commit indiscriminado.
+
+05:30 em09/09: fechamento seguro, sem abandonar operação em curso. Até06:00: commits, push verificado, handoff final, evidências, pendências e comandos exatos de retomada; WIP separado. A partir06:00 suspenda novas atribuições R01, integre aptos, teste e reconcilie rastreadores/inventário/coordenação. Antes de limpar preserve SHA/evidência; remover somente worktree R01 sem sessão ativa, limpa e com preservação/integração/arquivamento comprovados, sem force ou apagar branches com commits únicos. Até07:40 entregue feedback e next-round/R02 completo, mesmo com bloqueios. Renovar C00 exige transferência explícita, confirmação do sucessor e desativação do heartbeat antigo antes do novo writer. Não criar as conversas automaticamente.

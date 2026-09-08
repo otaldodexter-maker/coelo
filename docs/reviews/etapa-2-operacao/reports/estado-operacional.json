@@ -1,0 +1,78 @@
+{
+  "source": "Owner R01; native tools; baseline inspection",
+  "status": "prepared-awaiting-executor-sessions",
+  "generated_at": "2026-09-08T12:19:18-03:00",
+  "round": "R01",
+  "writer": "01a0818b-2a34-7fa3-a9aa-f191fc91cc8d",
+  "writer_active": true,
+  "code_baseline": "6cb8ba15bae15f5a6129b0db6e740a66f8f82b3f",
+  "window_start": "2026-09-08T12:20:00-03:00",
+  "window_end": "2026-09-16T12:20:00-03:00",
+  "delivery_branch": "dev",
+  "runtime_target": "localhost normal + real Supabase; remote mutable scenarios require nominal authorization",
+  "last_poll": null,
+  "processed_events": [],
+  "executors": {
+    "C01": {
+      "name": "E2 R01 C01 — Identidade e acesso",
+      "thread_id": null,
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01",
+      "branch": "codex/e2-r01-c01-identidade",
+      "instruction_revision": 1,
+      "received_revision": 0,
+      "integrated_revision": 0,
+      "last_evidence": null
+    },
+    "C02": {
+      "name": "E2 R01 C02 — Forms, mídia e cuidado",
+      "thread_id": null,
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
+      "branch": "codex/e2-r01-c02-forms-midia",
+      "instruction_revision": 1,
+      "received_revision": 0,
+      "integrated_revision": 0,
+      "last_evidence": null
+    },
+    "C03": {
+      "name": "E2 R01 C03 — Operações",
+      "thread_id": null,
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03",
+      "branch": "codex/e2-r01-c03-operacoes",
+      "instruction_revision": 1,
+      "received_revision": 0,
+      "integrated_revision": 0,
+      "last_evidence": null
+    },
+    "C04": {
+      "name": "E2 R01 C04 — Estruturas e pessoas",
+      "thread_id": null,
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c04",
+      "branch": "claude/e2-r01-c04-estruturas",
+      "instruction_revision": 1,
+      "received_revision": 0,
+      "integrated_revision": 0,
+      "last_evidence": null
+    },
+    "C05": {
+      "name": "E2 R01 C05 — Comunicação e Principal",
+      "thread_id": null,
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c05",
+      "branch": "claude/e2-r01-c05-comunicacao",
+      "instruction_revision": 1,
+      "received_revision": 0,
+      "integrated_revision": 0,
+      "last_evidence": null
+    }
+  },
+  "remote_authorizations": [],
+  "remote_test_leases": [],
+  "integration_queue": [],
+  "automation_id": "e2-r01-c00-acompanhamento-30-min",
+  "docker": {
+    "checked_at": "2026-09-08T12:20:45-03:00",
+    "server_version": "29.7.2",
+    "running_containers": 0,
+    "engine_blocker": false,
+    "sql_replay_verified": false
+  }
+}
