@@ -114,6 +114,8 @@ abstract final class SuperadminRoutes {
   static const personCreate = '/people/new';
   static const personCreateName = 'person-create';
   static const personEdit = '/people/:personId/edit';
+  static const personDetail = '/people/:personId';
+  static const personDetailName = 'person-detail';
   static const personEditName = 'person-edit';
   static const imports = '/imports';
   static const importsName = 'imports';

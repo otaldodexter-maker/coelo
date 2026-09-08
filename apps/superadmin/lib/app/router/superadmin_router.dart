@@ -153,6 +153,8 @@ import '../../features/people/data/supabase_person_directory_repository.dart';
 import '../dev_menu/development_person_directory_repository.dart';
 import '../dev_menu/development_person_identity_repository.dart';
 import '../../features/people/domain/person_directory.dart' hide PersonDirectoryPage;
+import '../../features/people/domain/person_detail_reader.dart';
+import '../../features/people/presentation/person_detail_page.dart';
 import '../../features/people/domain/person_identity.dart';
 import '../../features/people/presentation/person_directory_page.dart';
 import '../../features/people/presentation/person_edit_route_page.dart';
@@ -231,6 +233,7 @@ GoRouter createSuperadminRouter({
   bool enableAssessmentMutations = false,
   PersonDirectoryRepository personDirectoryRepository =
       const UnavailablePersonDirectoryRepository(),
+  PersonDetailReader personDetailReader = const UnavailablePersonDetailReader(),
   PersonIdentityRepository personIdentityRepository = const UnavailablePersonIdentityRepository(),
   UnitDirectoryRepository unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
   UnitBackendCommandsGateway unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
@@ -2182,6 +2185,24 @@ GoRouter createSuperadminRouter({
                       pathParameters: {'childId': state.pathParameters['personId']!},
                     ),
                   ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.personDetail,
+            name: SuperadminRoutes.personDetailName,
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, child) => !session.isAuthenticated || session.isPasswordRecovery
+                  ? const SizedBox.shrink()
+                  : PersonDetailPage(
+                      key: ValueKey(session.authorizationInvalidationRevision),
+                      reader: personDetailReader,
+                      id: state.pathParameters['personId']!,
+                      logout: logout,
+                      onBack: () => context.goNamed(SuperadminRoutes.peopleName),
+                      onDestinationSelected: (destination) =>
+                          _navigateFromPersistentShell(context, destination),
+                    ),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.profiles,
