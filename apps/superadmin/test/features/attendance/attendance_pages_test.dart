@@ -1296,6 +1296,45 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('correction dialog does not use a removed call page context', (tester) async {
+    final repository = FakeAttendanceRepository.seeded();
+    addTearDown(repository.dispose);
+    late StateSetter replacePage;
+    var showPage = true;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: StatefulBuilder(
+          builder: (context, setState) {
+            replacePage = setState;
+            return showPage
+                ? AttendanceCallPage(
+                    repository: repository,
+                    callId: 'call-completed',
+                    permissions: const AttendancePermissions.owner(),
+                    logout: unavailableSuperadminLogout,
+                    onBack: () {},
+                  )
+                : const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Corrigir chamada'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Página removida');
+
+    replacePage(() => showPage = false);
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Registrar correção'));
+    await tester.pumpAndSettle();
+
+    expect((await repository.fetchCall('call-completed'))!.revisions, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('failed correction keeps its draft open and retries successfully', (tester) async {
     final repository = _FailOnceCorrectionRepository();
     addTearDown(repository.dispose);
