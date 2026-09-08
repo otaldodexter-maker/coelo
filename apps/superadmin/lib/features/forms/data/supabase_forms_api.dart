@@ -278,12 +278,10 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
       _responseCommand(FormsRpc.editResponse, command, _responsePayload);
 
   @override
-  Future<FormMonitorProjection> getMonitor(FormMonitorQuery query) => _guard(() async {
-    final payload = _map(
-      await _backend.rpc(FormsRpc.getMonitor.functionName, {
-        'p_query': _monitorQuery(query, includeCursor: false),
-      }),
-    );
+  Future<FormMonitorProjection> getMonitor(FormMonitorQuery query) => _internalOperation(() async {
+    final payload = await _internalRpc('superadmin_forms_monitor_v2', {
+      'p_query': _monitorQuery(query, includeCursor: false),
+    });
     return FormMonitorProjection(
       eligibleCount: _integer(payload, 'eligible_count'),
       respondedCount: _integer(payload, 'responded_count'),
@@ -294,19 +292,17 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
 
   @override
   Future<FormCursorPage<FormMonitorScope>> listMonitorHierarchy(FormMonitorQuery query) =>
-      _guard(() async {
+      _internalOperation(() async {
         final cursor = _decodeCursor(query.cursor);
-        final payload = _map(
-          await _backend.rpc(FormsRpc.listMonitorHierarchy.functionName, {
-            'p_query': {
-              ..._monitorQuery(query, includeCursor: false),
-              'cursor_label': cursor?.sortKey,
-              'cursor_id': cursor?.id,
-              'limit': query.limit,
-            },
-          }),
-        );
-        return _page(
+        final payload = await _internalRpc('superadmin_forms_monitor_hierarchy_v2', {
+          'p_query': {
+            ..._monitorQuery(query, includeCursor: false),
+            'cursor_label': cursor?.sortKey,
+            'cursor_id': cursor?.id,
+            'limit': query.limit,
+          },
+        });
+        return _operationalPage(
           payload,
           (item) => FormMonitorScope(
             scopeId: _string(item, 'scope_id'),
@@ -319,59 +315,75 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
             pendingCount: _integer(item, 'pending_count'),
           ),
           cursorKey: 'label',
+          limit: query.limit,
         );
       });
 
   @override
   Future<FormCursorPage<FormMonitorPerson>> listMonitorPeople(FormMonitorQuery query) =>
-      _guard(() async {
+      _internalOperation(() async {
         final cursor = _decodeCursor(query.cursor);
-        final payload = _map(
-          await _backend.rpc(FormsRpc.listMonitorPeople.functionName, {
-            'p_query': {
-              'form_id': query.formId,
-              'application_id': query.applicationId,
-              'occurrence_id': query.occurrenceId,
-              'starts_on_or_after': _date(query.startsOnOrAfter),
-              'ends_on_or_before': _date(query.endsOnOrBefore),
-              'scope_id': query.scopeId,
-              'justification': null,
-              'cursor_name': cursor?.sortKey,
-              'cursor_id': cursor?.id,
-              'limit': query.limit,
-            },
-          }),
-        );
-        return _monitorPeoplePage(payload);
+        final payload = await _internalRpc('superadmin_forms_monitor_people_v2', {
+          'p_query': {
+            'form_id': query.formId,
+            'application_id': query.applicationId,
+            'occurrence_id': query.occurrenceId,
+            'starts_on_or_after': _date(query.startsOnOrAfter),
+            'ends_on_or_before': _date(query.endsOnOrBefore),
+            'scope_id': query.scopeId,
+            'justification': null,
+            'cursor_name': cursor?.sortKey,
+            'cursor_id': cursor?.id,
+            'limit': query.limit,
+          },
+        });
+        return _operationalPage(payload, _monitorPerson, cursorKey: 'name', limit: query.limit);
       });
 
   @override
   Future<FormCursorPage<FormResponseSummary>> listResponses(FormResponsesQuery query) =>
-      _guard(() async {
+      _internalOperation(() async {
         final cursor = _decodeCursor(query.cursor);
-        final payload = _map(
-          await _backend.rpc(FormsRpc.listResponses.functionName, {
-            'p_query': {
-              'form_id': query.formId,
-              'occurrence_id': query.occurrenceId,
-              'cursor_submitted_at': cursor?.sortKey,
-              'cursor_id': cursor?.id,
-              'limit': query.limit,
-            },
-          }),
+        final payload = await _internalRpc('superadmin_forms_responses_v2', {
+          'p_query': {
+            'form_id': query.formId,
+            'occurrence_id': query.occurrenceId,
+            'cursor_submitted_at': cursor == null || cursor.sortKey.isEmpty ? null : cursor.sortKey,
+            'cursor_id': cursor?.id,
+            'limit': query.limit,
+          },
+        });
+        if (payload['next_cursor'] != null &&
+            _list(payload, 'items').map(_map).any((item) => item['identity_mode'] == 'anonymous') &&
+            _map(payload['next_cursor']).containsKey('submitted_at')) {
+          throw const WireFormatException(
+            'Anonymous response cursor must not contain a timestamp.',
+          );
+        }
+        return _operationalPage(
+          payload,
+          _responseSummary,
+          cursorKey: 'submitted_at',
+          limit: query.limit,
+          allowIdOnlyCursor: true,
         );
-        return _page(payload, _responseSummary, cursorKey: 'submitted_at');
       });
 
   @override
-  Future<FormResponseDetail> getResponseDetail(String responseId) => _guard(() async {
-    final payload = _map(
-      await _backend.rpc(FormsRpc.getResponseDetail.functionName, {'p_response_id': responseId}),
-    );
+  Future<FormResponseDetail> getResponseDetail(String responseId) => _internalOperation(() async {
+    final payload = await _internalRpc('superadmin_forms_response_detail_v2', {
+      'p_query': {'response_id': responseId},
+    });
+    if (_string(payload, 'id') != responseId) {
+      throw const WireFormatException('Response detail correlation is invalid.');
+    }
     final answers = _list(
       payload,
       'answers',
-    ).map(_map).map(FormAnswerDto.fromJson).map((dto) => dto.toDomain());
+    ).map(_map).map(FormAnswerDto.fromJson).map((dto) => dto.toDomain()).toList(growable: false);
+    if (answers.map((answer) => answer.itemId).toSet().length != answers.length) {
+      throw const WireFormatException('Response detail contains duplicate answers.');
+    }
     return FormResponseDetail(
       summary: _responseSummary(payload),
       answers: {for (final answer in answers) answer.itemId: answer},
@@ -440,7 +452,21 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
     if (command.payload.kind != FormExportKind.xlsx) {
       throw const FormApiException(FormApiFailureKind.unavailable, 'Disponível depois do MVP');
     }
-    return _fileJobCommand(FormsRpc.requestExport, command);
+    if (command.payload.occurrenceId != null) {
+      throw const FormApiException(
+        FormApiFailureKind.validation,
+        'A exportação XLSX reúne todas as respostas do formulário.',
+      );
+    }
+    return _internalOperation(
+      () async => _fileJob(
+        await _internalRpc('superadmin_form_request_xlsx_v2', {
+          'p_request_id': command.requestId,
+          'p_expected_version': command.expectedVersion,
+          'p_payload': {'form_id': command.payload.formId},
+        }),
+      ),
+    );
   }
 
   @override
@@ -448,19 +474,17 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
     required String formId,
     String? cursor,
     int limit = 25,
-  }) => _guard(() async {
+  }) => _internalOperation(() async {
     final decoded = _decodeCursor(cursor);
-    final payload = _map(
-      await _backend.rpc(FormsRpc.listFileJobs.functionName, {
-        'p_query': {
-          'form_id': formId,
-          'cursor_created_at': decoded?.sortKey,
-          'cursor_id': decoded?.id,
-          'limit': limit,
-        },
-      }),
-    );
-    return _page(payload, _fileJob, cursorKey: 'created_at');
+    final payload = await _internalRpc('superadmin_forms_file_jobs_v2', {
+      'p_query': {
+        'form_id': formId,
+        'cursor_created_at': decoded?.sortKey,
+        'cursor_id': decoded?.id,
+        'limit': limit,
+      },
+    });
+    return _operationalPage(payload, _fileJob, cursorKey: 'created_at', limit: limit);
   });
 
   @override
@@ -525,23 +549,62 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
     return result;
   });
 
-  Future<FormFileJob> _fileJobCommand(FormsRpc rpc, FormCommand<FormExportPayload> command) =>
-      _guard(
-        () async => _fileJob(
-          _map(
-            await _command(
-              rpc,
-              command,
-              (value) => {
-                'form_id': value.formId,
-                'occurrence_id': value.occurrenceId,
-                'kind': _exportKind(value.kind),
-                'justification': value.justification,
-              },
-            ),
-          ),
-        ),
+  Future<Map<String, Object?>> _internalRpc(
+    String functionName,
+    Map<String, Object?> parameters,
+  ) async {
+    final envelope = _map(await _backend.rpc(functionName, parameters));
+    // A denied envelope never exposes data, even if it contains a projection.
+    if (envelope['ok'] == false) throw _internalFailure(_map(envelope['error'])['code']);
+    requireOnlyKeys(envelope, const {'ok', 'data', 'error'}, context: 'forms_operation');
+    if (envelope['ok'] != true || envelope['error'] != null) throw const FormatException();
+    return _map(envelope['data']);
+  }
+
+  Future<T> _internalOperation<T>(Future<T> Function() operation) async {
+    try {
+      return await operation();
+    } on FormApiException {
+      rethrow;
+    } on FormsBackendFailure catch (error) {
+      throw _internalFailure(error.code);
+    } catch (_) {
+      throw _internalFailure(null);
+    }
+  }
+
+  FormCursorPage<T> _operationalPage<T>(
+    Map<String, Object?> payload,
+    T Function(Map<String, Object?> item) decode, {
+    required String cursorKey,
+    required int limit,
+    bool allowIdOnlyCursor = false,
+  }) {
+    final items = _list(payload, 'items');
+    final more = _boolean(payload, 'has_more');
+    final next = payload['next_cursor'];
+    if (items.length > limit ||
+        (more && (items.isEmpty || next == null)) ||
+        (!more && next != null)) {
+      throw const WireFormatException('Invalid operational page.');
+    }
+    if (next != null) {
+      final cursor = _map(next);
+      final idOnly = allowIdOnlyCursor && !cursor.containsKey(cursorKey);
+      requireOnlyKeys(cursor, {if (!idOnly) cursorKey, 'id'}, context: 'operation_cursor');
+      final sortKey = idOnly ? '' : _string(cursor, cursorKey);
+      final id = _string(cursor, 'id');
+      if (id.isEmpty || (!idOnly && sortKey.isEmpty)) throw const FormatException();
+      return FormCursorPage(
+        items: items.map(_map).map(decode).toList(growable: false),
+        nextCursor: _cursorCodec.encode(FormCursor(sortKey: sortKey, id: id)),
       );
+    }
+    return FormCursorPage(
+      items: items.map(_map).map(decode).toList(growable: false),
+      nextCursor: null,
+    );
+  }
 
   Future<Object?> _command<T>(
     FormsRpc rpc,
@@ -609,17 +672,8 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
     );
   }
 
-  FormCursorPage<FormMonitorPerson> _monitorPeoplePage(Map<String, Object?> payload) => _page(
-    payload,
-    (item) => FormMonitorPerson(
-      personId: _string(item, 'person_id'),
-      displayName: _string(item, 'display_name'),
-      profileLabel: _string(item, 'profile_label'),
-      contextLabel: _string(item, 'context_label'),
-      responded: _boolean(item, 'responded'),
-    ),
-    cursorKey: 'name',
-  );
+  FormCursorPage<FormMonitorPerson> _monitorPeoplePage(Map<String, Object?> payload) =>
+      _page(payload, _monitorPerson, cursorKey: 'name');
 }
 
 Map<String, Object?> _applicationPayload(FormApplication value) => {
@@ -715,13 +769,48 @@ FormResponseDraft _responseDraft(Map<String, Object?> payload) {
   );
 }
 
-FormResponseSummary _responseSummary(Map<String, Object?> payload) => FormResponseSummary(
-  id: _string(payload, 'id'),
-  occurrenceId: _string(payload, 'occurrence_id'),
-  formVersionId: _string(payload, 'form_version_id'),
-  submittedAt: _nullableDateTime(payload['submitted_at']),
-  respondentLabel: payload['respondent_label'] as String?,
+FormResponseSummary _responseSummary(Map<String, Object?> payload) {
+  final identityMode = _identityMode(_string(payload, 'identity_mode'));
+  return FormResponseSummary(
+    id: _string(payload, 'id'),
+    occurrenceId: _string(payload, 'occurrence_id'),
+    formVersionId: _string(payload, 'form_version_id'),
+    submittedAt: identityMode == FormIdentityMode.anonymous
+        ? null
+        : _nullableDateTime(payload['submitted_at']),
+    respondentLabel: identityMode == FormIdentityMode.anonymous
+        ? null
+        : payload['respondent_label'] as String?,
+  );
+}
+
+FormMonitorPerson _monitorPerson(Map<String, Object?> item) => FormMonitorPerson(
+  personId: _string(item, 'person_id'),
+  displayName: _string(item, 'display_name'),
+  profileLabel: _string(item, 'profile_label'),
+  contextLabel: _string(item, 'context_label'),
+  responded: _boolean(item, 'responded'),
 );
+
+FormApiException _internalFailure(Object? code) {
+  final kind = switch (code) {
+    'SAI_AUTH_REQUIRED' ||
+    'SAI_SESSION_INVALID' ||
+    'SAI_INTERNAL_CONTEXT_DENIED' ||
+    'SAI_MEMBERSHIP_SUSPENDED' ||
+    'SAI_MEMBERSHIP_REVOKED' ||
+    'SAI_PERMISSION_DENIED' ||
+    'SAI_MFA_REQUIRED' ||
+    '42501' ||
+    'PGRST301' ||
+    '401' ||
+    '403' => FormApiFailureKind.unauthorized,
+    'SAI_INVALID_ARGUMENT' || '22023' => FormApiFailureKind.validation,
+    'SAI_CONCURRENT_CHANGE' || '40001' || '409' => FormApiFailureKind.conflict,
+    _ => FormApiFailureKind.unavailable,
+  };
+  return FormApiException(kind, _failureMessage(kind));
+}
 
 FormFileJob _fileJob(Map<String, Object?> payload) => FormFileJob(
   id: _string(payload, 'id'),
@@ -793,13 +882,6 @@ FormOccurrenceStatus _occurrenceStatus(String value) => FormOccurrenceStatus.val
   (status) => status.name == value,
   orElse: () => throw WireFormatException('Unknown occurrence status: $value.'),
 );
-String _exportKind(FormExportKind value) => switch (value) {
-  FormExportKind.csv => 'csv',
-  FormExportKind.xlsx => 'xlsx',
-  FormExportKind.zip => 'zip',
-  FormExportKind.anonymousParticipation => 'anonymous_participation',
-};
-
 Map<String, Object?> _map(Object? value) {
   if (value is! Map) throw const WireFormatException('Expected an object response.');
   return Map<String, Object?>.from(value);
