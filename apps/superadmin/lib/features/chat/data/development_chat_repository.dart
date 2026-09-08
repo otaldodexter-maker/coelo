@@ -1,7 +1,11 @@
 import '../domain/chat_repository.dart';
 
 /// Deterministic in-memory chat used only by the explicit `/dev` composition.
-final class DevelopmentChatRepository implements ChatRepository {
+///
+/// It stands in for the authorised server, so it is the side that grants
+/// `can_edit` / `can_revoke` and records revisions. The presentation layer only
+/// ever reads what this double projects.
+final class DevelopmentChatRepository implements ChatRepository, ChatMessageRevisionRepository {
   DevelopmentChatRepository({DateTime Function()? now}) : _now = now ?? DateTime.now {
     final anchor = _now().toUtc();
     _conversations.addAll(_seedConversations(anchor));
@@ -13,6 +17,8 @@ final class DevelopmentChatRepository implements ChatRepository {
   final List<ChatConversationSummary> _conversations = [];
   final Map<String, List<ChatMessage>> _threads = {};
   final Map<String, ChatMessage> _sendReceipts = {};
+  final Map<String, ChatMessage> _editReceipts = {};
+  final Set<String> _revokeReceipts = {};
   var _nextMessage = 100;
 
   @override
@@ -95,6 +101,10 @@ final class DevelopmentChatRepository implements ChatRepository {
       sentAt: _now().toUtc(),
       isMine: true,
       kind: 'text',
+      // The grant is issued here, by the side that plays the server. The page
+      // reads it; it never infers it from authorship.
+      canEdit: true,
+      canRevoke: true,
     );
     _threads[command.conversationId]!.insert(0, sent);
     final current = _conversations[conversationIndex];
@@ -106,6 +116,66 @@ final class DevelopmentChatRepository implements ChatRepository {
     );
     _sendReceipts[command.idempotencyKey] = sent;
     return sent;
+  }
+
+  @override
+  Future<ChatMessage> editMessage(ChatEditMessageCommand command) async {
+    // A replayed intent returns the recorded revision instead of writing a
+    // second one, exactly as a receipt table would.
+    final replayed = _editReceipts[command.idempotencyKey];
+    if (replayed != null) return replayed;
+    final issue = ChatMessageBodyPolicy.validate(command.body);
+    if (issue != null) throw ChatEditRejectedException(issue);
+    final target = _locate(command.conversationId, command.messageId);
+    final current = target.messages[target.index];
+    if (!current.canEdit || current.isRevoked) throw const ChatUnauthorizedException();
+    final edited = _reviseMessage(
+      current,
+      body: command.body.trim(),
+      isEdited: true,
+      editedAt: _now().toUtc(),
+    );
+    target.messages[target.index] = edited;
+    _refreshPreview(command.conversationId);
+    _editReceipts[command.idempotencyKey] = edited;
+    return edited;
+  }
+
+  @override
+  Future<void> revokeMessage(ChatRevokeMessageCommand command) async {
+    if (_revokeReceipts.contains(command.idempotencyKey)) return;
+    final target = _locate(command.conversationId, command.messageId);
+    final current = target.messages[target.index];
+    if (!current.canRevoke) throw const ChatUnauthorizedException();
+    // A tombstone keeps its place and its attachments. Only the body and the
+    // remaining affordances are withdrawn.
+    target.messages[target.index] = _reviseMessage(
+      current,
+      body: '',
+      canEdit: false,
+      canRevoke: false,
+      isRevoked: true,
+      revokedAt: _now().toUtc(),
+    );
+    _refreshPreview(command.conversationId);
+    _revokeReceipts.add(command.idempotencyKey);
+  }
+
+  ({List<ChatMessage> messages, int index}) _locate(String conversationId, String messageId) {
+    final messages = _threads[conversationId];
+    final index = messages?.indexWhere((item) => item.id == messageId) ?? -1;
+    if (messages == null || index < 0) throw const ChatUnauthorizedException();
+    return (messages: messages, index: index);
+  }
+
+  void _refreshPreview(String conversationId) {
+    final index = _conversations.indexWhere((item) => item.id == conversationId);
+    final latest = _threads[conversationId]?.firstOrNull;
+    if (index < 0 || latest == null) return;
+    _conversations[index] = _copyConversation(
+      _conversations[index],
+      preview: latest.isRevoked ? 'Mensagem removida' : latest.body,
+    );
   }
 
   @override
@@ -408,6 +478,33 @@ ChatConversationSummary _copyConversation(
   unreadCount: unreadCount ?? source.unreadCount,
   updatedAt: updatedAt ?? source.updatedAt,
   isReadOnly: source.isReadOnly,
+);
+
+ChatMessage _reviseMessage(
+  ChatMessage source, {
+  String? body,
+  bool? canEdit,
+  bool? canRevoke,
+  bool? isEdited,
+  DateTime? editedAt,
+  bool? isRevoked,
+  DateTime? revokedAt,
+}) => ChatMessage(
+  id: source.id,
+  conversationId: source.conversationId,
+  body: body ?? source.body,
+  authorName: source.authorName,
+  sentAt: source.sentAt,
+  isMine: source.isMine,
+  kind: source.kind,
+  // Attachments are kept and marked by the surface, never purged by a revision.
+  attachments: source.attachments,
+  canEdit: canEdit ?? source.canEdit,
+  canRevoke: canRevoke ?? source.canRevoke,
+  isEdited: isEdited ?? source.isEdited,
+  editedAt: editedAt ?? source.editedAt,
+  isRevoked: isRevoked ?? source.isRevoked,
+  revokedAt: revokedAt ?? source.revokedAt,
 );
 
 ChatMessage _message({

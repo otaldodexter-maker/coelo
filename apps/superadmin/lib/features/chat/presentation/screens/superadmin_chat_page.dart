@@ -37,6 +37,44 @@ final class _PendingChatSend {
       body == value;
 }
 
+/// A revision intent whose id survives a failure, so retrying the same edit
+/// replays it instead of recording a second revision.
+final class _PendingChatEdit {
+  const _PendingChatEdit({
+    required this.repository,
+    required this.messageId,
+    required this.body,
+    required this.idempotencyKey,
+  });
+
+  final ChatRepository repository;
+  final String messageId;
+  final String body;
+  final String idempotencyKey;
+
+  bool matches(ChatRepository candidateRepository, String candidateMessageId, String value) =>
+      identical(repository, candidateRepository) &&
+      messageId == candidateMessageId &&
+      body == value;
+}
+
+/// The same preserved-intent rule for `chat.revoke`: a retry must replay the
+/// recorded tombstone, never record a second one.
+final class _PendingChatRevoke {
+  const _PendingChatRevoke({
+    required this.repository,
+    required this.messageId,
+    required this.idempotencyKey,
+  });
+
+  final ChatRepository repository;
+  final String messageId;
+  final String idempotencyKey;
+
+  bool matches(ChatRepository candidateRepository, String candidateMessageId) =>
+      identical(repository, candidateRepository) && messageId == candidateMessageId;
+}
+
 final class SuperadminChatPage extends StatefulWidget {
   const SuperadminChatPage({
     required this.logout,
@@ -83,6 +121,10 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   Object? _threadError;
   var _sending = false;
   _PendingChatSend? _pendingSend;
+  int _revisionRequestGeneration = 0;
+  String? _revisingMessageId;
+  _PendingChatEdit? _pendingEdit;
+  _PendingChatRevoke? _pendingRevoke;
   int _attachmentGeneration = 0;
   ChatAttachmentDraft? _attachmentDraft;
   ChatAttachment? _attachmentAsset;
@@ -108,6 +150,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     _inboxRequestGeneration++;
     _threadRequestGeneration++;
     _sendRequestGeneration++;
+    _revisionRequestGeneration++;
     _repository = widget.chatRepository ?? _configuredRepository();
     _search.clear();
     _composer.clear();
@@ -116,6 +159,9 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     _threadError = null;
     _sending = false;
     _pendingSend = null;
+    _revisingMessageId = null;
+    _pendingEdit = null;
+    _pendingRevoke = null;
     _clearAttachment();
     _inboxPage = 1;
     _inboxCursor = null;
@@ -205,12 +251,20 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     if (conversationChanged) {
       _sendRequestGeneration++;
       _pendingSend = null;
+      // A revision intent belongs to one message in one conversation. Leaving
+      // it alive across a switch could replay it against the wrong thread.
+      _revisionRequestGeneration++;
+      _pendingEdit = null;
+      _pendingRevoke = null;
     }
     setState(() {
       _selected = conversation;
       _thread = null;
       _threadError = null;
-      if (conversationChanged) _sending = false;
+      if (conversationChanged) {
+        _sending = false;
+        _revisingMessageId = null;
+      }
     });
     try {
       final thread = await requestedRepository.fetchThread(
@@ -300,6 +354,228 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     }
   }
 
+  /// The revision transport, when this repository has one. A repository without
+  /// it cannot honour `chat.edit` / `chat.revoke`, which is reported as
+  /// unavailable — never as permission granted or denied.
+  ChatMessageRevisionRepository? get _revisions {
+    // Widened on purpose: the revision contract is deliberately not a subtype of
+    // ChatRepository, and only a local typed Object? promotes to it cleanly.
+    final Object repository = _repository;
+    return repository is ChatMessageRevisionRepository ? repository : null;
+  }
+
+  static const _editUnavailableNotice = 'A edicao de mensagens aguarda o servico autorizado.';
+  static const _revokeUnavailableNotice = 'A remocao de mensagens aguarda o servico autorizado.';
+
+  String _bodyIssueMessage(ChatMessageBodyIssue issue) => switch (issue) {
+    ChatMessageBodyIssue.empty => 'A mensagem nao pode ficar vazia.',
+    ChatMessageBodyIssue.tooLong =>
+      'A mensagem passa de ${ChatMessageBodyPolicy.maximumCharacters} caracteres.',
+  };
+
+  Future<void> _editMessage(ChatMessage message) async {
+    final conversation = _selected;
+    // The affordance is only ever the one the authorised projection granted.
+    if (conversation == null || !message.canEdit || message.isRevoked) return;
+    if (_revisingMessageId != null) return;
+    final draft = await _promptEditedBody(message);
+    if (!mounted || draft == null) return;
+    final body = draft.trim();
+    if (body == message.body) return;
+    // Courtesy only: the server revalidates the same body before it writes.
+    final issue = ChatMessageBodyPolicy.validate(body);
+    if (issue != null) {
+      _showNotice(_bodyIssueMessage(issue));
+      return;
+    }
+    final revisions = _revisions;
+    if (revisions == null) {
+      _showNotice(_editUnavailableNotice);
+      return;
+    }
+    final pending = _pendingEdit;
+    final intent = pending != null && pending.matches(_repository, message.id, body)
+        ? pending
+        : _PendingChatEdit(
+            repository: _repository,
+            messageId: message.id,
+            body: body,
+            idempotencyKey: _requestId(),
+          );
+    _pendingEdit = intent;
+    final generation = ++_revisionRequestGeneration;
+    final requestedRepository = intent.repository;
+    setState(() => _revisingMessageId = message.id);
+    try {
+      final revised = await revisions.editMessage(
+        ChatEditMessageCommand(
+          conversationId: conversation.id,
+          messageId: message.id,
+          body: body,
+          idempotencyKey: intent.idempotencyKey,
+        ),
+      );
+      if (!_isCurrentRevision(generation, requestedRepository, conversation.id)) return;
+      _pendingEdit = null;
+      // Only the server's re-projection replaces the message, so an edit can
+      // never be rendered as a silent local rewrite.
+      setState(() => _thread = _replaceMessage(revised));
+    } on ChatUnauthorizedException catch (error) {
+      if (_isCurrentRevision(generation, requestedRepository, conversation.id)) _denyAccess(error);
+    } on ChatEditUnavailableException {
+      if (_isCurrentRevision(generation, requestedRepository, conversation.id)) {
+        _showNotice(_editUnavailableNotice);
+      }
+    } on ChatEditRejectedException catch (error) {
+      if (_isCurrentRevision(generation, requestedRepository, conversation.id)) {
+        _showNotice(_bodyIssueMessage(error.issue));
+      }
+    } on ChatOfflineException {
+      if (_isCurrentRevision(generation, requestedRepository, conversation.id)) {
+        _showNotice('Sem conexao. A mensagem nao foi editada.');
+      }
+    } catch (_) {
+      if (_isCurrentRevision(generation, requestedRepository, conversation.id)) {
+        _showNotice('Nao foi possivel editar. Tente novamente.');
+      }
+    } finally {
+      _finishRevision(generation);
+    }
+  }
+
+  Future<void> _revokeMessage(ChatMessage message) async {
+    final conversation = _selected;
+    if (conversation == null || !message.canRevoke || message.isRevoked) return;
+    if (_revisingMessageId != null) return;
+    if (!await _confirmRevoke()) return;
+    if (!mounted || _selected?.id != conversation.id) return;
+    final revisions = _revisions;
+    if (revisions == null) {
+      _showNotice(_revokeUnavailableNotice);
+      return;
+    }
+    final pending = _pendingRevoke;
+    final intent = pending != null && pending.matches(_repository, message.id)
+        ? pending
+        : _PendingChatRevoke(
+            repository: _repository,
+            messageId: message.id,
+            idempotencyKey: _requestId(),
+          );
+    _pendingRevoke = intent;
+    final generation = ++_revisionRequestGeneration;
+    final requestedRepository = intent.repository;
+    setState(() => _revisingMessageId = message.id);
+    try {
+      await revisions.revokeMessage(
+        ChatRevokeMessageCommand(
+          conversationId: conversation.id,
+          messageId: message.id,
+          idempotencyKey: intent.idempotencyKey,
+        ),
+      );
+      if (!_isCurrentRevision(generation, requestedRepository, conversation.id)) return;
+      _pendingRevoke = null;
+      // The tombstone is proved by re-reading the authorised thread. The row is
+      // never dropped locally, which would only hide it on this device.
+      await _reloadRevokedThread(generation, requestedRepository, conversation.id);
+    } on ChatUnauthorizedException catch (error) {
+      if (_isCurrentRevision(generation, requestedRepository, conversation.id)) _denyAccess(error);
+    } on ChatRevokeUnavailableException {
+      if (_isCurrentRevision(generation, requestedRepository, conversation.id)) {
+        _showNotice(_revokeUnavailableNotice);
+      }
+    } on ChatOfflineException {
+      if (_isCurrentRevision(generation, requestedRepository, conversation.id)) {
+        _showNotice('Sem conexao. A mensagem nao foi removida.');
+      }
+    } catch (_) {
+      if (_isCurrentRevision(generation, requestedRepository, conversation.id)) {
+        _showNotice('Nao foi possivel remover. Tente novamente.');
+      }
+    } finally {
+      _finishRevision(generation);
+    }
+  }
+
+  Future<void> _reloadRevokedThread(
+    int generation,
+    ChatRepository requestedRepository,
+    String conversationId,
+  ) async {
+    try {
+      final thread = await requestedRepository.fetchThread(
+        ChatThreadQuery(conversationId: conversationId),
+      );
+      if (!_isCurrentRevision(generation, requestedRepository, conversationId)) return;
+      setState(() => _thread = thread);
+    } on ChatUnauthorizedException catch (error) {
+      if (_isCurrentRevision(generation, requestedRepository, conversationId)) _denyAccess(error);
+    } catch (_) {
+      if (!_isCurrentRevision(generation, requestedRepository, conversationId)) return;
+      // The revocation was accepted but its result could not be confirmed. The
+      // list stays as the server last projected it instead of being edited here.
+      _showNotice('Mensagem removida. Recarregue a conversa para confirmar.');
+    }
+  }
+
+  void _finishRevision(int generation) {
+    if (!mounted || generation != _revisionRequestGeneration) return;
+    setState(() => _revisingMessageId = null);
+  }
+
+  ChatThreadPage _replaceMessage(ChatMessage revised) {
+    final current = _thread;
+    if (current == null) return ChatThreadPage(items: [revised]);
+    return ChatThreadPage(
+      items: [for (final item in current.items) item.id == revised.id ? revised : item],
+      nextCursor: current.nextCursor,
+      totalCount: current.totalCount,
+      hasMore: current.hasMore,
+    );
+  }
+
+  Future<String?> _promptEditedBody(ChatMessage message) => showDialog<String>(
+    context: context,
+    builder: (_) => _ChatEditDialog(body: message.body),
+  );
+
+  Future<bool> _confirmRevoke() async =>
+      await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          key: const Key('superadmin-chat-revoke-dialog'),
+          title: const Text('Remover mensagem'),
+          content: const Text(
+            'A mensagem deixa de ser exibida para os participantes, mas continua '
+            'registrada para auditoria.',
+          ),
+          actions: [
+            TextButton(
+              key: const Key('superadmin-chat-revoke-cancel'),
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancelar'),
+            ),
+            FilledButton(
+              key: const Key('superadmin-chat-revoke-confirm'),
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Remover'),
+            ),
+          ],
+        ),
+      ) ??
+      false;
+
+  bool _isCurrentRevision(
+    int generation,
+    ChatRepository requestedRepository,
+    String conversationId,
+  ) =>
+      mounted &&
+      generation == _revisionRequestGeneration &&
+      identical(requestedRepository, _repository) &&
+      _selected?.id == conversationId;
+
   bool _isCurrentSend(int generation, ChatRepository requestedRepository, String conversationId) =>
       mounted &&
       generation == _sendRequestGeneration &&
@@ -313,6 +589,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     _inboxRequestGeneration++;
     _threadRequestGeneration++;
     _sendRequestGeneration++;
+    _revisionRequestGeneration++;
     _search.clear();
     _composer.clear();
     setState(() {
@@ -321,6 +598,9 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       _threadError = null;
       _pendingSend = null;
       _sending = false;
+      _revisingMessageId = null;
+      _pendingEdit = null;
+      _pendingRevoke = null;
       _clearAttachment();
       _inboxPage = 1;
       _inboxCursor = null;
@@ -873,6 +1153,11 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
               return _MessageBubble(
                 key: ValueKey(message.id),
                 message: message,
+                busy: _revisingMessageId != null,
+                // Gated by the server projection alone. Nothing here derives
+                // authorship, ownership or a revision window.
+                onEdit: message.canEdit ? () => _editMessage(message) : null,
+                onRevoke: message.canRevoke ? () => _revokeMessage(message) : null,
                 mediaReader: widget.mediaReader,
                 mediaSession: widget.mediaSession,
               );
@@ -897,16 +1182,48 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
 }
 
 final class _MessageBubble extends StatelessWidget {
-  const _MessageBubble({required this.message, this.mediaReader, this.mediaSession, super.key});
+  const _MessageBubble({
+    required this.message,
+    this.onEdit,
+    this.onRevoke,
+    this.busy = false,
+    this.mediaReader,
+    this.mediaSession,
+    super.key,
+  });
   final ChatMessage message;
+
+  /// Supplied only when the authorised projection granted the action.
+  final VoidCallback? onEdit;
+  final VoidCallback? onRevoke;
+
+  /// Another revision is in flight; the menu stays visible but inert.
+  final bool busy;
   final MediaReader? mediaReader;
   final MediaSession? mediaSession;
+
+  bool get _hasActions => !message.isRevoked && (onEdit != null || onRevoke != null);
+
+  String _timestampLabel(BuildContext context) {
+    final time = MaterialLocalizations.of(
+      context,
+    ).formatTimeOfDay(TimeOfDay.fromDateTime(message.sentAt), alwaysUse24HourFormat: true);
+    // An edit is always stated; a body is never swapped silently.
+    return message.isEdited ? '$time · editada' : time;
+  }
+
+  String get _semanticsLabel {
+    if (message.isRevoked) return '${message.authorName}. Mensagem removida.';
+    return message.isEdited
+        ? '${message.authorName}. ${message.body}. Mensagem editada.'
+        : '${message.authorName}. ${message.body}';
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Semantics(
-      label: '${message.authorName}. ${message.body}',
+      label: _semanticsLabel,
       child: Align(
         alignment: message.isMine ? Alignment.centerRight : Alignment.centerLeft,
         child: Container(
@@ -920,15 +1237,62 @@ final class _MessageBubble extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(message.authorName, style: Theme.of(context).textTheme.labelSmall),
+              if (_hasActions)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        message.authorName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                    ),
+                    const SizedBox(width: CoeloSpacing.space1),
+                    _RevisionMenu(
+                      message: message,
+                      onEdit: onEdit,
+                      onRevoke: onRevoke,
+                      enabled: !busy,
+                    ),
+                  ],
+                )
+              else
+                Text(message.authorName, style: Theme.of(context).textTheme.labelSmall),
               const SizedBox(height: CoeloSpacing.space1),
-              Text(message.body),
+              if (message.isRevoked)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.block_outlined,
+                      size: CoeloSize.iconSm,
+                      color: colors.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: CoeloSpacing.space1),
+                    Flexible(
+                      child: Text(
+                        'Mensagem removida',
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              else
+                Text(message.body),
+              // A tombstone keeps its attachments in place, marked as removed.
               for (final attachment in message.attachments) ...[
                 const SizedBox(height: CoeloSpacing.space2),
                 SuperadminChatAttachmentTile(
                   key: ValueKey(attachment.id),
                   attachment: attachment,
-                  state: SuperadminChatAttachmentState.ready,
+                  state: message.isRevoked
+                      ? SuperadminChatAttachmentState.deleted
+                      : SuperadminChatAttachmentState.ready,
                   mediaReader: mediaReader,
                   mediaSession: mediaSession,
                 ),
@@ -937,10 +1301,7 @@ final class _MessageBubble extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  MaterialLocalizations.of(context).formatTimeOfDay(
-                    TimeOfDay.fromDateTime(message.sentAt),
-                    alwaysUse24HourFormat: true,
-                  ),
+                  _timestampLabel(context),
                   style: Theme.of(
                     context,
                   ).textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
@@ -949,6 +1310,103 @@ final class _MessageBubble extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Editing dialog for one message body.
+///
+/// It owns its controller so the field outlives the awaited route and is
+/// disposed only once the route itself is gone. Disposing on `whenComplete`
+/// tears the controller down while the exit transition is still rebuilding the
+/// field.
+final class _ChatEditDialog extends StatefulWidget {
+  const _ChatEditDialog({required this.body});
+
+  final String body;
+
+  @override
+  State<_ChatEditDialog> createState() => _ChatEditDialogState();
+}
+
+final class _ChatEditDialogState extends State<_ChatEditDialog> {
+  late final _controller = TextEditingController(text: widget.body);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    key: const Key('superadmin-chat-edit-dialog'),
+    title: const Text('Editar mensagem'),
+    content: TextField(
+      key: const Key('superadmin-chat-edit-field'),
+      controller: _controller,
+      autofocus: true,
+      minLines: 1,
+      maxLines: 5,
+      decoration: const InputDecoration(labelText: 'Mensagem'),
+    ),
+    actions: [
+      TextButton(
+        key: const Key('superadmin-chat-edit-cancel'),
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Cancelar'),
+      ),
+      FilledButton(
+        key: const Key('superadmin-chat-edit-save'),
+        onPressed: () => Navigator.pop(context, _controller.text),
+        child: const Text('Salvar'),
+      ),
+    ],
+  );
+}
+
+enum _RevisionAction { edit, revoke }
+
+/// Renders only the revisions the authorised projection already granted for
+/// this message. It has no rule of its own about who may edit or revoke.
+final class _RevisionMenu extends StatelessWidget {
+  const _RevisionMenu({required this.message, required this.enabled, this.onEdit, this.onRevoke});
+
+  final ChatMessage message;
+  final bool enabled;
+  final VoidCallback? onEdit;
+  final VoidCallback? onRevoke;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: CoeloSize.touchMin,
+      height: CoeloSize.touchMin,
+      child: PopupMenuButton<_RevisionAction>(
+        key: Key('superadmin-chat-message-menu-${message.id}'),
+        tooltip: 'Acoes da mensagem',
+        enabled: enabled,
+        padding: EdgeInsets.zero,
+        icon: const Icon(Icons.more_horiz_rounded, size: CoeloSize.iconSm),
+        itemBuilder: (context) => [
+          if (onEdit != null)
+            const PopupMenuItem<_RevisionAction>(
+              key: Key('superadmin-chat-message-edit'),
+              value: _RevisionAction.edit,
+              child: Text('Editar mensagem'),
+            ),
+          if (onRevoke != null)
+            const PopupMenuItem<_RevisionAction>(
+              key: Key('superadmin-chat-message-revoke'),
+              value: _RevisionAction.revoke,
+              child: Text('Remover mensagem'),
+            ),
+        ],
+        onSelected: (action) => switch (action) {
+          _RevisionAction.edit => onEdit?.call(),
+          _RevisionAction.revoke => onRevoke?.call(),
+        },
       ),
     );
   }

@@ -13,7 +13,7 @@ import '../domain/chat_repository.dart';
 ///
 /// It never queries a chat table directly. Conversation ids from the client are
 /// passed only to RPCs that recompute the caller's authorised scope.
-final class SupabaseChatRepository implements ChatRepository {
+final class SupabaseChatRepository implements ChatRepository, ChatMessageRevisionRepository {
   const SupabaseChatRepository(this._client, {SessionMediaUploader? attachmentUploader})
     : _attachmentUploader = attachmentUploader;
 
@@ -102,6 +102,27 @@ final class SupabaseChatRepository implements ChatRepository {
     } catch (error) {
       throw _mapError(error);
     }
+  }
+
+  @override
+  Future<ChatMessage> editMessage(ChatEditMessageCommand command) async {
+    // The courtesy pre-check runs first so an obviously invalid body is named
+    // as such instead of being reported as a missing service.
+    final issue = ChatMessageBodyPolicy.validate(command.body);
+    if (issue != null) throw ChatEditRejectedException(issue);
+    // The internal-identity chat gateway (ADR 0019) exposes no authorised edit
+    // RPC. Guessing a name would either 404 or reach an unreviewed surface, and
+    // returning a receipt would be a lie, so `chat.edit` stays unavailable. The
+    // message the caller holds is left exactly as the server projected it.
+    throw const ChatEditUnavailableException();
+  }
+
+  @override
+  Future<void> revokeMessage(ChatRevokeMessageCommand command) async {
+    // Revocation is a server-side tombstone. There is no authorised RPC yet and
+    // dropping the row locally would only hide the message on this device, so
+    // the action fails closed instead.
+    throw const ChatRevokeUnavailableException();
   }
 
   @override
@@ -212,17 +233,32 @@ ChatConversationSummary _conversation(Map<String, dynamic> json) => ChatConversa
   isReadOnly: _bool(json['is_read_only']),
 );
 
-ChatMessage _message(Map<String, dynamic> json, {required String conversationId}) => ChatMessage(
-  id: _string(json, 'message_id'),
-  conversationId: conversationId,
-  body: json['body_text'] as String? ?? '',
-  // Author presentation is supplied only by the contextual, authorised RPC.
-  authorName: json['author_name'] as String? ?? '',
-  sentAt: _date(json, 'created_at'),
-  isMine: _bool(json['is_mine']),
-  kind: json['message_type'] as String? ?? '',
-  attachments: _rows(json['attachments']).map(_attachment).toList(growable: false),
-);
+ChatMessage _message(Map<String, dynamic> json, {required String conversationId}) {
+  final editedAt = _optionalDate(json['edited_at']);
+  final revokedAt = _optionalDate(json['revoked_at']);
+  final isRevoked = _bool(json['is_revoked']) || revokedAt != null;
+  return ChatMessage(
+    id: _string(json, 'message_id'),
+    conversationId: conversationId,
+    // A tombstone has no body to show. If a projection ever leaks one, it is
+    // dropped here rather than rendered behind a "removida" label.
+    body: isRevoked ? '' : json['body_text'] as String? ?? '',
+    // Author presentation is supplied only by the contextual, authorised RPC.
+    authorName: json['author_name'] as String? ?? '',
+    sentAt: _date(json, 'created_at'),
+    isMine: _bool(json['is_mine']),
+    kind: json['message_type'] as String? ?? '',
+    attachments: _rows(json['attachments']).map(_attachment).toList(growable: false),
+    // Authorisation travels with the projection. An absent flag is a denial, and
+    // a tombstone is never revised again.
+    canEdit: !isRevoked && _bool(json['can_edit']),
+    canRevoke: !isRevoked && _bool(json['can_revoke']),
+    isEdited: _bool(json['is_edited']) || editedAt != null,
+    editedAt: editedAt,
+    isRevoked: isRevoked,
+    revokedAt: revokedAt,
+  );
+}
 
 ChatAttachment _attachment(Map<String, dynamic> json) => ChatAttachment(
   id: _string(json, 'id'),
@@ -311,6 +347,16 @@ String _string(Map<String, dynamic> json, String key) {
 int _int(Object? value) => value is num ? value.toInt() : 0;
 
 bool _bool(Object? value) => value is bool ? value : false;
+
+/// A timestamp the projection may legitimately omit. A present but malformed
+/// value is a contract breach, not an absence, so it still fails.
+DateTime? _optionalDate(Object? value) {
+  if (value == null) return null;
+  if (value is! String) throw const ChatFailureException();
+  final parsed = DateTime.tryParse(value);
+  if (parsed == null) throw const ChatFailureException();
+  return parsed;
+}
 
 DateTime _date(Map<String, dynamic> json, String key) {
   final value = json[key];

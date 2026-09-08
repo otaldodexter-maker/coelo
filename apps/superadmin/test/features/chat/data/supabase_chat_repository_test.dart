@@ -409,6 +409,144 @@ void main() {
     expect(refresh.latestMessageId, isNull);
     expect(refresh.unreadCount, 9);
   });
+  for (final sample in <({String name, Map<String, Object?> extra, bool edit, bool revoke})>[
+    (name: 'omitted', extra: <String, Object?>{}, edit: false, revoke: false),
+    (name: 'false', extra: {'can_edit': false, 'can_revoke': false}, edit: false, revoke: false),
+    (name: 'granted', extra: {'can_edit': true, 'can_revoke': true}, edit: true, revoke: true),
+    // A non-boolean is not a grant. Anything but `true` denies.
+    (
+      name: 'truthy string',
+      extra: {'can_edit': 'true', 'can_revoke': 1},
+      edit: false,
+      revoke: false,
+    ),
+  ]) {
+    test('revision grants come from the projection only (${sample.name})', () async {
+      final client = _client(
+        (request) async => _json({
+          'ok': true,
+          'data': {
+            'items': [
+              {
+                'message_id': 'message-1',
+                'body_text': 'Corpo',
+                'author_name': 'Equipe',
+                'is_mine': true,
+                'message_type': 'text',
+                'created_at': '2026-09-07T12:00:00Z',
+                'attachments': <Object?>[],
+                ...sample.extra,
+              },
+            ],
+          },
+        }, request),
+      );
+      addTearDown(client.dispose);
+
+      final thread = await SupabaseChatRepository(
+        client,
+      ).fetchThread(const ChatThreadQuery(conversationId: 'conversation-1'));
+
+      expect(thread.items.single.canEdit, sample.edit);
+      expect(thread.items.single.canRevoke, sample.revoke);
+    });
+  }
+
+  test('a revoked message withdraws both grants and drops any leaked body', () async {
+    final client = _client(
+      (request) async => _json({
+        'ok': true,
+        'data': {
+          'items': [
+            {
+              'message_id': 'message-1',
+              // A projection that still carries a body for a tombstone is a
+              // contract breach; the body must not reach the surface anyway.
+              'body_text': 'Corpo que nao pode aparecer',
+              'author_name': 'Equipe',
+              'is_mine': true,
+              'message_type': 'text',
+              'created_at': '2026-09-07T12:00:00Z',
+              'attachments': <Object?>[],
+              'revoked_at': '2026-09-07T13:00:00Z',
+              'can_edit': true,
+              'can_revoke': true,
+            },
+          ],
+        },
+      }, request),
+    );
+    addTearDown(client.dispose);
+
+    final thread = await SupabaseChatRepository(
+      client,
+    ).fetchThread(const ChatThreadQuery(conversationId: 'conversation-1'));
+
+    expect(thread.items.single.isRevoked, isTrue);
+    expect(thread.items.single.body, isEmpty);
+    expect(thread.items.single.canEdit, isFalse);
+    expect(thread.items.single.canRevoke, isFalse);
+  });
+
+  test('edit and revoke fail closed without reaching the network', () async {
+    var requests = 0;
+    final client = _client((request) async {
+      requests++;
+      return _json({'ok': true, 'data': <String, Object?>{}}, request);
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseChatRepository(client);
+
+    await expectLater(
+      repository.editMessage(
+        const ChatEditMessageCommand(
+          conversationId: 'conversation-1',
+          messageId: 'message-1',
+          body: 'Corpo novo',
+          idempotencyKey: 'intent-1',
+        ),
+      ),
+      throwsA(isA<ChatEditUnavailableException>()),
+    );
+    await expectLater(
+      repository.revokeMessage(
+        const ChatRevokeMessageCommand(
+          conversationId: 'conversation-1',
+          messageId: 'message-1',
+          idempotencyKey: 'intent-2',
+        ),
+      ),
+      throwsA(isA<ChatRevokeUnavailableException>()),
+    );
+
+    // No RPC name may be guessed while the authorised endpoint does not exist.
+    expect(requests, 0);
+  });
+
+  test('an invalid body is named as such instead of as a missing service', () async {
+    final client = _client(
+      (request) async => _json({'ok': true, 'data': <String, Object?>{}}, request),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseChatRepository(client).editMessage(
+        const ChatEditMessageCommand(
+          conversationId: 'conversation-1',
+          messageId: 'message-1',
+          body: '   ',
+          idempotencyKey: 'intent-1',
+        ),
+      ),
+      throwsA(
+        isA<ChatEditRejectedException>().having(
+          (error) => error.issue,
+          'issue',
+          ChatMessageBodyIssue.empty,
+        ),
+      ),
+    );
+  });
 }
 
 SupabaseClient _client(Future<Response> Function(Request request) handler) => SupabaseClient(

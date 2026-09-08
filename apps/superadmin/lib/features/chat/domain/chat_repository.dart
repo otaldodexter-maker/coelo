@@ -153,6 +153,12 @@ final class ChatMessage {
     required this.isMine,
     required this.kind,
     this.attachments = const [],
+    this.canEdit = false,
+    this.canRevoke = false,
+    this.isEdited = false,
+    this.editedAt,
+    this.isRevoked = false,
+    this.revokedAt,
   });
 
   final String id;
@@ -163,6 +169,26 @@ final class ChatMessage {
   final bool isMine;
   final String kind;
   final List<ChatAttachment> attachments;
+
+  /// Affordances already granted by the authorised projection for this caller.
+  ///
+  /// They are never derived on the client from [isMine], authorship, age or any
+  /// other local signal: profile, hierarchy and RLS decide on the server, which
+  /// revalidates on every command. A payload that omits them means "not
+  /// granted", so both default to false.
+  final bool canEdit;
+  final bool canRevoke;
+
+  /// A body the server replaced through an authorised revision. An edit is
+  /// never applied silently: the surface states that the message changed.
+  final bool isEdited;
+  final DateTime? editedAt;
+
+  /// Logical revocation, i.e. a tombstone rather than a delete. The message
+  /// keeps its place in the conversation and its attachments stay marked, never
+  /// purged by the client; only the server decides to stop projecting it.
+  final bool isRevoked;
+  final DateTime? revokedAt;
 }
 
 final class ChatThreadPage {
@@ -281,6 +307,85 @@ final class ChatAttachmentUploadCommand {
   final String finalizeIdempotencyKey;
 }
 
+enum ChatMessageBodyIssue { empty, tooLong }
+
+/// Client-side pre-checks for a message body.
+///
+/// A courtesy only: it explains a refusal before a pointless round trip and
+/// never authorises anything. The server revalidates the actor, the
+/// conversation, the ownership, the revision window and the body itself.
+abstract final class ChatMessageBodyPolicy {
+  /// Mirrors the server refusal in `superadmin_chat_send_message_v2`
+  /// (`length(normalized_body) > 4000`). The composer does not cap typing
+  /// today, so this is the only cap the client can honestly claim.
+  static const maximumCharacters = 4000;
+
+  static ChatMessageBodyIssue? validate(String body) {
+    final normalized = body.trim();
+    if (normalized.isEmpty) return ChatMessageBodyIssue.empty;
+    // Postgres `length()` counts characters, not UTF-16 code units.
+    if (normalized.runes.length > maximumCharacters) return ChatMessageBodyIssue.tooLong;
+    return null;
+  }
+}
+
+/// `chat.edit`: replaces the body of a message the server already authorised
+/// this caller to revise.
+final class ChatEditMessageCommand {
+  const ChatEditMessageCommand({
+    required this.conversationId,
+    required this.messageId,
+    required this.body,
+    required this.idempotencyKey,
+  }) : assert(conversationId != ''),
+       assert(messageId != ''),
+       assert(idempotencyKey != '');
+
+  final String conversationId;
+  final String messageId;
+  final String body;
+
+  /// Preserved intent id. A retry of the same edit replays the recorded
+  /// revision instead of writing a second one.
+  final String idempotencyKey;
+}
+
+/// `chat.revoke`: turns a sent message into a tombstone. It is a logical
+/// revocation, so the row keeps its place and its attachments stay marked.
+final class ChatRevokeMessageCommand {
+  const ChatRevokeMessageCommand({
+    required this.conversationId,
+    required this.messageId,
+    required this.idempotencyKey,
+  }) : assert(conversationId != ''),
+       assert(messageId != ''),
+       assert(idempotencyKey != '');
+
+  final String conversationId;
+  final String messageId;
+
+  /// Preserved intent id, for the same reason as an edit: a retry must replay
+  /// the recorded revocation instead of recording a second one.
+  final String idempotencyKey;
+}
+
+/// Server-authorised revision commands over an already sent message.
+///
+/// Deliberately separate from [ChatRepository]: an adapter with no authorised
+/// revision endpoint must not be forced to declare a capability it cannot
+/// honour, and a surface must be able to tell "not offered here" from
+/// "offered and refused". Consumers that cannot see this interface treat the
+/// action as unavailable, never as permitted.
+abstract interface class ChatMessageRevisionRepository {
+  /// Returns the server's re-projection of the edited message. The client never
+  /// rewrites a body locally, and the projection carries [ChatMessage.isEdited].
+  Future<ChatMessage> editMessage(ChatEditMessageCommand command);
+
+  /// Records the tombstone. Nothing is returned on purpose: the new state is
+  /// proved by re-reading the thread from the server, never by dropping the row.
+  Future<void> revokeMessage(ChatRevokeMessageCommand command);
+}
+
 abstract interface class ChatRepository {
   Future<int> fetchUnreadTotal();
   Future<ChatInboxPage> fetchInbox(ChatInboxQuery query);
@@ -294,8 +399,16 @@ abstract interface class ChatRepository {
   Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId});
 }
 
-final class UnavailableChatRepository implements ChatRepository {
+final class UnavailableChatRepository implements ChatRepository, ChatMessageRevisionRepository {
   const UnavailableChatRepository();
+
+  @override
+  Future<ChatMessage> editMessage(ChatEditMessageCommand command) =>
+      Future<ChatMessage>.error(const ChatEditUnavailableException());
+
+  @override
+  Future<void> revokeMessage(ChatRevokeMessageCommand command) =>
+      Future<void>.error(const ChatRevokeUnavailableException());
 
   @override
   Future<int> fetchUnreadTotal() async => 0;
@@ -339,6 +452,25 @@ final class ChatAttachmentRejectedException implements Exception {
   const ChatAttachmentRejectedException(this.issue);
 
   final ChatAttachmentIssue issue;
+}
+
+/// No authorised edit endpoint exists yet. Raised instead of inventing an RPC
+/// name, forging a receipt or letting the surface believe the body changed.
+final class ChatEditUnavailableException implements Exception {
+  const ChatEditUnavailableException();
+}
+
+/// The body was refused by the client pre-check, before any round trip.
+final class ChatEditRejectedException implements Exception {
+  const ChatEditRejectedException(this.issue);
+
+  final ChatMessageBodyIssue issue;
+}
+
+/// No authorised revocation endpoint exists yet. Raised instead of removing the
+/// message locally, which would only hide it from this device.
+final class ChatRevokeUnavailableException implements Exception {
+  const ChatRevokeUnavailableException();
 }
 
 final class ChatOfflineException implements Exception {
