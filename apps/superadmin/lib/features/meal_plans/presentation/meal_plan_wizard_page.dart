@@ -1410,6 +1410,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
   }
 
   Future<void> _persist({required bool publish}) async {
+    if (!mounted || _saving) return;
     final contentError = _validateContent();
     if (_name.text.trim().isEmpty || contentError != null) {
       setState(() => _error = contentError ?? 'Informe o nome.');
