@@ -9,6 +9,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('delete preparation permits only one catalog request and confirmation', (
+    tester,
+  ) async {
+    final repository = _Repository();
+    await tester.pumpWidget(_page(GlobalKey(), repository, 'a'));
+    repository.a.complete(_profile('a'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Excluir'));
+    await tester.tap(find.text('Excluir'));
+    final calls = repository.listCalls;
+    repository.page.complete(
+      const AccessProfilePage(items: [], totalCount: 0, page: 0, pageSize: 100),
+    );
+    await tester.pumpAndSettle();
+    expect(calls, 1);
+    expect(find.text('Excluir perfil', skipOffstage: false), findsOneWidget);
+    await tester.tap(find.text('Cancelar'));
+    await tester.pumpAndSettle();
+    expect(repository.deletedIds, isEmpty);
+  });
+
   for (final changeResource in [false, true]) {
     testWidgets('sent delete completion respects current resource: $changeResource', (
       tester,
@@ -67,8 +88,7 @@ void main() {
     await tester.pumpWidget(_page(key, repository, 'b'));
     repository.b.complete(_profile('b'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Excluir e realocar'));
-    await tester.pumpAndSettle();
+    expect(find.text('Excluir e realocar'), findsNothing);
     repository.deleteGate.complete();
     await tester.pumpAndSettle();
     expect(repository.deletedIds, isEmpty);
