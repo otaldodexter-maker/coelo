@@ -8,6 +8,120 @@ import 'package:coelo_superadmin/features/principal_circulars/domain/circular_se
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final publishAt in [null, DateTime.utc(2026, 10, 1, 12)]) {
+    test('recovers publication receipt before another save ($publishAt)', () async {
+      final repository = _PublicationRepository();
+      final controller = _controller(repository)..toggleAudience(CircularAudienceKind.families);
+      addTearDown(controller.dispose);
+      await expectLater(
+        controller.publish(publishAt: publishAt),
+        throwsA(isA<CircularUnavailable>()),
+      );
+      final result = await controller.publish(publishAt: publishAt);
+      expect(repository.saves, 1);
+      expect(repository.publications, 1);
+      expect(repository.calls, hasLength(2));
+      expect(repository.calls[0], repository.calls[1]);
+      expect(
+        result.status,
+        publishAt == null ? CircularStatus.published : CircularStatus.scheduled,
+      );
+      expect(controller.draft.expectedVersion, result.version);
+    });
+  }
+
+  test('recovery preserves later edits without claiming they were published', () async {
+    final repository = _PublicationRepository();
+    final controller = _controller(repository)..toggleAudience(CircularAudienceKind.families);
+    addTearDown(controller.dispose);
+    await expectLater(controller.publish(), throwsA(isA<CircularUnavailable>()));
+    controller.updateTitle('Ainda não publicada');
+    await expectLater(
+      controller.publish(),
+      throwsA(
+        isA<CircularInvalid>().having(
+          (error) => error.code,
+          'code',
+          'publicationRecoveredWithChanges',
+        ),
+      ),
+    );
+    expect(repository.saves, 1);
+    expect(repository.publications, 1);
+    expect(controller.draft.title, 'Ainda não publicada');
+    expect(controller.draft.expectedVersion, 2);
+    expect(controller.state, CircularComposerState.failure);
+    expect(controller.errorCode, 'publicationRecoveredWithChanges');
+    await controller.publish();
+    expect(repository.publications, 2);
+    expect(repository.saves, 2);
+    expect(repository.calls.last.requestId, isNot(repository.calls.first.requestId));
+  });
+
+  test('recovery keeps original schedule and requires explicit changed intent', () async {
+    final repository = _PublicationRepository();
+    final controller = _controller(repository)..toggleAudience(CircularAudienceKind.families);
+    addTearDown(controller.dispose);
+    final firstAt = DateTime.utc(2026, 10, 1);
+    final nextAt = DateTime.utc(2026, 10, 2);
+    await expectLater(controller.publish(publishAt: firstAt), throwsA(isA<CircularUnavailable>()));
+    await expectLater(controller.publish(publishAt: nextAt), throwsA(isA<CircularInvalid>()));
+    expect(repository.calls[0], repository.calls[1]);
+    expect(repository.calls.last.publishAt, firstAt);
+    expect(controller.errorCode, 'publicationRecoveredWithChanges');
+    await controller.publish(publishAt: nextAt);
+    expect(repository.calls.last.publishAt, nextAt);
+    expect(repository.publications, 2);
+  });
+
+  test('concurrent publication shares operation and rejects a competing save', () async {
+    final repository = _PublicationRepository(loseFirstResponse: false, holdPublication: true);
+    final controller = _controller(repository)..toggleAudience(CircularAudienceKind.families);
+    addTearDown(controller.dispose);
+    final first = controller.publish();
+    final second = controller.publish();
+    await repository.started.future;
+    expect(repository.saves, 1);
+    expect(repository.calls, hasLength(1));
+    await expectLater(controller.save(), throwsA(isA<CircularInvalid>()));
+    await expectLater(
+      controller.publish(publishAt: DateTime.utc(2026, 10, 2)),
+      throwsA(isA<CircularInvalid>()),
+    );
+    repository.release.complete();
+    expect((await first).version, (await second).version);
+    expect(repository.publications, 1);
+    expect(repository.saves, 1);
+    expect(controller.busy, isFalse);
+  });
+
+  test('editing while publication is in flight keeps the operation busy', () async {
+    final repository = _PublicationRepository(loseFirstResponse: false, holdPublication: true);
+    final controller = _controller(repository)..toggleAudience(CircularAudienceKind.families);
+    addTearDown(controller.dispose);
+    final result = controller.publish();
+    final rejected = expectLater(result, throwsA(isA<CircularInvalid>()));
+    await repository.started.future;
+    controller.updateTitle('Alterada durante envio');
+    final busyDuringEdit = controller.busy;
+    repository.release.complete();
+    await rejected;
+    expect(busyDuringEdit, isTrue);
+    expect(controller.draft.title, 'Alterada durante envio');
+    expect(controller.errorCode, 'publicationRecoveredWithChanges');
+    expect(controller.busy, isFalse);
+  });
+
+  test('ambiguous publication blocks a new save until recovery', () async {
+    final repository = _PublicationRepository();
+    final controller = _controller(repository)..toggleAudience(CircularAudienceKind.families);
+    addTearDown(controller.dispose);
+    await expectLater(controller.publish(), throwsA(isA<CircularUnavailable>()));
+    await expectLater(controller.save(), throwsA(isA<CircularInvalid>()));
+    expect(controller.errorCode, 'publicationPending');
+    expect(repository.saves, 1);
+  });
+
   test('replays an ambiguous save instead of creating another draft', () async {
     final repository = _AmbiguousSaveRepository();
     final controller = _controller(repository);
@@ -172,6 +286,84 @@ CircularComposerController _controller(CircularRepository repository) {
     )
     ..updateTitle('Circular')
     ..updateBody('Texto');
+}
+
+final class _PublicationRepository implements CircularRepository {
+  _PublicationRepository({this.loseFirstResponse = true, this.holdPublication = false});
+  final bool loseFirstResponse;
+  final bool holdPublication;
+  final started = Completer<void>();
+  final release = Completer<void>();
+  final calls = <({String requestId, String circularId, int version, DateTime? publishAt})>[];
+  final receipts =
+      <
+        String,
+        ({String circularId, int version, DateTime? publishAt, CircularSaveResult result})
+      >{};
+  var saves = 0;
+  var publications = 0;
+  var version = 0;
+
+  @override
+  Future<CircularSaveResult> saveDraft({
+    required String requestId,
+    required CircularScope scope,
+    required CircularDraft draft,
+  }) async {
+    saves++;
+    if (draft.expectedVersion != version) throw const CircularVersionConflict();
+    return CircularSaveResult(
+      id: 'circular-persisted',
+      revisionId: 'revision-${++version}',
+      version: version,
+      status: CircularStatus.draft,
+    );
+  }
+
+  @override
+  Future<CircularSaveResult> publish({
+    required String requestId,
+    required String circularId,
+    required int expectedVersion,
+    DateTime? publishAt,
+  }) async {
+    calls.add((
+      requestId: requestId,
+      circularId: circularId,
+      version: expectedVersion,
+      publishAt: publishAt,
+    ));
+    if (!started.isCompleted) started.complete();
+    if (holdPublication) await release.future;
+    final prior = receipts[requestId];
+    if (prior != null) {
+      if (prior.circularId != circularId ||
+          prior.version != expectedVersion ||
+          prior.publishAt != publishAt) {
+        throw const CircularVersionConflict();
+      }
+      return prior.result;
+    }
+    if (expectedVersion != version) throw const CircularVersionConflict();
+    final result = CircularSaveResult(
+      id: circularId,
+      revisionId: 'published-${++version}',
+      version: version,
+      status: publishAt == null ? CircularStatus.published : CircularStatus.scheduled,
+    );
+    receipts[requestId] = (
+      circularId: circularId,
+      version: expectedVersion,
+      publishAt: publishAt,
+      result: result,
+    );
+    publications++;
+    if (loseFirstResponse && publications == 1) throw const CircularUnavailable();
+    return result;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 final class _PendingSaveRepository implements CircularRepository {

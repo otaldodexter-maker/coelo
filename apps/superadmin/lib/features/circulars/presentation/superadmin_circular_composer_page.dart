@@ -281,6 +281,18 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
       message: 'Circular publicada',
       success: true,
     ),
+    CircularComposerState.failure
+        when widget.controller.errorCode == 'publicationRecoveredWithChanges' =>
+      const _Feedback(
+        message:
+            'Publicação anterior confirmada. Suas alterações ainda não foram publicadas; revise e publique novamente.',
+        success: false,
+      ),
+    CircularComposerState.failure when widget.controller.errorCode == 'publicationPending' =>
+      const _Feedback(
+        message: 'Confirme a publicação pendente em Publicar antes de salvar novas alterações.',
+        success: false,
+      ),
     CircularComposerState.failure => const _Feedback(
       message: 'Revise os campos obrigatórios antes de continuar.',
       success: false,

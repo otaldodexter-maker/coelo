@@ -694,6 +694,10 @@ final class _ComposerFeedback extends StatelessWidget {
       CircularComposerState.published => 'Circular publicada',
       CircularComposerState.conflict =>
         'A Circular foi alterada em outro lugar. Recarregue antes de continuar.',
+      CircularComposerState.failure when errorCode == 'publicationRecoveredWithChanges' =>
+        'Publicação anterior confirmada. Suas alterações ainda não foram publicadas; revise e publique novamente.',
+      CircularComposerState.failure when errorCode == 'publicationPending' =>
+        'Confirme a publicação pendente em Publicar antes de salvar novas alterações.',
       CircularComposerState.failure when errorCode == 'audienceRequired' =>
         'Selecione ao menos um público antes de publicar.',
       CircularComposerState.failure => 'Não foi possível concluir. Tente novamente.',
