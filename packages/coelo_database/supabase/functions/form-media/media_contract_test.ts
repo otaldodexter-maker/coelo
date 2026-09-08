@@ -7,6 +7,8 @@ import {
   opaqueStoragePath,
   parseAssetAccess,
   parseFormMediaEnvelope,
+  parseFormMediaReadDescriptor,
+  parseFormMediaReadGrant,
   parsePrepareAsset,
   readFormMediaEnvelope,
   sha256,
@@ -16,6 +18,135 @@ import {
 } from "./media_contract.ts";
 
 const allowed = "https://superadmin.coelo.me,http://127.0.0.1:8765";
+
+Deno.test("read receipts reject normalized calendars, clocks, offsets and trailing characters", () => {
+  const id = "11111111-1111-4111-8111-111111111111";
+  const request = { asset_id: id, rendition: "preview" as const };
+  const grant = { ...request, read_token: id };
+  const descriptor = {
+    ...request,
+    media_asset_id: id,
+    institution_id: id,
+    form_id: id,
+    bucket: "coelo-media-prod",
+    mime_type: "image/webp",
+    object_key:
+      `tenants/${id}/forms/form/${id}/answer-image/${id}/preview/${id}.webp`,
+  };
+  for (
+    const expiry of [
+      "2026-02-30T16:01:00Z",
+      "1900-02-29T16:01:00Z",
+      "2026-02-29T16:01:00Z",
+      "2026-04-31T16:01:00Z",
+      "2026-00-01T16:01:00Z",
+      "2026-13-01T16:01:00Z",
+      "2026-09-00T16:01:00Z",
+      "2026-09-08T24:00:00Z",
+      "2026-09-08T16:60:00Z",
+      "2026-09-08T16:01:60Z",
+      "2026-09-08T16:01:00+24:00",
+      "2026-09-08T16:01:00-00:60",
+      "2026-09-08T16:01:00Z\n",
+      "2026-09-08T16:01:00Z\r\n",
+      "2026-09-08T16:01:00.1234567Z",
+      "2026-09-08T16:01:00",
+    ]
+  ) {
+    assertThrows(
+      () =>
+        parseFormMediaReadGrant({
+          ok: true,
+          data: { ...grant, expires_at: expiry },
+        }, request),
+      Error,
+      undefined,
+      expiry,
+    );
+    assertThrows(
+      () =>
+        parseFormMediaReadDescriptor(
+          { ...descriptor, expires_at: expiry },
+          request,
+        ),
+      Error,
+      undefined,
+      expiry,
+    );
+  }
+  for (
+    const expiry of [
+      "2000-02-29T16:01:00Z",
+      "2024-02-29T16:01:00.123456Z",
+      "2026-09-08T19:01:00.123456+03:00",
+      "2026-09-08T13:01:00.1-03:00",
+    ]
+  ) {
+    assertEquals(
+      parseFormMediaReadGrant({
+        ok: true,
+        data: { ...grant, expires_at: expiry },
+      }, request).expiresAt,
+      Date.parse(expiry),
+    );
+    assertEquals(
+      parseFormMediaReadDescriptor(
+        { ...descriptor, expires_at: expiry },
+        request,
+      ).expiresAt,
+      Date.parse(expiry),
+    );
+  }
+});
+
+Deno.test("read grant rejects contradictory success envelopes", () => {
+  const id = "11111111-1111-4111-8111-111111111111";
+  const request = { asset_id: id, rendition: "preview" as const };
+  const data = {
+    ...request,
+    read_token: id,
+    expires_at: "2026-09-08T16:01:00Z",
+  };
+  for (const error of [{ code: "SAI_PERMISSION_DENIED" }, false, 0, ""]) {
+    assertThrows(() =>
+      parseFormMediaReadGrant({ ok: true, data, error }, request)
+    );
+  }
+  for (const error of [null, undefined]) {
+    assertEquals(
+      parseFormMediaReadGrant({ ok: true, data, error }, request).readToken,
+      id,
+    );
+  }
+});
+
+Deno.test("read envelope accepts only the isolated asset and rendition contract", () => {
+  const payload = {
+    asset_id: "11111111-1111-4111-8111-111111111111",
+    rendition: "preview",
+  };
+  for (const rendition of ["preview", "original"] as const) {
+    const input = {
+      action: "read" as const,
+      payload: { ...payload, rendition },
+    };
+    assertEquals(parseFormMediaEnvelope(input), input);
+  }
+  for (
+    const input of [
+      { action: "read", payload, request_id: payload.asset_id },
+      { action: "read", payload, expected_version: 0 },
+      { action: "read", payload, actor_id: payload.asset_id },
+      { action: "read", payload: { ...payload, asset_id: "bad" } },
+      { action: "read", payload: { ...payload, rendition: "master" } },
+      { action: "read", payload: { asset_id: payload.asset_id } },
+      { action: "read", payload: { ...payload, edit_secret: "s".repeat(43) } },
+      { action: "read", payload: { ...payload, object_key: "private" } },
+      { action: "read", payload: null },
+      { action: "read", payload: [] },
+    ]
+  ) assertThrows(() => parseFormMediaEnvelope(input));
+});
 
 Deno.test("answers only allowlisted browser preflights", async () => {
   const request = new Request("https://example.test/form-media", {

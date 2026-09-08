@@ -1,13 +1,17 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { R2Client, type R2Config, validateR2Config } from "../_shared/r2_s3.ts";
 import {
   allowedOrigin,
   corsHeaders,
   type FormMediaEnvelope,
+  type FormMediaRead,
   FORMS_BUCKET,
   handleCorsPreflight,
   MAX_IMAGE_BYTES,
   opaqueStoragePath,
   parseAssetAccess,
+  parseFormMediaReadDescriptor,
+  parseFormMediaReadGrant,
   parsePrepareAsset,
   readFormMediaEnvelope,
   sha256,
@@ -21,6 +25,8 @@ type Json = Record<string, unknown>;
 export type FormMediaDependencies = Readonly<{
   envGet: (name: string) => string | undefined;
   createClient: typeof createClient;
+  now?: () => Date;
+  createR2?: (config: R2Config) => Pick<R2Client, "presignGet">;
 }>;
 const productionDependencies: FormMediaDependencies = {
   envGet: (name) => Deno.env.get(name),
@@ -52,6 +58,66 @@ function serviceKey(dependencies: FormMediaDependencies): string {
   }
   return configured.split(",").map((value) => value.trim()).find(Boolean) ??
     dependencies.envGet("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+}
+
+async function readInternalMedia(
+  origin: string | null,
+  payload: FormMediaRead,
+  userClient: SupabaseClient,
+  serviceClient: SupabaseClient,
+  dependencies: FormMediaDependencies,
+): Promise<Response> {
+  try {
+    const now = dependencies.now ?? (() => new Date());
+    const authorized = await userClient.rpc(
+      "superadmin_form_authorize_media_read_v2",
+      { p_query: payload },
+    );
+    if (authorized.error) throw new Error("read_denied");
+    const grant = parseFormMediaReadGrant(authorized.data, payload);
+    if (!(grant.expiresAt > now().getTime())) throw new Error("read_expired");
+    const redeemed = await serviceClient.rpc("form_redeem_media_read_r2_v1", {
+      p_read_token: grant.readToken,
+    });
+    if (redeemed.error) throw new Error("read_denied");
+    const descriptor = parseFormMediaReadDescriptor(redeemed.data, payload);
+    const signingAt = now().getTime();
+    const ttl = Math.min(
+      120,
+      Math.floor(
+        (Math.min(grant.expiresAt, descriptor.expiresAt) - signingAt) / 1000,
+      ),
+    );
+    if (!Number.isSafeInteger(ttl) || ttl < 1) throw new Error("read_expired");
+    const config = validateR2Config({
+      endpoint: dependencies.envGet("COELO_R2_ENDPOINT") ?? "",
+      region: dependencies.envGet("COELO_R2_REGION") ?? "auto",
+      accessKeyId: dependencies.envGet("COELO_R2_ACCESS_KEY_ID") ?? "",
+      secretAccessKey: dependencies.envGet("COELO_R2_SECRET_ACCESS_KEY") ?? "",
+      bucket: descriptor.bucket,
+    });
+    // S3 timestamps have second precision. Freeze the signing clock so the URL
+    // and client ticket cannot outlive either independently authorized receipt.
+    const expiresAt = Math.floor(signingAt / 1000) * 1000 + ttl * 1000;
+    const r2 = dependencies.createR2?.(config) ??
+      new R2Client(config, { now: () => new Date(signingAt) });
+    const signed = await r2.presignGet(descriptor.objectKey, ttl);
+    if (
+      !(expiresAt > now().getTime()) || signed.url.protocol !== "https:" ||
+      signed.url.username || signed.url.password || signed.url.hash
+    ) throw new Error("read_unavailable");
+    return response(origin, 200, {
+      asset_id: payload.asset_id,
+      state: "available",
+      ticket: {
+        url: signed.url.toString(),
+        expires_at: new Date(expiresAt).toISOString(),
+        headers: {},
+      },
+    });
+  } catch {
+    return response(origin, 404, { error: "media_unavailable" });
+  }
 }
 
 export async function handleFormMediaRequest(
@@ -94,6 +160,15 @@ export async function handleFormMediaRequest(
       .getUser();
     if (userError || !userData.user) {
       return response(origin, 401, { error: "unauthorized" });
+    }
+    if (body.action === "read") {
+      return await readInternalMedia(
+        origin,
+        body.payload,
+        userClient,
+        serviceClient,
+        dependencies,
+      );
     }
     const actorLookup = await serviceClient.from("person_auth_links").select(
       "person_id",

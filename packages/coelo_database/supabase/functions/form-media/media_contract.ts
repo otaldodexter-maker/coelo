@@ -48,7 +48,16 @@ const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SHA256 = /^[0-9a-f]{64}$/;
 
+export type FormMediaRead = {
+  asset_id: string;
+  rendition: "original" | "preview";
+};
+
 export type FormMediaEnvelope =
+  | { action: "read"; payload: FormMediaRead }
+  | LegacyFormMediaEnvelope;
+
+type LegacyFormMediaEnvelope =
   & {
     request_id: string;
     expected_version: number;
@@ -63,6 +72,34 @@ export function parseFormMediaEnvelope(value: unknown): FormMediaEnvelope {
     throw new Error("invalid_envelope");
   }
   const data = value as Record<string, unknown>;
+  if (data.action === "read") {
+    if (
+      Object.keys(data).some((key) => key !== "action" && key !== "payload")
+    ) {
+      throw new Error("invalid_envelope");
+    }
+    const payload = data.payload;
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+      throw new Error("invalid_payload");
+    }
+    const read = payload as Record<string, unknown>;
+    if (
+      Object.keys(read).some((key) =>
+        key !== "asset_id" && key !== "rendition"
+      ) ||
+      typeof read.asset_id !== "string" || !UUID.test(read.asset_id) ||
+      (read.rendition !== "original" && read.rendition !== "preview")
+    ) {
+      throw new Error("invalid_payload");
+    }
+    return {
+      action: "read",
+      payload: {
+        asset_id: read.asset_id.toLowerCase(),
+        rendition: read.rendition,
+      },
+    };
+  }
   const keys = new Set(["action", "request_id", "expected_version", "payload"]);
   if (
     Object.keys(data).some((key) => !keys.has(key)) ||
@@ -94,6 +131,97 @@ export function parseFormMediaEnvelope(value: unknown): FormMediaEnvelope {
     };
   }
   throw new Error("invalid_envelope");
+}
+
+function readReceipt(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error("invalid_read_receipt");
+  }
+  return value as Record<string, unknown>;
+}
+
+function readExpiry(value: unknown): number {
+  if (typeof value !== "string") throw new Error("invalid_read_expiry");
+  const match =
+    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,6})?(?:Z|[+-](\d{2}):(\d{2}))$/
+      .exec(value);
+  // JS $ can stop before a trailing newline; require the entire input.
+  if (!match || match[0] !== value) throw new Error("invalid_read_expiry");
+  const [year, month, day, hour, minute, second] = match.slice(1, 7).map(
+    Number,
+  );
+  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (
+    year < 1 || month < 1 || month > 12 || day < 1 || day > days[month - 1] ||
+    hour > 23 || minute > 59 || second > 59 ||
+    Number(match[7] ?? 0) > 23 || Number(match[8] ?? 0) > 59
+  ) {
+    throw new Error("invalid_read_expiry");
+  }
+  // Parse only after validating every component: Date.parse otherwise rolls
+  // impossible calendar days and 24:00 into a different authorized expiry.
+  const time = Date.parse(value);
+  if (!Number.isFinite(time)) throw new Error("invalid_read_expiry");
+  return time;
+}
+
+export function parseFormMediaReadGrant(
+  value: unknown,
+  request: FormMediaRead,
+) {
+  const envelope = readReceipt(value);
+  if (envelope.ok !== true || envelope.error != null) {
+    throw new Error("read_denied");
+  }
+  const data = readReceipt(envelope.data);
+  if (
+    data.asset_id !== request.asset_id ||
+    data.rendition !== request.rendition ||
+    typeof data.read_token !== "string" || !UUID.test(data.read_token)
+  ) {
+    throw new Error("invalid_read_grant");
+  }
+  return { readToken: data.read_token, expiresAt: readExpiry(data.expires_at) };
+}
+
+export function parseFormMediaReadDescriptor(
+  value: unknown,
+  request: FormMediaRead,
+) {
+  const data = readReceipt(value);
+  if (
+    data.asset_id !== request.asset_id ||
+    data.rendition !== request.rendition ||
+    typeof data.media_asset_id !== "string" ||
+    !UUID.test(data.media_asset_id) ||
+    typeof data.institution_id !== "string" ||
+    !UUID.test(data.institution_id) ||
+    typeof data.form_id !== "string" || !UUID.test(data.form_id) ||
+    data.bucket !== "coelo-media-prod" || typeof data.object_key !== "string" ||
+    /[\x00-\x20\x7f]/.test(data.object_key)
+  ) {
+    throw new Error("invalid_read_descriptor");
+  }
+  // Match I003's canonical locator against every server-authorized context ID.
+  const uuid = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
+  const extension = data.mime_type === "image/jpeg"
+    ? "jpg"
+    : data.mime_type === "image/png"
+    ? "png"
+    : data.mime_type === "image/webp"
+    ? "webp"
+    : null;
+  if (
+    !extension || !new RegExp(
+      `^tenants/${data.institution_id}/forms/form/${data.form_id}/answer-image/${data.media_asset_id}/${request.rendition}/${uuid}\\.${extension}$`,
+    ).test(data.object_key)
+  ) throw new Error("invalid_read_locator");
+  return {
+    bucket: data.bucket,
+    objectKey: data.object_key,
+    expiresAt: readExpiry(data.expires_at),
+  };
 }
 
 /** A command contains metadata only. Bound actual bytes before parsing or
