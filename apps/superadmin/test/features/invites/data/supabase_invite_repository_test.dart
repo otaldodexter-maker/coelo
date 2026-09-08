@@ -7,7 +7,52 @@ import 'package:http/http.dart';
 import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+const _inviteId = '50000000-0000-4000-8000-000000000001';
+
 void main() {
+  for (final operation in ['detail', 'resend', 'revoke']) {
+    test('$operation rejects a response for a different invitation', () async {
+      Request? captured;
+      final client = _client((request) async {
+        captured = request;
+        final otherInvite = {..._invite(), 'id': '50000000-0000-4000-8000-000000000002'};
+        return _success(
+          request,
+          operation == 'detail'
+              ? otherInvite
+              : {
+                  'invite': otherInvite,
+                  'replayed': false,
+                  'link': 'https://app.coelo.me/convites/${'a' * 64}',
+                },
+        );
+      });
+      addTearDown(client.dispose);
+      final repository = SupabaseInviteRepository(client);
+      final Future<Object?> result = switch (operation) {
+        'detail' => repository.fetchById(_inviteId),
+        'resend' => repository.resend(
+          const InviteResendCommand(
+            inviteId: _inviteId,
+            requestId: 'request-resend',
+            expectedVersion: 4,
+          ),
+        ),
+        _ => repository.revoke(
+          const InviteRevokeCommand(
+            inviteId: _inviteId,
+            requestId: 'request-revoke',
+            expectedVersion: 4,
+            reason: 'Solicitação cancelada',
+          ),
+        ),
+      };
+
+      await expectLater(result, throwsA(isA<InviteUnavailableException>()));
+      expect(jsonDecode(captured!.body), containsPair('p_invite_id', _inviteId));
+    });
+  }
+
   test('uses only the internal v2 directory RPC and maps minimized issuers', () async {
     Request? captured;
     final client = _client((request) async {
@@ -57,7 +102,7 @@ void main() {
     );
     addTearDown(client.dispose);
 
-    final invite = await SupabaseInviteRepository(client).fetchById('invite-id');
+    final invite = await SupabaseInviteRepository(client).fetchById(_inviteId);
 
     expect(invite!.channels, isEmpty);
     expect(invite.channelLabel, 'Não informado');
@@ -112,14 +157,14 @@ void main() {
 
     await repository.resend(
       const InviteResendCommand(
-        inviteId: 'invite-id',
+        inviteId: _inviteId,
         requestId: 'request-resend',
         expectedVersion: 4,
       ),
     );
     await repository.revoke(
       const InviteRevokeCommand(
-        inviteId: 'invite-id',
+        inviteId: _inviteId,
         requestId: 'request-revoke',
         expectedVersion: 4,
         reason: 'Solicitação cancelada',
@@ -142,7 +187,7 @@ void main() {
     }.entries) {
       final client = _client((request) async => _error(request, entry.key));
       await expectLater(
-        SupabaseInviteRepository(client).fetchById('invite-id'),
+        SupabaseInviteRepository(client).fetchById(_inviteId),
         throwsA(entry.value),
         reason: entry.key,
       );
@@ -163,7 +208,7 @@ void main() {
     );
     addTearDown(identifierClient.dispose);
     await expectLater(
-      SupabaseInviteRepository(identifierClient).fetchById('invite-id'),
+      SupabaseInviteRepository(identifierClient).fetchById(_inviteId),
       throwsA(isA<InviteUnavailableException>()),
     );
 
@@ -177,7 +222,7 @@ void main() {
     addTearDown(linkClient.dispose);
     await expectLater(
       SupabaseInviteRepository(linkClient).resend(
-        const InviteResendCommand(inviteId: 'invite-id', requestId: 'request', expectedVersion: 4),
+        const InviteResendCommand(inviteId: _inviteId, requestId: 'request', expectedVersion: 4),
       ),
       throwsA(isA<InviteUnavailableException>()),
     );
@@ -220,7 +265,7 @@ Map<String, Object?> _invite({
   String profileId = '30000000-0000-4000-8000-000000000001',
   int managementVersion = 4,
 }) => {
-  'id': '50000000-0000-4000-8000-000000000001',
+  'id': _inviteId,
   'scope_kind': 'institution',
   'institution_id': '10000000-0000-4000-8000-000000000001',
   'unit_id': null,
