@@ -1,7 +1,7 @@
 ---
 title: "Usuários internos — gaps nominais do payload de leitura"
 source: "Revisão estática root/realm_audit da migration 20260901210000; escopo original Identidade e Acessos"
-status: "findings-awaiting-nominal-forward-fix; not-runtime-verified"
+status: "nominal-forward-fix-static-reviewed; awaiting-green-replay"
 generated_at: "2026-09-07"
 ---
 
@@ -45,6 +45,29 @@ separados. Nenhum desses gaps autoriza habilitar mutações produtivas agora.
 
 Não houve regra nova de produto para projetar em Knowledge. A fonte técnica
 canônica permanece a migration, com eventual correção forward-only nominal.
+
+## Corretiva nominal — 2026-09-08
+
+O Coordenador informou RED real do teste minimizado: 1 PASS e 2 FAIL, sem
+erro de ACL, com cleanup; Users45 permanece uma evidência separada. A execução
+e a prova de teardown pertencem ao Engenheiro 1, não a esta frente.
+
+Criada pelo CLI 2.116.0 e movida sem trocar o timestamp para a fonte canônica:
+`packages/coelo_database/migrations/20260908021644_superadmin_internal_users_read_minimization.sql`.
+SHA-256 UTF-8/LF: `1cddea65cd5394c727ae56d7c668a2a6e1a7783527c6703f49a9d04f4214e34a`.
+
+Somente duas funções recebem CREATE OR REPLACE: projeção aplica a máscara
+também em `invitation.email` quando não sensível; listagem exige existência de
+auth-link antes de contar/paginar. Não filtra status do auth-link, preservando
+usuários completos suspensos/revogados. O ramo sensível, as assinaturas, os
+filtros, a ordenação, a auditoria, os envelopes e os ACLs existentes ficam
+inalterados. Nenhuma migration histórica foi editada.
+
+Revisão independente `account_review`: sem bloqueios estáticos, comparação
+confirmou somente esses deltas. `git diff --check` passou. GREEN SQL ainda
+pendente do replay serializado nominal; não houve SQL, Docker, DML, deploy ou
+alteração remota nesta frente. Não representa E2E nem habilita edição/convites.
+Gate de memória: no-op; restaura o contrato de minimização já existente.
 
 ## Pacote de teste separado e inventário remoto
 
