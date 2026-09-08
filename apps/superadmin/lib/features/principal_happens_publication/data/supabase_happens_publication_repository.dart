@@ -160,11 +160,8 @@ final class SupabaseHappensPublicationRepository implements HappensPublicationRe
       );
       if (response.status != 200) throw Exception('media_remove_failed');
     } on FunctionException catch (error) {
-      if (error.status == 401 ||
-          error.status == 403 ||
-          (error.status == 422 &&
-              error.details is Map &&
-              (error.details as Map)['error'] == 'media_delete_denied')) {
+      // The legacy 422 envelope also wraps operational RPC failures.
+      if (error.status == 401 || error.status == 403) {
         throw HappensPublicationUnauthorized();
       }
       rethrow;
