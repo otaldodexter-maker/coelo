@@ -3,6 +3,7 @@ import 'package:coelo_domain/locations.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_location_map_preview.dart';
 import '../domain/location_catalog_reader.dart';
 import 'location_detail_controller.dart';
 import 'location_read_widgets.dart';
@@ -97,7 +98,7 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
                         'Visibilidade': locationVisibilityLabel(item.visibility),
                         'Status': locationStatusLabel(item.status),
                       }),
-                      if (item.address case final address?)
+                      if (item.address case final address?) ...[
                         locationTextSection(context, 'Endereço próprio', {
                           'País': locationOptionalText(address['country']),
                           'CEP': locationOptionalText(address['postal_code']),
@@ -108,6 +109,24 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
                           'Número': locationOptionalText(address['number']),
                           'Complemento': locationOptionalText(address['complement']),
                         }),
+                        // Only an external location has an address of its own,
+                        // so only it gets a map. The preview is the shared
+                        // painted placeholder: no key, no network, no claim of
+                        // geographic authority over the stored address.
+                        if (item.kind == LocationKind.external)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+                            child: SuperadminLocationMapPreview(
+                              address: [
+                                address['street'],
+                                address['number'],
+                                address['district'],
+                                address['city'],
+                                address['state'],
+                              ].whereType<String>().where((part) => part.isNotEmpty).join(', '),
+                            ),
+                          ),
+                      ],
                     ] else
                       LocationReadStatePanel(state: _controller.state, prefix: 'location-detail'),
                   ],
