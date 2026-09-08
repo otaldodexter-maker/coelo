@@ -61,6 +61,7 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
   var _submitting = false;
   Object? _commandError;
   var _optionsLoadGeneration = 0;
+  var _commandGeneration = 0;
 
   DateTime get _today => DateUtils.dateOnly(widget.today ?? DateTime.now());
 
@@ -75,9 +76,23 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
   @override
   void didUpdateWidget(covariant AttendanceNewCallPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (identical(oldWidget.repository, widget.repository) && oldWidget.today == widget.today) {
+    if (identical(oldWidget.repository, widget.repository) &&
+        oldWidget.today == widget.today &&
+        oldWidget.initialInstitutionId == widget.initialInstitutionId &&
+        oldWidget.initialUnitId == widget.initialUnitId &&
+        oldWidget.initialGroupId == widget.initialGroupId &&
+        oldWidget.initialActivityId == widget.initialActivityId) {
       return;
     }
+    _commandGeneration++;
+    _submitting = false;
+    _commandError = null;
+    _institution = null;
+    _unit = null;
+    _group = null;
+    _activity = null;
+    _context = widget.initialActivityId == null ? 'group' : 'activity';
+    _currentStep = 0;
     _date = _today;
     _loadOptions(useInitialValues: true);
   }
@@ -85,6 +100,7 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
   @override
   void dispose() {
     _optionsLoadGeneration++;
+    _commandGeneration++;
     _dateFocusNode.dispose();
     super.dispose();
   }
@@ -470,28 +486,37 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
 
   Future<void> _create() async {
     if (_submitting) return;
+    final generation = ++_commandGeneration;
+    final repository = widget.repository;
+    final onCreated = widget.onCreated;
+    final draft = AttendanceCallDraft(
+      institutionId: _institution!,
+      unitId: _unit!,
+      groupId: _group!,
+      activityContextId: _context == 'activity' ? _activity : null,
+      date: _date,
+    );
     setState(() {
       _submitting = true;
       _commandError = null;
     });
     try {
-      final call = await widget.repository.createCall(
-        AttendanceCallDraft(
-          institutionId: _institution!,
-          unitId: _unit!,
-          groupId: _group!,
-          activityContextId: _context == 'activity' ? _activity : null,
-          date: _date,
-        ),
-      );
-      if (!mounted) return;
-      widget.onCreated(call.id);
+      final call = await repository.createCall(draft);
+      if (!_isCurrentCommand(generation, repository)) return;
+      onCreated(call.id);
     } catch (error) {
-      if (mounted) setState(() => _commandError = error);
+      if (_isCurrentCommand(generation, repository)) {
+        setState(() => _commandError = error);
+      }
     } finally {
-      if (mounted) setState(() => _submitting = false);
+      if (_isCurrentCommand(generation, repository)) {
+        setState(() => _submitting = false);
+      }
     }
   }
+
+  bool _isCurrentCommand(int generation, AttendanceRepository repository) =>
+      mounted && generation == _commandGeneration && identical(repository, widget.repository);
 }
 
 class _AttendanceContextFacts extends StatelessWidget {
