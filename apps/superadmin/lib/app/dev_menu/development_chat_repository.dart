@@ -2,6 +2,10 @@ import '../../features/chat/domain/chat_repository.dart';
 
 /// Deterministic, stateful repository used exclusively by `/dev/conversations`.
 final class DevelopmentChatRepository implements ChatRepository {
+  @override
+  Future<ChatAttachment> uploadAttachment(ChatAttachmentUploadCommand command) =>
+      Future<ChatAttachment>.error(const ChatAttachmentUnavailableException());
+
   DevelopmentChatRepository.content()
     : _summaries = [
         ChatConversationSummary(

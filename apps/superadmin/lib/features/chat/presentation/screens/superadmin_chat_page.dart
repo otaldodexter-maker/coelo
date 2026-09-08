@@ -14,6 +14,10 @@ import '../../domain/chat_repository.dart';
 import '../widgets/superadmin_chat_attachment_tile.dart';
 import '../widgets/superadmin_chat_composer.dart';
 
+typedef ChatAttachmentPicker = Future<ChatAttachmentDraft?> Function();
+
+enum _AttachmentPhase { idle, uploading, ready, failed }
+
 final class _PendingChatSend {
   const _PendingChatSend({
     required this.repository,
@@ -37,6 +41,7 @@ final class SuperadminChatPage extends StatefulWidget {
   const SuperadminChatPage({
     required this.logout,
     this.chatRepository,
+    this.attachmentPicker,
     this.mediaReader,
     this.mediaSession,
     this.currentDestination = 'conversations',
@@ -47,6 +52,9 @@ final class SuperadminChatPage extends StatefulWidget {
 
   final LogoutAction logout;
   final ChatRepository? chatRepository;
+
+  /// Injected so the selection step is exercisable without a platform picker.
+  final ChatAttachmentPicker? attachmentPicker;
   final MediaReader? mediaReader;
   final MediaSession? mediaSession;
   final String currentDestination;
@@ -75,6 +83,13 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   Object? _threadError;
   var _sending = false;
   _PendingChatSend? _pendingSend;
+  int _attachmentGeneration = 0;
+  ChatAttachmentDraft? _attachmentDraft;
+  ChatAttachment? _attachmentAsset;
+  var _attachmentPhase = _AttachmentPhase.idle;
+  String? _attachmentMessage;
+  var _attachmentRetryable = false;
+  final _composerFocus = FocusNode();
 
   @override
   void initState() {
@@ -99,6 +114,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     _threadError = null;
     _sending = false;
     _pendingSend = null;
+    _clearAttachment();
     _inboxPage = 1;
     _inboxCursor = null;
     _inboxCursorHistory.clear();
@@ -111,6 +127,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     _searchDebounce?.cancel();
     _search.dispose();
     _composer.dispose();
+    _composerFocus.dispose();
     super.dispose();
   }
 
@@ -230,7 +247,9 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   Future<void> _send() async {
     final conversation = _selected;
     final body = _composer.text.trim();
-    if (conversation == null || body.isEmpty || conversation.isReadOnly || _sending) return;
+    final attachment = _attachmentPhase == _AttachmentPhase.ready ? _attachmentAsset : null;
+    if (conversation == null || conversation.isReadOnly || _sending) return;
+    if (body.isEmpty && attachment == null) return;
     final pending = _pendingSend;
     final intent = pending != null && pending.matches(_repository, conversation.id, body)
         ? pending
@@ -250,12 +269,14 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
           conversationId: conversation.id,
           body: body,
           idempotencyKey: intent.idempotencyKey,
+          attachmentIds: attachment == null ? const [] : [attachment.id],
         ),
       );
       if (!_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) return;
       _pendingSend = null;
       setState(() {
         if (_composer.text.trim() == body) _composer.clear();
+        if (attachment != null) _clearAttachment();
         _thread = ChatThreadPage(items: [sent, ...?_thread?.items]);
       });
     } on ChatUnauthorizedException catch (error) {
@@ -298,12 +319,233 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       _threadError = null;
       _pendingSend = null;
       _sending = false;
+      _clearAttachment();
       _inboxPage = 1;
       _inboxCursor = null;
       _inboxCursorHistory.clear();
       _inboxState = ChatInboxState.unauthorized(error);
     });
   }
+
+  void _clearAttachment() {
+    _attachmentGeneration++;
+    _attachmentDraft = null;
+    _attachmentAsset = null;
+    _attachmentPhase = _AttachmentPhase.idle;
+    _attachmentMessage = null;
+    _attachmentRetryable = false;
+  }
+
+  String _attachmentIssueMessage(ChatAttachmentIssue issue) => switch (issue) {
+    ChatAttachmentIssue.emptyFile => 'O arquivo esta vazio.',
+    ChatAttachmentIssue.unsupportedMediaType => 'Formato nao aceito. Use JPG, PNG, WebP ou PDF.',
+    ChatAttachmentIssue.tooLarge => 'Arquivo acima do limite permitido.',
+    ChatAttachmentIssue.nameTooLong => 'Nome de arquivo invalido.',
+  };
+
+  Future<void> _pickAttachment() async {
+    final picker = widget.attachmentPicker;
+    final conversation = _selected;
+    if (picker == null) {
+      _showNotice('Anexos aguardam o gateway R2 autorizado.');
+      return;
+    }
+    if (conversation == null || conversation.isReadOnly || _sending) return;
+    if (_attachmentPhase == _AttachmentPhase.uploading) return;
+    final generation = ++_attachmentGeneration;
+    final requestedRepository = _repository;
+    final draft = await picker();
+    if (!_isCurrentAttachment(generation, requestedRepository, conversation.id)) return;
+    if (draft == null) {
+      _composerFocus.requestFocus();
+      return;
+    }
+    final issue = ChatAttachmentPolicy.validate(draft);
+    if (issue != null) {
+      setState(() {
+        _attachmentDraft = draft;
+        _attachmentAsset = null;
+        _attachmentPhase = _AttachmentPhase.failed;
+        _attachmentMessage = _attachmentIssueMessage(issue);
+        _attachmentRetryable = false;
+      });
+      _composerFocus.requestFocus();
+      return;
+    }
+    setState(() {
+      _attachmentDraft = draft;
+      _attachmentAsset = null;
+      _attachmentPhase = _AttachmentPhase.uploading;
+      _attachmentMessage = null;
+    });
+    await _uploadAttachment(draft, generation, requestedRepository, conversation.id);
+  }
+
+  Future<void> _uploadAttachment(
+    ChatAttachmentDraft draft,
+    int generation,
+    ChatRepository requestedRepository,
+    String conversationId,
+  ) async {
+    try {
+      final asset = await requestedRepository.uploadAttachment(
+        ChatAttachmentUploadCommand(
+          conversationId: conversationId,
+          draft: draft,
+          idempotencyKey: _requestId(),
+        ),
+      );
+      if (!_isCurrentAttachment(generation, requestedRepository, conversationId)) return;
+      setState(() {
+        _attachmentAsset = asset;
+        _attachmentPhase = _AttachmentPhase.ready;
+        _attachmentMessage = null;
+        _attachmentRetryable = false;
+      });
+      _composerFocus.requestFocus();
+    } on ChatUnauthorizedException catch (error) {
+      if (_isCurrentAttachment(generation, requestedRepository, conversationId)) {
+        _denyAccess(error);
+      }
+    } on ChatAttachmentUnavailableException {
+      if (!_isCurrentAttachment(generation, requestedRepository, conversationId)) return;
+      setState(() {
+        _attachmentPhase = _AttachmentPhase.failed;
+        // Retrying cannot help while the gateway does not exist, so the copy
+        // does not invite it.
+        _attachmentMessage = 'Anexos aguardam o gateway autorizado.';
+        _attachmentRetryable = false;
+      });
+      _composerFocus.requestFocus();
+    } on ChatAttachmentRejectedException catch (error) {
+      if (!_isCurrentAttachment(generation, requestedRepository, conversationId)) return;
+      setState(() {
+        _attachmentPhase = _AttachmentPhase.failed;
+        _attachmentMessage = _attachmentIssueMessage(error.issue);
+        _attachmentRetryable = false;
+      });
+      _composerFocus.requestFocus();
+    } on Object {
+      if (!_isCurrentAttachment(generation, requestedRepository, conversationId)) return;
+      setState(() {
+        _attachmentPhase = _AttachmentPhase.failed;
+        _attachmentMessage = 'Nao foi possivel anexar agora. Tente novamente.';
+        _attachmentRetryable = true;
+      });
+      _composerFocus.requestFocus();
+    }
+  }
+
+  Future<void> _retryAttachment() async {
+    final draft = _attachmentDraft;
+    final conversation = _selected;
+    if (draft == null || conversation == null || !_attachmentRetryable) return;
+    final generation = ++_attachmentGeneration;
+    final requestedRepository = _repository;
+    setState(() {
+      _attachmentPhase = _AttachmentPhase.uploading;
+      _attachmentMessage = null;
+    });
+    await _uploadAttachment(draft, generation, requestedRepository, conversation.id);
+  }
+
+  void _removeAttachment() {
+    setState(_clearAttachment);
+    _composerFocus.requestFocus();
+  }
+
+  bool _isCurrentAttachment(int generation, ChatRepository repository, String conversationId) =>
+      mounted &&
+      generation == _attachmentGeneration &&
+      identical(repository, _repository) &&
+      _selected?.id == conversationId;
+
+  Widget? _attachmentSurface() {
+    final draft = _attachmentDraft;
+    if (draft == null) return null;
+    final colors = Theme.of(context).colorScheme;
+    final failed = _attachmentPhase == _AttachmentPhase.failed;
+    final uploading = _attachmentPhase == _AttachmentPhase.uploading;
+    return Semantics(
+      container: true,
+      label: 'Anexo ${draft.fileName}, ${_attachmentStateLabel()}',
+      child: ExcludeSemantics(
+        child: DecoratedBox(
+          key: const Key('superadmin-chat-attachment-pending'),
+          decoration: BoxDecoration(
+            color: failed ? colors.errorContainer : colors.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(CoeloRadius.md),
+            border: Border.all(color: failed ? colors.error : colors.outlineVariant),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(CoeloSpacing.space2),
+            child: Row(
+              children: [
+                if (uploading)
+                  const SizedBox(
+                    width: CoeloSize.iconMd,
+                    height: CoeloSize.iconMd,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                else
+                  Icon(
+                    draft.mediaType == 'application/pdf'
+                        ? Icons.picture_as_pdf_outlined
+                        : Icons.image_outlined,
+                    color: failed ? colors.error : colors.onSurfaceVariant,
+                  ),
+                const SizedBox(width: CoeloSpacing.space2),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(draft.fileName, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      Text(
+                        _attachmentMessage ?? _attachmentStateLabel(),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: failed ? colors.error : colors.onSurfaceVariant,
+                        ),
+                      ),
+                      // Kept inside the column so a long refusal never pushes the
+                      // action off the row on a narrow composer.
+                      if (failed)
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton(
+                            key: const Key('superadmin-chat-attachment-retry'),
+                            onPressed: _attachmentRetryable ? _retryAttachment : null,
+                            child: const Text('Tentar novamente'),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  key: const Key('superadmin-chat-attachment-remove'),
+                  tooltip: 'Remover anexo',
+                  color: colors.error,
+                  hoverColor: colors.errorContainer,
+                  focusColor: colors.errorContainer,
+                  onPressed: uploading ? null : _removeAttachment,
+                  icon: const Icon(Icons.close_rounded),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _attachmentStateLabel() => switch (_attachmentPhase) {
+    _AttachmentPhase.idle => 'selecionado',
+    _AttachmentPhase.uploading => 'enviando',
+    _AttachmentPhase.ready => 'pronto para enviar',
+    _AttachmentPhase.failed => 'falhou',
+  };
 
   void _showNotice(String message) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
@@ -633,10 +875,14 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         if (!conversation.isReadOnly)
           SuperadminChatComposer(
             controller: _composer,
+            focusNode: _composerFocus,
             compact: compact,
             onSend: _send,
-            onAudio: () => _showNotice('Anexos aguardam o gateway R2 autorizado.'),
-            onImage: () => _showNotice('Anexos aguardam o gateway R2 autorizado.'),
+            canSendWithoutText: _attachmentPhase == _AttachmentPhase.ready,
+            attachment: _attachmentSurface(),
+            onAudio: () =>
+                _showNotice('Gravacao de audio estara disponivel na experiencia completa.'),
+            onImage: _pickAttachment,
           ),
       ],
     );

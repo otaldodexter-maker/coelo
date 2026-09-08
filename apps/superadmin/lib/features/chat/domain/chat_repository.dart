@@ -209,11 +209,72 @@ final class ChatRealtimeRefresh {
   final DateTime occurredAt;
 }
 
+/// A locally selected file that has not been authorised or stored yet.
+final class ChatAttachmentDraft {
+  const ChatAttachmentDraft({required this.fileName, required this.mediaType, required this.bytes});
+
+  final String fileName;
+  final String mediaType;
+  final List<int> bytes;
+}
+
+enum ChatAttachmentIssue { emptyFile, unsupportedMediaType, tooLarge, nameTooLong }
+
+/// Client-side pre-checks for a chat attachment.
+///
+/// They exist to fail fast and explain the refusal, never as authorisation: the
+/// server revalidates actor, scope, real MIME, bytes and checksum before the
+/// asset is linked to a message.
+abstract final class ChatAttachmentPolicy {
+  /// Mirrors the approved Circular media envelope. Video stays out of Chat:
+  /// ADR 0032 does not require Stream for Chat in the MVP.
+  static const maximumBytesByMediaType = <String, int>{
+    'image/jpeg': 10 * 1024 * 1024,
+    'image/png': 10 * 1024 * 1024,
+    'image/webp': 10 * 1024 * 1024,
+    'application/pdf': 5 * 1024 * 1024,
+  };
+
+  static const maximumNameLength = 240;
+
+  /// One attachment per message. The batch limit is an open decision, so this
+  /// stays at the most conservative value instead of guessing an upper bound.
+  static const maximumPerMessage = 1;
+
+  static ChatAttachmentIssue? validate(ChatAttachmentDraft draft) {
+    if (draft.bytes.isEmpty) return ChatAttachmentIssue.emptyFile;
+    if (draft.fileName.trim().isEmpty || draft.fileName.length > maximumNameLength) {
+      return ChatAttachmentIssue.nameTooLong;
+    }
+    final maximumBytes = maximumBytesByMediaType[draft.mediaType];
+    if (maximumBytes == null) return ChatAttachmentIssue.unsupportedMediaType;
+    if (draft.bytes.length > maximumBytes) return ChatAttachmentIssue.tooLarge;
+    return null;
+  }
+}
+
+final class ChatAttachmentUploadCommand {
+  const ChatAttachmentUploadCommand({
+    required this.conversationId,
+    required this.draft,
+    required this.idempotencyKey,
+  }) : assert(conversationId != ''),
+       assert(idempotencyKey != '');
+
+  final String conversationId;
+  final ChatAttachmentDraft draft;
+  final String idempotencyKey;
+}
+
 abstract interface class ChatRepository {
   Future<int> fetchUnreadTotal();
   Future<ChatInboxPage> fetchInbox(ChatInboxQuery query);
   Future<ChatThreadPage> fetchThread(ChatThreadQuery query);
   Future<ChatMessage> sendMessage(ChatSendMessageCommand command);
+
+  /// Stores an attachment through the authorised server gateway and returns the
+  /// catalogued asset. The client never signs, names or reaches the bucket.
+  Future<ChatAttachment> uploadAttachment(ChatAttachmentUploadCommand command);
   Future<void> markRead({required String conversationId, required String upToMessageId});
   Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId});
 }
@@ -237,6 +298,10 @@ final class UnavailableChatRepository implements ChatRepository {
       Future<ChatMessage>.error(const ChatFailureException());
 
   @override
+  Future<ChatAttachment> uploadAttachment(ChatAttachmentUploadCommand command) =>
+      Future<ChatAttachment>.error(const ChatAttachmentUnavailableException());
+
+  @override
   Future<void> markRead({required String conversationId, required String upToMessageId}) =>
       Future<void>.error(const ChatFailureException());
 
@@ -247,6 +312,18 @@ final class UnavailableChatRepository implements ChatRepository {
 
 final class ChatUnauthorizedException implements Exception {
   const ChatUnauthorizedException();
+}
+
+/// The authorised attachment gateway is not wired yet. It is raised instead of
+/// pretending an upload succeeded, so the surface can stay honest.
+final class ChatAttachmentUnavailableException implements Exception {
+  const ChatAttachmentUnavailableException();
+}
+
+final class ChatAttachmentRejectedException implements Exception {
+  const ChatAttachmentRejectedException(this.issue);
+
+  final ChatAttachmentIssue issue;
 }
 
 final class ChatOfflineException implements Exception {

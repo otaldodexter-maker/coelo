@@ -9,6 +9,7 @@ final class DevelopmentChatRepository implements ChatRepository {
   }
 
   final DateTime Function() _now;
+  int _attachmentSequence = 0;
   final List<ChatConversationSummary> _conversations = [];
   final Map<String, List<ChatMessage>> _threads = {};
   final Map<String, ChatMessage> _sendReceipts = {};
@@ -105,6 +106,20 @@ final class DevelopmentChatRepository implements ChatRepository {
     );
     _sendReceipts[command.idempotencyKey] = sent;
     return sent;
+  }
+
+  @override
+  Future<ChatAttachment> uploadAttachment(ChatAttachmentUploadCommand command) async {
+    final issue = ChatAttachmentPolicy.validate(command.draft);
+    if (issue != null) throw ChatAttachmentRejectedException(issue);
+    _attachmentSequence++;
+    return ChatAttachment(
+      id: 'dev-attachment-$_attachmentSequence',
+      fileName: command.draft.fileName,
+      mediaType: command.draft.mediaType,
+      byteSize: command.draft.bytes.length,
+      assetId: 'dev-asset-$_attachmentSequence',
+    );
   }
 
   @override

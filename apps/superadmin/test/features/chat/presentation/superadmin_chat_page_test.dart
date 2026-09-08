@@ -704,6 +704,10 @@ final class _ImageReader implements MediaReader {
 }
 
 final class _ChatRepository implements ChatRepository {
+  @override
+  Future<ChatAttachment> uploadAttachment(ChatAttachmentUploadCommand command) =>
+      Future<ChatAttachment>.error(const ChatAttachmentUnavailableException());
+
   _ChatRepository._({required this.inbox, required this.thread});
 
   factory _ChatRepository.standard() => _ChatRepository._(
@@ -785,6 +789,10 @@ final class _ChatRepository implements ChatRepository {
 }
 
 final class _ControlledSearchRepository implements ChatRepository {
+  @override
+  Future<ChatAttachment> uploadAttachment(ChatAttachmentUploadCommand command) =>
+      Future<ChatAttachment>.error(const ChatAttachmentUnavailableException());
+
   final _fallback = _ChatRepository.standard();
   final Map<String, Completer<ChatInboxPage>> pending = {};
 
@@ -836,6 +844,10 @@ final class _ControlledSearchRepository implements ChatRepository {
 }
 
 final class _PaginatedChatRepository implements ChatRepository {
+  @override
+  Future<ChatAttachment> uploadAttachment(ChatAttachmentUploadCommand command) =>
+      Future<ChatAttachment>.error(const ChatAttachmentUnavailableException());
+
   static final nextCursor = ChatCursor(DateTime.utc(2026, 8, 20), 'conversation-8');
   final List<ChatInboxQuery> inboxQueries = [];
 
@@ -868,6 +880,10 @@ final class _PaginatedChatRepository implements ChatRepository {
 }
 
 final class _ControlledThreadSearchRepository implements ChatRepository {
+  @override
+  Future<ChatAttachment> uploadAttachment(ChatAttachmentUploadCommand command) =>
+      Future<ChatAttachment>.error(const ChatAttachmentUnavailableException());
+
   final _fallback = _ChatRepository.standard();
   Completer<ChatThreadPage>? olderThread;
   var _sharedThreadRequests = 0;
@@ -919,6 +935,10 @@ final class _ControlledThreadSearchRepository implements ChatRepository {
 }
 
 final class _UnauthorizedChatRepository implements ChatRepository {
+  @override
+  Future<ChatAttachment> uploadAttachment(ChatAttachmentUploadCommand command) =>
+      Future<ChatAttachment>.error(const ChatAttachmentUnavailableException());
+
   final List<ChatInboxQuery> queries = [];
 
   @override
@@ -932,6 +952,10 @@ final class _UnauthorizedChatRepository implements ChatRepository {
 }
 
 final class _ControlledSendRepository implements ChatRepository {
+  @override
+  Future<ChatAttachment> uploadAttachment(ChatAttachmentUploadCommand command) =>
+      Future<ChatAttachment>.error(const ChatAttachmentUnavailableException());
+
   final List<ChatSendMessageCommand> sent = [];
   final Completer<ChatMessage> _firstSend = Completer<ChatMessage>();
   int threadRequests = 0;
@@ -990,6 +1014,10 @@ final class _ControlledSendRepository implements ChatRepository {
 }
 
 final class _AmbiguousSendRepository implements ChatRepository {
+  @override
+  Future<ChatAttachment> uploadAttachment(ChatAttachmentUploadCommand command) =>
+      Future<ChatAttachment>.error(const ChatAttachmentUnavailableException());
+
   final List<ChatSendMessageCommand> commands = [];
   final Map<String, ChatMessage> _receipts = {};
   int persistedMessages = 0;
@@ -1032,6 +1060,10 @@ final class _AmbiguousSendRepository implements ChatRepository {
 }
 
 final class _RevokedChatRepository implements ChatRepository {
+  @override
+  Future<ChatAttachment> uploadAttachment(ChatAttachmentUploadCommand command) =>
+      Future<ChatAttachment>.error(const ChatAttachmentUnavailableException());
+
   _RevokedChatRepository({
     this.pendingReceipt = false,
     this.denyThread = false,
@@ -1082,6 +1114,10 @@ final class _RevokedChatRepository implements ChatRepository {
 }
 
 final class _RefreshingChatRepository implements ChatRepository {
+  @override
+  Future<ChatAttachment> uploadAttachment(ChatAttachmentUploadCommand command) =>
+      Future<ChatAttachment>.error(const ChatAttachmentUnavailableException());
+
   _RefreshingChatRepository({required this.readOnlyAfterRefresh});
   final bool readOnlyAfterRefresh;
   final send = Completer<ChatMessage>();

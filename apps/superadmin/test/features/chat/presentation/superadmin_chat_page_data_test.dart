@@ -138,6 +138,10 @@ void main() {
 }
 
 final class _ChatRepository implements ChatRepository {
+  @override
+  Future<ChatAttachment> uploadAttachment(ChatAttachmentUploadCommand command) =>
+      Future<ChatAttachment>.error(const ChatAttachmentUnavailableException());
+
   _ChatRepository({required this.inbox, this.thread = const ChatThreadPage(items: [])});
 
   final ChatInboxPage inbox;

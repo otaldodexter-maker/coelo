@@ -95,6 +95,16 @@ final class SupabaseChatRepository implements ChatRepository {
   }
 
   @override
+  Future<ChatAttachment> uploadAttachment(ChatAttachmentUploadCommand command) async {
+    final issue = ChatAttachmentPolicy.validate(command.draft);
+    if (issue != null) throw ChatAttachmentRejectedException(issue);
+    // The authorised chat-media gateway does not exist yet, and the client must
+    // never sign or address the bucket itself. Failing closed keeps the surface
+    // honest instead of inventing a transport.
+    throw const ChatAttachmentUnavailableException();
+  }
+
+  @override
   Future<void> markRead({required String conversationId, required String upToMessageId}) async {
     try {
       _data(

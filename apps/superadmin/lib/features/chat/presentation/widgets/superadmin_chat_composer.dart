@@ -12,6 +12,9 @@ final class SuperadminChatComposer extends StatefulWidget {
     this.onEmojiSelected,
     this.onAudio,
     this.onImage,
+    this.attachment,
+    this.canSendWithoutText = false,
+    this.focusNode,
     this.compact = false,
     super.key,
   });
@@ -22,6 +25,13 @@ final class SuperadminChatComposer extends StatefulWidget {
   final ValueChanged<String>? onEmojiSelected;
   final VoidCallback? onAudio;
   final VoidCallback? onImage;
+
+  /// Pending attachment surface rendered above the field, owned by the screen.
+  final Widget? attachment;
+
+  /// A ready attachment is a message on its own, so Send stops depending on text.
+  final bool canSendWithoutText;
+  final FocusNode? focusNode;
   final bool compact;
 
   @override
@@ -29,12 +39,14 @@ final class SuperadminChatComposer extends StatefulWidget {
 }
 
 final class _SuperadminChatComposerState extends State<SuperadminChatComposer> {
-  late final FocusNode _focusNode;
+  late final FocusNode _ownedFocusNode;
+  FocusNode get _focusNode => widget.focusNode ?? _ownedFocusNode;
 
   @override
   void initState() {
     super.initState();
-    _focusNode = FocusNode(onKeyEvent: _onKey);
+    _ownedFocusNode = FocusNode(onKeyEvent: _onKey);
+    widget.focusNode?.onKeyEvent = _onKey;
     widget.controller.addListener(_refresh);
   }
 
@@ -49,14 +61,16 @@ final class _SuperadminChatComposerState extends State<SuperadminChatComposer> {
   @override
   void dispose() {
     widget.controller.removeListener(_refresh);
-    _focusNode.dispose();
+    _ownedFocusNode.dispose();
     super.dispose();
   }
 
   void _refresh() => setState(() {});
 
+  bool get _canSend => widget.controller.text.trim().isNotEmpty || widget.canSendWithoutText;
+
   void _send() {
-    if (widget.controller.text.trim().isNotEmpty) widget.onSend();
+    if (_canSend) widget.onSend();
   }
 
   Future<void> _openEmojiPicker() async {
@@ -95,66 +109,84 @@ final class _SuperadminChatComposerState extends State<SuperadminChatComposer> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final enabled = widget.controller.text.trim().isNotEmpty;
+    final enabled = _canSend;
     return SafeArea(
       top: false,
       child: Padding(
         padding: EdgeInsets.all(widget.compact ? CoeloSpacing.space2 : CoeloSpacing.space3),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _Action(
-              icon: Icons.emoji_emotions_outlined,
-              label: 'Adicionar emoji',
-              onTap: _openEmojiPicker,
-            ),
-            Expanded(
-              child: TextField(
-                key: const Key('superadmin-chat-composer-field'),
-                controller: widget.controller,
-                focusNode: _focusNode,
-                minLines: 1,
-                maxLines: widget.compact ? 3 : 5,
-                textInputAction: TextInputAction.newline,
-                decoration: InputDecoration(
-                  hintText: 'Mensagem',
-                  filled: true,
-                  fillColor: colors.surfaceContainerLow,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(CoeloRadius.xl),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(CoeloRadius.xl),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-            ),
-            if (!widget.compact) ...[
-              _Action(icon: Icons.mic_none_rounded, label: 'Gravar áudio', onTap: widget.onAudio),
-              _Action(icon: Icons.image_outlined, label: 'Adicionar imagem', onTap: widget.onImage),
+            if (widget.attachment case final attachment?) ...[
+              attachment,
+              const SizedBox(height: CoeloSpacing.space2),
             ],
-            const SizedBox(width: CoeloSpacing.space1),
-            IconButton(
-              key: const Key('superadmin-chat-send'),
-              tooltip: 'Enviar mensagem',
-              onPressed: enabled ? _send : null,
-              constraints: const BoxConstraints.tightFor(
-                width: CoeloSize.touchMin,
-                height: CoeloSize.touchMin,
-              ),
-              style: ButtonStyle(
-                shape: const WidgetStatePropertyAll(CircleBorder()),
-                backgroundColor: WidgetStateProperty.resolveWith(
-                  (states) => enabled ? colors.primary : colors.surfaceContainerHighest,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                _Action(
+                  icon: Icons.emoji_emotions_outlined,
+                  label: 'Adicionar emoji',
+                  onTap: _openEmojiPicker,
                 ),
-                foregroundColor: WidgetStateProperty.resolveWith(
-                  (states) => enabled ? colors.onPrimary : colors.onSurfaceVariant,
+                Expanded(
+                  child: TextField(
+                    key: const Key('superadmin-chat-composer-field'),
+                    controller: widget.controller,
+                    focusNode: _focusNode,
+                    minLines: 1,
+                    maxLines: widget.compact ? 3 : 5,
+                    textInputAction: TextInputAction.newline,
+                    decoration: InputDecoration(
+                      hintText: 'Mensagem',
+                      filled: true,
+                      fillColor: colors.surfaceContainerLow,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(CoeloRadius.xl),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(CoeloRadius.xl),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
                 ),
-                overlayColor: WidgetStatePropertyAll(colors.onPrimary.withValues(alpha: 0.12)),
-              ),
-              icon: const Icon(Icons.send_rounded, size: CoeloSize.iconMd),
+                if (!widget.compact) ...[
+                  _Action(
+                    icon: Icons.mic_none_rounded,
+                    label: 'Gravar áudio',
+                    onTap: widget.onAudio,
+                  ),
+                  _Action(
+                    icon: Icons.image_outlined,
+                    label: 'Adicionar imagem',
+                    onTap: widget.onImage,
+                  ),
+                ],
+                const SizedBox(width: CoeloSpacing.space1),
+                IconButton(
+                  key: const Key('superadmin-chat-send'),
+                  tooltip: 'Enviar mensagem',
+                  onPressed: enabled ? _send : null,
+                  constraints: const BoxConstraints.tightFor(
+                    width: CoeloSize.touchMin,
+                    height: CoeloSize.touchMin,
+                  ),
+                  style: ButtonStyle(
+                    shape: const WidgetStatePropertyAll(CircleBorder()),
+                    backgroundColor: WidgetStateProperty.resolveWith(
+                      (states) => enabled ? colors.primary : colors.surfaceContainerHighest,
+                    ),
+                    foregroundColor: WidgetStateProperty.resolveWith(
+                      (states) => enabled ? colors.onPrimary : colors.onSurfaceVariant,
+                    ),
+                    overlayColor: WidgetStatePropertyAll(colors.onPrimary.withValues(alpha: 0.12)),
+                  ),
+                  icon: const Icon(Icons.send_rounded, size: CoeloSize.iconMd),
+                ),
+              ],
             ),
           ],
         ),
