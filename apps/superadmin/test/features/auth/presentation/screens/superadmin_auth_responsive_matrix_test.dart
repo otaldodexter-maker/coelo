@@ -28,6 +28,8 @@ void main() {
 
           expect(tester.takeException(), isNull);
           expect(_primaryContentFinder(surface), findsOneWidget);
+          await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+          await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
           expect(
             tester.widget<Scaffold>(find.byType(Scaffold)).backgroundColor,
             theme.data.colorScheme.surface,
@@ -47,6 +49,8 @@ void main() {
 
         expect(tester.takeException(), isNull);
         expect(_primaryContentFinder(surface), findsOneWidget);
+        await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+        await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
       });
     }
   }

@@ -137,63 +137,65 @@ class _KeepSessionOpenControlState extends State<_KeepSessionOpenControl> {
     final actionColors = theme.extension<CoeloActionColors>()!;
     final radius = BorderRadius.circular(CoeloRadius.sm);
 
-    return Semantics(
+    return MergeSemantics(
       key: const ValueKey('superadmin-login-keep-session'),
-      container: true,
-      checked: widget.value,
-      enabled: widget.enabled,
-      label: 'Manter sessão aberta',
-      onTap: widget.enabled ? _toggle : null,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-        child: DecoratedBox(
-          key: _focused ? const ValueKey('superadmin-login-keep-session-focus-ring') : null,
-          decoration: BoxDecoration(
-            borderRadius: radius,
-            border: _focused ? Border.all(color: actionColors.focusRing, width: 2) : null,
-          ),
-          child: FocusableActionDetector(
-            key: const ValueKey('superadmin-login-keep-session-control'),
-            focusNode: _focusNode,
-            enabled: widget.enabled,
-            mouseCursor: widget.enabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
-            shortcuts: const <ShortcutActivator, Intent>{
-              SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
-              SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
-            },
-            actions: <Type, Action<Intent>>{
-              ActivateIntent: CallbackAction<ActivateIntent>(
-                onInvoke: (_) {
-                  _toggle();
-                  return null;
-                },
-              ),
-            },
-            onFocusChange: (focused) => setState(() => _focused = focused),
-            child: GestureDetector(
-              key: const ValueKey('superadmin-login-keep-session-hit-target'),
-              behavior: HitTestBehavior.opaque,
-              onTap: widget.enabled ? _toggle : null,
-              child: ExcludeSemantics(
-                child: Row(
-                  children: [
-                    ExcludeFocus(
-                      child: Checkbox(
-                        value: widget.value,
-                        onChanged: widget.enabled ? (_) => _toggle() : null,
-                        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                      ),
-                    ),
-                    const SizedBox(width: CoeloSpacing.space1),
-                    Expanded(
-                      child: Text(
-                        'Manter sessão aberta',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: widget.enabled ? colors.onSurface : colors.onSurfaceVariant,
+      child: Semantics(
+        container: true,
+        checked: widget.value,
+        enabled: widget.enabled,
+        label: 'Manter sessão aberta',
+        onTap: widget.enabled ? _toggle : null,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+          child: DecoratedBox(
+            key: _focused ? const ValueKey('superadmin-login-keep-session-focus-ring') : null,
+            decoration: BoxDecoration(
+              borderRadius: radius,
+              border: _focused ? Border.all(color: actionColors.focusRing, width: 2) : null,
+            ),
+            child: FocusableActionDetector(
+              key: const ValueKey('superadmin-login-keep-session-control'),
+              focusNode: _focusNode,
+              enabled: widget.enabled,
+              mouseCursor: widget.enabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
+              shortcuts: const <ShortcutActivator, Intent>{
+                SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+                SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+              },
+              actions: <Type, Action<Intent>>{
+                ActivateIntent: CallbackAction<ActivateIntent>(
+                  onInvoke: (_) {
+                    _toggle();
+                    return null;
+                  },
+                ),
+              },
+              onFocusChange: (focused) => setState(() => _focused = focused),
+              child: GestureDetector(
+                key: const ValueKey('superadmin-login-keep-session-hit-target'),
+                behavior: HitTestBehavior.opaque,
+                onTap: widget.enabled ? _toggle : null,
+                child: ExcludeSemantics(
+                  child: Row(
+                    children: [
+                      ExcludeFocus(
+                        child: Checkbox(
+                          value: widget.value,
+                          onChanged: widget.enabled ? (_) => _toggle() : null,
+                          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: CoeloSpacing.space1),
+                      Expanded(
+                        child: Text(
+                          'Manter sessão aberta',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: widget.enabled ? colors.onSurface : colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

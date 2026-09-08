@@ -296,9 +296,11 @@ void main() {
     control.focusNode!.requestFocus();
     await tester.pump();
 
-    final semantics = tester.getSemantics(row);
+    final semantics = tester.getSemantics(row).getSemanticsData();
     expect(semantics.label, contains('Manter sessão aberta'));
     expect(semantics.flagsCollection.isChecked, CheckedState.isFalse);
+    expect(semantics.hasAction(SemanticsAction.tap), isTrue);
+    await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
     expect(tester.getSize(row).height, greaterThanOrEqualTo(CoeloSize.touchMin));
     expect(find.byKey(const ValueKey('superadmin-login-keep-session-focus-ring')), findsOneWidget);
   });
