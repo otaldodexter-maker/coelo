@@ -614,6 +614,63 @@ void main() {
       if (readOnly) expect(find.byKey(const Key('superadmin-chat-composer-field')), findsNothing);
     });
   }
+
+  testWidgets('renders the thread oldest first and appends a sent message last', (tester) async {
+    _viewport(tester, 1024);
+    final repository = _ChatRepository._(
+      inbox: _ChatRepository.standard().inbox,
+      // The RPC contract is newest-first; presentation renders it reversed
+      // without reordering the data.
+      thread: ChatThreadPage(
+        items: [
+          ChatMessage(
+            id: 'message-recent',
+            conversationId: 'conversation-1',
+            body: 'Mensagem recente',
+            authorName: 'Marina',
+            sentAt: DateTime.utc(2026, 8, 12, 12, 10),
+            isMine: false,
+            kind: 'text',
+          ),
+          ChatMessage(
+            id: 'message-old',
+            conversationId: 'conversation-1',
+            body: 'Mensagem antiga',
+            authorName: 'Marina',
+            sentAt: DateTime.utc(2026, 8, 12, 12),
+            isMine: false,
+            kind: 'text',
+          ),
+        ],
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: SuperadminChatPage(logout: _logout, chatRepository: repository),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Turma Girassol').last);
+    await tester.pumpAndSettle();
+
+    double bottomOf(String text) => tester.getRect(find.text(text)).bottom;
+    expect(bottomOf('Mensagem antiga'), lessThan(bottomOf('Mensagem recente')));
+
+    await tester.enterText(
+      find.byKey(const Key('superadmin-chat-composer-field')),
+      'Mensagem nova',
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+    await tester.pumpAndSettle();
+
+    expect(repository.sent, hasLength(1));
+    expect(find.text('Mensagem antiga'), findsOneWidget);
+    expect(find.text('Mensagem recente'), findsOneWidget);
+    expect(find.text('Mensagem nova'), findsOneWidget);
+    expect(bottomOf('Mensagem recente'), lessThan(bottomOf('Mensagem nova')));
+  });
 }
 
 Widget _app({ChatRepository? repository, double textScale = 1}) => MaterialApp(
