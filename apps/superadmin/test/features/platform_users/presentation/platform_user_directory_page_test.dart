@@ -262,6 +262,24 @@ void main() {
     expect(find.text('Contexto A Exclusivo'), findsNothing);
   });
 
+  testWidgets('search discards the previous response before debounce completes', (tester) async {
+    final repository = _LifecycleRepository.pending('Antigo');
+    await tester.pumpWidget(
+      _directoryApp(
+        key: GlobalKey(),
+        repository: repository,
+        capability: PlatformUserCapability.owner,
+      ),
+    );
+    await tester.pump();
+    await tester.enterText(find.byKey(const Key('platform-user-search')), 'novo');
+    repository.complete();
+    await tester.pump();
+    final staleRows = find.text('Antigo Exclusivo').evaluate().length;
+    await tester.pumpWidget(const SizedBox.shrink());
+    expect(staleRows, 0);
+  });
+
   testWidgets('late repository A response cannot repaint repository B', (tester) async {
     final pageKey = GlobalKey();
     final repositoryA = _LifecycleRepository.pending('Contexto A');

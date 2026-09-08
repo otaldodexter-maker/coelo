@@ -102,6 +102,7 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
   }
 
   Future<void> _load({bool showLoading = true}) async {
+    _searchDebounce?.cancel();
     final epoch = ++_requestEpoch;
     final query = _query;
     if (showLoading && mounted) {
@@ -129,6 +130,8 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
 
   void _onSearchChanged(String _) {
     _searchDebounce?.cancel();
+    _requestEpoch++;
+    setState(() => _snapshot = const InviteDirectorySnapshot.loading());
     _searchDebounce = Timer(const Duration(milliseconds: 300), () {
       _page = 1;
       unawaited(_load());

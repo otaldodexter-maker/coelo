@@ -130,6 +130,7 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
   );
 
   Future<void> _load() async {
+    _debounce?.cancel();
     final generation = ++_loadGeneration;
     final repository = widget.repository;
     final query = _query;
@@ -171,6 +172,12 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
 
   void _search(String _) {
     _debounce?.cancel();
+    _loadGeneration++;
+    setState(() {
+      _loading = true;
+      _error = null;
+      _result = PlatformUserPage(items: const [], totalCount: 0, page: 1, pageSize: _pageSize);
+    });
     _debounce = Timer(const Duration(milliseconds: 300), () {
       _page = 1;
       unawaited(_load());
