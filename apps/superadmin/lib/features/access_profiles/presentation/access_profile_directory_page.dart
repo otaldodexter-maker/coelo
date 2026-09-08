@@ -606,6 +606,7 @@ final class _AccessProfileCards extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final columns = math.max(1, (constraints.maxWidth / 340).floor());
+      final cardWidth = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
       final cards = <Widget>[
         if (onCreate != null)
           ConstrainedBox(
@@ -628,20 +629,28 @@ final class _AccessProfileCards extends StatelessWidget {
         key: const Key('access-profile-card-grid'),
         children: [
           for (var start = 0; start < cards.length; start += columns) ...[
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  for (var column = 0; column < columns; column++) ...[
-                    Expanded(
-                      child: start + column < cards.length
-                          ? cards[start + column]
-                          : const SizedBox.shrink(),
-                    ),
-                    if (column + 1 < columns) const SizedBox(width: CoeloSpacing.space6),
+            // ponytail: use native row measurement; the canonical status uses
+            // LayoutBuilder and cannot participate in IntrinsicHeight.
+            Table(
+              defaultColumnWidth: FixedColumnWidth(cardWidth),
+              defaultVerticalAlignment: TableCellVerticalAlignment.intrinsicHeight,
+              columnWidths: {
+                for (var gap = 1; gap < columns * 2 - 1; gap += 2)
+                  gap: const FixedColumnWidth(CoeloSpacing.space6),
+              },
+              children: [
+                TableRow(
+                  children: [
+                    for (var column = 0; column < columns; column++) ...[
+                      if (start + column < cards.length)
+                        cards[start + column]
+                      else
+                        const SizedBox.shrink(),
+                      if (column + 1 < columns) const SizedBox(width: CoeloSpacing.space6),
+                    ],
                   ],
-                ],
-              ),
+                ),
+              ],
             ),
             if (start + columns < cards.length) const SizedBox(height: CoeloSpacing.space6),
           ],
