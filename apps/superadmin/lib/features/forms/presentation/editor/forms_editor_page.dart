@@ -1108,7 +1108,17 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           ? _BranchPanel(
               question: question,
               triggerSelector: question.kind == FormItemKind.yesNo
-                  ? null
+                  ? CoeloAdminSingleSelectField<bool>(
+                      key: ValueKey('forms-branch-boolean-${question.id}'),
+                      label: 'Resposta que revela o próximo ramo',
+                      value: question.branchExpectedYesNo,
+                      options: const [true, false],
+                      optionLabel: (value) => value ? 'Sim' : 'Não',
+                      onChanged: (value) {
+                        if (!current()) return;
+                        setState(() => question.branchExpectedYesNo = value);
+                      },
+                    )
                   : CoeloAdminSingleSelectField<String?>(
                       key: ValueKey('forms-branch-option-${question.id}'),
                       label: 'Opção que revela o próximo ramo',
@@ -1146,7 +1156,10 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                             required: false,
                             loadedConditions: [
                               if (question.kind == FormItemKind.yesNo)
-                                FormCondition.yesNo(sourceItemId: question.id, expected: true)
+                                FormCondition.yesNo(
+                                  sourceItemId: question.id,
+                                  expected: question.branchExpectedYesNo,
+                                )
                               else
                                 FormCondition.choice(
                                   sourceItemId: question.id,
@@ -1172,13 +1185,20 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          if (question.kind != FormItemKind.yesNo)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
-                              child: Text(
-                                'Se “${question.optionLabel(question.branchQuestions[childIndex].loadedConditions.single.optionIds.single)}”',
-                              ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+                            child: Text(
+                              question.kind == FormItemKind.yesNo
+                                  ? (question
+                                            .branchQuestions[childIndex]
+                                            .loadedConditions
+                                            .single
+                                            .expectedYesNo!
+                                        ? 'Se Sim'
+                                        : 'Se Não')
+                                  : 'Se “${question.optionLabel(question.branchQuestions[childIndex].loadedConditions.single.optionIds.single)}”',
                             ),
+                          ),
                           _questionTree(question.branchQuestions, childIndex, nested: true),
                         ],
                       ),
@@ -1571,7 +1591,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
               if (parent.id != condition.sourceItemId) return false;
               return switch (condition.kind) {
                 FormConditionKind.yesNo =>
-                  condition.expectedYesNo == true && parent.kind == FormItemKind.yesNo,
+                  condition.expectedYesNo != null && parent.kind == FormItemKind.yesNo,
                 FormConditionKind.choice =>
                   (parent.kind == FormItemKind.singleChoice ||
                           parent.kind == FormItemKind.multipleChoice) &&
@@ -2053,6 +2073,7 @@ final class _EditorQuestionDraft {
   bool required;
   bool branchEnabled;
   String? branchOptionId;
+  bool branchExpectedYesNo = true;
   _DateRule dateRule = _DateRule.free;
   DateTime from = DateTime(2026, 8, 1);
   DateTime until = DateTime(2026, 8, 31);
@@ -2690,7 +2711,7 @@ final class _BranchPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            question.kind == FormItemKind.yesNo ? 'Se Sim' : 'Por opção selecionada',
+            question.kind == FormItemKind.yesNo ? 'Ramos por resposta' : 'Por opção selecionada',
             style: Theme.of(context).textTheme.labelLarge,
           ),
           const SizedBox(height: CoeloSpacing.space2),

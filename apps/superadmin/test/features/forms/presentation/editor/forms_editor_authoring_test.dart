@@ -26,6 +26,50 @@ void main() {
     (widget) => widget is TextFormField && widget.controller?.text == value,
   );
 
+  testWidgets('yes-no false branch autosave keeps selected booleans per child', (tester) async {
+    final api = _Api(manage: true)
+      ..customItems = [
+        FormItem(id: 'parent', kind: FormItemKind.yesNo, label: 'Parent', position: 0),
+      ];
+    await open(tester, api);
+    tester
+        .widgetList<CoeloAdminToggleField>(find.byType(CoeloAdminToggleField))
+        .singleWhere((field) => field.label == 'Desdobrar por resposta')
+        .onChanged!(true);
+    await tester.pumpAndSettle();
+    final selector = find.byKey(const ValueKey('forms-branch-boolean-parent'));
+    tester.widget<CoeloAdminSingleSelectField<bool>>(selector).onChanged(false);
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.commands, isEmpty);
+    tester
+        .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Adicionar pergunta ao ramo'))
+        .onPressed!();
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.commands, hasLength(1));
+    expect(
+      api.commands.single.payload.sections.first.items.last.conditions.single.expectedYesNo,
+      isFalse,
+    );
+    tester.widget<CoeloAdminSingleSelectField<bool>>(selector).onChanged(true);
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.commands, hasLength(1));
+    tester
+        .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Adicionar pergunta ao ramo'))
+        .onPressed!();
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.commands, hasLength(2));
+    expect(
+      api.commands.last.payload.sections.first.items
+          .skip(1)
+          .map((item) => item.conditions.single.expectedYesNo),
+      [false, true],
+    );
+    expect(api.commands.last.expectedVersion, 2);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('choice branch autosave persists trigger without saving selector-only changes', (
     tester,
   ) async {
