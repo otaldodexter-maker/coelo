@@ -514,7 +514,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T18:24:33-03:00",
+  "updated_at": "2026-09-08T18:27:37-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -1160,10 +1160,10 @@
       "baseline": "f0763a657ca6e5422cc42fa61c0c3c4ca724e129",
       "handoff_path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06\\docs\\reviews\\etapa-2-operacao\\handoffs\\C06.md",
       "instruction_revision": 4,
-      "received_revision": 4,
-      "accepted_revision": 1,
+      "received_revision": 5,
+      "accepted_revision": 5,
       "status": "active-acknowledged",
-      "operational_ack": "R01-C06-I001",
+      "operational_ack": "R01-C06-I004",
       "scope": [
         "C04",
         "C05",
@@ -1174,11 +1174,11 @@
       "created_at": "2026-09-08T17:29:41-03:00",
       "bootstrap_commit": "2ed8513842a1d2f3f595645c7e868ad00662fefd",
       "push_verified_at": "2026-09-08T17:34:14-03:00",
-      "last_evidence": "2026-09-08T18:10:00-03:00",
+      "last_evidence": "2026-09-08T18:27:37-03:00",
       "automation_schedule": ":21/:51 America/Sao_Paulo;session-only idle-only;reported",
-      "source_commit": "f142dc144679e1c4ddbd6895f100014d5ef64515",
-      "c07_receipt_evidence": "C06-authored assignment17:52 + bootstrap46f63e84;summary revision update pending",
-      "next_nominal_tick": "2026-09-08T18:21:00-03:00",
+      "source_commit": "53cd1683e7f1f53f23fa98c1aebfdafc2343d5e5",
+      "c07_receipt_evidence": "C06r5 confirms C07 supervision, I003/I004 correction and RTK dispatch18:22-18:23",
+      "next_nominal_tick": "2026-09-08T18:51:00-03:00",
       "last_proven_tick": "2026-09-08T17:59:00-03:00",
       "timestamp_discrepancy": "r4 text18:10 versus commit18:03:39; preserve both, receipt uses actual read time"
     }
@@ -1269,7 +1269,7 @@
     "instruction": "R01-ALL-RTK-1808",
     "at": "2026-09-08T18:08:11-03:00",
     "codex_dispatch": "sent-native-C01-C02-C03;acks-next-material-handoffs",
-    "claude_dispatch": "requested-via-C06-I004;not-yet-acknowledged"
+    "claude_dispatch": "C06r5: sent once C07 ce92324618:22, C05 1c964a1718:22, C04 8e044f7a18:23; recipient acks next revisions"
   },
   "models34_reservation": {
     "writer": "C01",
@@ -1311,7 +1311,7 @@
   },
   "docker_recovery_1823": {
     "at": "2026-09-08T18:22:51-03:00",
-    "status": "delegated-exclusive-operator-awaiting-ack",
+    "status": "delegated-operator-active;native-snapshot-verified",
     "factory_reset": "Owner screenshots/logs confirm external reset;not executed byC00",
     "preserved_paths": [
       "C:/Users/adrie/AppData/Local/Docker/run.recovery-20260908-1820",
@@ -1323,7 +1323,19 @@
     "operator_thread_id": "01a082d8-0d41-71b0-95a3-72240507e254",
     "operator_title": "Apoiar C00 em tarefas rápidas",
     "delegated_at": "2026-09-08T18:24:33-03:00",
-    "scope": "recover local engine; no SQL/remotes; C00/subagents make no Docker mutations until handback"
+    "scope": "recover local engine; no SQL/remotes; C00/subagents make no Docker mutations until handback",
+    "native_cursor": "8595af92-fc69-405c-8db2-708727cd1d0c:1"
   },
-  "coordinator_next_steps_docker": "Read compact native status of support thread; verify engine result without asking Owner to watch app; only then nominal replay lease. Do not duplicate recovery operations."
+  "coordinator_next_steps_docker": "Read compact native status of support thread; verify engine result without asking Owner to watch app; only then nominal replay lease. Do not duplicate recovery operations.",
+  "visual_review_c07": {
+    "status": "C00-read-only-review-assigned",
+    "source": "C06r5 and C07 original reports",
+    "topics": [
+      "shell PageHeader compact actions",
+      "chat footer border",
+      "Agora3419a89e",
+      "Structures77 historical goldens/d9232a94"
+    ],
+    "promotion": false
+  }
 }
