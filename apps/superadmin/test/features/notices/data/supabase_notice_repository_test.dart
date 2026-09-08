@@ -268,6 +268,79 @@ void main() {
       throwsA(isA<NoticeUnauthorizedException>()),
     );
   });
+  for (final envelope in <({String name, Map<String, Object?> body})>[
+    // `ok: true` sem `data` nao e sucesso vazio: e envelope quebrado. Tratar
+    // como sucesso entregaria nulo ao mapeador e a tela renderizaria a partir
+    // de nada.
+    (name: 'ok sem data', body: {'ok': true, 'error': null}),
+    // Qualquer valor que nao seja `false` no `ok` tambem nao e recusa de
+    // dominio: sem um `error.code` de verdade, virar erro de dominio inventaria
+    // uma causa que o servidor nao deu.
+    (name: 'ok ausente', body: {'data': <String, Object?>{}}),
+    (name: 'ok nulo', body: {'ok': null, 'data': <String, Object?>{}}),
+    (name: 'ok textual', body: {'ok': 'true', 'data': <String, Object?>{}}),
+  ]) {
+    test('um envelope ${envelope.name} e recusado como inesperado', () async {
+      final client = _client(
+        (request) async => Response(
+          jsonEncode(envelope.body),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      );
+      addTearDown(client.dispose);
+
+      await expectLater(
+        SupabaseNoticeRepository(client).getById('20000000-0000-4000-8000-000000000001'),
+        throwsA(isA<NoticeUnexpectedException>()),
+      );
+    });
+  }
+
+  test('uma listagem com envelope quebrado nao vira "nenhum aviso"', () async {
+    // O caso perigoso do `containsKey('data')`: sem ele, `ok: true` sem `data`
+    // devolve nulo, a listagem le lista vazia e a tela diz que nao ha avisos.
+    // Um envelope quebrado passaria por ausencia de conteudo.
+    final client = _client(
+      (request) async => Response(
+        jsonEncode({'ok': true, 'error': null}),
+        200,
+        headers: {'content-type': 'application/json'},
+        request: request,
+      ),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseNoticeRepository(client).fetchPage(const NoticeDirectoryQuery()),
+      throwsA(isA<NoticeUnexpectedException>()),
+    );
+  });
+
+  test('um ok malformado nao vira recusa de dominio, mesmo com codigo de erro', () async {
+    // O caso perigoso do `ok == false`: com `!= true`, um envelope cujo `ok`
+    // veio quebrado seria lido como recusa legitima e o operador receberia
+    // "nao encontrado" no lugar de "resposta invalida".
+    final client = _client(
+      (request) async => Response(
+        jsonEncode({
+          'ok': 'true',
+          'data': null,
+          'error': {'code': 'NOTICE_NOT_FOUND'},
+        }),
+        200,
+        headers: {'content-type': 'application/json'},
+        request: request,
+      ),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseNoticeRepository(client).getById('20000000-0000-4000-8000-000000000001'),
+      throwsA(isA<NoticeUnexpectedException>()),
+    );
+  });
 }
 
 SupabaseClient _client(Future<Response> Function(Request request) handler) => SupabaseClient(
