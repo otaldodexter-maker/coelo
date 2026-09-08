@@ -710,7 +710,8 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
       });
     }
     try {
-      final call = await repository.fetchCall(callId);
+      final response = await repository.fetchCall(callId);
+      final call = response == null ? null : _validatedCall(response, callId);
       if (_isCurrentCallLoad(generation, repository, callId)) {
         setState(() {
           _call = call;
@@ -1040,7 +1041,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
       _commandError = null;
     });
     try {
-      final updated = await operation();
+      final updated = _validatedCall(await operation(), callId);
       if (!_isCurrentCallCommand(generation, repository, callId)) return false;
       setState(() {
         _call = updated;
@@ -1072,7 +1073,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
       if (!call.hasUnmarked) {
         final receipt = _lastBulkReceipt;
         if (receipt == null) return;
-        final updated = await repository.undoBulk(receipt);
+        final updated = _validatedCall(await repository.undoBulk(receipt), callId);
         if (_isCurrentCallCommand(generation, repository, callId)) {
           setState(() {
             _call = updated;
@@ -1082,6 +1083,8 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
         return;
       }
       final result = await repository.markRemainingPresent(call.id, expectedVersion: call.version);
+      _validatedCall(result.call, callId);
+      if (result.receipt.callId != callId) throw const AttendanceUnavailableException();
       if (_isCurrentCallCommand(generation, repository, callId)) {
         setState(() {
           _call = result.call;
@@ -1097,6 +1100,11 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
         setState(() => _commandInFlight = false);
       }
     }
+  }
+
+  AttendanceCall _validatedCall(AttendanceCall call, String expectedId) {
+    if (call.id != expectedId) throw const AttendanceUnavailableException();
+    return call;
   }
 
   bool _isCurrentCallCommand(int generation, AttendanceRepository repository, String callId) =>
@@ -1116,9 +1124,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
         onSubmit: (state, reason) async {
           if (!_isCurrentCorrectionContext(contextGeneration, repository, callId)) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('O contexto mudou. Reabra a correção para continuar.'),
-              ),
+              const SnackBar(content: Text('O contexto mudou. Reabra a correção para continuar.')),
             );
             return false;
           }
