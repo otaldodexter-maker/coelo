@@ -80,11 +80,14 @@ final class _ActivityProfileAboutSectionState extends State<ActivityProfileAbout
           controller.aboutPage ??
           await repository.load(institutionId: institutionId, activityId: activityId);
       if (!_isCurrentLoad(generation, controller, repository, activityId, institutionId)) return;
+      if (!_matchesRequestedSubject(page, institutionId, activityId)) {
+        setState(() => _state = _AboutLoadState.unauthorized);
+        return;
+      }
       page = _withActivitySuggestions(page, controller);
       controller.setAboutPage(page, markDirty: false);
       _replaceFieldControllers({
-        for (final key in _editableFields.keys)
-          key: TextEditingController(text: _value(page, key)),
+        for (final key in _editableFields.keys) key: TextEditingController(text: _value(page, key)),
       });
       setState(() => _state = _AboutLoadState.ready);
     } on ActivityProfileAboutUnauthorizedException {
@@ -111,6 +114,11 @@ final class _ActivityProfileAboutSectionState extends State<ActivityProfileAbout
       identical(repository, widget.repository) &&
       activityId == widget.activityId &&
       institutionId == widget.controller.selectedInstitutionId;
+
+  bool _matchesRequestedSubject(ProfileAboutPage page, String institutionId, String? activityId) =>
+      page.subject.type == ProfileAboutSubjectType.activity &&
+      page.subject.institutionId == institutionId &&
+      (activityId == null || page.subject.activityId == activityId);
 
   void _replaceFieldControllers(Map<ProfileAboutFieldKey, TextEditingController> next) {
     for (final controller in _fields.values) {
