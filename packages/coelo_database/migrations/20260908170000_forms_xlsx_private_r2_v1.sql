@@ -271,27 +271,27 @@ create function app_private.forms_xlsx_context_from_session_v1(
   p_identity uuid,p_link uuid,p_membership uuid,p_session uuid,p_scope text,p_institution uuid
 ) returns app_private.superadmin_internal_context
 language plpgsql volatile security definer set search_path='' as $$
-declare ctx app_private.superadmin_internal_context; session_user uuid; session_aal text;
+declare ctx app_private.superadmin_internal_context; v_auth_user_id uuid; session_aal text;
   original_claims text:=current_setting('request.jwt.claims',true);
   original_sub text:=current_setting('request.jwt.claim.sub',true);
 begin
-  select session_record.user_id,session_record.aal::text into session_user,session_aal
+  select session_record.user_id,session_record.aal::text into v_auth_user_id,session_aal
   from auth.sessions session_record
   join app_private.superadmin_internal_auth_links link on link.id=p_link
     and link.auth_user_id=session_record.user_id and link.internal_identity_id=p_identity
   where session_record.id=p_session and (session_record.not_after is null or session_record.not_after>clock_timestamp());
-  if session_user is null or session_aal is null or session_aal not in ('aal1','aal2') then
+  if v_auth_user_id is null or session_aal is null or session_aal not in ('aal1','aal2') then
     raise insufficient_privilege using detail='SAI_SESSION_INVALID';
   end if;
-  perform set_config('request.jwt.claims',jsonb_build_object('sub',session_user,'session_id',p_session,
+  perform set_config('request.jwt.claims',jsonb_build_object('sub',v_auth_user_id,'session_id',p_session,
     'aal',session_aal,'role','authenticated')::text,true);
-  perform set_config('request.jwt.claim.sub',session_user::text,true);
+  perform set_config('request.jwt.claim.sub',v_auth_user_id::text,true);
   select * into strict ctx from app_private.require_superadmin_internal_context('forms.responses.export');
   if row(ctx.internal_identity_id,ctx.internal_auth_link_id,ctx.internal_membership_id,ctx.session_id,
     ctx.scope_kind,ctx.scope_institution_id) is distinct from row(p_identity,p_link,p_membership,p_session,p_scope,p_institution)
     or ctx.scope_kind not in ('platform','institution')
     or (ctx.scope_kind='institution' and ctx.scope_institution_id is null)
-    or not exists(select 1 from auth.sessions s where s.id=p_session and s.user_id=session_user
+    or not exists(select 1 from auth.sessions s where s.id=p_session and s.user_id=v_auth_user_id
       and (s.not_after is null or s.not_after>clock_timestamp())) then
     raise insufficient_privilege using detail='SAI_INTERNAL_CONTEXT_DENIED';
   end if;
