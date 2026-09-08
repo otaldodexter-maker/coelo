@@ -37,6 +37,9 @@ C00 processa chave `(R01,CXX,revisão)`, grava received/accepted/integrated (est
 
 ## Ownership e reservas
 
+Release recebido em 08/09 12:30:25−03:00: C01 devolve auth scope e shell sem alterações; C00 retoma esses dois arquivos. `packages/coelo_auth` continua reservado ao C01 até SHA/release. Esta atualização prevalece sobre a concessão inicial R01-SHARED-01 da tabela.
+
+
 `assignments/ownership.json` expande os 219 IDs, um dono por ID, sem duplicados ou sem dono. Classificação operacional: 194 ativas (189 `mvp` +5 shell somente cliente), 22 adiadas,3 gates formais; N/A é anotado por camada para sete ações, não exclui seu trabalho FE. IDs de Planos/Catálogo com dúvida permanecem rastreáveis, sem retirar denominadores por conveniência.
 
 Arquivos de domínio pertencem à assignment. Um arquivo compartilhado tem um escritor por vez, mesmo em branches distintas:
@@ -45,7 +48,7 @@ Arquivos de domínio pertencem à assignment. Um arquivo compartilhado tem um es
 |---|---|---|
 | `apps/superadmin/lib/app/router/superadmin_router.dart`; `apps/superadmin/lib/main.dart`; composition roots não listados | C00 | Executores entregam delta mínimo no handoff; C00 integra ou concede reserva nominal antes da edição. |
 | `apps/superadmin/lib/core/config/superadmin_auth_scope.dart`; `apps/superadmin/lib/app/shell/superadmin_shell.dart`; `packages/coelo_auth/` | C01, lease R01-SHARED-01 | Primeiro lote de sessão/shell; liberar por SHA + handoff, ou renovação explícita C00. Não usar para writes de outras frentes. |
-| `packages/coelo_api/lib/src/media/`; `packages/coelo_database/supabase/functions/_shared/media_image_contract.ts` e seu teste; `packages/coelo_database/supabase/functions/moments-media/r2_s3.ts` e seu teste | C02, lease R01-MEDIA-01 | Núcleo comum já existente; preservar consumidores C04/C05, publicar contrato no primeiro lote. |
+| `packages/coelo_api/lib/src/media/`; `packages/coelo_database/supabase/functions/_shared/media_image_contract.ts` e seu teste; `packages/coelo_database/supabase/functions/moments-media/r2_s3.ts` e seu teste; `packages/coelo_database/supabase/functions/_shared/r2_s3.ts` e `_shared/r2_s3_test.ts` (I002) | C02, lease R01-MEDIA-01 | Núcleo comum já existente; preservar consumidores C04/C05, publicar contrato no primeiro lote. |
 | Barrel exports `packages/coelo_api/lib/coelo_api.dart`, `packages/coelo_domain/lib/coelo_domain.dart`; tokens/componentes UI centrais; manifests/lockfiles compartilhados | C00 | Propor export/delta no handoff; nenhuma edição concorrente. |
 | Migrations históricas, runner/replay/foundation manifests | C00 | Reserva nominal por arquivo antes de mudar. Autores podem preparar SQL candidato e teste dentro de domínio reservado, sem aplicar remoto. |
 | Novas migrations | Reserva nominal C00 antes de criar | Informar nome, dependências, domínio e IDs no primeiro handoff; C00 concede nome/arquivo por vez. Não renomear ou repinar para mascarar drift. Trabalho independente continua. |
@@ -55,6 +58,8 @@ Arquivos de domínio pertencem à assignment. Um arquivo compartilhado tem um es
 Lease cobre somente arquivos existentes nomeados e domínio; alteração transversal nova precisa nome/reserva, não permissão genérica. Transferir após release do escritor e acknowledgement C00. Bloqueio retém só as ações dependentes.
 
 ## Contrato mínimo de mídia já disponível — R01-MEDIA-01/v1
+
+Atualização C02/r1 recebida em 2026-09-08T12:28:13−03:00: o wrapper Moments delega a `_shared/r2_s3.ts`, transporte comum com presignPut/presignGet/head/delete, TTL 1–900 segundos. C02 recebe também os dois arquivos comuns pela I002 para extensão compatível GET limitado/PUT server-side; C04/C05 consomem o contrato sem criar gateway concorrente. Forms `form-media` e XLSX `form-operations` ainda usam Supabase Storage legado: migração para R2 requer catálogo/autorização nominal, não apenas troca de bucket. Validador de métricas não é decoder nem prova MIME/checksum. 40/40 Deno sintéticos relatados, sem certificação de ação. A ausência dos nomes de tabelas ADR na busca não prova ausência de catálogo ou autorização.
 
 Fontes: ADR0032; `packages/coelo_api/lib/src/media/media_read_contract.dart`, `media_reader.dart`, `media_session.dart`; evidência `docs/reviews/evidence/etapa-2/comunicacao/2026-09-07-media-m03-read-contract.md`.
 

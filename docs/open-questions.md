@@ -18,6 +18,8 @@ updated_at: "2026-09-08"
 - **Limite de camada:** algumas linhas FE exigem remoto/E2E para verified (ex.: notices.list, acontece.feed, agora.view, momentos.view). A ordem do Owner/skills atuais prevalece: registrar dependência BE/E2E separadamente, preservando todos os critérios próprios FE; nenhuma promoção automática. C00/execuções por ID devem substituir redação ambígua à medida que aceites nominais forem revisados.
 - **Operação:** Docker inicialmente inacessível em08/09; rechecagem em 2026-09-08T12:20:45-03:00 confirmou Server29.7.2 e nenhum container ativo. Bloqueio de engine removido; ainda falta executar replays nominais, sem inferir SQL ausente. Claude não tem sessão/ID/mecanismo de continuidade confirmado. Aplicativo Codex aceita um heartbeat por tarefa; agenda unificada de10min consulta executores só a cada30min. Essas lacunas não bloqueiam trabalho local independente.
 
+- **C01/r1 — aceites nominais:** Convites ainda menciona AAL2 em texto legado; ADR0019 supersedente aceita AAL1 no MVP interno. Conta/logout e errors.* têm critérios genéricos de listagem que precisam crosswalk por operação; não criar endpoints ou mudar aplicabilidade silenciosamente.
+
 Decisões de Forms/Locais, limite de anexos Chat, reader self da Conta, perfis globais, Suporte e clínicas permanecem nas respectivas perguntas canônicas. Nenhum pacote remoto novo foi autorizado por esta reconciliação.
 
 ## Auditoria das skills Coelo — reconciliação de 2026-09-08

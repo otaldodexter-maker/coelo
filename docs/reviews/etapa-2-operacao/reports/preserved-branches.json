@@ -1,0 +1,63 @@
+{
+  "source": "git refs and worktree inspection",
+  "status": "preserved-no-removal",
+  "generated_at": "2026-09-08T12:23:42-03:00",
+  "branches": [
+    {
+      "branch": "codex/e1-a01-client-20260908",
+      "sha": "f0be734ac3210c84523a61700f73feaba5150368",
+      "remote_tracking_sha": "f0be734ac3210c84523a61700f73feaba5150368",
+      "same_as_remote_tracking": true,
+      "note": "remote-tracking observation; not fresh proof of push"
+    },
+    {
+      "branch": "codex/e1-replay-harness-20260907",
+      "sha": "97769124011c26d337a4dfb3921c15a875a69d9f",
+      "remote_tracking_sha": "97769124011c26d337a4dfb3921c15a875a69d9f",
+      "same_as_remote_tracking": true,
+      "note": "remote-tracking observation; not fresh proof of push"
+    },
+    {
+      "branch": "codex/e2e-agenda-operacoes",
+      "sha": "ca4c82abc6c1604db6798c35d6381af8e8e56403",
+      "remote_tracking_sha": "ca4c82abc6c1604db6798c35d6381af8e8e56403",
+      "same_as_remote_tracking": true,
+      "note": "remote-tracking observation; not fresh proof of push"
+    },
+    {
+      "branch": "codex/e2e-comunicacao-midia-principal",
+      "sha": "943a69aeec929b743c5477494ea7a2860410f4d6",
+      "remote_tracking_sha": "943a69aeec929b743c5477494ea7a2860410f4d6",
+      "same_as_remote_tracking": true,
+      "note": "remote-tracking observation; not fresh proof of push"
+    },
+    {
+      "branch": "codex/e2e-estruturas-pessoas-locais",
+      "sha": "9e689374ec186b50bf38885a014a335844a6c4da",
+      "remote_tracking_sha": "9e689374ec186b50bf38885a014a335844a6c4da",
+      "same_as_remote_tracking": true,
+      "note": "remote-tracking observation; not fresh proof of push"
+    },
+    {
+      "branch": "codex/e2e-formularios-cuidado",
+      "sha": "f84d1dd70f0aaa0e09558845341b65e4190aaa7c",
+      "remote_tracking_sha": "f84d1dd70f0aaa0e09558845341b65e4190aaa7c",
+      "same_as_remote_tracking": true,
+      "note": "remote-tracking observation; not fresh proof of push"
+    },
+    {
+      "branch": "codex/e2e-identidade-acessos",
+      "sha": "58ef983ad219c61721b0c64374ca05b17c878127",
+      "remote_tracking_sha": "58ef983ad219c61721b0c64374ca05b17c878127",
+      "same_as_remote_tracking": true,
+      "note": "remote-tracking observation; not fresh proof of push"
+    },
+    {
+      "branch": "codex/pre-consolidation-wip-20260908",
+      "sha": "07e6e837371a2fba3d29e9803866be9ddf43e071",
+      "remote_tracking_sha": "07e6e837371a2fba3d29e9803866be9ddf43e071",
+      "same_as_remote_tracking": true,
+      "note": "remote-tracking observation; not fresh proof of push"
+    }
+  ]
+}

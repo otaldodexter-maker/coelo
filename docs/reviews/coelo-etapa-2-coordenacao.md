@@ -14,7 +14,7 @@ Este bloco prevalece operacionalmente. Todo conteúdo abaixo de **Histórico pre
 
 - Coordenador: **E2 R01 C00 — Coordenador geral**; ID real `01a0818b-2a34-7fa3-a9aa-f191fc91cc8d`; nome aplicado/verificado via ferramenta nativa. Único escritor/integrador confirmado pela ordem do Owner nesta tarefa; nenhuma transferência.
 - Worktree C00: `C:/Users/adrie/Documents/Coelo.worktrees/e2-c00`; branch `codex/e2-r01-c00-integration`. A tarefa nativa ainda tem cwd cadastrado no checkout original; todos os comandos de escrita usam C00 explicitamente. O app não permite à tarefa transferir a si mesma. Não criar outra conversa por esse motivo.
-- Baseline original: `84985b5485247df6a8dc7270e33d18601aca0421` (`dev`/origin/dev observado). Base recuperada seletiva: `6cb8ba15bae15f5a6129b0db6e740a66f8f82b3f`. Manifesto local em `etapa-2-operacao/reports/baseline-local-manifest.json` identifica arquivos/herança/hashes. Commit operacional R01 será o HEAD que contém PROTOCOLO/assignments; publicá-lo e criar executores a partir dele.
+- Baseline original: `84985b5485247df6a8dc7270e33d18601aca0421` (`dev`/origin/dev observado). Base recuperada seletiva: `6cb8ba15bae15f5a6129b0db6e740a66f8f82b3f`. Manifesto local em `etapa-2-operacao/reports/baseline-local-manifest.json` identifica arquivos/herança/hashes. Baseline operacional publicado: `479d1bd1771b13e0cd96084d244fc2cdc6b0e556`; seis worktrees verificadas abaixo.
 - 55 arquivos herdados compõem correções aprovadas de skills, governança/visual e ferramentas de índice necessárias, mais reconciliação dos rastreadores. Não são implementação nova de app; correções Tutor/learning/config Claude permanecem somente no checkout original. Relatório de auditoria preservado relata tarefa de origem e não certifica íntegra desse pacote parcial na C00.
 - Janela Owner: **08/09/2026 12:20 → 16/09/2026 12:20**, America/Sao_Paulo. Owner confirmou **dev como entrega e localhost ligado diretamente ao Supabase real**. Push de branch R01 é distinto de merge/dev, execução localhost e deploy/produção.
 - Preparação `2026-09-08T12:19:18-03:00`: inspeção Git, inventário e instruções; zero ação do produto promovida, zero pacote remoto aplicado. Critério de parada desta preparação: seis worktrees válidas,219 IDs com dono único, protocolo/prompts/automação verificados, ponto de retomada preservado.
@@ -25,17 +25,25 @@ As cinco conversas não foram criadas automaticamente. O Owner abre a sessão na
 
 | Executor | Nome exato | IDs | Worktree | Branch | Registro |
 |---|---|---|---|---|---|
-| C01 | `E2 R01 C01 — Identidade e acesso` | 44 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01` | `codex/e2-r01-c01-identidade` | ID/ack pendentes |
-| C02 | `E2 R01 C02 — Forms, mídia e cuidado` | 32 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02` | `codex/e2-r01-c02-forms-midia` | ID/ack pendentes |
-| C03 | `E2 R01 C03 — Operações` | 68 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03` | `codex/e2-r01-c03-operacoes` | ID/ack pendentes |
+| C01 | `E2 R01 C01 — Identidade e acesso` | 44 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01` | `codex/e2-r01-c01-identidade` | 01a08197-7b62-73c1-9673-5fd40fa40452; I001/r2 recebido |
+| C02 | `E2 R01 C02 — Forms mídia e cuidado` | 32 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02` | `codex/e2-r01-c02-forms-midia` | 01a0819a-f1f1-7421-95dd-d645ca9f5747; I001/r1 recebido; I002 pendente |
+| C03 | `E2 R01 C03 — Operações` | 68 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03` | `codex/e2-r01-c03-operacoes` | 01a0819b-a12e-7110-88cb-99e51a82f384; ack pendente |
 | C04 | `E2 R01 C04 — Estruturas e pessoas` | 47 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c04` | `claude/e2-r01-c04-estruturas` | ID/ack pendentes |
 | C05 | `E2 R01 C05 — Comunicação e Principal` | 28 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c05` | `claude/e2-r01-c05-comunicacao` | ID/ack pendentes |
+
+### Disponibilidade confirmada — 2026-09-08T12:23:42-03:00
+
+Seis worktrees conferidas pelo Git. C01/C03/C04/C05 partem de `479d1bd1771b13e0cd96084d244fc2cdc6b0e556`; C02 criou previamente a worktree correta em `6cb8ba15bae15f5a6129b0db6e740a66f8f82b3f`, reutilizada sem alterar HEAD durante sessão ativa. C02 lê protocolo/assignment vivos na C00; não precisa merge para começar. C01–C03 foram abertos pelo Owner, não pela C00. IDs reais: C01 `01a08197-7b62-73c1-9673-5fd40fa40452`; C02 `01a0819a-f1f1-7421-95dd-d645ca9f5747`; C03 `01a0819b-a12e-7110-88cb-99e51a82f384`. Nome nativo C02: `E2 R01 C02 — Forms mídia e cuidado`. C04/C05 ainda sem IDs conhecidos. Mensagem única de disponibilização enviada a C01/C02/C03; não repetir por aviso anterior à criação. Acknowledgement de instrução/handoff ainda não presumido.
 
 ### Contagem e última evidência
 
 Inventário vigente:219 IDs únicos/38 famílias; classificação operacional194 ativas(189mvp+5shell),22 adiadas,3 gates; nenhum ID sem dono/duplicado. FE219 aplicáveis; BE212 normativas(187ativas+3gate+22adiadas),7N/A; E2E187ativas,3gates e22adiadas separados,7N/A. Frontend certificado0/219,Backend0/212,E2E0/187; IDs certificados: nenhum. Verificação runtime de camada nesta R01:0 ações, pois a preparação foi documental; histórico não foi zerado. Implementação e testes faltantes estão separados nas colunas Feito/FE/BE do inventário, sem percentual inventado.
 
-Última evidência de preparação: `2026-09-08T12:19:18-03:00`. Última evidência dos executores R01: nenhuma; received/accepted/integrated=0. Os três rastreadores sincronizados somente ao baseline recuperado e ao protocolo C00/I001. Nenhum novo teste UI/SQL/produção nesta preparação. Evidências históricas até08/09 permanecem com seus próprios horários e ambientes.
+Última evidência de preparação: `2026-09-08T12:19:18-03:00`. Últimas entregas: C01/r2 recebido12:30:25; C02/r1 recebido12:28:13 (hora declarada12:30 divergente, correção solicitada). C01 recebido/aceito2 e C02 recebido/aceito1, ambos integrados0; C03–C05 sem handoff recebido. Os três rastreadores sincronizados a essas revisões sem promoção de ações. Nenhum novo teste UI/SQL/produção nesta preparação. Evidências históricas até08/09 permanecem com seus próprios horários e ambientes.
+
+### Ack inicial C01 — 2026-09-08T12:25:00-03:00
+
+Handoff R01/C01/r1, fonte12:22:29−03:00, recebido/aceito como contrato de abertura; I001 confirmada. Sem commit de código/teste runtime concluído, sem promoção, integrado0. Proposta: investigar reset concorrente com sessão e preparar personas. ETA condicional do primeiro lote: implementação30–60min se reproduzir corrida; testes15–30min após runtime;handoff5–10min; restante44 IDs desconhecido. Os três rastreadores sincronizados a r1 somente para proveniência/planejamento. C02–C05 sem revisão recebida neste snapshot.
 
 ### Fila inicial e dependências
 
@@ -53,15 +61,24 @@ Reservas e release: PROTOCOLO tabela R01-SHARED-01(C01),R01-MEDIA-01(C02),router
 
 Docker: consulta inicial falhou; após o Owner mostrar Engine running, a CLI confirmou Docker Server29.7.2 e `docker ps` vazio com exit0 em 2026-09-08T12:20:45-03:00. Bloqueio de engine removido; replays nominais ainda não executados. Não resetar dados/WSL/config. Credenciais não foram lidas/copied. Flutter/Dart/Node/Python presentes; localhost produtivo ainda não iniciado por esta preparação.
 
-ETA implementação/testes por executor: desconhecida até primeiro lote; integração depende de delta/teste e contratos, documentação operacional preparada. Espera externa: decisões nominais/produção e runtime local. Caminhos que podem determinar término: Auth/realm039 → gateways/SQL nominais → consumidores/runtime → prova remota/E2E; em paralelo catálogo/transporte de mídia C02 → consumidores C04/C05 e Forms/XLSX. Risco da janela: ainda não quantificável, elevado enquanto ambiente, contratos e primeiros lotes não forem calibrados. Menor mitigação: abrir executores, liberar contrato de mídia e obter um primeiro fluxo nominal completo por frente, sem refazer os READs já implementados.
+ETA implementação/testes por executor: desconhecida até primeiro lote; integração depende de delta/teste e contratos, documentação operacional preparada. Espera externa: decisões nominais/produção e runtime local. Caminhos que podem determinar término: Auth/realm039 → gateways/SQL nominais → consumidores/runtime → prova remota/E2E; em paralelo catálogo/transporte de mídia C02 → consumidores C04/C05 e Forms/XLSX. Risco da janela: ainda não quantificável, elevado enquanto ambiente, contratos e primeiros lotes não forem calibrados. Menor mitigação: abrir C04/C05, ampliar contrato de mídia e obter um primeiro fluxo nominal completo por frente, sem refazer os READs já implementados.
 
 ### Agenda nativa e renovação
 
 Heartbeat único ativo/verificado: `e2-r01-c00-acompanhamento-30-min`, anexado ao ID C00, fuso America/Sao_Paulo. Plataforma recusou múltiplos heartbeats por tarefa; consolidado em despertar10min com consulta executores apenas30min. Próximos ticks calculados pela regra: próximo minuto múltiplo de10; `reports/agenda-nativa.json` registra horário calculado/limitação. API de view confirma cartão, mas não retorna nextRunAt: não afirmar execução futura garantida. Eventos08/09:13:00,15:00,17:40;09/09:05:30,06:00,07:40. Atrasos registrados com hora real; estado idempotente em `reports/estado-operacional.json`.
 
-Automação antiga `checkpoint-coelo-rc-40min` foi pausada via ferramenta para remover writer concorrente; `coordena-o-coelo-50min` já estava pausada. ID histórico `etapa-2-acompanhamento-hor-rio` não existe no inventário local atual. Não inventar que está ativo. Nenhuma ponte Codex–Claude disponível: sessões Claude devem registrar mecanismo nativo local e ID no handoff; arquivo não acorda sessão. Até sessões abertas,IDs reais/continuidade dos cinco permanecem pendentes.
+Automação antiga `checkpoint-coelo-rc-40min` foi pausada via ferramenta para remover writer concorrente; `coordena-o-coelo-50min` já estava pausada. ID histórico `etapa-2-acompanhamento-hor-rio` não existe no inventário local atual. Não inventar que está ativo. Nenhuma ponte Codex–Claude disponível: sessões Claude devem registrar mecanismo nativo local e ID no handoff; arquivo não acorda sessão. C01–C03 têm IDs reais registrados; Heartbeat C02 `e2-r01-c02-retomada-30-min` confirmado ACTIVE via view/TOML, intervalo30min; disparo efetivo não comprovado. C04/C05 ainda sem IDs e sem mecanismo local de continuidade comprovado.
 
 Fechamento09/09:05:30 fechar com segurança;06:00 suspender novos lotes; até07:40 entregar feedback/prompts R02 com SHAs/WIP/limites. Remover somente worktrees limpas/sem sessão/preservadas/integração comprovada. Renovação C00 requer transferência explícita e acknowledgement do sucessor, com heartbeat antigo desativado. Nenhuma limpeza ou branch removida nesta preparação.
+
+
+### Ack C02/r1 e reserva I002 — 2026-09-08T12:28:13-03:00
+
+Crosswalk recebido, Deno sintético40/40 relatado, sem commit/push/certificação nova. `_shared/r2_s3.ts` e seu teste são o núcleo real usado pelo wrapper Moments; reserva nominal adicionada a C02 para GET limitado/PUT server-side compatíveis. Forms/XLSX ainda usa Storage legado; catálogo/autorização precisam de inspeção, sem criar arquitetura pelo nome da ADR. Instrução I002 publicada. Timestamp r1 futuro corrigível registrado sem aceitar como hora efetiva; usar recibo12:28:13 até próximo handoff. C02 permanece trabalhando independentemente; nova intervenção apenas pela dependência/reserva solicitada.
+
+### Ack C01/r2 — 2026-09-08T12:30:25−03:00
+
+Candidato Auth login/reset reproduzido; SDK sintético10/10 relatado no handoff, sem SHA/push. Mensagem anuncia regressões155/155 e pacote25/25, analyzer ainda ativo; aguardar consolidação no arquivo e revisão de código. Nenhuma ação integralmente auditada/certificada por esse teste focal. Substituição externa da sessão diretamente no SDK continua aberta. Scope/shell devolvidos sem mudança por mensagem; C00 reassume, coelo_auth permanece C01. Pacote C01-AUTH-PERSONAS-v1 recebido: cinco personas, sem necessidade de novo Owner, escopos mínimos e cleanup proposto; conferir catálogo/ledger e transformar em pacote executável antes de pedir autorização nominal.
 
 ## Histórico preservado — anterior à R01
 

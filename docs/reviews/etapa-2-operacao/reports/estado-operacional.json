@@ -1,6 +1,6 @@
 {
   "source": "Owner R01; native tools; baseline inspection",
-  "status": "prepared-awaiting-executor-sessions",
+  "status": "active-three-codex-sessions-claude-registration-pending",
   "generated_at": "2026-09-08T12:19:18-03:00",
   "round": "R01",
   "writer": "01a0818b-2a34-7fa3-a9aa-f191fc91cc8d",
@@ -10,38 +10,61 @@
   "window_end": "2026-09-16T12:20:00-03:00",
   "delivery_branch": "dev",
   "runtime_target": "localhost normal + real Supabase; remote mutable scenarios require nominal authorization",
-  "last_poll": null,
+  "last_poll": "2026-09-08T12:25:00-03:00",
   "processed_events": [],
   "executors": {
     "C01": {
       "name": "E2 R01 C01 — Identidade e acesso",
-      "thread_id": null,
+      "thread_id": "01a08197-7b62-73c1-9673-5fd40fa40452",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01",
       "branch": "codex/e2-r01-c01-identidade",
       "instruction_revision": 1,
-      "received_revision": 0,
+      "received_revision": 2,
       "integrated_revision": 0,
-      "last_evidence": null
+      "last_evidence": "2026-09-08T12:30:25-03:00",
+      "baseline": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
+      "worktree_verified_at": "2026-09-08T12:23:42-03:00",
+      "handoff_present_at_preparation": true,
+      "accepted_revision": 2,
+      "handoff_sha256": "09ad925b0d15f125f773bb6a497129328ca3733beb328448d188b89bca4899b9",
+      "next_step": "Consolidate tests/analyzer, commit/push and final lot handoff; external SDK session substitution remains open",
+      "eta_first_batch": "implementation 30–60min conditional on reproduced race; tests15–30min after local runtime; handoff5–10min; not total ETA",
+      "last_evidence_basis": "C00 receipt r2; section says 12:28, original frontmatter unchanged",
+      "local_test_evidence": "r2 SDK10/10; message155/155+25/25 awaiting handoff consolidation; analyzer active"
     },
     "C02": {
-      "name": "E2 R01 C02 — Forms, mídia e cuidado",
-      "thread_id": null,
+      "name": "E2 R01 C02 — Forms mídia e cuidado",
+      "thread_id": "01a0819a-f1f1-7421-95dd-d645ca9f5747",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
       "branch": "codex/e2-r01-c02-forms-midia",
-      "instruction_revision": 1,
-      "received_revision": 0,
+      "instruction_revision": 2,
+      "received_revision": 1,
       "integrated_revision": 0,
-      "last_evidence": null
+      "last_evidence": "2026-09-08T12:28:13-03:00",
+      "baseline": "6cb8ba15bae15f5a6129b0db6e740a66f8f82b3f",
+      "worktree_verified_at": "2026-09-08T12:23:42-03:00",
+      "handoff_present_at_preparation": false,
+      "accepted_revision": 1,
+      "last_evidence_basis": "C00 read receipt; handoff claims 12:30:00, later than receipt; timestamp correction requested",
+      "handoff_generated_at_reported": "2026-09-08T12:30:00-03:00",
+      "handoff_sha256": "d1fa4ac60ffc42a289e963f7ff76c446cfc336cd20b45fadcee584dd4020624c",
+      "next_step": "I002 compatible common R2 transport; independent Forms reader/editor; correct handoff timestamp",
+      "local_test_evidence": "Reported Deno 40 passed / 0 failed; synthetic local; no action certification",
+      "continuity_automation_id": "e2-r01-c02-retomada-30-min",
+      "continuity_verification": "Native automation view and local TOML confirmed ACTIVE, 30min; actual dispatch not proven"
     },
     "C03": {
       "name": "E2 R01 C03 — Operações",
-      "thread_id": null,
+      "thread_id": "01a0819b-a12e-7110-88cb-99e51a82f384",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03",
       "branch": "codex/e2-r01-c03-operacoes",
       "instruction_revision": 1,
       "received_revision": 0,
       "integrated_revision": 0,
-      "last_evidence": null
+      "last_evidence": null,
+      "baseline": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
+      "worktree_verified_at": "2026-09-08T12:23:42-03:00",
+      "handoff_present_at_preparation": false
     },
     "C04": {
       "name": "E2 R01 C04 — Estruturas e pessoas",
@@ -51,7 +74,10 @@
       "instruction_revision": 1,
       "received_revision": 0,
       "integrated_revision": 0,
-      "last_evidence": null
+      "last_evidence": null,
+      "baseline": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
+      "worktree_verified_at": "2026-09-08T12:23:42-03:00",
+      "handoff_present_at_preparation": false
     },
     "C05": {
       "name": "E2 R01 C05 — Comunicação e Principal",
@@ -61,7 +87,10 @@
       "instruction_revision": 1,
       "received_revision": 0,
       "integrated_revision": 0,
-      "last_evidence": null
+      "last_evidence": null,
+      "baseline": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
+      "worktree_verified_at": "2026-09-08T12:23:42-03:00",
+      "handoff_present_at_preparation": false
     }
   },
   "remote_authorizations": [],
@@ -74,5 +103,12 @@
     "running_containers": 0,
     "engine_blocker": false,
     "sql_replay_verified": false
-  }
+  },
+  "operational_baseline": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
+  "last_preparation_push": {
+    "branch": "origin/codex/e2-r01-c00-integration",
+    "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
+    "verified_at": "2026-09-08T12:25:00-03:00"
+  },
+  "updated_at": "2026-09-08T12:30:25-03:00"
 }
