@@ -10,6 +10,311 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final kind in [FormItemKind.singleChoice, FormItemKind.multipleChoice]) {
+    testWidgets('choice branch explicit trigger survives save and reload $kind', (tester) async {
+      final api = _EditorApi(firstItems: [_branchChoice(kind)]);
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      tester
+          .widgetList<CoeloAdminToggleField>(find.byType(CoeloAdminToggleField))
+          .singleWhere((field) => field.label == 'Desdobrar por resposta')
+          .onChanged!(true);
+      await tester.pumpAndSettle();
+      final selector = find.byKey(const ValueKey('forms-branch-option-parent'));
+      expect(selector, findsOneWidget);
+      expect(tester.widget<CoeloAdminSingleSelectField<String?>>(selector).value, isNull);
+      expect(
+        tester
+            .widget<OutlinedButton>(
+              find.widgetWithText(OutlinedButton, 'Adicionar pergunta ao ramo'),
+            )
+            .onPressed,
+        isNull,
+      );
+      tester.widget<CoeloAdminSingleSelectField<String?>>(selector).onChanged('opaque-b');
+      await tester.pumpAndSettle();
+      final add = find.text('Adicionar pergunta ao ramo');
+      await tester.ensureVisible(add);
+      await tester.pumpAndSettle();
+      await tester.tap(add);
+      await tester.pumpAndSettle();
+      final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+      await tester.ensureVisible(save);
+      await tester.pumpAndSettle();
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      final sent = api.savedCommands.single.payload.sections.first.items;
+      expect(sent, hasLength(2));
+      expect(sent.last.conditions.single.sourceItemId, 'parent');
+      expect(sent.last.conditions.single.optionIds, {'opaque-b'});
+      final reloaded = _EditorApi(firstItems: sent);
+      await tester.pumpWidget(_app(reloaded, 'form-1'));
+      await tester.pumpAndSettle();
+      expect(find.text('Se “Segunda opção”'), findsOneWidget);
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      final second = reloaded.savedCommands.single.payload.sections.first.items;
+      expect(second.map((item) => item.id), sent.map((item) => item.id));
+      expect(second.last.conditions.single.optionIds, {'opaque-b'});
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final action in [
+    'toggle',
+    'reorder-options',
+    'duplicate-parent',
+    'duplicate-section',
+    'next-trigger',
+  ]) {
+    testWidgets('choice branch retains opaque triggers after $action', (tester) async {
+      final api = _EditorApi(firstItems: [_branchChoice(FormItemKind.multipleChoice)]);
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      tester
+          .widgetList<CoeloAdminToggleField>(find.byType(CoeloAdminToggleField))
+          .singleWhere((field) => field.label == 'Desdobrar por resposta')
+          .onChanged!(true);
+      await tester.pumpAndSettle();
+      await _addChoiceBranch(tester, 'opaque-b');
+      if (action == 'toggle') {
+        tester
+            .widgetList<CoeloAdminToggleField>(find.byType(CoeloAdminToggleField))
+            .singleWhere((field) => field.label == 'Desdobrar por resposta')
+            .onChanged!(false);
+      } else if (action == 'reorder-options') {
+        tester
+            .widget<ReorderableListView>(find.byKey(const ValueKey('forms-editor-options-parent')))
+            .onReorderItem!(0, 1);
+        await tester.pumpAndSettle();
+        final text = find.byWidgetPredicate(
+          (widget) => widget is TextFormField && widget.controller?.text == 'Segunda opção',
+        );
+        await tester.enterText(text, 'Opção renomeada');
+      } else if (action.startsWith('duplicate')) {
+        final button = find
+            .byTooltip(action == 'duplicate-parent' ? 'Duplicar pergunta' : 'Duplicar seção')
+            .first;
+        await tester.ensureVisible(button);
+        await tester.pumpAndSettle();
+        await tester.tap(button);
+      } else {
+        await _addChoiceBranch(tester, 'opaque-a');
+      }
+      await tester.pumpAndSettle();
+      final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+      await tester.ensureVisible(save);
+      await tester.pumpAndSettle();
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      final definition = api.savedCommands.single.payload;
+      final items = definition.sections.expand((section) => section.items).toList();
+      final children = items.where((item) => item.conditions.isNotEmpty).toList();
+      expect(
+        children,
+        hasLength(action.startsWith('duplicate') || action == 'next-trigger' ? 2 : 1),
+      );
+      for (final child in children) {
+        final parent = items.singleWhere((item) => item.id == child.conditions.single.sourceItemId);
+        expect(
+          parent.options.map((option) => option.id),
+          contains(child.conditions.single.optionIds.single),
+        );
+        if (parent.id == 'parent') {
+          expect(
+            child.conditions.single.optionIds,
+            child == children.first ? {'opaque-b'} : {'opaque-a'},
+          );
+        } else {
+          expect(child.conditions.single.optionIds, isNot(contains('opaque-b')));
+        }
+      }
+      expect(items.map((item) => item.id).toSet(), hasLength(items.length));
+      expect(const FormDefinitionValidator().validate(definition), isEmpty);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('choice branch retained add cannot run after its trigger is cleared', (tester) async {
+    final api = _EditorApi(firstItems: [_branchChoice(FormItemKind.singleChoice)]);
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    tester
+        .widgetList<CoeloAdminToggleField>(find.byType(CoeloAdminToggleField))
+        .singleWhere((field) => field.label == 'Desdobrar por resposta')
+        .onChanged!(true);
+    await tester.pumpAndSettle();
+    final selector = find.byKey(const ValueKey('forms-branch-option-parent'));
+    tester.widget<CoeloAdminSingleSelectField<String?>>(selector).onChanged('opaque-b');
+    await tester.pumpAndSettle();
+    final retained = tester
+        .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Adicionar pergunta ao ramo'))
+        .onPressed!;
+    tester.widget<CoeloAdminSingleSelectField<String?>>(selector).onChanged(null);
+    await tester.pumpAndSettle();
+    expect(retained, returnsNormally);
+    await tester.pumpAndSettle();
+    expect(find.text('Pergunta do ramo 1'), findsNothing);
+  });
+
+  for (final invalid in ['cycle', 'unknown-option', 'unknown-source']) {
+    testWidgets('choice branch rejects $invalid without destructive hydration', (tester) async {
+      final source = _branchChoice(FormItemKind.singleChoice);
+      final api = _EditorApi(
+        firstItems: [
+          FormItem(
+            id: source.id,
+            kind: source.kind,
+            label: source.label,
+            position: 0,
+            options: source.options,
+            conditions: invalid == 'cycle'
+                ? [
+                    const FormCondition.choice(sourceItemId: 'leaf', optionIds: {'leaf-a'}),
+                  ]
+                : const [],
+          ),
+          FormItem(
+            id: 'leaf',
+            kind: FormItemKind.singleChoice,
+            label: 'Leaf',
+            position: 1,
+            options: const [
+              FormOption(id: 'leaf-a', label: 'One', position: 0),
+              FormOption(id: 'leaf-b', label: 'Two', position: 1),
+            ],
+            conditions: [
+              FormCondition.choice(
+                sourceItemId: invalid == 'unknown-source' ? 'missing' : 'parent',
+                optionIds: {invalid == 'unknown-option' ? 'missing' : 'opaque-b'},
+              ),
+            ],
+          ),
+        ],
+      );
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+      await tester.ensureVisible(save);
+      await tester.pumpAndSettle();
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      expect(api.savedCommands, isEmpty);
+      expect(
+        find.text('Revise o título, a ordem e os campos obrigatórios antes de salvar.'),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('choice branch mixed hierarchy remains editable at 375 and 200 percent text', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(375, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final source = _branchChoice(FormItemKind.singleChoice);
+    final api = _EditorApi(
+      firstItems: [
+        FormItem(id: 'root', kind: FormItemKind.yesNo, label: 'Root', position: 0),
+        FormItem(
+          id: source.id,
+          kind: source.kind,
+          label: source.label,
+          options: source.options,
+          position: 1,
+          conditions: const [FormCondition.yesNo(sourceItemId: 'root', expected: true)],
+        ),
+        FormItem(
+          id: 'leaf',
+          kind: FormItemKind.shortText,
+          label: 'Loaded leaf',
+          position: 2,
+          conditions: const [
+            FormCondition.choice(sourceItemId: 'parent', optionIds: {'opaque-b'}),
+          ],
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: Scaffold(
+          body: FormsEditorPage(api: api, formId: 'form-1'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final card = find.byKey(const ValueKey('forms-question-card-leaf'));
+    expect(card, findsOneWidget);
+    final expand = find.descendant(of: card, matching: find.byTooltip('Editar pergunta')).first;
+    await tester.ensureVisible(expand);
+    await tester.pumpAndSettle();
+    await tester.tap(expand);
+    await tester.pumpAndSettle();
+    final field = find.byWidgetPredicate(
+      (widget) => widget is TextFormField && widget.controller?.text == 'Loaded leaf',
+    );
+    await tester.ensureVisible(field);
+    await tester.pumpAndSettle();
+    await tester.enterText(field, 'Edited leaf');
+    await tester.pumpAndSettle();
+    final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.ensureVisible(save);
+    await tester.pumpAndSettle();
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    final items = api.savedCommands.single.payload.sections.first.items;
+    expect(items.map((item) => item.id), ['root', 'parent', 'leaf']);
+    expect(items.last.label, 'Edited leaf');
+    expect(items.last.conditions.single.optionIds, {'opaque-b'});
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final depth in [4, 5]) {
+    testWidgets('choice branch depth $depth keeps backend-independent client validation', (
+      tester,
+    ) async {
+      final api = _EditorApi(
+        firstItems: [
+          _branchChoice(FormItemKind.singleChoice),
+          for (var index = 1; index <= depth; index++)
+            FormItem(
+              id: 'level-$index',
+              kind: FormItemKind.singleChoice,
+              label: 'Level $index',
+              position: index,
+              options: [
+                FormOption(id: 'option-$index', label: 'One', position: 0),
+                FormOption(id: 'other-$index', label: 'Two', position: 1),
+              ],
+              conditions: [
+                FormCondition.choice(
+                  sourceItemId: index == 1 ? 'parent' : 'level-${index - 1}',
+                  optionIds: {index == 1 ? 'opaque-b' : 'option-${index - 1}'},
+                ),
+              ],
+            ),
+        ],
+      );
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+      await tester.ensureVisible(save);
+      await tester.pumpAndSettle();
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      expect(api.savedCommands, hasLength(depth == 4 ? 1 : 0));
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('yes-no branch creation survives a new editor load and second save', (tester) async {
     final first = _EditorApi(itemKind: FormItemKind.yesNo);
     await tester.pumpWidget(_app(first, 'form-1'));
@@ -1244,6 +1549,32 @@ List<FormItem> _branchingItems() => [
     ],
   ),
 ];
+
+FormItem _branchChoice(FormItemKind kind) => FormItem(
+  id: 'parent',
+  kind: kind,
+  label: 'Escolha',
+  position: 0,
+  options: const [
+    FormOption(id: 'opaque-a', label: 'Primeira opção', position: 0),
+    FormOption(id: 'opaque-b', label: 'Segunda opção', position: 1),
+  ],
+);
+
+Future<void> _addChoiceBranch(WidgetTester tester, String optionId) async {
+  tester
+      .widget<CoeloAdminSingleSelectField<String?>>(
+        find.byKey(const ValueKey('forms-branch-option-parent')),
+      )
+      .onChanged(optionId);
+  await tester.pumpAndSettle();
+  tester
+      .widget<OutlinedButton>(
+        find.widgetWithText(OutlinedButton, 'Adicionar pergunta ao ramo').first,
+      )
+      .onPressed!();
+  await tester.pumpAndSettle();
+}
 
 final class _EditorApi implements FormsApi, FormsEditorContextApi {
   _EditorApi({

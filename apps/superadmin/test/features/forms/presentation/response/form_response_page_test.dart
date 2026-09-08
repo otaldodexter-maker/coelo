@@ -871,6 +871,61 @@ void main() {
     });
   }
 
+  testWidgets('multiple-choice union drops only newly hidden branch answers before submit', (
+    tester,
+  ) async {
+    final api = _ResponseApi(
+      initialAnswers: {
+        'root': FormAnswer.multipleChoice(itemId: 'root', optionIds: {'a', 'b'}),
+        'leaf-a': FormAnswer.shortText(itemId: 'leaf-a', value: 'Answer A'),
+        'leaf-b': FormAnswer.shortText(itemId: 'leaf-b', value: 'Answer B'),
+      },
+      items: [
+        FormItem(
+          id: 'root',
+          kind: FormItemKind.multipleChoice,
+          label: 'Root',
+          position: 0,
+          options: const [
+            FormOption(id: 'a', label: 'A', position: 0),
+            FormOption(id: 'b', label: 'B', position: 1),
+          ],
+        ),
+        for (final id in ['a', 'b'])
+          FormItem(
+            id: 'leaf-$id',
+            kind: FormItemKind.shortText,
+            label: 'Leaf $id',
+            position: id == 'a' ? 1 : 2,
+            conditions: [
+              FormCondition.choice(sourceItemId: 'root', optionIds: {id}),
+            ],
+          ),
+      ],
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FormResponsePage(api: api, occurrenceId: 'occurrence-1'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('form-response-item-leaf-a')), findsOneWidget);
+    expect(find.byKey(const Key('form-response-item-leaf-b')), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilterChip, 'A'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('form-response-item-leaf-a')), findsNothing);
+    expect(find.byKey(const Key('form-response-item-leaf-b')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Answer A'), findsNothing);
+    await tester.ensureVisible(find.byKey(const Key('form-response-submit')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('form-response-submit')));
+    await tester.pumpAndSettle();
+    expect(api.submitCommand?.payload.answers.keys.toSet(), {'root', 'leaf-b'});
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('one matching branch condition is enough, consistent with the domain', (
     tester,
   ) async {

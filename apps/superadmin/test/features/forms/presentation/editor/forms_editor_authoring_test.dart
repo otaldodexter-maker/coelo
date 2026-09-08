@@ -5,6 +5,7 @@ import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_superadmin/features/forms/data/forms_authoring_api.dart';
 import 'package:coelo_superadmin/features/forms/presentation/editor/forms_editor_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -24,6 +25,58 @@ void main() {
   Finder title(String value) => find.byWidgetPredicate(
     (widget) => widget is TextFormField && widget.controller?.text == value,
   );
+
+  testWidgets('choice branch autosave persists trigger without saving selector-only changes', (
+    tester,
+  ) async {
+    final api = _Api(manage: true)
+      ..customItems = [
+        FormItem(
+          id: 'parent',
+          kind: FormItemKind.multipleChoice,
+          label: 'Choice',
+          position: 0,
+          options: const [
+            FormOption(id: 'a', label: 'A', position: 0),
+            FormOption(id: 'b', label: 'B', position: 1),
+          ],
+        ),
+      ];
+    await open(tester, api);
+    tester
+        .widgetList<CoeloAdminToggleField>(find.byType(CoeloAdminToggleField))
+        .singleWhere((field) => field.label == 'Desdobrar por resposta')
+        .onChanged!(true);
+    await tester.pumpAndSettle();
+    final selector = find.byKey(const ValueKey('forms-branch-option-parent'));
+    tester.widget<CoeloAdminSingleSelectField<String?>>(selector).onChanged('b');
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.commands, isEmpty);
+    tester
+        .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Adicionar pergunta ao ramo'))
+        .onPressed!();
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.commands, hasLength(1));
+    final child = api.commands.single.payload.sections.first.items.last;
+    expect(child.conditions.single.optionIds, {'b'});
+    tester.widget<CoeloAdminSingleSelectField<String?>>(selector).onChanged('a');
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.commands, hasLength(1));
+    tester
+        .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Adicionar pergunta ao ramo'))
+        .onPressed!();
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.commands, hasLength(2));
+    final items = api.commands.last.payload.sections.first.items;
+    expect(items, hasLength(3));
+    expect(items[1].id, child.id);
+    expect(items[1].conditions.single.optionIds, {'b'});
+    expect(items[2].conditions.single.optionIds, {'a'});
+    expect(api.commands.last.expectedVersion, 2);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('authoring autosave debounces edits but never saves hydration', (tester) async {
     final api = _Api(manage: true);
@@ -625,6 +678,7 @@ void main() {
 final class _Api implements FormsAuthoringApi {
   _Api({required this.manage});
   final bool manage;
+  List<FormItem>? customItems;
   final reads = <String>[];
   var catalogReads = 0;
   var failSave = false;
@@ -659,21 +713,23 @@ final class _Api implements FormsAuthoringApi {
             id: 'section-a',
             title: 'Section A',
             position: 0,
-            items: [
-              FormItem(
-                id: 'item-a',
-                kind: FormItemKind.shortText,
-                label: 'Question A',
-                position: 0,
-              ),
-              FormItem(
-                id: 'item-b',
-                kind: FormItemKind.shortText,
-                label: 'Question B',
-                helpText: 'Second question help',
-                position: 1,
-              ),
-            ],
+            items:
+                customItems ??
+                [
+                  FormItem(
+                    id: 'item-a',
+                    kind: FormItemKind.shortText,
+                    label: 'Question A',
+                    position: 0,
+                  ),
+                  FormItem(
+                    id: 'item-b',
+                    kind: FormItemKind.shortText,
+                    label: 'Question B',
+                    helpText: 'Second question help',
+                    position: 1,
+                  ),
+                ],
           ),
         ],
       ),

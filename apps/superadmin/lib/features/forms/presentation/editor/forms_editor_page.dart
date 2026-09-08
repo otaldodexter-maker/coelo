@@ -1077,6 +1077,13 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
 
   Widget _questionTree(List<_EditorQuestionDraft> siblings, int index, {bool nested = false}) {
     final question = siblings[index];
+    final generation = _contextGeneration;
+    bool current() =>
+        _isCurrentContext(generation) &&
+        _sections.any(
+          (section) =>
+              _flattenQuestions(section.questions).any((item) => identical(item, question)),
+        );
     return _QuestionCard(
       key: ValueKey('forms-question-card-${question.id}'),
       index: index,
@@ -1095,25 +1102,62 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       onDelete: () => _confirmDeleteQuestion(index, siblings: siblings),
       onChanged: () => _changeDraft(() => _feedback = null),
       branchPanel:
-          question.kind == FormItemKind.yesNo &&
+          _canBranch(question.kind) &&
               question.branchEnabled &&
               (_expandedQuestionId == question.id || question.branchQuestions.isNotEmpty)
           ? _BranchPanel(
               question: question,
-              onAdd: () => _changeDraft(() {
-                question.branchQuestions.add(
-                  _EditorQuestionDraft(
-                    id: _newRequestId(),
-                    kind: FormItemKind.shortText,
-                    label: 'Pergunta do ramo ${question.branchQuestions.length + 1}',
-                    required: false,
-                    loadedConditions: [
-                      FormCondition.yesNo(sourceItemId: question.id, expected: true),
-                    ],
-                  ),
-                );
-                _feedback = null;
-              }),
+              triggerSelector: question.kind == FormItemKind.yesNo
+                  ? null
+                  : CoeloAdminSingleSelectField<String?>(
+                      key: ValueKey('forms-branch-option-${question.id}'),
+                      label: 'Opção que revela o próximo ramo',
+                      value: question.branchOptionId,
+                      options: [
+                        null,
+                        for (final option in question.options) question.optionIds[option]!,
+                      ],
+                      optionLabel: (id) =>
+                          id == null ? 'Selecione uma opção' : question.optionLabel(id),
+                      onChanged: (id) {
+                        if (!current() || (id != null && !question.optionIds.containsValue(id))) {
+                          return;
+                        }
+                        setState(() => question.branchOptionId = id);
+                      },
+                    ),
+              onAdd:
+                  question.kind != FormItemKind.yesNo &&
+                      !question.optionIds.containsValue(question.branchOptionId)
+                  ? null
+                  : () {
+                      if (!current() ||
+                          !question.branchEnabled ||
+                          (question.kind != FormItemKind.yesNo &&
+                              !question.optionIds.containsValue(question.branchOptionId))) {
+                        return;
+                      }
+                      _changeDraft(() {
+                        question.branchQuestions.add(
+                          _EditorQuestionDraft(
+                            id: _newRequestId(),
+                            kind: FormItemKind.shortText,
+                            label: 'Pergunta do ramo ${question.branchQuestions.length + 1}',
+                            required: false,
+                            loadedConditions: [
+                              if (question.kind == FormItemKind.yesNo)
+                                FormCondition.yesNo(sourceItemId: question.id, expected: true)
+                              else
+                                FormCondition.choice(
+                                  sourceItemId: question.id,
+                                  optionIds: {question.branchOptionId!},
+                                ),
+                            ],
+                          ),
+                        );
+                        _feedback = null;
+                      });
+                    },
               onDelete: (index) =>
                   _confirmDeleteQuestion(index, siblings: question.branchQuestions),
               children: Column(
@@ -1125,7 +1169,19 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                   )
                     Padding(
                       padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
-                      child: _questionTree(question.branchQuestions, childIndex, nested: true),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (question.kind != FormItemKind.yesNo)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+                              child: Text(
+                                'Se “${question.optionLabel(question.branchQuestions[childIndex].loadedConditions.single.optionIds.single)}”',
+                              ),
+                            ),
+                          _questionTree(question.branchQuestions, childIndex, nested: true),
+                        ],
+                      ),
                     ),
                 ],
               ),
@@ -1415,7 +1471,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
             _ => true,
           },
         );
-    if (draftIssues.isNotEmpty) {
+    if (draftIssues.isNotEmpty || _hasInvalidChoiceReferences(definition)) {
       _autosavePaused = true;
       setState(
         () => _feedback = 'Revise o título, a ordem e os campos obrigatórios antes de salvar.',
@@ -1509,12 +1565,20 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     for (final item in items) {
       final draft = _questionDraft(item);
       final condition = item.conditions.length == 1 ? item.conditions.single : null;
-      final parentIndex =
-          condition?.kind == FormConditionKind.yesNo && condition?.expectedYesNo == true
-          ? ancestors.indexWhere(
-              (parent) => parent.id == condition!.sourceItemId && parent.kind == FormItemKind.yesNo,
-            )
-          : -1;
+      final parentIndex = condition == null
+          ? -1
+          : ancestors.indexWhere((parent) {
+              if (parent.id != condition.sourceItemId) return false;
+              return switch (condition.kind) {
+                FormConditionKind.yesNo =>
+                  condition.expectedYesNo == true && parent.kind == FormItemKind.yesNo,
+                FormConditionKind.choice =>
+                  (parent.kind == FormItemKind.singleChoice ||
+                          parent.kind == FormItemKind.multipleChoice) &&
+                      condition.optionIds.length == 1 &&
+                      parent.optionIds.containsValue(condition.optionIds.single),
+              };
+            });
       if (parentIndex >= 0) {
         final parent = ancestors[parentIndex];
         parent.branchQuestions.add(draft);
@@ -1882,10 +1946,31 @@ String _newRequestId() {
 
 enum _DateRule { free, from, until, range }
 
+bool _hasInvalidChoiceReferences(FormDefinition definition) {
+  final items = {
+    for (final section in definition.sections)
+      for (final item in section.items) item.id: item,
+  };
+  for (final item in items.values) {
+    for (final condition in item.conditions) {
+      if (condition.kind != FormConditionKind.choice) continue;
+      final source = items[condition.sourceItemId];
+      if (source == null ||
+          (source.kind != FormItemKind.singleChoice &&
+              source.kind != FormItemKind.multipleChoice) ||
+          condition.optionIds.isEmpty ||
+          !source.options.map((option) => option.id).toSet().containsAll(condition.optionIds)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 Iterable<_EditorQuestionDraft> _flattenQuestions(Iterable<_EditorQuestionDraft> questions) sync* {
   for (final question in questions) {
     yield question;
-    if (question.kind == FormItemKind.yesNo) {
+    if (_canBranch(question.kind)) {
       yield* _flattenQuestions(question.branchQuestions);
     }
   }
@@ -1967,9 +2052,12 @@ final class _EditorQuestionDraft {
   final List<_EditorQuestionDraft> branchQuestions = [];
   bool required;
   bool branchEnabled;
+  String? branchOptionId;
   _DateRule dateRule = _DateRule.free;
   DateTime from = DateTime(2026, 8, 1);
   DateTime until = DateTime(2026, 8, 31);
+
+  String optionLabel(String id) => options.firstWhere((option) => optionIds[option] == id).text;
 
   void replaceOptions(List<FormOption> values) {
     for (final option in options) {
@@ -2489,31 +2577,6 @@ final class _QuestionCardState extends State<_QuestionCard> {
           const SizedBox(height: CoeloSpacing.space3),
           widget.branchPanel!,
         ],
-        if (widget.question.branchEnabled && widget.question.kind != FormItemKind.yesNo) ...[
-          const SizedBox(height: CoeloSpacing.space3),
-          _BranchPanel(
-            question: widget.question,
-            onAdd: () {
-              setState(() {
-                widget.question.branchQuestions.add(
-                  _EditorQuestionDraft(
-                    id: '${widget.question.id}-branch-${widget.question.branchQuestions.length}',
-                    kind: FormItemKind.shortText,
-                    label: 'Pergunta do ramo ${widget.question.branchQuestions.length + 1}',
-                    required: false,
-                  ),
-                );
-              });
-              widget.onChanged();
-            },
-            onDelete: (index) {
-              final removed = widget.question.branchQuestions.removeAt(index);
-              removed.dispose();
-              setState(() {});
-              widget.onChanged();
-            },
-          ),
-        ],
       ],
       if (widget.question.kind == FormItemKind.photo ||
           widget.question.kind == FormItemKind.gallery) ...[
@@ -2604,12 +2667,14 @@ final class _BranchPanel extends StatelessWidget {
     required this.onAdd,
     required this.onDelete,
     this.children,
+    this.triggerSelector,
   });
 
   final _EditorQuestionDraft question;
-  final VoidCallback onAdd;
+  final VoidCallback? onAdd;
   final ValueChanged<int> onDelete;
   final Widget? children;
+  final Widget? triggerSelector;
 
   @override
   Widget build(BuildContext context) {
@@ -2630,6 +2695,10 @@ final class _BranchPanel extends StatelessWidget {
           ),
           const SizedBox(height: CoeloSpacing.space2),
           const Text('Perguntas do ramo permanecem vinculadas a esta resposta.'),
+          if (triggerSelector != null) ...[
+            const SizedBox(height: CoeloSpacing.space3),
+            triggerSelector!,
+          ],
           if (children != null)
             children!
           else if (question.branchQuestions.isNotEmpty) ...[
