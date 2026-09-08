@@ -13,6 +13,13 @@ updated_at: "2026-09-08"
 O histórico abaixo não substitui este corte; contagens de execuções diferentes
 não são somadas. Nenhuma ação desta retomada foi promovida a verified-e2e.
 
+Regressão funcional conjunta mais recente, HEAD e35c32f2: todos os arquivos
+`*_test.dart` sob test/features/auth, access_profiles e platform_users,
+excluindo `*golden*`: 303/303 PASS, exit0. Não inclui router/core guard/Conta,
+goldens, runtime HTTP ou produção; não somar com as rodadas focais abaixo.
+O candidato runtime e35c32f2 compila com 25 guards PASS e um SKIP forçado,
+aguardando seed/porta/janela nominal de Eng1 para Users49 e Models50 separadas.
+
 | Recorte original | Evidência local entregue | Primeiro gate aberto |
 |---|---|---|
 | Auth/login/recovery/sessão | R06/R07 e c0a199fd; regressões SDK/HTTP e integração central | Sessão real, revogação persistida, reload e negativos no pacote nominal |
