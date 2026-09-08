@@ -305,68 +305,76 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T13:56:20-03:00",
+  "updated_at": "2026-09-08T13:58:23-03:00",
   "integration_history": [
     {
       "executor": "C01",
       "revision": 3,
       "source": "1fd7f9ecd8805379ca4d24b09000f4abcff041af",
       "destination": "2dd5a9bc",
-      "status": "local-verified-awaiting-delivery-dev",
-      "report": "reports/R01-C01-auth-integracao.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-C01-auth-integracao.md",
+      "delivery_sha": "0bf9e0398574df9a8dc49c257bba1f586904889b"
     },
     {
       "executor": "C02",
       "revision": 3,
       "source": "76a34dda",
       "destination": "6fd676e2",
-      "status": "local-verified-awaiting-delivery-dev"
+      "status": "delivered-origin-dev;not-production-certified",
+      "delivery_sha": "0bf9e0398574df9a8dc49c257bba1f586904889b"
     },
     {
       "executor": "C02",
       "revision": 4,
       "source": "98a2f5fa",
       "destination": "44465b0c",
-      "status": "local-verified-awaiting-delivery-dev"
+      "status": "delivered-origin-dev;not-production-certified",
+      "delivery_sha": "0bf9e0398574df9a8dc49c257bba1f586904889b"
     },
     {
       "executor": "C03",
       "revision": 2,
       "source": "445ee6e2",
       "destination": "db3dd9e9",
-      "status": "harness-integrated-known-golden-failures-awaiting-delivery-dev"
+      "status": "delivered-origin-dev;not-production-certified",
+      "delivery_sha": "0bf9e0398574df9a8dc49c257bba1f586904889b"
     },
     {
       "executor": "C01",
       "revision": 8,
       "source": "556bedba18e2938b5b2f035c0e0bf89c3356f10c",
       "destination": "9aa46721d4c244c3f386bc8b05a9f26a4b086f23",
-      "status": "C00-verified-awaiting-dev",
-      "report": "reports/R01-checkpoint-1330.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-checkpoint-1330.md",
+      "delivery_sha": "0bf9e0398574df9a8dc49c257bba1f586904889b"
     },
     {
       "executor": "C01",
       "revision": 10,
       "source": "cf8d7c5b780f95f6512524ea6f02bee2416e4378",
       "destination": "e788c4531d8227276f0e1795117f6f841edc8604",
-      "status": "C00-verified-awaiting-dev",
-      "report": "reports/R01-checkpoint-1330.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-checkpoint-1330.md",
+      "delivery_sha": "0bf9e0398574df9a8dc49c257bba1f586904889b"
     },
     {
       "executor": "C01",
       "revision": 11,
       "source": "e5f881baa388b6c3652518e7475e43b521615d4c",
       "destination": "7a12addf4ba57e2d8438d506bd386843a43ed4d0",
-      "status": "C00-verified-awaiting-dev",
-      "report": "reports/R01-checkpoint-1330.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-checkpoint-1330.md",
+      "delivery_sha": "0bf9e0398574df9a8dc49c257bba1f586904889b"
     },
     {
       "executor": "C01",
       "revision": 12,
       "source": "17e42981c961df635966dce1ff204ab2fd738644",
       "destination": "7118f7e8abd2be13cd12fa22704785c593994553",
-      "status": "C00-verified-awaiting-dev",
-      "report": "reports/R01-checkpoint-1330.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-checkpoint-1330.md",
+      "delivery_sha": "0bf9e0398574df9a8dc49c257bba1f586904889b"
     }
   ],
   "last_delta_processed_at": "2026-09-08T13:50:02-03:00",
@@ -383,5 +391,22 @@
     "scope": "isolated nominal assessment workflow pgTAP",
     "release": "pending executor",
     "remote": false
+  },
+  "last_delivery": {
+    "branch": "origin/dev",
+    "sha": "0bf9e0398574df9a8dc49c257bba1f586904889b",
+    "verified_at": "2026-09-08T13:58:23-03:00",
+    "method": "atomic fast-forward push + ls-remote",
+    "original_local_dev": "84985b5485247df6a8dc7270e33d18601aca0421; dirty checkout preserved",
+    "deploy": "not executed by C00; production state not verified"
+  },
+  "prepared_dependency": {
+    "sha": "fe271f95681e10cedb1aa2e89931224229d68f2d",
+    "source": "8a792dce",
+    "paths": [
+      "form-export-download/deno.json",
+      "form-export-download/deno.lock"
+    ],
+    "state": "C00 only, not yet dev; same pins as current form-media"
   }
 }

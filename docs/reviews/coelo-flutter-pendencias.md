@@ -39,7 +39,7 @@ Fonte central `etapa-2-operacao/reports/R01-checkpoint-1330.md` e `R01-checkpoin
 
 Verificação FE parcial:59/219 IDs (52/194ativos,7/22adiados,0/3gates). BE10/212 contratos parciais, incluindo5 IDs com critérios SQL local, separado de remoto0/212; E2E0/187. Lista exata/evidência/critério no JSON e relatório. Conclusão FE0/219,BE0/212,E2E0/187; nenhum ID certificado,7N/A BE/E2E. Sem percentual de implementação inferido. FE e BE independentes; UI/real/reload/negativas exigidos para E2E.
 
-Publicação em dev autorizada pelo Owner, ainda pendente confirmação remota deste lote no estado-operacional.json. Nenhum deploy, Auth sintético ou mutação remota. C04 I003 e C02 I005 são reservas locais, não aprovação de pacote de produção.
+Entrega origin/dev confirmada em0bf9e039 por push atômico e ls-remote às2026-09-08T13:58:23-03:00. Checkout original dev84985b54 com alterações alheias preservado. Estado de produção não verificado; C00 não executou deploy, Auth sintético ou mutação de dados remota. C04 I003 e C02 I005 são reservas locais, não aprovação de pacote de produção.
 
 ## Pacotes preservados e gates transversais
 

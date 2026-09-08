@@ -115,6 +115,10 @@ C01/r8 fonte13:09 recebida antes de publicar: formulário556bedba entregue para 
 
 C01 lotes8/10/11/12 integrados em7118f7e8 com63 testes e analyzer3arquivos. C04 I003 reserva pass-through SuperadminApp e CHILD local; C02 I005 reserva XLSX/download em6arquivos e confirmou13:50. C01 I003 reserva teste de duplicação na rota normal, sem editar router sob C04. Goldens não impedem implementar aceites já aprovados. SQL Locais requer tabela vazia e pode afetar Atividades, revisão cruzada antes de aplicar. Catálogo mídia passou44/44, duas falhas Acontece idênticas ao baseline; recuperação histórica apenas no perfil temporário, sem migration remota. Relatório reports/R01-checkpoint-1330.md.
 
+### Entrega dev verificada — 2026-09-08T13:58:23-03:00
+
+Origin/dev avançou de84985b54 para **0bf9e0398574df9a8dc49c257bba1f586904889b**, junto da branch C00, por push atômico e conferência ls-remote. Trabalho local alheio permaneceu no checkout original dev84985b54; não foi forçado a sincronizar e localhost dessa pasta não foi atualizado. Nenhum apply/deploy manual; produção não verificada. Catálogos/SQL candidatos permanecem fora da entrega. Manifests Formsfe271f95681e10cedb1aa2e89931224229d68f2d preparados depois somente na C00, aguardando handlers. C03 I003 recebeu janela SQL local; C00 aguarda release antes de novo replay.
+
 ## Histórico preservado — anterior à R01
 
 ## Finalidade
