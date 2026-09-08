@@ -75,7 +75,7 @@ enabled = false
 "@
   $supabase = Join-Path $root 'supabase'
   [pscustomobject]@{
-    Identity=$id; Temp=$temp; Root=$root; Supabase=$supabase
+    Identity=$id; Temp=$temp; Root=$root; Supabase=$supabase; DbPort=$port
     Migrations=(Join-Path $supabase 'migrations'); ConfigPath=(Join-Path $supabase 'config.toml')
     ConfigText=$config; Marker=(Join-Path $root '.forms-authoring-owner')
     MarkerText=($id + '|' + $root + '|' + [guid]::NewGuid().ToString('N'))
@@ -110,39 +110,207 @@ function Assert-FormsPreflightProject($Context, [switch]$BeforeStart) {
     if (@($tree | Where-Object { $_.FullName -notin $allowed }).Count -ne 0) { throw 'unexpected startup path in F-AUTHOR project' }
   }
 }
-function Convert-FormsPreflightDockerArguments([string[]]$Arguments) {
-  # Match Docker's documented Windows-shell quoting under one explicit legacy mode.
-  foreach ($argument in $Arguments) { $argument.Replace('"', '\"') }
-}
-function Invoke-FormsPreflightNative([ValidateSet('docker','cli')]$Tool, [string[]]$Arguments, [string]$WorkingDirectory) {
-  # Never stream native output: start/setup can print generated credentials.
-  $previous = $ErrorActionPreference
-  $pushed = $false
-  try {
-    $ErrorActionPreference = 'Continue'
-    if ($WorkingDirectory) { Push-Location -LiteralPath $WorkingDirectory -ErrorAction Stop; $pushed=$true }
-    if ($Tool -eq 'cli') { $output = @(& npx.cmd --yes supabase@2.116.0 --agent no @Arguments 2>&1) }
-    else {
-      $PSNativeCommandArgumentPassing = 'Legacy'
-      $dockerArguments = @(Convert-FormsPreflightDockerArguments $Arguments)
-      $output = @(& docker @dockerArguments 2>&1)
+function Initialize-FormsPreflightProcessWindowType {
+  if ('Coelo.FormsPreflight.ProcessWindow' -as [type]) { return }
+  # Windows-only, private job. Child starts suspended so it cannot fork before assignment.
+  # No breakaway flags; closing the job also terminates descendants after the parent exits.
+  $definition = @"
+using System;
+using System.IO;
+using System.Text;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
+namespace Coelo.FormsPreflight {
+  public sealed class ProcessResult {
+    public int ExitCode; public string Output; public string Error;
+  }
+  public sealed class ProcessWindow : IDisposable {
+    [StructLayout(LayoutKind.Sequential)] struct SA { public int Length; public IntPtr Descriptor; public int Inherit; }
+    [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)] struct SI {
+      public int Size; public string Reserved, Desktop, Title;
+      public int X,Y,XSize,YSize,XChars,YChars,Fill,Flags; public short Show,ReservedBytes;
+      public IntPtr ReservedPtr,Input,Output,Error;
     }
-    $code = $LASTEXITCODE
-    [pscustomobject]@{ ExitCode=$code; Output=(($output | ForEach-Object { $_.ToString() }) -join "`n") }
-  } catch { [pscustomobject]@{ ExitCode=-1; Output='' } }
-  finally { if ($pushed) { Pop-Location }; $ErrorActionPreference=$previous }
+    [StructLayout(LayoutKind.Sequential)] struct PI { public IntPtr Process,Thread; public uint Id,ThreadId; }
+    [StructLayout(LayoutKind.Sequential)] struct Limits {
+      public long ProcessTime,JobTime; public uint Flags; public UIntPtr Min,Max; public uint Active;
+      public UIntPtr Affinity; public uint Priority,Scheduling;
+    }
+    [StructLayout(LayoutKind.Sequential)] struct IO { public ulong ReadOps,WriteOps,OtherOps,ReadBytes,WriteBytes,OtherBytes; }
+    [StructLayout(LayoutKind.Sequential)] struct Extended {
+      public Limits Basic; public IO Io; public UIntPtr ProcessMemory,JobMemory,PeakProcessMemory,PeakJobMemory;
+    }
+    [StructLayout(LayoutKind.Sequential)] struct Accounting {
+      public long User,Kernel,PeriodUser,PeriodKernel; public uint Faults,Total,Active,Terminated;
+    }
+    [DllImport("kernel32.dll",SetLastError=true)] static extern IntPtr CreateJobObject(IntPtr attributes,string name);
+    [DllImport("kernel32.dll",SetLastError=true)] static extern bool SetInformationJobObject(IntPtr job,int kind,ref Extended info,int length);
+    [DllImport("kernel32.dll",SetLastError=true)] static extern bool QueryInformationJobObject(IntPtr job,int kind,out Accounting info,int length,IntPtr returned);
+    [DllImport("kernel32.dll",SetLastError=true)] static extern bool AssignProcessToJobObject(IntPtr job,IntPtr process);
+    [DllImport("kernel32.dll",SetLastError=true)] static extern bool TerminateJobObject(IntPtr job,uint code);
+    [DllImport("kernel32.dll",SetLastError=true)] static extern bool TerminateProcess(IntPtr process,uint code);
+    [DllImport("kernel32.dll",SetLastError=true)] static extern bool CreatePipe(out IntPtr read,out IntPtr write,ref SA attributes,int size);
+    [DllImport("kernel32.dll",SetLastError=true)] static extern bool SetHandleInformation(IntPtr handle,uint mask,uint flags);
+    [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool CreateProcessW(string app,StringBuilder command,IntPtr pa,IntPtr ta,bool inherit,uint flags,IntPtr env,string cwd,ref SI startup,out PI process);
+    [DllImport("kernel32.dll",SetLastError=true)] static extern uint ResumeThread(IntPtr thread);
+    [DllImport("kernel32.dll",SetLastError=true)] static extern uint WaitForSingleObject(IntPtr handle,uint milliseconds);
+    [DllImport("kernel32.dll",SetLastError=true)] static extern bool GetExitCodeProcess(IntPtr process,out uint code);
+    [DllImport("kernel32.dll")] static extern bool CloseHandle(IntPtr handle);
+    IntPtr job,process,thread; bool assigned,disposed;
+    StreamWriter input; StreamReader output,error;
+    Task inputTask,exitTask; Task<string> outputTask,errorTask;
+    readonly Stopwatch elapsed=Stopwatch.StartNew();
+    static void Check(bool ok) { if (!ok) throw new InvalidOperationException("F-AUTHOR process ownership operation failed"); }
+    static void Close(ref IntPtr handle) { if(handle!=IntPtr.Zero) { CloseHandle(handle);handle=IntPtr.Zero; } }
+    static FileStream Stream(ref IntPtr handle,FileAccess access) {
+      var stream=new FileStream(new SafeFileHandle(handle,true),access,4096,false);handle=IntPtr.Zero;return stream;
+    }
+
+    public ProcessWindow(string file,string arguments,string cwd,string text,string environment) {
+      IntPtr inRead=IntPtr.Zero,inWrite=IntPtr.Zero,outRead=IntPtr.Zero,outWrite=IntPtr.Zero,errRead=IntPtr.Zero,errWrite=IntPtr.Zero,env=IntPtr.Zero;
+      try {
+        job=CreateJobObject(IntPtr.Zero,null);Check(job!=IntPtr.Zero);
+        var limits=new Extended();limits.Basic.Flags=0x2000;
+        Check(SetInformationJobObject(job,9,ref limits,Marshal.SizeOf(typeof(Extended))));
+        var sa=new SA { Length=Marshal.SizeOf(typeof(SA)),Inherit=1 };
+        Check(CreatePipe(out inRead,out inWrite,ref sa,0));
+        Check(CreatePipe(out outRead,out outWrite,ref sa,0));
+        Check(CreatePipe(out errRead,out errWrite,ref sa,0));
+        Check(SetHandleInformation(inWrite,1,0));Check(SetHandleInformation(outRead,1,0));Check(SetHandleInformation(errRead,1,0));
+        var si=new SI { Size=Marshal.SizeOf(typeof(SI)),Flags=0x100,Input=inRead,Output=outWrite,Error=errWrite };
+        PI pi;
+        if(!String.IsNullOrEmpty(environment)) env=Marshal.StringToHGlobalUni(environment);
+        // CREATE_SUSPENDED | CREATE_UNICODE_ENVIRONMENT | CREATE_NO_WINDOW.
+        Check(CreateProcessW(file,new StringBuilder("\""+file+"\" "+arguments),IntPtr.Zero,IntPtr.Zero,true,0x08000404,env,cwd,ref si,out pi));
+        process=pi.Process;thread=pi.Thread;
+        Check(AssignProcessToJobObject(job,process));assigned=true;
+        Close(ref inRead);Close(ref outWrite);Close(ref errWrite);
+        input=new StreamWriter(Stream(ref inWrite,FileAccess.Write),new UTF8Encoding(false));
+        output=new StreamReader(Stream(ref outRead,FileAccess.Read),new UTF8Encoding(false));
+        error=new StreamReader(Stream(ref errRead,FileAccess.Read),new UTF8Encoding(false));
+        Check(ResumeThread(thread)!=0xffffffff);Close(ref thread);
+        outputTask=output.ReadToEndAsync();errorTask=error.ReadToEndAsync();
+        inputTask=Task.Factory.StartNew(delegate {
+          try { input.WriteAsync(text ?? "").GetAwaiter().GetResult();input.FlushAsync().GetAwaiter().GetResult(); }
+          finally { input.Dispose(); }
+        });
+        exitTask=Task.Factory.StartNew(delegate { Check(WaitForSingleObject(process,0xffffffff)==0); });
+      } catch { Dispose();throw; }
+      finally {
+        Close(ref inRead);Close(ref inWrite);Close(ref outRead);Close(ref outWrite);Close(ref errRead);Close(ref errWrite);
+        if(env!=IntPtr.Zero) Marshal.FreeHGlobal(env);
+      }
+    }
+    public bool Wait(int milliseconds) {
+      int remaining=(int)Math.Max(0,(long)milliseconds-elapsed.ElapsedMilliseconds);
+      return Task.WaitAll(new Task[] {inputTask,outputTask,errorTask,exitTask},remaining);
+    }
+    public ProcessResult GetResult() {
+      if(!inputTask.IsCompleted || !outputTask.IsCompleted || !errorTask.IsCompleted || !exitTask.IsCompleted)
+        throw new InvalidOperationException("F-AUTHOR process result is incomplete");
+      uint code;Check(GetExitCodeProcess(process,out code));
+      return new ProcessResult { ExitCode=(int)code,Output=outputTask.GetAwaiter().GetResult(),Error=errorTask.GetAwaiter().GetResult() };
+    }
+    public void Dispose() {
+      if(disposed) return;disposed=true;
+      bool zero=true;
+      try {
+        if(job!=IntPtr.Zero && assigned) {
+          Check(TerminateJobObject(job,1));
+          var grace=Stopwatch.StartNew();Accounting state;
+          do {
+            Check(QueryInformationJobObject(job,1,out state,Marshal.SizeOf(typeof(Accounting)),IntPtr.Zero));
+            if(state.Active==0) break;
+            Thread.Sleep(10);
+          } while(grace.ElapsedMilliseconds<5000);
+          zero=state.Active==0;
+        } else if(process!=IntPtr.Zero) {
+          Check(TerminateProcess(process,1));zero=WaitForSingleObject(process,5000)==0;
+        }
+      } finally {
+        // Closing the non-inherited job handle enforces KILL_ON_JOB_CLOSE even on errors.
+        Close(ref job);Close(ref thread);Close(ref process);
+        if(input!=null) { try { input.BaseStream.Dispose(); } catch {} }
+        if(output!=null) output.Dispose();if(error!=null) error.Dispose();
+      }
+      if(!zero) throw new InvalidOperationException("F-AUTHOR owned process cleanup could not prove zero");
+    }
+  }
+}
+"@
+  Add-Type -TypeDefinition $definition -Language CSharp -ErrorAction Stop
+}
+function New-FormsPreflightProcessWindow([string]$File, [string]$Arguments, [string]$WorkingDirectory) {
+  Initialize-FormsPreflightProcessWindowType
+  [Coelo.FormsPreflight.ProcessWindow]::new($File, $Arguments, $WorkingDirectory, $null, $null)
+}
+function Complete-FormsPreflightProcessWindow($Window, [ValidateSet(30,60,240)][int]$TimeoutSeconds) {
+  $result=$null; $primary=$null
+  try {
+    if (-not $Window.Wait($TimeoutSeconds * 1000)) { throw [TimeoutException]::new('F-AUTHOR native deadline elapsed') }
+    $result=$Window.GetResult()
+  } catch { $primary=$_.Exception }
+  finally {
+    try { $Window.Dispose() }
+    catch { throw [InvalidOperationException]::new('F-AUTHOR native cleanup unproven') }
+  }
+  if ($primary) { throw $primary }
+  return $result
+}
+function Convert-FormsPreflightDockerArguments([string[]]$Arguments) {
+  # Serialize Win32 argv once, including embedded quotes and trailing backslashes.
+  # CreateProcessW is called directly; PowerShell Legacy escaping must not precede this.
+  foreach ($argument in $Arguments) {
+    $escaped=[regex]::Replace([string]$argument, '(\\*)"', '$1$1\"')
+    $escaped=[regex]::Replace($escaped, '(\\+)$', '$1$1')
+    '"' + $escaped + '"'
+  }
+}
+function Invoke-FormsPreflightNative(
+  [ValidateSet('docker','cli')]$Tool, [string[]]$Arguments, [string]$WorkingDirectory,
+  [Parameter(Mandatory=$true)][ValidateSet(30,60,240)][int]$TimeoutSeconds
+) {
+  # Capture both pipes without streaming native setup output or raw failure details.
+  $window=$null; $constructionAttempted=$false
+  try {
+    if (-not $WorkingDirectory) { $WorkingDirectory=$script:formsPreflightRepository }
+    if ($Tool -eq 'cli') {
+      $npx=(Get-Command -Name npx.cmd -CommandType Application -ErrorAction Stop).Source
+      $file=$env:COMSPEC
+      $tokens=@(Convert-FormsPreflightDockerArguments (@('--yes','supabase@2.116.0','--agent','no') + $Arguments))
+      $command='"' + $npx + '" ' + ($tokens -join ' ')
+      $nativeArguments='/d /s /c "' + $command + '"'
+    } else {
+      $file=(Get-Command -Name docker.exe -CommandType Application -ErrorAction Stop).Source
+      $nativeArguments=@(Convert-FormsPreflightDockerArguments $Arguments) -join ' '
+    }
+    $constructionAttempted=$true
+    $window=New-FormsPreflightProcessWindow $file $nativeArguments $WorkingDirectory
+    $result=Complete-FormsPreflightProcessWindow $window $TimeoutSeconds
+    [pscustomobject]@{ ExitCode=$result.ExitCode; Output=[string]$result.Output; Failure=$null }
+  } catch {
+    $reason='process-failed'
+    if ($_.Exception.Message -match 'native cleanup unproven' -or ($constructionAttempted -and $null -eq $window)) {
+      $script:formsPreflightNativeCleanupUnproven=$true
+      $reason='cleanup-unproven'
+    } elseif ($_.Exception.Message -match 'native deadline elapsed') { $reason='timeout' }
+    [pscustomobject]@{ ExitCode=-1; Output=''; Failure=$reason }
+  }
 }
 function Invoke-FormsPreflightDocker($Context, [string[]]$Arguments) {
   $prefix = if ($Context.DockerContext) { @('--context', $Context.DockerContext) } else { @() }
-  Invoke-FormsPreflightNative -Tool docker -Arguments ($prefix + $Arguments)
+  Invoke-FormsPreflightNative -Tool docker -Arguments ($prefix + $Arguments) -TimeoutSeconds 30
 }
 function Assert-FormsPreflightEnvironment($Context) {
   if (@(Get-FormsPreflightEnvironmentNames).Count -gt 0) { throw 'F-AUTHOR refuses inherited environment overrides (values suppressed)' }
-  $contextResult = Invoke-FormsPreflightNative -Tool docker -Arguments @('context','show')
+  $contextResult = Invoke-FormsPreflightNative -Tool docker -Arguments @('context','show') -TimeoutSeconds 30
   if ($contextResult.ExitCode -ne 0 -or $contextResult.Output.Trim() -cnotmatch '^[a-zA-Z0-9_.-]+$') { throw 'cannot determine the local Docker context' }
   $name = $contextResult.Output.Trim()
   if ($Context.DockerContext -and $Context.DockerContext -cne $name) { throw 'Docker context changed during F-AUTHOR preflight' }
-  $endpoint = Invoke-FormsPreflightNative -Tool docker -Arguments @('context','inspect',$name,'--format','{{.Endpoints.docker.Host}}')
+  $endpoint = Invoke-FormsPreflightNative -Tool docker -Arguments @('context','inspect',$name,'--format','{{.Endpoints.docker.Host}}') -TimeoutSeconds 30
   if ($endpoint.ExitCode -ne 0 -or $endpoint.Output.Trim() -notmatch '^npipe:/+\./pipe/[a-zA-Z0-9_.-]+$') {
     throw 'F-AUTHOR requires a local Windows Docker named-pipe endpoint'
   }
@@ -169,7 +337,7 @@ function Assert-FormsPreflightNoResources($Resources) {
   }
 }
 function Get-FormsPreflightInstance($Context) {
-  $format = '{"Id":{{json .Id}},"Name":{{json .Name}},"Image":{{json .Image}},"ImageRef":{{json .Config.Image}},"Project":{{json (index .Config.Labels "com.supabase.cli.project")}},"Workdir":{{json (index .Config.Labels "com.supabase.cli.workdir")}},"Running":{{json .State.Running}},"StartedAt":{{json .State.StartedAt}},"Mounts":[{{range $i,$m := .Mounts}}{{if $i}},{{end}}{"Type":{{json $m.Type}},"Name":{{json $m.Name}},"Destination":{{json $m.Destination}}}{{end}}],"Networks":[{{ $first := true }}{{range $i,$n := .NetworkSettings.Networks}}{{if not $first}},{{end}}{{ $first = false }}{"Name":{{json $i}},"Id":{{json $n.NetworkID}}}{{end}}]}'
+  $format = '{"Id":{{json .Id}},"Name":{{json .Name}},"Image":{{json .Image}},"ImageRef":{{json .Config.Image}},"Project":{{json (index .Config.Labels "com.supabase.cli.project")}},"Workdir":{{json (index .Config.Labels "com.supabase.cli.workdir")}},"Running":{{json .State.Running}},"StartedAt":{{json .State.StartedAt}},"Bindings":{{json (index .NetworkSettings.Ports "5432/tcp")}},"Mounts":[{{range $i,$m := .Mounts}}{{if $i}},{{end}}{"Type":{{json $m.Type}},"Name":{{json $m.Name}},"Destination":{{json $m.Destination}}}{{end}}],"Networks":[{{ $first := true }}{{range $i,$n := .NetworkSettings.Networks}}{{if not $first}},{{end}}{{ $first = false }}{"Name":{{json $i}},"Id":{{json $n.NetworkID}}}{{end}}]}'
   $r = Invoke-FormsPreflightDocker $Context @('inspect','--format',$format,("supabase_db_" + $Context.Identity))
   if ($r.ExitCode -ne 0) { throw 'cannot inspect the F-AUTHOR database container' }
   try { $m = $r.Output | ConvertFrom-Json -ErrorAction Stop } catch { throw 'invalid allowlisted Docker metadata' }
@@ -184,6 +352,16 @@ function Get-FormsPreflightInstance($Context) {
       $m.Mounts[0].Destination -cne '/var/lib/postgresql/data') { throw 'F-AUTHOR database volume mismatch' }
   if (@($m.Networks).Count -ne 1 -or $m.Networks[0].Name -cne ("supabase_network_" + $Context.Identity) -or
       $m.Networks[0].Id -cnotmatch '^[a-f0-9]{64}$') { throw 'F-AUTHOR database network mismatch' }
+  # Named-pipe transport proves a local daemon, not exclusive or loopback DB bindings.
+  $bindings=@($m.Bindings)
+  if ($null -eq $m.Bindings -or $bindings.Count -eq 0) { throw 'F-AUTHOR database bindings are missing' }
+  foreach ($binding in $bindings) {
+    $address=$null
+    if (-not [Net.IPAddress]::TryParse([string]$binding.HostIp, [ref]$address) -or
+        [string]$binding.HostPort -cnotmatch '^[0-9]{1,5}$' -or [int]$binding.HostPort -ne $Context.DbPort) {
+      throw 'F-AUTHOR database binding metadata mismatch'
+    }
+  }
   $r = Invoke-FormsPreflightDocker $Context @('image','inspect','--format','{"Id":{{json .Id}},"RepoDigests":{{json .RepoDigests}}}',$m.Image)
   if ($r.ExitCode -ne 0) { throw 'cannot inspect the F-AUTHOR image digest' }
   try { $im = $r.Output | ConvertFrom-Json -ErrorAction Stop } catch { throw 'invalid allowlisted image metadata' }
@@ -200,6 +378,7 @@ function Get-FormsPreflightInstance($Context) {
     Id=[string]$m.Id; Name=[string]$m.Name; Image=[string]$m.Image; ImageRef=[string]$m.ImageRef
     Digests=$digests; Volume=[string]$m.Mounts[0].Name; Network=[string]$m.Networks[0].Id
     StartedAt=[DateTimeOffset]::Parse($m.StartedAt).ToUniversalTime().ToString('o')
+    Bindings=@($bindings | ForEach-Object { [pscustomobject]@{ HostIp=[string]$_.HostIp; HostPort=[string]$_.HostPort } })
   }
 }
 function Get-FormsPreflightSql([ValidateSet('Catalog','Ledger','Jobs','Runs','Requests','Responses','DisableCron')]$Phase) {
@@ -364,6 +543,7 @@ function Get-FormsPreflightSnapshot($Context, $Instance, [switch]$AfterRestart) 
 }
 function Invoke-FormsAuthoringRuntimePreflight {
   $ErrorActionPreference = 'Stop'
+  $script:formsPreflightNativeCleanupUnproven=$false
   $ctx=$null; $mutex=$null; $acquired=$false; $failure=$null
   $before=$null; $after=$null; $instanceBefore=$null; $instanceAfter=$null
   $cleanup = New-Object Collections.Generic.List[string]
@@ -378,13 +558,13 @@ function Invoke-FormsAuthoringRuntimePreflight {
     Assert-FormsPreflightNoResources (Get-FormsPreflightResources $ctx)
     New-FormsPreflightProject $ctx
     Assert-FormsPreflightProject $ctx -BeforeStart
-    $version = Invoke-FormsPreflightNative -Tool cli -Arguments @('--version') -WorkingDirectory $ctx.Root
+    $version = Invoke-FormsPreflightNative -Tool cli -Arguments @('--version') -WorkingDirectory $ctx.Root -TimeoutSeconds 30
     if ($version.ExitCode -ne 0 -or $version.Output.Trim() -cne '2.116.0') { throw 'F-AUTHOR requires Supabase CLI 2.116.0' }
     Assert-FormsPreflightEnvironment $ctx
     Assert-FormsPreflightProject $ctx -BeforeStart
     $ctx.StartAttempted=$true
     $excludes='gotrue,realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor'
-    $start=Invoke-FormsPreflightNative -Tool cli -Arguments @('start','--workdir',$ctx.Root,'--exclude',$excludes) -WorkingDirectory $ctx.Root
+    $start=Invoke-FormsPreflightNative -Tool cli -Arguments @('start','--workdir',$ctx.Root,'--exclude',$excludes) -WorkingDirectory $ctx.Root -TimeoutSeconds 240
     if ($start.ExitCode -ne 0) { throw 'F-AUTHOR start failed (native output suppressed)' }
     Assert-FormsPreflightProject $ctx
     $instanceBefore=Get-FormsPreflightInstance $ctx
@@ -397,6 +577,7 @@ function Invoke-FormsAuthoringRuntimePreflight {
     for ($attempt=0; $attempt -lt 60; $attempt++) {
       $r=Invoke-FormsPreflightDocker $ctx @('exec',$instanceBefore.Id,'pg_isready','-U','postgres','-d','postgres','-t','1')
       if ($r.ExitCode -eq 0) { $ready=$true; break }
+      if ($r.ExitCode -lt 0) { throw 'F-AUTHOR native readiness command failed' }
       Start-Sleep -Seconds 1
     }
     if (-not $ready) { throw 'F-AUTHOR readiness did not recover after restart' }
@@ -417,7 +598,7 @@ function Invoke-FormsAuthoringRuntimePreflight {
       if ($safe -and $ctx.StartAttempted) {
         try {
           Assert-FormsPreflightEnvironment $ctx
-          $stop=Invoke-FormsPreflightNative -Tool cli -Arguments @('stop','--workdir',$ctx.Root,'--no-backup','--yes') -WorkingDirectory $ctx.Root
+          $stop=Invoke-FormsPreflightNative -Tool cli -Arguments @('stop','--workdir',$ctx.Root,'--no-backup','--yes') -WorkingDirectory $ctx.Root -TimeoutSeconds 60
           if ($stop.ExitCode -ne 0) { throw 'stop failed' }
           $stopped=$true
         } catch { $cleanup.Add('nominal stop failed; directory preserved') }
@@ -426,7 +607,7 @@ function Invoke-FormsAuthoringRuntimePreflight {
         try { Assert-FormsPreflightNoResources (Get-FormsPreflightResources $ctx); $empty=$true }
         catch { $cleanup.Add('Docker residual inspection did not prove zero') }
       } else { $empty=$true }
-      if ($safe -and $stopped -and $empty) {
+      if ($safe -and $stopped -and $empty -and -not $script:formsPreflightNativeCleanupUnproven) {
         try {
           Assert-FormsPreflightProject $ctx
           # Resolved absolute immediate TEMP child and every descendant were checked above.
@@ -435,6 +616,7 @@ function Invoke-FormsAuthoringRuntimePreflight {
         } catch { $cleanup.Add('owned TEMP removal did not prove zero') }
       }
     }
+    if ($script:formsPreflightNativeCleanupUnproven) { $cleanup.Add('native owned process cleanup unproven; directory preserved') }
     if ($acquired) { try { $mutex.ReleaseMutex() } catch { $cleanup.Add('mutex release failed') } }
     if ($mutex) { try { $mutex.Dispose() } catch { $cleanup.Add('mutex dispose failed') } }
   }

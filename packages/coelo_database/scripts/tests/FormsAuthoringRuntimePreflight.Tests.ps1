@@ -5,6 +5,11 @@ if (-not (Test-Path -LiteralPath $runtimePath)) { throw 'F-AUTHOR runtime prefli
 # A second fence prevents a failed mock from reaching a real executable.
 function docker { throw 'real Docker is forbidden in this suite' }
 function npx.cmd { throw 'real Supabase CLI is forbidden in this suite' }
+$script:faNativeImplementation = (Get-Command Invoke-FormsPreflightNative).ScriptBlock
+# A failed native mock must not fall through to Win32 process creation.
+function New-FormsPreflightProcessWindow([string]$File, [string]$Arguments, [string]$WorkingDirectory) {
+  throw 'real Forms process creation is forbidden in this suite'
+}
 
 Describe 'Isolated Forms authoring runtime preflight (native boundary mocked)' {
   BeforeEach {
@@ -22,6 +27,8 @@ Describe 'Isolated Forms authoring runtime preflight (native boundary mocked)' {
     $script:faDisposed = $false
     $script:faAcquire = $true
     $script:faPort = 56000
+    $script:faWaited = @()
+    $script:faWindowDisposed = $false
     $script:faCatalog = @{
       actor = 'postgres'; database = 'postgres'; server_version_num = 170006
       postmaster = '2026-09-08T04:00:00Z'
@@ -50,18 +57,24 @@ Describe 'Isolated Forms authoring runtime preflight (native boundary mocked)' {
       $m
     }
     Mock Invoke-FormsPreflightNative {
-      param($Tool, $Arguments, $WorkingDirectory)
-      [void]$script:faCalls.Add(@{ Tool=$Tool; Arguments=@($Arguments); WorkingDirectory=$WorkingDirectory })
+      param($Tool, $Arguments, $WorkingDirectory, $TimeoutSeconds)
+      [void]$script:faCalls.Add(@{ Tool=$Tool; Arguments=@($Arguments); WorkingDirectory=$WorkingDirectory; TimeoutSeconds=$TimeoutSeconds })
       $a = @($Arguments)
       if ($Tool -eq 'cli') {
         if ($a -contains '--version') { return @{ ExitCode=0; Output='2.116.0' } }
         if ($a -contains 'start') {
           $script:faLive = $true
+          if ($script:faFailure -in @('start_timeout','native_cleanup')) {
+            return & $script:faNativeImplementation -Tool cli -Arguments $a -WorkingDirectory $WorkingDirectory -TimeoutSeconds $TimeoutSeconds
+          }
           if ($script:faFailure -eq 'start') { return @{ ExitCode=1; Output='SECRET_START_OUTPUT' } }
           if ($script:faFailure -eq 'marker') { [IO.File]::WriteAllText((Join-Path $script:faRoot '.forms-authoring-owner'), 'alien') }
           return @{ ExitCode=0; Output='SECRET_START_OUTPUT' }
         }
         if ($a -contains 'stop') {
+          if ($script:faFailure -eq 'stop_timeout') {
+            return & $script:faNativeImplementation -Tool cli -Arguments $a -WorkingDirectory $WorkingDirectory -TimeoutSeconds $TimeoutSeconds
+          }
           if ($script:faFailure -eq 'stop') { return @{ ExitCode=1; Output='SECRET_STOP_OUTPUT' } }
           if ($script:faFailure -ne 'residual') { $script:faLive = $false }
           return @{ ExitCode=0; Output='SECRET_STOP_OUTPUT' }
@@ -98,6 +111,7 @@ Describe 'Isolated Forms authoring runtime preflight (native boundary mocked)' {
           StartedAt=$(if ($script:faRestarted) { '2026-09-08T04:01:00Z' } else { '2026-09-08T04:00:00Z' })
           Mounts=@(@{ Type='volume'; Name=('supabase_db_' + $script:faId); Destination='/var/lib/postgresql/data' })
           Networks=@(@{ Name=('supabase_network_' + $script:faId); Id=('f' * 64) })
+          Bindings=@(@{HostIp='0.0.0.0';HostPort='56001'},@{HostIp='::';HostPort='56001'})
         }
         if ($script:faRestarted) {
           switch ($script:faFailure) {
@@ -135,6 +149,21 @@ Describe 'Isolated Forms authoring runtime preflight (native boundary mocked)' {
       }
       throw 'unexpected native command in mock'
     }
+    Mock Get-Command { [pscustomobject]@{Source='C:\nominal\npx.cmd'} } -ParameterFilter { $Name -eq 'npx.cmd' }
+    Mock New-FormsPreflightProcessWindow {
+      $w = New-Object PSObject
+      $w | Add-Member ScriptMethod Wait {
+        param($milliseconds)
+        $script:faWaited += $milliseconds
+        return $script:faFailure -eq 'native_cleanup'
+      }
+      $w | Add-Member ScriptMethod GetResult { [pscustomobject]@{ExitCode=0;Output='';Error='SECRET_NATIVE_ERROR'} }
+      $w | Add-Member ScriptMethod Dispose {
+        $script:faWindowDisposed=$true
+        if ($script:faFailure -eq 'native_cleanup') { throw 'SECRET_NATIVE_CLEANUP_FAILURE' }
+      }
+      $w
+    }
   }
 
   It 'runs a fresh empty project, alters cron once and restarts the exact container before cleanup' {
@@ -166,6 +195,59 @@ Describe 'Isolated Forms authoring runtime preflight (native boundary mocked)' {
     ($result | ConvertTo-Json -Depth 15) | Should Not Match 'SECRET_'
   }
 
+  It 'uses fixed deadlines for start, stop, CLI version and every Docker call' {
+    $null = Invoke-FormsAuthoringRuntimePreflight
+    @($script:faCalls | Where-Object { $_.Arguments -contains 'start' })[0].TimeoutSeconds | Should Be 240
+    @($script:faCalls | Where-Object { $_.Arguments -contains 'stop' })[0].TimeoutSeconds | Should Be 60
+    @($script:faCalls | Where-Object { $_.Arguments -contains '--version' })[0].TimeoutSeconds | Should Be 30
+    foreach ($call in @($script:faCalls | Where-Object Tool -eq 'docker')) { $call.TimeoutSeconds | Should Be 30 }
+  }
+
+  It 'records actual database bindings without calling wildcard binds exclusive' {
+    $result = Invoke-FormsAuthoringRuntimePreflight
+    @($result.InstanceBefore.Bindings).Count | Should Be 2
+    $result.InstanceBefore.Bindings[0].HostIp | Should Be '0.0.0.0'
+    $result.InstanceBefore.Bindings[0].HostPort | Should Be '56001'
+    $result.InstanceAfter.Bindings[1].HostIp | Should Be '::'
+  }
+
+  It 'bounds a hung <Phase> and always releases the mutex' -TestCases @(
+    @{Phase='start';Milliseconds=240000;Cleanup='zero';Preserved=$false},
+    @{Phase='stop';Milliseconds=60000;Cleanup='unproven';Preserved=$true}
+  ) {
+    param($Phase,$Milliseconds,$Cleanup,$Preserved)
+    $script:faFailure=$Phase+'_timeout'
+    $reports=New-Object Collections.ArrayList
+    $message=''
+    try { Invoke-FormsAuthoringRuntimePreflight | ForEach-Object { [void]$reports.Add($_) } }
+    catch { $message=$_.Exception.Message }
+    $message | Should Match 'F-AUTHOR preflight failed'
+    $message | Should Not Match 'SECRET_'
+    $script:faWaited.Count | Should Be 1
+    $script:faWaited[0] | Should Be $Milliseconds
+    $script:faWindowDisposed | Should Be $true
+    $script:faReleased | Should Be $true
+    $script:faDisposed | Should Be $true
+    $reports.Count | Should Be 1
+    $reports[0].Cleanup | Should Be $Cleanup
+    (Test-Path -LiteralPath $script:faRoot) | Should Be $Preserved
+  }
+
+  It 'preserves TEMP and reports unproven when the native job cannot prove zero despite successful Docker cleanup' {
+    $script:faFailure='native_cleanup'
+    $reports=New-Object Collections.ArrayList
+    $message=''
+    try { Invoke-FormsAuthoringRuntimePreflight | ForEach-Object { [void]$reports.Add($_) } }
+    catch { $message=$_.Exception.Message }
+    $message | Should Match 'native owned process cleanup unproven'
+    $message | Should Not Match 'SECRET_'
+    $script:faWindowDisposed | Should Be $true
+    $script:faLive | Should Be $false
+    $script:faReleased | Should Be $true
+    $script:faDisposed | Should Be $true
+    $reports[0].Cleanup | Should Be 'unproven'
+    (Test-Path -LiteralPath $script:faRoot) | Should Be $true
+  }
   It 'records available but uninstalled extensions as not_installed with null counts' {
     foreach ($e in $script:faCatalog.extensions) { $e.installed=$null; $e.schema=$false; $e.structures=@($false,$false,$false) }
     $result = Invoke-FormsAuthoringRuntimePreflight
@@ -389,10 +471,12 @@ Describe 'Isolated Forms authoring runtime preflight (native boundary mocked)' {
   }
 
 
-  It 'preserves embedded Docker template quotes in Windows legacy argument passing' {
-    $a=@(Convert-FormsPreflightDockerArguments @('inspect','--format','{"Id":{{json .Id}}}'))
-    $a.Count | Should Be 3
-    $a[2] | Should Be '{\"Id\":{{json .Id}}}'
+  It 'quotes complete Windows native arguments including embedded templates and a trailing backslash' {
+    $a=@(Convert-FormsPreflightDockerArguments @('inspect','--format','{"Id":{{json .Id}}}','C:\space path\'))
+    $a.Count | Should Be 4
+    $a[0] | Should Be '"inspect"'
+    $a[2] | Should Be '"{\"Id\":{{json .Id}}}"'
+    $a[3] | Should Be '"C:\space path\\"'
   }
 
   It 'reports not_owned when preflight preserves an identity collision before creating resources' -TestCases @(
@@ -418,5 +502,66 @@ Describe 'Isolated Forms authoring runtime preflight (native boundary mocked)' {
     if ($Case -eq 'directory') {
       [IO.File]::ReadAllText((Join-Path $script:faRoot 'alien')) | Should Be 'preserve'
     }
+  }
+}
+
+Describe 'Forms native job deadline and result suppression' {
+  BeforeEach {
+    $script:formsPreflightNativeCleanupUnproven=$false
+    $script:faJobWait=$true
+    $script:faJobDisposeFail=$false
+    $script:faJobDisposed=$false
+    $script:faJobDeadline=$null
+    $script:faJobLaunch=$null
+    Mock Get-Command { [pscustomobject]@{Source='C:\nominal\docker.exe'} } -ParameterFilter { $Name -eq 'docker.exe' }
+    Mock New-FormsPreflightProcessWindow {
+      param($File,$Arguments,$WorkingDirectory)
+      $script:faJobLaunch=@{File=$File;Arguments=$Arguments;WorkingDirectory=$WorkingDirectory}
+      $w=New-Object PSObject
+      $w | Add-Member ScriptMethod Wait { param($milliseconds) $script:faJobDeadline=$milliseconds; $script:faJobWait }
+      $w | Add-Member ScriptMethod GetResult { [pscustomobject]@{ExitCode=0;Output='allowed-metadata';Error='SECRET_STDERR'} }
+      $w | Add-Member ScriptMethod Dispose {
+        $script:faJobDisposed=$true
+        if($script:faJobDisposeFail){throw 'SECRET_DISPOSE'}
+      }
+      $w
+    }
+  }
+
+  It 'compiles the independent Windows job type without starting a process' {
+    Initialize-FormsPreflightProcessWindowType
+    ('Coelo.FormsPreflight.ProcessWindow' -as [type]) | Should Not BeNullOrEmpty
+    $text=[IO.File]::ReadAllText($runtimePath)
+    $text | Should Match 'if\(!String\.IsNullOrEmpty\(environment\)\)'
+    $text | Should Not Match 'Coelo\.A01|Test-LocalA01Runtime|a01_local_http_seed'
+  }
+
+  It 'returns stdout metadata only after completed tasks and closes its private job' {
+    $r=Invoke-FormsPreflightNative -Tool docker -Arguments @('inspect','--format','{"Id":{{json .Id}}}') -TimeoutSeconds 30
+    $r.ExitCode | Should Be 0
+    $r.Output | Should Be 'allowed-metadata'
+    ($r | ConvertTo-Json) | Should Not Match 'SECRET_'
+    $script:faJobDeadline | Should Be 30000
+    $script:faJobDisposed | Should Be $true
+    $script:faJobLaunch.Arguments | Should Be '"inspect" "--format" "{\"Id\":{{json .Id}}}"'
+  }
+
+  It 'turns a blocked pipe or descendant into a bounded controlled timeout' {
+    $script:faJobWait=$false
+    $r=Invoke-FormsPreflightNative -Tool docker -Arguments @('inspect') -TimeoutSeconds 30
+    $r.ExitCode | Should Be -1
+    $r.Failure | Should Be 'timeout'
+    $r.Output | Should Be ''
+    $script:faJobDeadline | Should Be 30000
+    $script:faJobDisposed | Should Be $true
+    $script:formsPreflightNativeCleanupUnproven | Should Be $false
+  }
+
+  It 'does not report zero when job disposal fails' {
+    $script:faJobDisposeFail=$true
+    $r=Invoke-FormsPreflightNative -Tool docker -Arguments @('inspect') -TimeoutSeconds 30
+    $r.Failure | Should Be 'cleanup-unproven'
+    $script:formsPreflightNativeCleanupUnproven | Should Be $true
+    ($r | ConvertTo-Json) | Should Not Match 'SECRET_'
   }
 }

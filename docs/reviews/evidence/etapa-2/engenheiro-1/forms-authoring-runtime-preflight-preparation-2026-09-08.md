@@ -64,7 +64,7 @@ Os [IDs e labels locais](https://github.com/supabase/cli/blob/v2.116.0/apps/cli/
 
 O [pg_cron upstream](https://github.com/citusdata/pg_cron#extension-settings) documenta preload e `cron.launch_active_jobs`. A versão instalada é observada no catálogo local, sem presumir igualdade com upstream. [ALTER SYSTEM no PostgreSQL 17](https://www.postgresql.org/docs/17/sql-altersystem.html) persiste em `postgresql.auto.conf` e não pode ser usado dentro de bloco transacional; [pg_file_settings](https://www.postgresql.org/docs/17/view-pg-file-settings.html) fornece a prova de configuração aplicada e sem erro.
 
-O [restart Docker](https://docs.docker.com/reference/cli/docker/container/restart/) opera sobre o ID preservado. O [formato Docker em shells Windows](https://docs.docker.com/engine/cli/formatting/) exige tratamento das aspas internas; o script fixa argument passing Legacy na fronteira Docker e escapa essas aspas. O teste de transformação é isolado; o marshal real do executável ainda pertence ao gate de runtime.
+O [restart Docker](https://docs.docker.com/reference/cli/docker/container/restart/) opera sobre o ID preservado. A fronteira revisada chama `CreateProcessW` diretamente e serializa cada argumento Win32 uma única vez, tratando aspas internas, backslashes antes de aspas e backslashes finais. O escape Legacy do PowerShell foi removido. `npx.cmd` usa o `COMSPEC` com `/d /s /c`, versão e argumentos nominais; o workdir continua sendo o TEMP próprio. O teste de transformação é isolado; o marshal real de JSON e caminhos pertence ao smoke inócuo do operador.
 
 ## Evidências locais de preparação
 
@@ -97,7 +97,7 @@ O finally tenta `supabase@2.116.0 --agent no stop --workdir <TEMP próprio> --no
 
 A recuperação de um FAIL com cleanup não comprovado cabe ao root: usar o ID/TEMP devolvido, conferir novamente o marcador e os recursos nominais e solicitar o reparo mínimo específico se necessário. O pacote não autoriza reset, repair, repetição em volume sujo, remoção de recursos alheios, alterações de ACL ou instalação oportunista de extensões.
 
-A espera de saúde possui limite de tentativas e o CLI recebe `health_timeout=2m`. Download/pull, daemon travado e encerramento do processo nativo não têm deadline global adicional no wrapper; esses tempos permanecem sujeitos ao CLI/Docker e ao controle do operador. A autorização operacional deverá considerar esse limite antes de executar.
+A ausência anterior de deadline nativo foi corrigida no pacote abaixo. O `health_timeout=2m` e as 60 tentativas de readiness permanecem; além deles, cada chamada nativa recebe prazo fixo, inclusive cleanup. Falha nativa negativa em readiness interrompe imediatamente, sem repetir um processo travado em todas as 60 tentativas.
 
 Memória de conhecimento: nenhuma regra de produto ou permissão foi alterada. A evidência técnica permanece neste documento; o gate de memória não exige nova projeção em `docs/knowledge`.
 
@@ -109,3 +109,35 @@ O reviewer replay_auth_rls leu o script integralmente e identificou o reporte in
 O root executou independentemente a suíte final Pester3.4.0: **62/62 PASS, zero falhas/skips**, 10,7489194s externos, sessão31895 encerrada, exit0. Os testes simulam a fronteira nativa; não iniciaram Docker ou SQL. Pins finais UTF-8/CRLF: script **f8cf0c3010671bce47f4fce6e4f17e336d474da417293d8acc25950b0819e8ab**; testes **22f2033d8b3b854f18db1116ddf4067f14b77dbef66952280b3fb9f8d9470325**. O gate solicitado continua sendo somente preflight de runtime vazio, zero migrations da aplicação e cleanup obrigatório.
 
 O diff staged do operador detectou uma linha vazia excedente no fim do script; ela foi removida antes do commit. Somente whitespace final mudou após os62 testes; o pin acima já corresponde ao arquivo final.
+
+## Correção de deadline por processo — revisão Eng2 76ab
+
+A reserva central de 2026-09-08 limitou esta correção ao helper, sua suíte e esta nota. A implementação incorpora uma cópia independente do executor Windows já revisado no A01, sob `Coelo.FormsPreflight.ProcessWindow`, sem carregar helper, seed ou runtime A01. Nenhum entrypoint compartilhado, perfil, SQL ou closure64 foi alterado.
+
+| Chamada | Prazo fixo |
+| --- | --- |
+| Docker: contexto, inventário, inspect, SQL nominal, restart, readiness e inventário de cleanup | 30 segundos por processo |
+| CLI `--version` | 30 segundos |
+| CLI `start` | 240 segundos |
+| CLI `stop --no-backup --yes` | 60 segundos |
+
+Cada filho nasce suspenso (`CreateProcessW`), é atribuído ao Job Object privado com `KILL_ON_JOB_CLOSE` e somente então é retomado. Não há breakaway. O prazo inclui espera por stdin/stdout/stderr e saída do pai: um descendente que herde pipes também mantém a espera sujeita ao deadline. Ao encerrar, o executor termina somente seu job e consulta `ActiveProcesses=0`, com até cinco segundos adicionais para essa prova. O handle do job não é herdável e é fechado inclusive no erro; falha anterior à atribuição encerra somente o processo suspenso próprio. O bloco de ambiente herda o ambiente do processo quando nulo **ou vazio** (`String.IsNullOrEmpty`), preservando a correção do ERROR87 observada no smoke A01.
+
+As saídas nativas não são transmitidas ao console. O retorno interno preserva stdout necessário aos parsers nominais, suprime stderr e traduz exceções em `process-failed`, `timeout` ou `cleanup-unproven`, sem texto bruto. Uma falha de construção ou de prova de término marca a execução inteira como limpeza não comprovada. Essa marca não é apagada por um inventário Docker posteriormente vazio.
+
+O `finally` externo continua tentando stop nominal e inventário, com prazos próprios. TEMP só é removido com ownership íntegro, stop comprovado, recursos nominais zerados e término do job comprovado. Timeout de stop ou ausência dessa prova preserva TEMP e produz `Cleanup=unproven`; o mutex ainda é liberado/disposto. Timeout de start com job encerrado pode terminar em FAIL com `Cleanup=zero` quando o stop e as verificações posteriores passam. Isso não converte a tentativa em sucesso.
+
+O catálogo Docker agora registra os bindings efetivos de `5432/tcp` antes/depois do restart, validando IP sintaticamente válido e porta igual à porta nominal criada no TOML. Endereços wildcard `0.0.0.0` e `::` permanecem observações explícitas. O endpoint `npipe` comprova transporte para daemon local; **não comprova bindings DB exclusivos nem limitados a loopback**. O teste cobre os dois bindings wildcard sem rotulá-los como exclusivos.
+
+A revisão independente também identificou um limite retido do guard de contexto: ele fixa o nome e reconfere o endpoint antes das fases, mas não fixa o endpoint literal em cada processo. Alteração do endpoint sob o mesmo nome entre a conferência e a chamada não é coberta por esta correção de deadline. Esse achado foi encaminhado ao root para decisão e eventual pacote separado; nenhum gate de runtime é declarado aprovado por esta nota.
+
+Evidência TDD desta correção: RED focal **71 casos, 61 PASS / 10 FAIL / zero skips**, 10,0456941 s externos, sessão 6917 encerrada com exit1. As falhas discriminavam ausência de deadline, descarte, preservação de TEMP, bindings e serialização direta. Após implementação: **71/71 PASS, zero FAIL / zero skips**, Pester 9,7175433 s e 9,8471203 s externos, sessão 23124 encerrada com exit0. Parse dos dois arquivos PowerShell: zero erros.
+
+Os novos testes de start/stop travados usam objetos fake para comprovar os prazos 240000/60000 ms, descarte do job, cleanup e liberação do mutex. A fronteira nativa real do helper é exercitada com a factory substituída; uma segunda barreira impede criar processos mesmo se um mock falhar. O tipo C# é somente compilado, nunca instanciado no teste de compilação. Não houve Docker, SQL, HTTP ou processo real desse executor nesta rodada. Os testes não substituem o smoke inócuo de argv/pipe/descendentes nem o preflight vazio do operador.
+
+Pins UTF-8/CRLF desta preparação:
+
+- Helper: `b900c2a03a45221f4d63ed5fb654dd52dce96e4d3426498294fad7b8655af0aa` — 641 linhas, 40342 bytes.
+- Testes: `ec251543c048464a8f6670de2e72a6fd9362de450c85b5ecaa4eb3c3d27eab35` — 567 linhas, 29432 bytes.
+
+Os resultados anteriores de 62 testes e seu incidente de isolamento permanecem acima como histórico. Este pacote autoral termina na preparação e entrega para revisão, sem execução do runtime vazio nem das 64 migrations.
