@@ -209,6 +209,13 @@ final class FormResponseSummary {
   final String? respondentLabel;
 }
 
+/// Optional context-aware read capability for form-scoped response routes.
+/// Existing readers remain compatible; callers must verify the returned graph
+/// before rendering when this capability is absent.
+abstract interface class FormsResponseContextReader {
+  Future<FormResponseDetail> getResponseDetailInForm(String formId, String responseId);
+}
+
 final class FormResponseDetail {
   FormResponseDetail({
     required this.summary,

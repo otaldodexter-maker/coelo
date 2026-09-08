@@ -5,6 +5,18 @@ import 'package:coelo_superadmin/features/forms/data/supabase_forms_api.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('form scoped read reauthorizes the route pair and rejects a mismatched receipt', () async {
+    final backend = _Backend(_projection());
+    final result = await SupabaseFormsApi(backend).getResponseDetailInForm('form-1', 'response-1');
+    expect(backend.lastParameters, {
+      'p_query': {'response_id': 'response-1', 'form_id': 'form-1'},
+    });
+    expect(result.originalVersion?.formId, 'form-1');
+    await expectLater(
+      SupabaseFormsApi(_Backend(_projection())).getResponseDetailInForm('other-form', 'response-1'),
+      throwsA(isA<FormApiException>()),
+    );
+  });
   test('decodes the submitted graph and explicit identity without current editor lookup', () async {
     final backend = _Backend(_projection());
     final result = await SupabaseFormsApi(backend).getResponseDetail('response-1');
@@ -121,9 +133,11 @@ final class _Backend implements FormsBackendGateway {
   _Backend(this.payload);
   final Map<String, Object?> payload;
   final calls = <String>[];
+  Map<String, Object?>? lastParameters;
   @override
   Future<Object?> rpc(String functionName, Map<String, Object?> parameters) async {
     calls.add(functionName);
+    lastParameters = parameters;
     return {'ok': true, 'data': payload, 'error': null};
   }
 
