@@ -39,13 +39,14 @@ final class SupabaseAuditRepository implements AuditRepository {
       final cursorPayload = payload['next_cursor'];
       final cursor = cursorPayload == null ? null : _cursor(_map(cursorPayload));
       final hasMore = _boolean(payload, 'has_more');
+      _boolean(payload, 'can_export');
       if (hasMore != (cursor != null)) throw const AuditUnavailableException();
       return AuditPage(
         events: _rows(payload['items']).map(_event).toList(growable: false),
         hasMore: hasMore,
         nextCursor: cursor,
         totalCount: _integer(payload, 'total_count'),
-        canExport: _boolean(payload, 'can_export'),
+        canExport: false,
       );
     } catch (error) {
       throw _mapError(error);

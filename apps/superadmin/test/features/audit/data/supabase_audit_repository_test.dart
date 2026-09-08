@@ -158,7 +158,11 @@ void main() {
     expect(page.events.single.resourceId, isNull);
     expect(page.nextCursor?.eventId, '11111111-1111-1111-1111-111111111111');
     expect(page.hasMore, isTrue);
-    expect(page.canExport, isTrue);
+    expect(
+      page.canExport,
+      isFalse,
+      reason: 'general audit exports remain deferred even under stale payloads',
+    );
     expect(page.totalCount, 1);
   });
 
