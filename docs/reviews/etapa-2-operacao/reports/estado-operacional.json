@@ -5,12 +5,12 @@
   "round": "R01",
   "writer": "01a0818b-2a34-7fa3-a9aa-f191fc91cc8d",
   "writer_active": true,
-  "code_baseline": "f0763a65",
+  "code_baseline": "d9861117",
   "window_start": "2026-09-08T12:20:00-03:00",
   "window_end": "2026-09-16T12:20:00-03:00",
   "delivery_branch": "dev",
   "runtime_target": "localhost normal + real Supabase; remote mutable scenarios require nominal authorization",
-  "last_poll": "2026-09-08T16:01:53-03:00",
+  "last_poll": "2026-09-08T17:42:54-03:00",
   "processed_events": [
     {
       "id": "2026-09-08T13:00:00-03:00-checkpoint",
@@ -27,6 +27,12 @@
       "actual_report_written_at": "2026-09-08T15:02:23-03:00",
       "delivery_sha": "e564d33991d41bf9ccd6c56e513469658b64552d",
       "actual_published_at": "2026-09-08T15:04:03-03:00"
+    },
+    {
+      "id": "2026-09-08T17:40:00-03:00-checkpoint",
+      "status": "report-written-awaiting-push",
+      "actual_report_written_at": "2026-09-08T17:50:22-03:00",
+      "report": "reports/R01-checkpoint-1740.md"
     }
   ],
   "executors": {
@@ -35,15 +41,15 @@
       "thread_id": "01a08197-7b62-73c1-9673-5fd40fa40452",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01",
       "branch": "codex/e2-r01-c01-identidade",
-      "instruction_revision": 9,
-      "received_revision": 30,
+      "instruction_revision": 10,
+      "received_revision": 37,
       "integrated_revision": 3,
-      "last_evidence": "2026-09-08T15:54:02-03:00",
+      "last_evidence": "2026-09-08T17:30:00-03:00",
       "baseline": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
       "worktree_verified_at": "2026-09-08T14:25:04-03:00",
       "handoff_present_at_preparation": true,
-      "accepted_revision": 30,
-      "handoff_sha256": "48e891f4f5e57726afe944f90d8ffdb405b089acaf586399eb8e8e7e4ed1a10c",
+      "accepted_revision": 37,
+      "handoff_sha256": "de19ebcb5e1e72d7343b241b9ca8eee765785e0edd6678a38e1446513bf42e32",
       "next_step": "I008 local Auth persona nominal package; Models runner extension remains C00",
       "eta_first_batch": "implementation 30–60min conditional on reproduced race; tests15–30min after local runtime; handoff5–10min; not total ETA",
       "last_evidence_basis": "fixed handoff read and deltas synchronized; review/integration separate",
@@ -54,12 +60,13 @@
       "latest_source_code_sha": "7779bbf20373f40a0e59d708b0ff126e2a2510f2",
       "latest_local_test_evidence": "Executor65PASS/5preexistinggoldenFAIL; READ107/107; no certification",
       "instruction_acknowledgement": "I005 received/candidate prepared31asserts; I006 one shell test pending ack",
-      "native_wait_cursor": "99796484-dd48-447d-b871-d48aaf0f06ae:7",
+      "native_wait_cursor": "99796484-dd48-447d-b871-d48aaf0f06ae:10",
       "native_status": "active confirmed16:01 snapshot; later instantaneous activity not inferred",
       "continuity_automation_id": "e2-r01-c01-retomada-espa-ada",
       "continuity_verification": "first dispatch15:02:23 reportedr25; native idle afterr26 at15:19, resumed once15:30 with executable I005, active verified15:31",
       "continuity_timezone": "America/Sao_Paulo",
-      "continuity_next_nominal_trigger": "2026-09-08T15:00:00-03:00; calculated from saved schedule, not server next-run field"
+      "continuity_next_nominal_trigger": "2026-09-08T15:00:00-03:00; calculated from saved schedule, not server next-run field",
+      "handoff_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
     },
     "C02": {
       "name": "E2 R01 C02 — Forms mídia e cuidado",
@@ -67,16 +74,16 @@
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
       "branch": "codex/e2-r01-c02-forms-midia",
       "instruction_revision": 11,
-      "received_revision": 29,
+      "received_revision": 35,
       "integrated_revision": 4,
-      "last_evidence": "2026-09-08T16:06:28-03:00",
+      "last_evidence": "2026-09-08T17:27:00-03:00",
       "baseline": "6cb8ba15bae15f5a6129b0db6e740a66f8f82b3f",
       "worktree_verified_at": "2026-09-08T14:25:04-03:00",
       "handoff_present_at_preparation": false,
-      "accepted_revision": 29,
+      "accepted_revision": 35,
       "last_evidence_basis": "fixed handoff read and deltas synchronized; review/integration separate",
       "handoff_generated_at_reported": "2026-09-08T12:30:00-03:00",
-      "handoff_sha256": "9ae0b59fcd0f196bef69a18cefb19f0a9b45ddccd7858e347a41c10eb7a5b97f",
+      "handoff_sha256": "162216fe868a3b76b422c2d863e33df604596549ab57fc09cc1e2724c5173183",
       "next_step": "I008 submitted edit; XLSX132 lease; source corrected69migrations;Locais dependency released",
       "local_test_evidence": "C00 R249/49 + static4/4 + lint; Forms editor102/102 + DTO15/15",
       "continuity_automation_id": "e2-r01-c02-retomada-30-min",
@@ -88,8 +95,9 @@
         "44465b0c"
       ],
       "source_push_verified_sha": "fccaa2539ad7bce8580a4398b0e8cf9764531f9a",
-      "native_wait_cursor": "40b4aa04-b1a8-471a-8896-64092527a62b:7",
-      "native_status": "active confirmed16:01 snapshot; later instantaneous activity not inferred"
+      "native_wait_cursor": "40b4aa04-b1a8-471a-8896-64092527a62b:10",
+      "native_status": "active confirmed16:01 snapshot; later instantaneous activity not inferred",
+      "handoff_commit": "9c215148e0e9ff7b2e4020275d3c2bdf2c8684e2"
     },
     "C03": {
       "name": "E2 R01 C03 — Operações",
@@ -97,27 +105,28 @@
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03",
       "branch": "codex/e2-r01-c03-operacoes",
       "instruction_revision": 10,
-      "received_revision": 13,
+      "received_revision": 22,
       "integrated_revision": 2,
-      "last_evidence": "2026-09-08T16:00:42-03:00",
+      "last_evidence": "2026-09-08T17:27:52-03:00",
       "baseline": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
       "worktree_verified_at": "2026-09-08T14:25:04-03:00",
       "handoff_present_at_preparation": false,
-      "accepted_revision": 13,
-      "handoff_sha256": "cdbda80f11f9fab344bd73001383b2810347c6345987fb7b9d31e46915f554e5",
+      "accepted_revision": 22,
+      "handoff_sha256": "0df3bf458a9708330a6a55a91c7b1daa46c3e1a703e23d7a872775ae89cadc3a",
       "source_code_sha": "445ee6e2",
       "local_test_evidence": "C03 focal73/73; broad156PASS/9goldenFAIL; no golden approved",
       "next_step": "I009 twoPeople files for deferred visibility;auth_scope released",
       "instruction_acknowledgement": "I007 confirmed r10",
       "integrated_code_sha": "db3dd9e9",
       "source_push_verified_sha": "1d6fae2ffdc38284f31a46263851d318d2ea4d83",
-      "native_wait_cursor": "29550dbc-a14b-4f00-b341-7511017cc6fa:7",
+      "native_wait_cursor": "29550dbc-a14b-4f00-b341-7511017cc6fa:10",
       "native_status": "active confirmed16:01 snapshot; later instantaneous activity not inferred",
       "last_evidence_basis": "fixed handoff read and deltas synchronized; review/integration separate",
       "latest_source_code_sha": "4c5af8ced8e51ae83e8102a1087b35442b71e7d6",
       "latest_local_test_evidence": "C00 combined127/127PASS/analyzer4clean",
       "continuity_automation_id": "c03-opera-o-at-06h",
-      "continuity_verification": "Reportednative r20:30min until09/09 06:00;failed-only;C00 scheduler inspection pending"
+      "continuity_verification": "Reportednative r20:30min until09/09 06:00;failed-only;C00 scheduler inspection pending",
+      "handoff_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
     },
     "C04": {
       "name": "E2 R01 C04 — Estruturas e pessoas",
@@ -125,14 +134,14 @@
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c04",
       "branch": "claude/e2-r01-c04-estruturas",
       "instruction_revision": 11,
-      "received_revision": 17,
+      "received_revision": 20,
       "integrated_revision": 0,
-      "last_evidence": "2026-09-08T15:58:00-03:00",
+      "last_evidence": "2026-09-08T17:02:24-03:00",
       "baseline": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
       "worktree_verified_at": "2026-09-08T14:25:04-03:00",
       "handoff_present_at_preparation": false,
-      "accepted_revision": 17,
-      "handoff_sha256": "9d24e5f906defa9bde8c75744d2bd727a22ef8dfb51712409bbcca97e0beecd2",
+      "accepted_revision": 20,
+      "handoff_sha256": "100eced03a9cccd71231a20c37ce015795d6bad76f07b90597b572dc7ca636eb",
       "last_evidence_basis": "fixed handoff read and deltas synchronized; review/integration separate",
       "instruction_acknowledgement": "I006 confirmed r14; root release C00",
       "provider": "claude",
@@ -143,7 +152,8 @@
       "continuity_verification": "Claude reports CronCreate :13/:43; session-only, idle-only, expires7days; C00 cannot independently inspect",
       "next_step": "I008 Locais update/copy/schedule and own consumers;twoPeople paths temporarily C03",
       "latest_code_sha_observed": "e4489224005c7d8dde54411d00663003c62cbec9",
-      "latest_code_sha_note": "students code observed but no matching updated handoff; not integrated"
+      "latest_code_sha_note": "students code observed but no matching updated handoff; not integrated",
+      "handoff_commit": "dcd7dfd97d70a275dcfd5a086b34bc144b0dfb12"
     },
     "C05": {
       "name": "E2 R01 C05 — Comunicação e Principal",
@@ -151,14 +161,14 @@
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c05",
       "branch": "claude/e2-r01-c05-comunicacao",
       "instruction_revision": 9,
-      "received_revision": 10,
+      "received_revision": 15,
       "integrated_revision": 0,
-      "last_evidence": "2026-09-08T15:54:48-03:00",
+      "last_evidence": "2026-09-08T17:37:25-03:00",
       "baseline": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
       "worktree_verified_at": "2026-09-08T14:25:04-03:00",
       "handoff_present_at_preparation": false,
-      "accepted_revision": 10,
-      "handoff_sha256": "ccb24391b58235e566cb4b8b636a1fd36fdece967ee6ab98831468d77725cf07",
+      "accepted_revision": 15,
+      "handoff_sha256": "7033770440c38985a7c40790f1447ba61476f443488bb3b7134f7837ba4c2fe1",
       "last_evidence_basis": "fixed handoff read and deltas synchronized; review/integration separate",
       "instruction_acknowledgement": "I004 confirmed; I005 pending acknowledgement",
       "provider": "claude",
@@ -171,7 +181,8 @@
       "net_code_delta": "none; e7985f31 reverted by1ec8efc4",
       "handoff_generated_at_reported": "2026-09-08T14:55:16-03:00",
       "continuity_automation_id": "f10b9942",
-      "continuity_next_nominal_trigger": "2026-09-08T15:07:00-03:00;reported schedule, jitter up to3min"
+      "continuity_next_nominal_trigger": "2026-09-08T15:07:00-03:00;reported schedule, jitter up to3min",
+      "handoff_commit": "7810e7c584fa63eb6b7c79f0399ccdae2e582518"
     }
   },
   "remote_authorizations": [],
@@ -772,9 +783,8 @@
     "Next poll16:00;formal17:40;closing09/09 preserved"
   ],
   "local_replay_lease": {
-    "status": "none active;C04 scratch released",
-    "verified_at": "2026-09-08T17:21:46-03:00",
-    "evidence": "C04r20 admits unpause16:50;cleanup reported16:58;Docker ps -a empty C00 17:21;reconstructed SQL preserved,filesystem/log lost"
+    "status": "none active;Models31 released",
+    "verified_at": "2026-09-08T17:42:54-03:00"
   },
   "last_delivery": {
     "branch": "origin/dev",
@@ -939,10 +949,10 @@
     "report": "etapa-2-operacao/reports/R01-checkpoint-1600.md"
   },
   "next_local_replay": {
-    "executor": "C01",
-    "scope": "I005 Models31 after C02 release;manifest preparation only",
+    "executor": "C02",
+    "scope": "314fd92a XLSX172 proposed;needs review snapshot",
     "execution_granted": false,
-    "blocker": "Exact51input profile implemented and59toolingPASS;candidate/31TAP review and nominal runtime lease required"
+    "blocker": "C01 Models nominal lease active;C02 candidate review pending"
   },
   "local_replay_history": [
     {
@@ -983,6 +993,21 @@
         "c02_green": "authorized immutable I009;do not alter runner if paused resource rejected"
       },
       "green_result": "C02reported56/56PASS;exact5ead9407;cleanupzero"
+    },
+    {
+      "id": "R01-LOCAL-MODELS-AAL1-01",
+      "executor": "C01",
+      "status": "released",
+      "issued_at": "2026-09-08T17:37:00-03:00",
+      "scope": "ModelAal1PhasePolicy;20260908182839;31TAP only;C00 absolute runner/tests read-only",
+      "code_sha": "5f1911a8",
+      "test_sha": "43a900e0",
+      "tooling_sha": "6e1e2461",
+      "runner_sha256": "b2c0827413a85836cebd25af45dd0ff9c338014abefe8385a5e8ba192273eacd",
+      "remote": false,
+      "previous_release": "C02 Forms56 released;C04 scratch cleanup;Docker0 now",
+      "result": "31/31PASS;exit0;log checkedC00;cleanupzero",
+      "released_at": "2026-09-08T17:41:00-03:00"
     }
   ],
   "r02_planning": {
@@ -1075,25 +1100,28 @@
   "operational_coordinators": {
     "C06": {
       "name": "E2 R01 C06 — Coordenador Claude",
-      "thread_id": null,
+      "thread_id": "local_eff44bb8-3d3f-402f-a4a9-970f309de5c4",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c06",
       "branch": "claude/e2-r01-c06-coordenacao",
       "baseline": "f0763a657ca6e5422cc42fa61c0c3c4ca724e129",
       "handoff_path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06\\docs\\reviews\\etapa-2-operacao\\handoffs\\C06.md",
       "instruction_revision": 1,
-      "received_revision": null,
-      "accepted_revision": null,
-      "status": "prepared-awaiting-owner-open-and-ack",
-      "operational_ack": null,
+      "received_revision": 1,
+      "accepted_revision": 1,
+      "status": "active-acknowledged",
+      "operational_ack": "R01-C06-I001",
       "scope": [
         "C04",
         "C05"
       ],
       "action_ids": [],
-      "automation_id": null,
+      "automation_id": "6f97339a",
       "created_at": "2026-09-08T17:29:41-03:00",
       "bootstrap_commit": "2ed8513842a1d2f3f595645c7e868ad00662fefd",
-      "push_verified_at": "2026-09-08T17:34:14-03:00"
+      "push_verified_at": "2026-09-08T17:34:14-03:00",
+      "last_evidence": "2026-09-08T17:38:00-03:00",
+      "automation_schedule": ":21/:51 America/Sao_Paulo;session-only idle-only;reported",
+      "source_commit": "3a3879b8f1bdeaa5ae96ce1569fc2ab08b34f312"
     }
   },
   "operational_routing": {
@@ -1101,8 +1129,8 @@
     "C01": "C00",
     "C02": "C00",
     "C03": "C00",
-    "C04": "C06 after I001 ack;C00 material fallback before ack",
-    "C05": "C06 after I001 ack;C00 material fallback before ack",
+    "C04": "C06",
+    "C05": "C06",
     "technical_authority": "C00",
     "sole_tracker_writer": "C00",
     "sole_integrator": "C00",
@@ -1115,7 +1143,7 @@
     "c06_summary_first": true,
     "original_evidence_access": "retained by C00;read for code review/integration/discrepancies",
     "coordination_epoch": "R01-C06-01",
-    "effective_at": null,
+    "effective_at": "2026-09-08T17:42:54-03:00",
     "source_cut_before_transfer": {
       "global_tracker_sync": {
         "C04": 17,
@@ -1133,5 +1161,16 @@
     },
     "heartbeat_updated_at": "2026-09-08T17:34:14-03:00",
     "heartbeat_id": "e2-r01-c00-acompanhamento-30-min"
+  },
+  "tracker_sync": {
+    "at": "2026-09-08T17:50:22-03:00",
+    "revisions": {
+      "C01": 37,
+      "C02": 35,
+      "C03": 22,
+      "C04": 20,
+      "C05": 15
+    },
+    "report": "reports/R01-checkpoint-1740.md"
   }
 }

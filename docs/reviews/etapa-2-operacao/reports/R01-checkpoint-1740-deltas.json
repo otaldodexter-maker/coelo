@@ -1,0 +1,709 @@
+{
+  "source": "fixed handoffs+C00 checks",
+  "status": "synchronized-no-new-certification",
+  "generated_at": "2026-09-08T17:50:22-03:00",
+  "cuts": {
+    "C01": [
+      37,
+      "2d89602937a27cc77171104528520ddc36d90ed7",
+      "17:30:00"
+    ],
+    "C02": [
+      35,
+      "9c215148e0e9ff7b2e4020275d3c2bdf2c8684e2",
+      "17:27:00"
+    ],
+    "C03": [
+      22,
+      "965a7022a627121b6e725a7478ebc61e88ed5f0d",
+      "17:27:52"
+    ],
+    "C04": [
+      20,
+      "dcd7dfd97d70a275dcfd5a086b34bc144b0dfb12",
+      "17:02:24"
+    ],
+    "C05": [
+      15,
+      "7810e7c584fa63eb6b7c79f0399ccdae2e582518",
+      "17:37:25"
+    ]
+  },
+  "deltas": [
+    {
+      "executor": "C01",
+      "action_id": "internal-users.list",
+      "delta": "r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 37,
+      "source_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
+    },
+    {
+      "executor": "C01",
+      "action_id": "internal-users.edit",
+      "delta": "r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 37,
+      "source_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
+    },
+    {
+      "executor": "C01",
+      "action_id": "internal-users.suspend",
+      "delta": "r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 37,
+      "source_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
+    },
+    {
+      "executor": "C01",
+      "action_id": "access-profiles.detail",
+      "delta": "r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 37,
+      "source_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
+    },
+    {
+      "executor": "C01",
+      "action_id": "access-models.detail",
+      "delta": "r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 37,
+      "source_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
+    },
+    {
+      "executor": "C01",
+      "action_id": "invites.detail",
+      "delta": "r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 37,
+      "source_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
+    },
+    {
+      "executor": "C01",
+      "action_id": "invites.resend",
+      "delta": "r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 37,
+      "source_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
+    },
+    {
+      "executor": "C01",
+      "action_id": "invites.revoke",
+      "delta": "r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 37,
+      "source_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
+    },
+    {
+      "executor": "C01",
+      "action_id": "invites.create",
+      "delta": "r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 37,
+      "source_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
+    },
+    {
+      "executor": "C01",
+      "action_id": "account.settings",
+      "delta": "r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 37,
+      "source_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
+    },
+    {
+      "executor": "C01",
+      "action_id": "account.theme",
+      "delta": "r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 37,
+      "source_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
+    },
+    {
+      "executor": "C01",
+      "action_id": "auth.login",
+      "delta": "r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 37,
+      "source_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
+    },
+    {
+      "executor": "C01",
+      "action_id": "auth.recover",
+      "delta": "r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 37,
+      "source_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
+    },
+    {
+      "executor": "C01",
+      "action_id": "auth.reset",
+      "delta": "r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 37,
+      "source_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
+    },
+    {
+      "executor": "C01",
+      "action_id": "access-models.create",
+      "delta": "4ff02758→5f1911a8 e04499bc3→43a900e0;31TAP locais confirmados em log C00;sem remoto. Personas ee05b949/ba9b020b/00297839:31Denooffline;SecretStore/adapterPG/provaunban/cenários pendentes.",
+      "fe_partial": false,
+      "be_partial": true,
+      "revision": 37,
+      "source_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
+    },
+    {
+      "executor": "C01",
+      "action_id": "access-models.edit",
+      "delta": "4ff02758→5f1911a8 e04499bc3→43a900e0;31TAP locais confirmados em log C00;sem remoto. Personas ee05b949/ba9b020b/00297839:31Denooffline;SecretStore/adapterPG/provaunban/cenários pendentes.",
+      "fe_partial": false,
+      "be_partial": true,
+      "revision": 37,
+      "source_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
+    },
+    {
+      "executor": "C01",
+      "action_id": "access-models.duplicate",
+      "delta": "4ff02758→5f1911a8 e04499bc3→43a900e0;31TAP locais confirmados em log C00;sem remoto. Personas ee05b949/ba9b020b/00297839:31Denooffline;SecretStore/adapterPG/provaunban/cenários pendentes.",
+      "fe_partial": false,
+      "be_partial": true,
+      "revision": 37,
+      "source_commit": "2d89602937a27cc77171104528520ddc36d90ed7"
+    },
+    {
+      "executor": "C02",
+      "action_id": "forms.respond",
+      "delta": "2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 35,
+      "source_commit": "9c215148e0e9ff7b2e4020275d3c2bdf2c8684e2"
+    },
+    {
+      "executor": "C02",
+      "action_id": "health-care.list",
+      "delta": "2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 35,
+      "source_commit": "9c215148e0e9ff7b2e4020275d3c2bdf2c8684e2"
+    },
+    {
+      "executor": "C02",
+      "action_id": "health-care.detail",
+      "delta": "2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 35,
+      "source_commit": "9c215148e0e9ff7b2e4020275d3c2bdf2c8684e2"
+    },
+    {
+      "executor": "C02",
+      "action_id": "medication.list",
+      "delta": "2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 35,
+      "source_commit": "9c215148e0e9ff7b2e4020275d3c2bdf2c8684e2"
+    },
+    {
+      "executor": "C02",
+      "action_id": "forms.download",
+      "delta": "2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 35,
+      "source_commit": "9c215148e0e9ff7b2e4020275d3c2bdf2c8684e2"
+    },
+    {
+      "executor": "C02",
+      "action_id": "forms.expire-file",
+      "delta": "2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 35,
+      "source_commit": "9c215148e0e9ff7b2e4020275d3c2bdf2c8684e2"
+    },
+    {
+      "executor": "C02",
+      "action_id": "forms.monitor",
+      "delta": "2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 35,
+      "source_commit": "9c215148e0e9ff7b2e4020275d3c2bdf2c8684e2"
+    },
+    {
+      "executor": "C02",
+      "action_id": "forms.responses",
+      "delta": "2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 35,
+      "source_commit": "9c215148e0e9ff7b2e4020275d3c2bdf2c8684e2"
+    },
+    {
+      "executor": "C02",
+      "action_id": "forms.response-detail",
+      "delta": "2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 35,
+      "source_commit": "9c215148e0e9ff7b2e4020275d3c2bdf2c8684e2"
+    },
+    {
+      "executor": "C02",
+      "action_id": "forms.location-question",
+      "delta": "2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 35,
+      "source_commit": "9c215148e0e9ff7b2e4020275d3c2bdf2c8684e2"
+    },
+    {
+      "executor": "C02",
+      "action_id": "forms.location-answer",
+      "delta": "2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 35,
+      "source_commit": "9c215148e0e9ff7b2e4020275d3c2bdf2c8684e2"
+    },
+    {
+      "executor": "C02",
+      "action_id": "forms.respond",
+      "delta": "56TAPedição e132TAPXLSX0b596c85 comprovados;novoSQL314fd92a172NÃOEXECUTADOS. multipart22Deno/motor26Deno;writerreal,cleanup,zerorespostas/limite de linhas expandidas abertos. Não transferirGREEN antigo ao novo.",
+      "fe_partial": false,
+      "be_partial": true,
+      "revision": 35,
+      "source_commit": "9c215148e0e9ff7b2e4020275d3c2bdf2c8684e2"
+    },
+    {
+      "executor": "C02",
+      "action_id": "forms.responses.export",
+      "delta": "56TAPedição e132TAPXLSX0b596c85 comprovados;novoSQL314fd92a172NÃOEXECUTADOS. multipart22Deno/motor26Deno;writerreal,cleanup,zerorespostas/limite de linhas expandidas abertos. Não transferirGREEN antigo ao novo.",
+      "fe_partial": false,
+      "be_partial": true,
+      "revision": 35,
+      "source_commit": "9c215148e0e9ff7b2e4020275d3c2bdf2c8684e2"
+    },
+    {
+      "executor": "C02",
+      "action_id": "forms.download",
+      "delta": "56TAPedição e132TAPXLSX0b596c85 comprovados;novoSQL314fd92a172NÃOEXECUTADOS. multipart22Deno/motor26Deno;writerreal,cleanup,zerorespostas/limite de linhas expandidas abertos. Não transferirGREEN antigo ao novo.",
+      "fe_partial": false,
+      "be_partial": true,
+      "revision": 35,
+      "source_commit": "9c215148e0e9ff7b2e4020275d3c2bdf2c8684e2"
+    },
+    {
+      "executor": "C03",
+      "action_id": "attendance.mark",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "attendance.correct",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "attendance.finish",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "attendance.create",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "activities.create",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "activities.edit",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "activities.publish",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "activities.detail",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "activities.assessment",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "assessments.entry",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "daily-routine.create",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "daily-routine.edit",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "daily-routine.apply",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "daily-routine.publish",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "plans.activate",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "meal-plans.create",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "meal-plans.edit",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "meal-plans.model-create",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "meal-plans.model-edit",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "activities.list",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "support.create",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "support.table",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "support.kanban",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "support.detail",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "support.reply",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "support.close",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "audit.list",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "audit.filter",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "profile-files.import",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "profile-files.preview",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "profile-files.confirm",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "profile-files.status",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "profile-files.export",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C03",
+      "action_id": "profile-files.download",
+      "delta": "r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 22,
+      "source_commit": "965a7022a627121b6e725a7478ebc61e88ed5f0d"
+    },
+    {
+      "executor": "C04",
+      "action_id": "locations.create-edit",
+      "delta": "27236a5a/ae7e8f5f/15516da9 retidos:fundação,capabilities,assertionsrecibos e schedule só disponibilidade semanal. ScratchAuthstub não é replay. Release confirmado;timestamp20:09r20 incoerente. Adapters posteriores observadosC06 sem handoff novo.",
+      "fe_partial": false,
+      "be_partial": true,
+      "revision": 20,
+      "source_commit": "dcd7dfd97d70a275dcfd5a086b34bc144b0dfb12"
+    },
+    {
+      "executor": "C04",
+      "action_id": "locations.detail-links",
+      "delta": "27236a5a/ae7e8f5f/15516da9 retidos:fundação,capabilities,assertionsrecibos e schedule só disponibilidade semanal. ScratchAuthstub não é replay. Release confirmado;timestamp20:09r20 incoerente. Adapters posteriores observadosC06 sem handoff novo.",
+      "fe_partial": false,
+      "be_partial": true,
+      "revision": 20,
+      "source_commit": "dcd7dfd97d70a275dcfd5a086b34bc144b0dfb12"
+    },
+    {
+      "executor": "C04",
+      "action_id": "locations.schedule",
+      "delta": "27236a5a/ae7e8f5f/15516da9 retidos:fundação,capabilities,assertionsrecibos e schedule só disponibilidade semanal. ScratchAuthstub não é replay. Release confirmado;timestamp20:09r20 incoerente. Adapters posteriores observadosC06 sem handoff novo.",
+      "fe_partial": false,
+      "be_partial": true,
+      "revision": 20,
+      "source_commit": "dcd7dfd97d70a275dcfd5a086b34bc144b0dfb12"
+    },
+    {
+      "executor": "C04",
+      "action_id": "institutions.list",
+      "delta": "r18:hipótese harness/header é proposta,sem aprovação automática de golden. Novos fluxosLocais ainda dependem baseline/revisão específica;não bloquear outros domínios pela discussão de tabela.",
+      "fe_partial": false,
+      "be_partial": false,
+      "revision": 20,
+      "source_commit": "dcd7dfd97d70a275dcfd5a086b34bc144b0dfb12"
+    },
+    {
+      "executor": "C05",
+      "action_id": "chat.attach",
+      "delta": "313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 15,
+      "source_commit": "7810e7c584fa63eb6b7c79f0399ccdae2e582518"
+    },
+    {
+      "executor": "C05",
+      "action_id": "momentos.view",
+      "delta": "313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 15,
+      "source_commit": "7810e7c584fa63eb6b7c79f0399ccdae2e582518"
+    },
+    {
+      "executor": "C05",
+      "action_id": "principal.profile-view",
+      "delta": "313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 15,
+      "source_commit": "7810e7c584fa63eb6b7c79f0399ccdae2e582518"
+    },
+    {
+      "executor": "C05",
+      "action_id": "momentos.remove",
+      "delta": "313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.",
+      "fe_partial": true,
+      "be_partial": false,
+      "revision": 15,
+      "source_commit": "7810e7c584fa63eb6b7c79f0399ccdae2e582518"
+    },
+    {
+      "executor": "C05",
+      "action_id": "notices.list",
+      "delta": "SQL5f0e7e29 retido porACL/cursor/envelope/schema/realm/reautorização/audiênciadesconhecida/store eplansTAP incorretos. C05r15 aceitouachados e corrige;sem replay. Fontes completas na assignmentI009.",
+      "fe_partial": false,
+      "be_partial": true,
+      "revision": 15,
+      "source_commit": "7810e7c584fa63eb6b7c79f0399ccdae2e582518"
+    },
+    {
+      "executor": "C05",
+      "action_id": "momentos.view",
+      "delta": "SQL5f0e7e29 retido porACL/cursor/envelope/schema/realm/reautorização/audiênciadesconhecida/store eplansTAP incorretos. C05r15 aceitouachados e corrige;sem replay. Fontes completas na assignmentI009.",
+      "fe_partial": false,
+      "be_partial": true,
+      "revision": 15,
+      "source_commit": "7810e7c584fa63eb6b7c79f0399ccdae2e582518"
+    }
+  ]
+}

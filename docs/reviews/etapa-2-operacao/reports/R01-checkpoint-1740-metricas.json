@@ -1,0 +1,501 @@
+{
+  "source": "R01-checkpoint-1740-deltas.json + prior1655",
+  "status": "partial-audit-not-completion",
+  "generated_at": "2026-09-08T17:50:22-03:00",
+  "frontend_audited_partial_ids": [
+    "access-models.create",
+    "access-models.detail",
+    "access-models.duplicate",
+    "access-models.edit",
+    "access-models.filter",
+    "access-models.list",
+    "access-profiles.create",
+    "access-profiles.delete",
+    "access-profiles.detail",
+    "access-profiles.edit",
+    "access-profiles.list",
+    "account.logout",
+    "account.settings",
+    "account.theme",
+    "acontece.feed",
+    "activities.assessment",
+    "activities.create",
+    "activities.detail",
+    "activities.edit",
+    "activities.list",
+    "activities.location",
+    "activities.publish",
+    "agenda.detail",
+    "agenda.permissions",
+    "agenda.view",
+    "agora.create",
+    "agora.publish",
+    "assessments.close",
+    "assessments.detail",
+    "assessments.entry",
+    "assessments.gradebook",
+    "assessments.reopen",
+    "attendance.correct",
+    "attendance.create",
+    "attendance.dashboard",
+    "attendance.export",
+    "attendance.finish",
+    "attendance.mark",
+    "audit.filter",
+    "audit.list",
+    "auth.login",
+    "auth.recover",
+    "auth.reset",
+    "chat.attach",
+    "chat.list",
+    "chat.send",
+    "child-safety.child",
+    "child-safety.list",
+    "daily-routine.apply",
+    "daily-routine.create",
+    "daily-routine.edit",
+    "daily-routine.list",
+    "daily-routine.publish",
+    "errors.403",
+    "errors.404",
+    "errors.409",
+    "errors.500",
+    "errors.503",
+    "errors.retry",
+    "forms.create",
+    "forms.delete-file",
+    "forms.download",
+    "forms.edit",
+    "forms.expire-file",
+    "forms.location-answer",
+    "forms.location-question",
+    "forms.monitor",
+    "forms.overview",
+    "forms.respond",
+    "forms.response-detail",
+    "forms.responses",
+    "forms.test",
+    "forms.upload",
+    "groups.export",
+    "groups.import",
+    "groups.list",
+    "groups.location",
+    "health-care.detail",
+    "health-care.list",
+    "institutions.create",
+    "institutions.edit",
+    "institutions.error",
+    "institutions.export",
+    "institutions.files",
+    "institutions.filter",
+    "institutions.import",
+    "institutions.list",
+    "institutions.locations-map",
+    "internal-users.create",
+    "internal-users.edit",
+    "internal-users.list",
+    "internal-users.suspend",
+    "invites.create",
+    "invites.detail",
+    "invites.list",
+    "invites.resend",
+    "invites.revoke",
+    "locations.create-edit",
+    "locations.detail-links",
+    "locations.list",
+    "meal-plans.create",
+    "meal-plans.edit",
+    "meal-plans.list",
+    "meal-plans.model-create",
+    "meal-plans.model-edit",
+    "meal-plans.publish",
+    "medication.list",
+    "momentos.remove",
+    "momentos.view",
+    "notices.archive",
+    "notices.create",
+    "notices.edit",
+    "notices.list",
+    "notices.publish",
+    "people.edit",
+    "people.list",
+    "plans.activate",
+    "plans.create",
+    "plans.edit",
+    "principal.profile-edit",
+    "principal.profile-view",
+    "profile-files.confirm",
+    "profile-files.download",
+    "profile-files.export",
+    "profile-files.import",
+    "profile-files.preview",
+    "profile-files.status",
+    "shell.load",
+    "students.list",
+    "support.close",
+    "support.create",
+    "support.detail",
+    "support.kanban",
+    "support.reply",
+    "support.table",
+    "units.error",
+    "units.export",
+    "units.filter",
+    "units.import",
+    "units.list",
+    "units.locations-map",
+    "units.people-export",
+    "units.reload"
+  ],
+  "backend_contract_audited_partial_ids": [
+    "access-models.create",
+    "access-models.duplicate",
+    "access-models.edit",
+    "activities.create",
+    "activities.edit",
+    "activities.list",
+    "activities.publish",
+    "assessments.close",
+    "assessments.detail",
+    "assessments.entry",
+    "assessments.gradebook",
+    "assessments.reopen",
+    "forms.delete-file",
+    "forms.download",
+    "forms.expire-file",
+    "forms.resolve-file",
+    "forms.respond",
+    "forms.responses.export",
+    "forms.upload",
+    "locations.create-edit",
+    "locations.detail-links",
+    "locations.schedule",
+    "momentos.view",
+    "notices.list"
+  ],
+  "frontend_completed_ids": [
+    "profile-files.export",
+    "profile-files.import"
+  ],
+  "backend_completed_ids": [],
+  "e2e_completed_ids": [],
+  "backend_real_audited_ids": [],
+  "e2e_audited_ids": [],
+  "denominators": {
+    "FE_all": 219,
+    "FE_active": 194,
+    "BE_all_applicable": 212,
+    "BE_active": 187,
+    "E2E_active": 187,
+    "deferred": 22,
+    "formal_gate": 3,
+    "BE_E2E_not_applicable": 7
+  },
+  "limits": "Auditorias parciais por critérios nomeados, incluindo falhas. Backend local SQL conta como verificação de camada, separado de contrato simulado e remoto. Nenhuma conclusão integral, remoto ou E2E. Conservative snapshot: other new findings documented by action do not increase coverage without nominal criteria. Actions are not tests.",
+  "updated_at": "2026-09-08T17:50:22-03:00",
+  "backend_local_sql_audited_partial_ids": [
+    "access-models.create",
+    "access-models.duplicate",
+    "access-models.edit",
+    "activities.create",
+    "activities.edit",
+    "activities.list",
+    "activities.publish",
+    "assessments.close",
+    "assessments.detail",
+    "assessments.entry",
+    "assessments.gradebook",
+    "assessments.reopen",
+    "forms.download",
+    "forms.respond",
+    "forms.responses.export",
+    "forms.upload"
+  ],
+  "frontend_audited_by_classification": {
+    "ativa": 129,
+    "adiada": 14
+  },
+  "evidence_batches": [
+    {
+      "layer": "FE",
+      "ids": [
+        "account.logout",
+        "shell.load",
+        "auth.login",
+        "auth.reset"
+      ],
+      "criterion": "preserve replacement session after recovery response; package and consumers; not real Auth",
+      "evidence": "C00 r22 SDK18+package25+consumers27PASS; reports/R01-checkpoint-1430.md",
+      "date": "2026-09-08T14:33:36-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "invites.create",
+        "invites.detail",
+        "invites.resend"
+      ],
+      "criterion": "old result discarded on context change/reload; single flight",
+      "evidence": "C0016052b51/4436174e; combined61PASS including assessments",
+      "date": "2026-09-08T14:48:53-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "assessments.entry",
+        "assessments.gradebook",
+        "assessments.close",
+        "assessments.reopen",
+        "assessments.detail"
+      ],
+      "criterion": "closing status guards, entry/context/read UI and responsive tests, not backend persistence",
+      "evidence": "C00aa960d54;27assessment tests within61PASS",
+      "date": "2026-09-08T14:48:53-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "attendance.dashboard",
+        "attendance.create",
+        "attendance.mark",
+        "attendance.correct",
+        "attendance.finish",
+        "attendance.export"
+      ],
+      "criterion": "functional states/commands simulated; deferred export notice; viewport comparisons include failure",
+      "evidence": "C03r4:61functionalPASS,full64PASS/1goldenFAIL; OQ040 stays open",
+      "date": "2026-09-08T14:38:00-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "groups.location",
+        "institutions.list",
+        "units.list",
+        "groups.list",
+        "people.list",
+        "institutions.locations-map",
+        "units.locations-map",
+        "students.list"
+      ],
+      "criterion": "directory errors, normal sections/navigation and local selection; no write persistence",
+      "evidence": "C04r5/r6:19+2 focal; broader scopes documented separately; no golden approval",
+      "date": "2026-09-08T14:19:00-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "notices.create",
+        "notices.edit",
+        "notices.list",
+        "agora.create",
+        "agora.publish"
+      ],
+      "criterion": "viewport-specific golden failures/pass; Agora responsive behavior and composition; nominal visual review pending",
+      "evidence": "C05r3 received14:31:26;51AgoraPASS,14goldenFAIL;877PASS/61goldenFAIL broad",
+      "date": "2026-09-08T14:31:26-03:00"
+    },
+    {
+      "layer": "BE-SQL-local",
+      "ids": [
+        "assessments.entry",
+        "assessments.gradebook",
+        "assessments.close",
+        "assessments.reopen",
+        "assessments.detail"
+      ],
+      "criterion": "workflow, receipts, version, cross-tenant and revocation; queue fails; two explicit TEMP prerequisites",
+      "evidence": "C03r5 canonical9f97d80235/35PASS under nominal A01; lint/canonical broad chain/remote not green",
+      "date": "2026-09-08T14:53:00-03:00"
+    },
+    {
+      "layer": "BE-SQL-local",
+      "ids": [
+        "forms.responses.export",
+        "forms.download"
+      ],
+      "criterion": "XLSX catalog/job/snapshot constraints and authorize/redeem path reached; helper fails after41subtests of64planned",
+      "evidence": "C0055a41PASS/abort; helper-only14a1 comparison49PASS/abort before64plan due fixture membership lifecycle; both overallFAIL; manifests retained",
+      "date": "2026-09-08T14:45:56-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "units.error",
+        "units.reload",
+        "units.filter",
+        "institutions.error"
+      ],
+      "criterion": "failure state, retry, search and error handling without perpetual loading",
+      "evidence": "C00c3ce3127;37/37 directory tests, C04 source93a1536d",
+      "date": "2026-09-08T14:58:13-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "access-profiles.detail",
+        "invites.revoke"
+      ],
+      "criterion": "transport failures sanitized, command permission invalidation and owned overlays",
+      "evidence": "C01r23/r24:25f4dabd190PASS andf31fa1ce25PASS; pending C00 review",
+      "date": "2026-09-08T14:50:00-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "locations.create-edit"
+      ],
+      "criterion": "named local behavior only;not all acceptance criteria",
+      "evidence": "C04r7 creation half:6f20738c12writer+14formPASS;edit absent;pending C00 review",
+      "date": "2026-09-08T14:38:00-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "notices.publish",
+        "notices.archive",
+        "chat.send"
+      ],
+      "criterion": "named local behavior only;not all acceptance criteria",
+      "evidence": "C05r5:20e7b259 two state/refetch tests,43a3275d thread-order test; local only",
+      "date": "2026-09-08T14:55:16-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "agenda.view",
+        "agenda.detail",
+        "agenda.permissions"
+      ],
+      "criterion": "partial behavior/contract/visual audit including failures; not all acceptance criteria",
+      "evidence": "C03/r6 b049b163:27PASS/4goldenFAIL; view WIP, no commands certified",
+      "date": "2026-09-08T15:32:34-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "meal-plans.list",
+        "meal-plans.create",
+        "meal-plans.edit",
+        "meal-plans.model-create",
+        "meal-plans.model-edit",
+        "meal-plans.publish"
+      ],
+      "criterion": "partial behavior/contract/visual audit including failures; not all acceptance criteria",
+      "evidence": "C03/r7 82b1f4e5:93/93 functional;6goldenFAIL; media blocked until R2",
+      "date": "2026-09-08T15:32:34-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "daily-routine.list",
+        "daily-routine.create",
+        "daily-routine.edit",
+        "daily-routine.apply",
+        "daily-routine.publish"
+      ],
+      "criterion": "partial behavior/contract/visual audit including failures; not all acceptance criteria",
+      "evidence": "C03/r8:47PASS/4SKIP/6testsFAIL;9 divergent masters; normal writes absent",
+      "date": "2026-09-08T15:32:34-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "support.create",
+        "support.table",
+        "support.kanban",
+        "support.detail",
+        "support.reply",
+        "support.close"
+      ],
+      "criterion": "partial behavior/contract/visual audit including failures; not all acceptance criteria",
+      "evidence": "C03/r9:56PASS/1parametrizedgoldenFAIL with24masters; local prototype OQ028",
+      "date": "2026-09-08T15:32:34-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "institutions.create",
+        "institutions.edit",
+        "institutions.files",
+        "institutions.filter",
+        "people.edit"
+      ],
+      "criterion": "partial behavior/contract/visual audit including failures; not all acceptance criteria",
+      "evidence": "C04/r9/r10:563e1bab+50d9883e brand read7focal, institutions203PASS/8goldenFAIL; visual manifest; upload absent",
+      "date": "2026-09-08T15:32:34-03:00"
+    },
+    {
+      "layer": "BE-static",
+      "ids": [
+        "access-models.create",
+        "access-models.edit",
+        "access-models.duplicate"
+      ],
+      "criterion": "secondary AAL2 gate contradicts current ADR0019; static only, no runtime proof",
+      "evidence": "C01/r26 helper175-206 and correction20260901200206; I005 candidate reserved",
+      "date": "2026-09-08T15:32:34-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "child-safety.child",
+        "child-safety.list"
+      ],
+      "criterion": "stale cache/results after denial/context change; no integral certification",
+      "evidence": "C02r25 288171ca:48PASS/1preexistinggoldenFAIL",
+      "date": "2026-09-08T15:31:05-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "plans.create",
+        "plans.edit"
+      ],
+      "criterion": "same intent transport retry request ID; changed intent resets; context lifecycle",
+      "evidence": "C00e39bb29f;combined127PASS;analyzer4files clean",
+      "date": "2026-09-08T15:40:25-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "forms.respond"
+      ],
+      "criterion": "adapter occurrence/response/status correlation; mismatch submitted edit UI found, not completion",
+      "evidence": "C02r29/8ebf74f9;31/31adapter;C00 SQL20260825193120 comparison",
+      "date": "2026-09-08T16:06:28-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "profile-files.export",
+        "profile-files.import"
+      ],
+      "criterion": "approved deferred behavior:normal composition buttons visible,honest unavailable feedback,no picker/job/persistence;not real file operations",
+      "evidence": "da11057a→e14ed9c0;C0024/24;analyzer3clean;normal router callbacks absent verified",
+      "date": "2026-09-08T16:52:41-03:00"
+    },
+    {
+      "source": "R01-checkpoint-1740-deltas.json",
+      "at": "2026-09-08T17:50:22-03:00",
+      "criteria": "specific behavioral/static criteria;not whole action completion"
+    }
+  ],
+  "previous_evidence": "R01-checkpoint-1330-metricas.json and handoffs named in R01-checkpoint-1330.md",
+  "counts": {
+    "frontend_audited_partial_ids": 143,
+    "backend_contract_audited_partial_ids": 24,
+    "frontend_completed_ids": 2,
+    "backend_completed_ids": 0,
+    "e2e_completed_ids": 0,
+    "backend_real_audited_ids": 0,
+    "e2e_audited_ids": 0,
+    "backend_local_sql_audited_partial_ids": 16
+  },
+  "classification_note": "FE_active194 includes189mvp+5client shell; BE/E2E187active. Both auth.logout and account.logout are real inventory IDs; no alias deletion. C03 shorthand agenda.calendar/requests mapped to inventory agenda.view/request; only view/detail/permissions added to audit count.",
+  "frontend_completed_by_classification": {
+    "ativa": 0,
+    "adiada": 2,
+    "gate formal": 0
+  }
+}
