@@ -15,6 +15,17 @@ abstract final class SuperadminRoutes {
   static const unitEditName = 'unit-edit';
   static const unitDetail = '/units/:unitId';
   static const unitDetailName = 'unit-detail';
+  // Location catalogs belong to an owner, so the owner is part of the path.
+  // An institution and a unit keep independent catalogs and a scope-less route
+  // would blur them.
+  static const institutionLocations = '/institutions/:institutionId/locations';
+  static const institutionLocationsName = 'institution-locations';
+  static const institutionLocationDetail = '/institutions/:institutionId/locations/:locationId';
+  static const institutionLocationDetailName = 'institution-location-detail';
+  static const unitLocations = '/units/:unitId/locations';
+  static const unitLocationsName = 'unit-locations';
+  static const unitLocationDetail = '/units/:unitId/locations/:locationId';
+  static const unitLocationDetailName = 'unit-location-detail';
   static const groups = '/groups';
   static const groupsName = 'groups';
   static const groupCreate = '/groups/new';
@@ -49,6 +60,8 @@ abstract final class SuperadminRoutes {
   static const attendanceCallName = 'attendance-call';
   static const students = '/students';
   static const studentsName = 'students';
+  static const studentsDirectory = '/students/directory';
+  static const studentsDirectoryName = 'students-directory';
   static const studentManage = '/students/:childContextId/manage';
   static const studentManageName = 'student-manage';
   static const dailyRoutine = '/daily-routine';

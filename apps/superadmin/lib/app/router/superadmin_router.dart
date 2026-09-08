@@ -120,6 +120,10 @@ import '../../features/health_care/presentation/health_medication_form_sections.
 import '../../features/health_care/presentation/health_medication_plan_directory_page.dart';
 import '../../features/institutions/data/fake_institution_directory_repository.dart';
 import '../../features/institutions/data/supabase_institution_directory_repository.dart';
+import 'package:coelo_domain/locations.dart';
+import '../../features/locations/domain/location_catalog_reader.dart';
+import '../../features/locations/presentation/locations_page.dart';
+import '../../features/locations/presentation/unit_locations_gate.dart';
 import '../../features/institutions/domain/institution_directory_repository.dart';
 import '../../features/institutions/presentation/screens/institution_directory_page.dart';
 import '../../features/institutions/presentation/screens/institution_form_page.dart';
@@ -149,6 +153,8 @@ import '../../features/platform_users/domain/platform_user.dart';
 import '../../features/platform_users/presentation/platform_user_directory_page.dart';
 import '../../features/platform_users/presentation/platform_user_detail_page.dart';
 import '../../features/platform_users/presentation/platform_user_form_page.dart';
+import '../../features/children/presentation/child_directory_controller.dart';
+import '../../features/children/presentation/students_directory_page.dart';
 import '../../features/people/data/supabase_person_directory_repository.dart';
 import '../dev_menu/development_person_directory_repository.dart';
 import '../dev_menu/development_person_identity_repository.dart';
@@ -225,6 +231,8 @@ GoRouter createSuperadminRouter({
   GroupDirectoryRepository groupDirectoryRepository = const UnavailableGroupDirectoryRepository(),
   GroupDetailRepository groupDetailRepository = const UnavailableGroupDetailRepository(),
   UnitDetailRepository unitDetailRepository = const UnavailableUnitDetailRepository(),
+  LocationCatalogReader locationCatalogReader = const UnavailableLocationCatalogReader(),
+  ChildDirectoryRead childDirectoryRead = unavailableChildDirectoryRead,
   ActivityDirectoryRepository activityDirectoryRepository =
       const UnavailableActivityDirectoryRepository(),
   ActivityCommandRepository activityCommandRepository =
@@ -1285,6 +1293,121 @@ GoRouter createSuperadminRouter({
                       onDestinationSelected: (destination) =>
                           _navigateFromPersistentShell(context, destination),
                     ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.institutionLocations,
+            name: SuperadminRoutes.institutionLocationsName,
+            builder: (context, state) => _locationCatalogGuard(
+              session,
+              () => LocationsPage(
+                key: ValueKey(session.authorizationInvalidationRevision),
+                scope: LocationScope.institution(
+                  institutionId: state.pathParameters['institutionId']!,
+                ),
+                reader: locationCatalogReader,
+                sessionAvailable: true,
+                contextRevision: session.authorizationInvalidationRevision,
+                logout: logout,
+                currentDestination: 'institutions',
+                onLocationOpened: (id) => context.goNamed(
+                  SuperadminRoutes.institutionLocationDetailName,
+                  pathParameters: {
+                    'institutionId': state.pathParameters['institutionId']!,
+                    'locationId': id,
+                  },
+                ),
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.institutionLocationDetail,
+            name: SuperadminRoutes.institutionLocationDetailName,
+            builder: (context, state) => _locationCatalogGuard(
+              session,
+              () => LocationsPage(
+                key: ValueKey(session.authorizationInvalidationRevision),
+                scope: LocationScope.institution(
+                  institutionId: state.pathParameters['institutionId']!,
+                ),
+                reader: locationCatalogReader,
+                sessionAvailable: true,
+                contextRevision: session.authorizationInvalidationRevision,
+                selectedLocationId: state.pathParameters['locationId'],
+                logout: logout,
+                currentDestination: 'institutions',
+                onLocationClosed: () => context.goNamed(
+                  SuperadminRoutes.institutionLocationsName,
+                  pathParameters: {'institutionId': state.pathParameters['institutionId']!},
+                ),
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.unitLocations,
+            name: SuperadminRoutes.unitLocationsName,
+            builder: (context, state) => _locationCatalogGuard(
+              session,
+              // The institution of a unit is read from the authorized unit
+              // detail, never taken from the path.
+              () => UnitLocationsGate(
+                key: ValueKey(session.authorizationInvalidationRevision),
+                unitId: state.pathParameters['unitId']!,
+                unitDetailRepository: unitDetailRepository,
+                reader: locationCatalogReader,
+                sessionAvailable: true,
+                contextRevision: session.authorizationInvalidationRevision,
+                logout: logout,
+                onLocationOpened: (id) => context.goNamed(
+                  SuperadminRoutes.unitLocationDetailName,
+                  pathParameters: {'unitId': state.pathParameters['unitId']!, 'locationId': id},
+                ),
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.unitLocationDetail,
+            name: SuperadminRoutes.unitLocationDetailName,
+            builder: (context, state) => _locationCatalogGuard(
+              session,
+              () => UnitLocationsGate(
+                key: ValueKey(session.authorizationInvalidationRevision),
+                unitId: state.pathParameters['unitId']!,
+                unitDetailRepository: unitDetailRepository,
+                reader: locationCatalogReader,
+                sessionAvailable: true,
+                contextRevision: session.authorizationInvalidationRevision,
+                selectedLocationId: state.pathParameters['locationId'],
+                logout: logout,
+                onLocationClosed: () => context.goNamed(
+                  SuperadminRoutes.unitLocationsName,
+                  pathParameters: {'unitId': state.pathParameters['unitId']!},
+                ),
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.studentsDirectory,
+            name: SuperadminRoutes.studentsDirectoryName,
+            builder: (context, state) => _locationCatalogGuard(
+              session,
+              () => StudentsDirectoryPage(
+                key: ValueKey(session.authorizationInvalidationRevision),
+                read: childDirectoryRead,
+                sessionAvailable: true,
+                revision: session.authorizationInvalidationRevision,
+                logout: logout,
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
+              ),
             ),
           ),
           GoRoute(
@@ -4908,6 +5031,19 @@ bool _isProductionMutationLocation(String location) {
 bool _isMealPlanMutationLocation(String location) =>
     location.startsWith('/meal-plans/') &&
     (location.endsWith('/new') || location.endsWith('/edit'));
+
+/// Renders an authorized read only while the session can carry one.
+///
+/// A recovery session or a signed-out session must not reach a catalog read,
+/// and a revoked authorization rebuilds the page instead of keeping what was
+/// already on screen.
+Widget _locationCatalogGuard(SuperadminSession session, Widget Function() build) =>
+    ListenableBuilder(
+      listenable: session,
+      builder: (context, child) => !session.isAuthenticated || session.isPasswordRecovery
+          ? const SizedBox.shrink()
+          : build(),
+    );
 
 bool _isStructureMutationLocation(String location) =>
     location.startsWith('/institutions/') ||
