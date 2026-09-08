@@ -1,4 +1,4 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { assertEquals, assertRejects, assertThrows } from "@std/assert";
 import {
   allowedOrigin,
   corsHeaders,
@@ -6,7 +6,9 @@ import {
   MAX_IMAGE_BYTES,
   opaqueStoragePath,
   parseAssetAccess,
+  parseFormMediaEnvelope,
   parsePrepareAsset,
+  readFormMediaEnvelope,
   sha256,
   shouldVerifyFinalization,
   sniffImageMime,
@@ -70,6 +72,92 @@ const valid = {
   byte_length: MAX_IMAGE_BYTES,
   checksum: "a".repeat(64),
 };
+
+const envelope = {
+  action: "prepare",
+  request_id: "33333333-3333-4333-8333-333333333333",
+  expected_version: 0,
+  payload: valid,
+} as const;
+
+Deno.test("media envelope validates every action and preserves anonymous payload", () => {
+  assertEquals(parseFormMediaEnvelope(envelope), envelope);
+  for (const action of ["finalize", "discard", "download"] as const) {
+    const input = {
+      ...envelope,
+      action,
+      payload: { asset_id: valid.item_id, edit_secret: "s".repeat(43) },
+    };
+    assertEquals(parseFormMediaEnvelope(input), input);
+  }
+});
+
+Deno.test("media envelope rejects forged shape, action, IDs and versions safely", () => {
+  for (
+    const input of [
+      null,
+      [],
+      true,
+      7,
+      "private input",
+      { ...envelope, actor_id: "forged" },
+      { ...envelope, action: "delete-all" },
+      { ...envelope, request_id: "not-a-uuid" },
+      ...[-1, 0.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1, "0", null].map(
+        (expected_version) => ({ ...envelope, expected_version }),
+      ),
+      { ...envelope, payload: null },
+      { ...envelope, payload: { ...valid, edit_secret: null } },
+    ]
+  ) {
+    const error = assertThrows(() => parseFormMediaEnvelope(input), Error);
+    assertEquals(error.message.includes("private input"), false);
+  }
+});
+
+Deno.test("reads only bounded UTF8 JSON before requesting authorization", async () => {
+  assertEquals(
+    await readFormMediaEnvelope(
+      new Request("https://example.test", {
+        method: "POST",
+        body: JSON.stringify(envelope),
+      }),
+    ),
+    envelope,
+  );
+  for (const body of ["null", "[]", "not json", "", new Uint8Array([0xff])]) {
+    await assertRejects(() =>
+      readFormMediaEnvelope(
+        new Request("https://example.test", {
+          method: "POST",
+          body,
+        }),
+      )
+    );
+  }
+});
+
+Deno.test("cancels oversized request even with forged Content-Length", async () => {
+  let cancelled = false;
+  const request = new Request("https://example.test", {
+    method: "POST",
+    headers: { "content-length": "1" },
+    body: new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(new Uint8Array(32_769));
+      },
+      cancel() {
+        cancelled = true;
+      },
+    }),
+  });
+  await assertRejects(
+    () => readFormMediaEnvelope(request),
+    Error,
+    "payload_too_large",
+  );
+  assertEquals(cancelled, true);
+});
 
 Deno.test("accepts only the approved MIME types and ten megabyte limit", () => {
   assertEquals(parsePrepareAsset(valid), valid);
