@@ -1,7 +1,7 @@
 ---
 title: "Perfis — proposta nominal de reader interno após ACL RED"
 source: "Reserva de proposta do Coordenador; diagnóstico Profiles8/Auth47 do Engenheiro 1; spec 018; spec 039; migrations 20260811215451 e 20260901200206; review realm_audit"
-status: "proposal-only; scope-and-count-contract-awaiting-decision"
+status: "proposal-only; institutional-actor-scope-awaiting-decision"
 generated_at: "2026-09-08"
 ---
 
@@ -44,15 +44,27 @@ sem perder total. Nenhum filtro de status novo será inserido na UI.
    Recomenda-se uma primeira fatia explicitamente platform-scoped; liberar
    contexto institucional exige regra de visibilidade por instituição. Uma
    negação nova não deve ser implementada silenciosamente como decisão final.
-2. Contador do ramo platform: o cursor usa platform_memberships legadas;
-   o realm 039 usa superadmin_internal_memberships. Definir se o contador
-   representa memberships internas ativas ou identidades distintas, incluindo
-   requisitos de auth-link e estados. Não transplantar o valor antigo como
-   contagem de Usuários Internos nem inventar zero para passar teste.
-3. Ramo institution: spec 018:101–103 descreve bases globais reutilizáveis;
-   institution_roles também pode conter registros locais. Aprovar quais entram
-   no reader e como contar atribuições institucionais, sem misturá-las com
-   memberships internas. A primeira fixture cobre somente platform.
+
+## Contratos reconciliados pelo review central
+
+O Coordenador conferiu as fontes e esclareceu que, para ator global, o
+contador representa atribuições ativas, não contas autenticáveis. No ramo
+platform, contar superadmin_internal_memberships ativas por platform_role_id,
+sem exigir auth-link nem consultar platform_memberships legadas. A spec 039
+mantém uma membership interna ativa por identidade. Não usar o filtro do
+diretório de Usuários Internos para reduzir este contador.
+
+No ramo institution, preservar catálogo global e local e contar
+institution_role_assignments ativas/não expiradas. A spec 018:101 restringe
+CRIAÇÃO, não leitura. Não acrescentar join com People/Auth. A lacuna permanece
+na visibilidade/agregação para ator interno de escopo institucional; nenhuma
+negação global ou ampliação foi autorizada por conveniência técnica.
+
+Envelope: AccessProfile.fromJson consome `membership_count` ou o tamanho de
+`memberships`; não consome `linked_people_count`. O cursor legado devolve este
+último nome. A corretiva proposta deve servir `membership_count` ao consumidor
+real, sem introduzir `assigned_count` ou outro alias. Essa divergência é
+estática até teste nominal; o ACL RED não chegou a esse parsing.
 
 ## Matriz complementar proposta
 
@@ -66,7 +78,10 @@ Adicionar em fixture nominal separada:
 - capability ausente ou deny: SAI_PERMISSION_DENIED;
 - membership institucional com capability: negação ou filtro conforme decisão;
 - acesso direto ao cursor privado: continua proibido;
-- vínculos internos e legados distintos: contador segue o contrato aprovado;
+- vínculos internos ativos com e sem auth-link: ambos contam no ramo platform;
+- vínculos internos suspensos/revogados e vínculos platform legados: não contam;
+- assignments institution ativos válidos contam; inativos/expirados não;
+- envelope usa membership_count e o teste de cliente verifica seu valor;
 - domínio inválido, limites, CSV múltiplo, página vazia e fora do total;
 - se institution entrar: global/local e instituição A/B sem exposição cruzada.
 
@@ -78,7 +93,7 @@ privilégios efetivos, inclusive ausência de grant indireto indevido.
 Esta proposta não altera SQL, router, detail, catálogo, Principal, writes,
 atribuições, RLS, MFA ou modelos. O reader não resolve os gates próprios de
 proveniência de sessão/recovery. Revisão realm_audit aprova a arquitetura
-candidata, não fecha os contratos abertos. Após decisão, preparar teste RED,
+candidata, não fecha o escopo institucional aberto. Após decisão, preparar teste RED,
 corretiva nominal forward-only e replay por Engenheiro 1; produção somente com
 lease do Coordenador. Não há promoção Front-end verified, Back-end done ou E2E.
 Gate de memória: no-op; nenhuma proposta é projetada como produto aprovado.
