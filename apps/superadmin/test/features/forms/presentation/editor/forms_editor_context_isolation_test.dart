@@ -10,6 +10,105 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final action in [
+    'title',
+    'discard',
+    'reorder',
+    'duplicate-question',
+    'duplicate-section',
+    'reorder-duplicate-section',
+    'duplicate-dependent',
+  ]) {
+    testWidgets('loaded branching survives $action', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1200, 1100));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final api = _EditorApi(firstItems: _branchingItems());
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byWidget(_title(tester)), 'Edited title');
+      if (action == 'discard') await _discard(tester);
+      if (action.startsWith('reorder')) {
+        final list = tester.widget<ReorderableListView>(
+          find.byKey(const ValueKey('forms-editor-options-choice-source')),
+        );
+        list.onReorderItem!(0, 2);
+        await tester.pumpAndSettle();
+      }
+      if (action == 'duplicate-question') {
+        await tester.tap(find.byTooltip('Duplicar pergunta').first);
+        await tester.pumpAndSettle();
+      }
+      if (action == 'duplicate-dependent') {
+        await tester.ensureVisible(find.byTooltip('Duplicar pergunta').last);
+        await tester.pumpAndSettle();
+        await tester.tap(find.byTooltip('Duplicar pergunta').last);
+        await tester.pumpAndSettle();
+      }
+      if (action.endsWith('duplicate-section')) {
+        await tester.tap(find.byTooltip('Duplicar seção'));
+        await tester.pumpAndSettle();
+      }
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+      await tester.pumpAndSettle();
+      final payload = api.savedCommands.single.payload;
+      final original = payload.sections.first.items;
+      final choice = original.firstWhere((item) => item.id == 'choice-source');
+      expect(
+        choice.options.map((option) => option.id),
+        action.startsWith('reorder')
+            ? ['opaque-b', 'opaque-c', 'opaque-a']
+            : ['opaque-a', 'opaque-b', 'opaque-c'],
+      );
+      expect(
+        choice.options.map((option) => option.label),
+        action.startsWith('reorder') ? ['B', 'C', 'A'] : ['A', 'B', 'C'],
+      );
+      expect(choice.options.map((option) => option.position), [0, 1, 2]);
+      final target = original.firstWhere((item) => item.id == 'dependent');
+      expect(target.conditions, hasLength(2));
+      expect(target.conditions[0].kind, FormConditionKind.choice);
+      expect(target.conditions[0].sourceItemId, 'choice-source');
+      expect(target.conditions[0].optionIds, {'opaque-b', 'opaque-c'});
+      expect(target.conditions[1].kind, FormConditionKind.yesNo);
+      expect(target.conditions[1].sourceItemId, 'yes-source');
+      expect(target.conditions[1].expectedYesNo, isFalse);
+      if (action == 'duplicate-question') {
+        final copy = original[1];
+        expect(copy.options.map((option) => option.label), ['A', 'B', 'C']);
+        expect(
+          copy.options
+              .map((option) => option.id)
+              .toSet()
+              .intersection(choice.options.map((option) => option.id).toSet()),
+          isEmpty,
+        );
+      }
+      if (action == 'duplicate-dependent') {
+        final copied = original.last;
+        expect(copied.id, isNot(target.id));
+        expect(copied.conditions[0].sourceItemId, 'choice-source');
+        expect(copied.conditions[0].optionIds, {'opaque-b', 'opaque-c'});
+        expect(copied.conditions[1].sourceItemId, 'yes-source');
+        expect(copied.conditions[1].expectedYesNo, isFalse);
+      }
+      if (action.endsWith('duplicate-section')) {
+        final copied = payload.sections[1].items;
+        expect(copied, hasLength(3));
+        expect(copied[2].conditions[0].sourceItemId, copied[0].id);
+        expect(
+          copied[2].conditions[0].optionIds,
+          copied[0].options
+              .where((option) => option.label != 'A')
+              .map((option) => option.id)
+              .toSet(),
+        );
+        expect(copied[2].conditions[1].sourceItemId, copied[1].id);
+      }
+      expect(const FormDefinitionValidator().validate(payload), isEmpty);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   for (final kind in [FormItemKind.photo, FormItemKind.gallery]) {
     testWidgets('$kind duplication preserves loaded image settings', (tester) async {
       await tester.binding.setSurfaceSize(const Size(1200, 1100));
@@ -546,6 +645,31 @@ String _overlayTitle(String overlay) => switch (overlay) {
   _ => 'Descartar alterações locais?',
 };
 
+List<FormItem> _branchingItems() => [
+  FormItem(
+    id: 'choice-source',
+    kind: FormItemKind.singleChoice,
+    label: 'Choice',
+    position: 0,
+    options: const [
+      FormOption(id: 'opaque-a', label: 'A', position: 0),
+      FormOption(id: 'opaque-b', label: 'B', position: 1),
+      FormOption(id: 'opaque-c', label: 'C', position: 2),
+    ],
+  ),
+  FormItem(id: 'yes-source', kind: FormItemKind.yesNo, label: 'Yes or no', position: 1),
+  FormItem(
+    id: 'dependent',
+    kind: FormItemKind.shortText,
+    label: 'Dependent',
+    position: 2,
+    conditions: const [
+      FormCondition.choice(sourceItemId: 'choice-source', optionIds: {'opaque-b', 'opaque-c'}),
+      FormCondition.yesNo(sourceItemId: 'yes-source', expected: false),
+    ],
+  ),
+];
+
 final class _EditorApi implements FormsApi, FormsEditorContextApi {
   _EditorApi({
     this.title = 'Form title',
@@ -558,6 +682,7 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
     this.canPublish = true,
     this.itemKind = FormItemKind.shortText,
     this.itemConfig = const FormItemConfig(),
+    this.firstItems,
   });
   final String title;
   final String? savedTitle;
@@ -570,6 +695,7 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
   final bool canPublish;
   final FormItemKind itemKind;
   final FormItemConfig itemConfig;
+  final List<FormItem>? firstItems;
   final requestedForms = <String>[];
   final savedCommands = <FormCommand<FormDefinition>>[];
 
@@ -608,15 +734,17 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
         id: 'section-1',
         title: 'Section',
         position: 0,
-        items: [
-          FormItem(
-            id: 'item-1',
-            kind: itemKind,
-            label: 'Question',
-            position: 0,
-            config: itemConfig,
-          ),
-        ],
+        items:
+            firstItems ??
+            [
+              FormItem(
+                id: 'item-1',
+                kind: itemKind,
+                label: 'Question',
+                position: 0,
+                config: itemConfig,
+              ),
+            ],
       ),
       FormSection(
         id: 'section-2',

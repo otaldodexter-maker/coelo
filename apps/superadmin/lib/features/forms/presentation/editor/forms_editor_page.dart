@@ -1023,6 +1023,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                     : _sections[sectionIndex].questions[questionIndex].details.text.trim(),
                 position: questionIndex,
                 isRequired: _sections[sectionIndex].questions[questionIndex].required,
+                conditions: _sections[sectionIndex].questions[questionIndex].loadedConditions,
                 config: FormItemConfig(
                   allowCamera:
                       _sections[sectionIndex].questions[questionIndex].loadedConfig.allowCamera,
@@ -1054,7 +1055,12 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                     optionIndex++
                   )
                     FormOption(
-                      id: '${_sections[sectionIndex].questions[questionIndex].id}-option-$optionIndex',
+                      id:
+                          _sections[sectionIndex]
+                              .questions[questionIndex]
+                              .optionIds[_sections[sectionIndex]
+                              .questions[questionIndex]
+                              .options[optionIndex]]!,
                       label: _sections[sectionIndex]
                           .questions[questionIndex]
                           .options[optionIndex]
@@ -1135,17 +1141,13 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       label: item.label,
       required: item.isRequired,
       loadedConfig: item.config,
+      loadedConditions: item.conditions,
     );
     draft
       ..details.text = item.helpText ?? ''
       ..minimum.text = item.config.minValue?.toString() ?? ''
       ..maximum.text = item.config.maxValue?.toString() ?? '';
-    for (final option in draft.options) {
-      option.dispose();
-    }
-    draft.options
-      ..clear()
-      ..addAll([for (final option in item.options) TextEditingController(text: option.label)]);
+    draft.replaceOptions(item.options);
     return draft;
   }
 
@@ -1481,15 +1483,26 @@ final class _EditorSectionDraft {
   final String description;
   final List<_EditorQuestionDraft> questions;
 
-  _EditorSectionDraft copy({required String id, required String suffix}) => _EditorSectionDraft(
-    id: id,
-    title: '$title$suffix',
-    description: description,
-    questions: [
+  _EditorSectionDraft copy({required String id, required String suffix}) {
+    final itemIds = {
       for (var index = 0; index < questions.length; index++)
-        questions[index].copy(id: '$id-question-$index'),
-    ],
-  );
+        questions[index].id: '$id-question-$index',
+    };
+    final optionIds = {
+      for (final question in questions)
+        for (var index = 0; index < question.options.length; index++)
+          question.optionIds[question.options[index]]!: '${itemIds[question.id]}-option-$index',
+    };
+    return _EditorSectionDraft(
+      id: id,
+      title: '$title$suffix',
+      description: description,
+      questions: [
+        for (final question in questions)
+          question.copy(id: itemIds[question.id]!, itemIdMap: itemIds, optionIdMap: optionIds),
+      ],
+    );
+  }
 
   void dispose() {
     for (final question in questions) {
@@ -1506,22 +1519,29 @@ final class _EditorQuestionDraft {
     required this.required,
     this.branchEnabled = false,
     this.loadedConfig = const FormItemConfig(),
+    this.loadedConditions = const [],
   }) : label = TextEditingController(text: label),
        details = TextEditingController(),
        minimum = TextEditingController(),
        maximum = TextEditingController(),
        options = kind == FormItemKind.singleChoice || kind == FormItemKind.multipleChoice
            ? [TextEditingController(text: 'Opção 1'), TextEditingController(text: 'Opção 2')]
-           : [];
+           : [] {
+    for (var index = 0; index < options.length; index++) {
+      optionIds[options[index]] = '$id-option-$index';
+    }
+  }
 
   final String id;
   final FormItemKind kind;
   final FormItemConfig loadedConfig;
+  final List<FormCondition> loadedConditions;
   final TextEditingController label;
   final TextEditingController details;
   final TextEditingController minimum;
   final TextEditingController maximum;
   final List<TextEditingController> options;
+  final Map<TextEditingController, String> optionIds = {};
   final List<_EditorQuestionDraft> branchQuestions = [];
   bool required;
   bool branchEnabled;
@@ -1529,7 +1549,24 @@ final class _EditorQuestionDraft {
   DateTime from = DateTime(2026, 8, 1);
   DateTime until = DateTime(2026, 8, 31);
 
-  _EditorQuestionDraft copy({required String id}) {
+  void replaceOptions(List<FormOption> values) {
+    for (final option in options) {
+      option.dispose();
+    }
+    options.clear();
+    optionIds.clear();
+    for (final value in values) {
+      final controller = TextEditingController(text: value.label);
+      options.add(controller);
+      optionIds[controller] = value.id;
+    }
+  }
+
+  _EditorQuestionDraft copy({
+    required String id,
+    Map<String, String> itemIdMap = const {},
+    Map<String, String> optionIdMap = const {},
+  }) {
     final value = _EditorQuestionDraft(
       id: id,
       kind: kind,
@@ -1537,6 +1574,21 @@ final class _EditorQuestionDraft {
       required: required,
       branchEnabled: branchEnabled,
       loadedConfig: loadedConfig,
+      loadedConditions: [
+        for (final condition in loadedConditions)
+          switch (condition.kind) {
+            FormConditionKind.yesNo => FormCondition.yesNo(
+              sourceItemId: itemIdMap[condition.sourceItemId] ?? condition.sourceItemId,
+              expected: condition.expectedYesNo!,
+            ),
+            FormConditionKind.choice => FormCondition.choice(
+              sourceItemId: itemIdMap[condition.sourceItemId] ?? condition.sourceItemId,
+              optionIds: {
+                for (final optionId in condition.optionIds) optionIdMap[optionId] ?? optionId,
+              },
+            ),
+          },
+      ],
     );
     value
       ..dateRule = dateRule
@@ -1545,9 +1597,10 @@ final class _EditorQuestionDraft {
       ..details.text = details.text
       ..minimum.text = minimum.text
       ..maximum.text = maximum.text;
-    for (var index = 0; index < value.options.length && index < options.length; index++) {
-      value.options[index].text = options[index].text;
-    }
+    value.replaceOptions([
+      for (var index = 0; index < options.length; index++)
+        FormOption(id: '$id-option-$index', label: options[index].text, position: index),
+    ]);
     value.branchQuestions.addAll([
       for (var index = 0; index < branchQuestions.length; index++)
         branchQuestions[index].copy(id: '$id-branch-$index'),
