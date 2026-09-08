@@ -31,6 +31,46 @@ final class _RecordingWriter implements LocationCatalogWriter {
     results.add(result);
     return result.future;
   }
+
+  // This panel only creates. The rest of the contract is here so the stub stays
+  // a stub: if the panel ever reaches for one of these, the test fails loudly
+  // instead of the call quietly resolving.
+  @override
+  Future<LocationCatalogEntry> update({
+    required String locationId,
+    required LocationWriteDraft draft,
+    required int expectedVersion,
+    required String requestId,
+  }) async => throw UnimplementedError('the create panel does not edit');
+
+  @override
+  Future<LocationCatalogEntry> setStatus({
+    required String locationId,
+    required LocationCatalogStatus status,
+    required int expectedVersion,
+    required String requestId,
+  }) async => throw UnimplementedError('the create panel does not change status');
+
+  @override
+  Future<LocationCatalogEntry> copy({
+    required String sourceId,
+    required String sourceInstitutionId,
+    required LocationScope targetScope,
+    required String name,
+    required String requestId,
+  }) async => throw UnimplementedError('the create panel does not copy');
+
+  @override
+  Future<LocationSchedule> readSchedule({required String locationId}) async =>
+      throw UnimplementedError('the create panel does not read schedules');
+
+  @override
+  Future<LocationSchedule> setSchedule({
+    required String locationId,
+    required List<LocationScheduleWindow> windows,
+    required int expectedVersion,
+    required String requestId,
+  }) async => throw UnimplementedError('the create panel does not publish schedules');
 }
 
 void main() {
