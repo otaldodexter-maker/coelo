@@ -337,8 +337,77 @@ select is((select body->>'has_more' from xlsx_worker_results where label='page2'
 select is((select body->'submissions' from xlsx_worker_results where label='page_end'),'[]'::jsonb,'cursor at row count returns empty terminal page');
 select is(current_setting('request.jwt.claims')::jsonb,'{"role":"service_role"}'::jsonb,'worker restores original claims after paging');
 select throws_ok($$update public.media_assets set upload_request_id='forged-attempt' where id=(select (body->>'asset_id')::uuid from xlsx_worker_results where label='begin1')$$,'23514','forms_xlsx_asset_binding_immutable','attempt binding cannot be rewritten');
+create function pg_temp.xlsx_mp_scope(result_label text) returns jsonb language sql stable security invoker as $$
+  select jsonb_build_object('worker_job_id',body->'worker_job_id','worker_id','c02-xlsx-'||(body->>'attempt'),
+    'file_job_id',body->'job_id','attempt',body->'attempt','asset_id',body->'asset_id',
+    'bucket',body->'bucket','object_key',body->'object_key','snapshot_format_version',body->'snapshot_format_version',
+    'snapshot_row_count',body->'snapshot_row_count') from xlsx_worker_results where label=result_label;
+$$;
+create function pg_temp.xlsx_mp(result_label text,op text,payload jsonb default '{}'::jsonb,patch jsonb default '{}'::jsonb)
+returns jsonb language sql security invoker as $$
+  select public.form_worker_multipart_xlsx_r2_v1(pg_temp.xlsx_mp_scope(result_label)||patch,op,payload);
+$$;
+create function pg_temp.xlsx_mp_part(upload text,n integer,bytes bigint,checksum text default repeat('b',64))
+returns jsonb language sql immutable as $$
+  select jsonb_build_object('upload_id',upload,'part_number',n,'etag','"part-'||n||'"','byte_length',bytes,'checksum_sha256',checksum);
+$$;
+create function pg_temp.xlsx_mp_digest(upload text,bytes bigint,checksum text default repeat('c',64))
+returns jsonb language sql immutable as $$
+  select jsonb_build_object('upload_id',upload,'byte_length',bytes,'checksum_sha256',checksum);
+$$;
+create function pg_temp.xlsx_mp_finalize(result_label text,bytes bigint,checksum text)
+returns jsonb language sql security invoker as $$
+  select public.form_worker_complete_xlsx_r2_v1((s->>'worker_job_id')::uuid,s->>'worker_id',
+    (s->>'file_job_id')::uuid,(s->>'asset_id')::uuid,bytes,checksum)
+  from (select pg_temp.xlsx_mp_scope(result_label) s) q;
+$$;
+create function pg_temp.xlsx_mp_insert(result_label text) returns void language sql security invoker as $$
+  insert into app_private.form_multipart_uploads(file_job_id,worker_job_id,bucket_id,object_path,upload_id,
+    artifact_provider,media_asset_id,worker_attempt,attempt_owner,snapshot_format_version,snapshot_row_count)
+  select (s->>'file_job_id')::uuid,(s->>'worker_job_id')::uuid,s->>'bucket',s->>'object_key','direct-null-lease',
+    'r2',(s->>'asset_id')::uuid,(s->>'attempt')::integer,s->>'worker_id',
+    (s->>'snapshot_format_version')::integer,(s->>'snapshot_row_count')::bigint
+  from (select pg_temp.xlsx_mp_scope(result_label) s) q;
+$$;
+grant execute on function pg_temp.xlsx_mp_scope(text),pg_temp.xlsx_mp(text,text,jsonb,jsonb),
+  pg_temp.xlsx_mp_part(text,integer,bigint,text),pg_temp.xlsx_mp_digest(text,bigint,text),
+  pg_temp.xlsx_mp_finalize(text,bigint,text) to service_role;
+update app_private.form_worker_jobs set lease_owner=null,lease_expires_at=null where id=(select worker_job_id from xlsx_worker_fixture);
+select throws_ok($$select pg_temp.xlsx_mp_insert('begin1')$$,'23514','forms_xlsx_multipart_attempt_unavailable','catalog trigger refuses NULL owner and deadline independently of RPC');
+update app_private.form_worker_jobs set lease_owner='c02-xlsx-1',lease_expires_at=clock_timestamp()+interval '5 minutes'
+  where id=(select worker_job_id from xlsx_worker_fixture);
+set local role service_role;
+select is(pg_temp.xlsx_mp('begin1','snapshot'),null::jsonb,'first attempt has no multipart receipt');
+select is(pg_temp.xlsx_mp('begin1','authorize')->>'authorized','true','multipart authorize reconstructs live requester');
+select throws_ok($$select pg_temp.xlsx_mp('begin1','snapshot','{}','{"attempt":2}')$$,'40001','forms_xlsx_multipart_scope_mismatch','attempt number cannot be forged');
+select throws_ok($$select pg_temp.xlsx_mp('begin1','snapshot','{}','{"bucket":"coelo-media-prod"}')$$,'40001','forms_xlsx_multipart_scope_mismatch','bucket cannot be substituted');
+select throws_ok($$select pg_temp.xlsx_mp('begin1','snapshot','{}','{"object_key":"forged/path"}')$$,'40001','forms_xlsx_multipart_scope_mismatch','opaque catalog key cannot be substituted');
+select throws_ok($$select pg_temp.xlsx_mp('begin1','snapshot','{}','{"snapshot_row_count":99}')$$,'40001','forms_xlsx_multipart_scope_mismatch','sealed row count cannot be substituted');
+select throws_ok($$select pg_temp.xlsx_mp('begin1','snapshot','{}','{"extra":true}')$$,'40001','forms_xlsx_multipart_scope_mismatch','unknown scope fields rejected');
+select throws_ok($$select pg_temp.xlsx_mp('begin1','snapshot','{"extra":true}')$$,'22023','forms_xlsx_multipart_payload_invalid','unknown operation payload rejected');
+select throws_ok($$select pg_temp.xlsx_mp('begin1','begin','{"upload_id":"has space"}')$$,'22023','forms_xlsx_multipart_upload_id_invalid','invalid provider upload ID rejected');
+insert into xlsx_worker_results values('multipart1',pg_temp.xlsx_mp('begin1','begin','{"upload_id":"upload-1"}'));
+select is(pg_temp.xlsx_mp('begin1','begin','{"upload_id":"upload-1"}')->>'upload_id','upload-1','begin is idempotent for exact upload');
+select throws_ok($$select pg_temp.xlsx_mp('begin1','begin','{"upload_id":"other-upload"}')$$,'40001','forms_xlsx_multipart_begin_mismatch','lost begin cannot silently replace upload ID');
+select throws_ok($$select pg_temp.xlsx_mp('begin1','record_part',pg_temp.xlsx_mp_part('upload-1',2,5242880))$$,'40001','forms_xlsx_multipart_part_out_of_sequence','parts must arrive in order');
+select is(pg_temp.xlsx_mp('begin1','record_part',pg_temp.xlsx_mp_part('upload-1',1,5242880))->>'uploaded_bytes','5242880','first measured part persisted');
+select is(pg_temp.xlsx_mp('begin1','record_part',pg_temp.xlsx_mp_part('upload-1',1,5242880))->>'next_part_number','2','part retry does not advance cursor twice');
+select throws_ok($$select pg_temp.xlsx_mp('begin1','record_part',pg_temp.xlsx_mp_part('upload-1',1,5242881))$$,'40001','forms_xlsx_multipart_part_replay_mismatch','part retry with other bytes rejected');
+select throws_ok($$select pg_temp.xlsx_mp('begin1','record_part',pg_temp.xlsx_mp_part('upload-1',2,5242881))$$,'23514','forms_xlsx_multipart_nonfinal_size_invalid','final part cannot exceed preceding standard size');
+select is(pg_temp.xlsx_mp('begin1','record_part',pg_temp.xlsx_mp_part('upload-1',2,100))->>'uploaded_bytes','5242980','small final part allowed');
+select throws_ok($$select pg_temp.xlsx_mp('begin1','record_part',pg_temp.xlsx_mp_part('upload-1',3,100))$$,'23514','forms_xlsx_multipart_nonfinal_size_invalid','cannot append after small final part');
+select throws_ok($$select pg_temp.xlsx_mp('begin1','complete',pg_temp.xlsx_mp_digest('upload-1',5242981))$$,'23514','forms_xlsx_multipart_measurement_mismatch','whole byte count must equal recorded parts');
+select is(pg_temp.xlsx_mp('begin1','reconcile',pg_temp.xlsx_mp_digest('upload-1',5242980)),null::jsonb,'uploading receipt never claims committed provider completion');
+select throws_ok($$select pg_temp.xlsx_mp_finalize('begin1',5242980,repeat('c',64))$$,'23514','forms_xlsx_multipart_finalization_mismatch','partial multipart cannot become ready through artifact finalizer');
+reset role;
+select is((select count(*) from app_private.form_multipart_parts where multipart_upload_id=(select id from app_private.form_multipart_uploads where upload_id='upload-1')),2::bigint,'exact part retry leaves two rows');
+select throws_ok($$update app_private.form_multipart_uploads set attempt_owner='other-worker' where upload_id='upload-1'$$,'23514','forms_xlsx_multipart_origin_immutable','attempt ownership cannot be rewritten');
+select ok(not has_table_privilege('service_role','app_private.form_multipart_uploads','insert'),'service cannot bypass typed multipart wrapper');
+select ok(not has_function_privilege('authenticated','public.form_worker_multipart_xlsx_r2_v1(jsonb,text,jsonb)','execute'),'client cannot issue worker multipart operations');
+select ok(not has_function_privilege('anon','public.form_worker_multipart_xlsx_r2_v1(jsonb,text,jsonb)','execute'),'anonymous cannot issue worker multipart operations');
 update app_private.superadmin_internal_memberships set status='suspended',suspended_at=clock_timestamp(),version=version+1 where id=pg_temp.xlsx_id(501);
 set local role service_role;
+select throws_ok($$select pg_temp.xlsx_mp('begin1','snapshot')$$,'42501',null,'revoked requester cannot resume multipart');
 select throws_ok($$select pg_temp.xlsx_page('c02-xlsx-1',(body->>'asset_id')::uuid,0) from xlsx_worker_results where label='begin1'$$,'42501',null,'revoked requester cannot keep reading worker pages');
 reset role;
 update app_private.superadmin_internal_memberships set status='active',suspended_at=null,version=version+1 where id=pg_temp.xlsx_id(501);
@@ -349,10 +418,22 @@ reset role;
 update app_private.form_worker_jobs set attempts=2,lease_owner='c02-xlsx-2',lease_expires_at=clock_timestamp()+interval '5 minutes' where id=(select worker_job_id from xlsx_worker_fixture);
 set local role service_role;
 insert into xlsx_worker_results values('begin2',pg_temp.xlsx_begin('c02-xlsx-2'));
+select throws_ok($$select pg_temp.xlsx_mp('begin1','snapshot')$$,'40001','forms_xlsx_lease_unavailable','prior worker cannot resume after takeover');
+insert into xlsx_worker_results values('multipart2',pg_temp.xlsx_mp('begin2','begin','{"upload_id":"upload-2"}'));
+select is(pg_temp.xlsx_mp('begin2','record_part',pg_temp.xlsx_mp_part('upload-2',1,100))->>'uploaded_bytes','100','new attempt gets independent parts');
+select is(pg_temp.xlsx_mp('begin2','complete',pg_temp.xlsx_mp_digest('upload-2',100))->>'checksum_sha256',repeat('c',64),'completion seals integral checksum');
+select is(pg_temp.xlsx_mp('begin2','complete',pg_temp.xlsx_mp_digest('upload-2',100))->>'state','completed','same measured completion replay is idempotent');
+select throws_ok($$select pg_temp.xlsx_mp('begin2','complete',pg_temp.xlsx_mp_digest('upload-2',100,repeat('d',64)))$$,'40001','forms_xlsx_multipart_complete_mismatch','another integral checksum cannot replace sealed receipt');
+select is(pg_temp.xlsx_mp('begin2','reconcile',pg_temp.xlsx_mp_digest('upload-2',100))->>'state','completed','lost completion response reconciles exact receipt');
+select throws_ok($$select pg_temp.xlsx_mp_finalize('begin2',101,repeat('c',64))$$,'23514','forms_xlsx_multipart_finalization_mismatch','artifact finalizer requires exact multipart byte count');
+select throws_ok($$select pg_temp.xlsx_mp_finalize('begin2',100,repeat('d',64))$$,'23514','forms_xlsx_multipart_finalization_mismatch','artifact finalizer requires exact multipart checksum');
 select throws_ok($$select pg_temp.xlsx_page('c02-xlsx-1',(body->>'asset_id')::uuid,0) from xlsx_worker_results where label='begin1'$$,'40001','forms_xlsx_lease_unavailable','late old worker cannot read after lease takeover');
 select throws_ok($$select pg_temp.xlsx_page('c02-xlsx-2',(body->>'asset_id')::uuid,0) from xlsx_worker_results where label='begin1'$$,'40001','forms_xlsx_attempt_unavailable','new worker cannot revive an abandoned attempt');
 reset role;
 select isnt((select body->>'asset_id' from xlsx_worker_results where label='begin2'),(select body->>'asset_id' from xlsx_worker_results where label='begin1'),'new lease creates another opaque asset');
+select is((select count(*) from app_private.form_multipart_uploads where file_job_id=(select file_job_id from xlsx_worker_fixture)),2::bigint,'two attempt receipts coexist without replacing legacy job uniqueness');
+select is((select state from app_private.form_multipart_uploads where upload_id='upload-1'),'uploading','late old attempt remains identifiable for cleanup');
+select throws_ok($$update app_private.form_multipart_uploads set state='aborted',aborted_at=clock_timestamp(),completed_at=null,checksum_sha256=null where upload_id='upload-2'$$,'23514','forms_xlsx_multipart_terminal_immutable','sealed winner cannot be aborted by state rewrite');
 select is((select status::text from public.media_assets where id=(select (body->>'asset_id')::uuid from xlsx_worker_results where label='begin1')),'quarantined','previous attempt is retained in quarantine for cleanup');
 select throws_ok($$update public.media_assets set status='ready' where id=(select (body->>'asset_id')::uuid from xlsx_worker_results where label='begin1')$$,'23514','forms_xlsx_asset_revocation_final','quarantined attempt cannot become downloadable');
 select ok(not has_function_privilege('authenticated','public.form_worker_begin_xlsx_r2_v1(uuid,text,uuid)','execute'),'client cannot reserve a worker attempt');
@@ -398,6 +479,7 @@ select ok(exists(select 1 from audit.audit_logs where action_code='superadmin.fo
 delete from auth.sessions where id=pg_temp.xlsx_id(203);
 set local role service_role;
 insert into xlsx_worker_results select 'committed_after_logout',pg_temp.xlsx_reconcile((body->>'asset_id')::uuid) from xlsx_worker_results where label='begin2';
+select is(pg_temp.xlsx_mp('begin2','reconcile',pg_temp.xlsx_mp_digest('upload-2',100))->>'state','completed','service can reconcile multipart receipt after logout without delivery');
 reset role;
 select is((select body->>'state' from xlsx_worker_results where label='committed_after_logout'),'committed','service can preserve committed winner after requester logout without delivery authorization');
 select ok(not has_function_privilege('authenticated','public.form_worker_complete_xlsx_r2_v1(uuid,text,uuid,uuid,bigint,text)','execute'),'user cannot attest measured artifact');
