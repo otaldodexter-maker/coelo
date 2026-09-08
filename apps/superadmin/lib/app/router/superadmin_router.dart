@@ -462,6 +462,7 @@ GoRouter createSuperadminRouter({
   Widget blockedProductionMutationPage(BuildContext context) => SuperadminErrorScreen(
     key: const Key('production-mutation-capability-unavailable'),
     kind: SuperadminErrorKind.unavailable,
+    actionLabel: 'Voltar ao início',
     onAction: () => context.goNamed(SuperadminRoutes.homeName),
   );
   Widget productionMealPlanWizardPage(
@@ -4626,11 +4627,8 @@ GoRouter createSuperadminRouter({
               final kind = SuperadminErrorKind.fromCode(state.pathParameters['code']);
               return SuperadminErrorScreen(
                 kind: kind,
-                onAction: switch (kind) {
-                  SuperadminErrorKind.forbidden || SuperadminErrorKind.notFound =>
-                    () => context.goNamed(SuperadminRoutes.devHomeName),
-                  SuperadminErrorKind.internal || SuperadminErrorKind.unavailable => () {},
-                },
+                actionLabel: 'Voltar ao início',
+                onAction: () => context.goNamed(SuperadminRoutes.devHomeName),
               );
             },
           ),
@@ -5331,11 +5329,13 @@ RoutineEntryKind _routineEntryKind(String? value) {
 
 Widget _unavailableMedicationPlans(BuildContext context) => SuperadminErrorScreen(
   kind: SuperadminErrorKind.unavailable,
+  actionLabel: 'Voltar ao início',
   onAction: () => context.goNamed(SuperadminRoutes.homeName),
 );
 
 Widget _unavailableCompositionRootRoute(BuildContext context) => SuperadminErrorScreen(
   kind: SuperadminErrorKind.unavailable,
+  actionLabel: 'Voltar ao início',
   onAction: () => context.goNamed(SuperadminRoutes.homeName),
 );
 

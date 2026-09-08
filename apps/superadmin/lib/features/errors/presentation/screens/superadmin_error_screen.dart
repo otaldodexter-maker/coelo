@@ -38,10 +38,16 @@ enum SuperadminErrorKind {
 }
 
 final class SuperadminErrorScreen extends StatelessWidget {
-  const SuperadminErrorScreen({required this.kind, required this.onAction, super.key});
+  const SuperadminErrorScreen({
+    required this.kind,
+    required this.onAction,
+    this.actionLabel,
+    super.key,
+  });
 
   final SuperadminErrorKind kind;
   final VoidCallback onAction;
+  final String? actionLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +100,7 @@ final class SuperadminErrorScreen extends StatelessWidget {
                         style: TextButton.styleFrom(
                           foregroundColor: colorScheme.onPrimaryContainer,
                         ),
-                        child: Text(kind.actionLabel),
+                        child: Text(actionLabel ?? kind.actionLabel),
                       ),
                     ],
                   ),
