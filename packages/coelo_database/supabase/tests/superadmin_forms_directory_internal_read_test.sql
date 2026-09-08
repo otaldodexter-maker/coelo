@@ -16,6 +16,9 @@ select ok((select bool_and(p.prosecdef and 'search_path=""'=any(p.proconfig))
   from pg_proc p join pg_namespace n on n.oid=p.pronamespace
   where p.proname='superadmin_forms_directory_v2' and n.nspname in('public','app_private')),
   'both functions have explicit definer and empty search path');
+select ok((select bool_and(p.provolatile='v') from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+  where p.proname='superadmin_forms_directory_v2' and n.nspname in('public','app_private')),
+  'both directory functions allow mandatory audit writes');
 
 insert into public.institution_types(id,code,name,status) values
  ('8f010000-0000-4000-8000-000000000001','fread01-type','F-READ01 type','active');
@@ -23,25 +26,25 @@ insert into public.institutions(id,institution_type_id,public_name,slug,status) 
  ('8f010000-0000-4000-8000-000000000010','8f010000-0000-4000-8000-000000000001','F-READ01 A','fread01-a','active'),
  ('8f010000-0000-4000-8000-000000000020','8f010000-0000-4000-8000-000000000001','F-READ01 B','fread01-b','active');
 
--- Readers 101/102/104 have NO People identity. Only 103 is People-only.
+-- Readers 101/102/104/105 have NO People identity. Only 103 is People-only.
 insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,raw_app_meta_data,raw_user_meta_data)
 select ('8f010000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid,
  'authenticated','authenticated','fread01-'||n||'@invalid.test',now(),now(),now(),'{}','{}'
-from generate_series(101,104) n;
+from generate_series(101,105) n;
 insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after)
 select ('8f010000-0000-4000-8000-'||lpad((n+100)::text,12,'0'))::uuid,
  ('8f010000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid,
- now(),now(),'aal2',now()+interval '1 hour' from generate_series(101,104) n;
+ now(),now(),'aal2',now()+interval '1 hour' from generate_series(101,105) n;
 insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after) values
  ('8f010000-0000-4000-8000-000000000209','8f010000-0000-4000-8000-000000000101',now(),now(),'aal2',now()-interval '1 minute');
 
 insert into app_private.superadmin_internal_identities(id) values
- ('8f010000-0000-4000-8000-000000000301'),('8f010000-0000-4000-8000-000000000302'),('8f010000-0000-4000-8000-000000000304');
+ ('8f010000-0000-4000-8000-000000000301'),('8f010000-0000-4000-8000-000000000302'),('8f010000-0000-4000-8000-000000000304'),('8f010000-0000-4000-8000-000000000305');
 insert into app_private.superadmin_internal_auth_links(id,internal_identity_id,auth_user_id)
 select ('8f010000-0000-4000-8000-'||lpad((n+300)::text,12,'0'))::uuid,
  ('8f010000-0000-4000-8000-'||lpad((n+200)::text,12,'0'))::uuid,
  ('8f010000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid
-from unnest(array[101,102,104]) n;
+from unnest(array[101,102,104,105]) n;
 insert into app_private.superadmin_internal_memberships(id,internal_identity_id,platform_role_id,scope_kind,scope_institution_id)
 select fixture.id,fixture.identity_id,r.id,fixture.scope_kind::app_private.superadmin_internal_scope_kind,fixture.institution_id
 from (values
@@ -182,6 +185,10 @@ select set_config('request.jwt.claims','{"sub":"8f010000-0000-4000-8000-00000000
 set local role authenticated;
 insert into fread_results values ('people_only',public.superadmin_forms_directory_v2('{}'));
 reset role;
+select set_config('request.jwt.claims','{"sub":"8f010000-0000-4000-8000-000000000105","session_id":"8f010000-0000-4000-8000-000000000205","aal":"aal2","role":"authenticated"}',true);
+set local role authenticated;
+insert into fread_results values ('no_membership',public.superadmin_forms_directory_v2('{}'));
+reset role;
 select set_config('request.jwt.claims','{"sub":"8f010000-0000-4000-8000-000000000104","session_id":"8f010000-0000-4000-8000-000000000204","aal":"aal2","role":"authenticated"}',true);
 set local role authenticated;
 insert into fread_results values ('denied',public.superadmin_forms_directory_v2('{}'));
@@ -201,6 +208,7 @@ reset role;
 select is((select jsonb_array_length(body#>'{data,items}') from fread_results where label='owner'),6,'platform Owner reads A and B with no PersonAuthLink');
 select is((select body#>>'{error,code}' from fread_results where label='no_auth'),'SAI_AUTH_REQUIRED','auth guard runs before payload casts');
 select is((select body#>>'{error,code}' from fread_results where label='people_only'),'SAI_INTERNAL_CONTEXT_DENIED','People-only actor remains denied despite legacy Owner role');
+select is((select body#>>'{error,code}' from fread_results where label='no_membership'),'SAI_INTERNAL_CONTEXT_DENIED','internal AuthLink without membership does not authorize directory access');
 select is((select body#>>'{error,code}' from fread_results where label='denied'),'SAI_PERMISSION_DENIED','explicit deny checked');
 select is((select body#>>'{error,code}' from fread_results where label='expired'),'SAI_SESSION_INVALID','expired session denied');
 select is((select body#>>'{ok}' from fread_results where label='owner_aal1'),'true','Owner AAL1 is allowed by the MVP AAL policy');
@@ -208,9 +216,9 @@ select is((select body#>'{data,items}' from fread_results where label='owner_aal
 
 select set_config('request.jwt.claims','{"sub":"8f010000-0000-4000-8000-000000000102","session_id":"8f010000-0000-4000-8000-000000000202","role":"authenticated"}',true);
 set local role authenticated;
-insert into fread_results values ('missing_aal',public.superadmin_forms_directory_v2('{}'));
+select throws_ok($$select public.superadmin_forms_directory_v2('{}')$$,'23514',null,
+  'missing AAL cannot fabricate assurance or return a business denial when audit rejects it');
 reset role;
-select is((select body#>>'{error,code}' from fread_results where label='missing_aal'),'SAI_INTERNAL_CONTEXT_DENIED','missing assurance cannot pass the internal read boundary');
 
 select set_config('request.jwt.claims','{"sub":"8f010000-0000-4000-8000-000000000102","session_id":"8f010000-0000-4000-8000-000000000201","aal":"aal2","role":"authenticated"}',true);
 set local role authenticated;
@@ -270,5 +278,97 @@ select ok(not exists(select 1 from fread_results cross join lateral jsonb_array_
  array['id','identity_mode','kind','management_version','operational_status','status','title','updated_at']::text[]),'only eight allowlisted item fields');
 select ok(not exists(select 1 from fread_results where body::text like '%@invalid.test%' or body::text like '%created_by_person_id%' or body::text like '%participation_id%'),'no email authorship or response identity in projection');
 select is((select count(*)::integer from public.person_auth_links where auth_user_id in('8f010000-0000-4000-8000-000000000101','8f010000-0000-4000-8000-000000000102')),0,'internal readers never gain manufactured People links');
+-- Each completed read is audited; only server-validated scope reaches audit.
+select is((select count(*) from audit.audit_logs where action_code='superadmin.forms.directory' and outcome='success'),
+ (select count(*) from fread_results where body->>'ok'='true'),'exactly one success audit per returned successful page');
+select ok(exists(select 1 from audit.audit_logs where action_code='superadmin.forms.directory'
+ and outcome='success' and actor_internal_identity_id='8f010000-0000-4000-8000-000000000302'
+ and institution_id='8f010000-0000-4000-8000-000000000010' and context_id=institution_id),
+ 'institution reader success retains its authorized scope');
+select ok(not exists(select 1 from audit.audit_logs where action_code='superadmin.forms.directory'
+ and actor_internal_identity_id='8f010000-0000-4000-8000-000000000302'
+ and institution_id='8f010000-0000-4000-8000-000000000020'),
+ 'forged institution filter never becomes trusted audit scope');
+select is((select count(*) from audit.audit_logs where action_code='superadmin.forms.directory'
+ and outcome='success' and mfa_aal='aal1'),1::bigint,'successful Owner AAL1 read is audited without an MFA policy change');
+select is((select count(*) from audit.audit_logs where action_code='superadmin.forms.directory'
+ and outcome='denied' and reason_code='SAI_INVALID_ARGUMENT'),
+ (select count(*) from fread_invalid),'each invalid input has a persisted denial audit');
+select ok(not exists(select 1 from fread_results r where r.label like 'invalid_%'
+ and (select count(*) from audit.audit_logs a where a.action_code='superadmin.forms.directory'
+ and a.correlation_id=(r.body#>>'{error,correlation_id}')::uuid
+ and a.outcome='denied' and a.reason_code='SAI_INVALID_ARGUMENT')<>1),
+ 'every invalid input denial uses its own returned correlation identifier');
+select is((select count(*) from audit.audit_logs a where a.action_code='superadmin.forms.directory'
+ and a.correlation_id=(r.body#>>'{error,correlation_id}')::uuid and a.outcome='denied'
+ and a.reason_code=r.body#>>'{error,code}'),1::bigint,'one correlated denial for '||r.label)
+from fread_results r where r.label in('people_only','no_membership','denied','auth_link_revoked','grant_revoked','membership_suspended','membership_revoked');
+select ok(exists(select 1 from audit.audit_logs a join fread_results r
+ on a.correlation_id=(r.body#>>'{error,correlation_id}')::uuid where r.label='denied'
+ and a.actor_kind='superadmin_internal' and a.hash_version=2
+ and a.actor_internal_identity_id='8f010000-0000-4000-8000-000000000304'
+ and a.actor_internal_auth_link_id='8f010000-0000-4000-8000-000000000404'
+ and a.actor_internal_membership_id='8f010000-0000-4000-8000-000000000504'
+ and a.session_id_hash=extensions.digest(convert_to('8f010000-0000-4000-8000-000000000204','UTF8'),'sha256')),
+ 'permission denial attributes the complete real internal actor and hashed session');
+select ok(exists(select 1 from audit.audit_logs a join fread_results r
+ on a.correlation_id=(r.body#>>'{error,correlation_id}')::uuid where r.label='people_only'
+ and a.action_code='superadmin.forms.directory' and a.actor_kind='auth_session'
+ and a.hash_version=3 and a.payload_contract_version=3
+ and a.actor_person_id is null and a.actor_membership_id is null
+ and a.actor_internal_identity_id is null and a.actor_internal_auth_link_id is null
+ and a.actor_internal_membership_id is null and octet_length(a.session_id_hash)=32),
+ 'People-only valid session receives v3 denial without manufactured internal or People actor');
+select ok(exists(select 1 from audit.audit_logs a join fread_results r
+ on a.correlation_id=(r.body#>>'{error,correlation_id}')::uuid where r.label='no_membership'
+ and a.actor_kind='auth_session' and a.hash_version=3 and a.payload_contract_version=3
+ and a.actor_internal_identity_id is null and a.actor_internal_auth_link_id is null
+ and a.actor_internal_membership_id is null and a.actor_person_id is null
+ and a.actor_membership_id is null and a.actor_role_code is null
+ and a.context_kind='global' and a.context_id is null and octet_length(a.session_id_hash)=32),
+ 'incomplete internal actor uses minimized auth_session v3 rather than partial identity attribution');
+select ok(not exists(select 1 from audit.audit_logs a join fread_results r
+ on a.correlation_id=(r.body#>>'{error,correlation_id}')::uuid
+ where r.label in('no_auth','expired','foreign_session','session_revoked')),
+ 'unvalidated sessions never gain a manufactured audit actor');
+select ok(not exists(select 1 from audit.audit_logs where action_code='superadmin.forms.directory'
+ and (actor_person_id is not null or actor_membership_id is not null
+ or before_json is not null or after_json is not null
+ or permission_code is distinct from 'forms.read'
+ or correlation_id is null or octet_length(session_id_hash)<>32)),
+ 'audit stores permission and pseudonymous session but no legacy actor or query/result payload');
+select ok(not exists(select 1 from audit.audit_logs a where action_code='superadmin.forms.directory'
+ and (to_jsonb(a)::text like '%@invalid.test%' or to_jsonb(a)::text like '%F-READ01%'
+ or to_jsonb(a)::text like '%100%_literal%' or to_jsonb(a)::text like '%cursor_updated_at%')),
+ 'audit contains no email, title, search text or cursor payload');
+select ok(not exists(select 1 from audit.audit_logs a cross join auth.sessions s
+ where a.action_code='superadmin.forms.directory' and s.id::text like '8f010000-%'
+ and position(s.id::text in to_jsonb(a)::text)>0),
+ 'audit never stores the raw session identifier');
+select ok((select bool_and(app_private.audit_verify_entry(id)) from audit.audit_logs
+ where action_code='superadmin.forms.directory'),'directory audit entries preserve the append-only digest chain');
+
+-- Deliberate local fault injection; no shared helper is replaced or disabled.
+create function pg_temp.fread_reject_audit() returns trigger language plpgsql as $$begin
+ if new.action_code='superadmin.forms.directory' then
+  raise exception using errcode='P0001',message='forced FREAD audit failure';
+ end if;
+ return new;
+end$$;
+create trigger fread_audit_forced_failure before insert on audit.audit_logs
+ for each row execute function pg_temp.fread_reject_audit();
+select set_config('request.jwt.claims','{"sub":"8f010000-0000-4000-8000-000000000101","session_id":"8f010000-0000-4000-8000-000000000201","aal":"aal1","role":"authenticated"}',true);
+set local role authenticated;
+select throws_ok($$select public.superadmin_forms_directory_v2('{}')$$,'P0001','forced FREAD audit failure',
+ 'audit failure aborts a successful read rather than returning data');
+select throws_ok($$select public.superadmin_forms_directory_v2('{"limit":0}')$$,'P0001','forced FREAD audit failure',
+ 'audit failure aborts an identified denial rather than returning a business envelope');
+reset role;
+select set_config('request.jwt.claims','{"sub":"8f010000-0000-4000-8000-000000000103","session_id":"8f010000-0000-4000-8000-000000000203","aal":"aal2","role":"authenticated"}',true);
+set local role authenticated;
+select throws_ok($$select public.superadmin_forms_directory_v2('{}')$$,'P0001','forced FREAD audit failure',
+ 'audit failure aborts an auth_session denial rather than returning an unaudited denial');
+reset role;
+drop trigger fread_audit_forced_failure on audit.audit_logs;
 select * from finish();
 rollback;

@@ -47,6 +47,7 @@ indicador. O arquivo é aberto no painel direito como alternativa disponível.
 ## Trabalho ativo e BD
 
 - Root: F-READ01 SQL/pgTAP nominal preparado e revisado estaticamente em `21792181`; nenhum SQL executado. Imagens no editor e visibilidade condicional corrigidas localmente: 99/99, analyzer 4 arquivos, review aprovado; goldens continuam abertos. Evidência `2026-09-07-image-config-and-conditional-response.md`.
+- F-READ01: reserva adicional do Coordenador aplicada somente ao novo reader para auditoria obrigatória conforme spec 039; funções volatile, sucesso/negativas tipados e falha de append aborta a RPC. Testes de auditoria preparados, não executados; revisão estática aprovada. Base nominal 50/51 e execução exclusivas Eng1. Limitação AAL ausente do helper existente explicitada, sem alteração de MFA/sharedhelper.
 - Editor: preservação de opções/condições carregadas corrigida; 106/106 na regressão ampliada, analyzer 2 arquivos e review aprovados. Evidência `2026-09-07-editor-branch-preservation.md`; não conclui criação visual de ramos nem backend.
 - Responder: descarte de valores ocultos, ancestrais e recibos corrigidos; regressão 113/113, analyzer 2 arquivos e review aprovados. Evidência `2026-09-07-response-hidden-branches.md`; persistência/E2E permanecem abertas.
 - Editor: metadados e configuração carregados preservados; regressão 120/120, analyzer 2 arquivos e review aprovados. Evidência `2026-09-07-editor-loaded-metadata.md`; rascunho incompleto e integração permanecem abertos.
