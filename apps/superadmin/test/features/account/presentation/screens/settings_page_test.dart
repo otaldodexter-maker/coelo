@@ -151,6 +151,25 @@ void main() {
     expect(find.byKey(const Key('settings-reduce-motion')), findsOneWidget);
   });
 
+  testWidgets('reduced motion switch exposes its accessible name', (tester) async {
+    final controller = UserPreferencesController(InMemoryUserPreferencesRepository());
+    await controller.load();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: SettingsPage(
+          controller: controller,
+          logout: () async => const LogoutResult.success(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final control = find.byKey(const Key('settings-reduce-motion'));
+    await tester.scrollUntilVisible(control, 240);
+    expect(tester.getSemantics(control).getSemanticsData().label, contains('Reduzir animações'));
+  });
+
   testWidgets('uses equal theme segments with semantic hover and no gray overlay', (tester) async {
     final controller = UserPreferencesController(InMemoryUserPreferencesRepository());
     await controller.load();
