@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/router/superadmin_routes.dart';
+import '../../data/forms_file_jobs_reader.dart';
 
 enum FormsOperationsSurface { monitor, responses, responseDetail, files }
 
@@ -105,6 +107,12 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
   var _loadGeneration = 0;
   final _cursors = <String?>[null];
   var _pageIndex = 0;
+  FormsFileJobsContext? _fileJobsContext;
+  FormCommand<FormExportPayload>? _exportCommand;
+  var _exportGeneration = 0;
+  var _exportBusy = false;
+  var _exportConflict = false;
+  String? _exportFeedback;
 
   bool get _usesProductionApi => !widget.development && widget.api != null;
 
@@ -125,6 +133,12 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
         oldWidget.anonymous != widget.anonymous ||
         oldWidget.development != widget.development) {
       _loadGeneration++;
+      _exportGeneration++;
+      _fileJobsContext = null;
+      _exportCommand = null;
+      _exportBusy = false;
+      _exportConflict = false;
+      _exportFeedback = null;
       _projection = null;
       _cursors
         ..clear()
@@ -138,6 +152,7 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
   @override
   void dispose() {
     _loadGeneration++;
+    _exportGeneration++;
     super.dispose();
   }
 
@@ -149,6 +164,7 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
     final formId = widget.formId;
     final responseId = widget.responseId;
     _projection = null;
+    _fileJobsContext = null;
     if ((widget.surface != FormsOperationsSurface.responseDetail && formId == null) ||
         (widget.surface == FormsOperationsSurface.responseDetail && responseId == null)) {
       setState(() => _state = FormsOperationsState.unavailable);
@@ -165,13 +181,21 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
           formId != null && api is FormsResponseContextReader
               ? (api as FormsResponseContextReader).getResponseDetailInForm(formId, responseId!)
               : api.getResponseDetail(responseId!),
-        FormsOperationsSurface.files => api.listFileJobs(
-          formId: formId!,
-          cursor: _cursors[_pageIndex],
-        ),
+        FormsOperationsSurface.files =>
+          api is FormsFileJobsReader
+              ? (api as FormsFileJobsReader).listFileJobsContext(
+                  formId: formId!,
+                  cursor: _cursors[_pageIndex],
+                )
+              : api.listFileJobs(formId: formId!, cursor: _cursors[_pageIndex]),
       };
       final value = await projection;
       if (mounted && generation == _loadGeneration) {
+        if (value is FormsFileJobsContext &&
+            (value.formId.toLowerCase() != formId?.toLowerCase() || value.managementVersion < 1)) {
+          setState(() => _state = FormsOperationsState.unavailable);
+          return;
+        }
         if (value is FormResponseDetail &&
             formId != null &&
             value.originalVersion?.formId != formId) {
@@ -179,7 +203,8 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
           return;
         }
         setState(() {
-          _projection = value;
+          _fileJobsContext = value is FormsFileJobsContext ? value : null;
+          _projection = value is FormsFileJobsContext ? value.page : value;
           _state = FormsOperationsState.content;
         });
       }
@@ -214,6 +239,15 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
           children: [
             _Header(surface: widget.surface),
             const SizedBox(height: CoeloSpacing.space4),
+            if (_usesProductionApi &&
+                widget.surface == FormsOperationsSurface.files &&
+                _exportFeedback != null) ...[
+              Semantics(
+                liveRegion: true,
+                child: Text(_exportFeedback!, key: const Key('forms-xlsx-feedback')),
+              ),
+              const SizedBox(height: CoeloSpacing.space4),
+            ],
             if (_usesProductionApi) ...[
               if (_state != FormsOperationsState.content)
                 _OperationsStatePanel(
@@ -268,7 +302,7 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
   };
 
   void _nextPage(String cursor) {
-    if (_state != FormsOperationsState.content) return;
+    if (_state != FormsOperationsState.content || _exportBusy) return;
     _cursors.removeRange(_pageIndex + 1, _cursors.length);
     _cursors.add(cursor);
     _pageIndex++;
@@ -282,9 +316,9 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
     crossAxisAlignment: WrapCrossAlignment.center,
     children: [
       OutlinedButton(
-        onPressed: _pageIndex > 0
+        onPressed: _pageIndex > 0 && !_exportBusy
             ? () {
-                if (_state != FormsOperationsState.content) return;
+                if (_state != FormsOperationsState.content || _exportBusy) return;
                 _pageIndex--;
                 unawaited(_loadProduction());
               }
@@ -294,11 +328,122 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
       Text('Página ${_pageIndex + 1}'),
       OutlinedButton(
         key: const Key('forms-cursor-next'),
-        onPressed: nextCursor == null ? null : () => _nextPage(nextCursor),
+        onPressed: nextCursor == null || _exportBusy ? null : () => _nextPage(nextCursor),
         child: const Text('Próxima página'),
       ),
     ],
   );
+
+  bool _isCurrentExport(int generation, FormsApi api, String formId) =>
+      mounted &&
+      generation == _exportGeneration &&
+      identical(api, widget.api) &&
+      formId == widget.formId &&
+      widget.surface == FormsOperationsSurface.files &&
+      !widget.development;
+
+  Future<void> _requestXlsx(FormsFileJobsContext context) async {
+    final api = widget.api;
+    final formId = widget.formId;
+    if (!mounted ||
+        api == null ||
+        formId == null ||
+        widget.development ||
+        widget.surface != FormsOperationsSurface.files ||
+        _state != FormsOperationsState.content ||
+        !identical(context, _fileJobsContext) ||
+        _exportBusy ||
+        _exportConflict) {
+      return;
+    }
+    final generation = ++_exportGeneration;
+    final command = _exportCommand ??= FormCommand(
+      requestId: _newXlsxRequestId(),
+      expectedVersion: context.managementVersion,
+      payload: FormExportPayload(formId: formId, kind: FormExportKind.xlsx),
+    );
+    setState(() {
+      _exportBusy = true;
+      _exportFeedback = null;
+    });
+    try {
+      final receipt = await api.requestExport(command);
+      if (!_isCurrentExport(generation, api, formId)) return;
+      if (receipt.id.trim().isEmpty) throw const FormatException('Missing export job ID.');
+      setState(() {
+        _exportCommand = null;
+        _exportFeedback =
+            'Solicitação de XLSX recebida. Acompanhe o processamento na lista de arquivos.';
+      });
+      _cursors
+        ..clear()
+        ..add(null);
+      _pageIndex = 0;
+      await _loadProduction();
+    } on FormApiException catch (error) {
+      if (!_isCurrentExport(generation, api, formId)) return;
+      setState(() {
+        if (error.kind == FormApiFailureKind.unauthorized) {
+          _loadGeneration++;
+          _projection = null;
+          _fileJobsContext = null;
+          _exportCommand = null;
+          _exportFeedback = null;
+          _state = FormsOperationsState.unauthorized;
+        } else if (error.kind == FormApiFailureKind.conflict) {
+          _exportCommand = null;
+          _exportConflict = true;
+          _exportFeedback =
+              'O formulário mudou. Atualize os dados antes de solicitar uma nova exportação.';
+        } else {
+          _exportFeedback = 'Não foi possível confirmar a solicitação. Tente novamente.';
+        }
+      });
+    } on Object {
+      if (_isCurrentExport(generation, api, formId)) {
+        setState(
+          () => _exportFeedback = 'Não foi possível confirmar a solicitação. Tente novamente.',
+        );
+      }
+    } finally {
+      if (_isCurrentExport(generation, api, formId)) setState(() => _exportBusy = false);
+    }
+  }
+
+  Widget _exportAction() {
+    final context = _fileJobsContext;
+    if (context == null) return const _ExportUnavailable();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FilledButton(
+          key: const Key('forms-xlsx-request'),
+          onPressed: _exportBusy || _exportConflict ? null : () => unawaited(_requestXlsx(context)),
+          child: Text(
+            _exportBusy
+                ? 'Solicitando XLSX…'
+                : _exportCommand != null
+                ? 'Tentar novamente a solicitação'
+                : 'Exportar respostas em XLSX',
+          ),
+        ),
+        if (_exportConflict) ...[
+          const SizedBox(height: CoeloSpacing.space2),
+          OutlinedButton(
+            onPressed: () {
+              if (!mounted || _exportBusy || !identical(context, _fileJobsContext)) return;
+              setState(() {
+                _exportConflict = false;
+                _exportFeedback = null;
+              });
+              unawaited(_loadProduction());
+            },
+            child: const Text('Atualizar formulário'),
+          ),
+        ],
+      ],
+    );
+  }
 
   Widget _productionContent() => KeyedSubtree(
     key: Key('forms-operations-production-${widget.surface.name}'),
@@ -359,7 +504,7 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
         children: [
           Text('${value.items.length} job(s) de arquivo carregado(s).'),
           const SizedBox(height: CoeloSpacing.space4),
-          const _ExportUnavailable(),
+          _exportAction(),
           const SizedBox(height: CoeloSpacing.space4),
           if (value.items.isEmpty) const _OperationsStatePanel(state: FormsOperationsState.empty),
           for (final job in value.items)
@@ -484,6 +629,15 @@ final class _AuthorizedResponse extends StatelessWidget {
       ),
     );
   }
+}
+
+String _newXlsxRequestId() {
+  final random = Random.secure();
+  final bytes = List<int>.generate(16, (_) => random.nextInt(256));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  final hex = bytes.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
+  return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-${hex.substring(16, 20)}-${hex.substring(20)}';
 }
 
 final class _ExportUnavailable extends StatelessWidget {
