@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../../support/activities/fake_activity_directory_repository.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_detail_page.dart';
@@ -8,6 +10,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('reloads B and ignores a late activity A detail', (tester) async {
+    final repository = _DelayedActivityDirectoryRepository();
+
+    Widget app(String activityId) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: ActivityDetailPage(
+        activityId: activityId,
+        repository: repository,
+        logout: () async => const LogoutResult.success(),
+        onBack: () {},
+      ),
+    );
+
+    await tester.pumpWidget(app('activity-1'));
+    await tester.pump();
+    await tester.pumpWidget(app('activity-2'));
+    await tester.pump();
+
+    await repository.complete('activity-2');
+    await tester.pump();
+    expect(find.text('Dança'), findsOneWidget);
+
+    await repository.complete('activity-1');
+    await tester.pump();
+    expect(find.text('Dança'), findsOneWidget);
+    expect(find.text('Música'), findsNothing);
+  });
+
   testWidgets('renders a minimized read-only activity detail', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -67,4 +97,18 @@ void main() {
     expect(find.text('Atividade não encontrada'), findsOneWidget);
     expect(find.textContaining('Editar'), findsNothing);
   });
+}
+
+final class _DelayedActivityDirectoryRepository extends FakeActivityDirectoryRepository {
+  final _requests = <String, Completer<ActivityDetail?>>{};
+
+  @override
+  Future<ActivityDetail?> fetchById(String activityId) =>
+      _requests.putIfAbsent(activityId, Completer<ActivityDetail?>.new).future;
+
+  Future<void> complete(String activityId) async {
+    _requests
+        .putIfAbsent(activityId, Completer<ActivityDetail?>.new)
+        .complete(await super.fetchById(activityId));
+  }
 }
