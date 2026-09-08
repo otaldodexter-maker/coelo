@@ -142,6 +142,80 @@ select ok(not exists(select 1 from public.person_auth_links where auth_user_id i
   'internal reads do not need a global person surrogate');
 
 -- Existing single-column foreign keys do not authorize cross-resource links.
+-- These inserts keep all constraints/triggers enabled. The immutable trigger
+-- checks the row's declared working version, not the referenced section/item.
+select lives_ok($$insert into public.form_items(id,form_version_id,section_id,kind,label,position)
+  values(pg_temp.op_id(9300),pg_temp.op_id(1230),pg_temp.op_id(2210),'short_text','Foreign unanswered secret',99)$$,
+  'effective constraints permit a foreign working item under a published section');
+set local role authenticated;
+insert into op_results values('graph_foreign_item',pg_temp.op_read('detail',7210));
+reset role;
+select is((select body->>'ok' from op_results where label='graph_foreign_item'),'false','unanswered foreign item invalidates the complete projected graph');
+select is((select body->'data' from op_results where label='graph_foreign_item'),'null'::jsonb,'foreign unanswered graph returns no content');
+delete from public.form_items where id=pg_temp.op_id(9300);
+
+insert into public.form_items(id,form_version_id,section_id,kind,label,position)
+values(pg_temp.op_id(9301),pg_temp.op_id(1220),pg_temp.op_id(2240),'short_text','Misplaced local item',99);
+set local role authenticated;
+insert into op_results values('graph_foreign_section',pg_temp.op_read('detail',7220));
+reset role;
+select is((select body->>'ok' from op_results where label='graph_foreign_section'),'false','local version item cannot disappear into a foreign section');
+select is((select body->'data' from op_results where label='graph_foreign_section'),'null'::jsonb,'foreign section denial returns no partial graph');
+delete from public.form_items where id=pg_temp.op_id(9301);
+
+insert into public.form_items(id,form_version_id,section_id,kind,label,position) values
+  (pg_temp.op_id(3221),pg_temp.op_id(1220),pg_temp.op_id(2220),'yes_no','Unanswered yes/no source',1),
+  (pg_temp.op_id(3222),pg_temp.op_id(1220),pg_temp.op_id(2220),'single_choice','Unanswered choice source',2),
+  (pg_temp.op_id(3223),pg_temp.op_id(1220),pg_temp.op_id(2220),'single_choice','Other question',3),
+  (pg_temp.op_id(3241),pg_temp.op_id(1240),pg_temp.op_id(2240),'yes_no','Foreign yes/no source',1);
+insert into public.form_question_options(id,form_version_id,item_id,label,position) values
+  (pg_temp.op_id(9322),pg_temp.op_id(1220),pg_temp.op_id(3222),'Correct source option',0),
+  (pg_temp.op_id(9324),pg_temp.op_id(1220),pg_temp.op_id(3222),'Second source option',1),
+  (pg_temp.op_id(9323),pg_temp.op_id(1220),pg_temp.op_id(3223),'Wrong question option',0),
+  (pg_temp.op_id(9325),pg_temp.op_id(1220),pg_temp.op_id(3223),'Second other option',1),
+  (pg_temp.op_id(9302),pg_temp.op_id(1240),pg_temp.op_id(3222),'Foreign version option',99);
+set local role authenticated;
+insert into op_results values('graph_foreign_option',pg_temp.op_read('detail',7220));
+reset role;
+select is((select body->>'ok' from op_results where label='graph_foreign_option'),'false','unanswered question cannot project an option declared in another version');
+select is((select body->'data' from op_results where label='graph_foreign_option'),'null'::jsonb,'foreign option in definition returns no content');
+delete from public.form_question_options where id=pg_temp.op_id(9302);
+
+insert into public.form_question_conditions(id,form_version_id,target_item_id,source_item_id,condition_kind,expected_yes_no)
+values(pg_temp.op_id(9303),pg_temp.op_id(1240),pg_temp.op_id(3220),pg_temp.op_id(3221),'yes_no',true);
+set local role authenticated;
+insert into op_results values('graph_foreign_condition',pg_temp.op_read('detail',7220));
+reset role;
+select is((select body->>'ok' from op_results where label='graph_foreign_condition'),'false','condition attached by target ID must declare the projected version');
+select is((select body->'data' from op_results where label='graph_foreign_condition'),'null'::jsonb,'foreign condition returns no graph');
+delete from public.form_question_conditions where id=pg_temp.op_id(9303);
+
+insert into public.form_question_conditions(id,form_version_id,target_item_id,source_item_id,condition_kind,expected_yes_no)
+values(pg_temp.op_id(9304),pg_temp.op_id(1220),pg_temp.op_id(3220),pg_temp.op_id(3241),'yes_no',true);
+set local role authenticated;
+insert into op_results values('graph_foreign_source',pg_temp.op_read('detail',7220));
+reset role;
+select is((select body->>'ok' from op_results where label='graph_foreign_source'),'false','condition source must belong to the projected version');
+select is((select body->'data' from op_results where label='graph_foreign_source'),'null'::jsonb,'foreign source denial returns no graph');
+delete from public.form_question_conditions where id=pg_temp.op_id(9304);
+
+insert into public.form_question_conditions(id,form_version_id,target_item_id,source_item_id,condition_kind,source_option_id)
+values(pg_temp.op_id(9305),pg_temp.op_id(1220),pg_temp.op_id(3220),pg_temp.op_id(3222),'choice',pg_temp.op_id(9323));
+set local role authenticated;
+insert into op_results values('graph_wrong_source_option',pg_temp.op_read('detail',7220));
+reset role;
+select is((select body->>'ok' from op_results where label='graph_wrong_source_option'),'false','same-version source option must belong to the actual source question');
+select is((select body->'data' from op_results where label='graph_wrong_source_option'),'null'::jsonb,'wrong source question option returns no graph');
+update public.form_question_conditions set source_option_id=pg_temp.op_id(9322) where id=pg_temp.op_id(9305);
+insert into public.form_question_conditions(id,form_version_id,target_item_id,source_item_id,condition_kind,expected_yes_no)
+values(pg_temp.op_id(9306),pg_temp.op_id(1220),pg_temp.op_id(3220),pg_temp.op_id(3221),'yes_no',true);
+set local role authenticated;
+insert into op_results values('graph_valid_unanswered',pg_temp.op_read('detail',7220));
+reset role;
+select is((select body->>'ok' from op_results where label='graph_valid_unanswered'),'true','complete valid graph preserves unanswered source questions and conditions');
+select is((select jsonb_array_length(body#>'{data,definition,sections,0,items,0,conditions}') from op_results where label='graph_valid_unanswered'),2,
+  'valid yes/no and choice conditions remain projected');
+
 insert into public.form_question_options(id,form_version_id,item_id,label,position)
 values(pg_temp.op_id(9100),pg_temp.op_id(1240),pg_temp.op_id(3240),'Foreign option',0);
 insert into public.form_answer_options(answer_id,option_id,position)

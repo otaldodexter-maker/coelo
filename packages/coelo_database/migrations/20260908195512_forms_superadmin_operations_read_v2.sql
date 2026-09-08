@@ -13,6 +13,7 @@ declare
   correlation uuid:=gen_random_uuid(); error_code text; result jsonb;
   allowed text[]; field_name text; page_limit integer:=25;
   form_row public.forms; response_row public.form_responses; version_row public.form_versions;
+  definition_result jsonb; invalid_definition boolean;
   v_form_id uuid; v_response_id uuid; v_application_id uuid; v_occurrence_id uuid; v_scope_id uuid;
   v_cursor_id uuid; cursor_time timestamptz; cursor_field text;
   starts_on date; ends_on date; v_scope_kind text;
@@ -161,6 +162,34 @@ begin
     elsif p_operation='response_detail' then
       select v.* into strict version_row from public.form_versions v
         where v.id=response_row.form_version_id and v.form_id=form_row.id;
+      -- The legacy projector follows section/item IDs, not composite version
+      -- keys. Validate the whole graph, including unanswered/incoming rows,
+      -- before allowing it to project any definition content.
+      -- Both values use one statement snapshot; the later response envelope
+      -- reuses this captured definition instead of re-reading mutable links.
+      select app_private.form_definition_projection(form_row.id,version_row.id),
+        exists(select 1 from public.form_items i
+        join public.form_sections s on s.id=i.section_id
+        where (i.form_version_id=version_row.id or s.form_version_id=version_row.id)
+          and (i.form_version_id<>version_row.id or s.form_version_id<>version_row.id))
+        or exists(select 1 from public.form_question_options o
+          join public.form_items i on i.id=o.item_id
+          where (o.form_version_id=version_row.id or i.form_version_id=version_row.id)
+            and (o.form_version_id<>version_row.id or i.form_version_id<>version_row.id))
+        or exists(select 1 from public.form_question_conditions c
+          join public.form_items target on target.id=c.target_item_id
+          join public.form_items source on source.id=c.source_item_id
+          left join public.form_question_options o on o.id=c.source_option_id
+          where (c.form_version_id=version_row.id or target.form_version_id=version_row.id)
+            and (c.form_version_id<>version_row.id or target.form_version_id<>version_row.id
+              or source.form_version_id<>version_row.id
+              or (c.condition_kind='yes_no' and source.kind<>'yes_no')
+              or (c.condition_kind='choice' and (source.kind not in ('single_choice','multiple_choice')
+                or o.id is null or o.form_version_id<>version_row.id or o.item_id<>source.id))))
+        into definition_result,invalid_definition;
+      if invalid_definition then
+        raise check_violation using detail='SAI_UNAVAILABLE';
+      end if;
       if response_row.identity_mode is distinct from form_row.identity_mode
         or exists(select 1 from public.form_answers a
         left join public.form_items i on i.id=a.item_id and i.form_version_id=response_row.form_version_id
@@ -188,7 +217,7 @@ begin
         'submitted_at',case when response_row.identity_mode='identified' then response_row.submitted_at else null end,
         'respondent_label',case when response_row.identity_mode='identified' then
           (select display_name from public.people where id=response_row.respondent_person_id) else null end,
-        'definition',app_private.form_definition_projection(form_row.id,response_row.form_version_id),
+        'definition',definition_result,
         'answers',coalesce((select jsonb_agg(jsonb_build_object(
           'item_id',a.item_id,'kind',a.answer_kind,'text_value',a.text_value,'integer_value',a.integer_value,
           'decimal_value',a.decimal_value,'money_minor_units',a.money_minor_units,'date_value',a.date_value,
