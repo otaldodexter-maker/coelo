@@ -1496,6 +1496,11 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
             );
           }
         }
+        if (publish && savedTemplate.status != 'published') {
+          throw const MealPlanUnavailableException(
+            'Não foi possível confirmar a publicação do modelo.',
+          );
+        }
       } else {
         final draft = _buildDraft(requestId: '$operationId-save');
         var saved = await repository.createOrUpdateDraft(draft);
