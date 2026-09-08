@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_auth/coelo_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -198,6 +200,8 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
     return _createUnavailableScope(const UnavailableCoeloAuthGateway());
   }
 
+  SupabaseCoeloAuthGateway? ownedAuth;
+  SuperadminSession? ownedSession;
   try {
     final initialUri = appUri ?? Uri.base;
     final storage = ConditionalSupabaseLocalStorage(
@@ -213,14 +217,27 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       sessionPersistence: storage,
       initialRecoveryAccessToken: superadminPasswordRecoveryAccessToken(initialUri),
     );
+    if (auth is SupabaseCoeloAuthGateway) {
+      ownedAuth = auth;
+      // Synchronize the SDK's initial replay before deciding whether this is
+      // productive authentication or a recovery-only session.
+      await auth.authSessionStateChanges.first;
+    }
     final authContext = createAuthContextGateway(client);
     final initialState = auth.currentSessionState;
     final platformUsers = SupabasePlatformUserRepository(client);
     final session = SuperadminSession(
       isPasswordRecovery: initialState.isPasswordRecovery,
       authSessionStateChanges: auth.authSessionStateChanges,
-      onDispose: platformUsers.clearSessionCache,
+      onDispose: () {
+        try {
+          platformUsers.clearSessionCache();
+        } finally {
+          if (auth is SupabaseCoeloAuthGateway) unawaited(auth.dispose());
+        }
+      },
     );
+    ownedSession = session;
     if (initialState.kind == CoeloAuthSessionKind.authenticated) {
       final expectedRevision = session.authorizationInvalidationRevision;
       final initialContext = await authContext.bootstrap();
@@ -301,6 +318,8 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       nowPublicationRepository: SupabaseNowPublicationRepository(client),
     );
   } on Exception catch (error, stackTrace) {
+    ownedSession?.dispose();
+    await ownedAuth?.dispose();
     FlutterError.reportError(
       FlutterErrorDetails(
         exception: error,

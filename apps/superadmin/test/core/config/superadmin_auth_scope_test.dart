@@ -74,6 +74,14 @@ void main() {
       supabasePublishableKey: 'publishable-key',
       initializeSupabase: ({required localStorage, required publishableKey, required url}) async =>
           client,
+      // This test drives authorization directly; SDK lifecycle is verified in
+      // coelo_auth_recovery_sdk_test with actual SDK sessions.
+      createAuthGateway:
+          ({required client, required sessionPersistence, required initialRecoveryAccessToken}) =>
+              _FakeCoeloAuthGateway(
+                isAuthenticated: false,
+                authStateChanges: const Stream<bool>.empty(),
+              ),
     );
     addTearDown(scope.session.dispose);
     final repository = scope.platformUserRepository! as SupabasePlatformUserRepository;

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -139,44 +140,98 @@ final class SupabaseCoeloAuthGateway extends CoeloAuthLifecycleGateway {
   Future<void> signOut() {
     return _api.signOut();
   }
+
+  /// Releases only this adapter's event subscription, never the shared client
+  /// or its authenticated session.
+  Future<void> dispose() async {
+    final api = _api;
+    if (api is _SupabaseAuthApi) await api.dispose();
+  }
 }
 
 final class _SupabaseAuthApi implements CoeloSupabaseAuthApi {
-  _SupabaseAuthApi(this._client, {required this.initialRecoveryAccessToken});
+  _SupabaseAuthApi(
+    this._client, {
+    required String? initialRecoveryAccessToken,
+  }) {
+    _recoverySessionId = initialRecoveryAccessToken == null
+        ? null
+        : coeloAuthSessionIdFromAccessToken(initialRecoveryAccessToken);
+    _isRecovery = _recoverySessionId != null;
+    _initialStateObserved = _client.auth.currentSession == null;
+    _subscription = _client.auth.onAuthStateChange.listen(
+      _handleAuthState,
+      onError: _states.addError,
+    );
+  }
 
   final SupabaseClient _client;
-  final String? initialRecoveryAccessToken;
+  final _states = StreamController<CoeloAuthSessionState>.broadcast(sync: true);
+  late final StreamSubscription<AuthState> _subscription;
+  String? _recoverySessionId;
+  bool _isRecovery = false;
+  bool _disposed = false;
+  bool _initialStateObserved = false;
+
+  void _handleAuthState(AuthState data) {
+    if (_disposed) return;
+    _initialStateObserved = true;
+    final session = data.session;
+    final sessionId = session == null ? null : _validatedSessionId(session);
+    if (session == null) {
+      _isRecovery = false;
+      _recoverySessionId = null;
+    } else if (data.event == AuthChangeEvent.passwordRecovery) {
+      _isRecovery = true;
+      _recoverySessionId = sessionId;
+    } else if (sessionId != _recoverySessionId) {
+      _isRecovery = false;
+      _recoverySessionId = null;
+    }
+    _states.add(_stateFor(session));
+  }
 
   @override
   Stream<CoeloAuthSessionState> get authStateChanges =>
-      _client.auth.onAuthStateChange.map((data) {
-        if (data.session == null) {
-          return const CoeloAuthSessionState.signedOut();
+      Stream<CoeloAuthSessionState>.multi((controller) {
+        if (_disposed) {
+          controller.closeSync();
+          return;
         }
-        if (data.event == AuthChangeEvent.passwordRecovery) {
-          return CoeloAuthSessionState.passwordRecovery(
-            sessionId: _validatedSessionId(data.session!),
-          );
-        }
-        return CoeloAuthSessionState.authenticated(
-          sessionId: _validatedSessionId(data.session!),
+        final subscription = _states.stream.listen(
+          controller.addSync,
+          onError: controller.addErrorSync,
+          onDone: controller.closeSync,
         );
-      });
+        controller.onCancel = subscription.cancel;
+        if (_initialStateObserved) controller.addSync(currentSessionState);
+      }, isBroadcast: true);
 
   @override
-  CoeloAuthSessionState get currentSessionState {
-    final session = _client.auth.currentSession;
-    if (session == null) {
+  CoeloAuthSessionState get currentSessionState =>
+      _stateFor(_client.auth.currentSession);
+
+  CoeloAuthSessionState _stateFor(Session? session) {
+    if (_disposed || session == null) {
       return const CoeloAuthSessionState.signedOut();
     }
-    return initialRecoveryAccessToken != null &&
-            session.accessToken == initialRecoveryAccessToken
-        ? CoeloAuthSessionState.passwordRecovery(
-            sessionId: _validatedSessionId(session),
-          )
-        : CoeloAuthSessionState.authenticated(
-            sessionId: _validatedSessionId(session),
-          );
+    final sessionId = _validatedSessionId(session);
+    final isCurrentRecovery = _isRecovery && sessionId == _recoverySessionId;
+    if (!_initialStateObserved && !isCurrentRecovery) {
+      return const CoeloAuthSessionState.signedOut();
+    }
+    return isCurrentRecovery
+        ? CoeloAuthSessionState.passwordRecovery(sessionId: sessionId)
+        : CoeloAuthSessionState.authenticated(sessionId: sessionId);
+  }
+
+  Future<void> dispose() async {
+    if (_disposed) return;
+    _disposed = true;
+    _isRecovery = false;
+    _recoverySessionId = null;
+    await _subscription.cancel();
+    await _states.close();
   }
 
   @override
