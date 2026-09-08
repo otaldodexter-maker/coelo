@@ -884,13 +884,16 @@ export function privateVerifySql(
       : 1,
   }));
   return `-- C00 read-only verification. No credentials or session tokens in output.
+-- verified covers the full scenario. revocationVerified covers only terminal
+-- targets (one in scenario-revoked, five in revoked); it does not prove Auth ban.
 begin read only;
 with target as (select value item from jsonb_array_elements('${
     JSON.stringify(rows)
   }'::jsonb)),
-checks as (select item->>'persona' persona,
+checks as (select item->>'persona' persona, item->>'status'='revoked' revocation_target,
   exists(select 1 from auth.users u where u.id=(item->>'auth_id')::uuid and lower(u.email)=item->>'email'
-    and u.email_confirmed_at is not null and u.raw_app_meta_data->>'coelo_e2_package'='${PACKAGE}'
+    and (item->>'status'='revoked' or u.email_confirmed_at is not null)
+    and u.raw_app_meta_data->>'coelo_e2_package'='${PACKAGE}'
     and u.raw_app_meta_data->>'coelo_e2_plan'='${plan.id}'
     and u.raw_app_meta_data->>'coelo_e2_persona'=item->>'persona') auth_owned,
   not exists(select 1 from public.person_auth_links p where p.auth_user_id=(item->>'auth_id')::uuid) no_people_link,
@@ -903,24 +906,29 @@ checks as (select item->>'persona' persona,
     where m.id=(item->>'membership_id')::uuid and l.id=(item->>'link_id')::uuid
       and m.internal_identity_id=(item->>'identity_id')::uuid and l.auth_user_id=(item->>'auth_id')::uuid
       and m.platform_role_id=(item->>'role_id')::uuid and m.scope_kind='institution'
-      and m.scope_institution_id=(item->>'institution_id')::uuid and i.status='active' and i.deleted_at is null
+      and m.scope_institution_id=(item->>'institution_id')::uuid
       and m.status::text=item->>'status' and l.status::text=item->>'status'
       and m.version=(item->>'version')::bigint and l.version=(item->>'version')::bigint
-      and r.status='active' and r.code<>'owner' and r.max_scope_kind in ('platform','institution')
-      and exists(select 1 from public.platform_role_permissions g join public.platform_permissions p on p.id=g.permission_id
-        where g.role_id=r.id and p.code='platform.read' and p.status='active' and g.status='active'
-          and g.effect='allow' and g.revoked_at is null)
-      and (item->>'persona'<>'no-cap' or not exists(select 1 from public.platform_role_permissions g
-        join public.platform_permissions p on p.id=g.permission_id where g.role_id=r.id
-          and p.code='institution.update' and p.status='active' and g.status='active' and g.effect='allow' and g.revoked_at is null))
+      and (item->>'status'='revoked' or (
+        i.status='active' and i.deleted_at is null
+        and r.status='active' and r.code<>'owner' and r.max_scope_kind in ('platform','institution')
+        and exists(select 1 from public.platform_permissions p where p.code='institution.update' and p.status='active')
+        and exists(select 1 from public.platform_role_permissions g join public.platform_permissions p on p.id=g.permission_id
+          where g.role_id=r.id and p.code='platform.read' and p.status='active' and g.status='active'
+            and g.effect='allow' and g.revoked_at is null)
+        and (item->>'persona'<>'no-cap' or not exists(select 1 from public.platform_role_permissions g
+          join public.platform_permissions p on p.id=g.permission_id where g.role_id=r.id
+            and p.code='institution.update' and p.status='active' and g.status='active' and g.effect='allow' and g.revoked_at is null))))
       and not exists(select 1 from app_private.superadmin_internal_auth_links other
         where other.internal_identity_id=m.internal_identity_id and other.id<>l.id)
       and not exists(select 1 from app_private.superadmin_internal_memberships other
         where other.internal_identity_id=m.internal_identity_id and other.id<>m.id)) end private_bindings
   from target)
 select jsonb_build_object('planId','${plan.id}','state','${state}','verified',
-  count(*)=5 and bool_and(auth_owned and no_people_link and private_bindings)
-    and exists(select 1 from public.platform_permissions p where p.code='institution.update' and p.status='active'),
+  count(*)=5 and bool_and(auth_owned and no_people_link and private_bindings),
+  'revocationVerified',${state !== "active"}
+    and count(*) filter(where revocation_target)=${state === "revoked" ? 5 : 1}
+    and coalesce(bool_and(auth_owned and no_people_link and private_bindings) filter(where revocation_target),false),
   'personas',jsonb_agg(to_jsonb(checks) order by persona)) from checks;
 commit;
 `;
