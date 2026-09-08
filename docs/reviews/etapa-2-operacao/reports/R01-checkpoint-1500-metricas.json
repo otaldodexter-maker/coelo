@@ -1,0 +1,307 @@
+{
+  "source": "R01-checkpoint-1330-metricas.json plus explicit batches below",
+  "status": "partial-audit-not-completion",
+  "generated_at": "2026-09-08T15:02:23-03:00",
+  "frontend_audited_partial_ids": [
+    "access-models.create",
+    "access-models.detail",
+    "access-models.duplicate",
+    "access-models.edit",
+    "access-models.filter",
+    "access-models.list",
+    "access-profiles.create",
+    "access-profiles.delete",
+    "access-profiles.detail",
+    "access-profiles.edit",
+    "access-profiles.list",
+    "account.logout",
+    "account.settings",
+    "account.theme",
+    "acontece.feed",
+    "activities.create",
+    "activities.detail",
+    "activities.edit",
+    "activities.list",
+    "activities.location",
+    "agora.create",
+    "agora.publish",
+    "assessments.close",
+    "assessments.detail",
+    "assessments.entry",
+    "assessments.gradebook",
+    "assessments.reopen",
+    "attendance.correct",
+    "attendance.create",
+    "attendance.dashboard",
+    "attendance.export",
+    "attendance.finish",
+    "attendance.mark",
+    "auth.login",
+    "auth.reset",
+    "chat.list",
+    "chat.send",
+    "child-safety.child",
+    "child-safety.list",
+    "errors.403",
+    "errors.404",
+    "errors.409",
+    "errors.500",
+    "errors.503",
+    "errors.retry",
+    "forms.create",
+    "forms.delete-file",
+    "forms.edit",
+    "forms.overview",
+    "forms.test",
+    "forms.upload",
+    "groups.export",
+    "groups.import",
+    "groups.list",
+    "groups.location",
+    "institutions.error",
+    "institutions.export",
+    "institutions.import",
+    "institutions.list",
+    "institutions.locations-map",
+    "internal-users.create",
+    "internal-users.edit",
+    "internal-users.list",
+    "internal-users.suspend",
+    "invites.create",
+    "invites.detail",
+    "invites.list",
+    "invites.resend",
+    "invites.revoke",
+    "locations.create-edit",
+    "locations.detail-links",
+    "locations.list",
+    "momentos.view",
+    "notices.archive",
+    "notices.create",
+    "notices.edit",
+    "notices.list",
+    "notices.publish",
+    "people.list",
+    "principal.profile-edit",
+    "principal.profile-view",
+    "shell.load",
+    "students.list",
+    "units.error",
+    "units.export",
+    "units.filter",
+    "units.import",
+    "units.list",
+    "units.locations-map",
+    "units.people-export",
+    "units.reload"
+  ],
+  "backend_contract_audited_partial_ids": [
+    "activities.create",
+    "activities.edit",
+    "activities.list",
+    "activities.publish",
+    "assessments.close",
+    "assessments.detail",
+    "assessments.entry",
+    "assessments.gradebook",
+    "assessments.reopen",
+    "forms.delete-file",
+    "forms.download",
+    "forms.expire-file",
+    "forms.resolve-file",
+    "forms.responses.export",
+    "forms.upload"
+  ],
+  "frontend_completed_ids": [],
+  "backend_completed_ids": [],
+  "e2e_completed_ids": [],
+  "backend_real_audited_ids": [],
+  "e2e_audited_ids": [],
+  "denominators": {
+    "FE_all": 219,
+    "FE_active": 194,
+    "BE_all_applicable": 212,
+    "BE_active": 187,
+    "E2E_active": 187,
+    "deferred": 22,
+    "formal_gate": 3,
+    "BE_E2E_not_applicable": 7
+  },
+  "limits": "Auditorias parciais por critérios nomeados, incluindo falhas. Backend local SQL conta como verificação de camada, separado de contrato simulado e remoto. Nenhuma conclusão integral, remoto ou E2E.",
+  "updated_at": "2026-09-08T15:02:23-03:00",
+  "backend_local_sql_audited_partial_ids": [
+    "activities.create",
+    "activities.edit",
+    "activities.list",
+    "activities.publish",
+    "assessments.close",
+    "assessments.detail",
+    "assessments.entry",
+    "assessments.gradebook",
+    "assessments.reopen",
+    "forms.download",
+    "forms.responses.export",
+    "forms.upload"
+  ],
+  "frontend_audited_by_classification": {
+    "ativa": 83,
+    "adiada": 8
+  },
+  "evidence_batches": [
+    {
+      "layer": "FE",
+      "ids": [
+        "account.logout",
+        "shell.load",
+        "auth.login",
+        "auth.reset"
+      ],
+      "criterion": "preserve replacement session after recovery response; package and consumers; not real Auth",
+      "evidence": "C00 r22 SDK18+package25+consumers27PASS; reports/R01-checkpoint-1430.md",
+      "date": "2026-09-08T14:33:36-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "invites.create",
+        "invites.detail",
+        "invites.resend"
+      ],
+      "criterion": "old result discarded on context change/reload; single flight",
+      "evidence": "C0016052b51/4436174e; combined61PASS including assessments",
+      "date": "2026-09-08T14:48:53-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "assessments.entry",
+        "assessments.gradebook",
+        "assessments.close",
+        "assessments.reopen",
+        "assessments.detail"
+      ],
+      "criterion": "closing status guards, entry/context/read UI and responsive tests, not backend persistence",
+      "evidence": "C00aa960d54;27assessment tests within61PASS",
+      "date": "2026-09-08T14:48:53-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "attendance.dashboard",
+        "attendance.create",
+        "attendance.mark",
+        "attendance.correct",
+        "attendance.finish",
+        "attendance.export"
+      ],
+      "criterion": "functional states/commands simulated; deferred export notice; viewport comparisons include failure",
+      "evidence": "C03r4:61functionalPASS,full64PASS/1goldenFAIL; OQ040 stays open",
+      "date": "2026-09-08T14:38:00-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "groups.location",
+        "institutions.list",
+        "units.list",
+        "groups.list",
+        "people.list",
+        "institutions.locations-map",
+        "units.locations-map",
+        "students.list"
+      ],
+      "criterion": "directory errors, normal sections/navigation and local selection; no write persistence",
+      "evidence": "C04r5/r6:19+2 focal; broader scopes documented separately; no golden approval",
+      "date": "2026-09-08T14:19:00-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "notices.create",
+        "notices.edit",
+        "notices.list",
+        "agora.create",
+        "agora.publish"
+      ],
+      "criterion": "viewport-specific golden failures/pass; Agora responsive behavior and composition; nominal visual review pending",
+      "evidence": "C05r3 received14:31:26;51AgoraPASS,14goldenFAIL;877PASS/61goldenFAIL broad",
+      "date": "2026-09-08T14:31:26-03:00"
+    },
+    {
+      "layer": "BE-SQL-local",
+      "ids": [
+        "assessments.entry",
+        "assessments.gradebook",
+        "assessments.close",
+        "assessments.reopen",
+        "assessments.detail"
+      ],
+      "criterion": "workflow, receipts, version, cross-tenant and revocation; queue fails; two explicit TEMP prerequisites",
+      "evidence": "C03r5 canonical9f97d80235/35PASS under nominal A01; lint/canonical broad chain/remote not green",
+      "date": "2026-09-08T14:53:00-03:00"
+    },
+    {
+      "layer": "BE-SQL-local",
+      "ids": [
+        "forms.responses.export",
+        "forms.download"
+      ],
+      "criterion": "XLSX catalog/job/snapshot constraints and authorize/redeem path reached; helper fails after41subtests of64planned",
+      "evidence": "C0055a41PASS/abort; helper-only14a1 comparison49PASS/abort before64plan due fixture membership lifecycle; both overallFAIL; manifests retained",
+      "date": "2026-09-08T14:45:56-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "units.error",
+        "units.reload",
+        "units.filter",
+        "institutions.error"
+      ],
+      "criterion": "failure state, retry, search and error handling without perpetual loading",
+      "evidence": "C00c3ce3127;37/37 directory tests, C04 source93a1536d",
+      "date": "2026-09-08T14:58:13-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "access-profiles.detail",
+        "invites.revoke"
+      ],
+      "criterion": "transport failures sanitized, command permission invalidation and owned overlays",
+      "evidence": "C01r23/r24:25f4dabd190PASS andf31fa1ce25PASS; pending C00 review",
+      "date": "2026-09-08T14:50:00-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "locations.create-edit"
+      ],
+      "criterion": "named local behavior only;not all acceptance criteria",
+      "evidence": "C04r7 creation half:6f20738c12writer+14formPASS;edit absent;pending C00 review",
+      "date": "2026-09-08T14:38:00-03:00"
+    },
+    {
+      "layer": "FE",
+      "ids": [
+        "notices.publish",
+        "notices.archive",
+        "chat.send"
+      ],
+      "criterion": "named local behavior only;not all acceptance criteria",
+      "evidence": "C05r5:20e7b259 two state/refetch tests,43a3275d thread-order test; local only",
+      "date": "2026-09-08T14:55:16-03:00"
+    }
+  ],
+  "previous_evidence": "R01-checkpoint-1330-metricas.json and handoffs named in R01-checkpoint-1330.md",
+  "counts": {
+    "frontend_audited_partial_ids": 91,
+    "backend_contract_audited_partial_ids": 15,
+    "frontend_completed_ids": 0,
+    "backend_completed_ids": 0,
+    "e2e_completed_ids": 0,
+    "backend_real_audited_ids": 0,
+    "e2e_audited_ids": 0,
+    "backend_local_sql_audited_partial_ids": 12
+  }
+}

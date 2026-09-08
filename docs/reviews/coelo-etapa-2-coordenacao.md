@@ -132,6 +132,21 @@ Leitura14:30: C01r22/C02r18/C03r3/C04r6/C05r3; fonte C05 futura14:48 recebida14:
 
 Entrega confirmada 2026-09-08T14:35:41-03:00: `origin/dev` e branch C00 em `d4924a2c34eb9cbb90e20caf8d4f90fb0215f9f6` por push atômico fast-forward e ls-remote. Inclui lotes de cliente revistos até Auth r22 e os manifests históricos sem handler de form-export-download; esses manifests não ativam função nem certificam pacote XLSX. Checkout original dev84985b54 preservado; sem deploy ou mutação Supabase/Cloudflare executados por C00. Este registro posterior prevalece sobre estados pending-dev anteriores.
 
+
+## Avaliações — decisão de preparação local 2026-09-08T14:41:51-03:00
+
+C00 consultou produção em transação read-only: versão20260901182838 tem0 registros no ledger; context_options/closing_queue/validate_students ausentes. Não há prova de aplicação desse candidato; o último timestamp geral20260901200206 não significa uma cadeia contínua. I006 autoriza C03 corrigir somente os três defeitos locais no arquivo candidato existente, preservando fonte3da039be e commits anteriores, sem reparar ledger ou banco remoto. Próxima prova deve usar bytes canônicos do commit corrigido e perfil nominal declarado, removendo derivações TEMP. Aplicação remota futura exige pacote nominal autorizado e forward-only. Resultado I00534/35 é prova local com duas pré-condições derivadas, ainda não candidato canônico aprovado.
+
+## Checkpoint R01 — 15:00 (consolidado 2026-09-08T15:02:23-03:00)
+
+Fonte `etapa-2-operacao/reports/R01-checkpoint-1500.md` e JSON de métricas/IDs/critérios/evidências. C00 único escritor. Sincronizado C01/r24 (14:50), C02/r20 (14:49:32), C03/r5 (recebido14:53), C04/r7 (última evidência14:38), C05/r5 (14:55:16). Deltas pós-r20 C02 recebidos por mensagem estão identificados como ainda não consolidados/testados.
+
+Verificação parcial FE91/219 (83/194ativas,8/22adiadas,0/3gates); BE15/212 (12IDs com SQL local;0runtime remoto), com7N/A. Conclusão FE0/219,BE0/212,E2E0/187: nenhum ID novo certificado, sem percentual de implementação. Testes de uma parte não substituem aceites integrais; pending-verification não significa ausência de implementação.
+
+Lotes C0016052b51/4436174e/aa960d54:61/61 testes; c3ce3127:37/37 diretórios. Analyzer3+4arquivos limpo. Auth r22 e lotes anteriores entregues emdevd4924a2c; próximos pushes por SHA no relatório. Avaliações9f97d80235/35 canônicos no perfilA01, com lint/cadeia ampla/remoto ainda abertos. XLSX55a41PASS/abort, helper14a1→49PASS/abort na fixture lifecycle, resultado globalFAIL; novo patch de fixture e107asserts da fatia seguinte não executados. Nenhum SQL candidato aplicado/integrado por esta medição.
+
+C04 cria Locais no cliente (create_v2 já existe no candidato), edição/persistência/replay restantes; C05 card375 preserva alvo48 e devolve componente central sem alterações. Goldens novos/antigos aguardam revisão nominal. Contrato mínimo de leitura/lifetime publicado; upload/HTTP, decoder, XLSX completo e cenários Auth reais permanecem abertos. Risco da janela8dias elevado, ETA total desconhecida; menor ação: finalizar contrato mínimo de upload/pacote Auth revisável e reduzir fila de integração antes da UI real. Não somar tempos paralelos.
+
 ## Histórico preservado — anterior à R01
 
 ## Finalidade

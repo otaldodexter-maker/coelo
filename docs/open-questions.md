@@ -216,3 +216,7 @@ tenant, revogação ou auditoria foi dispensado.
 ## Avaliações — complemento técnico R01 2026-09-08T14:34:33-03:00
 
 No replay derivado I004, C03 confirmou SQL42702 em assessment_v2_validate_students por child_context_id ambíguo entre variável e coluna. C00 inspecionou predicado e I005 permite somente TEMP com expressão UUID do item já validado; registrar hashes/diff separados. Canônico/ledger continuam abertos, sem aprovação de pacote remoto ou remoção das negativas de domínio.
+
+## Avaliações — decisão de preparação local 2026-09-08T14:41:51-03:00
+
+C00 consultou produção em transação read-only: versão20260901182838 tem0 registros no ledger; context_options/closing_queue/validate_students ausentes. Não há prova de aplicação desse candidato; o último timestamp geral20260901200206 não significa uma cadeia contínua. I006 autoriza C03 corrigir somente os três defeitos locais no arquivo candidato existente, preservando fonte3da039be e commits anteriores, sem reparar ledger ou banco remoto. Próxima prova deve usar bytes canônicos do commit corrigido e perfil nominal declarado, removendo derivações TEMP. Aplicação remota futura exige pacote nominal autorizado e forward-only. Resultado I00534/35 é prova local com duas pré-condições derivadas, ainda não candidato canônico aprovado.

@@ -28,7 +28,19 @@ Este é o estado operacional atual. O histórico integral anterior está em [arq
 - /dev usa fixtures; sem /dev usa composição produtiva. Todo remoto é produção. MFA interno aceita AAL1 conforme ADR 0019. Admin, Principal e Site estão fora deste recorte de implementação.
 - ETA por ação: ainda não recalculada por dependências e execução; não somar estimativas antigas. A janela 36–60 h do plano anterior não é compromisso validado.
 
+## Checkpoint R01 — 15:00 (consolidado 2026-09-08T15:02:23-03:00)
+
+Fonte `etapa-2-operacao/reports/R01-checkpoint-1500.md` e JSON de métricas/IDs/critérios/evidências. C00 único escritor. Sincronizado C01/r24 (14:50), C02/r20 (14:49:32), C03/r5 (recebido14:53), C04/r7 (última evidência14:38), C05/r5 (14:55:16). Deltas pós-r20 C02 recebidos por mensagem estão identificados como ainda não consolidados/testados.
+
+Verificação parcial FE91/219 (83/194ativas,8/22adiadas,0/3gates); BE15/212 (12IDs com SQL local;0runtime remoto), com7N/A. Conclusão FE0/219,BE0/212,E2E0/187: nenhum ID novo certificado, sem percentual de implementação. Testes de uma parte não substituem aceites integrais; pending-verification não significa ausência de implementação.
+
+Lotes C0016052b51/4436174e/aa960d54:61/61 testes; c3ce3127:37/37 diretórios. Analyzer3+4arquivos limpo. Auth r22 e lotes anteriores entregues emdevd4924a2c; próximos pushes por SHA no relatório. Avaliações9f97d80235/35 canônicos no perfilA01, com lint/cadeia ampla/remoto ainda abertos. XLSX55a41PASS/abort, helper14a1→49PASS/abort na fixture lifecycle, resultado globalFAIL; novo patch de fixture e107asserts da fatia seguinte não executados. Nenhum SQL candidato aplicado/integrado por esta medição.
+
+C04 cria Locais no cliente (create_v2 já existe no candidato), edição/persistência/replay restantes; C05 card375 preserva alvo48 e devolve componente central sem alterações. Goldens novos/antigos aguardam revisão nominal. Contrato mínimo de leitura/lifetime publicado; upload/HTTP, decoder, XLSX completo e cenários Auth reais permanecem abertos. Risco da janela8dias elevado, ETA total desconhecida; menor ação: finalizar contrato mínimo de upload/pacote Auth revisável e reduzir fila de integração antes da UI real. Não somar tempos paralelos.
+
 ## Atualização R01 — 2026-09-08T14:33:36-03:00
+
+Avaliações 2026-09-08T14:41:51-03:00: I00534/35 local derivado, fila inclui draft; produção read-only confirmou versão20260901182838 e três funções ausentes. I006 permite correção mínima do candidato local não aplicado, com novo replay por SHA sem patches TEMP; sem aprovação remota ou certificação. C03r4 também informa Assiduidade61/61funcionais e64PASS/1goldenFAIL no recorte completo, backend retido por OQ040/spec048 draft.
 
 Entrega confirmada 2026-09-08T14:35:41-03:00: `origin/dev` e branch C00 em `d4924a2c34eb9cbb90e20caf8d4f90fb0215f9f6` por push atômico fast-forward e ls-remote. Inclui lotes de cliente revistos até Auth r22 e os manifests históricos sem handler de form-export-download; esses manifests não ativam função nem certificam pacote XLSX. Checkout original dev84985b54 preservado; sem deploy ou mutação Supabase/Cloudflare executados por C00. Este registro posterior prevalece sobre estados pending-dev anteriores.
 

@@ -1,0 +1,13 @@
+{
+  "source": "fixed55a457fa profile + exact helper-only diff14a1bcbe; does not include50fbbf5d request/snapshot",
+  "status": "FAIL-after49subtests;64planned-not-completed;cleanup-verified",
+  "generated_at": "2026-09-08T14:52:21-03:00",
+  "root": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-xlsx-fix-ce5eaf8f2b234fd8a84b90ecc1c7b33a",
+  "migration_sha256": "04080790d257790d85c6e0198d8fe200d00cbe9c58faa3a283e3864ad9ba247d",
+  "planned_asserts": 64,
+  "base_manifest": "reports/R01-xlsx-replay-manifest.json",
+  "result": "session_user defect resolved; fixture line177 violates membership lifecycle version/timestamps",
+  "finished_at": "2026-09-08T14:58:13-03:00",
+  "log": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-xlsx-fix-ce5eaf8f2b234fd8a84b90ecc1c7b33a/replay-02.log",
+  "cleanup": "zero coelo_safe containers/volumes/networks verified"
+}

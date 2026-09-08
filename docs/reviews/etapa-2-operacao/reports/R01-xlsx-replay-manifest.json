@@ -1,0 +1,22 @@
+{
+  "source": "55a457fa plus exact preserved C00 media profile snapshot",
+  "status": "FAIL-after41subtests;64planned-not-completed;cleanup-verified",
+  "generated_at": "2026-09-08T14:43:42-03:00",
+  "root": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-xlsx-26127f580b4645829907461cd74a813c",
+  "candidate_files": [
+    {
+      "path": "packages/coelo_database/migrations/20260908170000_forms_xlsx_private_r2_v1.sql",
+      "sha256": "75668da43b39a3963a20e742d08eeb881f05ab8c9cb6c46208b22122e0b698a3"
+    },
+    {
+      "path": "packages/coelo_database/supabase/tests/forms_xlsx_private_r2_v1_test.sql",
+      "sha256": "d34406178d4366d7e4a0f54b8e1dbe72fc7897ff7766f8985232414ecda5cbe7"
+    }
+  ],
+  "base_manifest": "reports/R01-media-replay-manifest.json",
+  "runner_sha256": "13734326e1fc6b4cab3e8adda68e7d1b27659b53dfc75029350b722f485f20ad",
+  "result": "SQL helper session_user keyword resolved to postgres; UUID cast fails; no plan reached",
+  "finished_at": "2026-09-08T14:47:06-03:00",
+  "log": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-xlsx-26127f580b4645829907461cd74a813c/replay-01.log",
+  "cleanup": "zero coelo_safe containers/volumes/networks verified"
+}
