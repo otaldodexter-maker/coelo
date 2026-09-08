@@ -283,11 +283,31 @@ class _CoeloNavigationContentState extends State<CoeloNavigationContent> {
   Set<String> _expanded = <String>{};
   Set<String> _beforeSearch = <String>{};
   bool _searchActive = false;
+  RouteInformationProvider? _routeInformationProvider;
 
   @override
   void initState() {
     super.initState();
     _expanded = coeloNavigationAncestors(widget.currentDestination);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // InheritedGoRouter itself never notifies; Router tracks config replacement.
+    Router.maybeOf(context);
+    final provider = context
+        .dependOnInheritedWidgetOfExactType<InheritedGoRouter>()
+        ?.goRouter
+        .routeInformationProvider;
+    if (identical(provider, _routeInformationProvider)) return;
+    _routeInformationProvider?.removeListener(_onRouteInformationChanged);
+    _routeInformationProvider = provider;
+    provider?.addListener(_onRouteInformationChanged);
+  }
+
+  void _onRouteInformationChanged() {
+    if (mounted) setState(() {});
   }
 
   @override
@@ -300,19 +320,17 @@ class _CoeloNavigationContentState extends State<CoeloNavigationContent> {
 
   @override
   void dispose() {
+    _routeInformationProvider?.removeListener(_onRouteInformationChanged);
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
   }
 
   CoeloNavigationEnvironment get _environment {
-    try {
-      return GoRouterState.of(context).uri.path.startsWith('/dev/')
-          ? CoeloNavigationEnvironment.development
-          : CoeloNavigationEnvironment.production;
-    } on GoError {
-      return CoeloNavigationEnvironment.production;
-    }
+    final path = _routeInformationProvider?.value.uri.path;
+    return path != null && path.startsWith('/dev/')
+        ? CoeloNavigationEnvironment.development
+        : CoeloNavigationEnvironment.production;
   }
 
   void _onSearchChanged(String value) {
