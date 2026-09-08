@@ -69,6 +69,19 @@ políticas de respondente nem permite que cliente se declare numa audiência.
 
 ## RPCs, receipt e projeção
 
+Precondição local aprovada pela coordenação: os três gateways exigem
+READ COMMITTED. Outros isolamentos retornam SAI_INVALID_ARGUMENT sem dados;
+não se alteram defaults globais. Contexto é revalidado depois das esperas por
+locks de recurso/proprietário e antes da projeção. Criação revalida também
+imediatamente após o advisory e verifica que o ator é o mesmo usado na chave;
+receipt/insert podem esperar novamente, exigindo revalidação final. O protocolo
+controlado está em `docs/superpowers/plans/2026-09-07-location-lock-revalidation-replay.md`.
+Após a última espera, cada gateway confere a sessão original e seu not_after
+real contra clock_timestamp, preservando NULL como sem expiração. Nenhuma
+duração ou default global é criado; Auth global continua fora da certificação
+desta fatia. Contraprovas wall-clock e isolamento incompatível ficam preparadas
+nas suítes authorization e isolation e no protocolo controlado de duas conexões.
+
 - Directory: proprietário explícito (institution_id + unit_id nullable coerente
   com scope_kind), search opcional até120 caracteres, limit1..100 default24,
   offset0..10000, ordem estável lower(name) COLLATE C + id. Sem SQL dinâmico.
@@ -110,8 +123,9 @@ correção automática. Nenhum dado real é lido pelo teste de vazio.
 Ordem nominal: dependências existentes, bootstrap local
 `packages/coelo_database/tests/fixtures/location_catalog_v2_capability_bootstrap.sql`,
 candidato `20260908031000_superadmin_location_catalog_v2.sql` e somente então
-as duas suítes `superadmin_location_catalog_v2_test.sql` e
-`superadmin_location_catalog_v2_authorization_test.sql`. O bootstrap exige
+as três suítes `superadmin_location_catalog_v2_test.sql`,
+`superadmin_location_catalog_v2_authorization_test.sql` e
+`superadmin_location_catalog_v2_isolation_test.sql`. O bootstrap exige
 conexão postgres e opt-in `SET coelo.local_replay='location-catalog-v2'` na
 mesma conexão; não é migration de produção nem seed após reset. Engineer1
 seleciona e serializa o replay. Nenhuma execução Docker ou remota é delegada

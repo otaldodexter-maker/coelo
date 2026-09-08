@@ -196,5 +196,38 @@ select ok(not exists(select 1 from audit.audit_logs where action_code like 'loca
   and (before_json is not null or after_json is not null or not app_private.audit_verify_entry(id))),
   'location audit is minimized and verifies');
 
+-- not_after is later than transaction start but expires by the next statement.
+-- This distinguishes clock_timestamp from the Auth helper's transaction-time now().
+update auth.sessions set not_after=clock_timestamp()
+  where id='81400000-0000-4000-8000-000000000001';
+select pg_temp.location_actor(1);
+set local role authenticated;
+insert into location_test_responses select 19,public.superadmin_location_create_v2(
+  value||'{"name":"Expired session room"}','81800000-0000-4000-8000-000000000019') from location_test_payload;
+insert into location_test_responses select 20,public.superadmin_location_detail_v2((body#>>'{data,id}')::uuid)
+  from location_test_responses where seq=1;
+insert into location_test_responses values(21,public.superadmin_location_directory_v2('institution',
+  '81100000-0000-4000-8000-000000000001'));
+reset role;
+select is((select body#>>'{error,code}' from location_test_responses where seq=19),
+  'SAI_SESSION_INVALID','create respects wall-clock session expiration');
+select is((select body#>>'{error,code}' from location_test_responses where seq=20),
+  'SAI_SESSION_INVALID','detail respects wall-clock session expiration');
+select is((select body#>>'{error,code}' from location_test_responses where seq=21),
+  'SAI_SESSION_INVALID','directory respects wall-clock session expiration');
+select is((select count(*) from app_private.superadmin_location_create_receipts
+  where request_id='81800000-0000-4000-8000-000000000019'),0::bigint,
+  'expired session leaves no creation receipt');
+select ok(not exists(select 1 from public.activity_locations
+  where created_by_internal_identity_id='81500000-0000-4000-8000-000000000001'
+    and name='Expired session room'),'expired session rolls back inserted location');
+update auth.sessions set not_after=null where id='81400000-0000-4000-8000-000000000001';
+set local role authenticated;
+insert into location_test_responses select 22,public.superadmin_location_detail_v2((body#>>'{data,id}')::uuid)
+  from location_test_responses where seq=1;
+reset role;
+select is((select body->>'ok' from location_test_responses where seq=22),'true',
+  'null expiration preserves canonical unbounded-session meaning');
+
 select * from finish();
 rollback;

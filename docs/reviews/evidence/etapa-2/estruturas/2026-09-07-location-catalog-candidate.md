@@ -29,6 +29,16 @@ Principal ou Site; nenhuma permissão para execução remota.
 
 ## Handoff obrigatório
 
+LOC-LOCK01: novos guards estáticos reproduziram separadamente RED para CASE
+sem parênteses, ausência de contexto renovado após advisory e ausência de
+expiração por relógio real. Corrigidos no candidato novo, sem modificar
+migrations históricas ou Auth global. Contexto/ator/proprietário revalidados
+após esperas nos três gateways; READ COMMITTED explícito e clock_timestamp com
+not_after real/NULL preservado. Suíte isolation e contraprovas wall-clock na
+authorization preparadas; protocolo de duas conexões documenta esperas reais
+advisory/recurso e revogação/mudança de escopo/expiração. Nada disso foi
+executado no PostgreSQL nesta tarefa; evidência continua estática/preparada.
+
 Revisão posterior da coordenação detectou três assertions TAP básicas e uma
 assertion de rollback executadas como authenticated, além de labels obrigatórios
 omitidos no bootstrap. Corrigidos: RPC/captura preserva papel real, TAP somente

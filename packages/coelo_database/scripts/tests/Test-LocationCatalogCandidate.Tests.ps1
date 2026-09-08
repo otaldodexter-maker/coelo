@@ -42,7 +42,7 @@ if ($candidateSql -match '(?im)^\s*(delete from|truncate)\s+public\.activity_loc
 if ($candidateSql -match '(?im)^\s*insert into public\.platform_(permissions|role_permissions)') {
   throw 'RED LOC-CATALOG01: capability provisioning belongs to nominal fixtures, not this candidate.'
 }
-foreach ($testFile in @('superadmin_location_catalog_v2_test.sql','superadmin_location_catalog_v2_authorization_test.sql')) {
+foreach ($testFile in @('superadmin_location_catalog_v2_test.sql','superadmin_location_catalog_v2_authorization_test.sql','superadmin_location_catalog_v2_isolation_test.sql')) {
   $testSql = Read-NominalCandidateFile "supabase/tests/$testFile"
   $actorBlocks = [regex]::Matches($testSql, '(?is)set local role authenticated;(.*?)reset role;')
   foreach ($actorBlock in $actorBlocks) {
@@ -55,4 +55,16 @@ $bootstrapSql = Read-NominalCandidateFile 'tests/fixtures/location_catalog_v2_ca
 if ($bootstrapSql -notmatch 'module_label' -or $bootstrapSql -notmatch 'screen_label' -or $bootstrapSql -notmatch 'action_label') {
   throw 'RED LOC-TAP01: bootstrap must explicitly supply required permission labels.'
 }
-Write-Output "PASS: $($requirements.Count) static candidate gates plus TAP-role/label guards; SQL runtime/replay NOT executed."
+if ($candidateSql -match "length\(text_value\)>case") {
+  throw 'RED LOC-LOCK01: CASE expression in PLpgSQL condition must be parenthesized.'
+}
+if ($candidateSql -notmatch "(?s)pg_advisory_xact_lock\([^;]+;\s+select \* into strict ctx from app_private.require_superadmin_internal_context\('locations.create'\)") {
+  throw 'RED LOC-LOCK01: context must be revalidated immediately after advisory lock acquisition.'
+}
+if ([regex]::Matches($candidateSql,"current_setting\('transaction_isolation'\)<>'read committed'").Count -ne 3) {
+  throw 'RED LOC-LOCK01: all three gateways must enforce READ COMMITTED.'
+}
+if ([regex]::Matches($candidateSql,'session_record.not_after>clock_timestamp\(\)').Count -ne 3) {
+  throw 'RED LOC-LOCK01: all three gateways must check original session wall-clock expiry after waits.'
+}
+Write-Output "PASS: $($requirements.Count) static candidate gates plus TAP-role/label/post-lock/isolation guards; SQL runtime/replay NOT executed."

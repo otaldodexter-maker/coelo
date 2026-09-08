@@ -198,7 +198,7 @@ begin
     end if;
     text_value:=nullif(btrim(p_payload->>field),'');
     if (field='name' and text_value is null)
-      or length(text_value)>case when field='description' then 500 else 120 end
+      or length(text_value)>(case when field='description' then 500 else 120 end)
       or text_value ~ U&'[\0001-\001f\007f]' then
       raise invalid_parameter_value using message='invalid location text',detail='SAI_INVALID_ARGUMENT';
     end if;
@@ -292,21 +292,38 @@ create function public.superadmin_location_detail_v2(p_location_id uuid)
 returns jsonb language plpgsql volatile security definer set search_path=''
 as $$
 declare ctx app_private.superadmin_internal_context; target public.activity_locations%rowtype;
+  initial_actor_id uuid; initial_session_id uuid;
   result jsonb; correlation uuid:=gen_random_uuid(); error_code text; error_detail text;
 begin
   begin
     select * into strict ctx from app_private.require_superadmin_internal_context('locations.read');
+    if current_setting('transaction_isolation')<>'read committed' then
+      raise invalid_parameter_value using message='location isolation unsupported',detail='SAI_INVALID_ARGUMENT';
+    end if;
+    initial_actor_id:=ctx.internal_identity_id;
+    initial_session_id:=ctx.session_id;
     select l.* into target from public.activity_locations l where l.id=p_location_id
       and ctx.platform_role_code='owner'
       and (ctx.scope_kind='platform' or
         (ctx.scope_kind='institution' and ctx.scope_institution_id=l.institution_id)) for share;
     perform app_private.superadmin_location_owner_v2(ctx,target.scope_kind,target.institution_id,target.unit_id);
+    select * into strict ctx from app_private.require_superadmin_internal_context('locations.read');
+    if ctx.internal_identity_id is distinct from initial_actor_id then
+      raise insufficient_privilege using message='location access denied',detail='SAI_PERMISSION_DENIED';
+    end if;
+    perform app_private.superadmin_location_owner_v2(ctx,target.scope_kind,target.institution_id,target.unit_id);
+    if ctx.session_id is distinct from initial_session_id or not exists(
+      select 1 from auth.sessions session_record where session_record.id=initial_session_id
+        and (session_record.not_after is null or session_record.not_after>clock_timestamp())) then
+      raise insufficient_privilege using message='location session invalid',detail='SAI_SESSION_INVALID';
+    end if;
     result:=app_private.superadmin_location_payload_v2(target.id);
   exception when insufficient_privilege then
     get stacked diagnostics error_detail=pg_exception_detail;
     error_code:=case when error_detail in('SAI_AUTH_REQUIRED','SAI_SESSION_INVALID','SAI_INTERNAL_CONTEXT_DENIED',
       'SAI_MEMBERSHIP_SUSPENDED','SAI_MEMBERSHIP_REVOKED','SAI_PERMISSION_DENIED','SAI_MFA_REQUIRED')
       then error_detail else 'SAI_INTERNAL_ERROR' end;
+  when invalid_parameter_value then error_code:='SAI_INVALID_ARGUMENT';
   when others then error_code:='SAI_INTERNAL_ERROR';
   end;
   if error_code is not null then
@@ -329,11 +346,27 @@ create function public.superadmin_location_directory_v2(
 ) returns jsonb language plpgsql volatile security definer set search_path=''
 as $$
 declare ctx app_private.superadmin_internal_context; result jsonb; normalized_search text;
+  initial_actor_id uuid; initial_session_id uuid;
   correlation uuid:=gen_random_uuid(); error_code text; error_detail text;
 begin
   begin
     select * into strict ctx from app_private.require_superadmin_internal_context('locations.read');
+    if current_setting('transaction_isolation')<>'read committed' then
+      raise invalid_parameter_value using message='location isolation unsupported',detail='SAI_INVALID_ARGUMENT';
+    end if;
+    initial_actor_id:=ctx.internal_identity_id;
+    initial_session_id:=ctx.session_id;
     perform app_private.superadmin_location_owner_v2(ctx,p_scope_kind,p_institution_id,p_unit_id);
+    select * into strict ctx from app_private.require_superadmin_internal_context('locations.read');
+    if ctx.internal_identity_id is distinct from initial_actor_id then
+      raise insufficient_privilege using message='location access denied',detail='SAI_PERMISSION_DENIED';
+    end if;
+    perform app_private.superadmin_location_owner_v2(ctx,p_scope_kind,p_institution_id,p_unit_id);
+    if ctx.session_id is distinct from initial_session_id or not exists(
+      select 1 from auth.sessions session_record where session_record.id=initial_session_id
+        and (session_record.not_after is null or session_record.not_after>clock_timestamp())) then
+      raise insufficient_privilege using message='location session invalid',detail='SAI_SESSION_INVALID';
+    end if;
     normalized_search:=nullif(btrim(p_search),'');
     if p_limit is null or p_limit not between 1 and 100 or p_offset is null or p_offset not between 0 and 10000
       or length(normalized_search)>120 or normalized_search ~ U&'[\0001-\001f\007f]' then
@@ -379,11 +412,16 @@ as $$
 declare ctx app_private.superadmin_internal_context; normalized jsonb; result jsonb;
   receipt app_private.superadmin_location_create_receipts%rowtype;
   target public.activity_locations%rowtype;
-  requested_hash bytea; location_id uuid; institution_id uuid; unit_id uuid;
+  requested_hash bytea; location_id uuid; institution_id uuid; unit_id uuid; locked_actor_id uuid;
+  initial_session_id uuid;
   correlation uuid:=gen_random_uuid(); error_code text; error_detail text;
 begin
   begin
     select * into strict ctx from app_private.require_superadmin_internal_context('locations.create');
+    initial_session_id:=ctx.session_id;
+    if current_setting('transaction_isolation')<>'read committed' then
+      raise invalid_parameter_value using message='location isolation unsupported',detail='SAI_INVALID_ARGUMENT';
+    end if;
     if p_request_id is null then
       raise invalid_parameter_value using message='location request id required',detail='SAI_INVALID_ARGUMENT';
     end if;
@@ -392,7 +430,13 @@ begin
     unit_id:=(normalized->>'unit_id')::uuid;
     perform app_private.superadmin_location_owner_v2(ctx,normalized->>'scope_kind',institution_id,unit_id);
     requested_hash:=extensions.digest(convert_to(normalized::text,'UTF8'),'sha256');
-    perform pg_advisory_xact_lock(hashtextextended(ctx.internal_identity_id::text||':'||p_request_id::text,0));
+    locked_actor_id:=ctx.internal_identity_id;
+    perform pg_advisory_xact_lock(hashtextextended(locked_actor_id::text||':'||p_request_id::text,0));
+    select * into strict ctx from app_private.require_superadmin_internal_context('locations.create');
+    if ctx.internal_identity_id is distinct from locked_actor_id then
+      raise insufficient_privilege using message='location access denied',detail='SAI_PERMISSION_DENIED';
+    end if;
+    perform app_private.superadmin_location_owner_v2(ctx,normalized->>'scope_kind',institution_id,unit_id);
     select r.* into receipt from app_private.superadmin_location_create_receipts r
       where r.actor_internal_identity_id=ctx.internal_identity_id and r.request_id=p_request_id;
     if found then
@@ -415,6 +459,19 @@ begin
       returning id into location_id;
       insert into app_private.superadmin_location_create_receipts(actor_internal_identity_id,request_id,request_hash,location_id)
         values(ctx.internal_identity_id,p_request_id,requested_hash,location_id);
+    end if;
+    -- Receipt/resource locks and INSERT may also wait after the advisory lock.
+    select l.* into target from public.activity_locations l where l.id=location_id for share;
+    select * into strict ctx from app_private.require_superadmin_internal_context('locations.create');
+    if ctx.internal_identity_id is distinct from locked_actor_id then
+      raise insufficient_privilege using message='location access denied',detail='SAI_PERMISSION_DENIED';
+    end if;
+    perform app_private.superadmin_location_owner_v2(ctx,target.scope_kind,target.institution_id,target.unit_id);
+    institution_id:=target.institution_id;
+    if ctx.session_id is distinct from initial_session_id or not exists(
+      select 1 from auth.sessions session_record where session_record.id=initial_session_id
+        and (session_record.not_after is null or session_record.not_after>clock_timestamp())) then
+      raise insufficient_privilege using message='location session invalid',detail='SAI_SESSION_INVALID';
     end if;
     result:=app_private.superadmin_location_payload_v2(location_id);
     if result is null then
