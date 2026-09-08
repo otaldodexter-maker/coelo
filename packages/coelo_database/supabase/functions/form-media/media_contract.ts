@@ -48,6 +48,91 @@ const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SHA256 = /^[0-9a-f]{64}$/;
 
+export type FormMediaEnvelope =
+  & {
+    request_id: string;
+    expected_version: number;
+  }
+  & (
+    | { action: "prepare"; payload: PrepareAsset }
+    | { action: "finalize" | "download" | "discard"; payload: AssetAccess }
+  );
+
+export function parseFormMediaEnvelope(value: unknown): FormMediaEnvelope {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error("invalid_envelope");
+  }
+  const data = value as Record<string, unknown>;
+  const keys = new Set(["action", "request_id", "expected_version", "payload"]);
+  if (
+    Object.keys(data).some((key) => !keys.has(key)) ||
+    typeof data.request_id !== "string" || !UUID.test(data.request_id) ||
+    typeof data.expected_version !== "number" ||
+    !Number.isSafeInteger(data.expected_version) || data.expected_version < 0
+  ) {
+    throw new Error("invalid_envelope");
+  }
+  const common = {
+    request_id: data.request_id,
+    expected_version: data.expected_version,
+  };
+  if (data.action === "prepare") {
+    return {
+      ...common,
+      action: data.action,
+      payload: parsePrepareAsset(data.payload),
+    };
+  }
+  if (
+    data.action === "finalize" || data.action === "download" ||
+    data.action === "discard"
+  ) {
+    return {
+      ...common,
+      action: data.action,
+      payload: parseAssetAccess(data.payload),
+    };
+  }
+  throw new Error("invalid_envelope");
+}
+
+/** A command contains metadata only. Bound actual bytes before parsing or
+ * contacting Auth/RPC; Content-Length supplied by a caller is not trusted.
+ */
+export async function readFormMediaEnvelope(
+  request: Request,
+): Promise<FormMediaEnvelope> {
+  if (!request.body) throw new Error("invalid_json");
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let length = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      length += value.byteLength;
+      if (length > 32_768) throw new Error("payload_too_large");
+      if (value.byteLength) chunks.push(value);
+    }
+  } finally {
+    await reader.cancel().catch(() => {});
+    reader.releaseLock();
+  }
+  const bytes = new Uint8Array(length);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  let value: unknown;
+  try {
+    value = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes));
+  } catch {
+    throw new Error("invalid_json");
+  }
+  return parseFormMediaEnvelope(value);
+}
+
 export type PrepareAsset = {
   occurrence_id: string;
   item_id: string;
