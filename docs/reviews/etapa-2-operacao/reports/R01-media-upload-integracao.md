@@ -1,11 +1,13 @@
 ---
 source: "C02r26; C00 review305f9824/2980151e; Dart89tests"
-status: "integrated-local;push-pending;not-certified"
+status: "delivered-origin-dev;not-certified"
 generated_at: "2026-09-08T15:50:03-03:00"
 timezone: "America/Sao_Paulo"
 ---
 
 ## Upload comum integrado — 2026-09-08T15:50:03-03:00
+Recibo 2026-09-08T15:51:42-03:00: push atômico e ls-remote confirmaram origin/dev e branch C00 em **e9e615706ec1d24602a3753e2678ecc809e96dd8**, incluindo305f9824/2980151e e documentação. Publicação Git verificada; nenhum deploy/aplicação remota.
+
 
 C02/r26 recebido; release dos quatro arquivos I007 aceito. Origem0a94f2da→C00305f9824; exports públicos/testes por barrel em2980151e. **89/89 Dart PASS** na C00, analyzer5arquivos limpo, formatter sem alterações. Log C:/Users/adrie/AppData/Local/Temp/coelo-c00-media-upload-1550.log. Contrato cliente disponível em package:coelo_api/coelo_api.dart; mediaUploadId permanece fora dos exports públicos.
 

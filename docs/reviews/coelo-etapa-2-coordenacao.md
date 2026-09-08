@@ -194,6 +194,8 @@ C05: anexos Chat a6128530(9aceites) e picker2c36807f(3testes), sem integração/
 Critérios/testes/arquivos/bloqueios estão nas linhas afetadas e neste relatório. Métrica quantitativa mais recente permanece o snapshot118/219FE parcial às15:40; não recalculada por esta simples incorporação, nenhum percentual de implementação criado. Código candidato Claude ainda não integrado; entrega dev de código permanece c144f8c4, sem deploy/aplicação remota. CronCreate C04e50dd60a e C056a2a031f são mecanismos relatados pelas sessões, não ferramentas de despertar direto C00. Acknowledgements publicados nas assignments, sem afirmar sessão ativa agora.
 
 ## Upload comum integrado — 2026-09-08T15:50:03-03:00
+Recibo 2026-09-08T15:51:42-03:00: push atômico e ls-remote confirmaram origin/dev e branch C00 em **e9e615706ec1d24602a3753e2678ecc809e96dd8**, incluindo305f9824/2980151e e documentação. Publicação Git verificada; nenhum deploy/aplicação remota.
+
 
 C02/r26 recebido; release dos quatro arquivos I007 aceito. Origem0a94f2da→C00305f9824; exports públicos/testes por barrel em2980151e. **89/89 Dart PASS** na C00, analyzer5arquivos limpo, formatter sem alterações. Log C:/Users/adrie/AppData/Local/Temp/coelo-c00-media-upload-1550.log. Contrato cliente disponível em package:coelo_api/coelo_api.dart; mediaUploadId permanece fora dos exports públicos.
 

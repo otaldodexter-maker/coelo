@@ -96,7 +96,7 @@
       "thread_id": "01a0819b-a12e-7110-88cb-99e51a82f384",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03",
       "branch": "codex/e2-r01-c03-operacoes",
-      "instruction_revision": 7,
+      "instruction_revision": 8,
       "received_revision": 10,
       "integrated_revision": 2,
       "last_evidence": "2026-09-08T15:28:00-03:00",
@@ -709,8 +709,9 @@
       "source": "0a94f2da",
       "destination": "305f9824",
       "followup": "2980151e",
-      "status": "integrated-local;push-pending",
-      "report": "reports/R01-media-upload-integracao.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-media-upload-integracao.md",
+      "delivery_sha": "e9e615706ec1d24602a3753e2678ecc809e96dd8"
     }
   ],
   "last_delta_processed_at": "2026-09-08T15:50:03-03:00",
@@ -732,9 +733,9 @@
   },
   "last_delivery": {
     "branch": "origin/dev",
-    "sha": "c144f8c432008e7ea53f60c0756949e7a107fb86",
-    "verified_at": "2026-09-08T15:41:16-03:00",
-    "method": "atomic push + ls-remote; two reviewed C03 lots; no remote data changes",
+    "sha": "e9e615706ec1d24602a3753e2678ecc809e96dd8",
+    "verified_at": "2026-09-08T15:51:42-03:00",
+    "method": "atomic push + ls-remote; shared media upload client and documents; no remote data changes",
     "original_local_dev": "84985b5485247df6a8dc7270e33d18601aca0421; dirty checkout preserved",
     "deploy": "not executed by C00; production state not verified"
   },
@@ -779,7 +780,8 @@
   "shared_file_reservations_incremental": {
     "at": "2026-09-08T15:50:03-03:00",
     "C01": "only _SidebarToggle.build plus I006test until explicit release",
-    "C00": "router/composition/auth scope/media public contracts; upload4files release accepted",
-    "C02": "priorSQLI003/I005/decoder reservations unchanged"
+    "C00": "router/composition/media public contracts; authscope temporarily C03; shell toggle temporarily C01",
+    "C02": "priorSQLI003/I005/decoder reservations unchanged",
+    "C03": "superadmin_auth_scope.dart only importRepository and now-unused import; imports_production_deferred_test.dart; until explicit release"
   }
 }
