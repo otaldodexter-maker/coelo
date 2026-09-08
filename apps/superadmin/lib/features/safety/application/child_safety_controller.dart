@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import '../domain/child_safety.dart';
 import '../domain/child_safety_contract.dart';
 
+enum ChildSafetyCommandFailure { unauthorized, validation, conflict, unavailable }
+
 final class ChildSafetyController extends ChangeNotifier {
   ChildSafetyController(
     this._repository, {
@@ -21,6 +23,7 @@ final class ChildSafetyController extends ChangeNotifier {
   bool _canCreate = false;
   bool _saving = false;
   String? _errorMessage;
+  ChildSafetyCommandFailure? _commandFailure;
   Timer? _searchTimer;
   int _requestVersion = 0;
   int _dataVersion = 0;
@@ -33,6 +36,7 @@ final class ChildSafetyController extends ChangeNotifier {
   ChildSafetyDirectoryQuery get query => _query;
   bool get canCreate => _canCreate;
   String? get errorMessage => _errorMessage;
+  ChildSafetyCommandFailure? get commandFailure => _commandFailure;
   ChildSafetySegmentCounts get segmentCounts => _segmentCounts;
   int get currentPage => _query.pageIndex;
   int get pageSize => _query.pageSize;
@@ -119,8 +123,12 @@ final class ChildSafetyController extends ChangeNotifier {
     }
   }
 
-  Future<bool> saveAuthorization(SavePickupAuthorizationCommand command) =>
-      _runCommand(() => _repository.saveAuthorization(command));
+  /// Confirmation belongs to the mutation; the returned bool also requires a
+  /// successful directory refresh. Retrying that read must not resubmit it.
+  Future<bool> saveAuthorization(
+    SavePickupAuthorizationCommand command, {
+    VoidCallback? onConfirmed,
+  }) => _runCommand(() => _repository.saveAuthorization(command), onConfirmed: onConfirmed);
   Future<bool> transitionAuthorization(TransitionPickupAuthorizationCommand command) =>
       _runCommand(() => _repository.transitionAuthorization(command));
   Future<bool> suspendAuthorization(SuspendPickupAuthorizationCommand command) =>
@@ -197,28 +205,38 @@ final class ChildSafetyController extends ChangeNotifier {
     _state = state;
   }
 
-  Future<bool> _runCommand(Future<void> Function() command, {bool refresh = true}) async {
+  Future<bool> _runCommand(
+    Future<void> Function() command, {
+    bool refresh = true,
+    VoidCallback? onConfirmed,
+  }) async {
     if (_saving || _disposed) return false;
     _saving = true;
     _errorMessage = null;
+    _commandFailure = null;
     _notify();
     try {
       await command();
       if (_disposed) return false;
+      onConfirmed?.call();
       if (refresh) await _load(_query);
       return !_disposed && _state == ChildSafetyLoadState.ready;
     } on ChildSafetyUnauthorizedException {
+      _commandFailure = ChildSafetyCommandFailure.unauthorized;
       _requestVersion++;
       _searchTimer?.cancel();
       _failClosed(ChildSafetyLoadState.unauthorized);
       return false;
     } on ChildSafetyValidationException {
+      _commandFailure = ChildSafetyCommandFailure.validation;
       _errorMessage = 'Revise os dados da autorização.';
       return false;
     } on ChildSafetyConflictException {
+      _commandFailure = ChildSafetyCommandFailure.conflict;
       _errorMessage = 'A autorização mudou. Recarregue e tente novamente.';
       return false;
     } on Exception {
+      _commandFailure = ChildSafetyCommandFailure.unavailable;
       _errorMessage = 'Não foi possível concluir a ação.';
       return false;
     } finally {

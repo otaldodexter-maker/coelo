@@ -11,6 +11,359 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('retained primary does not skip a step on a double invocation', (tester) async {
+    await _surface(tester);
+    final repository = _Repository('Escopo A');
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_wizard(controller, 'child-a'));
+    await tester.pumpAndSettle();
+    final primary = find.byKey(const Key('safety-wizard-primary'));
+    final retained = tester.widget<FilledButton>(primary).onPressed!;
+    retained();
+    retained();
+    await tester.pumpAndSettle();
+    expect(find.text('Selecione a pessoa global e informe relação e motivo.'), findsNothing);
+    expect(repository.savedCommands, isEmpty);
+    expect(find.widgetWithText(OutlinedButton, 'Anterior'), findsOneWidget);
+  });
+
+  for (final restored in [false, true]) {
+    testWidgets('retained primary cannot submit a replacement context, restored: $restored', (
+      tester,
+    ) async {
+      await _surface(tester);
+      final repository = _Repository('Escopo A');
+      final controller = ChildSafetyController(repository);
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(_wizard(controller, 'child-a'));
+      await tester.pumpAndSettle();
+      await _prepareSave(tester);
+      final primary = find.byKey(const Key('safety-wizard-primary'));
+      final retained = tester.widget<FilledButton>(primary).onPressed!;
+      await tester.pumpWidget(_wizard(controller, 'child-b'));
+      await tester.pumpAndSettle();
+      if (restored) {
+        await tester.pumpWidget(_wizard(controller, 'child-a'));
+        await tester.pumpAndSettle();
+      }
+      await _prepareSave(tester);
+      retained();
+      await tester.pumpAndSettle();
+      expect(repository.savedCommands, isEmpty);
+      await tester.tap(primary);
+      await tester.pumpAndSettle();
+      expect(repository.savedCommands, hasLength(1));
+    });
+  }
+
+  for (final recovery in ['success', 'denied', 'edited', 'callback', 'restored-context']) {
+    testWidgets('confirmed save retries only reads after reload failure: $recovery', (
+      tester,
+    ) async {
+      await _surface(tester);
+      final repository = _Repository('Escopo A');
+      final pending = Completer<void>();
+      repository.pendingSave = pending.future;
+      final controller = ChildSafetyController(repository);
+      addTearDown(controller.dispose);
+      var completions = 0;
+      var replacementCompletions = 0;
+      void completed() => completions++;
+      await tester.pumpWidget(_wizard(controller, 'child-a', onSaved: completed));
+      await tester.pumpAndSettle();
+      await _prepareSave(tester);
+      final primary = find.byKey(const Key('safety-wizard-primary'));
+      await tester.tap(primary);
+      await tester.pump();
+      if (recovery == 'edited') {
+        await tester.tap(find.widgetWithText(OutlinedButton, 'Anterior'));
+        await tester.pump();
+        await tester.tap(find.widgetWithText(OutlinedButton, 'Anterior'));
+        await tester.pump();
+        await tester.enterText(find.byType(TextField).last, 'Alteração ainda não enviada');
+      }
+      repository.directoryFailure = const ChildSafetyUnavailableException();
+      pending.complete();
+      await tester.pumpAndSettle();
+      final command = repository.savedCommands.single;
+      expect(completions, 0);
+      expect(find.text('child-a · Escopo A'), findsNothing);
+      expect(find.text('Alteração ainda não enviada'), findsNothing);
+      expect(tester.widget<FilledButton>(primary).onPressed, isNull);
+      final retry = find.widgetWithText(OutlinedButton, 'Recarregar dados');
+      final retainedRetry = tester.widget<OutlinedButton>(retry).onPressed!;
+      final readsBefore = repository.directoryReads;
+      retainedRetry();
+      retainedRetry();
+      await tester.pumpAndSettle();
+      expect(repository.directoryReads, readsBefore + 1);
+      expect(repository.savedCommands, [same(command)]);
+      expect(tester.widget<OutlinedButton>(retry).onPressed, isNotNull);
+      if (recovery == 'callback') {
+        await tester.pumpWidget(
+          _wizard(controller, 'child-a', onSaved: () => replacementCompletions++),
+        );
+        await tester.pumpAndSettle();
+      }
+      if (recovery == 'restored-context') {
+        await tester.pumpWidget(_wizard(controller, 'child-b', onSaved: completed));
+        await tester.pumpAndSettle();
+        await tester.pumpWidget(_wizard(controller, 'child-a', onSaved: completed));
+        await tester.pumpAndSettle();
+        final reads = repository.directoryReads;
+        retainedRetry();
+        await tester.pumpAndSettle();
+        expect(repository.directoryReads, reads);
+        expect(repository.savedCommands, [same(command)]);
+        expect(completions, 0);
+        return;
+      }
+      repository.directoryFailure = recovery == 'denied'
+          ? const ChildSafetyUnauthorizedException()
+          : null;
+      await tester.tap(retry);
+      await tester.pumpAndSettle();
+      expect(repository.savedCommands, [same(command)]);
+      expect(completions, recovery == 'success' ? 1 : 0);
+      expect(replacementCompletions, 0);
+      if (recovery == 'denied') {
+        expect(find.text('child-a · Escopo A'), findsNothing);
+        expect(retry, findsNothing);
+        expect(tester.widget<FilledButton>(primary).onPressed, isNull);
+      } else {
+        expect(repository.childReads, ['child-a', 'child-a']);
+        if (recovery == 'edited') {
+          expect(find.text('Alteração ainda não enviada'), findsOneWidget);
+        }
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final replacement in ['child', 'controller']) {
+    testWidgets('pending intention cannot survive a $replacement A B A context replacement', (
+      tester,
+    ) async {
+      await _surface(tester);
+      final repository = _Repository('Escopo A');
+      final pending = Completer<void>();
+      repository.pendingSave = pending.future;
+      final original = ChildSafetyController(repository);
+      final other = ChildSafetyController(_Repository('Escopo B'));
+      addTearDown(original.dispose);
+      addTearDown(other.dispose);
+      var completions = 0;
+      void completed() => completions++;
+      await tester.pumpWidget(_wizard(original, 'child-a', onSaved: completed));
+      await tester.pumpAndSettle();
+      await _prepareSave(tester);
+      final primary = find.byKey(const Key('safety-wizard-primary'));
+      await tester.tap(primary);
+      await tester.pump();
+      final oldCommand = repository.savedCommands.single;
+      await tester.pumpWidget(
+        _wizard(
+          replacement == 'controller' ? other : original,
+          replacement == 'child' ? 'child-b' : 'child-a',
+          onSaved: completed,
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.pumpWidget(_wizard(original, 'child-a', onSaved: completed));
+      await tester.pumpAndSettle();
+      pending.completeError(const ChildSafetyUnavailableException());
+      await tester.pumpAndSettle();
+      expect(completions, 0);
+      repository.pendingSave = null;
+      await _prepareSave(tester);
+      await tester.tap(primary);
+      await tester.pumpAndSettle();
+      expect(repository.savedCommands, hasLength(2));
+      expect(repository.savedCommands.last.requestId, isNot(oldCommand.requestId));
+      expect(completions, 1);
+    });
+  }
+
+  testWidgets('changing a submitted draft preserves edits without announcing their persistence', (
+    tester,
+  ) async {
+    await _surface(tester);
+    final repository = _Repository('Escopo A');
+    final pending = Completer<void>();
+    repository.pendingSave = pending.future;
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    var completions = 0;
+    await tester.pumpWidget(_wizard(controller, 'child-a', onSaved: () => completions++));
+    await tester.pumpAndSettle();
+    await _prepareSave(tester);
+    final primary = find.byKey(const Key('safety-wizard-primary'));
+    await tester.tap(primary);
+    await tester.pump();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Anterior'));
+    await tester.pump();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Anterior'));
+    await tester.pump();
+    await tester.enterText(find.byType(TextField).last, 'Nova intenção ainda não enviada');
+    pending.complete();
+    await tester.pumpAndSettle();
+    expect(completions, 0);
+    expect(repository.savedCommands.single.requestReason, 'Solicitação sintética');
+    expect(find.text('Nova intenção ainda não enviada'), findsOneWidget);
+    await tester.tap(primary);
+    await tester.pumpAndSettle();
+    await tester.tap(primary);
+    await tester.pumpAndSettle();
+    await tester.tap(primary);
+    await tester.pumpAndSettle();
+    expect(completions, 1);
+    expect(repository.savedCommands.last.requestReason, 'Nova intenção ainda não enviada');
+    expect(
+      repository.savedCommands.last.requestId,
+      isNot(repository.savedCommands.first.requestId),
+    );
+  });
+
+  testWidgets('create conflict cannot submit again without a new authorized context', (
+    tester,
+  ) async {
+    await _surface(tester);
+    final repository = _Repository('Escopo A');
+    final pending = Completer<void>();
+    repository.pendingSave = pending.future;
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_wizard(controller, 'child-a'));
+    await tester.pumpAndSettle();
+    await _prepareSave(tester);
+    final primary = find.byKey(const Key('safety-wizard-primary'));
+    final retained = tester.widget<FilledButton>(primary).onPressed!;
+    retained();
+    await tester.pump();
+    pending.completeError(const ChildSafetyConflictException());
+    await tester.pumpAndSettle();
+    expect(tester.widget<FilledButton>(primary).onPressed, isNull);
+    expect(find.text('Recarregar autorização'), findsNothing);
+    retained();
+    await tester.pumpAndSettle();
+    expect(repository.savedCommands, hasLength(1));
+  });
+
+  for (final change in ['unchanged', 'edited']) {
+    testWidgets('wizard retries an immutable authorization intention after $change', (
+      tester,
+    ) async {
+      await _surface(tester);
+      final repository = _Repository('Escopo A');
+      final pending = Completer<void>();
+      repository.pendingSave = pending.future;
+      final controller = ChildSafetyController(repository);
+      addTearDown(controller.dispose);
+      var completions = 0;
+      await tester.pumpWidget(_wizard(controller, 'child-a', onSaved: () => completions++));
+      await tester.pumpAndSettle();
+      await _prepareSave(tester);
+      final primary = find.byKey(const Key('safety-wizard-primary'));
+      await tester.tap(primary);
+      await tester.pump();
+      final first = repository.savedCommands.single;
+      pending.completeError(const ChildSafetyUnavailableException());
+      await tester.pumpAndSettle();
+      expect(completions, 0);
+      repository.pendingSave = null;
+      if (change == 'edited') {
+        await tester.tap(find.widgetWithText(OutlinedButton, 'Anterior'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(OutlinedButton, 'Anterior'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(TextField).last, 'Motivo atualizado');
+        await tester.tap(primary);
+        await tester.pumpAndSettle();
+        await tester.tap(primary);
+        await tester.pumpAndSettle();
+      }
+      await tester.tap(primary);
+      await tester.pumpAndSettle();
+      expect(repository.savedCommands, hasLength(2));
+      final second = repository.savedCommands.last;
+      expect(second.requestId, change == 'unchanged' ? first.requestId : isNot(first.requestId));
+      if (change == 'unchanged') expect(second, same(first));
+      expect(first.requestReason, 'Solicitação sintética');
+      expect(second.requestReason, change == 'edited' ? 'Motivo atualizado' : first.requestReason);
+      expect(second.childId, first.childId);
+      expect(second.childContextId, first.childContextId);
+      expect(second.unitId, first.unitId);
+      expect(second.personId, first.personId);
+      expect(second.expectedVersion, first.expectedVersion);
+      expect(second.relationshipCode, first.relationshipCode);
+      expect(second.relationshipDetail, first.relationshipDetail);
+      expect(second.capabilityCodes, first.capabilityCodes);
+      expect(second.validFrom, first.validFrom);
+      expect(second.validUntil, first.validUntil);
+      expect(() => first.capabilityCodes.add('transport'), throwsUnsupportedError);
+      expect(completions, 1);
+    });
+  }
+
+  testWidgets('conflict blocks obsolete submit until edit context is explicitly reloaded', (
+    tester,
+  ) async {
+    await _surface(tester);
+    final repository = _Repository('Escopo A')..authorizationVersion = 7;
+    final pending = Completer<void>();
+    repository.pendingSave = pending.future;
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    var completions = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: ChildSafetyWizardPage(
+          controller: controller,
+          childId: 'child-a',
+          authorizationId: 'authorization-a',
+          logout: _logout,
+          onCancel: () {},
+          onSaved: () => completions++,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await _prepareSave(tester);
+    final primary = find.byKey(const Key('safety-wizard-primary'));
+    await tester.tap(primary);
+    await tester.pump();
+    pending.completeError(const ChildSafetyConflictException());
+    await tester.pumpAndSettle();
+    expect(tester.widget<FilledButton>(primary).onPressed, isNull);
+    expect(completions, 0);
+    repository.authorizationVersion = 8;
+    repository.pendingSave = null;
+    final failedReload = Completer<ChildSafetyRecord?>();
+    repository.pending = failedReload.future;
+    await tester.tap(find.text('Recarregar autorização'));
+    await tester.pump();
+    failedReload.completeError(const ChildSafetyUnavailableException());
+    await tester.pumpAndSettle();
+    expect(tester.widget<FilledButton>(primary).onPressed, isNull);
+    expect(repository.savedCommands, hasLength(1));
+    repository.pending = null;
+    await tester.tap(find.text('Recarregar autorização'));
+    await tester.pumpAndSettle();
+    expect(repository.savedCommands, hasLength(1));
+    await _prepareSave(tester);
+    await tester.tap(primary);
+    await tester.pumpAndSettle();
+    expect(repository.savedCommands, hasLength(2));
+    expect(repository.savedCommands.first.expectedVersion, 7);
+    expect(repository.savedCommands.last.expectedVersion, 8);
+    expect(
+      repository.savedCommands.last.requestId,
+      isNot(repository.savedCommands.first.requestId),
+    );
+    expect(completions, 1);
+  });
   testWidgets('detail hides the previous child while the next child is loading', (tester) async {
     await _surface(tester);
     final repository = _Repository('Escopo A');
@@ -371,6 +724,18 @@ Future<void> _surface(WidgetTester tester) async {
   addTearDown(() => tester.binding.setSurfaceSize(null));
 }
 
+Future<void> _prepareSave(WidgetTester tester) async {
+  final primary = find.byKey(const Key('safety-wizard-primary'));
+  await tester.tap(primary);
+  await tester.pumpAndSettle();
+  await tester.enterText(find.byType(TextField).at(1), 'person-a');
+  await tester.enterText(find.byType(TextField).last, 'Solicitação sintética');
+  await tester.tap(primary);
+  await tester.pumpAndSettle();
+  await tester.tap(primary);
+  await tester.pumpAndSettle();
+}
+
 Future<LogoutResult> _logout() async => const LogoutResult.success();
 
 Widget _detail(ChildSafetyController controller, String childId) => MaterialApp(
@@ -404,6 +769,7 @@ final class _Repository implements ChildSafetyRepository {
   Future<ChildSafetyRecord?>? pending;
   Future<List<ChildSafetyChildOption>>? pendingSearch;
   Future<void>? pendingSave;
+  int? authorizationVersion;
   final savedCommands = <SavePickupAuthorizationCommand>[];
 
   ChildSafetyRecord record(String id) => ChildSafetyRecord(
@@ -412,7 +778,24 @@ final class _Repository implements ChildSafetyRepository {
     internalId: id,
     institutionName: scope,
     unitName: 'Unidade sintética',
-    authorizations: const [],
+    authorizations: [
+      if (authorizationVersion case final version?)
+        PickupAuthorization(
+          id: 'authorization-a',
+          name: 'Pessoa sintética',
+          relationship: 'mother',
+          institutionName: scope,
+          unitName: 'Unidade sintética',
+          status: PickupAuthorizationStatus.pending,
+          origin: PickupAuthorizationOrigin.guardian,
+          personId: 'person-a',
+          childContextId: 'context-$id',
+          unitId: 'unit-$scope',
+          capabilityCodes: const {'pickup'},
+          requestReason: 'Solicitação sintética',
+          version: version,
+        ),
+    ],
     childContextId: 'context-$id',
     institutionId: 'institution-$scope',
     unitId: 'unit-$scope',

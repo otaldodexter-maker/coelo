@@ -6,6 +6,64 @@ import 'package:coelo_superadmin/features/safety/domain/child_safety_repository.
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('confirmation precedes failed refresh and retry performs no new mutation', () async {
+    final repository = _Repository();
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    const command = SavePickupAuthorizationCommand(
+      requestId: '11111111-1111-4111-8111-111111111111',
+      childId: 'child-1',
+      childContextId: 'context-1',
+      unitId: 'unit-1',
+      personId: 'person-1',
+      relationshipCode: 'mother',
+      capabilityCodes: {'pickup'},
+      requestReason: 'Revisão sintética',
+    );
+    var confirmations = 0;
+    repository.unauthorized = true;
+    expect(
+      await controller.saveAuthorization(command, onConfirmed: () => confirmations++),
+      isFalse,
+    );
+    expect(confirmations, 1);
+    expect(controller.state, ChildSafetyLoadState.unauthorized);
+    repository.unauthorized = false;
+    await controller.retry();
+    expect(controller.state, ChildSafetyLoadState.ready);
+    expect(confirmations, 1);
+    expect(repository.saves, 1);
+    repository.saveFailure = const ChildSafetyUnavailableException();
+    expect(
+      await controller.saveAuthorization(command, onConfirmed: () => confirmations++),
+      isFalse,
+    );
+    expect(confirmations, 1);
+  });
+  test('command failure exposes conflict separately and resets after a new attempt', () async {
+    final repository = _Repository();
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    const command = SavePickupAuthorizationCommand(
+      requestId: '11111111-1111-4111-8111-111111111111',
+      childId: 'child-1',
+      childContextId: 'context-1',
+      unitId: 'unit-1',
+      personId: 'person-1',
+      relationshipCode: 'mother',
+      capabilityCodes: {'pickup'},
+      requestReason: 'Revisão sintética',
+    );
+    repository.saveFailure = const ChildSafetyConflictException();
+    expect(await controller.saveAuthorization(command), isFalse);
+    expect(controller.commandFailure, ChildSafetyCommandFailure.conflict);
+    repository.saveFailure = const ChildSafetyUnavailableException();
+    expect(await controller.saveAuthorization(command), isFalse);
+    expect(controller.commandFailure, ChildSafetyCommandFailure.unavailable);
+    repository.saveFailure = null;
+    expect(await controller.saveAuthorization(command), isTrue);
+    expect(controller.commandFailure, isNull);
+  });
   test('loads server page and exposes server segment counts', () async {
     final repository = _Repository();
     final controller = ChildSafetyController(repository, searchDebounce: Duration.zero);
@@ -295,6 +353,8 @@ void main() {
 }
 
 final class _Repository implements ChildSafetyRepository {
+  int saves = 0;
+  Exception? saveFailure;
   final queries = <ChildSafetyDirectoryQuery>[];
   bool unauthorized = false;
   bool commandUnauthorized = false;
@@ -351,7 +411,11 @@ final class _Repository implements ChildSafetyRepository {
   }
 
   @override
-  Future<void> saveAuthorization(SavePickupAuthorizationCommand command) async {}
+  Future<void> saveAuthorization(SavePickupAuthorizationCommand command) async {
+    saves++;
+    if (saveFailure case final failure?) throw failure;
+  }
+
   @override
   Future<void> transitionAuthorization(TransitionPickupAuthorizationCommand command) async {
     transitions++;

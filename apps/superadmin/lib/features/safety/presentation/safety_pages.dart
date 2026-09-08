@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -840,6 +842,12 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
   int expectedVersion = 1;
   int _contextVersion = 0;
   int _completionVersion = 0;
+  SavePickupAuthorizationCommand? _pendingSaveCommand;
+  SavePickupAuthorizationCommand? _confirmedSaveCommand;
+  VoidCallback? _confirmedSaveCallback;
+  int? _confirmedCompletionVersion;
+  bool _reloadingConfirmedSave = false;
+  bool _saveNeedsReload = false;
   bool _loadingContext = false;
   static const labels = ['Criança', 'Pessoa autorizada', 'Validade e capacidades', 'Revisão'];
 
@@ -873,6 +881,12 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
 
   void _clearContext() {
     _contextVersion++;
+    _pendingSaveCommand = null;
+    _confirmedSaveCommand = null;
+    _confirmedSaveCallback = null;
+    _confirmedCompletionVersion = null;
+    _reloadingConfirmedSave = false;
+    _saveNeedsReload = false;
     step = 0;
     searching = false;
     _loadingContext = false;
@@ -896,8 +910,15 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
     if (!mounted) return;
     setState(() {
       if (_contextUnavailable) {
-        _clearContext();
-        error = 'Não foi possível carregar o contexto solicitado.';
+        if (widget.controller.state == ChildSafetyLoadState.error &&
+            _confirmedSaveCommand != null) {
+          // Keep the accepted intention privately while the recovery panel
+          // hides its data. A denial still clears everything immediately.
+          error = 'Não foi possível atualizar os dados. Recarregue para continuar.';
+        } else {
+          _clearContext();
+          error = 'Não foi possível carregar o contexto solicitado.';
+        }
       }
     });
   }
@@ -940,6 +961,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       }
       setState(() {
         child = option;
+        _saveNeedsReload = false;
         options = [option];
         childSearch.text = record.childName;
         if (authorization != null) {
@@ -1003,23 +1025,22 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
                     : SuperadminFormStepStatus.incomplete,
               ),
           ],
-          onStepSelected: (value) => setState(() => step = value),
+          onStepSelected: (value) {
+            if (_confirmedSaveCommand == null) setState(() => step = value);
+          },
         ),
-        body: _section(),
+        body: _confirmedSaveCommand == null ? _section() : _confirmedSaveRecovery(),
         footer: SuperadminFormActionFooter(
           tertiaryAction: TextButton(onPressed: widget.onCancel, child: const Text('Cancelar')),
           continuationActions: [
             if (step > 0)
               OutlinedButton(
-                onPressed: () => setState(() => step--),
+                onPressed: _confirmedSaveCommand == null ? () => setState(() => step--) : null,
                 child: const Text('Anterior'),
               ),
             FilledButton(
               key: const Key('safety-wizard-primary'),
-              onPressed:
-                  widget.controller.isSaving || _contextUnavailable || _loadingContext || searching
-                  ? null
-                  : _continue,
+              onPressed: _primaryAction(),
               child: Text(step == 3 ? 'Enviar para aprovação' : 'Continuar'),
             ),
           ],
@@ -1027,6 +1048,110 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       ),
     ),
   );
+  VoidCallback? _primaryAction() {
+    if (widget.controller.isSaving ||
+        _contextUnavailable ||
+        _loadingContext ||
+        searching ||
+        _saveNeedsReload ||
+        _confirmedSaveCommand != null) {
+      return null;
+    }
+    final version = _contextVersion;
+    final completionVersion = _completionVersion;
+    final selectedStep = step;
+    final selectedChild = child;
+    return () {
+      if (!mounted ||
+          version != _contextVersion ||
+          completionVersion != _completionVersion ||
+          selectedStep != step ||
+          (selectedStep != 0 && !identical(selectedChild, child))) {
+        return;
+      }
+      unawaited(_continue());
+    };
+  }
+
+  Widget _confirmedSaveRecovery() {
+    final version = _contextVersion;
+    return _panel('Atualizar dados', [
+      const Text('A solicitação foi recebida. A recarga atualiza os dados sem enviar novamente.'),
+      const SizedBox(height: CoeloSpacing.space3),
+      OutlinedButton(
+        onPressed: widget.controller.isSaving || _reloadingConfirmedSave
+            ? null
+            : () {
+                if (mounted && version == _contextVersion) unawaited(_retryConfirmedSaveRead());
+              },
+        child: const Text('Recarregar dados'),
+      ),
+    ]);
+  }
+
+  Future<void> _retryConfirmedSaveRead() async {
+    final command = _confirmedSaveCommand;
+    if (command == null || _reloadingConfirmedSave || widget.controller.isSaving) return;
+    final version = _contextVersion;
+    final controller = widget.controller;
+    bool isCurrent() =>
+        mounted && version == _contextVersion && identical(command, _confirmedSaveCommand);
+    setState(() => _reloadingConfirmedSave = true);
+    try {
+      await controller.retry();
+      if (!isCurrent() || controller.state != ChildSafetyLoadState.ready) return;
+      final record = await controller.fetchChild(command.childId);
+      if (!isCurrent()) return;
+      if (record == null) throw const ChildSafetyUnavailableException();
+      PickupAuthorization? authorization;
+      if (command.authorizationId != null) {
+        for (final candidate in record.authorizations) {
+          if (candidate.id == command.authorizationId) authorization = candidate;
+        }
+        if (authorization == null) throw const ChildSafetyUnavailableException();
+      }
+      if ((authorization?.childContextId ?? record.childContextId) != command.childContextId ||
+          (authorization?.unitId ?? record.unitId) != command.unitId) {
+        throw const ChildSafetyUnavailableException();
+      }
+      _finishConfirmedSave(refreshedVersion: authorization?.version);
+    } on ChildSafetyUnauthorizedException {
+      if (isCurrent()) {
+        setState(() {
+          _clearContext();
+          error = 'Não foi possível carregar o contexto solicitado.';
+        });
+      }
+    } on Exception {
+      if (isCurrent()) {
+        setState(() => error = 'Não foi possível atualizar os dados. Recarregue para continuar.');
+      }
+    } finally {
+      if (isCurrent()) setState(() => _reloadingConfirmedSave = false);
+    }
+  }
+
+  void _finishConfirmedSave({int? refreshedVersion}) {
+    final command = _confirmedSaveCommand!;
+    final callback = _confirmedSaveCallback;
+    final canComplete =
+        _confirmedCompletionVersion == _completionVersion &&
+        identical(callback, widget.onSaved) &&
+        child?.childContextId != null &&
+        child?.unitId != null &&
+        _sameSaveIntention(command, _saveCommand(command.requestId));
+    setState(() {
+      _confirmedSaveCommand = null;
+      _confirmedSaveCallback = null;
+      _confirmedCompletionVersion = null;
+      _reloadingConfirmedSave = false;
+      _pendingSaveCommand = null;
+      if (refreshedVersion != null) expectedVersion = refreshedVersion;
+      error = null;
+    });
+    if (canComplete) callback?.call();
+  }
+
   Widget _section() => _panel(labels[step], switch (step) {
     0 => [
       CoeloFormTextField(
@@ -1201,9 +1326,33 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
           const SizedBox(height: CoeloSpacing.space3),
           Text(error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
         ],
+        if (_saveNeedsReload && widget.childId != null && widget.authorizationId != null) ...[
+          const SizedBox(height: CoeloSpacing.space3),
+          _conflictReloadAction(),
+        ],
       ],
     ),
   );
+  Widget _conflictReloadAction() {
+    final version = _contextVersion;
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: OutlinedButton(
+        onPressed: _loadingContext || widget.controller.isSaving
+            ? null
+            : () {
+                if (!mounted || version != _contextVersion || !_saveNeedsReload) return;
+                setState(() {
+                  _clearContext();
+                  _saveNeedsReload = true;
+                });
+                _loadInitialContext();
+              },
+        child: const Text('Recarregar autorização'),
+      ),
+    );
+  }
+
   Future<void> _search() async {
     if (_contextUnavailable || _loadingContext || searching) return;
     final version = _contextVersion;
@@ -1225,7 +1374,15 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
   }
 
   Future<void> _continue() async {
-    if (_contextUnavailable || _loadingContext || searching || widget.controller.isSaving) return;
+    if (!mounted ||
+        _contextUnavailable ||
+        _loadingContext ||
+        searching ||
+        widget.controller.isSaving ||
+        _saveNeedsReload ||
+        _confirmedSaveCommand != null) {
+      return;
+    }
     final version = _contextVersion;
     final controller = widget.controller;
     setState(() => error = null);
@@ -1255,30 +1412,71 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
     }
     final completionVersion = _completionVersion;
     final onSaved = widget.onSaved;
+    final pending = _pendingSaveCommand;
+    final current = _saveCommand(pending?.requestId ?? _uuid());
+    final command = pending != null && _sameSaveIntention(pending, current)
+        ? pending
+        : pending == null
+        ? current
+        : _saveCommand(_uuid());
+    _pendingSaveCommand = command;
     final saved = await controller.saveAuthorization(
-      SavePickupAuthorizationCommand(
-        requestId: _uuid(),
-        childId: selected.id,
-        childContextId: selected.childContextId!,
-        unitId: selected.unitId!,
-        personId: personId.text.trim(),
-        authorizationId: widget.authorizationId,
-        expectedVersion: expectedVersion,
-        relationshipCode: relationship,
-        relationshipDetail: relationship == 'other' ? relationshipDetail.text.trim() : null,
-        capabilityCodes: _capabilities(),
-        requestReason: requestReason.text.trim(),
-        validFrom: validity?.start,
-        validUntil: validityOpenEnded ? null : validity?.end,
-      ),
+      command,
+      onConfirmed: () {
+        if (!mounted || version != _contextVersion) return;
+        _confirmedSaveCommand = command;
+        _confirmedSaveCallback = onSaved;
+        _confirmedCompletionVersion = completionVersion;
+      },
     );
-    if (!mounted || version != _contextVersion || completionVersion != _completionVersion) return;
+    if (!mounted || version != _contextVersion) return;
+    if (controller.commandFailure == ChildSafetyCommandFailure.conflict) {
+      setState(() {
+        _pendingSaveCommand = null;
+        _saveNeedsReload = true;
+        error = controller.errorMessage;
+      });
+      return;
+    }
     if (saved) {
-      onSaved();
+      _finishConfirmedSave();
     } else {
       setState(() => error = controller.errorMessage);
     }
   }
+
+  SavePickupAuthorizationCommand _saveCommand(String requestId) => SavePickupAuthorizationCommand(
+    requestId: requestId,
+    childId: child!.id,
+    childContextId: child!.childContextId!,
+    unitId: child!.unitId!,
+    personId: personId.text.trim(),
+    authorizationId: widget.authorizationId,
+    expectedVersion: expectedVersion,
+    relationshipCode: relationship,
+    relationshipDetail: relationship == 'other' ? relationshipDetail.text.trim() : null,
+    capabilityCodes: Set.unmodifiable(_capabilities()),
+    requestReason: requestReason.text.trim(),
+    validFrom: validity?.start,
+    validUntil: validityOpenEnded ? null : validity?.end,
+  );
+
+  bool _sameSaveIntention(
+    SavePickupAuthorizationCommand first,
+    SavePickupAuthorizationCommand second,
+  ) =>
+      first.childId == second.childId &&
+      first.childContextId == second.childContextId &&
+      first.unitId == second.unitId &&
+      first.personId == second.personId &&
+      first.authorizationId == second.authorizationId &&
+      first.expectedVersion == second.expectedVersion &&
+      first.relationshipCode == second.relationshipCode &&
+      first.relationshipDetail == second.relationshipDetail &&
+      setEquals(first.capabilityCodes, second.capabilityCodes) &&
+      first.requestReason == second.requestReason &&
+      first.validFrom == second.validFrom &&
+      first.validUntil == second.validUntil;
 
   Set<String> _capabilities() => {
     if (pickup) 'pickup',
