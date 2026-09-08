@@ -9,8 +9,10 @@ generated_at: "2026-09-07"
 
 Somente Superadmin. Remoto é produção e permanece read-only sem lease.
 Um único writer: agente principal. Subagentes fazem inspeção e review sem
-alterações: account_review (sessão), realm_audit (Usuários internos/contrato
-RPC), rls_negative_review (P0 RLS; depois Conta). Não houve execução de BD,
+alterações: account_review (Auth/SDK), realm_audit (Usuários internos/Conta).
+O escopo original inclui Auth, Conta, Usuários internos, Perfis, Modelos e
+capacidades/realm/anti-escalada; um incremento não encerra a frente.
+Não houve execução de BD,
 Docker ou deploy por esta frente nesta retomada.
 
 ## Usuários internos — internal-users.list
@@ -18,9 +20,9 @@ Docker ou deploy por esta frente nesta retomada.
 | Passo | Camada / objeto | Estado e próximo gate |
 |---|---|---|
 | 1/6 Contrato/inventário | read/update/suspend internos | Recorte local listado; criação/convite não habilitados |
-| 2/6 Backend/negativas | RPCs superadmin_internal_user_profiles e superadmin_internal_users_list | Adapter testado via HTTP simulado; falta prova SQL/runtime autorizado |
+| 2/6 Backend/negativas | RPCs profiles/list/detail e lifecycle | Fixture nominal e0efd98e com 45 asserts revisados; replay exclusivo Eng1 pendente. Dois gaps de payload registrados separadamente em eaf19701 |
 | 3/6 Cliente/estados | scope/main/app/router/diretório | Composição readonly, negativa e limpeza de tela implementadas |
-| 4/6 Integração/reload | Sessão → RPC → UI | Cache local ligado à sessão; epoch descarta respostas antigas. Falta backend real e lifecycle de mídia |
+| 4/6 Integração/reload | Sessão → RPC → UI | Cache/epoch ligados à sessão e dispose. Backend real aberto; mídia aguarda consumidor real da E2E3 |
 | 5/6 Regressão/visual | testes Flutter | Diretório 13/13; composição inicial combinada 32/32; visual real ainda aberto |
 | 6/6 Review/evidências/commit | commits locais | 151d9ddf, 022e1568, bbafe63e; reviews locais aprovados, sem promover E2E |
 
@@ -32,30 +34,50 @@ Docker ou deploy por esta frente nesta retomada.
 | 2/6 Backend/negativas | Nenhum BD nesta fatia | Servidor continua reautorizando; não há mudança de claims/capabilities |
 | 3/6 Cliente/estados | authorize/_setSessionState | Alteração semântica notifica; reautorização equivalente permanece estável |
 | 4/6 Integração/reload | Lista normal escuta sessão | ListenableBuilder + chave de revisão; teste prova nova carga e perda de permissão sem RPC |
-| 5/6 Regressão/visual | sessão/scope/router/login | 55/55 locais verdes; cache/scope 36/36. MediaSession e dispose em andamento |
+| 5/6 Regressão/visual | sessão/scope/login/logout | R06: 42/42 (14 scope + 13 login + 3 logout + 12 sessão), analyzer e review. R07 SDK recovery em andamento |
 | 6/6 Review/evidências/commit | account_review | Bootstrap concorrente inicial corrigido após RED; revisão final aprovada |
 
 ## Usuários internos — detalhe/edição
 
 | Passo | Camada / objeto | Estado e próximo gate |
 |---|---|---|
-| 1/6 Contrato/inventário | detail/update/change_status | Subagente identificou preview residual; reserva de rota solicitada |
-| 2/6 Backend/negativas | RPCs superadmin_internal_user_detail/update/change_status | SQL lido, não executado; divergência de versões sob revisão |
-| 3/6 Cliente/estados | detail/form | Aberto: fallback cache em erro, instituições fake, avatar não persistido, e-mail imutável no SQL |
-| 4/6 Integração/reload | Nenhum fluxo novo habilitado | Aberto; separar read/update/suspend antes de habilitar |
-| 5/6 Regressão/visual | matriz proposta pelo subagente | REDs ainda a implementar |
-| 6/6 Review/evidências/commit | Sem commit desta fatia | Não declarar detalhe/edição prontos |
+| 1/6 Contrato/inventário | detail/update/change_status | R04 concedida e implementada: detalhe somente leitura; edição produtiva continua 503 |
+| 2/6 Backend/negativas | RPCs detail/update/change_status | Fixture e0efd98e inclui revoke/receipt/terminalidade; SQL não executado por esta frente |
+| 3/6 Cliente/estados | detail/form | Detalhe descarta fallback stale, trata negação/retry e alterações de revisão. Formulário produtivo não habilitado |
+| 4/6 Integração/reload | Deep link/lista/detalhe | 1e8f0966 prova navegação e troca de sessão via HTTP mock. Sessão/backend reais abertos |
+| 5/6 Regressão/visual | detalhe 7; rota real 4 | Quatro cenários passam em 800px. Trava 1440px pertence ao NAV-LOGOUT01 da E2E2; aguarda integração coordenada e regressão |
+| 6/6 Review/evidências/commit | 4206f2bb, 10730253, 1e8f0966 | Implementação local, não verified-e2e; contagens corrigidas na evidência runtime |
 
 ## Perfis e Modelos — P0 RLS
 
 | Passo | Camada / objeto | Estado e próximo gate |
 |---|---|---|
 | 1/6 Contrato/inventário | 3 tabelas app_private | catalog_versions, command_receipts e command_receipts_v2 nominais identificadas |
-| 2/6 Backend/negativas | app_private.access_profile_* | Proposta estática de RLS/ACL; Eng1 deve provar owners/bypass/trigger/replay local |
+| 2/6 Backend/negativas | app_private.access_profile_* | E1-P0-RLS01 reservado exclusivamente ao Eng1, migration 20260908000500; não duplicar pacote |
 | 3/6 Cliente/estados | Não incluído no pacote RLS | Não converter receipts people-based para UUID interno |
 | 4/6 Integração/reload | Nenhum BD executado | Aguarda replay/preflight; remoto exige lease |
 | 5/6 Regressão/visual | pgTAP proposto | ACL real + RLS independente + trigger/receipts positivos e rollback |
 | 6/6 Review/evidências/commit | Inspeção read-only | Não há migration aplicada nem estado local-green |
+
+## Auth — recovery e corridas de cleanup
+
+R06 entregue em `7d831c17`: recovery observado durante bootstrap preservado,
+sem autorizar o portal nem proteger ID inválido. R07 corrigiu getter/eventos
+SDK, refresh e descarte próprio. Teste SDK/HTTP mock reproduziu getter
+incorreto após callback tardio; revisão acrescentou RED de construção após
+recovery já existente. Sincronização pelo stream existente fechou os REDs:
+74/74 locais (9 SDK + 42 Auth + 23 pacote), sem interface pública adicional.
+Corrida A rejeitado/B ainda pendente permanece separada e aberta; diferença
+de ID isolada não autoriza preservar sessão desconhecida.
+
+## Conta e Configurações
+
+`67b36bab`: carga inicial/dispose do controller de preferências corrigidos
+após dois REDs; 6/6 locais, analyzer e review. Persistência real/reload,
+erros e ordenação de saves ainda abertos. Perfil produtivo continua 503 por
+contrato: self-read/self-edit interno exige gateway nominal, sem reaproveitar
+comando administrativo ou realm people. Avatar depende E2E3/R2; nenhuma capa
+da Conta aprovada. Senha autenticada não se confunde com recovery/reset.
 
 Os rastreadores oficiais permanecem sob autoria exclusiva do Coordenador.
 Este plano registra andamento, não amplia o recorte nem substitui evidência.
