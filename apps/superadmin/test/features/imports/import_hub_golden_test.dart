@@ -83,7 +83,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     await tester.pumpWidget(_app(Brightness.dark, const UnavailableImportRepository()));
     await tester.pumpAndSettle();
-    expect(find.text('Importações indisponíveis'), findsOneWidget);
+    expect(find.text('Importações adiadas'), findsOneWidget);
     await expectLater(
       find.byKey(const Key('import-hub-golden-root')),
       matchesGoldenFile('goldens/import_hub_unavailable_dark_1440.png'),
