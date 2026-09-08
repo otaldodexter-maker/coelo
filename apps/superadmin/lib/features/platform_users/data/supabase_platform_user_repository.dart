@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -16,12 +17,14 @@ final class SupabasePlatformUserRepository
   final Map<String, PlatformUserRecord> _records = {};
   List<PlatformAccessProfile> _profiles = const [];
   int _cacheRevision = 0;
+  final Map<String, ({String fingerprint, String requestId})> _pendingCommands = {};
 
   /// Discards this session's projection and invalidates its pending responses.
   void clearSessionCache() {
     _cacheRevision++;
     _records.clear();
     _profiles = const [];
+    _pendingCommands.clear();
   }
 
   void _requireCurrentCache(int revision) {
@@ -152,7 +155,6 @@ final class SupabasePlatformUserRepository
     final revision = _cacheRevision;
     final current = await _required(id);
     return _command('superadmin_internal_user_update', {
-      'p_request_id': _requestId(),
       'p_internal_identity_id': id,
       'p_expected_version': current.version,
       'p_reason': 'Cadastro interno revisado no Superadmin.',
@@ -197,7 +199,6 @@ final class SupabasePlatformUserRepository
     final revision = _cacheRevision;
     final current = await _required(id);
     return _command('superadmin_internal_user_change_status', {
-      'p_request_id': _requestId(),
       'p_internal_identity_id': id,
       'p_expected_version': current.version,
       'p_status': status,
@@ -215,13 +216,31 @@ final class SupabasePlatformUserRepository
     required int revision,
   }) async {
     _requireCurrentCache(revision);
+    final commandKey = '$function:${params['p_internal_identity_id']}';
+    final fingerprint = jsonEncode(params);
+    var pending = _pendingCommands[commandKey];
+    if (pending == null || pending.fingerprint != fingerprint) {
+      pending = (fingerprint: fingerprint, requestId: _requestId());
+      _pendingCommands[commandKey] = pending;
+    }
     try {
-      final response = await _client.rpc<Map<String, dynamic>>(function, params: params);
+      final response = await _client.rpc<Map<String, dynamic>>(
+        function,
+        params: {'p_request_id': pending.requestId, ...params},
+      );
       final record = _record(_responsePayload(response, revision));
       _records[record.id] = record;
+      if (_pendingCommands[commandKey] == pending) _pendingCommands.remove(commandKey);
       return record;
     } on PostgrestException catch (error) {
       throw _requestError(error, revision);
+    } on Object catch (error) {
+      _requireCurrentCache(revision);
+      if (error is PlatformUserRuleException || error is PlatformUserConflictException) rethrow;
+      throw const PlatformUserRuleException(
+        'backend',
+        'Não foi possível confirmar a operação. Tente novamente.',
+      );
     }
   }
 
