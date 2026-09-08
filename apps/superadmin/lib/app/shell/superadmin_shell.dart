@@ -748,38 +748,40 @@ class _SidebarToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return Semantics(
-      label: collapsed ? 'Expandir menu' : 'Recolher menu',
-      button: true,
-      child: IconButton(
-        key: const Key('superadmin-sidebar-collapse'),
-        onPressed: onPressed,
-        style: IconButton.styleFrom(
-          minimumSize: const Size.square(CoeloSize.touchMin),
-          maximumSize: const Size.square(CoeloSize.touchMin),
-          padding: EdgeInsets.zero,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        ),
-        icon: DecoratedBox(
-          key: const Key('superadmin-sidebar-collapse-visual'),
-          decoration: BoxDecoration(
-            color: colors.surface,
-            shape: BoxShape.circle,
-            border: Border.all(color: colors.outlineVariant),
-            boxShadow: [
-              BoxShadow(
-                color: colors.shadow.withValues(alpha: 0.08),
-                blurRadius: CoeloSpacing.space1,
-                offset: const Offset(0, CoeloSpacing.spaceHalf),
-              ),
-            ],
+    return MergeSemantics(
+      child: Semantics(
+        label: collapsed ? 'Expandir menu' : 'Recolher menu',
+        button: true,
+        child: IconButton(
+          key: const Key('superadmin-sidebar-collapse'),
+          onPressed: onPressed,
+          style: IconButton.styleFrom(
+            minimumSize: const Size.square(CoeloSize.touchMin),
+            maximumSize: const Size.square(CoeloSize.touchMin),
+            padding: EdgeInsets.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
-          child: SizedBox.square(
-            dimension: CoeloSpacing.space6,
-            child: Transform.rotate(
-              key: const Key('superadmin-sidebar-collapse-chevron'),
-              angle: math.pi * progress,
-              child: const Icon(Icons.chevron_left_rounded, size: CoeloSpacing.space4),
+          icon: DecoratedBox(
+            key: const Key('superadmin-sidebar-collapse-visual'),
+            decoration: BoxDecoration(
+              color: colors.surface,
+              shape: BoxShape.circle,
+              border: Border.all(color: colors.outlineVariant),
+              boxShadow: [
+                BoxShadow(
+                  color: colors.shadow.withValues(alpha: 0.08),
+                  blurRadius: CoeloSpacing.space1,
+                  offset: const Offset(0, CoeloSpacing.spaceHalf),
+                ),
+              ],
+            ),
+            child: SizedBox.square(
+              dimension: CoeloSpacing.space6,
+              child: Transform.rotate(
+                key: const Key('superadmin-sidebar-collapse-chevron'),
+                angle: math.pi * progress,
+                child: const Icon(Icons.chevron_left_rounded, size: CoeloSpacing.space4),
+              ),
             ),
           ),
         ),
