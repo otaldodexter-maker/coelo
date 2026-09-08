@@ -1118,6 +1118,55 @@ void main() {
     expect(find.text('Música · Turma Sol'), findsNothing);
   });
 
+  testWidgets('call page ignores an older command response after an A to B swap', (tester) async {
+    final repositoryA = FakeAttendanceRepository.seeded()..commandGate = Completer<void>();
+    final repositoryB = FakeAttendanceRepository.seeded();
+    addTearDown(repositoryA.dispose);
+    addTearDown(repositoryB.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repositoryA,
+          callId: 'call-progress',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final action = find.widgetWithText(OutlinedButton, 'Presente').first;
+    await tester.ensureVisible(action);
+    await tester.tap(action);
+    final save = find.byKey(const Key('attendance-participant-save-participant-1'));
+    await tester.ensureVisible(save);
+    await tester.pump();
+    await tester.tap(save);
+    await tester.pump();
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repositoryB,
+          callId: 'call-completed',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+    expect(find.textContaining('Turma Lua'), findsWidgets);
+
+    repositoryA.commandGate!.complete();
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Turma Lua'), findsWidgets);
+    expect(find.text('Música · Turma Sol'), findsNothing);
+  });
+
   testWidgets('participant list preserves Coelo radius and clipping', (tester) async {
     final repository = FakeAttendanceRepository.seeded();
     addTearDown(repository.dispose);

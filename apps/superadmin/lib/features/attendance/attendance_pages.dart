@@ -645,6 +645,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
   var _loading = true;
   var _commandInFlight = false;
   var _loadGeneration = 0;
+  var _commandGeneration = 0;
 
   @override
   void initState() {
@@ -665,6 +666,8 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
     _call = null;
     _lastBulkReceipt = null;
     _loading = true;
+    _commandGeneration++;
+    _commandInFlight = false;
     _loadCall();
   }
 
@@ -707,6 +710,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
   @override
   void dispose() {
     _loadGeneration++;
+    _commandGeneration++;
     for (final controller in _notes.values) {
       controller.dispose();
     }
@@ -1000,28 +1004,38 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
 
   Future<bool> _applyCall(Future<AttendanceCall> Function() operation) async {
     if (_commandInFlight) return false;
+    final generation = ++_commandGeneration;
+    final repository = widget.repository;
+    final callId = widget.callId;
     setState(() {
       _commandInFlight = true;
       _commandError = null;
     });
     try {
       final updated = await operation();
-      if (!mounted) return true;
+      if (!_isCurrentCallCommand(generation, repository, callId)) return false;
       setState(() {
         _call = updated;
         _lastBulkReceipt = null;
       });
       return true;
     } catch (error) {
-      if (mounted) setState(() => _commandError = error);
+      if (_isCurrentCallCommand(generation, repository, callId)) {
+        setState(() => _commandError = error);
+      }
       return false;
     } finally {
-      if (mounted) setState(() => _commandInFlight = false);
+      if (_isCurrentCallCommand(generation, repository, callId)) {
+        setState(() => _commandInFlight = false);
+      }
     }
   }
 
   Future<void> _toggleBulk(AttendanceCall call) async {
     if (_commandInFlight) return;
+    final generation = ++_commandGeneration;
+    final repository = widget.repository;
+    final callId = widget.callId;
     setState(() {
       _commandInFlight = true;
       _commandError = null;
@@ -1030,27 +1044,38 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
       if (!call.hasUnmarked) {
         final receipt = _lastBulkReceipt;
         if (receipt == null) return;
-        final updated = await widget.repository.undoBulk(receipt);
-        if (mounted) setState(() => _call = updated);
-        if (mounted) setState(() => _lastBulkReceipt = null);
+        final updated = await repository.undoBulk(receipt);
+        if (_isCurrentCallCommand(generation, repository, callId)) {
+          setState(() {
+            _call = updated;
+            _lastBulkReceipt = null;
+          });
+        }
         return;
       }
-      final result = await widget.repository.markRemainingPresent(
-        call.id,
-        expectedVersion: call.version,
-      );
-      if (mounted) {
+      final result = await repository.markRemainingPresent(call.id, expectedVersion: call.version);
+      if (_isCurrentCallCommand(generation, repository, callId)) {
         setState(() {
           _call = result.call;
           _lastBulkReceipt = result.receipt;
         });
       }
     } catch (error) {
-      if (mounted) setState(() => _commandError = error);
+      if (_isCurrentCallCommand(generation, repository, callId)) {
+        setState(() => _commandError = error);
+      }
     } finally {
-      if (mounted) setState(() => _commandInFlight = false);
+      if (_isCurrentCallCommand(generation, repository, callId)) {
+        setState(() => _commandInFlight = false);
+      }
     }
   }
+
+  bool _isCurrentCallCommand(int generation, AttendanceRepository repository, String callId) =>
+      mounted &&
+      generation == _commandGeneration &&
+      identical(repository, widget.repository) &&
+      callId == widget.callId;
 
   Future<void> _showCorrection(BuildContext context, AttendanceCall call) async {
     final reason = TextEditingController();
