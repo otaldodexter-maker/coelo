@@ -98,6 +98,9 @@ void main() {
     SuperadminRoutes.institutionCreate,
     SuperadminRoutes.healthMedicationPlans,
     SuperadminRoutes.profileModels,
+    '/students/synthetic-context/manage',
+    SuperadminRoutes.support,
+    SuperadminRoutes.profile,
   ]) {
     testWidgets('unavailable $path labels and performs home navigation', (tester) async {
       final session = SuperadminSession()..signInForTesting();
@@ -120,6 +123,28 @@ void main() {
       expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.home);
     });
   }
+
+  testWidgets('unavailable student preview returns only to preview home', (tester) async {
+    final session = SuperadminSession();
+    final router = createSuperadminRouter(
+      allowDevelopmentPreview: true,
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    router.go('/dev/students/synthetic-context/manage');
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    expect(find.text('503'), findsOneWidget);
+    expect(find.text('Tentar novamente'), findsNothing);
+    await tester.tap(find.text('Voltar ao início'));
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devHome);
+  });
 
   testWidgets('unsupported development error code falls back to 404', (tester) async {
     final session = SuperadminSession();

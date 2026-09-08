@@ -1591,6 +1591,7 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.studentManageName,
             builder: (context, state) => SuperadminErrorScreen(
               kind: SuperadminErrorKind.unavailable,
+              actionLabel: 'Voltar ao início',
               onAction: () => context.goNamed(SuperadminRoutes.homeName),
             ),
           ),
@@ -2321,6 +2322,7 @@ GoRouter createSuperadminRouter({
               if (controller == null) {
                 return SuperadminErrorScreen(
                   kind: SuperadminErrorKind.unavailable,
+                  actionLabel: 'Voltar ao início',
                   onAction: () => context.goNamed(SuperadminRoutes.homeName),
                 );
               }
@@ -2365,6 +2367,7 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.profileName,
             builder: (context, state) => SuperadminErrorScreen(
               kind: SuperadminErrorKind.unavailable,
+              actionLabel: 'Voltar ao início',
               onAction: () => context.goNamed(SuperadminRoutes.homeName),
             ),
           ),
@@ -2997,6 +3000,7 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.devStudentManageName,
             builder: (context, state) => SuperadminErrorScreen(
               kind: SuperadminErrorKind.unavailable,
+              actionLabel: 'Voltar ao início',
               onAction: () => context.goNamed(SuperadminRoutes.devHomeName),
             ),
           ),
