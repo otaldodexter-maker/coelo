@@ -42,6 +42,7 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
   InviteDirectorySnapshot _snapshot = const InviteDirectorySnapshot.loading();
   Timer? _searchDebounce;
   String? _busyInviteId;
+  bool _actionInProgress = false;
   final Map<String, String> _actionRequestIds = {};
   final Set<_OwnedInviteOverlay> _ownedOverlays = {};
   var _page = 1;
@@ -70,17 +71,21 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
   @override
   void didUpdateWidget(covariant InviteDirectoryPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!identical(oldWidget.repository, widget.repository)) {
-      _searchDebounce?.cancel();
-      _requestEpoch++;
+    final repositoryChanged = !identical(oldWidget.repository, widget.repository);
+    if (repositoryChanged || oldWidget.allowCommands != widget.allowCommands) {
       _commandGeneration++;
       _dismissOwnedOverlays();
+      _busyInviteId = null;
+      _actionInProgress = false;
+      _actionRequestIds.clear();
+    }
+    if (repositoryChanged) {
+      _searchDebounce?.cancel();
+      _requestEpoch++;
       _searchController.clear();
       _statuses.clear();
       _channels.clear();
       _page = 1;
-      _busyInviteId = null;
-      _actionRequestIds.clear();
       _snapshot = const InviteDirectorySnapshot.loading();
       unawaited(_load());
     }
@@ -152,17 +157,22 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
       widget.onOpen?.call(invite.id);
       return;
     }
-    if (!widget.allowCommands || _busyInviteId != null) return;
+    if (!widget.allowCommands || _actionInProgress) return;
+    _actionInProgress = true;
     final repository = widget.repository;
     final generation = _commandGeneration;
-    if (action == InviteRowAction.revoke) {
-      final confirmed = await _showRevokeConfirmation(invite.recipientMasked);
-      if (!confirmed || !_isCurrentCommand(generation, repository)) return;
-    }
     final requestKey = '${action.name}:${invite.id}';
     final requestId = _actionRequestIds.putIfAbsent(requestKey, newInviteRequestId);
-    setState(() => _busyInviteId = invite.id);
     try {
+      if (action == InviteRowAction.revoke) {
+        final confirmed = await _showRevokeConfirmation(invite.recipientMasked);
+        if (!_isCurrentCommand(generation, repository)) return;
+        if (!confirmed) {
+          _clearActionRequestId(requestKey, requestId);
+          return;
+        }
+      }
+      setState(() => _busyInviteId = invite.id);
       final result = switch (action) {
         InviteRowAction.resend => await repository.resend(
           InviteResendCommand(
@@ -209,13 +219,19 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
       }
     } finally {
       if (_isCurrentCommand(generation, repository)) {
-        setState(() => _busyInviteId = null);
+        setState(() {
+          _busyInviteId = null;
+          _actionInProgress = false;
+        });
       }
     }
   }
 
   bool _isCurrentCommand(int generation, InviteRepository repository) =>
-      mounted && generation == _commandGeneration && identical(repository, widget.repository);
+      mounted &&
+      widget.allowCommands &&
+      generation == _commandGeneration &&
+      identical(repository, widget.repository);
 
   void _clearActionRequestId(String key, String requestId) {
     if (_actionRequestIds[key] == requestId) _actionRequestIds.remove(key);
