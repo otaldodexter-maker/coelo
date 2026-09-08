@@ -18,6 +18,30 @@ import {
 const BUCKET = "coelo-forms-private";
 const PAGE_SIZE = 250;
 const MAX_ROWS_PER_LEASE = 50_000;
+const SAFE_JOB_ERRORS = new Set([
+  "artifact_upload_failed",
+  "cleanup_complete_failed",
+  "cleanup_snapshot_failed",
+  "cleanup_snapshot_invalid",
+  "cleanup_storage_remove_failed",
+  "empty_export",
+  "export_begin_failed",
+  "export_complete_failed",
+  "export_cursor_missing",
+  "export_cursor_repeated",
+  "export_lease_row_limit",
+  "export_page_empty",
+  "export_snapshot_failed",
+  "export_snapshot_invalid",
+  "export_snapshot_kind_changed",
+  "export_snapshot_kind_invalid",
+  "finish_failed",
+  "operational_job_failed",
+  "unsupported_job_kind",
+  "xlsx_column_limit",
+  "xlsx_snapshot_changed",
+  "zip64_not_supported",
+]);
 
 type Json = Record<string, unknown>;
 type Snapshot = {
@@ -147,6 +171,17 @@ export async function handleFormOperationsRequest(
   request: Request,
   dependencies: FormOperationsDependencies = productionDependencies,
 ): Promise<Response> {
+  try {
+    return await processFormOperationsRequest(request, dependencies);
+  } catch {
+    return reply(503, { error: "service_unavailable" });
+  }
+}
+
+async function processFormOperationsRequest(
+  request: Request,
+  dependencies: FormOperationsDependencies,
+): Promise<Response> {
   if (request.method !== "POST") {
     return reply(405, { error: "method_not_allowed" });
   }
@@ -256,7 +291,10 @@ export async function handleFormOperationsRequest(
     if (artifactPath && standardArtifactUploaded) {
       await client.storage.from(BUCKET).remove([artifactPath]);
     }
-    const errorCode = error instanceof Error ? error.message : "unknown";
+    const errorCode =
+      error instanceof Error && SAFE_JOB_ERRORS.has(error.message)
+        ? error.message
+        : "job_execution_failed";
     if (isExportJob) {
       await client.rpc("form_worker_fail_export", {
         p_job_id: job.id,

@@ -11,6 +11,60 @@ const environment = {
   FORMS_OPERATIONS_BEARER_TOKEN: "synthetic-operations-token-for-local-test",
 };
 const id = "11111111-1111-4111-8111-111111111111";
+const sensitiveError =
+  "synthetic-sensitive-value https://private.example.test/object?token=synthetic";
+
+Deno.test("worker never persists an unexpected dependency error as a job code", async () => {
+  for (const job_kind of ["export_xlsx", "reconcile_audience"]) {
+    let failureCode: unknown;
+    const dependencies: FormOperationsDependencies = {
+      environment: () => environment,
+      createClient: (() => ({
+        rpc: (name: string, params: Record<string, unknown>) => {
+          if (name === "form_worker_claim") {
+            return Promise.resolve({
+              error: null,
+              data: { id, aggregate_id: id, job_kind },
+            });
+          }
+          if (
+            name === "form_worker_fail_export" || name === "form_worker_fail"
+          ) {
+            failureCode = params.p_error_code;
+            return Promise.resolve({ error: null, data: null });
+          }
+          throw new Error(sensitiveError);
+        },
+      })) as unknown as FormOperationsDependencies["createClient"],
+    };
+    const response = await handleFormOperationsRequest(request(), dependencies);
+    assertEquals(response.status, 500);
+    assertEquals(await response.json(), { error: "job_failed" });
+    assertEquals(failureCode, "job_execution_failed");
+  }
+});
+
+Deno.test("worker returns a safe response when environment, client or claim throws", async () => {
+  for (const stage of ["environment", "client", "claim"]) {
+    const dependencies: FormOperationsDependencies = {
+      environment: () => {
+        if (stage === "environment") throw new Error(sensitiveError);
+        return environment;
+      },
+      createClient: (() => {
+        if (stage === "client") throw new Error(sensitiveError);
+        return {
+          rpc: () => {
+            throw new Error(sensitiveError);
+          },
+        };
+      }) as unknown as FormOperationsDependencies["createClient"],
+    };
+    const response = await handleFormOperationsRequest(request(), dependencies);
+    assertEquals(response.status, 503);
+    assertEquals(await response.json(), { error: "service_unavailable" });
+  }
+});
 function request() {
   return new Request("https://gateway.example.test", {
     method: "POST",
