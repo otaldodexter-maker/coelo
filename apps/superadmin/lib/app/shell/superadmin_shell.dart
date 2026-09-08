@@ -1539,21 +1539,23 @@ class _PageHeader extends StatelessWidget {
             constraints: const BoxConstraints(minHeight: _headerHeight),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space5),
-              child: Stack(
-                alignment: AlignmentDirectional.topEnd,
+              child: Row(
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title, style: theme.textTheme.headlineSmall),
-                      const SizedBox(height: CoeloSpacing.space1),
-                      Text(
-                        subtitle,
-                        style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
-                      ),
-                    ],
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(title, style: theme.textTheme.headlineSmall),
+                        const SizedBox(height: CoeloSpacing.space1),
+                        Text(
+                          subtitle,
+                          style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+                        ),
+                      ],
+                    ),
                   ),
+                  const SizedBox(width: CoeloSpacing.space1),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: visibleActions
