@@ -10,6 +10,213 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('choice options add and remove preserve stable IDs through reload', (tester) async {
+    final api = _EditorApi(firstItems: [_branchChoice(FormItemKind.singleChoice)]);
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    final add = find.byKey(const ValueKey('forms-add-option-parent'));
+    expect(add, findsOneWidget);
+    tester.widget<OutlinedButton>(add).onPressed!();
+    await tester.pumpAndSettle();
+    final fields = tester.widgetList<TextFormField>(find.byType(TextFormField));
+    final third = fields.singleWhere((field) => field.controller?.text == 'Opção 3');
+    await tester.enterText(find.byWidget(third), 'Nova opção');
+    await tester.pumpAndSettle();
+    final remove = find.byKey(const ValueKey('forms-remove-option-opaque-a'));
+    tester.widget<IconButton>(remove).onPressed!();
+    await tester.pumpAndSettle();
+    final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.ensureVisible(save);
+    await tester.pumpAndSettle();
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    final sent = api.savedCommands.single.payload.sections.first.items;
+    expect(sent.first.options.map((option) => option.label), ['Segunda opção', 'Nova opção']);
+    expect(sent.first.options.first.id, 'opaque-b');
+    expect(sent.first.options.last.id, isNot(isIn(['opaque-a', 'opaque-b'])));
+    expect(sent.first.options.map((option) => option.position), [0, 1]);
+    final reloaded = _EditorApi(firstItems: sent);
+    await tester.pumpWidget(_app(reloaded, 'form-1'));
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<IconButton>(find.byKey(const ValueKey('forms-remove-option-opaque-b')))
+          .onPressed,
+      isNull,
+    );
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    expect(
+      reloaded.savedCommands.single.payload.sections.first.items.first.options.map(
+        (option) => option.id,
+      ),
+      sent.first.options.map((option) => option.id),
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('choice options enforce fifty and recheck retained add at capacity', (tester) async {
+    final api = _EditorApi(firstItems: [_optionsItem(49)]);
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    final add = find.byKey(const ValueKey('forms-add-option-parent'));
+    final retained = tester.widget<OutlinedButton>(add).onPressed!;
+    retained();
+    await tester.pumpAndSettle();
+    expect(tester.widget<OutlinedButton>(add).onPressed, isNull);
+    retained();
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<ReorderableListView>(find.byKey(const ValueKey('forms-editor-options-parent')))
+          .itemCount,
+      50,
+    );
+    expect(find.text('Limite de 50 opções por pergunta.'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('choice options protect complex references in another section', (tester) async {
+    final api = _EditorApi(
+      firstItems: [_optionsItem(3)],
+      secondItems: [
+        FormItem(
+          id: 'remote-leaf',
+          kind: FormItemKind.shortText,
+          label: 'Remote leaf',
+          position: 0,
+          conditions: const [
+            FormCondition.choice(sourceItemId: 'parent', optionIds: {'option-0', 'option-1'}),
+          ],
+        ),
+      ],
+    );
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    for (final id in ['option-0', 'option-1']) {
+      expect(
+        tester.widget<IconButton>(find.byKey(ValueKey('forms-remove-option-$id'))).onPressed,
+        isNull,
+      );
+    }
+    expect(
+      tester
+          .widget<IconButton>(find.byKey(const ValueKey('forms-remove-option-option-2')))
+          .onPressed,
+      isNotNull,
+    );
+    expect(
+      find.text('Esta opção é usada em um ramo. Remova a referência antes de excluir.'),
+      findsNWidgets(2),
+    );
+  });
+
+  for (final minimum in [2, 3]) {
+    testWidgets('choice options preserve min $minimum max 50 without clamping', (tester) async {
+      final api = _EditorApi(
+        firstItems: [
+          _optionsItem(3, config: FormItemConfig(minSelections: minimum, maxSelections: 50)),
+        ],
+      );
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      final remove = tester.widget<IconButton>(
+        find.byKey(const ValueKey('forms-remove-option-option-2')),
+      );
+      if (minimum == 3) {
+        expect(remove.onPressed, isNull);
+        expect(
+          find.text('O mínimo de seleções exige manter esta quantidade de opções.'),
+          findsNWidgets(3),
+        );
+      } else {
+        remove.onPressed!();
+        await tester.pumpAndSettle();
+      }
+      final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+      await tester.ensureVisible(save);
+      await tester.pumpAndSettle();
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      final item = api.savedCommands.single.payload.sections.first.items.first;
+      expect(item.options.length, minimum);
+      expect(item.config.minSelections, minimum);
+      expect(item.config.maxSelections, 50);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('choice options removal clears only its transient branch selection', (tester) async {
+    final api = _EditorApi(firstItems: [_optionsItem(3)]);
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    tester
+        .widgetList<CoeloAdminToggleField>(find.byType(CoeloAdminToggleField))
+        .singleWhere((field) => field.label == 'Desdobrar por resposta')
+        .onChanged!(true);
+    await tester.pumpAndSettle();
+    final selector = find.byKey(const ValueKey('forms-branch-option-parent'));
+    tester.widget<CoeloAdminSingleSelectField<String?>>(selector).onChanged('option-2');
+    await tester.pumpAndSettle();
+    tester
+        .widget<IconButton>(find.byKey(const ValueKey('forms-remove-option-option-2')))
+        .onPressed!();
+    await tester.pumpAndSettle();
+    expect(tester.widget<CoeloAdminSingleSelectField<String?>>(selector).value, isNull);
+    expect(
+      tester
+          .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Adicionar pergunta ao ramo'))
+          .onPressed,
+      isNull,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('choice options retained callbacks ignore a replacement editor', (tester) async {
+    await tester.pumpWidget(_app(_EditorApi(firstItems: [_optionsItem(3)]), 'form-1'));
+    await tester.pumpAndSettle();
+    final add = tester
+        .widget<OutlinedButton>(find.byKey(const ValueKey('forms-add-option-parent')))
+        .onPressed!;
+    final remove = tester
+        .widget<IconButton>(find.byKey(const ValueKey('forms-remove-option-option-0')))
+        .onPressed!;
+    final replacement = _EditorApi(firstItems: [_optionsItem(4)]);
+    await tester.pumpWidget(_app(replacement, 'form-2'));
+    await tester.pumpAndSettle();
+    expect(add, returnsNormally);
+    expect(remove, returnsNormally);
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<ReorderableListView>(find.byKey(const ValueKey('forms-editor-options-parent')))
+          .itemCount,
+      4,
+    );
+    expect(replacement.savedCommands, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('choice options retained delete cannot remove a different option', (tester) async {
+    final api = _EditorApi(firstItems: [_optionsItem(4)]);
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    final retained = tester
+        .widget<IconButton>(find.byKey(const ValueKey('forms-remove-option-option-0')))
+        .onPressed!;
+    retained();
+    await tester.pumpAndSettle();
+    retained();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('forms-remove-option-option-1')), findsOneWidget);
+    expect(find.byType(ReorderableListView), findsWidgets);
+    final options = tester.widget<ReorderableListView>(
+      find.byKey(const ValueKey('forms-editor-options-parent')),
+    );
+    expect(options.itemCount, 3);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('yes-no false branch creates both booleans and preserves them after reload', (
     tester,
   ) async {
@@ -1044,7 +1251,17 @@ void main() {
         await tester.pumpAndSettle();
       }
       if (action == 'duplicate-dependent') {
-        await tester.ensureVisible(find.byTooltip('Duplicar pergunta').last);
+        // Keep the target clear of the persistent form action footer.
+        await tester.scrollUntilVisible(
+          find.byTooltip('Duplicar pergunta').last.hitTestable(),
+          200,
+          scrollable: find
+              .descendant(
+                of: find.byKey(const Key('forms-editor-scroll')),
+                matching: find.byType(Scrollable),
+              )
+              .first,
+        );
         await tester.pumpAndSettle();
         await tester.tap(find.byTooltip('Duplicar pergunta').last);
         await tester.pumpAndSettle();
@@ -1675,6 +1892,17 @@ List<FormItem> _branchingItems() => [
   ),
 ];
 
+FormItem _optionsItem(int count, {FormItemConfig config = const FormItemConfig()}) => FormItem(
+  id: 'parent',
+  kind: FormItemKind.multipleChoice,
+  label: 'Choices',
+  position: 0,
+  config: config,
+  options: [
+    for (var i = 0; i < count; i++) FormOption(id: 'option-$i', label: 'Option $i', position: i),
+  ],
+);
+
 List<FormItem> _falseBranchItems() => [
   FormItem(id: 'parent', kind: FormItemKind.yesNo, label: 'Parent', position: 0),
   FormItem(
@@ -1726,6 +1954,7 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
     this.itemKind = FormItemKind.shortText,
     this.itemConfig = const FormItemConfig(),
     this.firstItems,
+    this.secondItems,
     this.formKind = FormKind.form,
     this.identityMode = FormIdentityMode.identified,
     this.responseUnit = FormResponseUnit.person,
@@ -1744,6 +1973,7 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
   final FormItemKind itemKind;
   final FormItemConfig itemConfig;
   final List<FormItem>? firstItems;
+  final List<FormItem>? secondItems;
   final FormKind formKind;
   final FormIdentityMode identityMode;
   final FormResponseUnit responseUnit;
@@ -1806,9 +2036,16 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
           id: 'section-2',
           title: 'Section B',
           position: 1,
-          items: [
-            FormItem(id: 'item-2', kind: FormItemKind.shortText, label: 'Question B', position: 0),
-          ],
+          items:
+              secondItems ??
+              [
+                FormItem(
+                  id: 'item-2',
+                  kind: FormItemKind.shortText,
+                  label: 'Question B',
+                  position: 0,
+                ),
+              ],
         ),
     ],
   );
