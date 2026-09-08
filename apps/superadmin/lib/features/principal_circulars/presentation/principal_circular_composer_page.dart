@@ -29,6 +29,26 @@ final class PrincipalCircularComposerPage extends StatefulWidget {
 final class _PrincipalCircularComposerPageState extends State<PrincipalCircularComposerPage> {
   var _showPreview = false;
   DateTime? _publishAt;
+  var _generation = 0;
+  var _scheduleGeneration = 0;
+
+  @override
+  void didUpdateWidget(covariant PrincipalCircularComposerPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.controller, widget.controller)) {
+      _generation++;
+      _scheduleGeneration++;
+      _showPreview = false;
+      _publishAt = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    _generation++;
+    _scheduleGeneration++;
+    super.dispose();
+  }
 
   Future<void> _save() async {
     try {
@@ -39,9 +59,13 @@ final class _PrincipalCircularComposerPageState extends State<PrincipalCircularC
   }
 
   Future<void> _publish() async {
+    final generation = _generation;
+    final controller = widget.controller;
+    final onPublished = widget.onPublished;
     try {
-      await widget.controller.publish(publishAt: _publishAt);
-      widget.onPublished?.call();
+      await controller.publish(publishAt: _publishAt);
+      if (!mounted || generation != _generation) return;
+      onPublished?.call();
     } on Object {
       // Controller exposes a typed, user-safe state below.
     }
@@ -50,8 +74,15 @@ final class _PrincipalCircularComposerPageState extends State<PrincipalCircularC
   Future<void> _chooseSchedule() async {
     final callback = widget.onChooseSchedule;
     if (callback == null) return;
+    final generation = _generation;
+    final scheduleGeneration = ++_scheduleGeneration;
     final selected = await callback();
-    if (mounted && selected != null) setState(() => _publishAt = selected);
+    if (mounted &&
+        generation == _generation &&
+        scheduleGeneration == _scheduleGeneration &&
+        selected != null) {
+      setState(() => _publishAt = selected);
+    }
   }
 
   @override

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/principal_circulars/application/circular_composer_controller.dart';
 import 'package:coelo_superadmin/features/principal_circulars/domain/circular.dart';
 import 'package:coelo_superadmin/features/principal_circulars/domain/circular_repository.dart';
@@ -6,6 +8,71 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final dispose in [false, true]) {
+    testWidgets(
+      'late publication does not navigate after ${dispose ? 'dispose' : 'controller swap'}',
+      (tester) async {
+        final pending = Completer<CircularSaveResult>();
+        final first = _readyController(_Repository(pendingPublish: pending));
+        final second = _readyController(_Repository());
+        addTearDown(first.dispose);
+        addTearDown(second.dispose);
+        var firstCallbacks = 0;
+        var secondCallbacks = 0;
+        Widget page(CircularComposerController controller, VoidCallback onPublished) => MaterialApp(
+          home: PrincipalCircularComposerPage(
+            controller: controller,
+            onCancel: () {},
+            onPickFiles: () async {},
+            onPublished: onPublished,
+          ),
+        );
+        await tester.pumpWidget(page(first, () => firstCallbacks++));
+        await tester.tap(find.byKey(const Key('circular-publish')));
+        await tester.pump();
+        await tester.pumpWidget(dispose ? const SizedBox() : page(second, () => secondCallbacks++));
+        pending.complete(
+          const CircularSaveResult(
+            id: 'circular-1',
+            revisionId: 'revision-1',
+            version: 3,
+            status: CircularStatus.published,
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(firstCallbacks, 0);
+        expect(secondCallbacks, 0);
+      },
+    );
+  }
+
+  testWidgets('schedule selected for old controller cannot schedule the new draft', (tester) async {
+    final pending = Completer<DateTime?>();
+    final first = _readyController(_Repository());
+    final secondRepository = _Repository();
+    final second = _readyController(secondRepository);
+    addTearDown(first.dispose);
+    addTearDown(second.dispose);
+    Widget page(CircularComposerController controller) => MaterialApp(
+      home: PrincipalCircularComposerPage(
+        controller: controller,
+        onCancel: () {},
+        onPickFiles: () async {},
+        onChooseSchedule: () => pending.future,
+      ),
+    );
+    await tester.pumpWidget(page(first));
+    await tester.ensureVisible(find.text('Agendamento'));
+    await tester.tap(find.text('Agendamento'));
+    await tester.pumpWidget(page(second));
+    pending.complete(DateTime.now().add(const Duration(days: 10)));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('circular-publish')));
+    await tester.pumpAndSettle();
+    expect(secondRepository.published, isTrue);
+    expect(secondRepository.publishAt, isNull);
+  });
+
   for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
     testWidgets('composer respects constraints at ${width.toInt()}px', (tester) async {
       final errors = <FlutterErrorDetails>[];
@@ -108,7 +175,19 @@ void main() {
   });
 }
 
+CircularComposerController _readyController(_Repository repository) =>
+    CircularComposerController(
+        repository: repository,
+        scope: const CircularScope(institutionId: 'institution-1'),
+      )
+      ..updateTitle('Circular')
+      ..updateBody('Texto')
+      ..toggleAudience(CircularAudienceKind.families);
+
 final class _Repository implements CircularRepository {
+  _Repository({this.pendingPublish});
+  final Completer<CircularSaveResult>? pendingPublish;
+  DateTime? publishAt;
   bool published = false;
   @override
   Future<CircularDraft?> loadDraft(CircularScope scope) async => null;
@@ -131,6 +210,8 @@ final class _Repository implements CircularRepository {
     DateTime? publishAt,
   }) async {
     published = true;
+    this.publishAt = publishAt;
+    if (pendingPublish case final pending?) return pending.future;
     return const CircularSaveResult(
       id: 'circular-1',
       revisionId: 'revision-1',

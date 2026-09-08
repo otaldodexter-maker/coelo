@@ -26,7 +26,29 @@ final class _PrincipalCircularReaderState extends State<PrincipalCircularReader>
   };
   var _submitting = false;
   var _submitted = false;
+  var _generation = 0;
   String? _error;
+
+  @override
+  void didUpdateWidget(covariant PrincipalCircularReader oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final previous = oldWidget.detail;
+    final current = widget.detail;
+    if (previous.id != current.id ||
+        previous.revisionId != current.revisionId ||
+        previous.responseSessionId != current.responseSessionId ||
+        previous.responseVersion != current.responseVersion) {
+      _generation++;
+      _answers
+        ..clear()
+        ..addAll({
+          for (final entry in widget.initialAnswers.entries) entry.key: {...entry.value},
+        });
+      _submitting = false;
+      _submitted = false;
+      _error = null;
+    }
+  }
 
   Iterable<CircularQuestionBlock> get _questions =>
       widget.detail.blocks.whereType<CircularQuestionBlock>();
@@ -52,6 +74,7 @@ final class _PrincipalCircularReaderState extends State<PrincipalCircularReader>
   }
 
   Future<void> _submit() async {
+    final generation = _generation;
     final missingRequired = _questions.any(
       (question) => question.required && (_answers[question.id]?.isEmpty ?? true),
     );
@@ -67,13 +90,13 @@ final class _PrincipalCircularReaderState extends State<PrincipalCircularReader>
       await widget.onSubmit({
         for (final entry in _answers.entries) entry.key: List.unmodifiable(entry.value),
       });
-      if (!mounted) return;
+      if (!mounted || generation != _generation) return;
       setState(() => _submitted = true);
     } on Object {
-      if (!mounted) return;
+      if (!mounted || generation != _generation) return;
       setState(() => _error = 'Não foi possível enviar. Tente novamente.');
     } finally {
-      if (mounted) setState(() => _submitting = false);
+      if (mounted && generation == _generation) setState(() => _submitting = false);
     }
   }
 
