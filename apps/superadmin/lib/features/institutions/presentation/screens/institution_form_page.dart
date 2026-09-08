@@ -124,14 +124,24 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
 
   Future<void> _requestExit() async {
     final controller = _controller;
+    if (controller?.isSaving == true) return;
     if (controller == null || !controller.isDirty || await showInstitutionExitDialog(context)) {
       widget.onCancel();
     }
   }
 
   Future<void> _save() async {
-    final controller = _controller!;
-    final creating = widget.institutionId == null;
+    final controller = _controller;
+    if (controller == null || controller.isSaving) return;
+    final sequence = _loadSequence;
+    final institutionId = widget.institutionId;
+    final repository = widget.repository;
+    final creating = institutionId == null;
+    bool isCurrent() => mounted && sequence == _loadSequence && identical(controller, _controller);
+    void fail(String message) {
+      if (isCurrent()) _showSaveFailure(message);
+    }
+
     if (!(creating ? controller.validateAll() : controller.validateEditSave())) {
       return;
     }
@@ -140,42 +150,44 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
       _showSaveFailure(saveContractError);
       return;
     }
+    final draft = controller.toRecord(id: institutionId ?? '');
     controller.setSaving(true);
     await Future<void>.delayed(
       MediaQuery.disableAnimationsOf(context) ? Duration.zero : CoeloMotion.short,
     );
-    if (!mounted) return;
+    if (!isCurrent()) return;
     try {
-      final draft = controller.toRecord(id: widget.institutionId ?? '');
       final saved = creating
-          ? await widget.repository.create(draft)
-          : await widget.repository.update(draft, expectedVersion: draft.version);
-      if (!mounted) return;
-      controller.setSaving(false);
+          ? await repository.create(draft)
+          : await repository.update(draft, expectedVersion: draft.version);
+      if (!mounted || !isCurrent()) return;
       if (!creating) {
-        controller.markSaved(version: saved.version);
+        final replacement = InstitutionFormController(record: saved)
+          ..currentStep = controller.currentStep;
+        setState(() => _controller = replacement);
+        // Detach fields and their listeners before disposing their controllers.
+        WidgetsBinding.instance.addPostFrameCallback((_) => controller.dispose());
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Alterações salvas.')));
         return;
       }
+      controller.setSaving(false);
       widget.onSaved(InstitutionFormSaveResult.created);
     } on InstitutionDirectoryUnauthorizedException {
-      _showSaveFailure('Você não tem permissão para salvar esta instituição.');
+      fail('Você não tem permissão para salvar esta instituição.');
     } on InstitutionDirectoryNotFoundException {
-      _showSaveFailure('A instituição não existe mais. Volte à lista e tente novamente.');
+      fail('A instituição não existe mais. Volte à lista e tente novamente.');
     } on InstitutionDirectoryConflictException {
-      _showSaveFailure(
-        'Esta instituição foi alterada por outra pessoa. Recarregue antes de salvar.',
-      );
+      fail('Esta instituição foi alterada por outra pessoa. Recarregue antes de salvar.');
     } on InstitutionDirectoryValidationException catch (error) {
-      _showSaveFailure(error.message);
+      fail(error.message);
     } on InstitutionDirectoryUnsupportedRelationException {
-      _showSaveFailure('Representantes e administradores ainda não podem ser salvos neste fluxo.');
+      fail('Representantes e administradores ainda não podem ser salvos neste fluxo.');
     } on InstitutionDirectoryUnavailableException {
-      _showSaveFailure('Não foi possível conectar ao serviço. Tente novamente.');
+      fail('Não foi possível conectar ao serviço. Tente novamente.');
     } catch (_) {
-      _showSaveFailure('Não foi possível salvar a instituição. Tente novamente.');
+      fail('Não foi possível salvar a instituição. Tente novamente.');
     }
   }
 
@@ -187,6 +199,7 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
 
   Future<void> _selectDestination(String destination) async {
     final controller = _controller;
+    if (controller?.isSaving == true) return;
     if (controller != null && controller.isDirty && !await showInstitutionExitDialog(context)) {
       return;
     }
@@ -244,6 +257,7 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
           onAction: _load,
         ),
         _InstitutionFormLoadState.ready => _FormBody(
+          key: ObjectKey(_controller),
           controller: _controller!,
           onCancel: _requestExit,
           onSave: _save,
@@ -264,6 +278,7 @@ enum _InstitutionFormLoadState { loading, ready, notFound, unauthorized, unavail
 
 final class _FormBody extends StatelessWidget {
   const _FormBody({
+    super.key,
     required this.controller,
     required this.onCancel,
     required this.onSave,
@@ -293,20 +308,28 @@ final class _FormBody extends StatelessWidget {
               onCancel();
             }
           },
-          child: SuperadminFormFrame(
-            viewportWidth: viewportWidth,
-            navigation: InstitutionFormNavigation(controller: controller),
-            scrollKey: const Key('institution-form-scroll'),
-            body: InstitutionFormSection(
-              controller: controller,
-              locationService: locationService,
-              imagePicker: imagePicker,
-            ),
-            footer: _FormFooter(
-              controller: controller,
-              onCancel: onCancel,
-              onSave: onSave,
-              onHeightChanged: onFooterHeightChanged,
+          child: ExcludeFocus(
+            key: const Key('institution-form-focus-lock'),
+            excluding: controller.isSaving,
+            child: AbsorbPointer(
+              key: const Key('institution-form-interaction-lock'),
+              absorbing: controller.isSaving,
+              child: SuperadminFormFrame(
+                viewportWidth: viewportWidth,
+                navigation: InstitutionFormNavigation(controller: controller),
+                scrollKey: const Key('institution-form-scroll'),
+                body: InstitutionFormSection(
+                  controller: controller,
+                  locationService: locationService,
+                  imagePicker: imagePicker,
+                ),
+                footer: _FormFooter(
+                  controller: controller,
+                  onCancel: onCancel,
+                  onSave: onSave,
+                  onHeightChanged: onFooterHeightChanged,
+                ),
+              ),
             ),
           ),
         );

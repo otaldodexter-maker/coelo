@@ -1,7 +1,7 @@
 ---
 title: "Institution save lifecycle — implementation plan"
 source: "docs/superpowers/specs/2026-09-07-institution-save-lifecycle-design.md; confirmação do Coordenador"
-status: "approved-local; implementation-in-progress"
+status: "implemented-local; baseline-five-failures-unchanged; not-verified-e2e"
 generated_at: "2026-09-07"
 ---
 
@@ -35,15 +35,15 @@ Interfaces: consome `InstitutionDirectoryRepository.update(record,
 expectedVersion:) -> Future<InstitutionRecord>` sem modificar a assinatura.
 Produz somente comportamento da página; nenhuma API pública nova.
 
-- [ ] RED: repository delega leitura ao fake e mantém update em Completer;
+- [x] RED: repository delega leitura ao fake e mantém update em Completer;
   preparar representante/admin válido pelo controller do fixture e salvar.
   Conferir `controller.text(publicName) == saved.publicName`, versão via
   `controller.toRecord(id: id).version`, `isDirty == false` e mesma etapa.
-- [ ] RED: enquanto Completer está pendente, conferir `AbsorbPointer.absorbing`
+- [x] RED: enquanto Completer está pendente, conferir `AbsorbPointer.absorbing`
   e `ExcludeFocus.excluding`; segunda ação não cria segundo update.
-- [ ] RED: trocar ID durante save, completar sucesso/erro antigo e conferir
+- [x] RED: trocar ID durante save, completar sucesso/erro antigo e conferir
   novo ID/draft inalterados e ausência de snackbar da operação antiga.
-- [ ] Implementar guard local:
+- [x] Implementar guard local:
 
   ```dart
   final controller = _controller;
@@ -56,14 +56,14 @@ Produz somente comportamento da página; nenhuma API pública nova.
   Capturar draft/ID/repository antes do primeiro await. Chamar `isCurrent`
   antes de qualquer notificação, substituição, erro ou callback pós-await.
 
-- [ ] Reidratar com `InstitutionFormController(record: saved)` e atribuir a
+- [x] Reidratar com `InstitutionFormController(record: saved)` e atribuir a
   etapa anterior. `_FormBody(key: ObjectKey(_controller))` desmonta caches
   anteriores. Descartar controller anterior após o frame de substituição.
-- [ ] Envolver frame com `ExcludeFocus(excluding: controller.isSaving,
+- [x] Envolver frame com `ExcludeFocus(excluding: controller.isSaving,
   child: AbsorbPointer(absorbing: controller.isSaving, child: frame))`.
   Retornar de saída/navegação durante envio. Sem mudança de aparência.
-- [ ] GREEN: `rtk proxy C:\src\flutter\bin\flutter.bat test --no-pub test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart`.
-- [ ] Reexecutar formulário/goldens existentes; manter baseline5 falhas
+- [x] GREEN: `rtk proxy C:\src\flutter\bin\flutter.bat test --no-pub test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart`.
+- [x] Reexecutar formulário/goldens existentes; manter baseline5 falhas
   separadas, exigir zero falhas novas. Analyzer nos2 arquivos e review.
 - [ ] Evidência por ação, memória no-op se não houver regra nova, commit e
   handoff; não declarar tela/E2E concluídos.
