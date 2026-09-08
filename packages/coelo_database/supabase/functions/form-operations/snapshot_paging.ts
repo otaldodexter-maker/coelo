@@ -270,6 +270,7 @@ function exactNumber(value: unknown, integer = false): number {
   const number = Number(decimal);
   if (
     significant.length > 15 || !Number.isFinite(number) ||
+    (number !== 0 && Math.abs(number) < 2.2250738585072014e-308) ||
     (integer && !Number.isSafeInteger(number)) ||
     normalized(
         number.toLocaleString("en-US", {
@@ -392,8 +393,10 @@ export function parseXlsxSubmission(
     const item = items.find((item) => item.itemId === answer.itemId);
     requireSnapshot(item && item.kind !== "information");
     requireSnapshot(
-      ["multiple_choice", "gallery"].includes(item.kind) ||
-        answer.values.length === 1,
+      item.kind === "photo"
+        ? answer.values.length >= 1 && answer.values.length <= 5
+        : ["multiple_choice", "gallery"].includes(item.kind) ||
+          answer.values.length === 1,
     );
     const references = new Set<string>();
     for (const cell of answer.values) {

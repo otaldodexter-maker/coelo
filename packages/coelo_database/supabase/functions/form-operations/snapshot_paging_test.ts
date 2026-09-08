@@ -8,6 +8,117 @@ import {
 import { encodeXlsxWorkbook, streamXlsxWorkbook } from "./export_contract.ts";
 import * as XLSX from "xlsx";
 
+Deno.test("photo keeps one main column and up to five independent media links in both encoders", async () => {
+  const raw = v2schema();
+  raw.versions = raw.versions.slice(0, 1);
+  raw.versions[0].sections[0].items[3].kind = "photo";
+  const schema = parseXlsxSnapshotSchema(raw, v2id(1));
+  const input = (count: number) => ({
+    ...v2submission(),
+    answers: [{
+      itemId: v2id(123),
+      values: Array.from(
+        { length: count },
+        (_, index) => ({ kind: "media", assetId: v2id(80 + index) }),
+      ),
+    }],
+  });
+  for (const count of [1, 2, 5]) {
+    const submission = parseXlsxSubmission(input(count), schema);
+    const sheets = createVersionedXlsxSheets(schema, async function* () {
+      yield submission;
+    }, "https://superadmin.example.test");
+    const buffered = [];
+    for (const sheet of sheets) {
+      const rows = [];
+      for await (const row of sheet.rows()) rows.push(row);
+      buffered.push({ ...sheet, rows });
+    }
+    const chunks = [];
+    for await (const chunk of streamXlsxWorkbook(sheets)) chunks.push(chunk);
+    const streamed = new Uint8Array(
+      chunks.reduce((sum, chunk) => sum + chunk.length, 0),
+    );
+    let offset = 0;
+    for (const chunk of chunks) {
+      streamed.set(chunk, offset);
+      offset += chunk.length;
+    }
+    for (const encoded of [encodeXlsxWorkbook(buffered), streamed]) {
+      const book = XLSX.read(encoded, { type: "array" });
+      const main = book.Sheets["Respostas v1"];
+      assertEquals(XLSX.utils.sheet_to_json(main).length, 1);
+      assertEquals(main.L1.v, `Repeated [${v2id(123)}]`);
+      assertEquals(main.M1, undefined);
+      assertEquals(main.L2.v, `Ver Mídias v1 (${count})`);
+      const media = book.Sheets["Mídias v1"];
+      assertEquals(XLSX.utils.sheet_to_json(media).length, count);
+      for (let index = 0; index < count; index++) {
+        assertEquals(media[`M${index + 2}`].v, "Ver mídia");
+        assertEquals(
+          media[`M${index + 2}`].l?.Target,
+          `https://superadmin.example.test/forms/media/${v2id(80 + index)}`,
+        );
+        assertEquals(media[`B${index + 2}`].v, submission.responseId);
+        assertEquals(media[`I${index + 2}`].v, v2id(123));
+      }
+    }
+  }
+  for (const count of [0, 6]) {
+    assertThrows(
+      () => parseXlsxSubmission(input(count), schema),
+      Error,
+      "export_snapshot_invalid",
+    );
+  }
+});
+
+Deno.test("Excel numeric capacity rejects positive and negative subnormals before encoding", () => {
+  const schema = parseXlsxSnapshotSchema(v2schema(), v2id(1));
+  for (const sign of ["", "-"]) {
+    const value = sign + "0." + "0".repeat(308) + "1";
+    assertThrows(
+      () =>
+        parseXlsxSubmission({
+          ...v2submission(),
+          answers: [{
+            itemId: v2id(120),
+            values: [{ kind: "decimal", value }],
+          }],
+        }, schema),
+      Error,
+      "xlsx_number_unrepresentable",
+    );
+  }
+});
+
+Deno.test("zero and nearest normal values within existing precision remain native numbers", async () => {
+  const schema = parseXlsxSnapshotSchema(v2schema(), v2id(1));
+  const minimumSupportedNormal = "0." + "0".repeat(307) + "222507385850721";
+  const normal = "0." + "0".repeat(306) + "1";
+  for (
+    const value of [
+      "0",
+      "-0",
+      normal,
+      "-" + normal,
+      minimumSupportedNormal,
+      "-" + minimumSupportedNormal,
+    ]
+  ) {
+    const submission = parseXlsxSubmission({
+      ...v2submission(),
+      answers: [{ itemId: v2id(120), values: [{ kind: "decimal", value }] }],
+    }, schema);
+    const sheets = createVersionedXlsxSheets(schema, async function* () {
+      yield submission;
+    });
+    const row = await sheets[0].rows()[Symbol.asyncIterator]().next();
+    assertEquals(typeof row.value[v2id(120)], "number");
+    assertEquals(row.value[v2id(120)], Number(value) === 0 ? 0 : Number(value));
+  }
+});
+
 const v2id = (n: number) =>
   `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
 function v2schema() {
