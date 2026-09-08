@@ -27,6 +27,7 @@ enum _AboutLoadState { loading, ready, unavailable, unauthorized }
 final class _ActivityProfileAboutSectionState extends State<ActivityProfileAboutSection> {
   _AboutLoadState _state = _AboutLoadState.loading;
   final Map<ProfileAboutFieldKey, TextEditingController> _fields = {};
+  var _loadGeneration = 0;
 
   static const _editableFields = <ProfileAboutFieldKey, (String, IconData)>{
     ProfileAboutFieldKey.description: ('Descrição', Icons.notes_outlined),
@@ -44,39 +45,88 @@ final class _ActivityProfileAboutSectionState extends State<ActivityProfileAbout
   }
 
   @override
-  void dispose() {
-    for (final controller in _fields.values) {
-      controller.dispose();
+  void didUpdateWidget(covariant ActivityProfileAboutSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.controller, widget.controller) ||
+        !identical(oldWidget.repository, widget.repository) ||
+        oldWidget.activityId != widget.activityId) {
+      _state = _AboutLoadState.loading;
+      _replaceFieldControllers(const {});
+      _load();
     }
+  }
+
+  @override
+  void dispose() {
+    _loadGeneration += 1;
+    _replaceFieldControllers(const {});
     super.dispose();
   }
 
   Future<void> _load() async {
-    final institutionId = widget.controller.selectedInstitutionId;
+    final generation = ++_loadGeneration;
+    final controller = widget.controller;
+    final repository = widget.repository;
+    final activityId = widget.activityId;
+    final institutionId = controller.selectedInstitutionId;
     if (institutionId == null) {
-      if (mounted) setState(() => _state = _AboutLoadState.unavailable);
+      if (_isCurrentLoad(generation, controller, repository, activityId, institutionId)) {
+        setState(() => _state = _AboutLoadState.unavailable);
+      }
       return;
     }
     try {
       var page =
-          widget.controller.aboutPage ??
-          await widget.repository.load(institutionId: institutionId, activityId: widget.activityId);
-      page = _withActivitySuggestions(page);
-      widget.controller.setAboutPage(page, markDirty: false);
-      for (final key in _editableFields.keys) {
-        _fields[key] = TextEditingController(text: _value(page, key));
-      }
-      if (mounted) setState(() => _state = _AboutLoadState.ready);
+          controller.aboutPage ??
+          await repository.load(institutionId: institutionId, activityId: activityId);
+      if (!_isCurrentLoad(generation, controller, repository, activityId, institutionId)) return;
+      page = _withActivitySuggestions(page, controller);
+      controller.setAboutPage(page, markDirty: false);
+      _replaceFieldControllers({
+        for (final key in _editableFields.keys)
+          key: TextEditingController(text: _value(page, key)),
+      });
+      setState(() => _state = _AboutLoadState.ready);
     } on ActivityProfileAboutUnauthorizedException {
-      if (mounted) setState(() => _state = _AboutLoadState.unauthorized);
+      if (_isCurrentLoad(generation, controller, repository, activityId, institutionId)) {
+        setState(() => _state = _AboutLoadState.unauthorized);
+      }
     } on ActivityProfileAboutUnavailableException {
-      if (mounted) setState(() => _state = _AboutLoadState.unavailable);
+      if (_isCurrentLoad(generation, controller, repository, activityId, institutionId)) {
+        setState(() => _state = _AboutLoadState.unavailable);
+      }
     }
   }
 
-  ProfileAboutPage _withActivitySuggestions(ProfileAboutPage page) {
-    final name = widget.controller.name.text.trim();
-    final description = widget.controller.description.text.trim();
+  bool _isCurrentLoad(
+    int generation,
+    ActivityFormController controller,
+    ActivityProfileAboutRepository repository,
+    String? activityId,
+    String? institutionId,
+  ) =>
+      mounted &&
+      generation == _loadGeneration &&
+      identical(controller, widget.controller) &&
+      identical(repository, widget.repository) &&
+      activityId == widget.activityId &&
+      institutionId == widget.controller.selectedInstitutionId;
+
+  void _replaceFieldControllers(Map<ProfileAboutFieldKey, TextEditingController> next) {
+    for (final controller in _fields.values) {
+      controller.dispose();
+    }
+    _fields
+      ..clear()
+      ..addAll(next);
+  }
+
+  ProfileAboutPage _withActivitySuggestions(
+    ProfileAboutPage page,
+    ActivityFormController controller,
+  ) {
+    final name = controller.name.text.trim();
+    final description = controller.description.text.trim();
     var next = page;
     if (name.isNotEmpty && _value(page, ProfileAboutFieldKey.displayName).isEmpty) {
       next = next.replaceField(
