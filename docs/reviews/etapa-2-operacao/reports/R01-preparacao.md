@@ -53,3 +53,7 @@ C01/r3: origem1fd7f9ec → C00 2dd5a9bc, revisão/testes pós-integração11/11+
 ## Último recebimento C02/r3
 
 C02/r3 fonte12:34:24−03:00 recebida/aceita para revisão, I002 confirmada; código76a34dda (dois arquivos R2) na fila C00, integrado0. Executor relata49/49 Deno+4/4 estáticos Moments; mediaDart45/45; Forms recuperado102/102+DTO15/15 ainda WIP separado; preflight97769124 reproduzido71/71 Pester3.4.0 com mocks, sem runtime real. Timestamp corrigido. Decoder/catálogo/autorização e E2E continuam abertos; sem promoção de ações.
+
+## Recebimento C03/r2
+
+C03/r2 recebida, última evidência12:36:00−03:00: código445ee6e2 corrige apenas toque/rolagem no harness mobile; revisão C00 pendente, integrado0. Executor relata73/73 focais e156 PASS/9 cenários golden FAIL. IDs auditados visualmente: activities.list/create/detail/edit/location; publish/assessment ainda não nominais. Hipótese do C03: masters anteriores a workflow de6 etapas/shell atual; C00 ainda precisa revisar evidências visuais, nenhuma aprovação de golden. Sete IDs mantidos pending-verification; bloqueio visual retém somente fechamento dependente. C03 segue runtime/comandos/Avaliações. Push informado em mensagem1d6fae2f, ainda pendente no texto do handoff; conferir remoto antes de integrar.

@@ -63,12 +63,18 @@
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03",
       "branch": "codex/e2-r01-c03-operacoes",
       "instruction_revision": 1,
-      "received_revision": 0,
+      "received_revision": 2,
       "integrated_revision": 0,
-      "last_evidence": null,
+      "last_evidence": "2026-09-08T12:36:00-03:00",
       "baseline": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
       "worktree_verified_at": "2026-09-08T12:23:42-03:00",
-      "handoff_present_at_preparation": false
+      "handoff_present_at_preparation": false,
+      "accepted_revision": 2,
+      "handoff_sha256": "9fb3b74107d165ff19657a845576815b3551b2e91158d84c7554ba35f9166d7d",
+      "source_code_sha": "445ee6e2",
+      "local_test_evidence": "C03 focal73/73; broad156PASS/9goldenFAIL; no golden approved",
+      "next_step": "Independent activities runtime and assessments; C00 review nominal visual evidence and harness",
+      "instruction_acknowledgement": "I001 confirmed"
     },
     "C04": {
       "name": "E2 R01 C04 — Estruturas e pessoas",
@@ -109,6 +115,12 @@
         "_shared/r2_s3.ts",
         "_shared/r2_s3_test.ts"
       ]
+    },
+    {
+      "executor": "C03",
+      "revision": 2,
+      "sha": "445ee6e2",
+      "status": "received-test-harness-awaiting-review;9golden-failures-retained"
     }
   ],
   "automation_id": "e2-r01-c00-acompanhamento-30-min",

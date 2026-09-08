@@ -27,7 +27,7 @@ As cinco conversas não foram criadas automaticamente. O Owner abre a sessão na
 |---|---|---|---|---|---|
 | C01 | `E2 R01 C01 — Identidade e acesso` | 44 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01` | `codex/e2-r01-c01-identidade` | 01a08197-7b62-73c1-9673-5fd40fa40452; I001/r3 integrado |
 | C02 | `E2 R01 C02 — Forms mídia e cuidado` | 32 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02` | `codex/e2-r01-c02-forms-midia` | 01a0819a-f1f1-7421-95dd-d645ca9f5747; I002/r3 recebido |
-| C03 | `E2 R01 C03 — Operações` | 68 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03` | `codex/e2-r01-c03-operacoes` | 01a0819b-a12e-7110-88cb-99e51a82f384; ack pendente |
+| C03 | `E2 R01 C03 — Operações` | 68 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03` | `codex/e2-r01-c03-operacoes` | 01a0819b-a12e-7110-88cb-99e51a82f384; I001/r2 recebido |
 | C04 | `E2 R01 C04 — Estruturas e pessoas` | 47 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c04` | `claude/e2-r01-c04-estruturas` | ID/ack pendentes |
 | C05 | `E2 R01 C05 — Comunicação e Principal` | 28 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c05` | `claude/e2-r01-c05-comunicacao` | ID/ack pendentes |
 
@@ -39,7 +39,7 @@ Seis worktrees conferidas pelo Git. C01/C03/C04/C05 partem de `479d1bd1771b13e0c
 
 Inventário vigente:219 IDs únicos/38 famílias; classificação operacional194 ativas(189mvp+5shell),22 adiadas,3 gates; nenhum ID sem dono/duplicado. FE219 aplicáveis; BE212 normativas(187ativas+3gate+22adiadas),7N/A; E2E187ativas,3gates e22adiadas separados,7N/A. Frontend certificado0/219,Backend0/212,E2E0/187; IDs certificados: nenhum. Verificação de camada R01:2/219 IDs FE auditados parcialmente no lote Auth (auth.login/auth.reset), sem certificar critérios completos; BE real0/212,E2E0/187; histórico não foi zerado. Implementação e testes faltantes estão separados nas colunas Feito/FE/BE do inventário, sem percentual inventado.
 
-Última evidência de preparação: `2026-09-08T12:19:18-03:00`. Últimas entregas: C01/r3 integrado12:34:18; C02/r3 fonte12:34:24 corrigida. C01 recebido/aceito/integrado3 e C02 recebido/aceito3 integrado0; C03–C05 sem handoff recebido. Os três rastreadores sincronizados a essas revisões sem promoção de ações. Nenhum novo teste UI/SQL/produção nesta preparação. Evidências históricas até08/09 permanecem com seus próprios horários e ambientes.
+Última evidência de preparação: `2026-09-08T12:19:18-03:00`. Últimas entregas: C01/r3 integrado12:34:18; C02/r3 fonte12:34:24 corrigida. C01 recebido/aceito/integrado3 e C02 recebido/aceito3 integrado0; C03/r2 recebido integrado0, C04/C05 sem handoff recebido. Os três rastreadores sincronizados a essas revisões sem promoção de ações. Nenhum novo teste UI/SQL/produção nesta preparação. Evidências históricas até08/09 permanecem com seus próprios horários e ambientes.
 
 ### Ack inicial C01 — 2026-09-08T12:25:00-03:00
 
@@ -87,6 +87,10 @@ Código1fd7f9ec → C00 2dd5a9bc revisado, sem conflito; 11/11 SDK/remount e25/2
 ### Fila C02/r3
 
 C02/r3 fonte12:34:24−03:00 recebida/aceita para revisão, I002 confirmada; código76a34dda (dois arquivos R2) na fila C00, integrado0. Executor relata49/49 Deno+4/4 estáticos Moments; mediaDart45/45; Forms recuperado102/102+DTO15/15 ainda WIP separado; preflight97769124 reproduzido71/71 Pester3.4.0 com mocks, sem runtime real. Timestamp corrigido. Decoder/catálogo/autorização e E2E continuam abertos; sem promoção de ações.
+
+### Recebimento C03/r2
+
+C03/r2 recebida, última evidência12:36:00−03:00: código445ee6e2 corrige apenas toque/rolagem no harness mobile; revisão C00 pendente, integrado0. Executor relata73/73 focais e156 PASS/9 cenários golden FAIL. IDs auditados visualmente: activities.list/create/detail/edit/location; publish/assessment ainda não nominais. Hipótese do C03: masters anteriores a workflow de6 etapas/shell atual; C00 ainda precisa revisar evidências visuais, nenhuma aprovação de golden. Sete IDs mantidos pending-verification; bloqueio visual retém somente fechamento dependente. C03 segue runtime/comandos/Avaliações. Push informado em mensagem1d6fae2f, ainda pendente no texto do handoff; conferir remoto antes de integrar.
 
 ## Histórico preservado — anterior à R01
 
