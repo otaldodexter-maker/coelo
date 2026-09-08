@@ -82,7 +82,7 @@ final class HappensPublicationController extends ChangeNotifier {
     } on HappensPublicationUnauthorized {
       if (!_isCurrent(generation)) return;
       _denyAccess();
-    } on Exception {
+    } on Object {
       if (!_isCurrent(generation)) return;
       _emit(
         _state.copyWith(
@@ -148,7 +148,7 @@ final class HappensPublicationController extends ChangeNotifier {
     } on HappensPublicationUnauthorized {
       if (!_isCurrent(generation)) return;
       _denyAccess();
-    } on Exception {
+    } on Object {
       if (!_isCurrent(generation)) return;
       _emit(
         _state.copyWith(
@@ -209,7 +209,7 @@ final class HappensPublicationController extends ChangeNotifier {
     } on HappensPublicationUnauthorized {
       if (!_isCurrent(generation)) return;
       _denyAccess();
-    } on Exception {
+    } on Object {
       if (!_isCurrent(generation)) return;
       _emit(
         _state.copyWith(
@@ -291,7 +291,7 @@ final class HappensPublicationController extends ChangeNotifier {
     } on HappensPublicationUnauthorized {
       if (!_isCurrent(generation)) return null;
       _denyAccess();
-    } on Exception {
+    } on Object {
       if (!_isCurrent(generation)) return null;
       _emit(
         _state.copyWith(

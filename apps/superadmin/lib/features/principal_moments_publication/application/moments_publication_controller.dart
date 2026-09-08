@@ -65,7 +65,7 @@ final class MomentsPublicationController extends ChangeNotifier {
     } on MomentsPublicationUnauthorized {
       if (!_isCurrentLoad(generation)) return;
       _deny();
-    } on Exception {
+    } on Object {
       if (!_isCurrentLoad(generation)) return;
       _retryAction = _MomentsRetryAction.load;
       _emit(
@@ -149,7 +149,7 @@ final class MomentsPublicationController extends ChangeNotifier {
     } on MomentsPublicationUnauthorized {
       if (_disposed) return;
       _deny();
-    } on Exception {
+    } on Object {
       if (_disposed) return;
       _retryAction = _MomentsRetryAction.save;
       _emit(
@@ -194,7 +194,7 @@ final class MomentsPublicationController extends ChangeNotifier {
     } on MomentsPublicationUnauthorized {
       if (_disposed) return null;
       _deny();
-    } on Exception {
+    } on Object {
       if (_disposed) return null;
       _retryAction = _MomentsRetryAction.publish;
       _emit(
