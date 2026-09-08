@@ -76,74 +76,12 @@ final class SupabaseAuditRepository implements AuditRepository {
   }
 
   @override
-  Future<AuditExportJob> startExport(AuditExportRequest request) async {
-    final query = request.query.withoutCursor();
-    return _invokeExport({
-      'action': 'generate',
-      'format': request.format.name,
-      'filters': _exportFilters(query),
-      'idempotency_key': request.idempotencyKey,
-    });
-  }
+  Future<AuditExportJob> startExport(AuditExportRequest request) =>
+      Future<AuditExportJob>.error(const AuditUnavailableException());
 
   @override
   Future<AuditExportJob> fetchExportStatus(String jobId) =>
-      _invokeExport({'action': 'status', 'job_id': jobId});
-
-  Future<AuditExportJob> _invokeExport(Map<String, Object?> body) async {
-    try {
-      final response = await _client.functions.invoke('audit-export', body: body);
-      if (response.status < 200 || response.status >= 300) {
-        throw const AuditUnavailableException();
-      }
-      return _exportJob(_map(response.data));
-    } on FunctionException catch (error) {
-      if (error.status == 401 || error.status == 403) {
-        throw const AuditUnauthorizedException();
-      }
-      if (error.status == 400 || error.status == 409) {
-        throw const AuditValidationException();
-      }
-      throw const AuditUnavailableException();
-    } catch (error) {
-      throw _mapError(error);
-    }
-  }
-}
-
-Map<String, Object?> _exportFilters(AuditQuery query) {
-  final from = _timestamp(query.from);
-  final to = _timestamp(query.to);
-  return {
-    if (query.search.trim().isNotEmpty) 'search': query.search.trim(),
-    if (query.actorIds.isNotEmpty) 'actor_ids': query.actorIds.toList(growable: false),
-    if (query.contextKinds.isNotEmpty) 'context_kinds': query.contextKinds.toList(growable: false),
-    if (query.actionCodes.isNotEmpty) 'action_codes': query.actionCodes.toList(growable: false),
-    if (query.resourceTypes.isNotEmpty)
-      'resource_types': query.resourceTypes.toList(growable: false),
-    if (query.outcomes.isNotEmpty)
-      'outcomes': query.outcomes.map((outcome) => outcome.databaseValue).toList(growable: false),
-    if (query.origins.isNotEmpty) 'origins': query.origins.toList(growable: false),
-    'institution_id': ?query.institutionId,
-    'from': ?from,
-    'to': ?to,
-  };
-}
-
-AuditExportJob _exportJob(Map<String, Object?> payload) {
-  final summary = payload['summary'] == null ? const <String, Object?>{} : _map(payload['summary']);
-  return AuditExportJob(
-    id: _string(payload, 'job_id'),
-    status: AuditExportStatus.fromDatabase(_string(payload, 'state')),
-    format: _enumByName(AuditExportFormat.values, _string(payload, 'format')),
-    createdAt: _optionalDate(payload['created_at']),
-    phase: _optionalString(summary['phase']),
-    rowCount: _optionalInteger(payload['row_count']) ?? _optionalInteger(summary['row_count']),
-    retentionExpiresAt: _optionalDate(summary['retention_expires_at']),
-    errorCode: _optionalString(payload['error_code']),
-    downloadUrl: _safeHttpsUri(payload['download_url']),
-    downloadExpiresInSeconds: _optionalInteger(payload['expires_in']),
-  );
+      Future<AuditExportJob>.error(const AuditUnavailableException());
 }
 
 AuditEvent _event(Map<String, Object?> json) => AuditEvent(
@@ -250,36 +188,4 @@ DateTime _date(Map<String, Object?> json, String key) {
   throw const AuditUnavailableException();
 }
 
-DateTime? _optionalDate(Object? value) {
-  if (value == null) return null;
-  if (value case String text) {
-    final parsed = DateTime.tryParse(text);
-    if (parsed != null) return parsed;
-  }
-  throw const AuditUnavailableException();
-}
-
-int? _optionalInteger(Object? value) {
-  if (value == null) return null;
-  if (value case num number) return number.toInt();
-  throw const AuditUnavailableException();
-}
-
-Uri? _safeHttpsUri(Object? value) {
-  if (value == null) return null;
-  if (value is! String) throw const AuditUnavailableException();
-  final uri = Uri.tryParse(value);
-  if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) {
-    throw const AuditUnavailableException();
-  }
-  return uri;
-}
-
 String? _timestamp(DateTime? value) => value?.toUtc().toIso8601String();
-
-T _enumByName<T extends Enum>(List<T> values, String name) {
-  for (final value in values) {
-    if (value.name == name) return value;
-  }
-  throw const AuditUnavailableException();
-}
