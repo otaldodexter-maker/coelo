@@ -1,7 +1,7 @@
 ---
 title: "C07 — laudo das 61 divergências visuais da C05 no commit fixado cea29b1f (código de 7810e7c5)"
 source: "failures/ gerados por flutter test em C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c07 (17:46–17:50, código cea29b1f = 7810e7c5); seis laudos de subagentes somente-leitura revisados por C07; specs/050-principal-ui-ux-closure.md; specs/036-principal-now-publication-mvp.md; docs/superpowers/plans/2026-09-01-principal-ui-ux-closure.md; docs/superpowers/specs/2026-08-20-coelo-happens-publication-design.md; .agents/skills/coelo-ui/references (C00); git log dos masters e dos arquivos de feature"
-status: "evidence-review"
+status: "evidence-review;errata-1"
 generated_at: "2026-09-08T18:20:00-03:00"
 timezone: "America/Sao_Paulo"
 ---
@@ -285,3 +285,59 @@ comparação com `media_unavailable_light_1440.png` (rail + Prévia), que cairá
   `a0be1abe` nos outros 16 consumidores do indicador.
 - O laudo revisou os seis relatórios por amostragem (casos B/D e um caso A por família) e corrigiu
   onde eles se contradiziam; o restante é a leitura dos subagentes, atribuída a eles.
+
+---
+
+## Errata 1 — 2026-09-08T18:42-03:00: o cabeçalho mobile administrativo TEM aprovação
+
+A decisão `R01-VISUAL-1835` da C00 (18:33:32) apontou uma fonte aprovada que o laudo original não
+encontrou, e eu a verifiquei diretamente antes de aceitar:
+
+`docs/superpowers/specs/2026-09-01-superadmin-estruturas-finalizacao-design.md`, frontmatter
+`status: approved-design`, `updated_at: 2026-09-02`, linhas 52–54:
+
+> No mobile, o cabeçalho usa logo completa Coelo com respiro superior e chevron: direita quando
+> fechado, baixo quando o drawer está aberto. Não há hambúrguer. O acionador de Bug permanece
+> acessível.
+
+Isso descreve exatamente o que `d9232a94` implementou no `_CompactAppBar` e que o master
+`7ed598cf` (2026-09-01 14:48) não acompanha. **A afirmação do laudo de que o app bar compacto estava
+"sem aprovação visual localizada" está errada e fica retirada.** O subagente da família Chat
+declarou honestamente esse limite ("pode existir em conversa/anexo não versionado"); a fonte estava
+versionada, num caminho de spec que a busca dele não cobriu.
+
+### Reclassificação dos cinco casos de Chat
+
+| Caso | Classificação original | Classificação corrigida |
+|---|---|---|
+| `superadmin_chat_light_375` | D | **A** (spec de Estruturas, linhas 52–54) |
+| `superadmin_chat_dark_375` | D | **A** |
+| `superadmin_chat_reduced_motion_light_375` | D | **A** |
+| `superadmin_chat_light_768` | D | **A** (mais o rodapé de paginação, já A) |
+| `superadmin_chat_dark_768` | D | **A** |
+
+**Resumo corrigido: 43 A, 17 D, 0 B puro, 0 C, 1 assertiva desatualizada.** Os 17 D restantes são os
+4 de Comunicações e formulário e os 13 de Publicar no Agora.
+
+### O que a errata NÃO muda
+
+1. **O defeito do `_PageHeader` continua real e independente.** A aprovação do app bar não aprova o
+   deslocamento do título compacto quando há ações. A C00 confirmou isso no item 2 da mesma decisão
+   e mantém a reserva de `superadmin_shell.dart`. A reprodução em
+   `repro/shell_compact_page_header_inset_test.dart` segue válida: dx 20,0 sem ações contra 39,17
+   em 375 e 235,67 em 768.
+2. **A aprovação não cobre todos os pixels, o conteúdo nem os 77 goldens de Estruturas.** A
+   anterioridade dos 77 no baseline R01 `479d1bd1` é medição minha e continua de pé; atribuir todos
+   eles causalmente a `d9232a94` era e continua sendo **hipótese**, como o laudo já dizia. A C00
+   registrou a mesma ressalva.
+3. Os outros dois defeitos permanecem: borda do card do Chat coberta pelo rodapé (a corrigir no
+   consumidor, por C05) e ramo `wide` do Publicar no Agora inalcançável (a corrigir no consumidor,
+   por C05, conforme os itens 3 e 4 da decisão).
+
+### Lição de método que registro contra mim
+
+Um subagente não encontrar a fonte não é o mesmo que a fonte não existir. O laudo deveria ter
+escrito "não localizei aprovação nos caminhos X, Y e Z" em vez de tratar a ausência de resultado
+como ausência de aprovação — que é exatamente o erro que o próprio AGENTS.md adverte ("Falta de
+resultado no índice não significa ausência de implementação"). A busca cobriu
+`.agents/skills/coelo-ui/references` e `docs/reviews`, mas não `docs/superpowers/specs/`.
