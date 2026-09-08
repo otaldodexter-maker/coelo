@@ -13,6 +13,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final status in ['draft', 'archived', 'active', 'published']) {
+    testWidgets('template publication requires published response $status', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final repository = _TemplatePublicationRepository(status);
+      var savedCount = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: MealPlanWizardPage(
+              repository: repository,
+              imageRepository: const UnavailableMealPlanImageRepository(),
+              imageSelectionEnabled: false,
+              isTemplate: true,
+              onSaved: () => savedCount++,
+              onCancel: () {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextFormField).first, 'Modelo publicado');
+      await _selectAudienceOption(tester, 'Instituição do modelo', 'Colégio Coelo');
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await tester.enterText(find.byType(TextFormField).first, 'Arroz e feijão');
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await tester.tap(find.widgetWithText(FilledButton, 'Publicar modelo'));
+      await tester.pumpAndSettle();
+      expect(repository.calls, 1);
+      expect(savedCount, status == 'published' ? 1 : 0);
+      expect(
+        find.text('Não foi possível confirmar a publicação do modelo.'),
+        status == 'published' ? findsNothing : findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
   for (final stage in ['conflicts', 'review', 'publish']) {
     for (final validation in <bool?>[false, true, null]) {
       testWidgets('retry preserves confirmed resource after $stage validation=$validation', (
@@ -647,6 +686,32 @@ class _OrderedMealPlanRepository implements MealPlanRepository {
   @override
   Future<MealPlan> fetchEffectiveSnapshot(MealPlanDraft draft) =>
       _delegate.fetchEffectiveSnapshot(draft);
+}
+
+final class _TemplatePublicationRepository extends _OrderedMealPlanRepository {
+  _TemplatePublicationRepository(this.status);
+  final String status;
+  int calls = 0;
+
+  @override
+  Future<MealPlanTemplate> saveTemplate(
+    MealPlanTemplateDraft draft, {
+    required bool publish,
+  }) async {
+    calls++;
+    expect(publish, isTrue);
+    return MealPlanTemplate(
+      id: draft.id ?? 'template-confirmed',
+      name: draft.name,
+      planVariant: draft.planVariant,
+      audienceSegment: draft.audienceSegment,
+      status: status,
+      version: 1,
+      payload: draft.payload,
+      createdAt: DateTime(2026, 9, 8),
+      updatedAt: DateTime(2026, 9, 8),
+    );
+  }
 }
 
 final class _ConflictMealPlanRepository extends _OrderedMealPlanRepository {
