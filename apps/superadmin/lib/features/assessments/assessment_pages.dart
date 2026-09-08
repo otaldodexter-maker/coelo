@@ -1331,6 +1331,7 @@ final class _AssessmentClosingPageState extends State<AssessmentClosingPage> {
   final _search = TextEditingController();
   int _page = 0;
   int _pageSize = 8;
+  int _loadGeneration = 0;
   @override
   void initState() {
     super.initState();
@@ -1338,23 +1339,35 @@ final class _AssessmentClosingPageState extends State<AssessmentClosingPage> {
   }
 
   @override
+  void didUpdateWidget(covariant AssessmentClosingPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.repository, widget.repository)) {
+      _search.clear();
+      _page = 0;
+      unawaited(_load());
+    }
+  }
+
+  @override
   void dispose() {
+    _loadGeneration++;
     _search.dispose();
     super.dispose();
   }
 
   Future<void> _load() async {
+    final generation = ++_loadGeneration;
     setState(() {
       _items = null;
       _error = null;
     });
     try {
       final items = await widget.repository.fetchClosingQueue();
-      if (mounted) {
+      if (mounted && generation == _loadGeneration) {
         setState(() => _items = items);
       }
     } on Exception catch (error) {
-      if (mounted) {
+      if (mounted && generation == _loadGeneration) {
         setState(() => _error = error);
       }
     }
@@ -1554,7 +1567,8 @@ final class AssessmentClosingDetailPage extends StatefulWidget {
 }
 
 final class _AssessmentClosingDetailPageState extends State<AssessmentClosingDetailPage> {
-  late final AssessmentController _controller;
+  late AssessmentController _controller;
+  DialogRoute<dynamic>? _decisionRoute;
   double _footerHeight = 0;
   bool _reviewEditsDirty = false;
 
@@ -1566,28 +1580,65 @@ final class _AssessmentClosingDetailPageState extends State<AssessmentClosingDet
   }
 
   @override
+  void didUpdateWidget(covariant AssessmentClosingDetailPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.repository, widget.repository) ||
+        oldWidget.gradebookId != widget.gradebookId) {
+      _dismissDecision();
+      _controller.dispose();
+      _controller = AssessmentController(widget.repository);
+      _reviewEditsDirty = false;
+      _footerHeight = 0;
+      unawaited(_controller.loadGradebook(widget.gradebookId));
+    }
+  }
+
+  void _dismissDecision() {
+    final route = _decisionRoute;
+    _decisionRoute = null;
+    if (route == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (route.isActive) route.navigator?.removeRoute(route);
+    });
+  }
+
+  Future<T?> _decision<T>(WidgetBuilder builder) async {
+    if (_decisionRoute != null || _controller.saving) return null;
+    final route = DialogRoute<T>(context: context, builder: builder);
+    _decisionRoute = route;
+    try {
+      return await Navigator.of(context, rootNavigator: true).push<T>(route);
+    } finally {
+      if (identical(_decisionRoute, route)) _decisionRoute = null;
+    }
+  }
+
+  bool _isCurrent(AssessmentController controller) => mounted && identical(controller, _controller);
+
+  @override
   void dispose() {
+    _dismissDecision();
     _controller.dispose();
     super.dispose();
   }
 
   Future<void> _action(AssessmentClosingAction action) async {
+    final controller = _controller;
     if (action == AssessmentClosingAction.publish) {
-      final book = _controller.gradebook;
+      final book = controller.gradebook;
       if (book == null) return;
-      final decision = await showDialog<(DateTime, String)>(
-        context: context,
-        builder: (context) => _AssessmentPublicationDialog(
+      final decision = await _decision<(DateTime, String)>(
+        (context) => _AssessmentPublicationDialog(
           plannedAt: book.familyReleaseAt ?? book.publishScheduledAt,
         ),
       );
-      if (decision == null || !mounted) return;
+      if (decision == null || !_isCurrent(controller)) return;
       try {
-        await _controller.schedulePublication(decision.$1, decision.$2);
+        await controller.schedulePublication(decision.$1, decision.$2);
       } on Exception {
         return;
       }
-      if (!mounted) return;
+      if (!mounted || !_isCurrent(controller)) return;
       final immediate = !decision.$1.isAfter(DateTime.now());
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -1601,24 +1652,23 @@ final class _AssessmentClosingDetailPageState extends State<AssessmentClosingDet
       return;
     }
     final reason = await _reason(action);
-    if (reason == null || !mounted) {
+    if (reason == null || !_isCurrent(controller)) {
       return;
     }
     try {
-      await _controller.transition(action, reason);
+      await controller.transition(action, reason);
     } on Exception {
       return;
     }
-    if (!mounted) {
+    if (!mounted || !_isCurrent(controller)) {
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Fechamento atualizado.')));
   }
 
   Future<String?> _reason(AssessmentClosingAction action) async {
-    final result = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) => _AssessmentReasonDialog(
+    final result = await _decision<String>(
+      (dialogContext) => _AssessmentReasonDialog(
         title: switch (action) {
           AssessmentClosingAction.review => 'Revisar diário',
           AssessmentClosingAction.returnToTeacher => 'Devolver ao professor',
@@ -1630,17 +1680,17 @@ final class _AssessmentClosingDetailPageState extends State<AssessmentClosingDet
   }
 
   Future<void> _completePending() async {
-    final reason = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) => const _AssessmentReasonDialog(title: 'Completar pendências'),
+    final controller = _controller;
+    final reason = await _decision<String>(
+      (dialogContext) => const _AssessmentReasonDialog(title: 'Completar pendências'),
     );
-    if (reason == null || !mounted) return;
+    if (reason == null || !_isCurrent(controller)) return;
     try {
-      await _controller.saveDraft(reason: reason);
+      await controller.saveDraft(reason: reason);
     } on Exception {
       return;
     }
-    if (!mounted) return;
+    if (!mounted || !_isCurrent(controller)) return;
     setState(() => _reviewEditsDirty = false);
     ScaffoldMessenger.of(
       context,
