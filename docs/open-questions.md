@@ -81,6 +81,9 @@ Correções autorizadas pelo Owner e registradas em
 
 ## Conflito pendente — principal de autorização em Planos (2026-09-08)
 
+Evidência adicional C03/r10, 2026-09-08T15:40:25-03:00: migration20260901183154_superadmin_plans_production.sql usa created_by_person_id/updated_by_person_id e plan_change_receipts.actor_person_id, current_person_id()/has_platform_permission(); reader expõe units_with_override=0 como placeholder. Crosswalk activate=restaurar archived→active e assign=vínculos sem write permanece proposta pendente. Correção de retry4c5af8ce é cliente e não resolve nem aprova a transição de realm.
+
+
 - `specs/051-superadmin-plans-production.md`, seção Permissões e segurança,
   exige pessoa global ativa; `specs/039-superadmin-internal-auth-session-context.md`
   e ADR0019 proíbem ligar o principal interno a People e preveem transição
