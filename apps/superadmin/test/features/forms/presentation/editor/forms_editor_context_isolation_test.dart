@@ -10,6 +10,54 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final kind in [FormItemKind.photo, FormItemKind.gallery]) {
+    testWidgets('$kind duplication preserves loaded image settings', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1200, 1100));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final api = _EditorApi(
+        itemKind: kind,
+        itemConfig: const FormItemConfig(allowCamera: true, allowExisting: false, maxImages: 1),
+      );
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Duplicar pergunta').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+      await tester.pumpAndSettle();
+      final items = api.savedCommands.single.payload.sections.first.items;
+      expect(items, hasLength(2));
+      expect(items[0].id, isNot(items[1].id));
+      for (final item in items) {
+        expect(item.kind, kind);
+        expect(item.config.allowCamera, isTrue);
+        expect(item.config.allowExisting, isFalse);
+        expect(item.config.maxImages, 1);
+      }
+      expect(tester.takeException(), isNull);
+    });
+
+    for (final discard in [false, true]) {
+      testWidgets('$kind image settings survive title edit and discard=$discard', (tester) async {
+        final api = _EditorApi(
+          itemKind: kind,
+          itemConfig: const FormItemConfig(allowCamera: false, allowExisting: true, maxImages: 2),
+        );
+        await tester.pumpWidget(_app(api, 'form-1'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byWidget(_title(tester)), 'Edited title');
+        if (discard) await _discard(tester);
+        await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+        await tester.pumpAndSettle();
+        final item = api.savedCommands.single.payload.sections.first.items.single;
+        expect(item.kind, kind);
+        expect(item.config.allowCamera, isFalse);
+        expect(item.config.allowExisting, isTrue);
+        expect(item.config.maxImages, 2);
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
   testWidgets('production discard confirmation describes the confirmed baseline', (tester) async {
     await tester.pumpWidget(_app(_EditorApi(), 'form-1'));
     await tester.pumpAndSettle();
@@ -508,6 +556,8 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
     this.saveGate,
     this.publishGate,
     this.canPublish = true,
+    this.itemKind = FormItemKind.shortText,
+    this.itemConfig = const FormItemConfig(),
   });
   final String title;
   final String? savedTitle;
@@ -518,6 +568,8 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
   final Future<void>? publishGate;
   final publishCommands = <FormCommand<FormIdPayload>>[];
   final bool canPublish;
+  final FormItemKind itemKind;
+  final FormItemConfig itemConfig;
   final requestedForms = <String>[];
   final savedCommands = <FormCommand<FormDefinition>>[];
 
@@ -557,7 +609,13 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
         title: 'Section',
         position: 0,
         items: [
-          FormItem(id: 'item-1', kind: FormItemKind.shortText, label: 'Question', position: 0),
+          FormItem(
+            id: 'item-1',
+            kind: itemKind,
+            label: 'Question',
+            position: 0,
+            config: itemConfig,
+          ),
         ],
       ),
       FormSection(

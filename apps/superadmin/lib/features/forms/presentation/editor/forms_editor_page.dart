@@ -1024,6 +1024,12 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                 position: questionIndex,
                 isRequired: _sections[sectionIndex].questions[questionIndex].required,
                 config: FormItemConfig(
+                  allowCamera:
+                      _sections[sectionIndex].questions[questionIndex].loadedConfig.allowCamera,
+                  allowExisting:
+                      _sections[sectionIndex].questions[questionIndex].loadedConfig.allowExisting,
+                  maxImages:
+                      _sections[sectionIndex].questions[questionIndex].loadedConfig.maxImages,
                   minValue: num.tryParse(
                     _sections[sectionIndex].questions[questionIndex].minimum.text.trim().replaceAll(
                       ',',
@@ -1128,6 +1134,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       kind: item.kind,
       label: item.label,
       required: item.isRequired,
+      loadedConfig: item.config,
     );
     draft
       ..details.text = item.helpText ?? ''
@@ -1498,6 +1505,7 @@ final class _EditorQuestionDraft {
     required String label,
     required this.required,
     this.branchEnabled = false,
+    this.loadedConfig = const FormItemConfig(),
   }) : label = TextEditingController(text: label),
        details = TextEditingController(),
        minimum = TextEditingController(),
@@ -1508,6 +1516,7 @@ final class _EditorQuestionDraft {
 
   final String id;
   final FormItemKind kind;
+  final FormItemConfig loadedConfig;
   final TextEditingController label;
   final TextEditingController details;
   final TextEditingController minimum;
@@ -1527,6 +1536,7 @@ final class _EditorQuestionDraft {
       label: '${label.text} — cópia',
       required: required,
       branchEnabled: branchEnabled,
+      loadedConfig: loadedConfig,
     );
     value
       ..dateRule = dateRule

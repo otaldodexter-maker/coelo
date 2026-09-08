@@ -46,7 +46,7 @@ indicador. O arquivo é aberto no painel direito como alternativa disponível.
 
 ## Trabalho ativo e BD
 
-- Root: F-READ01 SQL/pgTAP após reader/injeção autorizados. Nenhum SQL executado.
+- Root: F-READ01 SQL/pgTAP nominal preparado na origem em `21792181`, ainda não integrado nem executado no destino; revisão central reteve helper400 e expectativa MFA obsoleta. Imagens no editor e visibilidade condicional corrigidas localmente: 99/99 informados, analyzer 4 arquivos, review aprovado; goldens continuam abertos. Evidência `2026-09-07-image-config-and-conditional-response.md`.
 - forms_next_slice: precondições e negativas SAI/SQL, análise read-only concluída.
 - review_export_policy: reader aprovado após correção de offset; sem backend.
 - medication_roundtrip: revisão UI/composição read-only, sem achado bloqueante.

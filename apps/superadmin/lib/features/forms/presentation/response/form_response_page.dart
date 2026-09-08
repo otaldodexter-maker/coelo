@@ -712,6 +712,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         .any(
           (item) =>
               item.isRequired &&
+              _isVisible(item) &&
               (item.kind == FormItemKind.photo || item.kind == FormItemKind.gallery),
         );
     if (unsupportedRequired) {
