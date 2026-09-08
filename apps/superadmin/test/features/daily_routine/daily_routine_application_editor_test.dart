@@ -9,6 +9,63 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('new model save unlocks after the repository returns its created id', (tester) async {
+    final repository = _RoutineRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: DailyRoutineWizardPage(repository: repository, logout: unavailableSuperadminLogout),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(const Key('daily-routine-name')), 'Modelo criado');
+    await tester.enterText(find.byKey(const Key('daily-routine-model-institution')), 'institution');
+    await tester.tap(find.byKey(const Key('daily-routine-save')));
+    await tester.pumpAndSettle();
+
+    expect(repository.savedModel?.name, 'Modelo criado');
+    final saveAgain = tester
+        .widget<FilledButton>(find.byKey(const Key('daily-routine-save')))
+        .onPressed;
+    expect(saveAgain, isNotNull);
+    expect(find.text('Salvando...'), findsNothing);
+    saveAgain!();
+    await tester.pumpAndSettle();
+    expect(repository.savedModel?.id, 'created-model');
+  });
+
+  testWidgets('new application save unlocks after the repository returns its created id', (
+    tester,
+  ) async {
+    final repository = _RoutineRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: DailyRoutineWizardPage(
+          repository: repository,
+          logout: unavailableSuperadminLogout,
+          entryKind: RoutineEntryKind.application,
+          applicationFromModelId: 'source-model',
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('daily-routine-application-save')));
+    await tester.pumpAndSettle();
+
+    expect(repository.savedApplication?.modelVersionId, 'source-model:v1');
+    final saveAgain = tester
+        .widget<FilledButton>(find.byKey(const Key('daily-routine-application-save')))
+        .onPressed;
+    expect(saveAgain, isNotNull);
+    expect(find.text('Salvando...'), findsNothing);
+    saveAgain!();
+    await tester.pumpAndSettle();
+    expect(repository.savedApplication?.id, 'created-application');
+  });
+
   testWidgets('ignores a late application load after the editor context changes', (tester) async {
     final repository = _DelayedRoutineRepository();
 
@@ -138,6 +195,7 @@ void main() {
 }
 
 class _RoutineRepository implements RoutineRepository {
+  RoutineModel? savedModel;
   RoutineApplication? savedApplication;
   String? revertedApplicationId;
 
@@ -181,15 +239,33 @@ class _RoutineRepository implements RoutineRepository {
   }
 
   @override
-  Future<RoutineDirectoryPage> fetchPage(RoutineDirectoryQuery query) async =>
-      throw UnimplementedError();
+  Future<RoutineDirectoryPage> fetchPage(RoutineDirectoryQuery query) async => RoutineDirectoryPage(
+    items: const [],
+    page: query.page,
+    pageSize: query.pageSize,
+    totalCount: 0,
+    canManage: true,
+  );
   @override
-  Future<RoutineModel> fetchModel(String id) async => throw UnimplementedError();
+  Future<RoutineModel> fetchModel(String id) async => RoutineModel(
+    id: id,
+    name: 'Modelo de origem',
+    description: '',
+    version: 1,
+    status: RoutineModelStatus.active,
+    sections: const [],
+    expectedVersion: 1,
+    institutionId: 'institution',
+    canManage: true,
+  );
   @override
   Future<RoutineLaunch> fetchLaunch(String id) async => throw UnimplementedError();
   @override
-  Future<String> saveModel(RoutineModel model, {required String requestId}) async =>
-      throw UnimplementedError();
+  Future<String> saveModel(RoutineModel model, {required String requestId}) async {
+    savedModel = model;
+    return model.id.isEmpty ? 'created-model' : model.id;
+  }
+
   @override
   Future<String> saveLaunchDraft(RoutineLaunch launch, {required String requestId}) async =>
       throw UnimplementedError();
