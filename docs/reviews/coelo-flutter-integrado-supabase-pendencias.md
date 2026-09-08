@@ -14,13 +14,17 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "1F9C1F256A1E8927A96D7CCDA934B78A4A88C26806E70E4D4C33E64B3F2A54E4"
+flutter_tracker_sha256: "18FFFDD473A299562E6D4976C93D1888ECB3508735D26CECEFF320FCDC7C8568"
 supabase_tracker_sha256: "A7F6EA7170FB8BFC55F35BDAE79566BE7246C6788CF27B482AD0FEDF69C6E863"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
+
+- Atualização02:39: Modelos+Agenda39/39 focais e Agora59/59inclgoldens no
+  destino, analyzers limpos. Invalidação cliente não é autorização backend,
+  snapshot transacional ou revogação de URL. Contadores E2E inalterados.
 
 - Atualização02:33: diagnóstico LOC separa EOL de alteração semântica remota;
   correção candidata nominal reservada, sem deploy. CHILD48/49 somente preparo.

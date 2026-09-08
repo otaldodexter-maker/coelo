@@ -14,6 +14,14 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização02:39: Modelos21ef243c impede cache tardio de save/duplicate
+  contaminar contexto novo; testes consumidores eb84a01c/990300ef preservados.
+  Agenda4daeafb9 mantém lista/contextos juntos na apresentação e invalida
+  sessão/contexto/negação; não é snapshot transacional entreRPCs.
+  Quatro focais Modelos+Agenda39/39 destino/analyzer2. Agora7cca9a27 purga
+  referências locais e callbacks após negação;59/59 inclgoldens no destino.
+  Não revoga URL remotamente nem comprova limpeza de cacheHTTP/decoder/E2E.
+
 - Atualização02:29: Respostas21efc6cc mostra uma seção por página, mantém
   edição/autosave ao navegar e valida globalmente;62/62 destino. Agendaf8a04b3a
   adiciona reader/DTO parcial isolado sem personIds ou conexão às rotas;
