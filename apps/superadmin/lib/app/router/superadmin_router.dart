@@ -1082,6 +1082,10 @@ GoRouter createSuperadminRouter({
                     locationCatalogReader: locationCatalogReader,
                     sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
                     contextRevision: session.authorizationInvalidationRevision,
+                    onOpenLocationCatalog: (institutionId) => context.goNamed(
+                      SuperadminRoutes.institutionLocationsName,
+                      pathParameters: {'institutionId': institutionId},
+                    ),
                     logout: logout,
                     onCancel: () => context.goNamed(SuperadminRoutes.institutionsName),
                     onSaved: (result) =>
@@ -1118,6 +1122,10 @@ GoRouter createSuperadminRouter({
                     locationCatalogReader: locationCatalogReader,
                     sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
                     contextRevision: session.authorizationInvalidationRevision,
+                    onOpenLocationCatalog: (institutionId) => context.goNamed(
+                      SuperadminRoutes.institutionLocationsName,
+                      pathParameters: {'institutionId': institutionId},
+                    ),
                     logout: logout,
                     onCancel: () => context.goNamed(SuperadminRoutes.institutionsName),
                     onSaved: (result) =>
@@ -1194,6 +1202,10 @@ GoRouter createSuperadminRouter({
                     locationCatalogReader: locationCatalogReader,
                     sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
                     contextRevision: session.authorizationInvalidationRevision,
+                    onOpenLocationCatalog: (unitId) => context.goNamed(
+                      SuperadminRoutes.unitLocationsName,
+                      pathParameters: {'unitId': unitId},
+                    ),
                     logout: logout,
                     onCreateGroup: (institutionId, unitId) => context.goNamed(
                       SuperadminRoutes.groupCreateName,
@@ -1249,6 +1261,10 @@ GoRouter createSuperadminRouter({
                     locationCatalogReader: locationCatalogReader,
                     sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
                     contextRevision: session.authorizationInvalidationRevision,
+                    onOpenLocationCatalog: (unitId) => context.goNamed(
+                      SuperadminRoutes.unitLocationsName,
+                      pathParameters: {'unitId': unitId},
+                    ),
                     logout: logout,
                     onCreateGroup: (institutionId, unitId) => context.goNamed(
                       SuperadminRoutes.groupCreateName,

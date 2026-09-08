@@ -29,6 +29,7 @@ final class InstitutionFormSection extends StatelessWidget {
     this.locationScope,
     this.sessionAvailable = false,
     this.contextRevision = 0,
+    this.onOpenLocationCatalog,
     super.key,
   });
 
@@ -44,6 +45,7 @@ final class InstitutionFormSection extends StatelessWidget {
   final LocationScope? locationScope;
   final bool sessionAvailable;
   final int contextRevision;
+  final VoidCallback? onOpenLocationCatalog;
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +58,7 @@ final class InstitutionFormSection extends StatelessWidget {
         locationScope: locationScope,
         sessionAvailable: sessionAvailable,
         contextRevision: contextRevision,
+        onOpenLocationCatalog: onOpenLocationCatalog,
       ),
       InstitutionFormStep.legalRepresentatives => _LegalRepresentativesSection(
         controller: controller,
@@ -147,6 +150,7 @@ final class _LocationSection extends StatefulWidget {
     this.locationScope,
     this.sessionAvailable = false,
     this.contextRevision = 0,
+    this.onOpenLocationCatalog,
   });
 
   final InstitutionFormController controller;
@@ -155,6 +159,7 @@ final class _LocationSection extends StatefulWidget {
   final LocationScope? locationScope;
   final bool sessionAvailable;
   final int contextRevision;
+  final VoidCallback? onOpenLocationCatalog;
 
   @override
   State<_LocationSection> createState() => _LocationSectionState();
@@ -314,6 +319,7 @@ final class _LocationSectionState extends State<_LocationSection> {
               reader: widget.locationCatalogReader!,
               sessionAvailable: widget.sessionAvailable,
               contextRevision: widget.contextRevision,
+              onOpenCatalog: widget.onOpenLocationCatalog,
             ),
           ],
         ],

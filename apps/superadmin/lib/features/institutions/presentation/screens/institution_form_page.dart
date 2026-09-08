@@ -34,6 +34,7 @@ final class InstitutionFormPage extends StatefulWidget {
     this.locationCatalogReader,
     this.sessionAvailable = false,
     this.contextRevision = 0,
+    this.onOpenLocationCatalog,
     super.key,
   });
 
@@ -53,6 +54,9 @@ final class InstitutionFormPage extends StatefulWidget {
   final LocationCatalogReader? locationCatalogReader;
   final bool sessionAvailable;
   final int contextRevision;
+
+  /// Opens the full catalog of this institution; absent when no route exists.
+  final ValueChanged<String>? onOpenLocationCatalog;
 
   @override
   State<InstitutionFormPage> createState() => _InstitutionFormPageState();
@@ -288,6 +292,12 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
               : LocationScope.institution(institutionId: widget.institutionId!),
           sessionAvailable: widget.sessionAvailable,
           contextRevision: widget.contextRevision,
+          onOpenLocationCatalog:
+              widget.onOpenLocationCatalog == null ||
+                  widget.institutionId == null ||
+                  !validLocationId(widget.institutionId!)
+              ? null
+              : () => widget.onOpenLocationCatalog!(widget.institutionId!),
         ),
       },
     );
@@ -310,6 +320,7 @@ final class _FormBody extends StatelessWidget {
     this.locationScope,
     this.sessionAvailable = false,
     this.contextRevision = 0,
+    this.onOpenLocationCatalog,
   });
 
   final InstitutionFormController controller;
@@ -323,6 +334,7 @@ final class _FormBody extends StatelessWidget {
   final LocationScope? locationScope;
   final bool sessionAvailable;
   final int contextRevision;
+  final VoidCallback? onOpenLocationCatalog;
 
   @override
   Widget build(BuildContext context) {
@@ -354,6 +366,7 @@ final class _FormBody extends StatelessWidget {
                   locationScope: locationScope,
                   sessionAvailable: sessionAvailable,
                   contextRevision: contextRevision,
+                  onOpenLocationCatalog: onOpenLocationCatalog,
                 ),
                 footer: _FormFooter(
                   controller: controller,

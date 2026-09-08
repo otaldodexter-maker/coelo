@@ -39,6 +39,7 @@ final class UnitFormPage extends StatefulWidget {
     this.locationCatalogReader,
     this.sessionAvailable = false,
     this.contextRevision = 0,
+    this.onOpenLocationCatalog,
     super.key,
   });
 
@@ -56,6 +57,9 @@ final class UnitFormPage extends StatefulWidget {
   final LocationCatalogReader? locationCatalogReader;
   final bool sessionAvailable;
   final int contextRevision;
+
+  /// Opens the full catalog of this unit; absent when no route exists.
+  final ValueChanged<String>? onOpenLocationCatalog;
   final ValueChanged<String>? onDestinationSelected;
   final void Function(String institutionId, String? unitId)? onCreateGroup;
   final ValueChanged<String>? onEditGroup;
@@ -823,6 +827,9 @@ final class _UnitFormPageState extends State<UnitFormPage> {
             reader: widget.locationCatalogReader!,
             sessionAvailable: widget.sessionAvailable,
             contextRevision: widget.contextRevision,
+            onOpenCatalog: widget.onOpenLocationCatalog == null || _unitLocationScope() == null
+                ? null
+                : () => widget.onOpenLocationCatalog!(_original!.id),
           ),
         ],
       ],
