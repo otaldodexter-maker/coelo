@@ -75,7 +75,7 @@ final class StudentTrackingViewModel extends ChangeNotifier {
       }
       selectedChild = _children.first;
       await _loadSelection(generation, autoSelect: true);
-    } on Exception catch (error) {
+    } on Object catch (error) {
       _handleFailure(error, generation);
     }
   }
@@ -89,7 +89,7 @@ final class StudentTrackingViewModel extends ChangeNotifier {
     _setState(const StudentTrackingLoading(), generation);
     try {
       await _loadSelection(generation, autoSelect: true);
-    } on Exception catch (error) {
+    } on Object catch (error) {
       _handleFailure(error, generation);
     }
   }
@@ -102,7 +102,7 @@ final class StudentTrackingViewModel extends ChangeNotifier {
     _setState(const StudentTrackingLoading(), generation);
     try {
       await _loadSelection(generation, autoSelect: true);
-    } on Exception catch (error) {
+    } on Object catch (error) {
       _handleFailure(error, generation);
     }
   }
@@ -114,7 +114,7 @@ final class StudentTrackingViewModel extends ChangeNotifier {
     _setState(const StudentTrackingLoading(), generation);
     try {
       await _loadSelection(generation);
-    } on Exception catch (error) {
+    } on Object catch (error) {
       _handleFailure(error, generation);
     }
   }
@@ -129,7 +129,7 @@ final class StudentTrackingViewModel extends ChangeNotifier {
     _setState(const StudentTrackingLoading(), generation);
     try {
       await _loadSelection(generation);
-    } on Exception catch (error) {
+    } on Object catch (error) {
       _handleFailure(error, generation);
     }
   }
@@ -172,7 +172,15 @@ final class StudentTrackingViewModel extends ChangeNotifier {
     _setState(const StudentTrackingReady(), generation);
   }
 
-  void _handleFailure(Exception error, int generation) {
+  /// Takes Object, not Exception. `on Exception` does not catch an `Error`, and
+  /// a decoding TypeError is an Error: it escaped every one of these five
+  /// catches, the state never left loading, and the screen sat on its skeleton
+  /// forever with no retry. A screen that hangs is worse than one that fails,
+  /// because failing is the only state a person can act on.
+  ///
+  /// Four sibling directory view models had the same defect and were fixed in
+  /// c3ce3127. This fifth file was missed there and is caught up here.
+  void _handleFailure(Object error, int generation) {
     if (!_isCurrent(generation)) return;
     _clearSensitiveState();
     switch (error) {
