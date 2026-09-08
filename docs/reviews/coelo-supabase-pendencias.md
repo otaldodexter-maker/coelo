@@ -10,6 +10,15 @@ family_count: 38
 
 # Pendências Coelo — Back-end
 
+- Atualização02:33: catálogo remoto nominal comparado pela E2 às05:28:22Z:
+  helperLOC6 é EOL misto com definiçãoLF idêntica; helper4 muda ORNULL e remove
+  students. Pattern da candidata só casa com fonte canônica, não remota.
+  Correção mínima candidata reservada: fechar exclusivamente bloco locations
+  da definição remota comprovada, preservando demais campos; snapshotlocal e
+  REDpattern/GREEN exigem review/pins. Nenhuma escrita remota autorizada.
+  CHILD78e SQL integralmente lido pelo coordenador; preparo48/49 liberado
+  na fila Eng1, ainda sem execução. F-AUTHOR02 SQL7ec lido, não integrado.
+
 - Atualização02:29: probeLOC Auth47 reportou7existênciasPASS, divergência de
   MD5 bruto só nas funções privadas form_options e create_activity_locations.
   Pins vieram de catálogo remoto0b7ab89a; LF local contra RAW remoto não prova
