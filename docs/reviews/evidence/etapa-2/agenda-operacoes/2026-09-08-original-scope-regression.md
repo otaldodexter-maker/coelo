@@ -1,11 +1,18 @@
 ---
 title: "E2E5 — regressão ampla do escopo original"
-source: "testes Flutter locais em a5ad81d10954dde9d4c443fa5e0522835ec357c0"
-status: "669 PASS; 1 runtime SKIP; integração real aberta"
+source: "testes Flutter locais; última rodada no conteúdo do cliente 35b531f3f0e557df798cc603e1012e8ae13471a9"
+status: "760 PASS; 1 runtime SKIP; integração real aberta"
 generated_at: "2026-09-08"
 ---
 
-## Rerun após 0b55e919
+## Rerun com cliente Agenda READ039
+
+Em 2026-09-08, **71 arquivos, 760 PASS e 1 SKIP**, exit0, runner57s.
+Conteúdo do cliente em `35b531f3f0e557df798cc603e1012e8ae13471a9`.
+Mesmo comando com manifesto não vazio abaixo, runtime A01 explicitamente0.
+Esta é a contagem vigente e não se soma às rodadas históricas.
+
+## Histórico: rerun após 0b55e919
 
 Em 2026-09-08, a seleção de **70 arquivos** do mesmo escopo terminou com
 **711 PASS e 1 SKIP**, exit0, runner52s. Runtime A01 foi explicitamente
@@ -27,7 +34,7 @@ rtk proxy flutter test --no-pub @taskTests
 
 Sem rebaseline, mudanças de produção ou promoção de gate E2E nesta rodada.
 
-# Resultado
+# Histórico: resultado anterior
 
 **669 testes PASS, 1 SKIP, exit0**, em69arquivos selecionados. O runner
 reportou51segundos. Nenhum arquivo de teste ou master foi alterado durante a
