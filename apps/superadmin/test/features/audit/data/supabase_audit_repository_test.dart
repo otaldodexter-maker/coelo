@@ -308,6 +308,64 @@ void main() {
     );
   });
 
+  for (final code in const [
+    'SAI_AUTH_REQUIRED',
+    'SAI_SESSION_INVALID',
+    'SAI_INTERNAL_CONTEXT_DENIED',
+    'SAI_MEMBERSHIP_SUSPENDED',
+    'SAI_MEMBERSHIP_REVOKED',
+    'SAI_PERMISSION_DENIED',
+    'SAI_MFA_REQUIRED',
+  ]) {
+    test('maps the internal authorization envelope $code', () async {
+      final repository = SupabaseAuditRepository(_client((request) async {
+        return Response(
+          jsonEncode(_errorEnvelope(code, code == 'SAI_AUTH_REQUIRED' ? 401 : 403)),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }));
+
+      await expectLater(
+        repository.fetchPage(AuditQuery()),
+        throwsA(isA<AuditUnauthorizedException>()),
+      );
+      await expectLater(
+        repository.fetchDetail('11111111-1111-1111-1111-111111111111'),
+        throwsA(isA<AuditUnauthorizedException>()),
+      );
+    });
+  }
+
+  test('maps validation and unknown internal envelopes fail closed', () async {
+    Future<Response> envelope(String code, int status, Request request) async => Response(
+      jsonEncode(_errorEnvelope(code, status)),
+      200,
+      headers: {'content-type': 'application/json'},
+      request: request,
+    );
+
+    await expectLater(
+      SupabaseAuditRepository(
+        _client((request) => envelope('SAI_INVALID_ARGUMENT', 400, request)),
+      ).fetchPage(AuditQuery()),
+      throwsA(isA<AuditValidationException>()),
+    );
+    await expectLater(
+      SupabaseAuditRepository(
+        _client((request) => envelope('SAI_INTERNAL_ERROR', 500, request)),
+      ).fetchDetail('11111111-1111-1111-1111-111111111111'),
+      throwsA(isA<AuditUnavailableException>()),
+    );
+    await expectLater(
+      SupabaseAuditRepository(
+        _client((request) => envelope('FORGED_UNKNOWN_CODE', 200, request)),
+      ).fetchPage(AuditQuery()),
+      throwsA(isA<AuditUnavailableException>()),
+    );
+  });
+
   test('uses the exact export states and unavailable repository fails closed', () async {
     expect(AuditExportStatus.fromDatabase('PENDENTE'), AuditExportStatus.queued);
     expect(AuditExportStatus.fromDatabase('PROCESSANDO'), AuditExportStatus.processing);
@@ -337,6 +395,17 @@ void main() {
     );
   });
 }
+
+Map<String, Object?> _errorEnvelope(String code, int status) => {
+  'ok': false,
+  'data': null,
+  'error': {
+    'code': code,
+    'message': 'Mensagem segura',
+    'correlation_id': '99999999-9999-4999-8999-999999999999',
+    'http_status': status,
+  },
+};
 
 Map<String, Object?> _sessionEvent() => {
   'id': 'event-session',
