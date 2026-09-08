@@ -13,6 +13,63 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets(
+    'publication conflict retry updates the confirmed draft instead of creating another',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final repository = _ConflictMealPlanRepository();
+      var savedCount = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: MealPlanWizardPage(
+              repository: repository,
+              imageRepository: const UnavailableMealPlanImageRepository(),
+              tenantId: 'dev-tenant',
+              imageSelectionEnabled: false,
+              onSaved: () => savedCount++,
+              onCancel: () {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextFormField).first, 'Cardápio com conflito');
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await _selectAudienceOption(tester, 'Instituições', 'Colégio Coelo');
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await tester.enterText(find.byType(TextFormField).first, 'Arroz e feijão');
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await tester.tap(find.widgetWithText(FilledButton, 'Enviar e publicar'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Publicação bloqueada:'), findsOneWidget);
+      expect(repository.drafts.single.mealPlanId, isNull);
+      final confirmed = repository.saved.single;
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Anterior'));
+      await tester.pump();
+      await tester.enterText(find.byType(TextFormField).first, 'Arroz, feijão e salada');
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await tester.tap(find.widgetWithText(FilledButton, 'Enviar e publicar'));
+      await tester.pumpAndSettle();
+      expect(repository.drafts, hasLength(2));
+      expect(repository.drafts.last.mealPlanId, confirmed.id);
+      expect(repository.drafts.last.expectedRevision, confirmed.revision);
+      expect(repository.drafts.last.requestId, isNot(repository.drafts.first.requestId));
+      expect(repository.saved.last.id, confirmed.id);
+      expect(repository.reviewCalls, 0);
+      expect(repository.publishCalls, 0);
+      expect(savedCount, 0);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   for (final isTemplate in [false, true]) {
     testWidgets('dev ${isTemplate ? 'model' : 'meal plan'} opens in the canonical wizard', (
       tester,
@@ -407,6 +464,45 @@ class _OrderedMealPlanRepository implements MealPlanRepository {
   @override
   Future<MealPlan> fetchEffectiveSnapshot(MealPlanDraft draft) =>
       _delegate.fetchEffectiveSnapshot(draft);
+}
+
+final class _ConflictMealPlanRepository extends _OrderedMealPlanRepository {
+  final drafts = <MealPlanDraft>[];
+  final saved = <MealPlan>[];
+  int reviewCalls = 0;
+  int publishCalls = 0;
+
+  @override
+  Future<MealPlan> createOrUpdateDraft(MealPlanDraft draft) async {
+    drafts.add(draft);
+    final result = await super.createOrUpdateDraft(draft);
+    saved.add(result);
+    return result;
+  }
+
+  @override
+  Future<List<MealPlanConflict>> checkConflicts({
+    required String scopeLevel,
+    required String scopeId,
+    required DateTime startDate,
+    required DateTime endDate,
+    required MealPlanRecurrence recurrence,
+    required List<MealPlanMenuEntry> menu,
+  }) async => [
+    MealPlanConflict.fromJson(const {'scopeLevel': 'institution'}),
+  ];
+
+  @override
+  Future<MealPlan> submitForReview(String id, String request, int revision) {
+    reviewCalls++;
+    return super.submitForReview(id, request, revision);
+  }
+
+  @override
+  Future<MealPlan> publish(String id, String request, int revision) {
+    publishCalls++;
+    return super.publish(id, request, revision);
+  }
 }
 
 final class _PendingMealPlanRepository extends _OrderedMealPlanRepository {

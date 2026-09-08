@@ -1498,7 +1498,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
         final draft = _buildDraft(requestId: '$operationId-save');
         var saved = await repository.createOrUpdateDraft(draft);
         if (!isCurrent()) return;
-        if (mealPlanId != null && saved.id != mealPlanId) {
+        if (draft.mealPlanId != null && saved.id != draft.mealPlanId) {
           throw const MealPlanUnavailableException(
             'O cardápio salvo não corresponde ao solicitado.',
           );
@@ -1537,6 +1537,10 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
           );
           if (!isCurrent()) return;
           if (conflicts.isNotEmpty) {
+            // The draft write succeeded even though publication was blocked.
+            // A corrected attempt must update that resource at its returned
+            // revision, using a fresh operation ID for the changed payload.
+            _original = saved;
             setState(
               () => _error =
                   'Publicação bloqueada: resolva ${conflicts.length} conflito(s) e defina prioridade explícita.',
@@ -1634,7 +1638,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
     };
     return MealPlanDraft(
       requestId: requestId,
-      mealPlanId: savedMealPlanId ?? widget.mealPlanId,
+      mealPlanId: savedMealPlanId ?? _original?.id ?? widget.mealPlanId,
       tenantId: tenantId,
       institutionId: institutionId,
       unitId: _units.firstOrNull ?? _original?.unitId,
