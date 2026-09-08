@@ -27,6 +27,8 @@ alter table public.form_file_jobs
   add column request_payload_sha256 text,
   add column snapshot_format_version integer,
   add column snapshot_row_count bigint,
+  add column snapshot_schema jsonb,
+  add column snapshot_schema_sha256 text,
   add column snapshot_ready boolean not null default false,
   alter column requested_by_person_id drop not null,
   add constraint form_file_jobs_provider_shape_ck check ((
@@ -36,7 +38,7 @@ alter table public.form_file_jobs
       and requested_auth_session_id is null and requested_scope_kind is null
       and requested_scope_institution_id is null and requested_management_version is null
       and request_payload_sha256 is null and snapshot_format_version is null
-      and snapshot_row_count is null and not snapshot_ready)
+      and snapshot_row_count is null and snapshot_schema is null and snapshot_schema_sha256 is null and not snapshot_ready)
     or (artifact_provider='r2' and requested_by_person_id is null
       and requested_by_internal_identity_id is not null and requested_auth_link_id is not null
       and requested_membership_id is not null and requested_auth_session_id is not null
@@ -46,7 +48,12 @@ alter table public.form_file_jobs
       and export_kind='xlsx' and occurrence_id is null and artifact_path is null
       and requested_management_version is not null and requested_management_version>=0
       and request_payload_sha256 is not null and request_payload_sha256 ~ '^[0-9a-f]{64}$'
-      and snapshot_format_version=1 and snapshot_row_count is not null and snapshot_row_count>=0
+      and snapshot_format_version in (1,2) and snapshot_row_count is not null and snapshot_row_count>=0
+      and (snapshot_format_version=1 or not snapshot_ready or (
+        jsonb_typeof(snapshot_schema)='object' and snapshot_schema->>'formId'=form_id::text
+        and jsonb_typeof(snapshot_schema->'versions')='array'
+        and snapshot_schema_sha256=encode(extensions.digest(convert_to(snapshot_schema::text,'UTF8'),'sha256'),'hex'))
+        or (state='expired' and snapshot_schema is null and snapshot_schema_sha256 ~ '^[0-9a-f]{64}$'))
       and (state<>'succeeded' or (snapshot_ready and artifact_media_asset_id is not null
         and artifact_byte_length is not null and artifact_byte_length>0 and completed_at is not null)))
   ) is true);
@@ -145,6 +152,8 @@ create table app_private.form_xlsx_snapshot_rows (
 alter table app_private.form_xlsx_snapshot_rows enable row level security;
 alter table app_private.form_xlsx_snapshot_rows force row level security;
 revoke all on app_private.form_xlsx_snapshot_rows from public,anon,authenticated,service_role;
+create unique index form_xlsx_snapshot_export_id_uidx
+  on app_private.form_xlsx_snapshot_rows(file_job_id,(submission_jsonb->>'responseId'));
 
 create function app_private.forms_xlsx_job_guard_v1()
 returns trigger language plpgsql security definer set search_path='' as $$
@@ -162,7 +171,12 @@ begin
       old.requested_by_internal_identity_id,old.requested_auth_link_id,old.requested_membership_id,
       old.requested_auth_session_id,old.requested_scope_kind,old.requested_scope_institution_id,
       old.requested_management_version,old.request_payload_sha256,old.snapshot_format_version,old.expires_at)
-    or (old.snapshot_ready and (not new.snapshot_ready or new.snapshot_row_count is distinct from old.snapshot_row_count))
+    or (old.snapshot_ready and (not new.snapshot_ready or new.snapshot_row_count is distinct from old.snapshot_row_count
+      or (new.snapshot_schema is distinct from old.snapshot_schema and not (
+        old.snapshot_format_version=2 and old.state='expired' and new.state='expired'
+        and old.snapshot_schema is not null and new.snapshot_schema is null
+        and not exists(select 1 from app_private.form_xlsx_snapshot_rows s where s.file_job_id=old.id)))
+      or new.snapshot_schema_sha256 is distinct from old.snapshot_schema_sha256))
     or (old.state='expired' and new.state<>'expired')
     or (old.state='succeeded' and (new.state not in ('succeeded','expired')
       or (new.state='succeeded' and row(new.artifact_media_asset_id,new.artifact_byte_length,new.manifest_jsonb)
@@ -217,7 +231,18 @@ begin
   end if;
   select * into job from public.form_file_jobs where id=new.file_job_id for share;
   if job.id is null or job.artifact_provider<>'r2' or job.snapshot_ready or job.state<>'pending'
-    or new.submission_jsonb->>'responseId' is distinct from new.response_id::text
+    or (job.snapshot_format_version=1 and new.submission_jsonb->>'responseId' is distinct from new.response_id::text)
+    or (job.snapshot_format_version=2 and (
+      new.submission_jsonb->>'responseId' is null
+      or new.submission_jsonb->>'responseId' !~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+      or not exists(select 1 from public.form_responses r where r.id=new.response_id
+        and r.form_id=job.form_id and r.institution_id=job.institution_id
+        and r.occurrence_id::text=new.submission_jsonb->>'occurrenceId'
+        and r.form_version_id::text=new.submission_jsonb->>'versionId'
+        and r.identity_mode=new.submission_jsonb#>>'{metadata,identity_mode}'
+        and case when r.identity_mode='identified' then new.submission_jsonb->>'responseId'=r.id::text
+          else new.submission_jsonb->>'responseId'<>r.id::text
+            and ((new.submission_jsonb->'metadata') - array['form_id','identity_mode'])='{}'::jsonb end)))
     or new.submission_jsonb#>>'{metadata,form_id}' is distinct from job.form_id::text
   then raise check_violation using message='forms_xlsx_snapshot_scope_invalid'; end if;
   return new;
@@ -516,7 +541,8 @@ create function app_private.superadmin_form_request_xlsx_v2(
 ) returns jsonb language plpgsql volatile security definer set search_path='' as $$
 declare ctx app_private.superadmin_internal_context; initial_ctx app_private.superadmin_internal_context;
   form_row public.forms; job public.form_file_jobs; target_form uuid; payload_hash text;
-  captured_count bigint; error_code text; correlation uuid:=gen_random_uuid();
+  captured_count bigint; captured_schema jsonb; invalid_capture boolean;
+  error_code text; correlation uuid:=gen_random_uuid();
 begin
   begin
     select * into strict ctx from app_private.require_superadmin_internal_context('forms.responses.export');
@@ -561,72 +587,127 @@ begin
         snapshot_format_version,snapshot_row_count,snapshot_ready)
       values(form_row.id,form_row.institution_id,p_request_id,'xlsx','r2',ctx.internal_identity_id,
         ctx.internal_auth_link_id,ctx.internal_membership_id,ctx.session_id,ctx.scope_kind,ctx.scope_institution_id,
-        p_expected_version,payload_hash,1,0,false) returning * into job;
-      -- One statement snapshot for response, answer, option labels and identity.
-      -- Version 1 preserves the existing writer projection; no binaries or
-      -- storage credentials/paths are captured, including anonymous responses.
-      insert into app_private.form_xlsx_snapshot_rows(file_job_id,sequence_number,response_id,submission_jsonb)
-      select job.id,row_number() over(order by response.id),response.id,
-             jsonb_build_object(
-               'responseId', response.id,
-               'occurrenceId', response.occurrence_id,
-               'versionId', response.form_version_id,
-               'metadata', jsonb_build_object(
-                 'form_id', response.form_id,
-                 'identity_mode', response.identity_mode,
-                 'respondent', case when response.identity_mode = 'identified'
-                   then person_row.display_name else '' end,
-                 'submitted_at', case when response.identity_mode = 'identified'
-                   then response.submitted_at::text else '' end
-               ),
-               'answers', coalesce((
-                 select jsonb_agg(jsonb_build_object(
-                   'itemId', item.id,
-                   'question', item.label,
-                   'multiValued', item.kind in ('multiple_choice', 'photo', 'gallery'),
-                   'values', case
-                     when item.kind in ('single_choice', 'multiple_choice') then coalesce((
-                       select jsonb_agg(option_row.label order by answer_option.position, option_row.position)
-                         from public.form_answer_options answer_option
-                         join public.form_question_options option_row on option_row.id = answer_option.option_id
-                        where answer_option.answer_id = answer.id and option_row.item_id = item.id
-                     ), '[]'::jsonb)
-                     when item.kind in ('photo', 'gallery') then coalesce((
-                       select jsonb_agg('/forms/media/' || asset.id::text order by answer_asset.position)
-                         from public.form_answer_assets answer_asset
-                         join public.form_assets asset on asset.id = answer_asset.asset_id
-                        where answer_asset.answer_id = answer.id and asset.state = 'finalized'
-                          and asset.institution_id = response.institution_id
-                          and asset.occurrence_id = response.occurrence_id and asset.item_id = item.id
-                     ), '[]'::jsonb)
-                     else jsonb_build_array(case answer.answer_kind
-                       when 'short_text' then answer.text_value
-                       when 'integer' then answer.integer_value::text
-                       when 'decimal' then answer.decimal_value::text
-                       when 'money' then answer.money_minor_units::text
-                       when 'date' then answer.date_value::text
-                       when 'yes_no' then case when answer.yes_no_value then 'Sim' else 'Não' end
-                       when 'scale' then answer.scale_value::text
-                       else '' end)
-                   end
-                 ) order by section.position, item.position, item.id)
-                   from public.form_answers answer
-                   join public.form_items item on item.id = answer.item_id
-                   join public.form_sections section on section.id = item.section_id
-                  where answer.response_id = response.id and answer.form_version_id = response.form_version_id
-                    and item.form_version_id = response.form_version_id and section.form_version_id = response.form_version_id
-               ), '[]'::jsonb)
-             )
-      from public.form_responses response
-      join public.form_occurrences occurrence on occurrence.id=response.occurrence_id
-        and occurrence.form_id=response.form_id and occurrence.institution_id=response.institution_id
-        and occurrence.form_version_id=response.form_version_id
-      join public.form_versions version on version.id=response.form_version_id and version.form_id=response.form_id
-      left join public.people person_row on person_row.id=response.respondent_person_id
-      where response.form_id=form_row.id and response.institution_id=form_row.institution_id and response.status='submitted';
-      get diagnostics captured_count=row_count;
-      update public.form_file_jobs set snapshot_ready=true,snapshot_row_count=captured_count
+        p_expected_version,payload_hash,2,0,false) returning * into job;
+      -- All source rows, the complete version graph and typed values share one
+      -- MVCC statement snapshot. Invalid incoming/outgoing links reject the
+      -- entire request; inner joins must never silently omit damaged history.
+      with captured as materialized (
+        select r.*,case when r.identity_mode='anonymous' then gen_random_uuid() else r.id end export_id
+        from public.form_responses r where r.form_id=form_row.id and r.status='submitted'
+      ), versions as materialized (
+        select v.* from public.form_versions v where v.id in(select form_version_id from captured)
+      ), sections as materialized (
+        select s.* from public.form_sections s where s.form_version_id in(select id from versions)
+      ), items as materialized (
+        select i.* from public.form_items i where i.form_version_id in(select id from versions)
+      ), options as materialized (
+        select o.* from public.form_question_options o where o.form_version_id in(select id from versions)
+      ), conditions as materialized (
+        select c.* from public.form_question_conditions c where c.form_version_id in(select id from versions)
+      ), graph as (
+        select jsonb_build_object('formId',form_row.id,'formTitle',form_row.title,'versions',
+          coalesce((select jsonb_agg(jsonb_build_object(
+            'versionId',v.id,'versionNumber',v.version_number,'state',v.state,
+            'sections',coalesce((select jsonb_agg(jsonb_build_object(
+              'sectionId',s.id,'title',s.title,'description',s.description,'position',s.position,
+              'items',coalesce((select jsonb_agg(jsonb_build_object(
+                'itemId',i.id,'kind',i.kind,'label',i.label,'helpText',i.help_text,
+                'position',i.position,'required',i.is_required,'config',i.config_jsonb,
+                'options',coalesce((select jsonb_agg(jsonb_build_object(
+                  'optionId',o.id,'label',o.label,'position',o.position) order by o.position,o.id)
+                  from options o where o.item_id=i.id),'[]'::jsonb)) order by i.position,i.id)
+                from items i where i.section_id=s.id),'[]'::jsonb)) order by s.position,s.id)
+              from sections s where s.form_version_id=v.id),'[]'::jsonb),
+            'conditions',coalesce((select jsonb_agg(jsonb_build_object(
+              'sourceItemId',c.source_item_id,'targetItemId',c.target_item_id,'kind',c.condition_kind,
+              'expectedYesNo',c.expected_yes_no,'sourceOptionId',c.source_option_id)
+              order by c.target_item_id,c.source_item_id,c.id)
+              from conditions c where c.form_version_id=v.id),'[]'::jsonb))
+            order by v.version_number,v.id) from versions v),'[]'::jsonb)) body
+      ), invalid as (
+        select exists(select 1 from captured r
+          left join public.form_occurrences o on o.id=r.occurrence_id and o.form_id=r.form_id
+            and o.institution_id=r.institution_id and o.form_version_id=r.form_version_id
+          left join public.form_applications app on app.id=o.application_id
+            and app.form_id=r.form_id and app.institution_id=r.institution_id
+          left join versions v on v.id=r.form_version_id and v.form_id=r.form_id
+          where r.institution_id<>form_row.institution_id or r.identity_mode<>form_row.identity_mode
+            or o.id is null or app.id is null or v.id is null)
+        or exists(select 1 from public.form_items i join public.form_sections s on s.id=i.section_id
+          where (i.form_version_id in(select id from versions) or s.form_version_id in(select id from versions))
+            and i.form_version_id<>s.form_version_id)
+        or exists(select 1 from public.form_question_options o join public.form_items i on i.id=o.item_id
+          where (o.form_version_id in(select id from versions) or i.form_version_id in(select id from versions))
+            and (o.form_version_id<>i.form_version_id or i.kind not in ('single_choice','multiple_choice')))
+        or exists(select 1 from public.form_question_conditions c
+          join public.form_items target on target.id=c.target_item_id
+          join public.form_items source on source.id=c.source_item_id
+          left join public.form_question_options o on o.id=c.source_option_id
+          where (c.form_version_id in(select id from versions) or target.form_version_id in(select id from versions)
+            or source.form_version_id in(select id from versions))
+            and (c.form_version_id<>target.form_version_id or c.form_version_id<>source.form_version_id
+              or (c.condition_kind='yes_no' and source.kind<>'yes_no')
+              or (c.condition_kind='choice' and (source.kind not in ('single_choice','multiple_choice')
+                or o.id is null or o.form_version_id<>c.form_version_id or o.item_id<>source.id))))
+        or exists(select 1 from public.form_answers a join captured r on r.id=a.response_id
+          left join items i on i.id=a.item_id and i.form_version_id=r.form_version_id
+          left join sections s on s.id=i.section_id and s.form_version_id=r.form_version_id
+          where a.form_version_id<>r.form_version_id or i.id is null or s.id is null or a.answer_kind<>i.kind
+            or case a.answer_kind
+              when 'short_text' then a.text_value is null
+              when 'integer' then a.integer_value is null
+              when 'decimal' then a.decimal_value is null
+              when 'money' then a.money_minor_units is null or jsonb_typeof(i.config_jsonb->'currency') is distinct from 'string'
+              when 'date' then a.date_value is null
+              when 'yes_no' then a.yes_no_value is null
+              when 'scale' then a.scale_value is null else false end)
+        or exists(select 1 from public.form_answer_options ao
+          join public.form_answers a on a.id=ao.answer_id join captured r on r.id=a.response_id
+          left join options o on o.id=ao.option_id and o.item_id=a.item_id and o.form_version_id=r.form_version_id
+          where o.id is null or a.answer_kind not in ('single_choice','multiple_choice'))
+        or exists(select 1 from public.form_answer_assets aa
+          join public.form_answers a on a.id=aa.answer_id join captured r on r.id=a.response_id
+          left join public.form_assets asset on asset.id=aa.asset_id and asset.item_id=a.item_id
+            and asset.occurrence_id=r.occurrence_id and asset.institution_id=r.institution_id
+          where asset.id is null or asset.state<>'finalized' or a.answer_kind not in ('photo','gallery')
+            or (r.identity_mode='identified' and asset.prepared_by_person_id is distinct from r.respondent_person_id)
+            or (r.identity_mode='anonymous' and asset.prepared_by_person_id is not null)) bad
+      ), inserted as (
+        insert into app_private.form_xlsx_snapshot_rows(file_job_id,sequence_number,response_id,submission_jsonb)
+        select job.id,row_number() over(order by r.export_id),r.id,jsonb_build_object(
+          'responseId',r.export_id,'occurrenceId',r.occurrence_id,'versionId',r.form_version_id,
+          'metadata',jsonb_build_object('form_id',r.form_id,'identity_mode',r.identity_mode)
+            ||case when r.identity_mode='identified' then jsonb_build_object(
+              'respondent',(select display_name from public.people where id=r.respondent_person_id),
+              'submitted_at',r.submitted_at) else '{}'::jsonb end,
+          'answers',coalesce((select jsonb_agg(jsonb_build_object('itemId',i.id,'values',case
+            when a.answer_kind in ('single_choice','multiple_choice') then coalesce((
+              select jsonb_agg(jsonb_build_object('kind','choice','optionId',ao.option_id) order by ao.position,ao.option_id)
+              from public.form_answer_options ao where ao.answer_id=a.id),'[]'::jsonb)
+            when a.answer_kind in ('photo','gallery') then coalesce((
+              select jsonb_agg(jsonb_build_object('kind','media','assetId',aa.asset_id) order by aa.position,aa.asset_id)
+              from public.form_answer_assets aa where aa.answer_id=a.id),'[]'::jsonb)
+            else jsonb_build_array(case a.answer_kind
+              when 'short_text' then jsonb_build_object('kind','text','value',a.text_value)
+              when 'integer' then jsonb_build_object('kind','integer','value',a.integer_value::text)
+              when 'decimal' then jsonb_build_object('kind','decimal','value',a.decimal_value::text)
+              when 'money' then jsonb_build_object('kind','money','minorUnits',a.money_minor_units::text,'currency',i.config_jsonb->>'currency')
+              when 'date' then jsonb_build_object('kind','date','value',a.date_value::text)
+              when 'yes_no' then jsonb_build_object('kind','boolean','value',a.yes_no_value)
+              when 'scale' then jsonb_build_object('kind','integer','value',a.scale_value::text) end) end)
+            order by s.position,i.position,i.id)
+            from public.form_answers a join items i on i.id=a.item_id
+            join sections s on s.id=i.section_id where a.response_id=r.id),'[]'::jsonb))
+          from captured r where not (select bad from invalid)
+          returning 1
+      ) select graph.body,invalid.bad,(select count(*) from inserted)
+        into captured_schema,invalid_capture,captured_count from graph cross join invalid;
+      if invalid_capture then raise check_violation using detail='SAI_UNAVAILABLE'; end if;
+      update public.form_file_jobs set snapshot_ready=true,snapshot_row_count=captured_count,
+        snapshot_schema=captured_schema,
+        snapshot_schema_sha256=encode(extensions.digest(convert_to(captured_schema::text,'UTF8'),'sha256'),'hex')
         where id=job.id returning * into job;
+
       insert into app_private.form_worker_jobs(job_kind,aggregate_id,payload_jsonb)
         values('export_xlsx_r2_v1',job.id,jsonb_build_object('file_job_id',job.id));
     end if;
@@ -735,9 +816,11 @@ begin
     'superadmin.forms.export.begin','success',null,gen_random_uuid(),v_job.institution_id,'form_file_job',v_job.id);
   perform app_private.forms_xlsx_worker_job_v1(p_job_id,p_worker_id,p_file_job_id,v_asset.id);
   return jsonb_build_object('job_id',v_job.id,'worker_job_id',v_worker.id,'attempt',v_worker.attempts,
+    'form_id',v_job.form_id,
     'asset_id',v_asset.id,'institution_id',v_job.institution_id,'provider','r2','bucket',v_asset.bucket_id,
     'object_key',v_asset.object_key,'mime_type',v_asset.mime_type,'expires_at',v_job.expires_at,
-    'snapshot_format_version',v_job.snapshot_format_version,'snapshot_row_count',v_job.snapshot_row_count);
+    'snapshot_format_version',v_job.snapshot_format_version,'snapshot_row_count',v_job.snapshot_row_count,
+    'snapshot_schema',v_job.snapshot_schema,'snapshot_schema_sha256',v_job.snapshot_schema_sha256);
 end;
 $$;
 create function app_private.form_worker_xlsx_snapshot_r2_v1(
@@ -752,6 +835,7 @@ begin
   v_job:=app_private.forms_xlsx_worker_job_v1(p_job_id,p_worker_id,p_file_job_id,p_asset_id);
   if p_after_sequence>v_job.snapshot_row_count then raise invalid_parameter_value using message='forms_xlsx_cursor_invalid'; end if;
   select jsonb_build_object('kind','xlsx','snapshot_format_version',v_job.snapshot_format_version,
+    'snapshot_schema_sha256',v_job.snapshot_schema_sha256,
     'submissions',coalesce(jsonb_agg(s.submission_jsonb order by s.sequence_number),'[]'::jsonb),
     'has_more',coalesce(max(s.sequence_number),p_after_sequence)<v_job.snapshot_row_count,
     'next_cursor',case when max(s.sequence_number) is not null then max(s.sequence_number)::text else null end)
@@ -804,7 +888,8 @@ begin
     checksum_sha256=p_actual_checksum_sha256,finalized_at=clock_timestamp() where id=p_asset_id;
   update public.form_file_jobs set state='succeeded',progress=1,artifact_byte_length=p_actual_byte_length,
     completed_at=clock_timestamp(),error_code=null,
-    manifest_jsonb=jsonb_build_object('format_version',snapshot_format_version,'response_count',snapshot_row_count)
+    manifest_jsonb=jsonb_build_object('format_version',snapshot_format_version,'response_count',snapshot_row_count,
+      'schema_sha256',snapshot_schema_sha256)
     where id=v_job.id;
   update app_private.form_worker_jobs set state='succeeded',completed_at=clock_timestamp(),
     lease_owner=null,lease_expires_at=null,progress_jsonb=jsonb_build_object('completed',true)
@@ -1014,7 +1099,7 @@ alter table app_private.form_multipart_uploads
     or (artifact_provider='r2' and bucket_id='coelo-transient-prod'
       and media_asset_id is not null and worker_attempt is not null and worker_attempt between 1 and 20
       and attempt_owner is not null and length(attempt_owner) between 1 and 240
-      and snapshot_format_version is not null and snapshot_format_version=1
+      and snapshot_format_version is not null and snapshot_format_version in (1,2)
       and snapshot_row_count is not null and snapshot_row_count>=0
       and object_path ~ '^tenants/[0-9a-f-]{36}/exports/forms/[0-9a-f-]{36}/[0-9a-f-]{36}/responses[.]xlsx$'
       and ((state='completed' and checksum_sha256 is not null and checksum_sha256 ~ '^[0-9a-f]{64}$')

@@ -268,8 +268,10 @@ insert into public.form_occurrences(id,application_id,schedule_id,institution_id
 values(pg_temp.xlsx_id(13005),pg_temp.xlsx_id(13003),pg_temp.xlsx_id(13004),pg_temp.xlsx_id(10),pg_temp.xlsx_id(210),pg_temp.xlsx_id(13000),'2026-09-08 00:00:00','UTC',now()-interval '1 day',now()+interval '1 day');
 insert into public.form_responses(id,occurrence_id,institution_id,form_id,form_version_id,identity_mode,respondent_person_id,status,submitted_at)
 values(pg_temp.xlsx_id(13010),pg_temp.xlsx_id(13005),pg_temp.xlsx_id(10),pg_temp.xlsx_id(210),pg_temp.xlsx_id(13000),'identified',pg_temp.xlsx_id(1000),'submitted',now());
-insert into public.form_responses(id,occurrence_id,institution_id,form_id,form_version_id,identity_mode,anonymous_edit_secret_hash,status,submitted_at)
-select pg_temp.xlsx_id(n),pg_temp.xlsx_id(13005),pg_temp.xlsx_id(10),pg_temp.xlsx_id(210),pg_temp.xlsx_id(13000),'anonymous','synthetic-not-a-real-secret',
+insert into public.people(id,person_type,first_name,last_name,display_name,status)
+select pg_temp.xlsx_id(n),'adult','Synthetic','Respondent','Synthetic respondent '||n,'active' from unnest(array[1001,1002]) n;
+insert into public.form_responses(id,occurrence_id,institution_id,form_id,form_version_id,identity_mode,respondent_person_id,status,submitted_at)
+select pg_temp.xlsx_id(n),pg_temp.xlsx_id(13005),pg_temp.xlsx_id(10),pg_temp.xlsx_id(210),pg_temp.xlsx_id(13000),'identified',pg_temp.xlsx_id(n-12010),
   case when n=13011 then 'submitted' else 'draft' end,case when n=13011 then now() else null end from unnest(array[13011,13012]) n;
 insert into public.form_answers(id,response_id,form_version_id,item_id,answer_kind,text_value)
 select pg_temp.xlsx_id(n+10),pg_temp.xlsx_id(n),pg_temp.xlsx_id(13000),pg_temp.xlsx_id(13002),'short_text','captured-'||n from unnest(array[13010,13011,13012]) n;
@@ -278,17 +280,17 @@ insert into xlsx_request_results values('captured',pg_temp.xlsx_request(12005,21
 reset role;
 select is((select body->>'ok' from xlsx_request_results where label='captured'),'true','request captures submitted answers');
 select is((select snapshot_row_count from public.form_file_jobs where id=(select (body#>>'{data,id}')::uuid from xlsx_request_results where label='captured')),2::bigint,'draft answer is excluded from export');
-select is((select submission_jsonb#>>'{answers,0,values,0}' from app_private.form_xlsx_snapshot_rows where response_id=pg_temp.xlsx_id(13010) and file_job_id=(select (body#>>'{data,id}')::uuid from xlsx_request_results where label='captured')),'captured-13010','typed answer projection captured');
-select is((select submission_jsonb#>>'{metadata,respondent}' from app_private.form_xlsx_snapshot_rows where response_id=pg_temp.xlsx_id(13011)),'','anonymous snapshot contains no respondent');
-select is((select submission_jsonb#>>'{metadata,submitted_at}' from app_private.form_xlsx_snapshot_rows where response_id=pg_temp.xlsx_id(13011)),'','anonymous snapshot omits exact submission timestamp');
-select ok(not exists(select 1 from app_private.form_xlsx_snapshot_rows where submission_jsonb::text like '%synthetic-not-a-real-secret%'),'anonymous edit secret never enters snapshot');
+select is((select submission_jsonb#>>'{answers,0,values,0,value}' from app_private.form_xlsx_snapshot_rows where response_id=pg_temp.xlsx_id(13010) and file_job_id=(select (body#>>'{data,id}')::uuid from xlsx_request_results where label='captured')),'captured-13010','typed answer projection captured');
+select is((select submission_jsonb#>>'{metadata,respondent}' from app_private.form_xlsx_snapshot_rows where response_id=pg_temp.xlsx_id(13011)),'Synthetic respondent 1001','identified snapshot preserves its own respondent');
+select ok((select submission_jsonb#>>'{metadata,submitted_at}' is not null from app_private.form_xlsx_snapshot_rows where response_id=pg_temp.xlsx_id(13011)),'identified snapshot preserves its submission timestamp');
+select ok(not exists(select 1 from app_private.form_xlsx_snapshot_rows where submission_jsonb::text like '%synthetic-not-a-real-secret%'),'response snapshot excludes edit secrets');
 update public.form_answers set text_value='changed-after-capture' where id=pg_temp.xlsx_id(13020);
 update public.forms set management_version=management_version+1 where id=pg_temp.xlsx_id(210);
 set local role authenticated;
 insert into xlsx_request_results values('after_change',pg_temp.xlsx_request(12005,210,1));
 reset role;
 select is((select body#>>'{data,id}' from xlsx_request_results where label='after_change'),(select body#>>'{data,id}' from xlsx_request_results where label='captured'),'idempotency survives later form management change');
-select is((select submission_jsonb#>>'{answers,0,values,0}' from app_private.form_xlsx_snapshot_rows where response_id=pg_temp.xlsx_id(13010)),'captured-13010','later answer edits do not change sealed export');
+select is((select submission_jsonb#>>'{answers,0,values,0,value}' from app_private.form_xlsx_snapshot_rows where response_id=pg_temp.xlsx_id(13010)),'captured-13010','later answer edits do not change sealed export');
 update app_private.superadmin_internal_memberships set status='suspended',suspended_at=clock_timestamp(),version=version+1 where id=pg_temp.xlsx_id(501);
 set local role authenticated;
 insert into xlsx_request_results values('revoked_replay',pg_temp.xlsx_request(12005,210,1));
@@ -330,7 +332,7 @@ select throws_ok($$select pg_temp.xlsx_page('c02-xlsx-1',(body->>'asset_id')::uu
 select throws_ok($$select pg_temp.xlsx_page('c02-xlsx-1',(body->>'asset_id')::uuid,0,501) from xlsx_worker_results where label='begin1'$$,'22023','forms_xlsx_page_invalid','page size is server bounded');
 reset role;
 select is((select body->>'asset_id' from xlsx_worker_results where label='begin_repeat'),(select body->>'asset_id' from xlsx_worker_results where label='begin1'),'begin retry reuses the same current attempt');
-select is((select body#>>'{submissions,0,answers,0,values,0}' from xlsx_worker_results where label='page1'),'captured-13010','worker reads immutable captured value after source edit');
+select is((select body#>>'{submissions,0,answers,0,values,0,value}' from xlsx_worker_results where label='page1'),'captured-13010','worker reads immutable captured value after source edit');
 select is((select body->>'next_cursor' from xlsx_worker_results where label='page1'),'1','page cursor uses sealed sequence');
 select is((select body->>'has_more' from xlsx_worker_results where label='page1'),'true','first bounded page has more');
 select is((select body->>'has_more' from xlsx_worker_results where label='page2'),'false','last nonempty page terminates');
@@ -596,6 +598,409 @@ insert into xlsx_claim_results values(31,public.form_worker_claim('synthetic-mix
 reset role;
 select is((select body->>'id' from xlsx_claim_results where n=31),pg_temp.xlsx_id(41030)::text,'mixed queue skips exhaustion and preserves eligible ordering');
 select is((select attempts from app_private.form_worker_jobs where id=pg_temp.xlsx_id(41031)),20,'exhausted R2 counter stays unchanged through filtered and mixed claim');
+
+-- I018: independent version schemas, typed values and anonymous aliases.
+-- Keep these jobs after queue-order tests. Published graphs are built while
+-- working, then sealed with all definition triggers still enabled.
+insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after)
+values(pg_temp.xlsx_id(204),pg_temp.xlsx_id(101),now(),now(),'aal2',now()+interval '1 hour');
+select set_config('request.jwt.claims',jsonb_build_object('sub',pg_temp.xlsx_id(101),'session_id',pg_temp.xlsx_id(204),'aal','aal2','role','authenticated')::text,true);
+insert into public.forms(id,institution_id,kind,identity_mode,response_unit,title,created_by_person_id,updated_by_person_id)
+select pg_temp.xlsx_id(n),pg_temp.xlsx_id(10),'form',case when n=50002 then 'anonymous' else 'identified' end,
+  'person','Repeated form title',pg_temp.xlsx_id(1000),pg_temp.xlsx_id(1000) from unnest(array[50001,50002]) n;
+insert into public.form_versions(id,form_id,version_number,created_by_person_id)
+values(pg_temp.xlsx_id(50100),pg_temp.xlsx_id(50001),1,pg_temp.xlsx_id(1000));
+insert into public.form_sections(id,form_version_id,title,description,position)
+values(pg_temp.xlsx_id(50101),pg_temp.xlsx_id(50100),'Repeated section','First original section',0),
+  (pg_temp.xlsx_id(50102),pg_temp.xlsx_id(50100),'Repeated section','Second original section',1);
+insert into public.form_items(id,form_version_id,section_id,kind,label,help_text,position,is_required,config_jsonb)
+select pg_temp.xlsx_id(50110+n),pg_temp.xlsx_id(50100),pg_temp.xlsx_id(case when n<5 then 50101 else 50102 end),
+  kind,'Repeated question','Original help '||n,case when n<5 then n else n-5 end,false,
+  case when kind='money' then '{"currency":"BRL"}'::jsonb else '{}'::jsonb end
+from (values(0,'short_text'),(1,'short_text'),(2,'integer'),(3,'decimal'),(4,'money'),
+  (5,'date'),(6,'yes_no'),(7,'multiple_choice'),(8,'gallery'),(9,'single_choice'),(10,'information')) kinds(n,kind);
+insert into public.form_question_options(id,form_version_id,item_id,label,position)
+values(pg_temp.xlsx_id(50130),pg_temp.xlsx_id(50100),pg_temp.xlsx_id(50117),'Repeated option',0),
+  (pg_temp.xlsx_id(50131),pg_temp.xlsx_id(50100),pg_temp.xlsx_id(50117),'Repeated option',1),
+  (pg_temp.xlsx_id(50132),pg_temp.xlsx_id(50100),pg_temp.xlsx_id(50119),'Repeated option',0),
+  (pg_temp.xlsx_id(50133),pg_temp.xlsx_id(50100),pg_temp.xlsx_id(50119),'Repeated option',1);
+insert into public.form_question_conditions(id,form_version_id,target_item_id,source_item_id,condition_kind,expected_yes_no,source_option_id)
+values(pg_temp.xlsx_id(50140),pg_temp.xlsx_id(50100),pg_temp.xlsx_id(50110),pg_temp.xlsx_id(50116),'yes_no',true,null),
+  (pg_temp.xlsx_id(50141),pg_temp.xlsx_id(50100),pg_temp.xlsx_id(50110),pg_temp.xlsx_id(50119),'choice',null,pg_temp.xlsx_id(50132));
+update public.form_versions set state='published',published_at=now() where id=pg_temp.xlsx_id(50100);
+
+insert into public.form_versions(id,form_id,version_number,created_by_person_id)
+values(pg_temp.xlsx_id(50200),pg_temp.xlsx_id(50001),2,pg_temp.xlsx_id(1000));
+insert into public.form_sections(id,form_version_id,title,description,position)
+values(pg_temp.xlsx_id(50201),pg_temp.xlsx_id(50200),'Repeated section','First original section',1),
+  (pg_temp.xlsx_id(50202),pg_temp.xlsx_id(50200),'Repeated section','Second original section',0);
+insert into public.form_items(id,form_version_id,section_id,kind,label,help_text,position,is_required,config_jsonb)
+select pg_temp.xlsx_id(50210+n),pg_temp.xlsx_id(50200),pg_temp.xlsx_id(case when n<5 then 50201 else 50202 end),
+  kind,label,'Second version help '||n,case when n<5 then 4-n else 10-n end,is_required,config_jsonb
+from public.form_items cross join lateral (select substring(id::text from 25)::integer-50110 n) number
+where form_version_id=pg_temp.xlsx_id(50100);
+insert into public.form_question_options(id,form_version_id,item_id,label,position)
+select pg_temp.xlsx_id(50230+n),pg_temp.xlsx_id(50200),pg_temp.xlsx_id(case when n<2 then 50217 else 50219 end),
+  'Repeated option',n%2 from generate_series(0,3) n;
+update public.form_versions set state='published',published_at=now() where id=pg_temp.xlsx_id(50200);
+update public.form_versions set state='superseded' where id=pg_temp.xlsx_id(50100);
+update public.forms set status='published',published_version_id=pg_temp.xlsx_id(50200),first_published_at=now() where id=pg_temp.xlsx_id(50001);
+
+insert into public.form_versions(id,form_id,version_number,created_by_person_id)
+values(pg_temp.xlsx_id(50300),pg_temp.xlsx_id(50002),1,pg_temp.xlsx_id(1000));
+insert into public.form_sections(id,form_version_id,title,position)
+values(pg_temp.xlsx_id(50301),pg_temp.xlsx_id(50300),'Anonymous section',0);
+insert into public.form_items(id,form_version_id,section_id,kind,label,position)
+values(pg_temp.xlsx_id(50310),pg_temp.xlsx_id(50300),pg_temp.xlsx_id(50301),'short_text','Anonymous answer',0);
+update public.form_versions set state='published',published_at=now() where id=pg_temp.xlsx_id(50300);
+update public.forms set status='published',published_version_id=pg_temp.xlsx_id(50300),first_published_at=now() where id=pg_temp.xlsx_id(50002);
+
+insert into public.form_applications(id,form_id,institution_id,name,created_by_person_id)
+select pg_temp.xlsx_id(50400+n),pg_temp.xlsx_id(50000+n),pg_temp.xlsx_id(10),'Schema application',pg_temp.xlsx_id(1000)
+from generate_series(1,2) n;
+insert into public.form_schedules(id,application_id,time_zone,starts_at_local,recurrence_kind)
+select pg_temp.xlsx_id(50410+n),pg_temp.xlsx_id(50400+n),'UTC','2026-09-08 00:00:00','once' from generate_series(1,2) n;
+insert into public.form_occurrences(id,application_id,schedule_id,institution_id,form_id,form_version_id,scheduled_local,time_zone,opens_at,closes_at)
+select pg_temp.xlsx_id(50420+n),pg_temp.xlsx_id(case when n=3 then 50402 else 50401 end),
+  pg_temp.xlsx_id(case when n=3 then 50412 else 50411 end),pg_temp.xlsx_id(10),
+  pg_temp.xlsx_id(case when n=3 then 50002 else 50001 end),pg_temp.xlsx_id(50000+n*100),
+  timestamp '2026-09-08 00:00:00'+make_interval(hours=>n),'UTC',now()-interval '1 day',now()+interval '1 day'
+from generate_series(1,3) n;
+insert into public.form_responses(id,occurrence_id,institution_id,form_id,form_version_id,identity_mode,respondent_person_id,status,submitted_at)
+values(pg_temp.xlsx_id(50501),pg_temp.xlsx_id(50421),pg_temp.xlsx_id(10),pg_temp.xlsx_id(50001),pg_temp.xlsx_id(50100),'identified',pg_temp.xlsx_id(1000),'submitted',now()),
+  (pg_temp.xlsx_id(50502),pg_temp.xlsx_id(50422),pg_temp.xlsx_id(10),pg_temp.xlsx_id(50001),pg_temp.xlsx_id(50200),'identified',pg_temp.xlsx_id(1001),'submitted',now()),
+  (pg_temp.xlsx_id(50503),pg_temp.xlsx_id(50422),pg_temp.xlsx_id(10),pg_temp.xlsx_id(50001),pg_temp.xlsx_id(50200),'identified',pg_temp.xlsx_id(1002),'draft',null);
+insert into public.form_responses(id,occurrence_id,institution_id,form_id,form_version_id,identity_mode,anonymous_edit_secret_hash,status,submitted_at)
+select pg_temp.xlsx_id(50500+n),pg_temp.xlsx_id(50423),pg_temp.xlsx_id(10),pg_temp.xlsx_id(50002),pg_temp.xlsx_id(50300),
+  'anonymous','synthetic-anonymous-schema-secret-'||n,'submitted',now()+make_interval(secs=>n) from generate_series(4,5) n;
+insert into public.form_answers(id,response_id,form_version_id,item_id,answer_kind,text_value,integer_value,decimal_value,money_minor_units,date_value,yes_no_value)
+values(pg_temp.xlsx_id(50601),pg_temp.xlsx_id(50501),pg_temp.xlsx_id(50100),pg_temp.xlsx_id(50111),'short_text','=literal spreadsheet text',null,null,null,null,null),
+  (pg_temp.xlsx_id(50602),pg_temp.xlsx_id(50501),pg_temp.xlsx_id(50100),pg_temp.xlsx_id(50112),'integer',null,9007199254740993,null,null,null,null),
+  (pg_temp.xlsx_id(50603),pg_temp.xlsx_id(50501),pg_temp.xlsx_id(50100),pg_temp.xlsx_id(50113),'decimal',null,null,123.456789,null,null,null),
+  (pg_temp.xlsx_id(50604),pg_temp.xlsx_id(50501),pg_temp.xlsx_id(50100),pg_temp.xlsx_id(50114),'money',null,null,null,12345,null,null),
+  (pg_temp.xlsx_id(50605),pg_temp.xlsx_id(50501),pg_temp.xlsx_id(50100),pg_temp.xlsx_id(50115),'date',null,null,null,null,'2026-09-08',null),
+  (pg_temp.xlsx_id(50606),pg_temp.xlsx_id(50501),pg_temp.xlsx_id(50100),pg_temp.xlsx_id(50116),'yes_no',null,null,null,null,null,false),
+  (pg_temp.xlsx_id(50607),pg_temp.xlsx_id(50501),pg_temp.xlsx_id(50100),pg_temp.xlsx_id(50117),'multiple_choice',null,null,null,null,null,null),
+  (pg_temp.xlsx_id(50608),pg_temp.xlsx_id(50501),pg_temp.xlsx_id(50100),pg_temp.xlsx_id(50118),'gallery',null,null,null,null,null,null),
+  (pg_temp.xlsx_id(50609),pg_temp.xlsx_id(50501),pg_temp.xlsx_id(50100),pg_temp.xlsx_id(50119),'single_choice',null,null,null,null,null,null),
+  (pg_temp.xlsx_id(50612),pg_temp.xlsx_id(50502),pg_temp.xlsx_id(50200),pg_temp.xlsx_id(50211),'short_text','Version two answer',null,null,null,null,null),
+  (pg_temp.xlsx_id(50613),pg_temp.xlsx_id(50503),pg_temp.xlsx_id(50200),pg_temp.xlsx_id(50211),'short_text','Draft excluded',null,null,null,null,null);
+insert into public.form_answers(id,response_id,form_version_id,item_id,answer_kind,text_value)
+select pg_temp.xlsx_id(50610+n),pg_temp.xlsx_id(50500+n),pg_temp.xlsx_id(50300),pg_temp.xlsx_id(50310),'short_text','Anonymous content'
+from generate_series(4,5) n;
+insert into public.form_answer_options(answer_id,option_id,position)
+values(pg_temp.xlsx_id(50607),pg_temp.xlsx_id(50130),0),(pg_temp.xlsx_id(50607),pg_temp.xlsx_id(50131),1),
+  (pg_temp.xlsx_id(50609),pg_temp.xlsx_id(50132),0);
+insert into public.form_assets(id,institution_id,occurrence_id,item_id,prepared_by_person_id,storage_path,mime_type,
+  expected_byte_length,actual_byte_length,expected_checksum_sha256,actual_checksum_sha256,state,finalized_at)
+select pg_temp.xlsx_id(50700+n),pg_temp.xlsx_id(10),pg_temp.xlsx_id(50421),pg_temp.xlsx_id(50118),pg_temp.xlsx_id(1000),
+  'aa/'||pg_temp.xlsx_id(50700+n)::text,'image/jpeg',4,4,repeat('a',64),repeat('a',64),'finalized',now() from generate_series(0,1) n;
+insert into public.form_answer_assets(answer_id,asset_id,position)
+select pg_temp.xlsx_id(50608),pg_temp.xlsx_id(50700+n),n from generate_series(0,1) n;
+
+set local role authenticated;
+insert into xlsx_request_results values('schema',pg_temp.xlsx_request(50801,50001,1)),('schema_anon',pg_temp.xlsx_request(50802,50002,1));
+reset role;
+select is((select body->>'ok' from xlsx_request_results where label='schema'),'true','v2 captures both published versions with incomplete answers');
+select is((select body->>'ok' from xlsx_request_results where label='schema_anon'),'true','v2 captures a consistent anonymous form');
+create temporary table xlsx_schema_jobs as
+select r.label,j.id file_job_id,w.id worker_job_id from xlsx_request_results r
+join public.form_file_jobs j on j.id=(r.body#>>'{data,id}')::uuid
+join app_private.form_worker_jobs w on w.aggregate_id=j.id where r.label in('schema','schema_anon');
+grant select on xlsx_schema_jobs to service_role;
+update app_private.form_worker_jobs set state='processing',attempts=1,lease_owner='c02-schema',lease_expires_at=clock_timestamp()+interval '5 minutes'
+where id in(select worker_job_id from xlsx_schema_jobs);
+select set_config('request.jwt.claims','{"role":"service_role"}',true);
+set local role service_role;
+insert into xlsx_worker_results select label||'_begin',public.form_worker_begin_xlsx_r2_v1(worker_job_id,'c02-schema',file_job_id) from xlsx_schema_jobs;
+insert into xlsx_worker_results select j.label||'_page',public.form_worker_xlsx_snapshot_r2_v1(j.worker_job_id,'c02-schema',j.file_job_id,
+  (r.body->>'asset_id')::uuid,0,25) from xlsx_schema_jobs j join xlsx_worker_results r on r.label=j.label||'_begin';
+reset role;
+create function pg_temp.xlsx_schema_version(n integer) returns jsonb language sql stable as $$
+  select version from xlsx_worker_results r cross join lateral jsonb_array_elements(r.body#>'{snapshot_schema,versions}') version
+  where r.label='schema_begin' and (version->>'versionNumber')::integer=n;
+$$;
+create function pg_temp.xlsx_schema_values(item_number integer) returns jsonb language sql stable as $$
+  select answer->'values' from xlsx_worker_results r cross join lateral jsonb_array_elements(r.body->'submissions') submission
+  cross join lateral jsonb_array_elements(submission->'answers') answer
+  where r.label='schema_page' and submission->>'responseId'=pg_temp.xlsx_id(50501)::text
+    and answer->>'itemId'=pg_temp.xlsx_id(item_number)::text;
+$$;
+select is((select body->>'snapshot_format_version' from xlsx_worker_results where label='schema_begin'),'2','worker begin explicitly selects schema format two');
+select is((select body->>'snapshot_format_version' from xlsx_worker_results where label='schema_page'),'2','worker page explicitly selects schema format two');
+select is((select body#>>'{snapshot_schema,formId}' from xlsx_worker_results where label='schema_begin'),pg_temp.xlsx_id(50001)::text,'schema carries the authorized form ID');
+select is((select body#>>'{snapshot_schema,formTitle}' from xlsx_worker_results where label='schema_begin'),'Repeated form title','schema captures the original form title');
+select is((select jsonb_array_length(body#>'{snapshot_schema,versions}') from xlsx_worker_results where label='schema_begin'),2,'schema includes each answered version exactly once');
+select is(pg_temp.xlsx_schema_version(1)->>'state','superseded','historical publication state is retained');
+select is(pg_temp.xlsx_schema_version(2)->>'state','published','current published state is retained');
+select is(pg_temp.xlsx_schema_version(1)#>>'{sections,0,sectionId}',pg_temp.xlsx_id(50101)::text,'first version keeps its original section order');
+select is(pg_temp.xlsx_schema_version(2)#>>'{sections,0,sectionId}',pg_temp.xlsx_id(50202)::text,'second version keeps its different section order');
+select is(pg_temp.xlsx_schema_version(1)#>>'{sections,0,items,0,itemId}',pg_temp.xlsx_id(50110)::text,'never answered question remains first in its schema');
+select is(pg_temp.xlsx_schema_version(2)#>>'{sections,1,items,0,itemId}',pg_temp.xlsx_id(50214)::text,'second version keeps reversed item order');
+select is(pg_temp.xlsx_schema_version(1)#>>'{sections,0,items,0,helpText}','Original help 0','unanswered question retains its original help');
+select is(pg_temp.xlsx_schema_version(1)#>'{sections,0,items,0,required}','false'::jsonb,'required flag remains a JSON boolean');
+select is(pg_temp.xlsx_schema_version(1)#>'{sections,0,items,4,config}','{"currency":"BRL"}'::jsonb,'money configuration is captured explicitly');
+select is((select count(*) from jsonb_array_elements(pg_temp.xlsx_schema_version(1)->'sections') section
+  cross join lateral jsonb_array_elements(section->'items') item where item->>'label'='Repeated question'),11::bigint,'repeated labels do not collapse distinct question IDs');
+select is(jsonb_array_length(pg_temp.xlsx_schema_version(1)->'conditions'),2,'schema preserves both conditions despite no target answer');
+select ok(exists(select 1 from jsonb_array_elements(pg_temp.xlsx_schema_version(1)->'conditions') condition
+  where condition->>'sourceItemId'=pg_temp.xlsx_id(50119)::text and condition->>'targetItemId'=pg_temp.xlsx_id(50110)::text
+    and condition->>'sourceOptionId'=pg_temp.xlsx_id(50132)::text),'choice condition preserves its exact source option identity');
+select is(pg_temp.xlsx_schema_values(50110),null::jsonb,'never answered question has no fabricated answer value');
+select is(jsonb_array_length(pg_temp.xlsx_schema_values(50117)),2,'multiple choice values remain independent of media count');
+select is(jsonb_array_length(pg_temp.xlsx_schema_values(50118)),2,'gallery values remain independent of choice count');
+select is((select jsonb_array_length(body->'submissions') from xlsx_worker_results where label='schema_page'),2,'multi-valued answers do not multiply captured response rows');
+select ok(not exists(select 1 from xlsx_worker_results where label='schema_page' and body::text like '%Draft excluded%'),'draft values never enter worker payload');
+select is((select body->>'snapshot_schema_sha256' from xlsx_worker_results where label='schema_begin'),
+  (select encode(extensions.digest(convert_to((body->'snapshot_schema')::text,'UTF8'),'sha256'),'hex') from xlsx_worker_results where label='schema_begin'),
+  'schema hash attests the exact captured JSON');
+select is((select body->>'snapshot_schema_sha256' from xlsx_worker_results where label='schema_page'),
+  (select body->>'snapshot_schema_sha256' from xlsx_worker_results where label='schema_begin'),'page binds to the begin schema hash');
+
+select is(pg_temp.xlsx_schema_values(50111),'[{"kind":"text","value":"=literal spreadsheet text"}]'::jsonb,'text is tagged without evaluating spreadsheet formula syntax');
+select is(pg_temp.xlsx_schema_values(50112),'[{"kind":"integer","value":"9007199254740993"}]'::jsonb,'integer beyond JavaScript precision stays an exact decimal string');
+select is(pg_temp.xlsx_schema_values(50113),'[{"kind":"decimal","value":"123.456789"}]'::jsonb,'decimal remains exact instead of being coerced to binary floating point');
+select is(pg_temp.xlsx_schema_values(50114),'[{"kind":"money","minorUnits":"12345","currency":"BRL"}]'::jsonb,'money keeps exact minor units and explicitly configured currency');
+select is(pg_temp.xlsx_schema_values(50115),'[{"kind":"date","value":"2026-09-08"}]'::jsonb,'calendar date retains its type and date-only value');
+select is(pg_temp.xlsx_schema_values(50116),'[{"kind":"boolean","value":false}]'::jsonb,'false boolean does not become an empty or localized string');
+select is(pg_temp.xlsx_schema_values(50117),jsonb_build_array(
+  jsonb_build_object('kind','choice','optionId',pg_temp.xlsx_id(50130)),
+  jsonb_build_object('kind','choice','optionId',pg_temp.xlsx_id(50131))),'equal option labels keep separate stable option references');
+select is(pg_temp.xlsx_schema_values(50118),jsonb_build_array(
+  jsonb_build_object('kind','media','assetId',pg_temp.xlsx_id(50700)),
+  jsonb_build_object('kind','media','assetId',pg_temp.xlsx_id(50701))),'media references use original form asset IDs without physical locators');
+select ok(not exists(select 1 from xlsx_worker_results where label='schema_page' and
+  (body::text like '%aa/%' or body::text like '%storage_path%' or body::text like '%signed%' or body::text like '%token%')),
+  'submission media contains no raw storage path or delivery credential');
+select is((select jsonb_array_length(body->'submissions') from xlsx_worker_results where label='schema_anon_page'),2,'anonymous responses are preserved as two distinct submissions');
+select ok((select bool_and(submission->'metadata'=jsonb_build_object('form_id',pg_temp.xlsx_id(50002),'identity_mode','anonymous'))
+  from xlsx_worker_results r cross join lateral jsonb_array_elements(r.body->'submissions') submission where r.label='schema_anon_page'),
+  'anonymous metadata contains only approved form and identity mode fields');
+select ok((select bool_and(submission->>'responseId' not in(pg_temp.xlsx_id(50504)::text,pg_temp.xlsx_id(50505)::text))
+  from xlsx_worker_results r cross join lateral jsonb_array_elements(r.body->'submissions') submission where r.label='schema_anon_page'),
+  'anonymous exported response IDs do not expose either source response ID');
+select is((select count(distinct submission->>'responseId') from xlsx_worker_results r
+  cross join lateral jsonb_array_elements(r.body->'submissions') submission where r.label='schema_anon_page'),2::bigint,
+  'anonymous aliases remain distinct even when answer content is equal');
+select ok(not exists(select 1 from xlsx_worker_results where label='schema_anon_page' and
+  (body::text like '%synthetic-anonymous-schema-secret%' or body::text like '%respondent%' or body::text like '%submitted_at%'
+    or body::text like '%participation%' or body::text like '%Synthetic legacy form author%')),
+  'anonymous worker payload has no secret, person, timestamp or participation correlation');
+select is((select jsonb_agg(submission_jsonb order by sequence_number) from app_private.form_xlsx_snapshot_rows
+  where file_job_id=(select file_job_id from xlsx_schema_jobs where label='schema_anon')),
+  (select body->'submissions' from xlsx_worker_results where label='schema_anon_page'),'anonymous aliases and order are persisted in the sealed rows');
+select ok((select bool_and(submission_jsonb->>'responseId'<>response_id::text) from app_private.form_xlsx_snapshot_rows
+  where file_job_id=(select file_job_id from xlsx_schema_jobs where label='schema_anon')),'source response identity remains separate from the exported alias');
+
+-- A new working definition and later answer edit cannot change an old export.
+insert into public.form_versions(id,form_id,version_number,created_by_person_id)
+values(pg_temp.xlsx_id(50900),pg_temp.xlsx_id(50001),3,pg_temp.xlsx_id(1000));
+insert into public.form_sections(id,form_version_id,title,position)
+values(pg_temp.xlsx_id(50901),pg_temp.xlsx_id(50900),'Later working section',0);
+insert into public.form_items(id,form_version_id,section_id,kind,label,position)
+values(pg_temp.xlsx_id(50910),pg_temp.xlsx_id(50900),pg_temp.xlsx_id(50901),'short_text','Later working question',0),
+  (pg_temp.xlsx_id(50911),pg_temp.xlsx_id(50900),pg_temp.xlsx_id(50901),'yes_no','Unanswered condition source',1),
+  (pg_temp.xlsx_id(50912),pg_temp.xlsx_id(50900),pg_temp.xlsx_id(50901),'single_choice','Unanswered choice source',2),
+  (pg_temp.xlsx_id(50913),pg_temp.xlsx_id(50900),pg_temp.xlsx_id(50901),'single_choice','Other choice source',3),
+  (pg_temp.xlsx_id(50914),pg_temp.xlsx_id(50900),pg_temp.xlsx_id(50901),'money','Money without currency',4);
+insert into public.form_question_options(id,form_version_id,item_id,label,position)
+values(pg_temp.xlsx_id(50920),pg_temp.xlsx_id(50900),pg_temp.xlsx_id(50912),'Choice',0),
+  (pg_temp.xlsx_id(50921),pg_temp.xlsx_id(50900),pg_temp.xlsx_id(50912),'Choice',1),
+  (pg_temp.xlsx_id(50922),pg_temp.xlsx_id(50900),pg_temp.xlsx_id(50913),'Choice',0),
+  (pg_temp.xlsx_id(50923),pg_temp.xlsx_id(50900),pg_temp.xlsx_id(50913),'Choice',1);
+update public.forms set working_version_id=pg_temp.xlsx_id(50900),title='Changed after snapshot',management_version=management_version+1
+where id=pg_temp.xlsx_id(50001);
+update public.form_items set label='Changed working label' where id=pg_temp.xlsx_id(50910);
+update public.form_answers set text_value='Changed historical response value' where id=pg_temp.xlsx_id(50601);
+select throws_ok($$update public.form_items set label='Forbidden historical edit' where id=pg_temp.xlsx_id(50111)$$,
+  '42501','published form version is immutable','published definition remains protected with triggers enabled');
+select is((select j.snapshot_schema from public.form_file_jobs j join xlsx_schema_jobs f on f.file_job_id=j.id where f.label='schema'),
+  (select body->'snapshot_schema' from xlsx_worker_results where label='schema_begin'),'new working definition does not mutate the captured historical schemas');
+select throws_ok($$update public.form_file_jobs set snapshot_schema='{}'::jsonb where id=(select file_job_id from xlsx_schema_jobs where label='schema')$$,
+  '23514',null,'sealed schema cannot be replaced independently of its rows');
+select throws_ok($$update public.form_file_jobs set snapshot_schema_sha256=repeat('0',64) where id=(select file_job_id from xlsx_schema_jobs where label='schema')$$,
+  '23514',null,'sealed schema digest cannot be rewritten');
+set local role service_role;
+insert into xlsx_worker_results select j.label||'_page_repeat',public.form_worker_xlsx_snapshot_r2_v1(j.worker_job_id,'c02-schema',j.file_job_id,
+  (r.body->>'asset_id')::uuid,0,25) from xlsx_schema_jobs j join xlsx_worker_results r on r.label=j.label||'_begin';
+insert into xlsx_worker_results select 'schema_begin_repeat',public.form_worker_begin_xlsx_r2_v1(worker_job_id,'c02-schema',file_job_id)
+from xlsx_schema_jobs where label='schema';
+reset role;
+select is((select body from xlsx_worker_results where label='schema_page_repeat'),(select body from xlsx_worker_results where label='schema_page'),
+  'worker reread remains byte-for-byte JSON equal after source answer and definition changes');
+select is((select body from xlsx_worker_results where label='schema_anon_page_repeat'),(select body from xlsx_worker_results where label='schema_anon_page'),
+  'anonymous aliases do not change on retry or acquire time ordering');
+select is((select body->'snapshot_schema' from xlsx_worker_results where label='schema_begin_repeat'),
+  (select body->'snapshot_schema' from xlsx_worker_results where label='schema_begin'),'begin retry returns the sealed schema rather than reading the current definition');
+
+-- Invalid incoming edges are possible under the existing independent FKs.
+-- Each fixture proves it can be inserted before asserting fail-closed export.
+create function pg_temp.xlsx_schema_denied(request_number integer,description text) returns setof text language plpgsql as $$
+declare result jsonb;
+begin
+  perform set_config('request.jwt.claims',jsonb_build_object('sub',pg_temp.xlsx_id(101),'session_id',pg_temp.xlsx_id(204),'aal','aal2','role','authenticated')::text,true);
+  execute 'set local role authenticated';
+  result:=pg_temp.xlsx_request(request_number,50001,2);
+  execute 'reset role';
+  return next is(result->>'ok','false',description||': request is denied');
+  return next is(result#>>'{error,code}','SAI_INTERNAL_ERROR',description||': canonical envelope sanitizes unavailable detail');
+  return next is(result->'data','null'::jsonb,description||': no partial payload is returned');
+  return next is((select count(*) from public.form_file_jobs where request_id=pg_temp.xlsx_id(request_number)),0::bigint,
+    description||': no partial job or snapshot survives');
+end;
+$$;
+select lives_ok($$insert into public.form_items(id,form_version_id,section_id,kind,label,position)
+  values(pg_temp.xlsx_id(51000),pg_temp.xlsx_id(50900),pg_temp.xlsx_id(50101),'short_text','Foreign unanswered item',99)$$,
+  'incoming item with working declared version is possible under active constraints');
+select * from pg_temp.xlsx_schema_denied(51100,'Unanswered item declared in another version');
+delete from public.form_items where id=pg_temp.xlsx_id(51000);
+select lives_ok($$insert into public.form_question_options(id,form_version_id,item_id,label,position)
+  values(pg_temp.xlsx_id(51001),pg_temp.xlsx_id(50900),pg_temp.xlsx_id(50119),'Foreign option',99)$$,
+  'incoming option with working declared version is possible under active constraints');
+select * from pg_temp.xlsx_schema_denied(51101,'Option declared in another version');
+delete from public.form_question_options where id=pg_temp.xlsx_id(51001);
+select lives_ok($$insert into public.form_question_conditions(id,form_version_id,target_item_id,source_item_id,condition_kind,expected_yes_no)
+  values(pg_temp.xlsx_id(51002),pg_temp.xlsx_id(50900),pg_temp.xlsx_id(50110),pg_temp.xlsx_id(50116),'yes_no',false)$$,
+  'incoming condition with working declared version is possible under active constraints');
+select * from pg_temp.xlsx_schema_denied(51102,'Condition declared in another version');
+delete from public.form_question_conditions where id=pg_temp.xlsx_id(51002);
+
+-- Capture a working graph to test outgoing edges without disabling the
+-- published-definition guard. The response exists even with no answer rows.
+insert into public.form_occurrences(id,application_id,schedule_id,institution_id,form_id,form_version_id,scheduled_local,time_zone,opens_at,closes_at)
+values(pg_temp.xlsx_id(50424),pg_temp.xlsx_id(50401),pg_temp.xlsx_id(50411),pg_temp.xlsx_id(10),pg_temp.xlsx_id(50001),pg_temp.xlsx_id(50900),
+  '2026-09-08 04:00:00','UTC',now()-interval '1 day',now()+interval '1 day');
+insert into public.form_responses(id,occurrence_id,institution_id,form_id,form_version_id,identity_mode,respondent_person_id,status,submitted_at)
+values(pg_temp.xlsx_id(50506),pg_temp.xlsx_id(50424),pg_temp.xlsx_id(10),pg_temp.xlsx_id(50001),pg_temp.xlsx_id(50900),'identified',pg_temp.xlsx_id(1002),'submitted',now());
+select lives_ok($$insert into public.form_items(id,form_version_id,section_id,kind,label,position)
+  values(pg_temp.xlsx_id(51003),pg_temp.xlsx_id(50900),pg_temp.xlsx_id(50301),'short_text','Misplaced local item',99)$$,
+  'local item under another form section is possible under active constraints');
+select * from pg_temp.xlsx_schema_denied(51103,'Captured version item references foreign section');
+delete from public.form_items where id=pg_temp.xlsx_id(51003);
+select lives_ok($$insert into public.form_question_conditions(id,form_version_id,target_item_id,source_item_id,condition_kind,expected_yes_no)
+  values(pg_temp.xlsx_id(51004),pg_temp.xlsx_id(50900),pg_temp.xlsx_id(50910),pg_temp.xlsx_id(50116),'yes_no',true)$$,
+  'working condition with another version source is possible under active constraints');
+select * from pg_temp.xlsx_schema_denied(51104,'Captured condition references foreign source');
+delete from public.form_question_conditions where id=pg_temp.xlsx_id(51004);
+select lives_ok($$insert into public.form_question_conditions(id,form_version_id,target_item_id,source_item_id,condition_kind,source_option_id)
+  values(pg_temp.xlsx_id(51005),pg_temp.xlsx_id(50900),pg_temp.xlsx_id(50910),pg_temp.xlsx_id(50912),'choice',pg_temp.xlsx_id(50922))$$,
+  'same-version option from the wrong source question is possible under active constraints');
+select * from pg_temp.xlsx_schema_denied(51105,'Condition option belongs to a different source question');
+update public.form_question_conditions set source_option_id=pg_temp.xlsx_id(50920) where id=pg_temp.xlsx_id(51005);
+set local role authenticated;
+insert into xlsx_request_results values('schema_no_answers',pg_temp.xlsx_request(51109,50001,2));
+reset role;
+select is((select body->>'ok' from xlsx_request_results where label='schema_no_answers'),'true','submitted response with zero answers still captures its version schema');
+select is((select jsonb_array_length(version#>'{sections,0,items}') from public.form_file_jobs j
+  cross join lateral jsonb_array_elements(j.snapshot_schema->'versions') version
+  where j.id=(select (body#>>'{data,id}')::uuid from xlsx_request_results where label='schema_no_answers')
+    and version->>'versionId'=pg_temp.xlsx_id(50900)::text),5,'all unanswered items of the captured version remain in the schema');
+select is((select submission_jsonb->'answers' from app_private.form_xlsx_snapshot_rows
+  where file_job_id=(select (body#>>'{data,id}')::uuid from xlsx_request_results where label='schema_no_answers')
+    and response_id=pg_temp.xlsx_id(50506)),'[]'::jsonb,'empty answer list is preserved without inventing values');
+update public.form_items set label='Changed after working graph capture' where id=pg_temp.xlsx_id(50910);
+select is((select version#>>'{sections,0,items,0,label}' from public.form_file_jobs j
+  cross join lateral jsonb_array_elements(j.snapshot_schema->'versions') version
+  where j.id=(select (body#>>'{data,id}')::uuid from xlsx_request_results where label='schema_no_answers')
+    and version->>'versionId'=pg_temp.xlsx_id(50900)::text),'Changed working label','later physical definition mutation does not change a sealed working-version fixture');
+insert into public.form_answers(id,response_id,form_version_id,item_id,answer_kind,money_minor_units)
+values(pg_temp.xlsx_id(50620),pg_temp.xlsx_id(50506),pg_temp.xlsx_id(50900),pg_temp.xlsx_id(50914),'money',100);
+select * from pg_temp.xlsx_schema_denied(51106,'Money answer has no explicitly configured currency');
+update public.form_items set config_jsonb='{"currency":"BRL"}'::jsonb where id=pg_temp.xlsx_id(50914);
+set local role authenticated;
+insert into xlsx_request_results values('schema_repaired',pg_temp.xlsx_request(51107,50001,2));
+reset role;
+select is((select body->>'ok' from xlsx_request_results where label='schema_repaired'),'true','complete coherent graph recovers after malformed edges are removed');
+select is((select jsonb_array_length(snapshot_schema->'versions') from public.form_file_jobs
+  where id=(select (body#>>'{data,id}')::uuid from xlsx_request_results where label='schema_repaired')),3,
+  'version with otherwise unanswered questions is captured independently of answer rows');
+
+-- A row shape can satisfy the anonymity table check while disagreeing with
+-- its parent form. Export must reject it rather than weakening anonymization.
+insert into public.form_responses(id,occurrence_id,institution_id,form_id,form_version_id,identity_mode,anonymous_edit_secret_hash,status,submitted_at)
+values(pg_temp.xlsx_id(50507),pg_temp.xlsx_id(50424),pg_temp.xlsx_id(10),pg_temp.xlsx_id(50001),pg_temp.xlsx_id(50900),
+  'anonymous','synthetic-mismatched-mode-secret','submitted',now());
+select * from pg_temp.xlsx_schema_denied(51108,'Response identity mode differs from its form');
+delete from public.form_responses where id=pg_temp.xlsx_id(50507);
+
+set local role authenticated;
+insert into xlsx_request_results values('schema_anon_second',pg_temp.xlsx_request(51110,50002,1));
+reset role;
+select is((select body->>'ok' from xlsx_request_results where label='schema_anon_second'),'true','a separate anonymous export is independently captured');
+select ok(not exists(select 1 from app_private.form_xlsx_snapshot_rows first_job
+  join app_private.form_xlsx_snapshot_rows second_job on second_job.response_id=first_job.response_id
+  where first_job.file_job_id=(select file_job_id from xlsx_schema_jobs where label='schema_anon')
+    and second_job.file_job_id=(select (body#>>'{data,id}')::uuid from xlsx_request_results where label='schema_anon_second')
+    and first_job.submission_jsonb->>'responseId'=second_job.submission_jsonb->>'responseId'),
+  'anonymous aliases cannot correlate the same source response across two export jobs');
+select is((select array_agg(submission_jsonb->>'responseId' order by sequence_number) from app_private.form_xlsx_snapshot_rows
+  where file_job_id=(select file_job_id from xlsx_schema_jobs where label='schema_anon')),
+  (select array_agg(submission_jsonb->>'responseId' order by submission_jsonb->>'responseId') from app_private.form_xlsx_snapshot_rows
+  where file_job_id=(select file_job_id from xlsx_schema_jobs where label='schema_anon')),
+  'anonymous sequence follows persisted opaque aliases instead of source timestamps');
+
+-- Purge only the expired database snapshot. This pending artifact is not
+-- attested READY, and these statements neither delete nor authorize R2 bytes.
+create temporary table xlsx_purge_before as
+select j.id file_job_id,j.snapshot_schema,j.snapshot_schema_sha256,
+  to_jsonb(j)-array['state','snapshot_schema','updated_at'] immutable_fields
+from public.form_file_jobs j join xlsx_schema_jobs f on f.file_job_id=j.id where f.label='schema_anon';
+create temporary table xlsx_purge_row_before as
+select s.* from app_private.form_xlsx_snapshot_rows s join xlsx_purge_before j on j.file_job_id=s.file_job_id
+where s.sequence_number=1;
+select is((select a.status::text from public.media_assets a join public.form_file_jobs j on j.artifact_media_asset_id=a.id
+  join xlsx_purge_before p on p.file_job_id=j.id),'pending','purge fixture has no READY artifact whose completion guard could be bypassed');
+select throws_ok($$update public.form_file_jobs set snapshot_schema=null where id=(select file_job_id from xlsx_purge_before)$$,
+  '23514',null,'active job cannot clear its captured schema');
+select throws_ok($$update public.form_file_jobs set state='expired',snapshot_schema=null where id=(select file_job_id from xlsx_purge_before)$$,
+  '23514',null,'expiring and clearing schema in one update is not the authorized purge transition');
+select lives_ok($$update public.form_file_jobs set state='expired' where id=(select file_job_id from xlsx_purge_before)$$,
+  'pending-artifact job can first enter the expired state');
+select throws_ok($$update public.form_file_jobs set snapshot_schema=null where id=(select file_job_id from xlsx_purge_before)$$,
+  '23514',null,'expired job cannot clear schema while all response rows remain');
+select lives_ok($$delete from app_private.form_xlsx_snapshot_rows where file_job_id=(select file_job_id from xlsx_purge_before) and sequence_number=1$$,
+  'expired response rows may be removed without clearing provenance');
+select throws_ok($$update public.form_file_jobs set snapshot_schema=null where id=(select file_job_id from xlsx_purge_before)$$,
+  '23514',null,'removing only part of the response rows does not permit schema purge');
+select lives_ok($$delete from app_private.form_xlsx_snapshot_rows where file_job_id=(select file_job_id from xlsx_purge_before)$$,
+  'remaining expired response rows can be removed');
+select is((select count(*) from app_private.form_xlsx_snapshot_rows where file_job_id=(select file_job_id from xlsx_purge_before)),0::bigint,
+  'purge removes every stored response payload and anonymous alias in the job');
+select lives_ok($$update public.form_file_jobs set snapshot_schema=null where id=(select file_job_id from xlsx_purge_before)$$,
+  'already expired format-two job with no rows can clear its schema');
+select ok((select snapshot_schema is null from public.form_file_jobs where id=(select file_job_id from xlsx_purge_before)),
+  'purge stores SQL NULL rather than an empty object or JSON null');
+select is((select snapshot_schema_sha256 from public.form_file_jobs where id=(select file_job_id from xlsx_purge_before)),
+  (select snapshot_schema_sha256 from xlsx_purge_before),'schema digest survives removal of sensitive schema content');
+select is((select to_jsonb(j)-array['state','snapshot_schema','updated_at'] from public.form_file_jobs j
+  where id=(select file_job_id from xlsx_purge_before)),(select immutable_fields from xlsx_purge_before),
+  'purge preserves sealed count, readiness, format, artifact metadata and complete request provenance');
+select set_config('request.jwt.claims','{"role":"service_role"}',true);
+set local role service_role;
+select throws_ok($$select public.form_worker_begin_xlsx_r2_v1(worker_job_id,'c02-schema',file_job_id)
+  from xlsx_schema_jobs where label='schema_anon'$$,'P0002','forms_xlsx_job_unavailable','worker cannot begin an expired purged snapshot');
+select throws_ok($$select public.form_worker_xlsx_snapshot_r2_v1(f.worker_job_id,'c02-schema',f.file_job_id,
+  (r.body->>'asset_id')::uuid,0,25) from xlsx_schema_jobs f join xlsx_worker_results r on r.label=f.label||'_begin'
+  where f.label='schema_anon'$$,'P0002','forms_xlsx_job_unavailable','worker cannot page expired aliases after purge');
+reset role;
+select throws_ok($$insert into app_private.form_xlsx_snapshot_rows select * from xlsx_purge_row_before$$,
+  '23514','forms_xlsx_snapshot_scope_invalid','expired snapshot cannot repopulate an old response or alias');
+select throws_ok($$update public.form_file_jobs set snapshot_schema=(select snapshot_schema from xlsx_purge_before)
+  where id=(select file_job_id from xlsx_purge_before)$$,'23514',null,'purged schema cannot be repopulated even with its original content');
+select throws_ok($$update public.form_file_jobs set snapshot_schema_sha256=repeat('f',64) where id=(select file_job_id from xlsx_purge_before)$$,
+  '23514',null,'purged schema digest cannot be replaced');
+select throws_ok($$update public.form_file_jobs set snapshot_schema_sha256=null where id=(select file_job_id from xlsx_purge_before)$$,
+  '23514',null,'purged schema digest cannot be erased');
+select throws_ok($$update public.form_file_jobs set state='pending' where id=(select file_job_id from xlsx_purge_before)$$,
+  '23514',null,'purged expired job cannot become pending again');
+select throws_ok($$update public.form_file_jobs set snapshot_ready=false where id=(select file_job_id from xlsx_purge_before)$$,
+  '23514',null,'purge cannot reopen snapshot capture');
+select throws_ok($$update public.form_file_jobs set snapshot_row_count=0 where id=(select file_job_id from xlsx_purge_before)$$,
+  '23514',null,'purge preserves the original sealed response count');
+select throws_ok($$update public.form_file_jobs set requested_management_version=requested_management_version+1
+  where id=(select file_job_id from xlsx_purge_before)$$,'23514',null,'purge cannot rewrite request provenance');
+select lives_ok($$update public.form_file_jobs set snapshot_schema=null where id=(select file_job_id from xlsx_purge_before)$$,
+  'repeating the completed SQL NULL purge is idempotent');
 
 set constraints all immediate;
 select * from finish();
