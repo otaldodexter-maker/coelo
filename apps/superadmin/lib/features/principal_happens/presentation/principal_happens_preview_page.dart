@@ -1667,40 +1667,32 @@ final class _ContextPanel extends StatelessWidget {
   final List<Widget> children;
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final actionButton = TextButton(onPressed: onAction, child: Text(action));
-      final titleText = Text(
-        title,
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
-      );
-      final stackedHeader = constraints.maxWidth < 300;
+  Widget build(BuildContext context) {
+    final actionButton = TextButton(onPressed: onAction, child: Text(action));
+    final titleText = Text(
+      title,
+      style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
+    );
 
-      return Container(
-        padding: const EdgeInsets.all(CoeloSpacing.space3),
-        decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-          borderRadius: BorderRadius.circular(CoeloRadius.lg),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (stackedHeader) ...[
-              titleText,
-              Align(alignment: Alignment.centerLeft, child: actionButton),
-            ] else
-              Row(
-                children: [
-                  Expanded(child: titleText),
-                  actionButton,
-                ],
-              ),
-            ...children,
-          ],
-        ),
-      );
-    },
-  );
+    return Container(
+      padding: const EdgeInsets.all(CoeloSpacing.space3),
+      decoration: BoxDecoration(
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          OverflowBar(
+            alignment: MainAxisAlignment.spaceBetween,
+            overflowAlignment: OverflowBarAlignment.start,
+            children: [titleText, actionButton],
+          ),
+          ...children,
+        ],
+      ),
+    );
+  }
 }
 
 final class _EventRow extends StatelessWidget {
