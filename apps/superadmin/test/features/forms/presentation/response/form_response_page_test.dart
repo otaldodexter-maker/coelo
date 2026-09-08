@@ -4,9 +4,43 @@ import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_superadmin/features/forms/presentation/response/form_response_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  List<FormSection> sections({bool branch = false}) => [
+    FormSection(
+      id: 'section-a',
+      title: 'First section',
+      position: 0,
+      items: [
+        FormItem(
+          id: 'item-a',
+          kind: branch ? FormItemKind.yesNo : FormItemKind.shortText,
+          label: 'First answer',
+          position: 0,
+          isRequired: true,
+        ),
+      ],
+    ),
+    FormSection(
+      id: 'section-b',
+      title: 'Second section',
+      position: 1,
+      items: [
+        FormItem(
+          id: 'item-b',
+          kind: FormItemKind.decimal,
+          label: 'Second answer',
+          position: 0,
+          isRequired: true,
+          conditions: branch
+              ? const [FormCondition.yesNo(sourceItemId: 'item-a', expected: true)]
+              : const [],
+        ),
+      ],
+    ),
+  ];
   Future<void> open(
     WidgetTester tester,
     _ResponseApi api, {
@@ -21,6 +55,192 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  testWidgets('response presents one section and preserves numeric text across navigation', (
+    tester,
+  ) async {
+    final api = _ResponseApi(sections: sections());
+    await open(tester, api);
+    expect(find.text('First section'), findsOneWidget);
+    expect(find.text('Second section'), findsNothing);
+    expect(find.text('Seção 1 de 2'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('form-response-next-section')));
+    await tester.pump();
+    expect(find.text('First section'), findsNothing);
+    expect(find.text('Seção 2 de 2'), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('form-response-item-item-b')), '-');
+    await tester.tap(find.byKey(const Key('form-response-previous-section')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('form-response-next-section')));
+    await tester.pump();
+    expect(find.text('-'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.saveCalls, isEmpty);
+    expect(api.submitCommand, isNull);
+  });
+
+  testWidgets('global response review navigates to the first missing section', (tester) async {
+    final api = _ResponseApi(sections: sections());
+    await open(tester, api);
+    await tester.tap(find.byKey(const Key('form-response-next-section')));
+    await tester.pump();
+    await tester.enterText(find.byKey(const Key('form-response-item-item-b')), '12');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pump();
+    expect(find.text('Seção 1 de 2'), findsOneWidget);
+    expect(find.byKey(const Key('form-response-submit')), findsNothing);
+    expect(api.submitCommand, isNull);
+  });
+
+  testWidgets('response section progress excludes a fully hidden conditional section', (
+    tester,
+  ) async {
+    final api = _ResponseApi(sections: sections(branch: true));
+    await open(tester, api);
+    expect(find.text('Seção 1 de 1'), findsOneWidget);
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Sim'));
+    await tester.pump();
+    expect(find.text('Seção 1 de 2'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('form-response-next-section')));
+    await tester.pump();
+    await tester.enterText(find.byKey(const Key('form-response-item-item-b')), '12');
+    await tester.tap(find.byKey(const Key('form-response-previous-section')));
+    await tester.pump();
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Não'));
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(find.text('Seção 1 de 1'), findsOneWidget);
+    expect(api.saveCalls.last.payload.answers.keys, ['item-a']);
+  });
+
+  testWidgets('global review chooses first section even when a later number is invalid', (
+    tester,
+  ) async {
+    final api = _ResponseApi(sections: sections());
+    await open(tester, api);
+    await tester.tap(find.byKey(const Key('form-response-next-section')));
+    await tester.pump();
+    await tester.enterText(find.byKey(const Key('form-response-item-item-b')), '-');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pump();
+    expect(find.text('Seção 1 de 2'), findsOneWidget);
+  });
+
+  testWidgets('navigation preserves pending autosave and focus stays in the active section', (
+    tester,
+  ) async {
+    final api = _ResponseApi(sections: sections());
+    await open(tester, api);
+    await tester.enterText(find.byKey(const Key('form-response-item-item-a')), 'First value');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('form-response-next-section')));
+    await tester.pump();
+    await tester.pump();
+    expect(FocusManager.instance.primaryFocus?.context?.widget is Focus, isTrue);
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    final field = tester.widget<EditableText>(
+      find.descendant(
+        of: find.byKey(const Key('form-response-item-item-b')),
+        matching: find.byType(EditableText),
+      ),
+    );
+    expect(field.focusNode.hasFocus, isTrue);
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.saveCalls, hasLength(1));
+    expect(api.saveCalls.single.payload.answers.keys, ['item-a']);
+    expect(find.text('Seção 2 de 2'), findsOneWidget);
+  });
+
+  testWidgets('receipt hiding the active section chooses a visible destination', (tester) async {
+    final gate = Completer<void>();
+    final api = _ResponseApi(
+      sections: sections(branch: true),
+      saveGate: gate.future,
+      receiptAnswers: {'item-a': FormAnswer.yesNo(itemId: 'item-a', value: false)},
+    );
+    await open(tester, api);
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Sim'));
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.tap(find.byKey(const Key('form-response-next-section')));
+    await tester.pump();
+    expect(find.text('Seção 2 de 2'), findsOneWidget);
+    gate.complete();
+    await tester.pump();
+    expect(find.text('Seção 1 de 1'), findsOneWidget);
+    expect(find.byKey(const Key('form-response-item-item-b')), findsNothing);
+  });
+
+  for (final replaceApi in [false, true]) {
+    testWidgets('response section context and focus reset on API replacement=$replaceApi', (
+      tester,
+    ) async {
+      final api = _ResponseApi(sections: sections());
+      await open(tester, api);
+      await tester.tap(find.byKey(const Key('form-response-next-section')));
+      await open(
+        tester,
+        replaceApi ? _ResponseApi(sections: sections()) : api,
+        occurrence: replaceApi ? 'occurrence-1' : 'occurrence-2',
+      );
+      expect(find.text('Seção 1 de 2'), findsOneWidget);
+      expect(find.byKey(const Key('form-response-item-item-b')), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('response review includes answers from every presented section', (tester) async {
+    final api = _ResponseApi(sections: sections());
+    await open(tester, api);
+    await tester.enterText(find.byKey(const Key('form-response-item-item-a')), 'First value');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('form-response-next-section')));
+    await tester.pump();
+    await tester.enterText(find.byKey(const Key('form-response-item-item-b')), '12');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pump();
+    expect(find.text('First answer: First value'), findsOneWidget);
+    expect(find.text('Second answer: 12.0'), findsOneWidget);
+    expect(api.submitCommand, isNull);
+  });
+
+  testWidgets('response section navigation fits 375px at 200 percent text', (tester) async {
+    tester.view.physicalSize = const Size(375, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final api = _ResponseApi(sections: sections());
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: Scaffold(
+          body: FormResponsePage(api: api, occurrenceId: 'occurrence-1'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final next = find.byKey(const Key('form-response-next-section'));
+    await tester.ensureVisible(next);
+    await tester.pumpAndSettle();
+    await tester.tap(next);
+    await tester.pump();
+    expect(find.text('Seção 2 de 2'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    final previous = find.byKey(const Key('form-response-previous-section'));
+    await tester.ensureVisible(previous);
+    await tester.pumpAndSettle();
+    await tester.tap(previous);
+    await tester.pump();
+    expect(find.text('Seção 1 de 2'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('response autosave debounces edits and does not save hydration', (tester) async {
     final api = _ResponseApi();
@@ -977,6 +1197,7 @@ final class _ResponseApi implements FormsApi {
     this.kind = FormItemKind.shortText,
     this.conditionalImageKind,
     this.items,
+    this.sections,
     this.initialAnswers = const {},
     this.receiptAnswers,
     this.lostConfirmation,
@@ -989,6 +1210,7 @@ final class _ResponseApi implements FormsApi {
   final FormItemKind kind;
   final FormItemKind? conditionalImageKind;
   final List<FormItem>? items;
+  final List<FormSection>? sections;
   final Map<String, FormAnswer> initialAnswers;
   final Map<String, FormAnswer>? receiptAnswers;
   final String? lostConfirmation;
@@ -1051,29 +1273,37 @@ final class _ResponseApi implements FormsApi {
         formId: 'form-1',
         number: 1,
         isPublished: true,
-        sections: [
-          FormSection(
-            id: 'section-1',
-            title: 'Cuidado',
-            position: 0,
-            items:
-                items ??
-                [
-                  FormItem(id: 'item-1', kind: kind, label: label, position: 0, isRequired: true),
-                  if (conditionalImageKind case final imageKind?)
-                    FormItem(
-                      id: 'image-1',
-                      kind: imageKind,
-                      label: 'Conditional image',
-                      position: 1,
-                      isRequired: true,
-                      conditions: const [
-                        FormCondition.yesNo(sourceItemId: 'item-1', expected: true),
-                      ],
-                    ),
-                ],
-          ),
-        ],
+        sections:
+            sections ??
+            [
+              FormSection(
+                id: 'section-1',
+                title: 'Cuidado',
+                position: 0,
+                items:
+                    items ??
+                    [
+                      FormItem(
+                        id: 'item-1',
+                        kind: kind,
+                        label: label,
+                        position: 0,
+                        isRequired: true,
+                      ),
+                      if (conditionalImageKind case final imageKind?)
+                        FormItem(
+                          id: 'image-1',
+                          kind: imageKind,
+                          label: 'Conditional image',
+                          position: 1,
+                          isRequired: true,
+                          conditions: const [
+                            FormCondition.yesNo(sourceItemId: 'item-1', expected: true),
+                          ],
+                        ),
+                    ],
+              ),
+            ],
       ),
       participationId: 'participation-1',
       identityMode: FormIdentityMode.identified,
