@@ -701,3 +701,6 @@ Recibo Git 2026-09-08T19:47:02-03:00: entrega72121fb1 verificada emdev e C00; ar
 ## Corte operacional 2026-09-08T20:07:04-03:00
 
 Fonte `etapa-2-operacao/reports/R01-delta-2005.md`: SecretStore1477ca3a,FormsSQL882c1655/b82157a4 eLocais188cf2ba integrados/testados; composiçãoC00pendente. C02r41sincronizado,claim193falhafixturnominalpreservada/leaseencerrada. C01I017Authprioritário,C03I014Auditnominalreservado,C06I010togglePrincipalpontual,C02I018schemaXLSXsem bloqueiogeral. Nenhumremoção/produção/conclusãopromovida. Corte eSHAs/evidênciasno relatório; próximo pushseráverificado.
+
+
+Recibo Git 2026-09-08T20:14:41-03:00: push atômico e ls-remote confirmaram `e55143ff64204ff02b576b7d01fe7b6fbb2d7eca` em dev e C00. Inclui as integrações verificadas de SecretStore, Auth, SQL Forms e componentes Locais, além dos rastreadores e reservas. C00 limpa; sem deploy ou mutação remota. Lease local Atividades46 em andamento, resultado pendente.

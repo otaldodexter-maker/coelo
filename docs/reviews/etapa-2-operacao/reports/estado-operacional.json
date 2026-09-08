@@ -514,7 +514,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T20:13:44-03:00",
+  "updated_at": "2026-09-08T20:14:41-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -1243,12 +1243,12 @@
     "report": "reports/R01-checkpoint-1740.md"
   },
   "last_verified_delivery": {
-    "sha": "422583a35629b1b08d8fc4acb58447379c1024b8",
+    "sha": "e55143ff64204ff02b576b7d01fe7b6fbb2d7eca",
     "refs": [
       "origin/dev",
       "origin/codex/e2-r01-c00-integration"
     ],
-    "verified_at": "2026-09-08T19:50:49-03:00",
+    "verified_at": "2026-09-08T20:14:41-03:00",
     "deploy": false
   },
   "validation_fronts": {
