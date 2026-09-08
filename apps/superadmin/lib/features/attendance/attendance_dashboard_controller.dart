@@ -125,6 +125,7 @@ final class AttendanceDashboardController extends ChangeNotifier {
   }
 
   void changeSearch(String value) {
+    if (_disposed) return;
     _searchTimer?.cancel();
     _searchTimer = Timer(searchDelay, () {
       _query = _query.copyWith(search: value.trim(), page: 1);
@@ -133,6 +134,7 @@ final class AttendanceDashboardController extends ChangeNotifier {
   }
 
   Future<void> _reload() async {
+    if (_disposed) return;
     final generation = ++_requestGeneration;
     final previous = switch (_state) {
       AttendanceDashboardReady(:final snapshot) ||
