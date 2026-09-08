@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @()
@@ -82,7 +82,11 @@ $foundationManifestHash = $null
 $additionalCanonical = @()
 $foundationBoundaryVersion = $null
 if ($NominalProfile) {
-  $nominalResolver = Join-Path $preflightRoot 'profiles\N01PrerequisitesRed\Resolve-N01PrerequisitesRed.ps1'
+  $nominalResolverRelative = switch ($NominalProfile) {
+    'N01PrerequisitesRed' { 'profiles\N01PrerequisitesRed\Resolve-N01PrerequisitesRed.ps1' }
+    'A01DirectoryContractRed' { 'profiles\A01DirectoryContractRed\Resolve-A01DirectoryContractRed.ps1' }
+  }
+  $nominalResolver = Join-Path $preflightRoot $nominalResolverRelative
   $nominalCursor = Get-Item -LiteralPath $nominalResolver -Force -ErrorAction Stop
   if ($nominalCursor.PSIsContainer) { throw 'nominal replay resolver must be a file' }
   while ($null -ne $nominalCursor) {
