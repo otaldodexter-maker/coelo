@@ -31,7 +31,6 @@ final class AgendaReadController extends ChangeNotifier {
   AgendaReadDetail? get detail => _detail;
   AgendaProjectionStatus get pageStatus => _pageStatus;
   AgendaProjectionStatus get detailStatus => _detailStatus;
-  int get boundaryRevision => _boundaryEpoch;
   bool get _canRead => !_disposed && _boundaryKey != null && !_denied;
 
   Future<void> loadPage({
