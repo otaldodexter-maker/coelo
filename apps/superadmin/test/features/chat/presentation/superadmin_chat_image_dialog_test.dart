@@ -13,6 +13,45 @@ const _asset = '11111111-1111-4111-8111-111111111111';
 const _otherAsset = '22222222-2222-4222-8222-222222222222';
 
 void main() {
+  for (final change in ['dispose', 'context', 'double-retry']) {
+    testWidgets('captured image retry rejects $change', (tester) async {
+      final reader = _Reader();
+      final session = MediaSession();
+      await _pump(tester, reader, session);
+      reader.pending.single.complete(_result('processing'));
+      await tester.pumpAndSettle();
+      final retry = tester
+          .widget<FilledButton>(find.widgetWithText(FilledButton, 'Tentar novamente'))
+          .onPressed!;
+      if (change == 'dispose') {
+        await tester.pumpWidget(const SizedBox.shrink());
+        retry();
+        await tester.pump();
+        expect(reader.requests, hasLength(1));
+      } else if (change == 'context') {
+        final replacement = _Reader();
+        await _pump(tester, replacement, MediaSession());
+        retry();
+        await tester.pump();
+        expect(replacement.requests, hasLength(1));
+        for (final pending in replacement.pending) {
+          pending.complete(_result('unavailable'));
+        }
+        await tester.pump();
+      } else {
+        retry();
+        retry();
+        await tester.pump();
+        expect(reader.requests, hasLength(2));
+        for (final pending in reader.pending.skip(1)) {
+          pending.complete(_result('unavailable'));
+        }
+        await tester.pump();
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   for (final dark in [false, true]) {
     for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
       for (final state in ['loading', 'processing', 'expired', 'unavailable', 'available']) {
