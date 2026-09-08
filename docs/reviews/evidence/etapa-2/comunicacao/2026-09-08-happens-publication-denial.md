@@ -14,6 +14,19 @@ e review. Critério da fatia: testes locais verdes, sem promoção de E2E.
 
 # Evidência
 
+Correção de interpretação após revisão central: a classificação definitiva de
+422/media_delete_denied descrita historicamente abaixo foi retirada. A Edge
+agrupa qualquer erro de RPC nesse envelope; ele não prova negação. Somente
+401/403 continuam tipados no adapter. O controller mantém purge quando recebe
+negação tipada, sem alteração neste incremento.
+
+Dois REDs confirmaram classificação e perda do draft; o novo teste atravessa
+MockClient, adapter e controller, preservando legenda, audiência e mídia após
+422 e permitindo nova remoção explicitamente solicitada com resposta 200.
+Isso não equivale a provar idempotência ou persistência remota.
+Regressão do incremento: 55/55 testes da feature incluindo goldens, analyzer
+dos dois arquivos, format e diff check verdes; revisão read-only sem bloqueante.
+
 - Seis REDs reproduzidos: negação tipada em load/save/prepare/finalize/publish
   retinha draft; remove entrava em failure e permitia rearme de autosave.
 - `_denyAccess` descarta draft/mídias/audiência/data, desliga e cancela autosave,
@@ -26,6 +39,8 @@ e review. Critério da fatia: testes locais verdes, sem promoção de E2E.
 - A Edge existente foi lida integralmente; ela própria agrupa erros de RPC em
   `media_delete_denied`. O cliente respeita esse envelope, sem provar a causa
   individual. Não ampliar o mapeamento por substring ou status genérico.
+  Essa interpretação inicial foi rejeitada pela revisão central e corrigida
+  conforme o adendo acima; o envelope ambíguo agora permanece recuperável.
 - 54/54 testes da feature de publicação, incluindo goldens existentes, GREEN.
   Destes, 20 controller e cinco adapter. Nenhum PNG alterado.
 - Analyzer quatro arquivos, format, diff check, validador visual e review

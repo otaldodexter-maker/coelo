@@ -10,10 +10,48 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('ambiguous 422 preserves the draft and permits explicit removal retry', () async {
+    var requests = 0;
+    final client = SupabaseClient(
+      'https://coelo.test',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        requests++;
+        expect(request.url.path, '/functions/v1/happens-media');
+        expect(jsonDecode(request.body)['action'], 'delete');
+        return http.Response(
+          requests == 1 ? '{"error":"media_delete_denied"}' : '{"deleted":true}',
+          requests == 1 ? 422 : 200,
+          headers: {'content-type': 'application/json'},
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+    final controller =
+        HappensPublicationController(
+            repository: SupabaseHappensPublicationRepository(client),
+            context: HappensPublicationContext.demo,
+          )
+          ..setCaption('Rascunho preservado')
+          ..toggleAudience(HappensAudienceKind.families)
+          ..addMedia(_media);
+    addTearDown(controller.dispose);
+    await controller.removeMedia(0);
+    expect(controller.state.phase, HappensPublicationPhase.failure);
+    expect(controller.state.draft.caption, 'Rascunho preservado');
+    expect(controller.state.draft.audiences, contains(HappensAudienceKind.families));
+    expect(controller.state.draft.media.single.assetId, _media.assetId);
+    expect(requests, 1);
+    await controller.removeMedia(0);
+    expect(requests, 2);
+    expect(controller.state.draft.media, isEmpty);
+    expect(controller.state.draft.caption, 'Rascunho preservado');
+  });
+
   for (final entry in [
     (401, 'authentication_required', true),
     (403, 'origin_not_allowed', true),
-    (422, 'media_delete_denied', true),
+    (422, 'media_delete_denied', false),
     (422, 'media_delete_failed', false),
     (503, 'media_delete_denied', false),
   ]) {
