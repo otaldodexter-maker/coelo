@@ -8,7 +8,7 @@
 
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(22);
+select plan(32);
 
 -- The extended signature exists and the previous one is gone, so the two never
 -- coexist as an ambiguous overload.
@@ -175,6 +175,50 @@ select function_privs_are('public', 'superadmin_notice_directory_v2',
         'text','boolean','text','text'],
   'authenticated', array['EXECUTE'],
   'only authenticated may execute, and only through the RPC');
+
+-- Regression guard for the ACL defect found in review: an earlier draft revoked
+-- EXECUTE from every superadmin_notice_% function and granted only the
+-- directory back, which silently broke five contracts the Superadmin client
+-- already calls. Each one is asserted by name so the wildcard cannot come back.
+select function_privs_are('public', 'superadmin_notice_detail_v2',
+  array['uuid'], 'authenticated', array['EXECUTE'],
+  'detail keeps the grant 20260901185008 gave it');
+select function_privs_are('public', 'superadmin_notice_audience_options_v2',
+  array['text','text','uuid[]','text','text','integer'],
+  'authenticated', array['EXECUTE'],
+  'audience options keeps the grant 20260901185008 gave it');
+select function_privs_are('public', 'superadmin_notice_save_draft_v2',
+  array['uuid','uuid','bigint','jsonb'], 'authenticated', array['EXECUTE'],
+  'save draft keeps the grant 20260901185008 gave it');
+select function_privs_are('public', 'superadmin_notice_publish_v2',
+  array['uuid','uuid','bigint'], 'authenticated', array['EXECUTE'],
+  'publish keeps the grant 20260901185008 gave it');
+select function_privs_are('public', 'superadmin_notice_change_status_v2',
+  array['uuid','uuid','bigint','text','text'], 'authenticated', array['EXECUTE'],
+  'change status keeps the grant 20260901185008 gave it');
+
+-- Regression guard for the error-code defect: NOTICE_INVALID_CURSOR is raised by
+-- the directory, so it has to survive the envelope allowlist. Without the entry
+-- it collapsed to NOTICE_INTERNAL_ERROR and the caller could not tell an
+-- unusable cursor from a server fault.
+select is(
+  app_private.superadmin_notice_error(
+    'NOTICE_INVALID_CURSOR', '9d100000-0000-4000-8000-0000000009c1')
+    -> 'error' ->> 'code',
+  'NOTICE_INVALID_CURSOR',
+  'an unusable cursor keeps its own code instead of becoming an internal error');
+select is(
+  (app_private.superadmin_notice_error(
+    'NOTICE_INVALID_CURSOR', '9d100000-0000-4000-8000-0000000009c1')
+    -> 'error' ->> 'http_status')::integer,
+  422,
+  'an unusable cursor is a client-fixable refusal, not a 500');
+
+-- Not covered here, and deliberately not faked: pagination over tied sort values
+-- in both directions runs through superadmin_notice_directory_v2, which needs
+-- the internal-identity fixture and a local replay. R01-C05-I007 keeps that
+-- behind a lease, so the tie case stays declared as uncovered rather than
+-- asserted against a hand-rolled copy of the query.
 
 select * from finish();
 rollback;

@@ -10,7 +10,11 @@
 --   * the keyset cursor is bound to the caller's scope and to the query it was
 --     issued for. A cursor from a different sort or filter is a legitimate UX
 --     transition and restarts at page one with cursor_reset; a malformed cursor
---     or one issued for another scope fails without returning rows.
+--     or one issued for another scope fails without returning rows;
+--   * the id tiebreak follows the chosen direction, so the ORDER BY and the
+--     row-tuple keyset comparison always agree. Ascending pages order by id asc
+--     and resume with >, descending pages order by id desc and resume with <.
+--     Mixing them duplicates or skips rows whose sort value ties.
 --
 -- The previous signature is dropped first so the two never coexist as an
 -- ambiguous overload.
@@ -66,6 +70,60 @@ create or replace function app_private.superadmin_notice_cursor_fingerprint(
       ),
       'hex'
     )
+$$;
+
+-- NOTICE_INVALID_CURSOR is raised below, so it has to be a declared code. Both
+-- allowlists are reproduced from 20260901185008_superadmin_internal_notices_v2.sql
+-- with the single new entry added; nothing else changes. Without this, a
+-- malformed or out-of-scope cursor would be normalised to SAI_INTERNAL_ERROR and
+-- the caller could not tell an unusable cursor from a server fault.
+-- create or replace preserves owner and ACL, so neither function needs a grant.
+create or replace function app_private.superadmin_notice_error(
+  p_code text, p_correlation_id uuid
+) returns jsonb language sql immutable security definer set search_path = '' as $$
+  select case
+    when p_code like 'SAI_%' then
+      app_private.superadmin_internal_error_envelope(p_code, p_correlation_id)
+    else pg_catalog.jsonb_build_object(
+      'ok', false, 'data', null,
+      'error', pg_catalog.jsonb_build_object(
+        'code', case when p_code in (
+          'NOTICE_INVALID_INPUT', 'NOTICE_INVALID_CURSOR', 'NOTICE_NOT_FOUND',
+          'NOTICE_CONFLICT', 'NOTICE_INVALID_TRANSITION', 'NOTICE_TERMINAL',
+          'NOTICE_MEDIA_BLOCKED'
+        ) then p_code else 'NOTICE_INTERNAL_ERROR' end,
+        'message', case
+          when p_code = 'NOTICE_INVALID_INPUT' then 'Revise os dados da comunicação.'
+          when p_code = 'NOTICE_INVALID_CURSOR' then 'A lista mudou. Recarregue e tente novamente.'
+          when p_code = 'NOTICE_NOT_FOUND' then 'Comunicação não encontrada.'
+          when p_code = 'NOTICE_CONFLICT' then 'A comunicação foi alterada. Recarregue e tente novamente.'
+          when p_code in ('NOTICE_INVALID_TRANSITION', 'NOTICE_TERMINAL') then 'Esta transição não é permitida.'
+          when p_code = 'NOTICE_MEDIA_BLOCKED' then 'A mídia ainda não está disponível.'
+          else 'Não foi possível concluir a operação.' end,
+        'correlation_id', p_correlation_id,
+        'http_status', case
+          when p_code = 'NOTICE_NOT_FOUND' then 404
+          when p_code = 'NOTICE_CONFLICT' then 409
+          when p_code in ('NOTICE_INVALID_INPUT', 'NOTICE_INVALID_CURSOR',
+            'NOTICE_INVALID_TRANSITION', 'NOTICE_TERMINAL', 'NOTICE_MEDIA_BLOCKED') then 422
+          else 500 end)) end
+$$;
+
+create or replace function app_private.superadmin_notice_denied(
+  p_permission_code text, p_action_code text, p_code text, p_correlation_id uuid
+) returns jsonb language plpgsql volatile security definer set search_path = '' as $$
+declare normalized_code text := case when p_code in (
+  'NOTICE_INVALID_INPUT', 'NOTICE_INVALID_CURSOR', 'NOTICE_NOT_FOUND', 'NOTICE_CONFLICT',
+  'NOTICE_INVALID_TRANSITION', 'NOTICE_TERMINAL', 'NOTICE_MEDIA_BLOCKED',
+  'SAI_AUTH_REQUIRED', 'SAI_SESSION_INVALID', 'SAI_INTERNAL_CONTEXT_DENIED',
+  'SAI_MEMBERSHIP_SUSPENDED', 'SAI_MEMBERSHIP_REVOKED',
+  'SAI_PERMISSION_DENIED', 'SAI_MFA_REQUIRED') then p_code
+  else 'SAI_INTERNAL_ERROR' end;
+begin
+  perform app_private.audit_superadmin_internal_denial_if_identified(
+    p_permission_code, p_action_code, normalized_code, p_correlation_id);
+  return app_private.superadmin_notice_error(normalized_code, p_correlation_id);
+end
 $$;
 
 drop function if exists public.superadmin_notice_directory_v2(
@@ -149,8 +207,14 @@ begin
 
     perform app_private.superadmin_notice_refresh_lifecycle();
 
+    -- notice_row carries the untouched table row so the projection is fed a
+    -- value that already has type public.platform_notices. A whole-row
+    -- reference to this CTE would not: the CTE also carries sort_value and
+    -- page_row, and record-to-composite coercion requires an exact column
+    -- match. Every other Notice directory in this repository keeps the row in
+    -- its own column for the same reason.
     with filtered as (
-      select notice_record.*,
+      select notice_record.*, notice_record as notice_row,
         app_private.superadmin_notice_sort_value(notice_record, p_sort_column) as sort_value
       from public.platform_notices notice_record
       where (p_search is null or notice_record.title ilike '%' ||
@@ -163,7 +227,8 @@ begin
         row_number() over(order by
           case when p_sort_ascending then filtered.sort_value end asc,
           case when not p_sort_ascending then filtered.sort_value end desc,
-          filtered.id desc) page_row
+          case when p_sort_ascending then filtered.id end asc,
+          case when not p_sort_ascending then filtered.id end desc) page_row
       from filtered
       where cursor_sort_value is null
         or (p_sort_ascending and (filtered.sort_value, filtered.id) > (cursor_sort_value, cursor_id))
@@ -171,14 +236,17 @@ begin
       order by
         case when p_sort_ascending then filtered.sort_value end asc,
         case when not p_sort_ascending then filtered.sort_value end desc,
-        filtered.id desc
+        case when p_sort_ascending then filtered.id end asc,
+        case when not p_sort_ascending then filtered.id end desc
       limit p_limit + 1
     )
-    select coalesce(jsonb_agg(app_private.superadmin_notice_json(page)
+    select coalesce(jsonb_agg(app_private.superadmin_notice_json(page.notice_row)
       order by
         case when p_sort_ascending then page.sort_value end asc,
         case when not p_sort_ascending then page.sort_value end desc,
-        page.id desc) filter(where page.page_row <= p_limit), '[]'::jsonb),
+        case when p_sort_ascending then page.id end asc,
+        case when not p_sort_ascending then page.id end desc)
+      filter(where page.page_row <= p_limit), '[]'::jsonb),
       count(*) > p_limit
     into items, has_more from page;
 
@@ -189,7 +257,8 @@ begin
           row_number() over(order by
             case when p_sort_ascending then filtered.sort_value end asc,
             case when not p_sort_ascending then filtered.sort_value end desc,
-            filtered.id desc) page_row
+            case when p_sort_ascending then filtered.id end asc,
+            case when not p_sort_ascending then filtered.id end desc) page_row
         from (
           select notice_record.*,
             app_private.superadmin_notice_sort_value(notice_record, p_sort_column) as sort_value
@@ -224,6 +293,13 @@ begin
 end
 $$;
 
+-- Only the three functions this migration creates are re-ACLed. A wildcard
+-- revoke over every superadmin_notice_% function would strip EXECUTE from
+-- detail, audience options, save, publish and change status, which
+-- 20260901185008_superadmin_internal_notices_v2.sql granted and the Superadmin
+-- client already depends on. superadmin_notice_error and
+-- superadmin_notice_denied are replaced above, and create or replace keeps
+-- their existing privileges, so they stay out of this loop as well.
 do $acl$
 declare function_record regprocedure;
 begin
@@ -232,9 +308,10 @@ begin
     from pg_proc procedure_record
     join pg_namespace namespace_record on namespace_record.oid = procedure_record.pronamespace
     where (namespace_record.nspname = 'app_private'
-      and procedure_record.proname like 'superadmin_notice_%')
+      and procedure_record.proname in (
+        'superadmin_notice_sort_value', 'superadmin_notice_cursor_fingerprint'))
       or (namespace_record.nspname = 'public'
-      and procedure_record.proname like 'superadmin_notice_%_v2')
+      and procedure_record.proname = 'superadmin_notice_directory_v2')
   loop
     execute format('alter function %s owner to postgres', function_record);
     execute format('revoke all on function %s from public, anon, authenticated, service_role',
@@ -246,5 +323,18 @@ $acl$;
 grant execute on function public.superadmin_notice_directory_v2(
   text[], text, text[], text[], timestamptz, uuid, integer,
   text, boolean, text, text) to authenticated;
+
+-- Reproduced verbatim from 20260901185008_superadmin_internal_notices_v2.sql.
+-- Grants are idempotent, so this asserts the surviving contracts rather than
+-- changing them, and it repairs any environment where an earlier draft of this
+-- candidate had already run the wildcard revoke.
+grant execute on function public.superadmin_notice_detail_v2(uuid) to authenticated;
+grant execute on function public.superadmin_notice_audience_options_v2(
+  text, text, uuid[], text, text, integer) to authenticated;
+grant execute on function public.superadmin_notice_save_draft_v2(
+  uuid, uuid, bigint, jsonb) to authenticated;
+grant execute on function public.superadmin_notice_publish_v2(uuid, uuid, bigint) to authenticated;
+grant execute on function public.superadmin_notice_change_status_v2(
+  uuid, uuid, bigint, text, text) to authenticated;
 
 commit;
