@@ -52,6 +52,8 @@ final class _PlanFormPageState extends State<PlanFormPage> {
   bool _capabilityError = false;
   bool _auditReasonError = false;
   String? _conflictMessage;
+  int _contextGeneration = 0;
+  int _readGeneration = 0;
 
   bool get _editing => _original != null;
 
@@ -87,11 +89,54 @@ final class _PlanFormPageState extends State<PlanFormPage> {
     }
   }
 
+  @override
+  void didUpdateWidget(covariant PlanFormPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.repository, widget.repository) && oldWidget.planId == widget.planId) {
+      return;
+    }
+    _contextGeneration++;
+    _readGeneration++;
+    _original = null;
+    _linked = const [];
+    _name.clear();
+    _code.clear();
+    _description.clear();
+    _reason.clear();
+    _capabilitySearch.clear();
+    _units.text = '1';
+    _memberships.text = '100';
+    _storage.text = '10';
+    _media.text = '2';
+    _features = {};
+    _status = PlanStatus.active;
+    _step = 0;
+    _furthestStep = 0;
+    _saving = false;
+    _capabilityError = false;
+    _auditReasonError = false;
+    _conflictMessage = null;
+    _loadState = widget.planId == null ? PlanDataState.ready : PlanDataState.loading;
+    if (widget.planId != null) unawaited(_loadPlan());
+  }
+
+  bool _isCurrentContext(int generation, PlanCatalogRepository repository, String? planId) =>
+      mounted &&
+      generation == _contextGeneration &&
+      identical(repository, widget.repository) &&
+      planId == widget.planId;
+
   Future<void> _loadPlan() async {
+    final generation = _contextGeneration;
+    final readGeneration = ++_readGeneration;
+    final repository = widget.repository;
+    final planId = widget.planId!;
+    bool isCurrent() =>
+        _isCurrentContext(generation, repository, planId) && readGeneration == _readGeneration;
     setState(() => _loadState = PlanDataState.loading);
     try {
-      final details = await widget.repository.get(widget.planId!);
-      if (!mounted) return;
+      final details = await repository.get(planId);
+      if (!isCurrent()) return;
       setState(() {
         _original = details.plan;
         _linked = details.linkedInstitutions;
@@ -107,7 +152,7 @@ final class _PlanFormPageState extends State<PlanFormPage> {
         _loadState = PlanDataState.ready;
       });
     } on PlanRepositoryException catch (error) {
-      if (!mounted) return;
+      if (!isCurrent()) return;
       setState(() {
         _loadState = error.kind == PlanRepositoryFailureKind.unauthorized
             ? PlanDataState.unauthorized
@@ -118,6 +163,8 @@ final class _PlanFormPageState extends State<PlanFormPage> {
 
   @override
   void dispose() {
+    _contextGeneration++;
+    _readGeneration++;
     _name.dispose();
     _code.dispose();
     _description.dispose();
@@ -493,6 +540,7 @@ final class _PlanFormPageState extends State<PlanFormPage> {
   ].every((controller) => (int.tryParse(controller.text) ?? 0) > 0);
 
   Future<void> _save() async {
+    if (_saving || _loadState != PlanDataState.ready) return;
     if (_reason.text.trim().isEmpty) {
       setState(() => _auditReasonError = true);
       return;
@@ -515,6 +563,10 @@ final class _PlanFormPageState extends State<PlanFormPage> {
       setState(() => _step = 2);
       return;
     }
+    final generation = _contextGeneration;
+    final repository = widget.repository;
+    final planId = widget.planId;
+    bool isCurrent() => _isCurrentContext(generation, repository, planId);
     setState(() {
       _saving = true;
       _conflictMessage = null;
@@ -526,7 +578,7 @@ final class _PlanFormPageState extends State<PlanFormPage> {
         storageGb: int.parse(_storage.text),
         mediaGb: int.parse(_media.text),
       );
-      final saved = await widget.repository.save(
+      final saved = await repository.save(
         PlanSaveCommand(
           requestId: newPlanRequestId(),
           expectedRevision: _original?.revision,
@@ -542,17 +594,19 @@ final class _PlanFormPageState extends State<PlanFormPage> {
           ),
         ),
       );
+      if (!isCurrent()) return;
       _original = saved.plan;
       _linked = saved.linkedInstitutions;
       widget.onSaved?.call();
     } on PlanRepositoryException catch (error) {
+      if (!isCurrent()) return;
       setState(() {
         _conflictMessage = error.kind == PlanRepositoryFailureKind.conflict
             ? 'O plano mudou desde que esta edição começou. Seu draft foi preservado.'
             : error.message;
       });
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (isCurrent()) setState(() => _saving = false);
     }
   }
 
