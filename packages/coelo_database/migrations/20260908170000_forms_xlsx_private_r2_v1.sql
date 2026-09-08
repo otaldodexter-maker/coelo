@@ -499,6 +499,167 @@ revoke all on function public.superadmin_form_authorize_xlsx_download_v2(uuid) f
 revoke all on function public.form_redeem_xlsx_download_r2_v1(uuid) from public,anon,authenticated;
 grant execute on function public.superadmin_form_authorize_xlsx_download_v2(uuid) to authenticated;
 grant execute on function public.form_redeem_xlsx_download_r2_v1(uuid) to service_role;
--- WIP: request/capture, worker lease/finalization/reconciliation and cleanup
+
+-- A distinct queue kind prevents a legacy Storage worker from claiming R2 work.
+alter table app_private.form_worker_jobs drop constraint form_worker_jobs_kind_ck;
+alter table app_private.form_worker_jobs add constraint form_worker_jobs_kind_ck check (job_kind in (
+  'generate_occurrences','reconcile_audience','materialize_metrics','enqueue_reminders',
+  'export_csv','export_xlsx','export_zip','export_anonymous_participation',
+  'finalize_asset','cleanup_uploads','cleanup_artifacts','export_xlsx_r2_v1'
+));
+create function app_private.superadmin_form_request_xlsx_v2(
+  p_request_id uuid,p_expected_version bigint,p_payload jsonb
+) returns jsonb language plpgsql volatile security definer set search_path='' as $$
+declare ctx app_private.superadmin_internal_context; initial_ctx app_private.superadmin_internal_context;
+  form_row public.forms; job public.form_file_jobs; target_form uuid; payload_hash text;
+  captured_count bigint; error_code text; correlation uuid:=gen_random_uuid();
+begin
+  begin
+    select * into strict ctx from app_private.require_superadmin_internal_context('forms.responses.export');
+    initial_ctx:=ctx;
+    if current_setting('transaction_isolation')<>'read committed' or p_request_id is null
+      or p_expected_version is null or p_expected_version<0
+      or jsonb_typeof(p_payload) is distinct from 'object' then
+      raise invalid_parameter_value using detail='SAI_INVALID_ARGUMENT';
+    end if;
+    if jsonb_typeof(p_payload->'form_id') is distinct from 'string'
+      or not (p_payload->>'form_id' ~ '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
+      or exists(select 1 from jsonb_object_keys(p_payload) k where k<>'form_id') then
+      raise invalid_parameter_value using detail='SAI_INVALID_ARGUMENT';
+    end if;
+    if ctx.aal is null or ctx.aal not in ('aal1','aal2') or ctx.scope_kind is null
+      or ctx.scope_kind not in ('platform','institution')
+      or (ctx.scope_kind='institution' and ctx.scope_institution_id is null) then
+      raise insufficient_privilege using detail='SAI_INTERNAL_CONTEXT_DENIED';
+    end if;
+    target_form:=(p_payload->>'form_id')::uuid;
+    payload_hash:=encode(extensions.digest(convert_to(jsonb_build_object('form_id',target_form,
+      'expected_version',p_expected_version)::text,'UTF8'),'sha256'),'hex');
+    perform pg_advisory_xact_lock(hashtextextended(ctx.internal_identity_id::text||':'||p_request_id::text,0));
+    select f.* into form_row from public.forms f join public.institutions i on i.id=f.institution_id
+      where f.id=target_form and i.deleted_at is null
+        and (ctx.scope_kind='platform' or f.institution_id=ctx.scope_institution_id) for share of f,i;
+    if form_row.id is null then raise insufficient_privilege using detail='SAI_PERMISSION_DENIED'; end if;
+    select * into job from public.form_file_jobs where requested_by_internal_identity_id=ctx.internal_identity_id
+      and request_id=p_request_id for update;
+    if job.id is not null then
+      if job.request_payload_sha256 is distinct from payload_hash or job.form_id is distinct from form_row.id
+        or job.institution_id is distinct from form_row.institution_id then
+        raise invalid_parameter_value using detail='SAI_INVALID_ARGUMENT';
+      end if;
+    else
+      if form_row.management_version<>p_expected_version then
+        raise serialization_failure using detail='SAI_CONCURRENT_CHANGE';
+      end if;
+      insert into public.form_file_jobs(form_id,institution_id,request_id,export_kind,artifact_provider,
+        requested_by_internal_identity_id,requested_auth_link_id,requested_membership_id,requested_auth_session_id,
+        requested_scope_kind,requested_scope_institution_id,requested_management_version,request_payload_sha256,
+        snapshot_format_version,snapshot_row_count,snapshot_ready)
+      values(form_row.id,form_row.institution_id,p_request_id,'xlsx','r2',ctx.internal_identity_id,
+        ctx.internal_auth_link_id,ctx.internal_membership_id,ctx.session_id,ctx.scope_kind,ctx.scope_institution_id,
+        p_expected_version,payload_hash,1,0,false) returning * into job;
+      -- One statement snapshot for response, answer, option labels and identity.
+      -- Version 1 preserves the existing writer projection; no binaries or
+      -- storage credentials/paths are captured, including anonymous responses.
+      insert into app_private.form_xlsx_snapshot_rows(file_job_id,sequence_number,response_id,submission_jsonb)
+      select job.id,row_number() over(order by response.id),response.id,
+             jsonb_build_object(
+               'responseId', response.id,
+               'occurrenceId', response.occurrence_id,
+               'versionId', response.form_version_id,
+               'metadata', jsonb_build_object(
+                 'form_id', response.form_id,
+                 'identity_mode', response.identity_mode,
+                 'respondent', case when response.identity_mode = 'identified'
+                   then person_row.display_name else '' end,
+                 'submitted_at', case when response.identity_mode = 'identified'
+                   then response.submitted_at::text else '' end
+               ),
+               'answers', coalesce((
+                 select jsonb_agg(jsonb_build_object(
+                   'itemId', item.id,
+                   'question', item.label,
+                   'multiValued', item.kind in ('multiple_choice', 'photo', 'gallery'),
+                   'values', case
+                     when item.kind in ('single_choice', 'multiple_choice') then coalesce((
+                       select jsonb_agg(option_row.label order by answer_option.position, option_row.position)
+                         from public.form_answer_options answer_option
+                         join public.form_question_options option_row on option_row.id = answer_option.option_id
+                        where answer_option.answer_id = answer.id and option_row.item_id = item.id
+                     ), '[]'::jsonb)
+                     when item.kind in ('photo', 'gallery') then coalesce((
+                       select jsonb_agg('/forms/media/' || asset.id::text order by answer_asset.position)
+                         from public.form_answer_assets answer_asset
+                         join public.form_assets asset on asset.id = answer_asset.asset_id
+                        where answer_asset.answer_id = answer.id and asset.state = 'finalized'
+                          and asset.institution_id = response.institution_id
+                          and asset.occurrence_id = response.occurrence_id and asset.item_id = item.id
+                     ), '[]'::jsonb)
+                     else jsonb_build_array(case answer.answer_kind
+                       when 'short_text' then answer.text_value
+                       when 'integer' then answer.integer_value::text
+                       when 'decimal' then answer.decimal_value::text
+                       when 'money' then answer.money_minor_units::text
+                       when 'date' then answer.date_value::text
+                       when 'yes_no' then case when answer.yes_no_value then 'Sim' else 'Não' end
+                       when 'scale' then answer.scale_value::text
+                       else '' end)
+                   end
+                 ) order by section.position, item.position, item.id)
+                   from public.form_answers answer
+                   join public.form_items item on item.id = answer.item_id
+                   join public.form_sections section on section.id = item.section_id
+                  where answer.response_id = response.id and answer.form_version_id = response.form_version_id
+                    and item.form_version_id = response.form_version_id and section.form_version_id = response.form_version_id
+               ), '[]'::jsonb)
+             )
+      from public.form_responses response
+      join public.form_occurrences occurrence on occurrence.id=response.occurrence_id
+        and occurrence.form_id=response.form_id and occurrence.institution_id=response.institution_id
+        and occurrence.form_version_id=response.form_version_id
+      join public.form_versions version on version.id=response.form_version_id and version.form_id=response.form_id
+      left join public.people person_row on person_row.id=response.respondent_person_id
+      where response.form_id=form_row.id and response.institution_id=form_row.institution_id and response.status='submitted';
+      get diagnostics captured_count=row_count;
+      update public.form_file_jobs set snapshot_ready=true,snapshot_row_count=captured_count
+        where id=job.id returning * into job;
+      insert into app_private.form_worker_jobs(job_kind,aggregate_id,payload_jsonb)
+        values('export_xlsx_r2_v1',job.id,jsonb_build_object('file_job_id',job.id));
+    end if;
+    -- Any wait or capture may span a revocation. Refresh before committing work.
+    select * into strict ctx from app_private.require_superadmin_internal_context('forms.responses.export');
+    if row(ctx.internal_identity_id,ctx.internal_auth_link_id,ctx.internal_membership_id,ctx.session_id,ctx.scope_kind,ctx.scope_institution_id)
+      is distinct from row(initial_ctx.internal_identity_id,initial_ctx.internal_auth_link_id,initial_ctx.internal_membership_id,
+        initial_ctx.session_id,initial_ctx.scope_kind,initial_ctx.scope_institution_id)
+      or not exists(select 1 from auth.sessions s where s.id=ctx.session_id and s.user_id=ctx.auth_user_id
+        and (s.not_after is null or s.not_after>clock_timestamp())) then
+      raise insufficient_privilege using detail='SAI_INTERNAL_CONTEXT_DENIED';
+    end if;
+    perform app_private.audit_append_superadmin_internal(ctx.internal_identity_id,ctx.internal_auth_link_id,ctx.internal_membership_id,
+      ctx.session_id,'forms.responses.export',ctx.aal,'superadmin.forms.export.request','success',null,
+      correlation,job.institution_id,'form_file_job',job.id);
+  exception when others then
+    get stacked diagnostics error_code=pg_exception_detail;
+    error_code:=app_private.superadmin_internal_error_envelope(error_code,correlation)#>>'{error,code}';
+  end;
+  if error_code is not null then
+    perform app_private.audit_superadmin_internal_denial_if_identified('forms.responses.export',
+      'superadmin.forms.export.request',error_code,correlation);
+    return app_private.superadmin_internal_error_envelope(error_code,correlation);
+  end if;
+  return jsonb_build_object('ok',true,'error',null,'data',jsonb_build_object('id',job.id,'status',job.state,
+    'progress',job.progress,'download_path',null,'error_code',job.error_code,'expires_at',job.expires_at,
+    'download_available',job.state='succeeded' and job.expires_at>clock_timestamp()));
+end;
+$$;
+create function public.superadmin_form_request_xlsx_v2(p_request_id uuid,p_expected_version bigint,p_payload jsonb)
+returns jsonb language sql volatile security definer set search_path='' as $$
+  select app_private.superadmin_form_request_xlsx_v2($1,$2,$3);
+$$;
+revoke all on function app_private.superadmin_form_request_xlsx_v2(uuid,bigint,jsonb) from public,anon,authenticated,service_role;
+revoke all on function public.superadmin_form_request_xlsx_v2(uuid,bigint,jsonb) from public,anon,service_role;
+grant execute on function public.superadmin_form_request_xlsx_v2(uuid,bigint,jsonb) to authenticated;
+
+-- WIP: worker lease/finalization/reconciliation and cleanup
 -- follow in this reserved candidate before a complete packet is proposed.
 commit;

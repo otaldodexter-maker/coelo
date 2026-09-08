@@ -221,6 +221,81 @@ select ok(not has_function_privilege('anon','public.superadmin_form_authorize_xl
 select ok(has_function_privilege('service_role','public.form_redeem_xlsx_download_r2_v1(uuid)','execute'),'only worker boundary redeems grant');
 select ok(not has_function_privilege('authenticated','public.form_redeem_xlsx_download_r2_v1(uuid)','execute'),'client cannot redeem catalog locator directly');
 select ok(not has_function_privilege('service_role','app_private.forms_xlsx_context_from_session_v1(uuid,uuid,uuid,uuid,text,uuid)','execute'),'worker cannot select an arbitrary internal session context');
+
+-- Request/capture is atomic and realm-specific. Synthetic data only.
+update app_private.superadmin_internal_memberships set scope_institution_id=pg_temp.xlsx_id(10) where id=pg_temp.xlsx_id(501);
+select set_config('request.jwt.claims',jsonb_build_object('sub',pg_temp.xlsx_id(101),'session_id',pg_temp.xlsx_id(203),'aal','aal2','role','authenticated')::text,true);
+create temporary table xlsx_request_results(label text primary key,body jsonb);
+grant insert,select on xlsx_request_results to authenticated;
+create function pg_temp.xlsx_request(n integer,form_number integer,version_number bigint,extra jsonb default '{}'::jsonb)
+returns jsonb language sql security invoker as $$
+  select public.superadmin_form_request_xlsx_v2(pg_temp.xlsx_id(n),version_number,
+    jsonb_build_object('form_id',pg_temp.xlsx_id(form_number))||extra);
+$$;
+set local role authenticated;
+insert into xlsx_request_results values('empty',pg_temp.xlsx_request(12000,210,1));
+insert into xlsx_request_results values('repeat',pg_temp.xlsx_request(12000,210,1));
+insert into xlsx_request_results values('csv',pg_temp.xlsx_request(12001,210,1,'{"kind":"csv"}'));
+insert into xlsx_request_results values('response',pg_temp.xlsx_request(12002,210,1,'{"response_id":"8c021000-0000-4000-8000-000000000910"}'));
+insert into xlsx_request_results values('tenant',pg_temp.xlsx_request(12003,220,1));
+insert into xlsx_request_results values('version',pg_temp.xlsx_request(12004,210,999));
+insert into xlsx_request_results values('changed_request',pg_temp.xlsx_request(12000,210,2));
+reset role;
+select is((select body->>'ok' from xlsx_request_results where label='empty'),'true','authorized internal identity requests an XLSX');
+select is((select body#>>'{data,id}' from xlsx_request_results where label='repeat'),(select body#>>'{data,id}' from xlsx_request_results where label='empty'),'same request replays exact job');
+select is((select count(*) from app_private.form_worker_jobs where job_kind='export_xlsx_r2_v1' and aggregate_id=(select (body#>>'{data,id}')::uuid from xlsx_request_results where label='empty')),1::bigint,'retry queues only one R2 job');
+select ok((select snapshot_ready and snapshot_row_count=0 and requested_by_person_id is null and requested_auth_session_id=pg_temp.xlsx_id(203) from public.form_file_jobs where id=(select (body#>>'{data,id}')::uuid from xlsx_request_results where label='empty')),'empty capture sealed with actual internal session provenance');
+select is((select body#>>'{error,code}' from xlsx_request_results where label='csv'),'SAI_INVALID_ARGUMENT','CSV cannot be selected');
+select is((select body#>>'{error,code}' from xlsx_request_results where label='response'),'SAI_INVALID_ARGUMENT','per-response export cannot be selected');
+select is((select body#>>'{error,code}' from xlsx_request_results where label='tenant'),'SAI_PERMISSION_DENIED','request cannot cross institution');
+select is((select body#>>'{error,code}' from xlsx_request_results where label='version'),'SAI_CONCURRENT_CHANGE','stale version returns existing concurrency envelope');
+select is((select body#>>'{error,code}' from xlsx_request_results where label='changed_request'),'SAI_INVALID_ARGUMENT','request ID cannot change its payload');
+select is((select count(*) from public.form_file_jobs where request_id in(select pg_temp.xlsx_id(n) from generate_series(12001,12004) n)),0::bigint,'denied requests leave no jobs');
+
+insert into public.form_versions(id,form_id,version_number,created_by_person_id)
+values(pg_temp.xlsx_id(13000),pg_temp.xlsx_id(210),1,pg_temp.xlsx_id(1000));
+insert into public.form_sections(id,form_version_id,title,position)
+values(pg_temp.xlsx_id(13001),pg_temp.xlsx_id(13000),'Synthetic capture',0);
+insert into public.form_items(id,form_version_id,section_id,kind,label,position)
+values(pg_temp.xlsx_id(13002),pg_temp.xlsx_id(13000),pg_temp.xlsx_id(13001),'short_text','Synthetic answer',0);
+insert into public.form_applications(id,form_id,institution_id,name,created_by_person_id)
+values(pg_temp.xlsx_id(13003),pg_temp.xlsx_id(210),pg_temp.xlsx_id(10),'Synthetic application',pg_temp.xlsx_id(1000));
+insert into public.form_schedules(id,application_id,time_zone,starts_at_local,recurrence_kind)
+values(pg_temp.xlsx_id(13004),pg_temp.xlsx_id(13003),'UTC','2026-09-08 00:00:00','once');
+insert into public.form_occurrences(id,application_id,schedule_id,institution_id,form_id,form_version_id,scheduled_local,time_zone,opens_at,closes_at)
+values(pg_temp.xlsx_id(13005),pg_temp.xlsx_id(13003),pg_temp.xlsx_id(13004),pg_temp.xlsx_id(10),pg_temp.xlsx_id(210),pg_temp.xlsx_id(13000),'2026-09-08 00:00:00','UTC',now()-interval '1 day',now()+interval '1 day');
+insert into public.form_responses(id,occurrence_id,institution_id,form_id,form_version_id,identity_mode,respondent_person_id,status,submitted_at)
+values(pg_temp.xlsx_id(13010),pg_temp.xlsx_id(13005),pg_temp.xlsx_id(10),pg_temp.xlsx_id(210),pg_temp.xlsx_id(13000),'identified',pg_temp.xlsx_id(1000),'submitted',now());
+insert into public.form_responses(id,occurrence_id,institution_id,form_id,form_version_id,identity_mode,anonymous_edit_secret_hash,status,submitted_at)
+select pg_temp.xlsx_id(n),pg_temp.xlsx_id(13005),pg_temp.xlsx_id(10),pg_temp.xlsx_id(210),pg_temp.xlsx_id(13000),'anonymous','synthetic-not-a-real-secret',
+  case when n=13011 then 'submitted' else 'draft' end,case when n=13011 then now() else null end from unnest(array[13011,13012]) n;
+insert into public.form_answers(id,response_id,form_version_id,item_id,answer_kind,text_value)
+select pg_temp.xlsx_id(n+10),pg_temp.xlsx_id(n),pg_temp.xlsx_id(13000),pg_temp.xlsx_id(13002),'short_text','captured-'||n from unnest(array[13010,13011,13012]) n;
+set local role authenticated;
+insert into xlsx_request_results values('captured',pg_temp.xlsx_request(12005,210,1));
+reset role;
+select is((select body->>'ok' from xlsx_request_results where label='captured'),'true','request captures submitted answers');
+select is((select snapshot_row_count from public.form_file_jobs where id=(select (body#>>'{data,id}')::uuid from xlsx_request_results where label='captured')),2::bigint,'draft answer is excluded from export');
+select is((select submission_jsonb#>>'{answers,0,values,0}' from app_private.form_xlsx_snapshot_rows where response_id=pg_temp.xlsx_id(13010) and file_job_id=(select (body#>>'{data,id}')::uuid from xlsx_request_results where label='captured')),'captured-13010','typed answer projection captured');
+select is((select submission_jsonb#>>'{metadata,respondent}' from app_private.form_xlsx_snapshot_rows where response_id=pg_temp.xlsx_id(13011)),'','anonymous snapshot contains no respondent');
+select is((select submission_jsonb#>>'{metadata,submitted_at}' from app_private.form_xlsx_snapshot_rows where response_id=pg_temp.xlsx_id(13011)),'','anonymous snapshot omits exact submission timestamp');
+select ok(not exists(select 1 from app_private.form_xlsx_snapshot_rows where submission_jsonb::text like '%synthetic-not-a-real-secret%'),'anonymous edit secret never enters snapshot');
+update public.form_answers set text_value='changed-after-capture' where id=pg_temp.xlsx_id(13020);
+update public.forms set management_version=management_version+1 where id=pg_temp.xlsx_id(210);
+set local role authenticated;
+insert into xlsx_request_results values('after_change',pg_temp.xlsx_request(12005,210,1));
+reset role;
+select is((select body#>>'{data,id}' from xlsx_request_results where label='after_change'),(select body#>>'{data,id}' from xlsx_request_results where label='captured'),'idempotency survives later form management change');
+select is((select submission_jsonb#>>'{answers,0,values,0}' from app_private.form_xlsx_snapshot_rows where response_id=pg_temp.xlsx_id(13010)),'captured-13010','later answer edits do not change sealed export');
+update app_private.superadmin_internal_memberships set status='suspended' where id=pg_temp.xlsx_id(501);
+set local role authenticated;
+insert into xlsx_request_results values('revoked_replay',pg_temp.xlsx_request(12005,210,1));
+reset role;
+select is((select body->>'ok' from xlsx_request_results where label='revoked_replay'),'false','idempotent replay still requires current permission');
+select ok(exists(select 1 from audit.audit_logs where action_code='superadmin.forms.export.request' and outcome='success' and actor_internal_identity_id=pg_temp.xlsx_id(301)),'request audits actual internal actor');
+select ok(not has_function_privilege('service_role','public.superadmin_form_request_xlsx_v2(uuid,bigint,jsonb)','execute'),'service worker cannot request as user');
+select ok(not has_function_privilege('anon','public.superadmin_form_request_xlsx_v2(uuid,bigint,jsonb)','execute'),'anonymous cannot enqueue export');
+
 set constraints all immediate;
 select * from finish();
 rollback;
