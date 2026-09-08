@@ -73,6 +73,7 @@ final class AssessmentController extends ChangeNotifier {
         _emit(const AssessmentEmpty());
         return;
       }
+      if (value.id != id) throw const AssessmentUnauthorizedException();
       _recoveredDraft = value.status == AssessmentGradebookStatus.draft;
       _emit(AssessmentReady(value));
     } on AssessmentUnauthorizedException {
@@ -92,6 +93,11 @@ final class AssessmentController extends ChangeNotifier {
     try {
       final value = await repository.createOrResumeGradebook(context, configuration);
       if (!_isCurrentLoad(generation)) return;
+      if (value.id.isEmpty ||
+          !_sameContextScope(context, value.context) ||
+          value.configuration?.id != configuration.id) {
+        throw const AssessmentUnauthorizedException();
+      }
       _recoveredDraft = value.version > 1;
       _emit(AssessmentReady(value));
     } on AssessmentUnauthorizedException {
@@ -195,6 +201,9 @@ final class AssessmentController extends ChangeNotifier {
     try {
       final saved = await operation(book);
       if (!_isCurrentCommand(generation)) return saved;
+      if (!_sameGradebookScope(book, saved)) {
+        throw const AssessmentUnauthorizedException();
+      }
       _emit(AssessmentReady(saved));
       return saved;
     } on AssessmentVersionConflictException {
@@ -232,6 +241,17 @@ final class AssessmentController extends ChangeNotifier {
 
   bool _isCurrentLoad(int generation) => !_disposed && generation == _loadGeneration;
   bool _isCurrentCommand(int generation) => !_disposed && generation == _commandGeneration;
+
+  bool _sameGradebookScope(AssessmentGradebook expected, AssessmentGradebook actual) =>
+      expected.id == actual.id && _sameContextScope(expected.context, actual.context);
+
+  bool _sameContextScope(AssessmentContext expected, AssessmentContext actual) =>
+      expected.activityGroupLinkId == actual.activityGroupLinkId &&
+      expected.institutionId == actual.institutionId &&
+      expected.unitId == actual.unitId &&
+      expected.groupId == actual.groupId &&
+      expected.activityId == actual.activityId &&
+      expected.periodId == actual.periodId;
 
   void _clearSensitiveState() {
     _state = const AssessmentInitial();
