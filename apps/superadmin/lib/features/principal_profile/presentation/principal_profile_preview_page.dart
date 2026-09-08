@@ -1,11 +1,15 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_domain/profile_about.dart';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../principal_happens/domain/principal_happens_preview_data.dart';
 import '../../principal_moments/domain/principal_moments_preview_data.dart';
 import '../../principal_shared/presentation/principal_global_navigation.dart';
 import '../../principal_circulars/domain/circular_repository.dart';
+import '../domain/principal_profile_repository.dart';
+import 'principal_profile_bio_dialog.dart';
 import '../../principal_circulars/presentation/principal_circular_surfaces.dart';
 import '../domain/principal_profile_preview_data.dart';
 
@@ -33,6 +37,8 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
     this.circularRepository,
     this.circularScope,
     this.onOpenCircular,
+    this.profileRepository,
+    this.profileScope,
     this.data = PrincipalProfilePreviewData.horizon,
     this.aboutPage,
     super.key,
@@ -61,12 +67,96 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
   final CircularScope? circularScope;
   final ValueChanged<String>? onOpenCircular;
 
+  /// Present only where an authorised edit transport exists. Absent means the
+  /// action is not offered here at all, which is different from refused.
+  final PrincipalProfileRepository? profileRepository;
+  final PrincipalProfileScope? profileScope;
+
   @override
   State<PrincipalProfilePreviewPage> createState() => _PrincipalProfilePreviewPageState();
 }
 
 final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePreviewPage> {
   var _selectedTab = _ProfileTab.happens;
+  final _profileRandom = math.Random.secure();
+  PrincipalProfilePreviewData? _edited;
+  String? _editRequestId;
+  var _editGeneration = 0;
+
+  /// The projection in force: what the server last returned, otherwise what the
+  /// host handed in. The client never patches the text on its own.
+  PrincipalProfilePreviewData get _data => _edited ?? widget.data;
+
+  bool get _canEditProfile =>
+      widget.profileRepository != null && widget.profileScope != null && _data.canEdit;
+
+  Future<void> _editBio() async {
+    final repository = widget.profileRepository;
+    final scope = widget.profileScope;
+    if (repository == null || scope == null || !_data.canEdit) return;
+    final current = _data;
+    final draft = await askPrincipalProfileBio(context, currentBio: current.bio);
+    if (!mounted || draft == null) return;
+    final bio = draft.trim();
+    if (bio == current.bio) return;
+    final issue = PrincipalProfileBioPolicy.validate(bio);
+    if (issue != null) {
+      _notify(_bioIssueMessage(issue));
+      return;
+    }
+    final generation = ++_editGeneration;
+    // Preserved across attempts so a retry replays the same intent.
+    final requestId = _editRequestId ??= _newRequestId();
+    try {
+      final result = await repository.editProfile(
+        PrincipalProfileEditCommand(
+          institutionId: scope.institutionId,
+          bio: bio,
+          requestId: requestId,
+          expectedVersion: current.version,
+        ),
+      );
+      if (!mounted || generation != _editGeneration) return;
+      _editRequestId = null;
+      // Only the server projection reaches the screen.
+      setState(() => _edited = current.withBio(result.bio, version: result.version));
+    } on PrincipalProfileUnauthorized {
+      if (mounted && generation == _editGeneration) _notify('Voce nao pode editar este perfil.');
+    } on PrincipalProfileConflict {
+      if (mounted && generation == _editGeneration) {
+        _notify('O perfil mudou. Recarregue e tente novamente.');
+      }
+    } on PrincipalProfileBioRejected catch (error) {
+      if (mounted && generation == _editGeneration) _notify(_bioIssueMessage(error.issue));
+    } on PrincipalProfileEditUnavailable {
+      if (mounted && generation == _editGeneration) {
+        _notify('A edicao do perfil aguarda o servico autorizado.');
+      }
+    } on Object {
+      if (mounted && generation == _editGeneration) {
+        _notify('Nao foi possivel editar agora. Tente novamente.');
+      }
+    }
+  }
+
+  String _bioIssueMessage(PrincipalProfileBioIssue issue) => switch (issue) {
+    PrincipalProfileBioIssue.empty => 'A biografia nao pode ficar vazia.',
+    PrincipalProfileBioIssue.tooLong =>
+      'A biografia passa de ${PrincipalProfileBioPolicy.maximumCharacters} caracteres.',
+  };
+
+  /// Real outcome of a real command, kept apart from the preview placeholders.
+  void _notify(String message) =>
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+
+  String _newRequestId() {
+    final values = List<int>.generate(16, (_) => _profileRandom.nextInt(256));
+    values[6] = (values[6] & 0x0f) | 0x40;
+    values[8] = (values[8] & 0x3f) | 0x80;
+    final hex = values.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
+    return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}'
+        '-${hex.substring(16, 20)}-${hex.substring(20)}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,10 +246,11 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       _IdentitySection(
-        data: widget.data,
+        data: _data,
         wide: !compact,
         onMessage: () => _runOrPreview(context, widget.onMessage, 'Mensagem'),
         onOpenBio: () => _runOrPreview(context, widget.onOpenBio, 'Biografia completa'),
+        onEditBio: _canEditProfile ? _editBio : null,
       ),
       const SizedBox(height: CoeloSpacing.space4),
       _MetricsPanel(metrics: widget.data.metrics, compact: compact),
@@ -358,12 +449,17 @@ final class _IdentitySection extends StatelessWidget {
     required this.wide,
     required this.onMessage,
     required this.onOpenBio,
+    this.onEditBio,
   });
 
   final PrincipalProfilePreviewData data;
   final bool wide;
   final VoidCallback onMessage;
   final VoidCallback onOpenBio;
+
+  /// Present only when the authorised projection granted the edit for this
+  /// actor and an edit transport exists. Absent means no affordance at all.
+  final VoidCallback? onEditBio;
 
   @override
   Widget build(BuildContext context) {
@@ -459,7 +555,18 @@ final class _IdentitySection extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 760),
           child: Text(data.bio, style: Theme.of(context).textTheme.bodyMedium),
         ),
-        TextButton(onPressed: onOpenBio, child: const Text('Ver mais')),
+        Row(
+          children: [
+            TextButton(onPressed: onOpenBio, child: const Text('Ver mais')),
+            if (onEditBio case final edit?)
+              TextButton.icon(
+                key: const Key('principal-profile-edit-bio'),
+                onPressed: edit,
+                icon: const Icon(Icons.edit_outlined, size: CoeloSize.iconSm),
+                label: const Text('Editar biografia'),
+              ),
+          ],
+        ),
       ],
     );
   }

@@ -10,6 +10,8 @@ final class PrincipalProfilePreviewData {
     required this.highlights,
     required this.links,
     required this.nextEvent,
+    this.canEdit = false,
+    this.version = 0,
   });
 
   final String name;
@@ -19,6 +21,28 @@ final class PrincipalProfilePreviewData {
   final List<PrincipalProfileHighlight> highlights;
   final List<String> links;
   final PrincipalProfileEvent nextEvent;
+
+  /// Whether the authorised projection says this actor may edit this profile.
+  /// Decided by profile, hierarchy and RLS on the server. Absent means denied,
+  /// so it defaults to false and the client never derives it.
+  final bool canEdit;
+
+  /// The revision the operator is looking at, echoed back on a write so a
+  /// concurrent change is refused instead of silently overwritten.
+  final int version;
+
+  PrincipalProfilePreviewData withBio(String bio, {required int version}) =>
+      PrincipalProfilePreviewData(
+        name: name,
+        typeLabel: typeLabel,
+        bio: bio,
+        metrics: metrics,
+        highlights: highlights,
+        links: links,
+        nextEvent: nextEvent,
+        canEdit: canEdit,
+        version: version,
+      );
 
   static const horizon = PrincipalProfilePreviewData(
     name: 'Colégio Horizonte',
