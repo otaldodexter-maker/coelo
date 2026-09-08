@@ -384,7 +384,7 @@ final class _PermissionSummary extends StatelessWidget {
                         subtitle: Text(permission.code),
                         trailing: permission.requiresMfa
                             ? const Tooltip(
-                                message: 'Exige MFA',
+                                message: 'MFA: gate formal do MVP no Superadmin',
                                 child: Icon(Icons.phonelink_lock_outlined),
                               )
                             : null,
