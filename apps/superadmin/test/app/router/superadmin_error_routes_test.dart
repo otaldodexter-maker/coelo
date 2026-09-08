@@ -9,6 +9,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('development errors remain disabled without the preview flag', (tester) async {
+    final session = SuperadminSession();
+    final router = createSuperadminRouter(
+      allowDevelopmentPreview: false,
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    router.go(SuperadminRoutes.devErrorLocation('503'));
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    expect(find.text('503'), findsNothing);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
+  });
   testWidgets('unknown unauthenticated URL still redirects to login', (tester) async {
     final session = SuperadminSession();
     final router = createSuperadminRouter(
@@ -54,6 +72,7 @@ void main() {
     testWidgets('development error route renders $code', (tester) async {
       final session = SuperadminSession();
       final router = createSuperadminRouter(
+        allowDevelopmentPreview: true,
         session: session,
         login: unavailableSuperadminLogin,
         logout: unavailableSuperadminLogout,
@@ -68,12 +87,44 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text(code), findsOneWidget);
+      expect(find.text('Tentar novamente'), findsNothing);
+      await tester.tap(find.text('Voltar ao início'));
+      await tester.pumpAndSettle();
+      expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devHome);
+    });
+  }
+
+  for (final path in const [
+    SuperadminRoutes.institutionCreate,
+    SuperadminRoutes.healthMedicationPlans,
+    SuperadminRoutes.profileModels,
+  ]) {
+    testWidgets('unavailable $path labels and performs home navigation', (tester) async {
+      final session = SuperadminSession()..signInForTesting();
+      final router = createSuperadminRouter(
+        session: session,
+        login: unavailableSuperadminLogin,
+        logout: unavailableSuperadminLogout,
+        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+        onThemeModeChanged: (_) {},
+      );
+      addTearDown(router.dispose);
+      addTearDown(session.dispose);
+      router.go(path);
+      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+      await tester.pumpAndSettle();
+      expect(find.text('503'), findsOneWidget);
+      expect(find.text('Tentar novamente'), findsNothing);
+      await tester.tap(find.text('Voltar ao início'));
+      await tester.pumpAndSettle();
+      expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.home);
     });
   }
 
   testWidgets('unsupported development error code falls back to 404', (tester) async {
     final session = SuperadminSession();
     final router = createSuperadminRouter(
+      allowDevelopmentPreview: true,
       session: session,
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
