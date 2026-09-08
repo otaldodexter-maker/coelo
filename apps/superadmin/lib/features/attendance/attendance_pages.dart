@@ -503,6 +503,7 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
     try {
       final call = await repository.createCall(draft);
       if (!_isCurrentCommand(generation, repository)) return;
+      if (!_matchesCreatedCall(call, draft)) throw const AttendanceUnauthorizedException();
       onCreated(call.id);
     } catch (error) {
       if (_isCurrentCommand(generation, repository)) {
@@ -517,6 +518,14 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
 
   bool _isCurrentCommand(int generation, AttendanceRepository repository) =>
       mounted && generation == _commandGeneration && identical(repository, widget.repository);
+
+  bool _matchesCreatedCall(AttendanceCall call, AttendanceCallDraft draft) =>
+      call.id.trim().isNotEmpty &&
+      call.institutionId == draft.institutionId &&
+      call.unitId == draft.unitId &&
+      call.groupId == draft.groupId &&
+      call.activityContextId == draft.activityContextId &&
+      DateUtils.isSameDay(call.date, draft.date);
 }
 
 class _AttendanceContextFacts extends StatelessWidget {
