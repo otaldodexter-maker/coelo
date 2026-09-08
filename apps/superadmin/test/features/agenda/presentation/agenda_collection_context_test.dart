@@ -9,6 +9,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('approval decision inherits local dark theme', (tester) async {
+    final repository = _Repository('A');
+    final current = ValueNotifier<AgendaRepository>(repository);
+    addTearDown(repository.dispose);
+    addTearDown(current.dispose);
+    await _pump(tester, current, localTheme: CoeloTheme.dark);
+    await _open(tester);
+    expect(
+      Theme.of(tester.element(find.byKey(const Key('agenda-approval-reason')))).brightness,
+      Brightness.dark,
+    );
+  });
   testWidgets('successful decision cannot pop a newer navigator route', (tester) async {
     final pending = Completer<AgendaMutationResult>();
     final repository = _Repository('A')..decision = () => pending.future;
@@ -165,6 +177,7 @@ Future<void> _pump(
   WidgetTester tester,
   ValueNotifier<AgendaRepository> current, {
   bool approvals = true,
+  ThemeData? localTheme,
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = const Size(500, 1000);
@@ -174,11 +187,14 @@ Future<void> _pump(
     MaterialApp(
       theme: CoeloTheme.light,
       home: Scaffold(
-        body: ValueListenableBuilder<AgendaRepository>(
-          valueListenable: current,
-          builder: (context, repository, _) => approvals
-              ? AgendaApprovalsPage(key: const Key('collection'), store: repository)
-              : AgendaRequestsPage.production(key: const Key('collection'), store: repository),
+        body: Theme(
+          data: localTheme ?? CoeloTheme.light,
+          child: ValueListenableBuilder<AgendaRepository>(
+            valueListenable: current,
+            builder: (context, repository, _) => approvals
+                ? AgendaApprovalsPage(key: const Key('collection'), store: repository)
+                : AgendaRequestsPage.production(key: const Key('collection'), store: repository),
+          ),
         ),
       ),
     ),

@@ -1604,7 +1604,18 @@ final class _AssessmentClosingDetailPageState extends State<AssessmentClosingDet
 
   Future<T?> _decision<T>(WidgetBuilder builder) async {
     if (_decisionRoute != null || _controller.saving) return null;
-    final route = DialogRoute<T>(context: context, builder: builder);
+    final route = DialogRoute<T>(
+      context: context,
+      builder: builder,
+      themes: InheritedTheme.capture(
+        from: context,
+        to: Navigator.of(context, rootNavigator: true).context,
+      ),
+      barrierColor:
+          DialogTheme.of(context).barrierColor ??
+          Theme.of(context).colorScheme.scrim.withValues(alpha: 0.54),
+      traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
+    );
     _decisionRoute = route;
     try {
       return await Navigator.of(context, rootNavigator: true).push<T>(route);
