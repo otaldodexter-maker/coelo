@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:coelo_superadmin/features/activities/data/supabase_activity_directory_repository.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,12 +9,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
   test('untrusted activity values never reach a non-equivalent legacy RPC', () async {
-    var requestCount = 0;
+    final requests = <Request>[];
     final client = SupabaseClient(
       'https://example.supabase.co',
       'publishable-key',
       httpClient: MockClient((request) async {
-        requestCount++;
+        requests.add(request);
         return Response('{}', 200, request: request);
       }),
     );
@@ -32,7 +34,10 @@ void main() {
       throwsA(isA<ActivityDirectoryUnavailableException>()),
     );
 
-    expect(requestCount, 0);
+    expect(requests, hasLength(1));
+    expect(requests.single.url.path, '/rest/v1/rpc/superadmin_activity_directory_v2');
+    expect(requests.single.url.query, isEmpty);
+    expect((jsonDecode(requests.single.body) as Map)['p_filters']['search'], r'a,b.c\d');
   });
 
   test('maps expired session on the internal template gateway to unauthorized', () async {
