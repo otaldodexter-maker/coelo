@@ -15,12 +15,17 @@ supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
 flutter_tracker_sha256: "23523DCDA10448092D000612EB0807874127B7B4F32CF5D456AAE8385EC71C53"
-supabase_tracker_sha256: "2C30A18CF511A85FE5A5CBDB001AE9AFF3D2E37FE6A7A1D80CE10A504938507A"
+supabase_tracker_sha256: "E8FD0B2A2CB8531C4B12423FB9E7E4D604A30E010EE6399575A5B9DE8DF9E053"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
+
+- Atualização02:16: LOC50 parser corrigido, novo bloqueio55000 fingerprint,
+  zeroTAP; probe apenas em preparo. AGGREEN54 também em preparo. CHILD48
+  candidato autorizado após leitura do vetor, sem SQL/wiring. Acompanhamento
+  retomou E1 ociosa; não altera contadores ready/verified nem gates remotos.
 
 - Atualização02:10: Respostas08315450/de51d4e7,52/52/analyzer2 destino.
   AGGREEN54 autorizado só preparo após main ler migration0b55 integralmente;

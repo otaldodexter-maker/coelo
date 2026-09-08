@@ -10,6 +10,16 @@ family_count: 38
 
 # Pendências Coelo — Back-end
 
+- Atualização02:16: o segundo LOC50 compilou o CASE corrigido, mas parou
+  com55000 `location legacy helper fingerprint drift`, antes de TAP.
+  Eng1 informou ledger49 na evidência93304747; ainda sem validação central
+  integral dessa evidência. Somente preparo de probe nominal read-only foi
+  autorizado; não normalizar hashes nem relaxar fingerprints sem diagnóstico.
+  AG53 reportou catálogo10/10 e fixture114 com21PASS/93FAIL, sem aborto;
+  ausência dos três readers é a causa inicial, não93 bugs independentes.
+  AGGREEN54 está em preparo, sem gate de execução. CHILDf84d063 teve vetor
+  mínimo48/audit13 lido: candidato autorizado, sem replay, wiring ou remoto.
+
 - Atualização01:48: LOC50 falhou42601 no DOpreflight do target31000 após49
   anteriores, zeroTAP; cleanup04:44:41UTC confirmado pelo Eng1. E2 corrige
   somente parentetizaçãoCASE; novo pin/review antesreplay. AG53 independente
