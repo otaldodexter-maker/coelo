@@ -54,6 +54,8 @@ import '../../features/meal_plans/data/supabase_meal_plan_image_repository.dart'
 import '../../features/meal_plans/domain/meal_plan_image_repository.dart';
 import '../../features/meal_plans/domain/meal_plan_repository.dart';
 import '../../features/forms/data/forms_backend_gateway.dart';
+import '../../features/forms/data/forms_directory_reader.dart';
+import '../../features/forms/data/supabase_superadmin_forms_directory_reader.dart';
 import '../../features/forms/data/supabase_forms_api.dart';
 import 'package:coelo_api/coelo_api.dart';
 import '../../features/institutions/data/supabase_institution_directory_repository.dart';
@@ -128,6 +130,7 @@ final class SuperadminAuthScope {
     required this.mealPlanImageRepository,
     this.authorizedMealPlanTenantId,
     required this.formsApi,
+    this.formsDirectoryReader,
     this.principalRuntimeContextRepository,
     this.principalHappensFeedRepository,
     this.principalMixedFeedRepository,
@@ -172,6 +175,7 @@ final class SuperadminAuthScope {
   final MealPlanImageRepository mealPlanImageRepository;
   final String? authorizedMealPlanTenantId;
   final FormsApi? formsApi;
+  final FormsDirectoryReader? formsDirectoryReader;
   final PrincipalRuntimeContextRepository? principalRuntimeContextRepository;
   final PrincipalHappensFeedRepository? principalHappensFeedRepository;
   final PrincipalMixedFeedRepository? principalMixedFeedRepository;
@@ -279,6 +283,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       mealPlanRepository: SupabaseMealPlanRepository(client),
       mealPlanImageRepository: SupabaseMealPlanImageRepository(client),
       formsApi: SupabaseFormsApi(formsBackend),
+      formsDirectoryReader: SupabaseSuperadminFormsDirectoryReader(formsBackend),
       principalRuntimeContextRepository: SupabasePrincipalRuntimeContextRepository(client),
       principalHappensFeedRepository: SupabasePrincipalHappensFeedRepository(client),
       principalMixedFeedRepository: SupabasePrincipalMixedFeedRepository(client),

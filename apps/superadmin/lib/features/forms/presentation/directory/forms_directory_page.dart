@@ -13,6 +13,7 @@ import '../../../../shared/presentation/widgets/superadmin_listing_pagination_fo
 import '../../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
 import '../../data/development_forms_api.dart';
 import '../../data/forms_editor_context.dart';
+import '../../data/forms_directory_reader.dart';
 import 'forms_lifecycle_actions.dart';
 
 enum FormsDirectoryDisplay { table, cards }
@@ -22,6 +23,7 @@ enum FormsDirectoryLoadStatus { loading, data, empty, noResults, unauthorized, f
 final class FormsDirectoryPage extends StatefulWidget {
   const FormsDirectoryPage({
     required this.api,
+    this.reader,
     this.canManage = false,
     this.canManageLifecycle = false,
     this.canTransferCrossInstitution = false,
@@ -36,6 +38,7 @@ final class FormsDirectoryPage extends StatefulWidget {
   });
 
   final FormsApi? api;
+  final FormsDirectoryReader? reader;
   final bool canManage;
   final bool canManageLifecycle;
   final bool canTransferCrossInstitution;
@@ -63,17 +66,23 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
   int _pageIndex = 0;
   Timer? _searchDebounce;
   int _loadGeneration = 0;
+  int _contextGeneration = 0;
   FormsEditorContext? _authorizedContext;
 
   bool get _canManage =>
-      widget.canManage ||
-      (_authorizedContext?.institutions.any((institution) => institution.canManageForms) ?? false);
+      widget.reader == null &&
+      (widget.canManage ||
+          (_authorizedContext?.institutions.any((institution) => institution.canManageForms) ??
+              false));
   bool get _canManageLifecycle =>
-      widget.canManageLifecycle ||
-      (_authorizedContext?.institutions.any((institution) => institution.canManageForms) ?? false);
+      widget.reader == null &&
+      (widget.canManageLifecycle ||
+          (_authorizedContext?.institutions.any((institution) => institution.canManageForms) ??
+              false));
   bool get _canTransferCrossInstitution =>
-      widget.canTransferCrossInstitution ||
-      (_authorizedContext?.canTransferCrossInstitution ?? false);
+      widget.reader == null &&
+      (widget.canTransferCrossInstitution ||
+          (_authorizedContext?.canTransferCrossInstitution ?? false));
 
   @override
   void initState() {
@@ -85,9 +94,10 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
   @override
   void didUpdateWidget(covariant FormsDirectoryPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!identical(oldWidget.api, widget.api)) {
+    if (!identical(oldWidget.api, widget.api) || !identical(oldWidget.reader, widget.reader)) {
       _searchDebounce?.cancel();
       _loadGeneration++;
+      _contextGeneration++;
       _search.clear();
       _operationalStatuses = {};
       _period = null;
@@ -105,10 +115,14 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
 
   Future<void> _loadAuthorizedContext() async {
     final api = widget.api;
-    if (api is! FormsEditorContextApi) return;
+    final generation = _contextGeneration;
+    if (widget.reader != null || api is! FormsEditorContextApi) return;
     try {
       final authorizedContext = await (api as FormsEditorContextApi).getEditorContext();
-      if (mounted && identical(api, widget.api)) {
+      if (mounted &&
+          generation == _contextGeneration &&
+          widget.reader == null &&
+          identical(api, widget.api)) {
         setState(() => _authorizedContext = authorizedContext);
       }
     } on FormApiException {
@@ -119,6 +133,7 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
   @override
   void dispose() {
     _loadGeneration++;
+    _contextGeneration++;
     _searchDebounce?.cancel();
     _search.dispose();
     super.dispose();
@@ -126,8 +141,9 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
 
   Future<void> _load() async {
     final api = widget.api;
+    final reader = widget.reader;
     final generation = ++_loadGeneration;
-    if (api == null) {
+    if (api == null && reader == null) {
       if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _status = FormsDirectoryLoadStatus.failure;
@@ -141,16 +157,20 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
     final cursor = _cursors[_pageIndex];
     setState(() => _status = FormsDirectoryLoadStatus.loading);
     try {
-      final page = await api.listDirectory(
-        FormDirectoryQuery(
-          search: search.isEmpty ? null : search,
-          operationalStatuses: operationalStatuses,
-          startsOnOrAfter: period?.start,
-          endsOnOrBefore: period?.end,
-          cursor: cursor,
-        ),
+      final query = FormDirectoryQuery(
+        search: search.isEmpty ? null : search,
+        operationalStatuses: operationalStatuses,
+        startsOnOrAfter: period?.start,
+        endsOnOrBefore: period?.end,
+        cursor: cursor,
       );
-      if (!mounted || generation != _loadGeneration || !identical(api, widget.api)) return;
+      final page = await (reader != null ? reader.listDirectory(query) : api!.listDirectory(query));
+      if (!mounted ||
+          generation != _loadGeneration ||
+          !identical(api, widget.api) ||
+          !identical(reader, widget.reader)) {
+        return;
+      }
       setState(() {
         _page = page;
         _status = page.items.isNotEmpty
@@ -160,8 +180,14 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
             : FormsDirectoryLoadStatus.empty;
       });
     } on FormApiException catch (error) {
-      if (!mounted || generation != _loadGeneration || !identical(api, widget.api)) return;
+      if (!mounted ||
+          generation != _loadGeneration ||
+          !identical(api, widget.api) ||
+          !identical(reader, widget.reader)) {
+        return;
+      }
       setState(() {
+        _page = null;
         _status = error.kind == FormApiFailureKind.unauthorized
             ? FormsDirectoryLoadStatus.unauthorized
             : FormsDirectoryLoadStatus.failure;
@@ -349,7 +375,7 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
       canManageLifecycle: _canManageLifecycle || (_canManage && widget.api is DevelopmentFormsApi),
       canTransferCrossInstitution:
           _canTransferCrossInstitution || (_canManage && widget.api is DevelopmentFormsApi),
-      api: widget.api,
+      api: widget.reader == null ? widget.api : null,
       pageNumber: _pageIndex + 1,
       onPrevious: _pageIndex > 0 ? _previous : null,
       onNext: _page!.nextCursor != null ? _next : null,
@@ -357,7 +383,7 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
       onCreate: widget.onCreate,
       onOpen: widget.onOpen,
       onEdit: widget.onEdit,
-      onManageSchedules: widget.onManageSchedules,
+      onManageSchedules: widget.reader == null ? widget.onManageSchedules : null,
       onResponses: widget.onResponses,
       onLifecycleCompleted: _resetAndLoad,
       visualMetadata: widget.visualMetadata,
