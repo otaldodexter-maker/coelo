@@ -51,35 +51,44 @@ final class InviteStatusChip extends StatelessWidget {
 Future<bool> showInviteRevokeConfirmation(
   BuildContext context, {
   required String recipientMasked,
+  ValueChanged<DialogRoute<bool>>? onRouteCreated,
+  bool Function()? isContextCurrent,
 }) async {
   final colors = Theme.of(context).colorScheme;
   final overlay = Theme.of(context).extension<CoeloOverlayColors>();
-  return await showDialog<bool>(
-        context: context,
-        barrierColor: overlay?.scrim ?? Colors.black54,
-        builder: (dialogContext) => CoeloAdminDialogShell(
-          dialogKey: const Key('invite-revoke-dialog'),
-          closeButtonKey: const Key('invite-revoke-dialog-close'),
-          title: 'Revogar convite?',
-          body: Text(
-            'O convite para $recipientMasked deixará de poder ser aceito. Esta ação será registrada na auditoria.',
-          ),
-          secondaryAction: OutlinedButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancelar'),
-          ),
-          primaryAction: FilledButton(
-            key: const Key('invite-revoke-confirm'),
-            style: FilledButton.styleFrom(
-              backgroundColor: colors.error,
-              foregroundColor: colors.onError,
+  final navigator = Navigator.of(context, rootNavigator: true);
+  final route = DialogRoute<bool>(
+    context: context,
+    themes: InheritedTheme.capture(from: context, to: navigator.context),
+    animationStyle: MediaQuery.disableAnimationsOf(context) ? AnimationStyle.noAnimation : null,
+    traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
+    barrierColor: overlay?.scrim ?? Colors.black54,
+    builder: (dialogContext) => isContextCurrent?.call() == false
+        ? const SizedBox.shrink()
+        : CoeloAdminDialogShell(
+            dialogKey: const Key('invite-revoke-dialog'),
+            closeButtonKey: const Key('invite-revoke-dialog-close'),
+            title: 'Revogar convite?',
+            body: Text(
+              'O convite para $recipientMasked deixará de poder ser aceito. Esta ação será registrada na auditoria.',
             ),
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Revogar convite'),
+            secondaryAction: OutlinedButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Cancelar'),
+            ),
+            primaryAction: FilledButton(
+              key: const Key('invite-revoke-confirm'),
+              style: FilledButton.styleFrom(
+                backgroundColor: colors.error,
+                foregroundColor: colors.onError,
+              ),
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text('Revogar convite'),
+            ),
           ),
-        ),
-      ) ??
-      false;
+  );
+  onRouteCreated?.call(route);
+  return await navigator.push(route) ?? false;
 }
 
 String formatInviteDate(DateTime value) {

@@ -41,6 +41,8 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
   _DetailAction? _busy;
   InviteCommandResult? _result;
   var _requestEpoch = 0;
+  var _contextGeneration = 0;
+  DialogRoute<bool>? _revokeRoute;
   String? _resendRequestId;
   String? _revokeRequestId;
 
@@ -54,7 +56,10 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
   void didUpdateWidget(covariant InviteDetailPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.inviteId != widget.inviteId ||
-        !identical(oldWidget.repository, widget.repository)) {
+        !identical(oldWidget.repository, widget.repository) ||
+        oldWidget.allowCommands != widget.allowCommands) {
+      _contextGeneration++;
+      _dismissRevokeConfirmation();
       setState(() {
         _invite = null;
         _result = null;
@@ -64,6 +69,43 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
       });
       unawaited(_load());
     }
+  }
+
+  @override
+  void dispose() {
+    _contextGeneration++;
+    _requestEpoch++;
+    _dismissRevokeConfirmation();
+    super.dispose();
+  }
+
+  bool _isCurrentCommand(int generation, InviteRepository repository) =>
+      mounted &&
+      widget.allowCommands &&
+      generation == _contextGeneration &&
+      identical(repository, widget.repository);
+
+  void _dismissRevokeConfirmation() {
+    final route = _revokeRoute;
+    _revokeRoute = null;
+    if (route == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (route.isActive) route.navigator?.removeRoute(route);
+    });
+  }
+
+  void _denyAccess() {
+    _contextGeneration++;
+    _requestEpoch++;
+    _dismissRevokeConfirmation();
+    setState(() {
+      _state = _DetailState.unauthorized;
+      _invite = null;
+      _result = null;
+      _busy = null;
+      _resendRequestId = null;
+      _revokeRequestId = null;
+    });
   }
 
   Future<void> _load() async {
@@ -79,7 +121,7 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
       });
     } on InviteUnauthorizedException {
       if (mounted && epoch == _requestEpoch) {
-        setState(() => _state = _DetailState.unauthorized);
+        _denyAccess();
       }
     } on Object {
       if (mounted && epoch == _requestEpoch) {
@@ -89,18 +131,23 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
   }
 
   Future<void> _resend(PlatformInvite invite) async {
+    if (!widget.allowCommands || _busy != null || _revokeRoute != null) return;
+    final generation = _contextGeneration;
+    final repository = widget.repository;
     final inviteId = widget.inviteId;
     final requestId = _resendRequestId ??= newInviteRequestId();
     setState(() => _busy = _DetailAction.resend);
     try {
-      final result = await widget.repository.resend(
+      final result = await repository.resend(
         InviteResendCommand(
           inviteId: invite.id,
           requestId: requestId,
           expectedVersion: invite.managementVersion,
         ),
       );
-      if (mounted && inviteId == widget.inviteId && _resendRequestId == requestId) {
+      if (_isCurrentCommand(generation, repository) &&
+          inviteId == widget.inviteId &&
+          _resendRequestId == requestId) {
         setState(() {
           _invite = result.invite;
           _result = result;
@@ -108,8 +155,12 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
           _busy = null;
         });
       }
+    } on InviteUnauthorizedException {
+      if (_isCurrentCommand(generation, repository)) _denyAccess();
     } on InviteConflictException {
-      if (mounted && inviteId == widget.inviteId && _resendRequestId == requestId) {
+      if (_isCurrentCommand(generation, repository) &&
+          inviteId == widget.inviteId &&
+          _resendRequestId == requestId) {
         setState(() {
           _resendRequestId = null;
           _busy = null;
@@ -118,27 +169,46 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
         await _load();
       }
     } on Object {
-      if (mounted && inviteId == widget.inviteId && _resendRequestId == requestId) {
+      if (_isCurrentCommand(generation, repository) &&
+          inviteId == widget.inviteId &&
+          _resendRequestId == requestId) {
         _feedback('Não foi possível reenviar o convite.', error: true);
       }
     } finally {
-      if (mounted && inviteId == widget.inviteId && _resendRequestId == requestId) {
+      if (_isCurrentCommand(generation, repository) &&
+          inviteId == widget.inviteId &&
+          _resendRequestId == requestId) {
         setState(() => _busy = null);
       }
     }
   }
 
   Future<void> _revoke(PlatformInvite invite) async {
+    if (!widget.allowCommands || _busy != null || _revokeRoute != null) return;
+    final generation = _contextGeneration;
+    final repository = widget.repository;
     final inviteId = widget.inviteId;
+    DialogRoute<bool>? openedRoute;
     final confirmed = await showInviteRevokeConfirmation(
       context,
       recipientMasked: invite.recipientMasked,
+      onRouteCreated: (route) {
+        openedRoute = route;
+        _revokeRoute = route;
+      },
+      isContextCurrent: () => _isCurrentCommand(generation, repository),
     );
-    if (!confirmed || !mounted || inviteId != widget.inviteId) return;
+    if (identical(_revokeRoute, openedRoute)) _revokeRoute = null;
+    if (!confirmed ||
+        !_isCurrentCommand(generation, repository) ||
+        inviteId != widget.inviteId ||
+        _busy != null) {
+      return;
+    }
     final requestId = _revokeRequestId ??= newInviteRequestId();
     setState(() => _busy = _DetailAction.revoke);
     try {
-      final result = await widget.repository.revoke(
+      final result = await repository.revoke(
         InviteRevokeCommand(
           inviteId: invite.id,
           requestId: requestId,
@@ -146,7 +216,9 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
           reason: 'Revogação administrativa confirmada',
         ),
       );
-      if (mounted && inviteId == widget.inviteId && _revokeRequestId == requestId) {
+      if (_isCurrentCommand(generation, repository) &&
+          inviteId == widget.inviteId &&
+          _revokeRequestId == requestId) {
         setState(() {
           _invite = result.invite;
           _result = null;
@@ -154,8 +226,12 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
           _busy = null;
         });
       }
+    } on InviteUnauthorizedException {
+      if (_isCurrentCommand(generation, repository)) _denyAccess();
     } on InviteConflictException {
-      if (mounted && inviteId == widget.inviteId && _revokeRequestId == requestId) {
+      if (_isCurrentCommand(generation, repository) &&
+          inviteId == widget.inviteId &&
+          _revokeRequestId == requestId) {
         setState(() {
           _revokeRequestId = null;
           _busy = null;
@@ -164,11 +240,15 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
         await _load();
       }
     } on Object {
-      if (mounted && inviteId == widget.inviteId && _revokeRequestId == requestId) {
+      if (_isCurrentCommand(generation, repository) &&
+          inviteId == widget.inviteId &&
+          _revokeRequestId == requestId) {
         _feedback('Não foi possível revogar o convite.', error: true);
       }
     } finally {
-      if (mounted && inviteId == widget.inviteId && _revokeRequestId == requestId) {
+      if (_isCurrentCommand(generation, repository) &&
+          inviteId == widget.inviteId &&
+          _revokeRequestId == requestId) {
         setState(() => _busy = null);
       }
     }

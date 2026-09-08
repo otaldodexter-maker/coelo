@@ -10,6 +10,112 @@ import 'package:flutter_test/flutter_test.dart';
 import 'invite_test_repository.dart';
 
 void main() {
+  testWidgets('late unauthorized resend cannot purge replacement repository detail', (
+    tester,
+  ) async {
+    final invite = testInvite(status: InviteStatus.expired);
+    final first = _DeferredResendRepository([invite]);
+    final second = TestInviteRepository(invites: [testInvite(recipient: 'b***@aurora.test')]);
+    Widget page(InviteRepository repository) =>
+        _app(InviteDetailPage(repository: repository, inviteId: invite.id, allowCommands: true));
+    await tester.pumpWidget(page(first));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('invite-detail-resend')));
+    await tester.pump();
+    await tester.pumpWidget(page(second));
+    await tester.pumpAndSettle();
+    first._pending.single.completeError(const InviteUnauthorizedException());
+    await tester.pumpAndSettle();
+    expect(find.text('b***@aurora.test'), findsOneWidget);
+    expect(find.text('Acesso não autorizado'), findsNothing);
+  });
+
+  testWidgets('transient resend error keeps the authorized context for explicit retry', (
+    tester,
+  ) async {
+    final repository = TestInviteRepository(invites: [testInvite(status: InviteStatus.expired)]);
+    await tester.pumpWidget(
+      _app(
+        InviteDetailPage(
+          repository: repository,
+          inviteId: repository.invites.single.id,
+          allowCommands: true,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    repository.failure = const InviteUnavailableException();
+    await tester.tap(find.byKey(const Key('invite-detail-resend')));
+    await tester.pumpAndSettle();
+    expect(find.text('a***@aurora.test'), findsOneWidget);
+    expect(find.text('Acesso não autorizado'), findsNothing);
+    repository.failure = null;
+    await tester.tap(find.byKey(const Key('invite-detail-resend')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('invite-result-link')), findsOneWidget);
+  });
+
+  for (final change in ['repository', 'round-trip', 'commands-disabled']) {
+    testWidgets('old revoke confirmation is invalidated by $change', (tester) async {
+      final first = TestInviteRepository();
+      final second = TestInviteRepository();
+      Widget page(TestInviteRepository repository, {bool allow = true}) => _app(
+        InviteDetailPage(
+          repository: repository,
+          inviteId: first.invites.single.id,
+          allowCommands: allow,
+        ),
+      );
+      await tester.pumpWidget(page(first));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('invite-detail-revoke')));
+      await tester.pumpAndSettle();
+      if (change == 'commands-disabled') {
+        await tester.pumpWidget(page(first, allow: false));
+      } else {
+        await tester.pumpWidget(page(second));
+        if (change == 'round-trip') await tester.pumpWidget(page(first));
+      }
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('invite-revoke-dialog')), findsNothing);
+      expect(first.lastRevoke, isNull);
+      expect(second.lastRevoke, isNull);
+    });
+  }
+
+  for (final revoke in [false, true]) {
+    testWidgets('${revoke ? 'revoke' : 'resend'} denial removes retained link and detail', (
+      tester,
+    ) async {
+      final repository = TestInviteRepository(invites: [testInvite(status: InviteStatus.expired)]);
+      await tester.pumpWidget(
+        _app(
+          InviteDetailPage(
+            repository: repository,
+            inviteId: repository.invites.single.id,
+            allowCommands: true,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('invite-detail-resend')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('invite-result-link')), findsOneWidget);
+      repository.failure = const InviteUnauthorizedException();
+      await tester.tap(find.byKey(Key(revoke ? 'invite-detail-revoke' : 'invite-detail-resend')));
+      await tester.pumpAndSettle();
+      if (revoke) {
+        await tester.tap(find.byKey(const Key('invite-revoke-confirm')));
+        await tester.pumpAndSettle();
+      }
+      expect(find.text('Acesso não autorizado'), findsOneWidget);
+      expect(find.byKey(const Key('invite-result-link')), findsNothing);
+      expect(find.text('a***@aurora.test'), findsNothing);
+      expect(find.byKey(const Key('invite-detail-resend')), findsNothing);
+      expect(find.byKey(const Key('invite-detail-revoke')), findsNothing);
+    });
+  }
+
   testWidgets('groups identity, actions and detail sections with responsive hierarchy', (
     tester,
   ) async {
