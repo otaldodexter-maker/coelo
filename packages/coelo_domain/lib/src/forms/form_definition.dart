@@ -114,6 +114,8 @@ final class FormItemConfig {
   const FormItemConfig({
     this.minValue,
     this.maxValue,
+    this.minSelections,
+    this.maxSelections,
     this.decimalPlaces,
     this.currency,
     this.scaleMin,
@@ -127,6 +129,8 @@ final class FormItemConfig {
 
   final num? minValue;
   final num? maxValue;
+  final int? minSelections;
+  final int? maxSelections;
   final int? decimalPlaces;
   final String? currency;
   final int? scaleMin;

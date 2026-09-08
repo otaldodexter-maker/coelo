@@ -64,6 +64,40 @@ void main() {
     expect(encodedItem['config'], isEmpty);
   });
 
+  for (final config in [
+    <String, Object?>{},
+    <String, Object?>{'min_selections': 2},
+    <String, Object?>{'max_selections': 50},
+    <String, Object?>{'min_selections': 2, 'max_selections': 4},
+  ]) {
+    test('preserves explicit selection limits and absent defaults $config', () {
+      final json = FormDefinitionDto.fromDomain(definition).toJson();
+      final section = (json['sections'] as List).first as Map<String, Object?>;
+      final item = (section['items'] as List).first as Map<String, Object?>;
+      item['config'] = config;
+      final decoded = FormDefinitionDto.fromJson(json).toDomain();
+      final encoded = FormDefinitionDto.fromDomain(decoded).toJson();
+      final encodedSection = (encoded['sections'] as List).first as Map<String, Object?>;
+      final encodedItem = (encodedSection['items'] as List).first as Map<String, Object?>;
+      expect(encodedItem['config'], config);
+    });
+  }
+
+  for (final key in ['min_selections', 'max_selections']) {
+    for (final value in <Object?>['2', 2.5, true, null]) {
+      test('rejects malformed selection limit $key=$value', () {
+        final json = FormDefinitionDto.fromDomain(definition).toJson();
+        final section = (json['sections'] as List).first as Map<String, Object?>;
+        final item = (section['items'] as List).first as Map<String, Object?>;
+        item['config'] = {key: value};
+        expect(
+          () => FormDefinitionDto.fromJson(json).toDomain(),
+          throwsA(isA<WireFormatException>()),
+        );
+      });
+    }
+  }
+
   test('rejects unknown keys at the top-level and nested boundaries', () {
     final json = FormDefinitionDto.fromDomain(definition).toJson();
     expect(

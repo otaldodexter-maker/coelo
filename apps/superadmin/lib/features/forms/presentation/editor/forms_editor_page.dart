@@ -1101,6 +1101,28 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       onDuplicate: () => _duplicateQuestionIn(siblings, index),
       onDelete: () => _confirmDeleteQuestion(index, siblings: siblings),
       onChanged: () => _changeDraft(() => _feedback = null),
+      onAddOption: () {
+        if (!current() || question.options.length >= FormDefinitionLimits.maxOptionsPerItem) return;
+        _changeDraft(() {
+          final option = TextEditingController(text: 'Opção ${question.options.length + 1}');
+          question.options.add(option);
+          question.optionIds[option] = _newRequestId();
+        });
+      },
+      optionRemovalIssue: (option) => _optionRemovalIssue(question, option),
+      onRemoveOption: (option) {
+        if (!current() ||
+            !question.options.contains(option) ||
+            _optionRemovalIssue(question, option) != null) {
+          return;
+        }
+        _changeDraft(() {
+          final id = question.optionIds.remove(option);
+          question.options.remove(option);
+          if (question.branchOptionId == id) question.branchOptionId = null;
+          option.dispose();
+        });
+      },
       branchPanel:
           _canBranch(question.kind) &&
               question.branchEnabled &&
@@ -1217,6 +1239,25 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       siblings.insert(to, value);
       _feedback = null;
     });
+  }
+
+  String? _optionRemovalIssue(_EditorQuestionDraft question, TextEditingController option) {
+    if (question.options.length <= 2) return 'Mantenha pelo menos duas opções.';
+    final id = question.optionIds[option];
+    if (_sections.any(
+      (section) => _flattenQuestions(section.questions).any(
+        (item) => item.loadedConditions.any(
+          (condition) => condition.sourceItemId == question.id && condition.optionIds.contains(id),
+        ),
+      ),
+    )) {
+      return 'Esta opção é usada em um ramo. Remova a referência antes de excluir.';
+    }
+    if (question.kind == FormItemKind.multipleChoice &&
+        (question.loadedConfig.minSelections ?? 1) > question.options.length - 1) {
+      return 'O mínimo de seleções exige manter esta quantidade de opções.';
+    }
+    return null;
   }
 
   void _reorderQuestion(int from, int to) {
@@ -1444,6 +1485,8 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     isRequired: question.required,
     conditions: question.loadedConditions,
     config: FormItemConfig(
+      minSelections: question.loadedConfig.minSelections,
+      maxSelections: question.loadedConfig.maxSelections,
       decimalPlaces: question.loadedConfig.decimalPlaces,
       scaleMin: question.loadedConfig.scaleMin,
       scaleMax: question.loadedConfig.scaleMax,
@@ -2325,6 +2368,9 @@ final class _QuestionCard extends StatefulWidget {
     required this.onDuplicate,
     required this.onDelete,
     required this.onChanged,
+    required this.onAddOption,
+    required this.onRemoveOption,
+    required this.optionRemovalIssue,
     this.canDrag = true,
     this.branchPanel,
   });
@@ -2335,6 +2381,9 @@ final class _QuestionCard extends StatefulWidget {
   final bool canMoveUp;
   final bool canMoveDown;
   final VoidCallback onToggle;
+  final VoidCallback onAddOption;
+  final ValueChanged<TextEditingController> onRemoveOption;
+  final String? Function(TextEditingController) optionRemovalIssue;
   final VoidCallback onMoveUp;
   final VoidCallback onMoveDown;
   final VoidCallback? onMoveToSection;
@@ -2553,7 +2602,8 @@ final class _QuestionCardState extends State<_QuestionCard> {
         const SizedBox(height: CoeloSpacing.space3),
         _dateConfiguration(),
       ],
-      if (widget.question.options.isNotEmpty) ...[
+      if (widget.question.kind == FormItemKind.singleChoice ||
+          widget.question.kind == FormItemKind.multipleChoice) ...[
         const SizedBox(height: CoeloSpacing.space3),
         Text('Opções', style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: CoeloSpacing.space2),
@@ -2569,19 +2619,61 @@ final class _QuestionCardState extends State<_QuestionCard> {
             });
             widget.onChanged();
           },
-          itemBuilder: (context, index) => Padding(
-            key: ObjectKey(widget.question.options[index]),
-            padding: EdgeInsets.only(
-              bottom: index < widget.question.options.length - 1 ? CoeloSpacing.space2 : 0,
-            ),
-            child: CoeloFormTextField(
-              controller: widget.question.options[index],
-              labelText: 'Opção ${index + 1}',
-              prefixIcon: Icons.radio_button_unchecked_rounded,
-              onChanged: (_) => widget.onChanged(),
-            ),
-          ),
+          itemBuilder: (context, index) {
+            final option = widget.question.options[index];
+            return Padding(
+              key: ObjectKey(option),
+              padding: EdgeInsets.only(
+                bottom: index < widget.question.options.length - 1 ? CoeloSpacing.space2 : 0,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CoeloFormTextField(
+                          controller: option,
+                          labelText: 'Opção ${index + 1}',
+                          prefixIcon: Icons.radio_button_unchecked_rounded,
+                          onChanged: (_) => widget.onChanged(),
+                        ),
+                      ),
+                      const SizedBox(width: CoeloSpacing.space2),
+                      IconButton(
+                        key: ValueKey('forms-remove-option-${widget.question.optionIds[option]}'),
+                        tooltip: 'Excluir opção ${index + 1}',
+                        style: IconButton.styleFrom(
+                          minimumSize: const Size.square(CoeloSize.touchMin),
+                          foregroundColor: Theme.of(context).colorScheme.error,
+                          hoverColor: Theme.of(context).colorScheme.errorContainer,
+                          focusColor: Theme.of(context).colorScheme.errorContainer,
+                          highlightColor: Theme.of(context).colorScheme.errorContainer,
+                        ),
+                        onPressed: widget.optionRemovalIssue(option) != null
+                            ? null
+                            : () => widget.onRemoveOption(option),
+                        icon: const Icon(Icons.delete_outline_rounded),
+                      ),
+                    ],
+                  ),
+                  if (widget.optionRemovalIssue(option) case final issue?)
+                    Text(issue, style: Theme.of(context).textTheme.bodySmall),
+                ],
+              ),
+            );
+          },
         ),
+        OutlinedButton.icon(
+          key: ValueKey('forms-add-option-${widget.question.id}'),
+          onPressed: widget.question.options.length < FormDefinitionLimits.maxOptionsPerItem
+              ? widget.onAddOption
+              : null,
+          icon: const Icon(Icons.add_rounded),
+          label: const Text('Adicionar opção'),
+        ),
+        if (widget.question.options.length >= FormDefinitionLimits.maxOptionsPerItem)
+          const Text('Limite de 50 opções por pergunta.'),
       ],
       if (_canBranch(widget.question.kind)) ...[
         const SizedBox(height: CoeloSpacing.space3),
