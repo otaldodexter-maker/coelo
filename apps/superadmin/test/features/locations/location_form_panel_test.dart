@@ -338,4 +338,56 @@ void main() {
     expect(cancelled, 1);
     expect(writer.drafts, isEmpty, reason: 'cancelling must not write');
   });
+
+  testWidgets('after creating, returning to the catalog reads it again', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final reader = ControlledLocationReader();
+    final writer = _RecordingWriter();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: LocationsPage(
+          scope: scopeA,
+          logout: unavailableSuperadminLogout,
+          reader: reader,
+          writer: writer,
+          sessionAvailable: true,
+          canCreate: true,
+        ),
+      ),
+    );
+    reader.directories.last.result.complete(locationPage());
+    await tester.pumpAndSettle();
+    final readsBefore = reader.directories.length;
+
+    await tester.tap(find.byKey(const Key('locations-create')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('location-form-name')), 'Sala nova');
+    await tester.tap(find.byKey(const Key('location-form-save')));
+    await tester.pump();
+    writer.results.single.complete(locationFixture(id: locationB, name: 'Sala nova'));
+    await tester.pump(const Duration(milliseconds: 80));
+
+    // The page opens the created location; going back must not show the
+    // catalog as it was before the creation.
+    reader.details.last.result.complete(locationFixture(id: locationB, name: 'Sala nova'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('location-detail-back')));
+    await tester.pump();
+
+    expect(
+      reader.directories.length,
+      greaterThan(readsBefore),
+      reason: 'the catalog must be read again so the new location can appear',
+    );
+    reader.directories.last.result.complete(
+      LocationDirectoryResult(
+        items: [locationFixture(), locationFixture(id: locationB, name: 'Sala nova')],
+        totalCount: 2,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Sala nova'), findsWidgets);
+  });
 }
