@@ -102,6 +102,8 @@ from fread_fixture where status<>'draft';
 
 create temporary table fread_results(label text primary key,body jsonb not null);
 grant select,insert on fread_results to authenticated;
+create temporary table fread_errors(label text primary key,state text,message text,executed_as text);
+grant insert on fread_errors to authenticated;
 create temporary table fread_invalid(label text primary key,query jsonb);
 insert into fread_invalid values
  ('null',null),('json_null','null'),('array','[]'),('scalar','1'),('unknown','{"actor_id":"forged"}'),
@@ -216,9 +218,18 @@ select is((select body#>'{data,items}' from fread_results where label='owner_aal
 
 select set_config('request.jwt.claims','{"sub":"8f010000-0000-4000-8000-000000000102","session_id":"8f010000-0000-4000-8000-000000000202","role":"authenticated"}',true);
 set local role authenticated;
-select throws_ok($$select public.superadmin_forms_directory_v2('{}')$$,'23514',null,
-  'missing AAL cannot fabricate assurance or return a business denial when audit rejects it');
+do $$declare captured_state text; captured_message text; begin
+ begin
+  perform public.superadmin_forms_directory_v2('{}');
+  insert into fread_errors values ('missing_aal','NO_EXCEPTION','RPC returned instead of aborting',current_user);
+ exception when others then
+  get stacked diagnostics captured_state=returned_sqlstate,captured_message=message_text;
+  insert into fread_errors values ('missing_aal',captured_state,captured_message,current_user);
+ end;
+end$$;
 reset role;
+select is((select state from fread_errors where label='missing_aal'),'23514',
+ 'missing AAL cannot fabricate assurance or return a business denial when audit rejects it');
 
 select set_config('request.jwt.claims','{"sub":"8f010000-0000-4000-8000-000000000102","session_id":"8f010000-0000-4000-8000-000000000201","aal":"aal2","role":"authenticated"}',true);
 set local role authenticated;
@@ -359,16 +370,42 @@ create trigger fread_audit_forced_failure before insert on audit.audit_logs
  for each row execute function pg_temp.fread_reject_audit();
 select set_config('request.jwt.claims','{"sub":"8f010000-0000-4000-8000-000000000101","session_id":"8f010000-0000-4000-8000-000000000201","aal":"aal1","role":"authenticated"}',true);
 set local role authenticated;
-select throws_ok($$select public.superadmin_forms_directory_v2('{}')$$,'P0001','forced FREAD audit failure',
- 'audit failure aborts a successful read rather than returning data');
-select throws_ok($$select public.superadmin_forms_directory_v2('{"limit":0}')$$,'P0001','forced FREAD audit failure',
- 'audit failure aborts an identified denial rather than returning a business envelope');
+do $$declare captured_state text; captured_message text; begin
+ begin
+  perform public.superadmin_forms_directory_v2('{}');
+  insert into fread_errors values ('audit_success','NO_EXCEPTION','RPC returned instead of aborting',current_user);
+ exception when others then
+  get stacked diagnostics captured_state=returned_sqlstate,captured_message=message_text;
+  insert into fread_errors values ('audit_success',captured_state,captured_message,current_user);
+ end;
+ begin
+  perform public.superadmin_forms_directory_v2('{"limit":0}');
+  insert into fread_errors values ('audit_internal_denial','NO_EXCEPTION','RPC returned instead of aborting',current_user);
+ exception when others then
+  get stacked diagnostics captured_state=returned_sqlstate,captured_message=message_text;
+  insert into fread_errors values ('audit_internal_denial',captured_state,captured_message,current_user);
+ end;
+end$$;
 reset role;
 select set_config('request.jwt.claims','{"sub":"8f010000-0000-4000-8000-000000000103","session_id":"8f010000-0000-4000-8000-000000000203","aal":"aal2","role":"authenticated"}',true);
 set local role authenticated;
-select throws_ok($$select public.superadmin_forms_directory_v2('{}')$$,'P0001','forced FREAD audit failure',
- 'audit failure aborts an auth_session denial rather than returning an unaudited denial');
+do $$declare captured_state text; captured_message text; begin
+ begin
+  perform public.superadmin_forms_directory_v2('{}');
+  insert into fread_errors values ('audit_session_denial','NO_EXCEPTION','RPC returned instead of aborting',current_user);
+ exception when others then
+  get stacked diagnostics captured_state=returned_sqlstate,captured_message=message_text;
+  insert into fread_errors values ('audit_session_denial',captured_state,captured_message,current_user);
+ end;
+end$$;
 reset role;
+select is((select state from fread_errors where label=fixture.label),'P0001','audit append failure aborts '||fixture.label)
+from (values ('audit_success'),('audit_internal_denial'),('audit_session_denial')) fixture(label);
+select is((select message from fread_errors where label=fixture.label),'forced FREAD audit failure','audit failure is not replaced by a business envelope: '||fixture.label)
+from (values ('audit_success'),('audit_internal_denial'),('audit_session_denial')) fixture(label);
+select is((select count(*) from fread_errors),4::bigint,'all four expected exceptions were captured');
+select ok(not exists(select 1 from fread_errors where executed_as is distinct from 'authenticated'),
+ 'every fault-injected RPC ran as authenticated, without pgTAP grants or elevated RPC execution');
 drop trigger fread_audit_forced_failure on audit.audit_logs;
 select * from finish();
 rollback;
