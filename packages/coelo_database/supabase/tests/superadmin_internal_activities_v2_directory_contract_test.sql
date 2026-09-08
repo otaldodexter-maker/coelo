@@ -155,7 +155,7 @@ grant execute on function pg_temp.directory_filter_options_result() to authentic
 create temporary table directory_contract_results(label text primary key,body jsonb);
 grant select, insert on table directory_contract_results to authenticated;
 set local role authenticated;
-select is(current_user::text,'authenticated','scoped directory calls use authenticated SQL role');
+insert into directory_contract_results values ('scoped_sql_role',to_jsonb(current_user::text));
 insert into directory_contract_results values
  ('page',public.superadmin_activity_directory_v2('{}',11,0,'name',true)),
  ('options',pg_temp.directory_filter_options_result()),
@@ -178,6 +178,8 @@ insert into directory_contract_results values
  ('beyond',public.superadmin_activity_directory_v2('{}',1,9,'name',true)),
  ('wildcard',public.superadmin_activity_directory_v2('{"search":"%"}',11,0,'name',true));
 reset role;
+
+select is((select body#>>'{}' from directory_contract_results where label='scoped_sql_role'),'authenticated','scoped directory calls use authenticated SQL role');
 
 select is((select body#>>'{data,total}' from directory_contract_results where label='page'),'2','scoped reader lists both activities in A');
 select is((select body#>>'{data,total}' from directory_contract_results where label='client_default'),'2','exact initial client payload treats empty arrays as no filters');
@@ -260,9 +262,9 @@ select ok(not exists(select 1 from directory_contract_results where body::text ~
 
 -- Invalid input never falls back to a broader query.
 set local role authenticated;
-select is(current_user::text,'authenticated','invalid-input calls use authenticated SQL role');
-select is(public.superadmin_activity_directory_v2(input,11,0,'name',true)#>>'{error,code}',
- 'ACTIVITY_INVALID_INPUT','invalid filters rejected: '||label)
+insert into directory_contract_results values ('invalid_sql_role',to_jsonb(current_user::text));
+insert into directory_contract_results(label,body)
+select 'invalid:'||label,public.superadmin_activity_directory_v2(input,11,0,'name',true)
 from (values
  ('non-object','[]'::jsonb),('unknown','{"unexpected":true}'::jsonb),
  ('array-null','{"institution_ids":null}'::jsonb),('not-array','{"unit_ids":"x"}'::jsonb),
@@ -274,24 +276,30 @@ from (values
  ('oversized',jsonb_build_object('unit_ids',(select jsonb_agg('8a200000-0000-4000-8000-'||lpad(n::text,12,'0')) from generate_series(1,101) n))),
  ('search-too-long',jsonb_build_object('search',repeat('x',121)))
 ) invalid(label,input) order by label;
+reset role;
+select is((select body#>>'{}' from directory_contract_results where label='invalid_sql_role'),'authenticated','invalid-input calls use authenticated SQL role');
+select is(body#>>'{error,code}','ACTIVITY_INVALID_INPUT','invalid filters rejected: '||label)
+from directory_contract_results where label like 'invalid:%' order by label;
 
 -- The current foundation defers MFA enforcement, but still validates AAL.
+set local role authenticated;
 select set_config('request.jwt.claims',jsonb_build_object(
  'sub','8a200000-0000-4000-8000-000000000103','session_id','8a200000-0000-4000-8000-000000000203',
  'aal','aal1','role','authenticated')::text,true);
-select is(public.superadmin_activity_directory_v2('{}',11,0,'name',true)->>'ok','true','current MVP AAL1 policy is preserved');
-select is(pg_temp.directory_filter_options_result()->>'ok','true','filters preserve current MVP AAL1 policy');
-
-select is(current_user::text,'authenticated','AAL1 positive calls use authenticated SQL role');
-select is(public.superadmin_activity_directory_v2('{}',11,0,'name',true)->>'ok','true','real authenticated SQL role can execute directory gateway');
-select is(pg_temp.directory_filter_options_result()->>'ok','true','real authenticated SQL role can execute filter gateway');
+insert into directory_contract_results values
+ ('aal1_sql_role',to_jsonb(current_user::text)),
+ ('aal1_directory',public.superadmin_activity_directory_v2('{}',11,0,'name',true)),
+ ('aal1_options',pg_temp.directory_filter_options_result());
 reset role;
+select is((select body#>>'{}' from directory_contract_results where label='aal1_sql_role'),'authenticated','AAL1 positive calls use authenticated SQL role');
+select is((select body->>'ok' from directory_contract_results where label='aal1_directory'),'true','current MVP AAL1 policy is preserved under authenticated');
+select is((select body->>'ok' from directory_contract_results where label='aal1_options'),'true','filters preserve current MVP AAL1 policy under authenticated');
 
 -- Separate statements guarantee claims are applied before each RPC.
 create temporary table directory_denials(label text, expected text, directory jsonb, options jsonb);
 grant select, insert on table directory_denials to authenticated;
 set local role authenticated;
-select is(current_user::text,'authenticated','all negative calls use authenticated SQL role');
+insert into directory_contract_results values ('negative_sql_role',to_jsonb(current_user::text));
 do $$
 declare fixture record;
 begin
@@ -311,14 +319,21 @@ begin
    pg_temp.directory_filter_options_result());
  end loop;
 end $$;
+reset role;
+select is((select body#>>'{}' from directory_contract_results where label='negative_sql_role'),'authenticated','all negative calls use authenticated SQL role');
 select is(directory#>>'{error,code}',expected,'directory denies '||label)
 from directory_denials order by label;
 select is(options#>>'{error,code}',expected,'filter options deny '||label)
 from directory_denials order by label;
 
+set local role authenticated;
 select set_config('request.jwt.claims','{}',true);
-select is(pg_temp.directory_filter_options_result()#>>'{error,code}','SAI_AUTH_REQUIRED','anonymous request cannot retrieve options');
+insert into directory_contract_results values
+ ('anonymous_sql_role',to_jsonb(current_user::text)),
+ ('anonymous_options',pg_temp.directory_filter_options_result());
 reset role;
+select is((select body#>>'{}' from directory_contract_results where label='anonymous_sql_role'),'authenticated','request without claims still uses authenticated transport role');
+select is((select body#>>'{error,code}' from directory_contract_results where label='anonymous_options'),'SAI_AUTH_REQUIRED','anonymous request cannot retrieve options');
 select ok(exists(select 1 from audit.audit_logs where permission_code='activities.read'
  and action_code='activity.filter_options' and outcome='denied'
  and actor_internal_identity_id in ('8a200000-0000-4000-8000-000000000304','8a200000-0000-4000-8000-000000000306')),
