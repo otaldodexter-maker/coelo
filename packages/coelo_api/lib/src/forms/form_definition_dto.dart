@@ -198,6 +198,8 @@ FormItemConfig _decodeConfig(Map<String, Object?> json) {
   const allowed = {
     'min_value',
     'max_value',
+    'min_selections',
+    'max_selections',
     'decimal_places',
     'currency',
     'scale_min',
@@ -212,9 +214,16 @@ FormItemConfig _decodeConfig(Map<String, Object?> json) {
   if (unknown.isNotEmpty) {
     throw WireFormatException('$context contains unknown keys: ${unknown.join(', ')}.');
   }
+  for (final key in ['min_selections', 'max_selections']) {
+    if (json.containsKey(key) && json[key] is! int) {
+      throw WireFormatException('$context.$key must be an integer when present.');
+    }
+  }
   return FormItemConfig(
     minValue: json['min_value'] as num?,
     maxValue: json['max_value'] as num?,
+    minSelections: json['min_selections'] as int?,
+    maxSelections: json['max_selections'] as int?,
     decimalPlaces: json['decimal_places'] as int?,
     currency: json['currency'] as String?,
     scaleMin: json['scale_min'] as int?,
@@ -230,6 +239,8 @@ FormItemConfig _decodeConfig(Map<String, Object?> json) {
 Map<String, Object?> _encodeConfig(FormItemConfig config) => <String, Object?>{
   if (config.minValue != null) 'min_value': config.minValue,
   if (config.maxValue != null) 'max_value': config.maxValue,
+  if (config.minSelections != null) 'min_selections': config.minSelections,
+  if (config.maxSelections != null) 'max_selections': config.maxSelections,
   if (config.decimalPlaces != null) 'decimal_places': config.decimalPlaces,
   if (config.currency != null) 'currency': config.currency,
   if (config.scaleMin != null) 'scale_min': config.scaleMin,
