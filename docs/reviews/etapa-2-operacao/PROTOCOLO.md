@@ -121,3 +121,8 @@ C04 I003 amplia nominalmente I002 para app/superadmin_app.dart (pass-through Loc
 ## Continuidade reforçada pelo Owner — 2026-09-08T15:30:22-03:00
 
 Handoff é um checkpoint de entrega, não encerramento do trabalho. Após publicar evidência/commit/push, cada executor inicia o próximo lote independente no mesmo turno. Bloqueio parcial retém apenas os IDs dependentes. C00 retoma por ferramenta nativa uma tarefa Codex comprovadamente ociosa com próximo passo executável, no máximo uma vez por causa/revisão; se não resolver, investiga em vez de repetir mensagens. Heartbeats são recuperação espaçada, não motivo para encerrar cedo. Claude consulta assignments pelo mecanismo local registrado; C00 não tem ferramenta direta de despertar Claude. Encerramento seguro, limites do aplicativo e bloqueios totais devem ser relatados honestamente. C00 continua único escritor dos três rastreadores.
+
+
+## Reservas operacionais — 2026-09-08T16:17:15-03:00
+
+Assignments C02 I008, C03 I009, C04 I008 e C05 I007 concedem arquivos nominais e prevalecem sobre esperas anteriores. Lease R01-LOCAL-XLSX-02 exclusiva C02 até release; outros executores/C00 não iniciam replay concorrente. Shell e auth_scope retornam à C00. Os dois caminhos People da I009 ficam temporariamente C03, excluídos de C04 até release. Nenhuma autorização remota nova.

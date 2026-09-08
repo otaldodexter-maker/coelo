@@ -25,11 +25,11 @@ As cinco conversas não foram criadas automaticamente. O Owner abre a sessão na
 
 | Executor | Nome exato | IDs | Worktree | Branch | Registro |
 |---|---|---|---|---|---|
-| C01 | `E2 R01 C01 — Identidade e acesso` | 44 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01` | `codex/e2-r01-c01-identidade` | 01a08197-7b62-73c1-9673-5fd40fa40452; r14 recebido; integração por SHA no estado operacional |
-| C02 | `E2 R01 C02 — Forms mídia e cuidado` | 32 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02` | `codex/e2-r01-c02-forms-midia` | 01a0819a-f1f1-7421-95dd-d645ca9f5747; r12 recebido; integração por SHA no estado operacional |
-| C03 | `E2 R01 C03 — Operações` | 68 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03` | `codex/e2-r01-c03-operacoes` | 01a0819b-a12e-7110-88cb-99e51a82f384; r3 recebido; integração por SHA no estado operacional |
-| C04 | `E2 R01 C04 — Estruturas e pessoas` | 47 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c04` | `claude/e2-r01-c04-estruturas` | e0191513-6656-4f3e-a0e8-753dd70bb590; r4 recebido; integração por SHA no estado operacional |
-| C05 | `E2 R01 C05 — Comunicação e Principal` | 28 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c05` | `claude/e2-r01-c05-comunicacao` | 2a43a349-a639-4be5-aefc-1ff180d1fc7a; r2 recebido; integração por SHA no estado operacional |
+| C01 | `E2 R01 C01 — Identidade e acesso` | 44 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01` | `codex/e2-r01-c01-identidade` | 01a08197-7b62-73c1-9673-5fd40fa40452; r30 recebido; integração por SHA no estado operacional |
+| C02 | `E2 R01 C02 — Forms mídia e cuidado` | 32 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02` | `codex/e2-r01-c02-forms-midia` | 01a0819a-f1f1-7421-95dd-d645ca9f5747; r29 recebido; integração por SHA no estado operacional |
+| C03 | `E2 R01 C03 — Operações` | 68 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03` | `codex/e2-r01-c03-operacoes` | 01a0819b-a12e-7110-88cb-99e51a82f384; r13 recebido; integração por SHA no estado operacional |
+| C04 | `E2 R01 C04 — Estruturas e pessoas` | 47 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c04` | `claude/e2-r01-c04-estruturas` | e0191513-6656-4f3e-a0e8-753dd70bb590; r17 recebido; integração por SHA no estado operacional |
+| C05 | `E2 R01 C05 — Comunicação e Principal` | 28 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c05` | `claude/e2-r01-c05-comunicacao` | 2a43a349-a639-4be5-aefc-1ff180d1fc7a; r10 recebido; integração por SHA no estado operacional |
 
 ### Disponibilidade confirmada — 2026-09-08T12:23:42-03:00
 
@@ -37,9 +37,11 @@ Seis worktrees conferidas pelo Git. C01/C03/C04/C05 partem de `479d1bd1771b13e0c
 
 ### Contagem e última evidência
 
-Inventário vigente:219 IDs únicos/38 famílias;194 ativas,22 adiadas,3 gates, nenhum sem dono/duplicado. FE219 aplicáveis; BE212 aplicáveis e7N/A; E2E187ativas,3gates e22adiadas separados. Auditoria parcial R01:59/219 FE(52/194ativas,7/22adiadas),10/212 contratos BE, dos quais5 IDs com critérios SQL local; remoto0/212,E2E0/187. Certificados FE0/219,BE0/212,E2E0/187, nenhum ID certificado. Números não medem implementação. IDs/critérios/evidências em reports/R01-checkpoint-1330-metricas.json e relatório associado.
+Estado reconciliado2026-09-08T16:24:59-03:00; histórico cronológico abaixo preservado. Inventário219 IDs únicos,194ativas/22adiadas/3gates; BE212 aplicáveis e7N/A; E2E187ativas. Critérios parcialmente examinados FE119/219 (111/194ativas,8/22adiadas,0/3gates), BE18/212 incluindo estática;12IDs com SQLlocal,0remoto. Certificados FE0/219,BE0/212,E2E0/187; nenhuma promoção. São ações, não quantidade de testes ou percentual de implementação. IDs/critérios em reports/R01-checkpoint-1600-metricas.json; outros achados por ID não inflacionam automaticamente essa contagem.
 
-Últimas revisões processadas: C01/r14(13:44),C02/r12(13:45:12),C03/r3(13:45),C04/r4(13:42),C05/r2(última evidência12:49). Rastreadores sincronizados até essas revisões. C01r8/10/11/12 integrados e63 testes C00 passam; sequência contínua integrada continua3 porque Convites/Erros/grid aguardam revisão. Catálogo mídia44/44 SQL local; compatibilidade141/143 versus baseline97/99, mesmas2falhas; SQL ainda candidato não integrado. Fila/SHAs/testes e reservas detalhados nas assignments e estado-operacional.json, sem inferir conclusão pelo estado pending-verification.
+Rastreadores sincronizados C01/r30, C02/r29, C03/r13, C04/r17, C05/r10; fontes/hashes no estado operacional. C01r31–33,C02r30,C03r14,C05r11 posteriores aguardam próximo corte: não declarar sincronizados por mensagem. Codex C01–C03 ativos no snapshot16:01; Claude via handoff local/mecanismo relatado, sem ponte de wake-up.
+
+Código C00local86ba8570: shell3693d180/ec9826f3, seleçãof4f0105a eimports86ba8570.165PASS/4falhas estáticas anteriores; analyzer7limpo. Último push dev comprovado e9e61570 às15:51:42; publicação deste lote pendente, sem deploy/apply. Reservas C02I008/C03I009/C04I008/C05I007 e lease XLSX exclusiva C02. C00corrigiu contagem da source69migrations, não71. Personas Auth ainda sem pacote remoto concreto/aprovado/provisionado. Relatório R01-checkpoint-1600.md.
 
 ### Ack inicial C01 — 2026-09-08T12:25:00-03:00
 
