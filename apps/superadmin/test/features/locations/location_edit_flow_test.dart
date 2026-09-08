@@ -241,7 +241,7 @@ void main() {
     late ControlledLocationReader reader;
     setUp(() => reader = ControlledLocationReader());
 
-    Widget page({bool canCreate = true, bool? canManage}) => MaterialApp(
+    Widget page({bool canCreate = true, bool? canManage, String? selectedLocationId}) => MaterialApp(
       theme: CoeloTheme.light,
       home: LocationsPage(
         scope: scopeA,
@@ -251,7 +251,7 @@ void main() {
         sessionAvailable: true,
         canCreate: canCreate,
         canManage: canManage,
-        selectedLocationId: locationA,
+        selectedLocationId: selectedLocationId ?? locationA,
       ),
     );
 
@@ -304,6 +304,32 @@ void main() {
       await tester.tap(cancel);
       await tester.pump(const Duration(milliseconds: 400));
       expect(find.byKey(Key('locations-form-$locationA')), findsNothing);
+    });
+
+    testWidgets('changing the route id closes the edit form instead of retargeting it', (
+      tester,
+    ) async {
+      // Reported by C00 review through C06. The page changed _selected and kept
+      // _editing, so the form stayed open holding A's id and version while the
+      // URL already said B - which is how an unsaved edit of A gets saved over
+      // B.
+      await openDetail(tester);
+      final edit = find.byKey(const Key('location-detail-edit'));
+      await tester.ensureVisible(edit);
+      await tester.pumpAndSettle();
+      await tester.tap(edit);
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.byKey(Key('locations-form-$locationA')), findsOneWidget);
+
+      await tester.pumpWidget(page(selectedLocationId: locationB));
+      await tester.pump(const Duration(milliseconds: 400));
+
+      expect(find.byKey(Key('locations-form-$locationA')), findsNothing);
+      expect(writer.updates, isEmpty, reason: 'nothing may be saved during the switch');
+      reader.details.last.result.complete(locationFixture(id: locationB, managementVersion: 2));
+      await tester.pump(const Duration(milliseconds: 400));
+      // And the detail that opens is the one the route asked for.
+      expect(reader.details.last.id, locationB);
     });
 
     testWidgets('creating is not offered while a location is open', (tester) async {

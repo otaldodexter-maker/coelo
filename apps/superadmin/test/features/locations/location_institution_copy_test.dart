@@ -333,6 +333,60 @@ void main() {
     });
   });
 
+  group('a failed re-read leaves no stale choice', () {
+    testWidgets('a search that fails clears the selection and the name', (tester) async {
+      // Reported by C00 review through C06. Keeping the selection over an empty
+      // list left the action enabled on an option nobody could see any more.
+      await openWith(tester, [option(locationB, 'Quadra')]);
+      await tester.tap(find.byKey(const Key('location-institution-copy-option')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(MenuItemButton, 'Quadra'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('location-institution-copy-name')), findsOneWidget);
+
+      await tester.enterText(find.byKey(const Key('location-institution-copy-search')), 'x');
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('location-institution-copy-search-run')));
+      await tester.pump();
+      source.results.last.completeError(const LocationSelectionUnavailableException());
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('location-institution-copy-name')), findsNothing);
+      expect(
+        tester
+            .widget<FilledButton>(find.byKey(const Key('location-institution-copy-confirm')))
+            .onPressed,
+        isNull,
+        reason: 'nothing is selected any more, so nothing can be confirmed',
+      );
+      expect(find.textContaining('Não foi possível listar'), findsOneWidget);
+    });
+
+    testWidgets('confirming is impossible while the list is being re-read', (tester) async {
+      await openWith(tester, [option(locationB, 'Quadra')]);
+      await tester.tap(find.byKey(const Key('location-institution-copy-option')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(MenuItemButton, 'Quadra'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('location-institution-copy-search-run')));
+      await tester.pump();
+      // The selection on screen may not survive the read in flight, so the
+      // action waits for the answer rather than acting on a guess.
+      expect(
+        tester
+            .widget<FilledButton>(find.byKey(const Key('location-institution-copy-confirm')))
+            .onPressed,
+        isNull,
+      );
+      expect(writer.calls, isEmpty);
+      source.results.last.complete(
+        LocationSelectionOptions(options: [option(locationB, 'Quadra')], truncated: false),
+      );
+      await tester.pumpAndSettle();
+    });
+  });
+
   group('accessibility', () {
     testWidgets('the panel meets tap size, labelling and contrast in both states', (tester) async {
       final handle = tester.ensureSemantics();

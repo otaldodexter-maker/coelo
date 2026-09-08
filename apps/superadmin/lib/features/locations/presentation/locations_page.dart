@@ -109,7 +109,14 @@ final class _LocationsPageState extends State<LocationsPage> {
       return;
     }
     if (oldWidget.selectedLocationId != widget.selectedLocationId) {
+      // The route now points at a different location, so whatever was open here
+      // was about the previous one. Keeping the edit form alive across that
+      // change is how an unsaved edit of A ends up saved over B: the panel
+      // still holds A's id and version while the URL already says B.
       _selected = _accepted(widget.selectedLocationId);
+      _creating = false;
+      _editing = null;
+      _bringing = false;
     }
   }
 

@@ -114,6 +114,13 @@ class _LocationInstitutionCopyPanelState extends State<LocationInstitutionCopyPa
       setState(() {
         _loading = false;
         _options = const [];
+        // A failed read leaves no list, so it must leave no choice either.
+        // Keeping the previous selection left the action enabled over an option
+        // nobody could see any more, and a confirm would have copied a source
+        // the operator was no longer looking at.
+        _selected = null;
+        _name.text = '';
+        _requestId = null;
         _error = 'Não foi possível listar os locais da instituição.';
       });
     }
@@ -303,7 +310,11 @@ class _LocationInstitutionCopyPanelState extends State<LocationInstitutionCopyPa
               continuationActions: [
                 FilledButton(
                   key: const Key('location-institution-copy-confirm'),
-                  onPressed: selected == null || _saving ? null : () => unawaited(_copy()),
+                  // Also disabled while the list is being re-read: the selection
+                  // on screen may not survive the read that is in flight.
+                  onPressed: selected == null || _saving || _loading
+                      ? null
+                      : () => unawaited(_copy()),
                   child: Text(_saving ? 'Trazendo…' : 'Trazer para a unidade'),
                 ),
               ],
