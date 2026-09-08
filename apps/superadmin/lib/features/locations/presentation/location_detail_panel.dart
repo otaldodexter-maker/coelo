@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_location_map_preview.dart';
 import '../domain/location_catalog_reader.dart';
+import '../domain/location_catalog_writer.dart';
 import 'location_detail_controller.dart';
 import 'location_read_widgets.dart';
+import 'location_status_actions.dart';
 
 /// Isolated content; normal routing and authorization composition are not wired.
 class LocationDetailPanel extends StatefulWidget {
@@ -14,6 +16,8 @@ class LocationDetailPanel extends StatefulWidget {
     required this.id,
     required this.scope,
     required this.onBack,
+    this.writer,
+    this.requestIdFactory,
     this.reader = const UnavailableLocationCatalogReader(),
     this.sessionAvailable = false,
     this.contextRevision = 0,
@@ -25,6 +29,12 @@ class LocationDetailPanel extends StatefulWidget {
   final LocationCatalogReader reader;
   final bool sessionAvailable;
   final int contextRevision;
+
+  /// Opt-in. Without a writer the detail is exactly the read-only panel it was,
+  /// down to the pixel, and no control appears that the composition cannot back.
+  final LocationCatalogWriter? writer;
+
+  final String Function()? requestIdFactory;
   @override
   State<LocationDetailPanel> createState() => _LocationDetailPanelState();
 }
@@ -98,6 +108,17 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
                         'Visibilidade': locationVisibilityLabel(item.visibility),
                         'Status': locationStatusLabel(item.status),
                       }),
+                      if (widget.writer case final writer?)
+                        LocationStatusActions(
+                          entry: item,
+                          writer: writer,
+                          enabled: widget.sessionAvailable,
+                          requestIdFactory: widget.requestIdFactory,
+                          // The catalog moved, so what this panel holds is one
+                          // version behind. Reading again is cheaper than being
+                          // subtly wrong about the version the next command needs.
+                          onChanged: (_) => unawaited(_controller.load()),
+                        ),
                       if (item.address case final address?) ...[
                         locationTextSection(context, 'Endereço próprio', {
                           'País': locationOptionalText(address['country']),
