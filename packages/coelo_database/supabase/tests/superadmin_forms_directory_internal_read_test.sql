@@ -192,7 +192,7 @@ insert into fread_results values ('expired',public.superadmin_forms_directory_v2
 reset role;
 select set_config('request.jwt.claims','{"sub":"8f010000-0000-4000-8000-000000000101","session_id":"8f010000-0000-4000-8000-000000000201","aal":"aal1","role":"authenticated"}',true);
 set local role authenticated;
-insert into fread_results values ('owner_aal1',public.superadmin_forms_directory_v2('{}'));
+insert into fread_results values ('owner_aal1',public.superadmin_forms_directory_v2('{"search":"F-READ01 "}'));
 reset role;
 select set_config('request.jwt.claims','{"sub":"8f010000-0000-4000-8000-000000000101","session_id":"8f010000-0000-4000-8000-000000000201","aal":"aal2","role":"authenticated"}',true);
 set local role authenticated;
@@ -203,7 +203,8 @@ select is((select body#>>'{error,code}' from fread_results where label='no_auth'
 select is((select body#>>'{error,code}' from fread_results where label='people_only'),'SAI_INTERNAL_CONTEXT_DENIED','People-only actor remains denied despite legacy Owner role');
 select is((select body#>>'{error,code}' from fread_results where label='denied'),'SAI_PERMISSION_DENIED','explicit deny checked');
 select is((select body#>>'{error,code}' from fread_results where label='expired'),'SAI_SESSION_INVALID','expired session denied');
-select is((select body#>>'{error,code}' from fread_results where label='owner_aal1'),'SAI_MFA_REQUIRED','Owner still requires AAL2');
+select is((select body#>>'{ok}' from fread_results where label='owner_aal1'),'true','Owner AAL1 is allowed by the MVP AAL policy');
+select is((select body#>'{data,items}' from fread_results where label='owner_aal1'),(select body#>'{data,items}' from fread_results where label='owner'),'Owner AAL1 and AAL2 retain the same authorized scope');
 
 select set_config('request.jwt.claims','{"sub":"8f010000-0000-4000-8000-000000000102","session_id":"8f010000-0000-4000-8000-000000000202","role":"authenticated"}',true);
 set local role authenticated;
