@@ -10,6 +10,85 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final incomplete in [
+    'missing-intent',
+    'blank-intent',
+    'long-intent',
+    'no-question',
+    'information',
+    'two-questions',
+  ]) {
+    testWidgets('incomplete quick poll $incomplete saves draft but cannot publish', (tester) async {
+      final api = _EditorApi(
+        formKind: FormKind.quickPoll,
+        description: switch (incomplete) {
+          'missing-intent' => null,
+          'blank-intent' => '   ',
+          'long-intent' => 'x' * 281,
+          _ => 'Approved intention',
+        },
+        firstItems: switch (incomplete) {
+          'no-question' => const [],
+          'information' => [
+            FormItem(id: 'info', kind: FormItemKind.information, label: 'Information', position: 0),
+          ],
+          'two-questions' => [
+            FormItem(id: 'one', kind: FormItemKind.shortText, label: 'First', position: 0),
+            FormItem(id: 'two', kind: FormItemKind.shortText, label: 'Second', position: 1),
+          ],
+          _ => null,
+        },
+      );
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+      await tester.pumpAndSettle();
+      expect(api.savedCommands, hasLength(1));
+      expect(api.savedCommands.single.payload.kind, FormKind.quickPoll);
+      expect(api.savedCommands.single.payload.description, api.description);
+      expect(find.text('Rascunho salvo.'), findsOneWidget);
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'));
+      await tester.pumpAndSettle();
+      expect(api.publishCommands, isEmpty);
+      expect(find.byType(CoeloAdminDialogShell), findsNothing);
+      expect(
+        find.text('Revise o título, a ordem e os campos obrigatórios antes de publicar.'),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final structural in ['empty-title', 'invalid-condition']) {
+    testWidgets('incomplete quick poll still rejects $structural on draft save', (tester) async {
+      final api = _EditorApi(
+        formKind: FormKind.quickPoll,
+        title: structural == 'empty-title' ? '   ' : 'Quick poll',
+        firstItems: structural == 'invalid-condition'
+            ? [
+                FormItem(
+                  id: 'one',
+                  kind: FormItemKind.shortText,
+                  label: 'Question',
+                  position: 0,
+                  conditions: const [FormCondition.yesNo(sourceItemId: 'missing', expected: true)],
+                ),
+              ]
+            : null,
+      );
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+      await tester.pumpAndSettle();
+      expect(api.savedCommands, isEmpty);
+      expect(
+        find.text('Revise o título, a ordem e os campos obrigatórios antes de salvar.'),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   for (final kind in FormKind.values) {
     for (final discard in [false, true]) {
       testWidgets('loaded metadata survives $kind title edit discard=$discard', (tester) async {
@@ -38,6 +117,45 @@ void main() {
       });
     }
   }
+
+  testWidgets(
+    'incomplete quick poll rejected by API retains edits and confirmed discard baseline',
+    (tester) async {
+      final gate = Completer<void>();
+      final api = _EditorApi(
+        formKind: FormKind.quickPoll,
+        title: 'Confirmed title',
+        saveGate: gate.future,
+      );
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byWidget(_title(tester)), 'Unsaved title');
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+      await tester.pump();
+      expect(api.savedCommands, hasLength(1));
+      gate.completeError(
+        const FormApiException(FormApiFailureKind.validation, 'Draft rejected by server'),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Draft rejected by server'), findsOneWidget);
+      expect(find.text('Rascunho salvo.'), findsNothing);
+      expect(_title(tester).controller!.text, 'Unsaved title');
+      await _discard(tester);
+      expect(_title(tester).controller!.text, 'Confirmed title');
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('complete quick poll retains publish confirmation', (tester) async {
+    final api = _EditorApi(formKind: FormKind.quickPoll, description: 'Approved intention');
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'));
+    await tester.pumpAndSettle();
+    expect(find.byType(CoeloAdminDialogShell), findsOneWidget);
+    expect(api.publishCommands, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
 
   for (final kind in [FormItemKind.scale, FormItemKind.decimal, FormItemKind.money]) {
     testWidgets('loaded $kind noneditable configuration survives title edit', (tester) async {

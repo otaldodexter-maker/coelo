@@ -52,6 +52,7 @@ indicador. O arquivo é aberto no painel direito como alternativa disponível.
 - Responder: descarte de valores ocultos, ancestrais e recibos corrigidos; regressão 113/113, analyzer 2 arquivos e review aprovados. Evidência `2026-09-07-response-hidden-branches.md`; persistência/E2E permanecem abertas.
 - Editor: metadados e configuração carregados preservados; regressão 120/120, analyzer 2 arquivos e review aprovados. Evidência `2026-09-07-editor-loaded-metadata.md`; rascunho incompleto e integração permanecem abertos.
 - Responder: obrigatoriedade de controles e valores vazios corrigida; regressão 127/127, analyzer 2 arquivos e review aprovados. Evidência `2026-09-07-response-required-values.md`; backend e visual ainda abertos.
+- Editor: rascunho incompleto de Enquete rápida deixa de ser bloqueado pela completude de publicação; integridade e pré-publish preservados. 6 REDs demonstrados, regressão 137/137, analyzer e review aprovados. Evidência `2026-09-07-quick-poll-incomplete-draft.md`; bloqueio equivalente no SQL legado continua pendente, sem persistência E2E comprovada.
 - forms_next_slice: precondições e negativas SAI/SQL, análise read-only concluída.
 - review_export_policy: reader aprovado após correção de offset; sem backend.
 - medication_roundtrip: revisão UI/composição read-only, sem achado bloqueante.
