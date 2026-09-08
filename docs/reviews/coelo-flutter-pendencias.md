@@ -14,6 +14,17 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização de destino às 21:55–21:59 BRT: cadeia Estruturas integrada até
+  `18c00caa`, com NAV `0269a2fb`, invalidação D01 `ab1e18ef`, contrato Locais
+  `86522d26` e lifecycle de Instituições/Pessoas. F-READ UI está em `ce320f55`.
+  Dezoito suítes combinadas passaram **249/249**, incluindo goldens D01 e
+  navegação/logout; Locais passou **9/9** em Dart. Analyzer de 11 recortes sem
+  issues. Isso não certifica CRUD, catálogo de Locais ou Supabase real.
+- Auth R06/R07 integrado até `f026e997`: replay do estado SDK e ownership dos
+  listeners preservados sem interface nova. Sete suítes de destino passaram
+  **65/65**, incluindo SDK recovery e composição F-READ/D01. Settings `67b36bab`
+  foi retido: Future de load rejeitado ficava cacheado e impedia retry;
+  follow-up nominal encaminhado à E2E 1. Não encerrar a vertical Conta/Auth.
 - Comunicação integrada até `d671ab0e`: sete suítes focadas Chat/Avisos no
   destino passaram, 84/84, com analyzer dos cinco arquivos sem issues.
   Cobrem negação, respostas tardias, versão de criação e replay/publicação
@@ -35,12 +46,12 @@ visual_program_accepted_count: 0
   preservam round-trip e intenção de retry apenas na prévia. Sete suítes de
   destino, incluindo rotas Auth: 71/71; análise de cinco arquivos sem issues.
   Sem conexão clínica produtiva ou promoção E2E.
-- D01 Unit/Group `c11614d5` permanece na fila: review central identificou
-  ausência de invalidação do detalhe por revisão de autorização. Correção
-  nominal e regressão de troca de contexto encaminhadas à própria frente.
+- D01 Unit/Group recebeu os dois follow-ups de invalidação e interrupção de
+  leitura após logout/recovery. O pacote completo está integrado e passou a
+  regressão acima; gravações, escopo remoto e E2E permanecem pendentes.
 - Após reinício informado pelo Owner, retomada enviada às sete tarefas;
-  estados ativos conferidos às 20:50–20:52 BRT. Logout desktop permanece em
-  correção NAV-LOGOUT01 na E2E 2; não marcar como resolvido antes do GREEN.
+  estados ativos conferidos às 20:50–20:52 BRT. NAV-LOGOUT01 recebeu GREEN
+  local no destino; isso não substitui a prova da sessão remota.
 - Os três rastreadores foram lidos integralmente pelo coordenador antes da
   integração. Evidência e fila: `evidence/etapa-2/coordenador/rodada-2026-09-07.md`.
   As contagens históricas abaixo ainda não incorporam os doze IDs de Locais;

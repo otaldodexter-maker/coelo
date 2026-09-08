@@ -14,14 +14,22 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "E6431D35BB64C77422EE3AD53DFDAD12F9C753B2A16345954ADF05D8F015A0DF"
-supabase_tracker_sha256: "2A81EEB3AEA6BB1A57714846AE75F33D34BF7DD29D4AFA962CD56FD098097D4D"
+flutter_tracker_sha256: "77589EB3EE47B3541378A091DC860C975A2912D0645E647EF05A35AFDABEA585"
+supabase_tracker_sha256: "999CBE0CE02F7014028EF29E32BE33228846E4D6BAE450315F18A8E39F243C36"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
 
+- Integração Estruturas/F-READ UI até `18c00caa`: 249/249 em 18 suítes no
+  destino, com NAV, D01 e goldens; contrato Locais9/9 Dart; analyzer11 sem
+  issues. Auth R06/R07 até `f026e997`: outras sete suítes65/65, preservando
+  composição F-READ/D01. Não somar suítes sobrepostas como cobertura única.
+- N01 reproduziu erro local42P01 com cleanup verificado pelo Eng1; Users48
+  está liberado para replay; A01 base54/fixture89 apenas preparados e F-READ
+  ainda precisa helper400 nominal e expectativa AAL1 corrigida. Nenhuma dessas
+  entregas autoriza declarar rota sem `/dev` concluída de ponta a ponta.
 - Comunicação: prefixo cliente integrado até `d671ab0e`, 84/84 testes Flutter,
   analyzer cinco arquivos sem issues; MediaSession 9/9 Dart e M02 29/29 Deno
   no destino. Nenhum destes resultados promove Chat/Avisos/Mídia a E2E.
@@ -35,8 +43,8 @@ supabase_tracker_sha256: "2A81EEB3AEA6BB1A57714846AE75F33D34BF7DD29D4AFA962CD56F
   Seis commits integrados até `d9d1bf46`; cinco suítes no destino passaram
   (83/83), análise de cinco arquivos sem issues. Nenhuma ação foi promovida
   a `ready-for-e2e` ou `verified-e2e` por esses commits.
-- D01 Unit/Group continua na fila por invalidação de contexto ausente no
-  detalhe; correção com regressão foi encaminhada à frente responsável.
+- D01 Unit/Group está integrado com follow-ups de invalidação/stop-read e
+  GREEN local no destino; escrita, contrato remoto e E2E continuam abertos.
   P0 RLS foi integrado em `256f0370`, com review central e Pester 27/27 no
   destino; 118/118 SQL é a evidência local do Eng1, não produção.
 - Checkpoint por ação após integração e reinício:

@@ -12,6 +12,23 @@ family_count: 37
 
 ## Rodada de 2026-09-07 — backend local e integração em curso
 
+- N01 diagnóstico nominal foi executado pelo Eng1 às 21:28 BRT: 50 canônicas
+  +2 preflights reproduziram **42P01** em `20260812003000`, statement22,
+  `public.notice_events`. Cleanup independente às 21:30:09 confirmou zero
+  containers/volumes/redes e staging nominal ausente. Seletor fechado integrado
+  em `48daf49d`; ponte transitória e corretiva N01 continuam não executadas.
+- Users: fixture45 revisada e integrada em `1279f471`; chamadas sob
+  authenticated, TAP/auditoria após RESET e sem grants produtivos novos.
+  Replay LOCAL Auth45+uma migration+2 preflights=48 liberado ao Eng1;
+  resultado SQL ainda pendente. Nenhuma autorização de remoto nesta reserva.
+- A01: análise nominal Auth45+7 Atividades+2 preflights=54 foi conferida por
+  hashes e dependências. Fixture final `e927c417` separa RPC/TAP corretamente,
+  com 89 resultados esperados estaticamente, não executados. Seletor fechado
+  em implementação/revisão; execução serial condicionada aos gates do perfil.
+- F-READ `21792181` continua fora da integração SQL: helper400 exige a adição
+  nominal de `20260827235500`, ausente da base47+2 proposta; não remover o
+  preflight. Fixture tinha expectativa MFA OwnerAAL1 obsoleta frente à
+  migration `20260901200206`; correção solicitada, sem restaurar MFA no MVP.
 - Transporte compartilhado R2 M02 integrado em `e0a00bc8`: testes Deno do
   destino 29/29, sem acesso de rede ou recurso remoto. MediaSession integrada
   em `c50ae4a8`: teste Dart focado 9/9; ainda não prova consumidor/gateway real.
@@ -30,7 +47,8 @@ family_count: 37
   coordenador confirmou Docker 29.7.2 linux/amd64 às 20:59:52. Eng1 informou
   smoke sem rede/volumes/pull com exit0 e cleanup; inventário atual
   0 containers/0 volumes/28 imagens. Backups preservados, sem inferir
-  preservação/perda total de dados anteriores ao reset. N01 ainda sem replay.
+  preservação/perda total de dados anteriores ao reset. N01 executado depois,
+  conforme diagnóstico nominal acima; não é corretiva ou sucesso funcional.
 - Docker recuperado e baseline Auth-only real passou localmente: 45 migrations
   canônicas + dois preflights, pgTAP 30/30 e lifecycle GoTrue/PostgREST/Mailpit;
   cleanup nominal confirmado pelo Engenheiro 1. Não prova produção nem wiring Flutter.
