@@ -1,7 +1,7 @@
 ---
 title: "LOC-CONTRACT01 — implementation plan"
 source: "design local aprovado; reserva nominal LOC-CONTRACT01 do Coordenador"
-status: "approved-local; implementation-in-progress"
+status: "implemented-local; tests-green; not-verified-e2e"
 generated_at: "2026-09-07"
 ---
 
@@ -71,7 +71,7 @@ final class OneOffLocationSelection extends LocationSelection {
 }
 ```
 
-- [ ] Escrever testes importando package:coelo_domain/locations.dart antes da
+- [x] Escrever testes importando package:coelo_domain/locations.dart antes da
   fonte. Cobrir dois escopos, dois kinds, seleções separadas, snapshot preservado
   após variável consumidora receber outro snapshot e nullable fora da união.
   Exemplo concreto:
@@ -84,12 +84,12 @@ final class OneOffLocationSelection extends LocationSelection {
   });
   ```
 
-- [ ] RED em packages/coelo_domain:
+- [x] RED em packages/coelo_domain:
   `rtk proxy C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe test test/locations/location_selection_test.dart`;
   esperado import/tipos ausentes, não falha ambiental.
-- [ ] Implementar tipos acima e documentação dos limites; barrel contém
+- [x] Implementar tipos acima e documentação dos limites; barrel contém
   `export 'src/locations/location_selection.dart';` como profile_about existente.
-- [ ] GREEN no mesmo comando. Rodar `dart test` e `dart analyze` via mesmo
+- [x] GREEN no mesmo comando. Rodar `dart test` e `dart analyze` via mesmo
   prefixo RTK/runtime; exigir nenhuma falha nova. Não rodar pub upgrade.
 - [ ] Review independente de spec e qualidade, gate de memória/evidência,
   diff sem consumidor/segredo, commit nominal e handoff antes de integração.

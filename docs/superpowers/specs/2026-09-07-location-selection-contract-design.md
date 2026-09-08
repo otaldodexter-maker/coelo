@@ -1,7 +1,7 @@
 ---
 title: "Locais — contrato puro de seleção compartilhada"
 source: "desenho aprovado de Locais em2026-09-02; escopo E2E2 do Owner; crosswalk local"
-status: "approved-local-package; LOC-CONTRACT01-reserved"
+status: "implemented-local; LOC-CONTRACT01; not-verified-e2e"
 generated_at: "2026-09-07"
 ---
 

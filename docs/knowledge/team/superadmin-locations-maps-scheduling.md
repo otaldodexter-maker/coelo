@@ -4,7 +4,7 @@ knowledge_id: superadmin-locations-maps-scheduling
 source: docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md
 status: validated
 generated_at: 2026-09-02
-updated_at: 2026-09-03
+updated_at: 2026-09-07
 audience: team
 surfaces: [superadmin, institutions, units, groups, activities, agenda, forms]
 visibility: internal
@@ -43,4 +43,21 @@ múltipla, mostrando apenas locais catalogados visíveis ao respondente.
 
 `/dev` usa fixtures determinísticas separadas. Produção usa exclusivamente
 repositories Supabase autorizados e nunca recorre a dados fake como fallback.
-O desenho está aprovado, mas sua implementação ainda não foi iniciada.
+O desenho está aprovado. A fundação local de seleção está disponível em
+`package:coelo_domain/locations.dart`; isso não implementa catálogo, UI, banco,
+reservas ou mídia e não comprova E2E.
+
+## Contrato de seleção para consumidores
+
+Fonte complementar: `docs/superpowers/specs/2026-09-07-location-selection-contract-design.md`.
+
+`LocationScope` identifica o proprietário do catálogo: instituição ou unidade
+com ambos os IDs explícitos. `LocationReferenceSnapshot` preserva ID do local,
+escopo, tipo e rótulo recebidos; é histórico, não prova de estado atual,
+visibilidade ou autorização. O backend deve reautorizar cada uso.
+
+`LocationSelection` separa referência catalogada de texto pontual. Ausência é
+nullable no consumidor; salvar texto no catálogo continua uma ação explícita
+separada. Versão do formulário e contexto do cadastro de origem permanecem no
+consumidor. Não inferir interno/externo a partir de opções legadas que não
+informem o tipo e não converter seleção pontual em reserva automaticamente.
