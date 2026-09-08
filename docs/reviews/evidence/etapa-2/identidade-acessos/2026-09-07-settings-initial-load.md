@@ -64,3 +64,33 @@ diagnósticos e review independente `account_review` sem bloqueantes.
 O teste remonta o controller e relê armazenamento controlado; não constitui
 SharedPreferences/browser real. Feedback visual de falha e persistência real
 permanecem gates separados, ainda abertos.
+
+## R08 — falhas visíveis e composição normal
+
+Reserva central restrita a controller/tela/testes, init load e callback de
+tema do App e load da rota normal `/settings`. Nenhuma alteração de shell,
+Auth, FREAD/D01, dependências ou backend.
+
+REDs observados: load falho deixava spinner sem retry; save falho produzia
+Future não tratado sem aviso; init/rota e callback global também propagavam
+falhas sem tratamento; erro antigo de tema exibia aviso após escolha nova.
+O controller conserva erro sanitizado e propaga a falha ao chamador; UI e
+composição consomem o Future apresentado, oferecem retry e não exibem dados
+do erro original. Retry de save usa snapshot atual pela mesma fila serial.
+Callback global confere estado atual e context mounted antes do aviso.
+
+Oito cenários de erro (375/1440px × claro/escuro × load/save, texto 200%)
+detectaram overflow no bloco de carga e no banner. Scroll no primeiro e ação
+abaixo do conteúdo no segundo fecharam os oito cenários, sem mudar layout
+global nem reduzir tamanho de texto.
+
+Provas: 29/29 focais (controller 7, UI 13, repository 1, App 3, rotas Conta 5);
+regressão conjunta Auth/Usuários/Conta 148/148. Analyzer inicialmente pediu
+checagem do mounted do próprio contexto; após ajuste, 6 arquivos sem
+diagnósticos e os 3 testes do App novamente PASS. Review independente
+`account_review` aprovado no recorte. Nenhuma alegação de frontend global
+verificado, pipeline produtivo de Conta ou E2E completo.
+
+A prova browser de persistência anterior está no registro específico
+`2026-09-07-settings-browser-persistence.md`; falhas de armazenamento nesta
+fatia foram injetadas somente nos testes locais.

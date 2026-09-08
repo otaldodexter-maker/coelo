@@ -2424,7 +2424,11 @@ GoRouter createSuperadminRouter({
             builder: (context, state) {
               if (!productionPreferencesLoadStarted) {
                 productionPreferencesLoadStarted = true;
-                unawaited(productionPreferencesController.load());
+                unawaited(
+                  productionPreferencesController.load().onError<Object>((error, stackTrace) {
+                    // Settings renders the sanitized failure and offers retry.
+                  }),
+                );
               }
               return SettingsPage(
                 controller: productionPreferencesController,
