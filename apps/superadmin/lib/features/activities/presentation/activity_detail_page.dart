@@ -40,6 +40,7 @@ final class _ActivityDetailPageState extends State<ActivityDetailPage> {
   late final SuperadminActivityController _activityController;
   _ActivityDetailState _state = _ActivityDetailState.loading;
   ActivityDetail? _detail;
+  var _loadGeneration = 0;
 
   @override
   void initState() {
@@ -49,26 +50,55 @@ final class _ActivityDetailPageState extends State<ActivityDetailPage> {
   }
 
   @override
+  void didUpdateWidget(covariant ActivityDetailPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.repository != widget.repository || oldWidget.activityId != widget.activityId) {
+      _load();
+    }
+  }
+
+  @override
   void dispose() {
+    _loadGeneration += 1;
     _activityController.dispose();
     super.dispose();
   }
 
   Future<void> _load() async {
-    setState(() => _state = _ActivityDetailState.loading);
+    final generation = ++_loadGeneration;
+    final repository = widget.repository;
+    final activityId = widget.activityId;
+    setState(() {
+      _detail = null;
+      _state = _ActivityDetailState.loading;
+    });
     try {
-      final detail = await widget.repository.fetchById(widget.activityId);
-      if (!mounted) return;
+      final detail = await repository.fetchById(activityId);
+      if (!_isCurrentLoad(generation, repository: repository, activityId: activityId)) return;
       setState(() {
         _detail = detail;
         _state = detail == null ? _ActivityDetailState.notFound : _ActivityDetailState.success;
       });
     } on ActivityDirectoryUnauthorizedException {
-      if (mounted) setState(() => _state = _ActivityDetailState.unauthorized);
+      if (_isCurrentLoad(generation, repository: repository, activityId: activityId)) {
+        setState(() => _state = _ActivityDetailState.unauthorized);
+      }
     } on Exception {
-      if (mounted) setState(() => _state = _ActivityDetailState.failure);
+      if (_isCurrentLoad(generation, repository: repository, activityId: activityId)) {
+        setState(() => _state = _ActivityDetailState.failure);
+      }
     }
   }
+
+  bool _isCurrentLoad(
+    int generation, {
+    required ActivityDirectoryRepository repository,
+    required String activityId,
+  }) =>
+      mounted &&
+      generation == _loadGeneration &&
+      identical(repository, widget.repository) &&
+      activityId == widget.activityId;
 
   @override
   Widget build(BuildContext context) => SuperadminShell(
