@@ -25,7 +25,8 @@ const artifact = {
   export_kind: "xlsx",
   purpose: "forms-responses-export",
   state: "ready",
-  object_key: `tenants/${institutionId}/exports/forms/${jobId}/responses.xlsx`,
+  object_key:
+    `tenants/${institutionId}/exports/forms/${jobId}/${assetId}/responses.xlsx`,
   expires_at: new Date(now + 42_900).toISOString(),
 };
 function request(
