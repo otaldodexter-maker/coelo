@@ -163,7 +163,7 @@ Assinaturas candidatas (nomes ainda sujeitos à reserva de migration):
 
 | Executor | RPC candidata | Responsabilidade |
 | --- | --- | --- |
-| authenticated, JWT real | prepare_chat_image_v1(uuid request_id, uuid conversation_id, jsonb declared_input) | Derivar ator/escopo, reservar ativo/sessão/mensagem invisível; devolver IDs opacos |
+| authenticated, JWT real | prepare_chat_images_v1(uuid request_id, uuid conversation_id, jsonb declared_inputs) | Derivar ator/escopo, reservar uma intenção/mensagem invisível compartilhada pelo lote e uma sessão/ativo por entrada; devolver IDs opacos |
 | authenticated, JWT real | authorize_chat_image_finalize_v1(uuid upload_session_id) | Reautorizar; emitir ticket de operação vinculado à sessão/ator reais |
 | service_role somente | claim_chat_image_finalize_v1(uuid request_id, uuid upload_session_id, uuid ticket) | Consumir autorização, revalidar contexto persistido, reservar lease e devolver localizadores físicos somente ao gateway |
 | service_role somente | complete_chat_image_finalize_v1(uuid request_id, uuid upload_session_id, uuid lease_token, jsonb verified_outputs) | Revalidar contexto/lease, gravar provas verificadas e tornar ready atomicamente |
@@ -178,8 +178,10 @@ normalizados, nunca copia campos finais do corpo do cliente.
 Ticket aleatório: armazenar somente hash, operação, upload_session, IDs reais
 de identity/auth-link/membership/auth-session, expiração e consumo. Claim e
 complete conferem correspondência integral; ticket roubado de outro ativo ou
-operação não serve. Claim retorna lease opaca com versão, prazo e receipt;
-retry idêntico não inicia outro processamento. Nenhuma transação SQL fica
+operação não serve. Claim inicial retorna lease opaca com versão e prazo;
+receipt persistido contém somente estado/IDs, nunca o token. Retry idêntico
+com lease ativa devolve estado opaco `lease_active`, sem token ou execução
+duplicada; claim não comprova que decoder iniciou. Nenhuma transação SQL fica
 aberta enquanto o decoder/R2 executa.
 Lease expirada nunca é devolvida como utilizável: retry do claim informa
 expired; nova tentativa exige nova autorização e nova chave de claim. A versão
@@ -230,7 +232,9 @@ internal_identity, internal_auth_link, internal_membership). Não selecionar a
 membership ativa mais recente nem aceitar substituição de link para um upload
 anterior. Derivar papel/escopo/capability atuais e a instituição da conversa;
 conferir sessão exata, usuário confirmado e validade atual. O tipo de contexto
-existente não traz versões nem instituição resolvida; não pressupor esses dados.
+existente não traz versões; possui `resolved_institution_id`, mas o helper
+vigente retorna NULL nesse campo. Derivar instituição pela conversa, sem
+pressupor que o campo já foi resolvido.
 
 O helper JWT vigente é STABLE e não bloqueia linhas; não transplantar sua
 volatilidade nem fabricar JWT/GUC no executor privilegiado. A assinatura e
@@ -247,13 +251,15 @@ conferir ticket/lease com clock_timestamp, não timestamp do início da transaç
 | Profile interno e scopes / edição U | M03 não precisa ler nem bloquear profile pessoal; membership cerca esse writer nominal de scopes. Não adicionar profile depois de membership |
 | Role/grants / atualização P | Bloqueio conflitante no role antes da leitura final dos grants cerca P nominal; não prova exclusão de todo INSERT/DML filho nem protege predicado ausente universalmente |
 | Contexto infantil / trigger | Não acrescentar lock infantil após conversa; autorização interna não depende de participante infantil |
-| Auth users/sessions / GoTrue | Ordem e barreiras ainda sem prova local; posição no protocolo depende da revisão E2E1, não de advisory Coelo |
+| Auth users/sessions / GoTrue | Parecer nominal posterior identifica users antes de sessions, com FOR SHARE conflitante; versão remota e composição recovery/E1 continuam gates, não substituídos por advisory Coelo |
 
-Proposta parcial para os novos comandos: resolver referências sem autorizar
-por elas → conversa → intenção idempotente nominal → sessões de upload por
-UUID → ativos por UUID → membership → auth_link → role/grants/escopo →
-revalidação final → mutação e receipt → auditoria. A posição das barreiras
-Auth e qualquer inversão identificada no review continuam bloqueantes. Leitura
+Ordem candidata atualizada após parecer GoTrue: resolver referências sem
+autorizar por elas → auth.users → auth.sessions → conversa → intenção
+idempotente nominal → sessões de upload por UUID → ativos por UUID →
+membership → auth_link → role → permission → grant → revalidação final →
+mutação e receipt → auditoria. AMR/proveniência ainda dependem do contrato E1;
+não adicionar lock AMR depois de sessions, pois os writers MFA podem adquirir
+AMR antes da sessão. Qualquer inversão identificada é bloqueante. Leitura
 inicial é apenas descoberta; conferir novamente todas as referências depois
 de bloquear, sem permitir troca do conjunto descoberto. A imutabilidade das
 âncoras e da conversa na sessão deve ser constraint/trigger, não convenção.
@@ -318,6 +324,286 @@ Para cada execução futura observar SQLSTATE/envelope, status do ativo/sessão,
 mensagem, binding, consumed_at, receipt, auditoria e ausência de deadlock. Antes
 de rodar, fechar fixtures nominais Auth, nomes de RPC e hashes do pacote. Não
 contabilizar esta matriz como testes ou prova de concorrência executados.
+
+## DDL nominal do lote — candidato para review, não migration
+
+Decisão técnica do Coordenador em 2026-09-07: prepare **em lote**, uma intenção
+imutável e um `reserved_message_id` servidor para todas as entradas. Não
+aceitar message/actor/institution IDs do cliente. Prepare singular foi
+substituído, pois reservas independentes não poderiam compor a mesma mensagem.
+
+Busca de E2E3 e busca independente Eng2 (evidência main, seção 445) não
+encontraram máximo numérico aprovado de anexos por mensagem no Chat. Não
+transferir quatro de Circulares ou seis de Acontece. A ausência do máximo
+impede habilitar prepare produtivo; o CHECK `expected_count > 0` abaixo é
+integridade estrutural, **não** autorização para lote ilimitado. O comando
+precisa do máximo aprovado antes de existir como endpoint habilitado.
+
+DDL das auxiliares fechado abaixo para revisão de nomes/tipos/FKs. Depende
+do ramo shared do catálogo A/B descrito acima; não aplicar isoladamente.
+Não cria outro catálogo universal nem altera Auth. Nenhum SQL foi executado.
+
+```sql
+create table app_private.media_upload_intents (
+  id uuid primary key default gen_random_uuid(),
+  request_id uuid not null,
+  request_hash bytea not null check (octet_length(request_hash) = 32),
+  conversation_id uuid not null references public.conversations(id) on delete restrict,
+  reserved_message_id uuid not null unique,
+  auth_user_id uuid not null,
+  auth_session_id uuid not null,
+  internal_identity_id uuid not null
+    references app_private.superadmin_internal_identities(id) on delete restrict,
+  internal_auth_link_id uuid not null
+    references app_private.superadmin_internal_auth_links(id) on delete restrict,
+  internal_membership_id uuid not null
+    references app_private.superadmin_internal_memberships(id) on delete restrict,
+  expected_count integer not null check (expected_count > 0),
+  created_at timestamptz not null default clock_timestamp(),
+  unique (internal_identity_id, request_id)
+);
+
+create table app_private.media_upload_sessions (
+  id uuid primary key default gen_random_uuid(),
+  intent_id uuid not null references app_private.media_upload_intents(id) on delete restrict,
+  media_asset_id uuid not null unique references public.media_assets(id) on delete restrict,
+  display_order integer not null check (display_order >= 0),
+  declared_name text not null check (
+    char_length(declared_name) between 1 and 255
+    and btrim(declared_name) <> '' and declared_name !~ '[[:cntrl:]]'
+  ),
+  declared_mime_type text not null check (declared_mime_type in (
+    'image/jpeg','image/png','image/webp','image/heic','image/heif'
+  )),
+  declared_byte_size bigint not null check (
+    declared_byte_size > 0 and declared_byte_size <= 10485760
+  ),
+  declared_sha256 bytea not null check (octet_length(declared_sha256) = 32),
+  transient_bucket text not null check (transient_bucket = 'coelo-transient-prod'),
+  transient_object_key text not null unique check (
+    btrim(transient_object_key) <> '' and transient_object_key !~ '[[:cntrl:]]'
+  ),
+  preview_bucket text not null check (preview_bucket = 'coelo-media-prod'),
+  preview_object_key text not null unique check (
+    btrim(preview_object_key) <> '' and preview_object_key !~ '[[:cntrl:]]'
+  ),
+  state text not null default 'prepared' check (state in (
+    'prepared','leased','ready','consumed','discarded'
+  )),
+  version bigint not null default 1 check (version > 0),
+  created_at timestamptz not null default clock_timestamp(),
+  expires_at timestamptz not null,
+  lease_token_hash bytea,
+  lease_version bigint,
+  lease_expires_at timestamptz,
+  claim_request_id uuid,
+  consumed_at timestamptz,
+  discarded_at timestamptz,
+  unique (intent_id, display_order),
+  check (expires_at > created_at),
+  check ((
+    (lease_token_hash is null and lease_version is null
+      and lease_expires_at is null and claim_request_id is null)
+    or (octet_length(lease_token_hash) = 32 and lease_version > 0
+      and lease_expires_at > created_at and lease_expires_at <= expires_at
+      and claim_request_id is not null)
+  ) is true),
+  check ((state <> 'leased' or (
+    lease_token_hash is not null and lease_version = version
+    and lease_expires_at is not null and claim_request_id is not null
+  )) is true),
+  check (state <> 'discarded' or lease_token_hash is null),
+  check ((
+    (state = 'consumed') = (consumed_at is not null)
+    and (state = 'discarded') = (discarded_at is not null)
+    and not (consumed_at is not null and discarded_at is not null)
+    and (consumed_at is null or consumed_at >= created_at)
+    and (discarded_at is null or discarded_at >= created_at)
+  ) is true)
+);
+
+create table app_private.media_upload_finalize_tickets (
+  token_hash bytea primary key check (octet_length(token_hash) = 32),
+  upload_session_id uuid not null
+    references app_private.media_upload_sessions(id) on delete restrict,
+  operation text not null check (operation = 'chat_image_finalize'),
+  created_at timestamptz not null default clock_timestamp(),
+  expires_at timestamptz not null,
+  consumed_at timestamptz,
+  check (expires_at > created_at),
+  check (consumed_at is null or consumed_at >= created_at)
+);
+
+create table app_private.media_upload_command_receipts (
+  internal_identity_id uuid not null
+    references app_private.superadmin_internal_identities(id) on delete restrict,
+  operation text not null check (operation in ('prepare','claim','complete','send','discard')),
+  request_id uuid not null,
+  request_hash bytea not null check (octet_length(request_hash) = 32),
+  intent_id uuid not null references app_private.media_upload_intents(id) on delete restrict,
+  response jsonb not null check ((jsonb_typeof(response) = 'object'
+    and response - array['state','intent_id','upload_session_ids',
+      'asset_ids','message_id','version']::text[] = '{}'::jsonb) is true),
+  created_at timestamptz not null default clock_timestamp(),
+  primary key (internal_identity_id, operation, request_id)
+);
+
+create table app_private.media_variants (
+  id uuid primary key default gen_random_uuid(),
+  media_asset_id uuid not null references public.media_assets(id) on delete restrict,
+  rendition text not null check (rendition = 'preview'),
+  storage_provider text not null check (storage_provider = 'r2'),
+  bucket_id text not null check (bucket_id = 'coelo-media-prod'),
+  object_key text not null check (btrim(object_key) <> '' and object_key !~ '[[:cntrl:]]'),
+  mime_type text not null check (mime_type in ('image/jpeg','image/png','image/webp')),
+  byte_size bigint not null check (byte_size > 0 and byte_size <= 4194304),
+  checksum_sha256 text not null check (checksum_sha256 ~ '^[0-9a-f]{64}$'),
+  width integer not null check (width > 0 and width <= 2560),
+  height integer not null check (height > 0 and height <= 2560),
+  created_at timestamptz not null default clock_timestamp(),
+  unique (media_asset_id, rendition),
+  unique (storage_provider, bucket_id, object_key)
+);
+
+alter table app_private.media_upload_intents enable row level security;
+alter table app_private.media_upload_intents force row level security;
+alter table app_private.media_upload_sessions enable row level security;
+alter table app_private.media_upload_sessions force row level security;
+alter table app_private.media_upload_finalize_tickets enable row level security;
+alter table app_private.media_upload_finalize_tickets force row level security;
+alter table app_private.media_upload_command_receipts enable row level security;
+alter table app_private.media_upload_command_receipts force row level security;
+alter table app_private.media_variants enable row level security;
+alter table app_private.media_variants force row level security;
+revoke all on app_private.media_upload_intents, app_private.media_upload_sessions,
+  app_private.media_upload_finalize_tickets, app_private.media_upload_command_receipts,
+  app_private.media_variants from public, anon, authenticated, service_role;
+```
+
+Master reside em media_assets; sessão reserva `preview_bucket/object_key`
+imutáveis ANTES do claim, e `media_variants` guarda somente preview nesta
+fatia. O teto 4 MiB/2560 é envelope máximo de foto, não perfil visual novo.
+Formato/dimensões precisos da rendição continuam vinculados ao decoder aprovado.
+Não há FK sessão→Auth: logout não pode ser impedido por RESTRICT nem adquirir
+uploads via CASCADE/SET NULL depois de auth.sessions. UUIDs originais são
+imutáveis e revalidados no servidor; não é permissão concedida pelo registro.
+`reserved_message_id` não referencia mensagem inexistente. Não há FK reversa
+obrigatória ativo→upload que criaria ciclo de inserção.
+
+Triggers nominais obrigatórios no mesmo futuro pacote, antes de qualquer grant
+de execução (ainda não implementados):
+
+- `media_upload_intent_immutable_guard`: rejeitar UPDATE das cinco âncoras,
+  conversa, request/hash, message reservado, expected_count e created_at.
+- `media_upload_session_identity_guard`: imutáveis intent/asset/ordem,
+  declarações/localizadores transitório e preview/reserva/expiração original; transições de estado e
+  lease exclusivamente por comandos, versão crescente, descartado terminal.
+- `media_upload_batch_shape_guard`: constraint trigger DEFERRABLE INITIALLY
+  DEFERRED verifica no commit exatamente expected_count sessões, ordem contígua
+  0..N-1, todos ativos shared da mesma instituição/mensagem/ator. Nunca recontar
+  após descartar removendo sessão: proveniência e ordem são preservadas.
+- `media_upload_ready_proof_guard`: ready/consumed exige master e preview
+  verificados correlacionados aos objetos reservados; variante preview deve
+  ter bucket/key iguais aos campos imutáveis da sessão. Claim retorna somente
+  essas reservas; verified_outputs não define retroativamente uma chave.
+  Confirmar objetos master/preview distintos pela hierarquia/UUIDs reservados.
+  Não aceita provas
+  declaradas. Binding exige reserva consumed no mesmo commit e ativo não
+  descartado. Constraints diferidas evitam dependência circular de ordem de
+  INSERT mensagem/binding/consumed, mas não dispensam validação final.
+
+Índices de FK necessários: intenção por conversation/auth-link/membership;
+sessão por intent já coberto UNIQUE; ticket por upload_session/expires_at;
+receipt por intent; variante por asset já coberto UNIQUE. Sem índice em URL,
+nome de pessoa ou payload. Resolver nomes de constraints globais existentes
+antes dos ALTERs A/B; não gerar DROP a partir de suposição.
+
+### Contratos de lote, hashes e replay
+
+Além das quatro assinaturas da tabela de boundary:
+
+```text
+public.send_chat_images_v1(
+  p_request_id uuid, p_conversation_id uuid,
+  p_body_text text, p_upload_session_ids uuid[]
+) returns jsonb                 -- authenticated/JWT real
+public.discard_chat_image_v1(
+  p_request_id uuid, p_upload_session_id uuid
+) returns jsonb                 -- authenticated/JWT real
+app_private.require_chat_image_upload_actor_v1(
+  p_upload_session_id uuid
+) returns app_private.superadmin_internal_context
+```
+
+Helper privado sem EXECUTE cliente/serviço. Descobre âncoras sem bloquear
+upload primeiro, adquire a ordem nominal e revalida todas. AAL persistido da
+linha exata aceita apenas aal1/aal2, negando NULL/aal3; não equivale ao JWT
+antigo. users.email_confirmed_at, deleted_at, banned_until e sessão.user_id/
+not_after são condições atuais após locks. Ban mantém sessão no GoTrue; testar
+somente existência de session seria insuficiente. Recovery/proveniência é
+dimensão separada ainda sob E1; não copiar IsRecovery upstream ou inventar
+negação geral de OTP/MagicLink. AMR ausente/ambíguo não autoriza por AAL.
+
+Prepare hash inclui versão de contrato, conversation e array ordenado completo
+de declarações normalizadas, com JSONB canônico server-side; identidade vem do
+contexto. Nulo/array vazio, entrada não-objeto, campos extras, declarações
+inválidas e ordem/cardinalidade fora da intenção são negados antes de reservar.
+Replay divergente conflita. Send hash inclui versão, conversation, texto
+normalizado pela regra textual existente e uploads na ordem de apresentação;
+**locks ordenam UUIDs**, hash não reordena a intenção do usuário. Após locks,
+send reautoriza e confere hash/receipt: replay permitido devolve o resultado
+antes do teste de não-consumido, pois o envio anterior já consumiu a reserva.
+Somente send NOVO sem receipt requer todo lote não descartado/consumido e ready;
+nenhum subset silencioso. A política
+de substituir um item descartado exige nova intenção, sem reciclar asset.
+
+Receipts contêm só IDs/estado/versão, nunca URL/ticket/token de lease ou nome de
+arquivo. Decisão nominal do Coordenador: hash não permite recuperar token
+original; replay do claim retorna `lease_active`/ocupado, sem segredo, sem
+disparar decoder e sem alegar processamento iniciado. Perda de resposta não
+autoriza rotação antecipada. Após expiração, reaquisição exige autorização
+atual e nova tentativa ligada à MESMA intenção/reserved_message_id, não nova
+mensagem. Dono legítimo pode concluir antes; replay reautoriza e devolve o
+resultado permitido. Complete replay confirma resultado após auth/hash e antes
+de exigir lease ainda ativa; não recria lease. Sem polling automático. O
+receipt textual v2 permanece intocado.
+
+Negativos obrigatórios antes do endpoint: resposta de claim perdida com lease
+ativa não emite token/não roda decoder; reaquisição antes da expiração nega;
+depois do prazo e após autorização atual emite nova lease/versão na mesma
+intenção; complete da lease anterior nega após reaquisição; complete vencedor
+antes do prazo permite replay autorizado sem nova escrita; revogação durante
+espera nega reaquisição e replay; bytes/outputs divergentes conflitam. Estes
+casos ainda não foram executados.
+
+### Statements da matriz de duas conexões
+
+Peças para o harness exclusivo Eng1, IDs sintéticos predefinidos, **não
+executadas**. Abrir A com BEGIN, executar statement, manter transação; iniciar B
+no comando nominal; observar espera pelo lock por inspeção de pg_locks/
+pg_stat_activity sob usuário técnico local; COMMIT/ROLLBACK A, então oráculos.
+Repetir invertendo vencedor. Timeouts limitados; sem sleep como prova.
+
+| A mantém após statement | B / oráculo após commit A |
+| --- | --- |
+| `delete from auth.sessions where id = :session_id` | complete/send negam sessão ausente, sem ready/mensagem/receipt de sucesso |
+| `update auth.users set banned_until = clock_timestamp() + interval '1 hour' where id = :user_id` | complete/send negam apesar da sessão existente |
+| `update auth.users set deleted_at = clock_timestamp() where id = :user_id`, seguido de DELETE sessions | complete nega; nenhuma inversão users→sessions |
+| `update public.conversations set is_read_only = true where id = :conversation_id` | send nega sem binding/mensagem |
+| writer U `superadmin_internal_user_change_status(...)`, argumentos exatos do catálogo | complete/send reavaliam membership e auth_link originais, sem substituição |
+| writer P `access_profile_update_v2(...)`, argumentos exatos do catálogo | complete/send reavaliam role/permission/grant; DML direto permission.status tem negativo separado |
+| complete com lease válida antes da transição ready | discard espera; inversão do vencedor impede ready tardio ou mantém efeito anterior válido |
+| send com IDs de duas sessões em ordem inversa à conexão B | locks por UUID eliminam inversão do conjunto; um envio atômico e replay/payload divergente distinguíveis |
+
+Esses DMLs modelam efeitos de GoTrue, não execução HTTP do provedor. Não
+contabilizar como verificação de todos writers MFA/refresh/downgrade. O gate
+E1 de AMR/proveniência ainda pode exigir ajustar a ordem antes do runner.
+
+Revisão independente do delta nominal: reserva de preview, ordem de replay
+send e integridade de lease corrigidas; sem novo bloqueante documental.
+Não é aprovação de migration executável. Máximo de anexos, helper E1,
+decoder e concorrência executada permanecem gates. Memória no-op para o DDL:
+candidato técnico não promovido como comportamento produtivo aprovado.
 
 ## Decoder: recomendação técnica pendente de decisão nominal
 
