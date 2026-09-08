@@ -24,23 +24,28 @@ apaga essa diferença vale metade.
 
 | Item | Estado | Como eu sei |
 |---|---|---|
-| 15 e 15b — toggle central | corrigido em  | **verificado por mim**: li o diff e ele traz / com  **e**  no , ou seja, cobre os **dois** defeitos que medi. Não medi a correção |
-| 8 — banner Criar compartilhado | corrigido no mesmo  | verificado por leitura do diff; o resultado RED4→GREEN4 é **declarado**, não medido por mim |
-| 1 — Acompanhamento trava | corrigido em  da C04 | **declarado**; confirmei apenas que o commit existe e toca o arquivo certo |
-| 2 e 3 — retry e  de Pessoas | corrigidos em  | **declarado**; confirmei que o commit toca os dois arquivos |
-| 21 — salvar pessoa incompleta sem retorno | corrigido em  | **declarado**; o título do commit descreve exatamente o defeito que relatei |
-| 6, 4 e 5 — foco em Instituições e Pessoas | corrigidos em  | **declarado**; confirmei que o commit toca  |
-| 14 —  | corrigido em  | **declarado**; minha reprodução roda contra baseline anterior |
-| 17, 18 e 19 — sessão e gateway de Auth | encaminhados à C01 como  | **declarado**; sem correção observada por mim |
-| Governança da referência aprovada | **resolvido** | **verificado por mim**: a imagem está em git na branch de integração, e o blob tem SHA256 , idêntico ao original byte a byte |
+| 15 e 15b — toggle central | corrigido em `302d4e90` | **verificado por mim**: li o diff e ele traz `shortcuts` e `actions` com `ActivateIntent` **e** `ExcludeFocus` no `Switch`, ou seja, cobre os **dois** defeitos que medi. Não medi a correção |
+| 8 — banner Criar compartilhado | corrigido no mesmo `302d4e90` | verificado por leitura do diff; o resultado RED4→GREEN4 é **declarado**, não medido por mim |
+| 1 — Acompanhamento trava | corrigido em `7d499cf2` da C04 | **declarado**; confirmei apenas que o commit existe e toca o arquivo certo |
+| 2 e 3 — retry e `Limpar filtros` de Pessoas | corrigidos em `8e71d4fb` | **declarado**; confirmei que o commit toca os dois arquivos |
+| 21 — salvar pessoa incompleta sem retorno | corrigido em `5aae74bc` | **declarado**; o título do commit descreve exatamente o defeito que relatei |
+| 6, 4 e 5 — foco em Instituições e Pessoas | corrigidos em `fb020538` | **declarado**; confirmei que o commit toca `institution_directory_cards.dart` |
+| 14 — cabeçalho compacto do shell | corrigido em `c4a7feff` | **declarado**; minha reprodução roda contra baseline anterior |
+| 17, 18 e 19 — sessão e gateway de Auth | encaminhados à C01 como `I017` | **declarado**; sem correção observada por mim |
+| Governança da referência aprovada | **resolvido** | **verificado por mim**: a imagem está em git na branch de integração, e o blob tem SHA256 `e096c855…`, idêntico ao original byte a byte |
 | 12, 13, 16, 20, 22 | abertos | sem correção observada |
 
 **O que ainda me falta, e é a diferença entre relatar e certificar:** nenhuma dessas correções foi
-**medida por mim**. Elas estão em branches que não são o meu baseline . Quando a C00
+**medida por mim**. Elas vivem em branches que não são o meu baseline `4af42925`. Quando a C00
 publicar o baseline conjunto, reexecuto os meus sete arquivos de aceite e as quatro reproduções e
 digo, por medição própria, quais vermelhos ficaram verdes. Até lá, os vermelhos do meu lote
 continuam vermelhos **porque o baseline é anterior à correção** — isso é baseline, não regressão, e
 não deve ser lido como suíte quebrada no fechamento.
+
+**Nota de método, contra mim:** a primeira gravação desta seção foi corrompida porque escrevi o
+texto dentro de um comando de shell e as crases viraram substituição de comando, apagando todos os
+identificadores. Corrigido em seguida, escrevendo por arquivo intermediário. Registro porque o
+commit corrompido está no histórico.
 
 ## Quadro geral
 
