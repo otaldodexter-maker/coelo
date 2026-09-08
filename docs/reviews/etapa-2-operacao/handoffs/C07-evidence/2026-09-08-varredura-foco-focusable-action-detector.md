@@ -24,17 +24,25 @@ A pergunta que sobrou: o padrão se repete? Sim. Das 22 ocorrências do widget n
 - **DEFEITO-1, foco duplo.** O detector é focalizável e não tem `actions:`; o filho também é
   focalizável (`InkWell`, `TextButton`). Resultado: duas paradas de Tab por elemento. A primeira
   acende o realce visual e Enter não faz nada; a segunda ativa, com aparência idêntica.
-- **DEFEITO-2, foco sem ativação.** O detector é focalizável e não tem `actions:`; o filho é um
-  `GestureDetector`, que não é focalizável nem responde a teclado. Resultado: uma parada de Tab que
-  Enter e Espaço não ativam. Agrava quando há `Semantics(button: true)` sem ação `onTap` própria,
-  porque o elemento é anunciado como botão e não responde.
+- **DEFEITO-2, foco sem ativação por teclado.** O detector é focalizável e não tem `actions:`; o
+  filho é um `GestureDetector`, que não é focalizável nem responde a teclado. Resultado: uma parada
+  de Tab que Enter e Espaço não ativam.
+
+  **Correção do que este documento afirmava antes:** eu supunha o agravante de que o elemento seria
+  anunciado como botão sem ação. **Isso foi medido e é falso.** A prova em
+  `c07_institutions_directory_test.dart` mostra que a semântica **passa**: o nó do indicador publica
+  papel de botão e ação de toque (`isSemantics(label: 'Status: Ativa', isButton: true,
+  hasTapAction: true)` é satisfeito), porque o `GestureDetector` filho anota o mesmo nó do
+  `Semantics`. Logo leitores de tela **conseguem** ativar; quem não consegue é o teclado físico. O
+  defeito é real e continua sendo falha de teclado, mas é menos grave do que eu havia escrito, e a
+  ressalva do limite 2 abaixo fica resolvida por medição.
 
 ## Os seis defeitos
 
 | # | Arquivo : linha | Forma | Filho | Dono |
 |---|---|---|---|---|
 | 6 | `apps/superadmin/lib/features/institutions/presentation/widgets/institution_directory_cards.dart:117` | DEFEITO-1 | `InkWell` | C04 |
-| 7 | `apps/superadmin/lib/features/institutions/presentation/widgets/institution_status_presentation.dart:55` | DEFEITO-2 | `GestureDetector` sob `Semantics(button: true)` | C04 |
+| 7 | `apps/superadmin/lib/features/institutions/presentation/widgets/institution_status_presentation.dart:55` | DEFEITO-2, provado por medição | `GestureDetector` sob `Semantics(button: true)`; semântica OK, teclado quebrado | C04 |
 | 8 | `apps/superadmin/lib/features/people/presentation/person_directory_page.dart:768` | DEFEITO-2 | `GestureDetector` sob `Semantics(button: true)` | C04 |
 | 14 | `apps/superadmin/lib/features/principal_happens_publication/presentation/principal_happens_publication_page.dart:487` | DEFEITO-1 | `TextButton.icon` | C05 |
 | 18 | `apps/superadmin/lib/shared/presentation/widgets/superadmin_directory_create_banner.dart:114` | DEFEITO-1 | `InkWell` | C00 |
@@ -87,7 +95,9 @@ Nenhuma delas é minha para aplicar; entrego a sugestão para o dono decidir.
    apoia na implementação do widget, que é um `Focus` com `canRequestFocus` ligado a `enabled` e sem
    `skipTraversal`, e no fato de nenhuma das 22 ocorrências passar as flags que desligariam isso.
    Confirmar de fato exige enviar Tab e checar o foco primário em cada ocorrência.
-2. **A fusão de nós semânticos não foi verificada** nos casos 7 e 8. Se o `GestureDetector` filho
+2. ~~A fusão de nós semânticos não foi verificada nos casos 7 e 8.~~ **Resolvido por medição:** a
+   semântica do indicador publica papel de botão e ação de toque, então o nó é fundido e leitores de
+   tela ativam. Só o teclado físico está quebrado. A redação original deste item dizia: Se o `GestureDetector` filho
    anotar o mesmo nó do `Semantics(button: true)`, leitores de tela conseguem ativar e só o teclado
    físico fica quebrado; se houver fronteira de nó, o elemento é anunciado como botão sem ação
    nenhuma. Só um exame da árvore semântica decide. Estou provando esse caso especificamente no meu
