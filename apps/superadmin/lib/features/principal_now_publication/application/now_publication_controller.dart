@@ -65,7 +65,7 @@ final class NowPublicationController extends ChangeNotifier {
     } on NowPublicationUnauthorized {
       if (!_isCurrentLoad(generation)) return;
       _denyAccess();
-    } on Exception {
+    } on Object {
       if (!_isCurrentLoad(generation)) return;
       _retryAction = _NowRetryAction.load;
       _emit(
@@ -168,7 +168,7 @@ final class NowPublicationController extends ChangeNotifier {
     } on NowPublicationUnauthorized {
       if (_disposed) return;
       _denyAccess();
-    } on Exception {
+    } on Object {
       if (_disposed) return;
       _retryAction = _NowRetryAction.save;
       _emit(
@@ -231,7 +231,7 @@ final class NowPublicationController extends ChangeNotifier {
     } on NowPublicationUnauthorized {
       if (_disposed) return null;
       _denyAccess();
-    } on Exception {
+    } on Object {
       if (_disposed) return null;
       _retryAction = _NowRetryAction.publish;
       _emit(
