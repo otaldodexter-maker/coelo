@@ -5,7 +5,7 @@
   "round": "R01",
   "writer": "01a0818b-2a34-7fa3-a9aa-f191fc91cc8d",
   "writer_active": true,
-  "code_baseline": "e39bb29f",
+  "code_baseline": "2980151e",
   "window_start": "2026-09-08T12:20:00-03:00",
   "window_end": "2026-09-16T12:20:00-03:00",
   "delivery_branch": "dev",
@@ -35,7 +35,7 @@
       "thread_id": "01a08197-7b62-73c1-9673-5fd40fa40452",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01",
       "branch": "codex/e2-r01-c01-identidade",
-      "instruction_revision": 6,
+      "instruction_revision": 7,
       "received_revision": 26,
       "integrated_revision": 3,
       "last_evidence": "2026-09-08T15:18:51-03:00",
@@ -67,22 +67,22 @@
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
       "branch": "codex/e2-r01-c02-forms-midia",
       "instruction_revision": 7,
-      "received_revision": 25,
+      "received_revision": 26,
       "integrated_revision": 4,
-      "last_evidence": "2026-09-08T15:31:05-03:00",
+      "last_evidence": "2026-09-08T15:45:17-03:00",
       "baseline": "6cb8ba15bae15f5a6129b0db6e740a66f8f82b3f",
       "worktree_verified_at": "2026-09-08T14:25:04-03:00",
       "handoff_present_at_preparation": false,
-      "accepted_revision": 25,
+      "accepted_revision": 26,
       "last_evidence_basis": "changed handoff read; accepted for review, not all integrated",
       "handoff_generated_at_reported": "2026-09-08T12:30:00-03:00",
-      "handoff_sha256": "17d7eb42148e5d5c28de741d35a92cc49e55360a1aa764c735ce9c36a456d3d6",
+      "handoff_sha256": "744b4a78fc0e44a535a45e4537f43dd63f997d997a6925e72fb0e2009d4f4efb",
       "next_step": "I005 XLSX/R2; catálogo44PASS/compatibilidade sem delta de falha; r13 anunciado após corte12",
       "local_test_evidence": "C00 R249/49 + static4/4 + lint; Forms editor102/102 + DTO15/15",
       "continuity_automation_id": "e2-r01-c02-retomada-30-min",
       "continuity_verification": "Native automation view and local TOML confirmed ACTIVE, 30min; actual dispatch not proven",
       "source_code_sha": "76a34dda11608b55ac31d855d1eddaf1993372ce",
-      "instruction_acknowledgement": "new instruction pending acknowledgement; previous retained in assignment history",
+      "instruction_acknowledgement": "I007 confirmed r26; release4files accepted; core integrated local",
       "integrated_code_shas": [
         "6fd676e2",
         "44465b0c"
@@ -122,7 +122,7 @@
       "thread_id": null,
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c04",
       "branch": "claude/e2-r01-c04-estruturas",
-      "instruction_revision": 6,
+      "instruction_revision": 7,
       "received_revision": 14,
       "integrated_revision": 0,
       "last_evidence": "2026-09-08T15:33:00-03:00",
@@ -148,7 +148,7 @@
       "thread_id": null,
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c05",
       "branch": "claude/e2-r01-c05-comunicacao",
-      "instruction_revision": 5,
+      "instruction_revision": 6,
       "received_revision": 7,
       "integrated_revision": 0,
       "last_evidence": "2026-09-08T15:35:08-03:00",
@@ -702,9 +702,18 @@
       "status": "delivered-origin-dev;not-production-certified",
       "report": "reports/R01-integracao-C03-1540.md",
       "delivery_sha": "c144f8c432008e7ea53f60c0756949e7a107fb86"
+    },
+    {
+      "executor": "C02",
+      "revision": 26,
+      "source": "0a94f2da",
+      "destination": "305f9824",
+      "followup": "2980151e",
+      "status": "integrated-local;push-pending",
+      "report": "reports/R01-media-upload-integracao.md"
     }
   ],
-  "last_delta_processed_at": "2026-09-08T15:45:15-03:00",
+  "last_delta_processed_at": "2026-09-08T15:50:03-03:00",
   "coordinator_next_steps": [
     "Review C02 I007 upload contract when ready",
     "Replay fixed XLSX;prepare concrete Auth personas package",
@@ -766,5 +775,11 @@
       "principal.profile-view"
     ],
     "report": "etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md"
+  },
+  "shared_file_reservations_incremental": {
+    "at": "2026-09-08T15:50:03-03:00",
+    "C01": "only _SidebarToggle.build plus I006test until explicit release",
+    "C00": "router/composition/auth scope/media public contracts; upload4files release accepted",
+    "C02": "priorSQLI003/I005/decoder reservations unchanged"
   }
 }
