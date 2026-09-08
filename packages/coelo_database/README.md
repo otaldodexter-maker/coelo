@@ -224,6 +224,13 @@ nem uma adaptação implícita para contornar a falha.
   -TestPath packages/coelo_database/supabase/tests/superadmin_forms_directory_internal_read_test.sql
 ```
 
+A seleção preparada `-NominalProfile FReadDirectoryContractGreen` acrescenta
+somente o reader auditado `20260908000049` à base50: 51 arquivos, com target
+único `20260908000049`. O nome não indica validação funcional: essa seleção
+canônica continua sujeita ao `42601` histórico descrito acima. Sua execução
+não foi realizada. O tratamento de uma base local derivada é um pacote
+nominal separado, com hashes e aprovação próprios.
+
 Nunca use
 `Prepare-SafeMigrationReplay.ps1` diretamente em operacoes normais, nem use o
 staging com `db push`, `migration repair` ou qualquer comando remoto. As

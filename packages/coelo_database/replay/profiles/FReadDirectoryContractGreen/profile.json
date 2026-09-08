@@ -1,0 +1,55 @@
+{
+    "id":  "FReadDirectoryContractGreen",
+    "base":  {
+                 "profile":  "auth",
+                 "manifest":  "packages/coelo_database/replay/foundation-migrations.sha256",
+                 "manifest_sha256_crlf_utf8":  "4279e67c9651f4049329591b6e8aad82e3a9052506c1a4e16ba8bbb693249d59",
+                 "selected_canonical_count":  45,
+                 "inherited_preflight_count":  2,
+                 "boundary":  "20260901200206"
+             },
+    "target_version":  "20260908000049",
+    "canonical_additions":  [
+                                {
+                                    "file":  "20260813155005_forms_definition_and_capabilities.sql",
+                                    "sha256_crlf_utf8":  "3a3d2bd348948cdef78a3a0c712c9eae8a6a6fb8be59b8fd942a445f6cbb6e36",
+                                    "canonical_union_position":  42
+                                },
+                                {
+                                    "file":  "20260813155116_forms_distribution_and_occurrences.sql",
+                                    "sha256_crlf_utf8":  "ab79c2616fa74944f5213e9544e0033d438308cf4a44b33bce34d7617421b2a0",
+                                    "canonical_union_position":  43
+                                },
+                                {
+                                    "file":  "20260827235500_superadmin_internal_institution_list_filter.sql",
+                                    "sha256_crlf_utf8":  "c4496229e2d004907b1c878e9719cadfa60169307eeb92be67cd76c3ad5551aa",
+                                    "canonical_union_position":  46
+                                },
+                                {
+                                    "file":  "20260908000049_superadmin_forms_directory_internal_read.sql",
+                                    "sha256_crlf_utf8":  "8900f60c8951efd20550a918684b335d10d3bf77d90fc4676a9381d16b27a119",
+                                    "canonical_union_position":  49
+                                }
+                            ],
+    "inherited_preflights":  [
+                                 {
+                                     "file":  "20260811151253_assert_function_execute_preflight.sql",
+                                     "sha256_crlf_utf8":  "718c2de052e9df29abc42642806d9a5e4d98c8964665453de6f14f0f8b61ab75",
+                                     "before":  "20260811151254_group_management_security.sql"
+                                 },
+                                 {
+                                     "file":  "20260811215452_access_profile_labels_replay_bridge.sql",
+                                     "sha256_crlf_utf8":  "d97e02796fcd5897707b5657b7a1c1df690f831e09ed98df6ed21886f75f9ef3",
+                                     "after":  "20260811215451_access_profile_management_v2.sql",
+                                     "before":  "20260812000847_audit_production.sql"
+                                 }
+                             ],
+    "extra_bridges":  [
+
+                      ],
+    "planned_counts":  {
+                           "canonical":  49,
+                           "preflight":  2,
+                           "total":  51
+                       }
+}
