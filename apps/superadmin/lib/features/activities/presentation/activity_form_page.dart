@@ -75,6 +75,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
   ActivityFormController? _controller;
   _ActivityFormCommand? _failedCommand;
   var _loadGeneration = 0;
+  var _commandGeneration = 0;
 
   bool get _isEditing => widget.activityId != null;
 
@@ -96,12 +97,14 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
     _controller = null;
     _failedCommand = null;
     _state = _ActivityFormLoadState.loading;
+    _commandGeneration++;
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
   }
 
   @override
   void dispose() {
     _loadGeneration++;
+    _commandGeneration++;
     _controller?.dispose();
     _activityController.dispose();
     super.dispose();
@@ -236,32 +239,41 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
   Future<void> _saveDraft() async {
     final controller = _controller!;
     if (!controller.validateDraft()) return;
+    final generation = ++_commandGeneration;
     setState(() => _failedCommand = null);
     controller.setSubmitting(true);
     try {
       await widget.onSaveDraft(controller.toDraft());
-      if (mounted) controller.markSubmitted();
+      if (_isCurrentCommand(generation, controller)) controller.markSubmitted();
     } on Exception {
-      if (mounted) setState(() => _failedCommand = _ActivityFormCommand.saveDraft);
+      if (_isCurrentCommand(generation, controller)) {
+        setState(() => _failedCommand = _ActivityFormCommand.saveDraft);
+      }
     } finally {
-      if (mounted) controller.setSubmitting(false);
+      if (_isCurrentCommand(generation, controller)) controller.setSubmitting(false);
     }
   }
 
   Future<void> _submit() async {
     final controller = _controller!;
     if (!controller.validateCompletion()) return;
+    final generation = ++_commandGeneration;
     setState(() => _failedCommand = null);
     controller.setSubmitting(true);
     try {
       await widget.onSubmit(controller.toDraft());
-      if (mounted) controller.markSubmitted();
+      if (_isCurrentCommand(generation, controller)) controller.markSubmitted();
     } on Exception {
-      if (mounted) setState(() => _failedCommand = _ActivityFormCommand.submit);
+      if (_isCurrentCommand(generation, controller)) {
+        setState(() => _failedCommand = _ActivityFormCommand.submit);
+      }
     } finally {
-      if (mounted) controller.setSubmitting(false);
+      if (_isCurrentCommand(generation, controller)) controller.setSubmitting(false);
     }
   }
+
+  bool _isCurrentCommand(int generation, ActivityFormController controller) =>
+      mounted && generation == _commandGeneration && identical(controller, _controller);
 
   Future<void> _retryCatalogOptions() async {
     try {

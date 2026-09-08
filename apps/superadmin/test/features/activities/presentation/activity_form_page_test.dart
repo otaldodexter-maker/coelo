@@ -423,6 +423,35 @@ void main() {
     expect(saved?.name, 'Dança');
   });
 
+  testWidgets('edit route ignores an older save response after an A to B swap', (tester) async {
+    final repository = _TaxonomyOptionsRepository();
+    final saveA = Completer<void>();
+
+    await tester.pumpWidget(
+      _app(activityId: 'activity-1', repository: repository, onSaveDraft: (_) => saveA.future),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('activity-form-save-draft')));
+    await tester.pump();
+
+    await tester.pumpWidget(_app(activityId: 'activity-2', repository: repository));
+    await tester.pump();
+    await tester.pump();
+    expect(
+      tester.widget<TextFormField>(find.byKey(const Key('activity-form-name'))).controller?.text,
+      'Dança',
+    );
+
+    saveA.complete();
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<TextFormField>(find.byKey(const Key('activity-form-name'))).controller?.text,
+      'Dança',
+    );
+    expect(find.byKey(const Key('activity-form-command-error')), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('failed draft save exposes retry and preserves the draft', (tester) async {
     var attempts = 0;
     await tester.pumpWidget(
@@ -554,10 +583,12 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('activity-form-name')), 'Robótica');
     final continueButton = find.byKey(const Key('activity-form-continue'));
-    final formScrollable = find.descendant(
-      of: find.byKey(const Key('activity-form-scroll')),
-      matching: find.byType(Scrollable),
-    ).first;
+    final formScrollable = find
+        .descendant(
+          of: find.byKey(const Key('activity-form-scroll')),
+          matching: find.byType(Scrollable),
+        )
+        .first;
     await tester.scrollUntilVisible(continueButton, 250, scrollable: formScrollable);
     await tester.pumpAndSettle();
     // The compact footer scrolls with the form; expose the whole button,
