@@ -123,7 +123,8 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
         oldWidget.mealPlanId != widget.mealPlanId ||
         oldWidget.templatePlanId != widget.templatePlanId ||
         oldWidget.mealPlanModelId != widget.mealPlanModelId ||
-        oldWidget.isTemplate != widget.isTemplate) {
+        oldWidget.isTemplate != widget.isTemplate ||
+        oldWidget.tenantId != widget.tenantId) {
       _commandGeneration++;
       _resetForLoad();
       _load();
@@ -987,6 +988,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
     final templatePlanId = widget.templatePlanId;
     final mealPlanModelId = widget.mealPlanModelId;
     final isTemplate = widget.isTemplate;
+    final tenantId = widget.tenantId;
     if (mounted) {
       setState(() {
         _loading = true;
@@ -1050,6 +1052,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
         templatePlanId,
         mealPlanModelId,
         isTemplate,
+        tenantId,
       )) {
         return;
       }
@@ -1079,6 +1082,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
         templatePlanId,
         mealPlanModelId,
         isTemplate,
+        tenantId,
       )) {
         setState(() => _error = error.message);
       }
@@ -1090,6 +1094,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
         templatePlanId,
         mealPlanModelId,
         isTemplate,
+        tenantId,
       )) {
         setState(() => _loading = false);
       }
@@ -1103,6 +1108,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
     String? templatePlanId,
     String? mealPlanModelId,
     bool isTemplate,
+    String tenantId,
   ) =>
       mounted &&
       generation == _loadGeneration &&
@@ -1110,7 +1116,8 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
       mealPlanId == widget.mealPlanId &&
       templatePlanId == widget.templatePlanId &&
       mealPlanModelId == widget.mealPlanModelId &&
-      isTemplate == widget.isTemplate;
+      isTemplate == widget.isTemplate &&
+      tenantId == widget.tenantId;
 
   void _resetForLoad() {
     _step = 0;
@@ -1465,6 +1472,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
     final templatePlanId = widget.templatePlanId;
     final mealPlanModelId = widget.mealPlanModelId;
     final isTemplate = widget.isTemplate;
+    final tenantId = widget.tenantId;
     bool isCurrent() => _isCurrentCommand(
       generation,
       repository,
@@ -1473,6 +1481,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
       templatePlanId,
       mealPlanModelId,
       isTemplate,
+      tenantId,
     );
     final operationId = _persistOperationId ??= _newUuid();
     MealPlan? confirmedPlan;
@@ -1648,6 +1657,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
     String? templatePlanId,
     String? mealPlanModelId,
     bool isTemplate,
+    String tenantId,
   ) =>
       mounted &&
       generation == _commandGeneration &&
@@ -1656,7 +1666,8 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
       mealPlanId == widget.mealPlanId &&
       templatePlanId == widget.templatePlanId &&
       mealPlanModelId == widget.mealPlanModelId &&
-      isTemplate == widget.isTemplate;
+      isTemplate == widget.isTemplate &&
+      tenantId == widget.tenantId;
 
   MealPlanDraft _buildDraft({
     required String requestId,
