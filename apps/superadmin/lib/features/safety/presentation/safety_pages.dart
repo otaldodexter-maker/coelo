@@ -839,6 +839,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
   String? error;
   int expectedVersion = 1;
   int _contextVersion = 0;
+  int _completionVersion = 0;
   bool _loadingContext = false;
   static const labels = ['Criança', 'Pessoa autorizada', 'Validade e capacidades', 'Revisão'];
 
@@ -852,6 +853,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
   @override
   void didUpdateWidget(covariant ChildSafetyWizardPage oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.onSaved != widget.onSaved) _completionVersion++;
     final changedController = oldWidget.controller != widget.controller;
     if (changedController) {
       oldWidget.controller.removeListener(_controllerChanged);
@@ -1251,6 +1253,8 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       setState(() => error = 'O contexto autorizado da criança está incompleto.');
       return;
     }
+    final completionVersion = _completionVersion;
+    final onSaved = widget.onSaved;
     final saved = await controller.saveAuthorization(
       SavePickupAuthorizationCommand(
         requestId: _uuid(),
@@ -1268,9 +1272,9 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
         validUntil: validityOpenEnded ? null : validity?.end,
       ),
     );
-    if (!mounted || version != _contextVersion) return;
+    if (!mounted || version != _contextVersion || completionVersion != _completionVersion) return;
     if (saved) {
-      widget.onSaved();
+      onSaved();
     } else {
       setState(() => error = controller.errorMessage);
     }

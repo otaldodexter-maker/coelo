@@ -261,6 +261,76 @@ void main() {
     expect(find.text('Não foi possível carregar o contexto solicitado.'), findsNothing);
   });
 
+  for (final replacement in ['unchanged', 'replaced', 'replaced-and-restored']) {
+    testWidgets('wizard save cannot navigate through a $replacement completion handler', (
+      tester,
+    ) async {
+      await _surface(tester);
+      final repository = _Repository('Escopo A');
+      final pending = Completer<void>();
+      repository.pendingSave = pending.future;
+      final controller = ChildSafetyController(repository);
+      addTearDown(controller.dispose);
+      final navigator = GlobalKey<NavigatorState>();
+      void original() => navigator.currentState!.push<void>(
+        MaterialPageRoute<void>(builder: (_) => const Scaffold(body: Text('Destino original'))),
+      );
+      void replacementHandler() => navigator.currentState!.push<void>(
+        MaterialPageRoute<void>(builder: (_) => const Scaffold(body: Text('Destino novo'))),
+      );
+      Widget page(VoidCallback onSaved) => MaterialApp(
+        navigatorKey: navigator,
+        theme: CoeloTheme.light,
+        home: ChildSafetyWizardPage(
+          controller: controller,
+          childId: 'child-a',
+          logout: _logout,
+          onCancel: () {},
+          onSaved: onSaved,
+        ),
+      );
+      await tester.pumpWidget(page(original));
+      await tester.pumpAndSettle();
+      final primary = find.byKey(const Key('safety-wizard-primary'));
+      await tester.tap(primary);
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField).at(1), 'person-a');
+      await tester.enterText(find.byType(TextField).last, 'Solicitação sintética');
+      await tester.tap(primary);
+      await tester.pumpAndSettle();
+      await tester.tap(primary);
+      await tester.pumpAndSettle();
+      await tester.tap(primary);
+      await tester.pump();
+      expect(repository.savedCommands, hasLength(1));
+      if (replacement != 'unchanged') {
+        await tester.pumpWidget(page(replacementHandler));
+        await tester.pump();
+        if (replacement == 'replaced-and-restored') {
+          await tester.pumpWidget(page(original));
+          await tester.pump();
+        }
+      }
+      pending.complete();
+      await tester.pumpAndSettle();
+      expect(find.text('Destino novo'), findsNothing);
+      expect(
+        find.text('Destino original'),
+        replacement == 'unchanged' ? findsOneWidget : findsNothing,
+      );
+      expect(repository.savedCommands, hasLength(1));
+      if (replacement != 'unchanged') {
+        expect(find.byType(ChildSafetyWizardPage), findsOneWidget);
+        await tester.tap(find.widgetWithText(OutlinedButton, 'Anterior'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(OutlinedButton, 'Anterior'));
+        await tester.pumpAndSettle();
+        expect(find.text('Solicitação sintética'), findsWidgets);
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('wizard never reports an old save through the new context callback', (tester) async {
     await _surface(tester);
     final repository = _Repository('Escopo A');
