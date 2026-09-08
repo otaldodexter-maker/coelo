@@ -84,6 +84,9 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
   String? _error;
   String? _pendingSaveRequestId;
   String? _pendingSaveFingerprint;
+  int _contextRevision = 0;
+
+  bool _isCurrent(int revision) => mounted && revision == _contextRevision;
 
   bool get _editing => widget.profileId != null;
 
@@ -135,12 +138,45 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
     if (mounted) setState(() {});
   }
 
+  @override
+  void didUpdateWidget(covariant AccessProfileFormPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.repository, widget.repository) ||
+        oldWidget.domain != widget.domain ||
+        oldWidget.profileId != widget.profileId) {
+      _contextRevision++;
+      _original = null;
+      _loading = true;
+      _saving = false;
+      _error = null;
+      _pendingSaveRequestId = null;
+      _pendingSaveFingerprint = null;
+      _permissions = const [];
+      _status = AccessProfileStatus.active;
+      _scope = AccessProfileScope.platform;
+      _currentStep = 0;
+      _furthestStep = 0;
+      _showIdentityErrors = false;
+      for (final controller in [
+        _nameController,
+        _codeController,
+        _descriptionController,
+        _permissionSearchController,
+        _reasonController,
+      ]) {
+        controller.clear();
+      }
+      _load();
+    }
+  }
+
   Future<void> _load() async {
+    final revision = _contextRevision;
     try {
       final profile = _editing
           ? await widget.repository.fetchDetail(widget.domain, widget.profileId!)
           : await widget.repository.fetchTemplate(widget.domain);
-      if (!mounted) return;
+      if (!_isCurrent(revision)) return;
       _original = profile;
       _nameController.text = profile.name;
       _codeController.text = profile.code;
@@ -152,13 +188,13 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
         _loading = false;
       });
     } on AccessProfileUnauthorizedException catch (error) {
-      if (!mounted) return;
+      if (!_isCurrent(revision)) return;
       setState(() {
         _error = error.message;
         _loading = false;
       });
     } on Object {
-      if (!mounted) return;
+      if (!_isCurrent(revision)) return;
       setState(() {
         _error = 'Não foi possível carregar o formulário.';
         _loading = false;
@@ -167,21 +203,26 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
   }
 
   Future<void> _requestExit() async {
+    final revision = _contextRevision;
+    final onCancel = widget.onCancel;
     if (!_isDirty || await showInstitutionExitDialog(context, entityLabel: widget.entityLabel)) {
-      if (!mounted) return;
-      widget.onCancel();
+      if (!_isCurrent(revision)) return;
+      onCancel();
     }
   }
 
   Future<void> _requestDestination(String destination) async {
+    final revision = _contextRevision;
+    final onDestinationSelected = widget.onDestinationSelected;
     if (!_isDirty || await showInstitutionExitDialog(context, entityLabel: widget.entityLabel)) {
-      if (!mounted) return;
-      widget.onDestinationSelected?.call(destination);
+      if (!_isCurrent(revision)) return;
+      onDestinationSelected?.call(destination);
     }
   }
 
   @override
   void dispose() {
+    _contextRevision++;
     _nameController.dispose();
     _codeController.dispose();
     _descriptionController.dispose();
@@ -239,9 +280,12 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
   }
 
   Future<void> _save() async {
+    if (_saving || _loading || _original == null) return;
     if (!_validateIdentity()) return;
     if (_reasonController.text.trim().isEmpty) return;
     final draft = _draft();
+    final revision = _contextRevision;
+    final onSaved = widget.onSaved;
     setState(() => _saving = true);
     final fingerprint = '${draft.toDraftJson()}|${_reasonController.text.trim()}';
     if (_pendingSaveFingerprint != fingerprint) {
@@ -255,14 +299,14 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
         reason: _reasonController.text.trim(),
         draft: draft,
       );
-      if (!mounted) return;
+      if (!_isCurrent(revision)) return;
       _pendingSaveRequestId = null;
       _pendingSaveFingerprint = null;
-      widget.onSaved(saved);
+      onSaved(saved);
     } on AccessProfileConflictException {
+      if (!mounted || !_isCurrent(revision)) return;
       _pendingSaveRequestId = null;
       _pendingSaveFingerprint = null;
-      if (!mounted) return;
       final reload = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => CoeloAdminDialogShell(
@@ -281,25 +325,26 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
           ),
         ),
       );
-      if (!mounted) return;
+      if (!_isCurrent(revision)) return;
       if (reload == true) await _reloadReferencePreservingDraft();
     } on AccessProfileException catch (error) {
-      if (mounted) {
+      if (mounted && _isCurrent(revision)) {
         showSuperadminNotice(context, error.message, icon: Icons.error_outline_rounded);
       }
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (_isCurrent(revision)) setState(() => _saving = false);
     }
   }
 
   Future<void> _reloadReferencePreservingDraft() async {
+    final revision = _contextRevision;
     final selectedCodes = _permissions
         .where((permission) => permission.selected)
         .map((permission) => permission.code)
         .toSet();
     try {
       final latest = await widget.repository.fetchDetail(widget.domain, widget.profileId!);
-      if (!mounted) return;
+      if (!mounted || !_isCurrent(revision)) return;
       setState(() {
         _original = latest;
         _permissions = latest.permissions
@@ -312,7 +357,7 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
         icon: Icons.sync_rounded,
       );
     } on AccessProfileException catch (error) {
-      if (mounted) {
+      if (mounted && _isCurrent(revision)) {
         showSuperadminNotice(context, error.message, icon: Icons.error_outline_rounded);
       }
     }
