@@ -484,8 +484,12 @@ class _AudienceToggleState extends State<_AudienceToggle> {
       child: MouseRegion(
         onEnter: (_) => setState(() => _hovered = true),
         onExit: (_) => setState(() => _hovered = false),
-        child: FocusableActionDetector(
-          onShowFocusHighlight: (value) => setState(() => _focused = value),
+        // Focus, not FocusableActionDetector: the child is already a real button
+        // with keyboard activation, and the detector was a second Tab stop over
+        // the same chip that looked focused and activated nothing.
+        child: Focus(
+          canRequestFocus: false,
+          onFocusChange: (value) => setState(() => _focused = value),
           child: TextButton.icon(
             onPressed: widget.onPressed,
             style: TextButton.styleFrom(
