@@ -20,7 +20,7 @@ Docker ou deploy por esta frente nesta retomada.
 | Passo | Camada / objeto | Estado e próximo gate |
 |---|---|---|
 | 1/6 Contrato/inventário | read/update/suspend internos | Recorte local listado; criação/convite não habilitados |
-| 2/6 Backend/negativas | RPCs profiles/list/detail e lifecycle | Fixture nominal e0efd98e com 45 asserts revisados; replay exclusivo Eng1 pendente. Dois gaps de payload registrados separadamente em eaf19701 |
+| 2/6 Backend/negativas | RPCs profiles/list/detail e lifecycle | Eng1 confirmou fixture 45/45 PASS no replay Auth45+1+2=48; evidência integrada central 2c7f369c, cleanup 01:00:48 UTC. Minimização separada: Coordenador confirmou 1 PASS/2 FAIL; corretiva de duas funções em 27a0c3bb revisada estaticamente, GREEN nominal pendente |
 | 3/6 Cliente/estados | scope/main/app/router/diretório | Composição readonly, negativa e limpeza de tela implementadas |
 | 4/6 Integração/reload | Sessão → RPC → UI | Cache/epoch ligados à sessão e dispose. Backend real aberto; mídia aguarda consumidor real da E2E3 |
 | 5/6 Regressão/visual | testes Flutter | Diretório 13/13; composição inicial combinada 32/32; visual real ainda aberto |
@@ -67,8 +67,11 @@ SDK, refresh e descarte próprio. Teste SDK/HTTP mock reproduziu getter
 incorreto após callback tardio; revisão acrescentou RED de construção após
 recovery já existente. Sincronização pelo stream existente fechou os REDs:
 74/74 locais (9 SDK + 42 Auth + 23 pacote), sem interface pública adicional.
-Corrida A rejeitado/B ainda pendente permanece separada e aberta; diferença
-de ID isolada não autoriza preservar sessão desconhecida.
+Corrida A rejeitado/B após remontagem foi reproduzida via SDK e router reais
+com transporte simulado. `c0a199fd` serializa a operação completa de login;
+154/154 na regressão local, analyzer/review aprovados. Coordenador integrou em
+`63258e5e` e informou 61/61 no lote de destino Auth/Circulares. Diferença de ID
+isolada continua sem autorizar preservar sessão desconhecida. Remoto/E2E abertos.
 
 ## Conta e Configurações
 

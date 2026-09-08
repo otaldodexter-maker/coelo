@@ -1,7 +1,7 @@
 ---
 title: "Modelos de Acesso — autorização antes de lookup"
 source: "Reserva local do Coordenador; spec 039 e aditivo MFA MVP; migrations 171731/193000; revisão realm_audit"
-status: "nominal-red-test-prepared; not-executed"
+status: "nominal-red-confirmed; corrective-static-reviewed-awaiting-green"
 generated_at: "2026-09-07"
 ---
 
@@ -45,3 +45,47 @@ produção/E2E dependem do pacote coordenado, sem ETA confirmada neste registro.
 Nenhuma SQL executada ou migration corretiva escrita nesta evidência.
 
 Knowledge: sem decisão nova de produto; o gate conserva fontes existentes.
+
+## Corretiva nominal — 2026-09-08
+
+O Coordenador confirmou replay real do plano 11: 9 PASS, 2 FAIL (5/7), sem
+erro de ACL ou abort, cleanup sem resíduo. O par conhecido/desconhecido retornou
+SESSION_INVALID/PERMISSION_DENIED para sessão inválida e
+INTERNAL_CONTEXT_DENIED/PERMISSION_DENIED para realm global. A execução foi
+do Engenheiro 1; esta frente não executou SQL ou Docker.
+
+A migration nova `20260908021821_access_profile_models_read_prelookup_authorization.sql`
+foi criada pelo CLI 2.116.0 e movida para `migrations/` sem mudar timestamp.
+SHA-256 UTF-8/LF: `6258f28e19237d2141746291d33afc3e6e54a6b81d4060cd0ec5f876a6c0ea34`.
+
+Acrescenta um pré-validador privado exclusivo de Models, sem argumentos do
+cliente, que tenta as três capabilities de leitura pelo helper vigente.
+Somente `42501` com detalhe `SAI_PERMISSION_DENIED` permite tentar o próximo
+domínio; sessão, realm e demais falhas propagam imediatamente. Sem leitura
+permitida, nega. O novo helper tem EXECUTE revogado de todos os papéis de API.
+Não exige `platform.read`: isso restringiria o contrato específico vigente.
+
+Duas chamadas condicionais antecedem lookup: dispatcher somente para
+list/detail/catalog e detalhe somente com `p_authorize=true`. A autorização do
+domínio exato permanece após lookup, assim como Owner/escopo plataforma,
+AAL1 para READ, auditoria/envelopes e ACLs das funções substituídas. Os corpos
+de escrita/import/export e os caminhos `p_authorize=false` não mudam.
+
+Teste novo separado `access_profile_models_read_prelookup_regression_test.sql`
+preserva os 11 casos e acrescenta seis controles: ator authenticated, list/detail
+permitidos com leitura exclusivamente institution ou Principal e negação de
+detalhe plataforma/catalog, sempre sem `platform.read`. Plano 17 ainda não
+executado; teste 11 original e seu hash permanecem intactos.
+SHA-256 UTF-8/LF do plano 17:
+`084d70c291552ff779192f96c4821b9d9b1a98dc4efaa0bec9d3435874de8e73`.
+
+Review independente `realm_audit` sem bloqueante estático: comparação mecânica
+confirmou corpos de detalhe/dispatcher idênticos à histórica, retirados apenas
+os guards. Plano 17 corresponde a 16 `is` e um `ok`; controles 13/16 recusam a
+restrição extra `platform.read`, e 14/17 mantêm a negação cross-domain/catalog.
+O assert de auditoria comprova existência agregada, não cada negação individual.
+
+`git diff --check` passou; inspeção de segredos encontrou somente o nome do
+papel `service_role` na revogação, nenhuma credencial. Próximo gate: replay
+nominal serializado do Engenheiro 1, incluindo ownership/ACL do helper novo.
+Nenhuma promoção local-green, remota ou E2E neste checkpoint.
