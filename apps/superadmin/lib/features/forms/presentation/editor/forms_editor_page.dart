@@ -1095,7 +1095,19 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     final api = widget.api;
     if (api == null || !_canEdit) return;
     final definition = _localDefinition();
-    if (const FormDefinitionValidator().validate(definition).isNotEmpty) {
+    // Quick-poll completeness is a publish gate, not a draft-save gate.
+    // Keep structural validation; the backend still authorizes every command.
+    final draftIssues = const FormDefinitionValidator()
+        .validate(definition)
+        .where(
+          (issue) => switch (issue.code) {
+            FormValidationCode.quickPollIntentRequired ||
+            FormValidationCode.quickPollIntentTooLong ||
+            FormValidationCode.quickPollRequiresOneQuestion => false,
+            _ => true,
+          },
+        );
+    if (draftIssues.isNotEmpty) {
       setState(
         () => _feedback = 'Revise o título, a ordem e os campos obrigatórios antes de salvar.',
       );
