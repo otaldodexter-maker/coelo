@@ -169,3 +169,49 @@ por exemplo com `throwsA(isA<StateError>())`, a troca o quebraria. Ninguém veri
 6. **Converter qualquer linha em fato medido é barato** e usa o padrão que já apliquei: injetar um
    repositório falso que lança `Error` e afirmar que a tela chega ao painel de falha com retry, e não
    ao esqueleto. Ofereço fazer isso para os casos que a C00 priorizar, dentro de reserva.
+
+---
+
+## Medição 1 — diretório de Atividades, 2026-09-08T20:50
+
+Primeira linha da varredura convertida de leitura em **fato medido**, e escolhida por consequência:
+está ligada a um repositório Supabase **real**, ao contrário dos quatro que `fdf0972d` corrigiu.
+
+Prova em `repro/activity_directory_error_hang_test.dart`. Método fora da árvore, com cópia temporária
+para executar e remoção depois; `analyze` limpo; worktree conferida limpa ao fim.
+
+| Caso | Resultado | Medido |
+|---|---|---|
+| **Controle** — `Exception` comum em `fetchPage` | **verde** | o estado vai para falha, como esperado. Prova que o harness funciona e separa "o teste está errado" de "o código está errado" |
+| `Error` de decodificação em `fetchPage` | **vermelho** | o estado permanece em `loading` |
+| `Error` de decodificação em `fetchFilterOptions` | **vermelho** | o estado permanece em `loading` |
+| Página montada com o repositório que lança `Error` | **vermelho** | a chave `activity-directory-loading` **continua encontrada** depois da falha: a tela fica no esqueleto, sem retry |
+
+### Correção que a medição fez na minha própria formulação
+
+Eu vinha dizendo, e a varredura também, que o carregamento "trava". **O mecanismo é mais preciso, e
+importa para quem for corrigir:**
+
+`_load` é `async`, então o `Error` que escapa do `try` vira o erro do `Future` devolvido por `load()`
+— ou seja, no nível do view model a chamada **completa com erro**, não fica pendurada. O travamento
+acontece na **UI**: `activity_directory_page.dart:175` dispara `load()` dentro de um
+`addPostFrameCallback` e **descarta o Future**. O erro vira erro assíncrono sem tratador, o
+`notifyListeners()` da linha 173 fica fora do `try` e não roda, o estado continua `loading` e a
+página renderiza o esqueleto para sempre.
+
+Consequência prática para o teste: **medir só por timeout daria falso verde**, porque `load()`
+completa. A prova precisa afirmar o **estado final** e a **ausência do esqueleto**, que foi o que
+este harness fez.
+
+### O que a medição deliberadamente não afirma
+
+Nada sobre a linha 181 (`_capture`), que devolve `Exception` como valor e deixa `Error` subir de
+propósito. Se ela capturasse `Object`, um `Error` viraria valor de retorno, passaria pelo filtro
+`whereType<Exception>()` e estouraria num cast adiante — trocaria um defeito por outro. O teste mede
+só o contrato observável, então continua válido qualquer que seja a forma da correção.
+
+### Estado da família após esta medição
+
+Duas linhas medidas, das 22 que travam: Acompanhamento e Atividades. As demais continuam leitura.
+Atividades vale mais que Acompanhamento na ordem de consequência, porque Acompanhamento está hoje
+ligado a um repositório `Unavailable` e Atividades não.
