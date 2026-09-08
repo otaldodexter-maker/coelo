@@ -32,6 +32,9 @@ final class CircularComposerController extends ChangeNotifier {
   String? _errorCode;
   ({String requestId, CircularDraft draft})? _pendingSave;
   Future<CircularSaveResult>? _saveInFlight;
+  ({String requestId, CircularDraft draft, DateTime? publishAt})? _pendingPublish;
+  Future<CircularSaveResult>? _publishInFlight;
+  DateTime? _publishAtInFlight;
 
   CircularDraft get draft => _draft;
   CircularComposerState get state => _state;
@@ -210,6 +213,14 @@ final class CircularComposerController extends ChangeNotifier {
   }
 
   Future<CircularSaveResult> save() {
+    if (_publishInFlight != null || _pendingPublish != null) {
+      if (_publishInFlight == null) _setState(CircularComposerState.failure, 'publicationPending');
+      return Future.error(const CircularInvalid('publicationPending'));
+    }
+    return _saveDraftSingleFlight();
+  }
+
+  Future<CircularSaveResult> _saveDraftSingleFlight() {
     final active = _saveInFlight;
     if (active != null) return active;
     final completion = Completer<CircularSaveResult>();
@@ -265,22 +276,54 @@ final class CircularComposerController extends ChangeNotifier {
     }
   }
 
-  Future<CircularSaveResult> publish({DateTime? publishAt}) async {
-    final publicationIssues = _draft.validate(requireAudience: true);
-    if (publicationIssues.isNotEmpty) {
-      final code = publicationIssues.first.code.name;
-      _setState(CircularComposerState.failure, code);
-      throw CircularInvalid(code);
+  Future<CircularSaveResult> publish({DateTime? publishAt}) {
+    final active = _publishInFlight;
+    if (active != null) {
+      if (publishAt != _publishAtInFlight) {
+        return Future.error(const CircularInvalid('publicationPending'));
+      }
+      return active;
     }
-    final saved = await save();
+    final completion = Completer<CircularSaveResult>();
+    _publishInFlight = completion.future;
+    _publishAtInFlight = publishAt;
+    _publishPendingDraft(publishAt: publishAt).then(
+      (result) {
+        _publishInFlight = null;
+        completion.complete(result);
+      },
+      onError: (Object error, StackTrace stack) {
+        _publishInFlight = null;
+        completion.completeError(error, stack);
+      },
+    );
+    return completion.future;
+  }
+
+  Future<CircularSaveResult> _publishPendingDraft({DateTime? publishAt}) async {
+    if (_pendingPublish == null) {
+      final publicationIssues = _draft.validate(requireAudience: true);
+      if (publicationIssues.isNotEmpty) {
+        final code = publicationIssues.first.code.name;
+        _setState(CircularComposerState.failure, code);
+        throw CircularInvalid(code);
+      }
+      await _saveDraftSingleFlight();
+      _pendingPublish = (requestId: _requestIdFactory(), draft: _draft, publishAt: publishAt);
+    }
+    final pending = _pendingPublish!;
     _setState(CircularComposerState.publishing);
+    late final CircularSaveResult result;
+    late final bool hasNewIntent;
     try {
-      final result = await repository.publish(
-        requestId: _requestIdFactory(),
-        circularId: saved.id,
-        expectedVersion: saved.version,
-        publishAt: publishAt,
+      result = await repository.publish(
+        requestId: pending.requestId,
+        circularId: pending.draft.id,
+        expectedVersion: pending.draft.expectedVersion,
+        publishAt: pending.publishAt,
       );
+      hasNewIntent = !identical(_draft, pending.draft) || publishAt != pending.publishAt;
+      _pendingPublish = null;
       _draft = CircularDraft(
         id: result.id,
         title: _draft.title,
@@ -291,15 +334,22 @@ final class CircularComposerController extends ChangeNotifier {
         responsesCloseAt: _draft.responsesCloseAt,
         expectedVersion: result.version,
       );
-      _setState(CircularComposerState.published);
-      return result;
     } on CircularVersionConflict {
+      _pendingPublish = null;
       _setState(CircularComposerState.conflict, 'expected_version_conflict');
       rethrow;
     } on CircularFailure catch (error) {
+      if (error is! CircularUnavailable) _pendingPublish = null;
       _setState(CircularComposerState.failure, error.runtimeType.toString());
       rethrow;
     }
+    if (hasNewIntent) {
+      // Recover the original receipt, but never label subsequent edits as sent.
+      _setState(CircularComposerState.failure, 'publicationRecoveredWithChanges');
+      throw const CircularInvalid('publicationRecoveredWithChanges');
+    }
+    _setState(CircularComposerState.published);
+    return result;
   }
 
   void _mapQuestion(String id, CircularQuestionBlock Function(CircularQuestionBlock) transform) {
@@ -326,7 +376,11 @@ final class CircularComposerController extends ChangeNotifier {
       responsesCloseAt: _draft.responsesCloseAt,
       expectedVersion: _draft.expectedVersion,
     );
-    _setState(CircularComposerState.editing);
+    if (_publishInFlight != null) {
+      notifyListeners();
+    } else {
+      _setState(CircularComposerState.editing);
+    }
   }
 
   void _setState(CircularComposerState value, [String? error]) {
