@@ -37,6 +37,7 @@ final class HealthCareController extends ChangeNotifier {
   HealthCareDirectoryDisplay _display = HealthCareDirectoryDisplay.cards;
   Object? _error;
   var _loadGeneration = 0;
+  var _viewGeneration = 0;
   var _disposed = false;
 
   @override
@@ -79,6 +80,7 @@ final class HealthCareController extends ChangeNotifier {
 
   Future<void> load() async {
     if (_disposed) return;
+    _viewGeneration++;
     final generation = ++_loadGeneration;
     if (_actor == null) {
       _page = null;
@@ -110,6 +112,12 @@ final class HealthCareController extends ChangeNotifier {
   }
 
   Future<void> loadDetail(String childId) async {
+    if (_disposed) return;
+    _viewGeneration++;
+    await _loadDetail(childId);
+  }
+
+  Future<void> _loadDetail(String childId) async {
     if (_disposed) return;
     final generation = ++_loadGeneration;
     _detail = null;
@@ -236,6 +244,7 @@ final class HealthCareController extends ChangeNotifier {
   );
 
   Future<void> correctMedication(HealthMedicationCorrectionCommand command) async {
+    final viewGeneration = _viewGeneration;
     await repository.changeMedicationRelevant(
       childId: command.childId,
       medicationId: command.medicationId,
@@ -243,10 +252,11 @@ final class HealthCareController extends ChangeNotifier {
       justification: command.justification,
       actor: actor,
     );
-    await loadDetail(command.childId);
+    await _refreshMutationView(viewGeneration, command.childId);
   }
 
   Future<void> createMedication(HealthMedicationCreateCommand command) async {
+    final viewGeneration = _viewGeneration;
     await repository.createMedication(
       childId: command.childId,
       name: command.name,
@@ -260,37 +270,47 @@ final class HealthCareController extends ChangeNotifier {
       documentType: command.documentType,
       actor: actor,
     );
-    await loadDetail(command.childId);
+    await _refreshMutationView(viewGeneration, command.childId);
   }
 
   Future<void> createAllergy(HealthAllergyCreateCommand command) async {
+    final viewGeneration = _viewGeneration;
     await repository.createAllergy(
       childId: command.childId,
       label: command.label,
       type: command.type,
       actor: actor,
     );
-    await loadDetail(command.childId);
+    await _refreshMutationView(viewGeneration, command.childId);
   }
 
   Future<void> inactivateAllergy(HealthAllergyInactivationCommand command) async {
+    final viewGeneration = _viewGeneration;
     await repository.deactivateAllergy(
       childId: command.childId,
       allergyId: command.allergyId,
       justification: command.justification,
       actor: actor,
     );
-    await loadDetail(command.childId);
+    await _refreshMutationView(viewGeneration, command.childId);
   }
 
   Future<void> updateCareProfile(HealthCareProfileUpdateCommand command) async {
+    final viewGeneration = _viewGeneration;
     await repository.updateCareProfile(
       childId: command.childId,
       items: command.items,
       justification: command.justification,
       actor: actor,
     );
-    await loadDetail(command.childId);
+    await _refreshMutationView(viewGeneration, command.childId);
+  }
+
+  Future<void> _refreshMutationView(int viewGeneration, String childId) async {
+    if (_disposed || viewGeneration != _viewGeneration) return;
+    // An internal refresh does not invalidate other writes in the same view.
+    // Explicit reads/navigation do; their context must never be replaced here.
+    await _loadDetail(childId);
   }
 }
 
