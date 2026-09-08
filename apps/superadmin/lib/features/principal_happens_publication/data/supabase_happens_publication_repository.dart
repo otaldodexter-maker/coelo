@@ -153,11 +153,22 @@ final class SupabaseHappensPublicationRepository implements HappensPublicationRe
   @override
   Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media) async {
     if (media.assetId == null) return;
-    final response = await _client.functions.invoke(
-      'happens-media',
-      body: {'action': 'delete', 'request_id': _uuid(), 'asset_id': media.assetId},
-    );
-    if (response.status != 200) throw Exception('media_remove_failed');
+    try {
+      final response = await _client.functions.invoke(
+        'happens-media',
+        body: {'action': 'delete', 'request_id': _uuid(), 'asset_id': media.assetId},
+      );
+      if (response.status != 200) throw Exception('media_remove_failed');
+    } on FunctionException catch (error) {
+      if (error.status == 401 ||
+          error.status == 403 ||
+          (error.status == 422 &&
+              error.details is Map &&
+              (error.details as Map)['error'] == 'media_delete_denied')) {
+        throw HappensPublicationUnauthorized();
+      }
+      rethrow;
+    }
   }
 
   @override
