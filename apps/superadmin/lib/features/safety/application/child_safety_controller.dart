@@ -44,9 +44,13 @@ final class ChildSafetyController extends ChangeNotifier {
   Future<void> retry() => _load(_query);
 
   void setSearch(String value) {
+    if (_disposed) return;
     _searchTimer?.cancel();
+    _requestVersion++;
     _resetCursors();
     _query = _replaceQuery(search: value);
+    _failClosed(ChildSafetyLoadState.loading);
+    _errorMessage = null;
     _notify();
     _searchTimer = Timer(searchDebounce, () => _load(_query));
   }
@@ -77,13 +81,22 @@ final class ChildSafetyController extends ChangeNotifier {
     return _replaceAndLoad(_replaceQuery(pageSize: value));
   }
 
-  Future<List<ChildSafetyChildOption>> searchChildren(String query, {int limit = 20}) {
+  Future<List<ChildSafetyChildOption>> searchChildren(String query, {int limit = 20}) async {
+    if (_disposed) throw const ChildSafetyUnavailableException();
     final normalized = query.trim();
-    if (normalized.length < 2 || limit < 1 || limit > 50) return Future.value(const []);
-    return _repository.searchChildren(normalized, limit: limit);
+    if (normalized.length < 2 || limit < 1 || limit > 50) return const [];
+    final result = await _repository.searchChildren(normalized, limit: limit);
+    if (_disposed) throw const ChildSafetyUnavailableException();
+    return result;
   }
 
-  Future<ChildSafetyRecord?> fetchChild(String id) => _repository.fetchChild(id);
+  Future<ChildSafetyRecord?> fetchChild(String id) async {
+    if (_disposed) throw const ChildSafetyUnavailableException();
+    final result = await _repository.fetchChild(id);
+    if (_disposed) throw const ChildSafetyUnavailableException();
+    return result;
+  }
+
   Future<bool> saveAuthorization(SavePickupAuthorizationCommand command) =>
       _runCommand(() => _repository.saveAuthorization(command));
   Future<bool> transitionAuthorization(TransitionPickupAuthorizationCommand command) =>
@@ -115,6 +128,7 @@ final class ChildSafetyController extends ChangeNotifier {
   );
 
   Future<void> _replaceAndLoad(ChildSafetyDirectoryQuery query) {
+    if (_disposed) return Future.value();
     _searchTimer?.cancel();
     if (query.pageIndex == 0) {
       _resetCursors();
@@ -124,6 +138,7 @@ final class ChildSafetyController extends ChangeNotifier {
   }
 
   Future<void> _load(ChildSafetyDirectoryQuery query) async {
+    if (_disposed) return;
     final version = ++_requestVersion;
     _state = ChildSafetyLoadState.loading;
     _errorMessage = null;
