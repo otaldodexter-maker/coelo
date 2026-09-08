@@ -79,7 +79,20 @@ void main() {
     router.go('/dev/daily-routine');
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('daily-routine-duplicate-model-1')));
+    final duplicate = find.byKey(const Key('daily-routine-duplicate-model-1'));
+    await tester.scrollUntilVisible(
+      duplicate,
+      250,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('daily-routine-content-scroll')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.pumpAndSettle();
+    expect(duplicate.hitTestable(), findsOneWidget);
+    await tester.tap(duplicate);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('daily-routine-model-editor')), findsOneWidget);
     final duplicateName = tester.widget<TextField>(
@@ -88,11 +101,24 @@ void main() {
         matching: find.byType(TextField),
       ),
     );
-    expect(duplicateName.controller?.text, 'Rotina diária (cópia)');
+    expect(duplicateName.controller?.text, 'Chegada e acolhimento (cópia)');
 
     router.go('/dev/daily-routine');
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('daily-routine-apply-model-1')));
+    final apply = find.byKey(const Key('daily-routine-apply-model-1'));
+    await tester.scrollUntilVisible(
+      apply,
+      250,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('daily-routine-content-scroll')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.pumpAndSettle();
+    expect(apply.hitTestable(), findsOneWidget);
+    await tester.tap(apply);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('daily-routine-application-editor')), findsOneWidget);
     final application = tester.widget<DailyRoutineEditorPage>(find.byType(DailyRoutineEditorPage));

@@ -71,6 +71,7 @@ void main() {
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
       activityDirectoryRepository: FakeActivityDirectoryRepository(),
       assessmentRepository: DevelopmentAssessmentRepository(),
+      allowDevelopmentPreview: true,
       onThemeModeChanged: (_) {},
     );
     addTearDown(router.dispose);
