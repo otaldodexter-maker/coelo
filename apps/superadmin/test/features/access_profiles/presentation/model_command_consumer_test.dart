@@ -22,8 +22,14 @@ void main() {
         await tester.binding.setSurfaceSize(const Size(1440, 1000));
         addTearDown(() => tester.binding.setSurfaceSize(null));
         final commands = <String>[];
+        final payloads = <Map<String, dynamic>>[];
         final client = (await tester.runAsync(
-          () async => _client(operation, denied ? 'SAI_PERMISSION_DENIED' : null, commands),
+          () async => _client(
+            operation,
+            denied ? 'SAI_PERMISSION_DENIED' : null,
+            commands,
+            onCommand: payloads.add,
+          ),
         ))!;
         addTearDown(() => tester.runAsync(client.dispose));
         final adapter = AccessProfileModelRepositoryAdapter(
@@ -69,10 +75,25 @@ void main() {
         await _submit(tester, operation);
         await tester.pumpAndSettle();
         expect(commands, [operation]);
+        final payload = payloads.single;
+        expect(payload['p_request_id'], matches(RegExp(r'^[0-9a-f-]{36}$')));
+        if (operation == 'create' || operation == 'update') {
+          final draft = payload['p_draft'] as Map;
+          expect(draft['name'], 'Nome revisado');
+          expect(draft['description'], 'Descrição revisada');
+          expect(draft['reason'], 'Motivo nominal');
+          expect(draft['expected_version'], operation == 'update' ? 3 : null);
+        }
         expect(successes, denied ? 0 : 1);
         if (denied) {
           expect(find.text(const AccessProfileUnauthorizedException().message), findsOneWidget);
           expect(find.textContaining('Untrusted backend detail'), findsNothing);
+          if (operation == 'create' || operation == 'update') {
+            await _checkDraft(tester, operation);
+          } else if (operation == 'duplicate') {
+            expect(_fieldText(tester, 'Nome do novo modelo'), 'Cópia nominal');
+            expect(_fieldText(tester, 'Motivo da duplicação'), 'Motivo nominal');
+          }
         } else if (operation != 'delete') {
           expect(saved?.id, _id);
           expect(saved?.version, 4);
@@ -88,10 +109,17 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final commands = <String>[];
+    final payloads = <Map<String, dynamic>>[];
     var detailReads = 0;
     final client = (await tester.runAsync(
-      () async =>
-          _client('update', 'SAI_CONCURRENT_CHANGE', commands, onDetail: () => detailReads++),
+      () async => _client(
+        'update',
+        'SAI_CONCURRENT_CHANGE',
+        commands,
+        onDetail: () => detailReads++,
+        onCommand: payloads.add,
+        resolveConflict: true,
+      ),
     ))!;
     addTearDown(() => tester.runAsync(client.dispose));
     final adapter = AccessProfileModelRepositoryAdapter(SupabaseAccessProfileRepository(client));
@@ -122,8 +150,41 @@ void main() {
     expect(detailReads, 2);
     expect(commands, ['update']);
     expect(successes, 0);
+    await _checkDraft(tester, 'update');
+    for (var step = 0; step < 3; step++) {
+      await tester.tap(find.byKey(const Key('access-profile-continue')));
+      await tester.pumpAndSettle();
+    }
+    await tester.tap(find.byKey(const Key('access-profile-save')));
+    await tester.pumpAndSettle();
+    expect(successes, 1);
+    expect(commands, ['update', 'update']);
+    final first = payloads.first['p_draft'] as Map;
+    final retried = payloads.last['p_draft'] as Map;
+    expect(first['expected_version'], 3);
+    expect(retried['expected_version'], 5);
+    expect(retried['name'], first['name']);
+    expect(retried['description'], first['description']);
+    expect(retried['reason'], first['reason']);
+    expect(payloads.last['p_request_id'], isNot(payloads.first['p_request_id']));
     expect(tester.takeException(), isNull);
   });
+}
+
+String _fieldText(WidgetTester tester, String label) => tester
+    .widget<CoeloFormTextField>(find.widgetWithText(CoeloFormTextField, label))
+    .controller
+    .text;
+
+Future<void> _checkDraft(WidgetTester tester, String operation) async {
+  expect(_fieldText(tester, 'Motivo da alteração'), 'Motivo nominal');
+  for (var step = 0; step < (operation == 'create' ? 2 : 3); step++) {
+    await tester.tap(find.byKey(const Key('access-profile-previous')));
+    await tester.pumpAndSettle();
+  }
+  expect(_fieldText(tester, 'Nome do perfil'), 'Nome revisado');
+  expect(_fieldText(tester, 'Código'), 'nominal.model');
+  expect(_fieldText(tester, 'Descrição'), 'Descrição revisada');
 }
 
 Future<void> _submit(WidgetTester tester, String operation) async {
@@ -154,11 +215,11 @@ Future<void> _submit(WidgetTester tester, String operation) async {
     );
     if (operation == 'create') {
       await tester.enterText(find.widgetWithText(CoeloFormTextField, 'Código'), 'nominal.model');
-      await tester.enterText(
-        find.widgetWithText(CoeloFormTextField, 'Descrição'),
-        'Descrição nominal',
-      );
     }
+    await tester.enterText(
+      find.widgetWithText(CoeloFormTextField, 'Descrição'),
+      'Descrição revisada',
+    );
     for (var step = 0; step < (operation == 'create' ? 2 : 3); step++) {
       await tester.ensureVisible(find.byKey(const Key('access-profile-continue')));
       await tester.tap(find.byKey(const Key('access-profile-continue')));
@@ -179,6 +240,8 @@ SupabaseClient _client(
   String? failure,
   List<String> commands, {
   VoidCallback? onDetail,
+  ValueChanged<Map<String, dynamic>>? onCommand,
+  bool resolveConflict = false,
 }) => SupabaseClient(
   'https://model-consumer.invalid',
   'test-publishable-key',
@@ -189,7 +252,10 @@ SupabaseClient _client(
     Object? error;
     if (rpc == 'superadmin_access_profile_model_$operation') {
       commands.add(operation);
-      error = failure == null ? null : {'code': failure, 'message': 'Untrusted backend detail'};
+      onCommand?.call(Map<String, dynamic>.from(jsonDecode(request.body) as Map));
+      error = failure == null || (resolveConflict && commands.length > 1)
+          ? null
+          : {'code': failure, 'message': 'Untrusted backend detail'};
       data = operation == 'delete'
           ? {'model_id': _id, 'status': 'inactive', 'version': 4, 'replayed': false}
           : {
@@ -200,7 +266,14 @@ SupabaseClient _client(
             };
     } else if (rpc == 'superadmin_access_profile_model_detail') {
       onDetail?.call();
-      data = _model;
+      data = resolveConflict && commands.isNotEmpty
+          ? {
+              ..._model,
+              'name': 'Nome remoto novo',
+              'description': 'Descrição remota nova',
+              'version': 5,
+            }
+          : _model;
     } else if (rpc == 'superadmin_access_permission_catalog' ||
         rpc == 'superadmin_access_profile_models_cursor') {
       data = {'items': <Object>[], 'next_cursor': null};
