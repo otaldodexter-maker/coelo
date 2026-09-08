@@ -5,7 +5,7 @@
   "round": "R01",
   "writer": "01a0818b-2a34-7fa3-a9aa-f191fc91cc8d",
   "writer_active": true,
-  "code_baseline": "86ba8570",
+  "code_baseline": "e14ed9c0",
   "window_start": "2026-09-08T12:20:00-03:00",
   "window_end": "2026-09-16T12:20:00-03:00",
   "delivery_branch": "dev",
@@ -66,7 +66,7 @@
       "thread_id": "01a0819a-f1f1-7421-95dd-d645ca9f5747",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
       "branch": "codex/e2-r01-c02-forms-midia",
-      "instruction_revision": 9,
+      "instruction_revision": 10,
       "received_revision": 29,
       "integrated_revision": 4,
       "last_evidence": "2026-09-08T16:06:28-03:00",
@@ -499,7 +499,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T16:44:55-03:00",
+  "updated_at": "2026-09-08T16:56:03-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -750,6 +750,14 @@
       "status": "delivered-origin-dev;not-certified",
       "report": "etapa-2-operacao/reports/R01-checkpoint-1600.md",
       "delivery_sha": "028a3ee7184791ea7f3ac52dace473eabd5b43a6"
+    },
+    {
+      "executor": "C03",
+      "revision": 15,
+      "source": "da11057aa0c96518dcf06293dd81a9425e616c38",
+      "destination": "e14ed9c0",
+      "status": "integrated-local;push-pending",
+      "report": "etapa-2-operacao/reports/R01-people-files-integracao-1655.md"
     }
   ],
   "last_delta_processed_at": "2026-09-08T15:50:03-03:00",
@@ -761,15 +769,11 @@
     "Next poll16:00;formal17:40;closing09/09 preserved"
   ],
   "local_replay_lease": {
-    "id": "R01-LOCAL-FORMS-EDIT-01",
-    "executor": "C02",
-    "issued_at": "2026-09-08T16:34:57-03:00",
-    "status": "C02-RED-completed;GREEN-held-pending-C04-scratch-release",
-    "sha": "5ead9407f560c7f0e256976fa0590d9ba679b0e7",
-    "scope": "RED56 without new migration;GREEN56 with20260908191327;immutable test;unchanged runner;pwsh7.6.5",
+    "status": "none granted;new SQL executions held pending C04 scratch preservation/release",
+    "executor": null,
     "remote": false,
-    "red_result": "17asserts;6PASS/11FAIL;then replay mismatch after invalid edit write;reported byC02",
-    "conflict": "coelo-c04-scratch created16:38:51;no lease;AutoRemove true;no mounts;no client connections16:41:25"
+    "scratch_id": "4bea596334959cb043dfae5eee68d853766c4705c3f3be0aac0fe0e937bf7c9c",
+    "scratch_observed": "same ID unpaused16:53;origin not proven;C00 guarded unpause did not execute"
   },
   "last_delivery": {
     "branch": "origin/dev",
@@ -959,6 +963,25 @@
       "retry_granted_at": "2026-09-08T16:29:23-03:00",
       "first_attempt_cleanup": "C02 confirmed zero coelo_safe containers/volumes/networks;one pre-R01 temp dir preserved",
       "result": "132/132PASS;exit0;C02reported16:29:53-16:31:21;cleanupzero"
+    },
+    {
+      "id": "R01-LOCAL-FORMS-EDIT-01",
+      "executor": "C02",
+      "issued_at": "2026-09-08T16:34:57-03:00",
+      "status": "released",
+      "sha": "5ead9407f560c7f0e256976fa0590d9ba679b0e7",
+      "scope": "RED56 without new migration;GREEN56 with20260908191327;immutable test;unchanged runner;pwsh7.6.5",
+      "remote": false,
+      "red_result": "17asserts;6PASS/11FAIL;then replay mismatch after invalid edit write;reported byC02",
+      "conflict": "coelo-c04-scratch created16:38:51;no lease;AutoRemove true;no mounts;no client connections16:41:25",
+      "conflict_resolution": {
+        "at": "2026-09-08T16:48:17-03:00",
+        "container_id": "4bea596334959cb043dfae5eee68d853766c4705c3f3be0aac0fe0e937bf7c9c",
+        "action": "docker pause;Paused=true verified;filesystem/process preserved",
+        "resume": "C00 grants unpause/preservation after C02 release",
+        "c02_green": "authorized immutable I009;do not alter runner if paused resource rejected"
+      },
+      "green_result": "C02reported56/56PASS;exact5ead9407;cleanupzero"
     }
   ],
   "r02_planning": {
@@ -969,5 +992,28 @@
     "decision_status": "R02 allocation pending coordinator analysis of residual work,dependencies,integration queue and actual capabilities",
     "correction": "Previous preference/confirmed-layer-allocation interpretation was C00 error;Owner explicitly corrected it",
     "no_sessions_created": true
+  },
+  "partial_handoff_deltas": [
+    {
+      "executor": "C03",
+      "revision": 15,
+      "source_handoff": "6b584858",
+      "only_ids": [
+        "profile-files.import",
+        "profile-files.preview",
+        "profile-files.confirm",
+        "profile-files.status",
+        "profile-files.export",
+        "profile-files.download"
+      ],
+      "integrated_code": "e14ed9c0",
+      "at": "2026-09-08T16:52:41-03:00",
+      "remaining_revision_content": "activities570343a4 and r14/r16/r17 await review;global sync unchanged"
+    }
+  ],
+  "people_reservation_release": {
+    "at": "2026-09-08T16:52:41-03:00",
+    "I009_C03": "accepted and integrated",
+    "writer": "C04 after safe dependency consumption;C03 does not re-edit"
   }
 }

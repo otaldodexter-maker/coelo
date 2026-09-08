@@ -37,11 +37,13 @@ Seis worktrees conferidas pelo Git. C01/C03/C04/C05 partem de `479d1bd1771b13e0c
 
 ### Contagem e última evidência
 
-Estado reconciliado2026-09-08T16:24:59-03:00; histórico cronológico abaixo preservado. Inventário219 IDs únicos,194ativas/22adiadas/3gates; BE212 aplicáveis e7N/A; E2E187ativas. Critérios parcialmente examinados FE119/219 (111/194ativas,8/22adiadas,0/3gates), BE18/212 incluindo estática;12IDs com SQLlocal,0remoto. Certificados FE0/219,BE0/212,E2E0/187; nenhuma promoção. São ações, não quantidade de testes ou percentual de implementação. IDs/critérios em reports/R01-checkpoint-1600-metricas.json; outros achados por ID não inflacionam automaticamente essa contagem.
+Estado reconciliado2026-09-08T16:24:59-03:00; histórico cronológico abaixo preservado. Inventário219 IDs únicos,194ativas/22adiadas/3gates; BE212 aplicáveis e7N/A; E2E187ativas. Critérios parcialmente examinados FE121/219 (111/194ativas,10/22adiadas,0/3gates), BE18/212 incluindo estática;12IDs com SQLlocal,0remoto. Certificados FE2/219, ambos adiados (import/export de Pessoas): FEativo0/194 e FEadiado2/22. BE0/212,E2E0/187. São ações, não quantidade de testes ou percentual de implementação. IDs/critérios em reports/R01-people-files-1655-metricas.json; outros achados por ID não inflacionam automaticamente essa contagem.
 
 Rastreadores sincronizados C01/r30, C02/r29, C03/r13, C04/r17, C05/r10; fontes/hashes no estado operacional. C01r31–33,C02r30,C03r14,C05r11 posteriores aguardam próximo corte: não declarar sincronizados por mensagem. Codex C01–C03 ativos no snapshot16:01; Claude via handoff local/mecanismo relatado, sem ponte de wake-up.
 
-Código C00local86ba8570: shell3693d180/ec9826f3, seleçãof4f0105a eimports86ba8570.165PASS/4falhas estáticas anteriores; analyzer7limpo. Lote publicado em dev028a3ee7 e C00 com ls-remote confirmado2026-09-08T16:27:18-03:00; sem deploy/apply. Reservas C02I008/C03I009/C04I008/C05I007 e lease XLSX exclusiva C02. C00corrigiu contagem da source69migrations, não71. Personas Auth ainda sem pacote remoto concreto/aprovado/provisionado. Relatório R01-checkpoint-1600.md.
+Código C00local e14ed9c0 inclui Pessoas24/24/analyzer3 e o lote anterior86ba8570: shell3693d180/ec9826f3, seleçãof4f0105a eimports86ba8570.165PASS/4falhas estáticas anteriores; analyzer7limpo. Lote publicado em dev028a3ee7 e C00 com ls-remote confirmado2026-09-08T16:27:18-03:00; sem deploy/apply. Reservas C02I008/C03I009/C04I008/C05I007 e lease XLSX exclusiva C02. C00corrigiu contagem da source69migrations, não71. Personas Auth ainda sem pacote remoto concreto/aprovado/provisionado. Relatório R01-checkpoint-1600.md.
+
+Delta focal C03r15/Pessoas incorporado sem ampliar recebimento global de r14–r18. XLSX132/132 e edição56/56 relatados C02, pacotes ainda em revisão. Scratch C04 já não está pausado na inspeção16:53, origem da mudança desconhecida; novas leases SQL retidas até preservação/liberação.
 
 ### Ack inicial C01 — 2026-09-08T12:25:00-03:00
 
@@ -637,3 +639,8 @@ Manter R01 até fechamento previsto; R02 prioriza Front-end no Claude e Back-end
 ### Retificação da interpretação R02 — 2026-09-08T16:44:55-03:00
 
 Owner esclareceu expressamente: mais Claude e separação por camada eram uma ideia para análise/conselho, não preferência ou alocação decidida. O registro anterior de distribuição confirmada foi erro C00 e não deve orientar transferências. Confirmado somente manter R01 até o fechamento; prioridade absoluta concluir app/Superadmin e Etapa2 conforme pendências. C00 deve recomendar R02 pelo caminho crítico, residual real, fila de integração e capacidades disponíveis, considerando tokens como restrição secundária. Nenhum ownership/arquivo foi transferido por essa ideia. next-round/R02-distribuicao-e-fechamento.md e estado operacional retificados.
+
+
+### Integração focal Pessoas — 2026-09-08T16:52:41-03:00
+
+C03r15 somente profile-files.*: da11057a→e14ed9c0,24/24 e analyzer3 limpo C00. FE verified duas ações adiadas import/export; FEativo0/194,FEadiado2/22,BE/E2E sem promoção. Métricas auditadas FE121/219(111ativas/10adiadas),BE18/212; fonte reports/R01-people-files-1655-metricas.json. Publicação pendente; receipt posterior registra SHA real. Demais entregas novas aguardam leitura nominal; não declarar tudo sincronizado.

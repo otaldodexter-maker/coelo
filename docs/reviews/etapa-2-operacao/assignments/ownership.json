@@ -2016,7 +2016,7 @@
       "frontend_applicable": true,
       "backend_applicable": true,
       "e2e_applicable": true,
-      "frontend": "pending-verification",
+      "frontend": "verified",
       "backend": "deferred-post-mvp",
       "e2e": "deferred-post-mvp"
     },
@@ -2064,7 +2064,7 @@
       "frontend_applicable": true,
       "backend_applicable": true,
       "e2e_applicable": true,
-      "frontend": "pending-verification",
+      "frontend": "verified",
       "backend": "deferred-post-mvp",
       "e2e": "deferred-post-mvp"
     },
@@ -2632,5 +2632,6 @@
       "backend": "pending-verification",
       "e2e": "pending-verification"
     }
-  ]
+  ],
+  "updated_at": "2026-09-08T16:52:41-03:00"
 }
