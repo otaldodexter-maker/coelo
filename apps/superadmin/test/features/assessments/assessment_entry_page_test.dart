@@ -9,6 +9,129 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('closing detail reloads when only gradebook ID changes', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final key = GlobalKey();
+    final repository = _PageAssessmentRepository.pending();
+    await tester.pumpWidget(_app(key, repository, 'book-a', closing: true));
+    repository.complete('book-a', _pageBook('book-a', 'Aluno A'));
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(_app(key, repository, 'book-b', closing: true));
+    expect(repository.gradebookRequests, ['book-a', 'book-b']);
+    expect(find.text('Aluno A'), findsNothing);
+    repository.complete('book-b', _pageBook('book-b', 'Aluno B'));
+    await tester.pumpAndSettle();
+    expect(find.text('Aluno B'), findsWidgets);
+  });
+
+  for (final lateFailure in [false, true]) {
+    testWidgets('closing command from A cannot notify or replace B (failure=$lateFailure)', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final key = GlobalKey();
+      final a = _PageAssessmentRepository.immediate(_pageBook('book-a', 'Aluno A'));
+      a.pendingTransition = Completer<AssessmentGradebook>();
+      final b = _PageAssessmentRepository.immediate(_pageBook('book-b', 'Aluno B'));
+      await tester.pumpWidget(_app(key, a, 'book-a', closing: true));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Revisar'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('assessment-closing-reason')), 'Revisão A');
+      await tester.tap(find.text('Confirmar'));
+      await tester.pumpAndSettle();
+      expect(a.transitions, ['book-a']);
+      await tester.pumpWidget(_app(key, b, 'book-b', closing: true));
+      await tester.pumpAndSettle();
+      if (lateFailure) {
+        a.pendingTransition!.completeError(Exception('old command'));
+      } else {
+        a.pendingTransition!.complete(_pageBook('book-a', 'Aluno A'));
+      }
+      await tester.pumpAndSettle();
+      expect(find.text('Aluno B'), findsWidgets);
+      expect(find.text('Aluno A'), findsNothing);
+      expect(find.text('Fechamento atualizado.'), findsNothing);
+      expect(b.transitions, isEmpty);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final lateFailure in [false, true]) {
+    testWidgets('closing queue swaps context and ignores late A (failure=$lateFailure)', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final key = GlobalKey();
+      final a = _PendingClosingRepository();
+      final b = _PendingClosingRepository();
+      Widget app(AssessmentRepository repository) => MaterialApp(
+        theme: CoeloTheme.light,
+        home: AssessmentClosingPage(
+          key: key,
+          repository: repository,
+          logout: unavailableSuperadminLogout,
+          onOpen: (_) {},
+        ),
+      );
+      await tester.pumpWidget(app(a));
+      await tester.pumpWidget(app(b));
+      expect(b.requests, 1);
+      final rows = await const _ClosingAssessmentRepository().fetchClosingQueue();
+      b.result.complete([rows.last]);
+      await tester.pumpAndSettle();
+      expect(find.text('Expressão musical'), findsWidgets);
+      if (lateFailure) {
+        a.result.completeError(Exception('old context'));
+      } else {
+        a.result.complete([rows.first]);
+      }
+      await tester.pumpAndSettle();
+      expect(find.text('Expressão musical'), findsWidgets);
+      expect(find.text('Robótica'), findsNothing);
+      expect(find.text('Não foi possível carregar'), findsNothing);
+    });
+  }
+
+  testWidgets('closing detail swaps repository and discards late gradebook A', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final key = GlobalKey();
+    final a = _PageAssessmentRepository.pending();
+    final b = _PageAssessmentRepository.pending();
+    await tester.pumpWidget(_app(key, a, 'book-a', closing: true));
+    await tester.pumpWidget(_app(key, b, 'book-b', closing: true));
+    expect(b.gradebookRequests, ['book-b']);
+    b.complete('book-b', _pageBook('book-b', 'Aluno B'));
+    await tester.pumpAndSettle();
+    a.complete('book-a', _pageBook('book-a', 'Aluno A'));
+    await tester.pumpAndSettle();
+    expect(find.text('Aluno B'), findsWidgets);
+    expect(find.text('Aluno A'), findsNothing);
+  });
+
+  testWidgets('closing decision is dismissed when its context changes', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final key = GlobalKey();
+    final a = _PageAssessmentRepository.immediate(_pageBook('book-a', 'Aluno A'));
+    final b = _PageAssessmentRepository.immediate(_pageBook('book-b', 'Aluno B'));
+    await tester.pumpWidget(_app(key, a, 'book-a', closing: true));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Revisar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Revisar diário'), findsOneWidget);
+    await tester.pumpWidget(_app(key, b, 'book-b', closing: true));
+    await tester.pumpAndSettle();
+    expect(find.text('Revisar diário'), findsNothing);
+    expect(find.text('Aluno B'), findsWidgets);
+    expect(a.transitions, isEmpty);
+    expect(b.transitions, isEmpty);
+  });
+
   testWidgets('assessment file actions stay visible and fail closed', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -140,19 +263,28 @@ Widget _app(
   AssessmentRepository repository,
   String gradebookId, {
   double textScale = 1,
+  bool closing = false,
 }) => MaterialApp(
   theme: CoeloTheme.light,
   builder: (context, child) => MediaQuery(
     data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(textScale)),
     child: child!,
   ),
-  home: AssessmentEntryPage(
-    key: pageKey,
-    repository: repository,
-    logout: unavailableSuperadminLogout,
-    onCancel: () {},
-    gradebookId: gradebookId,
-  ),
+  home: closing
+      ? AssessmentClosingDetailPage(
+          key: pageKey,
+          repository: repository,
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+          gradebookId: gradebookId,
+        )
+      : AssessmentEntryPage(
+          key: pageKey,
+          repository: repository,
+          logout: unavailableSuperadminLogout,
+          onCancel: () {},
+          gradebookId: gradebookId,
+        ),
 );
 
 AssessmentGradebook _pageBook(String id, String studentName) => AssessmentGradebook(
@@ -183,6 +315,18 @@ final class _PageAssessmentRepository implements AssessmentRepository {
   final AssessmentGradebook? _immediate;
   final _loads = <String, Completer<AssessmentGradebook?>>{};
   final gradebookRequests = <String>[];
+  final transitions = <String>[];
+  Completer<AssessmentGradebook>? pendingTransition;
+
+  @override
+  Future<AssessmentGradebook> transitionGradebook(
+    AssessmentGradebook book,
+    AssessmentClosingAction action,
+    String reason,
+  ) async {
+    transitions.add(book.id);
+    return pendingTransition?.future ?? Future.value(book);
+  }
 
   void complete(String id, AssessmentGradebook value) => _loads[id]!.complete(value);
 
@@ -191,6 +335,19 @@ final class _PageAssessmentRepository implements AssessmentRepository {
     gradebookRequests.add(id);
     if (_immediate case final value?) return Future.value(value);
     return (_loads[id] ??= Completer<AssessmentGradebook?>()).future;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _PendingClosingRepository implements AssessmentRepository {
+  final result = Completer<List<AssessmentClosingItem>>();
+  int requests = 0;
+  @override
+  Future<List<AssessmentClosingItem>> fetchClosingQueue() {
+    requests++;
+    return result.future;
   }
 
   @override
