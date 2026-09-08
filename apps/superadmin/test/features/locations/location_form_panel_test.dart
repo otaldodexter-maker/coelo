@@ -8,6 +8,7 @@ import 'package:coelo_superadmin/features/locations/presentation/location_form_p
 import 'package:coelo_superadmin/features/locations/presentation/locations_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'location_read_fixtures.dart';
@@ -278,4 +279,63 @@ void main() {
       });
     }
   }
+
+  for (final dark in const [false, true]) {
+    testWidgets('the form renders in ${dark ? 'dark' : 'light'} without overflow', (tester) async {
+      tester.view.physicalSize = const Size(1440, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final writer = _RecordingWriter();
+      await tester.pumpWidget(panel(writer: writer, dark: dark));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(find.byKey(const Key('location-form-name')), findsOneWidget);
+    });
+  }
+
+  testWidgets('cancel and save are reachable and activated by keyboard', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final writer = _RecordingWriter();
+    var cancelled = 0;
+    await tester.pumpWidget(panel(writer: writer, onCancel: () => cancelled++));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('location-form-name')), 'Sala');
+    await tester.pumpAndSettle();
+
+    final cancel = find.byKey(const Key('location-form-cancel'));
+    final save = find.byKey(const Key('location-form-save'));
+
+    bool focusedIn(Finder control) {
+      final focused = primaryFocus?.context?.widget;
+      return focused != null &&
+          find.descendant(of: control, matching: find.byWidget(focused)).evaluate().isNotEmpty;
+    }
+
+    var reachedCancel = false;
+    var reachedSave = false;
+    for (var step = 0; step < 30 && !(reachedCancel && reachedSave); step += 1) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump(const Duration(milliseconds: 80));
+      reachedCancel = reachedCancel || focusedIn(cancel);
+      reachedSave = reachedSave || focusedIn(save);
+    }
+    expect(reachedCancel, isTrue);
+    expect(reachedSave, isTrue);
+
+    var activated = false;
+    for (var step = 0; step < 30 && !activated; step += 1) {
+      if (focusedIn(cancel)) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump(const Duration(milliseconds: 80));
+        activated = true;
+        break;
+      }
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump(const Duration(milliseconds: 80));
+    }
+    expect(activated, isTrue);
+    expect(cancelled, 1);
+    expect(writer.drafts, isEmpty, reason: 'cancelling must not write');
+  });
 }
