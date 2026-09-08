@@ -63,3 +63,14 @@ Baselines históricos de Chat/Avisos/Acontece/Perfil e demais provas E2E permane
 abertos. A quantidade de testes/commits não substitui nenhuma dessas evidências.
 Memória no-op: nenhuma nova regra aprovada. Coordenador recebe o checkpoint
 para atualização dos rastreadores oficiais sob sua escrita exclusiva.
+
+## Reexecução após ownership do Agora
+
+Em `f353fee2`, 893/893 não-golden dos mesmos 14 domínios e shell passaram
+com `flutter test --no-pub`; 55/55 rotas passaram novamente com o define local.
+Publicação Agora separadamente: 91/91 incluindo goldens em `1a14784d`;
+prévia Agora: 54/54 incluindo goldens em `f353fee2`. Nenhuma referência atualizada.
+Diff desde `e8bbad3c`: 28 arquivos, zero apps proibidos, trackers oficiais,
+migrations e PNG. Varredura heurística do diff por chave secret Supabase,
+private key, access key AWS e JWT longo: zero ocorrências; não substitui um
+scanner completo de segredos. `.env` e `.env.local` continuam ignorados.
