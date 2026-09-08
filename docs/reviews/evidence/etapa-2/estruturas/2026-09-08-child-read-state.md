@@ -36,3 +36,12 @@ Nenhum controller conectado à aplicação, tela, rota ou DI. SQL, capabilities,
 grants, hierarquia completa, busca, comandos e detalhe046 permanecem intactos.
 No próximo gate, integração deve ligar revisão/sessão reais e provar o ciclo
 inteiro; mock ou estes testes não certificam E2E. Checkpoint03:20 preservado.
+
+## Composição local adicional — CHILD-READPIPE01
+
+Três testes novos ligam os objetos reais controller/adapter/DTO ao invoker
+simulado, sem HTTP: A→B com sucesso A atrasado, revogação atual após B, shape
+com campo extra recusado e logout durante resposta sem recuperação de dados.
+Children completo38 PASS; analyzer do novo teste sem issues. Nenhuma mudança
+em código produtivo ou autorização. Esta composição local não é wiring da
+aplicação, teste de SQL/RLS ou verified-e2e.
