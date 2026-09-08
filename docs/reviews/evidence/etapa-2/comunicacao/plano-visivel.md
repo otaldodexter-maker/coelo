@@ -19,14 +19,14 @@ Os quadros posteriores preservam a cronologia, não substituem este checkpoint.
 | --- | --- | --- |
 | Chat/Conversas canônico e Mensagens | `cdb542a5`: 124 não-golden + 8 goldens candidatos; imagem explícita, sessão, teclado e motion; 40 cenários de conteúdo | Composição/gateway/catálogo M03, transporte real, autorização/reload; goldens históricos e revisão visual completa ainda abertos |
 | Avisos | 106 não-golden na fatia de feedback; 46 expectativas SQL preparadas, não executadas aqui | N01: replay nominal/ponte sob Eng1, geração/job/worker/auditoria e produção |
-| Convites | `e4171bdb`: 58 não-golden; confirmação própria e purge de negação | OQ039/spec047 de emissão continuam pendentes; não habilitar default false; prova server-side/E2E aberta |
+| Convites | `e4171bdb`/`72b24d25`: 61 não-golden; confirmação própria, callbacks obsoletos e purge de negação | OQ039/spec047 de emissão continuam pendentes; não habilitar default false; prova server-side/E2E aberta |
 | Circulares administrativas e menu | `38870d1`, `17c6286a`, `8f7d9c6d`: editor, reader, contexto e purge; 112 não-golden | Respostas/publicação/mídia reais, revogação/reload e regressão visual completa |
-| Acontece | Crosswalk do catálogo legado e matriz de rotas preservados | Evolução nominal/cutover do mesmo catálogo, imagem/vídeo reais; não concluído por testes de Chat |
+| Acontece | `fb241618`/`8c2c7009`: publicação 55 testes; `bed43737`: galeria 33 funcionais + 10 goldens; `88fb2cf1`: prévia Circular no feed misto | Catálogo/gateway e mídia reais; 422 legado permanece recuperável; dez goldens do feed preexistentes abertos |
 | Agora | `a4c1943d`/`032badc1`: legenda reload e negação, 81 testes da feature | Master R2, HOT privado até 24h quando necessário, fallback, expiração só da cópia Stream e prova real |
 | Momentos | `5e53ea4f`: contexto; 86 funcionais/rota e 14 goldens naquela fatia; `6e7bc23b` transporte R2 comum | Catálogo/gateway, upload/reprodução real e promoção HOT por necessidade medida |
 | Para Você | `b543248e`: validade, 49 testes incluindo 13 goldens | Leitura/revogação/persistência real e conteúdo conectado |
-| Perfil/preview do menu | `9d88b87e`: matriz standalone; preserva escopo Superadmin | Avatar/capa 3:1 aplicável via gateway, contratos/reload reais; não inventar capa na Conta Superadmin |
-| Cabeçalho global | `f612f639`/`7cac7b19`: isolamento de preview e contexto do relato; 69 shell; footer comum `4a5ff8e` | Todas as rotas, foco/teclado/browser, composição real; suporte em memória e baselines históricos abertos |
+| Perfil/preview do menu | `19c6d6c7`/`88fb2cf1`: aba Circulares, cursor/contexto/prévia; lote 172 não-golden e 19 goldens Circulares | Avatar/capa/gateway, autorização real e revisão dos dez goldens completos obsoletos; não restaurar seguidores públicos |
+| Cabeçalho global | `da6eb4cf`: relato contextual; `e8bbad3c`: controller de notificações acompanha injeção; 101 shell/roteamento | Todas as rotas no browser e composição real; suporte/atividades em memória não são persistência; baselines históricos abertos |
 | Media Gateway/R2/Stream compartilhado | `33d7f751`, `589214b7`, `6e7bc23b`, `3efe3865`; inventário read-only dos três buckets; DDL candidato `69f5e8a` | Guard AMR/proveniência E1, máximo batch Owner, decoder/entitlement e credenciais/lease nominais; sem SQL/composiçãoScope autorizados |
 
 Coordenador confirmou em 2026-09-08: Circulares `38870d1`/`17c6286a` integrados
@@ -47,6 +47,16 @@ comprovada. Nenhuma proibição nova de OTP/magiclink foi aprovada. O gate exige
 contrato server-side e prova dos fluxos admitidos, sem ampliar lease/credenciais.
 
 ## Histórico das fatias
+
+Checkpoint de regressão independente root em `e8bbad3c`: 846/846 testes
+não-golden das superfícies originais + shell; 55/55 roteamento; 45/45
+coelo_api/test/media; 40/40 Deno de métricas de imagem e transporte R2.
+Esses lotes usam fixtures/fakes/contratos locais e não são prova de E2E real.
+Detalhes e limites em `2026-09-08-original-scope-regression.md`.
+
+N01: coordenação autorizou Eng1 a preparar/executar diagnóstico local nominal
+N01PrerequisitesRed de 50+2 entradas. Não é GREEN, ponte, migration N01 ou lease
+remoto. Root continua sem operar Docker, histórico, runner ou produção.
 
 Os marcos são por tela: 1 contrato/inventário; 2 backend/segurança/negativas;
 3 cliente/estados; 4 integração real/persistência/reload; 5 regressão/visual;
