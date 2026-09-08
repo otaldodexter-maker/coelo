@@ -12,7 +12,7 @@ import '../domain/agenda_models.dart';
 import '../domain/agenda_repository.dart';
 import 'agenda_reservation_conflict_dialog.dart';
 
-final class AgendaEventFormPage extends StatefulWidget {
+final class AgendaEventFormPage extends StatelessWidget {
   const AgendaEventFormPage({
     required this.store,
     required this.onCancel,
@@ -31,10 +31,40 @@ final class AgendaEventFormPage extends StatefulWidget {
   final bool actionsAvailable;
 
   @override
-  State<AgendaEventFormPage> createState() => _AgendaEventFormPageState();
+  Widget build(BuildContext context) => _AgendaEventFormBody(
+    key: ValueKey((ObjectKey(store), eventId, canPublish, actionsAvailable)),
+    store: store,
+    eventId: eventId,
+    canPublish: canPublish,
+    actionsAvailable: actionsAvailable,
+    onCancel: onCancel,
+    onSaved: onSaved,
+  );
 }
 
-final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
+final class _AgendaEventFormBody extends StatefulWidget {
+  const _AgendaEventFormBody({
+    required this.store,
+    required this.eventId,
+    required this.canPublish,
+    required this.actionsAvailable,
+    required this.onCancel,
+    required this.onSaved,
+    super.key,
+  });
+
+  final AgendaRepository store;
+  final String? eventId;
+  final bool canPublish;
+  final bool actionsAvailable;
+  final VoidCallback onCancel;
+  final ValueChanged<String> onSaved;
+
+  @override
+  State<_AgendaEventFormBody> createState() => _AgendaEventFormPageState();
+}
+
+final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
   static const _contexts = ['Instituição', 'Unidade', 'Turma', 'Atividade', 'Pessoa'];
   static const _audiences = ['Responsáveis', 'Equipe', 'Perfis específicos', 'Pessoas'];
   static const _timeZones = ['America/Sao_Paulo', 'America/Manaus', 'UTC'];
@@ -70,6 +100,8 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
   var _nextQuestionId = 1;
   String? _feedback;
   int _step = 0;
+  bool _saving = false;
+  DialogRoute<String>? _conflictRoute;
 
   AgendaItem? get _existing =>
       widget.eventId == null ? null : widget.store.itemById(widget.eventId!);
@@ -169,6 +201,13 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
 
   @override
   void dispose() {
+    final route = _conflictRoute;
+    _conflictRoute = null;
+    if (route != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (route.isActive) route.navigator?.removeRoute(route);
+      });
+    }
     _title.dispose();
     _location.dispose();
     _details.dispose();
@@ -180,6 +219,23 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
   }
 
   Future<void> _save(AgendaItemStatus requestedStatus) async {
+    if (_saving || !widget.actionsAvailable) return;
+    setState(() => _saving = true);
+    try {
+      await _saveCurrent(requestedStatus);
+    } on Exception {
+      if (mounted) {
+        setState(() => _feedback = 'Não foi possível concluir o evento agora. Tente novamente.');
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  Future<void> _saveCurrent(AgendaItemStatus requestedStatus) async {
+    final store = widget.store;
+    final canPublish = widget.canPublish;
+    final occurrenceEditScope = _occurrenceEditScope;
     if (!widget.actionsAvailable) return;
     if (_title.text.trim().isEmpty || _audience.isEmpty) {
       setState(() {
@@ -263,37 +319,43 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
       history: existing?.history ?? const [],
     );
     final actorContextId = selectedContext?.id ?? institutionId;
-    var result = await widget.store.saveItem(item, actorContextId: actorContextId);
+    var result = await store.saveItem(item, actorContextId: actorContextId);
     if (!mounted) return;
     if (result == AgendaMutationResult.reservationConflict &&
-        widget.store
+        store
             .resolveCapability(institutionId, AgendaCapability.overrideReservationConflict)
             .isAllowed) {
-      final reason = await showAgendaReservationConflictOverrideDialog(context);
+      final route = createAgendaReservationConflictOverrideRoute(context);
+      _conflictRoute = route;
+      final reason = await Navigator.of(context, rootNavigator: true).push<String>(route);
+      if (identical(_conflictRoute, route)) _conflictRoute = null;
       if (!mounted || reason == null) return;
-      result = await widget.store.saveItem(
+      result = await store.saveItem(
         item,
         actorContextId: actorContextId,
         actorName: 'Owner Coelo',
         overrideConflict: true,
         reason: reason,
       );
+      if (!mounted) return;
     }
     if (result == AgendaMutationResult.success) {
-      final savedItemId = widget.store.lastSavedItemId ?? id;
+      final savedItemId = store.lastSavedItemId ?? id;
       if (existing?.recurrence != null) {
-        await widget.store.recordOccurrenceEdit(
+        await store.recordOccurrenceEdit(
           itemId: savedItemId,
           occurrenceStartsAt: existing!.startsAt,
-          scope: _occurrenceEditScope,
+          scope: occurrenceEditScope,
           actorName: 'Owner Coelo',
         );
+        if (!mounted) return;
       }
-      if (requestedStatus == AgendaItemStatus.published && !widget.canPublish) {
-        await widget.store.requestPublication(
+      if (requestedStatus == AgendaItemStatus.published && !canPublish) {
+        await store.requestPublication(
           savedItemId,
           requestedBy: 'Usuário local sem permissão de publicação',
         );
+        if (!mounted) return;
       }
       widget.onSaved(savedItemId);
       return;
@@ -433,12 +495,16 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
           else ...[
             OutlinedButton(
               key: const Key('agenda-wizard-save-draft'),
-              onPressed: widget.actionsAvailable ? () => _save(AgendaItemStatus.draft) : null,
+              onPressed: widget.actionsAvailable && !_saving
+                  ? () => _save(AgendaItemStatus.draft)
+                  : null,
               child: const Text('Salvar rascunho'),
             ),
             FilledButton(
               key: const Key('agenda-wizard-publish'),
-              onPressed: widget.actionsAvailable ? () => _save(AgendaItemStatus.published) : null,
+              onPressed: widget.actionsAvailable && !_saving
+                  ? () => _save(AgendaItemStatus.published)
+                  : null,
               child: Text(widget.canPublish ? 'Publicar' : 'Solicitar publicação'),
             ),
           ],
