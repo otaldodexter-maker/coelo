@@ -287,10 +287,12 @@ advisories de governança last-owner/realm sem necessidade demonstrada.
 
 Revogação que efetivamente conclui primeiro deve impedir complete/send.
 Se complete vence as barreiras e confirma primeiro, ready precede a revogação;
-não apagar esse histórico retroativamente. Suspender e reativar antes do
-complete pode envolver política de versões distinta de autorização atual:
-registrar isso como questão técnica aberta para Auth/Coordenador, sem escolher
-silenciosamente invalidação permanente nem reutilização automática de lease.
+não apagar esse histórico retroativamente. Decisão de recorte recebida do
+Coordenador em 2026-09-07: complete/send exigem autorização ATUAL após locks,
+cinco âncoras originais exatas e lease/expiração válidas. Não acrescentar
+invalidação histórica permanente suspend→reactivate sem geração monotônica
+aprovada; tampouco alegar detecção de transição que o modelo não registra.
+A validade técnica da origem AAL/sessão permanece sujeita à revisão E2E1.
 
 ### Matriz local de duas conexões — preparada, NÃO executada
 
