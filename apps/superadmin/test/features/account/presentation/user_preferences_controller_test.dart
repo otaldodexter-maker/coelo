@@ -7,6 +7,76 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final failFirstWrite in [false, true]) {
+    test(
+      'requested writes finish after disposal without notifications (failure: $failFirstWrite)',
+      () async {
+        final repository = _OrderedWritesRepository();
+        final controller = UserPreferencesController(repository);
+        var notifications = 0;
+        controller.addListener(() => notifications++);
+        await controller.load();
+        final first = controller.setThemeMode(ThemeMode.dark);
+        final firstCompletion = expectLater(
+          first,
+          failFirstWrite ? throwsA(isA<StateError>()) : completes,
+        );
+        await repository.firstStarted.future;
+        final second = controller.setReduceMotion(true);
+        await Future<void>.delayed(Duration.zero);
+        expect(repository.writes, hasLength(1));
+        expect(
+          controller.preferences,
+          const UserPreferences(themeMode: ThemeMode.dark, reduceMotion: true),
+        );
+        final notificationsBeforeDisposal = notifications;
+        final revisionBeforeDisposal = controller.intentRevision;
+        controller.dispose();
+
+        await controller.setThemeMode(ThemeMode.light);
+        await controller.setReduceMotion(false);
+        await controller.retrySave();
+        await controller.load();
+        if (failFirstWrite) {
+          repository.firstRelease.completeError(StateError('synthetic disposed write failure'));
+        } else {
+          repository.firstRelease.complete();
+        }
+        await firstCompletion;
+        await second;
+
+        expect(repository.writes, hasLength(2));
+        expect(
+          repository.stored,
+          const UserPreferences(themeMode: ThemeMode.dark, reduceMotion: true),
+        );
+        expect(controller.preferences, repository.stored);
+        expect(controller.saveFailed, isFalse);
+        expect(controller.intentRevision, revisionBeforeDisposal);
+        expect(notifications, notificationsBeforeDisposal);
+      },
+    );
+  }
+
+  test('setters awaiting initial load cannot write after disposal', () async {
+    final repository = _PendingRepository();
+    final controller = UserPreferencesController(repository);
+    var notifications = 0;
+    controller.addListener(() => notifications++);
+    final theme = controller.setThemeMode(ThemeMode.dark);
+    final motion = controller.setReduceMotion(true);
+    final retry = controller.retrySave();
+    controller.dispose();
+    repository.loaded.complete(const UserPreferences(themeMode: ThemeMode.light));
+    await Future.wait([theme, motion, retry]);
+
+    expect(repository.loads, 1);
+    expect(repository.saved, isNull);
+    expect(controller.loaded, isFalse);
+    expect(controller.preferences, const UserPreferences());
+    expect(notifications, 0);
+  });
+
   test('failed device write reaches its caller without poisoning later writes', () async {
     final repository = _OrderedWritesRepository();
     final controller = UserPreferencesController(repository);

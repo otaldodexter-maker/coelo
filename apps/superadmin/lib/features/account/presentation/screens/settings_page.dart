@@ -79,6 +79,7 @@ class SettingsPage extends StatelessWidget {
                     child: SegmentedButton<ThemeMode>(
                       expandedInsets: EdgeInsets.zero,
                       style: ButtonStyle(
+                        padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
                         backgroundColor: WidgetStateProperty.resolveWith((states) {
                           if (states.contains(WidgetState.selected) ||
                               states.contains(WidgetState.hovered) ||
@@ -114,18 +115,27 @@ class SettingsPage extends StatelessWidget {
                       segments: const [
                         ButtonSegment(
                           value: ThemeMode.system,
-                          icon: Icon(Icons.devices_rounded),
-                          label: Text('Sistema', key: Key('settings-theme-system')),
+                          label: _SettingsThemeLabel(
+                            icon: Icons.devices_rounded,
+                            label: 'Sistema',
+                            labelKey: Key('settings-theme-system'),
+                          ),
                         ),
                         ButtonSegment(
                           value: ThemeMode.light,
-                          icon: Icon(Icons.light_mode_outlined),
-                          label: Text('Claro', key: Key('settings-theme-light')),
+                          label: _SettingsThemeLabel(
+                            icon: Icons.light_mode_outlined,
+                            label: 'Claro',
+                            labelKey: Key('settings-theme-light'),
+                          ),
                         ),
                         ButtonSegment(
                           value: ThemeMode.dark,
-                          icon: Icon(Icons.dark_mode_outlined),
-                          label: Text('Escuro', key: Key('settings-theme-dark')),
+                          label: _SettingsThemeLabel(
+                            icon: Icons.dark_mode_outlined,
+                            label: 'Escuro',
+                            labelKey: Key('settings-theme-dark'),
+                          ),
                         ),
                       ],
                       selected: {controller.preferences.themeMode},
@@ -141,7 +151,6 @@ class SettingsPage extends StatelessWidget {
                     child: Semantics(
                       key: const Key('settings-reduce-motion-row'),
                       container: true,
-                      label: 'Reduzir animações',
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
                         child: Row(
@@ -183,6 +192,26 @@ class SettingsPage extends StatelessWidget {
         );
       },
     ),
+  );
+}
+
+// Keep the approved icon/label composition without the SDK icon slot's fixed
+// asymmetric padding, which wraps "Sistema" at the 375 px breakpoint.
+class _SettingsThemeLabel extends StatelessWidget {
+  const _SettingsThemeLabel({required this.icon, required this.label, required this.labelKey});
+
+  final IconData icon;
+  final String label;
+  final Key labelKey;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(icon),
+      const SizedBox(width: CoeloSpacing.space2),
+      Flexible(child: Text(label, key: labelKey)),
+    ],
   );
 }
 
