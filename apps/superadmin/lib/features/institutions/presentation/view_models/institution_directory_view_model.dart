@@ -248,7 +248,9 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
           requestVersion: requestVersion,
         );
       }
-    } on Exception {
+      // Anything else, including an Error, has to reach the failure state: a
+      // load that throws and leaves the spinner on screen is a silent hang.
+    } on Object {
       if (requestVersion == _requestVersion) {
         _setFailure(
           state: InstitutionDirectoryLoadState.failure,
