@@ -80,6 +80,31 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   PlatformUserRecord? _loadedRecord;
   bool _dirty = false;
   double _footerHeight = 0;
+  int _contextRevision = 0;
+
+  bool _isCurrent(int revision) => mounted && revision == _contextRevision;
+
+  List<TextEditingController> get _textControllers => [
+    _firstName,
+    _lastName,
+    _displayName,
+    _cpf,
+    _email,
+    _mobile,
+    _additionalPhone,
+    _jobTitle,
+    _department,
+    _internalFunction,
+    _notes,
+    _postalCode,
+    _street,
+    _number,
+    _complement,
+    _neighborhood,
+    _city,
+    _state,
+    _country,
+  ];
 
   bool get _editing => widget.internalUserId != null;
   PlatformUserRecord? get _record => widget.internalUserId == null
@@ -89,6 +114,37 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   @override
   void initState() {
     super.initState();
+    _initializeContext();
+  }
+
+  @override
+  void didUpdateWidget(covariant PlatformUserFormPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.repository, widget.repository) ||
+        oldWidget.internalUserId != widget.internalUserId ||
+        oldWidget.capability != widget.capability) {
+      _contextRevision++;
+      for (final controller in _textControllers) {
+        controller.clear();
+      }
+      _country.text = 'Brasil';
+      _loadedRecord = null;
+      _loadError = null;
+      _avatarBytes = null;
+      _birthDateValue = null;
+      _scope = PlatformUserScope.limited;
+      _scopeIds = {};
+      _step = 0;
+      _saving = false;
+      _loading = false;
+      _dirty = false;
+      _initializeContext();
+    }
+  }
+
+  void _initializeContext() {
+    _profile = PlatformAccessProfiles.byId('operations');
+    if (widget.capability != PlatformUserCapability.owner) return;
     _profile = widget.repository.profiles.firstWhere(
       (item) => item.id == 'operations',
       orElse: () => PlatformAccessProfiles.byId('operations'),
@@ -107,10 +163,13 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   }
 
   Future<void> _loadRemote(PlatformUserRemoteLoader loader) async {
+    final revision = _contextRevision;
+    final internalUserId = widget.internalUserId!;
     try {
       await loader.fetchProfiles();
-      final record = await loader.fetchById(widget.internalUserId!);
-      if (!mounted) return;
+      if (!_isCurrent(revision)) return;
+      final record = await loader.fetchById(internalUserId);
+      if (!_isCurrent(revision)) return;
       if (record == null) {
         setState(() {
           _loading = false;
@@ -127,7 +186,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
         _loading = false;
       });
     } on Object catch (error) {
-      if (!mounted) return;
+      if (!_isCurrent(revision)) return;
       setState(() {
         _loading = false;
         _loadError = error;
@@ -164,25 +223,10 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
 
   @override
   void dispose() {
-    _firstName.dispose();
-    _lastName.dispose();
-    _displayName.dispose();
-    _cpf.dispose();
-    _email.dispose();
-    _mobile.dispose();
-    _additionalPhone.dispose();
-    _jobTitle.dispose();
-    _department.dispose();
-    _internalFunction.dispose();
-    _notes.dispose();
-    _postalCode.dispose();
-    _street.dispose();
-    _number.dispose();
-    _complement.dispose();
-    _neighborhood.dispose();
-    _city.dispose();
-    _state.dispose();
-    _country.dispose();
+    _contextRevision++;
+    for (final controller in _textControllers) {
+      controller.dispose();
+    }
     _firstFocus.dispose();
     super.dispose();
   }
@@ -258,31 +302,33 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   );
 
   Future<void> _save() async {
+    if (_saving || _loading) return;
     if (widget.capability != PlatformUserCapability.owner || !_validateIdentity()) return;
+    final revision = _contextRevision;
+    final onUpdated = widget.onUpdated;
+    final onCreated = widget.onCreated;
     setState(() => _saving = true);
     try {
       if (_editing) {
         final updated = await widget.repository.update(widget.internalUserId!, _draft());
-        if (mounted) {
-          widget.onUpdated?.call(updated);
-        }
+        if (!_isCurrent(revision)) return;
+        onUpdated?.call(updated);
       } else {
         final result = await widget.repository.create(_draft());
-        if (mounted) {
-          widget.onCreated?.call(result);
-        }
+        if (!_isCurrent(revision)) return;
+        onCreated?.call(result);
       }
       _dirty = false;
     } on PlatformUserConflictException catch (error) {
-      if (mounted) {
+      if (mounted && _isCurrent(revision)) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
       }
     } on PlatformUserRuleException catch (error) {
-      if (mounted) {
+      if (mounted && _isCurrent(revision)) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
       }
     } finally {
-      if (mounted) {
+      if (_isCurrent(revision)) {
         setState(() => _saving = false);
       }
     }
@@ -511,14 +557,15 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   }
 
   Future<void> _pickAvatar() async {
+    final revision = _contextRevision;
     final file = await pickInstitutionLogo();
-    if (file == null || !mounted) return;
+    if (file == null || !mounted || !_isCurrent(revision)) return;
     final adjusted = await showDialog<AvatarCropResult>(
       context: context,
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()?.scrim ?? Colors.black54,
       builder: (context) => AvatarCropDialog(bytes: file.bytes),
     );
-    if (adjusted == null || !mounted) return;
+    if (adjusted == null || !_isCurrent(revision)) return;
     setState(() => _avatarBytes = adjusted.bytes);
     _changed();
   }
@@ -887,8 +934,10 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   }
 
   Future<void> _cancel() async {
+    final revision = _contextRevision;
+    final onCancel = widget.onCancel;
     if (!_dirty) {
-      widget.onCancel?.call();
+      onCancel?.call();
       return;
     }
     final discard = await showDialog<bool>(
@@ -906,7 +955,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
         ),
       ),
     );
-    if (discard == true) widget.onCancel?.call();
+    if (discard == true && _isCurrent(revision)) onCancel?.call();
   }
 }
 
