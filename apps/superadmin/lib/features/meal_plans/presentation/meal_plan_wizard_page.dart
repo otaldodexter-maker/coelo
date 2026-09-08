@@ -1445,6 +1445,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
       isTemplate,
     );
     final operationId = _persistOperationId ??= _newUuid();
+    MealPlan? confirmedPlan;
     try {
       if (isTemplate) {
         var savedTemplate = await repository.saveTemplate(
@@ -1504,6 +1505,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
             'O cardápio salvo não corresponde ao solicitado.',
           );
         }
+        confirmedPlan = saved;
         if (_hasPendingImages) {
           final uploaded = await _uploadPendingImages(
             resourceId: saved.id,
@@ -1526,6 +1528,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
               'O cardápio salvo não corresponde ao solicitado.',
             );
           }
+          confirmedPlan = saved;
         }
         if (publish) {
           final conflicts = await repository.checkConflicts(
@@ -1560,6 +1563,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
               'O cardápio em revisão não corresponde ao solicitado.',
             );
           }
+          confirmedPlan = reviewed;
           final published = await repository.publish(
             reviewed.id,
             '$operationId-publish',
@@ -1586,6 +1590,9 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
     } on MealPlanRepositoryException catch (error) {
       if (!isCurrent()) return;
       if (error is MealPlanConflictException || error is MealPlanValidationException) {
+        // A rejected continuation does not undo earlier confirmed writes.
+        // Keep their resource/revision when starting a new operation ID.
+        if (confirmedPlan != null) _original = confirmedPlan;
         _persistOperationId = null;
       }
       setState(() => _error = error.message);

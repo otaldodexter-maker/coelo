@@ -13,6 +13,67 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final stage in ['conflicts', 'review', 'publish']) {
+    for (final validation in <bool?>[false, true, null]) {
+      testWidgets('retry preserves confirmed resource after $stage validation=$validation', (
+        tester,
+      ) async {
+        await tester.binding.setSurfaceSize(const Size(1440, 1000));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        final repository = _RejectedContinuationRepository(stage, validation);
+        var savedCount = 0;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: MealPlanWizardPage(
+                repository: repository,
+                imageRepository: const UnavailableMealPlanImageRepository(),
+                imageSelectionEnabled: false,
+                onSaved: () => savedCount++,
+                onCancel: () {},
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(TextFormField).first, 'Cardápio retomado');
+        await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+        await tester.pump();
+        await _selectAudienceOption(tester, 'Instituições', 'Colégio Coelo');
+        await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+        await tester.pump();
+        await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+        await tester.pump();
+        await tester.enterText(find.byType(TextFormField).first, 'Arroz e feijão');
+        await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+        await tester.pump();
+        await tester.tap(find.widgetWithText(FilledButton, 'Enviar e publicar'));
+        await tester.pumpAndSettle();
+        expect(find.text('Continuação rejeitada.'), findsOneWidget);
+        expect(savedCount, 0);
+        final confirmed = repository.lastConfirmed!;
+        final originalRequest = repository.drafts.single.requestId;
+        await tester.tap(find.widgetWithText(FilledButton, 'Enviar e publicar'));
+        await tester.pumpAndSettle();
+        expect(repository.drafts, hasLength(2));
+        if (validation == null) {
+          // An uncertain transport result retains the original request,
+          // including its original create identity, for idempotent replay.
+          expect(repository.drafts.last.mealPlanId, isNull);
+          expect(repository.drafts.last.expectedRevision, repository.drafts.first.expectedRevision);
+          expect(repository.drafts.last.requestId, originalRequest);
+        } else {
+          expect(repository.drafts.last.mealPlanId, confirmed.id);
+          expect(repository.drafts.last.expectedRevision, confirmed.revision);
+          expect(repository.drafts.last.requestId, isNot(originalRequest));
+        }
+        expect(repository.lastConfirmed!.id, confirmed.id);
+        expect(savedCount, 1);
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
   for (final outcome in [
     (status: MealPlanStatus.draft, isDraft: true, requiresReview: false),
     (status: MealPlanStatus.inReview, isDraft: false, requiresReview: true),
@@ -624,6 +685,54 @@ final class _ConflictMealPlanRepository extends _OrderedMealPlanRepository {
   Future<MealPlan> publish(String id, String request, int revision) {
     publishCalls++;
     return super.publish(id, request, revision);
+  }
+}
+
+final class _RejectedContinuationRepository extends _OrderedMealPlanRepository {
+  _RejectedContinuationRepository(this.stage, this.validation);
+  final String stage;
+  final bool? validation;
+  bool rejected = false;
+  MealPlan? lastConfirmed;
+  final drafts = <MealPlanDraft>[];
+
+  void _reject(String current) {
+    if (stage != current || rejected) return;
+    rejected = true;
+    if (validation == null) throw const MealPlanUnavailableException('Continuação rejeitada.');
+    if (validation!) throw const MealPlanValidationException('Continuação rejeitada.');
+    throw const MealPlanConflictException('Continuação rejeitada.');
+  }
+
+  @override
+  Future<MealPlan> createOrUpdateDraft(MealPlanDraft draft) async {
+    drafts.add(draft);
+    return lastConfirmed = await super.createOrUpdateDraft(draft);
+  }
+
+  @override
+  Future<List<MealPlanConflict>> checkConflicts({
+    required String scopeLevel,
+    required String scopeId,
+    required DateTime startDate,
+    required DateTime endDate,
+    required MealPlanRecurrence recurrence,
+    required List<MealPlanMenuEntry> menu,
+  }) async {
+    _reject('conflicts');
+    return const [];
+  }
+
+  @override
+  Future<MealPlan> submitForReview(String id, String request, int revision) async {
+    _reject('review');
+    return lastConfirmed = await super.submitForReview(id, request, revision);
+  }
+
+  @override
+  Future<MealPlan> publish(String id, String request, int revision) async {
+    _reject('publish');
+    return lastConfirmed = await super.publish(id, request, revision);
   }
 }
 
