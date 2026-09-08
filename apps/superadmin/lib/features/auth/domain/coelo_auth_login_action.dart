@@ -56,8 +56,9 @@ LoginAction createCoeloAuthLoginAction({
           final cleanupRevision = session.authorizationInvalidationRevision;
           try {
             await auth.signOut();
-          } on Exception {
-            // Supabase clears its local session before the remote revoke request.
+          } catch (_) {
+            // Cleanup can fail before or after local credential teardown.
+            // Keep login denied and protect newer authorization below.
           }
           if (session.authorizationInvalidationRevision == cleanupRevision) {
             session.signOut();

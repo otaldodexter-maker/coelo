@@ -239,6 +239,107 @@ void main() {
     expect(result.isSuccess, isFalse);
     expect(session.isAuthenticated, isFalse);
   });
+
+  final cleanupFailures = <String, Object Function()>{
+    'Exception': () => Exception('synthetic cleanup failure'),
+    'Error': Error.new,
+    'StateError': () => StateError('synthetic cleanup failure'),
+    'TypeError': TypeError.new,
+  };
+  for (final failure in cleanupFailures.entries) {
+    for (final clearedCredentialSession in [false, true]) {
+      test(
+        'denied login sanitizes ${failure.key} after credential cleanup=$clearedCredentialSession',
+        () async {
+          final auth = _FakeCoeloAuthGateway(
+            signOutError: failure.value(),
+            clearCredentialSessionOnSignOut: clearedCredentialSession,
+          );
+          final session = SuperadminSession()..authorize(_context, sessionId: _sessionA);
+          addTearDown(session.dispose);
+          final action = createCoeloAuthLoginAction(
+            auth: auth,
+            authContext: _FakeSuperadminAuthContextGateway(isAuthorized: false),
+            session: session,
+          );
+
+          final result = await action(request);
+
+          expect(result.isSuccess, isFalse);
+          expect(result.message, CoeloAuthSignInResult.genericFailureMessage);
+          expect(auth.signOutCalls, 1);
+          expect(session.isAuthenticated, isFalse);
+          expect(session.authContext, isNull);
+          expect(session.sessionId, isNull);
+          expect(
+            auth.currentSessionState.kind,
+            clearedCredentialSession
+                ? CoeloAuthSessionKind.signedOut
+                : CoeloAuthSessionKind.authenticated,
+          );
+        },
+      );
+    }
+
+    for (final winnerSessionId in [_sessionA, _sessionB]) {
+      test(
+        'denied login preserves winner $winnerSessionId when cleanup throws ${failure.key}',
+        () async {
+          final auth = _FakeCoeloAuthGateway(
+            signOutStarted: Completer<void>(),
+            signOutRelease: Completer<void>(),
+            signOutError: failure.value(),
+          );
+          final session = SuperadminSession();
+          addTearDown(session.dispose);
+          final action = createCoeloAuthLoginAction(
+            auth: auth,
+            authContext: _FakeSuperadminAuthContextGateway(isAuthorized: false),
+            session: session,
+          );
+
+          final pending = action(request);
+          await auth.signOutStarted!.future;
+          auth.stateOverride = CoeloAuthSessionState.authenticated(sessionId: winnerSessionId);
+          session.authorize(_context, sessionId: winnerSessionId);
+          final winnerRevision = session.authorizationInvalidationRevision;
+          auth.signOutRelease!.complete();
+          final result = await pending;
+
+          expect(result.isSuccess, isFalse);
+          expect(result.message, CoeloAuthSignInResult.genericFailureMessage);
+          expect(auth.signOutCalls, 1);
+          expect(session.isAuthenticated, isTrue);
+          expect(session.sessionId, winnerSessionId);
+          expect(session.authContext, same(_context));
+          expect(session.authorizationInvalidationRevision, winnerRevision);
+        },
+      );
+    }
+  }
+
+  test(
+    'a denied login cleanup Error releases single-flight for a later authorized login',
+    () async {
+      final auth = _FakeCoeloAuthGateway(signOutError: StateError('synthetic cleanup failure'));
+      final context = _FakeSuperadminAuthContextGateway(isAuthorized: false);
+      final session = SuperadminSession();
+      addTearDown(session.dispose);
+      final action = createCoeloAuthLoginAction(auth: auth, authContext: context, session: session);
+
+      final denied = await action(request);
+      expect(denied.isSuccess, isFalse);
+      auth.signOutError = null;
+      context.isAuthorized = true;
+      final authorized = await action(request);
+
+      expect(authorized.isSuccess, isTrue);
+      expect(context.bootstrapCalls, 2);
+      expect(auth.signOutCalls, 1);
+      expect(session.isAuthenticated, isTrue);
+      expect(session.sessionId, _sessionA);
+    },
+  );
 }
 
 const _context = SuperadminAuthContext(
@@ -251,7 +352,7 @@ const _context = SuperadminAuthContext(
 final class _FakeSuperadminAuthContextGateway implements SuperadminAuthContextGateway {
   _FakeSuperadminAuthContextGateway({this.isAuthorized = true});
 
-  final bool isAuthorized;
+  bool isAuthorized;
   int bootstrapCalls = 0;
 
   @override
@@ -280,6 +381,8 @@ final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
     this.nextResult = const CoeloAuthSignInResult.success(),
     this.signOutStarted,
     this.signOutRelease,
+    this.signOutError,
+    this.clearCredentialSessionOnSignOut = true,
   });
 
   String? lastEmail;
@@ -289,6 +392,8 @@ final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
   int signOutCalls = 0;
   final Completer<void>? signOutStarted;
   final Completer<void>? signOutRelease;
+  Object? signOutError;
+  final bool clearCredentialSessionOnSignOut;
   String sessionId = _sessionA;
   CoeloAuthSessionState? stateOverride;
   bool _isSignedOut = false;
@@ -325,17 +430,23 @@ final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
     lastEmail = email;
     lastPassword = password;
     this.persistSession = persistSession;
+    _isSignedOut = false;
     return nextResult;
   }
 
   @override
   Future<void> signOut() async {
     signOutCalls++;
-    stateOverride = null;
-    _isSignedOut = true;
+    if (clearCredentialSessionOnSignOut) {
+      stateOverride = null;
+      _isSignedOut = true;
+    }
     signOutStarted?.complete();
     if (signOutRelease case final release?) {
       await release.future;
+    }
+    if (signOutError case final error?) {
+      throw error;
     }
   }
 }
