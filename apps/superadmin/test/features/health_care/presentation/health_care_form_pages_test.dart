@@ -16,6 +16,82 @@ const _profileChildren = [
 ];
 
 void main() {
+  for (final change in [
+    'unchanged',
+    'callback',
+    'callback-restored',
+    'child',
+    'child-restored',
+    'dispose',
+  ]) {
+    testWidgets('exit confirmation remains bound to its context after $change', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      var originalCancels = 0;
+      var replacementCancels = 0;
+      void original() => originalCancels++;
+      void replacement() => replacementCancels++;
+      Future<void> save(HealthCareProfileDraft draft) async {}
+      Future<HealthCareProfileDraft?> load(String childId) async =>
+          HealthCareProfileDraft(childId: childId);
+      Widget page({
+        String childId = 'child-demo-a',
+        VoidCallback? onCancel,
+        bool disposed = false,
+      }) => MaterialApp(
+        theme: CoeloTheme.light,
+        home: disposed
+            ? const Scaffold(body: Text('Outro destino'))
+            : HealthCareProfileFormPage(
+                logout: unavailableSuperadminLogout,
+                childOptions: _profileChildren,
+                childId: childId,
+                loadDraft: load,
+                onSaved: save,
+                onCancel: onCancel ?? original,
+              ),
+      );
+      await tester.pumpWidget(page());
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Alergias e restrições').last);
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Reação observada'),
+        'Edição local preservada',
+      );
+      await tester.tap(find.widgetWithText(TextButton, 'Cancelar'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('health-care-profile-confirm-exit-dialog')), findsOneWidget);
+      await tester.pumpWidget(
+        page(
+          childId: change.startsWith('child') ? 'child-demo-b' : 'child-demo-a',
+          onCancel: change.startsWith('callback') ? replacement : original,
+          disposed: change == 'dispose',
+        ),
+      );
+      await tester.pumpAndSettle();
+      if (change.endsWith('restored')) {
+        await tester.pumpWidget(page());
+        await tester.pumpAndSettle();
+      }
+      await tester.tap(find.widgetWithText(FilledButton, 'Sair sem salvar'));
+      await tester.pumpAndSettle();
+      expect(originalCancels, change == 'unchanged' ? 1 : 0);
+      expect(replacementCancels, 0);
+      if (change.startsWith('callback')) {
+        expect(find.text('Edição local preservada'), findsOneWidget);
+        await tester.tap(find.widgetWithText(TextButton, 'Cancelar'));
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('health-care-profile-confirm-exit-dialog')), findsOneWidget);
+        await tester.tap(find.widgetWithText(FilledButton, 'Sair sem salvar'));
+        await tester.pumpAndSettle();
+        expect(originalCancels, change == 'callback-restored' ? 1 : 0);
+        expect(replacementCancels, change == 'callback' ? 1 : 0);
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('profile form is unavailable without injected data and save command', (tester) async {
     await tester.pumpWidget(
       MaterialApp(

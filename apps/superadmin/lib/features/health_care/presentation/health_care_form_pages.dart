@@ -65,6 +65,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
   String? _validationError;
   var _loadGeneration = 0;
   var _commandGeneration = 0;
+  var _cancelContextGeneration = 0;
   var _draftRevision = 0;
   final _lastEpisode = TextEditingController();
   final _reaction = TextEditingController();
@@ -109,6 +110,9 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
         oldWidget.childId != widget.childId || oldWidget.loadDraft != widget.loadDraft;
     final commandIdentityChanged =
         oldWidget.onSaved != widget.onSaved || oldWidget.onSaveSucceeded != widget.onSaveSucceeded;
+    if (loadIdentityChanged || commandIdentityChanged || oldWidget.onCancel != widget.onCancel) {
+      _cancelContextGeneration++;
+    }
     if (!loadIdentityChanged && !commandIdentityChanged) return;
     _commandGeneration++;
     _saving = false;
@@ -125,6 +129,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
 
   @override
   void dispose() {
+    _cancelContextGeneration++;
     _loadGeneration++;
     _commandGeneration++;
     _lastEpisode.dispose();
@@ -271,10 +276,14 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
   });
 
   Future<void> _requestCancel() async {
+    if (!mounted) return;
+    final onCancel = widget.onCancel;
     if (!_dirty) {
-      widget.onCancel();
+      onCancel();
       return;
     }
+    final generation = _cancelContextGeneration;
+    final childId = _childId;
     final discard = await showDialog<bool>(
       context: context,
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
@@ -297,7 +306,13 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
         ),
       ),
     );
-    if (discard == true && mounted) widget.onCancel();
+    if (discard == true &&
+        mounted &&
+        generation == _cancelContextGeneration &&
+        childId == _childId &&
+        identical(onCancel, widget.onCancel)) {
+      onCancel();
+    }
   }
 
   List<SuperadminFormStep> get _steps => [
