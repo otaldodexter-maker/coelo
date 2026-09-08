@@ -10,6 +10,81 @@ import 'package:flutter_test/flutter_test.dart';
 import 'invite_test_repository.dart';
 
 void main() {
+  testWidgets('disposing detail removes only its confirmation beneath another route', (
+    tester,
+  ) async {
+    final navigator = GlobalKey<NavigatorState>();
+    final repository = TestInviteRepository();
+    Widget host(bool showDetail) => MaterialApp(
+      navigatorKey: navigator,
+      theme: CoeloTheme.light,
+      home: showDetail
+          ? InviteDetailPage(
+              repository: repository,
+              inviteId: repository.invites.single.id,
+              allowCommands: true,
+            )
+          : const Scaffold(body: Text('Origem')),
+    );
+    await tester.pumpWidget(host(true));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('invite-detail-revoke')));
+    await tester.pumpAndSettle();
+    unawaited(
+      navigator.currentState!.push(
+        DialogRoute<void>(
+          context: navigator.currentContext!,
+          builder: (_) => const Dialog(child: Text('Outra rota')),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(host(false));
+    await tester.pumpAndSettle();
+    expect(find.text('Outra rota'), findsOneWidget);
+    navigator.currentState!.pop();
+    await tester.pumpAndSettle();
+    expect(find.text('Origem'), findsOneWidget);
+    expect(find.byKey(const Key('invite-revoke-dialog')), findsNothing);
+    expect(repository.lastRevoke, isNull);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final revoke in [false, true]) {
+    testWidgets('captured ${revoke ? 'revoke' : 'resend'} callback cannot run after denial', (
+      tester,
+    ) async {
+      final repository = TestInviteRepository();
+      await tester.pumpWidget(
+        _app(
+          InviteDetailPage(
+            repository: repository,
+            inviteId: repository.invites.single.id,
+            allowCommands: true,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final resend = tester
+          .widget<OutlinedButton>(find.byKey(const Key('invite-detail-resend')))
+          .onPressed!;
+      final captured = revoke
+          ? tester.widget<TextButton>(find.byKey(const Key('invite-detail-revoke'))).onPressed!
+          : resend;
+      repository.failure = const InviteUnauthorizedException();
+      resend();
+      await tester.pumpAndSettle();
+      expect(find.text('Acesso não autorizado'), findsOneWidget);
+      repository.failure = null;
+      captured();
+      await tester.pumpAndSettle();
+      expect(repository.lastResend, isNull);
+      expect(repository.lastRevoke, isNull);
+      expect(find.byKey(const Key('invite-revoke-dialog')), findsNothing);
+      expect(find.byKey(const Key('invite-result-link')), findsNothing);
+    });
+  }
+
   testWidgets('late unauthorized resend cannot purge replacement repository detail', (
     tester,
   ) async {

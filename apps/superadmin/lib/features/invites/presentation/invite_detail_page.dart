@@ -85,6 +85,14 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
       generation == _contextGeneration &&
       identical(repository, widget.repository);
 
+  bool _canCommand(PlatformInvite invite) =>
+      mounted &&
+      _state == _DetailState.ready &&
+      identical(invite, _invite) &&
+      widget.allowCommands &&
+      _busy == null &&
+      _revokeRoute == null;
+
   void _dismissRevokeConfirmation() {
     final route = _revokeRoute;
     _revokeRoute = null;
@@ -131,7 +139,7 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
   }
 
   Future<void> _resend(PlatformInvite invite) async {
-    if (!widget.allowCommands || _busy != null || _revokeRoute != null) return;
+    if (!_canCommand(invite) || !invite.canResend) return;
     final generation = _contextGeneration;
     final repository = widget.repository;
     final inviteId = widget.inviteId;
@@ -184,7 +192,7 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
   }
 
   Future<void> _revoke(PlatformInvite invite) async {
-    if (!widget.allowCommands || _busy != null || _revokeRoute != null) return;
+    if (!_canCommand(invite) || !invite.canRevoke) return;
     final generation = _contextGeneration;
     final repository = widget.repository;
     final inviteId = widget.inviteId;
@@ -202,7 +210,8 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
     if (!confirmed ||
         !_isCurrentCommand(generation, repository) ||
         inviteId != widget.inviteId ||
-        _busy != null) {
+        !_canCommand(invite) ||
+        !invite.canRevoke) {
       return;
     }
     final requestId = _revokeRequestId ??= newInviteRequestId();

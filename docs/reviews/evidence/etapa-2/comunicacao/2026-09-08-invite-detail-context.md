@@ -44,3 +44,21 @@ transitória permite tentativa explícita posterior.
 - Não é correção de IDOR server-side nem prova de E2E. Políticas de emissão e
   gates de produção permanecem abertos; não habilitar comandos por esta evidência.
 - Memória: restaura isolamento aprovado, nenhuma nova decisão/artigo durável.
+
+## Delta solicitado pela revisão central
+
+Dois REDs adicionais demonstraram que callbacks capturados enquanto o detalhe
+era autorizado ainda podiam reenviar ou abrir confirmação após a negação. A
+primeira fixture de revoke usava status expired, sem botão revogar; foi corrigida
+para pending com prazo vencido, e só então reproduzido o RED funcional.
+
+`_canCommand` agora exige detalhe ready, identidade do snapshot atual, contexto
+habilitado e ausência de operação/diálogo; os predicados de domínio canResend e
+canRevoke são reavaliados, inclusive depois da confirmação. Nenhuma capability
+nova ou autoridade server-side foi criada. A terceira prova complementar
+desmonta o detalhe com outra rota acima: remove só a confirmação pertencente à
+página e mantém a outra rota. A lacuna de dispose citada acima foi coberta.
+
+Resultado: 18/18 detalhe, 61/61 Convites não-golden; analyzer2 sem issues,
+format/diff/validador visual e review read-only sem bloqueantes. Sem produção,
+SQL, mudança de default ou PNG; permanecem os mesmos gates E2E e memória no-op.
