@@ -647,7 +647,7 @@ begin
         on child_context.id = child_unit.child_context_id and child_context.status = 'active'
       where participant.activity_group_link_id = p_gradebook.activity_group_link_id
         and participant.status = 'active' and participant.removed_at is null
-        and child_context.id = child_context_id
+        and child_context.id = (item->>'child_context_id')::uuid
         and child_context.institution_id = p_gradebook.institution_id
     ) then raise invalid_parameter_value using detail = 'ASSESSMENT_INVALID_REFERENCE'; end if;
     if (select count(*) from jsonb_array_elements(item->'instruments')) <>
@@ -871,7 +871,7 @@ begin
         'group_name', group_record.name, 'activity_id', activity.id,
         'activity_name', activity.name, 'period_id', null, 'period_name', null)
         order by institution.public_name, unit_record.name, group_record.name, activity.name)
-        filter (where gl.id is not null), '[]'::jsonb)
+        filter (where gl.id is not null), '[]'::jsonb))
     into result
     from public.activity_group_links gl
     join public.activity_definitions activity on activity.id = gl.activity_id
@@ -966,7 +966,7 @@ begin
     join public.units unit_record on unit_record.id = b.unit_id
     join public.groups group_record on group_record.id = gl.group_id
     join public.assessment_periods period on period.id = b.period_id
-    where b.status <> 'published'
+    where b.status in ('submitted', 'reviewed')
       and (ctx.scope_kind <> 'institution' or b.institution_id = ctx.scope_institution_id);
     return app_private.assessment_v2_ok(result);
   exception when others then get stacked diagnostics code = pg_exception_detail; end;
