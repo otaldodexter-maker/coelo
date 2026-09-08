@@ -104,8 +104,15 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
     final reader = widget.mediaReader!;
     final session = widget.mediaSession!;
     final generation = ++_openingGeneration;
+    final navigator = Navigator.of(context);
     final route = DialogRoute<void>(
       context: context,
+      themes: InheritedTheme.capture(from: context, to: navigator.context),
+      barrierColor:
+          DialogTheme.of(context).barrierColor ??
+          Theme.of(context).dialogTheme.barrierColor ??
+          Colors.black54,
+      traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
       builder: (_) => !mounted || generation != _openingGeneration
           ? const SizedBox.shrink()
           : SuperadminChatImageDialog(
@@ -116,7 +123,7 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
             ),
     );
     _imageRoute = route;
-    await Navigator.of(context).push(route);
+    await navigator.push(route);
     if (mounted && identical(_imageRoute, route)) {
       _imageRoute = null;
       if (_canOpen) _openFocus.requestFocus();

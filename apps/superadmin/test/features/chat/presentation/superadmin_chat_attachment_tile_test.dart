@@ -14,6 +14,37 @@ void main() {
     byteSize: 100,
     downloadUrl: Uri.parse('https://legacy.invalid/never-follow'),
   );
+  testWidgets('image dialog captures local theme barrier and closed focus traversal', (
+    tester,
+  ) async {
+    const barrier = Color(0x99000000);
+    final localTheme = CoeloTheme.dark.copyWith(
+      dialogTheme: CoeloTheme.dark.dialogTheme.copyWith(barrierColor: barrier),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Theme(
+          data: localTheme,
+          child: Scaffold(
+            body: SuperadminChatAttachmentTile(
+              attachment: canonicalImage,
+              state: SuperadminChatAttachmentState.ready,
+              mediaReader: _Reader(),
+              mediaSession: MediaSession(),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Abrir imagem'));
+    await tester.pumpAndSettle();
+    final dialog = tester.widget<Dialog>(find.byType(Dialog));
+    expect(dialog.backgroundColor, localTheme.colorScheme.surface);
+    final route = ModalRoute.of(tester.element(find.byType(Dialog)))!;
+    expect(route.barrierColor, barrier);
+    expect(route.traversalEdgeBehavior, TraversalEdgeBehavior.closedLoop);
+  });
   testWidgets('canonical image reads only after explicit open and restores focus', (tester) async {
     final reader = _Reader();
     await tester.pumpWidget(

@@ -72,3 +72,12 @@ reload, revogação, expiração e cleanup em produção sob lease nominal.
 Escopo E2E3 original permanece integral: Comunicação, plataforma de Mídia,
 Coelo (Principal) no Superadmin e cabeçalho global. Este consumidor não
 substitui as demais telas/ações e não encerra a tarefa.
+
+## Delta de revisão central — tema herdado
+
+O Coordenador identificou que DialogRoute manual não capturava o tema local
+abaixo do Navigator. RED com raiz clara/subárvore escura reproduziu superfície
+branca; correção usa `InheritedTheme.capture` para o mesmo Navigator dono,
+barreira do DialogTheme/Theme e traversal fechado, preservando ownership.
+22/22 testes tile/diálogo passaram após a correção. Nenhum golden histórico
+atualizado; este delta restaura tema do contexto, sem nova regra de produto.
