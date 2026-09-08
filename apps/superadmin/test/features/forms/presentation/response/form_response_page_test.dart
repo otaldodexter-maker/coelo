@@ -7,6 +7,97 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final kind in [FormItemKind.shortText, FormItemKind.multipleChoice]) {
+    testWidgets('empty loaded $kind does not satisfy a required answer', (tester) async {
+      final api = _ResponseApi(
+        items: [
+          FormItem(id: 'required', kind: kind, label: 'Required', position: 0, isRequired: true),
+        ],
+        initialAnswers: {
+          'required': kind == FormItemKind.shortText
+              ? FormAnswer.shortText(itemId: 'required', value: '   ')
+              : FormAnswer.multipleChoice(itemId: 'required', optionIds: const {}),
+        },
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: FormResponsePage(api: api, occurrenceId: 'occurrence-1'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('form-response-review')));
+      await tester.pumpAndSettle();
+      expect(find.text('Revisão da resposta'), findsNothing);
+      expect(api.submitCommand, isNull);
+    });
+  }
+
+  for (final kind in [
+    FormItemKind.yesNo,
+    FormItemKind.singleChoice,
+    FormItemKind.multipleChoice,
+    FormItemKind.scale,
+    FormItemKind.date,
+  ]) {
+    testWidgets('required $kind must be answered before review', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1000, 1100));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final api = _ResponseApi(
+        items: [
+          FormItem(
+            id: 'required',
+            kind: kind,
+            label: 'Required question',
+            position: 0,
+            isRequired: true,
+            config: const FormItemConfig(scaleMin: 0, scaleMax: 2),
+            options: kind == FormItemKind.singleChoice || kind == FormItemKind.multipleChoice
+                ? const [
+                    FormOption(id: 'a', label: 'A', position: 0),
+                    FormOption(id: 'b', label: 'B', position: 1),
+                  ]
+                : const [],
+          ),
+        ],
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: FormResponsePage(api: api, occurrenceId: 'occurrence-1'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('form-response-review')));
+      await tester.pumpAndSettle();
+      expect(find.text('Revisão da resposta'), findsNothing);
+      expect(api.submitCommand, isNull);
+      switch (kind) {
+        case FormItemKind.yesNo:
+          await tester.tap(find.widgetWithText(ChoiceChip, 'Não'));
+        case FormItemKind.singleChoice:
+          await tester.tap(find.widgetWithText(ChoiceChip, 'A'));
+        case FormItemKind.multipleChoice:
+          await tester.tap(find.widgetWithText(FilterChip, 'A'));
+        case FormItemKind.scale:
+          await tester.tap(find.widgetWithText(ChoiceChip, '0'));
+        case FormItemKind.date:
+          await tester.tap(find.text('Selecionar data'));
+          await tester.pumpAndSettle();
+          await tester.tap(find.text('OK'));
+        default:
+          throw StateError('Unsupported test case');
+      }
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('form-response-review')));
+      await tester.pumpAndSettle();
+      expect(find.text('Revisão da resposta'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('form-response-submit')));
+      await tester.pumpAndSettle();
+      expect(api.submitCommand?.payload.answers['required'], isNotNull);
+      expect(find.text('Resposta enviada'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('submitted summary shows the confirmed receipt, not edits during submit', (
     tester,
   ) async {

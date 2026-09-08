@@ -674,8 +674,16 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     _answers.removeWhere((id, _) => !visible.contains(id));
   }
 
+  bool _hasAnswer(FormItem item) => switch (_answers[item.id]?.value) {
+    null => false,
+    FormShortTextValue(:final value) => value.trim().isNotEmpty,
+    FormChoiceValue(:final optionIds) => optionIds.isNotEmpty,
+    FormAssetValue(:final assetIds) => assetIds.isNotEmpty,
+    _ => true,
+  };
+
   String? _requiredMessage(FormItem item) =>
-      item.isRequired && _answers[item.id] == null ? 'Esta resposta é obrigatória.' : null;
+      item.isRequired && !_hasAnswer(item) ? 'Esta resposta é obrigatória.' : null;
 
   void _setAnswer(FormItem item, FormAnswer? answer) {
     _answerRevision++;
@@ -758,7 +766,25 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       );
       return false;
     }
-    return _formKey.currentState?.validate() ?? false;
+    final fieldsValid = _formKey.currentState?.validate() ?? false;
+    final missingRequired = _occurrence!.version.sections
+        .expand((section) => section.items)
+        .any(
+          (item) =>
+              item.isRequired &&
+              item.kind != FormItemKind.information &&
+              visibleItemIds.contains(item.id) &&
+              !_hasAnswer(item),
+        );
+    if (missingRequired) {
+      setState(() {
+        _review = false;
+        _message = 'Responda às perguntas obrigatórias visíveis antes de revisar.';
+      });
+      return false;
+    }
+    if (fieldsValid) setState(() => _message = null);
+    return fieldsValid;
   }
 
   Future<void> _saveDraft() => _sendDraft((api, command) => api.saveResponseDraft(command));
