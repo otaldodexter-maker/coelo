@@ -157,6 +157,125 @@ void main() {
     expect(find.byKey(const Key('principal-now-story')), findsNothing);
   });
 
+  testWidgets('media denial prevents the subsequent audio request', (tester) async {
+    final requested = <PrincipalNowMediaKind>[];
+    await pumpAuthorized(
+      tester,
+      repository: _FakeNowFeedRepository(
+        list: (_) async => [_story],
+        resolve: (media) async {
+          requested.add(media.kind);
+          throw const PrincipalNowFeedUnauthorized();
+        },
+      ),
+    );
+    expect(find.text('Agora indisponível'), findsOneWidget);
+    expect(requested, [PrincipalNowMediaKind.media]);
+  });
+
+  testWidgets('repository replacement does not carry a private reply into the new feed', (
+    tester,
+  ) async {
+    await pumpAuthorized(tester, repository: _FakeNowFeedRepository(list: (_) async => [_story]));
+    final replyFinder = find.byKey(const Key('principal-now-reply-field'));
+    await tester.enterText(replyFinder, 'Resposta do contexto anterior');
+    await pumpAuthorized(
+      tester,
+      repository: _FakeNowFeedRepository(list: (_) async => [_secondStory]),
+    );
+    expect(find.text(_secondStory.caption), findsOneWidget);
+    expect(tester.widget<TextField>(replyFinder).controller!.text, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('obsolete media denial cannot poison an authorized refresh', (tester) async {
+    final refresh = PrincipalNowFeedRefreshSignal();
+    addTearDown(refresh.dispose);
+    final oldRead = Completer<PrincipalNowMediaRead>();
+    final newList = Completer<List<PrincipalNowFeedItem>>();
+    var loads = 0;
+    await pumpAuthorized(
+      tester,
+      refreshSignal: refresh,
+      repository: _FakeNowFeedRepository(
+        list: (_) async => ++loads == 1 ? [_story] : await newList.future,
+        resolve: (media) => media.readTicket == 'ticket-1'
+            ? oldRead.future
+            : Future.value(
+                PrincipalNowMediaRead(
+                  signedUrl: 'https://signed.test/${media.readTicket}',
+                  mimeType: media.mimeType,
+                  kind: media.kind,
+                  expiresIn: const Duration(seconds: 60),
+                ),
+              ),
+      ),
+    );
+    refresh.markPublished('new-publication');
+    await tester.pump();
+    oldRead.completeError(const PrincipalNowFeedUnauthorized());
+    await tester.pump();
+    newList.complete([_secondStory]);
+    await tester.pumpAndSettle();
+    expect(find.text(_secondStory.caption), findsOneWidget);
+    expect(find.text('Agora indisponível'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final origin in ['audio', 'list']) {
+    testWidgets('$origin denial clears private reply and closes owned options', (tester) async {
+      final refresh = PrincipalNowFeedRefreshSignal();
+      addTearDown(refresh.dispose);
+      var loads = 0;
+      final audio = Completer<PrincipalNowMediaRead>();
+      var reads = 0;
+      await pumpAuthorized(
+        tester,
+        refreshSignal: refresh,
+        repository: _FakeNowFeedRepository(
+          list: (_) async {
+            if (++loads > 1) throw const PrincipalNowFeedUnauthorized();
+            return [_story];
+          },
+          resolve: (media) {
+            reads++;
+            return media.kind == PrincipalNowMediaKind.audio
+                ? audio.future
+                : Future.value(
+                    PrincipalNowMediaRead(
+                      signedUrl: 'https://signed.test/image',
+                      mimeType: media.mimeType,
+                      kind: media.kind,
+                      expiresIn: const Duration(seconds: 60),
+                    ),
+                  );
+          },
+        ),
+      );
+      final replyFinder = find.byKey(const Key('principal-now-reply-field'));
+      await tester.enterText(replyFinder, 'Resposta privada sintética');
+      final reply = tester.widget<TextField>(replyFinder).controller!;
+      await tester.tap(find.byTooltip('Opções do Agora'));
+      await tester.pumpAndSettle();
+      expect(find.text('Opções deste Agora'), findsOneWidget);
+      if (origin == 'list') {
+        refresh.markPublished('new-publication');
+        await tester.pumpAndSettle();
+        expect(reply.text, isEmpty);
+        expect(find.text('Opções deste Agora'), findsNothing);
+      }
+      audio.completeError(const PrincipalNowFeedUnauthorized());
+      await tester.pumpAndSettle();
+      expect(reply.text, isEmpty);
+      expect(find.text('Opções deste Agora'), findsNothing);
+      expect(find.text('Agora indisponível'), findsOneWidget);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pumpAndSettle();
+      expect(reads, 2);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('expõe estado semântico quando vídeo ainda não possui player canônico', (
     tester,
   ) async {
