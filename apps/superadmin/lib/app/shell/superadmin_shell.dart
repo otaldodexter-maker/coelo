@@ -92,9 +92,9 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   bool _sidebarCollapsed = false;
   bool _drawerOpen = false;
   late final AnimationController _sidebarController;
-  late final SuperadminActivityController _activityController;
+  late SuperadminActivityController _activityController;
   late final SuperadminChatLauncherPositionController _chatLauncherPositionController;
-  late final bool _ownsActivityController;
+  late bool _ownsActivityController;
   double _embeddedChatLauncherBottomInset = 0;
 
   @override
@@ -111,6 +111,21 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     super.didChangeDependencies();
     if (_reduceMotion && _sidebarController.isAnimating) {
       _sidebarController.value = _sidebarCollapsed ? 1 : 0;
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant SuperadminShell oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.activityController, widget.activityController)) {
+      final previous = _activityController;
+      final ownedPrevious = _ownsActivityController;
+      _ownsActivityController = widget.activityController == null;
+      _activityController = widget.activityController ?? SuperadminActivityController();
+      if (ownedPrevious) {
+        // Let the center detach its old listener and open-state first.
+        WidgetsBinding.instance.addPostFrameCallback((_) => previous.dispose());
+      }
     }
   }
 
