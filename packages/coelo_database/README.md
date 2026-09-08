@@ -162,6 +162,26 @@ Adicione `-RunLint` para executar `supabase db lint --local` no mesmo banco
 descartavel antes do teardown. Erros fazem o wrapper falhar; warnings ficam
 visiveis para classificacao do delta.
 
+Para reproduzir somente os pré-requisitos históricos de Avisos, o seletor
+`-NominalProfile N01PrerequisitesRed` fixa Auth45, cinco migrations canônicas
+de Avisos e os dois preflights herdados: 52 arquivos, alvo `20260901200206`.
+O descriptor em `replay/profiles/N01PrerequisitesRed/profile.json` e todos
+os inputs são conferidos por SHA-256 normalizado antes de staging ou Docker.
+O modo rejeita combinações com `AuthOnly`, `FoundationOnly`,
+`AdditionalMigration`, `RunAuthLifecycle` e `RunActivityV2Concurrency`.
+
+Esse perfil é um diagnóstico local: a falha esperada é `42P01` na migration
+`20260812003000_notices_production.sql`, que exige `public.notice_events`
+depois de a fronteira canônica ter movido a tabela para `analytics`.
+Não acrescenta pontes nem a correção final de publicação. Uma execução que
+registre esse erro comprova o pré-requisito ausente; não valida Avisos ponta a ponta.
+
+```powershell
+& packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
+  -TargetVersion 20260901200206 `
+  -NominalProfile N01PrerequisitesRed
+```
+
 Nunca use
 `Prepare-SafeMigrationReplay.ps1` diretamente em operacoes normais, nem use o
 staging com `db push`, `migration repair` ou qualquer comando remoto. As

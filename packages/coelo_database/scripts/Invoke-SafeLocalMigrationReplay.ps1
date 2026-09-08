@@ -8,6 +8,9 @@ param(
 
   [switch]$AuthOnly,
 
+  [ValidateSet('N01PrerequisitesRed')]
+  [string]$NominalProfile,
+
   [string[]]$AdditionalMigration = @(),
 
   [string[]]$TestPath = @(),
@@ -87,6 +90,16 @@ function Get-DockerResources([string]$Identity) {
 
 if ($targetMigration.Count -ne 1) {
   throw "target version must identify exactly one canonical migration: $TargetVersion"
+}
+if ($NominalProfile) {
+  if ($FoundationOnly -or $AuthOnly -or $AdditionalMigration.Count -gt 0 -or
+      $RunAuthLifecycle -or $RunActivityV2Concurrency) {
+    throw 'nominal replay cannot be combined with other replay profiles, additions, Auth lifecycle or concurrency'
+  }
+  $nominalResolver = Join-Path $packageRoot 'replay\profiles\N01PrerequisitesRed\Resolve-N01PrerequisitesRed.ps1'
+  Assert-NoReparseAncestors $nominalResolver
+  Assert-NoReparseAncestors (Split-Path -Parent $nominalResolver)
+  $null = & $nominalResolver -TargetVersion $TargetVersion
 }
 if ($FoundationOnly -and $AuthOnly) {
   throw 'foundation-only and Auth-only replay profiles are mutually exclusive'
@@ -249,11 +262,13 @@ try {
     throw 'database-only replay config retained an Edge Function table'
   }
 
+  $nominalParameters = @{}
+  if ($NominalProfile) { $nominalParameters.NominalProfile = $NominalProfile }
   & (Join-Path $scriptRoot 'Prepare-SafeMigrationReplay.ps1') `
     -DestinationMigrationsRoot $validatedMigrationRoot `
     -FoundationOnly:$FoundationOnly `
     -AuthOnly:$AuthOnly `
-    -AdditionalMigration $AdditionalMigration
+    -AdditionalMigration $AdditionalMigration @nominalParameters
 
   $startAttempted = $true
   $excludedServices = if ($RunAuthLifecycle) {
