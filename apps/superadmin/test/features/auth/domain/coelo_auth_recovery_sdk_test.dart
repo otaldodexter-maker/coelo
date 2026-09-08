@@ -11,6 +11,80 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('external SDK session replacement survives an older recovery response', () async {
+    const sessionB = '22222222-2222-4222-8222-222222222222';
+    final userB = {..._user, 'id': 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb'};
+    final updateStarted = Completer<void>();
+    final finishUpdate = Completer<void>();
+    final requests = <Request>[];
+    final updatedUserIds = <String?>[];
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-test',
+      authOptions: const AuthClientOptions(autoRefreshToken: false),
+      httpClient: MockClient((request) async {
+        requests.add(request);
+        Object body = _session(1);
+        if (request.method == 'PUT' && request.url.path.endsWith('/user')) {
+          updateStarted.complete();
+          await finishUpdate.future;
+          body = _user;
+        } else if (request.url.path.endsWith('/token')) {
+          body = _session(2, sessionId: sessionB, user: userB);
+        } else if (request.url.path.endsWith('/logout')) {
+          body = <String, Object?>{};
+        }
+        return Response(
+          jsonEncode(body),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+    final gateway = SupabaseCoeloAuthGateway(client, sessionPersistence: _Persistence());
+    addTearDown(gateway.dispose);
+    final subscription = client.auth.onAuthStateChange.listen((state) {
+      if (state.event == AuthChangeEvent.userUpdated) {
+        updatedUserIds.add(state.session?.user.id);
+      }
+    });
+    addTearDown(subscription.cancel);
+    await client.auth.verifyOTP(type: OtpType.recovery, tokenHash: 'synthetic-recovery-hash');
+    await Future<void>.delayed(Duration.zero);
+
+    final update = gateway.updatePassword(password: 'synthetic-new-password');
+    await updateStarted.future;
+    await client.auth.signInWithPassword(
+      email: 'synthetic-b@example.invalid',
+      password: 'synthetic',
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(gateway.currentSessionState.sessionId, sessionB);
+    expect(client.auth.currentUser?.id, userB['id']);
+    finishUpdate.complete();
+    final reset = await update;
+    await Future<void>.delayed(Duration.zero);
+
+    expect(
+      {
+        'resetSuccess': reset.isSuccess,
+        'sessionId': gateway.currentSessionState.sessionId,
+        'userId': client.auth.currentUser?.id,
+        'logoutCount': requests.where((r) => r.url.path.endsWith('/logout')).length,
+        'updatedUserIds': updatedUserIds,
+      },
+      {
+        'resetSuccess': false,
+        'sessionId': sessionB,
+        'userId': userB['id'],
+        'logoutCount': 0,
+        'updatedUserIds': <String?>[],
+      },
+    );
+  });
+
   test('pending recovery password update excludes a new gateway login', () async {
     final updateStarted = Completer<void>();
     final finishUpdate = Completer<void>();
@@ -368,17 +442,21 @@ const _user = {
   'created_at': '2026-09-01T00:00:00Z',
 };
 
-Map<String, Object?> _session(int version, {String sessionId = _sessionId}) {
+Map<String, Object?> _session(
+  int version, {
+  String sessionId = _sessionId,
+  Map<String, Object?> user = _user,
+}) {
   String encode(Object value) =>
       base64Url.encode(utf8.encode(jsonEncode(value))).replaceAll('=', '');
   final token =
-      '${encode({'alg': 'HS256', 'typ': 'JWT'})}.${encode({'sub': _user['id'], 'session_id': sessionId, 'role': 'authenticated', 'aal': 'aal1', 'exp': DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600, 'test_version': version})}.synthetic-signature';
+      '${encode({'alg': 'HS256', 'typ': 'JWT'})}.${encode({'sub': user['id'], 'session_id': sessionId, 'role': 'authenticated', 'aal': 'aal1', 'exp': DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600, 'test_version': version})}.synthetic-signature';
   return {
     'access_token': token,
     'refresh_token': 'synthetic-refresh-$version',
     'expires_in': 3600,
     'token_type': 'bearer',
-    'user': _user,
+    'user': user,
   };
 }
 
