@@ -14,13 +14,16 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "18FFFDD473A299562E6D4976C93D1888ECB3508735D26CECEFF320FCDC7C8568"
+flutter_tracker_sha256: "BA21D67E4CF93F017359831213A599154D46FF026A722AF06B821C1D6DD33C52"
 supabase_tracker_sha256: "A7F6EA7170FB8BFC55F35BDAE79566BE7246C6788CF27B482AD0FEDF69C6E863"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
+
+- Atualização02:42: AutoriaForms cliente66/66/analyzer3 no destino; SQL02
+  versionado como candidato dependente01, sem execução, DI ou promoção E2E.
 
 - Atualização02:39: Modelos+Agenda39/39 focais e Agora59/59inclgoldens no
   destino, analyzers limpos. Invalidação cliente não é autorização backend,
