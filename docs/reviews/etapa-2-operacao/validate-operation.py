@@ -42,6 +42,26 @@ for code, coordinator in state.get('operational_coordinators', {}).items():
     assert all(metadata.get(k) for k in ('source', 'status', 'generated_at'))
     if coordinator['operational_ack'] is None:
         assert coordinator['status'].startswith('prepared-')
+for code, front in state.get('validation_fronts', {}).items():
+    assert code not in state['executors']
+    assert code not in {a['executor'] for a in assigned}
+    assert front['action_ids_transferred'] is False
+    assert code in state['operational_coordinators'][front['supervisor']]['scope']
+    assignment = (operation / f'assignments/{code}.md').read_text(encoding='utf8')
+    prompt = (operation / f'next-round/R01-{code}-prompt.md').read_text(encoding='utf8')
+    assert front['path'] in prompt and front['branch'] in prompt
+    assert front['baseline'] in assignment
+    reserved = front['reserved_test_paths']
+    assert len(reserved) == len(set(reserved)) and all(p in assignment for p in reserved)
+    path = Path(front['path'])
+    assert path.is_dir()
+    branch = subprocess.check_output(['git', '-C', str(path), 'branch', '--show-current'], text=True).strip()
+    assert branch == front['branch'], (code, branch)
+    subprocess.run(['git', '-C', str(path), 'merge-base', '--is-ancestor', front['baseline'], 'HEAD'], check=True)
+    handoff = Path(front['handoff_path'])
+    assert handoff == path / f'docs/reviews/etapa-2-operacao/handoffs/{code}.md'
+    metadata = yaml.safe_load(handoff.read_text(encoding='utf8').split('---', 2)[1])
+    assert all(metadata.get(k) for k in ('source', 'status', 'generated_at'))
 for path in operation.rglob('*.md'):
     content = path.read_text(encoding='utf8')
     assert content.startswith('---\n'), path

@@ -1,6 +1,6 @@
 ---
 source: "Owner; fixed handoffs in R01-checkpoint-1740-deltas.json; C06r1; C00 logs"
-status: "partial-verification;delivery-push-pending"
+status: "partial-verification;delivery-push-verified-see-receipt"
 generated_at: "2026-09-08T17:50:22-03:00"
 timezone: "America/Sao_Paulo"
 ---

@@ -43,7 +43,7 @@
       "thread_id": "01a08197-7b62-73c1-9673-5fd40fa40452",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01",
       "branch": "codex/e2-r01-c01-identidade",
-      "instruction_revision": 10,
+      "instruction_revision": 11,
       "received_revision": 37,
       "integrated_revision": 3,
       "last_evidence": "2026-09-08T17:30:00-03:00",
@@ -514,7 +514,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T17:05:59-03:00",
+  "updated_at": "2026-09-08T18:10:21-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -1107,23 +1107,28 @@
       "branch": "claude/e2-r01-c06-coordenacao",
       "baseline": "f0763a657ca6e5422cc42fa61c0c3c4ca724e129",
       "handoff_path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06\\docs\\reviews\\etapa-2-operacao\\handoffs\\C06.md",
-      "instruction_revision": 1,
-      "received_revision": 1,
+      "instruction_revision": 4,
+      "received_revision": 4,
       "accepted_revision": 1,
       "status": "active-acknowledged",
       "operational_ack": "R01-C06-I001",
       "scope": [
         "C04",
-        "C05"
+        "C05",
+        "C07"
       ],
       "action_ids": [],
       "automation_id": "6f97339a",
       "created_at": "2026-09-08T17:29:41-03:00",
       "bootstrap_commit": "2ed8513842a1d2f3f595645c7e868ad00662fefd",
       "push_verified_at": "2026-09-08T17:34:14-03:00",
-      "last_evidence": "2026-09-08T17:38:00-03:00",
+      "last_evidence": "2026-09-08T18:10:00-03:00",
       "automation_schedule": ":21/:51 America/Sao_Paulo;session-only idle-only;reported",
-      "source_commit": "3a3879b8f1bdeaa5ae96ce1569fc2ab08b34f312"
+      "source_commit": "f142dc144679e1c4ddbd6895f100014d5ef64515",
+      "c07_receipt_evidence": "C06-authored assignment17:52 + bootstrap46f63e84;summary revision update pending",
+      "next_nominal_tick": "2026-09-08T18:21:00-03:00",
+      "last_proven_tick": "2026-09-08T17:59:00-03:00",
+      "timestamp_discrepancy": "r4 text18:10 versus commit18:03:39; preserve both, receipt uses actual read time"
     }
   },
   "operational_routing": {
@@ -1162,7 +1167,8 @@
       "note": "Partial technical reviews are not full handoff synchronization;C06 records own fixed cut in r1"
     },
     "heartbeat_updated_at": "2026-09-08T17:34:14-03:00",
-    "heartbeat_id": "e2-r01-c00-acompanhamento-30-min"
+    "heartbeat_id": "e2-r01-c00-acompanhamento-30-min",
+    "C07": "C06"
   },
   "tracker_sync": {
     "at": "2026-09-08T17:50:22-03:00",
@@ -1183,5 +1189,58 @@
     ],
     "verified_at": "2026-09-08T17:56:56-03:00",
     "deploy": false
+  },
+  "validation_fronts": {
+    "C07": {
+      "name": "E2 R01 C07 — Validação visual e fluxos",
+      "thread_id": "local_3b1f7fb1-731c-4ba9-bae5-1657903ca22f",
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c07",
+      "branch": "claude/e2-r01-c07-validacao-visual",
+      "baseline": "4af42925ff6f05fa14a7e28dffb31edbee321c3e",
+      "supervisor": "C06",
+      "instruction_revision": 2,
+      "received_revision": null,
+      "handoff_path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c07\\docs\\reviews\\etapa-2-operacao\\handoffs\\C07.md",
+      "status": "session-observed-by-C06;own-ack-pending",
+      "reserved_test_paths": [
+        "apps/superadmin/test/visual_review/c07_moments_acceptance_test.dart",
+        "apps/superadmin/test/visual_review/c07_profile_acceptance_test.dart",
+        "apps/superadmin/test/acceptance/c07_institutions_directory_test.dart",
+        "apps/superadmin/test/acceptance/c07_units_directory_test.dart"
+      ],
+      "duplicate_check": "C06 assignment17:52 documents C04r20/C05r15;first execution recheck required",
+      "action_ids_transferred": false,
+      "session_evidence": "C06r3 observed 17:59:51; baseline commits are C00 preparation, corrected C06I004"
+    }
+  },
+  "continuity_owner_reinforcement_1808": {
+    "instruction": "R01-ALL-RTK-1808",
+    "at": "2026-09-08T18:08:11-03:00",
+    "codex_dispatch": "sent-native-C01-C02-C03;acks-next-material-handoffs",
+    "claude_dispatch": "requested-via-C06-I004;not-yet-acknowledged"
+  },
+  "models34_reservation": {
+    "writer": "C01",
+    "path": "packages/coelo_database/supabase/tests/access_profile_models_aal1_phase_policy_test.sql",
+    "instruction": "R01-C01-I011",
+    "status": "granted-awaiting-code-sha",
+    "lease": "not-granted",
+    "at": "2026-09-08T18:10:21-03:00"
+  },
+  "heartbeat_verification": {
+    "id": "e2-r01-c00-acompanhamento-30-min",
+    "status": "ACTIVE",
+    "timezone": "America/Sao_Paulo",
+    "nominal_minutes": [
+      0,
+      10,
+      20,
+      30,
+      40,
+      50
+    ],
+    "verified_at": "2026-09-08T18:10:21-03:00",
+    "next_nominal_tick": "2026-09-08T18:20:00-03:00",
+    "prompt": "updated includes C07/C06I004/RTK/safe closing; actual tick not yet proven"
   }
 }

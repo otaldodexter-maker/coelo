@@ -136,3 +136,19 @@ C00 abriu3subagentes nos3slots disponíveis: models_replay_profile (2runners/per
 ## Coordenação Claude C06 — 2026-09-08T17:29:41-03:00
 
 Owner incluiu E2 R01 C06 — Coordenador Claude. Worktree `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c06`, branch `claude/e2-r01-c06-coordenacao`, ID real ainda pendente. Assignment C06I001 na C00; resumo exclusivo `C:\Users\adrie\Documents\Coelo.worktrees\e2-r01-c06\docs\reviews\etapa-2-operacao\handoffs\C06.md`. Preparação r0 não é ack. Depois de r1 com operational_ack I001, C06 assume acompanhamento/retomadas C04/C05 e C00 lê seu resumo primeiro, mantendo acesso aos originais e responsabilidade exclusiva por integração, rastreadores e reservas/leases. Até ack, C00 cobre exceções; não há duas cobranças ativas. C06 usa ledger por executor/revisão/causa, máximo uma retomada por causa; encaminha decisões técnicas C00 sem inventar autorização. C04/C05 continuam seus próprios handoffs, commits e mecanismos de trabalho, consultam instruções operacionais C06 no limite de lote; código/política permanecem assignments C00. Sem ponte de teclado/API paga. Nenhuma nova conversa criada automaticamente. C06 não recebe action_ids e não altera denominadores.
+
+
+## C07 — validação adicional, 2026-09-08T18:01:23-03:00
+
+WorktreeC:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c07,branchclaude/e2-r01-c07-validacao-visual,baseline4af42925ff6f05fa14a7e28dffb31edbee321c3e;assignmentcanônicaC00/C07I002. C06 chefiaoperações e confirmoupreparação;C00 integra/reserva/trackers. Quatrotestesnominais novos,semSQL/Docker/mídiacompartilhada/masters. SemtransferirIDs. Antesdeteste,reconfirmarausênciadeexecuçãoidêntica. C06recolhe05:30/06:00;C00feedback07:40. HandoffC07r0 não é sessãoativa.
+
+
+## R01-ALL-RTK-1808 — continuidade e RTK (2026-09-08T18:08:11-03:00)
+
+O Owner reforçou a continuidade até o fechamento combinado. Use a skill `.agents/skills/rtk/SKILL.md` e RTK.md; use `rtk` explicitamente nos comandos compatíveis e `rtk proxy` quando necessário preservar a saída original. C00 conferiu RTK 0.35.0 e `rtk gain` funcional; a ausência de hook automático no Codex não impede uso explícito. Não reinstale nem reconfigure ferramentas globalmente apenas para cumprir este reforço.
+
+Handoff e feedback são checkpoints: prossiga no mesmo turno para o próximo lote autorizado. Use o máximo de subagentes úteis para tarefas concretas independentes, mantendo um escritor por arquivo. Bloqueio retém somente dependentes; sem próximo passo independente real, descreva a dependência exata para o coordenador resolver, sem fabricar testes/trabalho nem violar reservas ou produção. Antes de qualquer retomada, confira teste/build/ferramenta em andamento. Uma mensagem por causa/revisão, sem loops de cobrança.
+
+Em 09/09, America/Sao_Paulo: 05:30 preparar fechamento seguro; até 06:00 commits, push verificado, handoff final, evidências e WIP preservado separado, com comandos de retomada. Após 06:00 não iniciar atribuições novas R01. C00 integra, reconcilia os três rastreadores e prepara feedback/prompts até 07:40. Somente C00 remove worktree inativa, limpa e com preservação comprovada; nenhuma limpeza forçada ou descarte para aparentar conclusão.
+
+C00 acompanha C01/C02/C03 por ferramentas nativas; C06 acompanha C04/C05/C07 e repassa este reforço uma vez pelo seu mecanismo nativo, registrando envio e ack no próprio handoff. Apenas C00 escreve rastreadores, assignments, reservas e integração. Confirme esta instrução no próximo handoff material, sem parar para confirmação.

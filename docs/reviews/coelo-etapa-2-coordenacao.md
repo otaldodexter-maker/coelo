@@ -23,6 +23,10 @@ Este bloco prevalece operacionalmente. Todo conteúdo abaixo de **Histórico pre
 
 C06 está preparado em `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c06`, branch `claude/e2-r01-c06-coordenacao`, baseline `f0763a657ca6e5422cc42fa61c0c3c4ca724e129`. Nome: **E2 R01 C06 — Coordenador Claude**; ID pendente de abertura pelo Owner. Prompt `etapa-2-operacao/next-round/R01-C06-prompt.md`; handoff exclusivo `C:\Users\adrie\Documents\Coelo.worktrees\e2-r01-c06\docs\reviews\etapa-2-operacao\handoffs\C06.md`. Modelo r0 preparado não comprova recebimento. C06 só coordena operacionalmente C04/C05; 219 IDs continuam com os cinco executores. Após r1/ack I001, C00 consulta resumo C06, evita cobranças operacionais duplicadas e mantém originais para integrar/verificar. C00 segue único integrador/escritor; nenhuma transferência desse papel. Rotas/ledger no estado operacional/protocolo/assignment C06.
 
+### C07 — frente de validação sob C06 (2026-09-08T18:01:23-03:00)
+
+**E2 R01 C07 — Validação visual e fluxos**, IDpendente. Worktree `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c07`, branch `claude/e2-r01-c07-validacao-visual`, baseline `4af42925ff6f05fa14a7e28dffb31edbee321c3e`. Assignment/prompt canônicosC00, handoff próprio C07 preparadoC06. Recebimento operacional C06 comprovado pela preparação17:52/bootstrap46f63e84;C06r1/IDreal confirmado antes. C07 não altera ownership219, só valida critérios em quatrotestesnominais novos. C04/C05 seguem implementação. C00 mantém integração/reservas/trackers. Fechamento09/09 05:30–06:00 sobC06.
+
 ### Registro das conversas e ownership
 
 As cinco conversas não foram criadas automaticamente. O Owner abre a sessão na pasta e cola o prompt em `etapa-2-operacao/next-round/R01-CXX-prompt.md`. Primeiro handoff registra ID real/modelo e confirma I001. Não usar IDs das rodadas antigas.
@@ -660,3 +664,8 @@ Máxima concorrência útil instruída C00–C05, sem mudar ownership principal,
 C00/C01/C02/C03 confirmaram quatro slots por tarefa, principal mais três subagentes. C00 concluiu três lotes e reutilizou os agentes para revisões independentes. C04I010 e C05I008 publicadas, recebimento ainda não comprovado. Claude usa continuidade local; C00 não tem wake nativo para Claude. Detalhes no estado operacional. Este ack operacional não afirma sincronização global de handoffs posteriores ao corte anterior.
 
 C04r20 assumiu unpause16:50 e cleanup16:58; Docker vazio confirmado. Timestamp20:09 sem fuso contradiz recebimento17:02; correção solicitada. C05r14 informou cron novo f10b9942. Nenhuma execução remota autorizada.
+
+
+### R01-ALL-RTK-1808 — 2026-09-08T18:08:11-03:00
+
+Owner reforçou continuidade e RTK até fechamento 09/09 05:30–06:00, feedback/prompts 07:40. Instrução publicada em protocolo e assignments C01–C07. C06r4 lida; C07 ID real observado por C06 `local_3b1f7fb1-731c-4ba9-bae5-1657903ca22f`, ack próprio pendente. C06I004 corrige a atribuição equivocada dos cherry-picks de preparação C00 fdf0972d/4af42925 à sessão C07. Baseline autorizado preservado; nenhuma reversão ou infração C07 comprovada. Relatório 17:40 mantém seu corte fixado, sem promover novos handoffs a conclusão.
