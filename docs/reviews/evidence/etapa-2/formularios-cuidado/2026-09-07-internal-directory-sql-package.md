@@ -20,7 +20,7 @@ com 124 testes locais. Esses testes usam doubles, não este SQL.
 - `packages/coelo_database/migrations/20260908000049_superadmin_forms_directory_internal_read.sql`
   — Git blob `48ae0c2bf5793188741ec5ad2af4e31e25e763a0`.
 - `packages/coelo_database/supabase/tests/superadmin_forms_directory_internal_read_test.sql`
-  — Git blob `c7b86473e755520ad74dd8212536e521dd6458c0`.
+  — Git blob `0f1ef585f67100fc7f253e1eba25a55719b1e3b0` (corrigido para a política AAL vigente).
 
 Timestamp criado pela CLI Supabase 2.116.0 `migration new`, sem iniciar serviço.
 Arquivo movido para o diretório canônico por patch. Não aplicar toda a cauda de
@@ -40,6 +40,10 @@ Fontes canônicas consultadas:
 
 - `20260827233000_superadmin_internal_auth_context.sql`: tipo, guard, lifecycle,
   proteção do último Owner, separação de realms e grants.
+- ADR 0019 e spec 039, aditivos normativos de 2026-09-01, com
+  `20260901200206_defer_superadmin_internal_mfa_until_mvp_go_live.sql`: AAL1/AAL2
+  aceitos no realm interno durante validação do MVP, inclusive Owner. A regra
+  histórica de MFA obrigatório não é expectativa válida desta entrega.
 - `20260827235500_superadmin_internal_institution_list_filter.sql`: envelope
   ampliado com argumento inválido. O snapshot de Auth em
   `20260901190927_deploy_superadmin_internal_auth.sql` sozinho não o fornece.
@@ -64,12 +68,23 @@ executa a função pública; implementação privada não é concedida ao client
 
 pgTAP sintético e rollback-only: instituição A/B, Owner sem PersonAuthLink,
 People-only negado, permissão negada/revogada entre páginas, sessão expirada ou
-de outro usuário, AAL ausente/Owner AAL1, membership suspensa/revogada e AuthLink
+de outro usuário, AAL ausente negado, Owner AAL1/AAL2 com a mesma projeção autorizada,
+membership suspensa/revogada e AuthLink
 revogado com membership/grant ativos. Inclui filtros, busca literal, datas,
 offset equivalente, empate de cursor, página final, inputs inválidos, grants e
 minimização do envelope. Não desabilita triggers nem inventa links People.
 
 # Revisão e próximo gate
+
+Correção da revisão central: o teste inicialmente seguia a cláusula histórica
+de Owner AAL2. Foi corrigido para o aditivo vigente, sem mudar o endpoint ou
+inserir gate MFA. A base Auth45+Forms2 sozinha não contém o helper de argumento
+inválido/400; preservar o preflight e aguardar adição nominal separada pelo
+Coordenador/Eng1. A expectativa AAL1 exige a política vigente efetiva na base.
+
+Questão enviada ao Coordenador: confirmar o enquadramento de auditoria desta
+leitura nominal frente à redação de comandos da spec 039. O endpoint preparado
+é stable/read-only e ainda não registra audit; não declarar esse gate concluído.
 
 Duas revisões read-only: SQL sem bloqueante estático; fixture corrigida para
 preencher `suspended_at` conforme constraint. Root também conferiu a proteção do
