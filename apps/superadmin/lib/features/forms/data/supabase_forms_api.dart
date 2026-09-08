@@ -388,7 +388,7 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
               'mime_type': value.mimeType,
               'byte_length': value.byteLength,
               'checksum': value.checksum,
-              'edit_secret': value.editSecret,
+              if (value.editSecret != null) 'edit_secret': value.editSecret,
             },
           ),
         );
@@ -406,7 +406,10 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
           await _mediaCommand(
             'finalize',
             command,
-            (value) => {'asset_id': value.assetId, 'edit_secret': value.editSecret},
+            (value) => {
+              'asset_id': value.assetId,
+              if (value.editSecret != null) 'edit_secret': value.editSecret,
+            },
           ),
         );
         return FormAsset(
@@ -422,7 +425,10 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
     await _mediaCommand(
       'discard',
       command,
-      (value) => {'asset_id': value.assetId, 'edit_secret': value.editSecret},
+      (value) => {
+        'asset_id': value.assetId,
+        if (value.editSecret != null) 'edit_secret': value.editSecret,
+      },
     );
   });
 

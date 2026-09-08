@@ -323,7 +323,35 @@ void main() {
     expect(ticket.signedUploadUrl.queryParameters['token'], 'short-lived');
     expect(backend.mediaEnvelope?['action'], 'prepare');
     expect(backend.mediaEnvelope?['expected_version'], 3);
+    expect((backend.mediaEnvelope!['payload']! as Map).containsKey('edit_secret'), isFalse);
   });
+
+  for (final secret in [null, 's' * 43]) {
+    test('asset finalize and discard encode optional secret $secret', () async {
+      final backend = _Backend({
+        'id': 'asset-1',
+        'item_id': 'photo-1',
+        'mime_type': 'image/webp',
+        'byte_length': 128,
+      });
+      final api = SupabaseFormsApi(backend);
+      final command = FormCommand(
+        requestId: 'request-1',
+        expectedVersion: 0,
+        payload: FormAssetIdPayload('asset-1', editSecret: secret),
+      );
+      await api.finalizeAssetUpload(command);
+      expect(backend.mediaEnvelope!['payload'], {
+        'asset_id': 'asset-1',
+        'edit_secret': ?secret,
+      });
+      await api.discardAsset(command);
+      expect(backend.mediaEnvelope!['payload'], {
+        'asset_id': 'asset-1',
+        'edit_secret': ?secret,
+      });
+    });
+  }
 
   test('file job list maps availability without accepting a storage path', () async {
     final backend = _Backend({
