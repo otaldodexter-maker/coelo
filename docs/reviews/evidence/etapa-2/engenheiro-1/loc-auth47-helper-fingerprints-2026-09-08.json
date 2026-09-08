@@ -1,0 +1,229 @@
+{
+  "actor": "postgres",
+  "probe": "loc_legacy_helper_fingerprints_auth47",
+  "functions": [
+    {
+      "acl": [
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "oid": "21702",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "cr_count": 69,
+      "lf_bytes": 4624,
+      "lf_count": 75,
+      "position": 1,
+      "raw_bytes": 4693,
+      "signature": "app_private.activity_management_payload(uuid)",
+      "crlf_count": 69,
+      "matches_lf": false,
+      "volatility": "s",
+      "matches_raw": true,
+      "expected_md5": "dbfb21e52b0773a41815a0986be0d64f",
+      "actual_md5_lf": "41d84deeb09e0c0d4f32d750d630b8e7",
+      "actual_md5_raw": "dbfb21e52b0773a41815a0986be0d64f",
+      "security_definer": true
+    },
+    {
+      "acl": [
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "oid": "21703",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "cr_count": 97,
+      "lf_bytes": 6103,
+      "lf_count": 103,
+      "position": 2,
+      "raw_bytes": 6200,
+      "signature": "app_private.superadmin_activity_directory(text,uuid[],uuid[],uuid[],text[],text[],integer,integer,text,boolean)",
+      "crlf_count": 97,
+      "matches_lf": false,
+      "volatility": "s",
+      "matches_raw": true,
+      "expected_md5": "f1809b1c0b268ed571eaaa958a061015",
+      "actual_md5_lf": "662dff10b404d35a45c2b6cfd5674fb2",
+      "actual_md5_raw": "f1809b1c0b268ed571eaaa958a061015",
+      "security_definer": true
+    },
+    {
+      "acl": [
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "oid": "21707",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "cr_count": 14,
+      "lf_bytes": 1195,
+      "lf_count": 20,
+      "position": 3,
+      "raw_bytes": 1209,
+      "signature": "public.superadmin_activity_directory(text,uuid[],uuid[],uuid[],text[],text[],integer,integer,text,boolean)",
+      "crlf_count": 14,
+      "matches_lf": false,
+      "volatility": "s",
+      "matches_raw": true,
+      "expected_md5": "e1e94802dd59857459e6816c8b6a4069",
+      "actual_md5_lf": "b46f3dfec3424f8c419dca2a1e2a70bd",
+      "actual_md5_raw": "e1e94802dd59857459e6816c8b6a4069",
+      "security_definer": true
+    },
+    {
+      "acl": [
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "oid": "21705",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "cr_count": 80,
+      "lf_bytes": 4982,
+      "lf_count": 86,
+      "position": 4,
+      "raw_bytes": 5062,
+      "signature": "app_private.superadmin_get_activity_form_options(uuid)",
+      "crlf_count": 80,
+      "matches_lf": false,
+      "volatility": "s",
+      "matches_raw": false,
+      "expected_md5": "65fe6408f0f2c6b0c1c9d71a809f2d80",
+      "actual_md5_lf": "b951e603ef34b7d26597356a16eb6d06",
+      "actual_md5_raw": "70700ddc38d42df4fae75765b7ff2617",
+      "security_definer": true
+    },
+    {
+      "acl": [
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "oid": "21709",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "cr_count": 0,
+      "lf_bytes": 287,
+      "lf_count": 6,
+      "position": 5,
+      "raw_bytes": 287,
+      "signature": "public.superadmin_get_activity_form_options(uuid)",
+      "crlf_count": 0,
+      "matches_lf": true,
+      "volatility": "s",
+      "matches_raw": true,
+      "expected_md5": "4600bdfb92b0ea38f597947365750052",
+      "actual_md5_lf": "4600bdfb92b0ea38f597947365750052",
+      "actual_md5_raw": "4600bdfb92b0ea38f597947365750052",
+      "security_definer": true
+    },
+    {
+      "acl": [
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "oid": "21749",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "cr_count": 58,
+      "lf_bytes": 3221,
+      "lf_count": 64,
+      "position": 6,
+      "raw_bytes": 3279,
+      "signature": "app_private.superadmin_create_activity_locations(uuid,uuid[],text,uuid)",
+      "crlf_count": 58,
+      "matches_lf": false,
+      "volatility": "v",
+      "matches_raw": false,
+      "expected_md5": "886752274164d0d435c9df8ced18d896",
+      "actual_md5_lf": "3167d90039df952c9ae561f28486223c",
+      "actual_md5_raw": "063138f31cff9ec6b5a2fe24ba036c56",
+      "security_definer": true
+    },
+    {
+      "acl": [
+        {
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantee": "authenticated",
+          "grantor": "postgres",
+          "grantable": false,
+          "privilege": "EXECUTE"
+        }
+      ],
+      "oid": "21755",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "cr_count": 1,
+      "lf_bytes": 355,
+      "lf_count": 7,
+      "position": 7,
+      "raw_bytes": 356,
+      "signature": "public.superadmin_create_activity_locations(uuid,uuid[],text,uuid)",
+      "crlf_count": 1,
+      "matches_lf": false,
+      "volatility": "v",
+      "matches_raw": true,
+      "expected_md5": "1898ddd4ec4ea12373e1c13c55336774",
+      "actual_md5_lf": "cfda8ad0f555b16350d3f833b9fe0080",
+      "actual_md5_raw": "1898ddd4ec4ea12373e1c13c55336774",
+      "security_definer": true
+    }
+  ],
+  "search_path": "public, pg_catalog",
+  "server_version_num": 170006
+}
