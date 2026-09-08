@@ -12,6 +12,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('rejects a medication detail returned for another child', (tester) async {
+    final repository = _DelayedDirectoryRepository(delayChild: true);
+    final controller = _controllerFor('b', repository: repository);
+    addTearDown(controller.dispose);
+    final fixture = FixtureHealthCareRepository();
+    final page = await fixture.fetchDirectory(
+      const HealthCareDirectoryQuery(),
+      actor: controller.actor,
+    );
+    final otherChild = await fixture.findChild('child-demo-a', actor: fixture.defaultActor);
+    await tester.pumpWidget(_directory(controller));
+    repository.directory.complete(page);
+    await tester.pump();
+    expect(repository.childRequests, ['child-demo-b']);
+    repository.child.complete(otherChild);
+    await tester.pumpAndSettle();
+    expect(find.text('Criança Demo A'), findsNothing);
+    expect(find.text('Medicamento Demo'), findsNothing);
+    expect(find.text('Não foi possível carregar'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('clears medication cards when the authorized controller changes', (tester) async {
     final a = _controllerFor('a');
     final b = _controllerFor('b');

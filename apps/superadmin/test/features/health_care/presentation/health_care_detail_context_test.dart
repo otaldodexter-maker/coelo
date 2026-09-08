@@ -8,6 +8,58 @@ import 'package:flutter_test/flutter_test.dart';
 import '../support/health_care_fixture_repository.dart';
 
 void main() {
+  test('a detail receipt for another child is rejected', () async {
+    final repository = _PendingDetails();
+    final controller = HealthCareController(repository);
+    addTearDown(controller.dispose);
+    final load = controller.loadDetail('child-demo-a');
+    repository.pending['child-demo-a']!.complete(
+      await repository.fixture.findChild('child-demo-b', actor: controller.actor),
+    );
+    await load;
+    expect(controller.detail, isNull);
+    expect(controller.state, HealthCareLoadState.unauthorized);
+  });
+
+  test('starting a directory read clears the previous sensitive detail', () async {
+    final repository = _PendingDetails();
+    final controller = HealthCareController(repository);
+    addTearDown(controller.dispose);
+    final load = controller.loadDetail('child-demo-a');
+    repository.pending['child-demo-a']!.complete(
+      await repository.fixture.findChild('child-demo-a', actor: controller.actor),
+    );
+    await load;
+    expect(controller.detail, isNotNull);
+    final next = controller.load();
+    expect(controller.detail, isNull);
+    repository.directory.completeError(StateError('directory denied'));
+    await next;
+    expect(controller.page, isNull);
+    expect(controller.items, isEmpty);
+  });
+
+  test('starting a detail read clears the previous directory projection', () async {
+    final repository = _PendingDetails();
+    final controller = HealthCareController(repository);
+    addTearDown(controller.dispose);
+    final load = controller.load();
+    repository.directory.complete(
+      await repository.fixture.fetchDirectory(
+        const HealthCareDirectoryQuery(),
+        actor: controller.actor,
+      ),
+    );
+    await load;
+    expect(controller.items, isNotEmpty);
+    final next = controller.loadDetail('child-demo-a');
+    expect(controller.page, isNull);
+    expect(controller.items, isEmpty);
+    repository.pending['child-demo-a']!.completeError(StateError('detail denied'));
+    await next;
+    expect(controller.detail, isNull);
+  });
+
   for (final detailStartsLast in [true, false]) {
     test(
       'the last read wins across directory and detail when detailStartsLast=$detailStartsLast',

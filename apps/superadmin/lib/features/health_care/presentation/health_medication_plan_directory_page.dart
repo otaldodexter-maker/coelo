@@ -116,7 +116,13 @@ final class _HealthMedicationPlanDirectoryPageState
       );
       if (!_isCurrentLoad(generation, controller)) return;
       final children = await Future.wait(
-        directory.items.map((item) => controller.repository.findChild(item.id, actor: actor)),
+        directory.items.map((item) async {
+          final child = await controller.repository.findChild(item.id, actor: actor);
+          if (child != null && child.id != item.id) {
+            throw StateError('Health care detail is unavailable.');
+          }
+          return child;
+        }),
       );
       if (!_isCurrentLoad(generation, controller)) return;
       setState(() {

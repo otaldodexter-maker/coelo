@@ -82,6 +82,8 @@ final class HealthCareController extends ChangeNotifier {
     if (_disposed) return;
     _viewGeneration++;
     final generation = ++_loadGeneration;
+    _page = null;
+    _detail = null;
     if (_actor == null) {
       _page = null;
       _error = null;
@@ -120,6 +122,7 @@ final class HealthCareController extends ChangeNotifier {
   Future<void> _loadDetail(String childId) async {
     if (_disposed) return;
     final generation = ++_loadGeneration;
+    _page = null;
     _detail = null;
     _error = null;
     if (!canReadSensitive) {
@@ -132,6 +135,9 @@ final class HealthCareController extends ChangeNotifier {
     try {
       final detail = await repository.findChild(childId, actor: actor);
       if (generation != _loadGeneration) return;
+      if (detail != null && detail.id != childId) {
+        throw StateError('Health care detail is unavailable.');
+      }
       _detail = detail;
       _state = _detail == null ? HealthCareLoadState.empty : HealthCareLoadState.ready;
     } on StateError catch (error) {
