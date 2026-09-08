@@ -60,6 +60,37 @@ void main() {
     expect(result.status, ActivityStatus.draft);
   });
 
+  test('rejects an edit response bound to another activity id', () async {
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => Response(
+          jsonEncode({
+            'ok': true,
+            'data': {
+              'activity_id': 'activity-tampered',
+              'management_version': 7,
+              'status': 'draft',
+              'correlation_id': 'correlation-tampered',
+              'replayed': false,
+            },
+            'error': null,
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseActivityCommandRepository(client).save(_editSaveCommand),
+      throwsA(isA<ActivityCommandUnavailableException>()),
+    );
+  });
+
   test('unsupported activity save variants fail closed before HTTP', () async {
     var requestCount = 0;
     final client = SupabaseClient(
@@ -240,6 +271,28 @@ const _unsupportedSaveCommand = ActivitySaveCommand(
   taxonomyId: 'taxonomy-1',
   taxonomyOtherDescription: '',
   governance: ActivityGovernance.mandatory,
+  institutionId: 'institution-1',
+  unitIds: {'unit-1'},
+  groupIds: {},
+  assignments: [],
+  identity: ActivityCommandIdentity(
+    kind: ActivityIdentityKind.initials,
+    initials: 'NA',
+    color: '#D63C00',
+    icon: 'activity',
+  ),
+);
+
+const _editSaveCommand = ActivitySaveCommand(
+  requestId: '8b200000-0000-4000-8000-000000000903',
+  intent: ActivityCommandIntent.saveDraft,
+  activityId: 'activity-expected',
+  expectedVersion: 6,
+  name: 'Natação',
+  description: '',
+  taxonomyId: 'taxonomy-1',
+  taxonomyOtherDescription: '',
+  governance: ActivityGovernance.optional,
   institutionId: 'institution-1',
   unitIds: {'unit-1'},
   groupIds: {},

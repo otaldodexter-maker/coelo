@@ -39,6 +39,10 @@ final class SupabaseActivityCommandRepository implements ActivityCommandReposito
       if (activityId is! String || managementVersion is! int || statusValue is! String) {
         throw const ActivityCommandUnavailableException();
       }
+      if (activityId.trim().isEmpty ||
+          (command.activityId != null && activityId != command.activityId)) {
+        throw const ActivityCommandUnavailableException();
+      }
       final status = ActivityStatus.values
           .where((item) => item.databaseValue == statusValue)
           .firstOrNull;
