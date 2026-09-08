@@ -65,6 +65,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
   String? _validationError;
   var _loadGeneration = 0;
   var _commandGeneration = 0;
+  var _draftRevision = 0;
   final _lastEpisode = TextEditingController();
   final _reaction = TextEditingController();
   final _guidance = TextEditingController();
@@ -87,7 +88,12 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
   void initState() {
     super.initState();
     for (final controller in _textControllers) {
-      controller.addListener(_markDirty);
+      var previousText = controller.text;
+      controller.addListener(() {
+        if (controller.text == previousText) return;
+        previousText = controller.text;
+        _markDirty();
+      });
     }
     if (widget.childId case final childId?) {
       _loadDraft(childId);
@@ -143,11 +149,13 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
       _validationError = null;
     });
     final generation = ++_commandGeneration;
+    final submittedRevision = _draftRevision;
     final requestedChildId = widget.childId;
     final onSaveSucceeded = widget.onSaveSucceeded;
     try {
       await onSaved(_draft);
       if (!_isCurrentCommand(generation, requestedChildId, onSaved)) return;
+      if (submittedRevision != _draftRevision) return;
       setState(() => _dirty = false);
       onSaveSucceeded?.call();
     } catch (_) {
@@ -251,11 +259,14 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
   );
 
   void _markDirty() {
-    if (_draftReady && !_dirty && mounted) setState(() => _dirty = true);
+    if (!_draftReady || !mounted) return;
+    _draftRevision++;
+    if (!_dirty) setState(() => _dirty = true);
   }
 
   void _change(VoidCallback change) => setState(() {
     change();
+    _draftRevision++;
     _dirty = true;
   });
 

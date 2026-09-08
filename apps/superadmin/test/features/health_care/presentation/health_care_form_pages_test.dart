@@ -327,6 +327,114 @@ void main() {
     expect(newSuccess, 1);
   });
 
+  for (final change in ['create-text', 'edit-text', 'create-child', 'unchanged']) {
+    testWidgets('pending profile save preserves the current intention after $change', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final pending = Completer<void>();
+      final submitted = <HealthCareProfileDraft>[];
+      final editing = change == 'edit-text';
+      var successes = 0;
+      var cancels = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: HealthCareProfileFormPage(
+            logout: unavailableSuperadminLogout,
+            childId: editing ? 'child-demo-a' : null,
+            childOptions: _profileChildren,
+            loadDraft: (id) async => HealthCareProfileDraft(childId: id),
+            onCancel: () => cancels++,
+            onSaveSucceeded: () => successes++,
+            onSaved: (draft) async {
+              submitted.add(draft);
+              if (submitted.length == 1) await pending.future;
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Orientações de cuidado').last);
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Sinais importantes'),
+        'Sinal original',
+      );
+      await tester.enterText(
+        find.widgetWithText(
+          TextField,
+          editing ? 'Justificativa da alteração' : 'Justificativa do cadastro',
+        ),
+        'Motivo inicial',
+      );
+      await tester.tap(find.text('Revisão').last);
+      await tester.pumpAndSettle();
+      final action = editing ? 'Salvar alterações' : 'Criar perfil';
+      await tester.tap(find.widgetWithText(FilledButton, action));
+      await tester.pump();
+      expect(submitted, hasLength(1));
+
+      if (change == 'create-child') {
+        await tester.tap(find.text('Criança').first);
+        await tester.pump();
+        tester
+            .widget<CoeloAdminSingleSelectField<String>>(
+              find.byType(CoeloAdminSingleSelectField<String>),
+            )
+            .onChanged('child-demo-b');
+        await tester.pump();
+      } else {
+        await tester.tap(find.text('Orientações de cuidado').first);
+        await tester.pump();
+        if (change != 'unchanged') {
+          await tester.enterText(
+            find.widgetWithText(TextField, 'Sinais importantes'),
+            'Sinal atualizado',
+          );
+        } else {
+          await tester.tap(find.widgetWithText(TextField, 'Sinais importantes'));
+          await tester.pump();
+        }
+      }
+
+      pending.complete();
+      await tester.pumpAndSettle();
+      expect(submitted.single.childId, 'child-demo-a');
+      expect(submitted.single.importantSigns, 'Sinal original');
+      expect(successes, change == 'unchanged' ? 1 : 0);
+      await tester.tap(find.widgetWithText(TextButton, 'Cancelar'));
+      await tester.pumpAndSettle();
+      if (change == 'unchanged') {
+        expect(cancels, 1);
+        expect(find.byKey(const Key('health-care-profile-confirm-exit-dialog')), findsNothing);
+      } else {
+        expect(cancels, 0);
+        expect(find.byKey(const Key('health-care-profile-confirm-exit-dialog')), findsOneWidget);
+        await tester.tap(find.widgetWithText(OutlinedButton, 'Continuar editando'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Revisão').last);
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(FilledButton, action));
+        await tester.pumpAndSettle();
+        expect(submitted, hasLength(2));
+        expect(submitted.last, isNot(same(submitted.first)));
+        expect(submitted.last.childId, change == 'create-child' ? 'child-demo-b' : 'child-demo-a');
+        expect(
+          submitted.last.importantSigns,
+          change == 'create-child' ? 'Sinal original' : 'Sinal atualizado',
+        );
+        expect(successes, 1);
+        await tester.tap(find.widgetWithText(TextButton, 'Cancelar'));
+        await tester.pumpAndSettle();
+        expect(cancels, 1);
+        expect(find.byKey(const Key('health-care-profile-confirm-exit-dialog')), findsNothing);
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('profile load failure offers retry and recovers', (tester) async {
     var attempts = 0;
     await tester.pumpWidget(
