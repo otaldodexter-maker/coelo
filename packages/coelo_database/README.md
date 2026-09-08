@@ -289,6 +289,12 @@ com a fixture97 imutável: replay55 real passou97/97TAP, cleanup confirmado.
 Ambos passaram no harness332/332Pester e revisão;
 seus resultados SQL são registrados em evidências nominais separadas.
 
+O perfil `FReadDirectoryContractGreenDerived` fixa51arquivos e target20260908000049:
+base50derivada mais somente o reader aprovado. Reutiliza o conversor RED com
+hashes de origem/derivado e mantém os50outros inputs byte a byte. A preparação
+passou373Pester (41específicos +332regressões), parse e revisão. Sua execução
+SQL aguarda liberação nominal do Coordenador; o nome GREEN não é prova funcional.
+
 Nunca use
 `Prepare-SafeMigrationReplay.ps1` diretamente em operacoes normais, nem use o
 staging com `db push`, `migration repair` ou qualquer comando remoto. As

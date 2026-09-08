@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'A01DirectoryAuditGreen')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @()
@@ -92,6 +92,7 @@ if ($NominalProfile) {
     'A01DirectoryAuditRed' { 'profiles\A01DirectoryAuditRed\Resolve-A01DirectoryAuditRed.ps1' }
     'A01DirectoryAuditGreen' { 'profiles\A01DirectoryAuditGreen\Resolve-A01DirectoryAuditGreen.ps1' }
     'FReadDirectoryContractRedDerived' { 'profiles\FReadDirectoryContractRedDerived\Resolve-FReadDirectoryContractRedDerived.ps1' }
+    'FReadDirectoryContractGreenDerived' { 'profiles\FReadDirectoryContractGreenDerived\Resolve-FReadDirectoryContractGreenDerived.ps1' }
   }
   $nominalResolver = Join-Path $preflightRoot $nominalResolverRelative
   $nominalCursor = Get-Item -LiteralPath $nominalResolver -Force -ErrorAction Stop
@@ -245,8 +246,8 @@ if ($labelBridgeIndex -lt 1 -or
   throw 'label replay bridge must immediately follow access-profile management v2 and precede audit production'
 }
 
-if ($NominalProfile -eq 'FReadDirectoryContractRedDerived') {
-  # This one reviewed local derivation runs before any of the other 49 copies.
+if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryContractGreenDerived')) {
+  # This reviewed local derivation runs before the remaining input copies.
   $derivedMetadata = $nominal.FormsDefinitionMaterialization
   $derivedName = '20260813155005_forms_definition_and_capabilities.sql'
   $derivedSources = @($canonical | Where-Object Name -ceq $derivedName)
@@ -304,7 +305,7 @@ if ($NominalProfile -eq 'FReadDirectoryContractRedDerived') {
 }
 
 foreach ($source in @($canonical) + @($preflight)) {
-  if ($NominalProfile -eq 'FReadDirectoryContractRedDerived' -and $source.Name -ceq '20260813155005_forms_definition_and_capabilities.sql') { continue }
+  if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryContractGreenDerived') -and $source.Name -ceq '20260813155005_forms_definition_and_capabilities.sql') { continue }
   $sourceFull = [IO.Path]::GetFullPath($source.FullName)
   if (($source.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
     throw "replay input cannot be a reparse point: $sourceFull"
