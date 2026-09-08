@@ -188,27 +188,11 @@ final class _A01LocalTransport extends http.BaseClient {
   final Uri origin;
   final http.Client _inner;
   final records = <Map<String, Object?>>[];
-  static const _rpcNames = {
-    'superadmin_auth_bootstrap_context',
-    'superadmin_activity_directory_v2',
-    'superadmin_activity_filter_options_v2',
-  };
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
     final uri = request.url;
-    if (uri.scheme != origin.scheme ||
-        uri.host != origin.host ||
-        uri.port != origin.port ||
-        uri.userInfo.isNotEmpty ||
-        uri.hasQuery ||
-        uri.hasFragment ||
-        request.method != 'POST' ||
-        uri.pathSegments.length != 4 ||
-        uri.pathSegments.take(3).join('/') != 'rest/v1/rpc' ||
-        !_rpcNames.contains(uri.pathSegments.last)) {
-      throw const FormatException('A01 HTTP request is outside the nominal read allowlist.');
-    }
+    A01LocalRuntimeConfig.validateReadRequest(origin, uri, request.method);
     request.followRedirects = false;
     final response = await _inner.send(request).timeout(const Duration(seconds: 10));
     final bytes = await response.stream.toBytes().timeout(const Duration(seconds: 10));

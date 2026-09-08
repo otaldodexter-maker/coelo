@@ -5,6 +5,52 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../support/activities/a01_local_runtime_config.dart';
 
 void main() {
+  final origin = Uri.parse('http://127.0.0.1:54321');
+  for (final rpc in [
+    'superadmin_auth_bootstrap_context',
+    'superadmin_activity_directory_v2',
+    'superadmin_activity_filter_options_v2',
+  ]) {
+    test('allows only nominal POST read $rpc', () {
+      expect(
+        () => A01LocalRuntimeConfig.validateReadRequest(
+          origin,
+          origin.resolve('/rest/v1/rpc/$rpc'),
+          'POST',
+        ),
+        returnsNormally,
+      );
+    });
+  }
+  for (final request in [
+    (url: 'http://127.0.0.1:54321/rest/v1/rpc/superadmin_activity_directory_v2', method: 'GET'),
+    (url: 'http://127.0.0.1:54321/rest/v1/activity_definitions', method: 'POST'),
+    (url: 'http://127.0.0.1:54321/rest/v1/rpc/superadmin_activity_save_v2', method: 'POST'),
+    (url: 'http://127.0.0.1:54322/rest/v1/rpc/superadmin_activity_directory_v2', method: 'POST'),
+    (
+      url: 'https://example.supabase.co/rest/v1/rpc/superadmin_activity_directory_v2',
+      method: 'POST',
+    ),
+    (
+      url: 'http://127.0.0.1:54321/rest/v1/rpc/superadmin_activity_directory_v2?select=*',
+      method: 'POST',
+    ),
+    (
+      url: 'http://127.0.0.1:54321/rest/v1/rpc/superadmin_activity_directory_v2/extra',
+      method: 'POST',
+    ),
+  ]) {
+    test('rejects non-nominal request $request', () {
+      expect(
+        () => A01LocalRuntimeConfig.validateReadRequest(
+          origin,
+          Uri.parse(request.url),
+          request.method,
+        ),
+        throwsFormatException,
+      );
+    });
+  }
   test('requires explicit local runtime opt-in', () {
     expect(() => A01LocalRuntimeConfig.fromEnvironment({}), throwsFormatException);
   });

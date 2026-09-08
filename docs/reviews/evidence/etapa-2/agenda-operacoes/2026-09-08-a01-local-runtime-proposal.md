@@ -132,7 +132,9 @@ consulta posterior. Nenhum `verified-e2e` deve ser atribuído antes desses gates
 
 ## Preparação já executada
 
-13 testes de guards locais PASS. Runtime forçado a SKIP durante compilação;
+23 testes de guards locais PASS, incluindo dez controles da allowlist de
+requests (três readers permitidos; GET, tabela, escrita, outra porta, remoto,
+query e caminho extra recusados antes de IO). Runtime forçado a SKIP durante compilação;
 nenhum HTTP ou SQL executado por E2E5. Um erro inicial do harness com argumento
 nulo em HttpOverrides foi corrigido; não era falha do produto nem RED E2E.
 Revisão independente de seed/base confirmou os gates acima. Memória: roteiro

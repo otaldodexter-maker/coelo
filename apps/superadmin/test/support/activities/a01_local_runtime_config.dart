@@ -24,6 +24,27 @@ final class A01LocalRuntimeConfig {
   late final String publicKey;
   final tokens = <String, String>{};
 
+  static void validateReadRequest(Uri origin, Uri uri, String method) {
+    validateOrigin(origin.toString());
+    const rpcNames = {
+      'superadmin_auth_bootstrap_context',
+      'superadmin_activity_directory_v2',
+      'superadmin_activity_filter_options_v2',
+    };
+    if (uri.scheme != origin.scheme ||
+        uri.host != origin.host ||
+        uri.port != origin.port ||
+        uri.userInfo.isNotEmpty ||
+        uri.hasQuery ||
+        uri.hasFragment ||
+        method != 'POST' ||
+        uri.pathSegments.length != 4 ||
+        uri.pathSegments.take(3).join('/') != 'rest/v1/rpc' ||
+        !rpcNames.contains(uri.pathSegments.last)) {
+      throw const FormatException('A01 HTTP request is outside the nominal read allowlist.');
+    }
+  }
+
   static Uri validateOrigin(String value) {
     final uri = Uri.tryParse(value);
     if (uri == null ||
