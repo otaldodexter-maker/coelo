@@ -8,6 +8,45 @@ import 'package:coelo_superadmin/features/principal_circulars/domain/circular_se
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final publishing in [false, true]) {
+    test(
+      'disposed controller stops ${publishing ? 'publish' : 'save'} after pending save',
+      () async {
+        final repository = _PendingSaveRepository();
+        final controller = _controller(repository)..toggleAudience(CircularAudienceKind.families);
+        final operation = publishing ? controller.publish() : controller.save();
+        controller.dispose();
+        final assertion = expectLater(operation, throwsA(isA<CircularInvalid>()));
+        repository.result.complete(
+          const CircularSaveResult(
+            id: 'saved',
+            revisionId: 'revision',
+            version: 1,
+            status: CircularStatus.draft,
+          ),
+        );
+        await assertion;
+        expect(repository.calls, 1);
+      },
+    );
+  }
+
+  test('disposed controller ignores late publication and rejects new commands', () async {
+    final repository = _PublicationRepository(loseFirstResponse: false, holdPublication: true);
+    final controller = _controller(repository)..toggleAudience(CircularAudienceKind.families);
+    final operation = controller.publish();
+    await repository.started.future;
+    controller.dispose();
+    final assertion = expectLater(operation, throwsA(isA<CircularInvalid>()));
+    repository.release.complete();
+    await assertion;
+    await expectLater(controller.save(), throwsA(isA<CircularInvalid>()));
+    await expectLater(controller.publish(), throwsA(isA<CircularInvalid>()));
+    expect(() => controller.updateTitle('Late edit'), returnsNormally);
+    expect(repository.calls, hasLength(1));
+    expect(repository.saves, 1);
+  });
+
   for (final publishAt in [null, DateTime.utc(2026, 10, 1, 12)]) {
     test('recovers publication receipt before another save ($publishAt)', () async {
       final repository = _PublicationRepository();

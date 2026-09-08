@@ -31,6 +31,7 @@ final class ProductionCircularDirectoryHost extends StatefulWidget {
 final class _ProductionCircularDirectoryHostState extends State<ProductionCircularDirectoryHost> {
   var _state = CircularDirectoryViewState.loading;
   List<CircularDirectoryItem> _items = const [];
+  var _loadGeneration = 0;
 
   @override
   void initState() {
@@ -38,13 +39,23 @@ final class _ProductionCircularDirectoryHostState extends State<ProductionCircul
     _load();
   }
 
+  @override
+  void didUpdateWidget(covariant ProductionCircularDirectoryHost oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.repository, widget.repository)) _load();
+  }
+
   Future<void> _load() async {
-    if (mounted) setState(() => _state = CircularDirectoryViewState.loading);
+    final generation = ++_loadGeneration;
+    setState(() {
+      _items = const [];
+      _state = CircularDirectoryViewState.loading;
+    });
     try {
       final page = await widget.repository.fetchDirectory(
         const SuperadminCircularDirectoryQuery(limit: 100),
       );
-      if (!mounted) return;
+      if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _items = page.items
             .map(
@@ -65,9 +76,13 @@ final class _ProductionCircularDirectoryHostState extends State<ProductionCircul
         _state = CircularDirectoryViewState.content;
       });
     } on CircularUnauthorized {
-      if (mounted) setState(() => _state = CircularDirectoryViewState.forbidden);
+      if (mounted && generation == _loadGeneration) {
+        setState(() => _state = CircularDirectoryViewState.forbidden);
+      }
     } on Object {
-      if (mounted) setState(() => _state = CircularDirectoryViewState.error);
+      if (mounted && generation == _loadGeneration) {
+        setState(() => _state = CircularDirectoryViewState.error);
+      }
     }
   }
 
@@ -107,6 +122,7 @@ final class _ProductionCircularComposerHostState extends State<ProductionCircula
   InstitutionDirectoryItem? _selectedInstitution;
   Object? _error;
   var _loading = true;
+  var _prepareGeneration = 0;
 
   @override
   void initState() {
@@ -114,30 +130,54 @@ final class _ProductionCircularComposerHostState extends State<ProductionCircula
     _prepare();
   }
 
+  @override
+  void didUpdateWidget(covariant ProductionCircularComposerHost oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.circularId != widget.circularId ||
+        !identical(oldWidget.repository, widget.repository) ||
+        !identical(oldWidget.institutionRepository, widget.institutionRepository)) {
+      _prepare();
+    }
+  }
+
   Future<void> _prepare() async {
+    final generation = ++_prepareGeneration;
+    final repository = widget.repository;
+    final institutionRepository = widget.institutionRepository;
+    final circularId = widget.circularId;
+    _controller?.dispose();
+    setState(() {
+      _controller = null;
+      _institutions = const [];
+      _selectedInstitution = null;
+      _error = null;
+      _loading = true;
+    });
     try {
-      final circularId = widget.circularId;
       if (circularId != null) {
-        final editable = await widget.repository.loadDraftById(circularId);
+        final editable = await repository.loadDraftById(circularId);
+        if (!mounted || generation != _prepareGeneration) return;
         _controller = CircularComposerController(
-          repository: widget.repository,
+          repository: repository,
           scope: editable.scope,
           initialDraft: editable.draft,
         );
       } else {
-        final page = await widget.institutionRepository.fetchPage(
+        final page = await institutionRepository.fetchPage(
           InstitutionDirectoryQuery(
             statuses: const {InstitutionStatus.active, InstitutionStatus.onboarding},
             pageSize: 100,
           ),
         );
+        if (!mounted || generation != _prepareGeneration) return;
         _institutions = page.items;
         if (_institutions.isNotEmpty) _selectedInstitution = _institutions.first;
       }
     } on Object catch (error) {
+      if (!mounted || generation != _prepareGeneration) return;
       _error = error;
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted && generation == _prepareGeneration) setState(() => _loading = false);
     }
   }
 

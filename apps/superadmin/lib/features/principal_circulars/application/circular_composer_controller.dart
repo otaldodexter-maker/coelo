@@ -35,6 +35,7 @@ final class CircularComposerController extends ChangeNotifier {
   ({String requestId, CircularDraft draft, DateTime? publishAt})? _pendingPublish;
   Future<CircularSaveResult>? _publishInFlight;
   DateTime? _publishAtInFlight;
+  var _disposed = false;
 
   CircularDraft get draft => _draft;
   CircularComposerState get state => _state;
@@ -213,6 +214,7 @@ final class CircularComposerController extends ChangeNotifier {
   }
 
   Future<CircularSaveResult> save() {
+    if (_disposed) return Future.error(const CircularInvalid('contextDisposed'));
     if (_publishInFlight != null || _pendingPublish != null) {
       if (_publishInFlight == null) _setState(CircularComposerState.failure, 'publicationPending');
       return Future.error(const CircularInvalid('publicationPending'));
@@ -248,6 +250,7 @@ final class CircularComposerController extends ChangeNotifier {
           scope: scope,
           draft: pending.draft,
         );
+        _checkActive();
         final hasNewEdits = !identical(_draft, pending.draft);
         _pendingSave = null;
         _draft = CircularDraft(
@@ -277,6 +280,7 @@ final class CircularComposerController extends ChangeNotifier {
   }
 
   Future<CircularSaveResult> publish({DateTime? publishAt}) {
+    if (_disposed) return Future.error(const CircularInvalid('contextDisposed'));
     final active = _publishInFlight;
     if (active != null) {
       if (publishAt != _publishAtInFlight) {
@@ -309,6 +313,7 @@ final class CircularComposerController extends ChangeNotifier {
         throw CircularInvalid(code);
       }
       await _saveDraftSingleFlight();
+      _checkActive();
       _pendingPublish = (requestId: _requestIdFactory(), draft: _draft, publishAt: publishAt);
     }
     final pending = _pendingPublish!;
@@ -322,6 +327,7 @@ final class CircularComposerController extends ChangeNotifier {
         expectedVersion: pending.draft.expectedVersion,
         publishAt: pending.publishAt,
       );
+      _checkActive();
       hasNewIntent = !identical(_draft, pending.draft) || publishAt != pending.publishAt;
       _pendingPublish = null;
       _draft = CircularDraft(
@@ -366,6 +372,7 @@ final class CircularComposerController extends ChangeNotifier {
     List<CircularBlock>? blocks,
     Set<CircularAudienceKind>? audiences,
   }) {
+    if (_disposed) return;
     _draft = CircularDraft(
       id: _draft.id,
       title: title ?? _draft.title,
@@ -384,9 +391,22 @@ final class CircularComposerController extends ChangeNotifier {
   }
 
   void _setState(CircularComposerState value, [String? error]) {
+    if (_disposed) return;
     _state = value;
     _errorCode = error;
     notifyListeners();
+  }
+
+  void _checkActive() {
+    if (_disposed) throw const CircularInvalid('contextDisposed');
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _pendingSave = null;
+    _pendingPublish = null;
+    super.dispose();
   }
 }
 
