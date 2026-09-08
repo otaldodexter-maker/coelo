@@ -255,6 +255,103 @@ void main() {
     expect(payload['response_id'], 'response-1');
   });
 
+  for (final operation in ['open', 'save', 'submit', 'edit']) {
+    test('$operation accepts the correlated receipt and preserves its confirmed status', () async {
+      final status = operation == 'submit' || operation == 'edit' ? 'submitted' : 'draft';
+      final result = await _responseOperation(
+        SupabaseFormsApi(_Backend({..._responseProjection(), 'status': status})),
+        operation,
+      );
+      expect(result.id, 'response-1');
+      expect(result.occurrenceId, 'occurrence-1');
+      expect(result.status.name, status);
+    });
+    for (final wrongField in ['occurrence_id', if (operation != 'open') 'id']) {
+      test('$operation rejects a receipt for another $wrongField', () async {
+        final backend = _Backend({
+          ..._responseProjection(),
+          'status': operation == 'submit' || operation == 'edit' ? 'submitted' : 'draft',
+          wrongField: 'other-context',
+        });
+        final api = SupabaseFormsApi(backend);
+        await expectLater(
+          _responseOperation(api, operation),
+          throwsA(
+            isA<FormApiException>()
+                .having((error) => error.kind, 'safe protocol failure', FormApiFailureKind.unknown)
+                .having((error) => error.message, 'redacted', isNot(contains('other-context'))),
+          ),
+        );
+      });
+    }
+  }
+
+  for (final operation in ['submit', 'edit']) {
+    test('$operation rejects a receipt that does not confirm its state transition', () async {
+      const status = 'draft';
+      await expectLater(
+        _responseOperation(
+          SupabaseFormsApi(_Backend({..._responseProjection(), 'status': status})),
+          operation,
+        ),
+        throwsA(isA<FormApiException>()),
+      );
+    });
+  }
+
+  test('response decoder rejects unknown status and duplicate answer IDs', () async {
+    final answer = FormAnswerDto.fromDomain(
+      FormAnswer.shortText(itemId: 'item-1', value: 'Sintético'),
+    ).toJson();
+    for (final patch in <Map<String, Object?>>[
+      {'status': 'revoked'},
+      {
+        'answers': [answer, answer],
+      },
+    ]) {
+      await expectLater(
+        _responseOperation(
+          SupabaseFormsApi(_Backend({..._responseProjection(), ...patch})),
+          'save',
+        ),
+        throwsA(isA<FormApiException>()),
+      );
+    }
+  });
+
+  test('response reader rejects another occurrence before exposing its definition', () async {
+    final definition = FormDefinition(
+      id: 'form-1',
+      institutionId: 'institution-1',
+      title: 'Privado',
+      kind: FormKind.form,
+      identityMode: FormIdentityMode.identified,
+      responseUnit: FormResponseUnit.person,
+      status: FormStatus.published,
+      managementVersion: 1,
+      sections: const [],
+    );
+    final backend = _Backend({
+      'occurrence': {
+        'id': 'other-occurrence',
+        'application_id': 'application-1',
+        'form_version_id': 'version-1',
+        'opens_at': '2026-09-01T00:00:00Z',
+        'closes_at': '2026-10-01T00:00:00Z',
+        'status': 'open',
+        'management_version': 1,
+        'form_version_number': 1,
+      },
+      'definition': FormDefinitionDto.fromDomain(definition).toJson(),
+      'participation_id': 'participation-1',
+      'can_edit': true,
+    });
+    await expectLater(
+      SupabaseFormsApi(backend).getOccurrenceForResponse('occurrence-1'),
+      throwsA(isA<FormApiException>()),
+    );
+  });
+
   test('schedule commands preserve schedule id and schedule management version', () async {
     final backend = _Backend(_applicationProjection());
     final api = SupabaseFormsApi(backend);
@@ -341,15 +438,9 @@ void main() {
         payload: FormAssetIdPayload('asset-1', editSecret: secret),
       );
       await api.finalizeAssetUpload(command);
-      expect(backend.mediaEnvelope!['payload'], {
-        'asset_id': 'asset-1',
-        'edit_secret': ?secret,
-      });
+      expect(backend.mediaEnvelope!['payload'], {'asset_id': 'asset-1', 'edit_secret': ?secret});
       await api.discardAsset(command);
-      expect(backend.mediaEnvelope!['payload'], {
-        'asset_id': 'asset-1',
-        'edit_secret': ?secret,
-      });
+      expect(backend.mediaEnvelope!['payload'], {'asset_id': 'asset-1', 'edit_secret': ?secret});
     });
   }
 
@@ -374,6 +465,44 @@ void main() {
     expect(page.items.single.downloadAvailable, isTrue);
     expect(page.items.single.downloadPath, isNull);
   });
+}
+
+Map<String, Object?> _responseProjection() => {
+  'id': 'response-1',
+  'occurrence_id': 'occurrence-1',
+  'status': 'draft',
+  'management_version': 2,
+  'answers': <Object?>[],
+};
+
+Future<FormResponseDraft> _responseOperation(SupabaseFormsApi api, String operation) {
+  final command = FormCommand(
+    requestId: 'request-1',
+    expectedVersion: 1,
+    payload: FormResponseDraftPayload(
+      occurrenceId: 'occurrence-1',
+      responseId: 'response-1',
+      participationId: 'participation-1',
+      answers: {},
+    ),
+  );
+  return switch (operation) {
+    'open' => api.openResponseDraft(
+      const FormCommand(
+        requestId: 'request-1',
+        expectedVersion: 0,
+        payload: FormOpenResponseDraftPayload(
+          occurrenceId: 'occurrence-1',
+          participationId: 'participation-1',
+          identityMode: FormIdentityMode.identified,
+        ),
+      ),
+    ),
+    'save' => api.saveResponseDraft(command),
+    'submit' => api.submitResponse(command),
+    'edit' => api.editResponse(command),
+    _ => throw StateError('Invalid fixture operation'),
+  };
 }
 
 Map<String, Object?> _applicationProjection() => {
