@@ -282,9 +282,11 @@ não pertence a esse RED; não é evidência E2E de Formulários.
 
 Os perfis corrigidos `ModelReadAuthorizationGreen` e `A01DirectoryAuditGreen`
 fixam respectivamente50arquivos/target20260908021821 e55arquivos/target20260907222911.
-Modelos acrescenta somente a corretiva21821, com testes11+17 e prova separadaACL10.
+Modelos acrescenta somente a corretiva21821: replay50 real passou38/38TAP
+(11+17+ACL10), após RED49 com24PASS/4FAIL; ambos com cleanup próprio confirmado.
 Atividades usa a v2 auditada (hash e72e11c5d0f8fd8d49bfe098a230530edb3d4070d80ca5b4ae04b61b72eb196f),
-com a fixture97 imutável. Ambos passaram no harness332/332Pester e revisão;
+com a fixture97 imutável: replay55 real passou97/97TAP, cleanup confirmado.
+Ambos passaram no harness332/332Pester e revisão;
 seus resultados SQL são registrados em evidências nominais separadas.
 
 Nunca use
