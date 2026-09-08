@@ -139,6 +139,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
     if (oldWidget.feedRepository != widget.feedRepository ||
         oldWidget.feedScope != widget.feedScope) {
       _feedRequest += 1;
+      _replyController.clear();
       _remoteItems = null;
       _resolvedMedia.clear();
       _feedFailure = null;
@@ -351,6 +352,9 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
       setState(() {
         _feedLoading = true;
         _feedFailure = null;
+        _remoteItems = null;
+        _resolvedMedia.clear();
+        _resolvingMedia.clear();
       });
     }
     try {
@@ -366,6 +370,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
       if (items.isNotEmpty) {
         await _ensureMediaAround(0);
         if (mounted &&
+            request == _feedRequest &&
             _feedFailure == null &&
             !_paused &&
             !MediaQuery.disableAnimationsOf(context)) {
@@ -375,6 +380,10 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
       }
     } on PrincipalNowFeedFailure catch (failure) {
       if (!mounted || request != _feedRequest) return;
+      if (failure is PrincipalNowFeedUnauthorized) {
+        _denyFeed(failure);
+        return;
+      }
       setState(() {
         _feedFailure = failure;
         _feedLoading = false;
@@ -391,12 +400,16 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
   }
 
   Future<void> _ensureMediaAround(int index) async {
+    final request = _feedRequest;
     final items = _remoteItems;
     if (items == null || items.isEmpty) return;
     final indexes = <int>{index};
     if (index > 0) indexes.add(index - 1);
     if (index + 1 < items.length) indexes.add(index + 1);
     await Future.wait(indexes.map((value) => _resolveDescriptor(items[value], items[value].media)));
+    if (!mounted || request != _feedRequest || _remoteItems != items || _feedFailure != null) {
+      return;
+    }
     final audio = items[index].audio;
     if (audio != null) await _resolveDescriptor(items[index], audio);
   }
@@ -406,8 +419,16 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
     PrincipalNowMediaDescriptor descriptor,
   ) async {
     final repository = widget.feedRepository;
+    final request = _feedRequest;
     final items = _remoteItems;
-    if (repository == null || items == null || !items.contains(item)) return;
+    if (!mounted ||
+        _feedLoading ||
+        _feedFailure != null ||
+        repository == null ||
+        items == null ||
+        !items.contains(item)) {
+      return;
+    }
     final key = (publicationId: item.publicationId, kind: descriptor.kind);
     if (_resolvedMedia.containsKey(key) || !_resolvingMedia.add(key)) {
       return;
@@ -420,17 +441,31 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
         publicationId: item.publicationId,
         media: descriptor,
       );
-      if (!mounted || _remoteItems != items) return;
+      if (!mounted || request != _feedRequest || _remoteItems != items) return;
       setState(() => _resolvedMedia[key] = read);
     } on PrincipalNowFeedUnauthorized catch (failure) {
-      if (mounted && _remoteItems == items) {
-        setState(() => _feedFailure = failure);
+      if (mounted && request == _feedRequest && _remoteItems == items) {
+        _denyFeed(failure);
       }
     } on Object {
       // The story keeps an explicit unavailable-media placeholder; no demo fallback.
     } finally {
-      _resolvingMedia.remove(key);
+      if (request == _feedRequest) _resolvingMedia.remove(key);
     }
+  }
+
+  void _denyFeed(PrincipalNowFeedUnauthorized failure) {
+    _feedRequest++;
+    _progressController.stop();
+    _dismissOptions();
+    _replyController.clear();
+    setState(() {
+      _feedFailure = failure;
+      _feedLoading = false;
+      _remoteItems = null;
+      _resolvedMedia.clear();
+      _resolvingMedia.clear();
+    });
   }
 
   @override
