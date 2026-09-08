@@ -796,6 +796,34 @@ void main() {
     repository.complete();
     await tester.pumpAndSettle();
   });
+
+  testWidgets('repository swap loads the new directory and ignores the old result', (tester) async {
+    final pageKey = GlobalKey();
+    final repositoryA = _InitialLoadingRepository();
+    final repositoryB = FakeActivityDirectoryRepository();
+
+    Widget app(ActivityDirectoryRepository repository) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: ActivityDirectoryPage(
+        key: pageKey,
+        repository: repository,
+        logout: () async => const LogoutResult.success(),
+        onCreate: () {},
+        onView: (_) {},
+      ),
+    );
+
+    await tester.pumpWidget(app(repositoryA));
+    await tester.pump();
+    await tester.pumpWidget(app(repositoryB));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(find.byKey(const Key('activity-card-activity-10')), findsOneWidget);
+    repositoryA.complete();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('activity-card-activity-10')), findsOneWidget);
+  });
 }
 
 enum _DirectoryScenario { empty, failure, unauthorized }
