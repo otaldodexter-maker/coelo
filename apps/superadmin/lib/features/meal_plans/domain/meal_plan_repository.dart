@@ -527,7 +527,7 @@ final class MealPlanTemplate {
     tenantId: tenantId ?? '',
     institutionId: institutionId,
     name: name,
-    status: status == 'active'
+    status: status == 'active' || status == 'published'
         ? MealPlanStatus.published
         : status == 'archived'
         ? MealPlanStatus.archived
