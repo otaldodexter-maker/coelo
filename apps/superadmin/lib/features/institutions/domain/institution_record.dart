@@ -279,6 +279,8 @@ final class InstitutionRecord {
     required this.brandDisplayName,
     required this.hasSimulatedLogo,
     required this.hasSimulatedCover,
+    this.logoMediaAssetId,
+    this.coverMediaAssetId,
     required this.accentColor,
     required this.secondaryColor,
     required this.units,
@@ -442,6 +444,8 @@ final class InstitutionRecord {
       ),
       hasSimulatedLogo: branding['logo_media_asset_id'] != null,
       hasSimulatedCover: branding['cover_media_asset_id'] != null,
+      logoMediaAssetId: _nullableAssetId(branding['logo_media_asset_id']),
+      coverMediaAssetId: _nullableAssetId(branding['cover_media_asset_id']),
       accentColor: _toString(branding['accent_color'], fallback: '#D63C00'),
       secondaryColor: _toString(branding['secondary_color'], fallback: '#3F4549'),
       units: const [],
@@ -505,6 +509,14 @@ final class InstitutionRecord {
   final String brandDisplayName;
   final bool hasSimulatedLogo;
   final bool hasSimulatedCover;
+
+  /// Identifier of the stored brand image, when the record has one.
+  ///
+  /// Kept instead of being reduced to a boolean: without it the screen can only
+  /// know that an image exists somewhere, never show it. It grants no access —
+  /// the media gateway authorizes every read.
+  final String? logoMediaAssetId;
+  final String? coverMediaAssetId;
   final String accentColor;
   final String secondaryColor;
   final List<InstitutionUnit> units;
@@ -727,4 +739,18 @@ final class InstitutionRecord {
       version: version ?? this.version,
     );
   }
+}
+
+/// Accepts only a well-formed identifier; anything else is treated as absent.
+///
+/// A malformed value must not travel to the media gateway as if it were an
+/// asset, and it must not make the screen claim there is an image.
+String? _nullableAssetId(Object? value) {
+  if (value is! String) return null;
+  final trimmed = value.trim();
+  return RegExp(
+        r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+      ).hasMatch(trimmed)
+      ? trimmed
+      : null;
 }

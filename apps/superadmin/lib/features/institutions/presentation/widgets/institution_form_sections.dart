@@ -12,12 +12,14 @@ import '../../domain/institution_directory_item.dart';
 import '../../domain/institution_record.dart';
 import '../../../../shared/presentation/widgets/avatar_crop_dialog.dart';
 import '../../../../shared/presentation/widgets/superadmin_location_map_preview.dart';
+import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/locations.dart';
 
 import '../../../locations/domain/location_catalog_reader.dart';
 import '../../../locations/presentation/locations_map_section.dart';
 import '../view_models/institution_form_controller.dart';
 import 'institution_form_dialogs.dart';
+import 'institution_brand_image.dart';
 import 'institution_logo_picker.dart';
 
 final class InstitutionFormSection extends StatelessWidget {
@@ -30,6 +32,7 @@ final class InstitutionFormSection extends StatelessWidget {
     this.sessionAvailable = false,
     this.contextRevision = 0,
     this.onOpenLocationCatalog,
+    this.mediaReader,
     super.key,
   });
 
@@ -46,6 +49,9 @@ final class InstitutionFormSection extends StatelessWidget {
   final bool sessionAvailable;
   final int contextRevision;
   final VoidCallback? onOpenLocationCatalog;
+
+  /// Absent until a composition provides the gateway; then no image is read.
+  final MediaReader? mediaReader;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +71,11 @@ final class InstitutionFormSection extends StatelessWidget {
       ),
       InstitutionFormStep.administrators => _AdministratorsSection(controller: controller),
       InstitutionFormStep.plan => _PlanSection(controller: controller),
-      InstitutionFormStep.branding => _BrandingSection(controller: controller),
+      InstitutionFormStep.branding => _BrandingSection(
+        controller: controller,
+        mediaReader: mediaReader,
+        contextRevision: contextRevision,
+      ),
       InstitutionFormStep.review => _ReviewSection(controller: controller),
     };
   }
@@ -1457,7 +1467,10 @@ final class _PlanSection extends StatelessWidget {
 }
 
 final class _BrandingSection extends StatelessWidget {
-  const _BrandingSection({required this.controller});
+  const _BrandingSection({required this.controller, this.mediaReader, this.contextRevision = 0});
+
+  final MediaReader? mediaReader;
+  final int contextRevision;
   final InstitutionFormController controller;
 
   @override
@@ -1479,7 +1492,12 @@ final class _BrandingSection extends StatelessWidget {
         children: [
           _InstitutionBrandPreview(controller: controller, accent: accent, secondary: secondary),
           const SizedBox(height: CoeloSpacing.space5),
-          _LogoPicker(controller: controller, accent: accent),
+          _LogoPicker(
+            controller: controller,
+            accent: accent,
+            mediaReader: mediaReader,
+            contextRevision: contextRevision,
+          ),
           const SizedBox(height: CoeloSpacing.space4),
           _CoverPicker(controller: controller, accent: accent),
           const SizedBox(height: CoeloSpacing.space5),
@@ -1764,11 +1782,18 @@ final class _BioField extends StatelessWidget {
 }
 
 final class _LogoPicker extends StatelessWidget {
-  const _LogoPicker({required this.controller, required this.accent});
+  const _LogoPicker({
+    required this.controller,
+    required this.accent,
+    this.mediaReader,
+    this.contextRevision = 0,
+  });
 
   static const maxBytes = 2 * 1024 * 1024;
   final InstitutionFormController controller;
   final Color accent;
+  final MediaReader? mediaReader;
+  final int contextRevision;
 
   @override
   Widget build(BuildContext context) {
@@ -1788,9 +1813,24 @@ final class _LogoPicker extends StatelessWidget {
           CircleAvatar(
             radius: CoeloSize.touchMin,
             backgroundColor: accent.withValues(alpha: 0.16),
-            child: controller.logoBytes == null
+            // A locally chosen file wins: it is the newer, still unsaved choice.
+            // Otherwise the stored image is read through the media gateway, and
+            // only when there is neither does the generic icon stand in.
+            child: controller.logoBytes != null
+                ? _InstitutionLogoImage(controller: controller)
+                : (mediaReader == null || controller.logoMediaAssetId == null)
                 ? Icon(Icons.apartment_rounded, color: colors.primary, size: CoeloSize.iconLg)
-                : _InstitutionLogoImage(controller: controller),
+                : InstitutionBrandImage(
+                    assetId: controller.logoMediaAssetId!,
+                    reader: mediaReader,
+                    contextRevision: contextRevision,
+                    size: CoeloSize.touchMin * 2,
+                    placeholder: Icon(
+                      Icons.apartment_rounded,
+                      color: colors.primary,
+                      size: CoeloSize.iconLg,
+                    ),
+                  ),
           ),
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 520),

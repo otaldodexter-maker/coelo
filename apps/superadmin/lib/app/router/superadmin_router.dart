@@ -1082,6 +1082,7 @@ GoRouter createSuperadminRouter({
                 : InstitutionFormPage(
                     repository: institutionDirectoryRepository,
                     locationCatalogReader: locationCatalogReader,
+                    mediaReader: mediaReader,
                     sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
                     contextRevision: session.authorizationInvalidationRevision,
                     onOpenLocationCatalog: (institutionId) => context.goNamed(
@@ -1122,6 +1123,7 @@ GoRouter createSuperadminRouter({
                     repository: institutionDirectoryRepository,
                     institutionId: state.pathParameters['institutionId'],
                     locationCatalogReader: locationCatalogReader,
+                    mediaReader: mediaReader,
                     sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
                     contextRevision: session.authorizationInvalidationRevision,
                     onOpenLocationCatalog: (institutionId) => context.goNamed(

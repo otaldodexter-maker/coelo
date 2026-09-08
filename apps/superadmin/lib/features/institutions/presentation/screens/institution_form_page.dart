@@ -13,6 +13,7 @@ import '../../domain/institution_directory_repository.dart';
 import '../view_models/institution_form_controller.dart';
 import '../widgets/institution_form_dialogs.dart';
 import '../widgets/institution_form_navigation.dart';
+import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/locations.dart';
 
 import '../../../locations/domain/location_catalog_reader.dart';
@@ -35,6 +36,7 @@ final class InstitutionFormPage extends StatefulWidget {
     this.sessionAvailable = false,
     this.contextRevision = 0,
     this.onOpenLocationCatalog,
+    this.mediaReader,
     super.key,
   });
 
@@ -57,6 +59,9 @@ final class InstitutionFormPage extends StatefulWidget {
 
   /// Opens the full catalog of this institution; absent when no route exists.
   final ValueChanged<String>? onOpenLocationCatalog;
+
+  /// Reads stored brand images. Absent until a composition provides it.
+  final MediaReader? mediaReader;
 
   @override
   State<InstitutionFormPage> createState() => _InstitutionFormPageState();
@@ -290,6 +295,7 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
           locationScope: widget.institutionId == null || !validLocationId(widget.institutionId!)
               ? null
               : LocationScope.institution(institutionId: widget.institutionId!),
+          mediaReader: widget.mediaReader,
           sessionAvailable: widget.sessionAvailable,
           contextRevision: widget.contextRevision,
           onOpenLocationCatalog:
@@ -321,6 +327,7 @@ final class _FormBody extends StatelessWidget {
     this.sessionAvailable = false,
     this.contextRevision = 0,
     this.onOpenLocationCatalog,
+    this.mediaReader,
   });
 
   final InstitutionFormController controller;
@@ -335,6 +342,7 @@ final class _FormBody extends StatelessWidget {
   final bool sessionAvailable;
   final int contextRevision;
   final VoidCallback? onOpenLocationCatalog;
+  final MediaReader? mediaReader;
 
   @override
   Widget build(BuildContext context) {
@@ -367,6 +375,7 @@ final class _FormBody extends StatelessWidget {
                   sessionAvailable: sessionAvailable,
                   contextRevision: contextRevision,
                   onOpenLocationCatalog: onOpenLocationCatalog,
+                  mediaReader: mediaReader,
                 ),
                 footer: _FormFooter(
                   controller: controller,

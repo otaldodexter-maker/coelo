@@ -83,7 +83,9 @@ final class InstitutionFormController extends ChangeNotifier {
       subscriptionStart = record?.subscriptionStart ?? DateTime(2026, 7, 27),
       trialEnd = record?.trialEnd,
       hasSimulatedLogo = record?.hasSimulatedLogo ?? false,
-      hasSimulatedCover = record?.hasSimulatedCover ?? false {
+      hasSimulatedCover = record?.hasSimulatedCover ?? false,
+      logoMediaAssetId = record?.logoMediaAssetId,
+      coverMediaAssetId = record?.coverMediaAssetId {
     final values = _valuesFrom(record);
     for (final field in InstitutionFormField.values) {
       _controllers[field] = TextEditingController(text: values[field] ?? '');
@@ -132,6 +134,10 @@ final class InstitutionFormController extends ChangeNotifier {
   DateTime? trialEnd;
   bool hasSimulatedLogo;
   bool hasSimulatedCover;
+
+  /// Stored brand images, when the record has them; reading is the gateway's.
+  final String? logoMediaAssetId;
+  final String? coverMediaAssetId;
   bool isSaving = false;
   Uint8List? logoBytes;
   String? logoFileName;
