@@ -143,3 +143,63 @@ do teclado físico.
    cobrem apenas ocorrências corretas. Isso é, em si, a explicação de por que os defeitos passaram.
 6. A varredura é leitura de código feita por subagente somente-leitura, revisada por mim nos seis
    casos defeituosos, que conferi diretamente na fonte. Nenhum arquivo de produto foi editado.
+
+---
+
+## Verificação independente das duas correções — 2026-09-08T20:33
+
+Eu havia me oferecido para reverificar por medição própria, em vez de aceitar o resultado de quem
+corrigiu. Feito, e o desenho saiu melhor do que eu esperava: **as duas correções vivem em branches
+diferentes, e cada uma serve de controle para a outra.**
+
+- `302d4e90` (correção do pacote) está em `origin/dev` e na branch de integração; **não** tem a
+  correção do gêmeo.
+- `b44d5c08` (correção do gêmeo, C05) está só em `origin/claude/e2-r01-c05-comunicacao`; **não** tem
+  a correção do pacote.
+
+Método: checkout **destacado somente-leitura** na worktree de observação que já declarei, cópia
+temporária do harness A/B, execução, remoção da cópia e restauração da worktree. Nada foi integrado
+à minha branch, nenhum cherry-pick, nenhum merge. Conferi as duas árvores limpas ao fim.
+
+### Medição em `b44d5c08` — a correção do gêmeo
+
+| Caso | Medido |
+|---|---|
+| gêmeo, Enter na primeira parada | `onChanged=[true]`, `Switch` renderizado `true` |
+| gêmeo, Espaço na primeira parada | `onChanged=[true]` |
+| gêmeo, paradas de Tab | **total=1** — era 2 |
+| gêmeo, toda parada ativa | as duas sondagens caem no detector e ativam |
+| gêmeo, semântica | rótulo, `toggled`, `enabled` e ação de toque |
+| pacote, tudo | **ainda falha** — 4 vermelhos, controle esperado |
+
+**Veredito: o gêmeo está corrigido.** O `ExcludeFocus` fez as paradas caírem de 2 para 1, que era
+exatamente o defeito compartilhado que eu havia medido. O pacote falhando nesta árvore confirma que
+o harness continua detectando o defeito original, ou seja, o verde do gêmeo não é falso positivo.
+
+### Medição em `302d4e90` — a correção do pacote
+
+| Caso | Medido |
+|---|---|
+| pacote, Enter na primeira parada | `onChanged=[true]`, `Switch` renderizado `true` — antes era `[]` |
+| pacote, Espaço na primeira parada | `onChanged=[true]` — antes era `[]` |
+| pacote, paradas de Tab | **total=1** — era 2 |
+| pacote, toda parada ativa | as duas sondagens ativam |
+| pacote, semântica | intacta |
+| gêmeo, paradas de Tab | **total=2**, ainda — controle esperado |
+
+**Veredito: o pacote está corrigido, nos dois defeitos que medi.** Ativação e contagem de paradas.
+O gêmeo com 2 paradas nesta árvore confirma o controle na direção inversa.
+
+### O que isso fecha e o que não fecha
+
+Fecha: os itens 15 e 15b do registro saem de "corrigido, declarado" para **corrigido e verificado
+por medição minha**, com valores antes e depois.
+
+Não fecha: **nenhuma árvore tem as duas correções ao mesmo tempo**. O verde conjunto só existirá no
+baseline que a C00 preparar. Até lá, quem rodar o harness em qualquer uma das duas branches verá um
+vermelho legítimo do outro lado, e isso não é regressão.
+
+Também não fecha nada sobre as demais correções: Acompanhamento, retry de Pessoas, os dois botões de
+limpar, o salvar incompleto, os focos de Instituições e o cabeçalho do shell continuam **declarados**
+e não medidos por mim, porque exigem o baseline conjunto ou uma passada de observação própria por
+árvore, que farei quando o baseline sair.

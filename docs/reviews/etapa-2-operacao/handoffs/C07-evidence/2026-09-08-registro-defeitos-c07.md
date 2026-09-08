@@ -24,7 +24,8 @@ apaga essa diferença vale metade.
 
 | Item | Estado | Como eu sei |
 |---|---|---|
-| 15 e 15b — toggle central | corrigido em `302d4e90` | **verificado por mim**: li o diff e ele traz `shortcuts` e `actions` com `ActivateIntent` **e** `ExcludeFocus` no `Switch`, ou seja, cobre os **dois** defeitos que medi. Não medi a correção |
+| 15 — toggle do pacote | **corrigido e medido por mim** em `302d4e90` | rodei o harness A/B em checkout destacado: Enter e Espaço passam de `onChanged=[]` para `[true]`, e as paradas de Tab caem de 2 para 1 |
+| 15b — parada dupla no gêmeo | **corrigido e medido por mim** em `b44d5c08` | mesma medição na branch da C05: paradas caem de 2 para 1. As duas correções estão em branches diferentes e cada uma serve de controle para a outra |
 | 8 — banner Criar compartilhado | corrigido no mesmo `302d4e90` | verificado por leitura do diff; o resultado RED4→GREEN4 é **declarado**, não medido por mim |
 | 1 — Acompanhamento trava | corrigido em `7d499cf2` da C04 | **declarado**; confirmei apenas que o commit existe e toca o arquivo certo |
 | 2 e 3 — retry e `Limpar filtros` de Pessoas | corrigidos em `8e71d4fb` | **declarado**; confirmei que o commit toca os dois arquivos |
