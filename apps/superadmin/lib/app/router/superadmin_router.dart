@@ -5448,6 +5448,7 @@ ActivitySaveCommand _activitySaveCommand(
   institutionId: draft.institutionId,
   unitIds: draft.unitIds,
   groupIds: draft.groupIds,
+  groupParticipation: draft.groupParticipation,
   participants: draft.studentSelections
       .map(
         (selection) => ActivityCommandParticipant(
