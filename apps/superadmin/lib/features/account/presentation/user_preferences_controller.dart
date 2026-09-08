@@ -9,25 +9,42 @@ final class UserPreferencesController extends ChangeNotifier {
   final UserPreferencesRepository repository;
   UserPreferences _preferences = const UserPreferences();
   bool _loaded = false;
+  bool _disposed = false;
+  Future<void>? _loading;
 
   UserPreferences get preferences => _preferences;
   bool get loaded => _loaded;
 
-  Future<void> load() async {
-    _preferences = await repository.load();
+  Future<void> load() => _loading ??= _load();
+
+  Future<void> _load() async {
+    final preferences = await repository.load();
+    if (_disposed) return;
+    _preferences = preferences;
     _loaded = true;
     notifyListeners();
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
+    await load();
+    if (_disposed) return;
     _preferences = _preferences.copyWith(themeMode: mode);
     notifyListeners();
     await repository.save(_preferences);
   }
 
   Future<void> setReduceMotion(bool value) async {
+    await load();
+    if (_disposed) return;
     _preferences = _preferences.copyWith(reduceMotion: value);
     notifyListeners();
     await repository.save(_preferences);
+  }
+
+  @override
+  void dispose() {
+    if (_disposed) return;
+    _disposed = true;
+    super.dispose();
   }
 }
