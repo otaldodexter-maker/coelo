@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @()
@@ -89,6 +89,7 @@ if ($NominalProfile) {
     'FReadDirectoryContractGreen' { 'profiles\FReadDirectoryContractGreen\Resolve-FReadDirectoryContractGreen.ps1' }
     'ModelReadAuthorizationRed' { 'profiles\ModelReadAuthorizationRed\Resolve-ModelReadAuthorizationRed.ps1' }
     'A01DirectoryAuditRed' { 'profiles\A01DirectoryAuditRed\Resolve-A01DirectoryAuditRed.ps1' }
+    'FReadDirectoryContractRedDerived' { 'profiles\FReadDirectoryContractRedDerived\Resolve-FReadDirectoryContractRedDerived.ps1' }
   }
   $nominalResolver = Join-Path $preflightRoot $nominalResolverRelative
   $nominalCursor = Get-Item -LiteralPath $nominalResolver -Force -ErrorAction Stop
@@ -242,7 +243,66 @@ if ($labelBridgeIndex -lt 1 -or
   throw 'label replay bridge must immediately follow access-profile management v2 and precede audit production'
 }
 
+if ($NominalProfile -eq 'FReadDirectoryContractRedDerived') {
+  # This one reviewed local derivation runs before any of the other 49 copies.
+  $derivedMetadata = $nominal.FormsDefinitionMaterialization
+  $derivedName = '20260813155005_forms_definition_and_capabilities.sql'
+  $derivedSources = @($canonical | Where-Object Name -ceq $derivedName)
+  if ($derivedSources.Count -ne 1 -or $derivedMetadata.SourceMigration -cne $derivedName -or
+      $derivedMetadata.InsertedCharacterCount -ne 4) {
+    throw 'derived materialization requires exactly the reviewed Forms definition and four characters'
+  }
+  if ($DestinationMigrationsRoot -notmatch '^[A-Za-z]:[\\/]') {
+    throw 'derived destination must be an absolute local path'
+  }
+  $derivedTemporaryRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\')
+  if (-not $destinationFull.StartsWith($derivedTemporaryRoot + '\', [StringComparison]::OrdinalIgnoreCase)) {
+    throw 'derived destination must be below the local temporary root'
+  }
+  function Assert-FReadDerivedMaterializationPath([string]$Path, [bool]$IsDirectory) {
+    if (-not (Test-Path -LiteralPath $Path)) { throw "derived materialization path is missing: $Path" }
+    $item = Get-Item -LiteralPath $Path -Force -ErrorAction Stop
+    if ($item.PSIsContainer -ne $IsDirectory) { throw "derived materialization path kind is invalid: $Path" }
+    $cursor = $item
+    while ($null -ne $cursor) {
+      if (($cursor.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+        throw "derived materialization path contains a reparse point: $($cursor.FullName)"
+      }
+      $cursor = if ($cursor.PSIsContainer) { $cursor.Parent } else { $cursor.Directory }
+    }
+    return $item
+  }
+  $null = Assert-FReadDerivedMaterializationPath $destinationFull $true
+  $derivedSource = Assert-FReadDerivedMaterializationPath $derivedSources[0].FullName $false
+  $derivedConverter = Assert-FReadDerivedMaterializationPath $derivedMetadata.ConverterPath $false
+  if ((Get-NormalizedTextSha256 $derivedSource.FullName) -cne $derivedMetadata.SourceSha256CrlfUtf8 -or
+      (Get-NormalizedTextSha256 $derivedConverter.FullName) -cne $derivedMetadata.ConverterSha256CrlfUtf8) {
+    throw 'derived materialization input hash mismatch'
+  }
+  $derivedOriginalRawHash = Get-FileSha256 $derivedSource.FullName
+  $derivedOriginalLength = $derivedSource.Length
+  $derivedTarget = Join-Path $destinationFull $derivedName
+  $derivedReceipts = @(& $derivedConverter.FullName -DestinationMigrationsRoot $destinationFull)
+  if ($derivedReceipts.Count -ne 1) { throw 'derived materialization must return exactly one receipt' }
+  $derivedReceipt = $derivedReceipts[0]
+  if ($derivedReceipt.SourceMigration -cne $derivedName -or
+      $derivedReceipt.SourceSha256CrlfUtf8 -cne $derivedMetadata.SourceSha256CrlfUtf8 -or
+      $derivedReceipt.DerivedSha256CrlfUtf8 -cne $derivedMetadata.DerivedSha256CrlfUtf8 -or
+      $derivedReceipt.InsertedCharacterCount -ne 4 -or
+      $derivedReceipt.DestinationPath -cne $derivedTarget) {
+    throw 'derived materialization receipt mismatch'
+  }
+  $derivedFile = Assert-FReadDerivedMaterializationPath $derivedTarget $false
+  $null = Assert-FReadDerivedMaterializationPath $derivedSource.FullName $false
+  if ((Get-FileSha256 $derivedSource.FullName) -cne $derivedOriginalRawHash -or
+      (Get-NormalizedTextSha256 $derivedFile.FullName) -cne $derivedMetadata.DerivedSha256CrlfUtf8 -or
+      ($derivedFile.Length - $derivedOriginalLength) -ne 4) {
+    throw 'derived materialization file or original source mismatch'
+  }
+}
+
 foreach ($source in @($canonical) + @($preflight)) {
+  if ($NominalProfile -eq 'FReadDirectoryContractRedDerived' -and $source.Name -ceq '20260813155005_forms_definition_and_capabilities.sql') { continue }
   $sourceFull = [IO.Path]::GetFullPath($source.FullName)
   if (($source.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
     throw "replay input cannot be a reparse point: $sourceFull"
