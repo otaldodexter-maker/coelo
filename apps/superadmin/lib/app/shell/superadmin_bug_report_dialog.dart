@@ -9,17 +9,28 @@ Future<SupportReportDraft?> showSuperadminBugReportDialog(
   required String currentScreen,
   required Map<String, List<String>> sections,
   String dialogTitle = 'Bug? O Coelo resolve!',
+  ValueChanged<DialogRoute<SupportReportDraft>>? onRouteCreated,
+  bool Function()? isContextCurrent,
 }) {
   final theme = Theme.of(context);
-  return showDialog<SupportReportDraft>(
+  final navigator = Navigator.of(context, rootNavigator: true);
+  final route = DialogRoute<SupportReportDraft>(
     context: context,
+    themes: InheritedTheme.capture(from: context, to: navigator.context),
+    animationStyle: MediaQuery.disableAnimationsOf(context) ? AnimationStyle.noAnimation : null,
+    traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
     barrierColor: theme.extension<CoeloOverlayColors>()!.scrim,
-    builder: (context) => _SuperadminBugReportDialog(
-      currentScreen: currentScreen,
-      sections: sections,
-      dialogTitle: dialogTitle,
-    ),
+    builder: (context) => isContextCurrent?.call() == false
+        ? const SizedBox.shrink()
+        : _SuperadminBugReportDialog(
+            currentScreen: currentScreen,
+            sections: sections,
+            dialogTitle: dialogTitle,
+            isContextCurrent: isContextCurrent,
+          ),
   );
+  onRouteCreated?.call(route);
+  return navigator.push(route);
 }
 
 class _SuperadminBugReportDialog extends StatefulWidget {
@@ -27,11 +38,13 @@ class _SuperadminBugReportDialog extends StatefulWidget {
     required this.currentScreen,
     required this.sections,
     required this.dialogTitle,
+    this.isContextCurrent,
   });
 
   final String currentScreen;
   final Map<String, List<String>> sections;
   final String dialogTitle;
+  final bool Function()? isContextCurrent;
 
   @override
   State<_SuperadminBugReportDialog> createState() => _SuperadminBugReportDialogState();
@@ -77,7 +90,7 @@ class _SuperadminBugReportDialogState extends State<_SuperadminBugReportDialog> 
   }
 
   void _submit() {
-    if (!_isValid) {
+    if (!mounted || widget.isContextCurrent?.call() == false || !_isValid) {
       return;
     }
     final description = _descriptionController.text.trim();
@@ -97,6 +110,7 @@ class _SuperadminBugReportDialogState extends State<_SuperadminBugReportDialog> 
   }
 
   void _closeDialog() {
+    if (!mounted || widget.isContextCurrent?.call() == false) return;
     Navigator.of(context, rootNavigator: true).pop();
   }
 
