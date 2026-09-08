@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../../auth/domain/logout_action.dart';
+import '../../children/presentation/child_directory_controller.dart';
+import '../../children/presentation/child_directory_panel.dart';
 import '../domain/student_tracking.dart';
 import 'student_tracking_view_model.dart';
 
@@ -18,11 +20,24 @@ final class StudentTrackingPage extends StatefulWidget {
     required this.repository,
     required this.logout,
     this.onDestinationSelected,
+    this.childDirectoryRead,
+    this.sessionAvailable = false,
+    this.institutionId,
+    this.revision = 0,
     super.key,
   });
   final StudentTrackingRepository repository;
   final LogoutAction logout;
   final ValueChanged<String>? onDestinationSelected;
+
+  /// Authorized list of students, shown above the tracking of one of them.
+  ///
+  /// Absent by default so the screen renders exactly as before wherever the
+  /// composition does not provide the read.
+  final ChildDirectoryRead? childDirectoryRead;
+  final bool sessionAvailable;
+  final String? institutionId;
+  final int revision;
 
   @override
   State<StudentTrackingPage> createState() => _StudentTrackingPageState();
@@ -89,7 +104,20 @@ final class _StudentTrackingPageState extends State<StudentTrackingPage> {
           builder: (context, _) => ListView(
             key: const Key('student-tracking-scroll'),
             padding: EdgeInsets.all(inset),
-            children: [_body(context, constraints.maxWidth)],
+            children: [
+              if (widget.childDirectoryRead != null) ...[
+                ChildDirectoryPanel(
+                  key: const Key('student-tracking-directory'),
+                  read: widget.childDirectoryRead,
+                  sessionAvailable: widget.sessionAvailable,
+                  institutionId: widget.institutionId,
+                  revision: widget.revision,
+                  expand: false,
+                ),
+                const SizedBox(height: CoeloSpacing.space6),
+              ],
+              _body(context, constraints.maxWidth),
+            ],
           ),
         );
       },

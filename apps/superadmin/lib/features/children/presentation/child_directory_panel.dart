@@ -19,6 +19,7 @@ class ChildDirectoryPanel extends StatefulWidget {
     this.sessionAvailable = false,
     this.institutionId,
     this.revision = 0,
+    this.expand = true,
     super.key,
   });
 
@@ -29,6 +30,12 @@ class ChildDirectoryPanel extends StatefulWidget {
 
   /// Bumped by the composition whenever the session context changes.
   final int revision;
+
+  /// Whether the panel owns the viewport and scrolls its own list.
+  ///
+  /// False when it is embedded in a page that already scrolls, where an
+  /// [Expanded] would ask for unbounded height.
+  final bool expand;
 
   @override
   State<ChildDirectoryPanel> createState() => _ChildDirectoryPanelState();
@@ -83,97 +90,114 @@ class _ChildDirectoryPanelState extends State<ChildDirectoryPanel> {
             : CoeloSpacing.space6;
         final page = _controller.page;
         final loading = _controller.state == ChildDirectoryState.loading;
-        return ColoredBox(
-          color: Theme.of(context).colorScheme.surface,
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  key: const Key('child-directory-content'),
-                  padding: EdgeInsets.all(padding),
+        final content = <Widget>[
+          Semantics(
+            header: true,
+            child: Text('Alunos', style: Theme.of(context).textTheme.headlineSmall),
+          ),
+          Text(
+            'Consulta somente leitura dos vínculos autorizados.',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+          if (_controller.state == ChildDirectoryState.ready && page != null)
+            LayoutBuilder(
+              builder: (context, inner) {
+                final columns = (inner.maxWidth / 340).floor().clamp(1, 4);
+                final width = (inner.maxWidth - (columns - 1) * CoeloSpacing.space4) / columns;
+                return Wrap(
+                  spacing: CoeloSpacing.space4,
+                  runSpacing: CoeloSpacing.space4,
                   children: [
-                    Semantics(
-                      header: true,
-                      child: Text('Alunos', style: Theme.of(context).textTheme.headlineSmall),
-                    ),
-                    Text(
-                      'Consulta somente leitura dos vínculos autorizados.',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    const SizedBox(height: CoeloSpacing.space4),
-                    if (_controller.state == ChildDirectoryState.ready && page != null)
-                      LayoutBuilder(
-                        builder: (context, inner) {
-                          final columns = (inner.maxWidth / 340).floor().clamp(1, 4);
-                          final width =
-                              (inner.maxWidth - (columns - 1) * CoeloSpacing.space4) / columns;
-                          return Wrap(
-                            spacing: CoeloSpacing.space4,
-                            runSpacing: CoeloSpacing.space4,
-                            children: [
-                              for (final item in page.items)
-                                SizedBox(
-                                  width: width,
-                                  // A plain card: there is no authorized child
-                                  // detail to open yet, and an interactive card
-                                  // would promise one.
-                                  child: Card(
-                                    key: Key('child-card-${item.contextId}'),
-                                    margin: EdgeInsets.zero,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(CoeloSpacing.space4),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            item.personName,
-                                            style: Theme.of(context).textTheme.titleLarge,
-                                          ),
-                                          const SizedBox(height: CoeloSpacing.space3),
-                                          Text(item.institutionName),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
+                    for (final item in page.items)
+                      SizedBox(
+                        width: width,
+                        // A plain card: there is no authorized child
+                        // detail to open yet, and an interactive card
+                        // would promise one.
+                        child: Card(
+                          key: Key('child-card-${item.contextId}'),
+                          margin: EdgeInsets.zero,
+                          child: Padding(
+                            padding: const EdgeInsets.all(CoeloSpacing.space4),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.personName,
+                                  style: Theme.of(context).textTheme.titleLarge,
                                 ),
-                            ],
-                          );
-                        },
-                      )
-                    else
-                      ChildReadStatePanel(state: _controller.state),
+                                const SizedBox(height: CoeloSpacing.space3),
+                                Text(item.institutionName),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
-                ),
+                );
+              },
+            )
+          else
+            ChildReadStatePanel(state: _controller.state),
+        ];
+        final actions = Padding(
+          padding: EdgeInsets.symmetric(horizontal: padding, vertical: CoeloSpacing.space4),
+          child: Wrap(
+            spacing: CoeloSpacing.space3,
+            runSpacing: CoeloSpacing.space3,
+            alignment: WrapAlignment.end,
+            children: [
+              OutlinedButton.icon(
+                key: const Key('child-directory-reload'),
+                onPressed: loading ? null : () => unawaited(_controller.reload()),
+                icon: const Icon(Icons.refresh_rounded),
+                label: const Text('Recarregar'),
               ),
-              const SizedBox(height: CoeloSpacing.space4),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: padding, vertical: CoeloSpacing.space4),
-                child: Wrap(
-                  spacing: CoeloSpacing.space3,
-                  runSpacing: CoeloSpacing.space3,
-                  alignment: WrapAlignment.end,
-                  children: [
-                    OutlinedButton.icon(
-                      key: const Key('child-directory-reload'),
-                      onPressed: loading ? null : () => unawaited(_controller.reload()),
-                      icon: const Icon(Icons.refresh_rounded),
-                      label: const Text('Recarregar'),
-                    ),
-                    // Forward-only: the read path has no backward cursor, so no
-                    // "previous page" control is offered.
-                    FilledButton.icon(
-                      key: const Key('child-directory-next'),
-                      onPressed: page?.nextCursor == null || loading
-                          ? null
-                          : () => unawaited(_controller.nextPage()),
-                      icon: const Icon(Icons.arrow_forward_rounded),
-                      label: const Text('Próxima página'),
-                    ),
-                  ],
-                ),
+              // Forward-only: the read path has no backward cursor, so no
+              // "previous page" control is offered.
+              FilledButton.icon(
+                key: const Key('child-directory-next'),
+                onPressed: page?.nextCursor == null || loading
+                    ? null
+                    : () => unawaited(_controller.nextPage()),
+                icon: const Icon(Icons.arrow_forward_rounded),
+                label: const Text('Próxima página'),
               ),
             ],
           ),
+        );
+        return ColoredBox(
+          color: Theme.of(context).colorScheme.surface,
+          child: widget.expand
+              ? Column(
+                  children: [
+                    Expanded(
+                      child: ListView(
+                        key: const Key('child-directory-content'),
+                        padding: EdgeInsets.all(padding),
+                        children: content,
+                      ),
+                    ),
+                    const SizedBox(height: CoeloSpacing.space4),
+                    actions,
+                  ],
+                )
+              : Column(
+                  key: const Key('child-directory-content'),
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(padding),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: content,
+                      ),
+                    ),
+                    actions,
+                  ],
+                ),
         );
       },
     ),

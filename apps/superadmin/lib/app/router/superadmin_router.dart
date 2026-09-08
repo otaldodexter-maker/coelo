@@ -1728,11 +1728,21 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.students,
             name: SuperadminRoutes.studentsName,
-            builder: (context, state) => StudentTrackingPage(
-              repository: studentTrackingRepository,
-              logout: logout,
-              onDestinationSelected: (destination) =>
-                  _navigateFromPersistentShell(context, destination),
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, child) => StudentTrackingPage(
+                key: ValueKey(session.authorizationInvalidationRevision),
+                repository: studentTrackingRepository,
+                logout: logout,
+                // The authorized list of students comes from the CHILD read and
+                // sits above the tracking of one of them; the tracking tabs are
+                // untouched.
+                childDirectoryRead: childDirectoryRead,
+                sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
+                revision: session.authorizationInvalidationRevision,
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
+              ),
             ),
           ),
           GoRoute(
