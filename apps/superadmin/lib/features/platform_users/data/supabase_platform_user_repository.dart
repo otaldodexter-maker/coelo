@@ -130,7 +130,7 @@ final class SupabasePlatformUserRepository
         'superadmin_internal_user_detail',
         params: {'p_internal_identity_id': id},
       );
-      final record = _record(_responsePayload(response, revision));
+      final record = _record(_responsePayload(response, revision), expectedId: id);
       _records[record.id] = record;
       return record;
     } on PostgrestException catch (error) {
@@ -228,7 +228,10 @@ final class SupabasePlatformUserRepository
         function,
         params: {'p_request_id': pending.requestId, ...params},
       );
-      final record = _record(_responsePayload(response, revision));
+      final record = _record(
+        _responsePayload(response, revision),
+        expectedId: params['p_internal_identity_id'] as String,
+      );
       _records[record.id] = record;
       if (_pendingCommands[commandKey] == pending) _pendingCommands.remove(commandKey);
       return record;
@@ -252,8 +255,15 @@ final class SupabasePlatformUserRepository
     return record;
   }
 
-  PlatformUserRecord _record(Map<String, dynamic> json) {
+  PlatformUserRecord _record(Map<String, dynamic> json, {String? expectedId}) {
     final identityJson = Map<String, dynamic>.from(json['identity'] as Map);
+    if (expectedId != null &&
+        (identityJson['id'] as String).toLowerCase() != expectedId.toLowerCase()) {
+      throw const PlatformUserRuleException(
+        'backend',
+        'Não foi possível confirmar a operação. Tente novamente.',
+      );
+    }
     final credentialJson = Map<String, dynamic>.from(json['credential'] as Map);
     final membershipRows = json['memberships'] as List<dynamic>? ?? const [];
     final invitationJson = Map<String, dynamic>.from(json['invitation'] as Map);

@@ -9,6 +9,97 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('user detail and status accept canonical casing of a requested UUID', () async {
+    const id = 'aaaaaaaa-0000-4000-8000-000000000001';
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => Response(
+          jsonEncode(
+            request.url.path.endsWith('superadmin_internal_user_profiles')
+                ? {
+                    'items': [_profileJson],
+                  }
+                : {
+                    ..._recordJson,
+                    'identity': {...(_recordJson['identity'] as Map<String, dynamic>), 'id': id},
+                  },
+          ),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabasePlatformUserRepository(client);
+    expect((await repository.fetchById(id.toUpperCase()))?.id, id);
+    expect((await repository.suspend(id.toUpperCase())).id, id);
+  });
+
+  for (final operation in ['detail', 'update', 'status']) {
+    test('$operation rejects another identity without replacing the authorized cache', () async {
+      var wrongResponse = false;
+      final commandBodies = <Map<String, dynamic>>[];
+      final client = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-key',
+        httpClient: MockClient((request) async {
+          final isCommand =
+              request.url.path.endsWith('superadmin_internal_user_update') ||
+              request.url.path.endsWith('superadmin_internal_user_change_status');
+          if (isCommand) commandBodies.add(jsonDecode(request.body) as Map<String, dynamic>);
+          final payload = request.url.path.endsWith('superadmin_internal_user_profiles')
+              ? {
+                  'items': [_profileJson],
+                }
+              : wrongResponse
+              ? {
+                  ..._recordJson,
+                  'identity': {
+                    ...(_recordJson['identity'] as Map<String, dynamic>),
+                    'id': 'other-internal-identity',
+                  },
+                }
+              : _recordJson;
+          return Response(
+            jsonEncode(payload),
+            200,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          );
+        }),
+      );
+      addTearDown(client.dispose);
+      final repository = SupabasePlatformUserRepository(client);
+      final original = (await repository.fetchById(_identityId))!;
+      Future<Object?> run() => switch (operation) {
+        'detail' => repository.fetchById(_identityId),
+        'status' => repository.suspend(_identityId),
+        _ => repository.update(
+          _identityId,
+          PlatformUserDraft(
+            identity: original.identity,
+            profile: original.profile,
+            scope: original.scope,
+            scopeIds: original.membership.scopeIds,
+          ),
+        ),
+      };
+      wrongResponse = true;
+      await expectLater(run(), throwsA(isA<PlatformUserRuleException>()));
+      expect(repository.records, [same(original)]);
+      expect(repository.findById('other-internal-identity'), isNull);
+      wrongResponse = false;
+      await run();
+      if (operation != 'detail') {
+        expect(commandBodies, hasLength(2));
+        expect(commandBodies[1]['p_request_id'], commandBodies[0]['p_request_id']);
+      }
+    });
+  }
+
   for (final operation in ['update', 'status']) {
     for (final change in ['none', 'draft', 'session']) {
       test('$operation retry after a lost response respects change=$change', () async {
