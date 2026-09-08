@@ -455,3 +455,8 @@ Docker: Owner enviou telas de erro1920 nos sockets sailor-ingest.sock e SecretsE
 ## R01-VISUAL-1835 — 2026-09-08T18:33:32-03:00
 
 Decisões e bloqueios por superfície em [relatório](etapa-2-operacao/reports/R01-VISUAL-1835.md): appbarCoelo+chevron jáaprovado em01/09; shellalinhamento e consumidorChat/Agora aguardamcorreção pontual. NovoRED de ativação semântica do seletormúltiplo afetaUsuáriosinternos/Convites; C01I012 reservado. Todos os critérios de conclusão FE/BE/E2E continuam abertos, sem alteração de backend ou promoção; 77goldens históricos não são regressão atribuível automaticamente aos novos lotes.
+
+
+## Delta de revisão C00 — 2026-09-08T18:46:18-03:00
+
+Fonte: `etapa-2-operacao/reports/R01-continuidade-1845.md`, assignments C02/C03 I012. Activities create/edit: cadeia real retida por incompatibilidade de configuração pedagógica, modo de participação e ordenação das remoções no snapshot SQL. Support: corrigenda de rota nominal necessária quando chooser está sobre detalhe na troca de contexto. Forms response detail I010: integridade do grafo completo ainda requer prova/correção, inclusive campos sem resposta. Docker sem prova operacional; replays novos continuam pendentes. Revisão estática não certifica execução ou conclusão. Nenhuma promoção de métricas; sincronização integral C01r43/C02r37/C03r27 ainda pendente.

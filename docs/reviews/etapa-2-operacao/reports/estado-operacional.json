@@ -43,7 +43,7 @@
       "thread_id": "01a08197-7b62-73c1-9673-5fd40fa40452",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01",
       "branch": "codex/e2-r01-c01-identidade",
-      "instruction_revision": 12,
+      "instruction_revision": 13,
       "received_revision": 40,
       "integrated_revision": 3,
       "last_evidence": "2026-09-08T18:13:04-03:00",
@@ -75,7 +75,7 @@
       "thread_id": "01a0819a-f1f1-7421-95dd-d645ca9f5747",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
       "branch": "codex/e2-r01-c02-forms-midia",
-      "instruction_revision": 11,
+      "instruction_revision": 12,
       "received_revision": 35,
       "integrated_revision": 4,
       "last_evidence": "2026-09-08T17:27:00-03:00",
@@ -106,7 +106,7 @@
       "thread_id": "01a0819b-a12e-7110-88cb-99e51a82f384",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03",
       "branch": "codex/e2-r01-c03-operacoes",
-      "instruction_revision": 11,
+      "instruction_revision": 12,
       "received_revision": 25,
       "integrated_revision": 2,
       "last_evidence": "2026-09-08T18:16:41-03:00",
@@ -1311,7 +1311,7 @@
   },
   "docker_recovery_1823": {
     "at": "2026-09-08T18:22:51-03:00",
-    "status": "operator-ack-SUPPORT-I002;recovering-WSL-ping2376",
+    "status": "operator-resumed-after-ack-only-completion; recovery-unproven",
     "factory_reset": "Owner screenshots/logs confirm external reset;not executed byC00",
     "preserved_paths": [
       "C:/Users/adrie/AppData/Local/Docker/run.recovery-20260908-1820",
@@ -1325,7 +1325,7 @@
     "delegated_at": "2026-09-08T18:24:33-03:00",
     "scope": "recover local engine; no SQL/remotes; C00/subagents make no Docker mutations until handback",
     "native_cursor": "8595af92-fc69-405c-8db2-708727cd1d0c:1",
-    "last_intervention": "once for context loss; ack native received; no new tasks"
+    "last_intervention": "one for ack-only completed turn; no handoff or Docker processes at inspection"
   },
   "coordinator_next_steps_docker": "Read compact native status of support thread; verify engine result without asking Owner to watch app; only then nominal replay lease. Do not duplicate recovery operations.",
   "visual_review_c07": {
@@ -1349,5 +1349,27 @@
     ],
     "status": "granted",
     "at": "2026-09-08T18:33:32-03:00"
+  },
+  "continuity_departure_receipt": {
+    "at": "2026-09-08T18:46:18-03:00",
+    "report": "reports/R01-continuidade-1845.md",
+    "heartbeat_verified_active": true,
+    "docker": "support-exclusive; no operational proof; resumed once for ack-only completion",
+    "new_instructions": {
+      "C01": 13,
+      "C02": 12,
+      "C03": 12
+    },
+    "no_metric_promotion": true
+  },
+  "persona_adapter_reservation": {
+    "owner": "C01",
+    "instruction": "R01-C01-I013",
+    "paths": [
+      "packages/coelo_database/scripts/e2-r01-auth-personas-private.ts",
+      "packages/coelo_database/scripts/e2-r01-auth-personas-private_test.ts"
+    ],
+    "status": "granted-local-offline",
+    "at": "2026-09-08T18:46:18-03:00"
   }
 }
