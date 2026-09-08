@@ -36,7 +36,7 @@ passo 6 não significa que a tela chegou ao fim dos seis passos. Nenhum novo
 | Agenda | Contexto e acesso / `agenda.permissions` | 6/6 pacote local do parser | Cliente; `public.superadmin_agenda_contexts` código lido, RPC simulada | root + `activities_contract_read` review | 9 REDs; 46 repository finais; 124 regressões antes dois negativos finais | Autorização/persistência reais; construtor injetado fora deste parser |
 | Agenda | Solicitações e Aprovações | 6/6 pacotes `374da66`, `871e262`, `bc4432b` | Cliente; duas RPCs simuladas; guards de contexto e rota | root + reviews read-only | Estados de leitura; 7 RED lifecycle/navegação, 9 testes novos e 68 regressões finais PASS | Decisões, autorização e reload reais |
 | Atividades | Busca/filtros/diretório / `activities.list` | 6/6 negação imediata `d309d62` | Cliente ViewModel; nenhum BD | root + reviews read-only | 39 testes verdes; negação não espera RPC irmão pendente | BD/E2E abertos |
-| Atividades | Projeção/filtros v2 / `activities.list` | 2/6 RED SQL real; corretiva v1 `2fd8227`; fixture97 `ee212cb` | Dois RPCs nominais; root somente SQL local; Eng1 executou base54 | root; Eng1 operador serial via Coordenador | Base52+2preflights aplicada;89TAP42PASS47FAIL funcionais;37adapterPASS. Review central exige audit de sucesso | RED55v1 autorizado Eng1 com89originais+8audit; só depois append fora do catch e GREEN nominal. Foundation67 continua suspenso |
+| Atividades | Projeção/filtros v2 / `activities.list` | 2/6 RED55 real; audit-v2 candidato local | Dois RPCs nominais; root SQL local; Eng1 operador serial | root + activities_sql_review; Coordenador | RED55v1:97TAP91PASS6FAILaudit;89originaisPASS. Audit-v2 hash e4b02a21;fixture97inalterada;37adapterPASS | GREEN nominal com hash novo e mesmafixture97. Foundation67 continua suspenso |
 | Assiduidade | Chamada compacta | 6/6 local `696fb73` | Cliente; nenhum BD | root + `agenda_ui_contract` | RED overflow11px; 38 testes, 4 novos goldens; 1 golden antigo de outro fluxo divergente | Autorização, persistência e reload reais |
 | Rotina diária | Diretório/filtros | 6/6 local `edb58b8`; READ01 proposta `bd94602` | Cliente; proveniência SQL apenas leitura de arquivos | root + `activities_sql_review` | 4 REDs; 10 focados verdes; proposta de reader interno revisada | Confirmar base nominal; não restaurar migrations históricas em bloco |
 | Avaliações | Erros de leitura | 6/6 local `dd9cc25` | Adapter; contrato SQL lido, não executado | root + `activities_contract_read` | 1 RED; 12 testes verdes; erro500 não vira unauthorized | Composição nominal e BD real |
@@ -59,8 +59,9 @@ acima. O escopo original não foi reduzido a Agenda/Atividades.
   o RED nominal A01, com cleanup confirmado. Mocks HTTP não são persistência/reload
   real. Docker permanece reservado ao Eng1, sob grant explícito do Coordenador.
 - Migration A01: `20260907222911_superadmin_activity_directory_v2_client_contract.sql`,
-  v1 local commit2fd8227, hash6770c9bcbf5a3c3f6560021c0ca6e03d7bb1f12449878a2e98df64105cc04f92.
-  Congelada para RED55v1 da auditoria; ainda não é pacote GREEN/deploy.
+  v1 commit2fd8227 executada RED55:91PASS6FAILaudit. Candidato audit-v2 local
+  hash e4b02a2100030c36a0895d04036685cafae623326872f3141902d00043fe66f2;
+  append fora do catch, fixture97 intacta; GREEN serial ainda pendente.
 - Mídia nova MVP: R2 privado (`coelo-media-prod`, `coelo-documents-prod`,
   `coelo-transient-prod`); Supabase guarda catálogo/permissões/auditoria.
   Nenhum novo Supabase Storage, bucket ou lease é criado por este plano.
@@ -68,7 +69,7 @@ acima. O escopo original não foi reduzido a Agenda/Atividades.
 - Assiduidade/Chamada: OQ040 e spec048 draft bloqueiam contrato funcional SQL;
   depende decisão Owner sobre capacidades/AAL/escopo/DTO/cutover. Não restaurar
   cadeia histórica nem criar ponte people para o ator interno.
-- Próxima fatia SQL: auditoria de sucesso A01 após resultado RED55v1 do Eng1.
+- Próxima fatia SQL: GREEN nominal A01 audit-v2 com Eng1 após rehash/review.
   Demais superfícies originais continuam em execução; sem ETA remoto fictício. READ01 é proposta,
   não contém migration implementada nem testes comportamentais executados.
 

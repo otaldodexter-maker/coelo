@@ -154,13 +154,23 @@ begin
     select jsonb_build_object('items',coalesce(jsonb_agg(item order by ordinal),'[]'::jsonb),
       'total',(select count(*) from filtered),'limit',p_limit,'offset',p_offset)
     into result from projected;
-    return app_private.activity_v2_success_envelope(result);
   exception when others then
     get stacked diagnostics code = pg_exception_detail;
     code := coalesce(nullif(code,''),'SAI_INTERNAL_ERROR');
   end;
-  return app_private.activity_v2_denied_envelope('activities.read','activity.directory',code,
-    correlation,case when ctx.scope_kind = 'institution' then ctx.scope_institution_id else null end);
+  if code is not null then
+    return app_private.activity_v2_denied_envelope('activities.read','activity.directory',code,
+      correlation,case when ctx.scope_kind = 'institution' then ctx.scope_institution_id else null end);
+  end if;
+  -- Audit failure must propagate: do not place this append inside the read
+  -- exception block or return any data before the append succeeds.
+  perform app_private.audit_append_superadmin_internal(
+    ctx.internal_identity_id,ctx.internal_auth_link_id,ctx.internal_membership_id,ctx.session_id,
+    'activities.read',ctx.aal,'activity.directory','success'::public.audit_outcome,null::text,
+    correlation,case when ctx.scope_kind = 'institution' then ctx.scope_institution_id else null::uuid end,
+    null::text,null::uuid,jsonb_build_object('row_count',jsonb_array_length(result->'items')));
+  return app_private.activity_v2_success_envelope(
+    result || jsonb_build_object('correlation_id',correlation));
 end $$;
 
 create function public.superadmin_activity_filter_options_v2()
@@ -193,13 +203,25 @@ begin
         order by name,id),'[]'::jsonb) from units),
       'groups',(select coalesce(jsonb_agg(jsonb_build_object('id',id,'label',name,'parent_id',unit_id)
         order by name,id),'[]'::jsonb) from groups)) into result;
-    return app_private.activity_v2_success_envelope(result);
   exception when others then
     get stacked diagnostics code = pg_exception_detail;
     code := coalesce(nullif(code,''),'SAI_INTERNAL_ERROR');
   end;
-  return app_private.activity_v2_denied_envelope('activities.read','activity.filter_options',code,
-    correlation,case when ctx.scope_kind = 'institution' then ctx.scope_institution_id else null end);
+  if code is not null then
+    return app_private.activity_v2_denied_envelope('activities.read','activity.filter_options',code,
+      correlation,case when ctx.scope_kind = 'institution' then ctx.scope_institution_id else null end);
+  end if;
+  -- The collection audit contains counts only, never filters or row payloads.
+  -- Keep the append outside the exception block so an audit failure aborts.
+  perform app_private.audit_append_superadmin_internal(
+    ctx.internal_identity_id,ctx.internal_auth_link_id,ctx.internal_membership_id,ctx.session_id,
+    'activities.read',ctx.aal,'activity.filter_options','success'::public.audit_outcome,null::text,
+    correlation,case when ctx.scope_kind = 'institution' then ctx.scope_institution_id else null::uuid end,
+    null::text,null::uuid,jsonb_build_object('row_count',
+      jsonb_array_length(result->'institutions') + jsonb_array_length(result->'units')
+      + jsonb_array_length(result->'groups')));
+  return app_private.activity_v2_success_envelope(
+    result || jsonb_build_object('correlation_id',correlation));
 end $$;
 
 alter function public.superadmin_activity_directory_v2(jsonb,integer,integer,text,boolean) owner to postgres;
