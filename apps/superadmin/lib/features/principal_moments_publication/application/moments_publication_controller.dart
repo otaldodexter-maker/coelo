@@ -44,6 +44,7 @@ final class MomentsPublicationController extends ChangeNotifier {
   var _loadInFlight = false;
   var _commandInFlight = false;
   var _disposed = false;
+  var _authorizationRevoked = false;
   _MomentsRetryAction? _retryAction;
 
   MomentsPublicationState get state => _state;
@@ -56,19 +57,14 @@ final class MomentsPublicationController extends ChangeNotifier {
     try {
       final draft = await repository.loadDraft(context);
       if (!_isCurrentLoad(generation)) return;
+      _authorizationRevoked = false;
       _emit(
         _state.copyWith(draft: draft ?? MomentsDraft(), phase: MomentsPublicationPhase.editing),
       );
       _retryAction = null;
     } on MomentsPublicationUnauthorized {
       if (!_isCurrentLoad(generation)) return;
-      _retryAction = null;
-      _emit(
-        _state.copyWith(
-          phase: MomentsPublicationPhase.unauthorized,
-          message: 'Você não pode publicar neste contexto.',
-        ),
-      );
+      _deny();
     } on Exception {
       if (!_isCurrentLoad(generation)) return;
       _retryAction = _MomentsRetryAction.load;
@@ -97,6 +93,7 @@ final class MomentsPublicationController extends ChangeNotifier {
   void setSaveAsDraft(bool value) => _edit(_state.draft.copyWith(saveAsDraft: value));
 
   void addMedia(MomentsMediaDraft media) {
+    if (_authorizationRevoked || _disposed) return;
     if (_state.draft.media.length >= maxMedia) {
       _emit(_state.copyWith(message: 'Você pode adicionar até 5 mídias.'));
       return;
@@ -105,11 +102,13 @@ final class MomentsPublicationController extends ChangeNotifier {
   }
 
   void removeMedia(int index) {
+    if (_authorizationRevoked || _disposed) return;
     final media = [..._state.draft.media]..removeAt(index);
     _edit(_state.draft.copyWith(media: media));
   }
 
   void reorderMedia(int oldIndex, int newIndex) {
+    if (_authorizationRevoked || _disposed) return;
     final media = [..._state.draft.media];
     if (newIndex > oldIndex) newIndex -= 1;
     final item = media.removeAt(oldIndex);
@@ -118,7 +117,7 @@ final class MomentsPublicationController extends ChangeNotifier {
   }
 
   Future<void> saveDraft() async {
-    if (_disposed || _loadInFlight || _commandInFlight) return;
+    if (_disposed || _authorizationRevoked || _loadInFlight || _commandInFlight) return;
     final draft = _state.draft;
     final generation = _editGeneration;
     _commandInFlight = true;
@@ -149,13 +148,7 @@ final class MomentsPublicationController extends ChangeNotifier {
       );
     } on MomentsPublicationUnauthorized {
       if (_disposed) return;
-      _retryAction = null;
-      _emit(
-        _state.copyWith(
-          phase: MomentsPublicationPhase.unauthorized,
-          message: 'Você não pode publicar neste contexto.',
-        ),
-      );
+      _deny();
     } on Exception {
       if (_disposed) return;
       _retryAction = _MomentsRetryAction.save;
@@ -171,7 +164,7 @@ final class MomentsPublicationController extends ChangeNotifier {
   }
 
   Future<MomentsPublication?> publish() async {
-    if (_disposed || _loadInFlight || _commandInFlight) return null;
+    if (_disposed || _authorizationRevoked || _loadInFlight || _commandInFlight) return null;
     if (_state.draft.media.isEmpty) {
       _emit(_state.copyWith(message: 'Adicione pelo menos uma mídia para publicar.'));
       return null;
@@ -200,13 +193,7 @@ final class MomentsPublicationController extends ChangeNotifier {
       );
     } on MomentsPublicationUnauthorized {
       if (_disposed) return null;
-      _retryAction = null;
-      _emit(
-        _state.copyWith(
-          phase: MomentsPublicationPhase.unauthorized,
-          message: 'Você não pode publicar neste contexto.',
-        ),
-      );
+      _deny();
     } on Exception {
       if (_disposed) return null;
       _retryAction = _MomentsRetryAction.publish;
@@ -238,7 +225,10 @@ final class MomentsPublicationController extends ChangeNotifier {
   }
 
   void _edit(MomentsDraft draft) {
-    if (_disposed || _loadInFlight || _state.phase == MomentsPublicationPhase.publishing) {
+    if (_disposed ||
+        _authorizationRevoked ||
+        _loadInFlight ||
+        _state.phase == MomentsPublicationPhase.publishing) {
       return;
     }
     _editGeneration += 1;
@@ -249,6 +239,20 @@ final class MomentsPublicationController extends ChangeNotifier {
   }
 
   bool _isCurrentLoad(int generation) => !_disposed && generation == _loadGeneration;
+
+  void _deny() {
+    _authorizationRevoked = true;
+    _loadGeneration++;
+    _editGeneration++;
+    _retryAction = null;
+    _emit(
+      MomentsPublicationState(
+        draft: MomentsDraft(),
+        phase: MomentsPublicationPhase.unauthorized,
+        message: 'Você não pode publicar neste contexto.',
+      ),
+    );
+  }
 
   bool _isCurrentCommand(int generation) => !_disposed && generation == _editGeneration;
 

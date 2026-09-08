@@ -57,11 +57,52 @@ class _SectionCard extends StatelessWidget {
   }
 }
 
-class _MomentAsset extends StatelessWidget {
+class _MomentAsset extends StatefulWidget {
   const _MomentAsset({required this.media, required this.radius});
 
   final MomentsMediaDraft media;
   final double radius;
+
+  @override
+  State<_MomentAsset> createState() => _MomentAssetState();
+}
+
+class _MomentAssetState extends State<_MomentAsset> {
+  ImageProvider? _privateImage;
+  MomentsMediaDraft get media => widget.media;
+
+  @override
+  void initState() {
+    super.initState();
+    _privateImage = _provider();
+  }
+
+  ImageProvider? _provider() {
+    final mime = media.mimeType.toLowerCase();
+    if (mime.startsWith('video/') || (!mime.startsWith('image/') && media.assetPath.isEmpty)) {
+      return null;
+    }
+    if (media.bytes.isNotEmpty) return MemoryImage(media.bytes);
+    final url = media.remoteUrl;
+    return url == null ? null : NetworkImage(url);
+  }
+
+  @override
+  void didUpdateWidget(covariant _MomentAsset oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final next = _provider();
+    final previous = _privateImage;
+    _privateImage = next;
+    if (previous != null && previous != next) unawaited(previous.evict());
+  }
+
+  @override
+  void dispose() {
+    final previous = _privateImage;
+    _privateImage = null;
+    if (previous != null) unawaited(previous.evict());
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,15 +115,15 @@ class _MomentAsset extends StatelessWidget {
     } else if (!isImage && media.assetPath.isEmpty) {
       image = _unavailableMomentMedia(context);
     } else if (media.bytes.isNotEmpty) {
-      image = Image.memory(
-        media.bytes,
+      image = Image(
+        image: _privateImage!,
         key: const Key('moments-media-image'),
         fit: BoxFit.cover,
         semanticLabel: 'Capa do momento selecionado',
       );
     } else if (remoteUrl != null) {
-      image = Image.network(
-        remoteUrl,
+      image = Image(
+        image: _privateImage!,
         key: const Key('moments-media-image'),
         fit: BoxFit.cover,
         semanticLabel: 'Capa do momento selecionado',
@@ -115,7 +156,7 @@ class _MomentAsset extends StatelessWidget {
         },
       );
     }
-    return ClipRRect(borderRadius: BorderRadius.circular(radius), child: image);
+    return ClipRRect(borderRadius: BorderRadius.circular(widget.radius), child: image);
   }
 }
 
