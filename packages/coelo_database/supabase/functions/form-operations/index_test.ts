@@ -366,7 +366,7 @@ const xlsxMime =
 type RpcCall = { name: string; params: Record<string, unknown> };
 
 Deno.test("R2 reports only closed representation diagnostics without failing or cleaning the job", async () => {
-  for (const failure of ["number", "empty", "provider"]) {
+  for (const failure of ["number", "text", "empty", "provider"]) {
     const fixture = r2WriterFixture();
     if (failure === "empty") {
       fixture.transform((call, data) =>
@@ -391,6 +391,12 @@ Deno.test("R2 reports only closed representation diagnostics without failing or 
         value: "9007199254740993",
       }];
     }
+    if (failure === "text") {
+      fixture.page.submissions[0].answers[0].values = [{
+        kind: "text",
+        value: "unsupported\ufffe",
+      }];
+    }
     const dependencies = failure === "provider"
       ? {
         ...fixture.dependencies,
@@ -404,6 +410,8 @@ Deno.test("R2 reports only closed representation diagnostics without failing or 
     assertEquals(await response.json(), {
       error: failure === "number"
         ? "xlsx_number_unrepresentable"
+        : failure === "text"
+        ? "invalid_xlsx_text"
         : failure === "empty"
         ? "zero_respostas_aberto"
         : "export_completion_unknown",

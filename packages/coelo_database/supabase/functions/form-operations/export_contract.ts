@@ -57,10 +57,13 @@ export function xlsxMediaLink(origin: string, assetId: string): XlsxMediaLink {
   });
 }
 
-function mediaTarget(value: XlsxCellValue): string | undefined {
+function mediaTarget(
+  value: XlsxCellValue,
+  legacyStrings = true,
+): string | undefined {
   return typeof value === "object" && value.kind === "media"
     ? value.target
-    : isMediaLink(value)
+    : legacyStrings && isMediaLink(value)
     ? value
     : undefined;
 }
@@ -139,7 +142,10 @@ function explicitXlsxColumns(
 }
 
 function xlsxCellValue(value: XlsxCellValue): XlsxCellValue {
-  if (typeof value === "string") return neutralizeSpreadsheetFormula(value);
+  if (typeof value === "string") {
+    validateXlsxText(value);
+    return neutralizeSpreadsheetFormula(value);
+  }
   if (typeof value === "boolean") return value;
   if (typeof value === "number" && Number.isFinite(value)) return value;
   if (
@@ -265,13 +271,28 @@ export function encodeXlsx(
   rows: readonly XlsxRow[],
   options?: XlsxOptions,
 ): Uint8Array {
+  const worksheet = xlsxWorksheet(rows, options);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Respostas");
+  return XLSX.write(workbook, {
+    type: "array",
+    bookType: "xlsx",
+    compression: true,
+  }) as Uint8Array;
+}
+
+function xlsxWorksheet(
+  rows: readonly XlsxRow[],
+  options?: XlsxOptions,
+  labels?: readonly string[],
+): XLSX.WorkSheet {
   const columns = explicitXlsxColumns(options);
   const known = columns && new Set(columns);
   for (const row of rows) validateXlsxRow(row, known);
   const headers = columns ??
     [...new Set(rows.flatMap((row) => Object.keys(row)))];
   const matrix = [
-    [...headers],
+    labels?.map((label) => neutralizeSpreadsheetFormula(label)) ?? [...headers],
     ...rows.map((row) =>
       headers.map((header) => {
         const value = xlsxCellValue(xlsxRowCell(row, header));
@@ -287,7 +308,7 @@ export function encodeXlsx(
   rows.forEach((row, rowIndex) => {
     headers.forEach((header, columnIndex) => {
       const value = xlsxRowCell(row, header);
-      const target = mediaTarget(value);
+      const target = mediaTarget(value, labels === undefined);
       if (!target) return;
       const address = XLSX.utils.encode_cell({
         r: rowIndex + 1,
@@ -299,13 +320,13 @@ export function encodeXlsx(
       worksheet[address].l = { Target: target };
     });
   });
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Respostas");
-  return XLSX.write(workbook, {
-    type: "array",
-    bookType: "xlsx",
-    compression: true,
-  }) as Uint8Array;
+  // Apply the same OOXML string codec before either encoder's single write.
+  for (const cell of Object.values(worksheet)) {
+    if (cell && typeof cell === "object" && cell.t === "s") {
+      cell.v = xlsxEscapedText(String(cell.v));
+    }
+  }
+  return worksheet;
 }
 
 export function encodeXlsxWorkbook(
@@ -316,17 +337,11 @@ export function encodeXlsxWorkbook(
   const workbook = XLSX.utils.book_new();
   for (const sheet of workbookSheets(sheets)) {
     const keys = sheet.columns.map((column) => column.key);
-    const single = XLSX.read(encodeXlsx(sheet.rows, { columns: keys }), {
-      type: "array",
-      cellNF: true,
-    });
-    const worksheet = single.Sheets.Respostas;
-    sheet.columns.forEach((column, index) => {
-      worksheet[XLSX.utils.encode_cell({ r: 0, c: index })] = {
-        t: "s",
-        v: neutralizeSpreadsheetFormula(column.label),
-      };
-    });
+    const worksheet = xlsxWorksheet(
+      sheet.rows,
+      { columns: keys },
+      sheet.columns.map((column) => column.label),
+    );
     XLSX.utils.book_append_sheet(workbook, worksheet, sheet.name);
   }
   return new Uint8Array(
@@ -347,6 +362,42 @@ type RepeatableArchiveEntry = Readonly<{
   source: () => AsyncIterable<Uint8Array>;
 }>;
 const textEncoder = new TextEncoder();
+
+function validateXlsxText(value: string): void {
+  for (let i = 0; i < value.length; i++) {
+    const unit = value.charCodeAt(i);
+    // Our buffered encoder cannot prove a faithful round trip for these.
+    if (unit === 0xfffe || unit === 0xffff) {
+      throw new Error("invalid_xlsx_text");
+    }
+    if (unit >= 0xd800 && unit <= 0xdbff) {
+      const next = value.charCodeAt(++i);
+      if (!(next >= 0xdc00 && next <= 0xdfff)) {
+        throw new Error("invalid_xlsx_text");
+      }
+    } else if (unit >= 0xdc00 && unit <= 0xdfff) {
+      throw new Error("invalid_xlsx_text");
+    }
+  }
+}
+
+function xlsxLiteralText(value: string): string {
+  validateXlsxText(value);
+  return value.replace(
+    /_x[0-9a-f]{4}_/gi,
+    (escape) => `_x005F_${escape.slice(1)}`,
+  );
+}
+
+function xlsxEscapedText(value: string): string {
+  return xlsxLiteralText(value).replace(
+    // XML 1.0 controls (and CR normalization) require OOXML string escapes.
+    // deno-lint-ignore no-control-regex
+    /[\u0000-\u0008\u000b-\u001f]/g,
+    (unit) =>
+      `_x${unit.charCodeAt(0).toString(16).toUpperCase().padStart(4, "0")}_`,
+  );
+}
 
 const xmlText = (value: string) =>
   value.replaceAll("&", "&amp;")
@@ -551,6 +602,8 @@ async function xlsxArchiveEntries(
   }
   if (!headers.length) throw new Error("empty_export");
 
+  for (const label of labels ?? headers) validateXlsxText(label);
+
   const cell = (reference: string, value: XlsxCellValue) => {
     const safe = xlsxCellValue(value);
     if (typeof safe === "object" && safe.kind === "date") {
@@ -567,7 +620,7 @@ async function xlsxArchiveEntries(
       return `<c r="${reference}" t="b"><v>${safe ? 1 : 0}</v></c>`;
     }
     return `<c r="${reference}" t="inlineStr"><is><t xml:space="preserve">${
-      xmlText(safe)
+      xmlText(xlsxEscapedText(safe))
     }</t></is></c>`;
   };
   const sheet = async function* () {
@@ -592,7 +645,7 @@ async function xlsxArchiveEntries(
             const value = xlsxRowCell(row, header);
             return cell(
               `${excelColumn(column)}${rowNumber}`,
-              isMediaLink(value) ? "Ver foto" : value,
+              labels === undefined && isMediaLink(value) ? "Ver foto" : value,
             );
           }).join("")
         }</row>`,
@@ -604,7 +657,9 @@ async function xlsxArchiveEntries(
     let relationshipId = 1;
     for await (const row of checkedRows()) {
       for (let column = 0; column < headers.length; column++) {
-        if (mediaTarget(xlsxRowCell(row, headers[column]))) {
+        if (
+          mediaTarget(xlsxRowCell(row, headers[column]), labels === undefined)
+        ) {
           yield textEncoder.encode(
             `<hyperlink ref="${
               excelColumn(column)
@@ -626,7 +681,7 @@ async function xlsxArchiveEntries(
     for await (const row of checkedRows()) {
       for (const header of headers) {
         const value = xlsxRowCell(row, header);
-        const target = mediaTarget(value);
+        const target = mediaTarget(value, labels === undefined);
         if (target) {
           yield textEncoder.encode(
             `<Relationship Id="rId${relationshipId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="${

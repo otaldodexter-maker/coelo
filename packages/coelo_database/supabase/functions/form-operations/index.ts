@@ -49,6 +49,7 @@ const R2_SCHEMA_ERRORS = new Set([
   "xlsx_column_limit",
   "xlsx_row_limit",
   "xlsx_number_unrepresentable",
+  "invalid_xlsx_text",
   "xlsx_currency_unrepresentable",
   "invalid_xlsx_civil_date",
   "xlsx_civil_date_out_of_range",
