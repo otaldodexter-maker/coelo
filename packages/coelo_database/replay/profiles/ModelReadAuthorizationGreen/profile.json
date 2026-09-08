@@ -1,0 +1,50 @@
+{
+    "id":  "ModelReadAuthorizationGreen",
+    "base":  {
+                 "profile":  "auth",
+                 "manifest":  "packages/coelo_database/replay/foundation-migrations.sha256",
+                 "manifest_sha256_crlf_utf8":  "4279e67c9651f4049329591b6e8aad82e3a9052506c1a4e16ba8bbb693249d59",
+                 "selected_canonical_count":  45,
+                 "inherited_preflight_count":  2,
+                 "boundary":  "20260901200206"
+             },
+    "target_version":  "20260908021821",
+    "canonical_additions":  [
+                                {
+                                    "file":  "20260901170731_access_profile_models_crud_and_catalog.sql",
+                                    "sha256_crlf_utf8":  "0f82a20f05438e5711e8f4cdb61ec4ba2801be2da7f867cae4965d9f17569687",
+                                    "canonical_union_position":  45
+                                },
+                                {
+                                    "file":  "20260901193000_name_access_profile_model_rpc_arguments.sql",
+                                    "sha256_crlf_utf8":  "13be08a98dda8e65f8d6e064ca438095d7d21f73b0ba7ed747b1610997c7fc39",
+                                    "canonical_union_position":  46
+                                },
+                                {
+                                    "file":  "20260908021821_access_profile_models_read_prelookup_authorization.sql",
+                                    "sha256_crlf_utf8":  "b489f6ece6bc12c681d868ff9c68fdc13c00bdb52c3deda09b30aeccd418f992",
+                                    "canonical_union_position":  48
+                                }
+                            ],
+    "inherited_preflights":  [
+                                 {
+                                     "file":  "20260811151253_assert_function_execute_preflight.sql",
+                                     "sha256_crlf_utf8":  "718c2de052e9df29abc42642806d9a5e4d98c8964665453de6f14f0f8b61ab75",
+                                     "before":  "20260811151254_group_management_security.sql"
+                                 },
+                                 {
+                                     "file":  "20260811215452_access_profile_labels_replay_bridge.sql",
+                                     "sha256_crlf_utf8":  "d97e02796fcd5897707b5657b7a1c1df690f831e09ed98df6ed21886f75f9ef3",
+                                     "after":  "20260811215451_access_profile_management_v2.sql",
+                                     "before":  "20260812000847_audit_production.sql"
+                                 }
+                             ],
+    "extra_bridges":  [
+
+                      ],
+    "planned_counts":  {
+                           "canonical":  48,
+                           "preflight":  2,
+                           "total":  50
+                       }
+}
