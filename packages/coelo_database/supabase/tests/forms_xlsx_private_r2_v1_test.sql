@@ -174,7 +174,7 @@ select set_config('request.jwt.claims',jsonb_build_object('sub',pg_temp.xlsx_id(
 set local role authenticated;
 insert into xlsx_download_results values('before_revoke',public.superadmin_form_authorize_xlsx_download_v2('8c021000-0000-4000-8000-000000000700'));
 reset role;
-update app_private.superadmin_internal_memberships set status='suspended' where id=pg_temp.xlsx_id(501);
+update app_private.superadmin_internal_memberships set status='suspended',suspended_at=clock_timestamp(),version=version+1 where id=pg_temp.xlsx_id(501);
 select set_config('request.jwt.claims','{"role":"service_role"}',true);
 set local role service_role;
 insert into xlsx_download_results select 'after_revoke',public.form_redeem_xlsx_download_r2_v1((body#>>'{data,download_token}')::uuid) from xlsx_download_results where label='before_revoke';
@@ -183,7 +183,7 @@ select is((select body from xlsx_download_results where label='after_revoke'),nu
 select is(current_setting('request.jwt.claims')::jsonb,'{"role":"service_role"}'::jsonb,'denied reauthorization restores worker JWT claims');
 select is(nullif(current_setting('request.jwt.claim.sub',true),''),null::text,'denied reauthorization clears temporary subject');
 select ok((select consumed_at is not null from app_private.form_file_download_tokens where token_hash=encode(extensions.digest(convert_to((select body#>>'{data,download_token}' from xlsx_download_results where label='before_revoke'),'UTF8'),'sha256'),'hex')),'denied token is consumed exactly once');
-update app_private.superadmin_internal_memberships set status='active' where id=pg_temp.xlsx_id(501);
+update app_private.superadmin_internal_memberships set status='active',suspended_at=null,version=version+1 where id=pg_temp.xlsx_id(501);
 
 select set_config('request.jwt.claims',jsonb_build_object('sub',pg_temp.xlsx_id(101),'session_id',pg_temp.xlsx_id(201),'aal','aal2','role','authenticated')::text,true);
 set local role authenticated;
@@ -207,7 +207,7 @@ insert into xlsx_download_results select 'new_session_redeemed',public.form_rede
 reset role;
 select is((select body->>'job_id' from xlsx_download_results where label='new_session_redeemed'),pg_temp.xlsx_id(700)::text,'owner can reauthorize completed job from a new valid session');
 
-update app_private.superadmin_internal_memberships set scope_institution_id=pg_temp.xlsx_id(20) where id=pg_temp.xlsx_id(501);
+update app_private.superadmin_internal_memberships set scope_institution_id=pg_temp.xlsx_id(20),version=version+1 where id=pg_temp.xlsx_id(501);
 select set_config('request.jwt.claims',jsonb_build_object('sub',pg_temp.xlsx_id(101),'session_id',pg_temp.xlsx_id(203),'aal','aal2','role','authenticated')::text,true);
 set local role authenticated;
 insert into xlsx_download_results values('wrong_tenant',public.superadmin_form_authorize_xlsx_download_v2('8c021000-0000-4000-8000-000000000700'));
@@ -223,7 +223,7 @@ select ok(not has_function_privilege('authenticated','public.form_redeem_xlsx_do
 select ok(not has_function_privilege('service_role','app_private.forms_xlsx_context_from_session_v1(uuid,uuid,uuid,uuid,text,uuid)','execute'),'worker cannot select an arbitrary internal session context');
 
 -- Request/capture is atomic and realm-specific. Synthetic data only.
-update app_private.superadmin_internal_memberships set scope_institution_id=pg_temp.xlsx_id(10) where id=pg_temp.xlsx_id(501);
+update app_private.superadmin_internal_memberships set scope_institution_id=pg_temp.xlsx_id(10),version=version+1 where id=pg_temp.xlsx_id(501);
 select set_config('request.jwt.claims',jsonb_build_object('sub',pg_temp.xlsx_id(101),'session_id',pg_temp.xlsx_id(203),'aal','aal2','role','authenticated')::text,true);
 create temporary table xlsx_request_results(label text primary key,body jsonb);
 grant insert,select on xlsx_request_results to authenticated;
@@ -288,7 +288,7 @@ insert into xlsx_request_results values('after_change',pg_temp.xlsx_request(1200
 reset role;
 select is((select body#>>'{data,id}' from xlsx_request_results where label='after_change'),(select body#>>'{data,id}' from xlsx_request_results where label='captured'),'idempotency survives later form management change');
 select is((select submission_jsonb#>>'{answers,0,values,0}' from app_private.form_xlsx_snapshot_rows where response_id=pg_temp.xlsx_id(13010)),'captured-13010','later answer edits do not change sealed export');
-update app_private.superadmin_internal_memberships set status='suspended' where id=pg_temp.xlsx_id(501);
+update app_private.superadmin_internal_memberships set status='suspended',suspended_at=clock_timestamp(),version=version+1 where id=pg_temp.xlsx_id(501);
 set local role authenticated;
 insert into xlsx_request_results values('revoked_replay',pg_temp.xlsx_request(12005,210,1));
 reset role;
@@ -299,7 +299,7 @@ select ok(not has_function_privilege('anon','public.superadmin_form_request_xlsx
 
 
 -- Begin/paging with a real queue lease and service-only public boundary.
-update app_private.superadmin_internal_memberships set status='active' where id=pg_temp.xlsx_id(501);
+update app_private.superadmin_internal_memberships set status='active',suspended_at=null,version=version+1 where id=pg_temp.xlsx_id(501);
 create temporary table xlsx_worker_fixture as
 select w.id worker_job_id,j.id file_job_id from public.form_file_jobs j join app_private.form_worker_jobs w on w.aggregate_id=j.id
 where j.id=(select (body#>>'{data,id}')::uuid from xlsx_request_results where label='captured');
@@ -336,11 +336,11 @@ select is((select body->>'has_more' from xlsx_worker_results where label='page2'
 select is((select body->'submissions' from xlsx_worker_results where label='page_end'),'[]'::jsonb,'cursor at row count returns empty terminal page');
 select is(current_setting('request.jwt.claims')::jsonb,'{"role":"service_role"}'::jsonb,'worker restores original claims after paging');
 select throws_ok($$update public.media_assets set upload_request_id='forged-attempt' where id=(select (body->>'asset_id')::uuid from xlsx_worker_results where label='begin1')$$,'23514','forms_xlsx_asset_binding_immutable','attempt binding cannot be rewritten');
-update app_private.superadmin_internal_memberships set status='suspended' where id=pg_temp.xlsx_id(501);
+update app_private.superadmin_internal_memberships set status='suspended',suspended_at=clock_timestamp(),version=version+1 where id=pg_temp.xlsx_id(501);
 set local role service_role;
 select throws_ok($$select pg_temp.xlsx_page('c02-xlsx-1',(body->>'asset_id')::uuid,0) from xlsx_worker_results where label='begin1'$$,'42501',null,'revoked requester cannot keep reading worker pages');
 reset role;
-update app_private.superadmin_internal_memberships set status='active' where id=pg_temp.xlsx_id(501);
+update app_private.superadmin_internal_memberships set status='active',suspended_at=null,version=version+1 where id=pg_temp.xlsx_id(501);
 update app_private.form_worker_jobs set lease_expires_at=clock_timestamp()-interval '1 second' where id=(select worker_job_id from xlsx_worker_fixture);
 set local role service_role;
 select throws_ok($$select pg_temp.xlsx_begin('c02-xlsx-1')$$,'40001','forms_xlsx_lease_unavailable','expired lease cannot reserve another asset');
