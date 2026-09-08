@@ -14,6 +14,10 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Até22:32: header preview `e659601f`, required Forms `9cd88692` e fila de
+  Preferências `33cdf7d8` passaram **40/40** em três suítes no destino
+  (ambiente local explícito), analyzer3 sem issues. Contrato puro de métricas
+  de imagens foi integrado, sem alegação de decoder ou persistência remota.
 - Atualização até 22:12 BRT: Agenda/Operações até `9af82b70`, doze suítes
   **176/176** no destino e analyzer10 sem issues. Comunicação até `d04c9b89`,
   seis suítes **90/90**; MediaReader/Session **45/45 Dart**. Editor/Respostas

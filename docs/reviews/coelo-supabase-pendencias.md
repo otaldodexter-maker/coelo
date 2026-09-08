@@ -12,6 +12,20 @@ family_count: 37
 
 ## Rodada de 2026-09-07 — backend local e integração em curso
 
+- Atualização22:32: seletor A01 integrado em `b262886d`; suíte Pester completa
+  no destino **104/104 PASS**, sem SQL/Docker do coordenador. Corretiva
+  `2fd8227d` ainda não integrada: revisão identificou ausência de audit de
+  sucesso; frente5 prepara RED específico preservando os89 asserts originais.
+  Eventual sucesso funcional não fechará esse requisito da spec039.
+- F-READ cadeia SQL foi integrada até `a9157680`, incluindo AAL1/audit e
+  fixture final897 (117TAP esperados, não executados). Wrapper revisto não
+  devolve dados/negação se append obrigatório falhar. Replay50/51 ainda na
+  fila Eng1. Usersmin3 (`93072eec`) e Modelos11 (`bc420025`) são testes RED
+  preparados; bases nominais48 e49 respectivamente, não produção.
+- Imagens: métricas puras `c2005326`+R2shared passaram **30/30 Deno** no
+  destino, sem rede. Images binding segue proposta não habilitada; tipos da
+  API e saneamento real precisam prova, não tratar declaração de métricas
+  como decodificação, remoção de metadados ou liberação do ativo.
 - Users48 foi executado: **45/45 pgTAP PASS**, exit0, pelo Eng1; cleanup
   independente às22:00:48 BRT confirmou ausência dos recursos nominais.
   Evidência integrada `2c7f369c`; não é deploy ou conexão Flutter real.

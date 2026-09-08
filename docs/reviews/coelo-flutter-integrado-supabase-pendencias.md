@@ -14,14 +14,19 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "F66B1CDF7636C4FCC09B34C6C550A76AB3B62B44DE441887BA61CD7499AFDFAB"
-supabase_tracker_sha256: "1E9267E83A907845A278DD87E4936C825DB9173FBB13DA31B007F83471CFEF03"
+flutter_tracker_sha256: "CB86980C2D3F0616B4BDCB0A7DB617BA824F65BC82D68B427B1352F7DC003F0E"
+supabase_tracker_sha256: "92542D7F5B6F725DA912470A4C6C5320A73E086DD82CCD3849D26FCF00F3B372"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
 
+- Até22:32: novos recortes Flutter40/40 e analyzer3 no destino; métricas
+  imagens/R2shared30/30 sem rede; executor nominal104/104 Pester. F-READ SQL
+  integrado como pacote ainda não executado; Usersmin e Modelos somente REDs
+  preparados. A01 correção funcional precisa audit de sucesso antes de
+  conclusão do contrato. Nenhuma promoção E2E por essas contagens.
 - Avanço até22:12: Users SQL local45/45 e cleanup Eng1; Agenda/Operações
   destino176/176; Comunicação90/90+Media45/45; Forms69/69; follow-ups
   combinados202/202, sem somar cobertura duplicada. Pester77/77 no destino.
