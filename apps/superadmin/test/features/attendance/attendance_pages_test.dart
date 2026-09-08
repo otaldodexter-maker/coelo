@@ -750,6 +750,27 @@ void main() {
     expect(find.text('Chamada não encontrada.'), findsOneWidget);
   });
 
+  testWidgets('call page rejects detail bound to another call id', (tester) async {
+    final repository = _MismatchedAttendanceReadRepository();
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repository,
+          callId: 'call-progress',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Não foi possível carregar a chamada.'), findsOneWidget);
+    expect(find.textContaining('Turma Lua'), findsNothing);
+  });
+
   testWidgets('call route reloads when the call id changes in place', (tester) async {
     final repository = FakeAttendanceRepository.seeded();
     addTearDown(repository.dispose);
@@ -1200,6 +1221,37 @@ void main() {
     expect(find.text('Música · Turma Sol'), findsNothing);
   });
 
+  testWidgets('call page rejects a command response bound to another call', (tester) async {
+    final repository = _MismatchedAttendanceCommandRepository();
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repository,
+          callId: 'call-progress',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final action = find.widgetWithText(OutlinedButton, 'Presente').first;
+    await tester.ensureVisible(action);
+    await tester.tap(action);
+    final save = find.byKey(const Key('attendance-participant-save-participant-1'));
+    await tester.ensureVisible(save);
+    await tester.pump();
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Não foi possível salvar a alteração.'), findsOneWidget);
+    expect(find.textContaining('Turma Sol'), findsWidgets);
+    expect(find.textContaining('Turma Lua'), findsNothing);
+  });
+
   testWidgets('correction dialog does not write through a replacement repository', (tester) async {
     final repositoryA = FakeAttendanceRepository.seeded();
     final repositoryB = FakeAttendanceRepository.seeded();
@@ -1455,6 +1507,38 @@ final class _FailOnceCorrectionRepository implements AttendanceRepository {
       expectedVersion: expectedVersion,
     );
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _MismatchedAttendanceCommandRepository implements AttendanceRepository {
+  final FakeAttendanceRepository _delegate = FakeAttendanceRepository.seeded();
+
+  void dispose() => _delegate.dispose();
+
+  @override
+  Future<AttendanceCall?> fetchCall(String callId) => _delegate.fetchCall(callId);
+
+  @override
+  Future<AttendanceCall> setParticipantState(
+    String callId,
+    String participantId,
+    AttendancePresenceState state, {
+    required int expectedVersion,
+  }) async => (await _delegate.fetchCall('call-completed'))!;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _MismatchedAttendanceReadRepository implements AttendanceRepository {
+  final FakeAttendanceRepository _delegate = FakeAttendanceRepository.seeded();
+
+  void dispose() => _delegate.dispose();
+
+  @override
+  Future<AttendanceCall?> fetchCall(String callId) => _delegate.fetchCall('call-completed');
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
