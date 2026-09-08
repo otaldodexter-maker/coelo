@@ -100,6 +100,11 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
   }
 
   void _synchronizeLoadedDraft() {
+    if (controller.state.phase == NowPublicationPhase.unauthorized) {
+      _pickerGeneration += 1;
+      _dismissOwnedOverlays();
+      _currentStep = 0;
+    }
     final caption = controller.state.draft.caption;
     if (captionController.text != caption) {
       captionController.value = TextEditingValue(
