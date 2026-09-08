@@ -13,6 +13,66 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final publish in [false, true]) {
+    testWidgets('meal plan command is single flight before rebuild publish=$publish', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final repository = _PendingMealPlanRepository();
+      var savedCount = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: MealPlanWizardPage(
+              repository: repository,
+              imageRepository: const UnavailableMealPlanImageRepository(),
+              imageSelectionEnabled: false,
+              onSaved: () => savedCount++,
+              onCancel: () {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextFormField).first, 'Cardápio único');
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await _selectAudienceOption(tester, 'Instituições', 'Colégio Coelo');
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      await tester.enterText(find.byType(TextFormField).first, 'Arroz e feijão');
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pump();
+      final save = tester
+          .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Salvar rascunho'))
+          .onPressed!;
+      final submit = tester
+          .widget<FilledButton>(find.widgetWithText(FilledButton, 'Enviar e publicar'))
+          .onPressed!;
+      final first = publish ? submit : save;
+      first();
+      first();
+      (publish ? save : submit)();
+      expect(repository.saveCalls, 1);
+      await tester.pump();
+      first();
+      expect(repository.saveCalls, 1);
+      repository.pendingSave.complete(_plan('meal-a', 'Cardápio único'));
+      await tester.pumpAndSettle();
+      expect(savedCount, 1);
+      expect(repository.reviewCalls, publish ? 1 : 0);
+      expect(repository.publishCalls, publish ? 1 : 0);
+      await tester.pumpWidget(const SizedBox.shrink());
+      first();
+      await tester.pump();
+      expect(repository.saveCalls, 1);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets(
     'publication conflict retry updates the confirmed draft instead of creating another',
     (tester) async {
@@ -507,11 +567,15 @@ final class _ConflictMealPlanRepository extends _OrderedMealPlanRepository {
 
 final class _PendingMealPlanRepository extends _OrderedMealPlanRepository {
   final pendingSave = Completer<MealPlan>();
+  int saveCalls = 0;
   int reviewCalls = 0;
   int publishCalls = 0;
 
   @override
-  Future<MealPlan> createOrUpdateDraft(MealPlanDraft draft) => pendingSave.future;
+  Future<MealPlan> createOrUpdateDraft(MealPlanDraft draft) {
+    saveCalls++;
+    return pendingSave.future;
+  }
 
   @override
   Future<List<MealPlanConflict>> checkConflicts({
