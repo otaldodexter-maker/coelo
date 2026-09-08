@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:coelo_auth/coelo_auth.dart';
 import 'package:coelo_superadmin/app/router/superadmin_router.dart';
 import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
@@ -101,6 +102,73 @@ void main() {
             expect(tester.takeException(), isNull);
           },
         );
+      }
+    }
+  }
+  for (final entity in ['unit', 'group']) {
+    for (final pending in [false, true]) {
+      for (final recovery in [false, true]) {
+        testWidgets('$entity stops reads on logout/recovery pending=$pending recovery=$recovery', (
+          tester,
+        ) async {
+          tester.view.devicePixelRatio = 1;
+          tester.view.physicalSize = const Size(1440, 900);
+          addTearDown(tester.view.resetDevicePixelRatio);
+          addTearDown(tester.view.resetPhysicalSize);
+          final authStates = StreamController<CoeloAuthSessionState>(sync: true);
+          addTearDown(authStates.close);
+          final session = SuperadminSession(authSessionStateChanges: authStates.stream)
+            ..authorize(_contextA, sessionId: 'session-a');
+          final units = _Units();
+          final groups = _Groups();
+          final router = createSuperadminRouter(
+            session: session,
+            login: unavailableSuperadminLogin,
+            logout: unavailableSuperadminLogout,
+            requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+            onThemeModeChanged: (_) {},
+            unitDetailRepository: units,
+            groupDetailRepository: groups,
+          );
+          addTearDown(router.dispose);
+          addTearDown(session.dispose);
+          router.go('/${entity}s/$_id');
+          await tester.pumpWidget(
+            MaterialApp.router(theme: CoeloTheme.light, routerConfig: router),
+          );
+          await tester.pump();
+          int calls() => entity == 'unit' ? units.calls.length : groups.calls.length;
+          void complete() {
+            if (entity == 'unit') {
+              units.calls.first.complete(_unitA);
+            } else {
+              groups.calls.first.complete(_groupA);
+            }
+          }
+
+          expect(calls(), 1);
+          if (!pending) {
+            complete();
+            await tester.pumpAndSettle();
+            expect(find.text('Dados do contexto A'), findsOneWidget);
+          }
+          if (recovery) {
+            authStates.add(const CoeloAuthSessionState.passwordRecovery());
+          } else {
+            session.signOut();
+          }
+          await tester.pump();
+          expect(find.text('Dados do contexto A'), findsNothing);
+          expect(calls(), 1);
+          await tester.pumpAndSettle();
+          if (pending) {
+            complete();
+            await tester.pumpAndSettle();
+          }
+          expect(find.text('Dados do contexto A'), findsNothing);
+          expect(calls(), 1);
+          expect(tester.takeException(), isNull);
+        });
       }
     }
   }

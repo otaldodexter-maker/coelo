@@ -51,15 +51,11 @@ void main() {
             final entity = domain == 'units' ? 'unit' : 'group';
             expect(find.byKey(Key('$entity-detail-denied')), findsOneWidget);
             expect(find.text('Salvar alterações'), findsNothing);
-            if (width == 800) {
-              session.signOut();
-              await tester.pumpAndSettle();
-              expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
-              expect(find.byKey(Key('$entity-detail-denied')), findsNothing);
-              expect(ids, hasLength(1));
-            }
-            // Desktop logout remains an open shared-shell gate, also reproduced
-            // on Home without detail routes and reported to the coordinator.
+            session.signOut();
+            await tester.pumpAndSettle();
+            expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
+            expect(find.byKey(Key('$entity-detail-denied')), findsNothing);
+            expect(ids, hasLength(1));
           }
         });
       }
