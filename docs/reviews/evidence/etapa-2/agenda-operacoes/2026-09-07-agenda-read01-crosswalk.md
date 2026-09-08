@@ -3,6 +3,7 @@ title: "AG-READ01 — crosswalk e proposta de fixture interna de leitura"
 source: "ADR0029; specs006/050/039; migrations20260901183836/20260901193717; política20260901200206; reserva Coordenador 2026-09-07"
 status: "proposta local; sem corretiva SQL nem execução"
 generated_at: "2026-09-07"
+updated_at: "2026-09-08"
 ---
 
 # Recorte autorizado
@@ -148,3 +149,25 @@ Não contabilizar nenhuma linha desta matriz como teste passado.
 Coordenador/Eng1: inventário da base/grants e aceite do contrato proposto; depois
 fixture fechada e RED. Nenhuma corretiva ou composição compartilhada foi alterada.
 Gate de memória no-op: desenho ainda proposto, sem conhecimento aprovado novo.
+
+## Refinamento nominal 2026-09-08 — candidato de fixture
+
+A coordenação autorizou **preparar** a fixture RED, não executá-la nem aplicar corretiva. Arquivo candidato: `packages/coelo_database/supabase/tests/superadmin_agenda_read_v2_contract_test.sql`. Root não executou SQL/Docker. A base, o hash final e o alvo continuam sujeitos ao manifesto/review e ao operador serial Eng1.
+
+### Shape fechado desta fatia
+
+- Erros de domínio: `AGENDA_INVALID_ARGUMENT`/400 e `AGENDA_NOT_FOUND`/404; preservar códigos 039. B e UUID inexistente têm o mesmo erro público, exceto correlação única. Nenhuma alteração em helper de erro compartilhado.
+- `audience`: somente `institutionId`, `unitIds`, `groupIds`, `activityIds` e `individual_details_available=false`. Instituição deriva do evento validado; arrays contêm somente referências cuja hierarquia real foi comprovada no escopo. Referência embutida de B não se torna visível em A. Projeção não altera JSON armazenado.
+- **Decisão nominal da coordenação:** omitir `personIds` e `labels` pessoais sem relação elegível comprovada. Não devolver `[]` para sugerir audiência completa, não inferir contagem e não reescrever armazenamento. DTO/adapter dedicado deve renderizar a indisponibilidade dos detalhes individuais; não permitir editar/publicar nem afirmar audiência completa. Relação elegível permanece gate separado do restante E2E.
+- `reminders`: array de strings. `questions`: objetos somente `id,title,type`, com `shortText`/`yesNo`. `recurrence`: somente `frequency,interval,until,occurrenceCount,exceptions`, conforme parser estrito existente. `location`: string histórica, não objeto de catálogo/Local/reserva.
+- `history`: somente `action,occurred_at,reason,previous_revision,next_revision`, filtrado simultaneamente por evento e instituição. Sem autor, request ID, receipt integral ou responses.
+- Contextos conservam as sete capabilities nas listas efetivas; `mutation_actions_available=false` permanece separado. Fixture começa somente com `agenda.read`, depois concede e nega **apenas `agenda.create`**, autorizado nominalmente, ao mesmo papel sintético. Nenhum comando de escrita é chamado.
+- Auditoria dos três readers: correlation_id comum, ator/link/membership/sessão interna revalidada, instituição do escopo, `before_json=null`, `object_id=null`, `after_json` exatamente `{row_count:n}`. N é tamanho da página, um detalhe ou tamanho dos contextos; não é total filtrado de lista nem count de Pessoas. Append fora do catch; erro `P0001/AG_READ01_AUDIT_FAILURE` deve propagar sem envelope de sucesso.
+
+### Fixture e controles
+
+IDs sintéticos usam prefixo `8a500000-0000-4000-8000-`. Papéis `ag-read01-reader` (901) e `ag-read01-denied` (902), sem grants em papéis de produto. Auth105/Pessoa601 são autoria estrutural histórica, distintos dos Auth internos 101–104/106; sem ponte entre realms. Atividades estruturais são semeadas com esse autor People verdadeiro, vínculos ativos e constraints imediatas, sem marker, grant Activities ou trigger desabilitado. Origem cruzada de atividade já tem FK composta: não se força corrupção física.
+
+As chamadas são capturadas em TEMP sob `authenticated`; `RESET ROLE` precede cada TAP/inspeção de audit. Helper TEMP é invoker e só captura resultado/SQLSTATE; função nominal ausente permanece RED (`42883`), nunca API fake. Trigger temporário de teste recusa somente sucesso dos três audit actions nominais e é removido antes do rollback.
+
+Revisão estática independente encontrou e corrigiu precedência de extração JSON antes de subtração, comparações nulas que poderiam passar em capabilities ausentes e verificação insuficiente de não-mutação. Agora há `IS DISTINCT FROM`, snapshot integral dos eventos/receipts e contagem por escopo para receipts adicionais. Nenhum TAP foi contabilizado como executado ou aprovado. Existência de `auth.aal_level`, overload de audit14 e closure física de Activities continuam itens do inventário Eng1, não suposições de replay.
