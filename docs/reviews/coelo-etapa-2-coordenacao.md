@@ -681,3 +681,8 @@ Análise Attendance pós-integração confirmou **2arquivos sem problemas**;45te
 ## Continuidade C00 — 2026-09-08T18:46:18-03:00
 
 Owner saiu; acompanhamento automático confirmado ativo. Fonte `etapa-2-operacao/reports/R01-continuidade-1845.md`. Apoio mantém exclusividade Docker; intervenção única pela rodada encerrada só com ack, sem execução. C01 I013 adapter local reservado; C02/C03 I012 corrigendas publicadas. Horários05:30/06:00/07:40 de09/09 preservados. Sem nova autorização remota e sem promoção de conclusão.
+
+
+## Integração e dependências — 2026-09-08T19:00:55-03:00
+
+Fonte `etapa-2-operacao/reports/R01-delta-1855.md`: oito cherry-picks e dois commitsC00 integrados/testados; rastreadores/inventário recebem deltasnominais sempromoção. Dockerrecuperado18:53,leaseexclusivaC01Models34,I014. C02I013mediareader reservado,I01065aguardarevisão. C03contrato/router1c7a0e13 liberadospara consumo nominal; Support5596emrevisão. C06I006/C07I003 publicados: trêstestescamposreservados,Instituiçõesvermelhorealpermanece,C04corrige. Horáriosfechamentopreservados; referências/SHAs/logs norelatorio.

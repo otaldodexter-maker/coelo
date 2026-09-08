@@ -460,3 +460,8 @@ Decisões e bloqueios por superfície em [relatório](etapa-2-operacao/reports/R
 ## Delta de revisão C00 — 2026-09-08T18:46:18-03:00
 
 Fonte: `etapa-2-operacao/reports/R01-continuidade-1845.md`, assignments C02/C03 I012. Activities create/edit: cadeia real retida por incompatibilidade de configuração pedagógica, modo de participação e ordenação das remoções no snapshot SQL. Support: corrigenda de rota nominal necessária quando chooser está sobre detalhe na troca de contexto. Forms response detail I010: integridade do grafo completo ainda requer prova/correção, inclusive campos sem resposta. Docker sem prova operacional; replays novos continuam pendentes. Revisão estática não certifica execução ou conclusão. Nenhuma promoção de métricas; sincronização integral C01r43/C02r37/C03r27 ainda pendente.
+
+
+## Recibo incremental C00 — 2026-09-08T19:00:55-03:00
+
+Fonte `etapa-2-operacao/reports/R01-delta-1855.md`: C01I012/r43 seletor acessível integrado6749ed07; seis commitsC03r26–27 integrados428e14b7/357a275b/5f0163c1/9936a858/60d43c00/15b6a2dd (155testesclientePASS). HeadercompactoC00c4a7feff RED8→GREEN8; shared8PASS e regressão14PASS, analyzerlimpo. Activities1c7a0e13 sótransportamodo; adapter/SQL aindaabertos. IDs e provas nominais no relatório; nenhumstatusconcluído promovido. Dockerrecuperado18:53:45, engine29.7.2 comprovado; Models34 leaseexclusivaC01 resultadoaindapendente. Remotos/produção não alterados. Cortes integraisC01r40/C02r35/C03r25/C04r20/C05r15 mantidos comestesdeltasparciais; C02r38/C03novoslotessãorecebidos,nãointegralmentesincronizados.
