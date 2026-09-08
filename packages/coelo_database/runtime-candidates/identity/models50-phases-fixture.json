@@ -1,0 +1,67 @@
+{
+  "status": "candidate-not-executed",
+  "base": "Models50",
+  "source_fixture": "access_profile_models_read_prelookup_regression_test.sql",
+  "source_sha256_lf": "084d70c291552ff779192f96c4821b9d9b1a98dc4efaa0bec9d3435874de8e73",
+  "seed_kind": "committed-local-only-separate-from-pgtap",
+  "required_existing_role": "owner",
+  "required_existing_capabilities": ["platform.read", "platform.role_models.read", "institution.role_models.read", "principal.role_models.read"],
+  "missing_grant_behavior": "abort; do-not-insert-grants",
+  "reader": {
+    "auth_user_id": "f1000000-0000-4000-8000-000000000001",
+    "session_id": "f2000000-0000-4000-8000-000000000001",
+    "identity_id": "f3000000-0000-4000-8000-000000000001",
+    "auth_link_id": "f4000000-0000-4000-8000-000000000001",
+    "membership_id": "f5000000-0000-4000-8000-000000000001",
+    "scope_kind": "platform",
+    "aal": "aal1"
+  },
+  "backup_owner_candidate": {
+    "requires_nominal_approval": true,
+    "auth_user_id": "f1000000-0000-4000-8000-000000000003",
+    "identity_id": "f3000000-0000-4000-8000-000000000003",
+    "auth_link_id": "f4000000-0000-4000-8000-000000000003",
+    "membership_id": "f5000000-0000-4000-8000-000000000003",
+    "role": "owner",
+    "scope_kind": "platform",
+    "required_status": "active",
+    "reason": "preserve last active Owner protection; do not disable trigger or reuse global actor002"
+  },
+  "models": [
+    {"id": "f7000000-0000-4000-8000-000000000001", "domain": "platform", "name": "Read nominal platform"},
+    {"id": "f7000000-0000-4000-8000-000000000002", "domain": "institution", "name": "Read nominal institution"},
+    {"id": "f7000000-0000-4000-8000-000000000003", "domain": "principal", "name": "Read nominal principal"}
+  ],
+  "seed_assertions": [
+    "base fingerprint is ModelReadAuthorizationGreen50 and bound to reserved disposable identity",
+    "initial grant effects are allow/active/nonrevoked on existing Owner role",
+    "reader and approved backup have distinct active memberships and active auth-links",
+    "reader session is owned by reader and remains valid at aal1",
+    "session f2000000-0000-4000-8000-000000000099 is absent",
+    "all constraints immediate before seed commit"
+  ],
+  "phases": [
+    {"scenario": "initial", "expected_domains": ["platform", "institution", "principal"]},
+    {
+      "scenario": "models-domain-denied",
+      "previous_phase": "initial",
+      "mutation": "existing Owner institution.role_models.read effect allow -> deny; exactly one active nonrevoked grant row",
+      "must_preserve": ["same JWT bytes", "reader membership", "active auth-link", "auth.sessions row", "platform and principal read grants"],
+      "expected_denial": "SAI_PERMISSION_DENIED",
+      "denied_domain": "institution",
+      "allowed_domains": ["platform", "principal"],
+      "note": "shared role change also affects backup Owner; this is domain capability denial, not tenant isolation"
+    },
+    {
+      "scenario": "models-membership-revoked",
+      "previous_phase": "models-domain-denied",
+      "precondition": "approved backup still satisfies the existing last-Owner trigger joins; otherwise abort with no bypass",
+      "mutation_target": "f5000000-0000-4000-8000-000000000001",
+      "mutation": "membership active -> revoked; revoked_at set; suspended_at null; version + 1; exactly one row",
+      "must_preserve": ["same JWT bytes", "active auth-link", "auth.sessions row", "backup membership and link", "all model records"],
+      "expected_denial": "SAI_MEMBERSHIP_REVOKED",
+      "recovery": "teardown; never reactivate terminal membership"
+    }
+  ],
+  "execution_gate": "Eng1 must prepare reviewed SQL seed/phase runner, pin its hash, reserve endpoint and teardown; JSON is not executable SQL or proof of state"
+}

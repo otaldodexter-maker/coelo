@@ -51,8 +51,22 @@ void main() {
       final models = SupabaseAccessProfileRepository(client);
       final gateway = SupabaseSuperadminAuthContextGateway(client);
       final authContext = await tester.runAsync(gateway.bootstrap);
+      final isUsers = config.profile == 'Users49';
+      if (config.isMembershipRevoked) {
+        expect(authContext, isNull);
+        await tester.runAsync(() => _verifyMembershipRevoked(client, users, models, isUsers));
+        return;
+      }
       expect(authContext, isNotNull);
-      expect(authContext!.scopeKind, SuperadminAuthScopeKind.platform);
+      expect(
+        authContext!.scopeKind,
+        config.isUsersScoped
+            ? SuperadminAuthScopeKind.institution
+            : SuperadminAuthScopeKind.platform,
+      );
+      if (config.isUsersScoped) {
+        expect(authContext.scopeInstitutionId, '97000000-0000-4000-8000-000000000001');
+      }
       expect(authContext.aal, 'aal1');
       expect(authContext.permissionCodes, contains('platform.read'));
       final session = SuperadminSession()
@@ -70,9 +84,12 @@ void main() {
       addTearDown(session.dispose);
       await tester.binding.setSurfaceSize(const Size(1440, 1000));
       addTearDown(() => tester.binding.setSurfaceSize(null));
-      final isUsers = config.profile == 'Users49';
       final path = isUsers ? SuperadminRoutes.internalUsers : SuperadminRoutes.profileModels;
-      final label = isUsers ? 'Owner Sintético' : 'Read nominal platform';
+      final label = isUsers
+          ? config.isUsersScoped
+                ? 'Caio Almeida'
+                : 'Owner Sintético'
+          : 'Read nominal platform';
       final listRpc = isUsers
           ? 'superadmin_internal_users_list'
           : 'superadmin_access_profile_models_cursor';
@@ -87,6 +104,7 @@ void main() {
         expect(page.repository, same(users));
         expect(page.onCreate, isNull);
         expect(find.text('Parcial Sintético'), findsNothing);
+        if (config.isUsersScoped) expect(find.text('Bruna Barros'), findsNothing);
       } else {
         expect(find.byType(AccessProfileDirectoryPage), findsOneWidget);
       }
@@ -114,13 +132,57 @@ void main() {
       await tester.runAsync(() async {
         if (isUsers) {
           final page = await users.fetchPage(PlatformUserQuery());
-          expect(page.items.map((item) => item.id).toList(), [
-            'e3000000-0000-4000-8000-000000000001',
-          ]);
-          expect(page.totalCount, 1);
-          expect(await users.fetchById('e3000000-0000-4000-8000-000000000001'), isNotNull);
+          if (config.isUsersScoped) {
+            expect(page.items.map((item) => item.id).toSet(), {
+              '93000000-0000-4000-8000-000000000003',
+              '93000000-0000-4000-8000-000000000004',
+            });
+            expect(page.totalCount, 2);
+            expect(await users.fetchById('93000000-0000-4000-8000-000000000004'), isNotNull);
+            for (final suffix in ['005', '099']) {
+              final id = '93000000-0000-4000-8000-000000000$suffix';
+              await _expectBackendCode(client, 'superadmin_internal_user_detail', {
+                'p_internal_identity_id': id,
+              }, 'SAI_PERMISSION_DENIED');
+              await expectLater(
+                users.fetchById(id),
+                throwsA(
+                  isA<PlatformUserRuleException>().having(
+                    (error) => error.code,
+                    'code',
+                    'unauthorized',
+                  ),
+                ),
+              );
+            }
+          } else {
+            expect(page.items.map((item) => item.id).toList(), [
+              'e3000000-0000-4000-8000-000000000001',
+            ]);
+            expect(page.totalCount, 1);
+            expect(await users.fetchById('e3000000-0000-4000-8000-000000000001'), isNotNull);
+          }
         } else {
           for (final domain in AccessProfileDomain.values) {
+            if (config.isDomainDenied && domain == AccessProfileDomain.institution) {
+              await _expectBackendCode(client, 'superadmin_access_profile_models_cursor', {
+                'p_query': null,
+                'p_domain': 'institution',
+                'p_status': null,
+                'p_scope': null,
+                'p_limit': 25,
+                'p_after_name': null,
+                'p_after_id': null,
+              }, 'SAI_PERMISSION_DENIED');
+              await _expectBackendCode(client, 'superadmin_access_profile_model_detail', {
+                'p_model_id': 'f7000000-0000-4000-8000-000000000002',
+              }, 'SAI_PERMISSION_DENIED');
+              await expectLater(
+                models.fetchModels(AccessProfileModelQuery(domain: domain)),
+                throwsA(isA<AccessProfileUnauthorizedException>()),
+              );
+              continue;
+            }
             final page = await models.fetchModels(
               AccessProfileModelQuery(domain: domain, search: 'Read nominal'),
             );
@@ -158,6 +220,70 @@ void main() {
     },
     skip: Platform.environment['COELO_IDENTITY_LOCAL_RUNTIME'] != '1',
   );
+}
+
+Future<void> _expectBackendCode(
+  SupabaseClient client,
+  String rpc,
+  Map<String, dynamic> params,
+  String code,
+) async {
+  final response = await client.rpc<Map<String, dynamic>>(rpc, params: params);
+  expect(response['error'], isA<Map<dynamic, dynamic>>());
+  expect((response['error'] as Map<dynamic, dynamic>)['code'], code);
+  expect(response['items'], isNull);
+  expect(response['data'], isNull);
+}
+
+Future<void> _verifyMembershipRevoked(
+  SupabaseClient client,
+  SupabasePlatformUserRepository users,
+  SupabaseAccessProfileRepository models,
+  bool isUsers,
+) async {
+  const code = 'SAI_MEMBERSHIP_REVOKED';
+  if (isUsers) {
+    await _expectBackendCode(client, 'superadmin_internal_users_list', {
+      'p_search': null,
+      'p_profile_ids': null,
+      'p_statuses': null,
+      'p_scopes': null,
+      'p_page': 1,
+      'p_page_size': 11,
+    }, code);
+    await _expectBackendCode(client, 'superadmin_internal_user_profiles', {}, code);
+    for (final suffix in ['004', '099']) {
+      await _expectBackendCode(client, 'superadmin_internal_user_detail', {
+        'p_internal_identity_id': '93000000-0000-4000-8000-000000000$suffix',
+      }, code);
+    }
+    await expectLater(
+      users.fetchPage(PlatformUserQuery()),
+      throwsA(
+        isA<PlatformUserRuleException>().having((error) => error.code, 'code', 'unauthorized'),
+      ),
+    );
+  } else {
+    await _expectBackendCode(client, 'superadmin_access_profile_models_cursor', {
+      'p_query': null,
+      'p_domain': 'platform',
+      'p_status': null,
+      'p_scope': null,
+      'p_limit': 25,
+      'p_after_name': null,
+      'p_after_id': null,
+    }, code);
+    await _expectBackendCode(client, 'superadmin_access_permission_catalog', {}, code);
+    for (final suffix in ['001', '099']) {
+      await _expectBackendCode(client, 'superadmin_access_profile_model_detail', {
+        'p_model_id': 'f7000000-0000-4000-8000-000000000$suffix',
+      }, code);
+    }
+    await expectLater(
+      models.fetchModels(const AccessProfileModelQuery(domain: AccessProfileDomain.platform)),
+      throwsA(isA<AccessProfileUnauthorizedException>()),
+    );
+  }
 }
 
 Future<void> _waitFor(WidgetTester tester, bool Function() condition) async {

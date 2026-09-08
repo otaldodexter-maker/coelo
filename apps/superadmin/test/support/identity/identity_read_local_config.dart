@@ -7,6 +7,13 @@ final class IdentityReadLocalConfig {
     if (environment['COELO_IDENTITY_LOCAL_RUNTIME'] != '1') _reject();
     profile = environment['COELO_IDENTITY_LOCAL_PROFILE'] ?? '';
     if (!const {'Users49', 'Models50'}.contains(profile)) _reject();
+    scenario = environment['COELO_IDENTITY_LOCAL_SCENARIO'] ?? 'initial';
+    if (!(profile == 'Users49'
+            ? const {'initial', 'users-scoped', 'users-membership-revoked'}
+            : const {'initial', 'models-domain-denied', 'models-membership-revoked'})
+        .contains(scenario)) {
+      _reject();
+    }
     final uri = Uri.tryParse(environment['COELO_IDENTITY_LOCAL_URL'] ?? '');
     if (uri == null ||
         uri.scheme != 'http' ||
@@ -42,16 +49,30 @@ final class IdentityReadLocalConfig {
       }
     }
     if (readerToken == invalidSessionToken) _reject();
+    if (scenario != 'initial' &&
+        scenario != 'users-scoped' &&
+        environment['COELO_IDENTITY_INITIAL_READER_JWT'] != readerToken) {
+      _reject();
+    }
   }
 
   late final String profile;
+  late final String scenario;
   late final Uri origin;
   late final String publicKey;
   late final String readerToken;
   late final String invalidSessionToken;
-  String get _prefix => profile == 'Users49' ? 'e' : 'f';
-  String get readerAuthId => '${_prefix}1000000-0000-4000-8000-000000000001';
-  String get readerSessionId => '${_prefix}2000000-0000-4000-8000-000000000001';
+  bool get isUsersScoped => scenario.startsWith('users-');
+  bool get isMembershipRevoked => scenario.endsWith('membership-revoked');
+  bool get isDomainDenied => scenario == 'models-domain-denied';
+  String get _prefix => isUsersScoped
+      ? '9'
+      : profile == 'Users49'
+      ? 'e'
+      : 'f';
+  String get _readerSuffix => isUsersScoped ? '003' : '001';
+  String get readerAuthId => '${_prefix}1000000-0000-4000-8000-000000000$_readerSuffix';
+  String get readerSessionId => '${_prefix}2000000-0000-4000-8000-000000000$_readerSuffix';
   String get invalidSessionId => '${_prefix}2000000-0000-4000-8000-000000000099';
 
   Set<String> get rpcNames => {

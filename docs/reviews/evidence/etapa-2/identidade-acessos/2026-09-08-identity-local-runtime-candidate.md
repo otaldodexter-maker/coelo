@@ -101,7 +101,7 @@ Os testes de guard usaram tokens unsigned fictícios sem rede. RED de criação
 foi import/classe ausente, não bug de produto. Review account_review não apontou
 bloqueio estático para candidato; runtime real ainda pode revelar falhas.
 
-## Etapa seguinte obrigatória: revogação e escopo
+## Roteiro posterior ao corte inicial e35c32f2
 
 Estes controles estão no roteiro, NÃO implementados/provados pelo corte acima:
 
@@ -123,3 +123,60 @@ Após seed e reserva, comando candidato em apps/superadmin:
 `flutter test --no-pub test/features/identity/identity_read_local_runtime_test.dart`.
 Sem opt-in, SKIP. Produção permanece fora e exige lease próprio. Nenhum
 verified-e2e concedido. Gate de memória: no-op, roteiro técnico não muda produto.
+
+## Ampliação candidata — sessão, scope e revogação separados
+
+Nova reserva do Coordenador em 2026-09-08 autoriza preparação, sem execução.
+O runtime agora aceita COELO_IDENTITY_LOCAL_SCENARIO, fechado por base:
+
+| Base / cenário | Asserção candidata |
+|---|---|
+| Ambas / initial | Corte anterior: rota, bootstrap, adapters, reentrada e sessão099 inexistente |
+| Users49 / users-scoped | Reader003 da instituição A; lista003/004; detalhe004 permitido; detalhe005B e099 inexistente negados com SAI_PERMISSION_DENIED |
+| Users49 / users-membership-revoked | Bootstrap negado, list/profiles/detail004/detail099 com SAI_MEMBERSHIP_REVOKED; adapter unauthorized |
+| Models50 / models-domain-denied | Owner mantém bootstrap/plataforma/Principal/catalog; list/detail institution com SAI_PERMISSION_DENIED |
+| Models50 / models-membership-revoked | Bootstrap negado, list/catalog/detail001/detail099 com SAI_MEMBERSHIP_REVOKED; adapter unauthorized |
+
+As fases negativas requerem COELO_IDENTITY_INITIAL_READER_JWT idêntico ao token
+atual. Essa igualdade confere inputs, não prova execução histórica da fase
+inicial. O operador precisa preservar o MESMO token/sessão entre invocações e
+comprovar a alteração persistida, suas precondições e a ordem na evidência.
+Não imprimir tokens. Sessão099 permanece controle independente, sem equivaler
+à revogação de membership ou à revogação da sessão Auth.
+
+Nos cenários membership-revoked, o teste encerra antes de montar a UI: não
+reivindica descarte visual pós-revogação nem fluxo contínuo com tela aberta.
+Essa prova necessita janela coordenada com transição durante a mesma execução
+da UI. Os cenários scoped/domain-denied percorrem rota e adapters, mas continuam
+não executados. O runner futuro deve fechar auditoria e estado preservado.
+
+### Fixtures declarativas nominais
+
+Arquivos fora de migrations e dos testes SQL autoexecutáveis:
+
+- packages/coelo_database/runtime-candidates/identity/users49-scoped-fixture.json;
+  SHA256 bytes atuais: 97212cd1d64e1f17f7fd879a05d76e77d15ec571b74cffda3746b71cd6e495bd.
+- packages/coelo_database/runtime-candidates/identity/models50-phases-fixture.json;
+  SHA256 bytes atuais: c8ef236959009ce0b488fc43d5d4b68cb94715ce3882f62fae7c8c9229fa82b1.
+
+São manifestos de seed/fases/asserções, NÃO seeds SQL prontos para execução.
+Eng1 fecha SQL nominal revisado e hash, sem copiar a fixture inteira nem
+substituir ROLLBACK por COMMIT. Grants necessários devem existir; ausência
+aborta e exige decisão nominal. Users45 introduzia também update/suspend;
+isso não é reproduzido como grant implícito no candidato READ.
+
+Models exige segundo Owner sintético003, no papel Owner já existente, para a
+fase de revogação: o trigger de última autoridade impediria revogar o único
+Owner. O backup está explicitamente pendente de aprovação nominal, não será
+criado por este teste. Nunca desabilitar trigger, alterar função ou reativar
+membership terminal para obter PASS. O deny do papel também afeta esse backup.
+
+### Verificação da preparação
+
+36 testes de guard + 4 de manifesto = 40 PASS; runtime compilado e SKIP forçado;
+analyzer dos dois diretórios sem problemas. RED inicial de ampliação foi API
+de cenário ainda ausente, não RED de produto. Review account_review aprovou
+Users; realm_audit identificou parâmetros incompletos nas duas chamadas diretas
+ao cursor Models. Após conferir migration193000, ambas passaram a enviar os
+sete argumentos nomeados, antes de qualquer HTTP. Isso corrige o candidato,
+não demonstra falha do backend. Nenhuma execução HTTP/SQL/Docker/remota.

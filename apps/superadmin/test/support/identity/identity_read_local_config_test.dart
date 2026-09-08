@@ -5,6 +5,51 @@ import 'package:flutter_test/flutter_test.dart';
 import 'identity_read_local_config.dart';
 
 void main() {
+  for (final scenario in [
+    'users-scoped',
+    'users-membership-revoked',
+    'models-domain-denied',
+    'models-membership-revoked',
+  ]) {
+    test('accepts only nominal actor for $scenario', () {
+      final profile = scenario.startsWith('users') ? 'Users49' : 'Models50';
+      final environment = _environment(profile)..['COELO_IDENTITY_LOCAL_SCENARIO'] = scenario;
+      if (profile == 'Users49') {
+        environment['COELO_IDENTITY_READER_JWT'] = _token(
+          _reader(profile)
+            ..['sub'] = '91000000-0000-4000-8000-000000000003'
+            ..['session_id'] = '92000000-0000-4000-8000-000000000003',
+        );
+        environment['COELO_IDENTITY_INVALID_SESSION_JWT'] = _token(
+          _reader(profile)
+            ..['sub'] = '91000000-0000-4000-8000-000000000003'
+            ..['session_id'] = '92000000-0000-4000-8000-000000000099',
+        );
+      }
+      environment['COELO_IDENTITY_INITIAL_READER_JWT'] = environment['COELO_IDENTITY_READER_JWT']!;
+      final config = IdentityReadLocalConfig(environment, nowSeconds: 1000);
+      expect(config.scenario, scenario);
+      expect(config.isMembershipRevoked, scenario.endsWith('membership-revoked'));
+    });
+  }
+  test('rejects crossed and unknown scenarios', () {
+    for (final scenario in ['models-domain-denied', 'anything']) {
+      expect(
+        () => IdentityReadLocalConfig(
+          _environment('Users49')..['COELO_IDENTITY_LOCAL_SCENARIO'] = scenario,
+          nowSeconds: 1000,
+        ),
+        throwsFormatException,
+      );
+    }
+  });
+  test('negative phase requires the identical initial token supplied by operator', () {
+    final environment = _environment('Models50')
+      ..['COELO_IDENTITY_LOCAL_SCENARIO'] = 'models-membership-revoked';
+    expect(() => IdentityReadLocalConfig(environment, nowSeconds: 1000), throwsFormatException);
+    environment['COELO_IDENTITY_INITIAL_READER_JWT'] = 'different';
+    expect(() => IdentityReadLocalConfig(environment, nowSeconds: 1000), throwsFormatException);
+  });
   for (final expiry in [999, 1000, 4601]) {
     test('rejects expired or overlong local token: $expiry', () {
       final environment = _environment('Users49');

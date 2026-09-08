@@ -1,0 +1,67 @@
+{
+  "status": "candidate-not-executed",
+  "base": "Users49",
+  "source_fixture": "superadmin_internal_users_directory_test.sql",
+  "source_sha256_lf": "f19fe5166dc9ba6405f5921d4a2406a645fb1209933fec4df432692558b4c8fa",
+  "seed_kind": "committed-local-only-separate-from-pgtap",
+  "required_existing_role": "operations",
+  "required_existing_capabilities": ["platform.read", "platform.member.read"],
+  "missing_grant_behavior": "abort-and-request-nominal-seed-approval; do-not-insert-grants",
+  "reader": {
+    "auth_user_id": "91000000-0000-4000-8000-000000000003",
+    "session_id": "92000000-0000-4000-8000-000000000003",
+    "identity_id": "93000000-0000-4000-8000-000000000003",
+    "auth_link_id": "94000000-0000-4000-8000-000000000003",
+    "membership_id": "95000000-0000-4000-8000-000000000003",
+    "name": "Lia Auditora",
+    "scope_kind": "institution",
+    "institution_id": "97000000-0000-4000-8000-000000000001",
+    "aal": "aal1"
+  },
+  "targets": [
+    {
+      "auth_user_id": "91000000-0000-4000-8000-000000000004",
+      "identity_id": "93000000-0000-4000-8000-000000000004",
+      "auth_link_id": "94000000-0000-4000-8000-000000000004",
+      "membership_id": "95000000-0000-4000-8000-000000000004",
+      "institution_id": "97000000-0000-4000-8000-000000000001",
+      "name": "Caio Almeida"
+    },
+    {
+      "auth_user_id": "91000000-0000-4000-8000-000000000005",
+      "identity_id": "93000000-0000-4000-8000-000000000005",
+      "auth_link_id": "94000000-0000-4000-8000-000000000005",
+      "membership_id": "95000000-0000-4000-8000-000000000005",
+      "institution_id": "97000000-0000-4000-8000-000000000002",
+      "name": "Bruna Barros"
+    }
+  ],
+  "seed_assertions": [
+    "base fingerprint is Users49 and bound to reserved disposable identity",
+    "reader and targets have active auth-links and memberships; no people authorization bridge",
+    "membership_scopes has the exact institution for each membership",
+    "reader session belongs to reader, is aal1 and not_after remains valid",
+    "profile names and institutions are the source fixture values",
+    "session 92000000-0000-4000-8000-000000000099 is absent",
+    "all constraints immediate before seed commit"
+  ],
+  "phases": [
+    {
+      "scenario": "users-scoped",
+      "expected_total": 2,
+      "expected_identity_ids": ["93000000-0000-4000-8000-000000000003", "93000000-0000-4000-8000-000000000004"],
+      "denied_detail_ids": ["93000000-0000-4000-8000-000000000005", "93000000-0000-4000-8000-000000000099"],
+      "expected_denial": "SAI_PERMISSION_DENIED"
+    },
+    {
+      "scenario": "users-membership-revoked",
+      "previous_phase": "users-scoped",
+      "mutation_target": "95000000-0000-4000-8000-000000000003",
+      "mutation": "membership active -> revoked; revoked_at set; suspended_at null; version + 1; exactly one row",
+      "must_preserve": ["same JWT bytes", "auth.sessions row", "active auth-link", "role grants", "targets A/B"],
+      "expected_denial": "SAI_MEMBERSHIP_REVOKED",
+      "recovery": "teardown; never reactivate terminal membership"
+    }
+  ],
+  "execution_gate": "Eng1 must prepare reviewed SQL seed/phase runner, pin its hash, reserve endpoint and teardown; JSON is not executable SQL or proof of state"
+}
