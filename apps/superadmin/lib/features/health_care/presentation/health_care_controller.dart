@@ -244,6 +244,7 @@ final class HealthCareController extends ChangeNotifier {
   );
 
   Future<void> correctMedication(HealthMedicationCorrectionCommand command) async {
+    _requireActiveCommand();
     final viewGeneration = _viewGeneration;
     await repository.changeMedicationRelevant(
       childId: command.childId,
@@ -256,6 +257,7 @@ final class HealthCareController extends ChangeNotifier {
   }
 
   Future<void> createMedication(HealthMedicationCreateCommand command) async {
+    _requireActiveCommand();
     final viewGeneration = _viewGeneration;
     await repository.createMedication(
       childId: command.childId,
@@ -274,6 +276,7 @@ final class HealthCareController extends ChangeNotifier {
   }
 
   Future<void> createAllergy(HealthAllergyCreateCommand command) async {
+    _requireActiveCommand();
     final viewGeneration = _viewGeneration;
     await repository.createAllergy(
       childId: command.childId,
@@ -285,6 +288,7 @@ final class HealthCareController extends ChangeNotifier {
   }
 
   Future<void> inactivateAllergy(HealthAllergyInactivationCommand command) async {
+    _requireActiveCommand();
     final viewGeneration = _viewGeneration;
     await repository.deactivateAllergy(
       childId: command.childId,
@@ -296,6 +300,7 @@ final class HealthCareController extends ChangeNotifier {
   }
 
   Future<void> updateCareProfile(HealthCareProfileUpdateCommand command) async {
+    _requireActiveCommand();
     final viewGeneration = _viewGeneration;
     await repository.updateCareProfile(
       childId: command.childId,
@@ -304,6 +309,10 @@ final class HealthCareController extends ChangeNotifier {
       actor: actor,
     );
     await _refreshMutationView(viewGeneration, command.childId);
+  }
+
+  void _requireActiveCommand() {
+    if (_disposed) throw StateError('Health care controller is disposed.');
   }
 
   Future<void> _refreshMutationView(int viewGeneration, String childId) async {

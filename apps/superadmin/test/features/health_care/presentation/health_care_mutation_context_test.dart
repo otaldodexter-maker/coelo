@@ -15,6 +15,23 @@ void main() {
     'allergy-inactivate',
     'profile',
   ]) {
+    test('retained $kind callback cannot start a write after disposal', () async {
+      final repository = _MutationRepository();
+      final controller = HealthCareController(repository);
+      await controller.loadDetail('child-demo-a');
+      final child = controller.detail!;
+      Future<void> retained() => _mutate(kind, controller, child);
+      controller.dispose();
+      final result = retained();
+      // Release an incorrectly started call so RED fails without a timeout.
+      for (final gate in repository.gates) {
+        gate.complete();
+      }
+      await expectLater(result, throwsStateError);
+      expect(repository.gates, isEmpty);
+      expect(repository.reads, ['child-demo-a']);
+    });
+
     test('late $kind does not reload the previous child after navigation', () async {
       final repository = _MutationRepository();
       final controller = HealthCareController(repository);
