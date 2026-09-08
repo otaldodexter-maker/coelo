@@ -45,6 +45,7 @@ Sem mudança produtiva, HTTP de rede, SQL, Docker ou produção nesta preparaç�
 | Adapter Models READ | 865d0090 detalhe; bdd6fe6c paginação; ca543993 template; 87/87 data/rotas na última rodada | Cache auxiliar de writes e contrato catálogo domain-only separados; nenhuma ampliação de grant |
 | Modelos create/update/duplicate/delete — envelopes | e20f2a3a: dois REDs corrigidos; 169/169 data. Pós-integração: 57/57 consumers existentes e 9/9 novos widget→adapter→repository→mock, incluindo aviso/callback/conflito/releitura | Persistência, sessão/reload real e backend nominais abertos; sem alterar import/export |
 | Modelos rascunho/save pendente | Nove consumers ampliados: campos/payload/reenvio pós-conflito; seis casos novos create/update na rota normal com controle positivo e troca de rota/sessão | 9/9 e 6/6 locais; não cancelamento server-side nem prova do cache auxiliar de writes |
+| Modelos cache auxiliar save/duplicate | RED 2PASS/2FAIL reproduziu denyA no payloadB; quatro linhas de epoch após await; 24/24 regressão adapter/rotas | Cliente isolado; sem cancelamento ou prova de persistência server-side |
 | Mídia consumidora/Auth M03 | ce2d9bee: parecer de proveniência, sem helper implementado | Contrato server-side de origem operacional; AAL sozinho não resolve OTP/recovery ambíguo; mídia pertence E2E3 |
 | P0 RLS/realm | Fatia três tabelas reservada ao Eng1 | Pacote nominal/replay/produção; não habilitar lote de tabelas por inferência |
 

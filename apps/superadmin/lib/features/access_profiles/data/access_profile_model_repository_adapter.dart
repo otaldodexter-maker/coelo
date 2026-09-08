@@ -101,6 +101,7 @@ final class AccessProfileModelRepositoryAdapter
     required String reason,
     required AccessProfile draft,
   }) async {
+    final revision = _authorizationRevision?.call();
     final existing = draft.id.isEmpty ? null : _details[draft.id];
     final selectedCodes = draft.permissions
         .where((permission) => permission.selected)
@@ -131,6 +132,7 @@ final class AccessProfileModelRepositoryAdapter
     final saved = draft.id.isEmpty
         ? await _models.createModel(requestId, modelDraft)
         : await _models.updateModel(requestId, modelDraft);
+    _requireCurrentRevision(revision);
     _details[saved.id] = saved;
     return _toProfile(saved);
   }
@@ -158,6 +160,7 @@ final class AccessProfileModelRepositoryAdapter
     required String name,
     required String reason,
   }) async {
+    final revision = _authorizationRevision?.call();
     final duplicated = await _models.duplicateModel(
       requestId,
       AccessProfileModelDraft(
@@ -171,6 +174,7 @@ final class AccessProfileModelRepositoryAdapter
         reason: reason,
       ),
     );
+    _requireCurrentRevision(revision);
     _details[duplicated.id] = duplicated;
     return _toProfile(duplicated);
   }
