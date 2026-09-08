@@ -269,6 +269,30 @@ void main() {
     expect(find.byType(SuperadminShell), findsOneWidget);
   });
 
+  testWidgets('new call rejects a created call outside the submitted context', (tester) async {
+    final repository = _MismatchedCreatedCallRepository();
+    addTearDown(repository.dispose);
+    String? createdCallId;
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceNewCallPage(
+          repository: repository,
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onCancel: () {},
+          onCreated: (id) => createdCallId = id,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Chamada'));
+    await tester.pumpAndSettle();
+
+    expect(createdCallId, isNull);
+    expect(find.text('Não foi possível criar a chamada.'), findsOneWidget);
+  });
+
   testWidgets('new call accepts a prefilled activity context', (tester) async {
     final repository = FakeAttendanceRepository.seeded();
     addTearDown(repository.dispose);
@@ -1566,6 +1590,23 @@ final class _MismatchedAttendanceCommandRepository implements AttendanceReposito
     AttendancePresenceState state, {
     required int expectedVersion,
   }) async => (await _delegate.fetchCall('call-completed'))!;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _MismatchedCreatedCallRepository implements AttendanceRepository {
+  final FakeAttendanceRepository _delegate = FakeAttendanceRepository.seeded();
+
+  void dispose() => _delegate.dispose();
+
+  @override
+  Future<AttendanceContextOptions> fetchContextOptions({required DateTime date}) =>
+      _delegate.fetchContextOptions(date: date);
+
+  @override
+  Future<AttendanceCall> createCall(AttendanceCallDraft draft) async =>
+      (await _delegate.fetchCall('call-completed'))!;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
