@@ -9,6 +9,62 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('context change removes only the form-owned exit dialog', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app(_Repository('A')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(CoeloFormTextField, 'Nome do perfil'), 'Rascunho A');
+    await tester.tap(find.byKey(const Key('access-profile-cancel')));
+    await tester.pumpAndSettle();
+    expect(find.text('Sair sem salvar?'), findsOneWidget);
+    unawaited(
+      showDialog<void>(
+        context: tester.element(find.byType(AccessProfileFormPage)),
+        builder: (context) => AlertDialog(
+          title: const Text('Outra janela'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Fechar outra janela'),
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(_app(_Repository('B')));
+    await tester.pumpAndSettle();
+    expect(find.text('Sair sem salvar?', skipOffstage: false), findsNothing);
+    expect(find.text('Outra janela'), findsOneWidget);
+    await tester.tap(find.text('Fechar outra janela'));
+    await tester.pumpAndSettle();
+    expect(find.text('Nome B'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('context change dismisses an already visible conflict dialog', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final pending = Completer<AccessProfile>();
+    await tester.pumpWidget(_app(_Repository('A', saving: pending.future)));
+    await tester.pumpAndSettle();
+    await _submit(tester);
+    pending.completeError(const AccessProfileConflictException());
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('Alterações em conflito'), findsOneWidget);
+    final second = _Repository('B');
+    await tester.pumpWidget(_app(second));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('Alterações em conflito'), findsNothing);
+    expect(second.reads, 1);
+    expect(second.saves, 0);
+    expect(find.text('Nome B'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('old completion cannot release the replacement save lock', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));

@@ -38,11 +38,17 @@ void main() {
         );
         await tester.pump();
         if (destination) {
-          tester.widget<SuperadminShell>(find.byType(SuperadminShell)).onDestinationSelected!(
-            'dashboard',
-          );
+          final navigate = tester
+              .widget<SuperadminShell>(find.byType(SuperadminShell))
+              .onDestinationSelected!;
+          navigate('dashboard');
+          navigate('dashboard');
         } else {
-          await tester.tap(find.byKey(const Key('access-profile-cancel')));
+          final cancel = tester
+              .widget<TextButton>(find.byKey(const Key('access-profile-cancel')))
+              .onPressed!;
+          cancel();
+          cancel();
         }
         await tester.pumpAndSettle();
         expect(find.text('Sair sem salvar?'), findsOneWidget);
@@ -53,7 +59,11 @@ void main() {
           await tester.pumpAndSettle();
           expect(find.byType(AccessProfileFormPage), findsNothing);
         }
-        await tester.tap(find.text('Sair sem salvar'));
+        if (disposed) {
+          expect(find.text('Sair sem salvar?'), findsNothing);
+        } else {
+          await tester.tap(find.text('Sair sem salvar'));
+        }
         await tester.pumpAndSettle();
         expect(cancellations, !disposed && !destination ? 1 : 0);
         expect(destinations, !disposed && destination ? ['dashboard'] : isEmpty);
@@ -107,7 +117,11 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.byType(AccessProfileFormPage), findsNothing);
       }
-      await tester.tap(find.text('Recarregar referência'));
+      if (disposed) {
+        expect(find.text('Alterações em conflito'), findsNothing);
+      } else {
+        await tester.tap(find.text('Recarregar referência'));
+      }
       await tester.pumpAndSettle();
       expect(repository.reads, disposed ? 1 : 2);
       expect(tester.takeException(), isNull);
