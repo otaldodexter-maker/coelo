@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../principal_shared/data/principal_signed_media_url.dart';
 import '../domain/moments_publication.dart';
 
 final class SupabaseMomentsPublicationRepository implements MomentsPublicationRepository {
@@ -50,7 +51,7 @@ final class SupabaseMomentsPublicationRepository implements MomentsPublicationRe
             mimeType: item['mime_type'] as String,
             durationMilliseconds: (item['duration_milliseconds'] as num?)?.toInt(),
             remoteAssetId: assetId,
-            remoteUrl: signed['signed_url'] as String,
+            remoteUrl: parsePrincipalSignedMediaUrl(signed['signed_url'])?.toString(),
           ),
         );
       }

@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../principal_shared/data/principal_signed_media_url.dart';
 import '../domain/principal_happens_feed_repository.dart';
 import '../domain/principal_happens_preview_data.dart';
 
@@ -44,14 +45,10 @@ final class SupabasePrincipalHappensFeedRepository implements PrincipalHappensFe
         throw const PrincipalHappensFeedUnavailable();
       }
       final json = Map<String, dynamic>.from(response.data as Map);
-      // A redeemed ticket must come back as an HTTPS URL. Agora and Circulares
-      // already refuse anything else; Acontece was accepting any scheme.
-      final signedUrl = Uri.tryParse(json['signed_url']?.toString() ?? '');
+      final signedUrl = parsePrincipalSignedMediaUrl(json['signed_url']);
       final mimeType = json['mime_type'] as String?;
       final expiresIn = json['expires_in'] as num?;
       if (signedUrl == null ||
-          signedUrl.scheme != 'https' ||
-          !signedUrl.hasAuthority ||
           mimeType == null ||
           mimeType.trim().isEmpty ||
           expiresIn == null ||

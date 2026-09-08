@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../principal_shared/data/principal_signed_media_url.dart';
 import '../domain/now_publication.dart';
 
 final class SupabaseNowPublicationRepository implements NowPublicationRepository {
@@ -82,7 +83,11 @@ final class SupabaseNowPublicationRepository implements NowPublicationRepository
     if (response.status < 200 || response.status >= 300) {
       throw Exception('now_media_read_failed');
     }
-    return (response.data as Map)['signed_url'] as String;
+    final signedUrl = parsePrincipalSignedMediaUrl(
+      response.data is Map ? (response.data as Map)['signed_url'] : null,
+    );
+    if (signedUrl == null) throw Exception('now_media_read_failed');
+    return signedUrl.toString();
   }
 
   @override

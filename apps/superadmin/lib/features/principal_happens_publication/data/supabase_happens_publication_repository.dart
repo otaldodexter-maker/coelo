@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../application/happens_publication_controller.dart';
+import '../../principal_shared/data/principal_signed_media_url.dart';
 import '../domain/happens_publication.dart';
 
 final class SupabaseHappensPublicationRepository implements HappensPublicationRepository {
@@ -39,7 +40,7 @@ final class SupabaseHappensPublicationRepository implements HappensPublicationRe
             bytes: Uint8List(0),
             assetId: media['asset_id'] as String,
             objectKey: media['object_key'] as String,
-            remoteUrl: media['signed_url'] as String?,
+            remoteUrl: parsePrincipalSignedMediaUrl(media['signed_url'])?.toString(),
           );
         }),
         version: (json['version'] as num?)?.toInt() ?? 0,

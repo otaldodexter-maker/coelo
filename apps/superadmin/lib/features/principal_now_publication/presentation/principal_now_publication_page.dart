@@ -445,7 +445,11 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
             return Column(
               key: const Key('now-publication-stacked'),
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [stage, const SizedBox(height: CoeloSpacing.space5), details],
+              children: [
+                stage,
+                const SizedBox(height: CoeloSpacing.space5),
+                details,
+              ],
             );
           }
           return Row(
