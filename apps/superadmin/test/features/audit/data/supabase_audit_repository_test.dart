@@ -230,20 +230,13 @@ void main() {
     );
   });
 
-  test('startExport sends the same server-side query and idempotency id', () async {
-    late Request capturedRequest;
+  test('productive repository keeps general exports deferred without Edge calls', () async {
+    var requestCount = 0;
     final repository = SupabaseAuditRepository(
       _client((request) async {
-        capturedRequest = request;
+        requestCount += 1;
         return Response(
-          jsonEncode({
-            'job_id': '77777777-7777-7777-7777-777777777777',
-            'state': 'SUCESSO',
-            'format': 'csv',
-            'row_count': 8,
-            'download_url': 'https://private.example.test/generated',
-            'expires_in': 300,
-          }),
+          jsonEncode({'unexpected': true}),
           200,
           headers: {'content-type': 'application/json'},
           request: request,
@@ -251,96 +244,29 @@ void main() {
       }),
     );
 
-    final job = await repository.startExport(
-      AuditExportRequest(
-        idempotencyKey: '66666666-6666-6666-6666-666666666666',
-        format: AuditExportFormat.csv,
-        query: AuditQuery(
-          search: 'perfil',
-          cursor: AuditCursor(
-            occurredAt: DateTime.utc(2026, 8, 10),
-            eventId: '55555555-5555-5555-5555-555555555555',
+    for (final format in AuditExportFormat.values) {
+      await expectLater(
+        repository.startExport(
+          AuditExportRequest(
+            idempotencyKey: '66666666-6666-4666-8666-666666666666',
+            format: format,
+            query: AuditQuery(
+              search: 'perfil',
+              cursor: AuditCursor(
+                occurredAt: DateTime.utc(2026, 8, 10),
+                eventId: '55555555-5555-5555-5555-555555555555',
+              ),
+            ),
           ),
         ),
-      ),
-    );
-
-    expect(capturedRequest.url.path, endsWith('/functions/v1/audit-export'));
-    final body = Map<String, Object?>.from(jsonDecode(capturedRequest.body) as Map);
-    expect(body['action'], 'generate');
-    expect(body['idempotency_key'], '66666666-6666-6666-6666-666666666666');
-    expect(body['format'], 'csv');
-    expect(body['filters'], {'search': 'perfil'});
-    expect(job.id, '77777777-7777-7777-7777-777777777777');
-    expect(job.status, AuditExportStatus.completed);
-    expect(job.rowCount, 8);
-    expect(job.downloadExpiresInSeconds, 300);
-  });
-
-  test('fetchExportStatus maps safe progress and a temporary HTTPS download', () async {
-    late Request capturedRequest;
-    final repository = SupabaseAuditRepository(
-      _client((request) async {
-        capturedRequest = request;
-        return Response(
-          jsonEncode({
-            'job_id': '77777777-7777-7777-7777-777777777777',
-            'state': 'SUCESSO',
-            'format': 'xlsx',
-            'created_at': '2026-08-11T12:00:00Z',
-            'summary': {
-              'phase': 'complete',
-              'row_count': 42,
-              'retention_expires_at': '2026-08-12T12:00:00Z',
-            },
-            'download_url': 'https://private.example.test/signed',
-            'expires_in': 300,
-          }),
-          200,
-          headers: {'content-type': 'application/json'},
-          request: request,
-        );
-      }),
-    );
-
-    final job = await repository.fetchExportStatus('77777777-7777-7777-7777-777777777777');
-
-    expect(capturedRequest.url.path, endsWith('/functions/v1/audit-export'));
-    expect(jsonDecode(capturedRequest.body), {
-      'action': 'status',
-      'job_id': '77777777-7777-7777-7777-777777777777',
-    });
-    expect(job.status, AuditExportStatus.completed);
-    expect(job.phase, 'complete');
-    expect(job.rowCount, 42);
-    expect(job.downloadUrl, Uri.https('private.example.test', '/signed'));
-    expect(job.downloadExpiresInSeconds, 300);
-  });
-
-  test('rejects non-HTTPS export download URLs', () async {
-    final repository = SupabaseAuditRepository(
-      _client(
-        (request) async => Response(
-          jsonEncode({
-            'job_id': '77777777-7777-7777-7777-777777777777',
-            'state': 'SUCESSO',
-            'format': 'csv',
-            'created_at': '2026-08-11T12:00:00Z',
-            'summary': {'phase': 'complete', 'row_count': 1, 'retention_expires_at': null},
-            'download_url': 'javascript:alert(1)',
-            'expires_in': 300,
-          }),
-          200,
-          headers: {'content-type': 'application/json'},
-          request: request,
-        ),
-      ),
-    );
-
+        throwsA(isA<AuditUnavailableException>()),
+      );
+    }
     await expectLater(
       repository.fetchExportStatus('77777777-7777-7777-7777-777777777777'),
       throwsA(isA<AuditUnavailableException>()),
     );
+    expect(requestCount, 0);
   });
 
   test('maps authorization, not-found and malformed payloads to safe errors', () async {
