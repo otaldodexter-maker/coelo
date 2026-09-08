@@ -80,10 +80,12 @@ final class UnitDirectoryTable extends StatelessWidget {
         _UnitColumn.type => _text(item.typeName),
         _UnitColumn.groups => _text('${item.groupsCount}'),
         _UnitColumn.activities => _text('${item.activitiesCount}'),
-        _UnitColumn.administrators => _text('${_unitMetrics(item).administrators}'),
-        _UnitColumn.team => _text('${_unitMetrics(item).team}'),
-        _UnitColumn.guardians => _text('${_unitMetrics(item).guardians}'),
-        _UnitColumn.children => _text('${_unitMetrics(item).children}'),
+        // Atividades above comes from the read. These four did not: they were
+        // arithmetic on a hash of the unit id, rendered as plain numbers.
+        _UnitColumn.administrators => _unavailableCount('Administradores'),
+        _UnitColumn.team => _unavailableCount('Equipe'),
+        _UnitColumn.guardians => _unavailableCount('Responsáveis'),
+        _UnitColumn.children => _unavailableCount('Crianças'),
         _UnitColumn.plan => _text(item.effectivePlan.label),
         _UnitColumn.status => Align(
           alignment: Alignment.centerLeft,
@@ -151,10 +153,10 @@ final class UnitDirectoryTable extends StatelessWidget {
           _UnitDetailColumn.unit => _unitCell(context, row.unit),
           _UnitDetailColumn.group => _text(row.groupName),
           _UnitDetailColumn.activity => _text(row.activityName ?? '—'),
-          _UnitDetailColumn.administrators => _text('${row.metrics.administrators}'),
-          _UnitDetailColumn.team => _text('${row.metrics.team}'),
-          _UnitDetailColumn.guardians => _text('${row.metrics.guardians}'),
-          _UnitDetailColumn.children => _text('${row.metrics.children}'),
+          _UnitDetailColumn.administrators => _unavailableCount('Administradores'),
+          _UnitDetailColumn.team => _unavailableCount('Equipe'),
+          _UnitDetailColumn.guardians => _unavailableCount('Responsáveis'),
+          _UnitDetailColumn.children => _unavailableCount('Crianças'),
           _UnitDetailColumn.status => Align(
             alignment: Alignment.centerLeft,
             child: UnitStatusChip(status: row.unit.status),
@@ -185,6 +187,19 @@ final class UnitDirectoryTable extends StatelessWidget {
   Widget _text(String value) => Align(
     alignment: Alignment.centerLeft,
     child: Text(value.isEmpty ? '—' : value, maxLines: 1, overflow: TextOverflow.ellipsis),
+  );
+
+  /// Counts of team, guardians and children were arithmetic on a hash of the
+  /// row id, shown as plain numbers in a table an operator reads. A number with
+  /// no source is worse than no number: it gets believed, and somebody plans
+  /// around how many children a unit supposedly has. Same defect and same
+  /// answer as the institution directory table.
+  Widget _unavailableCount(String label) => Align(
+    alignment: Alignment.centerLeft,
+    child: Semantics(
+      label: '$label: não disponível nesta leitura',
+      child: const Text('—', maxLines: 1),
+    ),
   );
 
   Widget _copyable(UnitDirectoryItem item, String kind, String label, String value) {
@@ -347,8 +362,11 @@ List<_UnitHierarchyRow> _unitHierarchyRows(
   return rows;
 }
 
-_UnitMetrics _unitMetrics(UnitDirectoryItem item) => _unitHierarchyMetrics(item.id);
-
+/// Kept only because the hierarchy rows still carry a metrics record. Nothing
+/// renders these numbers any more; the cells say the read does not have them.
+/// The synthetic hierarchy rows themselves are a separate question, raised with
+/// the coordinator rather than removed here, because dropping them removes two
+/// whole table views.
 _UnitMetrics _unitHierarchyMetrics(String id) {
   final seed = id.codeUnits.fold<int>(0, (sum, value) => sum + value);
   return (

@@ -245,6 +245,11 @@ UnitRecord _record(Map<String, dynamic> row, {InstitutionRecord? fallbackInstitu
       textColor: branding['text_color'] as String? ?? '#3F4549',
       surfaceColor: branding['surface_color'] as String? ?? '#FFFFFF',
       activitiesCount: _int(row['activities_count']),
+      // The directory read returns a count, never the classes themselves, and
+      // this list exists only so groupsCount can be derived from its length.
+      // The entries carry a synthetic id and no name on purpose: nothing may
+      // render them as records. The form step that used to do exactly that now
+      // shows the count instead.
       groups: [
         for (var index = 0; index < _int(row['groups_count']); index++)
           InstitutionGroup(id: '${row['id']}-group-$index', name: ''),

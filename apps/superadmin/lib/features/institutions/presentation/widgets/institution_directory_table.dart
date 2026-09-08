@@ -127,10 +127,10 @@ class InstitutionDirectoryTable extends StatelessWidget {
           _InstitutionDetailColumn.unit => _cellText(row.unitName),
           _InstitutionDetailColumn.group => _cellText(row.groupName ?? '—'),
           _InstitutionDetailColumn.activity => _cellText(row.activityName ?? '—'),
-          _InstitutionDetailColumn.administrators => _cellText('${row.metrics.administrators}'),
-          _InstitutionDetailColumn.team => _cellText('${row.metrics.team}'),
-          _InstitutionDetailColumn.guardians => _cellText('${row.metrics.guardians}'),
-          _InstitutionDetailColumn.children => _cellText('${row.metrics.children}'),
+          _InstitutionDetailColumn.administrators => _unavailableCount('Administradores'),
+          _InstitutionDetailColumn.team => _unavailableCount('Equipe'),
+          _InstitutionDetailColumn.guardians => _unavailableCount('Responsáveis'),
+          _InstitutionDetailColumn.children => _unavailableCount('Crianças'),
           _InstitutionDetailColumn.status => Align(
             alignment: Alignment.centerLeft,
             child: InstitutionStatusChip(status: row.institution.status),
@@ -196,14 +196,14 @@ class InstitutionDirectoryTable extends StatelessWidget {
         _InstitutionColumn.type => _cellText(item.typeName ?? 'Não informado'),
         _InstitutionColumn.units => _cellText('${item.unitsCount}'),
         _InstitutionColumn.groups => _cellText('${item.groupsCount}'),
-        _InstitutionColumn.activities => _cellText('${_metricsFor(item).activities}'),
-        _InstitutionColumn.legalRepresentatives => _cellText(
-          '${_metricsFor(item).legalRepresentatives}',
-        ),
-        _InstitutionColumn.administrators => _cellText('${_metricsFor(item).administrators}'),
-        _InstitutionColumn.team => _cellText('${_metricsFor(item).team}'),
-        _InstitutionColumn.guardians => _cellText('${_metricsFor(item).guardians}'),
-        _InstitutionColumn.children => _cellText('${_metricsFor(item).children}'),
+        // Units and Turmas above come from the directory read. Everything from
+        // here down did not: it was arithmetic on a hash of the institution id.
+        _InstitutionColumn.activities => _unavailableCount('Atividades'),
+        _InstitutionColumn.legalRepresentatives => _unavailableCount('Representantes legais'),
+        _InstitutionColumn.administrators => _unavailableCount('Administradores'),
+        _InstitutionColumn.team => _unavailableCount('Equipe'),
+        _InstitutionColumn.guardians => _unavailableCount('Responsáveis'),
+        _InstitutionColumn.children => _unavailableCount('Crianças'),
         _InstitutionColumn.plan => _cellText(item.planName ?? 'Sem plano'),
         _InstitutionColumn.status => Align(
           alignment: Alignment.centerLeft,
@@ -238,6 +238,24 @@ class InstitutionDirectoryTable extends StatelessWidget {
     return Align(
       alignment: Alignment.centerLeft,
       child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis),
+    );
+  }
+
+  /// These counts were arithmetic on a hash of the row id - team, guardians and
+  /// children included - and they were rendered as plain numbers in a screen an
+  /// operator reaches in production. A number with no source is worse than no
+  /// number: it is believed, and someone would have planned around how many
+  /// children a unit supposedly has.
+  ///
+  /// The directory read does not carry these figures. Until one does, the cell
+  /// says so, and a screen reader is told why rather than being handed a dash.
+  Widget _unavailableCount(String label) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Semantics(
+        label: '$label: não disponível nesta leitura',
+        child: const Text('—', maxLines: 1),
+      ),
     );
   }
 
@@ -457,6 +475,12 @@ List<_InstitutionHierarchyRow> _institutionHierarchyRows(
   return rows;
 }
 
+/// Kept only because the hierarchy rows still carry a metrics record. Nothing
+/// renders these numbers any more; the cells say the read does not have them.
+/// The synthetic hierarchy rows themselves - invented unit, class and activity
+/// names built from counts - are a separate question, raised with the
+/// coordinator rather than removed here, because dropping them removes two
+/// whole table views.
 _InstitutionMetrics _hierarchyMetrics(String id) {
   final seed = id.codeUnits.fold<int>(0, (sum, value) => sum + value);
   return (
@@ -469,6 +493,8 @@ _InstitutionMetrics _hierarchyMetrics(String id) {
   );
 }
 
+/// Only `activities` is still read, and only to decide how many synthetic
+/// hierarchy rows to build. No number from here reaches a cell.
 _InstitutionMetrics _metricsFor(InstitutionDirectoryItem item) {
   final seed = item.id.codeUnits.fold<int>(0, (sum, value) => sum + value);
   return (

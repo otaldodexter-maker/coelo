@@ -474,21 +474,35 @@ final class _UnitFormPageState extends State<UnitFormPage> {
               ),
           ]
         : const <UnitLocalEntry>[];
-    final initialEntries = switch (kind) {
-      UnitLocalManagementKind.groups => [
-        for (final group in _original?.unit.groups ?? const <InstitutionGroup>[])
-          UnitLocalEntry(id: group.id, name: group.name, detail: 'Turma desta unidade'),
-      ],
-      UnitLocalManagementKind.activities => [
-        for (var index = 0; index < (_original?.activitiesCount ?? 0); index++)
-          UnitLocalEntry(
-            id: 'activity-${index + 1}',
-            name: 'Atividade ${index + 1}',
-            detail: 'Atividade desta unidade',
-          ),
-      ],
-      _ => const <UnitLocalEntry>[],
+    // The unit read carries counts, not names. This step used to turn those
+    // counts into rows: classes with a synthetic id and an empty name, and
+    // activities literally called "Atividade 1", "Atividade 2". Both were
+    // invented in production code and rendered as if they were records, which
+    // is the same silent dishonesty as a fixture - an operator would edit or
+    // delete a row that stands for nothing.
+    //
+    // The count is real, so the count is what is shown. Names arrive when a
+    // read that carries them does.
+    final localCount = switch (kind) {
+      UnitLocalManagementKind.groups => _original?.groupsCount ?? 0,
+      UnitLocalManagementKind.activities => _original?.activitiesCount ?? 0,
+      _ => 0,
     };
+    final initialEntries = localCount == 0
+        ? const <UnitLocalEntry>[]
+        : [
+            UnitLocalEntry(
+              name: switch (kind) {
+                UnitLocalManagementKind.groups =>
+                  '$localCount ${localCount == 1 ? 'turma cadastrada' : 'turmas cadastradas'}',
+                UnitLocalManagementKind.activities =>
+                  '$localCount ${localCount == 1 ? 'atividade cadastrada' : 'atividades cadastradas'}',
+                _ => '',
+              },
+              detail: 'Esta leitura traz a contagem, não os nomes.',
+              readOnly: true,
+            ),
+          ];
     return UnitLocalManagementSection(
       kind: kind,
       inheritedEntries: inheritedAdministrators,
