@@ -203,6 +203,27 @@ são o RED funcional esperado antes da corretiva.
   -TestPath packages/coelo_database/supabase/tests/superadmin_internal_activities_v2_directory_contract_test.sql
 ```
 
+Para reproduzir a base do diretório interno de Formulários,
+`-NominalProfile FReadDirectoryContractRed` fixa Auth45, as duas migrations
+Forms `20260813155005`/`20260813155116` e o helper institucional
+`20260827235500`, mais os dois preflights: 50 arquivos, alvo
+`20260901200206`. O descriptor fechado fica em
+`replay/profiles/FReadDirectoryContractRed/profile.json`.
+
+O replay real dessa base registra `42601` em
+`20260813155005_forms_definition_and_capabilities.sql`, durante a criação de
+`form_item_config_valid`, antes do target e da fixture. Esse resultado é um
+bloqueio de sintaxe histórico; não demonstra o contrato do reader. O perfil
+preserva os bytes canônicos e não inclui o reader futuro `20260908000049`
+nem uma adaptação implícita para contornar a falha.
+
+```powershell
+& packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
+  -TargetVersion 20260901200206 `
+  -NominalProfile FReadDirectoryContractRed `
+  -TestPath packages/coelo_database/supabase/tests/superadmin_forms_directory_internal_read_test.sql
+```
+
 Nunca use
 `Prepare-SafeMigrationReplay.ps1` diretamente em operacoes normais, nem use o
 staging com `db push`, `migration repair` ou qualquer comando remoto. As
