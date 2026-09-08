@@ -148,6 +148,35 @@ void main() {
     expect(find.text('Recarregar rascunho'), findsOneWidget);
   });
 
+  testWidgets('conflict reload displays exactly the caption used by the next save', (tester) async {
+    final repository = _CaptionReloadNowRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalNowPublicationPage.demo(repository: repository),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+    final caption = find.byKey(const Key('now-caption-field'));
+    expect(find.text('Legenda A'), findsOneWidget);
+    await tester.enterText(caption, 'Edição local');
+    await tester.tap(find.text('Salvar rascunho'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('now-publication-conflict')), findsOneWidget);
+    await tester.tap(find.text('Recarregar rascunho'));
+    await tester.pumpAndSettle();
+    final field = tester.widget<EditableText>(
+      find.descendant(of: caption, matching: find.byType(EditableText)),
+    );
+    expect(field.controller.text, 'Legenda B');
+    expect(find.text('Edição local'), findsNothing);
+    await tester.tap(find.text('Salvar rascunho'));
+    await tester.pumpAndSettle();
+    expect(repository.savedCaptions, ['Edição local', 'Legenda B']);
+  });
+
   testWidgets('unauthorized bloqueia o publisher sem oferecer retry', (tester) async {
     final repository = _RetryingNowRepository(unauthorizedOnSave: true);
     await tester.pumpWidget(
@@ -810,6 +839,34 @@ void main() {
     repository.finishSave();
     await tester.pumpAndSettle();
   });
+}
+
+final class _CaptionReloadNowRepository implements NowPublicationRepository {
+  var loads = 0;
+  final savedCaptions = <String>[];
+
+  @override
+  Future<NowPublicationDraft?> loadDraft(NowPublicationContext context) async {
+    loads++;
+    return NowPublicationDraft(
+      id: 'draft',
+      version: loads,
+      caption: loads == 1 ? 'Legenda A' : 'Legenda B',
+    );
+  }
+
+  @override
+  Future<NowPublicationDraft> saveDraft(
+    NowPublicationContext context,
+    NowPublicationDraft draft,
+  ) async {
+    savedCaptions.add(draft.caption);
+    if (savedCaptions.length == 1) throw NowPublicationConflict();
+    return draft.copyWith(version: draft.version + 1);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 final class _DeferredPageNowRepository implements NowPublicationRepository {
