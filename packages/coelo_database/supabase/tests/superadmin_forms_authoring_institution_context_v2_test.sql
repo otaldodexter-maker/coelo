@@ -3,10 +3,13 @@ begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 select has_function('public','superadmin_forms_authoring_institutions_v2',array['jsonb'],'nominal authoring institution reader exists');
-select ok(has_function_privilege('authenticated','public.superadmin_forms_authoring_institutions_v2(jsonb)','execute'),'authenticated can invoke public reader');
-select ok(not has_function_privilege('anon','public.superadmin_forms_authoring_institutions_v2(jsonb)','execute'),'anon cannot invoke reader');
-select ok(not has_function_privilege('service_role','public.superadmin_forms_authoring_institutions_v2(jsonb)','execute'),'service role is not a client');
-select ok(not has_function_privilege('authenticated','app_private.superadmin_forms_authoring_institutions_v2(jsonb)','execute'),'private reader has no client grant');
+-- Resolve an optional OID first. The textual overload raises undefined_function
+-- before pgTAP can report a missing migration as a failed ACL assertion.
+-- Missing OID must fail BOTH allow and deny assertions, never prove a revoke.
+select ok(coalesce(has_function_privilege('authenticated',to_regprocedure('public.superadmin_forms_authoring_institutions_v2(jsonb)')::oid,'execute'),false),'authenticated can invoke public reader');
+select ok(coalesce(not has_function_privilege('anon',to_regprocedure('public.superadmin_forms_authoring_institutions_v2(jsonb)')::oid,'execute'),false),'anon cannot invoke reader');
+select ok(coalesce(not has_function_privilege('service_role',to_regprocedure('public.superadmin_forms_authoring_institutions_v2(jsonb)')::oid,'execute'),false),'service role is not a client');
+select ok(coalesce(not has_function_privilege('authenticated',to_regprocedure('app_private.superadmin_forms_authoring_institutions_v2(jsonb)')::oid,'execute'),false),'private reader has no client grant');
 
 insert into public.institution_types(id,code,name,status) values
  ('8f032000-0000-4000-8000-000000000001','fauthor02-type','F-AUTHOR02 type','active');
