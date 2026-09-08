@@ -260,6 +260,8 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   Timer? _autosaveTimer;
   bool _autosavePaused = false;
   final _invalidNumericIds = <String>{};
+  String? _activeSectionId;
+  final _sectionFocus = <String, FocusNode>{};
   ({_ResponseCommandKind kind, FormCommand<FormResponseDraftPayload> command, int answerRevision})?
   _pendingCommand;
 
@@ -289,12 +291,19 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   @override
   void dispose() {
     _autosaveTimer?.cancel();
+    for (final node in _sectionFocus.values) {
+      node.dispose();
+    }
     _loadGeneration++;
     super.dispose();
   }
 
   Future<void> _load() async {
     _autosaveTimer?.cancel();
+    for (final node in _sectionFocus.values) {
+      node.dispose();
+    }
+    _sectionFocus.clear();
     final generation = ++_loadGeneration;
     final api = widget.api;
     final occurrenceId = widget.occurrenceId;
@@ -311,6 +320,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       _savedAnswerRevision = 0;
       _autosavePaused = false;
       _invalidNumericIds.clear();
+      _activeSectionId = null;
     });
     if (api == null || occurrenceId == null || occurrenceId.isEmpty) {
       setState(() => _state = _ProductionResponseState.unavailable);
@@ -442,6 +452,8 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   Widget _responseForm(BuildContext context) {
     final occurrence = _occurrence!;
     final visibleItemIds = _visibleItemIds;
+    final sections = _presentedSections;
+    final sectionIndex = sections.indexWhere((section) => section.id == _activeSectionId);
     return Form(
       key: _formKey,
       child: Column(
@@ -455,18 +467,68 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
                 : 'Resposta identificada',
           ),
           const SizedBox(height: CoeloSpacing.space5),
-          for (final section in occurrence.version.sections) ...[
-            Text(section.title, style: Theme.of(context).textTheme.titleLarge),
-            if (section.description case final description?) ...[
-              const SizedBox(height: CoeloSpacing.space1),
-              Text(description),
-            ],
-            const SizedBox(height: CoeloSpacing.space3),
-            for (final item in section.items)
-              if (visibleItemIds.contains(item.id)) ...[
-                _itemField(context, item),
-                const SizedBox(height: CoeloSpacing.space4),
+          if (sections.isNotEmpty) ...[
+            LinearProgressIndicator(
+              value: (sectionIndex + 1) / sections.length,
+              semanticsLabel:
+                  'Progresso das seções do formulário: seção ${sectionIndex + 1} de ${sections.length}',
+            ),
+            const SizedBox(height: CoeloSpacing.space2),
+            Text('Seção ${sectionIndex + 1} de ${sections.length}'),
+            const SizedBox(height: CoeloSpacing.space4),
+          ],
+          for (final section in occurrence.version.sections)
+            Offstage(
+              key: ValueKey('response-section-${section.id}'),
+              offstage: section.id != _activeSectionId,
+              child: ExcludeFocus(
+                excluding: section.id != _activeSectionId,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Focus(
+                      focusNode: _sectionFocus.putIfAbsent(section.id, () => FocusNode()),
+                      child: Semantics(
+                        header: true,
+                        child: Text(section.title, style: Theme.of(context).textTheme.titleLarge),
+                      ),
+                    ),
+                    if (section.description case final description?) ...[
+                      const SizedBox(height: CoeloSpacing.space1),
+                      Text(description),
+                    ],
+                    const SizedBox(height: CoeloSpacing.space3),
+                    for (final item in section.items)
+                      if (visibleItemIds.contains(item.id)) ...[
+                        _itemField(context, item),
+                        const SizedBox(height: CoeloSpacing.space4),
+                      ],
+                  ],
+                ),
+              ),
+            ),
+          if (sections.length > 1) ...[
+            Wrap(
+              spacing: CoeloSpacing.space2,
+              runSpacing: CoeloSpacing.space2,
+              children: [
+                OutlinedButton(
+                  key: const Key('form-response-previous-section'),
+                  onPressed: sectionIndex > 0
+                      ? _currentAction(() => _selectSection(sections[sectionIndex - 1].id))
+                      : null,
+                  child: const Text('Seção anterior'),
+                ),
+                OutlinedButton(
+                  key: const Key('form-response-next-section'),
+                  onPressed: sectionIndex >= 0 && sectionIndex < sections.length - 1
+                      ? _currentAction(() => _selectSection(sections[sectionIndex + 1].id))
+                      : null,
+                  child: const Text('Próxima seção'),
+                ),
               ],
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
           ],
           if (_message case final message?) ...[
             Text(message, style: TextStyle(color: Theme.of(context).colorScheme.error)),
@@ -722,10 +784,42 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
 
   bool _isVisible(FormItem item) => _visibleItemIds.contains(item.id);
 
+  List<FormSection> get _presentedSections {
+    final visible = _visibleItemIds;
+    return [
+      for (final section in _occurrence?.version.sections ?? const <FormSection>[])
+        if (section.items.isEmpty || section.items.any((item) => visible.contains(item.id)))
+          section,
+    ];
+  }
+
+  void _selectSection(String id) {
+    if (!_presentedSections.any((section) => section.id == id)) return;
+    setState(() => _activeSectionId = id);
+    _focusSection(id);
+  }
+
+  void _focusSection(String id) {
+    final generation = _loadGeneration;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_isCurrent(generation) || _activeSectionId != id) return;
+      final node = _sectionFocus[id];
+      node?.requestFocus();
+      final target = node?.context;
+      if (target != null) Scrollable.ensureVisible(target);
+    });
+  }
+
   void _pruneHiddenAnswers() {
     final visible = _visibleItemIds;
     _answers.removeWhere((id, _) => !visible.contains(id));
     _invalidNumericIds.removeWhere((id) => !visible.contains(id));
+    final sections = _presentedSections;
+    if (!sections.any((section) => section.id == _activeSectionId)) {
+      final hadActiveSection = _activeSectionId != null;
+      _activeSectionId = sections.firstOrNull?.id;
+      if (hadActiveSection && _activeSectionId != null) _focusSection(_activeSectionId!);
+    }
   }
 
   bool _hasAnswer(FormItem item) => switch (_answers[item.id]?.value) {
@@ -877,45 +971,35 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   }
 
   bool _validate() {
-    if (_invalidNumericIds.isNotEmpty) {
-      setState(() => _message = 'Revise os valores numéricos antes de salvar.');
-      return false;
-    }
     final visibleItemIds = _visibleItemIds;
-    final unsupportedRequired = _occurrence!.version.sections
-        .expand((section) => section.items)
-        .any(
-          (item) =>
-              item.isRequired &&
-              visibleItemIds.contains(item.id) &&
-              (item.kind == FormItemKind.photo || item.kind == FormItemKind.gallery),
-        );
-    if (unsupportedRequired) {
-      setState(
-        () => _message =
-            'Este formulário exige anexo e o envio protegido ainda não está disponível nesta superfície.',
-      );
-      return false;
+    for (final section in _presentedSections) {
+      for (final item in section.items) {
+        if (!visibleItemIds.contains(item.id)) continue;
+        final message = _itemValidationMessage(item);
+        if (message == null) continue;
+        _selectSection(section.id);
+        _formKey.currentState?.validate();
+        setState(() {
+          _review = false;
+          _message = message;
+        });
+        return false;
+      }
     }
     final fieldsValid = _formKey.currentState?.validate() ?? false;
-    final missingRequired = _occurrence!.version.sections
-        .expand((section) => section.items)
-        .any(
-          (item) =>
-              item.isRequired &&
-              item.kind != FormItemKind.information &&
-              visibleItemIds.contains(item.id) &&
-              !_hasAnswer(item),
-        );
-    if (missingRequired) {
-      setState(() {
-        _review = false;
-        _message = 'Responda às perguntas obrigatórias visíveis antes de revisar.';
-      });
-      return false;
-    }
     if (fieldsValid) setState(() => _message = null);
     return fieldsValid;
+  }
+
+  String? _itemValidationMessage(FormItem item) {
+    if (_invalidNumericIds.contains(item.id)) return 'Revise os valores numéricos antes de salvar.';
+    if (!item.isRequired || item.kind == FormItemKind.information) return null;
+    if (item.kind == FormItemKind.photo || item.kind == FormItemKind.gallery) {
+      return 'Este formulário exige anexo e o envio protegido ainda não está disponível nesta superfície.';
+    }
+    return _hasAnswer(item)
+        ? null
+        : 'Responda às perguntas obrigatórias visíveis antes de revisar.';
   }
 
   Future<void> _saveDraft() => _sendDraft(_ResponseCommandKind.save);
