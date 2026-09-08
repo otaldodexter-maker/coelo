@@ -8,6 +8,21 @@ generated_at: "2026-08-28"
 
 # Detalhe e reload v2 de Pessoas para o Superadmin interno
 
+## Aditivo de compatibilidade Flutter — 2026-09-07
+
+PERS-STATUS01, aprovado pela coordenação da Etapa 2, representa os cinco valores
+existentes de `record_status`: `draft`, `active`, `inactive`, `suspended` e
+`archived`. `suspended` aparece como `Suspensa`, sem conversão para inativa ou
+arquivada. É estado cadastral da pessoa, não estado de membership, grant ou
+sessão. Sua leitura/filtro não cria ação de suspensão nem amplia autorização.
+
+As referências históricas a MFA/AAL2 no corpo abaixo descrevem a aprovação
+original. Durante a validação do MVP, a política vigente do realm interno é o
+aditivo de 2026-09-01 da ADR 0019: AAL1/AAL2 aceitos sem gate MFA, mantendo os
+demais controles. Isso não afirma implantação/correção de RPCs legadas nem
+autoriza seu uso como contrato interno. Este aditivo é documental e de
+compatibilidade cliente; não altera SQL nem promove E2E.
+
 ## Objetivo e problema
 
 Migrar somente o detalhe e o reload de Pessoas para a identidade interna

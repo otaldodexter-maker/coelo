@@ -52,8 +52,6 @@ PersonDirectoryItem decodePersonDetailV2(Object? value, {required String request
   final auth = AuthLinkStatus.values
       .where((auth) => auth.databaseValue == data['auth_link'])
       .firstOrNull;
-  // record_status.suspended is valid upstream but not representable by the
-  // legacy PersonDirectoryItem. Keep unavailable; never invent another status.
   if (type == null || status == null || auth == null) _invalid();
   final memberships = _list(data['memberships']).map(_membership).toList(growable: false);
   final contexts = _list(data['child_contexts']).map(_context).toList(growable: false);
