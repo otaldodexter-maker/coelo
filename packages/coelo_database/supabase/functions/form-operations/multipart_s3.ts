@@ -171,13 +171,78 @@ function xmlEscape(value: string): string {
     .replaceAll('"', "&quot;").replaceAll("'", "&apos;");
 }
 
-function xmlValue(xml: string, element: string): string | undefined {
-  const matches = [...xml.matchAll(
-    new RegExp(`<${element}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${element}>`, "gi"),
-  )];
-  if (matches.length !== 1) return undefined;
-  return matches[0][1].replaceAll("&quot;", '"').replaceAll("&apos;", "'")
-    .replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("&amp;", "&");
+function xmlText(value: string): string {
+  const invalid = () => {
+    throw new Error("multipart_s3_invalid_xml");
+  };
+  if (
+    [...value].some((character) => {
+      const point = character.codePointAt(0)!;
+      return (point < 0x20 && point !== 9 && point !== 10 && point !== 13) ||
+        point === 0xfffe || point === 0xffff;
+    }) ||
+    value.includes("]]>")
+  ) invalid();
+  const entities: Record<string, string> = {
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&quot;": '"',
+    "&apos;": "'",
+  };
+  return value.replace(
+    /&(?:amp|lt|gt|quot|apos|#[0-9]+|#x[0-9a-fA-F]+);|&/g,
+    (entity) => {
+      if (entity === "&") return invalid();
+      if (entities[entity] !== undefined) return entities[entity];
+      const point = entity.startsWith("&#x")
+        ? Number.parseInt(entity.slice(3, -1), 16)
+        : Number(entity.slice(2, -1));
+      if (
+        !(point === 9 || point === 10 || point === 13 ||
+          (point >= 0x20 && point <= 0xd7ff) ||
+          (point >= 0xe000 && point <= 0xfffd) ||
+          (point >= 0x10000 && point <= 0x10ffff))
+      ) return invalid();
+      return String.fromCodePoint(point);
+    },
+  );
+}
+
+function resultFields(xml: string, root: string): Map<string, string> {
+  // ponytail: S3 results are flat text fields. Reject unsupported XML constructs
+  // instead of interpreting comments, nested markup or declarations as data.
+  const invalid = () => {
+    throw new Error("multipart_s3_invalid_xml");
+  };
+  let document = xml.replace(/^[ \t\r\n]+|[ \t\r\n]+$/g, "");
+  if (document.startsWith("<?xml")) {
+    const declaration =
+      /^<\?xml[ \t\r\n]+version[ \t\r\n]*=[ \t\r\n]*(['"])1\.0\1(?:[ \t\r\n]+encoding[ \t\r\n]*=[ \t\r\n]*(['"])[Uu][Tt][Ff]-8\2)?(?:[ \t\r\n]+standalone[ \t\r\n]*=[ \t\r\n]*(['"])(?:yes|no)\3)?[ \t\r\n]*\?>/
+        .exec(document);
+    if (!declaration) return invalid();
+    document = document.slice(declaration[0].length).replace(/^[ \t\r\n]+/, "");
+  }
+  const envelope = new RegExp(
+    `^<${root}(?:[ \\t\\r\\n]+xmlns[ \\t\\r\\n]*=[ \\t\\r\\n]*(['"])([^'"<]*)\\1)?[ \\t\\r\\n]*>([\\s\\S]*)<\\/${root}>$`,
+  ).exec(document);
+  if (!envelope) return invalid();
+  if (envelope[2] !== undefined && !xmlText(envelope[2])) return invalid();
+  const content = envelope[3];
+  const child =
+    /[ \t\r\n]*<([A-Za-z][A-Za-z0-9]*)(?:[ \t\r\n]*\/>|>([^<]*)<\/\1>)[ \t\r\n]*/y;
+  const fields = new Map<string, string>();
+  let offset = 0;
+  while (
+    offset < content.length && !/^[ \t\r\n]*$/.test(content.slice(offset))
+  ) {
+    child.lastIndex = offset;
+    const match = child.exec(content);
+    if (!match || fields.has(match[1])) return invalid();
+    fields.set(match[1], xmlText(match[2] ?? ""));
+    offset = child.lastIndex;
+  }
+  return fields;
 }
 
 const validEtag = (etag: string) =>
@@ -215,7 +280,8 @@ export class MultipartS3Client {
     if (/<Error(?:\s|>)/i.test(response.xml)) {
       throw new Error("multipart_s3_initiate_error");
     }
-    const uploadId = xmlValue(response.xml, "UploadId");
+    const uploadId = resultFields(response.xml, "InitiateMultipartUploadResult")
+      .get("UploadId");
     if (!uploadId) throw new Error("multipart_s3_missing_upload_id");
     this.#validateUpload(uploadId);
     return { uploadId };
@@ -285,7 +351,9 @@ export class MultipartS3Client {
     if (/<Error(?:\s|>)/i.test(responseXml)) {
       throw new Error("multipart_s3_complete_error");
     }
-    const etag = xmlValue(responseXml, "ETag");
+    const etag = resultFields(responseXml, "CompleteMultipartUploadResult").get(
+      "ETag",
+    );
     if (!etag || !validEtag(etag)) {
       throw new Error("multipart_s3_invalid_etag");
     }
@@ -306,7 +374,7 @@ export class MultipartS3Client {
   }
 
   #validateUpload(uploadId: string): void {
-    if (!/^[A-Za-z0-9+/_=.-]{1,1024}$/.test(uploadId)) {
+    if (!/^[\x21-\x7e]{1,1024}$/.test(uploadId)) {
       throw new Error("multipart_s3_invalid_upload_id");
     }
   }
@@ -364,7 +432,10 @@ export class MultipartS3Client {
             throw new MultipartTransportError("multipart_s3_timeout");
           }
           reader = response.body?.getReader();
-          if (!response.ok) {
+          if (
+            response.status !== 200 &&
+            !(method === "DELETE" && response.status === 204)
+          ) {
             cancelReader();
             throw new MultipartTransportError(
               `multipart_s3_http_${response.status}`,
