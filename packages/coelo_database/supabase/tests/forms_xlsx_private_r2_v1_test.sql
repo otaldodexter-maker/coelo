@@ -357,6 +357,51 @@ select throws_ok($$update public.media_assets set status='ready' where id=(selec
 select ok(not has_function_privilege('authenticated','public.form_worker_begin_xlsx_r2_v1(uuid,text,uuid)','execute'),'client cannot reserve a worker attempt');
 select ok(not has_function_privilege('authenticated','public.form_worker_xlsx_snapshot_r2_v1(uuid,text,uuid,uuid,bigint,integer)','execute'),'client cannot read worker snapshot');
 
+
+create function pg_temp.xlsx_finish(owner_name text,asset uuid,actual_bytes bigint,checksum text) returns jsonb language sql security invoker as $$
+ select public.form_worker_complete_xlsx_r2_v1(worker_job_id,owner_name,file_job_id,asset,actual_bytes,checksum) from xlsx_worker_fixture;
+$$;
+create function pg_temp.xlsx_reconcile(asset uuid) returns jsonb language sql security invoker as $$
+ select public.form_worker_reconcile_xlsx_r2_v1(worker_job_id,file_job_id,asset) from xlsx_worker_fixture;
+$$;
+grant execute on function pg_temp.xlsx_finish(text,uuid,bigint,text),pg_temp.xlsx_reconcile(uuid) to service_role;
+set local role service_role;
+insert into xlsx_worker_results select 'pending_reconcile',pg_temp.xlsx_reconcile((body->>'asset_id')::uuid) from xlsx_worker_results where label='begin2';
+insert into xlsx_worker_results select 'abandoned_reconcile',pg_temp.xlsx_reconcile((body->>'asset_id')::uuid) from xlsx_worker_results where label='begin1';
+select throws_ok($$select pg_temp.xlsx_finish('c02-xlsx-2',(body->>'asset_id')::uuid,0,repeat('c',64)) from xlsx_worker_results where label='begin2'$$,'22023','forms_xlsx_measurement_invalid','unmeasured empty artifact cannot complete');
+select throws_ok($$select pg_temp.xlsx_finish('c02-xlsx-2',(body->>'asset_id')::uuid,100,'not-a-checksum') from xlsx_worker_results where label='begin2'$$,'22023','forms_xlsx_measurement_invalid','malformed checksum cannot complete');
+select throws_ok($$select pg_temp.xlsx_finish('c02-xlsx-1',(body->>'asset_id')::uuid,100,repeat('c',64)) from xlsx_worker_results where label='begin1'$$,'40001','forms_xlsx_lease_unavailable','stale worker cannot publish its abandoned upload');
+reset role;
+select is((select body->>'state' from xlsx_worker_results where label='pending_reconcile'),'pending','ambiguous pending result does not imply failure or deletion');
+select is((select body->>'state' from xlsx_worker_results where label='abandoned_reconcile'),'abandoned','old attempt is distinguishable from winner without granting deletion');
+select ok(not exists(select 1 from xlsx_worker_results where label in('pending_reconcile','abandoned_reconcile') and (body?'object_key' or body?'url' or body?'delete_allowed')),'reconciliation exposes no URL or deletion grant');
+update app_private.superadmin_internal_memberships set status='suspended',suspended_at=clock_timestamp(),version=version+1 where id=pg_temp.xlsx_id(501);
+set local role service_role;
+select throws_ok($$select pg_temp.xlsx_finish('c02-xlsx-2',(body->>'asset_id')::uuid,100,repeat('c',64)) from xlsx_worker_results where label='begin2'$$,'42501',null,'revocation before finalize denies publication');
+reset role;
+select is((select status::text from public.media_assets where id=(select (body->>'asset_id')::uuid from xlsx_worker_results where label='begin2')),'pending','denied finalize cannot leave asset ready');
+update app_private.superadmin_internal_memberships set status='active',suspended_at=null,version=version+1 where id=pg_temp.xlsx_id(501);
+set local role service_role;
+insert into xlsx_worker_results select 'completed',pg_temp.xlsx_finish('c02-xlsx-2',(body->>'asset_id')::uuid,100,repeat('c',64)) from xlsx_worker_results where label='begin2';
+insert into xlsx_worker_results select 'committed_reconcile',pg_temp.xlsx_reconcile((body->>'asset_id')::uuid) from xlsx_worker_results where label='begin2';
+insert into xlsx_worker_results select 'committed_repeat',pg_temp.xlsx_reconcile((body->>'asset_id')::uuid) from xlsx_worker_results where label='begin2';
+select throws_ok($$select pg_temp.xlsx_finish('c02-xlsx-2',(body->>'asset_id')::uuid,101,repeat('d',64)) from xlsx_worker_results where label='begin2'$$,'40001','forms_xlsx_lease_unavailable','completed lease cannot rewrite winner with another body');
+reset role;
+select is((select state from public.form_file_jobs where id=(select file_job_id from xlsx_worker_fixture)),'succeeded','job succeeds with original');
+select is((select status::text from public.media_assets where id=(select (body->>'asset_id')::uuid from xlsx_worker_results where label='begin2')),'ready','original becomes ready in same transaction');
+select is((select state from app_private.form_worker_jobs where id=(select worker_job_id from xlsx_worker_fixture)),'succeeded','queue lease completes with file job');
+select is((select body->>'state' from xlsx_worker_results where label='committed_reconcile'),'committed','lost finalize response reconciles persisted winner');
+select is((select body->>'checksum_sha256' from xlsx_worker_results where label='committed_reconcile'),repeat('c',64),'reconcile correlates stored measured bytes');
+select is((select body from xlsx_worker_results where label='committed_repeat'),(select body from xlsx_worker_results where label='committed_reconcile'),'reconciliation is repeatable');
+select ok(exists(select 1 from audit.audit_logs where action_code='superadmin.forms.export.complete' and outcome='success' and object_id=(select file_job_id from xlsx_worker_fixture)),'successful finalize is audited against job');
+delete from auth.sessions where id=pg_temp.xlsx_id(203);
+set local role service_role;
+insert into xlsx_worker_results select 'committed_after_logout',pg_temp.xlsx_reconcile((body->>'asset_id')::uuid) from xlsx_worker_results where label='begin2';
+reset role;
+select is((select body->>'state' from xlsx_worker_results where label='committed_after_logout'),'committed','service can preserve committed winner after requester logout without delivery authorization');
+select ok(not has_function_privilege('authenticated','public.form_worker_complete_xlsx_r2_v1(uuid,text,uuid,uuid,bigint,text)','execute'),'user cannot attest measured artifact');
+select ok(not has_function_privilege('authenticated','public.form_worker_reconcile_xlsx_r2_v1(uuid,uuid,uuid)','execute'),'reconciliation metadata is service-only');
+
 set constraints all immediate;
 select * from finish();
 rollback;

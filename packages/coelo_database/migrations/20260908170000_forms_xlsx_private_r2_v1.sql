@@ -777,6 +777,89 @@ revoke all on function public.form_worker_begin_xlsx_r2_v1(uuid,text,uuid),
   public.form_worker_xlsx_snapshot_r2_v1(uuid,text,uuid,uuid,bigint,integer) from public,anon,authenticated;
 grant execute on function public.form_worker_begin_xlsx_r2_v1(uuid,text,uuid),
   public.form_worker_xlsx_snapshot_r2_v1(uuid,text,uuid,uuid,bigint,integer) to service_role;
--- WIP: worker finalization/reconciliation and cleanup
+create function app_private.form_worker_complete_xlsx_r2_v1(
+  p_job_id uuid,p_worker_id text,p_file_job_id uuid,p_asset_id uuid,
+  p_actual_byte_length bigint,p_actual_checksum_sha256 text
+) returns jsonb language plpgsql volatile security definer set search_path='' as $$
+declare v_job public.form_file_jobs; v_worker app_private.form_worker_jobs;
+  v_ctx app_private.superadmin_internal_context;
+begin
+  if p_asset_id is null or p_actual_byte_length is null or p_actual_byte_length<1
+    or p_actual_checksum_sha256 is null or p_actual_checksum_sha256!~'^[0-9a-f]{64}$' then
+    raise invalid_parameter_value using message='forms_xlsx_measurement_invalid';
+  end if;
+  v_job:=app_private.forms_xlsx_worker_job_v1(p_job_id,p_worker_id,p_file_job_id,p_asset_id);
+  select * into strict v_worker from app_private.form_worker_jobs where id=p_job_id;
+  perform 1 from public.media_assets where id=p_asset_id for update;
+  perform app_private.forms_xlsx_worker_job_v1(p_job_id,p_worker_id,p_file_job_id,p_asset_id);
+  -- Measurements come only from the service generating and writing the XLSX.
+  -- No client grant and no caller-supplied path, MIME, tenant or manifest.
+  update public.media_assets set status='ready',byte_size=p_actual_byte_length,
+    checksum_sha256=p_actual_checksum_sha256,finalized_at=clock_timestamp() where id=p_asset_id;
+  update public.form_file_jobs set state='succeeded',progress=1,artifact_byte_length=p_actual_byte_length,
+    completed_at=clock_timestamp(),error_code=null,
+    manifest_jsonb=jsonb_build_object('format_version',snapshot_format_version,'response_count',snapshot_row_count)
+    where id=v_job.id;
+  update app_private.form_worker_jobs set state='succeeded',completed_at=clock_timestamp(),
+    lease_owner=null,lease_expires_at=null,progress_jsonb=jsonb_build_object('completed',true)
+    where id=p_job_id;
+  v_ctx:=app_private.forms_xlsx_context_from_session_v1(v_job.requested_by_internal_identity_id,v_job.requested_auth_link_id,
+    v_job.requested_membership_id,v_job.requested_auth_session_id,v_job.requested_scope_kind,v_job.requested_scope_institution_id);
+  perform app_private.audit_append_superadmin_internal(v_ctx.internal_identity_id,v_ctx.internal_auth_link_id,
+    v_ctx.internal_membership_id,v_ctx.session_id,'forms.responses.export',v_ctx.aal,
+    'superadmin.forms.export.complete','success',null,gen_random_uuid(),v_job.institution_id,'form_file_job',v_job.id);
+  if v_worker.lease_expires_at<=clock_timestamp() or v_job.expires_at<=clock_timestamp() then
+    raise serialization_failure using message='forms_xlsx_lease_unavailable';
+  end if;
+  return jsonb_build_object('job_id',v_job.id,'asset_id',p_asset_id,'state','succeeded',
+    'byte_length',p_actual_byte_length,'checksum_sha256',p_actual_checksum_sha256,'expires_at',v_job.expires_at);
+end;
+$$;
+-- Reconciliation reports persisted outcome to the service even if the requester
+-- has since logged out. It grants neither a read ticket nor permission to delete.
+create function app_private.form_worker_reconcile_xlsx_r2_v1(p_job_id uuid,p_file_job_id uuid,p_asset_id uuid)
+returns jsonb language plpgsql volatile security definer set search_path='' as $$
+declare v_job public.form_file_jobs; v_asset public.media_assets; v_state text:='unavailable';
+begin
+  if current_setting('transaction_isolation')<>'read committed' or p_job_id is null or p_file_job_id is null or p_asset_id is null then
+    raise invalid_parameter_value using message='forms_xlsx_worker_input_invalid';
+  end if;
+  if not exists(select 1 from app_private.form_worker_jobs where id=p_job_id
+    and aggregate_id=p_file_job_id and job_kind='export_xlsx_r2_v1') then
+    return jsonb_build_object('state','unavailable');
+  end if;
+  select * into v_job from public.form_file_jobs where id=p_file_job_id and artifact_provider='r2' for update;
+  select * into v_asset from public.media_assets where id=p_asset_id and export_file_job_id=p_file_job_id
+    and catalog_kind='form-xlsx' for share;
+  if v_job.id is not null and v_asset.id is not null then
+    if v_job.state='succeeded' and v_job.artifact_media_asset_id=v_asset.id and v_asset.status='ready' then
+      v_state:='committed';
+    elsif v_asset.status in ('quarantined','deleted') or v_job.state='expired' then
+      v_state:='abandoned';
+    elsif v_job.artifact_media_asset_id=v_asset.id and v_asset.status='pending' then
+      v_state:='pending';
+    end if;
+  end if;
+  return jsonb_build_object('state',v_state,'job_id',p_file_job_id,'asset_id',p_asset_id,
+    'byte_length',case when v_state='committed' then v_asset.byte_size else null end,
+    'checksum_sha256',case when v_state='committed' then v_asset.checksum_sha256 else null end);
+end;
+$$;
+create function public.form_worker_complete_xlsx_r2_v1(p_job_id uuid,p_worker_id text,p_file_job_id uuid,p_asset_id uuid,
+  p_actual_byte_length bigint,p_actual_checksum_sha256 text)
+returns jsonb language sql volatile security definer set search_path='' as $$
+  select app_private.form_worker_complete_xlsx_r2_v1($1,$2,$3,$4,$5,$6);
+$$;
+create function public.form_worker_reconcile_xlsx_r2_v1(p_job_id uuid,p_file_job_id uuid,p_asset_id uuid)
+returns jsonb language sql volatile security definer set search_path='' as $$
+  select app_private.form_worker_reconcile_xlsx_r2_v1($1,$2,$3);
+$$;
+revoke all on function app_private.form_worker_complete_xlsx_r2_v1(uuid,text,uuid,uuid,bigint,text),
+  app_private.form_worker_reconcile_xlsx_r2_v1(uuid,uuid,uuid) from public,anon,authenticated,service_role;
+revoke all on function public.form_worker_complete_xlsx_r2_v1(uuid,text,uuid,uuid,bigint,text),
+  public.form_worker_reconcile_xlsx_r2_v1(uuid,uuid,uuid) from public,anon,authenticated;
+grant execute on function public.form_worker_complete_xlsx_r2_v1(uuid,text,uuid,uuid,bigint,text),
+  public.form_worker_reconcile_xlsx_r2_v1(uuid,uuid,uuid) to service_role;
+-- WIP: worker failure, physical cleanup and R2 writer integration
 -- follow in this reserved candidate before a complete packet is proposed.
 commit;
