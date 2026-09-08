@@ -3,6 +3,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_superadmin/features/chat/domain/chat_repository.dart';
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_attachment_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -14,6 +15,39 @@ void main() {
     byteSize: 100,
     downloadUrl: Uri.parse('https://legacy.invalid/never-follow'),
   );
+  testWidgets('image route honors reduced motion and keyboard open close focus', (tester) async {
+    final reader = _Reader();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: MediaQuery(
+          data: const MediaQueryData(disableAnimations: true),
+          child: Scaffold(
+            body: SuperadminChatAttachmentTile(
+              attachment: canonicalImage,
+              state: SuperadminChatAttachmentState.ready,
+              mediaReader: reader,
+              mediaSession: MediaSession(),
+            ),
+          ),
+        ),
+      ),
+    );
+    final button = tester.widget<TextButton>(find.widgetWithText(TextButton, 'Abrir imagem'));
+    button.focusNode!.requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    final route = ModalRoute.of(tester.element(find.byType(Dialog)))!;
+    expect(route.transitionDuration, Duration.zero);
+    expect(route.reverseTransitionDuration, Duration.zero);
+    expect(reader.requests, hasLength(1));
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+    expect(find.byType(Dialog), findsNothing);
+    expect(button.focusNode!.hasFocus, isTrue);
+  });
+
   testWidgets('image dialog captures local theme barrier and closed focus traversal', (
     tester,
   ) async {

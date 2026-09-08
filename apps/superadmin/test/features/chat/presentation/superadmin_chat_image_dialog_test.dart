@@ -13,6 +13,74 @@ const _asset = '11111111-1111-4111-8111-111111111111';
 const _otherAsset = '22222222-2222-4222-8222-222222222222';
 
 void main() {
+  for (final dark in [false, true]) {
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      for (final state in ['loading', 'processing', 'expired', 'unavailable', 'available']) {
+        testWidgets('image state $state width=$width dark=$dark text200', (tester) async {
+          tester.view.devicePixelRatio = 1;
+          tester.view.physicalSize = Size(width, 900);
+          addTearDown(tester.view.reset);
+          if (state == 'available') {
+            final decoded = await tester.runAsync(() async {
+              final result = Completer<ui.Image>();
+              ui.decodeImageFromPixels(
+                Uint8List.fromList(List.filled(64, 255)),
+                4,
+                4,
+                ui.PixelFormat.rgba8888,
+                result.complete,
+              );
+              return result.future;
+            });
+            PaintingBinding.instance.imageCache.putIfAbsent(
+              const NetworkImage(
+                'https://media.invalid/opaque-ticket',
+                headers: <String, String>{},
+              ),
+              () => OneFrameImageStreamCompleter(Future.value(ImageInfo(image: decoded!))),
+            );
+          }
+          final reader = _Reader();
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: dark ? CoeloTheme.dark : CoeloTheme.light,
+              builder: (context, child) => MediaQuery(
+                data: MediaQuery.of(
+                  context,
+                ).copyWith(textScaler: TextScaler.linear(2), disableAnimations: true),
+                child: child!,
+              ),
+              home: Scaffold(
+                body: SuperadminChatImageDialog(
+                  assetId: _asset,
+                  reader: reader,
+                  session: MediaSession(),
+                ),
+              ),
+            ),
+          );
+          await tester.pump();
+          if (state != 'loading') reader.pending.single.complete(_result(state));
+          await tester.pumpAndSettle();
+          expect(
+            find.byKey(Key('chat-image-${state == 'available' ? 'preview' : state}')),
+            findsOneWidget,
+          );
+          if (state == 'available') {
+            expect(tester.widget<RawImage>(find.byType(RawImage)).image, isNotNull);
+          }
+          expect(tester.takeException(), isNull);
+          final close = find.widgetWithText(OutlinedButton, 'Fechar');
+          expect(close, findsOneWidget);
+          expect(tester.getSize(close).height, greaterThanOrEqualTo(48));
+          await tester.pumpWidget(const SizedBox.shrink());
+          if (state == 'loading') reader.pending.single.complete(_result('unavailable'));
+          await tester.pump();
+        });
+      }
+    }
+  }
+
   testWidgets('decoded Flutter cache entry is evicted when its session is invalidated', (
     tester,
   ) async {
