@@ -192,9 +192,9 @@ function sameScope(value: unknown, expected: MultipartAttemptScope): boolean {
     );
 }
 
-function checkedSnapshot(
+export function validateMultipartSnapshot(
   value: unknown,
-  input: AdaptiveArtifactInput,
+  input: Pick<AdaptiveArtifactInput, "bucket" | "partSizeBytes">,
   scope?: MultipartAttemptScope,
 ): MultipartSnapshot | null {
   if (value === null) return null;
@@ -300,7 +300,7 @@ export async function uploadAdaptiveArtifact(
       name: "form_worker_multipart_snapshot",
       params: persistenceParams,
     });
-  const snapshot = checkedSnapshot(stored, input, scope);
+  const snapshot = validateMultipartSnapshot(stored, input, scope);
 
   let multipart = snapshot !== null;
   let uploadId = snapshot?.upload_id ?? "";
@@ -515,7 +515,7 @@ export async function uploadAdaptiveArtifact(
   } catch (error) {
     if (!persistence || !scope) throw error;
     try {
-      const winner = checkedSnapshot(
+      const winner = validateMultipartSnapshot(
         await persistence.reconcile(scope, uploadId, digest),
         input,
         scope,
