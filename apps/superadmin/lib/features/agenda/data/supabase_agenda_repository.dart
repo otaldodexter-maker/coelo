@@ -128,15 +128,21 @@ final class SupabaseAgendaRepository extends AgendaRepository {
   @override
   Future<void> loadRequests() => _load('requests', () async {
     final values = await Future.wait<Object?>([
-      _client.rpc<Object?>(
-        'superadmin_agenda_requests',
-        params: const {'p_kind': 'publication', 'p_status': null, 'p_limit': 50, 'p_offset': 0},
+      _captureRequestRead(
+        () => _client.rpc<Object?>(
+          'superadmin_agenda_requests',
+          params: const {'p_kind': 'publication', 'p_status': null, 'p_limit': 50, 'p_offset': 0},
+        ),
       ),
-      _client.rpc<Object?>(
-        'superadmin_agenda_requests',
-        params: const {'p_kind': 'guardian', 'p_status': null, 'p_limit': 50, 'p_offset': 0},
+      _captureRequestRead(
+        () => _client.rpc<Object?>(
+          'superadmin_agenda_requests',
+          params: const {'p_kind': 'guardian', 'p_status': null, 'p_limit': 50, 'p_offset': 0},
+        ),
       ),
-    ]);
+    ], eagerError: true);
+    final failures = values.whereType<Exception>();
+    if (failures.isNotEmpty) throw failures.first;
     final publicationRequests = _requiredList(
       values[0],
     ).map(_publicationRequest).toList(growable: false);
@@ -146,6 +152,17 @@ final class SupabaseAgendaRepository extends AgendaRepository {
       _requests = requests;
     };
   });
+
+  Future<Object?> _captureRequestRead(Future<Object?> Function() operation) async {
+    try {
+      return await operation();
+    } on PostgrestException catch (error) {
+      if (_mutationError(error) == AgendaMutationResult.notAuthorized) rethrow;
+      return error;
+    } on Exception catch (error) {
+      return error;
+    }
+  }
 
   @override
   Future<AgendaMutationResult> requestPublication(String itemId, {required String requestedBy}) =>
@@ -406,6 +423,11 @@ final class SupabaseAgendaRepository extends AgendaRepository {
     } on FormatException {
       if (_isCurrentRead(channel, version, epoch)) {
         _errorMessage = 'A Agenda retornou dados inválidos.';
+        _readStates[channel] = AgendaReadStatus.failure;
+      }
+    } on Exception {
+      if (_isCurrentRead(channel, version, epoch)) {
+        _errorMessage = 'Não foi possível carregar a Agenda.';
         _readStates[channel] = AgendaReadStatus.failure;
       }
     } finally {

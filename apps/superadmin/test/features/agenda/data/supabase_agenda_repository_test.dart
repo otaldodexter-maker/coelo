@@ -10,6 +10,86 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('falha de rede sem negação encerra solicitações em erro controlado', () async {
+    final client = _client((request) async {
+      final kind = (jsonDecode(request.body) as Map<String, dynamic>)['p_kind'];
+      if (kind == 'publication') throw ClientException('synthetic network failure');
+      return _json(request, <Object?>[]);
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client);
+    await repository.loadRequests();
+    expect(repository.requestsRead, AgendaReadStatus.failure);
+    expect(repository.isLoading, isFalse);
+    expect(repository.errorMessage, 'Não foi possível carregar a Agenda.');
+  });
+  for (final deniedKind in ['publication', 'guardian']) {
+    for (final siblingFailure in ['pending', 'postgrest', 'transport']) {
+      final siblingFailsFirst = siblingFailure != 'pending';
+      test(
+        'negação de solicitações prevalece sem aguardar sibling: $deniedKind $siblingFailure',
+        () async {
+          final responses = {
+            'publication': Completer<Response>(),
+            'guardian': Completer<Response>(),
+          };
+          final captured = <String, Request>{};
+          final client = _client((request) async {
+            if (request.url.path.endsWith('superadmin_agenda_list')) {
+              return _json(request, {
+                'items': [_eventJson(id: _eventId, revision: 1)],
+              });
+            }
+            final kind = (jsonDecode(request.body) as Map<String, dynamic>)['p_kind'] as String;
+            captured[kind] = request;
+            return responses[kind]!.future;
+          });
+          addTearDown(client.dispose);
+          final repository = SupabaseAgendaRepository(client);
+          await repository.loadEvents(from: DateTime.utc(2026, 9), to: DateTime.utc(2026, 10));
+          var finished = false;
+          Object? escapedError;
+          final loading = repository.loadRequests().then(
+            (_) => finished = true,
+            onError: (Object error) {
+              escapedError = error;
+              return false;
+            },
+          );
+          await Future<void>.delayed(Duration.zero);
+          final sibling = deniedKind == 'publication' ? 'guardian' : 'publication';
+          if (siblingFailure == 'transport') {
+            responses[sibling]!.completeError(ClientException('synthetic network failure'));
+            await Future<void>.delayed(Duration.zero);
+          } else if (siblingFailsFirst) {
+            responses[sibling]!.complete(
+              Response(
+                '{"code":"XX000","message":"untrusted"}',
+                400,
+                headers: {'content-type': 'application/json'},
+                request: captured[sibling],
+              ),
+            );
+            await Future<void>.delayed(Duration.zero);
+          }
+          responses[deniedKind]!.complete(_denied(captured[deniedKind]!));
+          for (var tick = 0; tick < 10 && !finished; tick++) {
+            await Future<void>.delayed(Duration.zero);
+          }
+          expect(repository.requestsRead, AgendaReadStatus.unauthorized);
+          expect(repository.items, isEmpty);
+          expect(finished, isTrue);
+          expect(escapedError, isNull);
+          if (!siblingFailsFirst) {
+            responses[sibling]!.complete(_json(captured[sibling]!, <Object?>[]));
+          }
+          await loading;
+          await Future<void>.delayed(Duration.zero);
+          expect(repository.requestsRead, AgendaReadStatus.unauthorized);
+        },
+      );
+    }
+  }
   Map<String, Object?> contextRow(
     String id,
     String level,
