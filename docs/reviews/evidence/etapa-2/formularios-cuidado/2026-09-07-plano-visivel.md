@@ -47,6 +47,7 @@ indicador. O arquivo é aberto no painel direito como alternativa disponível.
 ## Trabalho ativo e BD
 
 - Root: F-READ01 SQL/pgTAP nominal preparado e revisado estaticamente em `21792181`; nenhum SQL executado. Imagens no editor e visibilidade condicional corrigidas localmente: 99/99, analyzer 4 arquivos, review aprovado; goldens continuam abertos. Evidência `2026-09-07-image-config-and-conditional-response.md`.
+- Editor: preservação de opções/condições carregadas corrigida; 106/106 na regressão ampliada, analyzer 2 arquivos e review aprovados. Evidência `2026-09-07-editor-branch-preservation.md`; não conclui criação visual de ramos nem backend.
 - forms_next_slice: precondições e negativas SAI/SQL, análise read-only concluída.
 - review_export_policy: reader aprovado após correção de offset; sem backend.
 - medication_roundtrip: revisão UI/composição read-only, sem achado bloqueante.
