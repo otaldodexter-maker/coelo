@@ -11,9 +11,7 @@ import 'location_read_fixtures.dart';
 
 void main() {
   setUpAll(_fonts);
-  testWidgets('shared status text200 accessible candidate', (
-    tester,
-  ) async {
+  testWidgets('shared status text200 accessible candidate', (tester) async {
     await _size(tester, 375);
     final reader = ControlledLocationReader();
     await tester.pumpWidget(
