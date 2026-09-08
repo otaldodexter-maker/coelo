@@ -1,7 +1,7 @@
 ---
 title: "C07 — dossiê de decisão: Publicar no Agora, e por que os 13 goldens deixam de ser decisão do Owner"
 source: "referência visual aprovada pelo Owner em 2026-08-31, lida diretamente em C:/Users/adrie/.codex/generated_images/01a05881-1dac-78d0-afb2-f30c33149c1c/exec-59c8c015-634c-4451-8390-f8652f75190e.png; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md item 31, linhas 328-343, status approved-design; specs/036-principal-now-publication-mvp.md; specs/050-principal-ui-ux-closure.md; código em 4af42925; pedido operacional da C06 de 2026-09-08T18:44-03:00"
-status: "evidence-decision-dossier"
+status: "evidence-decision-dossier;corrigido-1940"
 generated_at: "2026-09-08T19:05:00-03:00"
 timezone: "America/Sao_Paulo"
 ---
@@ -76,12 +76,17 @@ O dono é a C05, e a C00 já autorizou correção no consumidor
 "recuperar o recibo da instrução Owner já relatada e a referência exata do publicador": **a
 referência exata é a imagem acima, e o recibo escrito é o item 31 da spec de 2026-08-28.**
 
-## Achado colateral: Acontece e Momentos também divergem
+## Achado colateral sobre Acontece e Momentos — hipótese, não veredito
 
-As referências aprovadas de 2026-08-31 para **Publicar em Momentos**
-(`exec-c0319a7b-45bd-4665-ba18-f5b436e41b6b.png`, 13:24) e para Publicar no Acontece têm a mesma
-anatomia, também **sem trilho de etapas**. Mas o código de hoje ainda passa `navigation:` ao
-`PrincipalPublicationFrame` nos dois:
+**Corrigido em 2026-09-08T19:40, por orientação da C00:** o item 31 e a imagem resolvem **a anatomia
+específica do Agora**. Acontece e Momentos **não** mudam por associação; cada uma exige abrir as
+próprias fontes aprovadas, o que eu **não** fiz. A referência de **Publicar em Momentos**
+(`exec-c0319a7b-45bd-4665-ba18-f5b436e41b6b.png`, 13:24) foi lida por subagente e não mostra trilho;
+a de Publicar no Acontece eu **não** verifiquei, e a redação anterior desta seção afirmava as duas.
+Retiro a afirmação sobre Acontece.
+
+Fica de pé apenas o fato de código: hoje ainda se passa `navigation:` ao `PrincipalPublicationFrame`
+nos dois:
 
 - `principal_happens_publication_page.dart:192`
 - `principal_moments_publication_page.dart:192`
@@ -89,6 +94,13 @@ anatomia, também **sem trilho de etapas**. Mas o código de hoje ainda passa `n
 Ou seja, o trilho continua nas duas telas que a referência aprovada não mostra com trilho. Não
 investiguei os goldens dessas duas famílias, que passam hoje; registro o achado para a C00 decidir se
 entra no mesmo lote de correção.
+
+**Distinção que a C00 exigiu e que eu não tinha feito:** "etapas" e "trilho visual de etapas" não
+são a mesma coisa. As projeções que mandam preservar etapas podem estar falando de etapas
+funcionais, com suas validações e sua ordem, e não do trilho lateral. Uma correção que remova o
+trilho **não** pode remover função nem validação. Onde eu escrevi que essas fontes contradizem as
+referências aprovadas, o que existe de fato é ambiguidade de redação a resolver na fonte, não
+necessariamente contradição.
 
 ## Conflitos documentais que a C00 precisa resolver na fonte
 
@@ -115,7 +127,25 @@ A leitura que proponho, e que a C00 decide: as palavras "etapas" e "rail" nessas
 descrevem a implementação de `fa293a6d`, não um anexo aprovado. Prosa escrita depois do código não
 vira aprovação. Sugiro registrar em `docs/open-questions.md`.
 
-## Governança: referência aprovada fora do controle de versão
+## Governança: resolvido pela C00, com uma ressalva de preservação
+
+**Atualização 2026-09-08T19:40.** A C00 abriu a imagem, leu o item 31 e **versionou uma cópia** em
+`docs/reviews/evidence/etapa-2/principal-visual/2026-08-31-publicar-agora-approved.png`, com a spec
+036 e a fonte de aprovação apontando para ela, e os conflitos documentais movidos para
+`docs/open-questions.md`. Conferi duas coisas por conta própria:
+
+1. **A cópia é byte a byte idêntica ao original.** SHA256 dos dois:
+   `e096c855f13449f2a3d4e0b4a2cedb323af30c4cac3be7404755aa0d66ddc315`. É a mesma imagem, não uma
+   reexportação.
+2. **Ressalva de preservação:** às 19:38 o arquivo ainda estava **não rastreado** na worktree da C00
+   (`git status` devolve `??`) e não aparecia em `origin/dev` nem na branch de integração. Ou seja,
+   por enquanto ele vive num único diretório local — exatamente a fragilidade que a versionagem
+   pretende encerrar. Registro sem cobrança: até o commit e o push, o risco continua de pé, e o
+   protocolo prevê limpeza de worktree no fechamento.
+
+O texto original desta seção, preservado:
+
+### Referência aprovada fora do controle de versão
 
 O ponto que mais me preocupa, e que extrapola este caso: **a referência visual que decide o desenho
 de três telas vive fora do repositório**, numa pasta de imagens geradas na máquina do Owner. Não

@@ -48,10 +48,20 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('composer body on a wide desktop reaches the large breakpoint', (tester) async {
+  // Diagnóstico, não contrato. A decisão C00 de 2026-09-08T19:34 é explícita:
+  // NÃO exigir corpo >= large.minWidth como condição, porque dá para resolver
+  // pelo viewport sem ampliar o frame. Este caso portanto NÃO afirma um limiar:
+  // ele só registra, quando o contrato acima falha, POR QUE o ramo amplo não é
+  // alcançado — a comparação do `LayoutBuilder` usa `large.minWidth` enquanto o
+  // corpo é limitado por `bodyMaxWidth`. Quem corrige escolhe o caminho.
+  testWidgets('the wide layout decision is reachable at 1440', (tester) async {
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
+    await pumpAt(tester, narrowDesktop);
+    final narrowStageWidth = tester.getSize(stage).width;
+
     await pumpAt(tester, wideDesktop);
+    final wideStageWidth = tester.getSize(stage).width;
     final frameBox = find.descendant(
       of: find.byType(PrincipalPublicationFrame),
       matching: find.byWidgetPredicate(
@@ -62,12 +72,15 @@ void main() {
     final bodyWidth = tester.getSize(zones).width;
 
     expect(
-      bodyWidth,
-      greaterThanOrEqualTo(CoeloBreakpoints.large.minWidth),
+      wideStageWidth == narrowStageWidth,
+      isFalse,
       reason:
-          'Corpo do compositor mede $bodyWidth (ConstrainedBox do frame: $frameBoxWidth) '
-          'em ${wideDesktop.width.toInt()}px; large.minWidth = '
-          '${CoeloBreakpoints.large.minWidth}.',
+          'Em ${wideDesktop.width.toInt()}px o palco mede $wideStageWidth, igual aos '
+          '$narrowStageWidth de ${narrowDesktop.width.toInt()}px, ou seja o ramo amplo '
+          'não foi alcançado. Diagnóstico da causa, sem prescrever a correção: o corpo '
+          'do compositor vê $bodyWidth (ConstrainedBox do frame: $frameBoxWidth) enquanto '
+          'a decisão compara com large.minWidth = ${CoeloBreakpoints.large.minWidth}. '
+          'Resolver pelo viewport ou pelo limiar é escolha de quem corrige.',
     );
     expect(tester.takeException(), isNull);
   });
