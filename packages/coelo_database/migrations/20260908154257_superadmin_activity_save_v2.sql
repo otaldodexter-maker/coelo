@@ -52,6 +52,18 @@ declare
   receipt app_private.superadmin_internal_activity_save_receipts%rowtype;
   current_activity_id uuid := p_activity_id;
   current_version bigint;
+  groups_to_detach uuid[] := '{}'::uuid[];
+  selected_to_all uuid[] := '{}'::uuid[];
+  bridge_group_ids uuid[] := '{}'::uuid[];
+  bridge_group_participation jsonb := '{}'::jsonb;
+  prune_participants jsonb := '[]'::jsonb;
+  prune_professionals jsonb := '[]'::jsonb;
+  prune_group_settings jsonb := '[]'::jsonb;
+  prune_professional_actions jsonb := '[]'::jsonb;
+  needs_participant_prune boolean := false;
+  needs_professional_prune boolean := false;
+  needs_permission_prune boolean := false;
+  needs_group_bridge boolean := false;
   required_capability text := case
     when p_activity_id is null then 'activities.create'
     else 'activities.manage'
@@ -112,6 +124,21 @@ begin
     exception when others then
       raise invalid_parameter_value using detail = 'ACTIVITY_INVALID_INPUT';
     end;
+
+    if (
+      select coalesce(array_agg(key order by key), '{}'::text[])
+      from jsonb_object_keys(p_payload->'group_participation') key
+    ) <> (
+      select coalesce(array_agg(group_id::text order by group_id::text), '{}'::text[])
+      from unnest(group_ids) group_id
+    ) or exists(
+      select 1
+      from jsonb_each_text(p_payload->'group_participation') participation
+      where participation.value is null
+        or participation.value not in ('all', 'selected')
+    ) then
+      raise invalid_parameter_value using detail = 'ACTIVITY_INVALID_INPUT';
+    end if;
 
     definition := p_payload->'definition';
     if p_activity_id is null then
@@ -211,6 +238,238 @@ begin
     current_version := (result#>>'{data,management_version}')::bigint;
 
     if p_activity_id is not null then
+      select coalesce(array_agg(link.group_id order by link.group_id), '{}'::uuid[])
+      into groups_to_detach
+      from public.activity_group_links link
+      where link.activity_id = current_activity_id
+        and link.status = 'active'
+        and (
+          not (link.group_id = any(group_ids))
+          or not (link.unit_id = any(unit_ids))
+        );
+
+      select coalesce(array_agg(link.group_id order by link.group_id), '{}'::uuid[])
+      into selected_to_all
+      from public.activity_group_links link
+      where link.activity_id = current_activity_id
+        and link.status = 'active'
+        and link.group_id = any(group_ids)
+        and link.unit_id = any(unit_ids)
+        and link.participation_mode = 'selected'
+        and (p_payload->'group_participation')->>(link.group_id::text) = 'all';
+
+      select exists(
+        select 1
+        from public.activity_group_participants participant
+        join public.activity_group_links link
+          on link.id = participant.activity_group_link_id
+        where link.activity_id = current_activity_id
+          and participant.status = 'active'
+          and (
+            link.group_id = any(groups_to_detach)
+            or link.group_id = any(selected_to_all)
+          )
+      ) into needs_participant_prune;
+
+      select exists(
+        select 1
+        from public.activity_group_assignments assignment
+        join public.activity_group_links link
+          on link.id = assignment.activity_group_link_id
+        where link.activity_id = current_activity_id
+          and link.group_id = any(groups_to_detach)
+          and assignment.assignment_role = 'instructor'
+          and assignment.status = 'active'
+          and assignment.revoked_at is null
+      ) into needs_professional_prune;
+
+      select exists(
+        select 1
+        from public.activity_group_capability_settings setting
+        join public.activity_group_links link
+          on link.id = setting.activity_group_link_id
+        where link.activity_id = current_activity_id
+          and link.group_id = any(groups_to_detach)
+      ) into needs_permission_prune;
+
+      select exists(
+        select 1
+        from public.activity_group_links link
+        where link.activity_id = current_activity_id
+          and link.status = 'active'
+          and not (link.unit_id = any(unit_ids))
+      ) into needs_group_bridge;
+
+      if needs_participant_prune then
+        select coalesce(
+          jsonb_agg(
+            element.value
+            order by element.value->>'group_id', element.value->>'child_group_link_id'
+          ),
+          '[]'::jsonb
+        )
+        into prune_participants
+        from jsonb_array_elements(p_payload->'participants') element(value)
+        where element.value->'belongs' = 'true'::jsonb
+          and exists(
+            select 1
+            from public.activity_group_links link
+            where link.activity_id = current_activity_id
+              and link.status = 'active'
+              and link.group_id::text = element.value->>'group_id'
+              and link.group_id = any(group_ids)
+              and link.unit_id = any(unit_ids)
+              and link.participation_mode = 'selected'
+              and (p_payload->'group_participation')->>(link.group_id::text) = 'selected'
+          );
+
+        required_capability := 'activities.assign_people';
+        result := public.superadmin_activity_set_participants_v2(
+          app_private.activity_request_uuid('activity-save-participants-prune', p_request_id),
+          current_activity_id,current_version,prune_participants
+        );
+        if result#>>'{ok}' is distinct from 'true' then
+          raise exception using detail = coalesce(result#>>'{error,code}', 'SAI_INTERNAL_ERROR');
+        end if;
+        current_version := (result#>>'{data,management_version}')::bigint;
+      end if;
+
+      if needs_professional_prune then
+        select coalesce(
+          jsonb_agg(
+            element.value
+            order by element.value->>'role', element.value->>'group_id',
+              element.value->>'membership_id'
+          ),
+          '[]'::jsonb
+        )
+        into prune_professionals
+        from jsonb_array_elements(p_payload->'professional_assignments') element(value)
+        where element.value->>'role' = 'activity_admin'
+          or (
+            element.value->>'role' = 'instructor'
+            and exists(
+              select 1
+              from public.activity_group_links link
+              where link.activity_id = current_activity_id
+                and link.status = 'active'
+                and link.group_id::text = element.value->>'group_id'
+                and link.group_id = any(group_ids)
+                and link.unit_id = any(unit_ids)
+            )
+          );
+
+        required_capability := 'activities.assign_people';
+        result := public.superadmin_activity_set_professionals_v2(
+          app_private.activity_request_uuid('activity-save-professionals-prune', p_request_id),
+          current_activity_id,current_version,prune_professionals
+        );
+        if result#>>'{ok}' is distinct from 'true' then
+          raise exception using detail = coalesce(result#>>'{error,code}', 'SAI_INTERNAL_ERROR');
+        end if;
+        current_version := (result#>>'{data,management_version}')::bigint;
+      end if;
+
+      if needs_permission_prune then
+        select coalesce(
+          jsonb_agg(element.value order by element.value->>'group_id'),
+          '[]'::jsonb
+        )
+        into prune_group_settings
+        from jsonb_array_elements(p_payload->'group_capability_settings') element(value)
+        where exists(
+          select 1
+          from public.activity_group_links link
+          where link.activity_id = current_activity_id
+            and link.status = 'active'
+            and link.group_id::text = element.value->>'group_id'
+            and link.group_id = any(group_ids)
+            and link.unit_id = any(unit_ids)
+        );
+
+        select coalesce(
+          jsonb_agg(
+            element.value
+            order by element.value->>'role', element.value->>'group_id',
+              element.value->>'membership_id'
+          ),
+          '[]'::jsonb
+        )
+        into prune_professional_actions
+        from jsonb_array_elements(p_payload->'professional_capability_actions') element(value)
+        where (
+          element.value->>'role' = 'activity_admin'
+          and exists(
+            select 1
+            from public.activity_admin_assignments assignment
+            where assignment.activity_id = current_activity_id
+              and assignment.membership_id::text = element.value->>'membership_id'
+              and assignment.status = 'active'
+              and assignment.revoked_at is null
+          )
+        ) or (
+          element.value->>'role' = 'instructor'
+          and exists(
+            select 1
+            from public.activity_group_assignments assignment
+            join public.activity_group_links link
+              on link.id = assignment.activity_group_link_id
+            where link.activity_id = current_activity_id
+              and link.group_id::text = element.value->>'group_id'
+              and assignment.membership_id::text = element.value->>'membership_id'
+              and assignment.assignment_role = 'instructor'
+              and assignment.status = 'active'
+              and assignment.revoked_at is null
+              and link.status = 'active'
+          )
+        );
+
+        required_capability := 'activities.manage_permissions';
+        result := public.superadmin_activity_set_permissions_v2(
+          app_private.activity_request_uuid('activity-save-permissions-prune', p_request_id),
+          current_activity_id,current_version,p_payload->'capability_policies',
+          prune_group_settings,prune_professional_actions
+        );
+        if result#>>'{ok}' is distinct from 'true' then
+          raise exception using detail = coalesce(result#>>'{error,code}', 'SAI_INTERNAL_ERROR');
+        end if;
+        current_version := (result#>>'{data,management_version}')::bigint;
+      end if;
+
+      if needs_group_bridge then
+        select coalesce(array_agg(link.group_id order by link.group_id), '{}'::uuid[])
+        into bridge_group_ids
+        from public.activity_group_links link
+        where link.activity_id = current_activity_id
+          and link.status = 'active'
+          and link.group_id = any(group_ids)
+          and link.unit_id = any(unit_ids);
+
+        select coalesce(
+          jsonb_object_agg(
+            link.group_id::text,
+            (p_payload->'group_participation')->>(link.group_id::text)
+            order by link.group_id::text
+          ),
+          '{}'::jsonb
+        )
+        into bridge_group_participation
+        from public.activity_group_links link
+        where link.activity_id = current_activity_id
+          and link.status = 'active'
+          and link.group_id = any(bridge_group_ids);
+
+        required_capability := 'activities.link_groups';
+        result := public.superadmin_activity_set_groups_v2(
+          app_private.activity_request_uuid('activity-save-groups-prune', p_request_id),
+          current_activity_id,current_version,bridge_group_ids,bridge_group_participation
+        );
+        if result#>>'{ok}' is distinct from 'true' then
+          raise exception using detail = coalesce(result#>>'{error,code}', 'SAI_INTERNAL_ERROR');
+        end if;
+        current_version := (result#>>'{data,management_version}')::bigint;
+      end if;
+
       required_capability := 'activities.link_units';
       result := public.superadmin_activity_set_units_v2(
         app_private.activity_request_uuid('activity-save-units', p_request_id),
