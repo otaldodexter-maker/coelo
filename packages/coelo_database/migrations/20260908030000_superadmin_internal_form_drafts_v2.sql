@@ -1555,6 +1555,7 @@ create function app_private.superadmin_forms_editor_v2(p_form_id uuid)
 returns jsonb language plpgsql volatile security definer set search_path='' as $function$
 declare
   ctx app_private.superadmin_internal_context;
+  initial_ctx app_private.superadmin_internal_context;
   f public.forms;
   correlation uuid:=pg_catalog.gen_random_uuid();
   permission text:='forms.manage';
@@ -1575,9 +1576,26 @@ begin
       or (ctx.scope_kind='institution' and ctx.scope_institution_id is null) then
       raise insufficient_privilege using detail='SAI_INTERNAL_CONTEXT_DENIED';
     end if;
+    initial_ctx:=ctx;
+    if pg_catalog.current_setting('transaction_isolation')<>'read committed' then
+      raise invalid_parameter_value using detail='SAI_INVALID_ARGUMENT';
+    end if;
     if p_form_id is null then raise invalid_parameter_value using detail='SAI_INVALID_ARGUMENT'; end if;
     select * into f from public.forms where id=p_form_id
       and (ctx.scope_kind='platform' or institution_id=ctx.scope_institution_id) for share;
+    perform 1 from public.institutions i where i.id=f.institution_id and i.deleted_at is null for share;
+    if not found then raise insufficient_privilege using detail='SAI_PERMISSION_DENIED'; end if;
+    -- A new SPI statement in this VOLATILE function gets a fresh READ COMMITTED
+    -- snapshot after all explicit waits. Keep the originally selected capability.
+    select * into strict ctx from app_private.require_superadmin_internal_context(permission);
+    if row(ctx.internal_identity_id,ctx.internal_auth_link_id,ctx.internal_membership_id,ctx.auth_user_id,ctx.session_id,
+           ctx.scope_kind,ctx.scope_institution_id)
+       is distinct from row(initial_ctx.internal_identity_id,initial_ctx.internal_auth_link_id,initial_ctx.internal_membership_id,
+           initial_ctx.auth_user_id,initial_ctx.session_id,initial_ctx.scope_kind,initial_ctx.scope_institution_id)
+      or ctx.aal is null or ctx.aal not in ('aal1','aal2') or ctx.scope_kind is null or ctx.scope_kind not in ('platform','institution')
+      or (ctx.scope_kind='institution' and (ctx.scope_institution_id is null or f.institution_id is distinct from ctx.scope_institution_id)) then
+      raise insufficient_privilege using detail='SAI_INTERNAL_CONTEXT_DENIED';
+    end if;
     if f.id is null or f.created_by_internal_identity_id is null or f.status<>'draft'
       or f.first_published_at is not null or f.published_version_id is not null
       or exists(select 1 from public.form_versions v where v.form_id=f.id and (v.state<>'working' or v.published_at is not null))
@@ -1607,6 +1625,7 @@ create function app_private.superadmin_forms_save_draft_v2(p_request_id uuid,p_e
 returns jsonb language plpgsql volatile security definer set search_path='' as $function$
 declare
   ctx app_private.superadmin_internal_context;
+  initial_ctx app_private.superadmin_internal_context;
   f public.forms;
   receipt app_private.superadmin_internal_form_draft_receipts;
   correlation uuid:=pg_catalog.gen_random_uuid();
@@ -1623,17 +1642,31 @@ begin
       or (ctx.scope_kind='institution' and ctx.scope_institution_id is null) then
       raise insufficient_privilege using detail='SAI_INTERNAL_CONTEXT_DENIED';
     end if;
+    initial_ctx:=ctx;
+    if pg_catalog.current_setting('transaction_isolation')<>'read committed' then
+      raise invalid_parameter_value using detail='SAI_INVALID_ARGUMENT';
+    end if;
     if p_request_id is null or p_expected_version is null or p_expected_version<0 then
       raise invalid_parameter_value using detail='SAI_INVALID_ARGUMENT';
     end if;
     perform app_private.superadmin_form_validate_draft_payload_v2(p_payload);
     target_institution:=(p_payload->>'institution_id')::uuid;
     if (ctx.scope_kind='institution' and target_institution is distinct from ctx.scope_institution_id)
-      or not exists(select 1 from public.institutions i where i.id=target_institution) then
+      or not exists(select 1 from public.institutions i where i.id=target_institution and i.deleted_at is null) then
       raise insufficient_privilege using detail='SAI_PERMISSION_DENIED';
     end if;
     request_hash:=extensions.digest(pg_catalog.convert_to(p_expected_version::text||':'||p_payload::text,'UTF8'),'sha256');
     perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(p_request_id::text,6404));
+    -- The request lock can wait before even the private receipt lookup.
+    select * into strict ctx from app_private.require_superadmin_internal_context('forms.manage');
+    if row(ctx.internal_identity_id,ctx.internal_auth_link_id,ctx.internal_membership_id,ctx.auth_user_id,ctx.session_id,
+           ctx.scope_kind,ctx.scope_institution_id)
+       is distinct from row(initial_ctx.internal_identity_id,initial_ctx.internal_auth_link_id,initial_ctx.internal_membership_id,
+           initial_ctx.auth_user_id,initial_ctx.session_id,initial_ctx.scope_kind,initial_ctx.scope_institution_id)
+      or ctx.aal is null or ctx.aal not in ('aal1','aal2') or ctx.scope_kind is null or ctx.scope_kind not in ('platform','institution')
+      or (ctx.scope_kind='institution' and (ctx.scope_institution_id is null or target_institution is distinct from ctx.scope_institution_id)) then
+      raise insufficient_privilege using detail='SAI_INTERNAL_CONTEXT_DENIED';
+    end if;
     select * into receipt from app_private.superadmin_internal_form_draft_receipts where request_id=p_request_id;
     if receipt.request_id is not null then
       if receipt.actor_internal_identity_id is distinct from ctx.internal_identity_id
@@ -1648,6 +1681,19 @@ begin
     end if;
     perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(target_id::text,0));
     select * into f from public.forms where id=target_id for update;
+    perform 1 from public.institutions i where i.id=target_institution and i.deleted_at is null for share;
+    if not found then raise insufficient_privilege using detail='SAI_PERMISSION_DENIED'; end if;
+    -- Reauthorize after request, form-row and institution waits, before exposing
+    -- a receipt snapshot or writing. Never migrate the in-flight actor/context.
+    select * into strict ctx from app_private.require_superadmin_internal_context('forms.manage');
+    if row(ctx.internal_identity_id,ctx.internal_auth_link_id,ctx.internal_membership_id,ctx.auth_user_id,ctx.session_id,
+           ctx.scope_kind,ctx.scope_institution_id)
+       is distinct from row(initial_ctx.internal_identity_id,initial_ctx.internal_auth_link_id,initial_ctx.internal_membership_id,
+           initial_ctx.auth_user_id,initial_ctx.session_id,initial_ctx.scope_kind,initial_ctx.scope_institution_id)
+      or ctx.aal is null or ctx.aal not in ('aal1','aal2') or ctx.scope_kind is null or ctx.scope_kind not in ('platform','institution')
+      or (ctx.scope_kind='institution' and (ctx.scope_institution_id is null or target_institution is distinct from ctx.scope_institution_id)) then
+      raise insufficient_privilege using detail='SAI_INTERNAL_CONTEXT_DENIED';
+    end if;
     if f.id is not null then
       if f.institution_id is distinct from target_institution or f.created_by_internal_identity_id is null or f.status<>'draft'
         or f.first_published_at is not null or f.published_version_id is not null

@@ -18,9 +18,18 @@ Arquivos:
 - Matriz `2026-09-07-authoring-coexistence-matrix.md` e crosswalk
   `2026-09-07-authoring-nominal-crosswalk.md`.
 
-Git blobs revisados (não SHA256 de arquivo CRLF): migration
-`955cfc5f0e84d74a4e95fe66b92eb2e432f0e03d`; teste
-`7b6dd8c184f1fecd6f7adefba3433e3234eeef5b`.
+Git blobs atuais após review pós-lock (não SHA256 de arquivo CRLF): migration
+`fe2f82f9a5901e35512a8c216c8e7e9c6f4fe04f`; teste principal
+`6ae5bd0c21da4ea23988cb4f5d2ee8a65e755821`.
+Os blobs anteriores 955cfc5/7b6dd8c do commit 1ccae045 foram substituídos antes
+do replay. Arquivos adicionais `_repeatable_read_test.sql` e
+`_serializable_test.sql` usam, respectivamente,
+`fa4f6b16996e170507722696e06365e2502cadf7` e
+`48e1404bbbeb396f6c44692776c8e1cbdc274f29`.
+
+Delta e protocolo concorrente: `2026-09-07-authoring-lock-reauthorization.md`.
+READ COMMITTED nominal obrigatório; reautorização após waits com âncoras/escopo
+originais; instituição não excluída sob SHARE. Nenhum SQL executado.
 
 # Dependências nominais para o executor
 
@@ -111,7 +120,7 @@ e cinco níveis foram preparados com timeout; nenhum tempo SQL foi medido ainda.
 
 Revisão estática dos 19 corpos aprovada; novas definições revisadas, P1 corrigido.
 Review final dos testes aprovado estaticamente, sem novos bloqueadores.
-Verificação textual: 29 funções na migration; 16 blocos authenticated no teste,
+Verificação textual: 29 funções na migration; 18 blocos authenticated no teste,
 nenhum TAP dentro deles e role restabelecida ao terminar. O manifesto e replay
 do executor permanecem gates abertos; esses números não são testes SQL passados.
 
