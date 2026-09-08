@@ -368,6 +368,39 @@ void main() {
     expect(find.byKey(const Key('daily-routine-pagination')), findsOneWidget);
   });
 
+  testWidgets('initial directory query uses the cards page size', (tester) async {
+    final repository = FakeRoutineRepository();
+
+    await pumpPage(tester, repository);
+
+    expect(repository.pageQueries.single.pageSize, 11);
+  });
+
+  testWidgets('replacement repository uses the currently selected table page size', (tester) async {
+    final repositoryA = FakeRoutineRepository();
+    final repositoryB = FakeRoutineRepository();
+
+    Widget app(RoutineRepository repository) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: DailyRoutineDirectoryPage(
+        repository: repository,
+        logout: unavailableSuperadminLogout,
+        onEdit: (_) {},
+      ),
+    );
+
+    await tester.pumpWidget(app(repositoryA));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('daily-routine-view-table')));
+    await tester.pumpAndSettle();
+    expect(repositoryA.pageQueries.last.pageSize, 8);
+
+    await tester.pumpWidget(app(repositoryB));
+    await tester.pumpAndSettle();
+
+    expect(repositoryB.pageQueries.single.pageSize, 8);
+  });
+
   testWidgets('directory tabs and async state survive responsive 200 percent matrix', (
     tester,
   ) async {

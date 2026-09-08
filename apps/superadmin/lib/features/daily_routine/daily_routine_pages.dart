@@ -67,7 +67,7 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
   void initState() {
     super.initState();
     _controller = RoutineDirectoryController(widget.repository)..addListener(_refresh);
-    _controller.load();
+    _load();
   }
 
   @override
@@ -81,7 +81,7 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
     _lastCanManage = false;
     _selectedType = RoutineEntryKind.model;
     _controller = RoutineDirectoryController(widget.repository)..addListener(_refresh);
-    _controller.load();
+    _load();
   }
 
   @override
