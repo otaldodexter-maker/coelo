@@ -10,6 +10,7 @@ import 'package:coelo_superadmin/features/institutions/domain/institution_direct
 import 'package:coelo_superadmin/features/institutions/domain/institution_record.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/screens/institution_directory_page.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/view_models/institution_directory_view_model.dart';
+import 'package:coelo_superadmin/features/institutions/presentation/widgets/institution_status_presentation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -430,6 +431,126 @@ void main() {
   );
 
   // ---------------------------------------------------------------------------
+  // institutions.list: ativação por teclado das superfícies clicáveis
+  // ---------------------------------------------------------------------------
+  testWidgets(
+    'institutions.list: o banner Criar da tabela ativa no primeiro ponto de foco',
+    (tester) async {
+      await _useSurface(tester, const Size(1440, 900));
+      var creates = 0;
+      await tester.pumpWidget(_app(_ControlledRepository(), onCreate: () => creates += 1));
+      await tester.pumpAndSettle();
+
+      // O card Criar vive na visão de cards; o banner Criar, na de tabela.
+      await tester.tap(find.byKey(const Key('institution-view-table')));
+      await tester.pumpAndSettle();
+      final banner = find.byKey(const Key('create-institution-banner'));
+      expect(banner, findsOneWidget);
+      expect(find.byKey(const Key('create-institution-card')), findsNothing);
+
+      // Percorre os pontos de foco dentro do banner e registra em qual deles
+      // Enter aciona Criar. O contrato é que o banner ofereça um único ponto de
+      // foco e que ele ative, como qualquer botão.
+      final reached = await _tabUntil(tester, banner);
+      expect(reached, isTrue, reason: 'Tab não alcançou o banner "Criar instituição"');
+      var stopsInsideBanner = 0;
+      int? activatedAtStop;
+      while (_focusWithin(banner) && stopsInsideBanner < 5) {
+        stopsInsideBanner += 1;
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+        if (creates > 0) {
+          activatedAtStop = stopsInsideBanner;
+          break;
+        }
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+      }
+
+      expect(
+        creates,
+        1,
+        reason: 'Enter dentro do banner não acionou Criar (pontos de foco: $stopsInsideBanner)',
+      );
+      expect(
+        activatedAtStop,
+        1,
+        reason:
+            'Enter só acionou Criar no ponto de foco $activatedAtStop do banner; o banner '
+            'expõe ao menos $stopsInsideBanner pontos de foco por Tab e o primeiro apenas '
+            'realça sem ativar.',
+      );
+    },
+  );
+
+  testWidgets(
+    'institutions.list: o indicador de status ativa por teclado como se anuncia',
+    (tester) async {
+      await _useSurface(tester, const Size(1440, 900));
+      final semantics = tester.ensureSemantics();
+      addTearDown(semantics.dispose);
+      await tester.pumpWidget(_app(_ControlledRepository()));
+      await tester.pumpAndSettle();
+
+      const itemId = 'demo-institution-aurora';
+      final indicator = find.byKey(const Key('institution-status-$itemId'));
+      expect(indicator, findsOneWidget);
+      final collapsedWidth = tester.getSize(indicator).width;
+
+      // Anúncio: o indicador se apresenta como botão e expõe a ação de toque.
+      final node = tester.getSemantics(indicator);
+      expect(
+        node,
+        isSemantics(label: 'Status: Ativa', isButton: true, hasTapAction: true),
+        reason: 'o indicador se anuncia como $node',
+      );
+
+      // Toque: expande e, ao tocar de novo, volta ao estado recolhido. Esse
+      // ciclo é a linha de base contra a qual o teclado é medido.
+      await tester.tap(indicator);
+      await tester.pumpAndSettle();
+      final tappedWidth = tester.getSize(indicator).width;
+      expect(
+        tappedWidth,
+        greaterThan(collapsedWidth),
+        reason: 'toque não expandiu o indicador (largura $collapsedWidth -> $tappedWidth)',
+      );
+      await tester.tap(indicator);
+      await tester.pumpAndSettle();
+      final retractedWidth = tester.getSize(indicator).width;
+      expect(
+        retractedWidth,
+        collapsedWidth,
+        reason: 'segundo toque não recolheu o indicador (largura $tappedWidth -> $retractedWidth)',
+      );
+
+      // Teclado: Tab realça (o realce sozinho já expande, e some ao sair), então
+      // a prova de ativação é a expansão permanecer depois que o foco vai embora,
+      // exatamente como o toque faz.
+      final reached = await _tabUntil(tester, _statusIndicator(itemId));
+      expect(reached, isTrue, reason: 'Tab não alcançou o indicador de status');
+      await tester.pumpAndSettle();
+      final focusedWidth = tester.getSize(indicator).width;
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      final activatedWidth = tester.getSize(indicator).width;
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+      final afterBlurWidth = tester.getSize(indicator).width;
+
+      expect(
+        afterBlurWidth,
+        greaterThan(collapsedWidth),
+        reason:
+            'Enter no indicador focado não o ativou como o toque ativa. Larguras medidas: '
+            'recolhido=$collapsedWidth, após toque=$tappedWidth, após segundo toque='
+            '$retractedWidth, com foco=$focusedWidth, após Enter=$activatedWidth, após sair '
+            'do foco=$afterBlurWidth.',
+      );
+    },
+  );
+
+  // ---------------------------------------------------------------------------
   // institutions.list em 375 e 1440
   // ---------------------------------------------------------------------------
   for (final width in const [375.0, 1440.0]) {
@@ -606,14 +727,18 @@ Object _realCastError() {
 // Fixtures e finders
 // -----------------------------------------------------------------------------
 
-Widget _app(InstitutionDirectoryRepository repository, {ValueChanged<String>? onEdit}) {
+Widget _app(
+  InstitutionDirectoryRepository repository, {
+  ValueChanged<String>? onEdit,
+  VoidCallback? onCreate,
+}) {
   return MaterialApp(
     theme: CoeloTheme.light,
     darkTheme: CoeloTheme.dark,
     home: InstitutionDirectoryPage(
       repository: repository,
       logout: () async => const LogoutResult.success(),
-      onCreate: () {},
+      onCreate: onCreate ?? () {},
       onEdit: onEdit ?? (_) {},
     ),
   );
@@ -655,6 +780,12 @@ Finder _institutionCards() => find.byWidgetPredicate((widget) {
       !value.startsWith('institution-card-surface-') &&
       !value.startsWith('institution-card-detail-');
 });
+
+/// O indicador de status: a chave fica no filho animado, mas quem recebe foco é
+/// o widget inteiro, então o percurso por Tab precisa mirar o widget.
+Finder _statusIndicator(String itemId) => find.byWidgetPredicate(
+  (widget) => widget is ExpandableInstitutionStatusIndicator && widget.itemId == itemId,
+);
 
 Finder _institutionTableRows() => find.byWidgetPredicate((widget) {
   final key = widget.key;
