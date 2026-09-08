@@ -80,11 +80,7 @@ final class SupabaseCoeloAuthGateway extends CoeloAuthLifecycleGateway {
       return const CoeloAuthSignInResult.failure(
         CoeloAuthSignInResult.genericFailureMessage,
       );
-    } on AuthException {
-      return const CoeloAuthSignInResult.failure(
-        CoeloAuthSignInResult.genericFailureMessage,
-      );
-    } on Exception {
+    } catch (_) {
       return const CoeloAuthSignInResult.failure(
         CoeloAuthSignInResult.genericFailureMessage,
       );
@@ -111,11 +107,7 @@ final class SupabaseCoeloAuthGateway extends CoeloAuthLifecycleGateway {
     try {
       await _api.requestPasswordRecovery(email: email, redirectTo: redirectTo);
       return const CoeloAuthPasswordRecoveryResult.success();
-    } on AuthException {
-      return const CoeloAuthPasswordRecoveryResult.failure(
-        CoeloAuthPasswordRecoveryResult.genericFailureMessage,
-      );
-    } on Exception {
+    } catch (_) {
       return const CoeloAuthPasswordRecoveryResult.failure(
         CoeloAuthPasswordRecoveryResult.genericFailureMessage,
       );
@@ -133,20 +125,22 @@ final class SupabaseCoeloAuthGateway extends CoeloAuthLifecycleGateway {
       );
     }
     _credentialOperationInProgress = true;
+    var passwordUpdated = false;
+    const cleanupFailure = CoeloAuthPasswordUpdateResult.failure(
+      'A senha foi alterada, mas não foi possível confirmar o encerramento da sessão.',
+    );
     try {
       await _api.updatePassword(password: password);
+      passwordUpdated = true;
       if (_api.currentSessionState != recoveryState) {
-        return const CoeloAuthPasswordUpdateResult.failure(
-          CoeloAuthPasswordUpdateResult.genericFailureMessage,
-        );
+        return cleanupFailure;
       }
       await _api.signOut();
       return const CoeloAuthPasswordUpdateResult.success();
-    } on AuthException {
-      return const CoeloAuthPasswordUpdateResult.failure(
-        CoeloAuthPasswordUpdateResult.genericFailureMessage,
-      );
-    } on Exception {
+    } catch (_) {
+      // A confirmed write and an unconfirmed cleanup are separate outcomes.
+      // Never retry the write or clear a replacement session from this catch.
+      if (passwordUpdated) return cleanupFailure;
       return const CoeloAuthPasswordUpdateResult.failure(
         CoeloAuthPasswordUpdateResult.genericFailureMessage,
       );
