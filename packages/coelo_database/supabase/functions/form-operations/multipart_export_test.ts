@@ -1,7 +1,11 @@
+// Async doubles intentionally model the transport/persistence Promise contract.
+// deno-lint-ignore-file require-await
 import { assertEquals, assertRejects } from "@std/assert";
 import {
   multipartArtifactConfig,
+  type MultipartPersistenceAdapter,
   type MultipartPersistenceCall,
+  type MultipartSnapshot,
   uploadAdaptiveArtifact,
 } from "./multipart_export.ts";
 import { sha256Hex } from "./multipart_s3.ts";
@@ -85,6 +89,7 @@ Deno.test("keeps a ZIP below the threshold on the bounded standard upload path",
     mode: "standard",
     artifactPath: base.proposedPath,
     byteLength: 3,
+    checksumSha256: await sha256Hex(new Uint8Array([1, 2, 3])),
   });
   assertEquals(events, ["form_worker_multipart_snapshot", "standard:1,2,3"]);
 });
@@ -283,4 +288,582 @@ Deno.test("aborts a multipart upload when regenerated persisted bytes diverge", 
     "multipart_resume_checksum_mismatch",
   );
   assertEquals(events, ["s3:abort", "rpc:form_worker_abort_multipart"]);
+});
+
+function engineFixture() {
+  const uploaded: number[] = [];
+  const events: string[] = [];
+  const input = {
+    ...base,
+    source: chunks([1, 2, 3, 4, 5, 6]),
+    thresholdBytes: 4,
+    partSizeBytes: 3,
+    rpc: async (call: MultipartPersistenceCall) => {
+      events.push(call.name);
+      return null;
+    },
+    standardUpload: async (_path: string, bytes: Uint8Array) => {
+      uploaded.push(...bytes);
+    },
+    s3: {
+      initiate: async () => ({ uploadId: "upload-id" }),
+      uploadPart: async (
+        _b: string,
+        _k: string,
+        _u: string,
+        partNumber: number,
+        bytes: Uint8Array,
+      ) => {
+        uploaded.push(...bytes);
+        return { partNumber, etag: `etag-${partNumber}` };
+      },
+      complete: async () => ({}),
+      abort: async () => {
+        events.push("abort");
+      },
+    },
+  };
+  return { input, uploaded, events };
+}
+
+Deno.test("returns whole artifact SHA256 for standard and multipart paths", async () => {
+  for (const thresholdBytes of [4, 20]) {
+    const { input } = engineFixture();
+    const result = await uploadAdaptiveArtifact({ ...input, thresholdBytes });
+    assertEquals(
+      "checksumSha256" in result ? result.checksumSha256 : undefined,
+      await sha256Hex(new Uint8Array([1, 2, 3, 4, 5, 6])),
+    );
+  }
+});
+
+Deno.test("copies the entire yielded chunk before asynchronous persistence", async () => {
+  const { input, uploaded } = engineFixture();
+  const bytes = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  input.source = {
+    async *[Symbol.asyncIterator]() {
+      yield bytes;
+    },
+  };
+  input.s3.initiate = async () => {
+    bytes.fill(99);
+    return { uploadId: "upload-id" };
+  };
+  await uploadAdaptiveArtifact(input);
+  assertEquals(uploaded, [1, 2, 3, 4, 5, 6, 7, 8, 9]);
+});
+
+Deno.test("rejects mismatched provider part number before persistence or completion", async () => {
+  const { input, events } = engineFixture();
+  input.s3.uploadPart = async () => ({ partNumber: 99, etag: "etag" });
+  await assertRejects(
+    () => uploadAdaptiveArtifact(input),
+    Error,
+    "multipart_part_invalid",
+  );
+  assertEquals(events.includes("form_worker_record_multipart_part"), false);
+});
+
+function adapterFixture() {
+  const fixture = engineFixture();
+  const scope = {
+    jobId: base.jobId,
+    workerId: base.workerId,
+    fileJobId: base.fileJobId,
+    attempt: 1,
+    assetId: "asset-id",
+    bucket: base.bucket,
+    objectPath: base.proposedPath,
+    snapshotFormatVersion: 1,
+    snapshotRowCount: 2,
+  };
+  const events = fixture.events;
+  let snapshot: MultipartSnapshot | null = null;
+  const persistence: MultipartPersistenceAdapter = {
+    scope,
+    authorize: async (value) => {
+      assertEquals(value, scope);
+      events.push("authorize");
+    },
+    snapshot: async () => snapshot,
+    begin: async (value, uploadId) => {
+      snapshot = {
+        scope: value,
+        bucket_id: value.bucket,
+        object_path: value.objectPath,
+        upload_id: uploadId,
+        state: "initiated",
+        next_part_number: 1,
+        uploaded_bytes: 0,
+        parts: [],
+      };
+      events.push("begin");
+    },
+    recordPart: async (_value, _id, part) => {
+      if (!snapshot) throw new Error("missing_snapshot");
+      snapshot = {
+        ...snapshot,
+        state: "uploading",
+        parts: [...snapshot.parts, part],
+        uploaded_bytes: snapshot.uploaded_bytes + part.byte_length,
+        next_part_number: part.part_number + 1,
+      };
+      events.push("record");
+    },
+    complete: async (_value, _id, digest) => {
+      if (!snapshot) throw new Error("missing_snapshot");
+      snapshot = {
+        ...snapshot,
+        state: "completed",
+        checksum_sha256: digest.checksumSha256,
+      };
+      events.push("complete");
+    },
+    reconcile: async () => {
+      events.push("reconcile");
+      return snapshot;
+    },
+  };
+  return {
+    ...fixture,
+    input: { ...fixture.input, persistence },
+    persistence,
+    scope,
+    setSnapshot: (value: MultipartSnapshot) => {
+      snapshot = value;
+    },
+  };
+}
+
+Deno.test("typed attempt adapter replaces legacy RPC and persists integral checksum", async () => {
+  const { input, events } = adapterFixture();
+  const result = await uploadAdaptiveArtifact(input);
+  assertEquals(events.includes("form_worker_multipart_snapshot"), false);
+  assertEquals(events.filter((event) => event === "record").length, 2);
+  assertEquals(events.includes("complete"), true);
+  assertEquals(
+    result.checksumSha256,
+    await sha256Hex(new Uint8Array([1, 2, 3, 4, 5, 6])),
+  );
+});
+
+Deno.test("typed attempt scope rejects another asset snapshot before network I/O", async () => {
+  const fixture = adapterFixture();
+  fixture.setSnapshot({
+    scope: { ...fixture.scope, assetId: "other-asset" },
+    bucket_id: base.bucket,
+    object_path: base.proposedPath,
+    upload_id: "upload-id",
+    state: "initiated",
+    next_part_number: 1,
+    uploaded_bytes: 0,
+    parts: [],
+  });
+  await assertRejects(
+    () => uploadAdaptiveArtifact(fixture.input),
+    Error,
+    "multipart_snapshot_scope_mismatch",
+  );
+  assertEquals(fixture.uploaded, []);
+});
+
+Deno.test("ambiguous persistence completion reconciles the exact completed winner", async () => {
+  const { input, persistence, events } = adapterFixture();
+  const complete = persistence.complete;
+  input.persistence = {
+    ...persistence,
+    complete: async (...args) => {
+      await complete(...args);
+      throw new Error("connection_lost_after_commit");
+    },
+  };
+  const result = await uploadAdaptiveArtifact(input);
+  assertEquals(result.byteLength, 6);
+  assertEquals(events.includes("reconcile"), true);
+  assertEquals(events.includes("abort"), false);
+});
+
+Deno.test("ambiguous provider completion without a winner stays uncertain and never aborts", async () => {
+  const { input, events } = adapterFixture();
+  input.s3.complete = async () => {
+    throw new Error("sensitive_remote_response");
+  };
+  await assertRejects(
+    () => uploadAdaptiveArtifact(input),
+    Error,
+    "multipart_completion_uncertain",
+  );
+  assertEquals(events.includes("reconcile"), true);
+  assertEquals(events.includes("abort"), false);
+});
+
+Deno.test("typed scope rejects each correlation field before reading persistence", async () => {
+  for (
+    const delta of [
+      { jobId: "other" },
+      { workerId: "other" },
+      { fileJobId: "other" },
+      { bucket: "other" },
+      { objectPath: "other" },
+      { assetId: "" },
+      { attempt: 0 },
+      { attempt: 1.5 },
+      { snapshotFormatVersion: 0 },
+      { snapshotRowCount: -1 },
+    ]
+  ) {
+    const { input, scope } = adapterFixture();
+    input.persistence = {
+      ...input.persistence,
+      scope: { ...scope, ...delta },
+      snapshot: async () => {
+        throw new Error("must_not_read");
+      },
+    };
+    await assertRejects(
+      () => uploadAdaptiveArtifact(input),
+      Error,
+      "multipart_attempt_scope_invalid",
+    );
+  }
+});
+
+Deno.test("typed snapshots reject all crossed attempt and snapshot fields", async () => {
+  for (
+    const delta of [
+      { jobId: "other" },
+      { workerId: "other" },
+      { fileJobId: "other" },
+      { bucket: "other" },
+      { objectPath: "other" },
+      { assetId: "other" },
+      { attempt: 2 },
+      { snapshotFormatVersion: 2 },
+      { snapshotRowCount: 3 },
+    ]
+  ) {
+    const { input, scope, setSnapshot, uploaded } = adapterFixture();
+    setSnapshot({
+      scope: { ...scope, ...delta },
+      bucket_id: base.bucket,
+      object_path: base.proposedPath,
+      upload_id: "upload-id",
+      state: "initiated",
+      next_part_number: 1,
+      uploaded_bytes: 0,
+      parts: [],
+    });
+    await assertRejects(
+      () => uploadAdaptiveArtifact(input),
+      Error,
+      "multipart_snapshot_scope_mismatch",
+    );
+    assertEquals(uploaded, []);
+  }
+});
+
+Deno.test("malformed part snapshots are rejected before provider I/O", async () => {
+  const part = {
+    part_number: 1,
+    etag: "etag-1",
+    byte_length: 3,
+    checksum_sha256: "0".repeat(64),
+  };
+  for (
+    const delta of [
+      { uploaded_bytes: -1 },
+      { uploaded_bytes: 2 },
+      { next_part_number: 3 },
+      { upload_id: "" },
+      { upload_id: "bad\nvalue" },
+      { parts: [{ ...part, part_number: 2 }] },
+      { parts: [{ ...part, etag: "" }] },
+      { parts: [{ ...part, byte_length: 1.5 }] },
+      { parts: [{ ...part, checksum_sha256: "invalid" }] },
+      { state: "initiated" as const },
+      { state: "completed" as const },
+    ]
+  ) {
+    const { input, scope, setSnapshot, uploaded } = adapterFixture();
+    setSnapshot({
+      scope,
+      bucket_id: base.bucket,
+      object_path: base.proposedPath,
+      upload_id: "upload-id",
+      state: "uploading",
+      next_part_number: 2,
+      uploaded_bytes: 3,
+      parts: [part],
+      ...delta,
+    });
+    await assertRejects(
+      () => uploadAdaptiveArtifact(input),
+      Error,
+      "multipart_snapshot_invalid",
+    );
+    assertEquals(uploaded, []);
+  }
+});
+
+Deno.test("completed typed snapshot returns the persisted integral checksum without rereading", async () => {
+  const { input, scope, setSnapshot } = adapterFixture();
+  const checksum = await sha256Hex(new Uint8Array([1, 2, 3]));
+  setSnapshot({
+    scope,
+    bucket_id: base.bucket,
+    object_path: base.proposedPath,
+    upload_id: "upload-id",
+    state: "completed",
+    next_part_number: 2,
+    uploaded_bytes: 3,
+    checksum_sha256: checksum,
+    parts: [{
+      part_number: 1,
+      etag: "etag-1",
+      byte_length: 3,
+      checksum_sha256: checksum,
+    }],
+  });
+  input.source = {
+    [Symbol.asyncIterator]: () => ({
+      next: () => Promise.reject(new Error("must_not_read")),
+    }),
+  };
+  const result = await uploadAdaptiveArtifact(input);
+  assertEquals(result.checksumSha256, checksum);
+});
+
+Deno.test("revoked lease before provider upload denies bytes and does not abort", async () => {
+  const { input, persistence, events, uploaded } = adapterFixture();
+  let revoked = false;
+  input.persistence = {
+    ...persistence,
+    authorize: async () => {
+      if (revoked) throw new Error("lease_revoked");
+    },
+    begin: async (...args) => {
+      await persistence.begin(...args);
+      revoked = true;
+    },
+  };
+  await assertRejects(
+    () => uploadAdaptiveArtifact(input),
+    Error,
+    "lease_revoked",
+  );
+  assertEquals(uploaded, []);
+  assertEquals(events.includes("abort"), false);
+});
+
+Deno.test("typed resumed checksum includes verified existing parts and new bytes", async () => {
+  const { input, scope, setSnapshot, uploaded } = adapterFixture();
+  setSnapshot({
+    scope,
+    bucket_id: base.bucket,
+    object_path: base.proposedPath,
+    upload_id: "upload-id",
+    state: "uploading",
+    next_part_number: 2,
+    uploaded_bytes: 3,
+    parts: [{
+      part_number: 1,
+      etag: "etag-1",
+      byte_length: 3,
+      checksum_sha256: await sha256Hex(new Uint8Array([1, 2, 3])),
+    }],
+  });
+  const result = await uploadAdaptiveArtifact(input);
+  assertEquals(uploaded, [4, 5, 6]);
+  assertEquals(
+    result.checksumSha256,
+    await sha256Hex(new Uint8Array([1, 2, 3, 4, 5, 6])),
+  );
+});
+
+Deno.test("typed resume divergence and truncation never abort a possibly stale attempt", async () => {
+  for (const source of [chunks([9, 9, 9]), chunks([1, 2])]) {
+    const { input, scope, setSnapshot, events } = adapterFixture();
+    setSnapshot({
+      scope,
+      bucket_id: base.bucket,
+      object_path: base.proposedPath,
+      upload_id: "upload-id",
+      state: "uploading",
+      next_part_number: 2,
+      uploaded_bytes: 3,
+      parts: [{
+        part_number: 1,
+        etag: "etag-1",
+        byte_length: 3,
+        checksum_sha256: await sha256Hex(new Uint8Array([1, 2, 3])),
+      }],
+    });
+    await assertRejects(
+      () => uploadAdaptiveArtifact({ ...input, source }),
+      Error,
+      "multipart_resume_",
+    );
+    assertEquals(events.includes("abort"), false);
+  }
+});
+
+Deno.test("reconciliation refuses mismatched winners and preserves ambiguous errors", async () => {
+  for (
+    const delta of [
+      { upload_id: "other" },
+      { checksum_sha256: "0".repeat(64) },
+      { uploaded_bytes: 99 },
+      { object_path: "other" },
+      { state: "uploading" as const },
+      { scope: undefined },
+    ]
+  ) {
+    const { input, persistence, events } = adapterFixture();
+    input.persistence = {
+      ...persistence,
+      complete: async (...args) => {
+        await persistence.complete(...args);
+        throw new Error("lost_ack");
+      },
+      reconcile: async (...args) => {
+        const snapshot = await persistence.reconcile(...args);
+        return snapshot ? { ...snapshot, ...delta } : null;
+      },
+    };
+    await assertRejects(
+      () => uploadAdaptiveArtifact(input),
+      Error,
+      "multipart_completion_uncertain",
+    );
+    assertEquals(events.includes("abort"), false);
+  }
+});
+
+Deno.test("attempt identity is copied before snapshot await", async () => {
+  const { input, persistence, scope } = adapterFixture();
+  const initial = { ...scope };
+  input.persistence = {
+    ...persistence,
+    snapshot: async (received) => {
+      scope.assetId = "mutated";
+      scope.attempt = 2;
+      assertEquals(received, initial);
+      return null;
+    },
+    authorize: async (received) => {
+      assertEquals(received, initial);
+    },
+  };
+  await uploadAdaptiveArtifact(input);
+});
+
+Deno.test("preserves client methods on class prototypes", async () => {
+  const { input } = engineFixture();
+  class Client {
+    #parts = 0;
+    async initiate() {
+      return { uploadId: "class-upload" };
+    }
+    async uploadPart(
+      _b: string,
+      _k: string,
+      _u: string,
+      partNumber: number,
+      _bytes: Uint8Array,
+    ) {
+      this.#parts++;
+      return { partNumber, etag: `etag-${partNumber}` };
+    }
+    async complete() {
+      assertEquals(this.#parts, 2);
+      return {};
+    }
+    async abort() {
+      throw new Error("must_not_abort");
+    }
+  }
+  assertEquals(
+    (await uploadAdaptiveArtifact({ ...input, s3: new Client() })).byteLength,
+    6,
+  );
+});
+
+Deno.test("resume rejects oversized and short nonfinal persisted parts", async () => {
+  for (const sizes of [[4], [2, 1]]) {
+    const { input, scope, setSnapshot, uploaded } = adapterFixture();
+    setSnapshot({
+      scope,
+      bucket_id: base.bucket,
+      object_path: base.proposedPath,
+      upload_id: "upload-id",
+      state: "uploading",
+      next_part_number: sizes.length + 1,
+      uploaded_bytes: sizes.reduce((a, b) => a + b, 0),
+      parts: sizes.map((size, index) => ({
+        part_number: index + 1,
+        etag: `etag-${index + 1}`,
+        byte_length: size,
+        checksum_sha256: "0".repeat(64),
+      })),
+    });
+    await assertRejects(
+      () => uploadAdaptiveArtifact(input),
+      Error,
+      "multipart_snapshot_invalid",
+    );
+    assertEquals(uploaded, []);
+  }
+});
+
+Deno.test("resume cannot append new bytes after a previously short final part", async () => {
+  const { input, scope, setSnapshot, events } = adapterFixture();
+  setSnapshot({
+    scope,
+    bucket_id: base.bucket,
+    object_path: base.proposedPath,
+    upload_id: "upload-id",
+    state: "uploading",
+    next_part_number: 2,
+    uploaded_bytes: 2,
+    parts: [{
+      part_number: 1,
+      etag: "etag-1",
+      byte_length: 2,
+      checksum_sha256: await sha256Hex(new Uint8Array([1, 2])),
+    }],
+  });
+  await assertRejects(
+    () => uploadAdaptiveArtifact(input),
+    Error,
+    "multipart_resume_length_mismatch",
+  );
+  assertEquals(events.includes("abort"), false);
+});
+
+Deno.test("native incremental SHA256 agrees with WebCrypto across one MiB and chunk boundaries", async () => {
+  const { input, uploaded } = engineFixture();
+  const bytes = Uint8Array.from(
+    { length: 1024 * 1024 + 17 },
+    (_, index) => index % 251,
+  );
+  const source = {
+    async *[Symbol.asyncIterator]() {
+      for (let offset = 0; offset < bytes.length; offset += 65537) {
+        yield bytes.subarray(offset, offset + 65537);
+      }
+    },
+  };
+  // Avoid a large argument list in the synthetic provider while retaining bytes.
+  input.s3.uploadPart = async (_bucket, _key, _id, partNumber, part) => {
+    for (const byte of part) uploaded.push(byte);
+    return { partNumber, etag: `etag-${partNumber}` };
+  };
+  const result = await uploadAdaptiveArtifact({
+    ...input,
+    source,
+    thresholdBytes: 262144,
+    partSizeBytes: 262144,
+  });
+  assertEquals(result.checksumSha256, await sha256Hex(bytes));
+  assertEquals(new Uint8Array(uploaded), bytes);
 });
