@@ -900,17 +900,23 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(CoeloRadius.lg),
                     ),
-                    // The outline is painted in front of the content, not
-                    // behind it. The inbox pagination footer sits flush with
-                    // the card edge and blurs its own backdrop, which erased
-                    // the 1 px line wherever the two overlapped.
+                    // Two separate problems, two separate fixes. The outline is
+                    // painted in front of the content, because the inbox
+                    // pagination footer sits flush with the card edge and blurs
+                    // its own backdrop, which erased the 1 px line. And the
+                    // content is clipped to the same radius, because the footer
+                    // is a plain rectangle: without the clip it paints past the
+                    // arc and squares off the corners under the border.
                     child: DecoratedBox(
                       position: DecorationPosition.foreground,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(CoeloRadius.lg),
                         border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
                       ),
-                      child: _body(),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                        child: _body(),
+                      ),
                     ),
                   ),
                 ),
