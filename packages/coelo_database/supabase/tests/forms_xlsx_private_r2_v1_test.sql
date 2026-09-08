@@ -232,6 +232,7 @@ returns jsonb language sql security invoker as $$
   select public.superadmin_form_request_xlsx_v2(pg_temp.xlsx_id(n),version_number,
     jsonb_build_object('form_id',pg_temp.xlsx_id(form_number))||extra);
 $$;
+grant execute on function pg_temp.xlsx_id(integer),pg_temp.xlsx_request(integer,integer,bigint,jsonb) to authenticated;
 set local role authenticated;
 insert into xlsx_request_results values('empty',pg_temp.xlsx_request(12000,210,1));
 insert into xlsx_request_results values('repeat',pg_temp.xlsx_request(12000,210,1));
@@ -295,6 +296,66 @@ select is((select body->>'ok' from xlsx_request_results where label='revoked_rep
 select ok(exists(select 1 from audit.audit_logs where action_code='superadmin.forms.export.request' and outcome='success' and actor_internal_identity_id=pg_temp.xlsx_id(301)),'request audits actual internal actor');
 select ok(not has_function_privilege('service_role','public.superadmin_form_request_xlsx_v2(uuid,bigint,jsonb)','execute'),'service worker cannot request as user');
 select ok(not has_function_privilege('anon','public.superadmin_form_request_xlsx_v2(uuid,bigint,jsonb)','execute'),'anonymous cannot enqueue export');
+
+
+-- Begin/paging with a real queue lease and service-only public boundary.
+update app_private.superadmin_internal_memberships set status='active' where id=pg_temp.xlsx_id(501);
+create temporary table xlsx_worker_fixture as
+select w.id worker_job_id,j.id file_job_id from public.form_file_jobs j join app_private.form_worker_jobs w on w.aggregate_id=j.id
+where j.id=(select (body#>>'{data,id}')::uuid from xlsx_request_results where label='captured');
+grant select on xlsx_worker_fixture to service_role;
+create temporary table xlsx_worker_results(label text primary key,body jsonb);
+grant select,insert on xlsx_worker_results to service_role;
+update app_private.form_worker_jobs set state='processing',attempts=1,lease_owner='c02-xlsx-1',lease_expires_at=clock_timestamp()+interval '5 minutes'
+where id=(select worker_job_id from xlsx_worker_fixture);
+create function pg_temp.xlsx_begin(owner_name text) returns jsonb language sql security invoker as $$
+ select public.form_worker_begin_xlsx_r2_v1(worker_job_id,owner_name,file_job_id) from xlsx_worker_fixture;
+$$;
+create function pg_temp.xlsx_page(owner_name text,asset uuid,after_sequence bigint,page_limit integer default 1)
+returns jsonb language sql security invoker as $$
+ select public.form_worker_xlsx_snapshot_r2_v1(worker_job_id,owner_name,file_job_id,asset,after_sequence,page_limit) from xlsx_worker_fixture;
+$$;
+grant execute on function pg_temp.xlsx_begin(text),pg_temp.xlsx_page(text,uuid,bigint,integer) to service_role;
+select set_config('request.jwt.claims','{"role":"service_role"}',true);
+set local role service_role;
+insert into xlsx_worker_results values('begin1',pg_temp.xlsx_begin('c02-xlsx-1'));
+insert into xlsx_worker_results values('begin_repeat',pg_temp.xlsx_begin('c02-xlsx-1'));
+insert into xlsx_worker_results select 'page1',pg_temp.xlsx_page('c02-xlsx-1',(body->>'asset_id')::uuid,0) from xlsx_worker_results where label='begin1';
+insert into xlsx_worker_results select 'page2',pg_temp.xlsx_page('c02-xlsx-1',(body->>'asset_id')::uuid,1) from xlsx_worker_results where label='begin1';
+insert into xlsx_worker_results select 'page_end',pg_temp.xlsx_page('c02-xlsx-1',(body->>'asset_id')::uuid,2) from xlsx_worker_results where label='begin1';
+select throws_ok($$select pg_temp.xlsx_begin('other-worker')$$,'40001','forms_xlsx_lease_unavailable','wrong worker cannot begin an existing lease');
+select throws_ok($$select pg_temp.xlsx_page('c02-xlsx-1','8c021000-0000-4000-8000-000000000800',0)$$,'40001','forms_xlsx_attempt_unavailable','asset ID from another job cannot page this snapshot');
+select throws_ok($$select pg_temp.xlsx_page('c02-xlsx-1',(body->>'asset_id')::uuid,3) from xlsx_worker_results where label='begin1'$$,'22023','forms_xlsx_cursor_invalid','cursor past sealed capture is rejected');
+select throws_ok($$select pg_temp.xlsx_page('c02-xlsx-1',(body->>'asset_id')::uuid,0,501) from xlsx_worker_results where label='begin1'$$,'22023','forms_xlsx_page_invalid','page size is server bounded');
+reset role;
+select is((select body->>'asset_id' from xlsx_worker_results where label='begin_repeat'),(select body->>'asset_id' from xlsx_worker_results where label='begin1'),'begin retry reuses the same current attempt');
+select is((select body#>>'{submissions,0,answers,0,values,0}' from xlsx_worker_results where label='page1'),'captured-13010','worker reads immutable captured value after source edit');
+select is((select body->>'next_cursor' from xlsx_worker_results where label='page1'),'1','page cursor uses sealed sequence');
+select is((select body->>'has_more' from xlsx_worker_results where label='page1'),'true','first bounded page has more');
+select is((select body->>'has_more' from xlsx_worker_results where label='page2'),'false','last nonempty page terminates');
+select is((select body->'submissions' from xlsx_worker_results where label='page_end'),'[]'::jsonb,'cursor at row count returns empty terminal page');
+select is(current_setting('request.jwt.claims')::jsonb,'{"role":"service_role"}'::jsonb,'worker restores original claims after paging');
+select throws_ok($$update public.media_assets set upload_request_id='forged-attempt' where id=(select (body->>'asset_id')::uuid from xlsx_worker_results where label='begin1')$$,'23514','forms_xlsx_asset_binding_immutable','attempt binding cannot be rewritten');
+update app_private.superadmin_internal_memberships set status='suspended' where id=pg_temp.xlsx_id(501);
+set local role service_role;
+select throws_ok($$select pg_temp.xlsx_page('c02-xlsx-1',(body->>'asset_id')::uuid,0) from xlsx_worker_results where label='begin1'$$,'42501',null,'revoked requester cannot keep reading worker pages');
+reset role;
+update app_private.superadmin_internal_memberships set status='active' where id=pg_temp.xlsx_id(501);
+update app_private.form_worker_jobs set lease_expires_at=clock_timestamp()-interval '1 second' where id=(select worker_job_id from xlsx_worker_fixture);
+set local role service_role;
+select throws_ok($$select pg_temp.xlsx_begin('c02-xlsx-1')$$,'40001','forms_xlsx_lease_unavailable','expired lease cannot reserve another asset');
+reset role;
+update app_private.form_worker_jobs set attempts=2,lease_owner='c02-xlsx-2',lease_expires_at=clock_timestamp()+interval '5 minutes' where id=(select worker_job_id from xlsx_worker_fixture);
+set local role service_role;
+insert into xlsx_worker_results values('begin2',pg_temp.xlsx_begin('c02-xlsx-2'));
+select throws_ok($$select pg_temp.xlsx_page('c02-xlsx-1',(body->>'asset_id')::uuid,0) from xlsx_worker_results where label='begin1'$$,'40001','forms_xlsx_lease_unavailable','late old worker cannot read after lease takeover');
+select throws_ok($$select pg_temp.xlsx_page('c02-xlsx-2',(body->>'asset_id')::uuid,0) from xlsx_worker_results where label='begin1'$$,'40001','forms_xlsx_attempt_unavailable','new worker cannot revive an abandoned attempt');
+reset role;
+select isnt((select body->>'asset_id' from xlsx_worker_results where label='begin2'),(select body->>'asset_id' from xlsx_worker_results where label='begin1'),'new lease creates another opaque asset');
+select is((select status::text from public.media_assets where id=(select (body->>'asset_id')::uuid from xlsx_worker_results where label='begin1')),'quarantined','previous attempt is retained in quarantine for cleanup');
+select throws_ok($$update public.media_assets set status='ready' where id=(select (body->>'asset_id')::uuid from xlsx_worker_results where label='begin1')$$,'23514','forms_xlsx_asset_revocation_final','quarantined attempt cannot become downloadable');
+select ok(not has_function_privilege('authenticated','public.form_worker_begin_xlsx_r2_v1(uuid,text,uuid)','execute'),'client cannot reserve a worker attempt');
+select ok(not has_function_privilege('authenticated','public.form_worker_xlsx_snapshot_r2_v1(uuid,text,uuid,uuid,bigint,integer)','execute'),'client cannot read worker snapshot');
 
 set constraints all immediate;
 select * from finish();

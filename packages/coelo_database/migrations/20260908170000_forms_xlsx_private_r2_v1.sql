@@ -184,8 +184,12 @@ returns trigger language plpgsql security definer set search_path='' as $$
 declare job public.form_file_jobs;
 begin
   if new.catalog_kind<>'form-xlsx' then return new; end if;
-  if tg_op='UPDATE' and row(new.export_file_job_id,new.expires_at)
-    is distinct from row(old.export_file_job_id,old.expires_at) then
+  if tg_op='UPDATE' and old.status in ('quarantined','deleted') and new.status<>old.status
+    and not (old.status='quarantined' and new.status='deleted') then
+    raise check_violation using message='forms_xlsx_asset_revocation_final';
+  end if;
+  if tg_op='UPDATE' and row(new.export_file_job_id,new.expires_at,new.upload_request_id)
+    is distinct from row(old.export_file_job_id,old.expires_at,old.upload_request_id) then
     raise check_violation using message='forms_xlsx_asset_binding_immutable';
   end if;
   select * into job from public.form_file_jobs where id=new.export_file_job_id for share;
@@ -660,6 +664,119 @@ revoke all on function app_private.superadmin_form_request_xlsx_v2(uuid,bigint,j
 revoke all on function public.superadmin_form_request_xlsx_v2(uuid,bigint,jsonb) from public,anon,service_role;
 grant execute on function public.superadmin_form_request_xlsx_v2(uuid,bigint,jsonb) to authenticated;
 
--- WIP: worker lease/finalization/reconciliation and cleanup
+-- Service-only operations reuse the existing queue, lease and attempt count.
+create function app_private.forms_xlsx_worker_job_v1(
+  p_job_id uuid,p_worker_id text,p_file_job_id uuid,p_asset_id uuid default null
+) returns public.form_file_jobs language plpgsql volatile security definer set search_path='' as $$
+declare v_worker app_private.form_worker_jobs; v_job public.form_file_jobs;
+  v_ctx app_private.superadmin_internal_context;
+begin
+  if current_setting('transaction_isolation')<>'read committed' or p_job_id is null or p_file_job_id is null
+    or p_worker_id is null or length(p_worker_id) not between 1 and 240 then
+    raise invalid_parameter_value using message='forms_xlsx_worker_input_invalid';
+  end if;
+  select * into v_worker from app_private.form_worker_jobs where id=p_job_id
+    and aggregate_id=p_file_job_id and job_kind='export_xlsx_r2_v1'
+    and state='processing' and lease_owner=p_worker_id and lease_expires_at>clock_timestamp() for update;
+  if v_worker.id is null then raise serialization_failure using message='forms_xlsx_lease_unavailable'; end if;
+  select j.* into v_job from public.form_file_jobs j join public.forms f on f.id=j.form_id and f.institution_id=j.institution_id
+    join public.institutions i on i.id=j.institution_id and i.deleted_at is null
+    where j.id=p_file_job_id and j.artifact_provider='r2' and j.export_kind='xlsx' and j.snapshot_ready
+      and j.state in ('pending','processing','failed') and j.expires_at>clock_timestamp() for update of j;
+  if v_job.id is null then raise no_data_found using message='forms_xlsx_job_unavailable'; end if;
+  v_ctx:=app_private.forms_xlsx_context_from_session_v1(v_job.requested_by_internal_identity_id,v_job.requested_auth_link_id,
+    v_job.requested_membership_id,v_job.requested_auth_session_id,v_job.requested_scope_kind,v_job.requested_scope_institution_id);
+  if v_ctx.scope_kind='institution' and v_ctx.scope_institution_id is distinct from v_job.institution_id then
+    raise insufficient_privilege using detail='SAI_PERMISSION_DENIED';
+  end if;
+  if p_asset_id is not null and (v_job.artifact_media_asset_id is distinct from p_asset_id
+    or not exists(select 1 from public.media_assets a where a.id=p_asset_id and a.export_file_job_id=v_job.id
+      and a.status='pending' and a.catalog_kind='form-xlsx'
+      and a.upload_request_id='xlsx:'||v_worker.id::text||':'||v_worker.attempts::text)) then
+    raise serialization_failure using message='forms_xlsx_attempt_unavailable';
+  end if;
+  if v_worker.lease_expires_at<=clock_timestamp() or v_job.expires_at<=clock_timestamp() then
+    raise serialization_failure using message='forms_xlsx_lease_unavailable';
+  end if;
+  return v_job;
+end;
+$$;
+create function app_private.form_worker_begin_xlsx_r2_v1(p_job_id uuid,p_worker_id text,p_file_job_id uuid)
+returns jsonb language plpgsql volatile security definer set search_path='' as $$
+declare v_job public.form_file_jobs; v_worker app_private.form_worker_jobs; v_asset public.media_assets;
+  v_attempt_key text; v_new_asset uuid:=gen_random_uuid(); v_ctx app_private.superadmin_internal_context;
+begin
+  v_job:=app_private.forms_xlsx_worker_job_v1(p_job_id,p_worker_id,p_file_job_id);
+  select * into strict v_worker from app_private.form_worker_jobs where id=p_job_id;
+  v_attempt_key:='xlsx:'||v_worker.id::text||':'||v_worker.attempts::text;
+  select * into v_asset from public.media_assets where id=v_job.artifact_media_asset_id for update;
+  if v_asset.id is null or v_asset.status<>'pending' or v_asset.upload_request_id<>v_attempt_key then
+    -- A stale worker may still finish network I/O. Preserve its unique locator
+    -- for reconciliation/cleanup, and never reuse that key for the next lease.
+    if v_asset.id is not null and v_asset.status='pending' then
+      update public.media_assets set status='quarantined' where id=v_asset.id;
+    end if;
+    insert into public.media_assets(id,institution_id,form_id,owner_internal_identity_id,upload_request_id,
+      catalog_kind,media_purpose,export_file_job_id,storage_provider,bucket_id,original_name,mime_type,expires_at,object_key)
+    values(v_new_asset,v_job.institution_id,v_job.form_id,v_job.requested_by_internal_identity_id,v_attempt_key,
+      'form-xlsx','forms-responses-export',v_job.id,'r2','coelo-transient-prod','',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',v_job.expires_at,
+      'tenants/'||v_job.institution_id::text||'/exports/forms/'||v_job.id::text||'/'||v_new_asset::text||'/responses.xlsx')
+    returning * into v_asset;
+    update public.form_file_jobs set artifact_media_asset_id=v_asset.id,state='processing',
+      started_at=coalesce(started_at,clock_timestamp()),progress=greatest(progress,0.05),error_code=null
+      where id=v_job.id;
+  end if;
+  v_job:=app_private.forms_xlsx_worker_job_v1(p_job_id,p_worker_id,p_file_job_id,v_asset.id);
+  v_ctx:=app_private.forms_xlsx_context_from_session_v1(v_job.requested_by_internal_identity_id,v_job.requested_auth_link_id,
+    v_job.requested_membership_id,v_job.requested_auth_session_id,v_job.requested_scope_kind,v_job.requested_scope_institution_id);
+  perform app_private.audit_append_superadmin_internal(v_ctx.internal_identity_id,v_ctx.internal_auth_link_id,
+    v_ctx.internal_membership_id,v_ctx.session_id,'forms.responses.export',v_ctx.aal,
+    'superadmin.forms.export.begin','success',null,gen_random_uuid(),v_job.institution_id,'form_file_job',v_job.id);
+  perform app_private.forms_xlsx_worker_job_v1(p_job_id,p_worker_id,p_file_job_id,v_asset.id);
+  return jsonb_build_object('job_id',v_job.id,'worker_job_id',v_worker.id,'attempt',v_worker.attempts,
+    'asset_id',v_asset.id,'institution_id',v_job.institution_id,'provider','r2','bucket',v_asset.bucket_id,
+    'object_key',v_asset.object_key,'mime_type',v_asset.mime_type,'expires_at',v_job.expires_at,
+    'snapshot_format_version',v_job.snapshot_format_version,'snapshot_row_count',v_job.snapshot_row_count);
+end;
+$$;
+create function app_private.form_worker_xlsx_snapshot_r2_v1(
+  p_job_id uuid,p_worker_id text,p_file_job_id uuid,p_asset_id uuid,
+  p_after_sequence bigint default 0,p_limit integer default 250
+) returns jsonb language plpgsql volatile security definer set search_path='' as $$
+declare v_job public.form_file_jobs; v_result jsonb;
+begin
+  if p_asset_id is null or p_after_sequence is null or p_after_sequence<0 or p_limit is null or p_limit not between 1 and 500 then
+    raise invalid_parameter_value using message='forms_xlsx_page_invalid';
+  end if;
+  v_job:=app_private.forms_xlsx_worker_job_v1(p_job_id,p_worker_id,p_file_job_id,p_asset_id);
+  if p_after_sequence>v_job.snapshot_row_count then raise invalid_parameter_value using message='forms_xlsx_cursor_invalid'; end if;
+  select jsonb_build_object('kind','xlsx','snapshot_format_version',v_job.snapshot_format_version,
+    'submissions',coalesce(jsonb_agg(s.submission_jsonb order by s.sequence_number),'[]'::jsonb),
+    'has_more',coalesce(max(s.sequence_number),p_after_sequence)<v_job.snapshot_row_count,
+    'next_cursor',case when max(s.sequence_number) is not null then max(s.sequence_number)::text else null end)
+    into v_result from (select sequence_number,submission_jsonb from app_private.form_xlsx_snapshot_rows
+      where file_job_id=v_job.id and sequence_number>p_after_sequence order by sequence_number limit p_limit) s;
+  perform app_private.forms_xlsx_worker_job_v1(p_job_id,p_worker_id,p_file_job_id,p_asset_id);
+  return v_result;
+end;
+$$;
+create function public.form_worker_begin_xlsx_r2_v1(p_job_id uuid,p_worker_id text,p_file_job_id uuid)
+returns jsonb language sql volatile security definer set search_path='' as $$
+  select app_private.form_worker_begin_xlsx_r2_v1($1,$2,$3);
+$$;
+create function public.form_worker_xlsx_snapshot_r2_v1(p_job_id uuid,p_worker_id text,p_file_job_id uuid,p_asset_id uuid,
+  p_after_sequence bigint default 0,p_limit integer default 250)
+returns jsonb language sql volatile security definer set search_path='' as $$
+  select app_private.form_worker_xlsx_snapshot_r2_v1($1,$2,$3,$4,$5,$6);
+$$;
+revoke all on function app_private.forms_xlsx_worker_job_v1(uuid,text,uuid,uuid),
+  app_private.form_worker_begin_xlsx_r2_v1(uuid,text,uuid),
+  app_private.form_worker_xlsx_snapshot_r2_v1(uuid,text,uuid,uuid,bigint,integer) from public,anon,authenticated,service_role;
+revoke all on function public.form_worker_begin_xlsx_r2_v1(uuid,text,uuid),
+  public.form_worker_xlsx_snapshot_r2_v1(uuid,text,uuid,uuid,bigint,integer) from public,anon,authenticated;
+grant execute on function public.form_worker_begin_xlsx_r2_v1(uuid,text,uuid),
+  public.form_worker_xlsx_snapshot_r2_v1(uuid,text,uuid,uuid,bigint,integer) to service_role;
+-- WIP: worker finalization/reconciliation and cleanup
 -- follow in this reserved candidate before a complete packet is proposed.
 commit;
