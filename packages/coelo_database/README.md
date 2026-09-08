@@ -292,8 +292,8 @@ seus resultados SQL são registrados em evidências nominais separadas.
 O perfil `FReadDirectoryContractGreenDerived` fixa51arquivos e target20260908000049:
 base50derivada mais somente o reader aprovado. Reutiliza o conversor RED com
 hashes de origem/derivado e mantém os50outros inputs byte a byte. A preparação
-passou373Pester (41específicos +332regressões), parse e revisão. Sua execução
-SQL aguarda liberação nominal do Coordenador; o nome GREEN não é prova funcional.
+passou373Pester (41específicos +332regressões), parse e revisão. O replay local51 aplicou integralmente e a fixture íntegra passou117/117TAP,
+com cleanup próprio confirmado. Esse resultado não é implantação nem E2E de tela.
 
 Nunca use
 `Prepare-SafeMigrationReplay.ps1` diretamente em operacoes normais, nem use o
