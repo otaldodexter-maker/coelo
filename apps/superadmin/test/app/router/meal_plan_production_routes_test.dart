@@ -8,7 +8,6 @@ import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/features/meal_plans/data/dev/development_meal_plan_repository.dart';
 import 'package:coelo_superadmin/features/meal_plans/presentation/meal_plan_directory_page.dart';
 import 'package:coelo_superadmin/features/meal_plans/presentation/meal_plan_wizard_page.dart';
-import 'package:coelo_superadmin/features/errors/presentation/screens/superadmin_error_screen.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -65,30 +64,32 @@ void main() {
     expect(wizard.tenantId, 'tenant-authorized-by-server');
   });
 
-  testWidgets('production meal plan mutation fails closed without an authorized tenant', (
-    tester,
-  ) async {
-    final session = SuperadminSession()..signInForTesting();
-    final router = createSuperadminRouter(
-      session: session,
-      login: unavailableSuperadminLogin,
-      logout: unavailableSuperadminLogout,
-      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-      mealPlanRepository: DevelopmentMealPlanRepository(),
-      mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
-      onThemeModeChanged: (_) {},
-    );
-    addTearDown(router.dispose);
-    addTearDown(session.dispose);
+  testWidgets(
+    'production model route allows repository institution selection without a preset tenant',
+    (tester) async {
+      final session = SuperadminSession()..signInForTesting();
+      final router = createSuperadminRouter(
+        session: session,
+        login: unavailableSuperadminLogin,
+        logout: unavailableSuperadminLogout,
+        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+        mealPlanRepository: DevelopmentMealPlanRepository(),
+        mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
+        onThemeModeChanged: (_) {},
+      );
+      addTearDown(router.dispose);
+      addTearDown(session.dispose);
 
-    router.go('/meal-plans/models/new');
-    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
-    await tester.pumpAndSettle();
+      router.go('/meal-plans/models/new');
+      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+      await tester.pumpAndSettle();
 
-    expect(find.byType(SuperadminErrorScreen), findsOneWidget);
-    expect(find.byKey(const Key('meal-plan-authorized-tenant-unavailable')), findsOneWidget);
-    expect(find.byType(MealPlanWizardPage), findsNothing);
-  });
+      final wizard = tester.widget<MealPlanWizardPage>(find.byType(MealPlanWizardPage));
+      expect(wizard.tenantId, isEmpty);
+      expect(wizard.isTemplate, isTrue);
+      expect(find.text('Instituição do modelo'), findsOneWidget);
+    },
+  );
 
   testWidgets('production meal plan wizard routes preserve their target identifiers', (
     tester,
