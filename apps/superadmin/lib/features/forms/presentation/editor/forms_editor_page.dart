@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:coelo_api/coelo_api.dart';
@@ -11,19 +12,30 @@ import 'package:flutter/material.dart';
 import '../../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../data/development_forms_api.dart';
+import '../../data/forms_authoring_api.dart';
 import '../../data/forms_editor_context.dart';
 
 /// Production remains fail-closed until the composition root owns an
 /// authoritative mutation capability. The development constructor exercises
 /// the complete visual editor without claiming remote persistence.
 final class FormsEditorPage extends StatefulWidget {
-  const FormsEditorPage({this.api, this.formId, super.key}) : development = false;
+  const FormsEditorPage({this.api, this.formId, super.key})
+    : development = false,
+      authoringApi = null;
 
-  const FormsEditorPage.development({this.formId, super.key}) : development = true, api = null;
+  const FormsEditorPage.authoring({required this.authoringApi, this.formId, super.key})
+    : development = false,
+      api = null;
+
+  const FormsEditorPage.development({this.formId, super.key})
+    : development = true,
+      api = null,
+      authoringApi = null;
 
   final bool development;
   final String? formId;
   final FormsApi? api;
+  final FormsAuthoringApi? authoringApi;
 
   @override
   State<FormsEditorPage> createState() => _FormsEditorPageState();
@@ -35,6 +47,14 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   final _catalogSearch = TextEditingController();
   final _sections = <_EditorSectionDraft>[];
   FormsEditorContext? _editorContext;
+  FormsAuthoringEditor? _authoringEditor;
+  var _authoringDenied = false;
+  FormCommand<FormDefinition>? _pendingAuthoringSave;
+  FormsAuthoringInstitution? _creationInstitution;
+  FormsAuthoringInstitutionPage? _institutionPage;
+  final _institutionSearch = TextEditingController();
+  var _institutionQueryGeneration = 0;
+  var _newFormId = _newRequestId();
   FormDefinition? _definition;
   String? _institutionId;
   var _loading = false;
@@ -57,7 +77,12 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       _editorContext?.institutions.where((value) => value.id == _institutionId).firstOrNull;
   bool get _canEdit =>
       widget.development ||
-      (!_loading && widget.api != null && _institution?.canManageForms == true);
+      (!_loading &&
+          (widget.authoringApi != null
+              ? (!_authoringDenied &&
+                    (_authoringEditor?.canManage ?? (_creationInstitution != null)))
+              : widget.api != null && _institution?.canManageForms == true));
+  bool get _canView => _canEdit || (!_loading && !_authoringDenied && _authoringEditor != null);
   bool get _canPublish => _canEdit && (_institution?.canPublishForms ?? widget.development);
 
   @override
@@ -82,6 +107,11 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
 
   Future<void> _loadProduction() async {
     final generation = ++_contextGeneration;
+    final authoring = widget.authoringApi;
+    if (authoring != null) {
+      await _loadAuthoring(authoring, generation);
+      return;
+    }
     final api = widget.api;
     final formId = widget.formId;
     if (api == null || api is! FormsEditorContextApi) {
@@ -128,12 +158,138 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     }
   }
 
+  Future<void> _loadAuthoring(FormsAuthoringApi api, int generation) async {
+    final formId = widget.formId ?? _definition?.id;
+    setState(() => _loading = true);
+    try {
+      if (formId == null) {
+        await _loadAuthoringInstitutions(api, generation);
+        return;
+      }
+      final editor = await api.getEditor(formId);
+      if (!_isCurrentContext(generation)) return;
+      setState(() {
+        _authoringEditor = editor;
+        _authoringDenied = false;
+        _institutionId = editor.institution.id;
+        // Reauthorization is not permission to discard local edits or replace
+        // the baseline of an unresolved command with a different snapshot.
+        if (_pendingAuthoringSave == null) _applyDefinition(editor.definition);
+        _feedback = null;
+      });
+    } on FormApiException catch (error) {
+      if (_isCurrentContext(generation)) setState(() => _feedback = error.message);
+    } finally {
+      if (_isCurrentContext(generation)) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _loadAuthoringInstitutions(
+    FormsAuthoringApi api,
+    int generation, {
+    FormsAuthoringInstitutionCursor? cursor,
+  }) async {
+    final queryGeneration = ++_institutionQueryGeneration;
+    final search = _institutionSearch.text;
+    setState(() {
+      _loading = true;
+      _institutionPage = null;
+    });
+    try {
+      final page = await api.listInstitutions(
+        FormsAuthoringInstitutionQuery(search: search, cursor: cursor),
+      );
+      if (!_isCurrentContext(generation) || queryGeneration != _institutionQueryGeneration) return;
+      setState(() {
+        _institutionPage = page;
+        if (_authoringDenied) {
+          final previous = _creationInstitution;
+          _creationInstitution = page.items.where((item) => item.id == previous?.id).firstOrNull;
+          _institutionId = _creationInstitution?.id;
+        }
+        _authoringDenied = false;
+        if (cursor == null && search.isEmpty && !page.hasMore && page.items.length == 1) {
+          _creationInstitution = page.items.single;
+          _institutionId = page.items.single.id;
+        }
+        _feedback = page.items.isEmpty ? 'Nenhuma instituição encontrada.' : null;
+      });
+    } on FormApiException catch (error) {
+      if (_isCurrentContext(generation) && queryGeneration == _institutionQueryGeneration) {
+        setState(() {
+          if (error.kind == FormApiFailureKind.unauthorized) _authoringDenied = true;
+          _feedback = error.message;
+        });
+      }
+    } finally {
+      if (_isCurrentContext(generation) && queryGeneration == _institutionQueryGeneration) {
+        setState(() => _loading = false);
+      }
+    }
+  }
+
+  Widget _creationInstitutionPicker() => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      CoeloFormTextField(
+        controller: _institutionSearch,
+        labelText: 'Buscar instituição',
+        prefixIcon: Icons.search_rounded,
+        onChanged: (_) => setState(() {
+          _institutionQueryGeneration++;
+          _institutionPage = null;
+        }),
+        enabled: !_loading && _pendingAuthoringSave == null,
+      ),
+      Wrap(
+        spacing: CoeloSpacing.space2,
+        children: [
+          OutlinedButton(
+            onPressed: !_loading && _pendingAuthoringSave == null
+                ? () => _loadAuthoringInstitutions(widget.authoringApi!, _contextGeneration)
+                : null,
+            child: const Text('Buscar instituições'),
+          ),
+          if (_institutionPage?.hasMore == true)
+            OutlinedButton(
+              onPressed: !_loading && _pendingAuthoringSave == null
+                  ? () => _loadAuthoringInstitutions(
+                      widget.authoringApi!,
+                      _contextGeneration,
+                      cursor: _institutionPage!.nextCursor,
+                    )
+                  : null,
+              child: const Text('Próximas instituições'),
+            ),
+        ],
+      ),
+      Wrap(
+        spacing: CoeloSpacing.space2,
+        children: [
+          for (final institution in _institutionPage?.items ?? const <FormsAuthoringInstitution>[])
+            TextButton(
+              onPressed: !_loading && _pendingAuthoringSave == null
+                  ? () => setState(() {
+                      _creationInstitution = institution;
+                      _institutionId = institution.id;
+                      _feedback = null;
+                    })
+                  : null,
+              child: Text(institution.publicName),
+            ),
+        ],
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+    ],
+  );
+
   bool _isCurrentContext(int generation) => mounted && generation == _contextGeneration;
 
   @override
   void didUpdateWidget(covariant FormsEditorPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (identical(oldWidget.api, widget.api) &&
+        identical(oldWidget.authoringApi, widget.authoringApi) &&
         oldWidget.formId == widget.formId &&
         oldWidget.development == widget.development) {
       return;
@@ -141,6 +297,14 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     _contextGeneration++;
     _dismissOwnedOverlays();
     _editorContext = null;
+    _authoringEditor = null;
+    _authoringDenied = false;
+    _pendingAuthoringSave = null;
+    _creationInstitution = null;
+    _institutionPage = null;
+    _institutionQueryGeneration++;
+    _institutionSearch.clear();
+    _newFormId = _newRequestId();
     _definition = null;
     _institutionId = null;
     _loading = false;
@@ -178,6 +342,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       ..removeListener(_markChanged)
       ..dispose();
     _catalogSearch.dispose();
+    _institutionSearch.dispose();
     for (final section in _sections) {
       section.dispose();
     }
@@ -194,11 +359,25 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           viewportWidth: constraints.maxWidth,
           bodyMaxWidth: 1180,
           scrollKey: const Key('forms-editor-scroll'),
-          navigation: _locked(_sectionNavigation(context, constraints)),
+          navigation: widget.authoringApi != null && !_canView
+              ? const SizedBox.shrink()
+              : _canView && !_canEdit
+              ? Wrap(
+                  children: [
+                    for (var index = 0; index < _sections.length; index++)
+                      TextButton(
+                        onPressed: () => _selectSection(index),
+                        child: Text(_sections[index].title),
+                      ),
+                  ],
+                )
+              : _locked(_sectionNavigation(context, constraints)),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (!widget.development && (_loading || !_canEdit)) ...[
+              if (widget.authoringApi != null && widget.formId == null && _definition == null)
+                _creationInstitutionPicker(),
+              if (!widget.development && (_loading || !_canView)) ...[
                 CoeloStatePanel(
                   key: Key('forms-editor-unavailable'),
                   title: _loading ? 'Carregando formulário' : 'Editor indisponível',
@@ -209,14 +388,20 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
                   loading: _loading,
                 ),
                 const SizedBox(height: CoeloSpacing.space4),
+                if (widget.authoringApi != null && !_loading)
+                  OutlinedButton(onPressed: _loadProduction, child: const Text('Revalidar acesso')),
               ],
-              _locked(_editorBody()),
+              if (widget.authoringApi == null || _canView) _locked(_editorBody()),
             ],
           ),
           footer: SuperadminFormActionFooter(
             tertiaryAction: TextButton(
-              onPressed: _canEdit && !_saving ? _confirmCancel : null,
-              child: const Text('Cancelar'),
+              onPressed: _canView && !_canEdit
+                  ? () => Navigator.of(context).maybePop()
+                  : _canEdit && !_saving
+                  ? _confirmCancel
+                  : null,
+              child: Text(_canView && !_canEdit ? 'Voltar' : 'Cancelar'),
             ),
             continuationActions: [
               OutlinedButton(
@@ -301,7 +486,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       if (_feedback != null) ...[
         const SizedBox(height: CoeloSpacing.space4),
         CoeloStatePanel(
-          title: 'Prévia local',
+          title: widget.authoringApi == null ? 'Prévia local' : 'Estado do rascunho',
           message: _feedback!,
           icon: Icons.info_outline_rounded,
         ),
@@ -323,7 +508,21 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           final stack =
               constraints.maxWidth < 720 || MediaQuery.textScalerOf(context).scale(1) > 1.3;
           final fields = [
-            if (!widget.development)
+            if (widget.authoringApi != null)
+              CoeloAdminSingleSelectField<String>(
+                key: const Key('forms-editor-institution'),
+                label: 'Instituição',
+                value: _institutionId ?? '',
+                options: [?_institutionId],
+                optionLabel: (_) =>
+                    _authoringEditor?.institution.publicName ??
+                    _creationInstitution?.publicName ??
+                    '',
+                prefixIcon: Icons.account_balance_outlined,
+                enabled: false,
+                onChanged: (_) {},
+              )
+            else if (!widget.development)
               CoeloAdminSingleSelectField<String>(
                 key: const Key('forms-editor-institution'),
                 label: 'Instituição',
@@ -366,7 +565,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
               label: 'Gerar ocorrências',
               description: 'Cria aberturas recorrentes para a rotina de cuidado.',
               value: _recurring,
-              onChanged: _canEdit
+              onChanged: _canEdit && widget.authoringApi == null
                   ? (value) => setState(() {
                       _recurring = value;
                       _feedback = null;
@@ -843,7 +1042,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       key: ValueKey('forms-question-card-${question.id}'),
       index: index,
       question: question,
-      expanded: _expandedQuestionId == question.id,
+      expanded: (_canView && !_canEdit) || _expandedQuestionId == question.id,
       canMoveUp: index > 0,
       canMoveDown: index < siblings.length - 1,
       canDrag: !nested,
@@ -1040,7 +1239,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   }
 
   FormDefinition _localDefinition() => FormDefinition(
-    id: _definition?.id ?? '',
+    id: _definition?.id ?? (widget.authoringApi != null ? _newFormId : ''),
     institutionId: _institutionId ?? '',
     kind: _definition?.kind ?? FormKind.form,
     identityMode: _definition?.identityMode ?? FormIdentityMode.identified,
@@ -1107,8 +1306,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       return;
     }
     final api = widget.api;
-    if (api == null || !_canEdit) return;
-    final definition = _localDefinition();
+    final authoring = widget.authoringApi;
+    if ((api == null && authoring == null) || !_canEdit || _saving) return;
+    final definition = _pendingAuthoringSave?.payload ?? _localDefinition();
     // Quick-poll completeness is a publish gate, not a draft-save gate.
     // Keep structural validation; the backend still authorizes every command.
     final draftIssues = const FormDefinitionValidator()
@@ -1129,21 +1329,43 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     }
     setState(() => _saving = true);
     try {
-      final saved = await api.saveDraft(
-        FormCommand(
-          requestId: _newRequestId(),
-          expectedVersion: _definition?.managementVersion ?? 0,
-          payload: definition,
-        ),
-      );
+      final command =
+          _pendingAuthoringSave ??
+          FormCommand(
+            requestId: _newRequestId(),
+            expectedVersion: _definition?.managementVersion ?? 0,
+            payload: definition,
+          );
+      if (authoring != null) _pendingAuthoringSave = command;
+      final saved = await (authoring != null
+          ? authoring.saveDraft(command)
+          : api!.saveDraft(command));
       if (!_isCurrentContext(generation)) return;
+      final changedSinceCommand =
+          authoring != null &&
+          jsonEncode(FormDefinitionDto.fromDomain(_localDefinition()).toJson()) !=
+              jsonEncode(FormDefinitionDto.fromDomain(command.payload).toJson());
       setState(() {
         _definition = saved;
         _institutionId = saved.institutionId;
-        _feedback = 'Rascunho salvo.';
+        _pendingAuthoringSave = null;
+        _feedback = changedSinceCommand
+            ? 'Salvamento anterior confirmado. Há alterações locais ainda não salvas.'
+            : 'Rascunho salvo.';
       });
     } on FormApiException catch (error) {
-      if (_isCurrentContext(generation)) setState(() => _feedback = error.message);
+      if (_isCurrentContext(generation)) {
+        setState(() {
+          if (authoring != null && error.kind == FormApiFailureKind.unauthorized) {
+            _authoringDenied = true;
+          }
+          if (error.kind == FormApiFailureKind.validation ||
+              error.kind == FormApiFailureKind.conflict) {
+            _pendingAuthoringSave = null;
+          }
+          _feedback = error.message;
+        });
+      }
     } finally {
       if (_isCurrentContext(generation)) setState(() => _saving = false);
     }
@@ -1266,6 +1488,12 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   }
 
   Future<void> _confirmCancel() async {
+    if (_pendingAuthoringSave != null) {
+      setState(
+        () => _feedback = 'Confirme o salvamento anterior antes de descartar alterações locais.',
+      );
+      return;
+    }
     final generation = _contextGeneration;
     final cancel = await _showOwnedDialog<bool>(
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
@@ -2030,11 +2258,14 @@ final class _QuestionCardState extends State<_QuestionCard> {
           widget.onChanged();
         },
       ),
-      if (widget.question.kind == FormItemKind.information) ...[
+      if (widget.question.kind == FormItemKind.information ||
+          widget.question.details.text.isNotEmpty) ...[
         const SizedBox(height: CoeloSpacing.space3),
         CoeloFormTextField(
           controller: widget.question.details,
-          labelText: 'Detalhes do bloco',
+          labelText: widget.question.kind == FormItemKind.information
+              ? 'Detalhes do bloco'
+              : 'Ajuda da pergunta',
           prefixIcon: Icons.notes_rounded,
           onChanged: (_) => widget.onChanged(),
         ),
