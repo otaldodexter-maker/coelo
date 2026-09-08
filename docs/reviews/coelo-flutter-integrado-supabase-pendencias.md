@@ -450,3 +450,8 @@ Atualiza a retenção registrada acima: C03 reproduziu o defeito de contexto des
 Atividadesmodelo40edad7f: testeadapter C00 **4/4 PASS**, análise2arquivos sem problemas. São quatro testes da base integrada, distintos dos oito relatados no branch C03 que incluem save ainda retido. Rotina0a01769f+ee2efb40 permanece7PASS/análise2PASS. Os logs nominais ficam em C:/Users/adrie/AppData/Local/Temp/coelo-c00-activity-model-1815.log, coelo-c00-daily-routine-1815.log e coelo-c00-attendance-1818.log, com arquivos -analyze.log correspondentes. Sem promoção ou execução remota.
 
 Docker: Owner enviou telas de erro1920 nos sockets sailor-ingest.sock e SecretsEngine/engine.sock e de factory reset concluído. C00 não executou factory reset; conferiu processos encerrados, driverafunixRUNNING e tagsAF_UNIX0x80000023. Remove-Item do socket falhou sem apagar. Diretórios de sockets foram preservados por renomeação nominal; último SecretsEngine foi conferido por inode12384898975887798 e substituído por diretório vazio. Boot em verificação; leaseSQL permanece não concedida. Nenhum arquivo Coelo, worktree ou recurso remoto alterado pela recuperação.
+
+
+## R01-VISUAL-1835 — 2026-09-08T18:33:32-03:00
+
+Decisões e bloqueios por superfície em [relatório](etapa-2-operacao/reports/R01-VISUAL-1835.md): appbarCoelo+chevron jáaprovado em01/09; shellalinhamento e consumidorChat/Agora aguardamcorreção pontual. NovoRED de ativação semântica do seletormúltiplo afetaUsuáriosinternos/Convites; C01I012 reservado. Todos os critérios de conclusão FE/BE/E2E continuam abertos, sem alteração de backend ou promoção; 77goldens históricos não são regressão atribuível automaticamente aos novos lotes.

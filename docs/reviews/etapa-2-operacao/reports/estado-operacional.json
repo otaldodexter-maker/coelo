@@ -43,7 +43,7 @@
       "thread_id": "01a08197-7b62-73c1-9673-5fd40fa40452",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01",
       "branch": "codex/e2-r01-c01-identidade",
-      "instruction_revision": 11,
+      "instruction_revision": 12,
       "received_revision": 40,
       "integrated_revision": 3,
       "last_evidence": "2026-09-08T18:13:04-03:00",
@@ -514,7 +514,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T18:27:37-03:00",
+  "updated_at": "2026-09-08T18:33:32-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -1159,7 +1159,7 @@
       "branch": "claude/e2-r01-c06-coordenacao",
       "baseline": "f0763a657ca6e5422cc42fa61c0c3c4ca724e129",
       "handoff_path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06\\docs\\reviews\\etapa-2-operacao\\handoffs\\C06.md",
-      "instruction_revision": 4,
+      "instruction_revision": 5,
       "received_revision": 5,
       "accepted_revision": 5,
       "status": "active-acknowledged",
@@ -1311,7 +1311,7 @@
   },
   "docker_recovery_1823": {
     "at": "2026-09-08T18:22:51-03:00",
-    "status": "delegated-operator-active;native-snapshot-verified",
+    "status": "operator-ack-SUPPORT-I002;recovering-WSL-ping2376",
     "factory_reset": "Owner screenshots/logs confirm external reset;not executed byC00",
     "preserved_paths": [
       "C:/Users/adrie/AppData/Local/Docker/run.recovery-20260908-1820",
@@ -1324,11 +1324,12 @@
     "operator_title": "Apoiar C00 em tarefas rápidas",
     "delegated_at": "2026-09-08T18:24:33-03:00",
     "scope": "recover local engine; no SQL/remotes; C00/subagents make no Docker mutations until handback",
-    "native_cursor": "8595af92-fc69-405c-8db2-708727cd1d0c:1"
+    "native_cursor": "8595af92-fc69-405c-8db2-708727cd1d0c:1",
+    "last_intervention": "once for context loss; ack native received; no new tasks"
   },
   "coordinator_next_steps_docker": "Read compact native status of support thread; verify engine result without asking Owner to watch app; only then nominal replay lease. Do not duplicate recovery operations.",
   "visual_review_c07": {
-    "status": "C00-read-only-review-assigned",
+    "status": "decisions-published;corrections-pending",
     "source": "C06r5 and C07 original reports",
     "topics": [
       "shell PageHeader compact actions",
@@ -1336,6 +1337,17 @@
       "Agora3419a89e",
       "Structures77 historical goldens/d9232a94"
     ],
-    "promotion": false
+    "promotion": false,
+    "report": "reports/R01-VISUAL-1835.md"
+  },
+  "multi_select_reservation": {
+    "owner": "C01",
+    "instruction": "R01-C01-I012",
+    "paths": [
+      "packages/coelo_ui_admin/lib/src/filter/coelo_admin_multi_select_field.dart",
+      "packages/coelo_ui_admin/test/filter/coelo_admin_multi_select_field_test.dart"
+    ],
+    "status": "granted",
+    "at": "2026-09-08T18:33:32-03:00"
   }
 }
