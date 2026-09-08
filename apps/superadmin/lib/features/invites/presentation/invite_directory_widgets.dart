@@ -174,36 +174,66 @@ final class InviteDirectoryCards extends StatelessWidget {
     builder: (context, constraints) {
       final columns = (constraints.maxWidth / 340).floor().clamp(1, 99);
       final cardWidth = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
-      return Wrap(
+      final cards = <Widget>[
+        if (onCreate != null)
+          SizedBox(
+            width: cardWidth,
+            child: ConstrainedBox(
+              key: const Key('invite-create-card'),
+              constraints: const BoxConstraints(minHeight: 216),
+              child: CoeloAdminCreateAction(
+                label: 'Novo convite',
+                description: 'Escolha contexto, perfil, destinatário e canais.',
+                icon: Icons.mark_email_unread_outlined,
+                onPressed: onCreate!,
+              ),
+            ),
+          ),
+        for (final invite in items)
+          SizedBox(
+            width: cardWidth,
+            child: _InviteCard(
+              invite: invite,
+              busy: busyInviteId == invite.id,
+              onOpen: onOpen == null ? null : () => onOpen!(invite.id),
+              allowCommands: allowCommands,
+              onSelected: (action) => onAction(invite, action),
+            ),
+          ),
+      ];
+      // Match each row's content height, including enlarged text, while keeping
+      // the approved directory widths, gaps and canonical card surfaces.
+      return Column(
         key: const Key('invite-card-grid'),
-        spacing: CoeloSpacing.space6,
-        runSpacing: CoeloSpacing.space6,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (onCreate != null)
-            SizedBox(
-              width: cardWidth,
-              child: ConstrainedBox(
-                key: const Key('invite-create-card'),
-                constraints: const BoxConstraints(minHeight: 216),
-                child: CoeloAdminCreateAction(
-                  label: 'Novo convite',
-                  description: 'Escolha contexto, perfil, destinatário e canais.',
-                  icon: Icons.mark_email_unread_outlined,
-                  onPressed: onCreate!,
+          for (var start = 0; start < cards.length; start += columns) ...[
+            if (start > 0) const SizedBox(height: CoeloSpacing.space6),
+            Table(
+              // ponytail: fixed columns avoid intrinsic width measurement of
+              // the LayoutBuilder used by the canonical status indicator.
+              defaultColumnWidth: FixedColumnWidth(cardWidth),
+              defaultVerticalAlignment: TableCellVerticalAlignment.intrinsicHeight,
+              columnWidths: {
+                for (var gap = 1; gap < columns * 2 - 1; gap += 2)
+                  gap: const FixedColumnWidth(CoeloSpacing.space6),
+              },
+              children: [
+                TableRow(
+                  children: [
+                    for (
+                      var index = start;
+                      index < cards.length && index < start + columns;
+                      index++
+                    ) ...[
+                      if (index > start) const SizedBox(width: CoeloSpacing.space6),
+                      cards[index],
+                    ],
+                  ],
                 ),
-              ),
+              ],
             ),
-          for (final invite in items)
-            SizedBox(
-              width: cardWidth,
-              child: _InviteCard(
-                invite: invite,
-                busy: busyInviteId == invite.id,
-                onOpen: onOpen == null ? null : () => onOpen!(invite.id),
-                allowCommands: allowCommands,
-                onSelected: (action) => onAction(invite, action),
-              ),
-            ),
+          ],
         ],
       );
     },
