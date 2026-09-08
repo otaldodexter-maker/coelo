@@ -10,6 +10,400 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('yes-no branch creation survives a new editor load and second save', (tester) async {
+    final first = _EditorApi(itemKind: FormItemKind.yesNo);
+    await tester.pumpWidget(_app(first, 'form-1'));
+    await tester.pumpAndSettle();
+    tester
+        .widgetList<CoeloAdminToggleField>(find.byType(CoeloAdminToggleField))
+        .singleWhere((field) => field.label == 'Desdobrar por resposta')
+        .onChanged!(true);
+    await tester.pumpAndSettle();
+    final add = find.text('Adicionar pergunta ao ramo').first;
+    await tester.ensureVisible(add);
+    await tester.tap(add);
+    await tester.pumpAndSettle();
+    final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    final sent = first.savedCommands.single.payload.sections.first.items;
+    final second = _EditorApi(firstItems: sent);
+    await tester.pumpWidget(_app(second, 'form-1'));
+    await tester.pumpAndSettle();
+    expect(find.text('Se Sim'), findsOneWidget);
+    expect(find.text('2 perguntas'), findsOneWidget);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    final saved = second.savedCommands.single.payload.sections.first.items;
+    expect(saved.map((item) => item.id), sent.map((item) => item.id));
+    expect(saved.map((item) => item.label), sent.map((item) => item.label));
+    expect(saved.last.conditions.single.sourceItemId, sent.first.id);
+    expect(saved.last.conditions.single.expectedYesNo, isTrue);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('yes-no branch cyclic loaded graph stays rejected without recursive UI failure', (
+    tester,
+  ) async {
+    final api = _EditorApi(
+      firstItems: [
+        FormItem(
+          id: 'parent',
+          kind: FormItemKind.yesNo,
+          label: 'Parent',
+          position: 0,
+          conditions: const [FormCondition.yesNo(sourceItemId: 'child', expected: true)],
+        ),
+        FormItem(
+          id: 'child',
+          kind: FormItemKind.yesNo,
+          label: 'Child',
+          position: 1,
+          conditions: const [FormCondition.yesNo(sourceItemId: 'parent', expected: true)],
+        ),
+      ],
+    );
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+    await tester.pumpAndSettle();
+    expect(api.savedCommands, isEmpty);
+    expect(
+      find.text('Revise o título, a ordem e os campos obrigatórios antes de salvar.'),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('yes-no branch loaded children remain present in preview', (tester) async {
+    final api = _EditorApi(
+      firstItems: [
+        FormItem(id: 'parent', kind: FormItemKind.yesNo, label: 'Parent', position: 0),
+        FormItem(
+          id: 'child',
+          kind: FormItemKind.shortText,
+          label: 'Loaded child',
+          position: 1,
+          conditions: const [FormCondition.yesNo(sourceItemId: 'parent', expected: true)],
+        ),
+      ],
+    );
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    await _openOverlay(tester, 'preview');
+    await tester.pumpAndSettle();
+    final preview = find.byType(CoeloAdminDialogShell);
+    expect(find.descendant(of: preview, matching: find.text('1. Parent')), findsOneWidget);
+    expect(find.descendant(of: preview, matching: find.text('2. Loaded child')), findsOneWidget);
+    expect(
+      find.descendant(of: preview, matching: find.text('Pergunta condicionada')),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('yes-no branch deep hierarchy remains editable at 375 pixels with 200 percent text', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(375, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final api = _EditorApi(
+      firstItems: [
+        for (var index = 0; index < 5; index++)
+          FormItem(
+            id: 'level-$index',
+            kind: index == 4 ? FormItemKind.shortText : FormItemKind.yesNo,
+            label: 'Level $index',
+            position: index,
+            conditions: index == 0
+                ? const []
+                : [FormCondition.yesNo(sourceItemId: 'level-${index - 1}', expected: true)],
+          ),
+      ],
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: Scaffold(
+          body: FormsEditorPage(api: api, formId: 'form-1'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final edit = find.descendant(
+      of: find.byKey(const ValueKey('forms-question-card-level-4')),
+      matching: find.byTooltip('Editar pergunta'),
+    );
+    await tester.ensureVisible(edit);
+    await tester.tap(edit);
+    await tester.pumpAndSettle();
+    final field = tester
+        .widgetList<TextFormField>(find.byType(TextFormField))
+        .singleWhere((field) => field.controller?.text == 'Level 4');
+    await tester.enterText(find.byWidget(field), 'Edited deep child');
+    final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    expect(api.savedCommands.single.payload.sections.first.items.last.label, 'Edited deep child');
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final action in [
+    'save',
+    'hide',
+    'duplicate-parent',
+    'duplicate-section',
+    'reorder-parent',
+  ]) {
+    testWidgets('yes-no branch retains child and condition after $action', (tester) async {
+      final api = _EditorApi(
+        itemKind: FormItemKind.yesNo,
+        firstItems: [
+          FormItem(id: 'parent', kind: FormItemKind.yesNo, label: 'Parent', position: 0),
+          FormItem(id: 'other', kind: FormItemKind.shortText, label: 'Other', position: 1),
+        ],
+      );
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      final toggle = tester
+          .widgetList<CoeloAdminToggleField>(find.byType(CoeloAdminToggleField))
+          .singleWhere((field) => field.label == 'Desdobrar por resposta');
+      toggle.onChanged!(true);
+      await tester.pumpAndSettle();
+      final add = find.text('Adicionar pergunta ao ramo').first;
+      await tester.ensureVisible(add);
+      await tester.tap(add);
+      await tester.pumpAndSettle();
+      if (action == 'hide') {
+        tester
+            .widgetList<CoeloAdminToggleField>(find.byType(CoeloAdminToggleField))
+            .singleWhere((field) => field.label == 'Desdobrar por resposta')
+            .onChanged!(false);
+        await tester.pumpAndSettle();
+      } else if (action == 'duplicate-parent' || action == 'duplicate-section') {
+        final button = find
+            .byTooltip(action == 'duplicate-parent' ? 'Duplicar pergunta' : 'Duplicar seção')
+            .first;
+        await tester.ensureVisible(button);
+        await tester.tap(button);
+        await tester.pumpAndSettle();
+      } else if (action == 'reorder-parent') {
+        final list = tester.widget<ReorderableListView>(
+          find.byKey(const Key('forms-editor-question-reorder-list')),
+        );
+        list.onReorderItem!(0, 1);
+        await tester.pumpAndSettle();
+      }
+      final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+      await tester.ensureVisible(save);
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      final definition = api.savedCommands.single.payload;
+      final allItems = definition.sections.expand((section) => section.items).toList();
+      final children = allItems.where((item) => item.label.startsWith('Pergunta do ramo')).toList();
+      expect(children, hasLength(action.startsWith('duplicate') ? 2 : 1));
+      for (final child in children) {
+        final parent = allItems.singleWhere(
+          (item) => item.id == child.conditions.single.sourceItemId,
+        );
+        expect(parent.kind, FormItemKind.yesNo);
+        expect(child.conditions.single.expectedYesNo, isTrue);
+        final section = definition.sections.singleWhere((section) => section.items.contains(child));
+        expect(section.items.indexOf(child), section.items.indexOf(parent) + 1);
+      }
+      expect(allItems.map((item) => item.id).toSet(), hasLength(allItems.length));
+      for (final section in definition.sections) {
+        expect(
+          section.items.map((item) => item.position),
+          List.generate(section.items.length, (index) => index),
+        );
+      }
+      expect(const FormDefinitionValidator().validate(definition), isEmpty);
+      if (action.startsWith('duplicate')) {
+        expect(children.map((item) => item.conditions.single.sourceItemId).toSet(), hasLength(2));
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('yes-no branch reload preserves hierarchy, order and editable child', (tester) async {
+    final api = _EditorApi(
+      firstItems: [
+        FormItem(id: 'parent', kind: FormItemKind.yesNo, label: 'Parent', position: 0),
+        FormItem(
+          id: 'child',
+          kind: FormItemKind.shortText,
+          label: 'Loaded child',
+          position: 1,
+          conditions: const [FormCondition.yesNo(sourceItemId: 'parent', expected: true)],
+        ),
+      ],
+    );
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    expect(find.text('Se Sim'), findsOneWidget);
+    final edit = find.byTooltip('Editar pergunta').first;
+    await tester.ensureVisible(edit);
+    await tester.tap(edit);
+    await tester.pumpAndSettle();
+    final childField = tester
+        .widgetList<TextFormField>(find.byType(TextFormField))
+        .singleWhere((field) => field.controller?.text == 'Loaded child');
+    await tester.enterText(find.byWidget(childField), 'Changed child');
+    final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    final items = api.savedCommands.single.payload.sections.first.items;
+    expect(items.map((item) => item.id), ['parent', 'child']);
+    expect(items.last.label, 'Changed child');
+    expect(items.last.conditions.single.sourceItemId, 'parent');
+    expect(items.last.conditions.single.expectedYesNo, isTrue);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final sourceAfter in [false, true]) {
+    testWidgets('yes-no branch preserves noncontiguous loaded order sourceAfter=$sourceAfter', (
+      tester,
+    ) async {
+      final order = sourceAfter ? ['child', 'other', 'parent'] : ['parent', 'other', 'child'];
+      final api = _EditorApi(
+        firstItems: [
+          for (var index = 0; index < order.length; index++)
+            FormItem(
+              id: order[index],
+              kind: order[index] == 'parent' ? FormItemKind.yesNo : FormItemKind.shortText,
+              label: order[index],
+              position: index,
+              conditions: order[index] == 'child'
+                  ? const [FormCondition.yesNo(sourceItemId: 'parent', expected: true)]
+                  : const [],
+            ),
+        ],
+      );
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byWidget(_title(tester)), 'Changed title only');
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+      await tester.pumpAndSettle();
+      final items = api.savedCommands.single.payload.sections.first.items;
+      expect(items.map((item) => item.id), order);
+      expect(
+        items.singleWhere((item) => item.id == 'child').conditions.single.sourceItemId,
+        'parent',
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('yes-no branch deleting and adding children retains distinct stable IDs', (
+    tester,
+  ) async {
+    final api = _EditorApi(itemKind: FormItemKind.yesNo);
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    tester
+        .widgetList<CoeloAdminToggleField>(find.byType(CoeloAdminToggleField))
+        .singleWhere((field) => field.label == 'Desdobrar por resposta')
+        .onChanged!(true);
+    await tester.pumpAndSettle();
+    for (var index = 0; index < 2; index++) {
+      final add = find.text('Adicionar pergunta ao ramo').first;
+      await tester.ensureVisible(add);
+      await tester.tap(add);
+      await tester.pumpAndSettle();
+    }
+    final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    final before = api.savedCommands.single.payload.sections.first.items;
+    expect(before, hasLength(3));
+    final delete = find.descendant(
+      of: find.byKey(ValueKey('forms-question-card-${before[1].id}')),
+      matching: find.byTooltip('Excluir pergunta'),
+    );
+    await tester.ensureVisible(delete);
+    await tester.tap(delete);
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Excluir pergunta'));
+    await tester.pumpAndSettle();
+    final add = find.text('Adicionar pergunta ao ramo').first;
+    await tester.ensureVisible(add);
+    await tester.tap(add);
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    final after = api.savedCommands.last.payload.sections.first.items;
+    expect(after.map((item) => item.id).toSet(), hasLength(3));
+    expect(after[1].id, before[2].id);
+    expect(after[2].id, isNot(isIn(before.map((item) => item.id))));
+    expect(const FormDefinitionValidator().validate(api.savedCommands.last.payload), isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'yes-no branch nested copy remaps the complete subtree and keeps descendant editable',
+    (tester) async {
+      final api = _EditorApi(
+        firstItems: [
+          FormItem(id: 'parent', kind: FormItemKind.yesNo, label: 'Parent', position: 0),
+          FormItem(
+            id: 'child',
+            kind: FormItemKind.yesNo,
+            label: 'Child',
+            position: 1,
+            conditions: const [FormCondition.yesNo(sourceItemId: 'parent', expected: true)],
+          ),
+          FormItem(
+            id: 'grandchild',
+            kind: FormItemKind.shortText,
+            label: 'Grandchild',
+            position: 2,
+            conditions: const [FormCondition.yesNo(sourceItemId: 'child', expected: true)],
+          ),
+        ],
+      );
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      final grandchild = find.byKey(const ValueKey('forms-question-card-grandchild'));
+      final edit = find.descendant(of: grandchild, matching: find.byTooltip('Editar pergunta'));
+      await tester.ensureVisible(edit);
+      await tester.tap(edit);
+      await tester.pumpAndSettle();
+      expect(find.text('Se Sim'), findsNWidgets(2));
+      final field = tester
+          .widgetList<TextFormField>(find.byType(TextFormField))
+          .singleWhere((field) => field.controller?.text == 'Grandchild');
+      await tester.enterText(find.byWidget(field), 'Edited grandchild');
+      final duplicate = find.byTooltip('Duplicar pergunta').first;
+      await tester.ensureVisible(duplicate);
+      await tester.tap(duplicate);
+      await tester.pumpAndSettle();
+      final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+      await tester.ensureVisible(save);
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      final items = api.savedCommands.single.payload.sections.first.items;
+      expect(items, hasLength(6));
+      expect(items[4].conditions.single.sourceItemId, items[3].id);
+      expect(items[5].conditions.single.sourceItemId, items[4].id);
+      expect(items[5].label, contains('Edited grandchild'));
+      expect(items.map((item) => item.id).toSet(), hasLength(6));
+      expect(const FormDefinitionValidator().validate(api.savedCommands.single.payload), isEmpty);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   for (final incomplete in [
     'missing-intent',
     'blank-intent',
