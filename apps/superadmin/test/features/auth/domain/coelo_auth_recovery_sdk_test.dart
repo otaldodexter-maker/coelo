@@ -11,6 +11,60 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('pending recovery password update excludes a new gateway login', () async {
+    final updateStarted = Completer<void>();
+    final finishUpdate = Completer<void>();
+    final requests = <Request>[];
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-test',
+      authOptions: const AuthClientOptions(autoRefreshToken: false),
+      httpClient: MockClient((request) async {
+        requests.add(request);
+        Object body = _session(1);
+        if (request.method == 'PUT' && request.url.path.endsWith('/user')) {
+          updateStarted.complete();
+          await finishUpdate.future;
+          body = _user;
+        } else if (request.url.path.endsWith('/logout')) {
+          body = <String, Object?>{};
+        }
+        return Response(
+          jsonEncode(body),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+    final gateway = SupabaseCoeloAuthGateway(client, sessionPersistence: _Persistence());
+    addTearDown(gateway.dispose);
+    await client.auth.verifyOTP(type: OtpType.recovery, tokenHash: 'synthetic-recovery-hash');
+    await Future<void>.delayed(Duration.zero);
+
+    final update = gateway.updatePassword(password: 'synthetic-new-password');
+    await updateStarted.future;
+    final login = await gateway.signInWithPassword(
+      email: 'synthetic@example.invalid',
+      password: 'synthetic',
+      persistSession: false,
+    );
+    finishUpdate.complete();
+    final reset = await update;
+
+    expect(login.isSuccess, isFalse);
+    expect(requests.where((r) => r.url.path.endsWith('/token')), isEmpty);
+    expect(reset.isSuccess, isTrue);
+    expect(client.auth.currentSession, isNull);
+    final retry = await gateway.signInWithPassword(
+      email: 'synthetic@example.invalid',
+      password: 'synthetic',
+      persistSession: false,
+    );
+    expect(retry.isSuccess, isTrue);
+  });
+
   test('initial recovery token for A cannot classify pending SDK session B', () async {
     const sessionB = '22222222-2222-4222-8222-222222222222';
     final client = SupabaseClient(

@@ -6,6 +6,52 @@ import 'package:coelo_auth/coelo_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final fails in [false, true]) {
+    test(
+      'password update is single-flight and releases after failure=$fails',
+      () async {
+        final started = Completer<void>();
+        final finish = Completer<void>();
+        final events = <String>[];
+        final api = _FakeSupabaseAuthApi(
+          sessionState: const CoeloAuthSessionState.passwordRecovery(),
+          events: events,
+          beforePasswordUpdate: () async {
+            if (!started.isCompleted) started.complete();
+            await finish.future;
+            if (fails) throw Exception('synthetic failure');
+          },
+        );
+        final gateway = SupabaseCoeloAuthGateway.test(
+          api,
+          sessionPersistence: _FakeSessionPersistence(),
+        );
+        final first = gateway.updatePassword(
+          password: 'first-synthetic-password',
+        );
+        await started.future;
+        final second = gateway.updatePassword(
+          password: 'second-synthetic-password',
+        );
+        finish.complete();
+        expect((await first).isSuccess, !fails);
+        expect((await second).isSuccess, isFalse);
+        expect(
+          events.where((event) => event == 'update-password'),
+          hasLength(1),
+        );
+        expect(api.lastUpdatedPassword, 'first-synthetic-password');
+        if (fails) {
+          await gateway.updatePassword(password: 'retry-synthetic-password');
+          expect(
+            events.where((event) => event == 'update-password'),
+            hasLength(2),
+          );
+        }
+      },
+    );
+  }
+
   test('extracts only a valid session_id from the access token payload', () {
     String token(Object payload) =>
         'header.${base64Url.encode(utf8.encode(jsonEncode(payload))).replaceAll('=', '')}.signature';
@@ -407,6 +453,7 @@ final class _FakeSupabaseAuthApi implements CoeloSupabaseAuthApi {
     this.events,
     this.passwordUpdateException,
     this.signOutException,
+    this.beforePasswordUpdate,
   }) : currentSessionState =
            sessionState ??
            (isAuthenticated
@@ -426,6 +473,7 @@ final class _FakeSupabaseAuthApi implements CoeloSupabaseAuthApi {
   final Exception? passwordRecoveryException;
   final Exception? passwordUpdateException;
   final Exception? signOutException;
+  final Future<void> Function()? beforePasswordUpdate;
   final List<String>? events;
   bool didSignOut = false;
   String? lastRecoveryEmail;
@@ -448,6 +496,7 @@ final class _FakeSupabaseAuthApi implements CoeloSupabaseAuthApi {
   Future<void> updatePassword({required String password}) async {
     events?.add('update-password');
     lastUpdatedPassword = password;
+    await beforePasswordUpdate?.call();
     if (passwordUpdateException case final exception?) {
       throw exception;
     }
