@@ -240,6 +240,7 @@ export interface AuthRecord {
   id: string;
   email: string;
   appMetadata: Record<string, unknown>;
+  bannedUntil?: string | null;
 }
 export interface AuthAdapter {
   inspect(plan: Plan): Promise<AuthRecord[]>;
@@ -487,11 +488,42 @@ export async function revokeScenario(
 export function sdkAuthAdapter(
   client: Pick<SupabaseClient, "auth">,
 ): AuthAdapter {
+  // The pinned SDK User type omits this Admin response field. Preserve its
+  // runtime value without treating a missing field as an explicit unban.
+  const bannedUntil = (user: User): unknown =>
+    Reflect.get(user, "banned_until");
+  const hasBanState = (user: User, banned: boolean): boolean => {
+    const until = bannedUntil(user);
+    if (until === null) return !banned;
+    if (
+      typeof until !== "string" ||
+      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/
+        .test(until)
+    ) return false;
+    const timestamp = Date.parse(until);
+    return Number.isFinite(timestamp) &&
+      (banned ? timestamp > Date.now() : timestamp <= Date.now());
+  };
   const record = (user: User): AuthRecord => ({
     id: user.id,
     email: user.email ?? "",
     appMetadata: user.app_metadata,
+    ...(typeof bannedUntil(user) === "string" || bannedUntil(user) === null
+      ? { bannedUntil: bannedUntil(user) as string | null }
+      : {}),
   });
+  const readBack = async (
+    id: string,
+    confirms: (user: User) => boolean,
+    code: string,
+  ): Promise<User> => {
+    const { data, error } = await guarded(
+      () => client.auth.admin.getUserById(id),
+      code,
+    );
+    requireValue(!error && data.user?.id === id && confirms(data.user), code);
+    return data.user;
+  };
   return {
     async inspect(plan) {
       const found: AuthRecord[] = [];
@@ -514,26 +546,48 @@ export function sdkAuthAdapter(
       throw new PackageError("AUTH_CATALOG_LIMIT_REQUIRES_REVIEW");
     },
     async create(input) {
-      const { data, error } = await client.auth.admin.createUser({
-        id: input.id,
-        email: input.email,
-        password: input.password,
-        email_confirm: true,
-        ban_duration: "876000h",
-        app_metadata: input.appMetadata,
-      });
-      if (error || !data.user) {
-        throw new PackageError("AUTH_CREATE_UNCONFIRMED");
+      const confirms = (user: User) =>
+        user.id === input.id && user.email?.toLowerCase() === input.email &&
+        Object.entries(input.appMetadata).every(([key, value]) =>
+          user.app_metadata?.[key] === value
+        ) && hasBanState(user, true);
+      try {
+        const { data, error } = await client.auth.admin.createUser({
+          id: input.id,
+          email: input.email,
+          password: input.password,
+          email_confirm: true,
+          ban_duration: "876000h",
+          app_metadata: input.appMetadata,
+        });
+        if (!error && data.user && confirms(data.user)) {
+          return record(data.user);
+        }
+      } catch (_) {
+        // A lost response does not authorize another create. Read the exact ID.
       }
-      return record(data.user);
+      return record(
+        await readBack(input.id, confirms, "AUTH_CREATE_UNCONFIRMED"),
+      );
     },
     async setBanned(id, banned) {
-      const { data, error } = await client.auth.admin.updateUserById(id, {
-        ban_duration: banned ? "876000h" : "none",
-      });
-      if (error || data.user?.id !== id) {
-        throw new PackageError("AUTH_STATUS_UNCONFIRMED");
+      try {
+        const { data, error } = await client.auth.admin.updateUserById(id, {
+          ban_duration: banned ? "876000h" : "none",
+        });
+        if (!error && data.user?.id === id && hasBanState(data.user, banned)) {
+          return;
+        }
+      } catch (_) {
+        // Reconcile once without repeating a potentially completed mutation.
       }
+      // GoTrue can omit banned_until for nil. Absence remains inconclusive;
+      // C00 must obtain separate authoritative proof for that serialization.
+      await readBack(
+        id,
+        (user) => hasBanState(user, banned),
+        "AUTH_STATUS_UNCONFIRMED",
+      );
     },
   };
 }
