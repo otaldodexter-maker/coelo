@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../domain/person_directory.dart';
@@ -36,6 +38,8 @@ final class PersonFormViewModel extends ChangeNotifier {
   final List<PersonChildContextChange> childContextChanges = [];
   bool saving = false;
   Object? saveError;
+  Future<PersonDirectoryItem>? _pendingSave;
+  bool _disposed = false;
 
   bool get isEditing => original != null;
   bool get isReadOnly => original?.type == PersonType.service;
@@ -141,63 +145,96 @@ final class PersonFormViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<PersonDirectoryItem> save() async {
-    if (isReadOnly) throw const PersonDirectoryReadOnlyException();
+  Future<PersonDirectoryItem> save() {
+    if (_disposed) return Future.error(StateError('Person form is disposed.'));
+    final pending = _pendingSave;
+    if (pending != null) return pending;
+    if (isReadOnly) return Future.error(const PersonDirectoryReadOnlyException());
     if ([firstName, lastName, displayName, legalName].any((value) => value.trim().isEmpty)) {
-      throw ArgumentError('Identity fields are required.');
+      return Future.error(ArgumentError('Identity fields are required.'));
     }
+    // Capture before notifying: listeners can edit fields or reenter save.
+    final draft = original == null
+        ? PersonDraft(
+            type: type,
+            firstName: firstName.trim(),
+            lastName: lastName.trim(),
+            displayName: displayName.trim(),
+            legalName: legalName.trim(),
+            memberships: List.unmodifiable(
+              memberships.map(
+                (item) => PersonMembershipDraft(
+                  institutionId: item.institutionId,
+                  unitId: item.unitId,
+                  groupId: item.groupId,
+                  role: item.role,
+                ),
+              ),
+            ),
+            childContexts: List.unmodifiable(
+              childContexts.map(
+                (item) => PersonChildContextDraft(
+                  institutionId: item.institutionId,
+                  unitId: item.unitId,
+                  groupId: item.groupId,
+                ),
+              ),
+            ),
+          )
+        : null;
+    final update = original != null
+        ? PersonUpdate(
+            personId: original!.id,
+            expectedUpdatedAt: original!.updatedAt,
+            firstName: firstName.trim(),
+            lastName: lastName.trim(),
+            displayName: displayName.trim(),
+            legalName: legalName.trim(),
+            membershipChanges: List.unmodifiable(membershipChanges),
+            childContextChanges: List.unmodifiable(childContextChanges),
+          )
+        : null;
+    final completion = Completer<PersonDirectoryItem>();
+    _pendingSave = completion.future;
     saving = true;
     saveError = null;
     notifyListeners();
+    unawaited(_saveSnapshot(draft, update, completion));
+    return completion.future;
+  }
+
+  Future<void> _saveSnapshot(
+    PersonDraft? draft,
+    PersonUpdate? update,
+    Completer<PersonDirectoryItem> completion,
+  ) async {
+    PersonDirectoryItem? value;
+    Object? failure;
+    StackTrace? failureStack;
     try {
-      final value = original == null
-          ? await _repository.createDraft(
-              PersonDraft(
-                type: type,
-                firstName: firstName.trim(),
-                lastName: lastName.trim(),
-                displayName: displayName.trim(),
-                legalName: legalName.trim(),
-                memberships: memberships
-                    .map(
-                      (item) => PersonMembershipDraft(
-                        institutionId: item.institutionId,
-                        unitId: item.unitId,
-                        groupId: item.groupId,
-                        role: item.role,
-                      ),
-                    )
-                    .toList(growable: false),
-                childContexts: childContexts
-                    .map(
-                      (item) => PersonChildContextDraft(
-                        institutionId: item.institutionId,
-                        unitId: item.unitId,
-                        groupId: item.groupId,
-                      ),
-                    )
-                    .toList(growable: false),
-              ),
-            )
-          : await _repository.updatePerson(
-              PersonUpdate(
-                personId: original!.id,
-                expectedUpdatedAt: original!.updatedAt,
-                firstName: firstName.trim(),
-                lastName: lastName.trim(),
-                displayName: displayName.trim(),
-                legalName: legalName.trim(),
-                membershipChanges: membershipChanges,
-                childContextChanges: childContextChanges,
-              ),
-            );
-      return value;
-    } on Object catch (error) {
-      saveError = error;
-      rethrow;
-    } finally {
+      value = draft != null
+          ? await _repository.createDraft(draft)
+          : await _repository.updatePerson(update!);
+    } on Object catch (error, stack) {
+      failure = error;
+      failureStack = stack;
+    }
+    _pendingSave = null;
+    if (!_disposed) {
       saving = false;
+      saveError = failure;
       notifyListeners();
     }
+    if (failure != null) {
+      completion.completeError(failure, failureStack);
+    } else {
+      completion.complete(value!);
+    }
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }
