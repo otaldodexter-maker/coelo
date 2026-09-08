@@ -33,7 +33,7 @@ function Get-LocationHash([string]$Path, [switch]$Raw) {
 # Closed local preparation contract; it grants no authority to run SQL.
 # The bootstrap is a separate committed input, never a canonical migration or extra preflight.
 $descriptorFile = Assert-LocationFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-LocationHash $descriptorFile.FullName) -cne '3edf1fc7608b50615f85994ce48c2e9875484eec6ea7e704516d84ee7c2a82f6') {
+if ((Get-LocationHash $descriptorFile.FullName) -cne '08e46ce829270e3c15e3d0b3da73365499e5a2dd869e48f6ee44835212eaa095') {
   throw 'LocationCatalogV2 descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json

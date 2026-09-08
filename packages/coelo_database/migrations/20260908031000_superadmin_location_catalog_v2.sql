@@ -90,7 +90,7 @@ begin
     if (select coalesce(array_agg(coalesce(r.rolname,'PUBLIC')::text||':'||a.privilege_type||':'||a.is_grantable::text order by r.rolname),'{}'::text[])
         from pg_proc p cross join lateral aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a
         left join pg_roles r on r.oid=a.grantee where p.oid=actual_oid and a.grantee<>p.proowner)
-      is distinct from case when expected.client_execute then array['authenticated:EXECUTE:false'] else '{}'::text[] end then
+      is distinct from (case when expected.client_execute then array['authenticated:EXECUTE:false'] else '{}'::text[] end) then
       raise object_not_in_prerequisite_state using message='location legacy helper ACL drift';
     end if;
   end loop;

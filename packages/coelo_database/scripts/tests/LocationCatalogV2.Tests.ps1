@@ -80,6 +80,11 @@ Describe 'Closed LocationCatalogV2 replay selector' {
     @($all.Name | ForEach-Object { $_.Substring(0,14) } | Sort-Object -Unique).Count | Should Be 50
     @($selection.Canonical)[43].Name | Should Be $institutionName
     @($selection.Canonical)[46].Name | Should Be $candidateName
+    (Get-LocationTestHash (Join-Path $fixtureMigrationRoot $candidateName)) | Should Be 'f6c6c842114932d96af6b2478df43827241192044cfcae778e7ca3e4132960df'
+    $pinnedCandidate = (Get-Content -LiteralPath $descriptorPath -Raw | ConvertFrom-Json).canonical_additions[1]
+    $pinnedCandidate.sha256_lf_utf8 | Should Be 'ec886dcbfbe88be54fb99f233e01395a8632388b2db94761f4a49b611e93ad2f'
+    $pinnedCandidate.commit | Should Be '6b0cbb3009c7184896cfd2aebd6c7a7ca0fafe10'
+    $pinnedCandidate.blob | Should Be '8d26581692ff78db923de98d7c788257857fbbdb'
     foreach ($items in @($selection.Canonical, $selection.Preflight, $selection.Additional)) {
       (@($items).Name -contains $bootstrapName) | Should Be $false
       (@($items).Name -contains $sourceName) | Should Be $false
@@ -141,7 +146,16 @@ Describe 'Closed LocationCatalogV2 replay selector' {
       source { $sourcePath }
       derived { $bootstrapPath }
     }
-    [IO.File]::AppendAllText($inputPath, "`n-- drift`n")
+    if ($kind -eq 'candidate') {
+      $approvedCase = "is distinct from (case when expected.client_execute then array['authenticated:EXECUTE:false'] else '{}'::text[] end) then"
+      $previousCase = "is distinct from case when expected.client_execute then array['authenticated:EXECUTE:false'] else '{}'::text[] end then"
+      $candidateText = [IO.File]::ReadAllText($inputPath)
+      ([regex]::Matches($candidateText, [regex]::Escape($approvedCase))).Count | Should Be 1
+      [IO.File]::WriteAllText($inputPath, $candidateText.Replace($approvedCase, $previousCase), [Text.UTF8Encoding]::new($false))
+      (Get-LocationTestHash $inputPath) | Should Be '02fb69cbff42834ffa9a9cdebb60bab7e15c6cd0cf150175020de8c8d0f823f6'
+    } else {
+      [IO.File]::AppendAllText($inputPath, "`n-- drift`n")
+    }
     { & $resolverPath } | Should Throw 'LocationCatalogV2 input hash mismatch'
   }
 
