@@ -49,6 +49,24 @@ void main() {
     expect(find.text('activity-a'), findsNothing);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('configuration reenables actions after a successful save', (tester) async {
+    final repository = _DelayedSaveConfigurationRepository();
+
+    await tester.pumpWidget(_app(repository, 'activity-a'));
+    await tester.pumpAndSettle();
+
+    final saveButton = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.tap(saveButton);
+    await tester.pump();
+    expect(tester.widget<OutlinedButton>(saveButton).onPressed, isNull);
+
+    repository.pendingSave.complete(_configuration('activity-a', version: 2));
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<OutlinedButton>(saveButton).onPressed, isNotNull);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 Widget _app(AssessmentRepository repository, String activityId) => MaterialApp(
