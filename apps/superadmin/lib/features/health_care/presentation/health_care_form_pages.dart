@@ -66,6 +66,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
   var _loadGeneration = 0;
   var _commandGeneration = 0;
   var _cancelContextGeneration = 0;
+  var _cancelDialogPending = false;
   var _draftRevision = 0;
   final _lastEpisode = TextEditingController();
   final _reaction = TextEditingController();
@@ -276,7 +277,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
   });
 
   Future<void> _requestCancel() async {
-    if (!mounted) return;
+    if (!mounted || _cancelDialogPending) return;
     final onCancel = widget.onCancel;
     if (!_dirty) {
       onCancel();
@@ -284,28 +285,34 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
     }
     final generation = _cancelContextGeneration;
     final childId = _childId;
-    final discard = await showDialog<bool>(
-      context: context,
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
-      builder: (dialogContext) => CoeloAdminDialogShell(
-        dialogKey: const Key('health-care-profile-confirm-exit-dialog'),
-        title: 'Sair sem salvar?',
-        closeTooltip: 'Fechar confirmação',
-        body: const Text('As alterações feitas neste perfil de cuidado serão descartadas.'),
-        secondaryAction: OutlinedButton(
-          onPressed: () => Navigator.of(dialogContext).pop(false),
-          child: const Text('Continuar editando'),
-        ),
-        primaryAction: FilledButton(
-          onPressed: () => Navigator.of(dialogContext).pop(true),
-          style: FilledButton.styleFrom(
-            backgroundColor: Theme.of(dialogContext).colorScheme.error,
-            foregroundColor: Theme.of(dialogContext).colorScheme.onError,
+    _cancelDialogPending = true;
+    bool? discard;
+    try {
+      discard = await showDialog<bool>(
+        context: context,
+        barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+        builder: (dialogContext) => CoeloAdminDialogShell(
+          dialogKey: const Key('health-care-profile-confirm-exit-dialog'),
+          title: 'Sair sem salvar?',
+          closeTooltip: 'Fechar confirmação',
+          body: const Text('As alterações feitas neste perfil de cuidado serão descartadas.'),
+          secondaryAction: OutlinedButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Continuar editando'),
           ),
-          child: const Text('Sair sem salvar'),
+          primaryAction: FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(dialogContext).colorScheme.error,
+              foregroundColor: Theme.of(dialogContext).colorScheme.onError,
+            ),
+            child: const Text('Sair sem salvar'),
+          ),
         ),
-      ),
-    );
+      );
+    } finally {
+      _cancelDialogPending = false;
+    }
     if (discard == true &&
         mounted &&
         generation == _cancelContextGeneration &&

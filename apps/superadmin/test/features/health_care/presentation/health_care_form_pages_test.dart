@@ -16,6 +16,38 @@ const _profileChildren = [
 ];
 
 void main() {
+  testWidgets('duplicate exit callbacks cannot confirm twice', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    var cancels = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: HealthCareProfileFormPage(
+          logout: unavailableSuperadminLogout,
+          childOptions: _profileChildren,
+          childId: 'child-demo-a',
+          loadDraft: (id) async => HealthCareProfileDraft(childId: id),
+          onSaved: (_) async {},
+          onCancel: () => cancels++,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Alergias e restrições').last);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextField, 'Reação observada'), 'Edição local');
+    final cancel = tester
+        .widget<TextButton>(find.widgetWithText(TextButton, 'Cancelar'))
+        .onPressed!;
+    cancel();
+    cancel();
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Sair sem salvar').last);
+    await tester.pumpAndSettle();
+    expect(cancels, 1);
+    expect(find.byKey(const Key('health-care-profile-confirm-exit-dialog')), findsNothing);
+  });
   for (final change in [
     'unchanged',
     'callback',
