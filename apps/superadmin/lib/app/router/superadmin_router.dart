@@ -122,6 +122,7 @@ import '../../features/institutions/data/fake_institution_directory_repository.d
 import '../../features/institutions/data/supabase_institution_directory_repository.dart';
 import 'package:coelo_domain/locations.dart';
 import '../../features/locations/domain/location_catalog_reader.dart';
+import '../../features/locations/domain/location_catalog_writer.dart';
 import '../../features/locations/domain/location_selection_source.dart';
 import '../../features/locations/presentation/locations_page.dart';
 import '../../features/locations/presentation/unit_locations_gate.dart';
@@ -233,6 +234,7 @@ GoRouter createSuperadminRouter({
   GroupDetailRepository groupDetailRepository = const UnavailableGroupDetailRepository(),
   UnitDetailRepository unitDetailRepository = const UnavailableUnitDetailRepository(),
   LocationCatalogReader locationCatalogReader = const UnavailableLocationCatalogReader(),
+  LocationCatalogWriter locationCatalogWriter = const UnavailableLocationCatalogWriter(),
   ChildDirectoryRead childDirectoryRead = unavailableChildDirectoryRead,
   ActivityDirectoryRepository activityDirectoryRepository =
       const UnavailableActivityDirectoryRepository(),
@@ -1338,6 +1340,8 @@ GoRouter createSuperadminRouter({
                   institutionId: state.pathParameters['institutionId']!,
                 ),
                 reader: locationCatalogReader,
+                writer: locationCatalogWriter,
+                canCreate: hasStructureMutationCapability(),
                 sessionAvailable: true,
                 contextRevision: session.authorizationInvalidationRevision,
                 logout: logout,
@@ -1365,6 +1369,8 @@ GoRouter createSuperadminRouter({
                   institutionId: state.pathParameters['institutionId']!,
                 ),
                 reader: locationCatalogReader,
+                writer: locationCatalogWriter,
+                canCreate: hasStructureMutationCapability(),
                 sessionAvailable: true,
                 contextRevision: session.authorizationInvalidationRevision,
                 selectedLocationId: state.pathParameters['locationId'],
@@ -1391,6 +1397,8 @@ GoRouter createSuperadminRouter({
                 unitId: state.pathParameters['unitId']!,
                 unitDetailRepository: unitDetailRepository,
                 reader: locationCatalogReader,
+                writer: locationCatalogWriter,
+                canCreate: hasStructureMutationCapability(),
                 sessionAvailable: true,
                 contextRevision: session.authorizationInvalidationRevision,
                 logout: logout,
@@ -1413,6 +1421,8 @@ GoRouter createSuperadminRouter({
                 unitId: state.pathParameters['unitId']!,
                 unitDetailRepository: unitDetailRepository,
                 reader: locationCatalogReader,
+                writer: locationCatalogWriter,
+                canCreate: hasStructureMutationCapability(),
                 sessionAvailable: true,
                 contextRevision: session.authorizationInvalidationRevision,
                 selectedLocationId: state.pathParameters['locationId'],

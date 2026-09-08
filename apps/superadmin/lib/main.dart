@@ -7,7 +7,9 @@ import 'core/config/superadmin_auth_scope.dart';
 import 'features/children/data/supabase_child_directory_reader.dart';
 import 'features/children/presentation/child_directory_controller.dart';
 import 'features/locations/data/supabase_location_catalog_reader.dart';
+import 'features/locations/data/supabase_location_catalog_writer.dart';
 import 'features/locations/domain/location_catalog_reader.dart';
+import 'features/locations/domain/location_catalog_writer.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +33,7 @@ Future<void> main() async {
       groupDetailRepository: authScope.groupDetailRepository,
       unitDetailRepository: authScope.unitDetailRepository,
       locationCatalogReader: _locationCatalogReader(),
+      locationCatalogWriter: _locationCatalogWriter(),
       childDirectoryRead: _childDirectoryRead(),
       activityDirectoryRepository: authScope.activityDirectoryRepository,
       activityCommandRepository: authScope.activityCommandRepository,
@@ -89,5 +92,14 @@ ChildDirectoryRead _childDirectoryRead() {
     return reader.fetchPage;
   } on Object {
     return unavailableChildDirectoryRead;
+  }
+}
+
+/// Production writer for the location catalog, same fail-closed rule.
+LocationCatalogWriter _locationCatalogWriter() {
+  try {
+    return SupabaseLocationCatalogWriter(Supabase.instance.client);
+  } on Object {
+    return const UnavailableLocationCatalogWriter();
   }
 }

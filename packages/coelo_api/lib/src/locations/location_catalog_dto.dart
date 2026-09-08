@@ -232,3 +232,192 @@ DateTime _timestamp(Object? value) {
 }
 
 Never _invalid() => throw const FormatException('Invalid location read response');
+
+/// The server denied the write; it never says whether the resource exists.
+final class LocationWriteDeniedException implements Exception {
+  const LocationWriteDeniedException();
+
+  @override
+  String toString() => 'Location write denied';
+}
+
+/// The payload does not satisfy the catalog contract.
+///
+/// Raised locally before transport whenever possible, and also for the
+/// server's own `SAI_INVALID_ARGUMENT`, so a client bug and a server refusal
+/// reach the caller the same way.
+final class LocationWriteRejectedException implements Exception {
+  const LocationWriteRejectedException();
+
+  @override
+  String toString() => 'Location write rejected';
+}
+
+/// The same request id was already used for a different payload.
+///
+/// Retrying with the identical payload is safe and returns the first result;
+/// changing the payload under the same id is a conflict, never a second
+/// location.
+final class LocationWriteConflictException implements Exception {
+  const LocationWriteConflictException();
+
+  @override
+  String toString() => 'Location write conflict';
+}
+
+/// What a consumer asks the catalog to create.
+///
+/// Status, ownership, provenance and audit belong to the server: this carries
+/// only what the actor typed plus the scope it typed it in.
+final class LocationWriteDraft {
+  const LocationWriteDraft({
+    required this.scope,
+    required this.kind,
+    required this.name,
+    required this.visibility,
+    this.description,
+    this.floor,
+    this.address,
+  });
+
+  final LocationScope scope;
+  final LocationKind kind;
+  final String name;
+  final LocationVisibility visibility;
+  final String? description;
+  final String? floor;
+  final Map<String, String?>? address;
+}
+
+/// Builds the create payload with exactly the nine keys the server accepts.
+///
+/// Every rule the server enforces is enforced here first, so a malformed draft
+/// fails without spending a round trip and without reaching a function that
+/// would refuse it anyway. This is convenience and honesty, never authority:
+/// the server validates the same payload again.
+Map<String, Object?> encodeLocationCreateV2(LocationWriteDraft draft) {
+  final institutionId = _writeUuid(draft.scope.institutionId);
+  final unitId = switch (draft.scope) {
+    InstitutionLocationScope() => null,
+    UnitLocationScope(:final unitId) => _writeUuid(unitId),
+  };
+  final name = _writeText(draft.name, 120);
+  if (name == null) throw const LocationWriteRejectedException();
+  final address = _writeAddress(draft.address);
+  if (draft.kind == LocationKind.external && address == null) {
+    throw const LocationWriteRejectedException();
+  }
+  return {
+    'scope_kind': draft.scope is UnitLocationScope ? 'unit' : 'institution',
+    'institution_id': institutionId,
+    'unit_id': unitId,
+    'name': name,
+    'description': _writeText(draft.description, 500),
+    'kind': draft.kind.name,
+    'floor': _writeText(draft.floor, 120),
+    'address': address,
+    'visibility': draft.visibility.name,
+  };
+}
+
+/// Reads the created location back, refusing anything outside the asked scope.
+LocationCatalogEntry decodeLocationCreateV2(
+  Object? value, {
+  required LocationScope requestedScope,
+}) {
+  final entry = _entry(_writeData(value));
+  final entryUnit = switch (entry.scope) {
+    InstitutionLocationScope() => null,
+    UnitLocationScope(:final unitId) => unitId,
+  };
+  final requestedUnit = switch (requestedScope) {
+    InstitutionLocationScope() => null,
+    UnitLocationScope(:final unitId) => unitId,
+  };
+  if (entry.scope.institutionId != requestedScope.institutionId || entryUnit != requestedUnit) {
+    _invalid();
+  }
+  return entry;
+}
+
+Object? _writeData(Object? value) {
+  final envelope = _map(value, const {'ok', 'data', 'error'});
+  if (envelope['ok'] == false) {
+    if (envelope['data'] != null) _invalid();
+    final error = _map(envelope['error'], const {
+      'code',
+      'message',
+      'correlation_id',
+      'http_status',
+    });
+    final code = error['code'];
+    if (code is! String || error['message'] is! String) _invalid();
+    _uuid(error['correlation_id']);
+    final status = _integer(error['http_status'], minimum: 400);
+    if (status > 599) _invalid();
+    if (const {
+      'SAI_AUTH_REQUIRED',
+      'SAI_SESSION_INVALID',
+      'SAI_INTERNAL_CONTEXT_DENIED',
+      'SAI_MEMBERSHIP_SUSPENDED',
+      'SAI_MEMBERSHIP_REVOKED',
+      'SAI_PERMISSION_DENIED',
+      'SAI_MFA_REQUIRED',
+    }.contains(code)) {
+      throw const LocationWriteDeniedException();
+    }
+    if (code == 'SAI_INVALID_ARGUMENT') throw const LocationWriteRejectedException();
+    if (code == 'SAI_CONCURRENT_CHANGE') throw const LocationWriteConflictException();
+    _invalid();
+  }
+  if (envelope['ok'] != true || envelope['error'] != null) _invalid();
+  return envelope['data'];
+}
+
+String _writeUuid(String value) {
+  if (!RegExp(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$').hasMatch(value)) {
+    throw const LocationWriteRejectedException();
+  }
+  return value;
+}
+
+/// Trims to null and refuses control characters, like the server does.
+String? _writeText(String? value, int limit) {
+  if (value == null) return null;
+  final trimmed = value.trim();
+  if (trimmed.isEmpty) return null;
+  if (trimmed.length > limit || RegExp(r'[\x00-\x1f\x7f]').hasMatch(trimmed)) {
+    throw const LocationWriteRejectedException();
+  }
+  return trimmed;
+}
+
+Map<String, Object?>? _writeAddress(Map<String, String?>? value) {
+  if (value == null) return null;
+  const allowed = {
+    'country',
+    'state',
+    'city',
+    'district',
+    'street',
+    'number',
+    'complement',
+    'postal_code',
+  };
+  final result = <String, Object?>{};
+  for (final entry in value.entries) {
+    if (!allowed.contains(entry.key)) throw const LocationWriteRejectedException();
+    final limit = entry.key == 'country'
+        ? 80
+        : (entry.key == 'number' || entry.key == 'postal_code' ? 64 : 240);
+    final text = _writeText(entry.value, 240);
+    if (text != null &&
+        (utf8.encode(text).length > limit ||
+            (entry.key == 'postal_code' && !RegExp(r'^[0-9]{8}$').hasMatch(text)))) {
+      throw const LocationWriteRejectedException();
+    }
+    result[entry.key] = text;
+  }
+  if (result['country'] != 'Brasil') throw const LocationWriteRejectedException();
+  return result;
+}

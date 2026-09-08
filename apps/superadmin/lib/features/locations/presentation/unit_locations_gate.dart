@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../units/domain/unit_detail.dart';
 import '../domain/location_catalog_reader.dart';
+import '../domain/location_catalog_writer.dart';
 import 'location_read_widgets.dart';
 import 'locations_page.dart';
 
@@ -22,6 +23,8 @@ final class UnitLocationsGate extends StatefulWidget {
     required this.logout,
     this.unitDetailRepository = const UnavailableUnitDetailRepository(),
     this.reader = const UnavailableLocationCatalogReader(),
+    this.writer = const UnavailableLocationCatalogWriter(),
+    this.canCreate = false,
     this.sessionAvailable = false,
     this.contextRevision = 0,
     this.selectedLocationId,
@@ -35,6 +38,8 @@ final class UnitLocationsGate extends StatefulWidget {
   final LogoutAction logout;
   final UnitDetailRepository unitDetailRepository;
   final LocationCatalogReader reader;
+  final LocationCatalogWriter writer;
+  final bool canCreate;
   final bool sessionAvailable;
   final int contextRevision;
   final String? selectedLocationId;
@@ -116,6 +121,8 @@ final class _UnitLocationsGateState extends State<UnitLocationsGate> {
       scope: LocationScope.unit(institutionId: detail.institutionId, unitId: detail.id),
       logout: widget.logout,
       reader: widget.reader,
+      writer: widget.writer,
+      canCreate: widget.canCreate,
       sessionAvailable: widget.sessionAvailable,
       contextRevision: widget.contextRevision,
       selectedLocationId: widget.selectedLocationId,

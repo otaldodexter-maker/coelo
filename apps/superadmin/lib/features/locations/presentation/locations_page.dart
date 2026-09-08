@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/location_catalog_reader.dart';
+import '../domain/location_catalog_writer.dart';
 import 'location_detail_panel.dart';
 import 'location_directory_panel.dart';
+import 'location_form_panel.dart';
 import 'location_read_widgets.dart';
 
 /// Route target for the location catalog of one institution or unit.
@@ -31,6 +33,8 @@ final class LocationsPage extends StatefulWidget {
     this.onLocationClosed,
     this.onDestinationSelected,
     this.currentDestination = 'institutions',
+    this.writer = const UnavailableLocationCatalogWriter(),
+    this.canCreate = false,
     super.key,
   });
 
@@ -52,12 +56,18 @@ final class LocationsPage extends StatefulWidget {
   /// Menu entry that stays highlighted; the catalog hangs off its owner.
   final String currentDestination;
 
+  final LocationCatalogWriter writer;
+
+  /// Whether this actor may create; the server authorizes the write anyway.
+  final bool canCreate;
+
   @override
   State<LocationsPage> createState() => _LocationsPageState();
 }
 
 final class _LocationsPageState extends State<LocationsPage> {
   String? _selected;
+  bool _creating = false;
 
   @override
   void initState() {
@@ -74,6 +84,7 @@ final class _LocationsPageState extends State<LocationsPage> {
         oldWidget.sessionAvailable != widget.sessionAvailable ||
         !sameLocationScope(oldWidget.scope, widget.scope)) {
       _selected = null;
+      _creating = false;
       return;
     }
     if (oldWidget.selectedLocationId != widget.selectedLocationId) {
@@ -86,13 +97,19 @@ final class _LocationsPageState extends State<LocationsPage> {
 
   void _open(LocationCatalogEntry item) {
     if (!mounted) return;
-    setState(() => _selected = item.id);
+    setState(() {
+      _creating = false;
+      _selected = item.id;
+    });
     widget.onLocationOpened?.call(item.id);
   }
 
   void _close() {
     if (!mounted) return;
-    setState(() => _selected = null);
+    setState(() {
+      _creating = false;
+      _selected = null;
+    });
     widget.onLocationClosed?.call();
   }
 
@@ -100,6 +117,10 @@ final class _LocationsPageState extends State<LocationsPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final selected = _selected;
+    // Creating is offered by the page, not by the directory panel: the panel is
+    // a read surface and adding an action to it would change every screen that
+    // renders it.
+    final canCreate = widget.canCreate && widget.sessionAvailable && !_creating && selected == null;
     return Theme(
       data: theme.copyWith(scaffoldBackgroundColor: theme.colorScheme.surface),
       child: SuperadminShell(
@@ -108,7 +129,25 @@ final class _LocationsPageState extends State<LocationsPage> {
         subtitle: locationScopeLabel(widget.scope),
         currentDestination: widget.currentDestination,
         onDestinationSelected: widget.onDestinationSelected,
-        child: selected == null
+        actions: [
+          if (canCreate)
+            FilledButton.icon(
+              key: const Key('locations-create'),
+              onPressed: () => setState(() => _creating = true),
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('Novo local'),
+            ),
+        ],
+        child: _creating
+            ? LocationFormPanel(
+                key: const Key('locations-form'),
+                scope: widget.scope,
+                writer: widget.writer,
+                sessionAvailable: widget.sessionAvailable,
+                onCancel: () => setState(() => _creating = false),
+                onCreated: _open,
+              )
+            : selected == null
             ? LocationDirectoryPanel(
                 key: const Key('locations-directory'),
                 scope: widget.scope,

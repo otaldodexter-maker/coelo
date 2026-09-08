@@ -4,6 +4,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import '../features/groups/domain/group_detail.dart';
 import '../features/children/presentation/child_directory_controller.dart';
 import '../features/locations/domain/location_catalog_reader.dart';
+import '../features/locations/domain/location_catalog_writer.dart';
 import '../features/units/domain/unit_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -106,6 +107,7 @@ class SuperadminApp extends StatefulWidget {
     this.groupDetailRepository = const UnavailableGroupDetailRepository(),
     this.unitDetailRepository = const UnavailableUnitDetailRepository(),
     this.locationCatalogReader = const UnavailableLocationCatalogReader(),
+    this.locationCatalogWriter = const UnavailableLocationCatalogWriter(),
     this.childDirectoryRead = unavailableChildDirectoryRead,
     this.activityDirectoryRepository = const UnavailableActivityDirectoryRepository(),
     this.activityCommandRepository = const UnavailableActivityCommandRepository(),
@@ -160,6 +162,7 @@ class SuperadminApp extends StatefulWidget {
   final GroupDetailRepository groupDetailRepository;
   final UnitDetailRepository unitDetailRepository;
   final LocationCatalogReader locationCatalogReader;
+  final LocationCatalogWriter locationCatalogWriter;
   final ChildDirectoryRead childDirectoryRead;
   final ActivityDirectoryRepository activityDirectoryRepository;
   final ActivityCommandRepository activityCommandRepository;
@@ -238,6 +241,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       groupDetailRepository: widget.groupDetailRepository,
       unitDetailRepository: widget.unitDetailRepository,
       locationCatalogReader: widget.locationCatalogReader,
+      locationCatalogWriter: widget.locationCatalogWriter,
       childDirectoryRead: widget.childDirectoryRead,
       activityDirectoryRepository: widget.activityDirectoryRepository,
       activityCommandRepository: widget.activityCommandRepository,
