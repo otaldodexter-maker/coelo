@@ -10,6 +10,25 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 void main() {
+  testWidgets('returning to the same theme does not revive an obsolete failure', (tester) async {
+    final session = SuperadminSession()..signInForTesting();
+    addTearDown(session.dispose);
+    final repository = _DelayedFailRepository();
+    await tester.pumpWidget(SuperadminApp(session: session, userPreferencesRepository: repository));
+    await tester.pumpAndSettle();
+    for (final mode in [ThemeMode.dark, ThemeMode.light, ThemeMode.dark]) {
+      tester
+          .widget<SuperadminThemeModeScope>(find.byType(SuperadminThemeModeScope))
+          .onChanged(mode);
+      await tester.pump();
+    }
+    repository.firstRelease.completeError(Exception('synthetic obsolete failure'));
+    await tester.pumpAndSettle();
+    expect(repository.stored.themeMode, ThemeMode.dark);
+    expect(find.text('Não foi possível salvar as preferências neste dispositivo.'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('an obsolete theme write failure does not report failure for a newer choice', (
     tester,
   ) async {

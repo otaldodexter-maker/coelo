@@ -11,6 +11,7 @@ final class UserPreferencesController extends ChangeNotifier {
   bool _loaded = false;
   bool _loadFailed = false;
   bool _saveFailed = false;
+  int _intentRevision = 0;
   bool _disposed = false;
   Future<void>? _loading;
   Future<void> _saving = Future<void>.value();
@@ -19,6 +20,7 @@ final class UserPreferencesController extends ChangeNotifier {
   bool get loaded => _loaded;
   bool get loadFailed => _loadFailed;
   bool get saveFailed => _saveFailed;
+  int get intentRevision => _intentRevision;
 
   Future<void> load() {
     if (_disposed) return Future<void>.value();
@@ -42,6 +44,8 @@ final class UserPreferencesController extends ChangeNotifier {
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
+    if (_disposed) return;
+    _intentRevision++;
     await load();
     if (_disposed) return;
     _preferences = _preferences.copyWith(themeMode: mode);
@@ -50,6 +54,8 @@ final class UserPreferencesController extends ChangeNotifier {
   }
 
   Future<void> setReduceMotion(bool value) async {
+    if (_disposed) return;
+    _intentRevision++;
     await load();
     if (_disposed) return;
     _preferences = _preferences.copyWith(reduceMotion: value);
@@ -79,6 +85,8 @@ final class UserPreferencesController extends ChangeNotifier {
   }
 
   Future<void> retrySave() async {
+    if (_disposed) return;
+    _intentRevision++;
     await load();
     if (_disposed) return;
     await _save(_preferences);
