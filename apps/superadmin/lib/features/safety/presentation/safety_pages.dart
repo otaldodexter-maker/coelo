@@ -838,6 +838,8 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
   var validityOpenEnded = false;
   String? error;
   int expectedVersion = 1;
+  int _contextVersion = 0;
+  bool _loadingContext = false;
   static const labels = ['Criança', 'Pessoa autorizada', 'Validade e capacidades', 'Revisão'];
 
   @override
@@ -847,14 +849,67 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
     if (widget.childId != null) _loadInitialContext();
   }
 
+  @override
+  void didUpdateWidget(covariant ChildSafetyWizardPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final changedController = oldWidget.controller != widget.controller;
+    if (changedController) {
+      oldWidget.controller.removeListener(_controllerChanged);
+      widget.controller.addListener(_controllerChanged);
+    }
+    if (changedController ||
+        oldWidget.childId != widget.childId ||
+        oldWidget.authorizationId != widget.authorizationId) {
+      _clearContext();
+      if (widget.childId != null) _loadInitialContext();
+    }
+  }
+
+  bool get _contextUnavailable =>
+      widget.controller.state == ChildSafetyLoadState.unauthorized ||
+      widget.controller.state == ChildSafetyLoadState.error;
+
+  void _clearContext() {
+    _contextVersion++;
+    step = 0;
+    searching = false;
+    _loadingContext = false;
+    options = const [];
+    child = null;
+    childSearch.clear();
+    personId.clear();
+    relationshipDetail.clear();
+    requestReason.clear();
+    relationship = 'mother';
+    pickup = true;
+    emergency = false;
+    transport = false;
+    validity = null;
+    validityOpenEnded = false;
+    expectedVersion = 1;
+    error = null;
+  }
+
   void _controllerChanged() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    setState(() {
+      if (_contextUnavailable) {
+        _clearContext();
+        error = 'Não foi possível carregar o contexto solicitado.';
+      }
+    });
   }
 
   Future<void> _loadInitialContext() async {
+    final version = _contextVersion;
+    final controller = widget.controller;
+    final childId = widget.childId!;
+    final authorizationId = widget.authorizationId;
+    _loadingContext = true;
     try {
-      final record = await widget.controller.fetchChild(widget.childId!);
-      if (!mounted || record == null) return;
+      final record = await controller.fetchChild(childId);
+      if (!mounted || version != _contextVersion) return;
+      if (record == null) throw const ChildSafetyNotFoundException();
       var option = ChildSafetyChildOption(
         id: record.childId,
         name: record.childName,
@@ -866,9 +921,9 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
         unitName: record.unitName,
       );
       PickupAuthorization? authorization;
-      if (widget.authorizationId != null) {
+      if (authorizationId != null) {
         for (final value in record.authorizations) {
-          if (value.id == widget.authorizationId) authorization = value;
+          if (value.id == authorizationId) authorization = value;
         }
         if (authorization == null) throw const ChildSafetyNotFoundException();
         option = ChildSafetyChildOption(
@@ -904,7 +959,11 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
         }
       });
     } on Exception {
-      if (mounted) setState(() => error = 'Não foi possível carregar o contexto solicitado.');
+      if (mounted && version == _contextVersion) {
+        setState(() => error = 'Não foi possível carregar o contexto solicitado.');
+      }
+    } finally {
+      if (mounted && version == _contextVersion) setState(() => _loadingContext = false);
     }
   }
 
@@ -955,7 +1014,10 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
               ),
             FilledButton(
               key: const Key('safety-wizard-primary'),
-              onPressed: widget.controller.isSaving ? null : _continue,
+              onPressed:
+                  widget.controller.isSaving || _contextUnavailable || _loadingContext || searching
+                  ? null
+                  : _continue,
               child: Text(step == 3 ? 'Enviar para aprovação' : 'Continuar'),
             ),
           ],
@@ -976,7 +1038,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
             width: CoeloSize.touchMin,
             height: CoeloSize.touchMin,
           ),
-          onPressed: searching ? null : _search,
+          onPressed: searching || _loadingContext || _contextUnavailable ? null : _search,
           icon: searching
               ? const SizedBox.square(
                   dimension: CoeloSize.iconSm,
@@ -1141,21 +1203,29 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
     ),
   );
   Future<void> _search() async {
+    if (_contextUnavailable || _loadingContext || searching) return;
+    final version = _contextVersion;
+    final controller = widget.controller;
     setState(() {
       searching = true;
       error = null;
     });
     try {
-      final result = await widget.controller.searchChildren(childSearch.text);
-      if (mounted) setState(() => options = result);
+      final result = await controller.searchChildren(childSearch.text);
+      if (mounted && version == _contextVersion) setState(() => options = result);
     } on Exception {
-      if (mounted) setState(() => error = 'Não foi possível buscar crianças.');
+      if (mounted && version == _contextVersion) {
+        setState(() => error = 'Não foi possível buscar crianças.');
+      }
     } finally {
-      if (mounted) setState(() => searching = false);
+      if (mounted && version == _contextVersion) setState(() => searching = false);
     }
   }
 
   Future<void> _continue() async {
+    if (_contextUnavailable || _loadingContext || searching || widget.controller.isSaving) return;
+    final version = _contextVersion;
+    final controller = widget.controller;
     setState(() => error = null);
     if (step == 0 && child == null) {
       setState(() => error = 'Busque e selecione uma criança.');
@@ -1181,7 +1251,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       setState(() => error = 'O contexto autorizado da criança está incompleto.');
       return;
     }
-    final saved = await widget.controller.saveAuthorization(
+    final saved = await controller.saveAuthorization(
       SavePickupAuthorizationCommand(
         requestId: _uuid(),
         childId: selected.id,
@@ -1198,11 +1268,11 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
         validUntil: validityOpenEnded ? null : validity?.end,
       ),
     );
-    if (!mounted) return;
+    if (!mounted || version != _contextVersion) return;
     if (saved) {
       widget.onSaved();
     } else {
-      setState(() => error = widget.controller.errorMessage);
+      setState(() => error = controller.errorMessage);
     }
   }
 

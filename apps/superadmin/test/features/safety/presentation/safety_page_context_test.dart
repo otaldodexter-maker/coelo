@@ -139,6 +139,161 @@ void main() {
     expect(find.text('child-a · Escopo B'), findsOneWidget);
     expect(find.text('child-a · Escopo A'), findsNothing);
   });
+
+  testWidgets('wizard clears prior fields and reloads when its controller changes', (tester) async {
+    await _surface(tester);
+    final oldController = ChildSafetyController(_Repository('Escopo A'));
+    final repository = _Repository('Escopo B');
+    final controller = ChildSafetyController(repository);
+    addTearDown(oldController.dispose);
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_wizard(oldController, 'child-a'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).last, 'Motivo do contexto anterior');
+
+    await tester.pumpWidget(_wizard(controller, 'child-a'));
+    await tester.pumpAndSettle();
+    expect(repository.childReads, ['child-a']);
+    expect(find.text('child-a · Escopo B'), findsWidgets);
+    expect(find.text('Motivo do contexto anterior'), findsNothing);
+    expect(find.text('child-a · Escopo A'), findsNothing);
+  });
+
+  testWidgets('wizard rejects late initial context after controller replacement', (tester) async {
+    await _surface(tester);
+    final oldRepository = _Repository('Escopo A');
+    final pending = Completer<ChildSafetyRecord?>();
+    oldRepository.pending = pending.future;
+    final oldController = ChildSafetyController(oldRepository);
+    final controller = ChildSafetyController(_Repository('Escopo B'));
+    addTearDown(oldController.dispose);
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_wizard(oldController, 'child-a'));
+    await tester.pump();
+    await tester.pumpWidget(_wizard(controller, 'child-b'));
+    await tester.pumpAndSettle();
+    pending.complete(oldRepository.record('child-a'));
+    await tester.pumpAndSettle();
+    expect(find.text('child-a · Escopo A'), findsNothing);
+    expect(find.text('child-b · Escopo B'), findsWidgets);
+  });
+
+  testWidgets('wizard reloads when the child changes on the same controller', (tester) async {
+    await _surface(tester);
+    final repository = _Repository('Escopo A');
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_wizard(controller, 'child-a'));
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(_wizard(controller, 'child-b'));
+    await tester.pumpAndSettle();
+    expect(repository.childReads, ['child-a', 'child-b']);
+    expect(find.text('child-a · Escopo A'), findsNothing);
+    expect(find.text('child-b · Escopo A'), findsWidgets);
+  });
+
+  testWidgets('wizard clears selected context and disables continuation after denial', (
+    tester,
+  ) async {
+    await _surface(tester);
+    final repository = _Repository('Escopo A');
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    await controller.load();
+    await tester.pumpWidget(_wizard(controller, 'child-a'));
+    await tester.pumpAndSettle();
+    repository.directoryFailure = const ChildSafetyUnauthorizedException();
+    await controller.retry();
+    await tester.pumpAndSettle();
+    expect(find.text('child-a · Escopo A'), findsNothing);
+    expect(
+      tester.widget<FilledButton>(find.byKey(const Key('safety-wizard-primary'))).onPressed,
+      isNull,
+    );
+  });
+
+  testWidgets('wizard rejects late search results after controller replacement', (tester) async {
+    await _surface(tester);
+    final repository = _Repository('Escopo A');
+    final pending = Completer<List<ChildSafetyChildOption>>();
+    repository.pendingSearch = pending.future;
+    final oldController = ChildSafetyController(repository);
+    final controller = ChildSafetyController(_Repository('Escopo B'));
+    addTearDown(oldController.dispose);
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_wizard(oldController, null));
+    await tester.enterText(find.byType(TextField).last, 'Criança');
+    await tester.tap(find.byTooltip('Buscar'));
+    await tester.pump();
+    await tester.pumpWidget(_wizard(controller, null));
+    await tester.pump();
+    pending.complete(const [
+      ChildSafetyChildOption(
+        id: 'child-a',
+        name: 'Criança anterior',
+        internalId: 'a',
+        institutionName: 'Escopo A',
+        unitName: 'Unidade A',
+      ),
+    ]);
+    await tester.pumpAndSettle();
+    expect(find.text('Criança anterior'), findsNothing);
+    expect(tester.widget<TextField>(find.byType(TextField).last).controller!.text, isEmpty);
+  });
+
+  testWidgets('wizard ignores the replaced controller listener', (tester) async {
+    await _surface(tester);
+    final oldRepository = _Repository('Escopo A');
+    final oldController = ChildSafetyController(oldRepository);
+    final controller = ChildSafetyController(_Repository('Escopo B'));
+    addTearDown(oldController.dispose);
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_wizard(oldController, 'child-a'));
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(_wizard(controller, 'child-b'));
+    await tester.pumpAndSettle();
+    oldRepository.directoryFailure = const ChildSafetyUnauthorizedException();
+    await oldController.load();
+    await tester.pumpAndSettle();
+    expect(find.text('child-b · Escopo B'), findsWidgets);
+    expect(find.text('Não foi possível carregar o contexto solicitado.'), findsNothing);
+  });
+
+  testWidgets('wizard never reports an old save through the new context callback', (tester) async {
+    await _surface(tester);
+    final repository = _Repository('Escopo A');
+    final pending = Completer<void>();
+    repository.pendingSave = pending.future;
+    final oldController = ChildSafetyController(repository);
+    final controller = ChildSafetyController(_Repository('Escopo B'));
+    addTearDown(oldController.dispose);
+    addTearDown(controller.dispose);
+    var oldSaved = 0;
+    var newSaved = 0;
+    await tester.pumpWidget(_wizard(oldController, 'child-a', onSaved: () => oldSaved++));
+    await tester.pumpAndSettle();
+    final primary = find.byKey(const Key('safety-wizard-primary'));
+    await tester.tap(primary);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).at(1), 'person-a');
+    await tester.enterText(find.byType(TextField).last, 'Solicitação sintética');
+    await tester.tap(primary);
+    await tester.pumpAndSettle();
+    await tester.tap(primary);
+    await tester.pumpAndSettle();
+    await tester.tap(primary);
+    await tester.pump();
+    expect(repository.savedCommands, hasLength(1));
+    await tester.pumpWidget(_wizard(controller, 'child-b', onSaved: () => newSaved++));
+    await tester.pumpAndSettle();
+    pending.complete();
+    await tester.pumpAndSettle();
+    expect(oldSaved, 0);
+    expect(newSaved, 0);
+    expect(find.text('child-b · Escopo B'), findsWidgets);
+  });
 }
 
 Future<void> _surface(WidgetTester tester) async {
@@ -158,6 +313,18 @@ Widget _directory(ChildSafetyController controller) => MaterialApp(
   home: SafetyLandingPage(controller: controller, logout: _logout, onOpenChild: (_) {}),
 );
 
+Widget _wizard(ChildSafetyController controller, String? childId, {VoidCallback? onSaved}) =>
+    MaterialApp(
+      theme: CoeloTheme.light,
+      home: ChildSafetyWizardPage(
+        controller: controller,
+        childId: childId,
+        logout: _logout,
+        onCancel: () {},
+        onSaved: onSaved ?? () {},
+      ),
+    );
+
 final class _Repository implements ChildSafetyRepository {
   _Repository(this.scope);
   final String scope;
@@ -165,6 +332,9 @@ final class _Repository implements ChildSafetyRepository {
   int directoryReads = 0;
   Exception? directoryFailure;
   Future<ChildSafetyRecord?>? pending;
+  Future<List<ChildSafetyChildOption>>? pendingSearch;
+  Future<void>? pendingSave;
+  final savedCommands = <SavePickupAuthorizationCommand>[];
 
   ChildSafetyRecord record(String id) => ChildSafetyRecord(
     childId: id,
@@ -173,6 +343,9 @@ final class _Repository implements ChildSafetyRepository {
     institutionName: scope,
     unitName: 'Unidade sintética',
     authorizations: const [],
+    childContextId: 'context-$id',
+    institutionId: 'institution-$scope',
+    unitId: 'unit-$scope',
   );
 
   @override
@@ -194,10 +367,14 @@ final class _Repository implements ChildSafetyRepository {
   }
 
   @override
-  Future<List<ChildSafetyChildOption>> searchChildren(String query, {int limit = 20}) async => [];
+  Future<List<ChildSafetyChildOption>> searchChildren(String query, {int limit = 20}) async =>
+      pendingSearch == null ? [] : await pendingSearch!;
   @override
-  Future<void> saveAuthorization(SavePickupAuthorizationCommand command) =>
-      throw UnimplementedError();
+  Future<void> saveAuthorization(SavePickupAuthorizationCommand command) async {
+    savedCommands.add(command);
+    await pendingSave;
+  }
+
   @override
   Future<void> transitionAuthorization(TransitionPickupAuthorizationCommand command) =>
       throw UnimplementedError();
