@@ -14,6 +14,13 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização02:47: Forms a4d8be57/c0b20ccd preserva ramos por opção e
+  Sim/Não explícitos no save/reload/cópia;190/190 três focais no destino.
+  Momentos31bacda3 limpa draft negado e remove provider antigo do cache
+  decodificado Flutter;79/79 inclgoldens destino. Analyzer3 e gatevisual PASS.
+  Cache compartilhado por chave não equivale a revogação HTTP ou zeroização.
+  Nenhum SQL/remoto/endpoint/rota ativado ou E2E certificado.
+
 - Atualização02:42: Autoria Forms1178b54e/74b56804/e9e7a282 integra contexto
   institucional paginado, descarte de callbacks e autosave800ms com receipt
   retido/retry manual.66/66 focais no destino/analyzer3 PASS. Sem ativação
