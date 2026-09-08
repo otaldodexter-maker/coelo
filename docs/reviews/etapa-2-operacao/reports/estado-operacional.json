@@ -19,18 +19,21 @@
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01",
       "branch": "codex/e2-r01-c01-identidade",
       "instruction_revision": 1,
-      "received_revision": 2,
-      "integrated_revision": 0,
-      "last_evidence": "2026-09-08T12:30:25-03:00",
+      "received_revision": 3,
+      "integrated_revision": 3,
+      "last_evidence": "2026-09-08T12:30:23-03:00",
       "baseline": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
       "worktree_verified_at": "2026-09-08T12:23:42-03:00",
       "handoff_present_at_preparation": true,
-      "accepted_revision": 2,
+      "accepted_revision": 3,
       "handoff_sha256": "09ad925b0d15f125f773bb6a497129328ca3733beb328448d188b89bca4899b9",
-      "next_step": "Consolidate tests/analyzer, commit/push and final lot handoff; external SDK session substitution remains open",
+      "next_step": "Users/Models/Invites independent domain; shared lease released",
       "eta_first_batch": "implementation 30–60min conditional on reproduced race; tests15–30min after local runtime; handoff5–10min; not total ETA",
-      "last_evidence_basis": "C00 receipt r2; section says 12:28, original frontmatter unchanged",
-      "local_test_evidence": "r2 SDK10/10; message155/155+25/25 awaiting handoff consolidation; analyzer active"
+      "last_evidence_basis": "handoff r3; C00 local verification 12:34:18",
+      "local_test_evidence": "C00 SDK/remount11/11 and coelo_auth25/25; C01 expanded155/155 and analyzer clean",
+      "source_code_sha": "1fd7f9ecd8805379ca4d24b09000f4abcff041af",
+      "integrated_code_sha": "2dd5a9bc",
+      "source_push_verified_sha": "10f893a724c8f525aeaab94631091b532572a371"
     },
     "C02": {
       "name": "E2 R01 C02 — Forms mídia e cuidado",
@@ -38,20 +41,21 @@
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
       "branch": "codex/e2-r01-c02-forms-midia",
       "instruction_revision": 2,
-      "received_revision": 1,
+      "received_revision": 3,
       "integrated_revision": 0,
-      "last_evidence": "2026-09-08T12:28:13-03:00",
+      "last_evidence": "2026-09-08T12:34:24-03:00",
       "baseline": "6cb8ba15bae15f5a6129b0db6e740a66f8f82b3f",
       "worktree_verified_at": "2026-09-08T12:23:42-03:00",
       "handoff_present_at_preparation": false,
-      "accepted_revision": 1,
-      "last_evidence_basis": "C00 read receipt; handoff claims 12:30:00, later than receipt; timestamp correction requested",
+      "accepted_revision": 3,
+      "last_evidence_basis": "handoff r3 with corrected timestamp",
       "handoff_generated_at_reported": "2026-09-08T12:30:00-03:00",
-      "handoff_sha256": "d1fa4ac60ffc42a289e963f7ff76c446cfc336cd20b45fadcee584dd4020624c",
-      "next_step": "I002 compatible common R2 transport; independent Forms reader/editor; correct handoff timestamp",
-      "local_test_evidence": "Reported Deno 40 passed / 0 failed; synthetic local; no action certification",
+      "handoff_sha256": "d8082dd6c7e480a1e1026bc9765e1191d6024552bfdfdd0f182555c2c564f3c1",
+      "next_step": "C00 review queued R2 commit; C02 independent Forms recovery and catalog inspection",
+      "local_test_evidence": "Executor49/49 Deno+4/4 static Moments; FormsWIP102/102+DTO15/15; mediaDart45/45; preflight71/71 mocked",
       "continuity_automation_id": "e2-r01-c02-retomada-30-min",
-      "continuity_verification": "Native automation view and local TOML confirmed ACTIVE, 30min; actual dispatch not proven"
+      "continuity_verification": "Native automation view and local TOML confirmed ACTIVE, 30min; actual dispatch not proven",
+      "source_code_sha": "76a34dda11608b55ac31d855d1eddaf1993372ce"
     },
     "C03": {
       "name": "E2 R01 C03 — Operações",
@@ -95,7 +99,18 @@
   },
   "remote_authorizations": [],
   "remote_test_leases": [],
-  "integration_queue": [],
+  "integration_queue": [
+    {
+      "executor": "C02",
+      "revision": 3,
+      "sha": "76a34dda11608b55ac31d855d1eddaf1993372ce",
+      "status": "received-awaiting-code-review-and-C00-tests",
+      "files": [
+        "_shared/r2_s3.ts",
+        "_shared/r2_s3_test.ts"
+      ]
+    }
+  ],
   "automation_id": "e2-r01-c00-acompanhamento-30-min",
   "docker": {
     "checked_at": "2026-09-08T12:20:45-03:00",
@@ -110,5 +125,15 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T12:30:25-03:00"
+  "updated_at": "2026-09-08T12:34:18-03:00",
+  "integration_history": [
+    {
+      "executor": "C01",
+      "revision": 3,
+      "source": "1fd7f9ecd8805379ca4d24b09000f4abcff041af",
+      "destination": "2dd5a9bc",
+      "status": "local-verified-awaiting-delivery-dev",
+      "report": "reports/R01-C01-auth-integracao.md"
+    }
+  ]
 }

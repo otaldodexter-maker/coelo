@@ -45,3 +45,11 @@ Handoff r1 recebido: crosswalk de mídia e40/40 Deno sintéticos relatados, sem 
 ## Delta C01/r2 — 2026-09-08T12:30:25−03:00
 
 Corrida login/reset reproduzida, correção candidata e10/10 SDK relatados. Três rastreadores sincronizados até C01/r2 e C02/r1; nenhuma promoção/integração, sem código commitado neste snapshot. Resultados155/155 e25/25 chegaram por mensagem, analyzer ativo: consolidação no arquivo de entrega ainda pendente. Persona nominal v1 proposta, C00 conferirá catálogo/ledger antes de autorização remota. Scope/shell devolvidos; coelo_auth permanece C01. Heartbeat C02 verificado por ferramenta/TOML; continuidade Claude permanece sem comprovação.
+
+## Primeiro lote integrado — 2026-09-08T12:34:18-03:00
+
+C01/r3: origem1fd7f9ec → C00 2dd5a9bc, revisão/testes pós-integração11/11+25/25 verdes; ver relatório R01-C01-auth-integracao.md. Dois IDs FE auditados parcialmente, auth.login/auth.reset, sem promoção de conclusão. Rastreadores até C01/r3 e C02/r1. Dev/produção ainda sem atualização neste snapshot. Lease shared C01 encerrada.
+
+## Último recebimento C02/r3
+
+C02/r3 fonte12:34:24−03:00 recebida/aceita para revisão, I002 confirmada; código76a34dda (dois arquivos R2) na fila C00, integrado0. Executor relata49/49 Deno+4/4 estáticos Moments; mediaDart45/45; Forms recuperado102/102+DTO15/15 ainda WIP separado; preflight97769124 reproduzido71/71 Pester3.4.0 com mocks, sem runtime real. Timestamp corrigido. Decoder/catálogo/autorização e E2E continuam abertos; sem promoção de ações.

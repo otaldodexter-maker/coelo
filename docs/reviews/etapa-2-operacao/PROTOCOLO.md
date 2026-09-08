@@ -37,7 +37,7 @@ C00 processa chave `(R01,CXX,revisão)`, grava received/accepted/integrated (est
 
 ## Ownership e reservas
 
-Release recebido em 08/09 12:30:25−03:00: C01 devolve auth scope e shell sem alterações; C00 retoma esses dois arquivos. `packages/coelo_auth` continua reservado ao C01 até SHA/release. Esta atualização prevalece sobre a concessão inicial R01-SHARED-01 da tabela.
+Release recebido em 08/09 12:30:25−03:00: C01 devolve auth scope e shell sem alterações; C00 retoma esses dois arquivos. `packages/coelo_auth` foi devolvido também às12:34:18−03:00 após integrar1fd7f9ec em2dd5a9bc e testes C00; R01-SHARED-01 encerrada, os arquivos passam a C00. Esta atualização prevalece sobre a concessão inicial R01-SHARED-01 da tabela.
 
 
 `assignments/ownership.json` expande os 219 IDs, um dono por ID, sem duplicados ou sem dono. Classificação operacional: 194 ativas (189 `mvp` +5 shell somente cliente), 22 adiadas,3 gates formais; N/A é anotado por camada para sete ações, não exclui seu trabalho FE. IDs de Planos/Catálogo com dúvida permanecem rastreáveis, sem retirar denominadores por conveniência.
@@ -58,6 +58,9 @@ Arquivos de domínio pertencem à assignment. Um arquivo compartilhado tem um es
 Lease cobre somente arquivos existentes nomeados e domínio; alteração transversal nova precisa nome/reserva, não permissão genérica. Transferir após release do escritor e acknowledgement C00. Bloqueio retém só as ações dependentes.
 
 ## Contrato mínimo de mídia já disponível — R01-MEDIA-01/v1
+
+Candidato v2 recebido C02/r3 em código76a34dda: `R2Client.get(key,maxBytes)` retorna bytes com limite server-side e `put(key,bytes,mimeType)` escreve server-side, preservando API anterior. Ainda na fila de revisão/teste C00, não integrado no baseline publicado. Escrita dos dois arquivos `_shared/r2_s3` transferida temporariamente a C00 para essa revisão; restante do lease de mídia segue C02. Consumidores aguardam SHA integrado para usar métodos novos, sem criar transporte concorrente.
+
 
 Atualização C02/r1 recebida em 2026-09-08T12:28:13−03:00: o wrapper Moments delega a `_shared/r2_s3.ts`, transporte comum com presignPut/presignGet/head/delete, TTL 1–900 segundos. C02 recebe também os dois arquivos comuns pela I002 para extensão compatível GET limitado/PUT server-side; C04/C05 consomem o contrato sem criar gateway concorrente. Forms `form-media` e XLSX `form-operations` ainda usam Supabase Storage legado: migração para R2 requer catálogo/autorização nominal, não apenas troca de bucket. Validador de métricas não é decoder nem prova MIME/checksum. 40/40 Deno sintéticos relatados, sem certificação de ação. A ausência dos nomes de tabelas ADR na busca não prova ausência de catálogo ou autorização.
 

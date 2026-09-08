@@ -25,8 +25,8 @@ As cinco conversas não foram criadas automaticamente. O Owner abre a sessão na
 
 | Executor | Nome exato | IDs | Worktree | Branch | Registro |
 |---|---|---|---|---|---|
-| C01 | `E2 R01 C01 — Identidade e acesso` | 44 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01` | `codex/e2-r01-c01-identidade` | 01a08197-7b62-73c1-9673-5fd40fa40452; I001/r2 recebido |
-| C02 | `E2 R01 C02 — Forms mídia e cuidado` | 32 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02` | `codex/e2-r01-c02-forms-midia` | 01a0819a-f1f1-7421-95dd-d645ca9f5747; I001/r1 recebido; I002 pendente |
+| C01 | `E2 R01 C01 — Identidade e acesso` | 44 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01` | `codex/e2-r01-c01-identidade` | 01a08197-7b62-73c1-9673-5fd40fa40452; I001/r3 integrado |
+| C02 | `E2 R01 C02 — Forms mídia e cuidado` | 32 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02` | `codex/e2-r01-c02-forms-midia` | 01a0819a-f1f1-7421-95dd-d645ca9f5747; I002/r3 recebido |
 | C03 | `E2 R01 C03 — Operações` | 68 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03` | `codex/e2-r01-c03-operacoes` | 01a0819b-a12e-7110-88cb-99e51a82f384; ack pendente |
 | C04 | `E2 R01 C04 — Estruturas e pessoas` | 47 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c04` | `claude/e2-r01-c04-estruturas` | ID/ack pendentes |
 | C05 | `E2 R01 C05 — Comunicação e Principal` | 28 | `C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c05` | `claude/e2-r01-c05-comunicacao` | ID/ack pendentes |
@@ -37,9 +37,9 @@ Seis worktrees conferidas pelo Git. C01/C03/C04/C05 partem de `479d1bd1771b13e0c
 
 ### Contagem e última evidência
 
-Inventário vigente:219 IDs únicos/38 famílias; classificação operacional194 ativas(189mvp+5shell),22 adiadas,3 gates; nenhum ID sem dono/duplicado. FE219 aplicáveis; BE212 normativas(187ativas+3gate+22adiadas),7N/A; E2E187ativas,3gates e22adiadas separados,7N/A. Frontend certificado0/219,Backend0/212,E2E0/187; IDs certificados: nenhum. Verificação runtime de camada nesta R01:0 ações, pois a preparação foi documental; histórico não foi zerado. Implementação e testes faltantes estão separados nas colunas Feito/FE/BE do inventário, sem percentual inventado.
+Inventário vigente:219 IDs únicos/38 famílias; classificação operacional194 ativas(189mvp+5shell),22 adiadas,3 gates; nenhum ID sem dono/duplicado. FE219 aplicáveis; BE212 normativas(187ativas+3gate+22adiadas),7N/A; E2E187ativas,3gates e22adiadas separados,7N/A. Frontend certificado0/219,Backend0/212,E2E0/187; IDs certificados: nenhum. Verificação de camada R01:2/219 IDs FE auditados parcialmente no lote Auth (auth.login/auth.reset), sem certificar critérios completos; BE real0/212,E2E0/187; histórico não foi zerado. Implementação e testes faltantes estão separados nas colunas Feito/FE/BE do inventário, sem percentual inventado.
 
-Última evidência de preparação: `2026-09-08T12:19:18-03:00`. Últimas entregas: C01/r2 recebido12:30:25; C02/r1 recebido12:28:13 (hora declarada12:30 divergente, correção solicitada). C01 recebido/aceito2 e C02 recebido/aceito1, ambos integrados0; C03–C05 sem handoff recebido. Os três rastreadores sincronizados a essas revisões sem promoção de ações. Nenhum novo teste UI/SQL/produção nesta preparação. Evidências históricas até08/09 permanecem com seus próprios horários e ambientes.
+Última evidência de preparação: `2026-09-08T12:19:18-03:00`. Últimas entregas: C01/r3 integrado12:34:18; C02/r3 fonte12:34:24 corrigida. C01 recebido/aceito/integrado3 e C02 recebido/aceito3 integrado0; C03–C05 sem handoff recebido. Os três rastreadores sincronizados a essas revisões sem promoção de ações. Nenhum novo teste UI/SQL/produção nesta preparação. Evidências históricas até08/09 permanecem com seus próprios horários e ambientes.
 
 ### Ack inicial C01 — 2026-09-08T12:25:00-03:00
 
@@ -51,7 +51,7 @@ Handoff R01/C01/r1, fonte12:22:29−03:00, recebido/aceito como contrato de aber
 2. C01 trabalha sessão/contratos internos, libera lease auth scope/shell no primeiro lote; C00 controla router/barrels/roots e migrations nominais, sem múltiplos escritores.
 3. C02 recupera `f84d1dd7` e `97769124`; C03 recupera view `ca4c82ab`; C04 revisa snapshot `9e689374`. Todos candidatos retidos até prova, não entrega nova. Demais commits em branches antigas podem ter cherry-picks equivalentes; comparar patch-id/diff.
 4. `07e6e837` preserva material de benchmark e revisão Eng2 fora de dev; não integrar branch inteira. Consultar evidência Eng2 por `git show 07e6e837:docs/reviews/evidence/etapa-2/engenheiro-2/plano-e-revisoes-2026-09-07.md` se precisar de proveniência; material de marketing fora de escopo.
-5. C00 recebe/revisa/testa/integra lotes aptos incrementalmente, publica SHA novo e acknowledgements. Fila de entregas R01 aptas: vazia até handoff real. Push origin permitido nas branches nominais; integração em dev autorizada, preservando trabalho original alheio. Nenhum deploy implícito.
+5. C00 recebe/revisa/testa/integra lotes aptos incrementalmente, publica SHA novo e acknowledgements. C01 lote Auth integrado em2dd5a9bc, pendente entrega dev; C02 código76a34dda na fila para revisão/testes proporcionais. Push origin permitido nas branches nominais; integração em dev autorizada, preservando trabalho original alheio. Nenhum deploy implícito.
 
 ### Decisões, reservas, ambiente e ETA
 
@@ -79,6 +79,14 @@ Crosswalk recebido, Deno sintético40/40 relatado, sem commit/push/certificaçã
 ### Ack C01/r2 — 2026-09-08T12:30:25−03:00
 
 Candidato Auth login/reset reproduzido; SDK sintético10/10 relatado no handoff, sem SHA/push. Mensagem anuncia regressões155/155 e pacote25/25, analyzer ainda ativo; aguardar consolidação no arquivo e revisão de código. Nenhuma ação integralmente auditada/certificada por esse teste focal. Substituição externa da sessão diretamente no SDK continua aberta. Scope/shell devolvidos sem mudança por mensagem; C00 reassume, coelo_auth permanece C01. Pacote C01-AUTH-PERSONAS-v1 recebido: cinco personas, sem necessidade de novo Owner, escopos mínimos e cleanup proposto; conferir catálogo/ledger e transformar em pacote executável antes de pedir autorização nominal.
+
+### Integração C01/r3 — 2026-09-08T12:34:18−03:00
+
+Código1fd7f9ec → C00 2dd5a9bc revisado, sem conflito; 11/11 SDK/remount e25/25 pacote Auth reproduzidos na C00. Origem push10f893a7 confirmada. Rastreadores sincronizados C01/r3,C02/r1; nenhuma promoção de conclusão. R01-SHARED-01 encerrada e devolvida à C00. Dev ainda84985b54 no snapshot, sem deploy. Evidência/limites/tempos em reports/R01-C01-auth-integracao.md.
+
+### Fila C02/r3
+
+C02/r3 fonte12:34:24−03:00 recebida/aceita para revisão, I002 confirmada; código76a34dda (dois arquivos R2) na fila C00, integrado0. Executor relata49/49 Deno+4/4 estáticos Moments; mediaDart45/45; Forms recuperado102/102+DTO15/15 ainda WIP separado; preflight97769124 reproduzido71/71 Pester3.4.0 com mocks, sem runtime real. Timestamp corrigido. Decoder/catálogo/autorização e E2E continuam abertos; sem promoção de ações.
 
 ## Histórico preservado — anterior à R01
 
