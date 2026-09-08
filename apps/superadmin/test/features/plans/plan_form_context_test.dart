@@ -47,6 +47,34 @@ void main() {
     expect(find.text('Acesso não autorizado'), findsOneWidget);
   });
 
+  testWidgets('edit rejects detail bound to a different plan ID', (tester) async {
+    await _size(tester);
+    final repository = _Repository();
+    await tester.pumpWidget(_app(repository, 'a'));
+    repository.reads['a']!.complete(_details('b'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Acesso não autorizado'), findsOneWidget);
+    expect(find.text('Plano b'), findsNothing);
+  });
+
+  testWidgets('edit rejects a save response bound to another plan', (tester) async {
+    await _size(tester);
+    final repository = _Repository();
+    var saved = 0;
+    await tester.pumpWidget(_app(repository, 'a', onSaved: () => saved++));
+    repository.reads['a']!.complete(_details('a'));
+    await tester.pumpAndSettle();
+
+    await _save(tester);
+    repository.saveResult.complete(_details('b'));
+    await tester.pumpAndSettle();
+
+    expect(saved, 0);
+    expect(find.text('Resposta de plano fora do contexto solicitado.'), findsOneWidget);
+    expect(find.text('Plano b'), findsNothing);
+  });
+
   for (final failure in [false, true]) {
     testWidgets('late save cannot affect replacement B, failure=$failure', (tester) async {
       await _size(tester);

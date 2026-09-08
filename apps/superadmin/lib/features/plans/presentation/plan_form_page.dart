@@ -142,6 +142,12 @@ final class _PlanFormPageState extends State<PlanFormPage> {
     try {
       final details = await repository.get(planId);
       if (!isCurrent()) return;
+      if (details.plan.id != planId) {
+        throw const PlanRepositoryException(
+          PlanRepositoryFailureKind.unauthorized,
+          'Resposta de plano fora do contexto solicitado.',
+        );
+      }
       setState(() {
         _original = details.plan;
         _linked = details.linkedInstitutions;
@@ -608,6 +614,14 @@ final class _PlanFormPageState extends State<PlanFormPage> {
         ),
       );
       if (!isCurrent()) return;
+      if (saved.plan.id.isEmpty ||
+          (planId != null && saved.plan.id != planId) ||
+          saved.plan.code != draft.code) {
+        throw const PlanRepositoryException(
+          PlanRepositoryFailureKind.unauthorized,
+          'Resposta de plano fora do contexto solicitado.',
+        );
+      }
       if (_pendingSaveRequestId == requestId) {
         _pendingSaveRequestId = null;
         _pendingSaveSignature = null;
