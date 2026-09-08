@@ -12,6 +12,43 @@ import '../../support/fake_attendance_repository.dart';
 void main() {
   setUpAll(_loadGoldenFonts);
 
+  for (final brightness in Brightness.values) {
+    testWidgets('compact marking scroll reference $brightness', (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(375, 900);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      final repository = FakeAttendanceRepository.seeded();
+      addTearDown(repository.dispose);
+      await tester.pumpWidget(
+        _goldenApp(
+          AttendanceCallPage(
+            repository: repository,
+            callId: 'call-progress',
+            permissions: const AttendancePermissions.owner(),
+            logout: unavailableSuperadminLogout,
+            onBack: () {},
+            today: FakeAttendanceRepository.today,
+          ),
+          brightness: brightness,
+          textScaler: const TextScaler.linear(2),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byKey(const Key('attendance-golden-root')),
+        matchesGoldenFile('goldens/attendance_call_compact_start_${brightness.name}_375.png'),
+      );
+      await tester.ensureVisible(find.widgetWithText(TextButton, 'Voltar para Assiduidade'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      await expectLater(
+        find.byKey(const Key('attendance-golden-root')),
+        matchesGoldenFile('goldens/attendance_call_compact_footer_${brightness.name}_375.png'),
+      );
+    });
+  }
+
   testWidgets('matches the new attendance call context reference', (tester) async {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -73,7 +110,11 @@ void main() {
   );
 }
 
-Widget _goldenApp(Widget child, {Brightness brightness = Brightness.light}) => MaterialApp(
+Widget _goldenApp(
+  Widget child, {
+  Brightness brightness = Brightness.light,
+  TextScaler textScaler = TextScaler.noScaling,
+}) => MaterialApp(
   debugShowCheckedModeBanner: false,
   theme: CoeloTheme.light,
   darkTheme: CoeloTheme.dark,
@@ -82,7 +123,7 @@ Widget _goldenApp(Widget child, {Brightness brightness = Brightness.light}) => M
   builder: (context, child) => RepaintBoundary(
     key: const Key('attendance-golden-root'),
     child: MediaQuery(
-      data: MediaQuery.of(context).copyWith(disableAnimations: true),
+      data: MediaQuery.of(context).copyWith(disableAnimations: true, textScaler: textScaler),
       child: child!,
     ),
   ),

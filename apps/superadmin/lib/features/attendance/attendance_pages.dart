@@ -782,10 +782,37 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
             },
           );
           final colors = Theme.of(context).colorScheme;
+          final footer = SuperadminFormActionFooter(
+            surfaceKey: const Key('attendance-call-footer'),
+            tertiaryAction: TextButton(
+              onPressed: widget.onBack,
+              child: const Text('Voltar para Assiduidade'),
+            ),
+            continuationActions: [
+              if (concluded && call.participants.isNotEmpty)
+                OutlinedButton.icon(
+                  onPressed: () => _showCorrection(context, call),
+                  icon: const Icon(Icons.history_rounded),
+                  label: const Text('Corrigir chamada'),
+                )
+              else
+                FilledButton(
+                  key: const Key('attendance-call-complete'),
+                  onPressed: call.hasUnmarked || widget.routinePendingParticipantIds.isNotEmpty
+                      ? null
+                      : () => _applyCall(
+                          () => widget.repository.completeCall(
+                            call.id,
+                            expectedVersion: call.version,
+                          ),
+                        ),
+                  child: const Text('Concluir chamada'),
+                ),
+            ],
+          );
           final content = Expanded(
             child: Column(
               children: [
-                if (!wide) ...[navigation, const SizedBox(height: CoeloSpacing.space4)],
                 if (_commandError != null) ...[
                   _AttendanceCommandErrorBanner(
                     message: _commandError is AttendanceVersionConflictException
@@ -807,6 +834,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
+                            if (!wide) ...[navigation, const SizedBox(height: CoeloSpacing.space4)],
                             DecoratedBox(
                               decoration: BoxDecoration(
                                 color: colors.surface,
@@ -932,42 +960,17 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
                                 child: const Text('Voltar para Assiduidade'),
                               ),
                             ],
+                            if (!wide && canWrite) ...[
+                              const SizedBox(height: CoeloSpacing.space6),
+                              footer,
+                            ],
                           ],
                         ),
                       ),
                     ),
                   ),
                 ),
-                if (canWrite)
-                  SuperadminFormActionFooter(
-                    surfaceKey: const Key('attendance-call-footer'),
-                    tertiaryAction: TextButton(
-                      onPressed: widget.onBack,
-                      child: const Text('Voltar para Assiduidade'),
-                    ),
-                    continuationActions: [
-                      if (concluded && call.participants.isNotEmpty)
-                        OutlinedButton.icon(
-                          onPressed: () => _showCorrection(context, call),
-                          icon: const Icon(Icons.history_rounded),
-                          label: const Text('Corrigir chamada'),
-                        )
-                      else
-                        FilledButton(
-                          key: const Key('attendance-call-complete'),
-                          onPressed:
-                              call.hasUnmarked || widget.routinePendingParticipantIds.isNotEmpty
-                              ? null
-                              : () => _applyCall(
-                                  () => widget.repository.completeCall(
-                                    call.id,
-                                    expectedVersion: call.version,
-                                  ),
-                                ),
-                          child: const Text('Concluir chamada'),
-                        ),
-                    ],
-                  ),
+                if (wide && canWrite) footer,
               ],
             ),
           );
