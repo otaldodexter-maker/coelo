@@ -1240,8 +1240,7 @@ void main() {
       await tester.pumpAndSettle();
 
       for (var step = 0; step < 4; step++) {
-        await tester.tap(find.byKey(const Key('institution-form-continue')));
-        await tester.pumpAndSettle();
+        await _tapFormContinue(tester);
       }
       final candidatesField = find.byKey(
         const Key('institution-administrator-representative-select'),
@@ -1368,11 +1367,11 @@ void main() {
         ),
       ),
     );
-    await tester.pump();
+    // Edit mode loads the record first; the wizard only exists after that.
+    await tester.pumpAndSettle();
 
     for (var step = 0; step < 3; step++) {
-      await tester.tap(find.byKey(const Key('institution-form-continue')));
-      await tester.pumpAndSettle();
+      await _tapFormContinue(tester);
     }
     final addRepresentative = find.byKey(const Key('institution-add-legal-representative'));
     await tester.ensureVisible(addRepresentative);
@@ -1568,8 +1567,7 @@ void main() {
       }
 
       for (var step = 0; step < 2; step++) {
-        await tester.tap(find.byKey(const Key('institution-form-continue')));
-        await tester.pumpAndSettle();
+        await _tapFormContinue(tester);
       }
       expect(
         find.byKey(const Key('institution-field-postalCode')),
@@ -1579,8 +1577,7 @@ void main() {
       expect(tester.takeException(), isNull, reason: 'location overflow at ${width.toInt()} px');
 
       for (var step = 0; step < 3; step++) {
-        await tester.tap(find.byKey(const Key('institution-form-continue')));
-        await tester.pumpAndSettle();
+        await _tapFormContinue(tester);
       }
       expect(
         find.byKey(const Key('institution-plan-essential')),
@@ -1804,6 +1801,20 @@ Widget _app(
     ),
     home: child,
   );
+}
+
+/// Advances the wizard the way a person does on a narrow screen.
+///
+/// Since `d4374e39` the compact layout keeps the action footer inside the
+/// scroll instead of pinning it, so at 375 px the primary action sits well
+/// below the fold. Scrolling to it first is part of the behaviour under test,
+/// not a workaround.
+Future<void> _tapFormContinue(WidgetTester tester) async {
+  final button = find.byKey(const Key('institution-form-continue'));
+  await tester.ensureVisible(button);
+  await tester.pumpAndSettle();
+  await tester.tap(button);
+  await tester.pumpAndSettle();
 }
 
 Future<LogoutResult> _logout() async => const LogoutResult.success();

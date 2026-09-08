@@ -352,12 +352,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('group-form-continue')));
-    await tester.pumpAndSettle();
+    await _tapGroupContinue(tester);
     await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma compacta');
     for (var step = 0; step < 4; step++) {
-      await tester.tap(find.byKey(const Key('group-form-continue')));
-      await tester.pumpAndSettle();
+      await _tapGroupContinue(tester);
     }
 
     await tester.ensureVisible(find.byKey(const Key('group-invite-add')));
@@ -401,4 +399,17 @@ void main() {
     expect(find.text('Turma não encontrada'), findsOneWidget);
     expect(find.byKey(const Key('group-form-save')), findsNothing);
   });
+}
+
+/// Advances the wizard the way a person does on a narrow screen.
+///
+/// Since `d4374e39` the compact layout keeps the action footer inside the
+/// scroll instead of pinning it, so at 375 px the primary action sits below
+/// the fold. Scrolling to it first is part of the behaviour under test.
+Future<void> _tapGroupContinue(WidgetTester tester) async {
+  final button = find.byKey(const Key('group-form-continue'));
+  await tester.ensureVisible(button);
+  await tester.pumpAndSettle();
+  await tester.tap(button);
+  await tester.pumpAndSettle();
 }
