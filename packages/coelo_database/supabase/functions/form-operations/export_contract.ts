@@ -259,7 +259,14 @@ async function* storedZipEntries(
     write16(view, 26, item.name.byteLength);
     local.set(item.name, 30);
     yield local;
+    let writtenSize = 0;
+    let writtenCrc = 0xFFFFFFFF;
     for await (const chunk of item.entry.source()) {
+      writtenSize += chunk.byteLength;
+      if (writtenSize > item.size) throw new Error("xlsx_snapshot_changed");
+      for (const byte of chunk) {
+        writtenCrc = crcTable[(writtenCrc ^ byte) & 0xFF] ^ (writtenCrc >>> 8);
+      }
       for (
         let offset = 0;
         offset < chunk.byteLength;
@@ -267,6 +274,12 @@ async function* storedZipEntries(
       ) {
         yield chunk.slice(offset, offset + outputChunkBytes);
       }
+    }
+    if (
+      writtenSize !== item.size ||
+      ((writtenCrc ^ 0xFFFFFFFF) >>> 0) !== item.crc
+    ) {
+      throw new Error("xlsx_snapshot_changed");
     }
   }
   const centralOffset = archiveOffset;

@@ -20,6 +20,57 @@ function request() {
   });
 }
 
+Deno.test("XLSX worker refuses another export snapshot kind before artifact upload", async () => {
+  for (const kind of ["csv", "zip", "anonymous_participation"]) {
+    let uploads = 0;
+    const calls: string[] = [];
+    const dependencies: FormOperationsDependencies = {
+      environment: () => environment,
+      createClient: (() => ({
+        rpc: (name: string) => {
+          calls.push(name);
+          return Promise.resolve({
+            error: null,
+            data: name === "form_worker_claim"
+              ? { id, aggregate_id: id, job_kind: "export_xlsx" }
+              : name === "form_worker_export_snapshot"
+              ? {
+                kind,
+                has_more: false,
+                rows: [{ Pessoa: "Synthetic identity" }],
+                submissions: [{
+                  responseId: id,
+                  occurrenceId: id,
+                  versionId: id,
+                  metadata: {},
+                  answers: [],
+                }],
+              }
+              : null,
+          });
+        },
+        storage: {
+          from: () => ({
+            upload: async (
+              _path: string,
+              stream: ReadableStream<Uint8Array>,
+            ) => {
+              uploads++;
+              await new Response(stream).arrayBuffer();
+              return { error: null };
+            },
+          }),
+        },
+      })) as unknown as FormOperationsDependencies["createClient"],
+    };
+    const response = await handleFormOperationsRequest(request(), dependencies);
+    assertEquals(response.status, 500);
+    assertEquals(uploads, 0);
+    assertEquals(calls.includes("form_worker_complete_export"), false);
+    assertEquals(calls.at(-1), "form_worker_fail_export");
+  }
+});
+
 Deno.test("worker claims only XLSX exports and refuses legacy export jobs", async () => {
   for (
     const kind of [
