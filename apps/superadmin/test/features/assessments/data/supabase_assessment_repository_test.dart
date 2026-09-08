@@ -184,4 +184,101 @@ void main() {
       throwsA(isA<AssessmentVersionConflictException>()),
     );
   });
+
+  test('configuration read rejects an activity or unit outside the request', () async {
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => _ok(
+          request,
+          _configurationEnvelope(
+            activityId: 'activity-b',
+            institutionId: 'institution-a',
+            unitId: 'unit-b',
+          ),
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseAssessmentRepository(client).fetchConfiguration('activity-a', unitId: 'unit-a'),
+      throwsA(isA<AssessmentUnauthorizedException>()),
+    );
+  });
+
+  for (final operation in ['save', 'activate']) {
+    test('$operation configuration rejects an authoritative cross-institution response', () async {
+      final client = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-key',
+        httpClient: MockClient((request) async {
+          if (request.url.path.endsWith('/rpc/superadmin_assessment_configuration_read')) {
+            return _ok(
+              request,
+              _configurationEnvelope(
+                activityId: 'activity-a',
+                institutionId: 'institution-b',
+                unitId: 'unit-a',
+              ),
+            );
+          }
+          return _ok(request, {'id': 'configuration-a', 'version': 2, 'status': 'draft'});
+        }),
+      );
+      addTearDown(client.dispose);
+      const source = AssessmentConfiguration(
+        id: 'configuration-a',
+        activityId: 'activity-a',
+        institutionId: 'institution-a',
+        unitId: 'unit-a',
+        periodicity: 'bimonthly',
+        scaleKind: AssessmentScaleKind.numeric0To10,
+        version: 1,
+        status: 'draft',
+        instruments: [],
+        competencies: [],
+      );
+      final repository = SupabaseAssessmentRepository(client);
+
+      await expectLater(
+        operation == 'save'
+            ? repository.saveConfiguration(source)
+            : repository.activateConfiguration(source),
+        throwsA(isA<AssessmentUnauthorizedException>()),
+      );
+    });
+  }
 }
+
+Response _ok(Request request, Object? data) => Response(
+  jsonEncode({'ok': true, 'data': data, 'error': null}),
+  200,
+  headers: {'content-type': 'application/json'},
+  request: request,
+);
+
+Map<String, Object?> _configurationEnvelope({
+  required String activityId,
+  required String institutionId,
+  required String? unitId,
+}) => {
+  'configuration': {
+    'id': 'configuration-a',
+    'activity_id': activityId,
+    'institution_id': institutionId,
+    'unit_id': unitId,
+    'periodicity': 'bimonthly',
+    'result_scale_kind': 'numeric_0_10',
+    'management_version': 2,
+    'status': 'draft',
+    'allow_final_override': false,
+    'scale_options': {'step': 0.01},
+  },
+  'concepts': <Object?>[],
+  'instruments': <Object?>[],
+  'competencies': <Object?>[],
+  'available_competencies': <Object?>[],
+  'periods': <Object?>[],
+};

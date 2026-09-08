@@ -1016,6 +1016,9 @@ final class _LegacyAssessmentConfigurationPrototypeState
     try {
       final value = await repository.fetchConfiguration(activityId, unitId: unitId);
       if (_isCurrentLoad(generation, repository, activityId, institutionId, unitId)) {
+        if (value != null && !_matchesRequestedScope(value, activityId, institutionId, unitId)) {
+          throw const AssessmentUnauthorizedException();
+        }
         setState(() {
           _competencyOptions = value?.availableCompetencies ?? value?.competencies ?? const [];
           _configuration =
@@ -1071,9 +1074,16 @@ final class _LegacyAssessmentConfigurationPrototypeState
     try {
       var saved = await repository.saveConfiguration(value);
       if (!_isCurrentCommand(generation, repository, activityId, value)) return;
+      if (!_matchesSavedConfiguration(value, saved)) {
+        throw const AssessmentUnauthorizedException();
+      }
       if (activate) {
+        final activating = saved;
         saved = await repository.activateConfiguration(saved);
         if (!_isCurrentCommand(generation, repository, activityId, value)) return;
+        if (!_matchesSavedConfiguration(activating, saved)) {
+          throw const AssessmentUnauthorizedException();
+        }
       }
       if (_isCurrentCommand(generation, repository, activityId, value)) {
         setState(() => _configuration = saved);
@@ -1121,6 +1131,27 @@ final class _LegacyAssessmentConfigurationPrototypeState
       generation == _commandGeneration &&
       identical(repository, widget.repository) &&
       activityId == widget.activityId;
+
+  bool _matchesRequestedScope(
+    AssessmentConfiguration value,
+    String activityId,
+    String institutionId,
+    String? unitId,
+  ) =>
+      value.id.isNotEmpty &&
+      value.activityId == activityId &&
+      value.institutionId == institutionId &&
+      value.unitId == unitId;
+
+  bool _matchesSavedConfiguration(
+    AssessmentConfiguration expected,
+    AssessmentConfiguration actual,
+  ) =>
+      actual.id.isNotEmpty &&
+      (expected.id.isEmpty || actual.id == expected.id) &&
+      actual.activityId == expected.activityId &&
+      actual.institutionId == expected.institutionId &&
+      actual.unitId == expected.unitId;
 
   @override
   Widget build(BuildContext context) => SuperadminShell(

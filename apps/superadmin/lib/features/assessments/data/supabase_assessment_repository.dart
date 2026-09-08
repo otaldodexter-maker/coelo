@@ -30,7 +30,14 @@ final class SupabaseAssessmentRepository implements AssessmentRepository {
       'target_activity': activityId,
       'target_unit': unitId,
     });
-    return value == null ? null : _configuration(_map(value));
+    if (value == null) return null;
+    final configuration = _configuration(_map(value));
+    if (configuration.id.isEmpty ||
+        configuration.activityId != activityId ||
+        configuration.unitId != unitId) {
+      throw const AssessmentUnauthorizedException();
+    }
+    return configuration;
   }
 
   @override
@@ -130,7 +137,8 @@ final class SupabaseAssessmentRepository implements AssessmentRepository {
       version: _int(result['version']),
       status: _string(result['status']),
     );
-    return await fetchConfiguration(saved.activityId, unitId: saved.unitId) ?? saved;
+    final authoritative = await fetchConfiguration(saved.activityId, unitId: saved.unitId) ?? saved;
+    return _validateConfigurationScope(value, authoritative);
   }
 
   @override
@@ -146,7 +154,9 @@ final class SupabaseAssessmentRepository implements AssessmentRepository {
       version: _int(result['version']),
       status: _string(result['status']),
     );
-    return await fetchConfiguration(activated.activityId, unitId: activated.unitId) ?? activated;
+    final authoritative =
+        await fetchConfiguration(activated.activityId, unitId: activated.unitId) ?? activated;
+    return _validateConfigurationScope(value, authoritative);
   }
 
   @override
@@ -263,6 +273,20 @@ final class SupabaseAssessmentRepository implements AssessmentRepository {
     } on Exception {
       throw const AssessmentOfflineException();
     }
+  }
+
+  AssessmentConfiguration _validateConfigurationScope(
+    AssessmentConfiguration expected,
+    AssessmentConfiguration actual,
+  ) {
+    if (actual.id.isEmpty ||
+        (expected.id.isNotEmpty && actual.id != expected.id) ||
+        actual.activityId != expected.activityId ||
+        actual.institutionId != expected.institutionId ||
+        actual.unitId != expected.unitId) {
+      throw const AssessmentUnauthorizedException();
+    }
+    return actual;
   }
 }
 
