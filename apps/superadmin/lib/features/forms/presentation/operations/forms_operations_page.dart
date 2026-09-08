@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/router/superadmin_routes.dart';
+import '../../data/form_export_download_resolver.dart';
 import '../../data/forms_file_jobs_reader.dart';
 
 enum FormsOperationsSurface { monitor, responses, responseDetail, files }
@@ -51,6 +52,8 @@ final class FormsOperationsPage extends StatefulWidget {
     this.state = FormsOperationsState.content,
     super.key,
   }) : surface = FormsOperationsSurface.monitor,
+       downloadResolver = null,
+       openDownloadUrl = null,
        anonymous = false,
        developmentStore = null,
        responseId = null;
@@ -63,6 +66,8 @@ final class FormsOperationsPage extends StatefulWidget {
     this.state = FormsOperationsState.content,
     super.key,
   }) : surface = FormsOperationsSurface.responses,
+       downloadResolver = null,
+       openDownloadUrl = null,
        developmentStore = null,
        responseId = null;
 
@@ -75,11 +80,15 @@ final class FormsOperationsPage extends StatefulWidget {
     this.state = FormsOperationsState.content,
     super.key,
   }) : surface = FormsOperationsSurface.responseDetail,
+       downloadResolver = null,
+       openDownloadUrl = null,
        developmentStore = null;
 
   const FormsOperationsPage.files({
     this.api,
     this.formId,
+    this.downloadResolver,
+    this.openDownloadUrl,
     this.development = false,
     this.state = FormsOperationsState.content,
     this.developmentStore,
@@ -96,6 +105,8 @@ final class FormsOperationsPage extends StatefulWidget {
   final FormsApi? api;
   final String? formId;
   final String? responseId;
+  final FormExportDownloadResolver? downloadResolver;
+  final Future<bool> Function(String url)? openDownloadUrl;
 
   @override
   State<FormsOperationsPage> createState() => _FormsOperationsPageState();
@@ -113,20 +124,28 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
   var _exportBusy = false;
   var _exportConflict = false;
   String? _exportFeedback;
+  var _downloadGeneration = 0;
+  var _downloadBusy = false;
+  FormExportDownloadTicket? _downloadTicket;
+  String? _downloadFeedback;
 
   bool get _usesProductionApi => !widget.development && widget.api != null;
+  bool get _acceptsProductionLoad =>
+      widget.state != FormsOperationsState.unauthorized &&
+      widget.state != FormsOperationsState.unavailable;
 
   @override
   void initState() {
     super.initState();
-    if (_usesProductionApi) unawaited(_loadProduction());
+    if (_usesProductionApi && _acceptsProductionLoad) unawaited(_loadProduction());
   }
 
   @override
   void didUpdateWidget(covariant FormsOperationsPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.state != widget.state) _state = widget.state;
-    if (oldWidget.api != widget.api ||
+    if (oldWidget.state != widget.state ||
+        oldWidget.api != widget.api ||
         oldWidget.formId != widget.formId ||
         oldWidget.responseId != widget.responseId ||
         oldWidget.surface != widget.surface ||
@@ -139,13 +158,17 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
       _exportBusy = false;
       _exportConflict = false;
       _exportFeedback = null;
+      _invalidateDownload();
       _projection = null;
       _cursors
         ..clear()
         ..add(null);
       _pageIndex = 0;
       _state = widget.state;
-      if (_usesProductionApi) unawaited(_loadProduction());
+      if (_usesProductionApi && _acceptsProductionLoad) unawaited(_loadProduction());
+    } else if (!identical(oldWidget.downloadResolver, widget.downloadResolver) ||
+        !identical(oldWidget.openDownloadUrl, widget.openDownloadUrl)) {
+      _invalidateDownload();
     }
   }
 
@@ -153,11 +176,13 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
   void dispose() {
     _loadGeneration++;
     _exportGeneration++;
+    _invalidateDownload();
     super.dispose();
   }
 
   Future<void> _loadProduction() async {
-    if (!mounted) return;
+    if (!mounted || !_acceptsProductionLoad) return;
+    _invalidateDownload();
     final generation = ++_loadGeneration;
     final api = widget.api;
     if (api == null || widget.development) return;
@@ -248,6 +273,15 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
               ),
               const SizedBox(height: CoeloSpacing.space4),
             ],
+            if (_usesProductionApi &&
+                widget.surface == FormsOperationsSurface.files &&
+                _downloadFeedback != null) ...[
+              Semantics(
+                liveRegion: true,
+                child: Text(_downloadFeedback!, key: const Key('forms-xlsx-download-feedback')),
+              ),
+              const SizedBox(height: CoeloSpacing.space4),
+            ],
             if (_usesProductionApi) ...[
               if (_state != FormsOperationsState.content)
                 _OperationsStatePanel(
@@ -309,30 +343,105 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
     unawaited(_loadProduction());
   }
 
-  Widget _pagination(String? nextCursor) => Wrap(
-    alignment: WrapAlignment.end,
-    spacing: CoeloSpacing.space2,
-    runSpacing: CoeloSpacing.space2,
-    crossAxisAlignment: WrapCrossAlignment.center,
-    children: [
-      OutlinedButton(
-        onPressed: _pageIndex > 0 && !_exportBusy
-            ? () {
-                if (_state != FormsOperationsState.content || _exportBusy) return;
-                _pageIndex--;
-                unawaited(_loadProduction());
-              }
-            : null,
-        child: const Text('Anterior'),
-      ),
-      Text('Página ${_pageIndex + 1}'),
-      OutlinedButton(
-        key: const Key('forms-cursor-next'),
-        onPressed: nextCursor == null || _exportBusy ? null : () => _nextPage(nextCursor),
-        child: const Text('Próxima página'),
-      ),
-    ],
-  );
+  Widget _pagination(String? nextCursor) {
+    final projection = _projection;
+    final generation = _loadGeneration;
+    bool isCurrent() =>
+        mounted && generation == _loadGeneration && identical(projection, _projection);
+    return Wrap(
+      alignment: WrapAlignment.end,
+      spacing: CoeloSpacing.space2,
+      runSpacing: CoeloSpacing.space2,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        OutlinedButton(
+          onPressed: _pageIndex > 0 && !_exportBusy
+              ? () {
+                  if (!isCurrent() || _state != FormsOperationsState.content || _exportBusy) return;
+                  _pageIndex--;
+                  unawaited(_loadProduction());
+                }
+              : null,
+          child: const Text('Anterior'),
+        ),
+        Text('Página ${_pageIndex + 1}'),
+        OutlinedButton(
+          key: const Key('forms-cursor-next'),
+          onPressed: nextCursor == null || _exportBusy
+              ? null
+              : () {
+                  if (isCurrent()) _nextPage(nextCursor);
+                },
+          child: const Text('Próxima página'),
+        ),
+      ],
+    );
+  }
+
+  void _invalidateDownload() {
+    _downloadGeneration++;
+    _downloadTicket?.dispose();
+    _downloadTicket = null;
+    _downloadBusy = false;
+    _downloadFeedback = null;
+  }
+
+  VoidCallback? _downloadAction(FormFileJob job, FormCursorPage<FormFileJob> page) {
+    final resolver = widget.downloadResolver;
+    final launcher = widget.openDownloadUrl;
+    if (job.status != FormFileJobStatus.succeeded ||
+        !job.downloadAvailable ||
+        resolver == null ||
+        launcher == null ||
+        _downloadBusy) {
+      return null;
+    }
+    final generation = _downloadGeneration;
+    bool isCurrent() =>
+        mounted &&
+        generation == _downloadGeneration &&
+        !widget.development &&
+        widget.surface == FormsOperationsSurface.files &&
+        _state == FormsOperationsState.content &&
+        identical(page, _projection) &&
+        identical(resolver, widget.downloadResolver) &&
+        identical(launcher, widget.openDownloadUrl);
+    return () async {
+      if (!isCurrent() || _downloadBusy) return;
+      setState(() {
+        _downloadBusy = true;
+        _downloadFeedback = null;
+      });
+      FormExportDownloadTicket? ticket;
+      try {
+        ticket = await resolver.resolve(job.id);
+        if (!isCurrent()) return;
+        _downloadTicket = ticket;
+        // The ticket checks session and expiry again at the point of use.
+        final opened = await launcher(ticket.downloadUrl.toString());
+        if (!isCurrent()) return;
+        setState(
+          () => _downloadFeedback = opened
+              ? 'Download solicitado ao navegador.'
+              : 'Não foi possível iniciar o download. Tente novamente.',
+        );
+      } on Object {
+        if (isCurrent()) {
+          setState(
+            () => _downloadFeedback = 'Não foi possível iniciar o download. Tente novamente.',
+          );
+        }
+      } finally {
+        ticket?.dispose();
+        if (isCurrent()) {
+          setState(() {
+            _downloadTicket = null;
+            _downloadBusy = false;
+          });
+        }
+      }
+    };
+  }
 
   bool _isCurrentExport(int generation, FormsApi api, String formId) =>
       mounted &&
@@ -521,6 +630,7 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
                   FormFileJobStatus.expired => 'Expirado',
                 },
                 progress: job.progress,
+                onDownload: _downloadAction(job, value),
               ),
             ),
           _pagination(value.nextCursor),
@@ -1433,9 +1543,10 @@ final class _FilesContentState extends State<_FilesContent> {
 }
 
 final class _JobRow extends StatelessWidget {
-  const _JobRow({required this.id, required this.status, required this.progress});
+  const _JobRow({required this.id, required this.status, required this.progress, this.onDownload});
   final String id, status;
   final double progress;
+  final VoidCallback? onDownload;
 
   @override
   Widget build(BuildContext context) => CoeloAdminInteractiveCard(
@@ -1459,7 +1570,7 @@ final class _JobRow extends StatelessWidget {
           if (status == 'Concluído' || status == 'Dividido')
             IconButton(
               tooltip: 'Baixar exportação $id',
-              onPressed: null,
+              onPressed: onDownload,
               icon: const Icon(Icons.download_rounded),
             ),
         ],
