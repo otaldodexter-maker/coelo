@@ -1,0 +1,33 @@
+{
+  "id": "AgendaReadContractGreen",
+  "base": {
+    "profile": "AgendaReadContractRed",
+    "resolver": "packages/coelo_database/replay/profiles/AgendaReadContractRed/Resolve-AgendaReadContractRed.ps1",
+    "resolver_sha256_crlf_utf8": "dd2d76099fffb393df040ea910981908e0a65e149964a311df7af1a36864bf15",
+    "descriptor_sha256_crlf_utf8": "ba5e2b94e3f245bdeb634d86c7f4db2f39b23a6831e0bfbd7a7511031b8c0385",
+    "target_version": "20260901200206",
+    "canonical": 51,
+    "preflight": 2,
+    "additional": 6,
+    "total": 53,
+    "manifest_sha256_crlf_utf8": "4279e67c9651f4049329591b6e8aad82e3a9052506c1a4e16ba8bbb693249d59"
+  },
+  "target_version": "20260908045531",
+  "canonical_addition": {
+    "file": "20260908045531_superadmin_agenda_read_v2.sql",
+    "sha256_crlf_utf8": "15a490013e556d4a271dc2e026dc564737f0bf078c25a9916e5276c3db57f4a9",
+    "source_commit": "0b55e9199502b7622c7fe82605196a901ecde430",
+    "source_blob": "aaa8a73a655b680372b98ac87a245814f054d7a2",
+    "source_sha256_lf_utf8": "b26487cb3d3ffbf483ba3f6ff7b94e7f6d4e95d3309dd9c96640b37532287cab",
+    "source_bytes_lf_utf8": 20249,
+    "canonical_union_position": 52,
+    "replay_union_position": 54
+  },
+  "extra_bridges": [],
+  "planned_counts": {
+    "canonical": 52,
+    "preflight": 2,
+    "additional": 7,
+    "total": 54
+  }
+}

@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'LocationCatalogV2', 'AgendaReadContractRed')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'LocationCatalogV2', 'AgendaReadContractRed', 'AgendaReadContractGreen')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @(),
@@ -19,7 +19,11 @@ param(
 
   [switch]$RunAuthLifecycle,
 
-  [switch]$RunActivityV2Concurrency
+  [switch]$RunActivityV2Concurrency,
+
+  [switch]$RunA01LocalRuntime,
+
+  [string]$A01ClientRoot
 )
 
 $ErrorActionPreference = 'Stop'
@@ -88,6 +92,16 @@ function Get-DockerResources([string]$Identity) {
   return @($containers) + @($volumes) + @($networks) | Where-Object { $_ }
 }
 
+if ($RunA01LocalRuntime) {
+  if ($NominalProfile -ne 'A01DirectoryAuditGreen' -or $TargetVersion -ne '20260907222911' -or
+      $FoundationOnly -or $AuthOnly -or $AdditionalMigration.Count -gt 0 -or
+      $RunAuthLifecycle -or $RunActivityV2Concurrency -or $TestPath.Count -gt 0 -or $RunLint) {
+    throw 'A01 local runtime requires only A01DirectoryAuditGreen55 and its fixed HTTP window'
+  }
+  if ([string]::IsNullOrWhiteSpace($A01ClientRoot)) { throw 'A01 client root is required' }
+} elseif ($PSBoundParameters.ContainsKey('A01ClientRoot')) {
+  throw 'A01 client root requires the runtime opt-in'
+}
 if ($targetMigration.Count -ne 1) {
   throw "target version must identify exactly one canonical migration: $TargetVersion"
 }
@@ -97,6 +111,7 @@ if ($NominalProfile) {
     throw 'nominal replay cannot be combined with other replay profiles, additions, Auth lifecycle or concurrency'
   }
   $nominalResolverRelative = switch ($NominalProfile) {
+    'AgendaReadContractGreen' { 'replay\profiles\AgendaReadContractGreen\Resolve-AgendaReadContractGreen.ps1' }
     'AgendaReadContractRed' { 'replay\profiles\AgendaReadContractRed\Resolve-AgendaReadContractRed.ps1' }
     'LocationCatalogV2' { 'replay\profiles\LocationCatalogV2\Resolve-LocationCatalogV2.ps1' }
     'N01PrerequisitesRed' { 'replay\profiles\N01PrerequisitesRed\Resolve-N01PrerequisitesRed.ps1' }
@@ -199,6 +214,29 @@ $resolvedTestPaths = @($TestPath | ForEach-Object {
   Assert-NoReparseAncestors $resolved
   $resolved
 })
+if ($RunA01LocalRuntime) {
+  $a01HelperPath = Join-Path $scriptRoot 'Test-LocalA01Runtime.ps1'
+  if (-not (Test-Path -LiteralPath $a01HelperPath -PathType Leaf)) { throw 'A01 helper is missing' }
+  Assert-NoReparseAncestors $a01HelperPath
+  Assert-NoReparseAncestors (Split-Path -Parent $a01HelperPath)
+  $a01HelperText = [IO.File]::ReadAllText($a01HelperPath).Replace("`r`n","`n").Replace("`r","`n").Replace("`n","`r`n")
+  $a01Hasher = [Security.Cryptography.SHA256]::Create()
+  try {
+    $a01ActualHash = ([BitConverter]::ToString($a01Hasher.ComputeHash(
+      [Text.UTF8Encoding]::new($false).GetBytes($a01HelperText)))).Replace('-','').ToLowerInvariant()
+  } finally { $a01Hasher.Dispose() }
+  if ($a01ActualHash -cne 'ab8947303545c311d644b62dcee2a04daefcfa535ee6f433259ed5daafd8172b') {
+    throw 'A01 helper pin mismatch'
+  }
+  . $a01HelperPath -ProjectRoot $projectRoot -ProjectId $projectId -ClientRoot $A01ClientRoot
+  $null = Assert-A01Client $A01ClientRoot
+  $null = Get-A01Inputs $packageRoot
+  $a01SeedPath = Join-Path $packageRoot 'tests\fixtures\a01_local_http_seed.sql'
+  if (-not (Test-Path -LiteralPath $a01SeedPath -PathType Leaf) -or
+      (Get-A01FileHash $a01SeedPath) -cne '758e6b4b3c8ad237ec709acd17c0fe59c9d554f6c789c76bbb81ab13a67adf99') {
+    throw 'A01 seed pin mismatch'
+  }
+}
 Assert-NoReparseAncestors $tempRoot
 if ($projectRoot -eq $repositoryFull -or
     $projectRoot.StartsWith($repositoryFull.TrimEnd('\') + '\', [StringComparison]::OrdinalIgnoreCase)) {
@@ -285,7 +323,7 @@ try {
     -AdditionalMigration $AdditionalMigration @nominalParameters
 
   $startAttempted = $true
-  $excludedServices = if ($RunAuthLifecycle) {
+  $excludedServices = if ($RunAuthLifecycle -or $RunA01LocalRuntime) {
     $authLifecycleExcludes
   }
   else {
@@ -322,6 +360,9 @@ try {
 
   & npx.cmd --yes $cliPackage --agent no db reset --local --no-seed --version $TargetVersion --workdir $projectRoot --yes
   if ($LASTEXITCODE -ne 0) { throw "safe local db reset failed with exit code $LASTEXITCODE" }
+  if ($RunA01LocalRuntime) {
+    & $a01HelperPath -ProjectRoot $projectRoot -ProjectId $projectId -ClientRoot $A01ClientRoot
+  }
   if ($resolvedTestPaths.Count -gt 0) {
     & npx.cmd --yes $cliPackage --agent no test db --local @resolvedTestPaths --workdir $projectRoot
     if ($LASTEXITCODE -ne 0) { throw "safe local pgTAP failed with exit code $LASTEXITCODE" }

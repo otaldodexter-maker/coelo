@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'LocationCatalogV2', 'AgendaReadContractRed')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'LocationCatalogV2', 'AgendaReadContractRed', 'AgendaReadContractGreen')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @()
@@ -84,6 +84,7 @@ $locationBootstrap = @()
 $foundationBoundaryVersion = $null
 if ($NominalProfile) {
   $nominalResolverRelative = switch ($NominalProfile) {
+    'AgendaReadContractGreen' { 'profiles\AgendaReadContractGreen\Resolve-AgendaReadContractGreen.ps1' }
     'AgendaReadContractRed' { 'profiles\AgendaReadContractRed\Resolve-AgendaReadContractRed.ps1' }
     'LocationCatalogV2' { 'profiles\LocationCatalogV2\Resolve-LocationCatalogV2.ps1' }
     'N01PrerequisitesRed' { 'profiles\N01PrerequisitesRed\Resolve-N01PrerequisitesRed.ps1' }
