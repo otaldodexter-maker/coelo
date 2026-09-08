@@ -59,6 +59,7 @@ indicador. O arquivo é aberto no painel direito como alternativa disponível.
 - review_export_policy: reader aprovado após correção de offset; sem backend.
 - Exportação XLSX: colisões de títulos/IDs/metadados corrigidas no gerador puro; três REDs e 14/14 GREEN, incluindo páginas esparsas e reabertura dos dois encoders. Cabeçalhos agora têm namespaces e ID da pergunta. Review aprovado; sem SQL, worker runtime ou R2. Evidência `2026-09-07-xlsx-column-identity.md`; não E2E.
 - medication_roundtrip: revisão UI/composição read-only, sem achado bloqueante.
+- Cuidado/Medicação: isolamento de controller/diretório e leituras de detalhe corrigido localmente; 10 REDs, 14 testes novos, regressão165/165 em16arquivos, analyzer4arquivos e validadorvisual limpos, reviewaprovado. Goldens0/4 permanecem abertos, sem atualização. Evidência `2026-09-08-care-read-context-isolation.md`; reload pós-mutação será tratado em fatia separada; backend/clínica/E2E continuam abertos.
 - Engenheiro 2 (coordenação externa): crosswalk nominal de ator/DTO/RPC Forms;
   não é writer desta branch.
 

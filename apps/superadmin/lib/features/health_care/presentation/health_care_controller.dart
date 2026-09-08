@@ -37,6 +37,14 @@ final class HealthCareController extends ChangeNotifier {
   HealthCareDirectoryDisplay _display = HealthCareDirectoryDisplay.cards;
   Object? _error;
   var _loadGeneration = 0;
+  var _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _loadGeneration++;
+    super.dispose();
+  }
 
   bool get isMinimized => _actor?.profile == HealthCareAccessProfile.minimized;
   HealthCareDirectoryQuery get query => _query;
@@ -70,6 +78,7 @@ final class HealthCareController extends ChangeNotifier {
             .toSet();
 
   Future<void> load() async {
+    if (_disposed) return;
     final generation = ++_loadGeneration;
     if (_actor == null) {
       _page = null;
@@ -101,7 +110,10 @@ final class HealthCareController extends ChangeNotifier {
   }
 
   Future<void> loadDetail(String childId) async {
+    if (_disposed) return;
+    final generation = ++_loadGeneration;
     _detail = null;
+    _error = null;
     if (!canReadSensitive) {
       _state = _actor == null ? HealthCareLoadState.unauthorized : HealthCareLoadState.minimized;
       notifyListeners();
@@ -110,12 +122,16 @@ final class HealthCareController extends ChangeNotifier {
     _state = HealthCareLoadState.loading;
     notifyListeners();
     try {
-      _detail = await repository.findChild(childId, actor: actor);
+      final detail = await repository.findChild(childId, actor: actor);
+      if (generation != _loadGeneration) return;
+      _detail = detail;
       _state = _detail == null ? HealthCareLoadState.empty : HealthCareLoadState.ready;
     } on StateError catch (error) {
+      if (generation != _loadGeneration) return;
       _error = error;
       _state = HealthCareLoadState.unauthorized;
     } on Object catch (error) {
+      if (generation != _loadGeneration) return;
       _error = error;
       _state = HealthCareLoadState.error;
     }

@@ -69,6 +69,7 @@ final class _HealthMedicationPlanDirectoryPageState
   var _doseSituations = <HealthMedicationDoseSituation>{};
   var _page = 0;
   var _pageSize = 11;
+  var _loadGeneration = 0;
 
   @override
   void initState() {
@@ -77,32 +78,47 @@ final class _HealthMedicationPlanDirectoryPageState
   }
 
   @override
+  void didUpdateWidget(covariant HealthMedicationPlanDirectoryPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.controller, widget.controller)) return;
+    _search.clear();
+    _query = '';
+    _reviewStatuses = {};
+    _doseSituations = {};
+    _page = 0;
+    _load();
+  }
+
+  @override
   void dispose() {
+    _loadGeneration++;
     _search.dispose();
     super.dispose();
   }
 
   Future<void> _load() async {
-    if (!widget.controller.canReadSensitive) {
-      if (!mounted) return;
-      setState(() {
-        _items = [];
-        _loadError = null;
-        _loading = false;
-      });
+    if (!mounted) return;
+    final generation = ++_loadGeneration;
+    final controller = widget.controller;
+    setState(() {
+      _items = [];
+      _loadError = null;
+      _loading = controller.canReadSensitive;
+    });
+    if (!controller.canReadSensitive) {
       return;
     }
     try {
-      final directory = await widget.controller.repository.fetchDirectory(
+      final actor = controller.actor;
+      final directory = await controller.repository.fetchDirectory(
         const HealthCareDirectoryQuery(pageSize: 100),
-        actor: widget.controller.actor,
+        actor: actor,
       );
+      if (!_isCurrentLoad(generation, controller)) return;
       final children = await Future.wait(
-        directory.items.map(
-          (item) => widget.controller.repository.findChild(item.id, actor: widget.controller.actor),
-        ),
+        directory.items.map((item) => controller.repository.findChild(item.id, actor: actor)),
       );
-      if (!mounted) return;
+      if (!_isCurrentLoad(generation, controller)) return;
       setState(() {
         _items = [
           for (final child in children.whereType<HealthCareChild>())
@@ -119,13 +135,16 @@ final class _HealthMedicationPlanDirectoryPageState
         _loading = false;
       });
     } on Object catch (error) {
-      if (!mounted) return;
+      if (!_isCurrentLoad(generation, controller)) return;
       setState(() {
         _loadError = error;
         _loading = false;
       });
     }
   }
+
+  bool _isCurrentLoad(int generation, HealthCareController controller) =>
+      mounted && generation == _loadGeneration && identical(controller, widget.controller);
 
   List<HealthMedicationPlanListItem> get _filteredItems {
     final query = _query.trim().toLowerCase();
