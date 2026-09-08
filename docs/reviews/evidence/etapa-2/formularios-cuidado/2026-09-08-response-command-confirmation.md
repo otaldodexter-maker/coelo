@@ -1,7 +1,7 @@
 ---
 title: "Respostas — retry após confirmação perdida"
 source: "Spec Forms aprovada; FormResponsePage; revisão read-only e testes locais de receipt"
-status: "local-verified-integrated-e2e-open"
+status: "local-verified-integration-and-e2e-open"
 generated_at: "2026-09-08"
 ---
 

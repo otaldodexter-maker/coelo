@@ -14,6 +14,11 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização02:10: Respostas `08315450`/`de51d4e7` integram retry com receipt
+  retido e autosave800ms sem envio automático;52/52 no destino e analyzer2 PASS.
+  Incompletude numérica não apaga valor anterior; revisão/envio seguem explícitos.
+  Não comprova persistência real, anon/secret, SQL ou integração E2E.
+
 - Atualização02:03: modelos Perfis `b3294c47` rejeitam envelopes negados nos
   quatro comandos;161/161 data no destino e analyzer focal PASS. Listagem
   crua preservada;8testesofflinePerfis da fonte não integrados explicam169autor.

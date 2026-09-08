@@ -14,13 +14,17 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "B5CF103AA3408F3FCCC32E536E66EF1551A48107920CD303442AFE522A2282A9"
+flutter_tracker_sha256: "23523DCDA10448092D000612EB0807874127B7B4F32CF5D456AAE8385EC71C53"
 supabase_tracker_sha256: "2C30A18CF511A85FE5A5CBDB001AE9AFF3D2E37FE6A7A1D80CE10A504938507A"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
+
+- Atualização02:10: Respostas08315450/de51d4e7,52/52/analyzer2 destino.
+  AGGREEN54 autorizado só preparo após main ler migration0b55 integralmente;
+  SQL não executado nem prontoE2E inferido. Autoria01/02 continua separada.
 
 - Atualização02:03: b3294c47 corrige negação de comandos Modelos no cliente,
   161/161 data/analyzer destino. SemSQL/grants ou avanço de verified-e2e.
