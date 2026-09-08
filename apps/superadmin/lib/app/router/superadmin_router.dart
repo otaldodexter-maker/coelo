@@ -2293,20 +2293,26 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.profileModelDetailName,
             builder: (context, state) => productionAccessProfileModelScreens == null
                 ? _unavailableCompositionRootRoute(context)
-                : AccessProfileDetailPage(
-                    repository: productionAccessProfileModelScreens,
-                    logout: logout,
-                    domain: _accessProfileDomain(state.pathParameters['domain']),
-                    profileId: state.pathParameters['modelId']!,
-                    currentDestination: 'profiles',
-                    onBack: () => context.goNamed(SuperadminRoutes.profileModelsName),
-                    onEdit: () => context.goNamed(
-                      SuperadminRoutes.profileModelEditName,
-                      pathParameters: state.pathParameters,
+                : ListenableBuilder(
+                    listenable: session,
+                    builder: (context, _) => AccessProfileDetailPage(
+                      key: ValueKey(
+                        'model-detail-${state.pathParameters}-${session.authorizationInvalidationRevision}',
+                      ),
+                      repository: productionAccessProfileModelScreens,
+                      logout: logout,
+                      domain: _accessProfileDomain(state.pathParameters['domain']),
+                      profileId: state.pathParameters['modelId']!,
+                      currentDestination: 'profiles',
+                      onBack: () => context.goNamed(SuperadminRoutes.profileModelsName),
+                      onEdit: () => context.goNamed(
+                        SuperadminRoutes.profileModelEditName,
+                        pathParameters: state.pathParameters,
+                      ),
+                      onDeleted: () => context.goNamed(SuperadminRoutes.profileModelsName),
+                      onDestinationSelected: (destination) =>
+                          _navigateFromPersistentShell(context, destination),
                     ),
-                    onDeleted: () => context.goNamed(SuperadminRoutes.profileModelsName),
-                    onDestinationSelected: (destination) =>
-                        _navigateFromPersistentShell(context, destination),
                   ),
           ),
           GoRoute(
@@ -2314,17 +2320,23 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.profileModelEditName,
             builder: (context, state) => productionAccessProfileModelScreens == null
                 ? _unavailableCompositionRootRoute(context)
-                : AccessProfileFormPage(
-                    repository: productionAccessProfileModelScreens,
-                    logout: logout,
-                    domain: _accessProfileDomain(state.pathParameters['domain']),
-                    profileId: state.pathParameters['modelId'],
-                    entityLabel: 'modelo de perfil',
-                    currentDestination: 'profiles',
-                    onCancel: () => context.goNamed(SuperadminRoutes.profileModelsName),
-                    onSaved: (_) => context.goNamed(SuperadminRoutes.profileModelsName),
-                    onDestinationSelected: (destination) =>
-                        _navigateFromPersistentShell(context, destination),
+                : ListenableBuilder(
+                    listenable: session,
+                    builder: (context, _) => AccessProfileFormPage(
+                      key: ValueKey(
+                        'model-edit-${state.pathParameters}-${session.authorizationInvalidationRevision}',
+                      ),
+                      repository: productionAccessProfileModelScreens,
+                      logout: logout,
+                      domain: _accessProfileDomain(state.pathParameters['domain']),
+                      profileId: state.pathParameters['modelId'],
+                      entityLabel: 'modelo de perfil',
+                      currentDestination: 'profiles',
+                      onCancel: () => context.goNamed(SuperadminRoutes.profileModelsName),
+                      onSaved: (_) => context.goNamed(SuperadminRoutes.profileModelsName),
+                      onDestinationSelected: (destination) =>
+                          _navigateFromPersistentShell(context, destination),
+                    ),
                   ),
           ),
           GoRoute(
@@ -2348,33 +2360,45 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.profileDetail,
             name: SuperadminRoutes.profileDetailName,
-            builder: (context, state) => AccessProfileDetailPage(
-              repository: accessProfileRepository,
-              logout: logout,
-              domain: _accessProfileDomain(state.pathParameters['domain']),
-              profileId: state.pathParameters['profileId']!,
-              onBack: () => context.goNamed(SuperadminRoutes.profilesName),
-              onEdit: () => context.goNamed(
-                SuperadminRoutes.profileEditName,
-                pathParameters: state.pathParameters,
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, _) => AccessProfileDetailPage(
+                key: ValueKey(
+                  'profile-detail-${state.pathParameters}-${session.authorizationInvalidationRevision}',
+                ),
+                repository: accessProfileRepository,
+                logout: logout,
+                domain: _accessProfileDomain(state.pathParameters['domain']),
+                profileId: state.pathParameters['profileId']!,
+                onBack: () => context.goNamed(SuperadminRoutes.profilesName),
+                onEdit: () => context.goNamed(
+                  SuperadminRoutes.profileEditName,
+                  pathParameters: state.pathParameters,
+                ),
+                onDeleted: () => context.goNamed(SuperadminRoutes.profilesName),
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
               ),
-              onDeleted: () => context.goNamed(SuperadminRoutes.profilesName),
-              onDestinationSelected: (destination) =>
-                  _navigateFromPersistentShell(context, destination),
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.profileEdit,
             name: SuperadminRoutes.profileEditName,
-            builder: (context, state) => AccessProfileFormPage(
-              repository: accessProfileRepository,
-              logout: logout,
-              domain: _accessProfileDomain(state.pathParameters['domain']),
-              profileId: state.pathParameters['profileId'],
-              onCancel: () => context.goNamed(SuperadminRoutes.profilesName),
-              onSaved: (_) => context.goNamed(SuperadminRoutes.profilesName),
-              onDestinationSelected: (destination) =>
-                  _navigateFromPersistentShell(context, destination),
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, _) => AccessProfileFormPage(
+                key: ValueKey(
+                  'profile-edit-${state.pathParameters}-${session.authorizationInvalidationRevision}',
+                ),
+                repository: accessProfileRepository,
+                logout: logout,
+                domain: _accessProfileDomain(state.pathParameters['domain']),
+                profileId: state.pathParameters['profileId'],
+                onCancel: () => context.goNamed(SuperadminRoutes.profilesName),
+                onSaved: (_) => context.goNamed(SuperadminRoutes.profilesName),
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
+              ),
             ),
           ),
           GoRoute(
