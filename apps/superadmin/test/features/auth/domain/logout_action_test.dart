@@ -21,56 +21,158 @@ void main() {
     expect(session.isAuthenticated, isFalse);
   });
 
-  test('keeps the session state and returns a safe message when logout fails', () async {
-    final auth = _FakeCoeloAuthGateway(signOutException: Exception('network details'));
-    final session = SuperadminSession()..signInForTesting();
-    addTearDown(session.dispose);
-    final logout = createCoeloAuthLogoutAction(auth: auth, session: session);
+  for (final error in [
+    Exception('network details'),
+    Error(),
+    StateError('network details'),
+    TypeError(),
+  ]) {
+    test('keeps the current session and sanitizes ${error.runtimeType} from logout', () async {
+      final auth = _FakeCoeloAuthGateway(signOutException: error);
+      final session = SuperadminSession()..signInForTesting();
+      addTearDown(session.dispose);
+      final logout = createCoeloAuthLogoutAction(auth: auth, session: session);
+      final revision = session.authorizationInvalidationRevision;
 
-    final result = await logout();
+      final result = await logout();
 
-    expect(result.isSuccess, isFalse);
-    expect(result.message, LogoutResult.genericFailureMessage);
-    expect(result.message, isNot(contains('network details')));
-    expect(session.isAuthenticated, isTrue);
-  });
+      expect(result.isSuccess, isFalse);
+      expect(result.message, LogoutResult.genericFailureMessage);
+      expect(result.message, isNot(contains('network details')));
+      expect(session.isAuthenticated, isTrue);
+      expect(session.authorizationInvalidationRevision, revision);
+      expect(auth.signOutCalls, 1);
+    });
 
-  test('does not clear a newer authorization while logout is pending', () async {
-    final auth = _FakeCoeloAuthGateway(
-      signOutStarted: Completer<void>(),
-      signOutRelease: Completer<void>(),
+    test('does not restore a session already cleared before ${error.runtimeType}', () async {
+      final session = SuperadminSession()..signInForTesting();
+      addTearDown(session.dispose);
+      final auth = _FakeCoeloAuthGateway(signOutException: error, onSignOut: session.signOut);
+      final logout = createCoeloAuthLogoutAction(auth: auth, session: session);
+
+      final result = await logout();
+
+      expect(result.isSuccess, isFalse);
+      expect(result.message, LogoutResult.genericFailureMessage);
+      expect(session.isAuthenticated, isFalse);
+      expect(session.authContext, isNull);
+      expect(session.sessionId, isNull);
+      expect(auth.signOutCalls, 1);
+    });
+
+    test(
+      'keeps a newer authorization when the pending gateway fails with ${error.runtimeType}',
+      () async {
+        final auth = _FakeCoeloAuthGateway(
+          signOutException: error,
+          signOutStarted: Completer<void>(),
+          signOutRelease: Completer<void>(),
+        );
+        final session = SuperadminSession()..signInForTesting();
+        addTearDown(session.dispose);
+        final logout = createCoeloAuthLogoutAction(auth: auth, session: session);
+        final pending = logout();
+        await auth.signOutStarted!.future;
+        session.authorize(
+          const SuperadminAuthContext(
+            platformRoleCode: 'newer-role',
+            scopeKind: SuperadminAuthScopeKind.platform,
+            permissionCodes: {'platform.read', 'audit.read'},
+            aal: 'aal1',
+          ),
+          sessionId: 'new-session',
+        );
+        final revision = session.authorizationInvalidationRevision;
+        auth.signOutRelease!.complete();
+        final result = await pending;
+
+        expect(result.isSuccess, isFalse);
+        expect(result.message, LogoutResult.genericFailureMessage);
+        expect(session.isAuthenticated, isTrue);
+        expect(session.sessionId, 'new-session');
+        expect(session.authContext!.platformRoleCode, 'newer-role');
+        expect(session.authorizationInvalidationRevision, revision);
+        expect(auth.signOutCalls, 1);
+      },
     );
-    final session = SuperadminSession()..signInForTesting();
-    addTearDown(session.dispose);
-    final logout = createCoeloAuthLogoutAction(auth: auth, session: session);
+  }
 
-    final resultFuture = logout();
-    await auth.signOutStarted!.future;
-    session.authorize(
-      const SuperadminAuthContext(
-        platformRoleCode: 'newer-role',
-        scopeKind: SuperadminAuthScopeKind.platform,
-        permissionCodes: {'platform.read'},
-        aal: 'aal1',
-      ),
-      sessionId: 'new-session',
+  for (final changeSessionId in [true, false]) {
+    test(
+      'does not clear a newer authorization when session ID changes: $changeSessionId',
+      () async {
+        final auth = _FakeCoeloAuthGateway(
+          signOutStarted: Completer<void>(),
+          signOutRelease: Completer<void>(),
+        );
+        final session = SuperadminSession()..signInForTesting();
+        addTearDown(session.dispose);
+        final logout = createCoeloAuthLogoutAction(auth: auth, session: session);
+
+        final resultFuture = logout();
+        await auth.signOutStarted!.future;
+        final newerSessionId = changeSessionId ? 'new-session' : session.sessionId!;
+        session.authorize(
+          const SuperadminAuthContext(
+            platformRoleCode: 'newer-role',
+            scopeKind: SuperadminAuthScopeKind.platform,
+            permissionCodes: {'platform.read'},
+            aal: 'aal1',
+          ),
+          sessionId: newerSessionId,
+        );
+        auth.signOutRelease!.complete();
+        final result = await resultFuture;
+
+        expect(result.isSuccess, isTrue);
+        expect(session.isAuthenticated, isTrue);
+        expect(session.sessionId, newerSessionId);
+        expect(session.authContext!.platformRoleCode, 'newer-role');
+        expect(auth.signOutCalls, 1);
+      },
     );
-    auth.signOutRelease!.complete();
-    final result = await resultFuture;
+  }
 
-    expect(result.isSuccess, isTrue);
-    expect(session.isAuthenticated, isTrue);
-    expect(session.sessionId, 'new-session');
-  });
+  test(
+    'reports failed local teardown after a completed gateway logout without leaking Error',
+    () async {
+      final auth = _FakeCoeloAuthGateway(
+        signOutStarted: Completer<void>(),
+        signOutRelease: Completer<void>(),
+      );
+      final session = SuperadminSession()..signInForTesting();
+      addTearDown(session.dispose);
+      final logout = createCoeloAuthLogoutAction(auth: auth, session: session);
+      final pending = logout();
+      await auth.signOutStarted!.future;
+      session.dispose();
+      auth.signOutRelease!.complete();
+
+      final result = await pending;
+
+      expect(result.isSuccess, isFalse);
+      expect(result.message, LogoutResult.genericFailureMessage);
+      expect(auth.didSignOut, isTrue);
+      expect(auth.signOutCalls, 1);
+      expect(session.isAuthenticated, isFalse);
+    },
+  );
 }
 
 final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
-  _FakeCoeloAuthGateway({this.signOutException, this.signOutStarted, this.signOutRelease});
+  _FakeCoeloAuthGateway({
+    this.signOutException,
+    this.signOutStarted,
+    this.signOutRelease,
+    this.onSignOut,
+  });
 
-  final Exception? signOutException;
+  final Object? signOutException;
   final Completer<void>? signOutStarted;
   final Completer<void>? signOutRelease;
+  final void Function()? onSignOut;
   bool didSignOut = false;
+  int signOutCalls = 0;
 
   @override
   Stream<CoeloAuthSessionState> get authSessionStateChanges =>
@@ -102,13 +204,15 @@ final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
 
   @override
   Future<void> signOut() async {
-    if (signOutException case final exception?) {
-      throw exception;
-    }
-    didSignOut = true;
+    signOutCalls++;
     signOutStarted?.complete();
     if (signOutRelease case final release?) {
       await release.future;
     }
+    onSignOut?.call();
+    if (signOutException case final exception?) {
+      throw exception;
+    }
+    didSignOut = true;
   }
 }

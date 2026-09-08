@@ -30,7 +30,7 @@ LogoutAction createCoeloAuthLogoutAction({
         session.signOut();
       }
       return const LogoutResult.success();
-    } on Exception {
+    } catch (_) {
       return const LogoutResult.failure(LogoutResult.genericFailureMessage);
     }
   };
