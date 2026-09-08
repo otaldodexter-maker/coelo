@@ -59,3 +59,16 @@ de invalidação do diretório/editor passou 83/83. Analyzer de dois arquivos PA
 format/diff check PASS; review realm_audit sem bloqueantes no delta de duas
 linhas. Não somar execuções nem declarar E2E. Template/cache de writes seguem
 fora deste complemento.
+
+## Complemento nominal: template
+
+RED real de template: 8 PASS / 1 FAIL no arquivo de contexto; mudança durante
+catálogo devolvia template anterior. Duas linhas em `fetchTemplate` capturam
+revisão na entrada e verificam após o await. Controle equivalente permitido;
+contexto alterado rejeitado, sem mudar requisitos de catálogo ou writes.
+
+Contexto 9/9 e com testes legados do adapter 14/14 PASS. Regressão data + rotas
+de invalidação do diretório/editor: 87/87 PASS. Analyzer dois arquivos sem
+issues, format/diff check PASS; review realm_audit sem bloqueantes. Sem SQL,
+router, grants, mídia ou remoto; cache de writes e contrato domain-only seguem
+fora da correção. Estes READs locais não representam verified-e2e.

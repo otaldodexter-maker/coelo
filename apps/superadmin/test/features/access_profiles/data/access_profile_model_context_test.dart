@@ -9,6 +9,30 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   for (final changed in [false, true]) {
+    test('model template preserves authorization continuity: changed=$changed', () async {
+      final session = SuperadminSession()..authorize(_institution, sessionId: 'nominal');
+      addTearDown(session.dispose);
+      final source = _Source(session);
+      final adapter = AccessProfileModelRepositoryAdapter(
+        source,
+        authorizationRevision: () => session.authorizationInvalidationRevision,
+      );
+      final result = adapter.fetchTemplate(AccessProfileDomain.institution);
+      final expectation = changed
+          ? expectLater(result, throwsA(isA<AccessProfileUnauthorizedException>()))
+          : null;
+      await source.catalogStarted.future;
+      session.authorize(changed ? _platform : _institution, sessionId: 'nominal');
+      source.catalogGate.complete();
+      if (changed) {
+        await expectation;
+      } else {
+        expect((await result).domain, AccessProfileDomain.institution);
+      }
+    });
+  }
+
+  for (final changed in [false, true]) {
     for (final heldPage in [1, 2]) {
       test(
         'paged model read preserves authorization continuity: changed=$changed, page=$heldPage',
