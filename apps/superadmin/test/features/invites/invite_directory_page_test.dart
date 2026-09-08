@@ -242,6 +242,25 @@ void main() {
     expect(find.byKey(const Key('invite-resend-copy-link')), findsOneWidget);
   });
 
+  testWidgets('search discards the previous response before debounce completes', (tester) async {
+    final repository = _RacingInviteRepository();
+    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository)));
+    await tester.pump();
+    await tester.enterText(find.byType(TextField).first, 'novo');
+    repository.requests.single.complete(
+      InviteDirectoryResult(
+        items: [testInvite(recipient: 'antigo@coelo.test')],
+        totalCount: 1,
+        page: 1,
+        pageSize: 11,
+      ),
+    );
+    await tester.pump();
+    final staleRows = find.text('antigo@coelo.test').evaluate().length;
+    await tester.pumpWidget(const SizedBox.shrink());
+    expect(staleRows, 0);
+  });
+
   testWidgets('ignores an older server response after a newer search completes', (tester) async {
     final repository = _RacingInviteRepository();
     await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository)));
