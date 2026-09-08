@@ -58,6 +58,9 @@ Replay permanece exclusivo do Engenheiro 1, sujeito ao pacote nominal coordenado
 Revisão independente `realm_audit`: sem bloqueante estático; `plan(3)` coerente.
 O total esperado pressupõe baseline descartável sem outros perfis internos,
 como Users45; este teste não deve ser executado contra produção.
+Follow-up da revisão central: a RPC e a captura de `current_user` executam
+sob `authenticated`; `RESET ROLE` ocorre antes dos três asserts pgTAP.
+O primeiro assert verifica o ator capturado, sem grants novos para executar TAP.
 
 Consulta somente de catálogo ao projeto `evvbomzejfijozbtgvpt`, em
 `2026-09-08 00:57:09.136813+00`, retornou ausência (`to_regprocedure IS NULL`)
