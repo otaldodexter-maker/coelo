@@ -410,6 +410,31 @@ reset role;
 select is((select body->>'ok' from fauthor_results where label='inactive_institution_read'),'true','inactive is not silently treated as soft-deleted for draft reading');
 update public.institutions set status='active' where id='8f020000-0000-4000-8000-000000000010';
 
+-- Session expires after transaction start but before these RPCs. The shared
+-- helper's now() check alone would still accept it; the nominal clock guard must not.
+update auth.sessions set not_after=now()+(clock_timestamp()-now())/2
+where id='8f020000-0000-4000-8000-000000000201';
+select ok((select not_after>now() and not_after<clock_timestamp() from auth.sessions where id='8f020000-0000-4000-8000-000000000201'),'temporal fixture is valid at transaction start but expired now');
+set local role authenticated;
+insert into fauthor_results values ('expired_clock_read',public.superadmin_forms_editor_v2('8f020000-0000-4000-8000-000000000701'),null,current_user);
+insert into fauthor_results select 'expired_clock_replay',public.superadmin_forms_save_draft_v2(request_id,0,payload),null,current_user from fauthor_cases where label='incomplete_1';
+insert into fauthor_results select 'expired_clock_create',public.superadmin_forms_save_draft_v2('8f020000-0000-4000-8000-000000000989',0,payload||'{"id":"8f020000-0000-4000-8000-000000000796"}'),null,current_user from fauthor_cases where label='incomplete_1';
+insert into fauthor_results select 'expired_clock_edit',public.superadmin_forms_save_draft_v2('8f020000-0000-4000-8000-000000000990',2,payload),null,current_user from fauthor_cases where label='incomplete_1';
+reset role;
+select is(body#>>'{error,code}','SAI_SESSION_INVALID',label||' rejects clock-expired session') from fauthor_results where label like 'expired_clock_%';
+select is(body->'data','null'::jsonb,label||' returns no snapshot') from fauthor_results where label like 'expired_clock_%';
+select is((select management_version from public.forms where id='8f020000-0000-4000-8000-000000000701'),2::bigint,'clock expiration leaves revision unchanged');
+select ok(not exists(select 1 from public.forms where id='8f020000-0000-4000-8000-000000000796'),'clock expiration creates no form');
+select ok(not exists(select 1 from app_private.superadmin_internal_form_draft_receipts where request_id in('8f020000-0000-4000-8000-000000000989','8f020000-0000-4000-8000-000000000990')),'clock expiration creates no receipt');
+select is((select count(*) from audit.audit_logs a where a.correlation_id=(r.body#>>'{error,correlation_id}')::uuid
+ and a.outcome='denied' and a.reason_code='SAI_SESSION_INVALID'),1::bigint,r.label||' temporal denial audited') from fauthor_results r where label like 'expired_clock_%';
+update auth.sessions set not_after=null where id='8f020000-0000-4000-8000-000000000201';
+set local role authenticated;
+insert into fauthor_results values ('null_session_expiration_read',public.superadmin_forms_editor_v2('8f020000-0000-4000-8000-000000000701'),null,current_user);
+reset role;
+select is((select body->>'ok' from fauthor_results where label='null_session_expiration_read'),'true','null expiration retains canonical session semantics');
+update auth.sessions set not_after=clock_timestamp()+interval '1 hour' where id='8f020000-0000-4000-8000-000000000201';
+
 select is((select count(*) from audit.audit_logs where action_code in('superadmin.forms.editor','superadmin.forms.draft.save') and outcome='success'),
  (select count(*) from fauthor_results where body->>'ok'='true'),'one audit for each successful nominal operation including replay');
 select is((select count(*) from fauthor_audit_capture c where c.operation_label=r.label),1::bigint,'exactly one correlated success audit for '||r.label)

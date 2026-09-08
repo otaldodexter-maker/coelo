@@ -123,11 +123,26 @@ Reautorização pós-espera fecha a janela testada, não serializa toda revogaç
 futura contra cada instrução da transação. O ponto de autorização e os locks
 observados devem constar da evidência do executor.
 
-Limitação do helper compartilhado preservado: valida `auth.sessions.not_after`
-usando `now()` (início da transação), não relógio corrente após o lock. Este
-delta cobre revogações confirmadas durante espera, não comprova expiração
-puramente temporal durante uma transação longa. A ressalva foi encaminhada ao
-Coordenador; não foi corrigida silenciosamente alterando Auth global.
+O helper compartilhado preservado valida `auth.sessions.not_after` usando
+`now()` (início da transação). Após a ressalva, o Coordenador autorizou fechar
+temporalidade **nominalmente**: as três reautorizações pós-espera agora consultam
+também a sessão original, vinculada ao auth_user original, e exigem
+`not_after IS NULL OR not_after > clock_timestamp()`. Ausência ou expiração
+produz SESSION_INVALID, sem mudar Auth global nem a semântica NULL vigente.
+
+RED sequencial preparado usa not_after entre início da transação e relógio
+corrente. Assim o helper antigo aceitaria, mas reader/create/edit/replay nominais
+devem negar; verifica ausência de snapshot/efeitos e auditoria por correlação.
+Controle NULL permite leitura. Nenhum SQL foi executado nesta preparação.
+
+Protocolo temporal adicional Eng1: publicar fixture com not_after curto, porém
+futuro; A segura cada lock da matriz, B inicia antes de not_after e fica
+comprovadamente bloqueado. A consulta clock_timestamp/not_after até ultrapassar
+o limite, sem alterar a sessão e sem usar apenas sleep como prova, então libera
+o lock. B deve negar SESSION_INVALID, com mesmas asserções de ausência de
+snapshot, escrita, receipt e sucesso auditado. Repetir reader/create/edit/replay
+nos locks aplicáveis. Controle libera antes da expiração e deve passar; controle
+not_after NULL também passa. Registrar relógio antes/depois e isolamento de B.
 
 Revisões independentes do código e dos testes não encontraram novo bloqueante
 estático. Os arquivos de isolamento reutilizam fixtures rollback-only e devem
