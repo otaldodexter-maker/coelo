@@ -131,9 +131,7 @@ void main() {
     expect(find.text('Sintética Um'), findsNothing);
   });
 
-  testWidgets('the embedded list lays out without overflow at 375 and 200 percent', (
-    tester,
-  ) async {
+  testWidgets('the embedded list lays out without overflow at 375 and 200 percent', (tester) async {
     tester.view.physicalSize = const Size(375, 812);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);

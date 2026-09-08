@@ -12,6 +12,10 @@ import '../../domain/institution_directory_item.dart';
 import '../../domain/institution_record.dart';
 import '../../../../shared/presentation/widgets/avatar_crop_dialog.dart';
 import '../../../../shared/presentation/widgets/superadmin_location_map_preview.dart';
+import 'package:coelo_domain/locations.dart';
+
+import '../../../locations/domain/location_catalog_reader.dart';
+import '../../../locations/presentation/locations_map_section.dart';
 import '../view_models/institution_form_controller.dart';
 import 'institution_form_dialogs.dart';
 import 'institution_logo_picker.dart';
@@ -21,12 +25,25 @@ final class InstitutionFormSection extends StatelessWidget {
     required this.controller,
     required this.locationService,
     required this.imagePicker,
+    this.locationCatalogReader,
+    this.locationScope,
+    this.sessionAvailable = false,
+    this.contextRevision = 0,
     super.key,
   });
 
   final InstitutionFormController controller;
   final InstitutionLocationService locationService;
   final InstitutionLogoPicker imagePicker;
+
+  /// Absent until a composition provides the catalog; the Mapa e locais section
+  /// is then appended to the address step instead of becoming a new step.
+  final LocationCatalogReader? locationCatalogReader;
+
+  /// Null while the institution is still being created and has no catalog.
+  final LocationScope? locationScope;
+  final bool sessionAvailable;
+  final int contextRevision;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +52,10 @@ final class InstitutionFormSection extends StatelessWidget {
       InstitutionFormStep.location => _LocationSection(
         controller: controller,
         locationService: locationService,
+        locationCatalogReader: locationCatalogReader,
+        locationScope: locationScope,
+        sessionAvailable: sessionAvailable,
+        contextRevision: contextRevision,
       ),
       InstitutionFormStep.legalRepresentatives => _LegalRepresentativesSection(
         controller: controller,
@@ -119,10 +140,21 @@ final class _ProfileSection extends StatelessWidget {
 }
 
 final class _LocationSection extends StatefulWidget {
-  const _LocationSection({required this.controller, required this.locationService});
+  const _LocationSection({
+    required this.controller,
+    required this.locationService,
+    this.locationCatalogReader,
+    this.locationScope,
+    this.sessionAvailable = false,
+    this.contextRevision = 0,
+  });
 
   final InstitutionFormController controller;
   final InstitutionLocationService locationService;
+  final LocationCatalogReader? locationCatalogReader;
+  final LocationScope? locationScope;
+  final bool sessionAvailable;
+  final int contextRevision;
 
   @override
   State<_LocationSection> createState() => _LocationSectionState();
@@ -274,6 +306,16 @@ final class _LocationSectionState extends State<_LocationSection> {
               ),
             ],
           ),
+          if (widget.locationCatalogReader != null) ...[
+            const SizedBox(height: CoeloSpacing.space5),
+            LocationsMapSection(
+              ownerKind: LocationOwnerKind.institution,
+              scope: widget.locationScope,
+              reader: widget.locationCatalogReader!,
+              sessionAvailable: widget.sessionAvailable,
+              contextRevision: widget.contextRevision,
+            ),
+          ],
         ],
       ),
     );

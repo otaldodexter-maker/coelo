@@ -1075,6 +1075,9 @@ GoRouter createSuperadminRouter({
                 ? blockedProductionMutationPage(context)
                 : InstitutionFormPage(
                     repository: institutionDirectoryRepository,
+                    locationCatalogReader: locationCatalogReader,
+                    sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
+                    contextRevision: session.authorizationInvalidationRevision,
                     logout: logout,
                     onCancel: () => context.goNamed(SuperadminRoutes.institutionsName),
                     onSaved: (result) =>
@@ -1108,6 +1111,9 @@ GoRouter createSuperadminRouter({
                 : InstitutionFormPage(
                     repository: institutionDirectoryRepository,
                     institutionId: state.pathParameters['institutionId'],
+                    locationCatalogReader: locationCatalogReader,
+                    sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
+                    contextRevision: session.authorizationInvalidationRevision,
                     logout: logout,
                     onCancel: () => context.goNamed(SuperadminRoutes.institutionsName),
                     onSaved: (result) =>
@@ -1181,6 +1187,9 @@ GoRouter createSuperadminRouter({
                 ? blockedProductionMutationPage(context)
                 : UnitFormPage(
                     repository: unitRepository,
+                    locationCatalogReader: locationCatalogReader,
+                    sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
+                    contextRevision: session.authorizationInvalidationRevision,
                     logout: logout,
                     onCreateGroup: (institutionId, unitId) => context.goNamed(
                       SuperadminRoutes.groupCreateName,
@@ -1233,6 +1242,9 @@ GoRouter createSuperadminRouter({
                 : UnitFormPage(
                     repository: unitRepository,
                     unitId: state.pathParameters['unitId'],
+                    locationCatalogReader: locationCatalogReader,
+                    sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
+                    contextRevision: session.authorizationInvalidationRevision,
                     logout: logout,
                     onCreateGroup: (institutionId, unitId) => context.goNamed(
                       SuperadminRoutes.groupCreateName,

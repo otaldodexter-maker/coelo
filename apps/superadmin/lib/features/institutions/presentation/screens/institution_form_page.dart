@@ -13,6 +13,9 @@ import '../../domain/institution_directory_repository.dart';
 import '../view_models/institution_form_controller.dart';
 import '../widgets/institution_form_dialogs.dart';
 import '../widgets/institution_form_navigation.dart';
+import 'package:coelo_domain/locations.dart';
+
+import '../../../locations/domain/location_catalog_reader.dart';
 import '../widgets/institution_form_sections.dart';
 import '../widgets/institution_logo_picker.dart';
 
@@ -28,6 +31,9 @@ final class InstitutionFormPage extends StatefulWidget {
     this.locationService,
     this.onDestinationSelected,
     this.imagePicker,
+    this.locationCatalogReader,
+    this.sessionAvailable = false,
+    this.contextRevision = 0,
     super.key,
   });
 
@@ -39,6 +45,14 @@ final class InstitutionFormPage extends StatefulWidget {
   final ValueChanged<InstitutionFormSaveResult> onSaved;
   final ValueChanged<String>? onDestinationSelected;
   final InstitutionLogoPicker? imagePicker;
+
+  /// Reads the institution's location catalog for the Mapa e locais section.
+  ///
+  /// Absent by default: without it the section is not rendered at all, so a
+  /// composition that does not provide the catalog looks exactly as before.
+  final LocationCatalogReader? locationCatalogReader;
+  final bool sessionAvailable;
+  final int contextRevision;
 
   @override
   State<InstitutionFormPage> createState() => _InstitutionFormPageState();
@@ -268,6 +282,12 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
             setState(() => _footerHeight = height);
           },
           viewportWidth: viewportWidth,
+          locationCatalogReader: widget.locationCatalogReader,
+          locationScope: widget.institutionId == null || !validLocationId(widget.institutionId!)
+              ? null
+              : LocationScope.institution(institutionId: widget.institutionId!),
+          sessionAvailable: widget.sessionAvailable,
+          contextRevision: widget.contextRevision,
         ),
       },
     );
@@ -286,6 +306,10 @@ final class _FormBody extends StatelessWidget {
     required this.imagePicker,
     required this.onFooterHeightChanged,
     required this.viewportWidth,
+    this.locationCatalogReader,
+    this.locationScope,
+    this.sessionAvailable = false,
+    this.contextRevision = 0,
   });
 
   final InstitutionFormController controller;
@@ -295,6 +319,10 @@ final class _FormBody extends StatelessWidget {
   final InstitutionLogoPicker imagePicker;
   final ValueChanged<double> onFooterHeightChanged;
   final double viewportWidth;
+  final LocationCatalogReader? locationCatalogReader;
+  final LocationScope? locationScope;
+  final bool sessionAvailable;
+  final int contextRevision;
 
   @override
   Widget build(BuildContext context) {
@@ -322,6 +350,10 @@ final class _FormBody extends StatelessWidget {
                   controller: controller,
                   locationService: locationService,
                   imagePicker: imagePicker,
+                  locationCatalogReader: locationCatalogReader,
+                  locationScope: locationScope,
+                  sessionAvailable: sessionAvailable,
+                  contextRevision: contextRevision,
                 ),
                 footer: _FormFooter(
                   controller: controller,

@@ -12,6 +12,10 @@ import '../../institutions/presentation/widgets/institution_form_dialogs.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_location_map_preview.dart';
+import 'package:coelo_domain/locations.dart';
+
+import '../../locations/domain/location_catalog_reader.dart';
+import '../../locations/presentation/locations_map_section.dart';
 import '../domain/unit_directory.dart';
 import 'unit_form_controller.dart';
 import 'unit_form_navigation.dart';
@@ -32,6 +36,9 @@ final class UnitFormPage extends StatefulWidget {
     this.onEditGroup,
     this.onCreateActivity,
     this.onEditActivity,
+    this.locationCatalogReader,
+    this.sessionAvailable = false,
+    this.contextRevision = 0,
     super.key,
   });
 
@@ -41,6 +48,14 @@ final class UnitFormPage extends StatefulWidget {
   final ValueChanged<UnitFormSaveResult> onSaved;
   final String? unitId;
   final InstitutionLocationService? locationService;
+
+  /// Reads the unit's own catalog for the Mapa e locais section.
+  ///
+  /// Absent by default: without it the section is not rendered, so a
+  /// composition that does not provide the catalog looks exactly as before.
+  final LocationCatalogReader? locationCatalogReader;
+  final bool sessionAvailable;
+  final int contextRevision;
   final ValueChanged<String>? onDestinationSelected;
   final void Function(String institutionId, String? unitId)? onCreateGroup;
   final ValueChanged<String>? onEditGroup;
@@ -798,9 +813,29 @@ final class _UnitFormPageState extends State<UnitFormPage> {
             _text('state'),
           ].where((part) => part.isNotEmpty).join(', '),
         ),
+        if (widget.locationCatalogReader != null) ...[
+          const SizedBox(height: CoeloSpacing.space5),
+          LocationsMapSection(
+            ownerKind: LocationOwnerKind.unit,
+            // The unit only has a catalog once it exists; its institution comes
+            // from the loaded record, never from a route parameter.
+            scope: _unitLocationScope(),
+            reader: widget.locationCatalogReader!,
+            sessionAvailable: widget.sessionAvailable,
+            contextRevision: widget.contextRevision,
+          ),
+        ],
       ],
     ),
   );
+
+  LocationScope? _unitLocationScope() {
+    final unitId = _original?.id;
+    if (unitId == null || !validLocationId(unitId) || !validLocationId(_institution.id)) {
+      return null;
+    }
+    return LocationScope.unit(institutionId: _institution.id, unitId: unitId);
+  }
 
   Widget _planSection() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
