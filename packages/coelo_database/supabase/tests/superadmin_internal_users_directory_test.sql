@@ -1,6 +1,11 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(29);
+select plan(45);
+
+-- Fixture lookup runs as the test owner; RPC payload construction below must
+-- not require authenticated to SELECT the private authorization catalog.
+select set_config('test.internal_users_operations_role_id',
+  (select id::text from public.platform_roles where code='operations'),true);
 
 select ok(
   to_regclass('app_private.superadmin_internal_profiles') is not null
@@ -122,7 +127,7 @@ select is(public.superadmin_internal_user_update(
     'additional_phone','','job_title','Líder de operações','department','Operações',
     'internal_function','Atendimento','professional_notes','','postal_code','',
     'street','','number','','complement','','neighborhood','','city','','state','',
-    'country','Brasil'),'profile_id',(select id from public.platform_roles where code='operations'),
+    'country','Brasil'),'profile_id',current_setting('test.internal_users_operations_role_id')::uuid,
     'scope','platform','scope_ids','[]'::jsonb))->'identity'->>'job_title',
   'Líder de operações','edit persists the guarded professional draft');
 select is(public.superadmin_internal_user_update(
@@ -135,7 +140,7 @@ select is(public.superadmin_internal_user_update(
     'additional_phone','','job_title','Líder de operações','department','Operações',
     'internal_function','Atendimento','professional_notes','','postal_code','',
     'street','','number','','complement','','neighborhood','','city','','state','',
-    'country','Brasil'),'profile_id',(select id from public.platform_roles where code='operations'),
+    'country','Brasil'),'profile_id',current_setting('test.internal_users_operations_role_id')::uuid,
     'scope','platform','scope_ids','[]'::jsonb))->>'version','2',
   'replayed request returns its receipt without applying the stale draft twice');
 select is(public.superadmin_internal_user_change_status(
@@ -150,6 +155,7 @@ select is(public.superadmin_internal_user_change_status(
   '96000000-0000-4000-8000-000000000004',
   '93000000-0000-4000-8000-000000000001',1,'suspended','Teste de proteção')
   #>>'{error,code}','SAI_LAST_OWNER_PROTECTED','last global Owner cannot be suspended');
+reset role;
 select is((select count(*) from audit.audit_logs
   where actor_internal_identity_id='93000000-0000-4000-8000-000000000001'
     and action_code in('superadmin.internal-users.list','superadmin.internal-users.detail',
@@ -243,7 +249,7 @@ select is(public.superadmin_internal_user_update(
     'mobile','','additional_phone','','job_title','Suporte A','department','',
     'internal_function','','professional_notes','','postal_code','','street','','number','',
     'complement','','neighborhood','','city','','state','','country','Brasil'),
-    'profile_id',(select id from public.platform_roles where code='operations'),
+    'profile_id',current_setting('test.internal_users_operations_role_id')::uuid,
     'scope','platform','scope_ids','[]'::jsonb))#>>'{error,code}','SAI_PERMISSION_DENIED',
   'limited actor cannot escalate a same-tenant target to platform scope');
 select is(public.superadmin_internal_user_update(
@@ -255,7 +261,7 @@ select is(public.superadmin_internal_user_update(
     'mobile','','additional_phone','','job_title','Suporte B','department','',
     'internal_function','','professional_notes','','postal_code','','street','','number','',
     'complement','','neighborhood','','city','','state','','country','Brasil'),
-    'profile_id',(select id from public.platform_roles where code='operations'),
+    'profile_id',current_setting('test.internal_users_operations_role_id')::uuid,
     'scope','limited','scope_ids',jsonb_build_array('97000000-0000-4000-8000-000000000002')))
   #>>'{error,code}','SAI_PERMISSION_DENIED',
   'edit denies a target from institution B before row disclosure');
@@ -273,11 +279,201 @@ select is(public.superadmin_internal_users_list(
 select is(public.superadmin_internal_users_list(
   null,null,null,null,1,999)#>>'{error,code}','SAI_INVALID_INPUT',
   'directory rejects page sizes outside the allowlist');
+reset role;
 select ok((select count(*)>=7 from audit.audit_logs
   where actor_internal_identity_id='93000000-0000-4000-8000-000000000003'
     and outcome='denied' and reason_code in('SAI_PERMISSION_DENIED','SAI_INVALID_INPUT')),
   'cross-scope, IDOR and malformed-input denials are audited for the identified actor');
 
 reset role;
+
+-- Actual users RPCs must reauthorize on every request. These fixture changes
+-- are owner-only; each public RPC still executes as authenticated.
+select set_config('request.jwt.claims',jsonb_build_object(
+  'sub','91000000-0000-4000-8000-000000000003',
+  'session_id','92000000-0000-4000-8000-000000000003',
+  'aal','aal1','role','authenticated')::text,true);
+update auth.sessions set aal='aal1'
+where id='92000000-0000-4000-8000-000000000003';
+set local role authenticated;
+select is((public.superadmin_internal_users_list(null,null,null,null,1,11)->>'total')::integer,
+  2,'users read accepts AAL1 under the explicit MVP policy');
+reset role;
+
+update public.platform_role_permissions set effect='deny'
+where role_id=current_setting('test.internal_users_operations_role_id')::uuid
+  and permission_id=(select id from public.platform_permissions where code='platform.member.read');
+set local role authenticated;
+select results_eq(
+  $$select public.superadmin_internal_users_list(null,null,null,null,1,11)#>>'{error,code}'
+    union all select public.superadmin_internal_user_detail('93000000-0000-4000-8000-000000000004')#>>'{error,code}'
+    union all select public.superadmin_internal_user_profiles()#>>'{error,code}'$$,
+  $$values ('SAI_PERMISSION_DENIED'),('SAI_PERMISSION_DENIED'),('SAI_PERMISSION_DENIED')$$,
+  'list, detail and profiles reject capability removed after a successful read');
+reset role;
+update public.platform_role_permissions set effect='allow'
+where role_id=current_setting('test.internal_users_operations_role_id')::uuid
+  and permission_id=(select id from public.platform_permissions where code='platform.member.read');
+
+update app_private.superadmin_internal_memberships
+set status='suspended',suspended_at=now(),version=version+1
+where id='95000000-0000-4000-8000-000000000003';
+set local role authenticated;
+select results_eq(
+  $$select public.superadmin_internal_users_list(null,null,null,null,1,11)#>>'{error,code}'
+    union all select public.superadmin_internal_user_detail('93000000-0000-4000-8000-000000000004')#>>'{error,code}'
+    union all select public.superadmin_internal_user_profiles()#>>'{error,code}'$$,
+  $$values ('SAI_MEMBERSHIP_SUSPENDED'),('SAI_MEMBERSHIP_SUSPENDED'),('SAI_MEMBERSHIP_SUSPENDED')$$,
+  'users reads reject a suspended membership despite an active auth-link');
+reset role;
+update app_private.superadmin_internal_memberships
+set status='active',suspended_at=null,version=version+1
+where id='95000000-0000-4000-8000-000000000003';
+update app_private.superadmin_internal_memberships
+set status='revoked',revoked_at=now(),version=version+1
+where id='95000000-0000-4000-8000-000000000003';
+set local role authenticated;
+select results_eq(
+  $$select public.superadmin_internal_users_list(null,null,null,null,1,11)#>>'{error,code}'
+    union all select public.superadmin_internal_user_detail('93000000-0000-4000-8000-000000000004')#>>'{error,code}'
+    union all select public.superadmin_internal_user_profiles()#>>'{error,code}'$$,
+  $$values ('SAI_MEMBERSHIP_REVOKED'),('SAI_MEMBERSHIP_REVOKED'),('SAI_MEMBERSHIP_REVOKED')$$,
+  'users reads reject a revoked membership despite a still valid Auth session');
+reset role;
+
+-- A separate active actor isolates auth-link checks from revoked membership.
+insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after) values
+  ('92000000-0000-4000-8000-000000000005','91000000-0000-4000-8000-000000000005',
+   now(),now(),'aal1',now()+interval '1 hour');
+select set_config('request.jwt.claims',jsonb_build_object(
+  'sub','91000000-0000-4000-8000-000000000005',
+  'session_id','92000000-0000-4000-8000-000000000005',
+  'aal','aal1','role','authenticated')::text,true);
+set local role authenticated;
+select is((public.superadmin_internal_users_list(null,null,null,null,1,11)->>'total')::integer,
+  1,'auth-link test actor reads its own institution before link suspension');
+reset role;
+update app_private.superadmin_internal_auth_links
+set status='suspended',suspended_at=now(),version=version+1
+where id='94000000-0000-4000-8000-000000000005';
+set local role authenticated;
+select results_eq(
+  $$select public.superadmin_internal_users_list(null,null,null,null,1,11)#>>'{error,code}'
+    union all select public.superadmin_internal_user_detail('93000000-0000-4000-8000-000000000005')#>>'{error,code}'
+    union all select public.superadmin_internal_user_profiles()#>>'{error,code}'$$,
+  $$values ('SAI_INTERNAL_CONTEXT_DENIED'),('SAI_INTERNAL_CONTEXT_DENIED'),('SAI_INTERNAL_CONTEXT_DENIED')$$,
+  'users reads reject a suspended auth-link while membership remains active');
+reset role;
+update app_private.superadmin_internal_auth_links
+set status='revoked',suspended_at=null,revoked_at=now(),version=version+1
+where id='94000000-0000-4000-8000-000000000005';
+set local role authenticated;
+select results_eq(
+  $$select public.superadmin_internal_users_list(null,null,null,null,1,11)#>>'{error,code}'
+    union all select public.superadmin_internal_user_detail('93000000-0000-4000-8000-000000000005')#>>'{error,code}'
+    union all select public.superadmin_internal_user_profiles()#>>'{error,code}'$$,
+  $$values ('SAI_INTERNAL_CONTEXT_DENIED'),('SAI_INTERNAL_CONTEXT_DENIED'),('SAI_INTERNAL_CONTEXT_DENIED')$$,
+  'users reads reject a revoked auth-link');
+reset role;
+
+-- Owner remains otherwise valid; remove only an independently created session.
+insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after) values
+  ('92000000-0000-4000-8000-000000000007','91000000-0000-4000-8000-000000000001',
+   now(),now(),'aal1',now()+interval '1 hour');
+select set_config('request.jwt.claims',jsonb_build_object(
+  'sub','91000000-0000-4000-8000-000000000001',
+  'session_id','92000000-0000-4000-8000-000000000007',
+  'aal','aal1','role','authenticated')::text,true);
+set local role authenticated;
+select is(public.superadmin_internal_user_detail(
+  '93000000-0000-4000-8000-000000000002')->>'id',
+  '93000000-0000-4000-8000-000000000002','Owner session is valid immediately before deletion');
+reset role;
+delete from auth.sessions where id='92000000-0000-4000-8000-000000000007';
+set local role authenticated;
+select results_eq(
+  $$select public.superadmin_internal_users_list(null,null,null,null,1,11)#>>'{error,code}'
+    union all select public.superadmin_internal_user_detail('93000000-0000-4000-8000-000000000004')#>>'{error,code}'
+    union all select public.superadmin_internal_user_profiles()#>>'{error,code}'$$,
+  $$values ('SAI_SESSION_INVALID'),('SAI_SESSION_INVALID'),('SAI_SESSION_INVALID')$$,
+  'users RPCs reject stale JWT claims after the referenced session is deleted');
+reset role;
+
+insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,
+  raw_app_meta_data,raw_user_meta_data) values
+  ('91000000-0000-4000-8000-000000000006','authenticated','authenticated',
+   'global-realm@invalid.test',now(),now(),now(),'{}','{}');
+insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after) values
+  ('92000000-0000-4000-8000-000000000006','91000000-0000-4000-8000-000000000006',
+   now(),now(),'aal1',now()+interval '1 hour');
+insert into public.people(id,person_type,first_name,last_name,display_name,status) values
+  ('98000000-0000-4000-8000-000000000006','adult','Pessoa','Sintética','Pessoa Sintética','active');
+insert into public.person_auth_links(person_id,auth_user_id,status) values
+  ('98000000-0000-4000-8000-000000000006','91000000-0000-4000-8000-000000000006','active');
+select set_config('request.jwt.claims',jsonb_build_object(
+  'sub','91000000-0000-4000-8000-000000000006',
+  'session_id','92000000-0000-4000-8000-000000000006',
+  'aal','aal1','role','authenticated')::text,true);
+set local role authenticated;
+select results_eq(
+  $$select public.superadmin_internal_users_list(null,null,null,null,1,11)#>>'{error,code}'
+    union all select public.superadmin_internal_user_detail('93000000-0000-4000-8000-000000000004')#>>'{error,code}'
+    union all select public.superadmin_internal_user_profiles()#>>'{error,code}'$$,
+  $$values ('SAI_INTERNAL_CONTEXT_DENIED'),('SAI_INTERNAL_CONTEXT_DENIED'),('SAI_INTERNAL_CONTEXT_DENIED')$$,
+  'global people/Auth realm with valid session cannot enter the internal users realm');
+reset role;
+
+-- Revoke is an existing nominal RPC contract, not invitation provisioning.
+select set_config('request.jwt.claims',jsonb_build_object(
+  'sub','91000000-0000-4000-8000-000000000001',
+  'session_id','92000000-0000-4000-8000-000000000001',
+  'aal','aal1','role','authenticated')::text,true);
+set local role authenticated;
+select set_config('test.internal_users_revoke_version',
+  public.superadmin_internal_user_detail('93000000-0000-4000-8000-000000000002')->>'version',true);
+select set_config('test.internal_users_revoke_result',
+  public.superadmin_internal_user_change_status(
+    '96000000-0000-4000-8000-000000000020','93000000-0000-4000-8000-000000000002',
+    current_setting('test.internal_users_revoke_version')::bigint,'revoked','Encerramento de acesso')::text,true);
+select is(current_setting('test.internal_users_revoke_result')::jsonb#>>'{memberships,0,status}',
+  'revoked','Owner can revoke the internal target through the authenticated RPC');
+select is(public.superadmin_internal_user_change_status(
+  '96000000-0000-4000-8000-000000000020','93000000-0000-4000-8000-000000000002',
+  current_setting('test.internal_users_revoke_version')::bigint,'revoked','Encerramento de acesso'),
+  current_setting('test.internal_users_revoke_result')::jsonb,
+  'identical revoke request replays the original receipt');
+reset role;
+select set_config('test.internal_users_revoked_rows',jsonb_build_object(
+  'membership',(select to_jsonb(m) from app_private.superadmin_internal_memberships m
+    where id='95000000-0000-4000-8000-000000000002'),
+  'link',(select to_jsonb(l) from app_private.superadmin_internal_auth_links l
+    where id='94000000-0000-4000-8000-000000000002'))::text,true);
+select ok(
+  (select status='revoked' and revoked_at is not null and suspended_at is null
+   from app_private.superadmin_internal_memberships where id='95000000-0000-4000-8000-000000000002')
+  and (select status='revoked' and revoked_at is not null and suspended_at is null
+   from app_private.superadmin_internal_auth_links where id='94000000-0000-4000-8000-000000000002'),
+  'revoke persists both membership and credential with coherent timestamps');
+set local role authenticated;
+select is(public.superadmin_internal_user_change_status(
+  '96000000-0000-4000-8000-000000000021','93000000-0000-4000-8000-000000000002',
+  (current_setting('test.internal_users_revoke_result')::jsonb->>'version')::bigint,
+  'active','Tentativa de reativação')#>>'{error,code}',
+  'SAI_INTERNAL_ERROR','terminal revoke rejects reactivation (current SQLSTATE 55000 envelope)');
+reset role;
+select is(jsonb_build_object(
+  'membership',(select to_jsonb(m) from app_private.superadmin_internal_memberships m
+    where id='95000000-0000-4000-8000-000000000002'),
+  'link',(select to_jsonb(l) from app_private.superadmin_internal_auth_links l
+    where id='94000000-0000-4000-8000-000000000002')),
+  current_setting('test.internal_users_revoked_rows')::jsonb,
+  'rejected terminal transition preserves all membership and auth-link fields');
+select ok(
+  (select count(*)=1 from app_private.superadmin_internal_user_command_receipts
+    where request_id in('96000000-0000-4000-8000-000000000020','96000000-0000-4000-8000-000000000021'))
+  and (select count(*)=1 from audit.audit_logs
+    where actor_internal_identity_id='93000000-0000-4000-8000-000000000001'
+      and action_code='superadmin.internal-users.revoke' and outcome='success'),
+  'revoke replay appends neither a second receipt nor a duplicate success audit');
 select * from finish();
 rollback;
