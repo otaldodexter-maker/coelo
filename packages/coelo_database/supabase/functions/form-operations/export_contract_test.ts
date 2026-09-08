@@ -1,4 +1,4 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { assertEquals, assertRejects, assertThrows } from "@std/assert";
 import {
   encodeCsv,
   encodeXlsx,
@@ -9,12 +9,44 @@ import {
   streamCsv,
   streamXlsx,
   streamZip,
+  xlsxCivilDate,
   type XlsxOptions,
   type XlsxRow,
 } from "./export_contract.ts";
 import * as XLSX from "xlsx";
 import { unzipSync } from "fflate";
 import { createSnapshotRows } from "./snapshot_paging.ts";
+
+Deno.test("XLSX civil dates validate Gregorian calendar and expose Excel range separately", () => {
+  const date = xlsxCivilDate("2026-09-08");
+  assertEquals(date, { kind: "date", value: "2026-09-08" });
+  assertEquals(Object.isFrozen(date), true);
+  for (
+    const value of [
+      "1900-02-29",
+      "2100-02-29",
+      "2026-02-30",
+      "2026-00-01",
+      "2026-13-01",
+      "2026-01-00",
+      "0000-01-01",
+      "2026-9-8",
+      "2026-09-08T00:00:00Z",
+      " 2026-09-08",
+      "2026-09-08\n",
+      "10000-01-01",
+    ]
+  ) {
+    assertThrows(() => xlsxCivilDate(value), Error, "invalid_xlsx_civil_date");
+  }
+  for (const value of ["0001-01-01", "1899-12-31"]) {
+    assertThrows(
+      () => xlsxCivilDate(value),
+      Error,
+      "xlsx_civil_date_out_of_range",
+    );
+  }
+});
 
 for (const encoder of ["buffer", "stream"]) {
   const encode = async (rows: readonly XlsxRow[], options?: XlsxOptions) => {
@@ -33,6 +65,100 @@ for (const encoder of ["buffer", "stream"]) {
     ) chunks.push(chunk);
     return concatenate(chunks);
   };
+
+  Deno.test(`${encoder} XLSX civil dates preserve serials civil components and styles in the XML`, async () => {
+    const dates: Array<[string, number]> = [
+      ["1900-01-01", 1],
+      ["1900-02-28", 59],
+      ["1900-03-01", 61],
+      ["1904-01-01", 1462],
+      ["2000-02-29", 36585],
+      ["2026-09-08", 46273],
+      ["9999-12-31", 2958465],
+    ];
+    const rows = dates.map(([date]) => ({
+      plain: date,
+      yes: true,
+      amount: 12.5,
+      date: xlsxCivilDate(date),
+    }));
+    const bytes = await encode(rows, {
+      columns: ["date", "plain", "yes", "amount"],
+    });
+    const sheet =
+      XLSX.read(bytes, { type: "array", cellDates: false, cellNF: true }).Sheets
+        .Respostas;
+    const files = unzipSync(new Uint8Array(bytes));
+    const xml = new TextDecoder().decode(files["xl/worksheets/sheet1.xml"]);
+    const styles = new TextDecoder().decode(files["xl/styles.xml"]);
+    assertEquals(styles.includes('formatCode="yyyy-mm-dd"'), true);
+    assertEquals(
+      new TextDecoder().decode(files["xl/_rels/workbook.xml.rels"]).includes(
+        "/relationships/styles",
+      ),
+      true,
+    );
+    assertEquals(
+      new TextDecoder().decode(files["[Content_Types].xml"]).includes(
+        "spreadsheetml.styles+xml",
+      ),
+      true,
+    );
+    for (const [index, [date, serial]] of dates.entries()) {
+      const cell = sheet[`A${index + 2}`];
+      assertEquals([cell.t, cell.v, cell.z, cell.w], [
+        "n",
+        serial,
+        "yyyy-mm-dd",
+        date,
+      ]);
+      const civil = cell.w!.split("-").map(Number);
+      assertEquals(civil, date.split("-").map(Number));
+      const tag =
+        xml.match(new RegExp(`<c r="A${index + 2}"[^>]*>.*?</c>`))?.[0] ?? "";
+      assertEquals(tag.includes(`<v>${serial}</v>`), true);
+      assertEquals(/\bs="\d+"/.test(tag), true);
+      assertEquals(
+        tag.includes('t="d"') || tag.includes('t="inlineStr"'),
+        false,
+      );
+      assertEquals([sheet[`B${index + 2}`].t, sheet[`B${index + 2}`].v], [
+        "s",
+        date,
+      ]);
+      assertEquals([sheet[`C${index + 2}`].t, sheet[`C${index + 2}`].v], [
+        "b",
+        true,
+      ]);
+      assertEquals([sheet[`D${index + 2}`].t, sheet[`D${index + 2}`].v], [
+        "n",
+        12.5,
+      ]);
+    }
+  });
+
+  Deno.test(`${encoder} XLSX validates raw civil date objects without accepting generic dates`, async () => {
+    for (
+      const value of [
+        { kind: "date", value: "1900-02-29" },
+        { kind: "date", value: "2026-09-08", timezone: "UTC" },
+        { kind: "date", value: 20260908 },
+        new Date("2026-09-08"),
+        Object.assign(new Date(), { kind: "date", value: "2026-09-08" }),
+        Object.assign([], { kind: "date", value: "2026-09-08" }),
+      ]
+    ) {
+      await assertRejects(
+        () => encode([{ date: value } as unknown as XlsxRow]),
+        Error,
+      );
+    }
+    await assertRejects(
+      () => encode([{ date: { kind: "date", value: "1899-12-31" } }]),
+      Error,
+      "xlsx_civil_date_out_of_range",
+    );
+  });
 
   Deno.test(`${encoder} XLSX sparse columns never read inherited object properties`, async () => {
     const bytes = await encode([{}, { constructor: "own value" }], {
@@ -155,6 +281,24 @@ for (const encoder of ["buffer", "stream"]) {
     }
   });
 }
+
+Deno.test("stream XLSX rejects a date introduced after the schema scan", async () => {
+  let pass = 0;
+  await assertRejects(
+    async () => {
+      for await (
+        const _chunk of streamXlsx(() => ({
+          async *[Symbol.asyncIterator]() {
+            pass++;
+            yield { value: pass === 1 ? 1 : xlsxCivilDate("2026-09-08") };
+          },
+        }))
+      ) { /* consume the archive */ }
+    },
+    Error,
+    "xlsx_snapshot_changed",
+  );
+});
 
 Deno.test("stream XLSX snapshots explicit column order before asynchronous row reads", async () => {
   const columns = ["a", "b"];

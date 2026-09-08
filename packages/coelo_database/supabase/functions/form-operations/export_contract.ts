@@ -15,10 +15,39 @@ export type ExportSubmission = {
 
 export type ExportRow = Record<string, string>;
 
-/** Date support requires a verified UTC codec; no implicit date/string conversion. */
-export type XlsxCellValue = string | number | boolean;
+/** A Gregorian calendar day, without a time or timezone. Generic Date is not accepted. */
+export type XlsxCivilDate = Readonly<{ kind: "date"; value: string }>;
+export type XlsxCellValue = string | number | boolean | XlsxCivilDate;
 export type XlsxRow = Readonly<Record<string, XlsxCellValue>>;
 export type XlsxOptions = Readonly<{ columns: readonly string[] }>;
+
+export function xlsxCivilDate(value: string): XlsxCivilDate {
+  if (
+    typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value) ||
+    value.length !== 10
+  ) {
+    throw new Error("invalid_xlsx_civil_date");
+  }
+  const [year, month, day] = value.split("-").map(Number);
+  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (year < 1 || month < 1 || month > 12 || day < 1 || day > days[month - 1]) {
+    throw new Error("invalid_xlsx_civil_date");
+  }
+  // Excel's 1900 date-system capacity, not a restriction on Forms answers.
+  if (year < 1900) throw new Error("xlsx_civil_date_out_of_range");
+  return Object.freeze({ kind: "date", value });
+}
+
+function civilDateSerial(date: XlsxCivilDate): number {
+  const [year, month, day] = date.value.split("-").map(Number);
+  // UTC is used only for integer day arithmetic. Excel reserves the fictitious
+  // serial 60 for 1900-02-29, which strict Gregorian validation never accepts.
+  return (Date.UTC(year, month - 1, day) - Date.UTC(1899, 11, 31)) / 86400000 +
+    (date.value >= "1900-03-01" ? 1 : 0);
+}
+
+const civilDateFormat = "yyyy-mm-dd";
 
 function explicitXlsxColumns(
   options?: XlsxOptions,
@@ -39,6 +68,14 @@ function xlsxCellValue(value: XlsxCellValue): XlsxCellValue {
   if (typeof value === "string") return neutralizeSpreadsheetFormula(value);
   if (typeof value === "boolean") return value;
   if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (
+    value !== null && typeof value === "object" && !Array.isArray(value) &&
+    !(value instanceof Date) &&
+    Object.hasOwn(value, "kind") && Object.hasOwn(value, "value") &&
+    Object.keys(value).length === 2 && value.kind === "date"
+  ) {
+    return xlsxCivilDate(value.value);
+  }
   throw new Error("invalid_xlsx_cell_value");
 }
 
@@ -149,7 +186,12 @@ export function encodeXlsx(
   const matrix = [
     [...headers],
     ...rows.map((row) =>
-      headers.map((header) => xlsxCellValue(xlsxRowCell(row, header)))
+      headers.map((header) => {
+        const value = xlsxCellValue(xlsxRowCell(row, header));
+        return typeof value === "object"
+          ? { t: "n", v: civilDateSerial(value), z: civilDateFormat }
+          : value;
+      })
     ),
   ];
   const worksheet = XLSX.utils.aoa_to_sheet(matrix);
@@ -369,6 +411,7 @@ export async function* streamXlsx(
   const columns = explicitXlsxColumns(options);
   const headers: string[] = columns ? [...columns] : [];
   const knownHeaders = new Set<string>(headers);
+  let hasCivilDates = false;
   const checkedRows = async function* () {
     for await (const row of rowsFactory()) {
       validateXlsxRow(row, columns ? knownHeaders : undefined);
@@ -376,6 +419,9 @@ export async function* streamXlsx(
     }
   };
   for await (const row of checkedRows()) {
+    hasCivilDates ||= Object.values(row).some((value) =>
+      typeof value === "object"
+    );
     for (const header of Object.keys(row)) {
       if (!knownHeaders.has(header)) {
         if (headers.length >= 512) throw new Error("xlsx_column_limit");
@@ -388,6 +434,12 @@ export async function* streamXlsx(
 
   const cell = (reference: string, value: XlsxCellValue) => {
     const safe = xlsxCellValue(value);
+    if (typeof safe === "object") {
+      if (!hasCivilDates) throw new Error("xlsx_snapshot_changed");
+      return `<c r="${reference}" s="1" t="n"><v>${
+        civilDateSerial(safe)
+      }</v></c>`;
+    }
     if (typeof safe === "number") {
       return `<c r="${reference}" t="n"><v>${safe}</v></c>`;
     }
@@ -469,11 +521,18 @@ export async function* streamXlsx(
       yield textEncoder.encode(value);
     },
   });
+  const stylesOverride = hasCivilDates
+    ? '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'
+    : "";
+  const stylesRelationship = hasCivilDates
+    ? '<Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
+    : "";
   const entries: RepeatableArchiveEntry[] = [
     {
       name: "[Content_Types].xml",
       source: repeat(
-        '<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>',
+        '<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' +
+          stylesOverride + "</Types>",
       ),
     },
     {
@@ -491,12 +550,21 @@ export async function* streamXlsx(
     {
       name: "xl/_rels/workbook.xml.rels",
       source: repeat(
-        '<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>',
+        '<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' +
+          stylesRelationship + "</Relationships>",
       ),
     },
     { name: "xl/worksheets/sheet1.xml", source: sheet },
     { name: "xl/worksheets/_rels/sheet1.xml.rels", source: relationships },
   ];
+  if (hasCivilDates) {
+    entries.push({
+      name: "xl/styles.xml",
+      source: repeat(
+        '<?xml version="1.0" encoding="UTF-8"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="1"><numFmt numFmtId="164" formatCode="yyyy-mm-dd"/></numFmts><fonts count="1"><font/></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>',
+      ),
+    });
+  }
   yield* storedZipEntries(entries, outputChunkBytes);
 }
 
