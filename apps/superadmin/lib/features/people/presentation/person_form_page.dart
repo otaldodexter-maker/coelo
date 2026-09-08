@@ -2,6 +2,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show listEquals;
 
 import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_shell.dart';
@@ -255,7 +256,7 @@ final class _RelationshipSearchState extends State<_RelationshipSearch> {
 }
 
 final class _PersonFormPageState extends State<PersonFormPage> {
-  late final PersonFormViewModel _viewModel;
+  late PersonFormViewModel _viewModel;
   late final SuperadminActivityController _activityController;
   late final Map<String, TextEditingController> _controllers;
   PersonDirectoryFilterOptions _options = const PersonDirectoryFilterOptions();
@@ -267,6 +268,8 @@ final class _PersonFormPageState extends State<PersonFormPage> {
   bool _loadingOptions = true;
   Object? _optionsError;
   double _footerHeight = 0;
+  var _formGeneration = 0;
+  var _saveGeneration = 0;
 
   List<PersonFilterOption> get _unitOptions => _options.units
       .where((option) => option.institutionId == _selectedInstitution.id)
@@ -306,13 +309,15 @@ final class _PersonFormPageState extends State<PersonFormPage> {
   }
 
   Future<void> _loadOptions() async {
+    final generation = _formGeneration;
+    final repository = widget.repository;
     setState(() {
       _loadingOptions = true;
       _optionsError = null;
     });
     try {
-      final value = await widget.repository.fetchFilterOptions();
-      if (!mounted) return;
+      final value = await repository.fetchFilterOptions();
+      if (!mounted || generation != _formGeneration) return;
       setState(() {
         _options = value;
         _loadingOptions = false;
@@ -321,12 +326,45 @@ final class _PersonFormPageState extends State<PersonFormPage> {
         _applyInitialMembershipContext();
       }
     } on Object catch (error) {
-      if (!mounted) return;
+      if (!mounted || generation != _formGeneration) return;
       setState(() {
         _loadingOptions = false;
         _optionsError = error;
       });
     }
+  }
+
+  @override
+  void didUpdateWidget(covariant PersonFormPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.original?.id == widget.original?.id &&
+        oldWidget.original?.updatedAt == widget.original?.updatedAt &&
+        identical(oldWidget.repository, widget.repository)) {
+      return;
+    }
+    _formGeneration++;
+    _saveGeneration++;
+    final previous = _viewModel;
+    _viewModel = PersonFormViewModel(widget.repository, original: widget.original);
+    if (widget.initialPersonType != null) _viewModel.type = widget.initialPersonType!;
+    final identity = {
+      'firstName': _viewModel.firstName,
+      'lastName': _viewModel.lastName,
+      'displayName': _viewModel.displayName,
+      'legalName': _viewModel.legalName,
+    };
+    for (final entry in _controllers.entries) {
+      entry.value.text = identity[entry.key] ?? '';
+    }
+    _selectedInstitution = _emptyOption;
+    _selectedUnit = _emptyOption;
+    _selectedGroup = _emptyOption;
+    _selectedRole = _emptyOption;
+    _identityError = null;
+    _options = const PersonDirectoryFilterOptions();
+    _optionsError = null;
+    previous.dispose();
+    _loadOptions();
   }
 
   @override
@@ -422,24 +460,44 @@ final class _PersonFormPageState extends State<PersonFormPage> {
   }
 
   Future<void> _save() async {
+    if (!mounted || _viewModel.saving) return;
     _syncIdentity();
+    final viewModel = _viewModel;
+    final generation = ++_saveGeneration;
+    final identity = _identityValues;
+    final type = viewModel.type;
+    final memberships = List.of(viewModel.membershipChanges);
+    final contexts = List.of(viewModel.childContextChanges);
+    bool canDeliver() =>
+        mounted &&
+        generation == _saveGeneration &&
+        identical(viewModel, _viewModel) &&
+        type == viewModel.type &&
+        listEquals(identity, _identityValues) &&
+        listEquals(memberships, viewModel.membershipChanges) &&
+        listEquals(contexts, viewModel.childContextChanges);
     try {
-      final saved = await _viewModel.save();
-      if (mounted) widget.onSaved?.call(saved);
+      final saved = await viewModel.save();
+      if (canDeliver()) widget.onSaved?.call(saved);
     } on PersonDirectoryConflictException {
-      if (mounted) {
+      if (mounted && canDeliver()) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('A pessoa foi alterada em outra sessão. Recarregue.')),
         );
       }
     } on Exception {
-      if (mounted) {
+      if (mounted && canDeliver()) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Não foi possível salvar a pessoa.')));
       }
     }
   }
+
+  List<String> get _identityValues => [
+    for (final key in ['firstName', 'lastName', 'displayName', 'legalName'])
+      _controllers[key]!.text.trim(),
+  ];
 
   @override
   Widget build(BuildContext context) => SuperadminShell(
