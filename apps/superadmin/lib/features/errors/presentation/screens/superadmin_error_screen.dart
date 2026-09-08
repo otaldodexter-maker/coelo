@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +12,11 @@ enum SuperadminErrorKind {
   notFound(
     code: '404',
     message: 'Não encontramos a página que você procura.',
+    actionLabel: 'Voltar ao início',
+  ),
+  conflict(
+    code: '409',
+    message: 'Esta ação não pode ser concluída no estado atual.',
     actionLabel: 'Voltar ao início',
   ),
   internal(
@@ -37,7 +44,7 @@ enum SuperadminErrorKind {
   }
 }
 
-final class SuperadminErrorScreen extends StatelessWidget {
+final class SuperadminErrorScreen extends StatefulWidget {
   const SuperadminErrorScreen({
     required this.kind,
     required this.onAction,
@@ -46,11 +53,70 @@ final class SuperadminErrorScreen extends StatelessWidget {
   });
 
   final SuperadminErrorKind kind;
-  final VoidCallback onAction;
+  final FutureOr<void> Function() onAction;
   final String? actionLabel;
 
   @override
+  State<SuperadminErrorScreen> createState() => _SuperadminErrorScreenState();
+}
+
+final class _SuperadminErrorScreenState extends State<SuperadminErrorScreen> {
+  final _actionFocus = FocusNode();
+  var _running = false;
+  var _actionFailed = false;
+  var _revision = 0;
+
+  @override
+  void didUpdateWidget(covariant SuperadminErrorScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.onAction != widget.onAction || oldWidget.kind != widget.kind) {
+      _revision++;
+      _running = false;
+      _actionFailed = false;
+    }
+  }
+
+  Future<void> _runAction() async {
+    if (_running) return;
+    final revision = _revision;
+    final restoreFocus = _actionFocus.hasFocus;
+    setState(() {
+      _running = true;
+      _actionFailed = false;
+    });
+    var failed = false;
+    try {
+      await widget.onAction();
+    } on Object {
+      failed = true;
+    }
+    if (!mounted || revision != _revision) return;
+    setState(() {
+      _running = false;
+      _actionFailed = failed;
+    });
+    if (restoreFocus) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || revision != _revision) return;
+        final current = FocusManager.instance.primaryFocus;
+        if (current == null || current is FocusScopeNode || current == _actionFocus) {
+          _actionFocus.requestFocus();
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _revision++;
+    _actionFocus.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final kind = widget.kind;
+    final message = _actionFailed ? 'Não foi possível concluir esta ação.' : kind.message;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -79,16 +145,19 @@ final class SuperadminErrorScreen extends StatelessWidget {
                     children: [
                       Semantics(
                         container: true,
-                        label: 'Erro ${kind.code}. ${kind.message}',
+                        liveRegion: _actionFailed,
+                        label: 'Erro ${kind.code}. $message',
                         child: ExcludeSemantics(
                           child: useHorizontalLayout
                               ? _HorizontalErrorContent(
                                   kind: kind,
+                                  message: message,
                                   color: colorScheme.onPrimaryContainer,
                                   textTheme: textTheme,
                                 )
                               : _VerticalErrorContent(
                                   kind: kind,
+                                  message: message,
                                   color: colorScheme.onPrimaryContainer,
                                   textTheme: textTheme,
                                 ),
@@ -96,11 +165,17 @@ final class SuperadminErrorScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: CoeloSpacing.space6),
                       TextButton(
-                        onPressed: onAction,
+                        focusNode: _actionFocus,
+                        onPressed: _running ? null : _runAction,
                         style: TextButton.styleFrom(
                           foregroundColor: colorScheme.onPrimaryContainer,
                         ),
-                        child: Text(actionLabel ?? kind.actionLabel),
+                        child: Semantics(
+                          liveRegion: _running,
+                          child: Text(
+                            _running ? 'Aguarde…' : widget.actionLabel ?? kind.actionLabel,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -115,9 +190,15 @@ final class SuperadminErrorScreen extends StatelessWidget {
 }
 
 final class _HorizontalErrorContent extends StatelessWidget {
-  const _HorizontalErrorContent({required this.kind, required this.color, required this.textTheme});
+  const _HorizontalErrorContent({
+    required this.kind,
+    required this.message,
+    required this.color,
+    required this.textTheme,
+  });
 
   final SuperadminErrorKind kind;
+  final String message;
   final Color color;
   final TextTheme textTheme;
 
@@ -133,7 +214,7 @@ final class _HorizontalErrorContent extends StatelessWidget {
             child: VerticalDivider(color: color),
           ),
           Flexible(
-            child: Text(kind.message, style: textTheme.bodyLarge?.copyWith(color: color)),
+            child: Text(message, style: textTheme.bodyLarge?.copyWith(color: color)),
           ),
         ],
       ),
@@ -142,9 +223,15 @@ final class _HorizontalErrorContent extends StatelessWidget {
 }
 
 final class _VerticalErrorContent extends StatelessWidget {
-  const _VerticalErrorContent({required this.kind, required this.color, required this.textTheme});
+  const _VerticalErrorContent({
+    required this.kind,
+    required this.message,
+    required this.color,
+    required this.textTheme,
+  });
 
   final SuperadminErrorKind kind;
+  final String message;
   final Color color;
   final TextTheme textTheme;
 
@@ -159,7 +246,7 @@ final class _VerticalErrorContent extends StatelessWidget {
           child: Divider(color: color),
         ),
         Text(
-          kind.message,
+          message,
           textAlign: TextAlign.center,
           style: textTheme.bodyLarge?.copyWith(color: color),
         ),
