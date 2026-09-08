@@ -38,24 +38,24 @@ with source as (
     pg_catalog.pg_get_functiondef(
       'public.superadmin_activity_save_v2(uuid,uuid,bigint,boolean,jsonb)'::regprocedure
     ),'[[:space:]]+','','g'
-  )) as body
+  )) as function_definition
 )
 select ok(
-  pg_catalog.position('transaction_isolation' in body)>0
-    and pg_catalog.position('readcommitted' in body)>0,
+  pg_catalog.position('transaction_isolation' in function_definition)>0
+    and pg_catalog.position('readcommitted' in function_definition)>0,
   'aggregate rejects isolation levels that cannot refresh authorization after waits'
 ) from source;
 
 with source as (
-  select pg_catalog.substring(body from pg_catalog.position(
-    'pg_catalog.pg_advisory_xact_lock' in body
+  select pg_catalog.substring(function_definition from pg_catalog.position(
+    'pg_catalog.pg_advisory_xact_lock' in function_definition
   )) as locked_body
   from (
     select pg_catalog.lower(pg_catalog.regexp_replace(
       pg_catalog.pg_get_functiondef(
         'public.superadmin_activity_save_v2(uuid,uuid,bigint,boolean,jsonb)'::regprocedure
       ),'[[:space:]]+','','g'
-    )) as body
+    )) as function_definition
   ) definition
 )
 select ok(
@@ -67,15 +67,15 @@ select ok(
 ) from source;
 
 with source as (
-  select pg_catalog.substring(body from pg_catalog.position(
-    'pg_catalog.pg_advisory_xact_lock' in body
+  select pg_catalog.substring(function_definition from pg_catalog.position(
+    'pg_catalog.pg_advisory_xact_lock' in function_definition
   )) as locked_body
   from (
     select pg_catalog.lower(pg_catalog.regexp_replace(
       pg_catalog.pg_get_functiondef(
         'public.superadmin_activity_save_v2(uuid,uuid,bigint,boolean,jsonb)'::regprocedure
       ),'[[:space:]]+','','g'
-    )) as body
+    )) as function_definition
   ) definition
 )
 select ok(
@@ -86,30 +86,30 @@ select ok(
 ) from source;
 
 with source as (
-  select body,pg_catalog.substring(
+  select function_definition,pg_catalog.substring(
     locked_body from 1 for pg_catalog.position(
       'select*intoreceiptfromapp_private.superadmin_internal_activity_save_receipts' in locked_body
     )-1
   ) as before_receipt
   from (
-    select body,pg_catalog.substring(body from pg_catalog.position(
-      'pg_catalog.pg_advisory_xact_lock' in body
+    select function_definition,pg_catalog.substring(function_definition from pg_catalog.position(
+      'pg_catalog.pg_advisory_xact_lock' in function_definition
     )) as locked_body
     from (
       select pg_catalog.lower(pg_catalog.regexp_replace(
         pg_catalog.pg_get_functiondef(
           'public.superadmin_activity_save_v2(uuid,uuid,bigint,boolean,jsonb)'::regprocedure
         ),'[[:space:]]+','','g'
-      )) as body
+      )) as function_definition
     ) definition
   ) locked
 )
 select ok(
-  body like '%activities.link_units%'
-    and body like '%activities.link_groups%'
-    and body like '%activities.assign_people%'
-    and body like '%activities.manage_permissions%'
-    and body like '%activities.manage%'
+  function_definition like '%activities.link_units%'
+    and function_definition like '%activities.link_groups%'
+    and function_definition like '%activities.assign_people%'
+    and function_definition like '%activities.manage_permissions%'
+    and function_definition like '%activities.manage%'
     and pg_catalog.position(
       'foreachrequired_capabilityinarrayrequired_capabilitiesloop' in before_receipt
     )>0
