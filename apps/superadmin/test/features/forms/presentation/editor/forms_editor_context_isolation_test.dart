@@ -10,6 +10,131 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('yes-no false branch creates both booleans and preserves them after reload', (
+    tester,
+  ) async {
+    final api = _EditorApi(itemKind: FormItemKind.yesNo);
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    tester
+        .widgetList<CoeloAdminToggleField>(find.byType(CoeloAdminToggleField))
+        .singleWhere((field) => field.label == 'Desdobrar por resposta')
+        .onChanged!(true);
+    await tester.pumpAndSettle();
+    final selector = find.byKey(const ValueKey('forms-branch-boolean-item-1'));
+    expect(selector, findsOneWidget);
+    expect(tester.widget<CoeloAdminSingleSelectField<bool>>(selector).value, isTrue);
+    for (final expected in [false, true]) {
+      tester.widget<CoeloAdminSingleSelectField<bool>>(selector).onChanged(expected);
+      await tester.pumpAndSettle();
+      tester
+          .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Adicionar pergunta ao ramo'))
+          .onPressed!();
+      await tester.pumpAndSettle();
+    }
+    final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.ensureVisible(save);
+    await tester.pumpAndSettle();
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    final sent = api.savedCommands.single.payload.sections.first.items;
+    expect(sent.skip(1).map((item) => item.conditions.single.expectedYesNo), [false, true]);
+    final reloaded = _EditorApi(firstItems: sent);
+    await tester.pumpWidget(_app(reloaded, 'form-1'));
+    await tester.pumpAndSettle();
+    expect(find.text('Se Não'), findsOneWidget);
+    expect(find.text('Se Sim'), findsOneWidget);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    final second = reloaded.savedCommands.single.payload.sections.first.items;
+    expect(second.map((item) => item.id), sent.map((item) => item.id));
+    expect(second.skip(1).map((item) => item.conditions.single.expectedYesNo), [false, true]);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final action in ['toggle', 'duplicate-parent', 'duplicate-section', 'reorder-parent']) {
+    testWidgets('yes-no false branch retains boolean and source after $action', (tester) async {
+      final api = _EditorApi(firstItems: _falseBranchItems());
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      if (action == 'toggle') {
+        tester
+            .widgetList<CoeloAdminToggleField>(find.byType(CoeloAdminToggleField))
+            .singleWhere((field) => field.label == 'Desdobrar por resposta')
+            .onChanged!(false);
+      } else if (action == 'reorder-parent') {
+        tester
+            .widget<ReorderableListView>(
+              find.byKey(const Key('forms-editor-question-reorder-list')),
+            )
+            .onReorderItem!(0, 1);
+      } else {
+        final button = find
+            .byTooltip(action == 'duplicate-parent' ? 'Duplicar pergunta' : 'Duplicar seção')
+            .first;
+        await tester.ensureVisible(button);
+        await tester.pumpAndSettle();
+        await tester.tap(button);
+      }
+      await tester.pumpAndSettle();
+      final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+      await tester.ensureVisible(save);
+      await tester.pumpAndSettle();
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      final definition = api.savedCommands.single.payload;
+      final items = definition.sections.expand((section) => section.items).toList();
+      final children = items.where((item) => item.conditions.isNotEmpty).toList();
+      expect(children, hasLength(action.startsWith('duplicate') ? 2 : 1));
+      for (final child in children) {
+        expect(child.conditions.single.expectedYesNo, isFalse);
+        final source = items.singleWhere((item) => item.id == child.conditions.single.sourceItemId);
+        expect(source.kind, FormItemKind.yesNo);
+        expect(items.indexOf(child), items.indexOf(source) + 1);
+      }
+      expect(const FormDefinitionValidator().validate(definition), isEmpty);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final dispose in [false, true]) {
+    testWidgets('yes-no false branch retained callbacks ignore obsolete context dispose=$dispose', (
+      tester,
+    ) async {
+      final api = _EditorApi(firstItems: _falseBranchItems());
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      final selector = tester
+          .widget<CoeloAdminSingleSelectField<bool>>(
+            find.byKey(const ValueKey('forms-branch-boolean-parent')),
+          )
+          .onChanged;
+      final add = tester
+          .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Adicionar pergunta ao ramo'))
+          .onPressed!;
+      final replacement = _EditorApi(firstItems: _falseBranchItems());
+      await tester.pumpWidget(dispose ? const SizedBox() : _app(replacement, 'form-2'));
+      await tester.pumpAndSettle();
+      expect(() => selector(false), returnsNormally);
+      expect(add, returnsNormally);
+      await tester.pumpAndSettle();
+      expect(api.savedCommands, isEmpty);
+      expect(replacement.savedCommands, isEmpty);
+      if (!dispose) {
+        expect(
+          tester
+              .widget<CoeloAdminSingleSelectField<bool>>(
+                find.byKey(const ValueKey('forms-branch-boolean-parent')),
+              )
+              .value,
+          isTrue,
+        );
+        expect(find.text('Pergunta do ramo 2'), findsNothing);
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   for (final kind in [FormItemKind.singleChoice, FormItemKind.multipleChoice]) {
     testWidgets('choice branch explicit trigger survives save and reload $kind', (tester) async {
       final api = _EditorApi(firstItems: [_branchChoice(kind)]);
@@ -1548,6 +1673,18 @@ List<FormItem> _branchingItems() => [
       FormCondition.yesNo(sourceItemId: 'yes-source', expected: false),
     ],
   ),
+];
+
+List<FormItem> _falseBranchItems() => [
+  FormItem(id: 'parent', kind: FormItemKind.yesNo, label: 'Parent', position: 0),
+  FormItem(
+    id: 'false-child',
+    kind: FormItemKind.shortText,
+    label: 'False child',
+    position: 1,
+    conditions: const [FormCondition.yesNo(sourceItemId: 'parent', expected: false)],
+  ),
+  FormItem(id: 'other', kind: FormItemKind.shortText, label: 'Other', position: 2),
 ];
 
 FormItem _branchChoice(FormItemKind kind) => FormItem(
