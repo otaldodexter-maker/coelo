@@ -499,7 +499,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T16:56:03-03:00",
+  "updated_at": "2026-09-08T16:57:45-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -756,8 +756,9 @@
       "revision": 15,
       "source": "da11057aa0c96518dcf06293dd81a9425e616c38",
       "destination": "e14ed9c0",
-      "status": "integrated-local;push-pending",
-      "report": "etapa-2-operacao/reports/R01-people-files-integracao-1655.md"
+      "status": "delivered-origin-dev;FE-deferred-import-export-verified",
+      "report": "etapa-2-operacao/reports/R01-people-files-integracao-1655.md",
+      "delivery_sha": "6eb23bd79b45f30017d493597a3946cac6dfdb3d"
     }
   ],
   "last_delta_processed_at": "2026-09-08T15:50:03-03:00",
@@ -777,11 +778,11 @@
   },
   "last_delivery": {
     "branch": "origin/dev",
-    "sha": "028a3ee7184791ea7f3ac52dace473eabd5b43a6",
-    "verified_at": "2026-09-08T16:27:18-03:00",
-    "method": "atomic push C00+dev;ls-remote exact both refs",
-    "original_local_dev": "84985b5485247df6a8dc7270e33d18601aca0421;dirty original preserved",
-    "deploy": "not executed;production state not certified"
+    "sha": "6eb23bd79b45f30017d493597a3946cac6dfdb3d",
+    "verified_at": "2026-09-08T16:57:45-03:00",
+    "method": "atomic C00+dev push;exact ls-remote both refs",
+    "deploy": "not executed;not production-certified",
+    "original_local_dev": "84985b54;original dirty work preserved"
   },
   "prepared_dependency": {
     "sha": "fe271f95681e10cedb1aa2e89931224229d68f2d",

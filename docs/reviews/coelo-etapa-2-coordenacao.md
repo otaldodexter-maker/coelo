@@ -41,7 +41,7 @@ Estado reconciliado2026-09-08T16:24:59-03:00; histórico cronológico abaixo pre
 
 Rastreadores sincronizados C01/r30, C02/r29, C03/r13, C04/r17, C05/r10; fontes/hashes no estado operacional. C01r31–33,C02r30,C03r14,C05r11 posteriores aguardam próximo corte: não declarar sincronizados por mensagem. Codex C01–C03 ativos no snapshot16:01; Claude via handoff local/mecanismo relatado, sem ponte de wake-up.
 
-Código C00local e14ed9c0 inclui Pessoas24/24/analyzer3 e o lote anterior86ba8570: shell3693d180/ec9826f3, seleçãof4f0105a eimports86ba8570.165PASS/4falhas estáticas anteriores; analyzer7limpo. Lote publicado em dev028a3ee7 e C00 com ls-remote confirmado2026-09-08T16:27:18-03:00; sem deploy/apply. Reservas C02I008/C03I009/C04I008/C05I007 e lease XLSX exclusiva C02. C00corrigiu contagem da source69migrations, não71. Personas Auth ainda sem pacote remoto concreto/aprovado/provisionado. Relatório R01-checkpoint-1600.md.
+Código C00local e14ed9c0 inclui Pessoas24/24/analyzer3 e o lote anterior86ba8570: shell3693d180/ec9826f3, seleçãof4f0105a eimports86ba8570.165PASS/4falhas estáticas anteriores; analyzer7limpo. Lote atual publicado em dev6eb23bd7 e C00, ls-remote confirmado2026-09-08T16:57:45-03:00; sem deploy/apply. Reservas C02I008/C03I009/C04I008/C05I007 e lease XLSX exclusiva C02. C00corrigiu contagem da source69migrations, não71. Personas Auth ainda sem pacote remoto concreto/aprovado/provisionado. Relatório R01-checkpoint-1600.md.
 
 Delta focal C03r15/Pessoas incorporado sem ampliar recebimento global de r14–r18. XLSX132/132 e edição56/56 relatados C02, pacotes ainda em revisão. Scratch C04 já não está pausado na inspeção16:53, origem da mudança desconhecida; novas leases SQL retidas até preservação/liberação.
 

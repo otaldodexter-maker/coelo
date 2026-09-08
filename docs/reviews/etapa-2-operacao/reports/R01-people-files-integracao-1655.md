@@ -1,6 +1,6 @@
 ---
 source: "C03r15 handoff6b584858;da11057a;C00e14ed9c0;ADR0032;inventário"
-status: "local-integrated;push-pending;FE-deferred-behavior-verified"
+status: "delivered-origin-dev;FE-deferred-behavior-verified"
 generated_at: "2026-09-08T16:52:41-03:00"
 timezone: "America/Sao_Paulo"
 ---
@@ -16,3 +16,6 @@ Aceite FE verificado apenas para profile-files.import e profile-files.export: co
 Três rastreadores/inventário/ownership reconciliados somente nesses6IDs. Sourcehandoff6b584858,r15; demais deltas r14–r17 não estão sincronizados por este lote. Arquivos devolvidos C04, dependência seletiva e14ed9c0 liberada. Conhecimento durável mantém ADR0032/projeção existentes, sem regra nova.
 
 Código integrado localmente, publicação ainda pendente no corte; recibo posterior registra push. Produção não certificada. O plano original e fechamento07:40 permanecem; não houve redistribuição por aplicativo.
+
+
+Recibo 2026-09-08T16:57:45-03:00: lote6eb23bd79b45f30017d493597a3946cac6dfdb3d publicado atomicamente em origin/dev e branch C00; ls-remote confirmou ambas. Nenhum deploy/apply remoto.
