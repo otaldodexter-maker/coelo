@@ -41,6 +41,7 @@ Coordenador; este arquivo registra somente esta frente.
 | 6/6 da fatia leitura | Chat / anexo imagem, mídia M03 | coelo_api puro; catálogo ainda não alterado | `review_media_session`, `crosswalk_media` | 59/59 pacote, analyzer e dois reviews sem bloqueante; próximo gate asset_id canônico, catálogo/gateway e consumidor real |
 | 6/6 da fatia referência | Chat / anexo, mídia M03 | DTO e adapter Flutter; nenhum BD | `review_media_session` | 16/16 adapter e 62/62 Chat não-golden; assetId distinto da metadata; catálogo/projeção/gateway ainda abertos |
 | 6/6 da fatia | Momentos / transporte privado R2 / mídia server-side | Deno `moments-media/r2_s3.ts` e `_shared/r2_s3.ts`; nenhum BD nesta fatia | `review_media_session`, `review_chat_receipt`, `crosswalk_media` | M02 com extensão index_test autorizada; RED seis falhas, GREEN 29/29 completo, lint/typecheck; commit e integração real pendentes |
+| 6/6 da fatia | Momentos / publicação e troca de contexto | Estado Flutter; nenhum BD | `review_media_session` | RED3; GREEN86/86 funcional/rota +14/14 goldens; A não restaura conteúdo/callback em B; próximo gate contexto e mídia reais |
 
 Sem API de plano nativo disponível nesta sessão. Este documento é a alternativa
 aberta no painel direito; não substitui nem controla o contador nativo do app.
