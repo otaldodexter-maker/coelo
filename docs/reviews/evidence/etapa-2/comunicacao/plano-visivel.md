@@ -3,10 +3,50 @@ title: "E2E 3 — plano visível por tela e camada"
 source: "pedido do Owner via Coordenador em 2026-09-07; reservas E2E3-M01 e E2E3-N01; evidências locais desta frente"
 status: "in-progress; not-e2e-complete"
 generated_at: "2026-09-07"
-updated_at: "2026-09-07"
+updated_at: "2026-09-08"
 ---
 
 # Plano por tela
+
+## Posição atual — escopo original integral
+
+O Owner reiterou que o escopo original não deve ser esquecido. Cada fatia
+abaixo continua subordinada à entrega real da vertical completa. Somente
+Superadmin e dependências; Coelo (Principal) é o menu, não `apps/principal`.
+Os quadros posteriores preservam a cronologia, não substituem este checkpoint.
+
+| Superfície original | Última evidência desta frente | Próximo gate real / situação |
+| --- | --- | --- |
+| Chat/Conversas canônico e Mensagens | `cdb542a5`: 124 não-golden + 8 goldens candidatos; imagem explícita, sessão, teclado e motion; 40 cenários de conteúdo | Composição/gateway/catálogo M03, transporte real, autorização/reload; goldens históricos e revisão visual completa ainda abertos |
+| Avisos | 106 não-golden na fatia de feedback; 46 expectativas SQL preparadas, não executadas aqui | N01: replay nominal/ponte sob Eng1, geração/job/worker/auditoria e produção |
+| Convites | `e4171bdb`: 58 não-golden; confirmação própria e purge de negação | OQ039/spec047 de emissão continuam pendentes; não habilitar default false; prova server-side/E2E aberta |
+| Circulares administrativas e menu | `38870d1`, `17c6286a`, `8f7d9c6d`: editor, reader, contexto e purge; 112 não-golden | Respostas/publicação/mídia reais, revogação/reload e regressão visual completa |
+| Acontece | Crosswalk do catálogo legado e matriz de rotas preservados | Evolução nominal/cutover do mesmo catálogo, imagem/vídeo reais; não concluído por testes de Chat |
+| Agora | `a4c1943d`/`032badc1`: legenda reload e negação, 81 testes da feature | Master R2, HOT privado até 24h quando necessário, fallback, expiração só da cópia Stream e prova real |
+| Momentos | `5e53ea4f`: contexto; 86 funcionais/rota e 14 goldens naquela fatia; `6e7bc23b` transporte R2 comum | Catálogo/gateway, upload/reprodução real e promoção HOT por necessidade medida |
+| Para Você | `b543248e`: validade, 49 testes incluindo 13 goldens | Leitura/revogação/persistência real e conteúdo conectado |
+| Perfil/preview do menu | `9d88b87e`: matriz standalone; preserva escopo Superadmin | Avatar/capa 3:1 aplicável via gateway, contratos/reload reais; não inventar capa na Conta Superadmin |
+| Cabeçalho global | `f612f639`/`7cac7b19`: isolamento de preview e contexto do relato; 69 shell; footer comum `4a5ff8e` | Todas as rotas, foco/teclado/browser, composição real; suporte em memória e baselines históricos abertos |
+| Media Gateway/R2/Stream compartilhado | `33d7f751`, `589214b7`, `6e7bc23b`, `3efe3865`; inventário read-only dos três buckets; DDL candidato `69f5e8a` | Guard AMR/proveniência E1, máximo batch Owner, decoder/entitlement e credenciais/lease nominais; sem SQL/composiçãoScope autorizados |
+
+Coordenador confirmou em 2026-09-08: Circulares `38870d1`/`17c6286a` integrados
+com lote central 386 PASS; Chat `cdb542a5` integrado com lote Chat/Cardápios
+172 PASS/analyzer5. São resultados comunicados pela coordenação, não execução
+independente desta frente. Nenhum desses lotes promove automaticamente E2E.
+
+Próximo trabalho: continuar achados independentes do escopo enquanto os gates
+M03 são resolvidos por seus responsáveis. Não escrever SQL, conectar Scope,
+inventar máximo ou autorizar sessão por AAL isolado. ETA global segue dependente
+dos gates externos; não trocar critério de entrega por quantidade de commits.
+
+Parecer E1 retransmitido pelo Coordenador neste checkpoint: não existe guard
+AMR/proveniência pronto nas migrations e não há helper iminente. AAL persistido
+1/2 não prova origem operacional; recovery PKCE identificável não resolve OTP
+implícito ambíguo. O GoTrue congelado é fonte nominal, não versão de produção
+comprovada. Nenhuma proibição nova de OTP/magiclink foi aprovada. O gate exige
+contrato server-side e prova dos fluxos admitidos, sem ampliar lease/credenciais.
+
+## Histórico das fatias
 
 Os marcos são por tela: 1 contrato/inventário; 2 backend/segurança/negativas;
 3 cliente/estados; 4 integração real/persistência/reload; 5 regressão/visual;
