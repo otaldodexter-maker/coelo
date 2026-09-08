@@ -559,6 +559,130 @@ void main() {
     expect(find.text('Nova comunicação'), findsNothing);
     expect(find.byType(CoeloAdminCreateAction), findsNothing);
   });
+
+  testWidgets('a published notice reloads the directory and offers the next lifecycle action', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(375, 800);
+    addTearDown(tester.view.reset);
+    final draft = _repository().create(_draft(96));
+    var fetches = 0;
+    var published = false;
+    final repository = _DeferredNoticeRepository(
+      (_) async {
+        fetches++;
+        return NoticePage(
+          items: [
+            published
+                ? draft.copyWith(status: NoticeStatus.active, managementVersion: 1)
+                : draft,
+          ],
+        );
+      },
+      publishHandler: (notice, {required requestId, required expectedVersion}) async {
+        published = true;
+        return notice.copyWith(status: NoticeStatus.active, managementVersion: 1);
+      },
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(body: NoticeDirectoryPage(repository: repository, canManageLifecycle: true)),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(fetches, 1);
+
+    await tester.tap(find.byTooltip('Ações da comunicação').first);
+    await tester.pumpAndSettle();
+    expect(find.text('Publicar'), findsWidgets);
+    await tester.tap(find.text('Publicar').last);
+    await tester.pumpAndSettle();
+
+    // The directory refetches instead of patching the row locally, so what the
+    // operator sees is the state the server returned.
+    expect(published, isTrue);
+    expect(fetches, 2);
+
+    await tester.tap(find.byTooltip('Ações da comunicação').first);
+    await tester.pumpAndSettle();
+    expect(find.text('Pausar'), findsWidgets);
+    expect(find.text('Publicar'), findsNothing);
+  });
+
+  testWidgets('an inactivated notice reloads the directory with its reason recorded', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(375, 800);
+    addTearDown(tester.view.reset);
+    final active = _repository()
+        .create(_draft(97))
+        .copyWith(status: NoticeStatus.active, managementVersion: 1);
+    var fetches = 0;
+    var inactivated = false;
+    String? recordedReason;
+    NoticeStatus? recordedStatus;
+    final repository = _DeferredNoticeRepository(
+      (_) async {
+        fetches++;
+        return NoticePage(
+          items: [
+            inactivated
+                ? active.copyWith(status: NoticeStatus.cancelled, managementVersion: 2)
+                : active,
+          ],
+        );
+      },
+      changeStatusHandler:
+          (
+            noticeId, {
+            required requestId,
+            required status,
+            required expectedVersion,
+            String? reason,
+          }) async {
+            inactivated = true;
+            recordedReason = reason;
+            recordedStatus = status;
+            return active.copyWith(status: status, managementVersion: expectedVersion + 1);
+          },
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(body: NoticeDirectoryPage(repository: repository, canManageLifecycle: true)),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(fetches, 1);
+
+    await tester.tap(find.byTooltip('Ações da comunicação').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Inativar').last);
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('notice-inactivate-reason')),
+      'Encerrada pela coordenação',
+    );
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('notice-inactivate-confirm')));
+    await tester.pumpAndSettle();
+
+    expect(inactivated, isTrue);
+    expect(recordedStatus, NoticeStatus.cancelled);
+    expect(recordedReason, 'Encerrada pela coordenação');
+    expect(fetches, 2);
+
+    await tester.tap(find.byTooltip('Ações da comunicação').first);
+    await tester.pumpAndSettle();
+    expect(find.text('Pausar'), findsNothing);
+    expect(find.text('Inativar'), findsNothing);
+  });
 }
 
 Future<void> _pumpDirectory(
