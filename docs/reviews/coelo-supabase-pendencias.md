@@ -12,6 +12,15 @@ family_count: 38
 
 ## Rodada de 2026-09-07 — backend local e integração em curso
 
+- Até23:29: A01AuditRED55 real Eng1: **97TAP,91PASS/6FAIL** somente91–94,
+  96–97;89 originais e controles authenticated passaram. Falta append de
+  sucesso e falha de auditoria não impede retorno. Cleanup23:22:12BRT sem
+  recursos nominais. V2 `96de811b` recebida, ainda não revisada/replayed.
+- Users corretiva `45974168` e Models `be40c7c8` integradas após review local,
+  ainda sem GREEN SQL. Replay serial nominal45+3 e11+17 autorizado ao Eng1
+  após gates de perfil/hash; Models não acrescenta platform.read. LOCce318
+  permanece candidato em revisão; bootstrap é local e anterior à migration.
+  FREAD full derivado ainda não executado. Nenhum lease remoto aberto.
 - Usersmin48 real:1PASS/2FAIL, base integral; corretiva de projeção/count e
   e-mail no convite com E2E1. Modelos49 real:9PASS/2FAIL nas provas5/7,
   lookup antes de autorização; corretiva READ nominal com E2E1, sem impor

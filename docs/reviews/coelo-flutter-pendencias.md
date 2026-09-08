@@ -14,6 +14,12 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Até23:29: Auditoria `2b1b595c` e Avaliações `8f9d5123` passaram **67/67**
+  no destino, analyzer4 sem issues. Cardápios `cc54dae8` e formulário Agenda
+  `c965294d` passaram outro lote **67/67**, analyzer5 sem issues. Corrigem
+  estado obsoleto, contexto e retry; nenhum destes lotes certifica backend/E2E.
+  Chat prepara consumidor explícito de imagem e ajuste canônico dos botões
+  multiline; catálogo Locais prepara decoder READ sem ligação produtiva.
 - Até23:15: PERS-READ01 `bb49760e`, Agenda `a24bb57d`, Circulares
   `de377e01` e composição central passaram **263/263** em18 suítes; analyzer8
   sem issues. R08+P2 `00b1f80b`/`53c97c74`, Agora purge `1abc81a7` e Suporte

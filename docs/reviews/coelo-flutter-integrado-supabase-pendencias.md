@@ -14,14 +14,18 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "A42346D6FCCA7C9055C3BA980CB023D0C18E8CBA9DC1860BCC0308C5417B4D37"
-supabase_tracker_sha256: "6EDE4EB254BEBA746173F485C224E1A66F6B4DD749858F4954F3E3E98031E9D5"
+flutter_tracker_sha256: "CEA7BBA912E6346ACB1823543725B90D3BBB8B78981839107857BAE2C10C1112"
+supabase_tracker_sha256: "C6D668FC8AD7E5199CD62EA79138F76F7D1407731830ECDAC5913E54D63AE8C8"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
 
+- Até23:29: dois lotes focais67/67 e analyzers4/5 passaram no destino para
+  Auditoria/Avaliações/Cardápios/Agenda. Users/Models corretivas integradas
+  ainda aguardam replay. A01 real97 teve6 falhas de auditoria; v2 recebida,
+  não comprovada. Nenhuma promoção de ready/verified ou alegação produtiva.
 - Até23:15: novos lotes locais263/263,177/177,146/146 e61/61 passaram no
   destino, sem soma de cobertura duplicada. Usersmin e Modelos reproduziram
   defeitos SQL reais, não correções concluídas. Parser Forms3/3 local apenas
