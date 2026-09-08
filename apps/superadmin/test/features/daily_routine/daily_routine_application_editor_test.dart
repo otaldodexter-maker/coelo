@@ -105,6 +105,116 @@ void main() {
     );
   });
 
+  testWidgets('distinct equal repositories still replace the editor context', (tester) async {
+    final repositoryA = _EqualDelayedRoutineRepository();
+    final repositoryB = _EqualDelayedRoutineRepository();
+
+    Widget editor(_EqualDelayedRoutineRepository repository) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: DailyRoutineWizardPage(
+        repository: repository,
+        logout: unavailableSuperadminLogout,
+        entryId: 'application-id',
+        entryKind: RoutineEntryKind.application,
+      ),
+    );
+
+    await tester.pumpWidget(editor(repositoryA));
+    await tester.pumpWidget(editor(repositoryB));
+    expect(repositoryB.fetchCount, 1);
+
+    repositoryB.complete(startsAt: '10:00');
+    await tester.pump();
+    repositoryA.complete(startsAt: '08:00');
+    await tester.pump();
+
+    expect(
+      tester
+          .widget<CoeloFormTextField>(find.byKey(const Key('daily-routine-application-starts-at')))
+          .controller
+          .text,
+      '10:00',
+    );
+  });
+
+  for (final kind in [RoutineEntryKind.model, RoutineEntryKind.application]) {
+    testWidgets('rejects a mismatched id returned while editing ${kind.name}', (tester) async {
+      final repository = _TamperedRoutineRepository();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: DailyRoutineWizardPage(
+            repository: repository,
+            logout: unavailableSuperadminLogout,
+            entryId: kind == RoutineEntryKind.model ? 'model-id' : 'application-id',
+            entryKind: kind,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(
+        find.byKey(
+          kind == RoutineEntryKind.model
+              ? const Key('daily-routine-save')
+              : const Key('daily-routine-application-save'),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(
+          kind == RoutineEntryKind.model
+              ? 'O modelo salvo não corresponde ao solicitado.'
+              : 'A rotina aplicada salva não corresponde à solicitada.',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text(kind == RoutineEntryKind.model ? 'Modelo salvo.' : 'Rotina aplicada salva.'),
+        findsNothing,
+      );
+    });
+  }
+
+  testWidgets('fails closed when an application load returns another id', (tester) async {
+    final repository = _TamperedRoutineRepository(tamperLoad: true);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: DailyRoutineWizardPage(
+          repository: repository,
+          logout: unavailableSuperadminLogout,
+          entryId: 'application-id',
+          entryKind: RoutineEntryKind.application,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('daily-routine-application-editor')), findsNothing);
+    expect(find.text('A rotina aplicada solicitada não pôde ser validada.'), findsOneWidget);
+  });
+
+  testWidgets('fails closed when applying a model returned for another id', (tester) async {
+    final repository = _TamperedRoutineRepository(tamperLoad: true);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: DailyRoutineWizardPage(
+          repository: repository,
+          logout: unavailableSuperadminLogout,
+          entryKind: RoutineEntryKind.application,
+          applicationFromModelId: 'source-model',
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('daily-routine-application-editor')), findsNothing);
+    expect(find.text('O modelo de origem não pôde ser validado.'), findsOneWidget);
+  });
+
   testWidgets('does not surface application creation without an authorized context', (
     tester,
   ) async {
@@ -200,8 +310,8 @@ class _RoutineRepository implements RoutineRepository {
   String? revertedApplicationId;
 
   @override
-  Future<RoutineApplication> fetchApplication(String id) async => const RoutineApplication(
-    id: 'application-id',
+  Future<RoutineApplication> fetchApplication(String id) async => RoutineApplication(
+    id: id,
     modelVersionId: 'model-version',
     institutionId: 'institution',
     status: RoutineApplicationStatus.active,
@@ -307,4 +417,60 @@ final class _DelayedRoutineRepository extends _RoutineRepository {
       ),
     );
   }
+}
+
+final class _EqualDelayedRoutineRepository extends _RoutineRepository {
+  final _request = Completer<RoutineApplication>();
+  var fetchCount = 0;
+
+  @override
+  Future<RoutineApplication> fetchApplication(String id) {
+    fetchCount += 1;
+    return _request.future;
+  }
+
+  void complete({required String startsAt}) {
+    _request.complete(
+      RoutineApplication(
+        id: 'application-id',
+        modelVersionId: 'model-version',
+        institutionId: 'institution',
+        status: RoutineApplicationStatus.draft,
+        inheritanceMode: RoutineInheritanceMode.inherited,
+        effectiveVersion: 1,
+        expectedVersion: 0,
+        startsAt: startsAt,
+        canManage: true,
+      ),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) => other is _EqualDelayedRoutineRepository;
+
+  @override
+  int get hashCode => 1;
+}
+
+final class _TamperedRoutineRepository extends _RoutineRepository {
+  _TamperedRoutineRepository({this.tamperLoad = false});
+
+  final bool tamperLoad;
+
+  @override
+  Future<RoutineApplication> fetchApplication(String id) =>
+      super.fetchApplication(tamperLoad ? 'another-application' : id);
+
+  @override
+  Future<RoutineModel> fetchModel(String id) => super.fetchModel(tamperLoad ? 'another-model' : id);
+
+  @override
+  Future<String> saveApplication(
+    RoutineApplication application, {
+    required String requestId,
+  }) async => 'another-application';
+
+  @override
+  Future<String> saveModel(RoutineModel model, {required String requestId}) async =>
+      'another-model';
 }
