@@ -20,7 +20,7 @@ Docker ou deploy por esta frente nesta retomada.
 | Passo | Camada / objeto | Estado e próximo gate |
 |---|---|---|
 | 1/6 Contrato/inventário | read/update/suspend internos | Recorte local listado; criação/convite não habilitados |
-| 2/6 Backend/negativas | RPCs profiles/list/detail e lifecycle | Fixture nominal e0efd98e com 45 asserts revisados; replay exclusivo Eng1 pendente. Dois gaps de payload registrados separadamente em eaf19701 |
+| 2/6 Backend/negativas | RPCs profiles/list/detail e lifecycle | Eng1 confirmou fixture 45/45 PASS no replay Auth45+1+2=48; evidência integrada central 2c7f369c, cleanup 01:00:48 UTC. Dois gaps separados têm proposta de teste em 009eaf4e, ainda não executada |
 | 3/6 Cliente/estados | scope/main/app/router/diretório | Composição readonly, negativa e limpeza de tela implementadas |
 | 4/6 Integração/reload | Sessão → RPC → UI | Cache/epoch ligados à sessão e dispose. Backend real aberto; mídia aguarda consumidor real da E2E3 |
 | 5/6 Regressão/visual | testes Flutter | Diretório 13/13; composição inicial combinada 32/32; visual real ainda aberto |
@@ -72,8 +72,8 @@ de ID isolada não autoriza preservar sessão desconhecida.
 
 ## Conta e Configurações
 
-`67b36bab`: carga inicial/dispose do controller de preferências corrigidos
-após dois REDs; 6/6 locais, analyzer e review. Persistência real/reload,
+`67b36bab` + follow-up obrigatório `beba812a`: carga inicial/dispose e retry
+após erro corrigidos com REDs; 9/9 locais, analyzer e review. Persistência real/reload,
 erros e ordenação de saves ainda abertos. Perfil produtivo continua 503 por
 contrato: self-read/self-edit interno exige gateway nominal, sem reaproveitar
 comando administrativo ou realm people. Avatar depende E2E3/R2; nenhuma capa
@@ -81,6 +81,12 @@ da Conta aprovada. Senha autenticada não se confunde com recovery/reset.
 
 Os rastreadores oficiais permanecem sob autoria exclusiva do Coordenador.
 Este plano registra andamento, não amplia o recorte nem substitui evidência.
+
+Regressão conjunta em `009eaf4e`: 128/128 PASS (Auth/SDK/pacote 74,
+repository 24, detalhe 7, rotas diretório 4/preview 2/detalhe 8 e Settings 9).
+Esta execução não inclui os sete testes NAV da execução anterior; não somar
+os denominadores como se fossem uma única execução. Continua sendo prova
+local com HTTP simulado, não navegador/backend produtivos.
 
 ## Incremento R05 — cache por autorização
 
