@@ -942,11 +942,14 @@ fechamento e filtros; não cria componente público nem altera fluxos de domíni
   contrato no próprio pacote e nunca importa `coelo_ui_admin`. Outra anatomia
   exige que o usuário indique
   explicitamente outro padrão aprovado. Quando houver status semântico, o
-  indicador começa circular em 24 × 24 e sem texto. Em Admin/Superadmin, usar
+  indicador começa circular em 24 × 24 e sem texto; essa é a dimensão visual,
+  não o alvo interativo, que permanece de pelo menos 48 × 48. Em Admin/Superadmin, usar
   `CoeloAdminExpandableStatusIndicator`; no Principal, implementar o mesmo
   contrato no pacote próprio, sem importar `coelo_ui_admin`. Hover, foco por
   teclado ou toque no indicador o
-  expande para revelar o rótulo. A cor segue o token semântico do status e o
+  expande para revelar o rótulo. Enter e Espaço permitem alternar a expansão;
+  o rótulo permanece legível com texto a 200% e negrito de acessibilidade,
+  sem reduzir a escala solicitada. A cor segue o token semântico do status e o
   texto impede dependência exclusiva de cor. Com reduced motion, a expansão
   acontece sem animação não essencial. Não usar chip sempre aberto como
   substituição silenciosa desse padrão.

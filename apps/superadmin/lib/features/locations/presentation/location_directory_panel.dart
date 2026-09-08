@@ -170,7 +170,7 @@ class _LocationDirectoryPanelState extends State<LocationDirectoryPanel> {
                     ],
                     if (data != null) ...[
                       Text(
-                        '${data.totalCount} locais',
+                        data.totalCount == 1 ? '1 local' : '${data.totalCount} locais',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       if (_controller.windowLimited)

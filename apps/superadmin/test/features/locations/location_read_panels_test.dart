@@ -29,6 +29,7 @@ void main() {
       await tester.pumpWidget(app(0));
       reader.directories.last.result.complete(cached);
       await tester.pumpAndSettle();
+      expect(find.text('1 local'), findsOneWidget);
       if (table) {
         await tester.tap(find.byKey(const Key('location-view-table')));
         reader.directories.last.result.complete(cached);

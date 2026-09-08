@@ -3,7 +3,7 @@ title: Hierarquia de interação administrativa Coelo
 knowledge_id: coelo-admin-interaction-hierarchy
 source: docs/design/design-system.md
 status: validated
-generated_at: 2026-08-03
+generated_at: 2026-09-08
 audience: team
 surfaces: [admin, superadmin, catalog]
 visibility: internal
@@ -54,8 +54,10 @@ administrativo. O card usa `CoeloAdminInteractiveCard`, mantém `surface` e
 `radius.lg`; hover/foco enfatizam
 somente borda e sombra, nunca com overlay cinza ou retangular. Quando existe
 status semântico, usar `CoeloAdminExpandableStatusIndicator`: ele começa como
-ponto circular de 24 × 24 sem texto e expande
-para revelar o rótulo em hover, foco ou toque no indicador. A apresentação usa
+ponto circular visual de 24 × 24 sem texto, com alvo interativo mínimo de
+48 × 48, e expande para revelar o rótulo em hover, foco ou toque no indicador.
+Enter e Espaço alternam a expansão. O rótulo permanece legível com texto a
+200% e negrito de acessibilidade, sem reduzir a escala solicitada. A apresentação usa
 cores semânticas com texto e remove a animação não essencial em reduced motion.
 
 Login, Instituições, Home, navegação, Conta, overlays e o wizard de

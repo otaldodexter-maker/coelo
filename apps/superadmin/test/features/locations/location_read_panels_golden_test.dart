@@ -11,7 +11,7 @@ import 'location_read_fixtures.dart';
 
 void main() {
   setUpAll(_fonts);
-  testWidgets('shared status text200 diagnostic candidate, not accessibility approval', (
+  testWidgets('shared status text200 accessible candidate', (
     tester,
   ) async {
     await _size(tester, 375);
@@ -38,9 +38,8 @@ void main() {
     await tester.ensureVisible(status);
     await tester.tap(status);
     await tester.pumpAndSettle();
-    // Documents the existing shared limitation; does not certify touch sizing.
-    expect(tester.getSize(status).height, 24);
-    await _golden(tester, 'directory_status_text200_diagnostic_light_375');
+    expect(tester.getSize(status).height, greaterThanOrEqualTo(CoeloSize.touchMin));
+    await _golden(tester, 'directory_status_text200_light_375');
   });
   for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
     for (final dark in [false, true]) {
@@ -265,7 +264,7 @@ Future<void> _golden(WidgetTester tester, String name) async {
   expect(tester.takeException(), isNull);
   await expectLater(
     find.byKey(const Key('location-frame')),
-    matchesGoldenFile('goldens/location_$name.png'),
+    matchesGoldenFile('goldens/status_a11y/location_$name.png'),
   );
 }
 
