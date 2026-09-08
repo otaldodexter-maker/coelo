@@ -1,0 +1,2152 @@
+---
+title: "Pendências Coelo — Front-end + Back-end"
+source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; consolidação Git de 2026-09-08"
+status: "open"
+generated_at: "2026-08-26"
+updated_at: "2026-09-08"
+action_count: 192
+historical_action_count: 214
+deferred_post_mvp_action_count: 22
+flutter_action_count: 219
+family_count: 38
+ready_for_e2e_count: 0
+verified_e2e_count: 0
+supabase_backend_gate_count: 21
+flutter_only_general_gate_count: 1
+supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
+flutter_tracker_sha256: "04DA45FD346FAD71D00854D38F4ACCB62A26C7AADD84C797BFD278EE1AB0C1DA"
+supabase_tracker_sha256: "A0BF867D7614F4FB4B3F8BBC6EA5838BAD6B96AC01BC17F4A135FE003618C376"
+---
+
+# Pendências Coelo — Front-end + Back-end
+
+## Fechamento operacional de 2026-09-08 — estado integrado vigente
+
+- Escopo integrado do MVP: **192 ações**; 22 ações de import/export geral são
+  `deferred-post-mvp` e cinco gates são somente Flutter.
+- `ready-for-e2e`: **0,00% (0/192)**. `verified-e2e`:
+  **0,00% (0/192)**. Nenhuma ação possui simultaneamente Front-end `verified`,
+  Back-end `done` e a prova real UI→provedores→persistência→reload.
+- Indicadores de camada, que não devem ser somados: Front-end técnico local
+  **47,49% (104/219)**; Front-end estrito **0/219**; Back-end técnico local
+  **7,89% (3/38 famílias)**; Back-end estrito **0/219**.
+- Todas as branches da rodada foram publicadas. As worktrees geridas pelo Codex
+  estão limpas; as worktrees próprias em `.worktrees/` foram removidas após
+  confirmar que os HEADs locais e remotos eram idênticos.
+- A matriz completa de 38 telas/famílias, subtelas e primeiro gate pendente está
+  em `evidence/etapa-2/coordenador/fechamento-etapa-2-2026-09-08.md`.
+
+## Rodada de 2026-09-07 — consolidação não é conclusão E2E
+
+- Atualização02:53: dependênciasForms01/02 e guardSAFE versionados candidatos;
+  nenhuma migration executada por integraçãoGit, nenhuma promoção E2E.
+
+- Atualização02:47: ramosForms190/190 e Momentos79/79inclgoldens destino,
+  analyzer3/gatevisual PASS; sem progresso artificial dos contadoresE2E.
+
+- Atualização02:42: AutoriaForms cliente66/66/analyzer3 no destino; SQL02
+  versionado como candidato dependente01, sem execução, DI ou promoção E2E.
+
+- Atualização02:39: Modelos+Agenda39/39 focais e Agora59/59inclgoldens no
+  destino, analyzers limpos. Invalidação cliente não é autorização backend,
+  snapshot transacional ou revogação de URL. Contadores E2E inalterados.
+
+- Atualização02:33: diagnóstico LOC separa EOL de alteração semântica remota;
+  correção candidata nominal reservada, sem deploy. CHILD48/49 somente preparo.
+
+- Atualização02:29: Respostas62/62 e AgendaDTO49/49 no destino/analyzer3.
+  LOC investiga dois fingerprints sem afirmar divergência semântica;
+  F-AUTHOR aguarda timeout seguro do preflight. Sem novos gates E2E completos.
+
+- Atualização02:23: Para Você/Agora/Publicação200/200 incluindo goldens,
+  analyzer3 e gate visual local PASS após integração. M03/N01, persistência
+  e mídia real seguem abertos; não altera contadores ready/verified.
+
+- Atualização02:18: CHILD adapter/estado/pipeline38/38 e Cardápios roundtrip
+  c6532889 com70/70 focais, analyzer4 PASS no destino. Sem wiring, SQL,
+  persistência real ou mudança em ready/verified E2E.
+
+- Atualização02:16: LOC50 parser corrigido, novo bloqueio55000 fingerprint,
+  zeroTAP; probe apenas em preparo. AGGREEN54 também em preparo. CHILD48
+  candidato autorizado após leitura do vetor, sem SQL/wiring. Acompanhamento
+  retomou E1 ociosa; não altera contadores ready/verified nem gates remotos.
+
+- Atualização02:10: Respostas08315450/de51d4e7,52/52/analyzer2 destino.
+  AGGREEN54 autorizado só preparo após main ler migration0b55 integralmente;
+  SQL não executado nem prontoE2E inferido. Autoria01/02 continua separada.
+
+- Atualização02:03: b3294c47 corrige negação de comandos Modelos no cliente,
+  161/161 data/analyzer destino. SemSQL/grants ou avanço de verified-e2e.
+
+- Atualização01:59: Cardápios cbdc90c3/845f461a,48/48 destino e analyzer2;
+  backend People versus039 permanece aberto, sem progresso E2E inferido.
+
+- Atualização01:55: Care/Chat f245e989/e363f9ee/ad18af87 integrados após review;
+  87/87 focais/analyzer2 no destino. Sem alteração backend ou mídia real.
+
+- Atualização01:48: CHILD DTOeb6ff0bd/API171PASS/analyzer3 destino, sem wiring.
+  LOC50 abortou compilação42601 antesTAP, correção mínima em autoria. Autosave
+  Respostas aprovado após conferir ownership explícito no prompt original;
+  cliente em implementação, nenhum gate SQL/segredo anônimo ampliado.
+
+- Atualização01:44: Avisos `a24993e8`/`bbed5f18`,28/28 form/dialog no destino;
+  revisão P2 encerrada no cliente, sem promoção de N01/backend/E2E.
+
+- Atualização01:40: ContextPanel `b37a441d`,16/16 destino, sem rebaseline.
+ Avisos9abd retido por revisão P2 de ownership; nenhum SQL ou E2E promovido.
+ CHILD DTOa9a5974, F-AUTHOR02dbac e runtimes de identidade permanecem candidatos.
+
+- Atualização01:35: isolamento Perfil/Circulares e controller de atividades
+  integrado em1b6533bc/175acbf0/50814957,21/21 focais e analyzer3 no destino.
+  Sem SQL/mídia real. Autosave de rascunho Forms autorizado para implementação
+  cliente do requisito existente, sem validação de publicação sobre rascunho;
+  fluxo remoto/receipt real seguem pendentes.
+
+- Atualização01:32: adapter Locais `4328741a` e versão de modelo Cardápios
+  `682d4483` integrados após revisão independente e leitura central; destino
+  88/88 Locais e60/60 Cardápios, analyzer3 PASS. Sem SQL, HTTP ou ligação de
+  rotas; nenhum estado ready/verified alterado. CHILD-READ01 limitado a
+  contrato/DTO/testes; detalhe046/hierarquia completa não ampliados.
+
+- Atualização01:16: status compartilhado129/129 pacote e115/115 consumidores
+  no destino; DS/projeção reconciliam visual24/alvo48. Validador de memória
+  mantém11erros só em benchmarks alheios, suíte do gate PASS. AG53 e preflight
+  seguro F-AUTHOR64 autorizados para preparação, não execução. Novos
+  candidatos aguardam integração; nenhuma ação ready/verified promovida.
+
+- Atualização01:03: FREAD local117/117 agora comprovado e cleanup confirmado;
+  shell/relato/continuação Perfis104/104 no destino, analyzer5 limpo.
+  Fluxo real pela tela continua pendente, assim como autoria/exports/R2.
+  LOC prepara perfil nominal final; Perfis READ conserva lacuna de alcance
+  do ator institucional, sem inventar catálogo global nem contador autenticável.
+- Em08/09 até00:57: **88/88** e **111/111** nos dois lotes cliente do destino,
+  analyzers sem issues e **41/41 Pester** FREAD derivado51. LOCUI agora
+  integrado com callback ligado à geração; clipping compartilhado continua
+  pendente. Acontece preserva draft em422 ambíguo e rejeita negativas tipadas.
+  São recortes locais, não novas ações ready/verified; Auth/R2/runtime e
+  avaliação visual completa continuam distintos.
+- Auth47: LOC deltaMAINTAIN comprovado, Perfis primeiro gateACL42501
+  comprovado, cleanup independente confirmado. FREAD51 em execução nominal;
+  Agenda fixture aprovada somente para futuro RED com manifesto fechado.
+  Atividades prepara roteiro Flutter→PostgREST local, sem inferir E2E dos97TAP.
+  Sete tarefas seguem apoiadas até03:20; consolidação/relatório até04:40BRT.
+- Em08/09 até00:44: lotes cliente172/277/145/289/82 passaram no destino e
+  Pester332/332 passou, sem somar execuções sobrepostas. Eng1 confirmou SQL
+  Models38/38 e Atividades97/97 com cleanup. São provas de recortes locais;
+  zero nova promoção ready/verified. LOCUI retido por callback obsoleto e
+  status cortado a200%; Conta depende contrato nominal; M03 mantém gates
+  reais de proveniência, limite e decoder. Convites pertence à E2E3 conforme
+  anexo, corrigido explicitamente no feedback, não à E2E1.
+- Em08/09 até00:10: **386/386 testes não-golden** em46arquivos no destino,
+  analyzer7 sem issues; Perfis/Modelos, Atividades, Cardápios e Circulares.
+  Users49 **48/48 SQL local** pelo Eng1; FREAD base derivada50 aplica, mas
+  fixture aborta após2FAIL porque não inclui reader. Nenhuma nova ação
+  ready/verified: execução real autorizada, Auth/R2 e revisão visual seguem
+  gates distintos. Feedback adicional por tarefa entregue ao Owner00:04.
+- Até23:55: Chat102/102, Models/Users/Agenda204/204, pacotes DTO142/142 e
+ 32/32, XLSX puro14/14 e Pester29/29 passaram no destino, em recortes
+  diferentes e com sobreposição. Atividades ampliado ainda tem1 falha de
+  teste funcional e9 visuais; nenhuma aprovação global ou promoção E2E.
+  SQL corretivo, gates de concorrência e Auth/R2 real permanecem separados.
+- Até23:29: dois lotes focais67/67 e analyzers4/5 passaram no destino para
+  Auditoria/Avaliações/Cardápios/Agenda. Users/Models corretivas integradas
+  ainda aguardam replay. A01 real97 teve6 falhas de auditoria; v2 recebida,
+  não comprovada. Nenhuma promoção de ready/verified ou alegação produtiva.
+- Até23:15: novos lotes locais263/263,177/177,146/146 e61/61 passaram no
+  destino, sem soma de cobertura duplicada. Usersmin e Modelos reproduziram
+  defeitos SQL reais, não correções concluídas. Parser Forms3/3 local apenas
+  delimita a base derivada. Nenhuma nova ação verified ou deploy produtivo.
+- Inventário reconciliado: **219 ações / 38 famílias** nas três matrizes,
+  sendo214 normativas integradas e5 gates Flutter-only; excluindo22 ações
+  adiadas, **192 ações MVP**. Doze IDs de Locais foram materializados sem
+  duplicatas/aliases. Ready e verified permanecem0. Valores207/202/180 nos
+  checkpoints anteriores são históricos, não o denominador vigente.
+- Atualização22:50: novos recortes cliente passaram138/138 no destino e
+  analyzer3 sem issues. F-READ50 encontrou42601 histórico antes do endpoint,
+  zeroTAP; cleanup comprovado. Derivação local mínima apenas em preparação,
+  e A01 RED55/97 audit autorizado na fila Eng1. M03 mantém gates concretos de
+  Auth/revalidação/locks. Nenhum desses avanços promove ação a verified E2E.
+- Até22:32: novos recortes Flutter40/40 e analyzer3 no destino; métricas
+  imagens/R2shared30/30 sem rede; executor nominal104/104 Pester. F-READ SQL
+  integrado como pacote ainda não executado; Usersmin e Modelos somente REDs
+  preparados. A01 correção funcional precisa audit de sucesso antes de
+  conclusão do contrato. Nenhuma promoção E2E por essas contagens.
+- Avanço até22:12: Users SQL local45/45 e cleanup Eng1; Agenda/Operações
+  destino176/176; Comunicação90/90+Media45/45; Forms69/69; follow-ups
+  combinados202/202, sem somar cobertura duplicada. Pester77/77 no destino.
+  Nenhuma ação foi promovida a verified por essas evidências locais.
+- Locais em Forms tem duas políticas sem decisão aprovada, registradas em
+  `../open-questions.md`: seleção fixa/dinâmica e reenvio com opção revogada.
+  Isso não suspende outras telas. Mídia mantém R2 master e processamento
+  auxiliar proposto, sem habilitação paga/remote. Suporte OQ-028 segue aberto.
+- Integração Estruturas/F-READ UI até `18c00caa`: 249/249 em 18 suítes no
+  destino, com NAV, D01 e goldens; contrato Locais9/9 Dart; analyzer11 sem
+  issues. Auth R06/R07 até `f026e997`: outras sete suítes65/65, preservando
+  composição F-READ/D01. Não somar suítes sobrepostas como cobertura única.
+- N01 reproduziu erro local42P01 com cleanup verificado pelo Eng1; Users48
+  está liberado para replay; A01 base54/fixture89 apenas preparados e F-READ
+  ainda precisa helper400 nominal e expectativa AAL1 corrigida. Nenhuma dessas
+  entregas autoriza declarar rota sem `/dev` concluída de ponta a ponta.
+- Comunicação: prefixo cliente integrado até `d671ab0e`, 84/84 testes Flutter,
+  analyzer cinco arquivos sem issues; MediaSession 9/9 Dart e M02 29/29 Deno
+  no destino. Nenhum destes resultados promove Chat/Avisos/Mídia a E2E.
+  N01 SQL preparado ficou fora desse lote; jobs, autorização agendada e
+  gateway/consumidor/R2 real continuam gates separados.
+- Gate documental de mídia reconciliado: Chat usa domínio `communication`
+  e Perfil contextual usa `profiles`, conforme ADR 0032. M03 começa por
+  contratos/REDs nominais; essa correção não certifica gateway, R2 ou E2E.
+- Integração incremental iniciada pelo lote E2E 4 `c0729294` → `4e6f8dc5`:
+  Formulários/Respostas/Editor e receipt de Medicação, sem SQL ou deploy.
+  Seis commits integrados até `d9d1bf46`; cinco suítes no destino passaram
+  (83/83), análise de cinco arquivos sem issues. Nenhuma ação foi promovida
+  a `ready-for-e2e` ou `verified-e2e` por esses commits.
+- D01 Unit/Group está integrado com follow-ups de invalidação/stop-read e
+  GREEN local no destino; escrita, contrato remoto e E2E continuam abertos.
+  P0 RLS foi integrado em `256f0370`, com review central e Pester 27/27 no
+  destino; 118/118 SQL é a evidência local do Eng1, não produção.
+- Checkpoint por ação após integração e reinício:
+
+  | Ações | Evidência de destino | Gate que continua aberto |
+  | --- | --- | --- |
+  | `auth.login`, `auth.logout`, `internal-users.list` e detalhe complementar | E2E 1 até `2cce76cc`; dez suítes 92/92; analyzer 11 arquivos sem issues | Runtime Supabase autorizado/revogado e prova E2E real; sobrevivência da sessão vencedora no SDK/backend |
+  | `medication.create`, `medication.edit` | MED-DEV01 `ce142d27`; sete suítes 71/71 incluindo rotas Auth; analyzer cinco arquivos sem issues | Somente `/dev`, em memória; conexão clínica produtiva e E2E continuam fora desta prova |
+  | `access-profiles.*` — tabelas privadas de catálogo/receipts | P0 `256f0370`; ENABLE/FORCE nominal, replay Eng1 118/118 | Wrappers v2, isolamento tenant/realm, pacote remoto e E2E não certificados |
+
+- As sete tarefas receberam retomada após o desligamento informado pelo Owner
+  e foram conferidas ativas às 20:50–20:52 BRT. Feedbacks devem confrontar
+  execução e próximo passo com as pendências originais, sem parar as frentes.
+- Até 03:20 BRT as frentes continuam o escopo original; coordenação apoia somente
+  bloqueios concretos e consolida sem exigir interrupção administrativa.
+  Balanços às 21:00, 22:15, 23:30 e fechamento previsto até 04:40.
+- Prova restante distingue cliente, backend local, produção e E2E real.
+- No localhost, `/dev/...` é prévia com fixtures; sem `/dev` é composição real
+  Supabase, sem fallback fake. Os dois caminhos exigem evidências separadas.
+  R2 privado e XLSX das respostas do formulário inteiro substituem referências
+  históricas contrárias. Contagens/ETAs antigos não representam nova certificação.
+- Ledger vivo: `evidence/etapa-2/coordenador/rodada-2026-09-07.md`.
+
+
+> **Nomenclatura canônica — 2026-09-03:** este rastreador é governado por
+> **Coelo Front-end + Back-end** (`coelo-frontend-backend`). O nome do arquivo
+> é histórico; a integração agora inclui Front-end, Supabase e Cloudflare.
+
+> **Supersedência:** qualquer seção histórica abaixo que ainda descreva
+> Supabase Storage, R2 pós-MVP, Stream sempre fora do gate ou exportação
+> individual de resposta foi substituída pela ADR 0032 e pelos checkpoints de
+> 2026-09-03 no topo.
+
+> **Pessoas e vínculos — 2026-09-03:** provar na integração que memberships,
+> guardian/child links, assignments de atividades e contextos nomeados respeitam
+> hierarquia, tenant, relações familiares e revogação; pronome é contextual e
+> não pode alterar autorização. Contextos podem misturar membros somente por
+> seleção explícita do responsável, nunca por inferência.
+
+> **Etapa 2 — 2026-09-03:** fronteira de mídia atualizada pela ADR 0032:
+> Flutter → Media Gateway → R2 privado; Supabase mantém metadados/RLS/auditoria.
+> Stream é gate somente nas ações em que a política HOT o exige; em Agora, deve
+> ser provado quando a publicação for promovida. `forms.responses.export` exige
+> E2E de um arquivo XLSX contendo as respostas do formulário.
+
+> **Produção — 2026-09-03:** todo recurso Supabase/Cloudflare remoto é
+> produção. A prova usa os buckets privados `coelo-media-prod`,
+> `coelo-documents-prod` e `coelo-transient-prod`, hierarquia canônica única sem
+> raiz v1/v2 e catálogo autoritativo no Postgres. Cada upload comprova MIME
+> real, bytes, dimensões/pixels quando imagem, checksum, finalidade, URL curta,
+> revogação e cleanup conforme ADR 0032.
+> Contratos de domínio/API são compartilhados por Superadmin, Admin e Principal,
+> mas somente Superadmin entra no recorte de código da Etapa 2. O Site usa
+> assets estáticos próprios e não lê os buckets privados.
+
+## Checkpoint Etapa 2 — política híbrida R2/Stream — 2026-09-03
+
+O fluxo integrado deve provar: Flutter → Media Gateway → autorização/RLS →
+R2 master → (opcional) Stream HOT → player, com tenant A/B, revogação,
+expiração, reload e auditoria. Agora usa janela de até 24h; Momentos promove
+somente por tráfego; Acontece e Chat permanecem R2 por padrão. A cadeia
+`forms.responses.export` deve produzir Excel com as respostas do formulário;
+botões de import/export do Superadmin não executam backend. `ready-for-e2e` e
+`verified-e2e` permanecem inalterados até existirem evidências remotas.
+
+Cobrir também avatar/perfil, capa 3:1 onde aprovada, logo, mapa/foto de local,
+galeria/capa de evento, imagens de pergunta e resposta, anexos e PDF. PDF fica
+em documentos, nunca Stream; fotos usam variant/thumbnail para primeira
+renderização. A conta Superadmin não recebe capa por inferência.
+
+Há relatos conflitantes sobre a existência dos três buckets canônicos. O gate
+integrado começa por inventário read-only na conta correta; E2E 3 cria somente
+os ausentes ou valida/configura os existentes. Criação não pode ser repetida e
+nunca autoriza renomear, esvaziar ou apagar.
+
+## Decisão aprovada — locais, mapas e agendamentos — 2026-09-02
+
+- Fonte canônica:
+  `docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md`.
+  Nenhum trabalho de implementação foi iniciado; `ready-for-e2e` e
+  `verified-e2e` permanecem inalterados.
+- Cadeia futura obrigatória para os doze IDs reservados: Superadmin real →
+  repository produtivo → Supabase → autorização/RLS → Media Gateway → R2
+  privado quando houver imagem → persistência/metadados → resposta → reload.
+  `/dev` usa somente fixtures determinísticas e nunca serve de fallback para
+  produção.
+- E2E 2: `institutions.locations-map`, `units.locations-map`,
+  `units.copy-institution-location`, `locations.list`,
+  `locations.create-edit`, `locations.detail-links` e `groups.location`.
+- E2E 4: `forms.location-question` e `forms.location-answer`, limitados a locais
+  internos catalogados e visíveis ao respondente.
+- E2E 5: `locations.schedule`, `activities.location` e `agenda.location`, com
+  reservas opcionais, recorrência, disponibilidade e política de conflito
+  `bloquear` ou `alertar` com override autorizado/auditado.
+- A prova integrada deverá cobrir cópia independente, local pontual versus
+  catalogado, externo sem endereço negado, visibilidade por público, mídia
+  privada, permitido/negado/revogado, tenant A/B, conflito, override,
+  idempotência, persistência e reload.
+- Os IDs ainda não alteram os denominadores históricos de 207 Flutter e 180
+  E2E; o inventário posterior deverá reconciliar aliases antes de recalcular.
+  Estado inicial correto: Flutter pendente, Supabase
+  `blocked-implementation`, integração 0/12 `verified-e2e`.
+- OQ-045 foi encerrada com `locations` como prefixo R2 canônico. A prova de
+  mídia continua dependente de Media Gateway, retenção, autorização, expiração
+  e cleanup; catálogo, marcadores, vínculos e agenda seguem seus gates próprios.
+- ETA integrada de esforço: E2E 2 em 36–60 h; E2E 4 em 10–18 h; E2E 5 em
+  28–46 h; fundação compartilhada, replay e regressão conjunta em 18–30 h.
+  Total estimado 92–154 h de esforço. Com três frentes paralelas após a fundação,
+  janela de calendário estimada em 54–90 h; recalcular após OQ-045 e inventário.
+
+## Checkpoint E2E 4 — rodada controlada de 45 minutos — 2026-09-02
+
+- Branch `codex/e2e-formularios-cuidado`, commit `2f1479fc`, preserva `/dev`
+  com fixtures determinísticas e altera somente o contrato produtivo de
+  `forms.export` para carregar exatamente um `response_id`.
+- `forms.export` continua 0/1 `verified-e2e`: cliente e backend estão
+  intencionalmente incompatíveis até existir gateway v2 nominal, worker de uma
+  resposta, Storage privado com ticket one-time/TTL curto, auditoria, cleanup e
+  testes permitido/negado/revogado/cross-tenant, persistência e reload.
+- O recorte E2E 4 inventariado contém 30 `action_id`; permanece 0/30
+  `ready-for-e2e` e 0/30 `verified-e2e`. O denominador geral permanece 180,
+  sem promoção de contadores nesta rodada.
+- Próximo passo coordenado: reservar nome/ordem da migration forward-only,
+  recuperar a fonte implantada de `form-export-download` e só então implementar
+  o backend individual com arquivo sintético sem PII.
+
+## Checkpoint E2E 5 — rodada controlada de 45 minutos — 2026-09-02
+
+- Recorte: 57 ações integráveis após retirar `attendance.export` e
+  `audit.export`; permanece 0/57 `ready-for-e2e` e 0/57 `verified-e2e`.
+- `activities.list` foi rastreada até o primeiro gate: rota normal injeta o
+  repository Supabase, mas `fetchPage` falha fechado porque a projeção RPC v2
+  ainda não é equivalente ao DTO Flutter. `/dev` continua separado, com dados
+  fake/determinísticos.
+- A branch `codex/e2e-agenda-operacoes` terminou limpa, sem commit e sem tocar
+  router, shell, design system, migrations, ledger, Storage ou remoto.
+- Próximo passo: migration forward-only reservada para completar a projeção;
+  depois RED do adapter, negativos, persistência/reload e prova remota. Nenhuma
+  ação foi promovida nesta rodada.
+
+## Checkpoint E2E 3 — rodada controlada de 45 minutos — 2026-09-02
+
+- Branch `codex/e2e-comunicacao-coelo-principal`, commit `1293138e`, alterou
+  somente o contrato de regressão do shell; `/dev` fake/determinístico e rotas
+  normais produtivas/`fail-closed` permanecem separados.
+- O recorte normativo inventariado contém 38 ações; continua 0/38
+  `ready-for-e2e` e 0/38 `verified-e2e`. O denominador geral canônico permanece
+  180, corrigindo a referência histórica 202 do handoff.
+- Não houve prova nova de tenant A/B, revogação, persistência, reload ou
+  auditoria. Gate seguinte: escolher Chat list/open/send ou Convites, integrar
+  o backend pelo Coordenador e executar a cadeia completa no Superadmin real.
+
+## Checkpoint E2E 2 — rodada controlada de 45 minutos — 2026-09-02
+
+- Commit `35da78b9`: `people.list` mantém as ações de arquivo visíveis e
+  informativas na rota normal, sem conectar operação real. `/dev` preserva
+  fixtures; produção preserva a boundary sem fake.
+- O subcontrole de import/export é Flutter-only no MVP e não possui gate E2E.
+  `people.list` funcional continua sem `verified-e2e`; nenhuma das 39 ações do
+  recorte foi promovida.
+
+## Checkpoint E2E 1 — rodada controlada de 45 minutos — 2026-09-02
+
+- Commit `054a09cc`: `internal-users.list` sanitiza localmente erros 401/403,
+  mas continua 503 na rota normal porque o composition root produtivo não foi
+  reservado nesta rodada. `/dev` permanece fake/determinístico.
+- Recorte canônico de 28 ações: 0/28 `ready-for-e2e` e 0/28 `verified-e2e`.
+  Próximo gate é reservar serialmente o composition root/router, compor o
+  repository e provar permitido/negado/revogado, tenant A/B, reload e auditoria.
+- Cutover permanece bloqueado por drift de ledger (116 migrations remotas, 146
+  arquivos locais; 53 somente remotas e 83 somente locais) e por Advisors de
+  segurança ainda abertos. Nunca aplicar a cauda local em lote.
+
+## 0. Etapa 2 — controlador recuperável de conclusão ponta a ponta
+
+> **Regras do MVP aprovadas em 2026-09-01:** fluxos reais de importação e
+> exportação estão `deferred-post-mvp`, exceto a exportação individual de cada
+> resposta de Formulário; os demais botões continuam visíveis e exibem
+> indisponibilidade honesta, mas não exigem backend nem E2E. Toda mídia privada
+> do MVP usa Supabase Storage; Cloudflare R2 não existe no ambiente atual e não
+> é gate da Etapa 2. Ver ADRs 0030 e 0031.
+
+O crosswalk nominal foi concluído para planejamento: 22 fluxos reais de
+import/export saíram do denominador obrigatório, reduzindo 202 ações históricas
+para 180 ações integráveis no MVP, sem contar item diferido como concluído. No
+encerramento formal do MVP, o
+coordenador deve perguntar ao Owner se deseja implementar import/export real e
+se deseja avaliar evolução de Supabase Storage para R2.
+
+| Candidatos ao crosswalk `deferred-post-mvp` | Regra |
+| --- | --- |
+| `institutions.import`, `institutions.export`, `units.import`, `units.export`, `units.people-export`, `groups.import`, `groups.export`, `attendance.export`, `audit.export` | Flutter mantém o botão e sua mensagem; backend e E2E reais ficam fora do MVP. `forms.export` não pertence a esta linha: exportar uma resposta individual é obrigatório no MVP. |
+| `imports.list`, `imports.create`, `imports.upload`, `imports.preview`, `imports.confirm`, `imports.status`, `imports.download` | Revisar se cada ID representa apenas arquivo real ou também a tela informativa antes de retirar do denominador integrado. |
+| `profile-files.import`, `profile-files.preview`, `profile-files.confirm`, `profile-files.status`, `profile-files.export`, `profile-files.download` | Separar UI visível de operação real antes do recálculo. |
+| Atividades, Circulares, Planos, Modelos de acesso, Perfis de cuidado, Medicação, Pessoas e Usuários internos sem ID exclusivo de arquivo | Diferir somente o subcontrole de import/export; não retirar a ação inteira do MVP. |
+
+O inventário remoto read-only confirmou `import-export-jobs` v2 ativa e
+migrations históricas de import/export já aplicadas antes da ADR 0031. Elas
+ficam congeladas e fora do wiring integrado do MVP; não contam como ação pronta
+ou verificada. Nenhuma remoção destrutiva foi autorizada. A reconciliação futura
+de produção deve ser forward-only e coordenada.
+
+No Flutter consolidado, Turmas e Unidade/Pessoas já preservam os botões;
+Pessoas, Assiduidade e Formulários/Respostas ainda precisam exibi-los na rota
+real, e Usuários internos e Perfis/Modelos precisam trocar o estado desabilitado
+por clique informativo. Essa correção é exclusivamente Flutter: o clique não
+pode alcançar os artefatos legados do Supabase.
+
+### ETA integrado supersedente — somente trabalho adicional E2E
+
+Esta tabela substitui todas as estimativas integradas anteriores para
+planejamento da Etapa 2. Integração não repete UI, migrations, RLS, pgTAP,
+Advisors ou negativos já certificados pelas skills especializadas; mede apenas
+wiring real, execução pelo cliente, resposta/erro, persistência, reload e a
+matriz transversal reutilizável. O crosswalk do MVP passa de 202 IDs históricos
+para **180 IDs integráveis**: 22 fluxos reais de import/export estão
+`deferred-post-mvp`. Botões informativos são Flutter-only.
+
+| Grupo integrado | IDs abrangidos | Trabalho E2E adicional | ETA líquida |
+| --- | ---: | --- | ---: |
+| Fundação/Auth/Conta/Erros | 17 | Wiring de sessão, lifecycle, reload e envelopes | 4–6 h |
+| Cadastros e Acessos | 49 | CRUD, vínculos, permissão e tenant A/B | 8–12 h |
+| Operação escolar | 43 | Commands, persistência, reload e concorrência | 7–10 h |
+| Comunicação e Formulários | 34 | Mensagens/publicações/respostas e mídia aplicável | 7–11 h |
+| Menu Coelo (Principal) + mídia | 15 | Rotas do Superadmin e Supabase Storage | 4–6 h |
+| Cuidado/Saúde | 14 | Fluxos sensíveis permitidos/negados/revogados | 4–6 h |
+| Plataforma/Auditoria/Catálogo | 7 | Contratos e envelopes transversais | 2–4 h |
+| Harness e regressão final | transversal | Fixtures únicas, matriz parametrizada e evidências | 4–6 h |
+
+**Total sequencial adicional de integração:** **42–65 h líquidas**. Com cinco
+worktrees verticais e subagentes de teste/evidência, o caminho crítico de
+calendário é **14–22 h**: fundação compartilhada 3–5 h, maior vertical 8–12 h e
+regressão 3–5 h. Esse tempo
+só começa para uma ação quando Flutter estiver `verified` e Supabase `done`; não
+é somado novamente dentro dos ETAs das duas camadas.
+
+### ETA de entrega revisada — cinco worktrees ponta a ponta
+
+O cálculo oficial de calendário agora corresponde ao modelo discutido para os
+possíveis prompts: um coordenador e cinco worktrees verticais, cada worktree
+responsável por Flutter, Supabase local, wiring, testes e evidência do próprio
+recorte. Cada writer pode usar subagentes para tarefas independentes, mas mantém
+um único integrador responsável pelos arquivos compartilhados do seu recorte.
+
+| Frente futura | Prazo próprio estimado | Observação de caminho crítico |
+| --- | ---: | --- |
+| Coordenador | 18–30 h ativas, sobrepostas | Ownership, deduplicação, trackers, ledger, merges e cutover; não somar integralmente ao calendário. |
+| Identidade e Acessos | 30–50 h | Auth, pessoas, perfis, modelos, permissões e segurança. |
+| Estruturas e Pessoas | 26–43 h | Instituições, unidades, turmas, alunos e vínculos. |
+| Comunicação e menu Coelo (Principal) | 33–52 h | Chat, avisos, convites, circulares e superfícies internas do Superadmin. |
+| Formulários, Respostas e Cuidado | 36–60 h | Formulários, exportação individual de resposta, Storage, cuidado, saúde e medicação. |
+| Agenda, Eventos e Operações | 34–56 h | Agenda, eventos, rotina, assiduidade, atividades, avaliações e operações. |
+| Consolidação/cutover final | 6–10 h | Replay ordenado, regressão conjunta, remoto, hashes, commits e limpeza; já incluído na faixa geral. |
+
+**Prazo provável da Etapa 2: 50–76 h de calendário técnico** se as cinco
+worktrees permanecerem realmente isoladas, cada uma usar o máximo útil de
+subagentes e o coordenador for o único escritor do ledger/deploy remoto.
+**Compromisso recomendado: 76 h. Teto conservador: 96 h**, aplicável quando só
+três worktrees puderem escrever com segurança, houver conflitos em arquivos
+compartilhados ou reexecução de migrations/testes. A estimativa anterior de
+42–68 h era otimista porque não reservava margem suficiente para replay,
+conflitos, retestes e cutover serial. Espera por decisão do Owner, indisponibilidade
+externa e mudança de escopo não estão incluídas.
+
+Uma única pessoa em sequência teria de somar Flutter, Supabase e integração;
+essa soma representa esforço técnico bruto, não prazo de calendário coordenado.
+
+### Checkpoint final de consolidação — 2026-09-01
+
+As seis frentes de implementação estão agora no mesmo histórico e as
+composições duplicadas de Chat, rotas, shell e manifesto de migrations foram
+resolvidas. Isso conclui 100% da **consolidação Git recebida**, mas não conclui
+nenhuma vertical E2E. Qualquer linha histórica abaixo que ainda peça integração
+de branch está superada somente no aspecto Git.
+
+| Vertical | O que já está junto no código | Ponto exato de retomada para integração real |
+| --- | --- | --- |
+| Auth | Flutter Auth + Supabase Auth hospedado + lifecycle + migration de adiamento de MFA. | Executar navegador/SMTP reais, login → sessão → reload → logout/revogação e negativos; registrar persistência/auditoria. |
+| Pessoas/Acessos/Saúde | Telas, adapters, detalhe de Pessoa e migrations candidatas. | Corrigir P0 de realm antes de lookup, pgTAP vermelho, decisões sensíveis; depois permitido/negado/revogado e reload. |
+| Estruturas/Avaliações | Telas, gateways e migrations no mesmo código. | Resolver hierarquia, replay e gates de autorização; escolher uma ação e provar tenant A/B, persistência e reload. |
+| Operações | Planos, Cardápios, Formulários, Importações e Agenda compostos; botões de import/export permanecem visíveis e honestamente indisponíveis. | Fechar commands/backend que pertencem ao MVP por ação e executar o primeiro fluxo clique → Supabase → persistência → nova leitura. Import/export real não participa deste gate. |
+| Comunicação | Chat é canônico; o botão “Mensagens” do Coelo (Principal) abre a mesma rota em prévia e produção, preservando o retorno; Avisos, Convites e Circulares estão compostos sem rotas duplicadas. | Replay/pgTAP, auth scope, mídia/outbox/Realtime, tenant A/B, revogação e reload; então rodar E2E. |
+| Menu Coelo (Principal) | Para Você, Acontece, Agora, Momentos e Perfil estão dentro do Superadmin. | Fechar backend/audiência/Supabase Storage/publicadores e comprovar cada rota real ponta a ponta. R2 está fora do MVP. |
+| Macro — cabeçalho, shell e migrations | Cabeçalho compartilhado e capabilities combinadas; manifesto único ordenado. | Regressão visual final e replay integral antes do primeiro deploy amplo. |
+
+**Contagem oficial após o crosswalk:** 0/180 `ready-for-e2e` = **0,00%** e
+0/180 `verified-e2e` = **0,00%**. O avanço das camadas continua mensurado sem
+mistura: Flutter 105/207 `local-green` (50,72%); Supabase 3/37 famílias
+`local-green` (8,11%), ou 39/202 ações com evidência local (19,31%).
+
+Esta é a resposta canônica para “o que foi feito, onde parou e o que falta na
+Etapa 2” sob a skill `coelo-flutter-supabase-review`. As seções posteriores
+preservam todas as ações e evidências históricas.
+
+**Integração em 2026-09-01:** 0/180 ações `ready-for-e2e` (0,00%) e 0/180
+`verified-e2e` (0,00%). Isso não significa avanço zero nas camadas: Flutter
+possui 105/207 ações `local-green` e Supabase possui 3/37 famílias
+`local-green`, além de trabalho parcial registrado tela a tela. Os contadores
+`verified` Flutter e `done` Supabase são informados separadamente.
+
+**Geral conhecido e Etapa 2 integrada:** ambos usam atualmente 180 `action_id`
+integráveis no MVP. A base histórica tinha 202; 22 fluxos reais de
+import/export foram classificados `deferred-post-mvp`. Cinco dos 207 IDs
+Flutter permanecem Flutter-only e não entram no denominador integrado. A antiga
+soma 207 Flutter + gates Supabase foi descontinuada porque misturava camadas e
+duplicava responsabilidades.
+
+| Percentual integrado da Etapa 2 | Concluído | Restante | Interpretação |
+| --- | ---: | ---: | --- |
+| Ações prontas para começar E2E | 0,00% (0/180) | 100,00% (180/180) | Nenhuma ação reúne Flutter e backend prontos. |
+| Ações `verified-e2e` | 0,00% (0/180) | 100,00% (180/180) | Nenhum fluxo foi comprovado ponta a ponta. |
+
+> **Leitura correta:** a Etapa 2 tem avanço técnico real e recuperável, mas ainda
+> não tem uma vertical certificada ponta a ponta. Não existe denominador somando
+> Flutter, Supabase e integração: isso duplicaria responsabilidades. Devem ser
+> reportados separadamente Flutter `verified`, Supabase `done`, prontidão E2E e
+> integração `verified-e2e`.
+
+### Telas, subtelas e ações ponta a ponta
+
+| Tela / ações | Flutter | Supabase | Falta para `verified-e2e` | Passo atual |
+| --- | --- | --- | --- | --- |
+| Auth — login/recover/reset/logout | Local-green; Catalog recovery fail-closed corrigido/revisado em `5e8d2655`. | Auth-only local-green; remoto not-deployed. | Integrar, ledger/replay, 17 migrations, redirect/SMTP/hosting/identity e E2E. | Gate local sem P1 conhecido. |
+| Chat — list/open/send/edit/attach/receipts/revoke | UI local preservada; `68d1217d` acrescentou gateway interno v2 e adapter locais, com 54/54 Flutter. Harness de replay corrigido em `1fca68b8` (3/3 Pester) e Docker operacional. | pgTAP/replay do gateway, wiring auth scope, remoto e E2E ainda ausentes. | Provar autorização, tenant A/B, revogação, mídia/Realtime, persistência/reload/audit e E2E antes do cutover. | Avanço local sem promoção integrada. |
+| Convites — list/detail/create/resend/revoke | `/dev` local-green. | Produção Unavailable; migration histórica rejeitada; OQ-039 sem decisão. | Aprovar realm/Owner+AAL2/issuer interno, implementar RPC-only, token/outbox, RLS, reload/audit/E2E. | `blocked-decision`; 10/10 auditoria. |
+| Avisos — list/create/edit/schedule/publish/archive | Lista local; `c5085746` fail-closed; Notices 96/96 e adapter 5/5. | Worker 2/2 e SQL estático auditado; replay Docker travou sem resíduos. | OQ-038/OQ-041, Supabase Storage privado, tenant A/B, persistência/reload/audit/E2E. R2 não participa do gate. | Sem promoção integrada. |
+| Instituições — list/options/detail/edit | `d864f19a` compõe seis gateways v2; Flutter 6/6. | pgTAP 20 asserts somente declarado/static-reviewed. | Replay, sessão/realm/capability, tenant A/B, reload e E2E. | Composição local; sem promoção. |
+| Instituições — create/status | UI fail-closed. | Gateway ausente. | Contrato, backend/RLS/audit, cutover/reload/E2E. | Pendente. |
+| Unidades/Turmas — CRUD/status | UI local/fail-closed. | Gateways internos bloqueados por decisões/drift. | OQ/specs, backend nominal, replay, cutover e E2E. | Pendente. |
+| Atividades/Modelos | UI local. | Migration/unit scope apenas estática. | Replay, adapter produtivo, autorizado/negado/reload e E2E. | Aguardando replay. |
+| Avaliações | UI local/fail-closed. | Doze RPCs/tabelas ausentes; pacote em desenvolvimento. | Schema/RLS/RPC, concorrência, audit, cutover, reload e E2E. | Backend local em execução. |
+| Planos/Cardápios/Importações/Agenda | UI `/dev` local-green; botões de import/export permanecem como UI futura. | Drift e lacunas dos domínios que pertencem ao MVP. | Reconciliar ledger, implementar/compor backend das ações MVP e provar E2E. Import/export real está `deferred-post-mvp` e não entra no gate. | Inventário de drift em execução. |
+| Formulários — monitor/respostas/detalhe/arquivos | `236f12cd` conecta quatro leituras produtivas; 7/7 rotas. | RPC/projeção existente, sem sessão remota comprovada. | Integrar; RLS/negativos, reload, arquivos e E2E. | Backend-read composto localmente. |
+| Formulários — criar/editar/publicar/testar/responder | UI/editor local; produção fail-closed. | DTO/contexto/versionamento incompletos. | Contrato autorizado, commands/RLS/audit, persistência/reload e E2E. | Pendente. |
+| Pessoas — detalhe/vínculos/reload | `d4a87af8` compõe `superadmin_person_detail_v2`; 16/16 clientes verdes. | RPC contratual sem replay fresco/remoto. | Corrigir fixture/mapa/goldens; replay, sessão/permissão/MFA, persistência/reload e E2E. | Composição local; promoção retida. |
+| Pessoas — lista/criar/editar | UI `/dev` local; produção no legado people-based. | Gateway interno de escrita não aprovado. | Spec, CRUD/RLS/audit, negativos, reload e E2E. | Fail-closed/bloqueado. |
+| Segurança da criança | Quatro ações locais; suspend auditada. | Backend sensível somente auditado. | Suspend/revoke, AAL2/capability, evidência privada, audit/reload/E2E. | Primeira fatia seletiva candidata. |
+| Usuários internos | UI `/dev`; produção fail-closed. | Identidade/RPC/MFA bloqueados. | Realm, Auth/Convites, lifecycle, audit, reload e E2E. | Aguardando decisões/correções. |
+| Perfis e permissões | UI parcial; detalhe/goldens abertos. | P0 realm people-based. | Redesenho interno, anti-escalation, atribuir/excluir, replay/cutover/E2E. | Integração retida. |
+| Modelos de perfil | UI/adapter parciais. | Static-reviewed com P0/P1; pgTAP não executado. | Corrigir realm/gates/audit/filtro/paginação, replay, remoto e E2E. | Integração retida. |
+| Perfis de cuidado/Medicação | UI fake local. | Fail-closed/blocked-decision. | Decisões, backend sensível, RLS/audit, persistência/reload/E2E. | Aguardando decisões e pacote próprio. |
+| Acontece/Para Você/Agora/Perfil/publicadores | Rotas/histórico local; revisão ainda aberta. | Backend e Supabase Storage privado bloqueados pelos contratos restantes. | Fechar Flutter, contratos, audience/Storage/RLS/audit e E2E. R2 está fora do MVP. | Fila após Circulares. |
+| Momentos — view/create/publish/remove | View local-green 38/38; demais bloqueadas. | Todos bloqueados por decisão. | Integrar view; contratos/metadata/Supabase Storage/audience/removal/reload/E2E. R2 está fora do MVP. | View fechado localmente. |
+| Circulares — view/menu/arquivos | `circulars.view` local-green; `5e714c16` consolidou diretório, busca/paginação, botões Importar/Exportar, 14 dados `/dev`, responsividade e goldens. | Fluxos reais de arquivo foram retirados do MVP. | Validar somente UI/mensagem dos botões. Callbacks, backend e E2E de import/export estão `deferred-post-mvp`. | Flutter `/dev` fechado; não há gate integrado de arquivo no MVP. |
+| Circulares — criar/editar/detalhe/publicar | `5e714c16` entregou criar, detalhe, editar, salvar e publicar mutáveis no `/dev`. | Produção continua fail-closed e os contratos remotos são parciais. | Adapter, autorização, estados negativos, persistência/reload e E2E. | Local-green Flutter; integração pendente. |
+
+### Macroajustes integrados da Etapa 2
+
+| Macroajuste | Estado atual | Gate pendente |
+| --- | --- | --- |
+| Cabeçalho/shell/navegação | Implementações locais compartilhadas; Chat tem ownership único. | Cherry-picks seletivos e regressão conjunta em todas as rotas. |
+| Auth/realm/autorização | Auth local; P0 detectado em Perfis/Modelos. | Contexto interno nominal, sessão viva, realm/capability, negações antes de lookup. |
+| RLS/grants/cross-tenant | Alguns pacotes revisados estaticamente. | Replay, RLS deny-by-default, grants mínimos, tenant A/B e ID adulterado por ação. |
+| Migrations/ledger/remoto | Inventário read-only até `20260821200000`; remoto sem mutação. | OQ-041, replay compatível e pacote nominal; nunca aplicar cauda em lote. |
+| Persistência/reload/auditoria | Quase toda evidência atual é fixture/local. | Escrever, recarregar/nova sessão, negar revogado, auditar ator/efeitos e provar E2E. |
+| Responsividade/visual | Várias matrizes locais; Momentos e Comunicação com gates verdes. | Dívida golden de Acessos e regressão visual depois de todos os merges. |
+| Mídia/arquivos | Supabase Storage privado é o único provedor do MVP; placeholders honestos de import/export permanecem. | Para mídia do MVP: upload/download autorizado, expiração, retenção, remoção e cleanup. Import/export real e R2 estão fora do MVP. |
+| Consolidação Git | Comunicação integrada; demais branches preservadas. | Reviews/correções, cherry-pick, regressão, hashes dos MDs e só então limpar worktrees. |
+
+### Instituições v2 — composição local sem replay
+
+- Seis gateways internos de list/options/detail/edit foram compostos no Flutter;
+  6/6 testes verdes. PgTAP de 20 asserts não executou porque Docker não responde.
+- Create/status, Unidades e Turmas continuam fail-closed/bloqueados. Remoto tem
+  hardening de EXECUTE ainda ausente e recebeu zero mutações.
+- Nenhuma ação avança para `ready-for-e2e`.
+
+### Ordem de retomada vinculante da Etapa 2
+
+1. Reviews de Acessos/Saúde recebidos e registrados; corrigir P0/P1/P2 e pedir
+   novo review antes de qualquer integração produtiva.
+2. Fechar Circulares e continuar a sequência do menu Coelo (Principal).
+3. Integrar seletivamente branches limpas, com testes pós-merge; preservar
+   Comunicação como dona do Chat e Estruturas como dona do cabeçalho.
+4. Resolver autorização Catalog para Auth.
+5. Reconciliar ledger/replay e escolher a primeira vertical E2E autorizada.
+6. Somente remover worktrees após equivalência, regressão, rastreadores e
+   evidências estarem conferidos.
+
+**Tempo usado na Etapa 2:** não calculável ainda porque não há duração homogênea
+das frentes. **ETA geral revisado:** **50–76 h de calendário técnico** com cinco
+worktrees ponta a ponta e máximo útil de subagentes; compromisso de 76 h e teto
+conservador de 96 h. Espera por decisão não é contada como hora técnica.
+
+## 1. Papel deste documento
+
+Este é o **controlador mestre de conclusão ponta a ponta**. Deve ser lido quando
+o pedido mencionar verificação profunda, auditoria ou correção profunda de
+Flutter com Supabase, conclusão de tela, funcionamento real, produção ou “100%”.
+
+Nessa situação, a leitura dos três arquivos é obrigatória e nesta ordem:
+
+1. `docs/reviews/coelo-flutter-pendencias.md`;
+2. `docs/reviews/coelo-supabase-pendencias.md`;
+3. `docs/reviews/coelo-flutter-integrado-supabase-pendencias.md`.
+
+Os dois primeiros dizem se cada lado está pronto. Este comprova que os lados
+funcionam juntos no ambiente correto. Nenhum deles substitui os demais.
+
+### Passagem em andamento — Operações — 2026-09-01
+
+- Recorte ativo: Planos, Cardápios, Formulários, Importações, Agenda/Criar,
+  Solicitações e Aprovações; Permissões da Agenda foi consolidada em Perfis e
+  permissões por decisão direta de produto.
+- Flutter avançou localmente em diretórios, fixtures e editor de Formulários,
+  mas nenhuma ação executou `clique -> Supabase autorizado -> persistência ->
+  reload -> auditoria -> negativo cross-tenant`.
+- `verified_e2e_count` e `strict_done_count` permanecem em zero. Não há promoção
+  por teste de widget, fixture `/dev`, menu indisponível ou redirecionamento.
+- Próximo gate: inventário Supabase nominal por `action_id`, seguido de uma
+  primeira vertical CRUD/RLS pequena e reprodutível.
+- Agenda/Criar avançou somente no Flutter local: mini-mapa, perguntas do evento,
+  toggle canônico e lembretes sem canais prematuros passaram em 11 testes e
+  analyzer focado. O remoto read-only não apresentou tabelas nominais de Agenda;
+  portanto criar/editar/solicitar/aprovar continuam `blocked-supabase`, sem
+  promoção de `ready-for-e2e` ou `verified-e2e`.
+- A regressão ampliada preservou 93/93 testes funcionais da Agenda. Vinte
+  comparações de imagem seguem abertas e exigem inspeção antes de qualquer nova
+  baseline; esse RED visual não altera o bloqueio Supabase nem promove E2E.
+
+### Contrato de abertura da atividade
+
+Toda revisão, auditoria ou correção começa listando as pendências conhecidas e
+apresentando o recorte que será executado:
+
+| Campo | Preenchimento obrigatório |
+|---|---|
+| Modalidade | Todas as pendências; todas as telas; macrotema; macrotema + telas; telas específicas; ou ações específicas. |
+| Objetivo | Resultado concreto esperado. |
+| Incluído | Flutter, Supabase, integração, telas, subtelas e `action_id` do recorte. |
+| Fora de escopo | Tudo que continuará pendente após esta atividade. |
+| Ordem | Sequência, dependências e posição inicial. |
+| Critério de parada | Prova necessária para encerrar ou condição explícita de pausa. |
+| Evidências | UI, código, banco, segurança, remoto, E2E, reload e negativos esperados. |
+| Estimativa | Tempo por fatia e total, com premissas e bloqueios. |
+
+Se o recorte já foi definido, apenas confirmá-lo. Se não foi, a primeira entrega
+da revisão é a lista de pendências e a escolha do recorte; nenhuma correção começa
+antes disso. Nunca declarar conclusão fora do recorte contratado.
+
+## 2. Regra objetiva de conclusão
+
+Uma ação só pode ser marcada `verified-e2e` quando todas as condições aplicáveis
+forem verdadeiras e tiverem evidência atual:
+
+1. O `action_id` está `verified` no rastreador Flutter.
+2. A operação correspondente está `verified` no rastreador Supabase.
+3. O app usa o repository/serviço produtivo, sem fake, fixture ou callback vazio.
+4. A escrita chega ao projeto remoto correto e a leitura seguinte devolve o dado
+   persistido depois de recarregar ou iniciar uma nova sessão.
+5. RLS/RPC/Edge valida pessoa, tenant, instituição, escopo, capability e MFA
+   aplicáveis; ocultar botão no Flutter não conta como autorização.
+6. Cenários permitido, negado, sessão expirada, membership revogada, ID inválido,
+   duplo envio, falha de rede e cross-tenant foram cobertos conforme o risco.
+7. Upload/download, publicação, chat, notificações, auditoria e efeitos laterais
+   aplicáveis foram comprovados, inclusive expiração/revogação.
+8. Migration, função, policy ou Edge necessária está implantada no ambiente
+   testado; código apenas local não fecha a ação.
+9. Não há erro crítico do analyzer, testes focados, integração ou regressão
+   relacionado à ação.
+10. O registro informa ambiente, usuário/papel, tenant, dados usados, resultado,
+    comandos/testes, evidência, data e tempo restante.
+
+### O que não significa conclusão
+
+- “54/54 testes passaram” significa apenas que 54 testes executados passaram.
+- A tela abrir ou parecer correta não prova que os dados foram salvos.
+- Backend verde isoladamente não prova que o Flutter o chama.
+- `local-green`, `fail-closed`, `/dev`, mock, golden ou migration local não são
+  conclusão ponta a ponta.
+- Uma família não fecha se criar funciona, mas editar, publicar, chat, arquivos,
+  permissão, reload ou outra ação aplicável continua aberta.
+
+## 3. Estados integrados
+
+| Estado | Significado simples |
+|---|---|
+| `not-reviewed` | Integração ainda não verificada no estado atual. |
+| `blocked-flutter` | O cliente ainda impede o teste ponta a ponta. |
+| `blocked-supabase` | Backend, segurança ou implantação ainda impedem o teste. |
+| `blocked-decision` | Falta decisão formal para implementar com segurança. |
+| `ready-for-e2e` | Os dois lados parecem prontos; falta executar a prova real. |
+| `e2e-failed` | A prova real encontrou falha. |
+| `verified-e2e` | A ação passou integralmente pela regra de conclusão. |
+| `regressed` | Evidência anterior ficou inválida após mudança. |
+
+O estado da família e da tela permanece **aberto** enquanto qualquer `action_id`
+aplicável não estiver `verified-e2e`.
+
+### Glossário em linguagem simples
+
+| Termo | O que significa aqui |
+|---|---|
+| Flutter/Dart | A interface e o código do aplicativo. |
+| Supabase | A plataforma usada pelo backend, incluindo autenticação e banco. |
+| repository produtivo | A peça do app que conversa com dados reais, não com dados de demonstração. |
+| RLS | Regras do banco que decidem quais linhas cada pessoa pode ler ou alterar. |
+| RPC | Operação protegida executada no banco ou servidor. |
+| tenant | A instituição ou contexto cujos dados devem permanecer isolados. |
+| cross-tenant | Tentativa de acessar dados de outra instituição; deve ser negada. |
+| E2E ou ponta a ponta | Prova do clique na tela até o banco e de volta à tela. |
+| `local-green` | Os testes locais passaram, mas o ambiente real ainda não foi comprovado. |
+| `fail-closed` | A funcionalidade está bloqueada com segurança porque ainda não pode operar. |
+| `verified-e2e` | A ação completa funcionou no ambiente correto, inclusive segurança e recarga. |
+
+## Orçamento e níveis de correção integrada
+
+Se o tempo total ainda não foi informado, perguntar primeiro: **“Quanto tempo
+total você quer investir nesta atividade?”**. Depois, inventariar novamente os
+três lados — Flutter, Supabase e funcionamento conjunto — e recomendar o pacote
+que realmente cabe. Nenhuma correção começa antes da confirmação do usuário.
+
+| Nível | O que inclui | O que fica fora | Evidência esperada | ETA inicial |
+|---|---|---|---|---:|
+| Básica | Ajuste local, simples e de baixo risco. | Não fecha backend, autorização, ambiente remoto nem tela. | Teste focado e diff revisado. | 30–90 min por ação simples |
+| Intermediária | Básica + problemas principais, contrato existente e testes proporcionais. | Pode deixar ações, segurança remota e E2E abertos. | Testes dos lados autorizados e contrato conferido. | 2–6 h por ação ou tela simples |
+| Avançada | Anteriores + ações aplicáveis, arquitetura, autorização, isolamento entre instituições e prova remota. | Pode deixar pendências finais ou regressão integral abertas. | Fluxos permitido, negado, revogado e cross-tenant. | 1–2 dias por tela |
+| Completa | Todas as pendências aplicáveis e regressão dos três lados. | Nada aplicável dentro do recorte. | Flutter, Supabase e E2E verdes no ambiente correto. | 2–5 dias por tela |
+
+### Tabela geral obrigatória
+
+| Nível | O que corrige | O que pode continuar pendente | Estimativa inicial | Quando aconselhar |
+| --- | --- | --- | ---: | --- |
+| Básica | Ajuste pequeno e local com teste focado. | Backend, remoto, autorização ampla, regressão e demais ações. | 30–90 min | Somente item trivial e não sensível. |
+| Intermediária | Básica + problemas principais, contrato existente e testes proporcionais. | Cross-tenant, remoto, regressão completa e outras ações. | 2–6 h | Mínimo para item relevante de baixo ou médio risco. |
+| Avançada | Intermediária + ações relacionadas, autorização, negativas, cross-tenant e remoto autorizado. | Fechamento global e itens fora do recorte. | 1–2 dias | Auth, RLS, migrations, segurança e dados sensíveis. |
+| Completa | Avançada + todas as pendências, regressão e provas finais dos três lados. | Somente bloqueios externos e itens fora do recorte. | 2–5 dias | Obrigatória para declarar integração ou tela concluída. |
+
+**Intermediária é o MÍNIMO RECOMENDADO apenas para risco baixo ou médio.**
+Autenticação, RLS (regras de acesso no banco), autorização, dados sensíveis,
+arquivos privados e isolamento entre instituições exigem Avançada ou Completa.
+Somente Completa pode sustentar conclusão integral e apenas com Flutter,
+Supabase e teste ponta a ponta comprovados. Pacote parcial nunca promove uma
+ação para “verified-e2e”.
+
+### Temas gerais integrados e nível mínimo aconselhado
+
+| ID | Tema | Mínimo | ETA inicial | Motivo |
+|---|---|---|---:|---|
+| INT-GEN-001 | Inventário de telas, ações e ambientes | Intermediária | 2–6 h | Define o recorte real antes da correção. |
+| INT-GEN-002 | Cadeia Flutter até banco/Storage | Avançada | 1–2 d | Precisa rastrear a causa raiz ponta a ponta. |
+| INT-GEN-003 | Drift de migrations e remoto | Completa | 2–5 d | Schema diferente invalida a prova. |
+| INT-GEN-004 | Fakes, fixtures e caminhos produtivos | Avançada | 1–2 d | Um fake pode simular integração inexistente. |
+| INT-GEN-005 | Sessão, autenticação e MFA | Completa | 2–5 d | Segurança transversal e revogação. |
+| INT-GEN-006 | RLS, IDOR e cross-tenant | Completa | 2–5 d | Impede acesso indevido entre instituições. |
+| INT-GEN-007 | Supabase Storage e ciclo de mídia | Completa | 2–5 d | Privacidade, expiração e remoção são inseparáveis; R2 está fora do MVP. |
+| INT-GEN-008 | Tradução de erros e nova tentativa | Avançada | 1–2 d | UI deve refletir corretamente falhas reais. |
+| INT-GEN-009 | Gates Flutter, Supabase e E2E | Completa | 2–5 d | Só a combinação sustenta conclusão. |
+| INT-GEN-010 | Rastreamento, checkpoint e ETA | Intermediária | 2–6 h | Permite retomada sem perder pendências. |
+
+### Nível mínimo por família e ações integradas
+
+O nível abaixo é o mínimo para enfrentar o risco principal. Para declarar uma
+tela integrada concluída, o pacote necessário continua sendo **Completa**.
+
+| screen_id | Ações abrangidas | Mínimo aconselhado | ETA inicial | Motivo principal |
+|---|---|---|---:|---|
+| auth | login, recuperação, redefinição, saída, MFA | Completa | 2–5 d | Auth, sessão revogada e prova remota. |
+| shell | carregar, navegar, contexto, negar, recarregar | Completa | 2–5 d | Contexto e autorização atravessam o produto. |
+| institutions | listar, filtrar, visualizar, criar, editar, ativar/desativar, arquivos, importar, exportar, erro/retry, acesso negado, recarregar | Completa | 2–5 d | Baseline, arquivos, erros e isolamento institucional. |
+| units | listar, criar, editar, status, importar, exportar | Completa | 2–5 d | CRUD, arquivos e escopo institucional. |
+| groups | listar, criar, editar, membros, importar, exportar | Completa | 2–5 d | Membership e arquivos afetam autorização. |
+| people | listar, criar, editar, vínculos, recarregar | Completa | 2–5 d | Identidade, vínculos e dados pessoais. |
+| access_profiles | listar, criar, detalhe, editar, atribuir, excluir | Completa após decisão | 2–5 d | Controle de acesso não admite prova parcial. |
+| access_models | listar, criar, detalhe, editar, duplicar | Completa após decisão | 2–5 d | Modelo de permissão e capabilities. |
+| invites | listar, criar, detalhe, reenviar, revogar | Avançada | 1–2 d | Token, expiração e revogação remota. |
+| activities | listar, criar, detalhe, editar, publicar, avaliar | Completa | 2–5 d | Publicação e avaliação persistentes. |
+| assessments | lançar, diário, fechar, reabrir, detalhe | Completa | 2–5 d | Integridade de notas e autorização. |
+| students | listar, vincular, transferir, editar, revogar | Completa após decisão | 2–5 d | Vínculos de crianças e cross-tenant. |
+| attendance | painel, criar, marcar, corrigir, concluir, exportar | Avançada | 1–2 d | Commands, idempotência e exportação. |
+| daily_routine | listar, criar, editar, aplicar, publicar | Completa | 2–5 d | Aplicação/publicação e persistência. |
+| agenda | calendário, criar, detalhe, editar, solicitar, permissões | Completa após decisão | 2–5 d | Permissões e contrato ainda abertos. |
+| chat | conversas, abrir, enviar, editar, anexar, recibos, revogar | Completa | 2–5 d | Mensagens, mídia, realtime e revogação. |
+| notices | listar, criar, editar, agendar, publicar, arquivar | Completa | 2–5 d | Agendamento e publicação server-side. |
+| forms_authoring | listar, criar, overview, editar, publicar, testar | Completa | 2–5 d | Editor, versão e publicação. |
+| forms_responses | monitorar, responder, listar, detalhe, exportar | Completa | 2–5 d | Respostas, autorização e exportação. |
+| forms_files | upload, resolver, baixar, expirar, excluir | Completa | 2–5 d | Arquivos privados e ciclo integral. |
+| acontece | feed, criar, publicar, remover | Completa após decisão | 2–5 d | Mídia em Supabase Storage privado, audiência e publicação; R2 está fora do MVP. |
+| agora | visualizar, criar, publicar, expirar | Completa após decisão | 2–5 d | Expiração e audiência server-side. |
+| momentos | visualizar, criar, publicar, remover | Completa após decisão | 2–5 d | Mídia, audiência e remoção. |
+| principal_profile | Para Você, perfil, editar | Completa após decisão | 2–5 d | Dados pessoais e escopo familiar. |
+| child_safety | listar, criança, criar, editar, suspender | Completa | 2–5 d | Proteção infantil e dados sensíveis. |
+| health_care | listar, criar, detalhe, editar | Completa | 2–5 d | Dados de saúde exigem prova total. |
+| medication | listar, criar, detalhe, editar, evidência | Completa após decisão | 2–5 d | Saúde, auditoria e decisão jurídica. |
+| imports | hub, criar, upload, preview, confirmar, status, baixar | Completa | 2–5 d | Jobs, arquivos e idempotência. |
+| profile_files | importar, preview, confirmar, status, exportar, baixar | Completa | 2–5 d | Arquivos privados e autorização. |
+| audit | listar, filtrar, detalhe, exportar | Avançada | 1–2 d | Sanitização e trilha de auditoria. |
+| support | criar, tabela, kanban, detalhe, responder, encerrar | Completa | 2–5 d | Conversa, status e permissão. |
+| account | perfil, configurações, tema, MFA, sessões, sair | Completa | 2–5 d | Sessões e segurança da conta. |
+| catalog | listar, validar, sincronizar, publicar | Intermediária | 2–6 h | Tema de engenharia; publicar eleva o risco. |
+| plans | listar, criar, editar, ativar, atribuir | Completa após decisão | 2–5 d | Ativação, cobrança e atribuição. |
+| meal_plans | listar, criar, editar, modelos, publicar | Completa após decisão | 2–5 d | Publicação e audiência institucional. |
+| internal_users | listar, criar, editar, suspender, MFA | Completa | 2–5 d | Privilégio interno, MFA e auditoria. |
+| error_pages | 403, 404, 409, 500, 503, tentar novamente | Avançada | 1–2 d | Precisa refletir erros reais sem vazamento. |
+
+## 4. Ordem obrigatória de execução
+
+### Fase 0 — congelamento e inventário
+
+1. Registrar branch, commit base, worktree, alterações concorrentes e ambiente.
+2. Reconciliar rotas/menu com as 37 famílias abaixo.
+3. Reconciliar repositories produtivos/fakes e projeto Supabase local/remoto.
+4. Registrar migrations locais/remotas, funções Edge e avisos de segurança.
+5. Atualizar estados dos três rastreadores antes de corrigir.
+
+### Fases 1 a 8
+
+1. Fundação geral: build, analyzer, shell, sessão, migrations e gates globais.
+2. Identidade/autorização: Auth, MFA, contexto, membership e acesso cruzado.
+3. Cadastros estruturais: Instituições, Unidades, Grupos, Pessoas, perfis e convites.
+4. Operação: Atividades, Avaliações, Alunos, Assiduidade, Rotina e Agenda.
+5. Comunicação: Chat, Avisos, Formulários, Acontece, Agora e Momentos.
+6. Cuidado: Segurança infantil, Saúde e Medicação.
+7. Plataforma: importações, arquivos, auditoria, suporte, conta, catálogo e `/dev`.
+8. Fechamento: E2E completo, cross-tenant, regressão, advisors, documentação e ETA.
+
+Não avançar uma família como “concluída” por conveniência. Um bloqueio deve ser
+registrado; ações independentes seguintes podem avançar sem apagar o bloqueio.
+
+## 5. Pendências gerais integradas
+
+| ID | Estado | Pendência | Fechamento exigido | ETA |
+|---|---|---|---|---:|
+| INT-GEN-001 | `not-reviewed` | Fixar inventário único de rotas, menus, flags e telas `/dev`; o snapshot tinha 79 rotas normais, 96 `/dev` e 42 caminhos `/dev` capazes de alcançar Supabase. | Reextração no HEAD, mapa das 37 famílias e tripwires de zero chamada produtiva em `/dev`. | 1–2 d |
+| INT-GEN-002 | `not-reviewed` | Mapear cada um dos 190 `action_id` ao método Flutter e ao contrato Supabase real. | Tabela por ação: widget/controller → repository → RPC/query/Edge → RLS/Storage → auditoria/reload. | 2–3 d |
+| INT-GEN-003 | `blocked-supabase` | Reconciliar 156 migrations canônicas + 156 espelhadas, ledger local 148 e remoto observado 103. | Nomes/hashes iguais, reset limpo autorizado, ledger e catálogo convergentes e ambiente remoto classificado. | 1–3 d |
+| INT-GEN-004 | `blocked-supabase` | O banco local usado na revisão está contaminado para reprodutibilidade. | Stack descartável autorizada, fixtures sintéticas registradas e nenhuma definição fora do ledger. | 0,5–1 d |
+| INT-GEN-005 | `not-reviewed` | Eliminar caminhos produtivos com fake, fixture, dados demo ou callback vazio. | Source guards, wiring tests e E2E por caminho produtivo; `/dev` permanece somente local. | 1–2 d |
+| INT-GEN-006 | `blocked-supabase` | Provar login, recovery/reset, refresh/logout, MFA/AAL2, membership revogada e troca de tenant. | Sessão válida/inválida, callback, downgrade, revogação e cache limpo no ambiente autorizado. | decisão 0,5 d + 1–2 d |
+| INT-GEN-007 | `not-reviewed` | Provar IDOR/BOLA e isolamento cross-tenant em leituras, escritas e arquivos. | Matriz A/B, sem capability, suspenso, revogado e ID adulterado por domínio. | 2–4 d |
+| INT-GEN-008 | `blocked-supabase` | Classificar os 207 achados remotos de segurança e 505 de desempenho. | Triagem nominal: 50 RLS sem policy, 156 `SECURITY DEFINER` executáveis por `authenticated`, 1 proteção de senha vazada, 128 FKs sem índice e 377 índices não usados. | 2–4 d |
+| INT-GEN-009 | `blocked-supabase` | Validar RLS, grants, views, RPCs, `search_path`, Data API e revogação dinâmica. | ACL efetiva por objeto, policies por operação e negativos reais com SQLSTATE estável. | 3–5 d |
+| INT-GEN-010 | `blocked-supabase` | Validar Edge Functions: `verify_jwt`, CORS, métodos, limits, headers, rate limit e mensagens públicas. | Deno/config tests por função e deploy no ambiente autorizado. | 2–3 d |
+| INT-GEN-011 | `blocked-supabase` | Fechar lifecycle de Storage/arquivos sem expor bucket/path ou remint após revogação/expiração. | Upload, checksum, preview, confirmação, status, ticket curto, reuso negado, retenção e cleanup. | 3–5 d |
+| INT-GEN-012 | `blocked-supabase` | Access Profile Files permite riscos em `file_complete`, `file_job`, import assinado e DTO interno. | Gateway worker-only aprovado; somente export autorizado/não expirado pode gerar ticket sanitizado. | decisão 1 d + 3–5 d |
+| INT-GEN-013 | `blocked-supabase` | Forms F5, responses, autosave, files/media e download protegido não formam closure produtivo. | Migration/RPC no ledger, composição segura, Storage privado e pgTAP/Deno/Dart/E2E. | 4–7 d |
+| INT-GEN-014 | `not-reviewed` | Padronizar erros Supabase/Edge no Flutter sem vazar detalhes. | Matriz SQLSTATE/PostgREST/Edge, correlation ID seguro e retry somente idempotente. | 1–2 d |
+| INT-GEN-015 | `not-reviewed` | Reexecutar gates completos depois da integração atual, não inferir de checkpoints. | Analyzer/testes Flutter, lint/pgTAP, Deno, Advisors, secrets scan e diff-check datados. | 1–2 d |
+| INT-GEN-016 | `not-reviewed` | Provar persistência, reload/read-after-write, auditoria e cleanup em cada mutação. | UI, banco/Storage e nova sessão convergem; órfãos e fixtures removidos pelo ledger sintético. | 2–4 d |
+| INT-GEN-017 | `not-reviewed` | Manter contribuição Flutter separada até a passagem do CReview. | Estado FLU por `action_id`, referência de teste/rota e blocker visual/funcional sem promoção automática. | 1 d documental + execução Flutter |
+| INT-GEN-018 | `not-reviewed` | Manter ETA por ação/família com dependências e bloqueios explícitos. | Atualização ao pausar e após cada fechamento. | contínuo |
+| INT-GEN-019 | `regressed` | Reconciliar 199 PNGs rastreados alterados fora de `failures/` (173 M + 26 D), 72 PNGs rastreados em `failures/`, 93 PNGs não rastreados e 1.564 artefatos sob `failures/`. | Inventário por família, comparação HEAD/current e inspeção individual; nenhum `failures/` pode virar baseline. | 40 h Flutter |
+| INT-GEN-020 | `blocked-decision` | Forms editor/response, Access Extended, Imports parciais, Medication, Agenda, Plans e usuários internos ainda não têm closure integrado aprovado. | Decisão canônica, implementação dos dois lados e negativos antes de qualquer habilitação produtiva. | externo + ETAs das famílias |
+| INT-GEN-021 | `regressed` | Catálogo 1A foi commitado, mas o relatório do HEAD ainda registra 8 fingerprints; fontes preparadas e não commitadas reduzem a 2. | Revalidar o HEAD final, integrar apenas os 6 ajustes mecânicos aprovados e decidir os 2 contratos Forms sem promover API por conveniência. | 6 h Flutter + decisão Forms |
+| INT-GEN-022 | `blocked-supabase` | Lotes Flutter recentes estão local-green ou fail-closed, mas nenhum executou clique → backend remoto → reload com negativos e cross-tenant. | Executar prova vertical no ambiente autorizado por cada um dos 202 IDs normativos. | 202 ações; ver ETA consolidado |
+
+### 5.1. Snapshot de autoridade e evidência — 2026-08-26
+
+| Camada | Fato consolidado | Limite integrado |
+|---|---|---|
+| HEAD documental | `447ac02c` observado na abertura desta passagem; os arquivos de rastreamento estavam untracked. | Revalidar se o HEAD ou worktree mudar; preservar alterações concorrentes. |
+| Filesystem | 156 migrations canônicas e 156 espelhadas. | Igualdade de contagem não prova igualdade de hashes. |
+| Ledger local | 148 versões, máximo `20260825180500`; definições posteriores foram instaladas fora do ledger. | Banco local contaminado; não é prova reprodutível. |
+| Remoto `coelo` | 103 versões observadas, máximo `20260821200000`; acesso foi somente leitura. | Zero push, deploy, migration, repair ou E2E remoto nesta revisão. |
+| S1 local | 19 arquivos pgTAP executados; todos os 402 testes passaram; lint local terminou com zero erro. | Resultado local em banco contaminado, sem implantação. |
+| Edge local | Unit-B, Forms F3/F4 e `circular-media` tiveram hardenings/testes locais focados. | Sem deploy, Storage real ou fluxo Flutter-remoto comprovado. |
+| Advisors | 207 achados de segurança e 505 de desempenho no snapshot remoto. | Baseline histórico; precisa reexecução e classificação por objeto. |
+| E2E | Zero ação `verified-e2e`. | Não existe `ready-for-e2e` automático por combinação de dois estados locais. |
+| Flutter HEAD | `447ac02c`; 19 commits desde `9e3c9622`; evidência recente por fatias, não suíte/E2E global. | Snapshots e fontes preparadas não commitadas são evidência auxiliar, nunca estado do HEAD. |
+| Visual Flutter | Support 54/54 + paginação 15/15; Attendance 47/47 + matrix 9/9 + DEV 4/4; sem execução golden nesses lotes. | Cobertura local não resolve backend fail-closed, 199 PNGs rastreados divergentes nem `failures/`. |
+| Rastreador Supabase vivo | SHA-256 `710C85B98318EF813552EE142DD0B3EA1613CE9CC8CC30E7A85020BD513F54FD`; 206 linhas de ação e 206 IDs únicos no checkpoint 21. | Evidência local; nenhum deploy, mutation remota ou E2E foi inferido desse hash. |
+| Reconciliação nominal | 37 `screen_id`; 201 `action_id` normativos comparados entre Supabase e o conjunto integrado: zero ausente e zero extra. | Os cinco IDs Flutter-only de shell elevam o rastreador Flutter a 206, mas continuam fora do denominador integrado conforme 7.3. |
+
+### 5.2. Alinhamento com a tarefa Final Revisão Supabase
+
+Handoff read-only recebido da tarefa
+`01a03a60-2c1b-7f72-9235-b83cddeee63e` em 2026-08-26:
+
+- os Markdown trabalhados por essa frente foram
+  `docs/reviews/coelo-supabase-pendencias.md` e, em uma fase autorizada anterior,
+  este rastreador integrado; nenhum arquivo foi editado durante o alinhamento;
+- não houve mudança posterior de estado por `screen_id` ou `action_id`; as
+  adições recentes foram metodológicas: uso obrigatório do plugin oficial
+  `@Supabase`, quatro níveis de correção, recomendações por tema/família e
+  histórico retomável;
+- permanecem `local-green` somente `institutions/*`, `activities/*` e
+  `attendance.dashboard/create/mark/correct/finish`; os grupos `audited`,
+  `fail-closed` e `blocked-decision` continuam exatamente os enumerados na
+  contribuição Supabase da seção 7;
+- filesystem, ledger, remoto, pgTAP, lint e Advisors permanecem nos valores da
+  seção 5.1; não houve push, deploy, migration, repair ou teste remoto novo;
+- Storage, Edge, Access Profile Files, Forms, segurança cross-tenant e os
+  contratos sob decisão continuam abertos;
+- a leitura cruzada encontrou zero diferença entre os 201 IDs Supabase e os
+  201 IDs normativos integrados. Não existe evidência para promover qualquer
+  ação a `ready-for-e2e`, `verified-e2e`, `remote-green` ou `done`.
+
+Este alinhamento é evidência documental de consistência, não prova funcional. A
+próxima atualização deve capturar novamente HEAD, hashes e estado remoto antes
+de reutilizar estas contagens.
+
+## 6. Matriz controladora por tela e ação
+
+Os estados abaixo são deliberadamente conservadores. Nenhuma família está
+declarada concluída no snapshot inicial de 2026-08-26.
+
+| Ordem | `screen_id` | Telas/subtelas e ações | Flutter (snapshot; CReview revalida) | Supabase | Integração | Geral |
+|---:|---|---|---|---|---|---|
+| 1 | `auth` | login, recuperar, redefinir, logout, MFA | `audited` | misto: `audited`/`blocked-decision` | `blocked-supabase` | aberto |
+| 2 | `shell` | home, menu, contexto, sem permissão, reload | `audited` | `audited` | `not-reviewed` | aberto |
+| 3 | `institutions` | listar, filtrar, criar, editar, status, reload | `local-green` | `local-green` | `not-reviewed` | aberto |
+| 4 | `units` | listar, filtrar, criar, editar, status, erro, acesso negado, recarregar, importar, exportar | misto: `local-green`/`audited` | `audited`/`fail-closed` | `blocked-supabase` | aberto |
+| 5 | `groups` | listar, criar, editar, membros, importar, exportar | misto: `local-green`/`audited` | `fail-closed` | `blocked-supabase` | aberto |
+| 6 | `people` | listar, criar, editar, vínculos, reload | misto: `local-green`/`audited` | `fail-closed` | `blocked-supabase` | aberto |
+| 7 | `access_profiles` | listar, criar, detalhe, editar, atribuir, excluir | misto: `audited`/`blocked-decision` | `fail-closed` | misto: `blocked-supabase`/`blocked-decision` | aberto |
+| 8 | `access_models` | listar, filtrar, criar, detalhe, editar, duplicar | misto: `audited`/`blocked-decision` | `fail-closed` | misto: `blocked-supabase`/`blocked-decision` | aberto |
+| 9 | `invites` | listar, criar, detalhe, reenviar, revogar | `local-green` | `local-green` | `blocked-supabase` | dois lados locais; migration ausente no remoto e sem delivery/aceite Auth ou E2E |
+| 10 | `activities` | listar, criar, detalhe, editar, publicar, avaliação | `local-green` | `local-green` | `blocked-supabase` | aberto |
+| 11 | `assessments` | lançar, diário, fechar, reabrir, detalhe | `audited` | `local-green` | `blocked-supabase` | backend 85/85; Flutter, reset, remoto e E2E abertos |
+| 12 | `students` | listar, vincular, transferir, editar, revogar | misto: `local-green`/`blocked-decision` | `fail-closed` | misto: `blocked-supabase`/`blocked-decision` | aberto |
+| 13 | `attendance` | dashboard, criar, marcar, corrigir, concluir, exportar | misto: `local-green`/`audited` | misto: `local-green`/`fail-closed` | misto: `not-reviewed`/`blocked-supabase` | aberto |
+| 14 | `daily_routine` | listar, criar, editar, aplicar, publicar | `local-green` | `fail-closed` | `blocked-supabase` | aberto |
+| 15 | `agenda` | ver, criar, detalhe, editar, solicitar, permissões | `blocked-decision` | `blocked-decision` | `blocked-decision` | aberto |
+| 16 | `chat` | listar, abrir, enviar, editar, anexar, recibos, revogar | `audited` | `audited` | `not-reviewed` | aberto |
+| 17 | `notices` | listar, criar, editar, agendar, publicar, arquivar | `audited` | `audited` | `not-reviewed` | aberto |
+| 18 | `forms_authoring` | listar, criar, overview, editar, publicar, testar | misto: `local-green`/`audited`/`blocked-decision` | `fail-closed` | misto: `blocked-supabase`/`blocked-decision` | aberto |
+| 19 | `forms_responses` | monitorar, responder, listar, detalhe, exportar | misto: `local-green`/`audited` | `fail-closed` | `blocked-supabase` | aberto |
+| 20 | `forms_files` | upload, resolver, baixar, expirar, excluir | misto: `local-green`/`audited` | `fail-closed` | `blocked-supabase` | aberto |
+| 21 | `acontece` | feed, criar, publicar, remover | `blocked-decision` | `blocked-decision` | `blocked-decision` | aberto |
+| 22 | `agora` | visualizar, criar, publicar, expirar | `blocked-decision` | `blocked-decision` | `blocked-decision` | aberto |
+| 23 | `momentos` | visualizar, criar, publicar, remover | `blocked-decision` | `blocked-decision` | `blocked-decision` | aberto |
+| 24 | `principal_profile` | Para Você, ver perfil, editar perfil | `blocked-decision` | `blocked-decision` | `blocked-decision` | aberto |
+| 25 | `child_safety` | lista, criança, criar, editar, suspender | `audited` | `audited` | `not-reviewed` | aberto |
+| 26 | `health_care` | listar, criar, detalhe, editar | misto: `local-green`/`blocked-decision` | `fail-closed` | misto: `blocked-supabase`/`blocked-decision` | aberto |
+| 27 | `medication` | listar, criar, detalhe, editar, evidência | `blocked-decision` | `blocked-decision` | `blocked-decision` | aberto |
+| 28 | `imports` | listar, criar, upload, preview, confirmar, status, baixar | `audited` | `fail-closed` | `blocked-supabase` | aberto |
+| 29 | `profile_files` | importar, preview, confirmar, status, exportar, baixar | `audited` | `fail-closed` | `blocked-supabase` | aberto |
+| 30 | `audit` | listar, filtrar, detalhe, exportar | `audited` | `local-green` | `blocked-supabase` | backend local comprovado; Flutter, remoto e E2E abertos |
+| 31 | `support` | criar, tabela, kanban, detalhe, responder, encerrar | misto: `local-green`/`audited` | `fail-closed` | `blocked-supabase` | aberto |
+| 32 | `account` | perfil, configurações, tema, MFA, sessões, logout | `audited` | `fail-closed` | `blocked-supabase` | aberto |
+| 33 | `catalog` | listar, validar, sincronizar, publicar | misto: `local-green`/`regressed`/`blocked-decision` | `blocked-decision` | `blocked-decision` | aberto |
+| 34 | `plans` | listar, criar, editar, ativar, atribuir | `blocked-decision` | `blocked-decision` | `blocked-decision` | aberto |
+| 35 | `meal_plans` | listar, criar, editar, modelos, publicar | `blocked-decision` | `blocked-decision` | `blocked-decision` | aberto |
+| 36 | `internal_users` | listar, criar, editar, suspender, MFA | `blocked-decision` | `blocked-decision` | `blocked-decision` | aberto |
+| 37 | `error_pages` | 403, 404, 409, 500, 503, retry | `audited` | `audited` | `not-reviewed` | aberto |
+| 38 | `locations` | diretório, criar/editar, detalhe/vínculos e agendamento | `not-reviewed` | `not-reviewed` | `not-reviewed` | aberto |
+
+Os `action_id` oficiais de cada linha estão repetidos literalmente na seção 7.1.
+O CReview deve atualizar somente a contribuição Flutter, sem renomear IDs nem
+promover o estado integrado por evidência de um único lado.
+
+### 6.1. Matriz decisória completa por tela, subtela e ação
+
+Esta matriz contém as **219 ações rastreadas**: 214 ações normativas integradas e
+cinco gates Flutter do shell. Ela é decisória, não evidência de execução. As
+colunas Básica, Intermediária, Avançada e Completa descrevem pacotes cumulativos;
+nenhum preenchimento promove estado. Para os cinco gates do shell, a coluna
+Supabase representa a pré-condição transversal de sessão/contexto, sem inventar
+RPC ou tabela própria.
+
+| Ordem | Tela/subtela | Ação | Pendência Flutter | Pendência Supabase | Pendência integrada | Estado Flutter | Estado Supabase | Estado integrado | Básica | Intermediária | Avançada | Completa | Nível aconselhado | Estimativa | Evidência para conclusão |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---: | --- |
+| 1 | `auth` | `auth.login` | Login e bootstrap por `session_id` passaram localmente; falta implantação e prova produtiva. | Replay Auth-only e lifecycle local passaram; ledger produtivo não recebeu o pacote. | Flutter/backend locais têm evidência, mas deploy e E2E continuam abertos. | `local-green` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | replay produtivo 1–2 d + E2E 0,5–1 d | Login válido/inválido, sessão/contexto pelo mesmo `session_id`, vínculo/revogação/tenant A/B, nenhum dado pré-auth, deploy transacional, reload e E2E remoto. |
+| 1 | `auth` | `auth.logout` | Logout real limpa estado local; falta prova produtiva. | Lifecycle local provou logout, rotação e recusa de tokens revogados. | Dois lados estão locais; drift do ledger impede deploy/E2E. | `local-green` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | replay produtivo 1–2 d + E2E 0,5–1 d | Logout, voltar/link direto sem dado anterior, refresh/access token revogados negados e E2E remoto datado. |
+| 1 | `auth` | `auth.mfa` | O gateway Flutter reduz `onAuthStateChange` a um booleano de sessão; 15/15 testes do pacote confirmam esse contrato atual, mas ele não preserva evento, AAL atual/próximo nem downgrade para conduzir o desafio MFA. | Owner com MFA obrigatório já é decisão canônica e várias RPCs exigem `has_mfa_aal2()`; OQ-006 ainda deixa demais perfis privilegiados em aberto e falta provar cobertura por ação, MFA recente/step-up e revogação. | Falta contrato único para desafio, refresh, downgrade, revogação e bloqueio antes de qualquer dado protegido; o cliente hoje não consegue satisfazer de forma guiada os gates AAL2 existentes. | `audited` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | decisão 0,5 d + implementação 1–2 d + E2E 1 d | OQ-006/OQ-015/OQ-016; documentação oficial exige avaliar `currentLevel`/`nextLevel`, desafiar quando `aal1` pode subir para `aal2` e atualizar sessão após verify/unenroll; provar AAL1 negado/AAL2 permitido em cada ação sensível, sessão e vínculo revogados, downgrade, tenant A/B, reload e nenhum dado antes da autorização. |
+| 1 | `auth` | `auth.recover` | `f280e291` confina recovery ao reset e nega Home/rotas protegidas/startup/runtime sem contexto. | Solicitação neutra, Mailpit, callback e link de uso único passaram no replay local. | Dois lados estão locais; delta fora de escopo, deploy e E2E seguem bloqueados. | `local-green` | `local-green` | `blocked-supabase` | Guard e negativos concluídos; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | escopo local pendente + replay produtivo 1–2 d + E2E | Recovery confinada, auto-refresh, email/link real, sessão inválida/revogada, não enumeração, deploy e E2E remoto. |
+| 1 | `auth` | `auth.reset` | Recovery nunca autentica o shell; voltar para login revoga/limpa recovery e falha fechado se logout falhar. | Reset, expiração/reuso, logout e senha antiga recusada passaram localmente. | Dois lados estão locais; delta fora de escopo, deploy e E2E seguem bloqueados. | `local-green` | `local-green` | `blocked-supabase` | Guard e negativos concluídos; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | escopo local pendente + replay produtivo 1–2 d + E2E | Token inválido/expirado/reutilizado, auto-refresh, senha antiga negada/nova aceita, logout, 200%, deploy e E2E remoto. |
+| 2 | `shell` | `shell.load` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 6–12 h de backend + Flutter/E2E proporcional | Sessão válida/inválida; pessoa e vínculo ativos; revogação/downgrade; tenant A/B; nenhum dado antes da autorização. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 2 | `shell` | `shell.navigate` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 6–12 h de backend + Flutter/E2E proporcional | Sessão válida/inválida; pessoa e vínculo ativos; revogação/downgrade; tenant A/B; nenhum dado antes da autorização. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 2 | `shell` | `shell.reload` | Ação inventariada; falta prova Flutter atual completa. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 6–12 h de backend + Flutter/E2E proporcional | Sessão válida/inválida; pessoa e vínculo ativos; revogação/downgrade; tenant A/B; nenhum dado antes da autorização. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 2 | `shell` | `shell.switch-context` | Ação inventariada; falta prova Flutter atual completa. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 6–12 h de backend + Flutter/E2E proporcional | Sessão válida/inválida; pessoa e vínculo ativos; revogação/downgrade; tenant A/B; nenhum dado antes da autorização. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 2 | `shell` | `shell.unauthorized` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 6–12 h de backend + Flutter/E2E proporcional | Sessão válida/inválida; pessoa e vínculo ativos; revogação/downgrade; tenant A/B; nenhum dado antes da autorização. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 3 | `institutions` | `institutions.access-denied` | Ação inventariada; falta prova Flutter atual completa. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `local-green` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 3 | `institutions` | `institutions.create` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `local-green` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 3 | `institutions` | `institutions.detail` | Ação inventariada; falta prova Flutter atual completa. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `local-green` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 3 | `institutions` | `institutions.edit` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `local-green` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 3 | `institutions` | `institutions.error` | Ação inventariada; falta prova Flutter atual completa. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `local-green` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 3 | `institutions` | `institutions.export` | A superfície Flutter permanece indisponível por segurança; nenhuma exportação funcional ou E2E foi comprovada. | O wrapper remoto executável por `authenticated` alcança `app_private.superadmin_request_institution_export`, que referencia `institution_directory.slug` e `updated_at`, colunas ausentes da view; runtime/lint falha com SQLSTATE `42703`. | O contrato remoto está quebrado e o cliente deve permanecer fail-closed até correção forward-only, autorização, arquivos reais e E2E. | `audited` | `fail-closed` | `blocked-supabase` | Reproduzir `42703` e manter integração indisponível; não fecha ação. | Básica + corrigir projeção/contrato sem confiar em filtros, com autorização e negativas locais. | Intermediária + tenant A/B, vínculo revogado, limites, arquivo real, expiração e remoto autorizado. | Avançada + regressão, Advisors, auditoria, cleanup e E2E. | Completa | 6–12 h local + remoto/E2E separado | View e função compatíveis; ator/tenant/ownership; filtros/IDs adulterados; arquivo real; DTO sem path; expiração/revogação; cleanup sem órfão; remoto autorizado e E2E. |
+| 3 | `institutions` | `institutions.files` | Ação inventariada; falta prova Flutter atual completa. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `local-green` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 3 | `institutions` | `institutions.filter` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `local-green` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 3 | `institutions` | `institutions.import` | A superfície Flutter permanece indisponível por segurança; nenhuma importação funcional ou E2E foi comprovada. | O wrapper remoto executável por `authenticated` alcança `app_private.superadmin_confirm_institution_import`, cujo update usa `created_count` e `rejected_count` de forma ambígua; runtime/lint falha com SQLSTATE `42702`. | O contrato remoto está quebrado e o cliente deve permanecer fail-closed até correção forward-only, autorização, arquivo real e E2E. | `audited` | `fail-closed` | `blocked-supabase` | Reproduzir `42702` e manter integração indisponível; não fecha ação. | Básica + qualificar variáveis/colunas, contrato, autorização e negativas locais. | Intermediária + tenant A/B, vínculo revogado, idempotência, arquivo real e remoto autorizado. | Avançada + regressão, Advisors, auditoria, cleanup e E2E. | Completa | 6–12 h local + remoto/E2E separado | Contagens persistidas sem ambiguidade; ator/tenant/ownership; negações; replay; arquivo real; reload; auditoria; remoto autorizado e E2E. |
+| 3 | `institutions` | `institutions.list` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `local-green` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 3 | `institutions` | `institutions.reload` | Ação inventariada; falta prova Flutter atual completa. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `local-green` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 3 | `institutions` | `institutions.status` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `local-green` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 3 | `institutions` | `institutions.locations-map` | Catálogo institucional, mapa, marcadores e visibilidade. Falta fechamento Flutter nominal. | Contrato, autorização, coexistência legada e prova SQL/E2E específicos ainda abertos. | Contrato local/proposta não comprova E2E. | `not-reviewed` | `not-reviewed` | `not-reviewed` | RED nominal. | Contrato e testes locais. | Autorização e tenant A/B. | Regressão, auditoria, reload e E2E. | Completa | a estimar após recorte | Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. |
+| 4 | `units` | `units.create` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `audited` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 4 | `units` | `units.edit` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `audited` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 4 | `units` | `units.error` | Estado de erro e recuperação passaram no diretório local; o analyzer não possui mais erros de Units. | Contrato backend de falha foi inventariado, mas o estado produtivo e sua recuperação não têm E2E/remoto. | UI local está verde; gateway produtivo permanece indisponível e falta provar erro tipado/minimizado ponta a ponta. | `local-green` | `audited` | `blocked-supabase` | Reproduzir falha + teste local; não fecha ação. | Básica + erro tipado, autorização e ausência de dados antes da permissão. | Intermediária + tenant A/B, sessão revogada, ID adulterado e retry seguro. | Avançada + Flutter/E2E, remoto autorizado, auditoria e cleanup. | Completa | 2–4 h de backend/E2E proporcional | Erro UI/retry local; depois erro backend tipado, nenhum dado pré-autorização, tenant A/B, sessão revogada, ID adulterado e retry sem duplicação/vazamento. |
+| 4 | `units` | `units.export` | HARDEN-EXPORT local: 45/45; gateway usa `request_export` → `status` → `download`, rejeita snapshot/DTO/URL/TTL inválidos e mantém single-flight/retry/opener/busy acessíveis. Produção continua `Unavailable`. | Checkpoint 27: replay, fronteira pós-conclusão, reautorização e delegação interna estão GREEN. Worker direto recebe 403/zero RPC. Unit-export 41/47; seis REDs permanecem: purge, retention/remint, cleanup órfão e três grants legados. | Pacote principal local 7/7 foi concluído, mas não houve configuração de segredo, deploy, composição produtiva ou E2E. `units.export` continua fail-closed e `blocked-supabase`; OQ-032/OQ-034/ADR0019 bloqueiam escopo/autorização. | `blocked-supabase` | `audited` | `blocked-supabase` | Correção local pequena + RED/GREEN focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | pacote principal local concluído; backend residual 6–15 h + 6–10 h remoto autorizado; fechamento import+export 3–5 d | Flutter 45/45 e analyzer focado sem issues. Unit-export 41/47; import hub 22/23; pós-sucesso 4/4; checks verdes. Lint amplo encontrou três resíduos preexistentes (dois `require-await` nos testes e `MAX_BYTES` não usado no hub). Zero E2E. |
+| 4 | `units` | `units.filter` | Busca/filtros, troca para noResults e matriz responsiva fazem parte dos 16/16 testes locais verdes; falta prova produtiva isolada. | Filtros server-side foram inventariados; integração produtiva não possui E2E/remoto. | UI local está verde, mas falta provar allowlist/escopo, filtros adulterados e ausência de cross-tenant no fluxo real. | `local-green` | `audited` | `blocked-supabase` | Teste focado de filtro/noResults; não fecha ação. | Básica + allowlist, escopo backend, autorização e negativas locais. | Intermediária + tenant A/B, filtros/IDs adulterados, paginação e minimização. | Avançada + Flutter/E2E, remoto autorizado, auditoria e cleanup. | Completa | 2–4 h de backend/E2E proporcional | Buscar/limpar/noResults local; depois allowlist, tenant A/B, filtros/IDs adulterados, paginação/minimização, reload e E2E remoto. |
+| 4 | `units` | `units.import` | Adapter Flutter existe, mas a composição candidata foi preservada externamente e revertida; 26/26 testes confirmam o fail-closed produtivo. | D3a/D3c alinharam hub e path; D3d provou concorrência real multi-conexão em banco descartável. Permanecem REDs de membership revogada, retry nulo e objeto órfão quando delete falha. | Backend local avançou, mas cliente segue fail-closed; todo próximo patch material exige migration/RPC/infra de cleanup autorizados. | `blocked-supabase` | `audited` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | migrations membership/retry 2–4 h; cleanup 4–8 h; E 11–19 h | Backup Pacote A: 4 arquivos/27596 bytes/SHA256 `f07da81fff31a55ade80da1a9c101da9b93a785edf0ce27ffcc29d0d6b64ad1f`. D3d concorrência 1/1: create/upload/preview/confirm/retry convergem e divergências são negadas. Cleanup 0/1: job falha auditavelmente, mas objeto permanece se delete falha. Ambiente final sem fixture/banco/dump/processo. Faltam migrations forward, fila/worker idempotente com retry/DLQ, purge objeto-antes-metadados, staging/remoto e E2E. |
+| 4 | `units` | `units.list` | Caller agora entrega `UnitCreateBanner` aos estados recuperáveis; 16/16 testes Units e 5/5 router Access passaram, com 375–1440 e 200%. | Backend local Units passou 180/180, mas diretório produtivo continua com repository indisponível e sem remoto/E2E. | Flutter está local-green; backend produtivo/gateway e prova real continuam bloqueando integração. | `local-green` | `audited` | `blocked-supabase` | Correção local + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + regressão e provas finais Flutter/Supabase/E2E. | Completa | 2–4 h de backend/E2E proporcional | Patch de uma linha; 16/16 Units, 5/5 routers, zero erros no analyzer; depois leitura autorizada/negada, tenant A/B, ID/filtro adulterado, repository produtivo, reload, auditoria e E2E remoto. |
+| 4 | `units` | `units.reload` | Retry/reload e persistência visual fazem parte do lote local verde; falta fluxo produtivo real. | Contrato backend de releitura foi inventariado, sem E2E/remoto. | UI local está verde; gateway indisponível impede comprovar estado persistido após recarregar. | `local-green` | `audited` | `blocked-supabase` | Teste de retry/reload; não fecha ação. | Básica + contrato de releitura, autorização e negativa local. | Intermediária + tenant A/B, sessão revogada, idempotência e persistência. | Avançada + Flutter/E2E, remoto autorizado, auditoria e cleanup. | Completa | 2–4 h de backend/E2E proporcional | Retry local; depois reload reflete estado persistido, tenant A/B, sessão revogada, sem duplicação/cache cruzado/dado obsoleto e E2E remoto. |
+| 4 | `units` | `units.status` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `audited` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 4 | `units` | `units.access-denied` | No estado final `unauthorized`, a UI oculta toolbar, busca, filtros, tabs, alternância, arquivos, criar, Cards/tabela e paginação; mensagem negada é semântica em 375 px/200%. `initial`/`loading` não foram cobertos por essa prova. | Negação backend foi inventariada; superfície produtiva permanece fail-closed e sem remoto/E2E. | Flutter não oferece ações no estado final negado; falta provar ausência de dados/ações antes da resposta, limpeza de cache após success→revogação e negação uniforme real para capability, sessão/vínculo revogado, tenant B, deep link e ID adulterado. | `local-green` | `audited/fail-closed` | `blocked-supabase` | Teste local de acesso negado; não fecha ação. | Básica + nenhum dado pré-autorização e resposta uniforme. | Intermediária + revogação, tenant A/B, ID adulterado, foco/teclado e acesso direto. | Avançada + remoto/E2E, regressão e auditoria. | Completa | 0,5 h Flutter executada; 2–4 h backend/E2E residual | Commit `b7a6f012`; handoff 23/23 e consolidação 25/25 testes verdes; analyzer 0 erros/0 warnings/45 infos. Ainda exige pré-resposta, success→revogação, cache limpo, 768–1440, backend/RLS/grants, cross-tenant e E2E. |
+| 4 | `units` | `units.people-export` | Botão e falso SnackBar removidos no commit `c9b5905b`; ação não aparece. Não há Flutter funcional, callback, job, arquivo ou URL. | Nenhum contrato reutilizável: listagem de Pessoas pode agregar vínculos externos; export de Unidades tem outro domínio; hub atual aceita apenas `units`. | A ausência local evita falso sucesso, mas capability, escopo unitário, colunas/minimização, snapshot/job/Storage, autorização e E2E ainda dependem de decisão e implementação dos dois lados. | `blocked-decision` | `blocked-decision/fail-closed` | `blocked-decision` | Remover falso sucesso + teste; não fecha ação. | Básica + decisão de capability/escopo/colunas e contrato Flutter. | Intermediária + backend local, AAL2, negativos, tenant A/B, arquivos e reload. | Avançada + remoto autorizado, retenção/cleanup, auditoria e E2E. | Completa | 0,5 h fail-closed executada; 18–32 h vertical completa após decisões | RED→GREEN; `unit_form_page_test.dart` 24/24; analyzer/visual/catálogo verdes. Para conclusão: unidade server-derived, ator/capability/AAL2, vínculos minimizados sem contexto B, replay/concorrência, CSV/XLSX real, URL expirada, revogação, cleanup, remoto e E2E. |
+| 4 | `units` | `units.locations-map` | Catálogo e mapa independentes da unidade. Falta fechamento Flutter nominal. | Contrato, autorização, coexistência legada e prova SQL/E2E específicos ainda abertos. | Contrato local/proposta não comprova E2E. | `not-reviewed` | `not-reviewed` | `not-reviewed` | RED nominal. | Contrato e testes locais. | Autorização e tenant A/B. | Regressão, auditoria, reload e E2E. | Completa | a estimar após recorte | Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. |
+| 4 | `units` | `units.copy-institution-location` | Cópia com proveniência, sem sincronização posterior. Falta fechamento Flutter nominal. | Contrato, autorização, coexistência legada e prova SQL/E2E específicos ainda abertos. | Contrato local/proposta não comprova E2E. | `not-reviewed` | `not-reviewed` | `not-reviewed` | RED nominal. | Contrato e testes locais. | Autorização e tenant A/B. | Regressão, auditoria, reload e E2E. | Completa | a estimar após recorte | Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. |
+| 5 | `groups` | `groups.create` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 5 | `groups` | `groups.edit` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 5 | `groups` | `groups.export` | Botão e SnackBar falsos foram removidos; a ação não aparece e não existe gateway/job/arquivo/URL local funcional. | Backend/repository/Storage permanecem indisponíveis e nenhuma prova Supabase nova foi produzida. | A ausência local evita falso sucesso, mas request/status/download, autorização, arquivos reais e E2E continuam bloqueados. | `audited/fail-closed` | `fail-closed` | `blocked-supabase` | RED→GREEN local e suíte do formulário 8/8; não fecha ação. | Básica + contrato/repository, autorização e negativas locais. | Intermediária + job/Storage, tenant A/B, revogação, replay, URL expirada e reload. | Avançada + remoto autorizado, auditoria, retenção/cleanup e E2E. | Completa | 0,5 h Flutter executada; 6–12 h backend + remoto/E2E | Commit `81038c2b`; falso controle ausente em 375 px/200%. Ainda exige repository real, request/status/download, RLS/Auth, tenant A/B, revogação, replay, reload, cleanup, remoto e E2E. |
+| 5 | `groups` | `groups.import` | Botão e SnackBar falsos foram removidos; a ação não aparece e não existe picker/gateway/upload/preview local funcional. | Backend/repository/Storage permanecem indisponíveis e nenhuma prova Supabase nova foi produzida. | A ausência local evita falso sucesso, mas seleção/preview/confirm/retry, autorização, arquivos reais e E2E continuam bloqueados. | `audited/fail-closed` | `fail-closed` | `blocked-supabase` | RED→GREEN local e suíte do formulário 8/8; não fecha ação. | Básica + contrato/repository, autorização e negativas locais. | Intermediária + upload/preview/confirm/retry, tenant A/B, revogação, replay e reload. | Avançada + remoto autorizado, auditoria, cleanup e E2E. | Completa | 0,5 h Flutter executada; 6–12 h backend + remoto/E2E | Commit `81038c2b`; falso controle ausente em 375 px/200%. Ainda exige repository real, picker/upload/preview/confirm/retry, RLS/Auth, tenant A/B, revogação, replay, reload, cleanup, remoto e E2E. |
+| 5 | `groups` | `groups.list` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 5 | `groups` | `groups.members` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 5 | `groups` | `groups.location` | Local catalogado ou pontual e reserva recorrente explícita. Falta fechamento Flutter nominal. | Contrato, autorização, coexistência legada e prova SQL/E2E específicos ainda abertos. | Contrato local/proposta não comprova E2E. | `not-reviewed` | `not-reviewed` | `not-reviewed` | RED nominal. | Contrato e testes locais. | Autorização e tenant A/B. | Regressão, auditoria, reload e E2E. | Completa | a estimar após recorte | Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. |
+| 6 | `people` | `people.create` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 6 | `people` | `people.edit` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 6 | `people` | `people.links` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 6 | `people` | `people.list` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 6 | `people` | `people.reload` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 7 | `access_profiles` | `access-profiles.assign` | Decisão canônica bloqueia a implementação Flutter produtiva. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `blocked-decision` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 7 | `access_profiles` | `access-profiles.create` | Decisão canônica bloqueia a implementação Flutter produtiva. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `blocked-decision` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 7 | `access_profiles` | `access-profiles.delete` | Decisão canônica bloqueia a implementação Flutter produtiva. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `blocked-decision` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 7 | `access_profiles` | `access-profiles.detail` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 7 | `access_profiles` | `access-profiles.edit` | Decisão canônica bloqueia a implementação Flutter produtiva. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `blocked-decision` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 7 | `access_profiles` | `access-profiles.list` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 8 | `access_models` | `access-models.create` | Decisão canônica bloqueia a implementação Flutter produtiva. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `blocked-decision` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 8 | `access_models` | `access-models.detail` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `blocked-decision` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 8 | `access_models` | `access-models.duplicate` | Decisão canônica bloqueia a implementação Flutter produtiva. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `blocked-decision` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 8 | `access_models` | `access-models.edit` | Decisão canônica bloqueia a implementação Flutter produtiva. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `blocked-decision` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 8 | `access_models` | `access-models.filter` | Busca, troca de domínio, status e estado sem resultados existem na UI, mas ainda não possuem prova Flutter isolada de reload, teclado, foco e 200%. | Ação produtiva permanece fail-closed enquanto o repository estendido não integra a composição autorizada. | Falta provar que filtros não ampliam escopo, não vazam modelos de outro tenant e persistem corretamente após reload. | `audited` | `fail-closed` | `blocked-supabase` | Ajuste local e teste focado; não fecha ação. | Básica + contrato de filtro e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + regressão e provas finais Flutter/Supabase/E2E. | Completa após decisão | 1 h Flutter + 2–4 h backend/E2E após decisão | Buscar/limpar/trocar domínio/status; vazio/erro; teclado/foco/200%; filtro e ID adulterados; tenant A/B; reload/persistência; repository produtivo e E2E remoto. |
+| 8 | `access_models` | `access-models.list` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 9 | `invites` | `invites.create` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Backend local aprovado por 60/60 asserts; reset limpo, remoto e efeitos externos reais continuam pendentes. | Flutter e backend estão local-green, mas remoto não contém a migration e faltam delivery/aceite Auth, reload e E2E. | `local-green` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. Evidência backend: 60/60 pgTAP; MFA, tenant A/B, ID oracle, idempotência/versão, outbox e auditoria; faltam entrega/aceite Auth reais e remoto. |
+| 9 | `invites` | `invites.detail` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Backend local aprovado por 60/60 asserts; reset limpo, remoto e efeitos externos reais continuam pendentes. | Flutter e backend estão local-green, mas remoto não contém a migration e faltam delivery/aceite Auth, reload e E2E. | `local-green` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. Evidência backend: 60/60 pgTAP; grants/RLS, MFA, tenant A/B, ID oracle, idempotência/versão, revogação e auditoria; faltam remoto e E2E. |
+| 9 | `invites` | `invites.list` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Backend local aprovado por 60/60 asserts; reset limpo, remoto e efeitos externos reais continuam pendentes. | Flutter e backend estão local-green, mas remoto não contém a migration e faltam delivery/aceite Auth, reload e E2E. | `local-green` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. Evidência backend: 60/60 pgTAP; grants/RLS, MFA, tenant A/B, ID oracle, idempotência/versão, revogação e auditoria; faltam remoto e E2E. |
+| 9 | `invites` | `invites.resend` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Backend local aprovado por 60/60 asserts; reset limpo, remoto e efeitos externos reais continuam pendentes. | Flutter e backend estão local-green, mas remoto não contém a migration e faltam delivery/aceite Auth, reload e E2E. | `local-green` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. Evidência backend: 60/60 pgTAP; MFA, tenant A/B, ID oracle, idempotência/versão, outbox e auditoria; faltam entrega/aceite Auth reais e remoto. |
+| 9 | `invites` | `invites.revoke` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Backend local aprovado por 60/60 asserts; reset limpo, remoto e efeitos externos reais continuam pendentes. | Flutter e backend estão local-green, mas remoto não contém a migration e faltam delivery/aceite Auth, reload e E2E. | `local-green` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. Evidência backend: 60/60 pgTAP; grants/RLS, MFA, tenant A/B, ID oracle, idempotência/versão, revogação e auditoria; faltam remoto e E2E. |
+| 10 | `activities` | `activities.assessment` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 10 | `activities` | `activities.create` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 10 | `activities` | `activities.detail` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 10 | `activities` | `activities.edit` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 10 | `activities` | `activities.list` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 10 | `activities` | `activities.publish` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 10 | `activities` | `activities.location` | Local e reserva explícita da atividade. Falta fechamento Flutter nominal. | Contrato, autorização, coexistência legada e prova SQL/E2E específicos ainda abertos. | Contrato local/proposta não comprova E2E. | `not-reviewed` | `not-reviewed` | `not-reviewed` | RED nominal. | Contrato e testes locais. | Autorização e tenant A/B. | Regressão, auditoria, reload e E2E. | Completa | a estimar após recorte | Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. |
+| 11 | `assessments` | `assessments.close` | Ação inventariada; falta prova Flutter atual completa. | Backend local aprovado por 85/85; migrations locais com espelhos iguais, ausentes no remoto consultado. | Falta Flutter, reset limpo, remoto e E2E; prova local não conclui fechamento integrado. | `audited` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de Flutter/integração + E2E proporcional | Backend 85/85; ainda exige sucesso persistido; sem capability; revogado; tenant A/B; concorrência/versão; ID adulterado; reload; auditoria; remoto e E2E. |
+| 11 | `assessments` | `assessments.detail` | Ação inventariada; falta prova Flutter atual completa. | Backend local aprovado por 85/85; migrations locais com espelhos iguais, ausentes no remoto consultado. | Falta Flutter, reset limpo, remoto e E2E; prova local não conclui detalhe integrado. | `audited` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de Flutter/integração + E2E proporcional | Backend 85/85; ainda exige leitura autorizada/negada; tenant A/B; ID/filtro adulterado; minimização; repository produtivo; reload; remoto e E2E. |
+| 11 | `assessments` | `assessments.entry` | Ação inventariada; falta prova Flutter atual completa. | Backend local aprovado por 85/85; migrations locais com espelhos iguais, ausentes no remoto consultado. | Falta Flutter, reset limpo, remoto e E2E; prova local não conclui lançamento integrado. | `audited` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de Flutter/integração + E2E proporcional | Backend 85/85; ainda exige escrita autorizada/negada; tenant A/B; ID adulterado; concorrência; repository produtivo; reload; auditoria; remoto e E2E. |
+| 11 | `assessments` | `assessments.gradebook` | Ação inventariada; falta prova Flutter atual completa. | Backend local aprovado por 85/85; migrations locais com espelhos iguais, ausentes no remoto consultado. | Falta Flutter, reset limpo, remoto e E2E; prova local não conclui diário integrado. | `audited` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de Flutter/integração + E2E proporcional | Backend 85/85; ainda exige leitura autorizada/negada; tenant A/B; ID/filtro adulterado; paginação; repository produtivo; reload; remoto e E2E. |
+| 11 | `assessments` | `assessments.reopen` | Ação inventariada; falta prova Flutter atual completa. | Backend local aprovado por 85/85; migrations locais com espelhos iguais, ausentes no remoto consultado. | Falta Flutter, reset limpo, remoto e E2E; prova local não conclui reabertura integrada. | `audited` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de Flutter/integração + E2E proporcional | Backend 85/85; ainda exige autorização/capability; revogado; tenant A/B; concorrência/versão; ID adulterado; reload; auditoria; remoto e E2E. |
+| 12 | `students` | `students.edit` | Decisão canônica bloqueia a implementação Flutter produtiva. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `blocked-decision` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 12 | `students` | `students.link` | Decisão canônica bloqueia a implementação Flutter produtiva. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `blocked-decision` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 12 | `students` | `students.list` | A superfície canônica rastreada é read-only e passou 22/22 testes + analyzer focado; 24 legados foram preservados externamente com manifesto idêntico, reduzindo erros globais de 100 para 38 e `student_tracking` de 62 para zero. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Flutter read-only está local-green; gerenciamento não foi adotado, backend continua fail-closed e não existe E2E. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | gerenciamento/backend 2–4 h + Flutter/E2E proporcional após decisão | Recuperação em `C:\Users\adrie\Documents\Coelo-recovery-20260825-final\student-tracking-legacy-20260826-flutter-recovery`; 24 arquivos, 451151 bytes, SHA256 `5417fc9b1ce2d84f5f182ade9c4f3a16d640a83e19399558b68bb79ecbd8cd3a`; provar futuramente leitura autorizada/negada, tenant A/B, ID adulterado, repository produtivo, reload, auditoria e E2E remoto. |
+| 12 | `students` | `students.revoke` | Decisão canônica bloqueia a implementação Flutter produtiva. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `blocked-decision` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 12 | `students` | `students.transfer` | Decisão canônica bloqueia a implementação Flutter produtiva. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `blocked-decision` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 13 | `attendance` | `attendance.correct` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `local-green` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 13 | `attendance` | `attendance.create` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `local-green` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 13 | `attendance` | `attendance.dashboard` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `local-green` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 13 | `attendance` | `attendance.export` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 6–12 h de backend + Flutter/E2E proporcional | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 13 | `attendance` | `attendance.finish` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `local-green` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 13 | `attendance` | `attendance.mark` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `local-green` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 14 | `daily_routine` | `daily-routine.apply` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 14 | `daily_routine` | `daily-routine.create` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 14 | `daily_routine` | `daily-routine.edit` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 14 | `daily_routine` | `daily-routine.list` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 14 | `daily_routine` | `daily-routine.publish` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 15 | `agenda` | `agenda.create` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 15 | `agenda` | `agenda.detail` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 15 | `agenda` | `agenda.edit` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 15 | `agenda` | `agenda.permissions` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 15 | `agenda` | `agenda.request` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 15 | `agenda` | `agenda.view` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 15 | `agenda` | `agenda.location` | Local, disponibilidade e reserva única ou recorrente. Falta fechamento Flutter nominal. | Contrato, autorização, coexistência legada e prova SQL/E2E específicos ainda abertos. | Contrato local/proposta não comprova E2E. | `not-reviewed` | `not-reviewed` | `not-reviewed` | RED nominal. | Contrato e testes locais. | Autorização e tenant A/B. | Regressão, auditoria, reload e E2E. | Completa | a estimar após recorte | Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. |
+| 16 | `chat` | `chat.attach` | Adapter Flutter existe, mas falta prova atual do arquivo privado e da reação a acesso revogado. | Correção local forward-only faz a invalidação derivar a conversa por `message_id`; 43/43 pgTAP e 2/2 Deno verdes, sem aplicação remota. | Backend local corrigido, porém Flutter, ambiente remoto, arquivo real, revogação e E2E continuam abertos. | `audited` | `audited` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 6–12 h de Flutter/remoto/E2E proporcional | Migration `20260826120000_chat_private_broadcast_attachment_hardening`; arquivo sintético real; ator/tenant/ownership; membership revogada; negações; expiração; DTO sem path; cleanup sem órfão; remoto e E2E datados. |
+| 16 | `chat` | `chat.edit` | Ação inventariada; falta prova Flutter atual completa. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 16 | `chat` | `chat.list` | Diretório `/dev`, busca, cursor, mark-read, menu Principal e goldens passaram; total de páginas continua sem contrato. | Adapter Dart passou localmente, mas RPCs esperadas não estão no remoto. | Flutter está local-green; remoto/RLS/E2E continuam bloqueados. | `local-green` | `audited` | `blocked-supabase` | Fixture/testes locais; não fecha ação. | Básica + contrato existente e testes proporcionais. | Intermediária + autorização, negativos, tenant A/B e remoto. | Avançada + regressão, auditoria, reload e E2E. | Completa | backend/E2E separado | Leitura autorizada/negada, tenant A/B, paginação real, minimização, reload e E2E remoto. |
+| 16 | `chat` | `chat.open` | Ordem multi-message, entrada Principal, retorno e goldens passaram localmente. | Membership revogada foi endurecida localmente em pgTAP; remoto continua sem prova. | Flutter está local-green; revogação/cache/reload/remoto/E2E seguem bloqueados. | `local-green` | `audited` | `blocked-supabase` | Teste local proporcional; não fecha ação. | Básica + contrato existente e testes proporcionais. | Intermediária + autorização, negativos, tenant A/B e remoto. | Avançada + regressão, auditoria, reload e E2E. | Completa | remoto/E2E separado | Membership ativa/revogada, tenant A/B, ID adulterado, cache limpo, reload e E2E remoto. |
+| 16 | `chat` | `chat.receipts` | Ação inventariada; falta prova Flutter atual completa. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 16 | `chat` | `chat.revoke` | Falta provar no Flutter a saída da conversa, limpeza de estado/cache e acesso negado após revogação. | RED confirmou que membership revogada mantinha acesso; correção local forward-only agora falha fechada e passou 43/43 pgTAP, sem remoto. | Revogação backend foi corrigida localmente, mas UI, cache/reload, Realtime, remoto e E2E não foram comprovados. | `audited` | `audited` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de Flutter/remoto/E2E proporcional | Membership ativa permite; revogada nega imediatamente; evento Realtime não vaza domínio; cache limpo, acesso direto/ID adulterado negado, reload, auditoria e E2E remoto. |
+| 16 | `chat` | `chat.send` | Envio idempotente e ordem pós-envio passaram localmente. | Adapter Dart passou localmente; RPC/comando remoto não foi comprovado. | Flutter está local-green; autorização, persistência, reload e E2E seguem bloqueados. | `local-green` | `audited` | `blocked-supabase` | Teste local proporcional; não fecha ação. | Básica + contrato existente e testes proporcionais. | Intermediária + autorização, negativos, tenant A/B e remoto. | Avançada + regressão, auditoria, reload e E2E. | Completa | remoto/E2E separado | Enviar/falhar/retry, idempotência, revogação, tenant A/B, reload e E2E remoto. |
+| 17 | `notices` | `notices.archive` | Ação inventariada; falta prova Flutter atual completa. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 17 | `notices` | `notices.create` | Ação inventariada; falta prova Flutter atual completa. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 17 | `notices` | `notices.edit` | Ação inventariada; falta prova Flutter atual completa. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 17 | `notices` | `notices.list` | Ação inventariada; falta prova Flutter atual completa. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 17 | `notices` | `notices.publish` | Ação inventariada; falta prova Flutter atual completa. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 17 | `notices` | `notices.schedule` | Ação inventariada; falta prova Flutter atual completa. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 18 | `forms_authoring` | `forms.create` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 18 | `forms_authoring` | `forms.edit` | Editor integrado adotado somente como componente catalogado; duas referências dormant removidas. 24/24 testes non-golden passaram e Forms caiu de dois erros para zero; rota produtiva não foi habilitada. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Flutter está local-green como componente; autorização, backend, rota produtiva, texto 150%/200% e E2E continuam bloqueados. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend/rota + Flutter/E2E proporcional | 24 testes cobrem autosave/retry, 17 cenários do componente, rota local, quatro dormant, 375 px e comandos acessíveis; faltam 150%/200%, autorização, tenant A/B, reload, auditoria e E2E remoto. |
+| 18 | `forms_authoring` | `forms.list` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 18 | `forms_authoring` | `forms.overview` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 18 | `forms_authoring` | `forms.publish` | Decisão canônica bloqueia a implementação Flutter produtiva. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 18 | `forms_authoring` | `forms.test` | Decisão canônica bloqueia a implementação Flutter produtiva. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 18 | `forms_authoring` | `forms.location-question` | Escolha única ou múltipla; política fixa/dinâmica pendente. Falta fechamento Flutter nominal. | Contrato, autorização, coexistência legada e prova SQL/E2E específicos ainda abertos. | Contrato local/proposta não comprova E2E. | `not-reviewed` | `blocked-decision` | `blocked-decision` | RED nominal. | Contrato e testes locais. | Autorização e tenant A/B. | Regressão, auditoria, reload e E2E. | Completa | a estimar após recorte | Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. |
+| 19 | `forms_responses` | `forms.responses.export` | Fluxo de um XLSX com todas as respostas, erro/retry e entrega autorizada ainda não fechados. | Worker e R2 privado com reautorização/expiração/auditoria pendentes. | Exceção MVP nominal, sem CSV/ZIP/PDF ou exportação por resposta; alias histórico forms.export substituído1:1. | `audited` | `fail-closed` | `blocked-supabase` | RED nominal. | Contrato e XLSX local. | Tenant A/B e entrega autorizada. | Auditoria, revogação, cleanup, reload e E2E. | Completa | a estimar após recorte | Formulário→worker→XLSX→R2 privado→download reautorizado; arquivo válido, expiração, negações e auditoria sem vazamento. |
+| 19 | `forms_responses` | `forms.monitor` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 19 | `forms_responses` | `forms.respond` | Delta integrado preservado externamente; placeholder/teste canônico fail-closed restaurado. Analyzer removeu 32 erros de Response e o teste canônico passou 1/1; Catálogo preserva exatamente o diagnóstico `superadmin.forms-response`. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Flutter está local-green somente no fail-closed; falta decisão funcional e o backend indisponível impede resposta real/E2E. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | decisão + 4–8 h de backend/Flutter + E2E | Recovery: sete arquivos/40944 bytes/SHA256 `bc578089790f4867ce83b3a26e2da05a57c451d6341cdc1eac6ff87ac227af66`; contrato aprovado, autosave/retomada, autorização, suspenso/revogado, tenant A/B, ID adulterado, reload, auditoria e E2E remoto. |
+| 19 | `forms_responses` | `forms.response-detail` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 19 | `forms_responses` | `forms.responses` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 19 | `forms_responses` | `forms.location-answer` | Opções autorizadas e snapshot; reenvio com opção revogada depende de decisão. Falta fechamento Flutter nominal. | Contrato, autorização, coexistência legada e prova SQL/E2E específicos ainda abertos. | Contrato local/proposta não comprova E2E. | `not-reviewed` | `blocked-decision` | `blocked-decision` | RED nominal. | Contrato e testes locais. | Autorização e tenant A/B. | Regressão, auditoria, reload e E2E. | Completa | a estimar após recorte | Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. |
+| 20 | `forms_files` | `forms.delete-file` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 6–12 h de backend + Flutter/E2E proporcional | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 20 | `forms_files` | `forms.download` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 6–12 h de backend + Flutter/E2E proporcional | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 20 | `forms_files` | `forms.expire-file` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 6–12 h de backend + Flutter/E2E proporcional | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 20 | `forms_files` | `forms.resolve-file` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 6–12 h de backend + Flutter/E2E proporcional | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 20 | `forms_files` | `forms.upload` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 6–12 h de backend + Flutter/E2E proporcional | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 21 | `acontece` | `acontece.create` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 21 | `acontece` | `acontece.feed` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 21 | `acontece` | `acontece.publish` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 21 | `acontece` | `acontece.remove` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 22 | `agora` | `agora.create` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 22 | `agora` | `agora.expire` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 22 | `agora` | `agora.publish` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 22 | `agora` | `agora.view` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 23 | `momentos` | `momentos.create` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 23 | `momentos` | `momentos.publish` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 23 | `momentos` | `momentos.remove` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 23 | `momentos` | `momentos.view` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 24 | `principal_profile` | `principal.for-you` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 24 | `principal_profile` | `principal.profile-edit` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 24 | `principal_profile` | `principal.profile-view` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 25 | `child_safety` | `child-safety.child` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 25 | `child_safety` | `child-safety.create` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 25 | `child_safety` | `child-safety.edit` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 25 | `child_safety` | `child-safety.list` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 25 | `child_safety` | `child-safety.suspend` | Ação inventariada; falta prova Flutter atual completa. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 26 | `health_care` | `health-care.create` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 26 | `health_care` | `health-care.detail` | Decisão canônica bloqueia a implementação Flutter produtiva. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `blocked-decision` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 26 | `health_care` | `health-care.edit` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 26 | `health_care` | `health-care.list` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 27 | `medication` | `medication.create` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 27 | `medication` | `medication.detail` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 27 | `medication` | `medication.edit` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 27 | `medication` | `medication.evidence` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 6–12 h de backend + Flutter/E2E proporcional | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 27 | `medication` | `medication.list` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 28 | `imports` | `imports.confirm` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 28 | `imports` | `imports.create` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 28 | `imports` | `imports.download` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 6–12 h de backend + Flutter/E2E proporcional | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 28 | `imports` | `imports.list` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 28 | `imports` | `imports.preview` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 28 | `imports` | `imports.status` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 28 | `imports` | `imports.upload` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 6–12 h de backend + Flutter/E2E proporcional | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 29 | `profile_files` | `profile-files.confirm` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 29 | `profile_files` | `profile-files.download` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 6–12 h de backend + Flutter/E2E proporcional | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 29 | `profile_files` | `profile-files.export` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 6–12 h de backend + Flutter/E2E proporcional | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 29 | `profile_files` | `profile-files.import` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 6–12 h de backend + Flutter/E2E proporcional | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 29 | `profile_files` | `profile-files.preview` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 29 | `profile_files` | `profile-files.status` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 30 | `audit` | `audit.detail` | Ação inventariada; falta prova Flutter atual completa. | Backend local comprovado: Audit 78/78 e regressão consolidada de 14 arquivos/395 asserts; migration `20260812000847` preservada e canônico/espelho iguais. | Falta repository produtivo Flutter, remoto correto e E2E real; a prova local não conclui a ação integrada. | `audited` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 2–4 h de Flutter/integração + E2E proporcional | Backend: 78/78 local e 395 asserts consolidados; nenhum grant produtivo ampliado. Ainda exige leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização; Flutter acessível; repository produtivo; reload; remoto datado e E2E. |
+| 30 | `audit` | `audit.export` | Ação inventariada; falta prova Flutter atual completa e download real. | Backend local comprovado: Audit 78/78 e regressão consolidada de 14 arquivos/395 asserts; harness usou grants apenas em tabelas temporárias. | Falta CSV/arquivo real, Flutter, remoto correto, cleanup e E2E; a prova local não conclui exportação integrada. | `audited` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 6–12 h de Flutter/integração + E2E proporcional | Backend: 78/78 local e 395 asserts consolidados; nenhum grant produtivo ampliado. Ainda exige arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup; repository produtivo; remoto datado e E2E. |
+| 30 | `audit` | `audit.filter` | Ação inventariada; falta prova Flutter atual completa. | Backend local comprovado: Audit 78/78 e regressão consolidada de 14 arquivos/395 asserts; fixtures alinhadas aos campos obrigatórios de Units. | Falta repository produtivo Flutter, remoto correto e E2E com filtros adulterados; a prova local não conclui a ação integrada. | `audited` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 2–4 h de Flutter/integração + E2E proporcional | Backend: 78/78 local e 395 asserts consolidados. Ainda exige leitura autorizada; acesso negado; tenant A/B; filtro/ID adulterado; paginação/minimização; Flutter acessível; repository produtivo; reload; remoto datado e E2E. |
+| 30 | `audit` | `audit.list` | Ação inventariada; falta prova Flutter atual completa. | Backend local comprovado: Audit 78/78 e regressão consolidada de 14 arquivos/395 asserts; IDs reais validados contra `object_id`/`request_id`. | Falta repository produtivo Flutter, remoto correto e E2E real; a prova local não conclui a ação integrada. | `audited` | `local-green` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 2–4 h de Flutter/integração + E2E proporcional | Backend: 78/78 local e 395 asserts consolidados. Ainda exige leitura autorizada; acesso negado; tenant A/B; ID adulterado; paginação/minimização; Flutter acessível; repository produtivo; reload; remoto datado e E2E. |
+| 31 | `support` | `support.close` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 31 | `support` | `support.create` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 31 | `support` | `support.detail` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 31 | `support` | `support.kanban` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 31 | `support` | `support.reply` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 31 | `support` | `support.table` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 32 | `account` | `account.logout` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 32 | `account` | `account.mfa` | Ação inventariada; falta prova Flutter atual completa. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `audited` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 32 | `account` | `account.profile` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `local-green` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 32 | `account` | `account.sessions` | Ação inventariada; falta prova Flutter atual completa. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `audited` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 32 | `account` | `account.settings` | Ação inventariada; falta prova Flutter atual completa. | Acesso está seguro, porém a ação produtiva permanece indisponível. | Backend, segurança, ledger ou deploy impedem a prova ponta a ponta. | `audited` | `fail-closed` | `blocked-supabase` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 32 | `account` | `account.theme` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `local-green` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | 1–2 h de backend + Flutter/E2E proporcional | Confirmar que é preferência local e que nenhuma persistência Supabase é alegada. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 33 | `catalog` | `catalog.list` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Intermediária | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 33 | `catalog` | `catalog.publish` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Intermediária | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 33 | `catalog` | `catalog.sync` | Sincronização mecânica Flutter concluída; `superadmin.forms-response` permanece bloqueado por decisão funcional. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Intermediária após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | Advanced Color Picker sincronizado; Forms Response preservado como bloqueio; 137 testes do Catálogo, oito testes Superadmin e 107 testes de `coelo_ui_admin` verdes; nenhuma prova Supabase/E2E. |
+| 33 | `catalog` | `catalog.validate` | Validação Flutter atual comprovou índice, fronteiras e contrato visual sem diagnóstico mecânico. | Ação depende de decisão canônica antes de implementação produtiva. | Flutter está local-green; falta decidir e provar o contrato produtivo/integrado. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Intermediária | decisão + 4–8 h de backend + Flutter/E2E proporcional | 137 testes completos do Catálogo passaram; oito testes Superadmin passaram; `coelo_ui_admin` executou 107 testes e analyzer verde; nenhuma prova Supabase/E2E. |
+| 34 | `plans` | `plans.activate` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 34 | `plans` | `plans.assign` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 34 | `plans` | `plans.create` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 34 | `plans` | `plans.edit` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 34 | `plans` | `plans.list` | Ação inventariada; falta prova Flutter atual completa. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `audited` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 35 | `meal_plans` | `meal-plans.create` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 35 | `meal_plans` | `meal-plans.edit` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 35 | `meal_plans` | `meal-plans.list` | Ação inventariada; falta prova Flutter atual completa. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `audited` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 35 | `meal_plans` | `meal-plans.model-create` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 35 | `meal_plans` | `meal-plans.model-edit` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 35 | `meal_plans` | `meal-plans.publish` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa após decisão | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 36 | `internal_users` | `internal-users.create` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 36 | `internal_users` | `internal-users.edit` | Prova local parcial; faltam regressão Flutter completa e gates da ação. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `local-green` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 36 | `internal_users` | `internal-users.list` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | decisão + 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 36 | `internal_users` | `internal-users.mfa` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 36 | `internal_users` | `internal-users.suspend` | Decisão canônica bloqueia a implementação Flutter produtiva. | Ação depende de decisão canônica antes de implementação produtiva. | Falta decisão formal antes da conexão produtiva. | `blocked-decision` | `blocked-decision` | `blocked-decision` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Completa | decisão + 4–8 h de backend + Flutter/E2E proporcional | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 37 | `error_pages` | `errors.403` | Ação inventariada; falta prova Flutter atual completa. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 37 | `error_pages` | `errors.404` | Ação inventariada; falta prova Flutter atual completa. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 37 | `error_pages` | `errors.409` | Ação inventariada; falta prova Flutter atual completa. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 37 | `error_pages` | `errors.500` | Ação inventariada; falta prova Flutter atual completa. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 37 | `error_pages` | `errors.503` | Ação inventariada; falta prova Flutter atual completa. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 37 | `error_pages` | `errors.retry` | Ação inventariada; falta prova Flutter atual completa. | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | Dois lados têm apenas evidência parcial/local; falta E2E real. | `audited` | `audited` | `not-reviewed` | Correção local pequena + teste focado; não fecha ação. | Básica + contrato existente e testes proporcionais; remoto/E2E podem ficar abertos. | Intermediária + autorização, negativos, tenant A/B e remoto autorizado. | Avançada + todos os gates, regressão, auditoria, reload e prova final dos três lados. | Avançada | 2–4 h de backend + Flutter/E2E proporcional | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. Flutter acessível e correto; repository produtivo; persistência após reload; auditoria/efeitos laterais; E2E remoto datado. |
+| 38 | `locations` | `locations.list` | Diretório, filtros, proprietário, tipo e disponibilidade. Falta fechamento Flutter nominal. | Contrato, autorização, coexistência legada e prova SQL/E2E específicos ainda abertos. | Contrato local/proposta não comprova E2E. | `not-reviewed` | `not-reviewed` | `not-reviewed` | RED nominal. | Contrato e testes locais. | Autorização e tenant A/B. | Regressão, auditoria, reload e E2E. | Completa | a estimar após recorte | Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. |
+| 38 | `locations` | `locations.create-edit` | Interno/externo, endereço, andar, foto e públicos. Falta fechamento Flutter nominal. | Contrato, autorização, coexistência legada e prova SQL/E2E específicos ainda abertos. | Contrato local/proposta não comprova E2E. | `not-reviewed` | `not-reviewed` | `not-reviewed` | RED nominal. | Contrato e testes locais. | Autorização e tenant A/B. | Regressão, auditoria, reload e E2E. | Completa | a estimar após recorte | Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. |
+| 38 | `locations` | `locations.detail-links` | Mapa/foto, agenda e relações autorizadas. Falta fechamento Flutter nominal. | Contrato, autorização, coexistência legada e prova SQL/E2E específicos ainda abertos. | Contrato local/proposta não comprova E2E. | `not-reviewed` | `not-reviewed` | `not-reviewed` | RED nominal. | Contrato e testes locais. | Autorização e tenant A/B. | Regressão, auditoria, reload e E2E. | Completa | a estimar após recorte | Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. |
+| 38 | `locations` | `locations.schedule` | Reservas, recorrência, conflitos, política e override auditado. Falta fechamento Flutter nominal. | Contrato, autorização, coexistência legada e prova SQL/E2E específicos ainda abertos. | Contrato local/proposta não comprova E2E. | `not-reviewed` | `not-reviewed` | `not-reviewed` | RED nominal. | Contrato e testes locais. | Autorização e tenant A/B. | Regressão, auditoria, reload e E2E. | Completa | a estimar após recorte | Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. |
+
+#### Estimativas por pacote e total
+
+| Pacote | Recorte seguro inicial | Estimativa recalculada | Resultado realista |
+| --- | --- | ---: | --- |
+| Intermediária | Inventário/contrato e correções principais de **uma ação** de baixo ou médio risco. | 2–6 h por ação simples | Pode concluir o pacote contratado; não conclui integração nem tela. |
+| Avançada | Uma fatia vertical autorizada, com negativos, acesso entre instituições e remoto. | 1–2 dias por ação/tela pequena | Adequada a Auth, RLS, migrations, segurança e arquivos; ainda pode deixar a família aberta. |
+| Completa | Todas as ações aplicáveis de uma família, regressão e provas dos três lados. | 2–5 dias por tela simples; maior nas famílias bloqueadas | Única que pode sustentar ação/tela integrada concluída. |
+| Programa conhecido | 37 famílias; 207 ações Flutter; 180 ações integráveis no MVP após diferir 22 fluxos de import/export. | Flutter 79–98 h mais prováveis; Supabase estrito 152–253 h; integração adicional 42–65 h; calendário em pipeline 50–76 h com cinco worktrees ponta a ponta e máximo útil de subagentes; teto conservador 96 h. | Zero ação está pronta para E2E e zero foi concluída ponta a ponta no snapshot atual. |
+
+## 7. Manifesto integrado histórico de 202 ações / 180 ações no MVP
+
+As referências de ambiente usadas abaixo significam:
+
+- **E0:** filesystem com 156 migrations canônicas + 156 espelhadas; ledger local
+  148 até `20260825180500`; remoto observado 103 até `20260821200000`;
+- **E1:** banco local contaminado; S1 com 19 arquivos e 402 testes pgTAP
+  aprovados e lint zero, sem deploy;
+- **E2:** remoto somente leitura, hardenings Edge apenas locais e zero E2E
+  verificado.
+
+“Flutter” é contribuição preparada a partir do rastreador Flutter e deve ser
+revalidada/substituída pelo CReview. “Integração” é o teto atual por ação; não é
+resultado de execução E2E nesta passagem. O ETA cobre Supabase + prova integrada
+após liberação; o esforço Flutter permanece o registrado no rastreador próprio.
+
+| # | `screen_id` | Contribuição Flutter por `action_id` | Supabase por `action_id` | Integração por `action_id` | Cadeia backend esperada | Ambiente, blocker, prova faltante e ETA |
+|---:|---|---|---|---|---|---|
+| 1 | `auth` | `local-green`: quatro ações não-MFA; `audited`: `auth.mfa` | `local-green`: quatro ações não-MFA; `blocked-decision`: `auth.mfa` | `blocked-supabase`: quatro ações não-MFA; `blocked-decision`: `auth.mfa` | Flutter Auth → Supabase Auth → sessão/refresh → membership/contexto → rota/cache | `f280e291` corrigiu o guard; 66/66 + 21/21 verdes. Antes de integrar, remover compatibilidade fora do recorte em `apps/catalog`; produção sem mutação, replay 1–2 d + E2E 0,5–1 d. |
+| 2 | `shell` | `local-green`: `shell.load`, `shell.navigate`, `shell.unauthorized`; `audited`: `shell.switch-context`, `shell.reload` | `audited`: todos os 5 IDs | `not-reviewed`: todos os 5 IDs | Shell → auth scope/repository → RPC de contexto → RLS → estado limpo | E0/E2; reextrair rotas, provar ausência de dado pré-auth, troca A/B, cache limpo e `/dev` zero-call; 1–2 d. |
+| 3 | `institutions` | `local-green`: `institutions.list`, `institutions.filter`, `institutions.create`, `institutions.edit`, `institutions.status`; `audited`: `institutions.detail`, `institutions.files`, `institutions.import`, `institutions.export`, `institutions.error`, `institutions.access-denied`, `institutions.reload` | `local-green`: 10 IDs ordinários; `fail-closed`: `institutions.import`, `institutions.export` por SQLSTATE `42702`/`42703` | `blocked-supabase`: `institutions.import`, `institutions.export`; `not-reviewed`: os outros 10 IDs | Page/controller → repository institucional → RPC/Data API/arquivos → RLS/tabelas → audit → reload | E0/E1/E2; import/export permanecem runtime-broken e fail-closed; falta história reproduzível, correções forward-only, ledger limpo, CRUD/arquivos remoto A/B, negativos, erro/retry e read-after-write; 2–3 d + E2E 1 d. |
+| 4 | `units` | `local-green`: `units.list`, `units.filter`, `units.create`, `units.edit`, `units.status`, `units.error`, `units.access-denied`, `units.reload`; `audited`: `units.import`, `units.export`; `blocked-decision`: `units.people-export`, cuja ação falsa foi ocultada. | `audited`: os 10 IDs anteriores; `units.access-denied` também fail-closed; `blocked-decision/fail-closed`: `units.people-export`, sem capability/job/worker próprio. Import chegou a D3d com REDs de membership/retry/cleanup; export checkpoint 21 tem 36/47 verdes e 11 REDs preservados. | `blocked-supabase`: os 10 IDs anteriores; `blocked-decision`: `units.people-export`; zero composição remota/E2E | Unit UI → directory/commands gateway → RPC ou Edge job → RLS/Storage → audit/status/reload | UI list/estados: 16/16, routers 5/5, 375–1440/200%. Pacote A foi preservado e revertido; fail-closed reconfirmado 26/26. Export local endurecido sem composição; people-export exige decisão e backend próprios. Backend restante 11–18 h local + 6–10 h remoto autorizado; people-export 18–32 h vertical após decisões; Completa import+export 3–5 d. |
+| 5 | `groups` | `local-green`: `groups.list`, `groups.create`, `groups.edit`, `groups.members`; `audited/fail-closed`: `groups.import`, `groups.export`, com falsos controles removidos | `fail-closed`: todos os 6 IDs | `blocked-supabase`: todos os 6 IDs | Group UI → repository → RPCs de grupos/membros/jobs → RLS/Storage → audit/reload | RED→GREEN local e formulário 8/8; adapter produtivo stale. Alinhar contrato/ACL, jobs/Storage, arquivos reais, pgTAP, A/B, revogação, replay, reload, cleanup e E2E; 2–3 d + E2E 1 d. |
+| 6 | `people` | `local-green`: `people.create`, `people.edit`; `audited`: `people.list`, `people.links`, `people.reload` | `fail-closed`: todos os 5 IDs | `blocked-supabase`: todos os 5 IDs | People UI → identity/directory repository → RPC protegida → tabelas globais/vínculos → audit/reload | E0/E2; falta decisão OQ-038, PII minimizada, AAL2/capability, vínculos e A/B; 2–4 d + E2E 1 d. |
+| 7 | `access_profiles` | `audited`: `access-profiles.list`, `access-profiles.detail`; `blocked-decision`: `access-profiles.create`, `access-profiles.edit`, `access-profiles.assign`, `access-profiles.delete` | `fail-closed`: todos os 6 IDs | `blocked-supabase`: todos os 6 IDs | Access UI → access repository → RPC versionada → capabilities/assignments → RLS/audit/reload | E0/E1/E2; definição local fora do ledger e extended closure ausente; provar delegação, AAL2, revogação e reatribuição; 2–3 d + E2E 1 d. |
+| 8 | `access_models` | `audited`: `access-models.list`, `access-models.filter`, `access-models.detail`; `blocked-decision`: `access-models.create`, `access-models.edit`, `access-models.duplicate` | `fail-closed`: todos os 6 IDs | `blocked-supabase`: todos os 6 IDs | Models UI → repository → RPC de catálogo/modelo/versionamento → RLS/audit | Busca/domínio/status e vazio confirmam a ação de filtro, ainda sem prova isolada; contrato produtivo/closure estendido não aprovado; decidir e testar escopo, AAL2, filtros adulterados e idempotência; decisão 1 d + 2–3 d. |
+| 9 | `invites` | `local-green`: todos os 5 IDs | `local-green`: todos os 5 IDs; 60/60 pgTAP | `blocked-supabase`: todos os 5 IDs; migration ausente nas 103 remotas consultadas | Invite UI → repository → RPC/Edge delivery → receipt/lock → audit → reload | E0/E2; delivery/aceite Auth, reset limpo e remoto não provados; testar replay, expiração, revogação, concorrência, reload e A/B; 2–3 d + E2E 1 d. |
+| 10 | `activities` | `local-green`: todos os 6 IDs | `local-green`: todos os 6 IDs | `blocked-supabase`: todos os 6 IDs | Activity UI → repository → RPC de draft/publish/assignment → RLS → audit/reload | E0/E1/E2; artefato local sem deploy, lookup sensível OQ-038 fail-closed; executar CRUD/publicação A/B e read-after-write; 2 d + E2E 1 d. |
+| 11 | `assessments` | `audited`: todos os 5 IDs | `local-green`: todos os 5 IDs; 85/85 | `blocked-supabase`: todos os 5 IDs; sem Flutter/reset/remoto/E2E | Assessment UI → controller/repository → RPC de lançamento/fechamento → RLS/version lock → audit | E0/E2; quatro migrations estão no ledger local e ausentes no remoto consultado. Faltam concorrência, capability, A/B, reload, reset limpo, remoto e E2E; 2 d + E2E 1 d. |
+| 12 | `students` | `local-green`: `students.list`; `blocked-decision`: `students.link`, `students.transfer`, `students.edit`, `students.revoke` | `fail-closed`: todos os 5 IDs | `blocked-supabase`: todos os 5 IDs | Student UI → Unavailable/read repository → foundation/commands RPC → RLS/Storage → audit | E0/E2; commands/files reprovados; provar leitura foundation e redesenhar B/C separados antes de mutações; 3–5 d + E2E 1 d. |
+| 13 | `attendance` | `local-green`: `attendance.dashboard`, `attendance.create`, `attendance.mark`, `attendance.correct`, `attendance.finish`; `audited`: `attendance.export` | `local-green`: os 5 primeiros IDs; `fail-closed`: `attendance.export` | `not-reviewed`: os 5 primeiros IDs; `blocked-supabase`: `attendance.export` | Attendance UI → contract/controller → RPC transacional → RLS/locks → audit/reload; export → job/Storage/ticket | E0/E1/E2; falta rerun integrado, A/B/concorrência; export não tem materializador/status/download; 2–3 d + E2E 1 d. |
+| 14 | `daily_routine` | `local-green`: todos os 5 IDs | `fail-closed`: todos os 5 IDs | `blocked-supabase`: todos os 5 IDs | Routine UI → Unavailable/repository → RPC de modelos/aplicações/revisões → RLS/audit/reload | E0/E2; adapter stale; comparar fonte/instalado e testar versões, capability e A/B; 2–3 d + E2E 1 d. |
+| 15 | `agenda` | `blocked-decision`: todos os 6 IDs | `blocked-decision`: todos os 6 IDs | `blocked-decision`: todos os 6 IDs | Agenda UI → contrato futuro → RPC de eventos/solicitações → RLS/audit | E2; superfície `/dev` sem spec produtiva; decisão 1 d + implementação 3–5 d + E2E. |
+| 16 | `chat` | `local-green`: `chat.list`, `chat.open`, `chat.send`; `audited`: `chat.edit`, `chat.attach`, `chat.receipts`, `chat.revoke` | `audited`: todos os 7 IDs | `blocked-supabase`: `chat.list`, `chat.open`, `chat.send`, `chat.attach`, `chat.revoke`; `not-reviewed`: `chat.edit`, `chat.receipts` | Chat UI → repository → RPC/Realtime/Edge mídia → RLS → receipts/audit/reload | Launcher, ordem e goldens locais verdes; faltam RPC remoto, cache/Realtime, paginação total, mídia, receipts, A/B e E2E; 2–3 d + E2E 1 d. |
+| 17 | `notices` | `audited`: todos os 6 IDs | `audited`: todos os 6 IDs | `not-reviewed`: todos os 6 IDs | Notice UI → repository → RPC/Edge publish/schedule → RLS/mídia → receipts/audit | E0/E2; falta audiência, idempotência, mídia, revogação e remoto; 2–3 d + E2E 1 d. |
+| 18 | `forms_authoring` | `local-green`: `forms.list`, `forms.overview`, `forms.edit`; `audited`: `forms.create`; `blocked-decision`: `forms.publish`, `forms.test` | `fail-closed`: todos os 6 IDs | `blocked-supabase`: todos os 6 IDs | Forms UI → API/repository → route-context/RPC → versions/applications → RLS/audit/reload | Editor local/catalogado passou 24/24 non-golden e Forms tem zero erro; rota produtiva, 150%/200%, F5, autorização e closure backend continuam ausentes; integrar migration/RPC/pgTAP e provar versionar/publicar/distribuir; 3–5 d + E2E 1–2 d. |
+| 19 | `forms_responses` | `local-green`: `forms.respond`; `audited`: `forms.monitor`, `forms.responses`, `forms.response-detail`, `forms.export` | `fail-closed`: todos os 5 IDs | `blocked-supabase`: todos os 5 IDs | Response UI → API/autosave → eligibility RPC → respostas/revisões → RLS/export job/audit | `forms.respond` está verde apenas no placeholder fail-closed: 1/1 teste e zero dos 32 erros anteriores; delta preservado externamente e diagnóstico Catálogo mantido. Faltam contrato produtivo, autosave/edição/métricas/export, A/B e E2E; 4–6 d + E2E 1–2 d. |
+| 20 | `forms_files` | `local-green`: `forms.resolve-file`, `forms.download`; `audited`: `forms.upload`, `forms.expire-file`, `forms.delete-file` | `fail-closed`: todos os 5 IDs | `blocked-supabase`: todos os 5 IDs | Forms files UI → resolver/Edge → auth RPC → Storage privado → ticket HTTPS → expiry/delete/audit | E0/E1/E2; resolver fora da composição e sem deploy; provar zero `storage_path`, TTL, revogação, cleanup e A/B; 2–4 d + E2E 1 d. |
+| 21 | `acontece` | `local-green`: `acontece.feed`; `blocked-decision`: `acontece.create`, `acontece.publish`, `acontece.remove` | `blocked-decision`: todos os 4 IDs | `blocked-decision`: todos os 4 IDs | Acontece UI → metadata repository → Supabase RLS + Storage privado → audience/audit | E2; contrato Storage/metadados, audiência e retenção não aprovado; R2 fora do MVP; decisão 1–2 d + 4–6 d + E2E. |
+| 22 | `agora` | `local-green`: `agora.view`; `blocked-decision`: `agora.create`, `agora.publish`, `agora.expire` | `blocked-decision`: todos os 4 IDs | `blocked-decision`: todos os 4 IDs | Agora UI → metadata repository → Supabase RLS + Storage privado → expiry/audit | E2; contrato temporal/audiência/mídia não aprovado; R2 fora do MVP; decisão 1–2 d + 3–5 d + E2E. |
+| 23 | `momentos` | `local-green`: `momentos.view`; `blocked-decision`: `momentos.create`, `momentos.publish`, `momentos.remove` | `blocked-decision`: todos os 4 IDs | `blocked-decision`: todos os 4 IDs | Momentos UI → metadata repository → Supabase RLS + Storage privado → audience/removal/audit | E2; contrato de publicação/mídia/retenção não aprovado; R2 fora do MVP; decisão 1–2 d + 3–5 d + E2E. |
+| 24 | `principal_profile` | `local-green`: `principal.for-you`, `principal.profile-view`; `blocked-decision`: `principal.profile-edit` | `blocked-decision`: todos os 3 IDs | `blocked-decision`: todos os 3 IDs | Principal UI → context/profile repository → RLS de pessoa/vínculo → audit/reload | E2; campos permitidos, ownership e edição produtiva não definidos; decisão 1 d + 2–4 d + E2E. |
+| 25 | `child_safety` | `local-green`: `child-safety.list`, `child-safety.child`, `child-safety.create`, `child-safety.edit`; `audited`: `child-safety.suspend` | `audited`: todos os 5 IDs | `not-reviewed`: todos os 5 IDs | Safety UI → repository → RPC sensível → RLS/Storage privado → notification/audit/reload | E0/E1/E2; falta ledger, AAL2/capability, ownership, suspensão, evidência e A/B; 2–4 d + E2E 1 d. |
+| 26 | `health_care` | `local-green`: `health-care.list`, `health-care.create`, `health-care.edit`; estado Flutter de `health-care.detail` pertence ao rastreador Flutter | `fail-closed`: todos os 4 IDs; trabalho Supabase local liberado pelo Owner em 2026-08-28 | `blocked-supabase`: todos os 4 IDs | Health UI → Unavailable/repository → RPC sensível → RLS/Storage privado → history/audit | E0/E2; implementar backend técnico com dados sintéticos, minimização e isolamento; jurídico/retenção ficam como gate posterior de produção, não bloqueio do trabalho local; depois cutover + E2E. |
+| 27 | `medication` | `blocked-decision`: todos os 5 IDs | `blocked-decision`: todos os 5 IDs | `blocked-decision`: todos os 5 IDs | Medication UI → contrato futuro → RPC sensível → RLS/Storage → evidence/audit | E2; OQ-040, base legal, prescrição, dose e retenção abertas; decisão externa + 5–8 d + E2E. |
+| 28 | `imports` | `local-green`: `imports.create`; `audited`: `imports.list`, `imports.upload`, `imports.preview`, `imports.confirm`, `imports.status`, `imports.download` | `fail-closed`: todos os 7 IDs | `blocked-supabase`: todos os 7 IDs | Imports UI → domain gateway → Edge allowlist → job/Storage → status/ticket/audit/cleanup | E0/E2; hub real atende Units, facade genérica diverge; publicar handlers permitidos e testar limites, replay, partial failure e A/B; 3–5 d + E2E 1–2 d. |
+| 29 | `profile_files` | `audited`: todos os 6 IDs | `fail-closed`: todos os 6 IDs | `blocked-supabase`: todos os 6 IDs | Access files UI → gateway worker-only futuro → RPCs protegidas → Storage privado → ticket sanitizado/audit | E0/E1/E2; P0 em conclusão/status/assinatura e exposição bucket/path; decisão 1 d + 3–5 d + E2E 1 d. |
+| 30 | `audit` | `audited`: todos os 4 IDs | `local-green`: todos os 4 IDs; Audit 78/78 e regressão 14 arquivos/395 asserts | `blocked-supabase`: todos os 4 IDs; sem Flutter produtivo, remoto ou E2E | Audit UI → read/export repository → RPC/view invoker → immutable log → protected export | E0/E2; migration `20260812000847` preservada; nenhum grant produtivo ampliado. Faltam minimização, paginação, hash/imutabilidade, retenção, A/B, CSV/download real, reset limpo, remoto e E2E; 2–3 d + E2E 1 d. |
+| 31 | `support` | `local-green`: `support.create`, `support.table`, `support.kanban`; `audited`: `support.detail`, `support.reply`, `support.close` | `fail-closed`: todos os 6 IDs | `blocked-supabase`: todos os 6 IDs | Support UI → Unavailable/repository → RPC de ticket/reply → least privilege → audit/reload | E2; nenhum backend produtivo aprovado; decidir modelo/motivo/escopo/retenção e implementar; decisão 1–2 d + 4–6 d + E2E. |
+| 32 | `account` | `local-green`: `account.theme`, `account.logout`; `audited`: `account.profile`, `account.settings`, `account.mfa`, `account.sessions` | `audited`: `account.theme`, `account.logout`; `fail-closed`: `account.profile`, `account.settings`; `blocked-decision`: `account.mfa`, `account.sessions` | `not-reviewed`: `account.theme`, `account.logout`; `blocked-supabase`: `account.profile`, `account.settings`; `blocked-decision`: `account.mfa`, `account.sessions` | Account UI → Auth/profile repository → Auth/session APIs + profile RPC → RLS/audit/reload | E0/E2; depende do Auth, campos editáveis e revogação de sessões; 2–4 d após Auth + E2E 1 d. |
+| 33 | `catalog` | `local-green`: `catalog.list`, `catalog.validate`; `blocked-decision`: `catalog.sync`, `catalog.publish` | `blocked-decision`: todos os 4 IDs | `blocked-decision`: todos os 4 IDs | Catalog tooling → validator/sync → contrato versionado futuro → audit/rollback | Flutter atual: 137 testes do Catálogo, oito Superadmin e 107 `coelo_ui_admin` verdes; `superadmin.forms-response` continua decisão funcional; nenhuma prova Supabase/E2E; decisão 1 d + 3–5 d. |
+| 34 | `plans` | `local-green`: `plans.create`, `plans.edit`; `audited`: `plans.list`; `blocked-decision`: `plans.activate`, `plans.assign` | `blocked-decision`: todos os 5 IDs | `blocked-decision`: todos os 5 IDs | Plans UI → contrato futuro → RPC de estados/assignment → RLS/idempotency/audit | E2; rotas `/dev`, cobrança/autoridade não aprovadas; decisão 2–3 d + 5–8 d + E2E. |
+| 35 | `meal_plans` | `local-green`: `meal-plans.create`, `meal-plans.edit`, `meal-plans.model-create`, `meal-plans.model-edit`; `audited`: `meal-plans.list`; `blocked-decision`: `meal-plans.publish` | `blocked-decision`: todos os 6 IDs | `blocked-decision`: todos os 6 IDs | Meal plans UI → contrato futuro → RPC versionada → RLS/media/audience/audit | E2; domínio, alergias/dados sensíveis, mídia e publicação abertos; decisão 2 d + 5–8 d + E2E. |
+| 36 | `internal_users` | `local-green`: `internal-users.create`, `internal-users.edit`; `blocked-decision`: `internal-users.list`, `internal-users.suspend`, `internal-users.mfa` | `blocked-decision`: todos os 5 IDs | `blocked-decision`: todos os 5 IDs | Internal users UI → privileged Auth gateway → membership/capability RPC → audit/session revoke | E2; política por papel/MFA, convite e suspensão não aprovados; decisão 2–3 d + 5–8 d + E2E. |
+| 37 | `error_pages` | `audited`: todos os 6 IDs | `audited`: todos os 6 IDs | `not-reviewed`: todos os 6 IDs | Backend/Edge error → typed mapper → error route → safe retry/correlation | E0/E2; falta matriz real SQLSTATE/PostgREST/Edge, leak check e retry idempotente; 0,5–1 d + E2E 0,5 d. |
+
+### 7.1. Índice literal: 202 integrados + 5 exclusivos Flutter
+
+Nas linhas da tabela principal que dizem “todos os IDs”, o grupo significa
+exatamente a lista literal abaixo. O índice contém os 202 IDs normativos
+integrados e, para preservar as 37 famílias e o rastreador Flutter, os cinco IDs
+de `shell` classificados nominalmente como client-only na seção 7.3. Eles não
+entram em `action_count: 202`. Nenhum ID foi renomeado, omitido ou convertido em
+operação backend por inferência.
+
+| `screen_id` | `action_id` oficiais |
+|---|---|
+| `auth` | `auth.login`; `auth.recover`; `auth.reset`; `auth.logout`; `auth.mfa` |
+| `shell` (Flutter-only; fora dos 202) | `shell.load`; `shell.navigate`; `shell.switch-context`; `shell.unauthorized`; `shell.reload` |
+| `institutions` | `institutions.list`; `institutions.filter`; `institutions.detail`; `institutions.create`; `institutions.edit`; `institutions.status`; `institutions.files`; `institutions.import`; `institutions.export`; `institutions.error`; `institutions.access-denied`; `institutions.reload` |
+| `units` | `units.list`; `units.filter`; `units.create`; `units.edit`; `units.status`; `units.error`; `units.access-denied`; `units.reload`; `units.import`; `units.export`; `units.people-export` |
+| `groups` | `groups.list`; `groups.create`; `groups.edit`; `groups.members`; `groups.import`; `groups.export` |
+| `people` | `people.list`; `people.create`; `people.edit`; `people.links`; `people.reload` |
+| `access_profiles` | `access-profiles.list`; `access-profiles.create`; `access-profiles.detail`; `access-profiles.edit`; `access-profiles.assign`; `access-profiles.delete` |
+| `access_models` | `access-models.list`; `access-models.filter`; `access-models.create`; `access-models.detail`; `access-models.edit`; `access-models.duplicate` |
+| `invites` | `invites.list`; `invites.create`; `invites.detail`; `invites.resend`; `invites.revoke` |
+| `activities` | `activities.list`; `activities.create`; `activities.detail`; `activities.edit`; `activities.publish`; `activities.assessment` |
+| `assessments` | `assessments.entry`; `assessments.gradebook`; `assessments.close`; `assessments.reopen`; `assessments.detail` |
+| `students` | `students.list`; `students.link`; `students.transfer`; `students.edit`; `students.revoke` |
+| `attendance` | `attendance.dashboard`; `attendance.create`; `attendance.mark`; `attendance.correct`; `attendance.finish`; `attendance.export` |
+| `daily_routine` | `daily-routine.list`; `daily-routine.create`; `daily-routine.edit`; `daily-routine.apply`; `daily-routine.publish` |
+| `agenda` | `agenda.view`; `agenda.create`; `agenda.detail`; `agenda.edit`; `agenda.request`; `agenda.permissions` |
+| `chat` | `chat.list`; `chat.open`; `chat.send`; `chat.edit`; `chat.attach`; `chat.receipts`; `chat.revoke` |
+| `notices` | `notices.list`; `notices.create`; `notices.edit`; `notices.schedule`; `notices.publish`; `notices.archive` |
+| `forms_authoring` | `forms.list`; `forms.create`; `forms.overview`; `forms.edit`; `forms.publish`; `forms.test` |
+| `forms_responses` | `forms.monitor`; `forms.respond`; `forms.responses`; `forms.response-detail`; `forms.export` |
+| `forms_files` | `forms.upload`; `forms.resolve-file`; `forms.download`; `forms.expire-file`; `forms.delete-file` |
+| `acontece` | `acontece.feed`; `acontece.create`; `acontece.publish`; `acontece.remove` |
+| `agora` | `agora.view`; `agora.create`; `agora.publish`; `agora.expire` |
+| `momentos` | `momentos.view`; `momentos.create`; `momentos.publish`; `momentos.remove` |
+| `principal_profile` | `principal.for-you`; `principal.profile-view`; `principal.profile-edit` |
+| `child_safety` | `child-safety.list`; `child-safety.child`; `child-safety.create`; `child-safety.edit`; `child-safety.suspend` |
+| `health_care` | `health-care.list`; `health-care.create`; `health-care.detail`; `health-care.edit` |
+| `medication` | `medication.list`; `medication.create`; `medication.detail`; `medication.edit`; `medication.evidence` |
+| `imports` | `imports.list`; `imports.create`; `imports.upload`; `imports.preview`; `imports.confirm`; `imports.status`; `imports.download` |
+| `profile_files` | `profile-files.import`; `profile-files.preview`; `profile-files.confirm`; `profile-files.status`; `profile-files.export`; `profile-files.download` |
+| `audit` | `audit.list`; `audit.filter`; `audit.detail`; `audit.export` |
+| `support` | `support.create`; `support.table`; `support.kanban`; `support.detail`; `support.reply`; `support.close` |
+| `account` | `account.profile`; `account.settings`; `account.theme`; `account.mfa`; `account.sessions`; `account.logout` |
+| `catalog` | `catalog.list`; `catalog.validate`; `catalog.sync`; `catalog.publish` |
+| `plans` | `plans.list`; `plans.create`; `plans.edit`; `plans.activate`; `plans.assign` |
+| `meal_plans` | `meal-plans.list`; `meal-plans.create`; `meal-plans.edit`; `meal-plans.model-create`; `meal-plans.model-edit`; `meal-plans.publish` |
+| `internal_users` | `internal-users.list`; `internal-users.create`; `internal-users.edit`; `internal-users.suspend`; `internal-users.mfa` |
+| `error_pages` | `errors.403`; `errors.404`; `errors.409`; `errors.500`; `errors.503`; `errors.retry` |
+
+### 7.2. Contribuição Flutter revalidada para as 202 ações normativas
+
+Esta seção preserva a passagem histórica no HEAD `447ac02c`; a matriz 6.1 e o
+checkpoint integrado 63 contêm a reconciliação vigente em `dev@7b94428a`. Um
+resultado citado como snapshot, cessão
+ou preparo não commitado está identificado como tal e não substitui o HEAD. Em
+cada linha, os estados FLU e os `action_id` são exatamente os da coluna Flutter
+da tabela principal; os detalhes de rota, wiring, UI e prova abaixo se aplicam a
+cada ID enumerado naquela linha. Nenhum lote executou E2E remoto nesta passagem.
+
+Abreviações: **prod** = composição produtiva; **DEV** = rota/repository de
+desenvolvimento; **FC** = `Unavailable`/503 seguro; **NG** = teste non-golden.
+
+| # | `screen_id` | Tela/rota e código Flutter | Wiring prod/DEV e estados de UI | Testes, responsividade, acessibilidade e visual | Blocker, próxima prova e ETA Flutter |
+|---:|---|---|---|---|---|
+| 1 | `auth` | Login/recovery/reset/MFA nas rotas Auth; auth scope compõe sessão e contexto. | Prod usa Auth configurado; falha de configuração permanece FC. Cobrir loading, credencial inválida, callback, sessão expirada, unauthorized e logout/reload. | Evidência focal histórica; não houve rerun global nem golden. Reexecutar 375/1440, texto 100/150/200%, teclado e foco. | Reset/MFA/AAL2 e revogação ainda abertos; executar fluxo completo e wiring test; 6 h. |
+| 2 | `shell` | `SuperadminShell`, menu/router e páginas unauthorized/error; cinco IDs são client-only conforme crosswalk 7.3. | Troca de contexto e reload não podem renderizar dados antes de auth; DEV deve permanecer isolado. | Viewers preservam shell; route/focus NG recente. Falta smoke total de deep links, foco, semântica e 200%. | Reextrair 79 rotas normais/96 DEV no HEAD e provar cache limpo; 6 h. |
+| 3 | `institutions` | `InstitutionDirectoryPage`, `InstitutionFormPage` e `InstitutionFormController` sobre `InstitutionDirectoryRepository`. | Prod possui repository Supabase; fake é DEV/test. Cobrir loading/empty/error/unauthorized, comando, retry e reload. | Baseline administrativa funcional local; 7 PNGs alterados aguardam inspeção. Sem golden nesta passagem. | Provar CRUD real, status, erro e 200%; 8 h. |
+| 4 | `units` | `UnitDirectoryPage`, `UnitFormPage`/controller e gateways de diretório/comando/arquivos. | Snapshot U0/U1: prod directory/gateway FC; DEV fake/null local; quatro forms sem `backendCommands`; 18 métodos falham explicitamente. | Closure 53/53 em snapshot; analyzer/validator focados. Goldens/geometria e E2E não executados. | Integrar commands reais, importar/exportar, reload e revisar PNGs; 10 h. |
+| 5 | `groups` | `GroupDirectoryPage`, `GroupFormPage`, repository e fluxo About canônico. | Prod FC/Unavailable; DEV mantém fake em cache local; directory sem demos/echo e form assíncrono de 6 passos. | 30/30 feature, 39/39 feature+roots e 33/33 regressões por fatias; sem golden. | CRUD/membros/arquivos produtivos, erros e visual; 8 h. |
+| 6 | `people` | `PersonDirectoryPage`, `PersonFormPage`, edit route e repositories identity/directory. | Prod identity FC e sem adapter Supabase nos roots; DEV repositories dedicados; fakes de teste em `test/support`. | Cessões 18/18 e 45/45 NG. Oito goldens de diretório e status/card ficaram fora. | Provar vínculos/reload, PII, estados e inspeção dos 8 goldens; 12 h. |
+| 7 | `access_profiles` | Directory/form/detail, catalog controller e repositories Basic/Extended. | Basic é estático/FC 503; Extended não deve usar shims `isDemo/contextCount`; nenhum sucesso aparente. | Runtime 35/35 e páginas 15/15 no lote Basic; goldens/Imports/Extended excluídos. | Access Extended depende do prerequisite Imports e decisão de contrato; 16 h após decisão. |
+| 8 | `access_models` | Model directory/controller/form/detail sobre contrato Access Basic. | Prod configurado/fallback FC; não criar autorização client-side nem CRUD aparente. | Incluído nos 35/35 Basic; sem golden/PNG. | Aprovar capability/contrato Extended e provar CRUD/duplicação; 10 h. |
+| 9 | `invites` | Directory/form/detail e `InviteRepository`; rotas prod/DEV separadas. | Três rotas prod usam injected FC; três DEV usam um `DevelopmentInviteRepository` em cache; fake legado removido. | 56/56 NG no fechamento; source guards e composição verdes; invite golden source-only, não executado. | Backend/email, resend/revoke negativos, reload e golden; 8 h. |
+| 10 | `activities` | Directory/detail/form/controller; wizard 6 etapas com Pedagógico + Sobre. | Prod FC, zero `SupabaseActivity` nos roots; DEV sessão local única. About indisponível bloqueia antes do command, sem sucesso parcial. | 90/90 NG; adapters gate-only 21/21; rota runtime antes bloqueada por calendário, depois closure separado. Sem golden. | Rerodar rota no HEAD, matriz 375–1440/200%, publish/assessment e E2E; 12 h. |
+| 11 | `assessments` | Assessment controller/repository e rotas de lançamento/diário/detalhe. | Timezone server-owned; DEV repository dedicado somente nas rotas DEV. Estados de fechamento/conflito/reload ainda não têm prova completa. | Repo 3/3, rotas 4/4 e controller 5/5 em cessões; 8 comparadores sobrescritos foram preservados, sem golden. | Revalidar páginas NG e depois visual individual; 10 h. |
+| 12 | `students` | `StudentTrackingPage`; manage page permanece fora do fluxo produtivo. | Prod `/students` somente leitura; configured/fallback FC; DEV local com tripwire zero; sem `onManage`, storage ou commands nos roots. | F0–F2: 29/29; unavailable 375 light/1440 dark a 200%, ausência de Gerenciar/Justificar. Sem golden. | Aprovar contracts link/transfer/edit/revoke e provar offline versus unavailable; 8 h. |
+| 13 | `attendance` | Dashboard/controller, páginas de chamada e `AttendanceDashboardRepository`. | Três builders prod usam injected; três DEV usam cache `DevelopmentAttendanceRepository`; guard de comando preserva snapshot. Export separado e FC. | Attendance 47/47, matrix 9/9 e DEV 4/4; 375 light/dark e 200%. Sem E2E; dois goldens/clock/export abertos. | Clock determinístico, erros/reload/concorrência, goldens e export worker; 12 h. |
+| 14 | `daily_routine` | Directory/controller, forms/aplicação/publicação e repository de rotina. | Prod configured/fallback/init FC; três DEV usam cache Development; zero adapter Supabase nos roots do lote. | 35/35 por fatias, roots 8/8 e regressões 19/19; sem smoke visual/golden. | Rodar 375–1440/200%, comandos, erro, reload e backend; 8 h. |
+| 15 | `agenda` | Calendar/events/form/requests/permissions existem como superfícies draft. | Não há contrato produtivo aprovado; não compor repository real nem inferir permissões. | Apenas auditoria de fonte; sem suíte visual, E2E ou golden atual. | Decidir spec/draft, ações e capability; depois revisar calendário; 16 h após decisão. |
+| 16 | `chat` | `SuperadminChatPage`, `ChatRepository` e adapter Supabase presentes. | Wiring, membership revogada, anexos, receipts e paginação precisam ser revalidados; não inferir isolamento por UI. | Auditoria anterior e allowlist visual limpa; shell/chat PNGs permanecem em reconciliação. Sem golden nesta passagem. | NG de conversas/mensagens + 375–1440/200%, teclado, foco e mídia; 16 h. |
+| 17 | `notices` | Directory/form/controller e `NoticeRepository`. | Adapter Supabase existe; falta provar prod/DEV, schedule/publish/archive, erros e reload. | Somente auditoria/rota conhecida; nenhum lote funcional/visual recente. | Executar revisão NG completa, wiring guards e matriz visual; 10 h. |
+| 18 | `forms_authoring` | Directory/overview e rotas editor/test; editor/test permanecem stubs/FC. | Composition sanitization mantém 14 builders FC; C0 files/media preservado; editor real depende de F5/capability. | Forms 23/23 no fechamento conhecido; `forms-editor` ainda é fingerprint funcional. Sem golden. | Decidir editor/F5, integrar contrato e provar create/edit/publish/test; 16 h. |
+| 19 | `forms_responses` | Monitor, response route/page/detail e export. | Resposta direta prova FC; autosave/API real e autorização ainda não estão compostos ponta a ponta. | Teste direto 1/1 e regressão Forms conhecida; `forms-response` é fingerprint funcional remanescente. | Fechar eligibility/autosave/detail/export e estados de erro/reload; 12 h. |
+| 20 | `forms_files` | `FormMediaPage`, `FormsFilesPage` e route page; resolver F3 é dependência já commitada. | Exige download protegido, zero `storage_path` direto e isolamento prod/DEV; closure F6 ainda não foi aceita como integrada. | Gates focados históricos; nenhum golden/PNG. | Fechar transitive closure, upload/expiry/delete e negativos; 12 h. |
+| 21 | `acontece` | Preview/feed enquadrado e superfícies de publicação separadas. | Preview é local; publish/remove dependem de metadata Supabase + R2 e não têm wiring aprovado. | Página/rota Happens 14/14 em lote recente; goldens não executados. | Contrato de audiência/mídia/retenção e E2E; 10 h. |
+| 22 | `agora` | `PrincipalNowPreviewPage` e entrada pelo card; publication page/controller separados. | Viewer é visualização; create/publish/expire não têm contrato produtivo aprovado. | Rota Agora 6/6; regressões viewers 73/73; foco, `Esc`, pop e deep link cobertos. Sem golden. | Provar origem real no HEAD e só então lifecycle/R2; 8 h. |
+| 23 | `momentos` | `PrincipalMomentsPreviewPage`; tab real/fechamento retorna a Acontece; publicação separada. | Viewer é visualização; create/publish/remove sem wiring produtivo aprovado. | Route 4/6→6/6 e regressões NG 73/73; `Esc`/foco cobertos. Sem golden. | Provar origem/tab e implementar lifecycle somente após contrato; 8 h. |
+| 24 | `principal_profile` | For You route/preview, `PrincipalProfilePreviewPage` e circulares. | Preview estático sem backend/PII; edição real não está ligada a account profile. | 9/9 NG; 375 light e 1440 dark a 200%, tabs/agenda sem overflow no lote. Goldens excluídos. | Decidir campos/edição e revisar responsive/goldens; 8 h. |
+| 25 | `child_safety` | Controller/repository e páginas de lista/criança/autorização. | Adapter Supabase existe; composição e autorização server-side precisam de prova atual. DEV repository separado. | Gates focados históricos, sem E2E/golden atual. | Testar lifecycle, suspend/revoke, unauthorized, 200% e visual; 10 h. |
+| 26 | `health_care` | Directory/controller/forms; detail legado removido conforme spec B2. | Prod FC e adapter desconectado; DEV fixture própria. `health-care.detail` permanece decisão bloqueada. | Health B2 28/28 + 42/42 e rotas 6/6; 12 PNGs Health M fora do commit. | Reconciliar PNGs, detail/arquivos e backend sensível; 12 h. |
+| 27 | `medication` | Directory/form existem, rotas normais retornam unavailable; detail legado removido. | Zero wiring do adapter Supabase nos roots; OQ-003/OQ-040 bloqueiam list/create/detail/edit/evidence. | Rotas Health 6/6 e auth scope 5/5 no fechamento; sem golden. | Decisão jurídica/produto antes de qualquer UI produtiva; 12 h após decisão. |
+| 28 | `imports` | Directory/wizard/controller e New Dialog com shell/X/Cancelar. | Imports A/backend amplo não foi integrado; pacotes parciais/callback não são equivalentes. | Dialog funcional 4/4 no lote; provenance/golden negados e não promovidos. | Fechar prerequisite canônico, upload/preview/confirm/status/download e golden; 16 h. |
+| 29 | `profile_files` | Superfícies Access files/import/export; callbacks/repositories ainda precisam de mapeamento nominal. | Prod deve permanecer FC até gateway worker-only/ticket sanitizado; não expor bucket/path. | Auditoria source-only; sem teste integrado ou golden atual. | Wiring guards, lifecycle, erro/reload e autorização; 12 h. |
+| 30 | `audit` | `AuditDirectoryPage`, controller e repository Supabase. | Deve sanitizar dados, paginar e proteger export; prod/DEV e capability não foram revalidados nesta passagem. | Inventário/rota apenas; sem suíte funcional/visual recente. | NG list/filter/detail/export + 200% e E2E; 8 h. |
+| 31 | `support` | `SupportPage`, Kanban/tabela e paginação compartilhada. | Backend produtivo permanece FC; create/detail/reply/close não podem aparentar persistência. | Support 54/54 + paginação 15/15; 375/768/1024/1440 e texto 1.5/2.0, teclado/semântica. Sem golden. | Provar negativos detail/reply/close, backend e visual; 8 h. |
+| 32 | `account` | Profile/settings pages, account/preferences controllers e Auth logout. | Theme local; profile/settings FC; MFA/sessions dependem de Auth e revogação real. | Auditoria focada; oito PNGs de conta divergentes, sem rerun golden. | Testar 375–1440/200%, foco, sessão revogada e wiring; 8 h. |
+| 33 | `catalog` | Catalog host/validator/sync; publicação não possui contrato produtivo aprovado. | Ferramenta é local até decisão; não inventar backend. HEAD registra 8 fingerprints; fontes preparadas, não commitadas, chegam a 2. | Catálogo 1A commitado; validator final do HEAD precisa ser reexecutado em snapshot limpo. | Integrar/revalidar 6 mecânicos e decidir 2 Forms; 6 h. |
+| 34 | `plans` | Directory/form/wizard; fake catalog ainda caracteriza fluxo DEV/protótipo. | Activate/assign sem contrato; nenhuma composição produtiva deve usar fake. | Evidência funcional/visual histórica, sem rerun atual/golden. | Decidir cobrança/autoridade e provar list/create/edit/activate/assign; 10 h. |
+| 35 | `meal_plans` | Directory/wizard e repositories de plano/imagem. | Adapters Supabase existem, mas publish, mídia e dados sensíveis não têm closure integrada. | Characterization 1/1 para interpolações; restante não foi rerodado, sem golden. | Lifecycle, 200%, mídia, publish e negativos; 12 h. |
+| 36 | `internal_users` | Platform user directory/form; ações abrir/desativar permanecem indisponíveis. | Fake só pode atender DEV; criação/edição local não prova Auth privilegiado, suspensão ou MFA. | Formulário local-green histórico; nenhum E2E/golden. | Decidir domínio/papéis e testar list/create/edit/suspend/MFA; 10 h. |
+| 37 | `error_pages` | Rotas 403/404/409/500/503 e retry tipado. | Mapper deve ocultar SQLSTATE/PostgREST/Edge e repetir somente operação idempotente. | Rotas de erro 7/7 em lote Health; baselines protegidas não foram rerenderizadas. | Provar matriz real de erros, teclado, reload/retry e visual; 6 h. |
+
+**ETA Flutter supersedente:** 79–98 h líquidas mais prováveis, fora espera,
+Supabase e E2E. A tabela detalhada acima conserva valores históricos por linha,
+mas eles não devem mais ser somados.
+
+### 7.3. Crosswalk 207 Flutter → 202 históricas → 180 ações MVP
+
+O rastreador Flutter conta 207 ações porque inclui cinco ações de shell que não
+representam operação Supabase autônoma. Elas permanecem rastreadas no
+`screen_id` `shell`, mas ficam fora do denominador normativo integrado de 202 e
+não recebem RPC, tabela, policy ou Edge inventada.
+
+| `action_id` exclusivamente Flutter | Correspondência integrada | Estado FLU | Prova ainda necessária |
+|---|---|---|---|
+| `shell.load` | Pré-condição transversal de todas as rotas, sem ação backend própria. | `local-green` | Sessão válida/inválida, ausência de dado pré-auth e reload. |
+| `shell.navigate` | Navegação client-side para a ação normativa de destino. | `local-green` | Menu, deep link, teclado, foco e rota não autorizada. |
+| `shell.switch-context` | Dispara futuras leituras normativas no novo contexto, mas não é CRUD autônomo. | `audited` | Limpeza de cache, tenant A/B e nova leitura autorizada. |
+| `shell.unauthorized` | Estado de apresentação para negação produzida pela ação normativa. | `local-green` | Acesso direto, sem vazamento prévio e retorno de foco. |
+| `shell.reload` | Reexecução client-side da leitura normativa correspondente. | `audited` | Retry idempotente, sessão revogada e snapshot limpo. |
+
+Assim, as 37 famílias permanecem no controlador, mas as contagens integradas
+abaixo consideram apenas os 202 IDs com contrato ponta a ponta:
+
+| Estado integrado recalculado | Quantidade | Regra aplicada |
+|---|---:|---|
+| `not-reviewed` | 38 | Ambos os lados têm evidência parcial/local, sem E2E atual. |
+| `blocked-supabase` | 113 | Flutter permite a prova ou está FC, mas backend/ledger/deploy/security impede. |
+| `blocked-decision` | 51 | Contrato, permissão, escopo jurídico ou comportamento ainda não foi aprovado. |
+| `blocked-flutter` | 0 | Nenhuma ação fica bloqueada exclusivamente pelo Flutter após considerar blockers Supabase/decisão. |
+| `ready-for-e2e` | 0 | Nenhuma ação cumpriu os pré-requisitos remoto, negativos e cross-tenant. |
+| `e2e-failed` | 0 | Nenhuma prova E2E autorizada foi executada nesta passagem. |
+| `verified-e2e` | 0 | Nenhuma ação cumpriu a regra objetiva de conclusão. |
+
+Precedência conservadora usada por ação: `blocked-decision` quando falta decisão;
+caso contrário `blocked-supabase` quando backend/ambiente impede; caso contrário
+`blocked-flutter`; somente depois `not-reviewed`. Um lote `local-green` nunca
+gera `ready-for-e2e` automaticamente.
+
+### 7.4. Próxima prova integrada e ETA total
+
+1. Revalidar HEAD, catálogo, rotas e composição compartilhada: 2–4 h.
+2. Fechar as camadas por família conforme os ETAs supersedentes.
+3. Executar as 180 ações MVP por harness compartilhado e verticais, sem repetir
+   pgTAP/RLS ou testes Flutter já comprovados: 42–65 h adicionais de integração.
+4. Rodar regressão/evidências finais uma vez: 4–6 h já incluídas na integração.
+
+O ETA total usa pipeline: **50–76 h de calendário técnico** com cinco worktrees
+ponta a ponta e o máximo útil de subagentes, usando **76 h como compromisso** e
+**96 h como teto conservador**. Os números antigos de 388 h Flutter, 25–39 dias
+E2E e 10–17 semanas estão substituídos e permanecem apenas nos checkpoints
+históricos.
+
+### 7.5. Modelo para evidência E2E futura
+
+```md
+### INT-SCREEN-NNN — `action_id`
+
+- Tela/rota:
+- Estado Flutter e referência FLU:
+- Estado Supabase e referência SUP:
+- Estado integrado:
+- Ambiente/projeto remoto:
+- Usuário, papel, tenant e pré-condições:
+- Caminho Flutter → repository → RPC/query/Edge → tabela/storage:
+- Cenário permitido:
+- Cenários negado, cross-tenant e sessão/revogação:
+- Persistência após reload/nova sessão:
+- Efeitos laterais, auditoria e notificações:
+- Testes/comandos e resultado em linguagem simples:
+- Evidências:
+- Arquivos/migrations/functions envolvidos:
+- Pendências e bloqueio:
+- Próxima ação:
+- Tempo estimado restante:
+- Última verificação:
+```
+
+## 8. Protocolo de pausa e retomada
+
+Antes de pausar, atualizar os três rastreadores no mesmo checkpoint. Registrar:
+
+- fase, `screen_id` e `action_id` atuais;
+- último resultado reproduzível e ambiente usado;
+- alterações locais, migrations/Edge implantadas e alterações não implantadas;
+- primeiro teste falhando ou primeira prova ausente;
+- bloqueio, responsável/decisão necessária, próxima ação e tempo restante.
+
+Ao retomar, reler os três documentos, conferir o Git e o remoto e começar pela
+primeira ação aplicável que não esteja `verified-e2e`. Evidência antiga deve ser
+reexecutada se código, schema, policy, configuração ou ambiente mudou.
+
+### 8.1. Checkpoint vivo do pacote Avançado — 2026-08-26
+
+| Faixa | Owner | Tela/ação exata | Estado e evidência atual | Próximo passo | ETA |
+| --- | --- | --- | --- | --- | ---: |
+| 0–60 min | Flutter | Catálogo — `catalog.validate` e `catalog.sync` | `catalog.validate` local-green após 137 testes do Catálogo, oito testes Superadmin e 107 testes de `coelo_ui_admin`; `catalog.sync` bloqueado por decisão de Forms Response. | Triagem somente leitura dos 100 erros do analyzer global; não iniciar Unidades. | 30–60 min |
+| 0–120 min | Supabase | Fundação/Unidades — `SUP-GEN-002`, `SUP-GEN-016`, `units.import`, `units.export` | Correção local concluída: timestamps implantados restaurados; mirror 156/156; 3/3 Deno import, 2/2 Deno export e 48/48 pgTAP verdes; zero segredo; nenhuma mutação remota. | Handoff à Final Higenização; continuar os cinco aliases de Cardápios separadamente. `units.import/export` permanecem `audited`, não `done`. | checkpoint concluído |
+| 120–180 min | Flutter | Acompanhamento — `students.list` | Grupo Flutter fechado: 22/22 testes e analyzer focado verdes; erros globais 100 → 38, `student_tracking` 62 → 0 e warnings 29 → 8. Legado recuperável fora da árvore. | Avançar a Forms — 34 erros; manter gerenciamento e integração Acompanhamento abertos. | checkpoint concluído |
+| 120–180 min | Supabase | Fundação/Cardápios — seis aliases de migrations | Seis timestamps implantados restaurados localmente; mirror 156/156, ledger/cleanup Deno 4/4, segurança/lifecycle 21/21 e mídia/receipts 30/30 verdes; fingerprints conferidos no remoto somente leitura. O subsistema local está auditado, mas as seis ações da tela continuam `blocked-decision`. | Classificar as 17 migrations remotas ainda sem versão canônica contra as 70 apenas locais; não promover tela ou E2E. | 20–40 min para classificação |
+| 180–300 min | Supabase | Fundação — `SUP-GEN-002` / continuidade do ledger | Após recuperar Chat e adicionar hardening forward-only, catálogo/mirror estão 173/173 com hash idêntico; todas as 103/103 migrations remotas têm contraparte canônica e zero remote-only. Checkpoint amplo: 438 asserts pgTAP + três Deno anteriores. | Classificar migrations locais futuras, provar reset limpo descartável e executar lint/regressão global; não concluir `SUP-GEN-002` antes desses gates. | 2–4 h |
+| 300–420 min | Supabase | Chat — `chat.open`, `chat.attach`, `chat.revoke` | RED provou coluna inexistente na invalidação de anexos e acesso preservado após revogar membership. Correção forward-only passou 43/43 pgTAP com rollback e 2/2 Deno; secrets scan limpo, sem remoto. | Provar Flutter/cache/Realtime, arquivo real, acesso permitido/negado, tenant A/B, remoto autorizado e E2E; manter Chat `audited`. | 1–2 d com E2E |
+| 300–420 min | Supabase | Unidades — migrations `20260820140933`–`935` | Proveniência local confirmada em `7bc79256`; regressão ampliada de Unidades passou 180/180. Trabalho deve ser preservado/integrado, sem promover ação/E2E. | Manter migrations e testes no lote nominal; composição Flutter produtiva e remoto continuam separados. | checkpoint concluído |
+| 300–420 min | Supabase | Perfis/Modelos de acesso — `access-profiles.*`, `access-models.*` | Harness pgTAP corrigido de forma transacional; oito REDs eram falsos positivos de formatação/ordem. Regressão final: seis arquivos, 162/162 asserts verdes; migrations/RPCs/RLS/grants não foram alterados. O subsistema local está auditado, mas as ações produtivas permanecem fail-closed. | Flutter mapear os três erros sem compor repository estendido; depois preservar testes incompatíveis e alinhar fakes ao contrato canônico. Remoto/E2E continuam abertos. | Flutter 45–70 min; integração 2–3 d + E2E |
+| 180–300 min | Flutter | Forms — `forms.respond` e `forms.edit` | `forms.respond` fechado no recorte local fail-closed: analyzer 32 → 0 nessa ação, teste 1/1, recovery 7/40944/SHA256 preservado e diagnóstico Catálogo mantido. Forms ainda tem dois erros em `forms.edit`; app global tem seis erros e 54 issues totais. | Inventariar somente `forms.edit` antes de corrigir; manter Response produtiva, backend e E2E abertos. | `forms.respond` concluído; `forms.edit` 45–75 min |
+| 300–360 min | Flutter | Forms — `forms.edit` | Componente local/catalogado fechado: duas deleções no teste dormant, 24/24 testes non-golden, Forms dois → zero erros e Catálogo com somente `superadmin.forms-response`. App ainda tem quatro erros e 52 issues totais. | Inventariar Perfis de acesso sem corrigir até alinhar o checkpoint Supabase; manter Units congelada. | checkpoint concluído |
+| 360–480 min | Flutter | Perfis/Modelos de acesso — wiring fail-closed e `access-models.filter` | Opção A concluída: backup 3/12539/SHA256 preservado; dois testes incompatíveis removidos da árvore; fake untracked alinhado. Nove testes independentes passaram, incluindo 768 px/200%; Access três → zero erros; composition root permanece 503. | Inventariar somente o erro restante `units.list`; não compor import/export até novo contrato. | checkpoint concluído |
+| 480–540 min | Flutter + Integrador | Unidades — `units.list`, `units.filter`, `units.error`, `units.reload`, `units.access-denied` | Patch Flutter de uma linha passou 16/16 Units e 5/5 routers, 375–1440/200%, zero erros no analyzer; 47 warnings/infos permanecem. Supabase inventariou as quatro ações novas; todos os 10 IDs continuam sem backend remoto/E2E e produção usa gateway Unavailable. | Manter import/export bloqueados; próximo passo vertical exige contrato separado para compor gateway, arquivo real, negativos, tenant A/B, revogação, reload e remoto autorizado. | UI concluída; integração 2–4 d + E2E 1 d |
+| 540–600 min | Flutter | Acontece + Perfis de acesso — `acontece.feed`, `access-profiles.list`, `access-profiles.detail` | Duas derivações locais mínimas removidas; 20/20 testes Principal e 5/5 Access passaram. Analyzer global está em zero erros e zero warnings, com 45 infos ainda abertas; nenhuma ação integrada foi promovida. | Não tratar infos mecanicamente; priorizar apenas grupo com efeito funcional demonstrável. | checkpoint concluído |
+| 540–600 min | Supabase + Integrador | Convites — `invites.list`, `invites.create`, `invites.detail`, `invites.resend`, `invites.revoke` | Backend local passou 60/60 pgTAP; Flutter permanece local-green. A migration não consta nas 103 migrations remotas consultadas, e delivery/aceite Auth reais não foram provados. | Manter as cinco ações `blocked-supabase`; exigir autorização remota separada, reset limpo, reload e E2E antes de promoção. | integração 2–3 d + E2E 1 d |
+| 600–660 min | Supabase + Integrador | Auditoria — `audit.list`, `audit.filter`, `audit.detail`, `audit.export` | Backend local passou 78/78; regressão consolidada de 14 arquivos/395 asserts. Migration `20260812000847` preservada, canônico/espelho iguais e nenhum grant produtivo ampliado. | Mapear repository/composição Flutter e provar minimização, A/B, ID/filtro adulterado, reload, CSV real, reset limpo, remoto autorizado e E2E. | list/filter/detail 2–4 h cada; export 6–12 h; E2E proporcional |
+| 660–720 min | Supabase + Integrador | Avaliações — `assessments.entry`, `assessments.gradebook`, `assessments.close`, `assessments.reopen`, `assessments.detail` | Backend local passou 85/85; regressão da janela chegou a 16 arquivos/523 asserts. Quatro migrations estão no ledger local, com mirrors iguais, mas ausentes no remoto consultado. | Manter as cinco ações `blocked-supabase`; provar Flutter, concorrência/versão, capability, A/B, reload, reset limpo, remoto autorizado e E2E. Student Tracking 43/43 não promove `students.*`. | integração 2 d + E2E 1 d |
+| 720–840 min | Flutter + Supabase + Integrador | Unidades — `units.import`, `units.export` | Pacote A compôs o adapter e passou 27/27 local, mas o remoto mostrou boundary incompatível. Candidato preservado externamente em 4 arquivos/27596 bytes/SHA256 `f07da81fff31a55ade80da1a9c101da9b93a785edf0ce27ffcc29d0d6b64ad1f`; reversão seletiva retornou produção ao fail-closed e 26/26 testes passaram, sem perder deltas concorrentes. | Backend D1 escolheu o hub `import-export-jobs`; executar D2 REDs comportamentais de paridade, revogação, replay, A/B e IDs antes de D3. Sem remoto/deploy. | D local 12–23 h; E autorizado 11–19 h; Completa 3–5 d |
+| 840–900 min | Supabase + Integrador | Unidades — `units.import` D2 | REDs iniciais executados isoladamente: Deno 2/5, com falhas em registro `verify_jwt`, chamada da Edge legada ao RPC fechado e compensação do objeto após falha; pgTAP 10/11, com retry aceitando `request_id` nulo. Transação terminou em rollback. | Fechar somente a matriz D2 e as lacunas de ameaças; D3 continua proibido até contrato/RED completos. | D2 restante 2–4 h |
+| 900–960 min | Supabase + Integrador | Unidades — `units.import` D2 completo | Revalidação manteve Deno 2/5 e pgTAP 10/11; nenhum defeito de harness. Cobertura controlada existe para AAL/capability, ownership A/B, revogação e replay; faltam identidades/HTTP, fixtures CSV/XLSX A+B, duas sessões concorrentes e Storage real. | D3a autorizado apenas para os três REDs Deno. O RED SQL de `request_id` nulo permanece até autorização explícita de migration forward. | D3a 3–5 h; D3b/fixtures depois |
+| 960–1080 min | Supabase + Integrador | Unidades — `units.import` D3a | Três REDs Deno foram corrigidos 3→2→1→0: config registra JWT, legado usa RPCs do hub sem reabrir grant e falha pós-upload remove somente o objeto criado pela tentativa. Regressão 14/14, checks e secrets verdes. | Executar fixtures/negativos locais sem migration. O pgTAP de retry nulo continua 10/11 e exige autorização separada para migration forward. | fixtures/negativos 4–7 h; migration 1–2 h |
+| 1080–1260 min | Supabase + Integrador | Unidades — `units.import` D3b | Fixtures reais e handler HTTP produziram matriz 116 casos: 113 GREEN/3 RED. Path adulterado alcança Storage; membership revogada ainda alcança upload contract; retry nulo é aceito. Regressão 14/14 Deno + 58/58 pgTAP; rollback deixou zero fixtures. | Corrigir somente path na Edge. Os dois REDs SQL exigem migration forward autorizada; purge de órfão e concorrência multi-conexão permanecem separados. | path 0,5–1,5 h; migrations 2–4 h; purge/concorrência 2–4 h |
+| 1260–1320 min | Supabase + Integrador | Unidades — `units.import` D3c-EDGE | Path adulterado foi fechado com validação server-owned antes do Storage; RED 0/1→1/1, D3b 10/10 e regressão Deno 14/14. | Provar concorrência multi-conexão e falha de delete sem migration; manter membership/retry nulo bloqueados por autorização forward. | 2–4 h |
+| 1320–1500 min | Supabase + Integrador | Unidades — `units.import` D3d | Concorrência real multi-conexão passou 1/1 em banco descartável: operações idênticas convergiram e payload/checksum divergentes foram negados. RED cleanup 0/1 prova objeto órfão quando delete falha, embora o job falhe auditavelmente. Ambiente terminou sem resíduos. | Exige autorização explícita para migrations forward de membership/retry e para fila/worker/infra de cleanup; não iniciar sem grant. | migrations 2–4 h; cleanup 4–8 h |
+| 1500–1740 min | Flutter + Supabase + Integrador | Unidades — `units.export` D1/D2, D3a/DTO e HARDEN A+B | Flutter endureceu gateway e UI em cinco paths: 41/41 testes passaram, analyzer terminou com zero erros/zero warnings e 45 infos, sem composição produtiva. Supabase fechou parte do boundary/DTO local: 47 testes Deno, 36 verdes e 11 REDs preservados; import regressão 7/7. | Produção permanece Unavailable/fail-closed. Antes de compor, decidir escopo/autorização e concluir migrations forward, worker/grants, revogação pós-complete, retenção/cleanup/replay, paridade remota e E2E. | backend 11–18 h local + 6–10 h remoto autorizado; Completa import+export 3–5 d |
+| 2026-08-26 16:44–16:51 BRT | Flutter + Supabase + Integrador | Unidades — `units.export`, gate snapshot pós-`await` | RED confirmou abertura de artefato obsoleto após rebuild com nova query; correção mínima revalida a assinatura e o widget passou 21/21. Baseline Deno renovada ficou 33/44, preservando os mesmos 11 REDs backend. Os três rastreadores foram sincronizados. | Gate Flutter local concluído; ação integrada continua `blocked-supabase`, produção `Unavailable`, zero remoto mutável e zero E2E. Próximo gate: request/status/download do gateway. | recorte 1/7; ETA restante 8 h |
+| 2026-08-26 16:51–16:58 BRT | Flutter + Supabase + Integrador | Unidades — `units.export`, gate request/status/download | RED confirmou que o gateway pulava `status`; correção introduziu a chamada e valida ID/DTO/estado antes de download. Gateway 24/24, widget 21/21 e analyzer focado sem issues. Os três rastreadores foram sincronizados. | Gate Flutter local concluído; backend segue 33/44, ação integrada `blocked-supabase`, produção `Unavailable`, zero remoto mutável e zero E2E. Próximo gate: replay pós-sucesso. | recorte 2/7; ETA restante 6 h 45 min |
+| 2026-08-26 16:58–17:00 BRT | Flutter + Supabase + Integrador | Unidades — `units.export`, replay pós-sucesso | RED isolado provou rematerialização; GREEN reutiliza job/path canônico sem materializar, upload ou assinatura precoce. Deno avançou de 33/44 para 34/44; `deno check` GREEN. Os três rastreadores foram sincronizados. | Gate Supabase local concluído; 10 REDs permanecem, ação integrada `blocked-supabase`, produção `Unavailable`, zero remoto mutável e zero E2E. Próximo gate: resposta de conclusão perdida. | recorte 3/7; ETA restante 5 h 15 min |
+| 2026-08-26 17:01–17:03 BRT | Flutter + Supabase + Integrador | Unidades — `units.export`, fronteira pós-conclusão | Dois REDs ficaram GREEN: resposta perdida e falha de assinatura já não removem/rebaixam artefato após tentativa de conclusão. Deno 36/44, Flutter 45/45, `deno check` GREEN. Os três rastreadores foram sincronizados. | Dois gates locais concluídos; 8 REDs permanecem, ação integrada `blocked-supabase`, produção `Unavailable`, zero remoto mutável e zero E2E. Próximo gate: reautorização pós-complete. | recorte 5/7; ETA restante 3 h 45 min |
+| 2026-08-26 17:04–17:05 BRT | Flutter + Supabase + Integrador | Unidades — `units.export`, reautorização pós-complete | Terceira autorização foi inserida após conclusão e antes da signed URL; vínculo revogado não chega ao Storage. Pós-sucesso 4/4, Deno 37/44, `deno check` GREEN. Os três rastreadores foram sincronizados. | Gate local concluído; 7 REDs permanecem, ação integrada `blocked-supabase`, produção `Unavailable`, zero remoto mutável e zero E2E. Próximo gate: worker-only delegation. | recorte 6/7; ETA restante 2 h 45 min |
+| 2026-08-26 17:05–17:10 BRT | Flutter + Supabase + Integrador | Unidades — `units.export`, delegação worker-only | Segredo interno dedicado protege hub→worker; JWT direto recebe 403 antes de RPC. Unit-export 41/47, import hub 22/23, Flutter 45/45; README registra configuração coordenada. Os três rastreadores foram sincronizados. | Pacote principal local 7/7 concluído; ação integrada continua `blocked-supabase`, produção `Unavailable`, segredo/deploy remoto não autorizados, zero E2E. Próximo seguro: decidir grants/retention/cleanup antes de extensão. | recorte 7/7; ETA do pacote principal 0 min |
+| 2026-08-26 17:10–17:12 BRT | Integrador | Encerramento e handoff | Recorte 100,00% (7/7), restante 0,00% (0/7); backlog integrado 0,00% (0/207), restante 100,00% (207/207). Handoff nominal enviado à tarefa Final Higenização. | Tempo mensurável 28 min desde o marcador 16:44; inventário anterior não calculável com precisão. Nenhuma ação integrada foi promovida; extensões exigem decisão/migration/configuração ou autorização remota. | pacote principal encerrado; residual local 6–15 h + remoto 6–10 h |
+| 2026-08-28 | Supabase + Integrador | Instituições — Checkpoint seguro 43, `institutions.edit` ROOT+ADDRESS | Backend local: spec 042 SHA-256 `273578B5…`, migration canônica/mirror `20260828000500` SHA-256 `87996FEE…`, pgTAP SHA-256 `8167B71B…` plano 47. Replay 47/47 e regressões Auth 29/29 + detalhe 26/26 + listagem/filtros 35/35 totalizaram 137 testes, todos verdes. Corridas reais provaram 1 sucesso/1 concurrent e request duplicado com 1 mutação/1 replay; persistência/detail reload, receipt, idempotência e auditoria fail-closed foram exercitados. Mirror 109/109 e teardown sem resíduos Docker. | Máximo `local-green`: zero remoto, Flutter ou E2E; integrado nunca concluído e produto permanece 0/207. Contacts, create/activation, plan, branding, reps/admins, status/domain/document ficam fora; contact exige protocolo comum/versionado. Knowledge `no-op`, fonte canônica spec 042. | aproximadamente 7 h 30 min de cerca de 10 h; restante aproximado 2 h 30 min, sem precisão falsa |
+| contínuo | Integrador | Auth — `auth.mfa` | 15/15 testes do pacote `coelo_auth` verdes confirmam o contrato booleano atual; ele não carrega evento, AAL atual/próximo nem downgrade. Owner obrigatório e vários gates backend AAL2 já existem; OQ-006 mantém os demais perfis privilegiados em decisão aberta. | Especificar step-up Flutter para o Owner sem esperar OQ-006; decidir demais papéis separadamente e provar AAL1 negado/AAL2 permitido por ação. | Owner 1–2 d + E2E 1 d; decisão dos demais 0,5 d |
+| contínuo | Integrador | `units.import` e `units.export` | Cadeia local mapeada e endurecida por partes: widgets → gateway → RPCs/Edges → RLS/Storage. O auth scope produtivo continua injetando gateway Unavailable; há zero E2E. | Não compor até fechar decisões e REDs restantes. Depois: migration lifecycle autorizada, regressão local, staging/remoto, tenant A/B, sessão/vínculo revogado, arquivos reais, URL/expiração, reload e cleanup. | 11–18 h local + 6–10 h remoto; Completa 3–5 d |
+| contínuo | Final Higenização | Git/worktrees | Ciente dos ownerships; nenhum stage/commit global autorizado pelos owners. | Preservar paths ativos e receber handoff nominal antes de consolidar. | conforme handoff |
+
+**Ponto de retomada seguro:** `units.list` e os estados recuperáveis do diretório
+estão local-green. Para `units.export`, Flutter HARDEN A+B terminou com 41/41 e
+Supabase checkpoint 21 terminou com 36/47 testes Deno verdes, preservando 11
+REDs; o tracker Supabase está no SHA-256 `4EE497D3…`. O Pacote A continua
+preservado externamente e revertido, portanto produção permanece fail-closed e
+há zero E2E. O contrato conceitual de OQ-034/OQ-035 foi encerrado pela spec 039,
+mas sua implementação continua bloqueada. O próximo passo não é compor nem
+promover recoveries em lote: primeiro comprovar equivalência/proveniência por
+versão remota, triar cada migration apenas local por pacote e decisão, resolver
+OQ-032, obter autorização nominal para migrations forward e fechar worker/grants,
+revogação, retenção, cleanup, replay e resposta pós-complete.
+Somente depois executar regressão local fresca, staging/remoto autorizado e E2E
+Flutter–Supabase com tenant A/B, sessão/vínculo revogado, arquivos reais,
+expiração e reload. Migration, SQL mutante e deploy remoto exigem autorização
+explícita separada.
+
+Para Instituições, o Checkpoint seguro 43 prova somente o backend local da fatia
+ROOT+ADDRESS de `institutions.edit`: 47/47 no pacote, 137/137 com regressões,
+concorrência real e reload persistido. Não houve Flutter, remoto ou E2E; o
+tracker integrado permanece aberto, sem ação promovida, e a métrica geral segue
+0/207. Contacts só pode avançar após protocolo comum e versionado entre writers.
+
+Para Unidades, o Checkpoint seguro 44 prova somente o backend local de
+detail/reload v2: UNIT 31/31 e regressoes Auth 29/29, detalhe de Instituicao
+26/26, listagem/filtros 35/35 e EDIT CORE 47/47, totalizando 168/168. Nao houve
+Flutter, remoto mutavel ou E2E e nenhuma acao foi promovida. A contraprova
+read-only posterior preserva esse estado como `local-green`, mas acrescenta
+`blocked-schema/provenance`: o remoto implantado usa
+`unit_type_id/unit_types`, enquanto DETAIL local usa
+`institution_type_id/institution_types`. As tabelas filhas remotas estao
+FORCE RLS e usam `units.read` escopada no realm legado; nao houve prova de
+cross-tenant fora do escopo. Design A permanece bloqueado e a metrica geral
+continua 0/207.
+
+**Gate estrutural deste checkpoint:** os três rastreadores possuem os mesmos 207
+`action_id`; cada rastreador contém 207 linhas únicas, zero duplicadas, e o
+integrado possui zero linhas com quantidade inválida de colunas. Os 22 gates
+`SUP-GEN` são um conjunto transversal separado: o universo estrito tem 229
+unidades, 0 `done`; a métrica de produto/E2E permanece 0/207 ações.
+
+## 9. Relatório obrigatório ao usuário
+
+Usar linguagem direta e explicar números. Informar sempre:
+
+1. posição atual na ordem;
+2. tela, subtela e ação trabalhadas;
+3. o que foi corrigido no Flutter;
+4. o que foi corrigido no Supabase;
+5. como foi provado que funcionam juntos;
+6. o que falta e por que a tela ainda não é 100%;
+7. bloqueio e decisão necessária;
+8. próxima ação e tempo estimado restante por família e total.
+
+Na primeira ocorrência, escrever o termo técnico e seu significado cotidiano.
+Por exemplo, não dizer apenas `54/54`: dizer “54 testes foram executados e todos
+passaram; isso não prova ações que não possuem teste”.
+
+Nunca dizer “tela concluída” se apenas um lado estiver verde.
+
+## 10. Prompt mestre — finalização Flutter integrada ao Supabase
+
+```text
+Use obrigatoriamente coelo-flutter-supabase-review. Ela deve chamar sempre
+coelo-ui, rtk, ponytail, flutter-dart-code-review, o plugin Supabase, supabase e
+supabase-postgres-best-practices. Deve também consultar coelo-flutter-review e
+coelo-supabase.
+
+Se eu ainda não tiver informado um orçamento, pergunte somente: “Quanto tempo
+total você quer investir nesta atividade?”. Aguarde e não corrija nada. Se o
+tempo já estiver na minha mensagem, não pergunte novamente.
+
+Depois de saber o orçamento, leia integralmente, nesta ordem: AGENTS.md,
+docs/reviews/coelo-flutter-pendencias.md,
+docs/reviews/coelo-supabase-pendencias.md e
+docs/reviews/coelo-flutter-integrado-supabase-pendencias.md.
+
+Comece pela Fase 0, atualize o snapshot e siga a ordem obrigatória. Trabalhe em
+fatias verticais: para cada `action_id`, revise/corrija Flutter, Dart, repository,
+contrato Supabase, schema, RLS, RPC/Edge/Storage, implantação e testes. Depois
+execute o fluxo real permitido, os cenários negados e cross-tenant, recarregue a
+tela ou sessão e confirme persistência, auditoria e efeitos laterais aplicáveis.
+
+Antes de alterar qualquer coisa, inventarie as pendências Flutter, Supabase e
+integradas. Apresente tabela com pendência por lado, nível mínimo, motivo/risco,
+dependências, ambiente, tempo recalculado, o que cabe no orçamento e o que
+continuará pendente. Registre objetivo, incluído, fora de escopo, ordem, critério
+de parada e evidências. Aceite todas as pendências, todas as telas, macrotema,
+macrotema + X telas, X telas na ordem ou X ações específicas.
+
+Intermediária é o mínimo recomendado apenas para baixo ou médio risco. Auth,
+RLS, autorização, cross-tenant, dados sensíveis e arquivos privados não podem
+receber Básica. Somente Completa pode sustentar conclusão integral e exige
+Flutter, Supabase e teste ponta a ponta verdes. Recomende o pacote, peça minha
+confirmação, pare e aguarde. Só depois execute as correções autorizadas.
+Confirmação local não autoriza migration, deploy ou alteração remota.
+
+Use Criar/Editar Instituição como baseline administrativa do Flutter. Respeite o
+Design System, shell, contêiner macro, flyout, filtros, tabela/Card, diálogos,
+wizard, calendário, espaçamento, hover, acessibilidade e responsividade. Não use
+UI para substituir autorização de backend. Não mantenha fake, fixture, callback
+vazio ou rota /dev em caminho declarado produtivo.
+
+Não considere uma família pronta apenas porque listar ou criar funciona. Verifique
+também detalhe, editar, publicar/ativar, excluir/revogar, arquivos, erro, sem
+permissão, sessão revogada, reload e chat quando aplicáveis. “Todos os testes
+executados passaram” só prova o conjunto executado; explique quantos e quais.
+
+Atualize os três rastreadores após cada ação. Só marque `verified-e2e` quando a
+regra objetiva de conclusão estiver integralmente comprovada no ambiente correto.
+Se houver bloqueio de decisão, registre-o e continue apenas as ações independentes.
+
+Informe sempre posição, correções Flutter, correções Supabase, prova integrada,
+pendências, bloqueios, próxima ação e tempo estimado restante. Antes de pausar,
+deixe os três Markdown atualizados para retomada sem depender desta conversa.
+```
+
+## 11. Histórico
+
+| Data | Mudança |
+|---|---|
+| 2026-08-28 | Checkpoint seguro 44 registrou Unidades detail/reload v2 somente no backend local: spec 043 aprovada sem criar/restaurar `units.read/create/update`, migration/mirror `20260828002000` SHA-256 `0943AF7A…`, pgTAP plano 31 SHA-256 `B75159BB…`, manifesto 110/110 e replay RED específico seguido de UNIT 31/31 mais regressões 29/29 + 26/26 + 35/35 + 47/47, total 168/168. Persistência/reload, plano efetivo determinístico, endereço/contato arquivado ausente e auditoria v2/v3 fail-closed foram provados; teardown sem resíduos. O P0 legado de `SELECT` direto/RLS sem escopo em `unit_addresses`/`unit_contacts` mantém domínio/cutover incompletos. Zero remoto, Flutter ou E2E; nenhuma das 207 ações foi promovida e o progresso permanece 0/207. Knowledge `no-op`, fonte canônica spec 043. |
+| 2026-08-28 | Checkpoint seguro 43 registrou `institutions.edit` ROOT+ADDRESS somente no backend local: spec 042, migration/mirror `20260828000500`, pgTAP plano 47, replay 47/47, regressões totalizando 137/137, concorrência real, persistência/detail reload, receipt/idempotência e auditoria fail-closed. Manifesto 109/109 e teardown sem resíduos. Zero remoto, Flutter ou E2E; integrado nunca concluído, 0/207 ações verificadas. Contacts e os demais domínios fora do slice permanecem bloqueados; knowledge `no-op`, fonte canônica spec 042. |
+| 2026-08-27 | Instituições ganhou listagem/filtros v2 somente no backend local: spec 041 refinou a spec 040, RPCs internas provaram escopo, MFA, roles, busca literal, paginação, 17 sorts, filtros/opções visible-only, ACL e audit. Replay isolado passou 35/35 e regressões Auth 29/29 + detalhe 26/26; page size Flutter 500/cutover, remoto e E2E permanecem pendentes, sem promoção das 207 ações. |
+| 2026-08-27 | Instituições ganhou somente detalhe/reload v2 no backend local: contrato técnico 040 aprovado, RPC aditiva com identidade interna, allowlist Owner/Operations/Auditor, Support/Content fail-closed, MFA, cross-tenant, auditoria e reload. Replay isolado passou 26/26 e P0/P1=0; contratos Flutter/legados não foram alterados, list/filter e escrita permanecem pendentes, zero remoto/E2E e as 207 ações integradas seguem sem promoção. |
+| 2026-08-27 | Fundação Auth/Supabase permaneceu RED contratual e sem promoção integrada: o draft local aplicou no stage truncado com hardening ACL e o pgTAP mínimo passou 13/13, mas OQ-037 impede fechar a auditoria de sessão válida sem vínculo interno sem inventar ator. Migration/teste seguem sem commit, zero remoto/Flutter/E2E e as 207 ações integradas permanecem inalteradas. |
+| 2026-08-27 | Consolidação Flutter/UI complementar: wizards Acontece/Momentos/Agora, shell único, Conteúdo somente `/dev`, Chat, Agenda/Permissões e responsividade de Medicação foram integrados em commits pequenos. Um P1 herdado de concorrência no Acontece foi fechado com mutex e ações fail-closed. Gate final: 58/58 testes não-golden e analyzer completo sem issues; nenhum backend/golden/remoto foi alterado e todos os estados integrados permanecem inalterados, com E2E 0/207. |
+| 2026-08-27 | Segunda reconciliação Supabase individual sem promoção integrada: `20260811215451_access_profile_management_v2.sql` foi restaurada do único blob Git compatível com o vetor do ledger remoto; a recovery posterior foi rejeitada. Canônico/mirror chegaram a 101/101 e o replay avançou até o próximo RED, ausência de `import_jobs.processing_state`. Teardown completo, zero mutação remota e zero E2E; as 207 ações integradas permanecem inalteradas. |
+| 2026-08-27 | Reconciliação Supabase individual sem promoção integrada: `20260812000847_audit_production.sql` foi restaurada ao blob histórico `5dea64a9` após o ledger remoto read-only confirmar as 12 substituições de identificador e os labels. Canônico/mirror ficaram 100/100 e idênticos; o replay isolado avançou do SQLSTATE `42601` para o próximo RED, ausência de `platform_permissions.module_label`, dependência ainda não promovida. Teardown completo, zero mutação remota e zero E2E; todas as 207 ações integradas permanecem inalteradas. |
+| 2026-08-27 | Baseline Supabase/Auth sem promoção integrada: spec 039 e ADR 0019 fixaram conta/e-mail Auth distintos no mesmo projeto, principal/link/membership internos, `session_id` revalidado, `platform.read` escopado, Owner AAL2 e envelope PostgREST 200 auditável. O manifesto v2 inventariou 100 canônicas, 175 recovery e 103 remotas em 186 versões, preservando seis conflitos textuais. Dois commits locais (`d6366d49`, `64308b19`) passaram reviews, knowledge gates, determinismo, autointegridade e secrets scan. Nenhuma migration/RPC/Function/Flutter foi alterada, o remoto recebeu somente `SELECT`, zero E2E foi executado e todos os estados integrados permanecem inalterados. Próximo gate: provar equivalência/proveniência por versão remota e triar as migrations apenas locais por pacote/decisão antes de qualquer replay isolado; não promover as 86 candidatas em lote. Tempo usado aproximado: 1 h; ETA do recorte backend 8–17 dias focados; backlog integral não calculável. |
+| 2026-08-26 | `groups.import`/`groups.export`: commit `81038c2b` removeu os falsos botões/SnackBars; RED→GREEN local e suíte do formulário 8/8. Flutter fica `audited`/fail-closed, Supabase `fail-closed` e integrado `blocked-supabase`; repository, jobs/Storage, RLS/Auth, tenant A/B, revogação, replay, reload, cleanup, remoto e E2E continuam pendentes. |
+| 2026-08-26 | `units.access-denied` foi comprovado localmente sem controles no estado final negado e permanece `blocked-supabase`; pré-resposta e cache/revogação seguem abertos. `units.people-export` foi criado como ação separada após remoção do falso sucesso; permanece `blocked-decision`/fail-closed, sem backend, remoto ou E2E. Contagem atual: 202 ações normativas + cinco shell = 207 Flutter. |
+| 2026-08-26 | Criação do controlador integrado; todas as 37 famílias permanecem abertas até prova por ação. |
+| 2026-08-26 | Snapshot histórico inicial: contribuição Supabase factual das 37 famílias e então 190 ações; cadeia backend esperada, filesystem/ledger/remoto, blockers, provas faltantes, ETAs e handoff Flutter; zero `verified-e2e`. |
+| 2026-08-26 | Snapshot histórico da passagem CReview Flutter no HEAD `447ac02c`: contribuição FLU detalhada por família/ação, wiring prod/DEV, estados UI, gates, acessibilidade, resíduos e ETAs; crosswalk então 195 Flutter → 190 integrados; contagem então 46 `not-reviewed`, 79 `blocked-supabase`, 65 `blocked-decision`, zero `ready-for-e2e` e zero `verified-e2e`. |
+| 2026-08-26 | Organização decisória sincronizada: Instituições foi decomposta em 12 ações; os três rastreadores agora enumeram os mesmos 201 IDs Flutter/Supabase, sendo 196 normativos integrados e cinco gates Flutter do shell; estados integrados atuais: 52 `not-reviewed`, 79 `blocked-supabase`, 65 `blocked-decision`, zero `ready-for-e2e` e zero `verified-e2e`. Consulta remota pelo plugin oficial foi somente leitura; nenhum código, migration, deploy ou ambiente remoto foi alterado. |
+| 2026-08-26 | Higienização final do orçamento: corrigida a última referência operacional de 190 para 196 provas integradas; mantidos intactos os snapshots históricos anteriores. Atividade limitada aos três Markdown, sem correção Flutter, banco, migration, deploy ou mutação remota. |
+| 2026-08-26 | Checkpoint avançado sincronizado em 206 ações: Auditoria passou 78/78 local e regressão 14 arquivos/395 asserts, Convites passou 60/60 local, e ambos permanecem `blocked-supabase` sem remoto/E2E. Flutter chegou a zero erros e zero warnings, com 45 infos abertas. Nenhum stage, commit, migration remota ou deploy. |
+| 2026-08-26 | Avaliações promovida somente no backend local: cinco ações com 85/85; regressão Supabase da janela 16 arquivos/523 asserts. Quatro migrations estão no ledger local e ausentes no remoto consultado. Student Tracking 43/43 não promoveu diretório/vínculos; `students.*` permanece fail-closed. |
+| 2026-08-26 | Units Pacote A: composição Flutter seletiva foi comprovada por 27/27, mas a matriz remota revelou hub ausente e Functions/grants divergentes. Quatro arquivos foram preservados externamente e os hunks Units revertidos seletivamente; fail-closed reconfirmado por 26/26, analyzer zero erros/zero warnings e deltas Activities/Acontece preservados. `units.import/export` continuam `blocked-supabase`; D2 backend local é o próximo ponto. |
+| 2026-08-26 | Units D2 iniciou por RED: três falhas Deno de boundary/compensação e uma falha pgTAP de retry com `request_id` nulo; 12 dos 16 casos já passam, rollback confirmado. Nenhum arquivo de produção, migration, Edge/config, remoto, stage ou commit foi alterado. |
+| 2026-08-26 | Units D3a corrigiu localmente os três REDs Deno: `verify_jwt`, redirecionamento do legado aos RPCs canônicos e compensação escopada pós-upload. Regressão Deno 14/14; retry nulo permanece RED 10/11 no pgTAP, sem tocar migration/RPC. `units.import` segue `blocked-supabase`. |
+| 2026-08-26 | Units D3b adicionou fixtures reais/transacionais e testes HTTP: matriz 116 casos, 113 GREEN e três REDs conhecidos — path adulterado, membership revogada no upload e retry nulo. Banco terminou sem fixtures/extensão persistentes; produção/config não mudaram neste subpacote. |
+| 2026-08-26 | Units D3c-EDGE corrigiu validação de path: job/MIME/path canônico são verificados antes do Storage e divergência retorna 422 uniforme. D3b 10/10 e regressão Deno 14/14; restam dois REDs SQL e gap de órfão/concorrência. |
+| 2026-08-26 | Units D3d comprovou concorrência multi-conexão sem duplicação observável e deixou RED reproduzível para órfão quando Storage delete falha. Banco descartável e fixtures foram removidos; restam membership revogada, retry nulo e cleanup, todos dependentes de autorização para migration/infra local. |
+| 2026-08-26 | Units Export foi sincronizado após Flutter HARDEN A+B e Supabase checkpoint 21: 41/41 testes Flutter passaram; a matriz Deno ficou em 36 verdes e 11 REDs, com regressão de import 7/7. Produção continua Unavailable/fail-closed, `units.export` permanece `blocked-supabase` e nenhuma ação foi promovida a E2E. Contagem operacional reconciliada em 201 ações normativas + cinco gates shell = 206 no Flutter. |
+| 2026-08-27 | Terceira reconciliação Supabase individual sem promoção integrada: `20260811151254_group_management_security.sql` foi restaurada do único blob Git/recovery após equivalência exata dos 140 statements com o ledger remoto read-only. Canônico/mirror chegaram a 102/102 e o replay avançou além de Import/Export até o próximo RED em `20260812002000_child_safety_schema.sql`, que omite `platform_permissions.module_label`. Teardown completo, zero mutação remota, nenhum Flutter alterado e zero E2E; as 207 ações integradas permanecem inalteradas. |
+| 2026-08-27 | Revisão de segurança de Grupos encontrou e reproduziu exposição parcial de `SECURITY DEFINER` após `COMMIT` interno. A migration forward-only `20260827214000_harden_default_function_execute_privileges.sql` exige o creator `postgres`, torna `PUBLIC`/`anon`/`authenticated`/`service_role` opt-in nos defaults global e por schema, remove grants fora da allowlist e reaplica ACLs mínimos; pgTAP passou 12/12. O wrapper DB-only agora gera identidade/portas próprias, rejeita reparse e impõe teardown; caminhos GREEN e RED terminaram sem recursos. Child Safety continua bloqueada por divergência histórica sem equivalência remota; o único pacote histórico que cria `groups.export` depende de bridge/worker ausentes, então a ação permanece fail-closed. Tudo é somente local, sem Flutter, remoto mutável ou promoção das 207 ações/E2E. |
+| 2026-08-27 | Import/Export recebeu somente uma closure ACL forward-only local: inventário remoto read-only confirmou 15 implementações privadas e 13 gateways Unit; a migration `20260827222000` fecha `PUBLIC`/`anon`/`authenticated`/`service_role` nas privadas e preserva allowlist pública 7 authenticated/4 service/2 deny. Replay isolado passou 73/73, mirror 105/105 e cleanup total. O remoto não foi alterado e ainda mantém o P0 até deploy autorizado; import/export continua fora do recorte funcional, sem Flutter, sem E2E e sem promoção das 207 ações. |
+| 2026-08-27 | Notices permaneceu bloqueado após auditoria individual de `20260812002900`: migration e consumidora `12003000` estão fora do ledger; o enum remoto mantém cinco labels legados, enquanto as specs divergem sobre o ciclo final. A ACL SQL remota de `platform_notices` é excessiva para `anon`/`authenticated`, inclusive `TRUNCATE`, mas nenhuma reachability HTTP foi afirmada. OQ-038 foi aberta; nenhum Flutter, migration, deploy, ação ou E2E foi promovido. |
+| 2026-08-27 | O hardening forward-only `20260827222500` fechou localmente o acesso direto de `PUBLIC`/`anon`/`authenticated` às cinco tabelas Platform Notice e forçou RLS sem ativar enum/RPC/worker. RED confirmou grants/FORCE inseguros; GREEN passou 35/35, mirror 106/106 e cleanup total. O remoto não foi alterado e continua vulnerável até deploy autorizado; Notice permanece bloqueado, sem Flutter, sem E2E e sem promoção das 207 ações. |
+| 2026-08-27 | Fundação Auth/Supabase avançou somente para `local-green`: a opção A aprovada criou ator auditável v3 `auth_session` para negações após sessão válida sem vínculo completo, preservou cadeia v1/v2, isolou principal/link/membership internos e expôs apenas bootstrap/resolução autenticados. Replay truncado + hardening ACL + Auth passou 29/29 com ledger e cleanup; P0/P1=0 em review independente. Nenhum Flutter ou remoto foi alterado, login/refresh/logout/AAL2 e cross-tenant reais continuam pendentes, zero E2E foi executado e as 207 ações integradas permanecem inalteradas. |
+
+### Checkpoint integrado 45 - drift Units/Profile About sem promocao
+
+- O backend local de DETAIL/RELOAD mantem os testes 168/168 ja aceitos, sem
+  repeticao, mas nao e aplicavel ao remoto atual antes de reconciliar
+  `unit_type_id/unit_types` versus
+  `institution_type_id/institution_types`.
+- O remoto materializa `units.read/create/update` e RPCs people-based; o
+  Flutter produtivo continua `UnavailableUnitDirectoryRepository` e nao chama
+  os RPCs legados de create/update.
+- A proveniencia read-only fechou `11214000/11214500/11214600` e
+  Profile/About `21192000/21200000`; `11215451` permanece text-conflict e
+  `25193131` e local-only regressiva.
+- Nenhuma tela Flutter, migration, grant, policy, funcao, deploy ou estado
+  remoto foi alterado. Integracao/E2E permanece aberta em 0/207.
+- Estado: DETAIL `local-green + blocked-schema/provenance`; Design A
+  `blocked-provenance/drift`; zero `remote-green`.
+- Proximo gate integrado: decisao canonica de schema/capability/realm, pacote
+  forward-only revisado e so entao handoff ao Eng Integrador. Tempo restante:
+  nao calculavel.
+
+### Checkpoint integrado 46 - Grupos detail/reload somente backend local
+
+- Backend Groups DETAIL/RELOAD v2 ficou `local-green`: RED especifico seguido
+  de 33/33 e regressoes totalizando 201/201, com Auth/sessao/MFA, roles,
+  cross-app/cross-tenant, lifecycle, persistencia/reload, ACL e audit v2/v3.
+- A RPC usa `groups.read` e allowlist Owner/Operations; Owner exige AAL2.
+  Auditor, Support e Content ficam `fail-closed`; missing/cross-scope retornam
+  a mesma negativa sem dados.
+- Flutter produtivo continua em `UnavailableGroupDirectoryRepository`; nenhum
+  repository, tela, rota, contrato integrado ou E2E foi alterado/testado.
+- List/filter, create/edit/status/archive/delete, membros, convites, atividades,
+  arquivos/import/export e OQ-031 permanecem abertos. As seis migrations Groups
+  remotas ausentes do HEAD continuam bloqueadas por proveniencia individual.
+- Estado remoto factual: somente SELECT agregado/read-only; zero migration,
+  deploy ou mutacao. O pacote nao e `remote-green`, deployable ou `done` e nao
+  promove nenhuma das 207 acoes integradas; progresso E2E permanece 0/207.
+- Mirror local verificado 111/111 e teardown sem residuos. Handoff Flutter fica
+  permitido somente depois da consolidacao e de autorizacao do Eng Integrador.
+  Tempo restante integrado: nao calculavel sem cutover Flutter, OQ-031 e prova
+  remota autorizada.
+
+### Checkpoint integrado 47 - Pessoas detail/reload somente backend local
+
+- Backend Pessoas DETAIL/RELOAD CORE v2 ficou `local-green`: RED especifico,
+  Pessoas 42/42 e regressao Auth 29/29, total focal 71/71, com sessao/MFA,
+  lifecycle, role/capability/grant, cross-app/cross-tenant, hierarquia,
+  minimizacao, persistencia/reload, ACL e audit v2/v3.
+- A RPC usa `people.read`, Owner-only e AAL2. O escopo platform/institution e
+  derivado do principal interno; Operations, Auditor, Support e Content ficam
+  `fail-closed`, e missing/cross-scope retornam a mesma negativa sem dados.
+- O output backend omite nascimento, endereco, contato, documentos, e-mail,
+  Auth/session IDs e summaries nao aprovados. O estado Auth e apenas coarse e
+  os vinculos retornados sao filtrados por lifecycle e hierarquia.
+- Flutter produtivo continua nos gateways Pessoas legados people-based. Nenhum
+  repository, tela, rota, contrato Flutter ou E2E foi alterado/testado; o
+  cutover continua P0 separado e o progresso integrado permanece 0/207.
+- List/filter/options, create/edit, vinculos, import/export, activity filter,
+  OQ-033 e OQ-036 permanecem abertos. Grants/RLS legados nao foram revogados.
+- Estado remoto: zero migration, deploy ou mutacao. O pacote nao e
+  `remote-green`, deployable ou `done`, e nao promove nenhuma acao integrada.
+- Mirror local verificado 112/112 e teardown sem residuos. Handoff Flutter
+  somente depois da consolidacao e de autorizacao do Eng Integrador. Tempo
+  restante integrado: nao calculavel sem cutover Flutter, contratos restantes
+  e prova remota autorizada.
+
+### Checkpoint integrado 48 - Convites e estado historico de Perfis de cuidado
+
+- Convites recebeu apenas spec 047 `draft-for-review`, OQ-039 e inventario de
+  proveniencia. RED executavel, SQL, capability, backfill, Flutter e cutover
+  permanecem bloqueados; a migration historica people-based nao foi restaurada.
+- As mencoes anteriores a Convites `local-green` e 60/60 neste rastreador
+  descrevem somente a cadeia composta historica people-based, incluindo
+  delivery/hardening posterior. Elas nao provam o contrato interno v2 nem
+  representam estado `local-green` atual.
+- O Flutter produtivo continua em `UnavailableInviteRepository`; as rotas
+  `/dev` permanecem demonstrativas. Nenhum detalhe, reload, emissao, reenvio,
+  revogacao, aceite ou delivery foi testado ponta a ponta.
+- Perfis de cuidado permanece `blocked-decision + blocked-provenance`, com
+  recoveries locais sensiveis nao promovidas e Flutter produtivo indisponivel.
+  Nenhuma regra juridica, retencao ou autoridade sobre saude infantil foi
+  inferida.
+- Decisao superveniente do Owner Coelo em 2026-08-28: o juridico sera tratado
+  depois e nao bloqueia o trabalho Supabase local de Perfis de cuidado. O
+  estado integrado continua aberto porque ainda faltam spec tecnica, backend,
+  cutover Flutter e E2E; nao por bloqueio juridico desta etapa.
+- O snapshot remoto usado foi estritamente SELECT-only; zero migration,
+  DDL/DML, Auth, Storage, Edge ou deploy. Nenhum Docker/pgTAP foi executado
+  porque o contrato bloqueou RED/SQL.
+- Estado integrado permanece 0/207 E2E, sem acao promovida a `done` ou
+  `remote-green`. O proximo gate exige decisoes canonicas, implementacao
+  backend local revisada, consolidacao e autorizacao explicita do Eng
+  Integrador.
+
+### Checkpoint integrado 49 - Assiduidade sem promocao
+
+- Assiduidade recebeu somente spec 048 `draft-for-review`, OQ-040 e
+  inventario/proveniencia. RED, SQL/migration, capability e cutover continuam
+  bloqueados.
+- O Flutter produtivo injeta `SupabaseAttendanceRepository`, mas chama
+  dashboard local-only e RPCs de chamada ausentes do remoto. Nenhum fluxo foi
+  promovido ou testado E2E.
+- A fundacao remota e people-based. Definicoes, ACLs e policies provam um P0
+  backend: `platform.read` alcanca o ramo manage, confirmacao/reversao e
+  participantes esperados sem escopo institucional do ator. Nenhum DML/HTTP
+  foi executado, nenhum incidente foi afirmado e nenhuma policy/grant foi
+  revogada. A correcao e o cutover permanecem pacotes separados.
+- Dashboard, listagem, exportacao, criar/marcar/concluir/reabrir/corrigir,
+  agendamento e cancelamento permanecem fora deste pacote.
+- Estado integrado segue 0/207 E2E, sem `local-green`, `remote-green`,
+  deploy ou `done`. O proximo gate exige decisoes OQ-040, backend local
+  revisado, consolidacao e autorizacao do Eng Integrador.
+
+### Checkpoint integrado 50 - Perfis de cuidado B+C sem integração
+
+- A spec 049 draft delimita backend exclusivamente Superadmin: Owner global e
+  assignments restritivos por instituicao/unidade, com autorizacao por
+  capabilities de Perfis de Acesso. Nenhum Admin ou Principal foi incluído.
+- Nao houve Flutter, repository produtivo, RPC implantada, persistencia remota,
+  reload de UI ou E2E. O estado integrado permanece 0/207 e nenhuma acao foi
+  promovida.
+- O proximo gate integrado so começa depois de spec aprovada, backend
+  local-green consolidado e autorizacao do Eng Integrador. A implementacao
+  Supabase continua registrada exclusivamente no rastreador backend.
+
+### Checkpoint integrado 51 - fundacao cross-app aberta sem promocao
+
+- A nova worktree backend foi criada a partir de `dev` em `c9b7114b`; a
+  worktree visual ativa permaneceu integralmente intocada. Nenhum arquivo em
+  `apps/**`, pacote visual, repository Flutter, rota ou estado de tela mudou.
+- O Dia 1 backend produziu inventario remoto SELECT-only, manifesto de drift
+  112 locais versus 103 registros remotos, mirror 112/112 e plano TDD. O
+  remoto continua `blocked-environment`; nao houve migration, DDL/DML, Auth,
+  Edge, deploy ou configuracao remota.
+- O primeiro replay/RED SQL fresco esta bloqueado pelo daemon Docker local.
+  Evidencias historicas `local-green` nao foram promovidas a prova desta
+  execucao e o remoto nao sera usado como substituto.
+- Progresso integrado permanece E2E 0,00% (0/202), com Flutter `verified`
+  0,00% (0/207). A divergencia historica de prosa que menciona 207 provas E2E
+  nao altera silenciosamente o denominador aprovado 202; qualquer mudanca
+  requer reconciliacao canonica. Nenhuma acao Flutter ou E2E foi promovida.
+- A consolidacao final permanece condicionada ao checkpoint seguro da frente
+  visual e aos gates locais backend. Ate la, nao ha merge, push, remocao de
+  worktree/branch nem avanco de `dev`.
+- Excecao já comprovada: a worktree backend legada limpa foi removida depois
+  de o ledger `a1cc69f6` registrar 41/41 patches equivalentes em `dev`; a
+  branch e os commits foram preservados. A worktree visual nao foi tocada.
+
+### Checkpoint integrado 52 - backend focado replay-green sem promocao E2E
+
+- Docker local foi reparado e o perfil fechado de replay da fundação instalou
+  50 migrations canônicas revisadas + dois preflights até `20260831130726`, com teardown
+  sem recursos residuais.
+- Nove arquivos pgTAP/264 asserts passaram para Auth, instituição, unidade,
+  grupo, pessoa, ACL e reconciliação de labels. O replay integral permanece
+  RED em cadeias intermediárias fora do recorte; o lint global também mantém
+  erros históricos classificados.
+- Nenhum arquivo Flutter/UI, repository, rota, teste visual ou estado de tela
+  foi alterado. A worktree visual ativa continuou intocada.
+- Flutter `verified` permanece 0,00% (0/207) e E2E permanece 0,00% (0/202).
+  Backend local focado não promove ação integrada, `remote-green` ou `done`.
+- Consolidação em `dev` continua aguardando commit/review backend, regressão
+  final e checkpoint seguro da frente visual. Zero push e zero remoto mutável.
+- Reconsulta oficial read-only confirmou remoto e Advisors inalterados; a
+  frente visual continua ativa, portanto nenhum cherry-pick/merge foi iniciado.
+
+### Checkpoint integrado 53 - replay fechado sem promocao Flutter/E2E
+
+- O review backend foi fechado com manifesto de 50 migrations/hash, alvo final
+  obrigatório e preflight catalogal antes de qualquer DDL; nove arquivos pgTAP
+  somam 265 asserts, incluindo drift estrutural fail-closed.
+- Flutter `verified` continua 0,00% (0/207), E2E continua 0,00% (0/202) e
+  nenhum arquivo visual foi alterado. A frente visual permanece isolada.
+- O lint histórico continua RED e o remoto segue read-only. Portanto o backend
+  focado permanece `local-green`, sem promover `done` ou integração.
+
+### Checkpoint integrado 54 - capacidades backend sem promocao E2E
+
+- O núcleo local de capacidades fechou os erros de catálogo, domínio ambíguo e
+  unicidade de override. Replay com dez arquivos/270 asserts passou e o Dia 3
+  do macrotema backend ficou local-green.
+- Flutter `verified` permanece 0,00% (0/207) e E2E permanece 0,00% (0/202).
+  Nenhuma tela, repository, rota ou worktree visual foi alterada.
+- Importação/arquivo, lint histórico e remoto continuam fora ou bloqueados;
+  não há promoção de `done`, `remote-green` ou integração.
+
+### Checkpoint integrado 55 - gateway backend corrigido sem promocao E2E
+
+- Review adversarial corrigiu ACL efetiva dos gateways e isolamento entre
+  sibling units; pgTAP focal passou 13/13 e o gate backend soma 278 asserts.
+- Cleanup de mirror rejeitou junction externo sem apagar o arquivo-prova.
+- Flutter `verified` segue 0,00% (0/207), E2E 0,00% (0/202), remoto read-only e
+  nenhuma worktree visual foi tocada por esta correção.
+
+### Checkpoint integrado 56 - consolidação local sem promocao E2E
+
+- A fundação backend fechou 4/4 gates locais, com replay de 51 migrations +
+  dois preflights e dez arquivos pgTAP/278 asserts. Mirror 114/114 e cleanup
+  Docker sem recursos `coelo_safe_*` residuais.
+- Os 26 commits visuais exclusivos foram integrados por cherry-pick em ordem;
+  `git cherry` contra a consolidação passou a reportar zero patch exclusivo na
+  branch visual. A regressão não-golden alterada passou 773 testes em 71
+  arquivos e analyzers ficaram verdes.
+- Goldens não aprovados, falhas históricas do catálogo/Superadmin, lint
+  histórico do banco e toda prova remota/E2E continuam explicitamente abertos.
+  Flutter `verified` permanece 0,00% (0/207), E2E 0,00% (0/202), Supabase
+  `done` 0,00% (0/37) e remoto `blocked-environment`, read-only.
+- Esta consolidação não prova clique → backend remoto → reload, não altera
+  denominadores e não promove tela, ação integrada, `remote-green` ou `done`.
+
+### Checkpoint integrado 57 - contrato visual tardio preservado
+
+- O contrato aprovado do feed Acontece foi integrado depois do fast-forward
+  como documentação, spec canônica e projeção de conhecimento validadas.
+- Não houve implementação produtiva, backend, remoto, reload ou E2E. Flutter
+  `verified` permanece 0,00% (0/207) e E2E 0,00% (0/202).
+
+### Checkpoint integrado 58 - viewer aprovado sem integração
+
+- O contrato visual fullscreen do Agora foi preservado em spec, rastreador e
+  conhecimento, com validadores verdes. O protótipo seguinte não aprovado foi
+  apenas temporário e não entrou em Git.
+- Não houve implementação produtiva, backend, remoto ou E2E. Flutter
+  `verified` permanece 0,00% (0/207), E2E 0,00% (0/202) e Supabase `done`
+  permanece 0,00% (0/37).
+
+### Checkpoint integrado 59 - composer aprovado e worktree encerrada
+
+- O contrato visual do composer Acontece foi integrado por fast-forward após
+  validação documental. O protótipo seguinte, sem aprovação, não entrou em Git.
+- A branch/worktree temporária do handoff foi removida após prova de
+  ancestralidade. Não houve código produtivo, backend, remoto ou E2E; os
+  percentuais `verified` e `done` permanecem inalterados.
+
+### Checkpoint integrado 60 - regressão backend retomada sem promoção
+
+- A nova worktree backend partiu limpa de `dev` em `e0404638`. O mirror passou
+  114/114 e o replay descartável aplicou 51 migrations + dois preflights até
+  `20260831134407`; dez arquivos pgTAP/278 asserts passaram novamente.
+- O lint preserva quatro erros históricos classificados em importação/arquivo,
+  fora do recorte desta fundação. Nenhuma migration corretiva especulativa foi
+  criada e o teardown Docker terminou sem recurso residual.
+- O remoto foi reconsultado somente via plugin oficial/SELECT e permanece
+  `blocked-environment`: ledger 103, Edge 10 e Advisors 207/505. Não houve
+  mutation, deploy, Auth, configuração ou push.
+- Flutter `verified` permanece 0,00% (0/207), E2E permanece 0,00% (0/202),
+  Supabase `done` permanece 0,00% (0/37) e projeto estrito permanece 0,00%
+  (0/229). Backend `local-green` não promove tela, ação integrada,
+  `remote-green` ou `done`.
+
+### Checkpoint integrado 61 - Activities v2 backend local sem promoção
+
+- O backend interno de Activities v2 fechou localmente directory, detail,
+  create, update, publish e snapshots de unidades, turmas, participantes,
+  profissionais e permissões. As suítes executaram 199 asserts pgTAP; todos
+  passaram, incluindo o teste focal final 25/25, junto do ciclo Auth,
+  concorrência real, contratos PowerShell 11/11, perfil 59/59 e mirror
+  122/122. O review final aprovou o fechamento técnico `1e921c47`.
+- A autorização usa somente identidade/sessão interna, capability, AAL e escopo
+  validados. Admin people-based permanece separado e o Principal não recebeu
+  endpoint ou grant. Tenant A/B, sibling, cross-app, membership revogada,
+  UUID adulterado, replay e conflito de versão foram negados ou resolvidos
+  conforme o contrato.
+- O repository Flutter atual ainda usa o contrato legado de upsert e não
+  encadeia os gateways/snapshots v2. Nenhum arquivo Flutter, tela, rota,
+  repository, golden ou teste visual foi alterado; portanto não há prova de
+  clique, persistência remota e reload.
+- O remoto está `ACTIVE_HEALTHY`, mas continua `blocked-environment`, somente
+  leitura, com ledger em 103 migrations até `20260821200000`. Nenhuma migration
+  ou configuração foi aplicada. Importação, exportação, arquivos e mídia
+  existentes permaneceram fora do trabalho, sem exclusão.
+- Estados e percentuais permanecem inalterados: Flutter `verified` 0,00%
+  (0/207), E2E 0,00% (0/202), Supabase `done` 0,00% (0/37) e projeto estrito
+  `done` 0,00% (0/229). Os cinco `action_id` Activities têm prova backend
+  `local-green`, mas nenhum foi promovido a `ready-for-e2e`, `verified-e2e`,
+  `remote-green` ou `done`.
+- Próximo gate integrado: consolidar os commits backend sem tocar a frente
+  visual; depois criar um contrato próprio para o adapter Flutter e, somente
+  com ambiente classificado e mutação remota autorizada, executar a prova E2E.
+  A ETA integrada permanece não calculável enquanto esses gates estiverem
+  abertos.
+
+### Checkpoint integrado 62 - V4.19–V5.31 visual local sem promoção E2E
+
+- As 14 unidades V4.19–V5.31 fecharam o recorte Flutter visual local no host de
+  preview autorizado. O gate consolidado executou 688 testes focados; todos os
+  688 passaram. `coelo_ui_admin` passou 110/110, `coelo_api` passou 14/14 e os
+  analyzers, o validador visual e os gates de conhecimento ficaram verdes.
+- A evidência atual amplia somente o lado Flutter de `forms.list`, `forms.edit`,
+  `imports.list`, `imports.create`, `notices.list`, `acontece.feed`,
+  `agora.view`, `momentos.view`, `principal.for-you` e
+  `principal.profile-view`. Circulares e Galeria não possuem `action_id`
+  integrado próprio. Os IDs de criar/publicar/remover continuam nos estados
+  bloqueados já registrados e nenhum ID foi promovido a `verified`.
+- Nenhum repository produtivo, RPC/query/Edge, policy RLS, grant, migration,
+  Supabase Storage, Cloudflare R2, Auth, dado remoto ou reload após persistência
+  foi implementado ou provado por esse pacote. O app `apps/principal` continua
+  sem materialização executável comprovada neste recorte.
+- Portanto Flutter `verified` permanece 0,00% (0/207), E2E permanece 0,00%
+  (0/202), Supabase `done` permanece 0,00% (0/37) e o projeto estrito permanece
+  0,00% (0/229). Goldens, mocks, fixtures e rotas `/dev` não foram tratados como
+  evidência de integração.
+- Próximo gate integrado por ação: materializar o app/repository produtivo,
+  rastrear Flutter → estado → gateway → RPC/query/Edge → autorização/RLS →
+  banco ou Storage/R2 → resposta da UI, e então provar permitido, negado,
+  sessão/vínculo revogado, cross-tenant, persistência, reload, auditoria e
+  efeitos laterais no ambiente remoto autorizado.
+- A ETA integrada permanece `não calculável ainda`: faltam contratos/cutovers
+  produtivos, ambiente remoto mutável autorizado e inventário de dependências
+  por ação. O rastreador Supabase permanece inalterado porque não houve
+  correção, migration ou evidência backend nova nesta onda visual.
+
+### Checkpoint integrado 63 - matriz final pós-consolidação sem promoção E2E
+
+- **Progresso geral:** projeto estrito `done` 0,00% (0/229), restante 100,00%
+  (229/229); Flutter `local-green` 50,72% (105/207), restante fora de
+  `local-green` 49,28% (102/207); Flutter `verified` 0,00% (0/207);
+  Supabase `local-green` 8,11% (3/37 famílias), Supabase `done` 0,00% (0/37);
+  E2E 0,00% (0/202). O recorte documental deste checkpoint concluiu 100,00%
+  (1/1), restante 0,00% (0/1), sem transformar evidência local em integração.
+- **Base e proveniência:** a base canônica é `dev@7b94428a`. O limite visual
+  V4/V5 foi registrado em `cd1ea97c`, o rastreador Supabase reconciliado em
+  `5222ac1b` e a matriz Flutter reconciliada em `7b94428a`. Os commits backend
+  Activities `65bae28c` e `32516e63`, além de seus commits de origem
+  `1e921c47` e `03bf6734`, estão alcançáveis por `dev`; não há commit correto
+  dependente das worktrees históricas removidas.
+- **Recalculo Flutter por `action_id`:** a matriz decisória contém 207 linhas,
+  207 IDs únicos e 16 colunas por linha. Ela foi sincronizada com o rastreador
+  Flutter atual: 102 `local-green`, 64 `audited`, 37 `blocked-decision`, dois
+  `audited/fail-closed` e dois `blocked-supabase`. Os cinco IDs `shell.*`
+  continuam exclusivamente Flutter; retirados deles, a contribuição aos 202
+  IDs normativos é 99 `local-green`, 62 `audited`, 37 `blocked-decision`, dois
+  `audited/fail-closed` e dois `blocked-supabase`.
+- **Deltas reconciliados:** 23 estados Flutter da matriz integrada estavam
+  diferentes do rastreador canônico. Foram alinhados `units.import/export`,
+  `access-profiles.list`, `access-models.detail`, os seis IDs de Agenda,
+  `notices.list`, dez IDs de Forms (`create`, `publish`, `test`, `monitor`,
+  `responses`, `response-detail`, `export`, `upload`, `expire-file` e
+  `delete-file`), `imports.list` e `account.profile`. Formulários/Agenda
+  preservam 22/22 ações Flutter `local-green`, com a evidência local 238/238,
+  Agenda 112/112 e 113 goldens; isso não prova repository produtivo, backend,
+  autorização remota ou E2E.
+- **Recalculo Supabase por `action_id`:** nos 202 IDs normativos, a matriz
+  backend atual contém 35 `local-green`, 38 `audited`, um
+  `audited/fail-closed`, 77 `fail-closed`, 50 `blocked-decision` e um
+  `blocked-decision/fail-closed`. Essa granularidade por ação não altera o
+  denominador de famílias: somente 3/37 famílias estão `local-green` e 0/37
+  está `done`. Activities v2 preserva 199/199 pgTAP e focal 25/25 como prova
+  local de cinco ações; `activities.assessment` permaneceu fora do pacote.
+- **Estados integrados derivados:** a enumeração dos 202 IDs resulta em 38
+  `not-reviewed`, 113 `blocked-supabase` e 51 `blocked-decision`; zero
+  `blocked-flutter`, `ready-for-e2e`, `e2e-failed` ou `verified-e2e`. A
+  contagem anterior 40/111/51 foi corrigida porque divergia em duas ações da
+  própria matriz. Os 23 ajustes Flutter não promovem estado integrado: o teto
+  continua determinado pelo backend/ambiente, por decisão pendente ou pela
+  ausência da prova ponta a ponta.
+- **Ambiente e limite remoto:** o projeto `coelo` permanece tecnicamente
+  `ACTIVE_HEALTHY`, com ledger read-only de 103 migrations até
+  `20260821200000_profile_about_remote_context_compatibility`, mas sem
+  classificação documental entre desenvolvimento, homologação ou produção.
+  Portanto segue `blocked-environment`; nenhuma migration, DDL/DML, Auth,
+  Edge, deploy ou configuração remota foi executada por esta reconciliação.
+- **Primeiro gate incompleto e próximo passo seguro:** nenhuma ação está
+  `ready-for-e2e`. O primeiro gate é selecionar uma ação com ambos os contratos
+  aprovados, materializar o adapter/repository Flutter produtivo quando faltar,
+  classificar o ambiente e obter autorização nominal para o pacote remoto
+  exato; somente depois executar permitido, negado, sessão/vínculo revogado,
+  tenant A/B, persistência, reload e auditoria. Até essa autorização, o remoto
+  admite apenas inventário read-only. A ETA da primeira prova vertical continua
+  não calculável sem essas dependências.
+- **Gate de conhecimento:** `no-op`. Esta reconciliação corrige estados,
+  contagens e proveniência documental; não cria comportamento, permissão,
+  domínio ou UX novos.
+
+### Checkpoint integrado 64 — Etapa 2/Auth corrigida localmente, ainda não consolidada
+
+- **Progresso atual reconciliado:** Flutter `local-green` 105/207 (50,72%),
+  Supabase `local-green` 3/37 famílias, Flutter `verified` 0/207, Supabase
+  `done` 0/37, E2E 0/202 e projeto estrito 0/229.
+- **Passo exato:** `f280e291` corrigiu o bypass recovery e adicionou negativos
+  de Home, Instituições, `/dev`, startup e runtime. 66/66 testes
+  Auth/guards/router e 21/21 `coelo_auth` passaram; recovery/reset retornaram a
+  `local-green`.
+- **Backend separado:** as quatro ações Auth não-MFA permanecem Supabase local
+  `local-green` por pgTAP 29/29 e lifecycle descartável real. Produção recebeu
+  zero mutações e continua `not-deployed`; ledger/replay transacional, URL/SMTP
+  e E2E exigem 1–2 dias + 0,5–1 dia após ambiente/autorização.
+- **Escopo:** o delta de Auth ainda toca `apps/catalog`, fora do recorte
+  exclusivo Superadmin. Compatibilidade deverá ser preservada ou essa ampliação
+  removida antes de integrar. Nenhum commit/worktree foi descartado.
+
+## Checkpoint 2026-09-01 — Comunicações/Avisos sem promoção integrada
+
+- O lote `ee8d3aff` fecha o diretório e os formulários de Comunicações/Avisos
+  apenas no plano Flutter local: 37/37 testes, analyzer e validador visual
+  verdes, 20 fixtures `/dev` e 13 goldens revisados.
+- O primeiro gate integrado continua no backend: RPCs públicas de gestão de
+  Avisos e `notice_events` não apareceram no remoto read-only; ambiente ainda
+  não classificado impede aplicar o pacote local. Não há prova permitido,
+  negado, vínculo revogado, tenant A/B, persistência, reload ou auditoria.
+- O estado permanece `blocked-supabase`, E2E 0/202 e projeto estrito 0/229.
+  A superfície `Coelo (Principal)` citada nesta etapa pertence ao
+  `apps/superadmin`; os aplicativos `apps/principal`, `apps/admin` e `apps/site`
+  estão fora do recorte.
+
+### Checkpoint integrado 66 — Estruturas locais sem promoção remota
+
+- Shell mobile, Instituições, Unidades, Turmas, Atividades e Avaliações foram
+  decompostos por tela/subtela/action_id. Flutter permanece 102/207
+  `local-green`; Supabase 3/37 famílias `local-green`; E2E 0/202 e estrito 0/229.
+- Unidades/Turmas têm adapters candidatos, porém os RPCs people-based não podem
+  ser usados pelo ator interno; produção segue `Unavailable` por OQ-043.
+- Modelos por Unidade têm migration e 31 asserts somente estáticos. Sem replay,
+  remoto autorizado, tenant A/B, revogação, persistência e reload, não há
+  promoção integrada.
+- Avaliações têm UI `/dev`, mas nenhum dos 12 RPCs requeridos existe nas
+  migrations; `7e702447` mantém cinco superfícies produtivas fail-closed.
+- Primeiro gate: contratos backend nominais, replay/pgTAP e OQ-041; ETA técnica
+  8–16 h após desbloqueios, sem incluir espera externa.
+
+## Checkpoint integrado 67 — Comunicação preservada, Chat/Convites reabertos
+
+- Chat/Avisos têm adapters locais com 10/10 testes, mas o remoto não possui as
+  RPCs esperadas nem `chat_attachment_metadata`/`notice_events`; continuam
+  `blocked-supabase` e sem E2E.
+- `chat.list/open/send` possuem fixture e testes locais em `5663042f`, porém a
+  ordem de 2+ mensagens/pós-envio está incorreta e o gate visual conserva
+  goldens RED. Flutter permanece `audited/in-progress`, não integrado.
+- Convites `/dev` aceita combinações cross-institution enquanto filtros e
+  validação de escopo não forem corrigidos; `invites.create` não pode ser
+  declarado coerente/completo nesse gate.
+- Circulares possui RPCs/RLS remotos, mas sem adapter final, ator, tenant A/B,
+  persistência/reload ou E2E; não avança para `ready-for-e2e`.
+
+## Checkpoint integrado 69 — Comunicação seletivamente integrada, backend aberto
+
+- `chat.list`, `chat.open` e `chat.send` foram materializados em `dev` até
+  `f516be71` após correções de launcher, ordenação multi-message/pós-envio e
+  escopo cross-institution de Convites. O gate pós-merge passou 301/301 testes
+  e analyzer global sem issues.
+- Por subtela, lista/abertura/envio estão somente Flutter `local-green`;
+  editar/anexar/receipts/revogar permanecem `audited`/fail-closed. Convites
+  diretório/detalhe/formulário têm coerência `/dev`, mas CRUD produtivo segue
+  indisponível. Avisos diretório/criar/editar preservam somente evidência local.
+- O passo integrado atual continua no backend: as RPCs esperadas de Chat/Avisos,
+  metadados de anexo e eventos não estão comprovados no remoto. Faltam
+  permitido/negado, sessão e vínculo revogados, tenant A/B, persistência,
+  reload, auditoria e E2E.
+- Nenhum estado integrado foi promovido: `ready-for-e2e` 0/202,
+  `verified-e2e` 0/202 e estrito 0/229. ETA ponta a ponta permanece dependente
+  de classificação e autorização nominal do ambiente.
+
+### Avisos/Convites — hardening sem promoção integrada
+
+- Avisos `c5085746` corrige mascaramento de status; 96/96 Flutter, adapter 5/5,
+  worker 2/2 e SQL estático auditado. Replay Docker travou sem resíduos; segue
+  sem OQ-038/remoto/E2E.
+- Convites continua produção unavailable. Migration histórica foi rejeitada por
+  realm/issuer/backfill; OQ-039 precisa aprovar o pacote interno antes do backend.
+- Nenhuma ação avança para `ready-for-e2e`.
+
+## Checkpoint integrado 70 — Momentos fullscreen local, integração inalterada
+
+- `momentos.view` recebeu em `e1cf1be3` o viewer top-level fullscreen sem shell,
+  com retorno contextual, Escape, foco e fallback de deep link. A verificação
+  independente passou 28/28 testes focados e analyzer sem issues.
+- A evidência é exclusivamente Flutter local e não muda o estado integrado:
+  Supabase continua `blocked-decision`, não houve repository produtivo,
+  autorização, R2, remoto, persistência/reload, auditoria ou E2E.
+- O review independente foi aprovado após `008c14c2`, que adicionou saídas
+  seguras aos estados inválido/loading/failure/unauthorized/empty; 38/38 testes
+  e analyzer focal passaram. Isso encerra o recorte funcional Flutter local,
+  mas não altera backend ou integração: `ready-for-e2e` permanece 0/202,
+  `verified-e2e` 0/202 e estrito 0/229.
+
+## Checkpoint integrado 72 — Circulares local, backend inalterado
+
+- `circulars.view` fechou somente navegação/diretório/ações de arquivo Flutter
+  local: 21/21 testes e review aprovados; `393fc7ff` foi excluído.
+- `circulars.create` conserva apenas hierarquia e não é concluído. Criar/editar/
+  detalhe/publicar permanecem pendentes.
+- RPCs/RLS históricos não receberam adapter final nem prova de ator, tenant A/B,
+  import/export, persistência, reload ou E2E. Nenhuma promoção integrada:
+  `ready-for-e2e` 0/202, `verified-e2e` 0/202 e estrito 0/229.
+
+## Checkpoint integrado 71 — Acessos/Saúde preservado, ainda sem integração
+
+- Handoff `6e56d3e4` entrega localmente sete rotas de Pessoas, Segurança da
+  criança, Usuários internos, Perfis/Modelos, Perfis de cuidado e Medicação.
+  Evidências informadas: 152/152 testes críticos, Acessos 259/259, Saúde
+  127/127 e analyzer global verde; worktree limpa e 13 referências manifestadas.
+- A evidência continua Flutter `/dev`. Produção permanece fail-closed ou
+  bloqueada para mutações sensíveis; 59 comparações visuais e três cenários
+  antigos de Convites continuam abertos e nenhuma promoção em massa ocorreu.
+- O pacote backend de Modelos de perfil possui somente revisão estática de duas
+  migrations e planos 35+10 asserts. Sem Docker/replay/Advisors/remoto/E2E, ele
+  não é `local-green` Supabase e não torna nenhuma ação `ready-for-e2e`.
+- Revisões independentes Flutter e banco estão em andamento. Contagens ficam
+  inalteradas: Flutter 105/207 `local-green`, Supabase 3/37 famílias
+  `local-green`, E2E 0/202 e estrito 0/229.
+- O review de banco encontrou P0: as RPCs de Modelos usam principal
+  people-based, incompatível com o contexto interno nominal de ADR 0019/spec
+  039. Sem revalidação de sessão/realm e auditoria do ator interno, o pacote não
+  pode ser integrado nem levado a replay como solução produtiva.
+- Também há lookup antes da autorização, anti-escalation cross-app incompleta,
+  motivo de auditoria opcional e ausência de execução dos planos pgTAP. As
+  quatro tabelas citadas são herdadas de migration anterior e o replay completo
+  já está RED; estado correto é `static-reviewed`, nunca `static-green`.
+- O review Flutter confirmou apenas 12/31 action_ids `local-green` no recorte e
+  bloqueou promoção: 13 suítes golden RED, IDs oficiais omitidos, detalhes só
+  por deep link, filtro/paginação produtivos incorretos, mapa OSM sem contrato e
+  fixture de adultos compartilhados perdendo escopo. Antes do backend/E2E, a
+  própria integração Flutter precisa ser refeita por fatias.
+
+## Checkpoint integrado 68 — Operações Flutter local, backend 0/40 E2E
+
+- Planos, Cardápios, Formulários, Importações e Agenda passaram 344/344 testes
+  Flutter locais em `84759675`; analyzer, contrato visual e conhecimento estão
+  verdes. Isso não promove produção.
+- O recorte backend permanece 0/40 E2E. Drift de ledger/schema impede aplicar
+  migrations em lote; Planos, Agenda e Importações têm contratos ausentes,
+  Forms está desconectado em superfícies produtivas e Cardápios não está ligado
+  ao composition root real.
+- Mapa/geocodificação real de Agenda continua bloqueado por provedor e contrato
+  de privacidade; a UI atual registra apenas prévia visual honesta.
+- Primeiro gate integrado: reconciliar ledger/replay, depois ACL/RLS comuns,
+  Forms, Importações, Cardápios, Planos após decisão e backend novo de Agenda.
+  E2E continua 0/202 e estrito 0/229.

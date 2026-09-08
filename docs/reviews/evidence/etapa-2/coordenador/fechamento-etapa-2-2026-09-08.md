@@ -1,12 +1,19 @@
 ---
 title: "Fechamento operacional da Etapa 2 E2E"
 source: "dev fe6f6b51; branches E2E publicadas; rastreadores Coelo Front-end, Back-end e Front-end + Back-end"
-status: "open"
+status: "superseded — histórico, não usar como plano"
 generated_at: "2026-09-08"
 updated_at: "2026-09-08"
 ---
 
 # Fechamento operacional da Etapa 2 E2E
+
+> **SUBSTITUÍDO pela [reconciliação de pendências](reconciliacao-pendencias-2026-09-08.md).**
+> O texto abaixo é histórico e contém próximos passos incorretos: backend de
+> Avaliações/readers já existem; Locais usa script direto, não Pester; o teste
+> Forms foi +101/-1 (102 casos); o preflight exige reconciliar o runner.
+> Percentuais locais e ETA antigos não são medições atuais. Consulte somente
+> as três matrizes vigentes e o inventário para planejar a execução.
 
 Horário de corte desta auditoria: 2026-09-08 09:32 BRT. O recorte autorizado
 continua sendo `apps/superadmin` e os packages/backends usados por ele. As rotas
