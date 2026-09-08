@@ -17,6 +17,7 @@ class LocationDetailPanel extends StatefulWidget {
     required this.scope,
     required this.onBack,
     this.writer,
+    this.onEdit,
     this.requestIdFactory,
     this.reader = const UnavailableLocationCatalogReader(),
     this.sessionAvailable = false,
@@ -33,6 +34,9 @@ class LocationDetailPanel extends StatefulWidget {
   /// Opt-in. Without a writer the detail is exactly the read-only panel it was,
   /// down to the pixel, and no control appears that the composition cannot back.
   final LocationCatalogWriter? writer;
+
+  /// Opt-in. The panel does not own the form, so it asks the page to open it.
+  final ValueChanged<LocationCatalogEntry>? onEdit;
 
   final String Function()? requestIdFactory;
   @override
@@ -161,6 +165,14 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
                   child: const Text('Voltar'),
                 ),
                 continuationActions: [
+                  if (widget.onEdit case final onEdit?)
+                    if (_controller.data case final item?)
+                      FilledButton.icon(
+                        key: const Key('location-detail-edit'),
+                        onPressed: widget.sessionAvailable ? () => onEdit(item) : null,
+                        icon: const Icon(Icons.edit_rounded),
+                        label: const Text('Editar local'),
+                      ),
                   OutlinedButton.icon(
                     key: const Key('location-detail-reload'),
                     onPressed: _controller.state == LocationReadState.loading

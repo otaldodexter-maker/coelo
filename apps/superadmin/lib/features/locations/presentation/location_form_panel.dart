@@ -12,20 +12,26 @@ import '../domain/location_catalog_reader.dart';
 import '../domain/location_catalog_writer.dart';
 import 'location_read_widgets.dart';
 
-/// Creates one location in the catalog of a single owner.
+/// Creates or edits one location in the catalog of a single owner.
 ///
 /// The owner is fixed by the screen, never typed: a form that let an actor
 /// choose the institution would be asking the client to decide ownership. The
-/// server revalidates the scope anyway.
+/// server revalidates the scope anyway, and on an edit it refuses an owner that
+/// differs from the stored one, because a location is never re-parented.
+///
+/// Pass [initial] to edit that location instead of creating one. The same form
+/// serves both so the rules cannot drift apart between them; only the command
+/// and the wording change.
 ///
 /// Saving is idempotent by request id. The id is minted once per attempt, so a
-/// second tap or a retry after a timeout returns the location already created
-/// instead of creating another one.
+/// second tap or a retry after a timeout returns what the first attempt did
+/// instead of doing it twice.
 class LocationFormPanel extends StatefulWidget {
   const LocationFormPanel({
     required this.scope,
     required this.onCancel,
     required this.onCreated,
+    this.initial,
     this.writer = const UnavailableLocationCatalogWriter(),
     this.sessionAvailable = false,
     this.requestIdFactory,
@@ -34,7 +40,12 @@ class LocationFormPanel extends StatefulWidget {
 
   final LocationScope scope;
   final VoidCallback onCancel;
+  /// Receives the saved location, whether it was created or edited.
   final ValueChanged<LocationCatalogEntry> onCreated;
+
+  /// The location being edited, or null to create a new one.
+  final LocationCatalogEntry? initial;
+
   final LocationCatalogWriter writer;
   final bool sessionAvailable;
   final String Function()? requestIdFactory;
@@ -73,6 +84,28 @@ class _LocationFormPanelState extends State<LocationFormPanel> {
 
   /// Kept across retries so a repeated attempt cannot create a second location.
   String? _requestId;
+
+  bool get _editing => widget.initial != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initial case final entry?) {
+      _name.text = entry.name;
+      _description.text = entry.description ?? '';
+      _floor.text = entry.floor ?? '';
+      _kind = entry.kind;
+      _visibility = entry.visibility;
+      final address = entry.address ?? const <String, String?>{};
+      _postalCode.text = address['postal_code'] ?? '';
+      _state.text = address['state'] ?? '';
+      _city.text = address['city'] ?? '';
+      _district.text = address['district'] ?? '';
+      _street.text = address['street'] ?? '';
+      _number.text = address['number'] ?? '';
+      _complement.text = address['complement'] ?? '';
+    }
+  }
 
   @override
   void dispose() {
@@ -122,19 +155,28 @@ class _LocationFormPanelState extends State<LocationFormPanel> {
       _error = null;
       _nameError = null;
     });
+    final draft = LocationWriteDraft(
+      // On an edit the owner comes from the stored location, not from the
+      // screen: the two agree today, and if they ever stop agreeing the catalog
+      // must refuse rather than silently move the place.
+      scope: widget.initial?.scope ?? widget.scope,
+      kind: _kind,
+      name: _name.text,
+      visibility: _visibility,
+      description: _description.text,
+      floor: _floor.text,
+      address: _address(),
+    );
     try {
-      final entry = await widget.writer.create(
-        draft: LocationWriteDraft(
-          scope: widget.scope,
-          kind: _kind,
-          name: _name.text,
-          visibility: _visibility,
-          description: _description.text,
-          floor: _floor.text,
-          address: _address(),
-        ),
-        requestId: requestId,
-      );
+      final existing = widget.initial;
+      final entry = existing == null
+          ? await widget.writer.create(draft: draft, requestId: requestId)
+          : await widget.writer.update(
+              locationId: existing.id,
+              draft: draft,
+              expectedVersion: existing.managementVersion,
+              requestId: requestId,
+            );
       if (!mounted) return;
       widget.onCreated(entry);
     } on LocationWriteRejectedException {
@@ -142,9 +184,17 @@ class _LocationFormPanelState extends State<LocationFormPanel> {
       _requestId = null;
       _fail('Revise os dados do local. O endereço é obrigatório para local externo.');
     } on LocationWriteDeniedException {
-      _fail('Você não tem permissão para criar locais neste catálogo.');
+      _fail(
+        _editing
+            ? 'Você não tem permissão para editar este local.'
+            : 'Você não tem permissão para criar locais neste catálogo.',
+      );
     } on LocationWriteConflictException {
-      _fail('Este envio já foi usado com outros dados. Recomece o cadastro.');
+      _fail(
+        _editing
+            ? 'Alguém mudou este local enquanto a tela estava aberta. Recarregue antes de salvar.'
+            : 'Este envio já foi usado com outros dados. Recomece o cadastro.',
+      );
     } on Object {
       _fail('Não foi possível salvar. Tente novamente.');
     }
@@ -175,7 +225,10 @@ class _LocationFormPanelState extends State<LocationFormPanel> {
                 children: [
                   Semantics(
                     header: true,
-                    child: Text('Novo local', style: theme.textTheme.headlineSmall),
+                    child: Text(
+                      _editing ? 'Editar local' : 'Novo local',
+                      style: theme.textTheme.headlineSmall,
+                    ),
                   ),
                   Text(locationScopeLabel(widget.scope), style: theme.textTheme.bodyLarge),
                   const SizedBox(height: CoeloSpacing.space4),
@@ -322,7 +375,7 @@ class _LocationFormPanelState extends State<LocationFormPanel> {
                           dimension: CoeloSize.iconSm,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Criar local'),
+                      : Text(_editing ? 'Salvar local' : 'Criar local'),
                 ),
               ],
             ),

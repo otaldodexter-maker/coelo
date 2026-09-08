@@ -35,6 +35,7 @@ final class LocationsPage extends StatefulWidget {
     this.currentDestination = 'institutions',
     this.writer = const UnavailableLocationCatalogWriter(),
     this.canCreate = false,
+    this.canManage,
     super.key,
   });
 
@@ -61,6 +62,15 @@ final class LocationsPage extends StatefulWidget {
   /// Whether this actor may create; the server authorizes the write anyway.
   final bool canCreate;
 
+  /// Whether this actor may edit, change status, copy or schedule.
+  ///
+  /// Null falls back to [canCreate]. Today the catalog grants every location
+  /// capability to the same role, so the actor who may create is the actor who
+  /// may manage. This is a hint for what to draw and never an authorization:
+  /// the server checks each capability on its own, and a refusal is shown as a
+  /// refusal. Pass it explicitly once the grants stop moving together.
+  final bool? canManage;
+
   @override
   State<LocationsPage> createState() => _LocationsPageState();
 }
@@ -68,6 +78,9 @@ final class LocationsPage extends StatefulWidget {
 final class _LocationsPageState extends State<LocationsPage> {
   String? _selected;
   bool _creating = false;
+  LocationCatalogEntry? _editing;
+
+  bool get _canManage => widget.canManage ?? widget.canCreate;
 
   @override
   void initState() {
@@ -85,6 +98,7 @@ final class _LocationsPageState extends State<LocationsPage> {
         !sameLocationScope(oldWidget.scope, widget.scope)) {
       _selected = null;
       _creating = false;
+      _editing = null;
       return;
     }
     if (oldWidget.selectedLocationId != widget.selectedLocationId) {
@@ -99,6 +113,7 @@ final class _LocationsPageState extends State<LocationsPage> {
     if (!mounted) return;
     setState(() {
       _creating = false;
+      _editing = null;
       _selected = item.id;
     });
     widget.onLocationOpened?.call(item.id);
@@ -108,6 +123,7 @@ final class _LocationsPageState extends State<LocationsPage> {
     if (!mounted) return;
     setState(() {
       _creating = false;
+      _editing = null;
       _selected = null;
     });
     widget.onLocationClosed?.call();
@@ -120,7 +136,13 @@ final class _LocationsPageState extends State<LocationsPage> {
     // Creating is offered by the page, not by the directory panel: the panel is
     // a read surface and adding an action to it would change every screen that
     // renders it.
-    final canCreate = widget.canCreate && widget.sessionAvailable && !_creating && selected == null;
+    final editing = _editing;
+    final canCreate =
+        widget.canCreate &&
+        widget.sessionAvailable &&
+        !_creating &&
+        editing == null &&
+        selected == null;
     return Theme(
       data: theme.copyWith(scaffoldBackgroundColor: theme.colorScheme.surface),
       child: SuperadminShell(
@@ -138,13 +160,23 @@ final class _LocationsPageState extends State<LocationsPage> {
               label: const Text('Novo local'),
             ),
         ],
-        child: _creating
+        child: _creating || editing != null
             ? LocationFormPanel(
-                key: const Key('locations-form'),
+                // The create form keeps the key it has always had; an edit gets
+                // its own so switching between two locations rebuilds the state
+                // instead of carrying the previous one's text along.
+                key: editing == null ? const Key('locations-form') : Key('locations-form-${editing.id}'),
                 scope: widget.scope,
+                initial: editing,
                 writer: widget.writer,
                 sessionAvailable: widget.sessionAvailable,
-                onCancel: () => setState(() => _creating = false),
+                onCancel: () => setState(() {
+                  _creating = false;
+                  _editing = null;
+                }),
+                // Editing returns to the detail of the same location, which
+                // reads again and therefore holds the version the next command
+                // will need.
                 onCreated: _open,
               )
             : selected == null
@@ -163,6 +195,8 @@ final class _LocationsPageState extends State<LocationsPage> {
                 reader: widget.reader,
                 sessionAvailable: widget.sessionAvailable,
                 contextRevision: widget.contextRevision,
+                writer: _canManage ? widget.writer : null,
+                onEdit: _canManage ? (item) => setState(() => _editing = item) : null,
                 onBack: _close,
               ),
       ),
