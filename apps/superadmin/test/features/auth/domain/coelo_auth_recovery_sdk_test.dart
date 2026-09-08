@@ -11,26 +11,107 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
-  test('external SDK session replacement survives an older recovery response', () async {
-    const sessionB = '22222222-2222-4222-8222-222222222222';
-    final userB = {..._user, 'id': 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb'};
+  for (final sameUser in [false, true]) {
+    test(
+      'external SDK session replacement survives an older recovery response: sameUser=$sameUser',
+      () async {
+        const sessionB = '22222222-2222-4222-8222-222222222222';
+        final userB = sameUser ? _user : {..._user, 'id': 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb'};
+        final updateStarted = Completer<void>();
+        final finishUpdate = Completer<void>();
+        final requests = <Request>[];
+        final updatedUserIds = <String?>[];
+        final client = SupabaseClient(
+          'https://example.supabase.co',
+          'publishable-test',
+          authOptions: const AuthClientOptions(autoRefreshToken: false),
+          httpClient: MockClient((request) async {
+            requests.add(request);
+            Object body = _session(1);
+            if (request.method == 'PUT' && request.url.path.endsWith('/user')) {
+              updateStarted.complete();
+              await finishUpdate.future;
+              body = _user;
+            } else if (request.url.path.endsWith('/token')) {
+              body = _session(2, sessionId: sessionB, user: userB);
+            } else if (request.url.path.endsWith('/logout')) {
+              body = <String, Object?>{};
+            }
+            return Response(
+              jsonEncode(body),
+              200,
+              headers: {'content-type': 'application/json'},
+              request: request,
+            );
+          }),
+        );
+        addTearDown(client.dispose);
+        final gateway = SupabaseCoeloAuthGateway(client, sessionPersistence: _Persistence());
+        addTearDown(gateway.dispose);
+        final subscription = client.auth.onAuthStateChange.listen((state) {
+          if (state.event == AuthChangeEvent.userUpdated) {
+            updatedUserIds.add(state.session?.user.id);
+          }
+        });
+        addTearDown(subscription.cancel);
+        await client.auth.verifyOTP(type: OtpType.recovery, tokenHash: 'synthetic-recovery-hash');
+        await Future<void>.delayed(Duration.zero);
+        final recoveryToken = client.auth.currentSession!.accessToken;
+
+        final update = gateway.updatePassword(password: 'synthetic-new-password');
+        await updateStarted.future;
+        await client.auth.signInWithPassword(
+          email: 'synthetic-b@example.invalid',
+          password: 'synthetic',
+        );
+        await Future<void>.delayed(Duration.zero);
+        expect(gateway.currentSessionState.sessionId, sessionB);
+        expect(client.auth.currentUser?.id, userB['id']);
+        finishUpdate.complete();
+        final reset = await update;
+        await Future<void>.delayed(Duration.zero);
+        final updateRequest = requests.singleWhere((r) => r.method == 'PUT');
+        expect(updateRequest.url.path, '/auth/v1/user');
+        expect(updateRequest.headers['authorization'], 'Bearer $recoveryToken');
+        expect(updateRequest.headers['apikey'], 'publishable-test');
+
+        expect(
+          {
+            'resetSuccess': reset.isSuccess,
+            'sessionId': gateway.currentSessionState.sessionId,
+            'userId': client.auth.currentUser?.id,
+            'logoutCount': requests.where((r) => r.url.path.endsWith('/logout')).length,
+            'updatedUserIds': updatedUserIds,
+          },
+          {
+            'resetSuccess': false,
+            'sessionId': sessionB,
+            'userId': userB['id'],
+            'logoutCount': 0,
+            'updatedUserIds': <String?>[],
+          },
+        );
+      },
+    );
+  }
+
+  test('recovery update allows token refresh in the same session', () async {
     final updateStarted = Completer<void>();
     final finishUpdate = Completer<void>();
     final requests = <Request>[];
-    final updatedUserIds = <String?>[];
     final client = SupabaseClient(
-      'https://example.supabase.co',
+      'https://example.supabase.co/prefix',
       'publishable-test',
       authOptions: const AuthClientOptions(autoRefreshToken: false),
       httpClient: MockClient((request) async {
         requests.add(request);
         Object body = _session(1);
-        if (request.method == 'PUT' && request.url.path.endsWith('/user')) {
+        if (request.method == 'PUT') {
           updateStarted.complete();
           await finishUpdate.future;
           body = _user;
         } else if (request.url.path.endsWith('/token')) {
-          body = _session(2, sessionId: sessionB, user: userB);
+          body = _session(2);
         } else if (request.url.path.endsWith('/logout')) {
           body = <String, Object?>{};
         }
@@ -45,45 +126,80 @@ void main() {
     addTearDown(client.dispose);
     final gateway = SupabaseCoeloAuthGateway(client, sessionPersistence: _Persistence());
     addTearDown(gateway.dispose);
-    final subscription = client.auth.onAuthStateChange.listen((state) {
-      if (state.event == AuthChangeEvent.userUpdated) {
-        updatedUserIds.add(state.session?.user.id);
-      }
-    });
-    addTearDown(subscription.cancel);
     await client.auth.verifyOTP(type: OtpType.recovery, tokenHash: 'synthetic-recovery-hash');
     await Future<void>.delayed(Duration.zero);
-
+    final oldToken = client.auth.currentSession!.accessToken;
     final update = gateway.updatePassword(password: 'synthetic-new-password');
     await updateStarted.future;
-    await client.auth.signInWithPassword(
-      email: 'synthetic-b@example.invalid',
-      password: 'synthetic',
-    );
+    await client.auth.refreshSession();
     await Future<void>.delayed(Duration.zero);
-    expect(gateway.currentSessionState.sessionId, sessionB);
-    expect(client.auth.currentUser?.id, userB['id']);
+    final refreshedToken = client.auth.currentSession!.accessToken;
+    expect(refreshedToken, isNot(oldToken));
+    expect(gateway.currentSessionState.isPasswordRecovery, isTrue);
     finishUpdate.complete();
-    final reset = await update;
-    await Future<void>.delayed(Duration.zero);
-
+    expect((await update).isSuccess, isTrue);
+    expect(client.auth.currentSession, isNull);
+    final updateRequest = requests.singleWhere((r) => r.method == 'PUT');
+    expect(updateRequest.url.path, '/prefix/auth/v1/user');
+    expect(updateRequest.headers['authorization'], 'Bearer $oldToken');
     expect(
-      {
-        'resetSuccess': reset.isSuccess,
-        'sessionId': gateway.currentSessionState.sessionId,
-        'userId': client.auth.currentUser?.id,
-        'logoutCount': requests.where((r) => r.url.path.endsWith('/logout')).length,
-        'updatedUserIds': updatedUserIds,
-      },
-      {
-        'resetSuccess': false,
-        'sessionId': sessionB,
-        'userId': userB['id'],
-        'logoutCount': 0,
-        'updatedUserIds': <String?>[],
-      },
+      requests.singleWhere((r) => r.url.path.endsWith('/logout')).headers['authorization'],
+      'Bearer $refreshedToken',
     );
   });
+
+  for (final scenario in ['denied', 'transport', 'invalid-json', 'list', 'wrong-user']) {
+    test('recovery response failure is sanitized without session mutation: $scenario', () async {
+      final requests = <Request>[];
+      final client = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-test',
+        authOptions: const AuthClientOptions(autoRefreshToken: false),
+        httpClient: MockClient((request) async {
+          requests.add(request);
+          if (request.method == 'PUT') {
+            if (scenario == 'transport') throw ClientException('synthetic-private-detail');
+            final body = switch (scenario) {
+              'invalid-json' => 'synthetic-private-detail',
+              'list' => '[]',
+              'wrong-user' => jsonEncode({..._user, 'id': 'wrong-user'}),
+              _ => jsonEncode({'message': 'synthetic-private-detail'}),
+            };
+            return Response(
+              body,
+              scenario == 'denied' ? 403 : 200,
+              headers: {'content-type': 'application/json'},
+              request: request,
+            );
+          }
+          return Response(
+            jsonEncode(_session(1)),
+            200,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          );
+        }),
+      );
+      addTearDown(client.dispose);
+      final gateway = SupabaseCoeloAuthGateway(client, sessionPersistence: _Persistence());
+      addTearDown(gateway.dispose);
+      final updated = <AuthState>[];
+      final subscription = client.auth.onAuthStateChange.listen((state) {
+        if (state.event == AuthChangeEvent.userUpdated) updated.add(state);
+      });
+      addTearDown(subscription.cancel);
+      await client.auth.verifyOTP(type: OtpType.recovery, tokenHash: 'synthetic-recovery-hash');
+      await Future<void>.delayed(Duration.zero);
+      final session = client.auth.currentSession;
+      final result = await gateway.updatePassword(password: 'synthetic-new-password');
+      await Future<void>.delayed(Duration.zero);
+      expect(result.isSuccess, isFalse);
+      expect(result.message, CoeloAuthPasswordUpdateResult.genericFailureMessage);
+      expect(client.auth.currentSession, same(session));
+      expect(updated, isEmpty);
+      expect(requests.where((r) => r.url.path.endsWith('/logout')), isEmpty);
+    });
+  }
 
   test('pending recovery password update excludes a new gateway login', () async {
     final updateStarted = Completer<void>();

@@ -126,8 +126,8 @@ final class SupabaseCoeloAuthGateway extends CoeloAuthLifecycleGateway {
   Future<CoeloAuthPasswordUpdateResult> updatePassword({
     required String password,
   }) async {
-    if (_credentialOperationInProgress ||
-        !_api.currentSessionState.isPasswordRecovery) {
+    final recoveryState = _api.currentSessionState;
+    if (_credentialOperationInProgress || !recoveryState.isPasswordRecovery) {
       return const CoeloAuthPasswordUpdateResult.failure(
         CoeloAuthPasswordUpdateResult.genericFailureMessage,
       );
@@ -135,6 +135,11 @@ final class SupabaseCoeloAuthGateway extends CoeloAuthLifecycleGateway {
     _credentialOperationInProgress = true;
     try {
       await _api.updatePassword(password: password);
+      if (_api.currentSessionState != recoveryState) {
+        return const CoeloAuthPasswordUpdateResult.failure(
+          CoeloAuthPasswordUpdateResult.genericFailureMessage,
+        );
+      }
       await _api.signOut();
       return const CoeloAuthPasswordUpdateResult.success();
     } on AuthException {
@@ -276,7 +281,43 @@ final class _SupabaseAuthApi implements CoeloSupabaseAuthApi {
 
   @override
   Future<void> updatePassword({required String password}) async {
-    await _client.auth.updateUser(UserAttributes(password: password));
+    final session = _client.auth.currentSession;
+    final recoveryState = currentSessionState;
+    final transport = _client.rest.httpClient;
+    final restUri = Uri.parse(_client.rest.url);
+    const restSuffix = '/rest/v1';
+    if (session == null ||
+        !recoveryState.isPasswordRecovery ||
+        transport == null ||
+        !restUri.path.endsWith(restSuffix)) {
+      throw const AuthException('Password recovery is unavailable.');
+    }
+
+    // Supabase derives both paths from the same configured project URL.
+    // Reuse its transport, but pin the recovery token: SDK updateUser writes
+    // its response into whichever session is current after the network await.
+    final endpoint = restUri.replace(
+      path:
+          '${restUri.path.substring(0, restUri.path.length - restSuffix.length)}/auth/v1/user',
+    );
+    final headers = Map<String, String>.from(_client.auth.headers)
+      ..removeWhere((key, _) => key.toLowerCase() == 'authorization')
+      ..['Authorization'] = 'Bearer ${session.accessToken}'
+      ..['Content-Type'] = 'application/json';
+    final response = await transport.put(
+      endpoint,
+      headers: headers,
+      body: jsonEncode(UserAttributes(password: password).toJson()),
+    );
+    if (response.statusCode != 200 ||
+        currentSessionState != recoveryState ||
+        _client.auth.currentUser?.id != session.user.id) {
+      throw const AuthException('Password recovery could not be confirmed.');
+    }
+    final payload = jsonDecode(response.body);
+    if (payload is! Map<String, dynamic> || payload['id'] != session.user.id) {
+      throw const AuthException('Password recovery could not be confirmed.');
+    }
   }
 
   @override
