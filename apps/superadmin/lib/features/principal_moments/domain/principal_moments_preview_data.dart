@@ -87,6 +87,7 @@ final class PrincipalMomentPreviewItem {
     this.saves,
     this.imageIndex = 0,
     this.id,
+    this.canRemove = false,
     this.media = const [],
   });
 
@@ -107,6 +108,11 @@ final class PrincipalMomentPreviewItem {
 
   /// Server identifier. It addresses, it never authorises.
   final String? id;
+
+  /// Whether the authorised projection says this actor may remove this moment.
+  /// Decided by profile, hierarchy and RLS on the server; the client only
+  /// renders what was already granted and never derives it.
+  final bool canRemove;
 
   /// Ordered, opaque descriptors. The URL only ever comes from the gateway.
   final List<PrincipalMomentsMediaDescriptor> media;

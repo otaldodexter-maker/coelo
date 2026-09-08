@@ -1,8 +1,11 @@
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../principal_shared/presentation/principal_removal_dialog.dart';
 import '../domain/principal_moments_feed_repository.dart';
 import '../domain/principal_moments_preview_data.dart';
 
@@ -53,6 +56,8 @@ final class PrincipalMomentsPreviewPage extends StatefulWidget {
 final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPreviewPage> {
   final _pageController = PageController();
   final _focusNode = FocusNode(debugLabel: 'Momentos');
+  final _removalRequestIds = <String, String>{};
+  final _requestRandom = math.Random.secure();
   final _liked = <int>{};
   final _saved = <int>{};
   var _currentIndex = 0;
@@ -107,6 +112,66 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
   }
 
   void _reloadAfterPublication() => _loadFeed();
+
+  bool get _canRemoveCurrent {
+    if (widget.feedRepository == null) return false;
+    final moments = _moments;
+    if (_currentIndex < 0 || _currentIndex >= moments.length) return false;
+    final moment = moments[_currentIndex];
+    return moment.canRemove && moment.id != null;
+  }
+
+  Future<void> _confirmRemoveMoment() async {
+    final repository = widget.feedRepository;
+    final moments = _moments;
+    if (repository == null || _currentIndex >= moments.length) return;
+    final moment = moments[_currentIndex];
+    final momentId = moment.id;
+    if (momentId == null || !moment.canRemove) return;
+    final reason = await askPrincipalRemovalReason(
+      context,
+      title: 'Remover momento',
+      description: 'O momento de ${moment.author} deixa de aparecer para quem podia ve-lo.',
+      dialogKey: const Key('principal-moments-remove-dialog'),
+      reasonKey: const Key('principal-moments-remove-reason'),
+      cancelKey: const Key('principal-moments-remove-cancel'),
+      confirmKey: const Key('principal-moments-remove-confirm'),
+    );
+    if (!mounted || reason == null) return;
+    final generation = _loadGeneration;
+    try {
+      await repository.removeMoment(
+        PrincipalMomentsRemoveCommand(
+          momentId: momentId,
+          requestId: _removalRequestIds.putIfAbsent(momentId, _newRequestId),
+          reason: reason,
+        ),
+      );
+      if (!mounted || generation != _loadGeneration) return;
+      // Confirmed by reloading, never by hiding the item locally.
+      _removalRequestIds.remove(momentId);
+      await _loadFeed();
+    } on PrincipalMomentsFeedUnauthorized {
+      if (mounted) _feedback('Voce nao pode remover este momento.');
+    } on PrincipalMomentsRemoveUnavailable {
+      if (mounted) _feedback('Remocao aguarda o comando autorizado.');
+    } on Object {
+      if (mounted) _feedback('Nao foi possivel remover agora. Tente novamente.');
+    }
+  }
+
+  /// Real outcome of a real command, distinct from the prototype placeholder.
+  void _feedback(String message) =>
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+
+  String _newRequestId() {
+    final values = List<int>.generate(16, (_) => _requestRandom.nextInt(256));
+    values[6] = (values[6] & 0x0f) | 0x40;
+    values[8] = (values[8] & 0x3f) | 0x80;
+    final hex = values.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
+    return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}'
+        '-${hex.substring(16, 20)}-${hex.substring(20)}';
+  }
 
   Future<void> _loadFeed() async {
     final repository = widget.feedRepository;
@@ -252,6 +317,7 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
       }),
       onMute: () => setState(() => _muted = !_muted),
       onAction: _prototypeMessage,
+      onRemove: _canRemoveCurrent ? _confirmRemoveMoment : null,
     );
   }
 
@@ -334,6 +400,7 @@ final class _MomentPager extends StatelessWidget {
     required this.onSave,
     required this.onMute,
     required this.onAction,
+    this.onRemove,
   });
 
   final PageController controller;
@@ -350,6 +417,7 @@ final class _MomentPager extends StatelessWidget {
   final VoidCallback onSave;
   final VoidCallback onMute;
   final ValueChanged<String> onAction;
+  final VoidCallback? onRemove;
 
   @override
   Widget build(BuildContext context) => ColoredBox(
@@ -387,6 +455,9 @@ final class _MomentPager extends StatelessWidget {
           onSave: onSave,
           onMute: onMute,
           onAction: onAction,
+          // The callback resolves the current moment when it runs, so the
+          // frame never carries a stale target.
+          onRemove: onRemove,
         ),
       ),
     ),
@@ -404,6 +475,7 @@ final class _MomentFrame extends StatelessWidget {
     required this.onSave,
     required this.onMute,
     required this.onAction,
+    this.onRemove,
   });
 
   final PrincipalMomentPreviewItem moment;
@@ -415,6 +487,7 @@ final class _MomentFrame extends StatelessWidget {
   final VoidCallback onSave;
   final VoidCallback onMute;
   final ValueChanged<String> onAction;
+  final VoidCallback? onRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -471,6 +544,7 @@ final class _MomentFrame extends StatelessWidget {
               onLike: onLike,
               onSave: onSave,
               onAction: onAction,
+              onRemove: onRemove,
             ),
           ),
           Positioned(
@@ -493,6 +567,7 @@ final class _ActionRail extends StatelessWidget {
     required this.onLike,
     required this.onSave,
     required this.onAction,
+    this.onRemove,
   });
 
   final PrincipalMomentPreviewItem moment;
@@ -501,6 +576,7 @@ final class _ActionRail extends StatelessWidget {
   final VoidCallback onLike;
   final VoidCallback onSave;
   final ValueChanged<String> onAction;
+  final VoidCallback? onRemove;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -535,12 +611,23 @@ final class _ActionRail extends StatelessWidget {
         count: moment.saves,
         onPressed: onSave,
       ),
-      _OverlayIcon(
-        icon: Icons.more_horiz_rounded,
-        label: 'Mais opções',
-        onPressed: () => onAction('Mais opções'),
-        circularBackground: true,
-      ),
+      // Removal replaces the placeholder only when the authorised projection
+      // granted it for this actor and a real command is wired.
+      if (onRemove case final remove?)
+        _OverlayIcon(
+          actionKey: const Key('principal-moments-remove'),
+          icon: Icons.delete_outline_rounded,
+          label: 'Remover momento',
+          onPressed: remove,
+          circularBackground: true,
+        )
+      else
+        _OverlayIcon(
+          icon: Icons.more_horiz_rounded,
+          label: 'Mais opções',
+          onPressed: () => onAction('Mais opções'),
+          circularBackground: true,
+        ),
     ],
   );
 }

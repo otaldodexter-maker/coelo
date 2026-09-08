@@ -35,6 +35,29 @@ abstract interface class PrincipalMomentsFeedRepository {
   /// Redeems one descriptor through the authorised gateway. The ticket is
   /// single use and short lived, and the client never signs anything itself.
   Future<PrincipalMomentsMediaRead> resolveMedia(PrincipalMomentsMediaDescriptor media);
+
+  /// Removes a published moment logically. The server decides by profile,
+  /// hierarchy and RLS, keeps the tombstone and writes the audit entry; media
+  /// assets are marked, never purged here.
+  Future<void> removeMoment(PrincipalMomentsRemoveCommand command);
+}
+
+final class PrincipalMomentsRemoveCommand {
+  const PrincipalMomentsRemoveCommand({
+    required this.momentId,
+    required this.requestId,
+    required this.reason,
+  }) : assert(momentId != ''),
+       assert(requestId != '');
+
+  final String momentId;
+
+  /// Preserved by the caller so a retry replays instead of removing twice.
+  final String requestId;
+
+  /// Recorded with the removal. Required so the audit trail never depends on
+  /// the operator remembering to send it.
+  final String reason;
 }
 
 final class PrincipalMomentsMediaRead {
@@ -75,4 +98,10 @@ final class PrincipalMomentsFeedUnauthorized extends PrincipalMomentsFeedFailure
 
 final class PrincipalMomentsFeedUnavailable extends PrincipalMomentsFeedFailure {
   const PrincipalMomentsFeedUnavailable();
+}
+
+/// The authorised removal command does not exist yet. Raised instead of
+/// pretending a moment was taken down.
+final class PrincipalMomentsRemoveUnavailable extends PrincipalMomentsFeedFailure {
+  const PrincipalMomentsRemoveUnavailable();
 }

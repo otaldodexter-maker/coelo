@@ -12,6 +12,7 @@ import '../../principal_circulars/domain/principal_happens_mixed_feed.dart';
 import '../../principal_circulars/presentation/principal_circular_surfaces.dart';
 import '../../principal_for_you/presentation/widgets/coelo_principal_action_card.dart';
 import '../../principal_shared/presentation/principal_global_navigation.dart';
+import '../../principal_shared/presentation/principal_removal_dialog.dart';
 
 const _principalHappensNowCardKey = Key('principal-happens-now-card');
 
@@ -181,9 +182,14 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
     }
   }
 
-  Future<String?> _askRemovalReason(PrincipalPostPreviewItem post) => showDialog<String>(
-    context: context,
-    builder: (context) => _RemovePostDialog(post: post),
+  Future<String?> _askRemovalReason(PrincipalPostPreviewItem post) => askPrincipalRemovalReason(
+    context,
+    title: 'Remover publicacao',
+    description: 'A publicacao de ${post.author} deixa de aparecer no feed.',
+    dialogKey: const Key('principal-happens-remove-dialog'),
+    reasonKey: const Key('principal-happens-remove-reason'),
+    cancelKey: const Key('principal-happens-remove-cancel'),
+    confirmKey: const Key('principal-happens-remove-confirm'),
   );
 
   Future<void> _loadFeed() async {
@@ -1909,84 +1915,4 @@ final class _BirthdayRow extends StatelessWidget {
       ],
     ),
   );
-}
-
-final class _RemovePostDialog extends StatefulWidget {
-  const _RemovePostDialog({required this.post});
-
-  final PrincipalPostPreviewItem post;
-
-  @override
-  State<_RemovePostDialog> createState() => _RemovePostDialogState();
-}
-
-final class _RemovePostDialogState extends State<_RemovePostDialog> {
-  // The dialog owns the controller so it outlives the awaited route and is
-  // disposed only when the route is gone.
-  final _controller = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _controller.addListener(_refresh);
-  }
-
-  @override
-  void dispose() {
-    _controller
-      ..removeListener(_refresh)
-      ..dispose();
-    super.dispose();
-  }
-
-  void _refresh() => setState(() {});
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final reason = _controller.text.trim();
-    return AlertDialog(
-      key: const Key('principal-happens-remove-dialog'),
-      title: const Text('Remover publicacao'),
-      content: SizedBox(
-        width: 420,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('A publicacao de ${widget.post.author} deixa de aparecer no feed.'),
-            const SizedBox(height: CoeloSpacing.space3),
-            TextField(
-              key: const Key('principal-happens-remove-reason'),
-              controller: _controller,
-              autofocus: true,
-              maxLength: 240,
-              decoration: const InputDecoration(
-                labelText: 'Motivo',
-                helperText: 'Fica registrado na auditoria.',
-              ),
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          key: const Key('principal-happens-remove-cancel'),
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancelar'),
-        ),
-        FilledButton(
-          key: const Key('principal-happens-remove-confirm'),
-          // The reason is required, so the audit trail never depends on the
-          // operator remembering to fill it in.
-          onPressed: reason.isEmpty ? null : () => Navigator.of(context).pop(reason),
-          style: FilledButton.styleFrom(
-            backgroundColor: colors.error,
-            foregroundColor: colors.onError,
-          ),
-          child: const Text('Remover'),
-        ),
-      ],
-    );
-  }
 }

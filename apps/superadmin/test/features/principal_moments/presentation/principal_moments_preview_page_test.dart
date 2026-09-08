@@ -464,4 +464,8 @@ final class _FakeMomentsFeedRepository implements PrincipalMomentsFeedRepository
   @override
   Future<List<PrincipalMomentPreviewItem>> listVisibleMoments(PrincipalMomentsFeedScope scope) =>
       _load(scope);
+
+  @override
+  Future<void> removeMoment(PrincipalMomentsRemoveCommand command) =>
+      Future<void>.error(const PrincipalMomentsRemoveUnavailable());
 }

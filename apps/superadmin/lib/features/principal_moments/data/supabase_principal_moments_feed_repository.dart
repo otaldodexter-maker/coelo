@@ -47,6 +47,13 @@ final class SupabasePrincipalMomentsFeedRepository implements PrincipalMomentsFe
   }
 
   @override
+  Future<void> removeMoment(PrincipalMomentsRemoveCommand command) async {
+    // No authorised removal command exists yet. Failing closed keeps the feed
+    // honest instead of hiding a moment the server still publishes.
+    throw const PrincipalMomentsRemoveUnavailable();
+  }
+
+  @override
   Future<PrincipalMomentsMediaRead> resolveMedia(PrincipalMomentsMediaDescriptor media) async {
     try {
       final response = await _client.functions.invoke(
@@ -108,6 +115,9 @@ PrincipalMomentPreviewItem _momentFromJson(Map<String, dynamic> json) {
         ..sort((a, b) => a.displayOrder.compareTo(b.displayOrder));
   return PrincipalMomentPreviewItem(
     id: id,
+    // Absent while the projection does not publish it: the affordance stays
+    // hidden rather than guessing that this actor may remove anything.
+    canRemove: json['can_remove'] == true,
     author: author,
     context: context,
     time: _relativeTime(publishedAt),
