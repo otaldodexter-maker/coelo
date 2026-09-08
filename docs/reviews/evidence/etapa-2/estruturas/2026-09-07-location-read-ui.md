@@ -82,3 +82,12 @@ cópia e vínculos continuam fora desta fatia e dentro do escopo original.
 Memória: nenhum comportamento novo durável aprovado para usuário final;
 contrato e evidência preparados atualizados, sem criar conhecimento promocional.
 Ledger e três rastreadores continuam sob single-writer da coordenação.
+
+## LOC-READUI02 — callback e cache de mesma instância
+
+Review central reteve LOCUI antes de integrar: contains(item) não bastava se
+o reader devolvesse exatamente o mesmo objeto após nova geração de leitura.
+Dois REDs runtime (cards/tabela) confirmaram abertura pelo callback antigo.
+Callbacks agora capturam readGeneration do controller; só a geração atual pode
+abrir. Os mesmos testes passaram e confirmam que o callback novo funciona.
+Mudança nominal sem alteração visual/DS; a pendência de status continua aberta.

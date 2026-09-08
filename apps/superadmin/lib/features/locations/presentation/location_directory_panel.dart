@@ -77,8 +77,11 @@ class _LocationDirectoryPanelState extends State<LocationDirectoryPanel> {
     unawaited(_controller.setPageSize(cards ? 11 : 8));
   }
 
-  void _open(LocationCatalogEntry item) {
-    if (mounted && widget.sessionAvailable && _controller.data?.items.contains(item) == true) {
+  void _open(LocationCatalogEntry item, int generation) {
+    if (mounted &&
+        widget.sessionAvailable &&
+        generation == _controller.readGeneration &&
+        _controller.data?.items.contains(item) == true) {
       widget.onOpen(item);
     }
   }
@@ -91,6 +94,7 @@ class _LocationDirectoryPanelState extends State<LocationDirectoryPanel> {
         final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
         final padding = compact ? CoeloSpacing.space4 : CoeloSpacing.space6;
         final data = _controller.data;
+        final generation = _controller.readGeneration;
         final allowed = widget.sessionAvailable && _controller.state != LocationReadState.denied;
         final previous = data != null && _controller.page > 0
             ? () => unawaited(_controller.goToPage(_controller.page - 1))
@@ -192,7 +196,7 @@ class _LocationDirectoryPanelState extends State<LocationDirectoryPanel> {
                                           key: Key('location-card-${item.id}'),
                                           minHeight: 216,
                                           semanticLabel: 'Abrir local ${item.name}',
-                                          onPressed: () => _open(item),
+                                          onPressed: () => _open(item, generation),
                                           child: Padding(
                                             padding: const EdgeInsets.all(CoeloSpacing.space4),
                                             child: Column(
@@ -223,7 +227,7 @@ class _LocationDirectoryPanelState extends State<LocationDirectoryPanel> {
                               key: const Key('location-table'),
                               items: data.items,
                               rowKey: (item) => item.id,
-                              onRowPressed: _open,
+                              onRowPressed: (item) => _open(item, generation),
                               headerHeight: 56 * MediaQuery.textScalerOf(context).scale(1),
                               rowHeight: 64 * MediaQuery.textScalerOf(context).scale(1),
                               pinnedColumn: _column('name', 'Nome', 220, (item) => item.name),
