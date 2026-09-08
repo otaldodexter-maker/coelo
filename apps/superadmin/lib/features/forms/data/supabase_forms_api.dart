@@ -4,7 +4,8 @@ import 'package:coelo_domain/coelo_domain.dart';
 import 'forms_backend_gateway.dart';
 import 'forms_editor_context.dart';
 
-final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
+final class SupabaseFormsApi
+    implements FormsApi, FormsEditorContextApi, FormsResponseContextReader {
   const SupabaseFormsApi(this._backend, {FormCursorCodec cursorCodec = const FormCursorCodec()})
     : _cursorCodec = cursorCodec;
 
@@ -370,27 +371,37 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
       });
 
   @override
-  Future<FormResponseDetail> getResponseDetail(String responseId) => _internalOperation(() async {
-    final payload = await _internalRpc('superadmin_forms_response_detail_v2', {
-      'p_query': {'response_id': responseId},
-    });
-    if (_string(payload, 'id') != responseId) {
-      throw const WireFormatException('Response detail correlation is invalid.');
-    }
-    final answers = _list(
-      payload,
-      'answers',
-    ).map(_map).map(FormAnswerDto.fromJson).map((dto) => dto.toDomain()).toList(growable: false);
-    if (answers.map((answer) => answer.itemId).toSet().length != answers.length) {
-      throw const WireFormatException('Response detail contains duplicate answers.');
-    }
-    final summary = _responseSummary(payload);
-    return FormResponseDetail(
-      summary: summary,
-      answers: {for (final answer in answers) answer.itemId: answer},
-      originalVersion: _originalResponseVersion(payload, summary, answers),
-    );
-  });
+  Future<FormResponseDetail> getResponseDetail(String responseId) =>
+      _readResponseDetail(responseId);
+
+  @override
+  Future<FormResponseDetail> getResponseDetailInForm(String formId, String responseId) =>
+      _readResponseDetail(responseId, formId: formId);
+
+  Future<FormResponseDetail> _readResponseDetail(String responseId, {String? formId}) =>
+      _internalOperation(() async {
+        final payload = await _internalRpc('superadmin_forms_response_detail_v2', {
+          'p_query': {'response_id': responseId, 'form_id': ?formId},
+        });
+        if (_string(payload, 'id') != responseId ||
+            (formId != null && _string(payload, 'form_id') != formId)) {
+          throw const WireFormatException('Response detail correlation is invalid.');
+        }
+        final answers = _list(payload, 'answers')
+            .map(_map)
+            .map(FormAnswerDto.fromJson)
+            .map((dto) => dto.toDomain())
+            .toList(growable: false);
+        if (answers.map((answer) => answer.itemId).toSet().length != answers.length) {
+          throw const WireFormatException('Response detail contains duplicate answers.');
+        }
+        final summary = _responseSummary(payload);
+        return FormResponseDetail(
+          summary: summary,
+          answers: {for (final answer in answers) answer.itemId: answer},
+          originalVersion: _originalResponseVersion(payload, summary, answers),
+        );
+      });
 
   @override
   Future<FormAssetUploadTicket> prepareAssetUpload(FormCommand<FormAssetUploadPayload> command) =>

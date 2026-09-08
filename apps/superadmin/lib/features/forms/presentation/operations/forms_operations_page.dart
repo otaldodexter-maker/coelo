@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:coelo_api/coelo_api.dart';
+import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -65,14 +66,14 @@ final class FormsOperationsPage extends StatefulWidget {
 
   const FormsOperationsPage.responseDetail({
     this.api,
+    this.formId,
     this.responseId,
     this.development = false,
     this.anonymous = false,
     this.state = FormsOperationsState.content,
     super.key,
   }) : surface = FormsOperationsSurface.responseDetail,
-       developmentStore = null,
-       formId = null;
+       developmentStore = null;
 
   const FormsOperationsPage.files({
     this.api,
@@ -160,7 +161,10 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
         FormsOperationsSurface.responses => api.listResponses(
           FormResponsesQuery(formId: formId!, cursor: _cursors[_pageIndex]),
         ),
-        FormsOperationsSurface.responseDetail => api.getResponseDetail(responseId!),
+        FormsOperationsSurface.responseDetail =>
+          formId != null && api is FormsResponseContextReader
+              ? (api as FormsResponseContextReader).getResponseDetailInForm(formId, responseId!)
+              : api.getResponseDetail(responseId!),
         FormsOperationsSurface.files => api.listFileJobs(
           formId: formId!,
           cursor: _cursors[_pageIndex],
@@ -168,6 +172,12 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
       };
       final value = await projection;
       if (mounted && generation == _loadGeneration) {
+        if (value is FormResponseDetail &&
+            formId != null &&
+            value.originalVersion?.formId != formId) {
+          setState(() => _state = FormsOperationsState.unavailable);
+          return;
+        }
         setState(() {
           _projection = value;
           _state = FormsOperationsState.content;
@@ -320,12 +330,28 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
           _AuthorizedResponse(summary: value.summary, anonymous: widget.anonymous),
           Text('${value.answers.length} resposta(s) carregada(s) para consulta.'),
           const SizedBox(height: CoeloSpacing.space4),
-          const CoeloStatePanel(
-            icon: Icons.info_outline_rounded,
-            title: 'Conteúdo das perguntas indisponível',
-            message:
-                'Não foi possível recuperar os enunciados e a ordem original das perguntas desta resposta.',
-          ),
+          if (value.originalVersion == null)
+            const CoeloStatePanel(
+              icon: Icons.info_outline_rounded,
+              title: 'Conteúdo das perguntas indisponível',
+              message:
+                  'Não foi possível recuperar os enunciados e a ordem original das perguntas desta resposta.',
+            )
+          else
+            _OriginalResponseAnswers(
+              detail: value,
+              onOpenAsset: (assetId) {
+                if (!mounted ||
+                    _state != FormsOperationsState.content ||
+                    !identical(value, _projection)) {
+                  return;
+                }
+                context.goNamed(
+                  SuperadminRoutes.formMediaName,
+                  pathParameters: {'assetId': assetId},
+                );
+              },
+            ),
         ],
       ),
       FormCursorPage<FormFileJob> value => Column(
@@ -416,7 +442,10 @@ final class _AuthorizedResponse extends StatelessWidget {
   Widget build(BuildContext context) {
     // A missing identity projection never authorizes correlation metadata.
     final private =
-        anonymous || summary.respondentLabel == null || summary.respondentLabel!.trim().isEmpty;
+        anonymous ||
+        summary.identityMode == FormIdentityMode.anonymous ||
+        summary.respondentLabel == null ||
+        summary.respondentLabel!.trim().isEmpty;
     final title = private ? 'Resposta anônima' : summary.respondentLabel!;
     final date = summary.submittedAt;
     final subtitle = private
@@ -918,9 +947,98 @@ final class _ResponseDetailContent extends StatelessWidget {
   );
 }
 
+final class _OriginalResponseAnswers extends StatelessWidget {
+  const _OriginalResponseAnswers({required this.detail, required this.onOpenAsset});
+  final FormResponseDetail detail;
+  final ValueChanged<String> onOpenAsset;
+
+  @override
+  Widget build(BuildContext context) {
+    final sections = [...detail.originalVersion!.sections]
+      ..sort(
+        (a, b) =>
+            a.position != b.position ? a.position.compareTo(b.position) : a.id.compareTo(b.id),
+      );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [for (final section in sections) ..._section(context, section)],
+    );
+  }
+
+  List<Widget> _section(BuildContext context, FormSection section) {
+    final items =
+        section.items
+            .where(
+              (item) => const FormVisibilityEvaluator().isVisible(
+                conditions: item.conditions,
+                answers: detail.answers,
+              ),
+            )
+            .toList()
+          ..sort(
+            (a, b) =>
+                a.position != b.position ? a.position.compareTo(b.position) : a.id.compareTo(b.id),
+          );
+    if (items.isEmpty) return const [];
+    return [
+      Text(section.title, style: Theme.of(context).textTheme.titleLarge),
+      if (section.description case final description? when description.isNotEmpty) ...[
+        const SizedBox(height: CoeloSpacing.space2),
+        Text(description),
+      ],
+      const SizedBox(height: CoeloSpacing.space3),
+      for (final item in items) _answer(context, item),
+      const SizedBox(height: CoeloSpacing.space3),
+    ];
+  }
+
+  Widget _answer(BuildContext context, FormItem item) {
+    final value = detail.answers[item.id]?.value;
+    final text = switch (value) {
+      FormShortTextValue(:final value) => value,
+      FormIntegerValue(:final value) => '$value',
+      FormDecimalValue(:final value) => '$value',
+      FormMoneyValue(:final minorUnits) =>
+        '${minorUnits < 0 ? '-' : ''}${minorUnits.abs() ~/ 100},${(minorUnits.abs() % 100).toString().padLeft(2, '0')}',
+      FormDateValue(:final value) => MaterialLocalizations.of(context).formatFullDate(value),
+      FormYesNoValue(:final value) => value ? 'Sim' : 'Não',
+      FormChoiceValue(:final optionIds) =>
+        (item.options.where((option) => optionIds.contains(option.id)).toList()..sort(
+              (a, b) => a.position != b.position
+                  ? a.position.compareTo(b.position)
+                  : a.id.compareTo(b.id),
+            ))
+            .map((option) => option.label)
+            .join(', '),
+      FormScaleValue(:final value) => '$value',
+      FormAssetValue(:final assetIds) => '${assetIds.length} arquivo(s)',
+      null => item.kind == FormItemKind.information ? (item.helpText ?? '') : 'Não respondida',
+    };
+    return _Answer(
+      question: item.label,
+      answer: text,
+      action: value is FormAssetValue && value.assetIds.isNotEmpty
+          ? Wrap(
+              spacing: CoeloSpacing.space2,
+              runSpacing: CoeloSpacing.space2,
+              children: [
+                for (var index = 0; index < value.assetIds.length; index++)
+                  OutlinedButton.icon(
+                    onPressed: () => onOpenAsset(value.assetIds[index]),
+                    icon: const Icon(Icons.image_outlined),
+                    label: Text('Ver mídia ${index + 1}'),
+                  ),
+              ],
+            )
+          : null,
+    );
+  }
+}
+
 final class _Answer extends StatelessWidget {
-  const _Answer({required this.question, required this.answer});
+  const _Answer({required this.question, required this.answer, this.action});
   final String question, answer;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -935,6 +1053,7 @@ final class _Answer extends StatelessWidget {
             Text(question, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: CoeloSpacing.space2),
             Text(answer),
+            if (action != null) ...[const SizedBox(height: CoeloSpacing.space3), action!],
           ],
         ),
       ),
