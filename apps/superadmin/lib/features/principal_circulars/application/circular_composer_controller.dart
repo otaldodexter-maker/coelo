@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:characters/characters.dart';
@@ -29,6 +30,8 @@ final class CircularComposerController extends ChangeNotifier {
   CircularDraft _draft;
   CircularComposerState _state = CircularComposerState.editing;
   String? _errorCode;
+  ({String requestId, CircularDraft draft})? _pendingSave;
+  Future<CircularSaveResult>? _saveInFlight;
 
   CircularDraft get draft => _draft;
   CircularComposerState get state => _state;
@@ -206,30 +209,57 @@ final class CircularComposerController extends ChangeNotifier {
     _replace(blocks: blocks);
   }
 
-  Future<CircularSaveResult> save() async {
+  Future<CircularSaveResult> save() {
+    final active = _saveInFlight;
+    if (active != null) return active;
+    final completion = Completer<CircularSaveResult>();
+    _saveInFlight = completion.future;
+    _savePendingDraft().then(
+      (result) {
+        _saveInFlight = null;
+        completion.complete(result);
+      },
+      onError: (Object error, StackTrace stack) {
+        _saveInFlight = null;
+        completion.completeError(error, stack);
+      },
+    );
+    return completion.future;
+  }
+
+  Future<CircularSaveResult> _savePendingDraft() async {
     _setState(CircularComposerState.saving);
     try {
-      final result = await repository.saveDraft(
-        requestId: _requestIdFactory(),
-        scope: scope,
-        draft: _draft,
-      );
-      _draft = CircularDraft(
-        id: result.id,
-        title: _draft.title,
-        blocks: _draft.blocks,
-        status: result.status,
-        responsePolicy: _draft.responsePolicy,
-        audiences: _draft.audiences,
-        responsesCloseAt: _draft.responsesCloseAt,
-        expectedVersion: result.version,
-      );
-      _setState(CircularComposerState.saved);
-      return result;
+      while (true) {
+        final pending = _pendingSave ??= (requestId: _requestIdFactory(), draft: _draft);
+        final result = await repository.saveDraft(
+          requestId: pending.requestId,
+          scope: scope,
+          draft: pending.draft,
+        );
+        final hasNewEdits = !identical(_draft, pending.draft);
+        _pendingSave = null;
+        _draft = CircularDraft(
+          id: result.id,
+          title: _draft.title,
+          blocks: _draft.blocks,
+          status: result.status,
+          responsePolicy: _draft.responsePolicy,
+          audiences: _draft.audiences,
+          responsesCloseAt: _draft.responsesCloseAt,
+          expectedVersion: result.version,
+        );
+        // Reconcile an ambiguous receipt before issuing a new command for edits.
+        if (hasNewEdits) continue;
+        _setState(CircularComposerState.saved);
+        return result;
+      }
     } on CircularVersionConflict {
+      _pendingSave = null;
       _setState(CircularComposerState.conflict, 'expected_version_conflict');
       rethrow;
     } on CircularFailure catch (error) {
+      if (error is! CircularUnavailable) _pendingSave = null;
       _setState(CircularComposerState.failure, error.runtimeType.toString());
       rethrow;
     }
