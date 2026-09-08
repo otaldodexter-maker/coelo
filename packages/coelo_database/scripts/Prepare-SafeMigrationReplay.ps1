@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'LocationCatalogV2', 'AgendaReadContractRed')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @()
@@ -80,9 +80,12 @@ $canonical = @(Get-ChildItem -LiteralPath $canonicalFull -File -Filter '*.sql' |
 $preflight = @(Get-ChildItem -LiteralPath $preflightFull -File -Filter '*.sql' | Sort-Object Name)
 $foundationManifestHash = $null
 $additionalCanonical = @()
+$locationBootstrap = @()
 $foundationBoundaryVersion = $null
 if ($NominalProfile) {
   $nominalResolverRelative = switch ($NominalProfile) {
+    'AgendaReadContractRed' { 'profiles\AgendaReadContractRed\Resolve-AgendaReadContractRed.ps1' }
+    'LocationCatalogV2' { 'profiles\LocationCatalogV2\Resolve-LocationCatalogV2.ps1' }
     'N01PrerequisitesRed' { 'profiles\N01PrerequisitesRed\Resolve-N01PrerequisitesRed.ps1' }
     'A01DirectoryContractRed' { 'profiles\A01DirectoryContractRed\Resolve-A01DirectoryContractRed.ps1' }
     'FReadDirectoryContractRed' { 'profiles\FReadDirectoryContractRed\Resolve-FReadDirectoryContractRed.ps1' }
@@ -108,6 +111,14 @@ if ($NominalProfile) {
   $preflight = @($nominal.Preflight)
   $additionalCanonical = @($nominal.Additional)
   $foundationManifestHash = $nominal.ManifestHash
+  if ($NominalProfile -eq 'LocationCatalogV2') {
+    $locationBootstrap = @($nominal.LocationBootstrap)
+    if ($locationBootstrap.Count -ne 1 -or
+        $locationBootstrap[0].Name -cne '20260908030959_location_catalog_v2_capability_bootstrap_local.sql' -or
+        (Get-NormalizedTextSha256 $locationBootstrap[0].FullName) -cne '7d7ae81d7adc7d4d998e7b7f6ffaa7f1d16f463b106bb68b804e01caa0bf5bdc') {
+      throw 'LocationCatalogV2 requires exactly the reviewed local bootstrap'
+    }
+  }
 }
 if ($AdditionalMigration.Count -gt 0 -and -not ($FoundationOnly -or $AuthOnly)) {
   throw 'additional migrations require FoundationOnly or AuthOnly'
@@ -219,7 +230,13 @@ if ($canonical.Count -eq 0 -or
   throw "unexpected replay inputs: canonical=$($canonical.Count) preflight=$($preflight.Count)"
 }
 
-$combined = @($canonical) + @($preflight) | Sort-Object Name
+$combined = @($canonical) + @($preflight) + @($locationBootstrap) | Sort-Object Name
+if ($NominalProfile -eq 'LocationCatalogV2' -and
+    ($canonical.Count -ne 47 -or $combined.Count -ne 50 -or
+     $combined[48].Name -cne '20260908030959_location_catalog_v2_capability_bootstrap_local.sql' -or
+     $combined[49].Name -cne '20260908031000_superadmin_location_catalog_v2.sql')) {
+  throw 'LocationCatalogV2 requires 47 canonical, two preflight and one bootstrap immediately before target'
+}
 $versions = @($combined | ForEach-Object {
   if ($_.Name -notmatch '^(\d{14})_[a-z0-9_]+\.sql$') {
     throw "invalid migration filename: $($_.Name)"
@@ -304,7 +321,7 @@ if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryCon
   }
 }
 
-foreach ($source in @($canonical) + @($preflight)) {
+foreach ($source in @($canonical) + @($preflight) + @($locationBootstrap)) {
   if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryContractGreenDerived') -and $source.Name -ceq '20260813155005_forms_definition_and_capabilities.sql') { continue }
   $sourceFull = [IO.Path]::GetFullPath($source.FullName)
   if (($source.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
@@ -316,10 +333,18 @@ foreach ($source in @($canonical) + @($preflight)) {
 }
 
 $generated = @(Get-ChildItem -LiteralPath $destinationFull -File -Filter '*.sql' | Sort-Object Name)
-if ($generated.Count -ne ($canonical.Count + $preflight.Count)) {
+if ($generated.Count -ne ($canonical.Count + $preflight.Count + $locationBootstrap.Count)) {
   throw 'generated safe replay migration count mismatch'
 }
 
+if ($NominalProfile -eq 'LocationCatalogV2') {
+  $locationBootstrapTarget = Join-Path $destinationFull $locationBootstrap[0].Name
+  if ((Get-NormalizedTextSha256 $locationBootstrapTarget) -cne '7d7ae81d7adc7d4d998e7b7f6ffaa7f1d16f463b106bb68b804e01caa0bf5bdc' -or
+      (Get-FileSha256 $locationBootstrapTarget) -cne (Get-FileSha256 $locationBootstrap[0].FullName)) {
+    throw 'LocationCatalogV2 copied bootstrap differs from the reviewed source'
+  }
+}
+$locationBootstrapEvidence = if ($locationBootstrap.Count -eq 1) { ' + 1 location bootstrap' } else { '' }
 $preflightHashes = @($preflight | ForEach-Object {
   "$(($_.BaseName))=$(Get-FileSha256 $_.FullName)"
 }) -join ','
@@ -341,4 +366,4 @@ $manifestEvidence = if ($FoundationOnly -or $AuthOnly -or $NominalProfile) {
 else {
   ''
 }
-"Prepared $($generated.Count) safe replay migrations ($($canonical.Count) canonical + $($preflight.Count) preflight); profile=$profile; additional=$($additionalCanonical.Count)$manifestEvidence; preflight_sha256=$preflightHashes."
+"Prepared $($generated.Count) safe replay migrations ($($canonical.Count) canonical + $($preflight.Count) preflight$locationBootstrapEvidence); profile=$profile; additional=$($additionalCanonical.Count)$manifestEvidence; preflight_sha256=$preflightHashes."

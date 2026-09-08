@@ -1,0 +1,65 @@
+{
+    "id":  "AgendaReadContractRed",
+    "base":  {
+                 "profile":  "auth",
+                 "manifest":  "packages/coelo_database/replay/foundation-migrations.sha256",
+                 "manifest_sha256_crlf_utf8":  "4279e67c9651f4049329591b6e8aad82e3a9052506c1a4e16ba8bbb693249d59",
+                 "selected_canonical_count":  45,
+                 "inherited_preflight_count":  2,
+                 "boundary":  "20260901200206"
+             },
+    "target_version":  "20260901200206",
+    "canonical_additions":  [
+                                {
+                                    "file":  "20260831195944_activities_v2_actor_provenance_semantics.sql",
+                                    "sha256_crlf_utf8":  "19c3168014d7710b248da92100bb1b61528e9299150a54da74080315e8b99745",
+                                    "canonical_union_position":  44
+                                },
+                                {
+                                    "file":  "20260831203645_activities_v2_permissions_receipts.sql",
+                                    "sha256_crlf_utf8":  "84bfc497aae6e4d8ad950fc03035896d6b9246c42531823e32ce34817b0d02b5",
+                                    "canonical_union_position":  45
+                                },
+                                {
+                                    "file":  "20260831211945_activities_v2_internal_gateways.sql",
+                                    "sha256_crlf_utf8":  "443be75040ca103a7a6723aa90037359c11c1681afdc6a6361c2d81f667a6dfa",
+                                    "canonical_union_position":  46
+                                },
+                                {
+                                    "file":  "20260901183836_superadmin_agenda_production.sql",
+                                    "sha256_crlf_utf8":  "96d909e33598300619a03b8975fa0c6fca243894f1af8fd33acb9458a5926f3d",
+                                    "canonical_union_position":  48
+                                },
+                                {
+                                    "file":  "20260901184240_agenda_fk_index_hardening.sql",
+                                    "sha256_crlf_utf8":  "05c581aa6c8452e98c30592b9dab137f7900b8fb7e22dfe6954222cc359a0df0",
+                                    "canonical_union_position":  49
+                                },
+                                {
+                                    "file":  "20260901193717_superadmin_agenda_contexts.sql",
+                                    "sha256_crlf_utf8":  "d177e4253a6552d88dfe3626afe0834ac3a230bef58db5a0baeaa61951025b27",
+                                    "canonical_union_position":  50
+                                }
+                            ],
+    "inherited_preflights":  [
+                                 {
+                                     "file":  "20260811151253_assert_function_execute_preflight.sql",
+                                     "sha256_crlf_utf8":  "718c2de052e9df29abc42642806d9a5e4d98c8964665453de6f14f0f8b61ab75",
+                                     "before":  "20260811151254_group_management_security.sql"
+                                 },
+                                 {
+                                     "file":  "20260811215452_access_profile_labels_replay_bridge.sql",
+                                     "sha256_crlf_utf8":  "d97e02796fcd5897707b5657b7a1c1df690f831e09ed98df6ed21886f75f9ef3",
+                                     "after":  "20260811215451_access_profile_management_v2.sql",
+                                     "before":  "20260812000847_audit_production.sql"
+                                 }
+                             ],
+    "extra_bridges":  [
+
+                      ],
+    "planned_counts":  {
+                           "canonical":  51,
+                           "preflight":  2,
+                           "total":  53
+                       }
+}

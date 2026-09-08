@@ -1,0 +1,69 @@
+{
+  "id": "LocationCatalogV2",
+  "base": {
+    "profile": "auth",
+    "manifest": "packages/coelo_database/replay/foundation-migrations.sha256",
+    "manifest_sha256_crlf_utf8": "4279e67c9651f4049329591b6e8aad82e3a9052506c1a4e16ba8bbb693249d59",
+    "selected_canonical_count": 45,
+    "inherited_preflight_count": 2,
+    "boundary": "20260901200206"
+  },
+  "target_version": "20260908031000",
+  "canonical_additions": [
+    {
+      "file": "20260827235500_superadmin_internal_institution_list_filter.sql",
+      "sha256_crlf_utf8": "c4496229e2d004907b1c878e9719cadfa60169307eeb92be67cd76c3ad5551aa",
+      "canonical_union_position": 44
+    },
+    {
+      "file": "20260908031000_superadmin_location_catalog_v2.sql",
+      "sha256_crlf_utf8": "02fb69cbff42834ffa9a9cdebb60bab7e15c6cd0cf150175020de8c8d0f823f6",
+      "sha256_lf_utf8": "7c7ca4da2aa4eece06f386aee9ada7c52db69eecd996bca18ed434a922f90538",
+      "canonical_union_position": 47,
+      "commit": "98d166d25d18d1d0b615e244ba8af7e93f11420e",
+      "blob": "0d4223268de032d7e3536ba58b350b481f8db7c6"
+    }
+  ],
+  "inherited_preflights": [
+    {
+      "file": "20260811151253_assert_function_execute_preflight.sql",
+      "sha256_crlf_utf8": "718c2de052e9df29abc42642806d9a5e4d98c8964665453de6f14f0f8b61ab75",
+      "before": "20260811151254_group_management_security.sql"
+    },
+    {
+      "file": "20260811215452_access_profile_labels_replay_bridge.sql",
+      "sha256_crlf_utf8": "d97e02796fcd5897707b5657b7a1c1df690f831e09ed98df6ed21886f75f9ef3",
+      "after": "20260811215451_access_profile_management_v2.sql",
+      "before": "20260812000847_audit_production.sql"
+    }
+  ],
+  "location_bootstrap": {
+    "source": {
+      "file": "location_catalog_v2_capability_bootstrap.sql",
+      "sha256_raw": "3dd0bf5c11e52a68102e3e707e48835eb676513c235daab5defcdb1e7ad24bfb",
+      "sha256_crlf_utf8": "4b0c56f6fdb15c28d19bb1392bf89060a3c67a5ba9e17724350de5976e61ecb2",
+      "bytes": 1644,
+      "commit": "fbef1b92cf5cc9ba735f78c0057d6d853cd736ea",
+      "blob": "b811809655d8081175965b3120ade41f8af7f0b3"
+    },
+    "derived": {
+      "file": "20260908030959_location_catalog_v2_capability_bootstrap_local.sql",
+      "sha256_raw": "d46583bc936dfb284b5d05bdba8dea8f965d31a0f899164bfdd8a8c6bd6d2471",
+      "sha256_crlf_utf8": "7d7ae81d7adc7d4d998e7b7f6ffaa7f1d16f463b106bb68b804e01caa0bf5bdc",
+      "bytes": 1698,
+      "commit": "115df2ca35b04e4b8f48aecb1d2a46929bd19949",
+      "blob": "43adedc3a6149c5c2d42bfcec2fe7f74c8286ed5"
+    },
+    "insert_after": "begin;\n",
+    "insert_line": "set local coelo.local_replay = 'location-catalog-v2';\n",
+    "combined_position": 49,
+    "before": "20260908031000_superadmin_location_catalog_v2.sql"
+  },
+  "extra_bridges": [],
+  "planned_counts": {
+    "canonical": 47,
+    "preflight": 2,
+    "bootstrap": 1,
+    "total": 50
+  }
+}

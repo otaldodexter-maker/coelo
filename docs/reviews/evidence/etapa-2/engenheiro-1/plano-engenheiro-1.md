@@ -3,7 +3,7 @@ title: Plano de trabalho — Engenheiro 1
 source: Coordenador — Etapa 2 E2E; decisões do Owner; evidências locais desta tarefa
 status: em andamento
 generated: 2026-09-07
-updated: 2026-09-08T00:58:00-03:00
+updated: 2026-09-08
 ---
 
 # Engenheiro 1 — plano por tela, ação e backend
@@ -27,6 +27,11 @@ PASSOS: 1/6 delimitar contrato e dependências; 2/6 reproduzir e registrar basel
 | Usuários internos | Usersmin: minimização da projeção READ | 6/6 — RED funcional entregue | Base48 aplicada integralmente; fixture3 independente de Users45 | root; fixture E2E1 a763c6f9; review replay_manifest | 1PASS autorização,2FAIL minimização; três TAP completos, sem ACL/aborto, cleanup zero às22:49:31 BRT | Users49GREEN: corretiva21644 aplicada,45+3intactos=48PASS,exit0;cleanup zero23:55:41BRT. Evidência users49-green; concorrência/tela fora do recorte |
 | Modelos de permissões | READ: detalhe / lista / catálogo | 6/6 — RED funcional entregue | Auth45 + 170731/193000 + dois preflights =49; base aplicada integralmente | root; writer/review do harness; fixture E2E1 fa3acdba | 187/187 Pester PASS;11TAP:9PASS/2FAIL5,7 porlookup antesautorização; cleanup zero às22:56:41 BRT | ModelRED49:24PASS/4FAIL em28; GREEN50:38/38PASS, incl.owner/ACL10;cleanup zero00:15:13BRT. Evidência models-read-green, semE2EFlutter |
 | Atividades | A01: auditoria de leitura do diretório/opções v2 | 6/6 — RED funcional entregue | Base55 aplicada com v1; leituras ainda sem append de sucesso | root; writer/review do harness; fixture97 E2E5 ee212cb5 | 233PesterPASS do writer,root29focaisPASS;97TAP:91PASS/6FAIL91–94,96–97;cleanup zero23:22:12 BRT | A01GREEN55:v2aplicada,97/97PASS,exit0;cleanup zero00:18:51BRT. V1histórica preservada; E2EFlutter fora do recorte |
+| Locais | Catálogo v2 / bootstrap e ACL | 3/6 — implementação do perfil local | Auth45 +235500+31000; dois preflights e bootstrap separado =50 | replay_runner writer; root integração | ProbeAuth47 real confirmou nove ACLs e somenteMAINTAIN extra; candidato98d166d2+bootstrap115df2ca revisados; RED do harness53=52FAIL/1PASS antesimplementação | Concluir testes/review do perfil LocationCatalogV2 e obter gate central antesSQL |
+| Perfis e permissões | READ / cursor / scopes / statuses | 6/6 — primeiro bloqueio local entregue | Auth47 sem corretiva, wrapper invoker e helper privado | root; fixture E2E1 b11c3c3e | 8TAP=3pré-condiçõesPASS/5FAIL; quatrocenários42501 acl-before-contract; catálogo e cleanup entregues46a6077a | Corretiva pertence à frente E2E1 e precisa revisão nominal |
+| Agenda | AG-READ01 / base dos três readers | 3/6 — perfil nominal em implementação | Auth45+3Activities+3Agenda+2preflights=53,target200206 | replay_manifest writer; root integração | Proposta743591df; root+autor53/53hashes; fixturea3b76f5b preservada; centralautorizouharness | RED/GREEN Pester, regressão, review e gate antesSQL |
+| Formulários | F-AUTHOR01 / autoria v2 | 3/6 — closure e proteção operacional em revisão |59canônicas+3snapshotsalternativos+2preflight=64,target030000 | root; replay_auth_rls autorclosure; replay_manifest revisão | Proposta19990960;64/64pins; derivação155005 quatrocaracteres; resetrecriavolume e perdeconfigcron; alternativapushlocaldocumentada | Gate central do mecanismo cronoff; nenhumSQL64executado; G42703 e concorrência separados |
+| Atividades | A01 / rota normal + PostgREST real | 3/6 — seed e janela em preparação | BaseA01AuditGreen55 jáSQL97PASS; seedHTTPconfirmadoainda nãoaplicado | replay_auth_rls seed; root operador; E2E5 cliente | Roteirof5b0e5bf; grantsplatform.read sintéticos102/106 aprovados; checkoutcliente realdifere doE1 | Pins/review de seed, helper comtimeout/cleanup, gate central antesHTTP/SQL |
 
 ## Limites e rastreabilidade
 

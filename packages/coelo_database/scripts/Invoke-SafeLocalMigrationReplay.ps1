@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'LocationCatalogV2', 'AgendaReadContractRed')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @(),
@@ -97,6 +97,8 @@ if ($NominalProfile) {
     throw 'nominal replay cannot be combined with other replay profiles, additions, Auth lifecycle or concurrency'
   }
   $nominalResolverRelative = switch ($NominalProfile) {
+    'AgendaReadContractRed' { 'replay\profiles\AgendaReadContractRed\Resolve-AgendaReadContractRed.ps1' }
+    'LocationCatalogV2' { 'replay\profiles\LocationCatalogV2\Resolve-LocationCatalogV2.ps1' }
     'N01PrerequisitesRed' { 'replay\profiles\N01PrerequisitesRed\Resolve-N01PrerequisitesRed.ps1' }
     'A01DirectoryContractRed' { 'replay\profiles\A01DirectoryContractRed\Resolve-A01DirectoryContractRed.ps1' }
     'FReadDirectoryContractRed' { 'replay\profiles\FReadDirectoryContractRed\Resolve-FReadDirectoryContractRed.ps1' }

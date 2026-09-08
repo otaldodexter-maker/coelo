@@ -303,3 +303,11 @@ migrations sinteticas do replay nao pertencem ao ledger remoto.
 Novas migrations nascem com `npx supabase migration new <nome>
 --workdir packages/coelo_database`; o arquivo gerado deve ser movido para
 `migrations/` sem alterar o timestamp.
+
+### Perfis nominais Locais50 e Agenda53 — preparação local
+
+LocationCatalogV2 fixa Auth45+235500+31000 (47 canônicas), dois preflights e um bootstrap local separado:50 entradas, target20260908031000. O bootstrap versionado030959 deve ocupar49 imediatamente antes do candidato; fonte/derivado têm pins brutos e comparação de delta exato. As duas fontes usam eolLF explícito no checkout. O perfil não amplia AdditionalMigration ou a contagem de preflights.
+
+AgendaReadContractRed fixa Auth45+trêsActivities+trêsAgenda (51 canônicas), dois preflights,53 entradas e target20260901200206. Não importa outras migrations Activities nem cria helpers alternativos. Os dois perfis rejeitam modos misturados antes de staging/Docker.
+
+Preparação e revisão:488/488PesterPASS, zero skips. O erro inicial de casingLOC que omitia o bootstrap foi reproduzido e corrigido; os cinco novos casos preservam50entradas e rejeitam alteração do bootstrap. A fixture Agenda adicional plan10 registra Authenum/audit14 por catálogos; o contrato a3b continua intacto. Nenhum SQL desses pacotes foi executado na preparação. Evidência e pins completos em [loc-agenda-nominal-preparation-2026-09-08.md](../../docs/reviews/evidence/etapa-2/engenheiro-1/loc-agenda-nominal-preparation-2026-09-08.md). Runtime depende de gate central nominal e operador único, com cleanup obrigatório.
