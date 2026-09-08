@@ -35,6 +35,8 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
   late final TextEditingController _body;
   DateTime? _publishAt;
   bool _compactPreview = false;
+  int _contextGeneration = 0;
+  int _scheduleGeneration = 0;
 
   @override
   void initState() {
@@ -44,7 +46,21 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
   }
 
   @override
+  void didUpdateWidget(covariant SuperadminCircularComposerPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.controller, widget.controller)) return;
+    _contextGeneration++;
+    _scheduleGeneration++;
+    _title.text = widget.controller.draft.title;
+    _body.text = _bodyText(widget.controller.draft);
+    _publishAt = null;
+    _compactPreview = false;
+  }
+
+  @override
   void dispose() {
+    _contextGeneration++;
+    _scheduleGeneration++;
     _title.dispose();
     _body.dispose();
     super.dispose();
@@ -59,9 +75,17 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
   }
 
   Future<void> _publish() async {
+    final controller = widget.controller;
+    final generation = _contextGeneration;
+    final onPublished = widget.onPublished;
     try {
-      await widget.controller.publish(publishAt: _publishAt);
-      widget.onPublished?.call();
+      await controller.publish(publishAt: _publishAt);
+      if (!mounted ||
+          generation != _contextGeneration ||
+          !identical(controller, widget.controller)) {
+        return;
+      }
+      onPublished?.call();
     } on Object {
       // The controller exposes a user-safe state in the page feedback.
     }
@@ -70,8 +94,15 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
   Future<void> _chooseSchedule() async {
     final choose = widget.onChooseSchedule;
     if (choose == null) return;
+    final generation = _contextGeneration;
+    final scheduleGeneration = ++_scheduleGeneration;
     final selected = await choose();
-    if (mounted && selected != null) setState(() => _publishAt = selected);
+    if (mounted &&
+        generation == _contextGeneration &&
+        scheduleGeneration == _scheduleGeneration &&
+        selected != null) {
+      setState(() => _publishAt = selected);
+    }
   }
 
   @override
@@ -240,7 +271,11 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     for (final question in questions) ...[
-                      _QuestionCard(controller: widget.controller, question: question),
+                      _QuestionCard(
+                        key: ValueKey((widget.controller, question.id)),
+                        controller: widget.controller,
+                        question: question,
+                      ),
                       const SizedBox(height: CoeloSpacing.space3),
                     ],
                     OutlinedButton.icon(
@@ -342,7 +377,7 @@ final class _Section extends StatelessWidget {
 }
 
 final class _QuestionCard extends StatefulWidget {
-  const _QuestionCard({required this.controller, required this.question});
+  const _QuestionCard({required this.controller, required this.question, super.key});
   final CircularComposerController controller;
   final CircularQuestionBlock question;
 
@@ -357,6 +392,12 @@ final class _QuestionCardState extends State<_QuestionCard> {
   void initState() {
     super.initState();
     _prompt = TextEditingController(text: widget.question.prompt);
+  }
+
+  @override
+  void didUpdateWidget(covariant _QuestionCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_prompt.text != widget.question.prompt) _prompt.text = widget.question.prompt;
   }
 
   @override
