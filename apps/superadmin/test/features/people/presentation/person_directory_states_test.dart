@@ -36,6 +36,30 @@ void main() {
     expect(find.text('Limpar filtros'), findsWidgets);
   });
 
+  testWidgets('keeps deferred file actions visible without production callbacks', (tester) async {
+    await tester.pumpWidget(_app(FakePersonDirectoryRepository()));
+    await tester.pumpAndSettle();
+
+    final files = find.byKey(const Key('coelo-admin-files-action'));
+    expect(files, findsOneWidget);
+    await tester.tap(files);
+    await tester.pumpAndSettle();
+    expect(find.text('Importar'), findsOneWidget);
+    expect(find.text('Exportar CSV'), findsOneWidget);
+    expect(find.text('Exportar XLSX'), findsOneWidget);
+
+    await tester.tap(find.text('Importar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Indisponível nesta etapa'), findsOneWidget);
+
+    await tester.tap(files);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Exportar XLSX'));
+    await tester.pumpAndSettle();
+    expect(find.text('Indisponível nesta etapa'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final fixture in [
     (label: 'loading', repository: FakePersonDirectoryRepository()),
     (label: 'error', repository: FakePersonDirectoryRepository(fail: true)),
