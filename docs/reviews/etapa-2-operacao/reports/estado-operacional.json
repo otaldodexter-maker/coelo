@@ -690,16 +690,18 @@
       "revision": 7,
       "source": "82b1f4e5",
       "destination": "62ef457a",
-      "status": "integrated-local;push-pending",
-      "report": "reports/R01-integracao-C03-1540.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-integracao-C03-1540.md",
+      "delivery_sha": "c144f8c432008e7ea53f60c0756949e7a107fb86"
     },
     {
       "executor": "C03",
       "revision": 10,
       "source": "4c5af8ce",
       "destination": "e39bb29f",
-      "status": "integrated-local;push-pending",
-      "report": "reports/R01-integracao-C03-1540.md"
+      "status": "delivered-origin-dev;not-production-certified",
+      "report": "reports/R01-integracao-C03-1540.md",
+      "delivery_sha": "c144f8c432008e7ea53f60c0756949e7a107fb86"
     }
   ],
   "last_delta_processed_at": "2026-09-08T15:40:25-03:00",
@@ -721,9 +723,9 @@
   },
   "last_delivery": {
     "branch": "origin/dev",
-    "sha": "e564d33991d41bf9ccd6c56e513469658b64552d",
-    "verified_at": "2026-09-08T15:04:03-03:00",
-    "method": "atomic fast-forward push + ls-remote",
+    "sha": "c144f8c432008e7ea53f60c0756949e7a107fb86",
+    "verified_at": "2026-09-08T15:41:16-03:00",
+    "method": "atomic push + ls-remote; two reviewed C03 lots; no remote data changes",
     "original_local_dev": "84985b5485247df6a8dc7270e33d18601aca0421; dirty checkout preserved",
     "deploy": "not executed by C00; production state not verified"
   },

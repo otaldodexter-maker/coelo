@@ -172,6 +172,8 @@ Continuidade: C01 foi encontrado idle apósr26, recebeu uma retomada nativa com 
 Git entregue permanece origin/dev e564d339, último push verificado15:04; este checkpoint inicialmente é documentação local C00, recibo posterior registra publicação. Sem integração nova de código, aplicação SQL, deploy ou teste mutante remoto neste checkpoint. ETA total desconhecida, risco8dias elevado; próximas dependências críticas: upload comum, replay XLSX, pacote Auth sintético nominal e revisão/integração de consumidores. C00 não aprova novo pacote remoto para si.
 
 ## Integração incremental C03 — 2026-09-08T15:40:25-03:00
+Recibo 2026-09-08T15:41:16-03:00: push atômico e ls-remote confirmaram origin/dev e origin/codex/e2-r01-c00-integration em **c144f8c432008e7ea53f60c0756949e7a107fb86**. Inclui dois lotesC03 testados e documentação1530/1540. Publicação Git concluída; checkout original preservado, sem deploy nem aplicação Supabase/Cloudflare. Este recibo prevalece sobre push pendente acima.
+
 
 C03/r10 recebida e sincronizada. Lotes82b1f4e5→62ef457a (Cardápios: mídia legada desabilitada por padrão) e4c5af8ce→e39bb29f (Planos: request_id preservado em retry do mesmo payload após perda de resposta) integrados na C00. Revisão de Dart/contratos/composição confirmou contexto e reset da intenção; nenhum arquivo root/SQL/golden foi incluído. **127/127 testes funcionais C00 PASS**, analyzer4arquivos limpo. Logs locais C:/Users/adrie/AppData/Local/Temp/coelo-c00-meal-plans-plans-1540.log e sufixo-analyze.log. Flutter3.44.2/Dart3.12.2; testes controlados não certificam remoto.
 

@@ -1,11 +1,13 @@
 ---
 source: "C03r10; reviewed source commits82b1f4e5/4c5af8ce; C00 tests"
-status: "integrated-local; push-pending; not-certified"
+status: "delivered-origin-dev; not-certified"
 generated_at: "2026-09-08T15:40:25-03:00"
 timezone: "America/Sao_Paulo"
 ---
 
 ## Integração incremental C03 — 2026-09-08T15:40:25-03:00
+Recibo 2026-09-08T15:41:16-03:00: push atômico e ls-remote confirmaram origin/dev e origin/codex/e2-r01-c00-integration em **c144f8c432008e7ea53f60c0756949e7a107fb86**. Inclui dois lotesC03 testados e documentação1530/1540. Publicação Git concluída; checkout original preservado, sem deploy nem aplicação Supabase/Cloudflare. Este recibo prevalece sobre push pendente acima.
+
 
 C03/r10 recebida e sincronizada. Lotes82b1f4e5→62ef457a (Cardápios: mídia legada desabilitada por padrão) e4c5af8ce→e39bb29f (Planos: request_id preservado em retry do mesmo payload após perda de resposta) integrados na C00. Revisão de Dart/contratos/composição confirmou contexto e reset da intenção; nenhum arquivo root/SQL/golden foi incluído. **127/127 testes funcionais C00 PASS**, analyzer4arquivos limpo. Logs locais C:/Users/adrie/AppData/Local/Temp/coelo-c00-meal-plans-plans-1540.log e sufixo-analyze.log. Flutter3.44.2/Dart3.12.2; testes controlados não certificam remoto.
 
