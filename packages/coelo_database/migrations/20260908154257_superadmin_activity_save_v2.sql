@@ -202,13 +202,13 @@ begin
     from app_private.activity_v2_require_context(required_capability, institution_id);
     if row(
       ctx.internal_identity_id,ctx.internal_auth_link_id,ctx.internal_membership_id,
-      ctx.auth_user_id,ctx.session_id,ctx.platform_role_id,ctx.role_code,
+      ctx.auth_user_id,ctx.session_id,ctx.platform_role_id,ctx.platform_role_code,
       ctx.scope_kind,ctx.scope_institution_id,ctx.resolved_institution_id,
       ctx.aal,ctx.permission_code,ctx.requires_mfa
     ) is distinct from row(
       initial_ctx.internal_identity_id,initial_ctx.internal_auth_link_id,
       initial_ctx.internal_membership_id,initial_ctx.auth_user_id,initial_ctx.session_id,
-      initial_ctx.platform_role_id,initial_ctx.role_code,initial_ctx.scope_kind,
+      initial_ctx.platform_role_id,initial_ctx.platform_role_code,initial_ctx.scope_kind,
       initial_ctx.scope_institution_id,initial_ctx.resolved_institution_id,
       initial_ctx.aal,initial_ctx.permission_code,initial_ctx.requires_mfa
     ) then
@@ -220,13 +220,14 @@ begin
       if row(
         capability_ctx.internal_identity_id,capability_ctx.internal_auth_link_id,
         capability_ctx.internal_membership_id,capability_ctx.auth_user_id,
-        capability_ctx.session_id,capability_ctx.platform_role_id,capability_ctx.role_code,
+        capability_ctx.session_id,capability_ctx.platform_role_id,
+        capability_ctx.platform_role_code,
         capability_ctx.scope_kind,capability_ctx.scope_institution_id,
         capability_ctx.resolved_institution_id,capability_ctx.aal
       ) is distinct from row(
         initial_ctx.internal_identity_id,initial_ctx.internal_auth_link_id,
         initial_ctx.internal_membership_id,initial_ctx.auth_user_id,initial_ctx.session_id,
-        initial_ctx.platform_role_id,initial_ctx.role_code,initial_ctx.scope_kind,
+        initial_ctx.platform_role_id,initial_ctx.platform_role_code,initial_ctx.scope_kind,
         initial_ctx.scope_institution_id,initial_ctx.resolved_institution_id,initial_ctx.aal
       ) then
         raise insufficient_privilege using detail = 'SAI_INTERNAL_CONTEXT_DENIED';

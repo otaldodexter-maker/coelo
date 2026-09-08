@@ -86,13 +86,13 @@ select ok(
 ) from source;
 
 with source as (
-  select pg_catalog.substring(
+  select body,pg_catalog.substring(
     locked_body from 1 for pg_catalog.position(
       'select*intoreceiptfromapp_private.superadmin_internal_activity_save_receipts' in locked_body
     )-1
   ) as before_receipt
   from (
-    select pg_catalog.substring(body from pg_catalog.position(
+    select body,pg_catalog.substring(body from pg_catalog.position(
       'pg_catalog.pg_advisory_xact_lock' in body
     )) as locked_body
     from (
@@ -105,18 +105,17 @@ with source as (
   ) locked
 )
 select ok(
-  before_receipt like '%activities.link_units%'
-    and before_receipt like '%activities.link_groups%'
-    and before_receipt like '%activities.assign_people%'
-    and before_receipt like '%activities.manage_permissions%'
-    and (
-      pg_catalog.position(
-        'thenarray[''activities.manage''::text]' in before_receipt
-      )>0
-      or pg_catalog.position(
-        'thenarray[''activities.manage'']::text[]' in before_receipt
-      )>0
-    ),
+  body like '%activities.link_units%'
+    and body like '%activities.link_groups%'
+    and body like '%activities.assign_people%'
+    and body like '%activities.manage_permissions%'
+    and body like '%activities.manage%'
+    and pg_catalog.position(
+      'foreachrequired_capabilityinarrayrequired_capabilitiesloop' in before_receipt
+    )>0
+    and pg_catalog.position(
+      'select*intostrictcapability_ctxfromapp_private.activity_v2_require_context' in before_receipt
+    )>0,
   'aggregate refreshes every applicable capability before receipt replay or mutation'
 ) from source;
 
