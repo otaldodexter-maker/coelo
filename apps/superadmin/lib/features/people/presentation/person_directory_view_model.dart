@@ -267,7 +267,9 @@ final class PersonDirectoryViewModel extends ChangeNotifier {
         _filterOptions = const PersonDirectoryFilterOptions();
         _state = PersonDirectoryLoadState.unauthorized;
       }
-    } on Exception {
+      // Anything else, including an Error, has to reach the failure state: a
+      // load that throws and leaves the spinner on screen is a silent hang.
+    } on Object {
       if (version == _requestVersion) {
         _query = PersonDirectoryQuery(pageSize: value.pageSize);
         _page = PersonDirectoryPage(

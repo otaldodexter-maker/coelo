@@ -131,7 +131,9 @@ final class GroupDirectoryViewModel extends ChangeNotifier {
       if (!_isDisposed && version == _requestVersion) {
         _state = GroupDirectoryLoadState.unauthorized;
       }
-    } on Exception {
+      // Anything else, including an Error, has to reach the failure state: a
+      // load that throws and leaves the spinner on screen is a silent hang.
+    } on Object {
       if (!_isDisposed && version == _requestVersion) {
         _state = GroupDirectoryLoadState.failure;
       }
