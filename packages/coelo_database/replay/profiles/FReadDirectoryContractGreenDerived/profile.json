@@ -1,0 +1,24 @@
+{
+  "id": "FReadDirectoryContractGreenDerived",
+  "parent": {
+    "id": "FReadDirectoryContractGreen",
+    "descriptor_sha256_crlf_utf8": "baa720662ebb022633d01f2ce512b613a681046a39ff9ada97ba9abc510e6fda",
+    "resolver_sha256_crlf_utf8": "4c706a2e634c062264aca4438d2350985b752b85acfe30089e80021ce0b46812"
+  },
+  "target_version": "20260908000049",
+  "forms_definition_materialization": {
+    "file": "20260813155005_forms_definition_and_capabilities.sql",
+    "source_sha256_crlf_utf8": "3a3d2bd348948cdef78a3a0c712c9eae8a6a6fb8be59b8fd942a445f6cbb6e36",
+    "derived_sha256_crlf_utf8": "06b71570bbb25c84efe5efed6a6d1f2416a33a5a6fdf71bc20b4776d01833dfe",
+    "converter_profile": "FReadDirectoryContractRedDerived",
+    "converter": "Convert-FReadFormsDefinitionForLocalReplay.ps1",
+    "converter_sha256_crlf_utf8": "c3cc8e86a075c20f608d3d34ab31f1611e56f80aabfe29958832f5ab05982dc5",
+    "inserted_character_count": 4
+  },
+  "extra_bridges": [],
+  "planned_counts": {
+    "canonical": 49,
+    "preflight": 2,
+    "total": 51
+  }
+}

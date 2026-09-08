@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'A01DirectoryAuditGreen')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @(),
@@ -106,6 +106,7 @@ if ($NominalProfile) {
     'A01DirectoryAuditRed' { 'replay\profiles\A01DirectoryAuditRed\Resolve-A01DirectoryAuditRed.ps1' }
     'A01DirectoryAuditGreen' { 'replay\profiles\A01DirectoryAuditGreen\Resolve-A01DirectoryAuditGreen.ps1' }
     'FReadDirectoryContractRedDerived' { 'replay\profiles\FReadDirectoryContractRedDerived\Resolve-FReadDirectoryContractRedDerived.ps1' }
+    'FReadDirectoryContractGreenDerived' { 'replay\profiles\FReadDirectoryContractGreenDerived\Resolve-FReadDirectoryContractGreenDerived.ps1' }
   }
   $nominalResolver = Join-Path $packageRoot $nominalResolverRelative
   Assert-NoReparseAncestors $nominalResolver
