@@ -129,6 +129,7 @@ final class _CoeloAdminMultiSelectFieldState<T> extends State<CoeloAdminMultiSel
   }
 
   void _toggle(T value) {
+    if (!_canInteract) return;
     setState(() {
       _draftValues = Set.of(_draftValues);
       if (!_draftValues.add(value)) {
@@ -137,9 +138,13 @@ final class _CoeloAdminMultiSelectFieldState<T> extends State<CoeloAdminMultiSel
     });
   }
 
-  void _clear() => setState(() => _draftValues = {});
+  void _clear() {
+    if (!_canInteract) return;
+    setState(() => _draftValues = {});
+  }
 
   void _apply() {
+    if (!_canInteract) return;
     final result = Set<T>.unmodifiable(_draftValues);
     _appliedWhileOpen = true;
     _closeAndRestoreFocus();
@@ -232,7 +237,7 @@ final class _CoeloAdminMultiSelectFieldState<T> extends State<CoeloAdminMultiSel
                         children: [
                           Expanded(
                             child: TextButton(
-                              onPressed: _draftValues.isEmpty ? null : _clear,
+                              onPressed: !_canInteract || _draftValues.isEmpty ? null : _clear,
                               style: TextButton.styleFrom(
                                 minimumSize: const Size.fromHeight(CoeloSize.touchMin),
                               ),
@@ -242,7 +247,8 @@ final class _CoeloAdminMultiSelectFieldState<T> extends State<CoeloAdminMultiSel
                           const SizedBox(width: CoeloSpacing.space2),
                           Expanded(
                             child: FilledButton(
-                              onPressed: _setsEqual(_draftValues, widget.selectedValues)
+                              onPressed:
+                                  !_canInteract || _setsEqual(_draftValues, widget.selectedValues)
                                   ? null
                                   : _apply,
                               style: FilledButton.styleFrom(
@@ -309,11 +315,12 @@ final class _CoeloAdminMultiSelectFieldState<T> extends State<CoeloAdminMultiSel
       button: true,
       label: widget.optionLabel(option),
       checked: selected,
-      enabled: true,
+      enabled: _canInteract,
+      onTap: _canInteract ? () => _toggle(option) : null,
       child: ExcludeSemantics(
         child: MenuItemButton(
           closeOnActivate: false,
-          onPressed: () => _toggle(option),
+          onPressed: _canInteract ? () => _toggle(option) : null,
           style: ButtonStyle(
             minimumSize: const WidgetStatePropertyAll(Size.fromHeight(CoeloSize.touchMin)),
             shape: const WidgetStatePropertyAll(RoundedRectangleBorder()),

@@ -14,8 +14,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('creates an exclusive Superadmin access through four steps', (tester) async {
-    final semantics = tester.ensureSemantics();
-    addTearDown(semantics.dispose);
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final repository = FakePlatformUserRepository();
