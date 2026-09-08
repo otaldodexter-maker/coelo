@@ -6,6 +6,71 @@ import 'package:coelo_superadmin/features/principal_now_publication/domain/now_p
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final operation in ['load', 'save', 'media', 'audio', 'publish']) {
+    test('unauthorized $operation purges every protected draft field', () async {
+      final repository = _DeniedNowRepository();
+      final controller = NowPublicationController(
+        repository: repository,
+        context: NowPublicationContext.demo,
+      );
+      addTearDown(controller.dispose);
+      await controller.load();
+      repository.deniedOperation = operation;
+      if (operation == 'load') {
+        await controller.load();
+      } else if (operation == 'publish') {
+        await controller.publish();
+      } else {
+        await controller.saveDraft();
+      }
+      expect(controller.state.phase, NowPublicationPhase.unauthorized);
+      _expectPurged(controller.state.draft);
+    });
+  }
+
+  test('unauthorized blocks late edits and commands until an authorized load', () async {
+    final repository = _DeniedNowRepository();
+    final controller = NowPublicationController(
+      repository: repository,
+      context: NowPublicationContext.demo,
+    );
+    addTearDown(controller.dispose);
+    await controller.load();
+    repository.deniedOperation = 'save';
+    await controller.saveDraft();
+    final deniedCalls = repository.commands;
+    controller
+      ..setMedia(repository.draft.media!)
+      ..setAudio(repository.draft.audio!)
+      ..setCaption('Late caption')
+      ..setOverlayText('Late overlay')
+      ..toggleAudience(NowAudience.families)
+      ..setPublishAt(DateTime(2099));
+    await controller.saveDraft();
+    expect(await controller.publish(), isNull);
+    expect(await controller.retry(), isNull);
+    expect(repository.commands, deniedCalls);
+    expect(controller.state.phase, NowPublicationPhase.unauthorized);
+    _expectPurged(controller.state.draft);
+
+    repository.failLoad = true;
+    await controller.load();
+    controller.setCaption('Must not unlock on unavailable reload');
+    await controller.saveDraft();
+    expect(repository.commands, deniedCalls);
+    _expectPurged(controller.state.draft);
+
+    repository.failLoad = false;
+    repository.deniedOperation = null;
+    await controller.load();
+    expect(controller.state.phase, NowPublicationPhase.editing);
+    expect(controller.state.draft.caption, 'Protected caption');
+    controller.setCaption('Authorized edit');
+    await controller.saveDraft();
+    expect(controller.state.phase, NowPublicationPhase.saved);
+    expect(controller.state.draft.caption, 'Authorized edit');
+  });
+
   test('edita ferramentas leves sem substituir a mídia', () async {
     final controller = NowPublicationController(
       repository: InMemoryNowPublicationRepository(),
@@ -308,6 +373,91 @@ void main() {
     expect(controller.state.draft.id, 'draft-1');
     expect(controller.state.draft.version, 1);
   });
+}
+
+void _expectPurged(NowPublicationDraft draft) {
+  expect(draft.id, isNull);
+  expect(draft.version, 0);
+  expect(draft.media, isNull);
+  expect(draft.audio, isNull);
+  expect(draft.caption, isEmpty);
+  expect(draft.overlayText, isEmpty);
+  expect(draft.audiences, isEmpty);
+  expect(draft.publishAt, isNull);
+}
+
+final class _DeniedNowRepository implements NowPublicationRepository {
+  String? deniedOperation;
+  var failLoad = false;
+  var commands = 0;
+  final draft = NowPublicationDraft(
+    id: 'protected-draft',
+    version: 7,
+    caption: 'Protected caption',
+    overlayText: 'Protected overlay',
+    audiences: const {NowAudience.families},
+    publishAt: DateTime(2099),
+    media: NowMediaDraft.image(
+      localId: 'media',
+      name: 'private.png',
+      mimeType: 'image/png',
+      bytes: Uint8List.fromList([1]),
+    ).copyWith(remoteUrl: 'https://signed.invalid/private'),
+    audio: NowAudioDraft(
+      localId: 'audio',
+      name: 'private.mp3',
+      mimeType: 'audio/mpeg',
+      bytes: Uint8List.fromList([2]),
+      rightsConfirmed: true,
+    ),
+  );
+
+  void _check(String operation) {
+    if (operation != 'load') commands++;
+    if (deniedOperation == operation) throw NowPublicationUnauthorized();
+  }
+
+  @override
+  Future<NowPublicationDraft?> loadDraft(NowPublicationContext context) async {
+    _check('load');
+    if (failLoad) throw Exception('offline');
+    return draft;
+  }
+
+  @override
+  Future<NowPublicationDraft> saveDraft(
+    NowPublicationContext context,
+    NowPublicationDraft value,
+  ) async {
+    _check('save');
+    return value;
+  }
+
+  @override
+  Future<NowMediaDraft> uploadMedia(
+    NowPublicationContext context,
+    String publicationId,
+    NowMediaDraft media,
+  ) async {
+    _check('media');
+    return media.copyWith(remoteAssetId: 'remote-media');
+  }
+
+  @override
+  Future<NowAudioDraft> uploadAudio(
+    NowPublicationContext context,
+    String publicationId,
+    NowAudioDraft audio,
+  ) async {
+    _check('audio');
+    return audio.copyWith(remoteAssetId: 'remote-audio');
+  }
+
+  @override
+  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft value) async {
+    _check('publish');
+    return NowPublication(id: value.id!, publishAt: value.publishAt);
+  }
 }
 
 final class _DeferredNowRepository implements NowPublicationRepository {

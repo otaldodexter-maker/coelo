@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:coelo_superadmin/features/principal_now_publication/application/now_publication_controller.dart';
 import 'package:coelo_superadmin/features/principal_now_publication/domain/now_publication.dart';
 import 'package:coelo_superadmin/features/principal_now_publication/presentation/principal_now_publication_page.dart';
 import 'package:coelo_superadmin/features/principal_shared/presentation/principal_publication_frame.dart';
@@ -176,6 +177,164 @@ void main() {
     await tester.pumpAndSettle();
     expect(repository.savedCaptions, ['Edição local', 'Legenda B']);
   });
+
+  testWidgets('unauthorized ignores a pending media picker and purges caption controller', (
+    tester,
+  ) async {
+    final repository = _RetryingNowRepository(unauthorizedOnSave: true);
+    final picker = Completer<NowMediaDraft?>();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalNowPublicationPage.demo(
+          repository: repository,
+          mediaPicker: () => picker.future,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Adicionar mídia'));
+    await tester.pump();
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+    final captionController = tester
+        .widget<EditableText>(
+          find.descendant(
+            of: find.byKey(const Key('now-caption-field')),
+            matching: find.byType(EditableText),
+          ),
+        )
+        .controller;
+    expect(captionController.text, 'Rascunho preservado');
+    await tester.tap(find.text('Salvar rascunho'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('now-publication-unauthorized')), findsOneWidget);
+    picker.complete(
+      NowMediaDraft.image(
+        localId: 'late',
+        name: 'late.png',
+        mimeType: 'image/png',
+        bytes: Uint8List.fromList([1]),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('now-publication-unauthorized')), findsOneWidget);
+    expect(find.byType(PrincipalPublicationFrame), findsNothing);
+    expect(captionController.text, isEmpty);
+    expect(repository.saveCalls, 1);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final audio in [false, true]) {
+    testWidgets(
+      'unauthorized invalidates pending ${audio ? 'audio' : 'media'} across authorized reload',
+      (tester) async {
+        final repository = _RetryingNowRepository(unauthorizedOnSave: true);
+        final mediaPicker = Completer<NowMediaDraft?>();
+        final audioPicker = Completer<NowAudioDraft?>();
+        await tester.pumpWidget(
+          MaterialApp(
+            home: PrincipalNowPublicationPage.demo(
+              repository: repository,
+              mediaPicker: () => mediaPicker.future,
+              audioPicker: () => audioPicker.future,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final builder = tester.widget<AnimatedBuilder>(
+          find.byWidgetPredicate(
+            (widget) => widget is AnimatedBuilder && widget.animation is NowPublicationController,
+          ),
+        );
+        final controller = builder.animation as NowPublicationController;
+        if (audio) {
+          controller.setMedia(
+            NowMediaDraft.image(
+              localId: 'current',
+              name: 'current.png',
+              mimeType: 'image/png',
+              bytes: Uint8List.fromList([1]),
+            ),
+          );
+          await tester.pumpAndSettle();
+          await tester.tap(find.byTooltip('Música'));
+        } else {
+          await tester.tap(find.text('Adicionar mídia'));
+        }
+        await tester.pump();
+        await controller.saveDraft();
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('now-publication-unauthorized')), findsOneWidget);
+        await controller.load();
+        await tester.pumpAndSettle();
+        expect(controller.state.phase, NowPublicationPhase.editing);
+        mediaPicker.complete(
+          audio
+              ? null
+              : NowMediaDraft.image(
+                  localId: 'late',
+                  name: 'late.png',
+                  mimeType: 'image/png',
+                  bytes: Uint8List.fromList([1]),
+                ),
+        );
+        audioPicker.complete(
+          audio
+              ? NowAudioDraft(
+                  localId: 'late-audio',
+                  name: 'late.mp3',
+                  mimeType: 'audio/mpeg',
+                  bytes: Uint8List.fromList([2]),
+                )
+              : null,
+        );
+        await tester.pumpAndSettle();
+        expect(controller.state.draft.media, isNull);
+        expect(controller.state.draft.audio, isNull);
+        expect(find.text('Confirmar direitos'), findsNothing);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  for (final tooltip in ['Texto', 'Cortar']) {
+    testWidgets('unauthorized dismisses owned $tooltip before its first build', (tester) async {
+      final repository = _RetryingNowRepository(unauthorizedOnSave: true);
+      await tester.pumpWidget(
+        MaterialApp(home: PrincipalNowPublicationPage.demo(repository: repository)),
+      );
+      await tester.pumpAndSettle();
+      final controller =
+          tester
+                  .widget<AnimatedBuilder>(
+                    find.byWidgetPredicate(
+                      (widget) =>
+                          widget is AnimatedBuilder && widget.animation is NowPublicationController,
+                    ),
+                  )
+                  .animation
+              as NowPublicationController;
+      controller.setMedia(
+        NowMediaDraft.image(
+          localId: 'current',
+          name: 'current.png',
+          mimeType: 'image/png',
+          bytes: Uint8List.fromList([1]),
+        ),
+      );
+      controller.setOverlayText('Protected overlay');
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip(tooltip));
+      await controller.saveDraft();
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('now-publication-unauthorized')), findsOneWidget);
+      expect(find.byKey(const Key('now-overlay-field')), findsNothing);
+      expect(find.text('Cortar mídia'), findsNothing);
+      expect(find.text('Protected overlay'), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  }
 
   testWidgets('unauthorized bloqueia o publisher sem oferecer retry', (tester) async {
     final repository = _RetryingNowRepository(unauthorizedOnSave: true);

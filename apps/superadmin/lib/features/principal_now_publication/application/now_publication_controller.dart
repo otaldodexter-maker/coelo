@@ -41,6 +41,7 @@ final class NowPublicationController extends ChangeNotifier {
   var _commandInFlight = false;
   var _publishingIntent = false;
   var _disposed = false;
+  var _accessDenied = false;
   _NowRetryAction? _retryAction;
 
   NowPublicationState get state => _state;
@@ -53,6 +54,7 @@ final class NowPublicationController extends ChangeNotifier {
     try {
       final draft = await repository.loadDraft(context);
       if (!_isCurrentLoad(generation)) return;
+      _accessDenied = false;
       _emit(
         NowPublicationState(
           draft: draft ?? const NowPublicationDraft(),
@@ -62,13 +64,7 @@ final class NowPublicationController extends ChangeNotifier {
       _retryAction = null;
     } on NowPublicationUnauthorized {
       if (!_isCurrentLoad(generation)) return;
-      _retryAction = null;
-      _emit(
-        _state.copyWith(
-          phase: NowPublicationPhase.unauthorized,
-          message: 'Você não pode publicar neste contexto.',
-        ),
-      );
+      _denyAccess();
     } on Exception {
       if (!_isCurrentLoad(generation)) return;
       _retryAction = _NowRetryAction.load;
@@ -124,7 +120,7 @@ final class NowPublicationController extends ChangeNotifier {
       _edit(_state.draft.copyWith(publishAt: value, clearPublishAt: value == null));
 
   Future<void> saveDraft() async {
-    if (_disposed || _loadInFlight || _commandInFlight) return;
+    if (_disposed || _accessDenied || _loadInFlight || _commandInFlight) return;
     final snapshot = _state.draft;
     final generation = _editGeneration;
     _commandInFlight = true;
@@ -171,13 +167,7 @@ final class NowPublicationController extends ChangeNotifier {
       );
     } on NowPublicationUnauthorized {
       if (_disposed) return;
-      _retryAction = null;
-      _emit(
-        _state.copyWith(
-          phase: NowPublicationPhase.unauthorized,
-          message: 'Você não pode publicar neste contexto.',
-        ),
-      );
+      _denyAccess();
     } on Exception {
       if (_disposed) return;
       _retryAction = _NowRetryAction.save;
@@ -193,7 +183,7 @@ final class NowPublicationController extends ChangeNotifier {
   }
 
   Future<NowPublication?> publish() async {
-    if (_disposed || _loadInFlight || _commandInFlight) return null;
+    if (_disposed || _accessDenied || _loadInFlight || _commandInFlight) return null;
     final issues = _state.draft.validate(context);
     if (issues.isNotEmpty) {
       _emit(_state.copyWith(message: _messageFor(issues.first)));
@@ -240,13 +230,7 @@ final class NowPublicationController extends ChangeNotifier {
       );
     } on NowPublicationUnauthorized {
       if (_disposed) return null;
-      _retryAction = null;
-      _emit(
-        _state.copyWith(
-          phase: NowPublicationPhase.unauthorized,
-          message: 'Você não pode publicar neste contexto.',
-        ),
-      );
+      _denyAccess();
     } on Exception {
       if (_disposed) return null;
       _retryAction = _NowRetryAction.publish;
@@ -279,11 +263,23 @@ final class NowPublicationController extends ChangeNotifier {
   }
 
   void _edit(NowPublicationDraft draft) {
-    if (_disposed || _loadInFlight || _publishingIntent) return;
+    if (_disposed || _accessDenied || _loadInFlight || _publishingIntent) return;
     _editGeneration += 1;
     _retryAction = null;
     final phase = _commandInFlight ? _state.phase : NowPublicationPhase.editing;
     _emit(NowPublicationState(draft: draft, phase: phase));
+  }
+
+  void _denyAccess() {
+    _accessDenied = true;
+    _retryAction = null;
+    _emit(
+      const NowPublicationState(
+        draft: NowPublicationDraft(),
+        phase: NowPublicationPhase.unauthorized,
+        message: 'Você não pode publicar neste contexto.',
+      ),
+    );
   }
 
   bool _isCurrentLoad(int generation) => !_disposed && generation == _loadGeneration;

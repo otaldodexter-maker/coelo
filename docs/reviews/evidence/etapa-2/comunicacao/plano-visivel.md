@@ -44,6 +44,17 @@ Coordenador; este arquivo registra somente esta frente.
 | 6/6 da fatia | Momentos / publicação e troca de contexto | Estado Flutter; nenhum BD | `review_media_session` | RED3; GREEN86/86 funcional/rota +14/14 goldens; A não restaura conteúdo/callback em B; próximo gate contexto e mídia reais |
 | 6/6 da fatia | Para Você / validade dos destaques | Estado Flutter; nenhum BD | `crosswalk_media` | RED3; GREEN49/49 incluindo 13 goldens; timer cancelado em troca/dispose; próximo gate leitura/revogação reais |
 
+## Deltas locais adicionais
+
+| Fatia | Evidência e resultado local | Gate ainda aberto |
+| --- | --- | --- |
+| M03 métricas de imagem | `3efe3865`; 19/19 métricas, 30/30 com transporte R2; revisão aprovada | Decoder real, catálogo, reautorização, lease e cadeia R2 |
+| Cabeçalho: isolamento preview | `f612f639`; 3/3 focal, 69/69 shell | Composition root real e regressão global; controller de suporte ainda em memória |
+| Cabeçalho: contexto do relato | `7cac7b19`; 3/3 focal, 69/69 shell | Goldens Turmas divergentes também no baseline; sem atualizar PNG |
+| Principal: matriz standalone | `9d88b87e`; 26/26 rotas; spec 050, 7 rotas × 4 larguras × 2 escalas | Foco/teclado, retorno contextual e backend real |
+| Agora: legenda após reload | `a4c1943d`; 70/70 feature antes da fatia seguinte | Draft e contexto reais |
+| Agora: negação e callbacks tardios | `2026-09-07-now-denial-purge.md`; RED11, GREEN81/81 feature, analyzer/visual/review | Revogação real, mídia compartilhada e persistência E2E |
+
 Sem API de plano nativo disponível nesta sessão. Este documento é a alternativa
 aberta no painel direito; não substitui nem controla o contador nativo do app.
 
