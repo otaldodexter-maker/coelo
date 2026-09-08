@@ -52,6 +52,13 @@ class _InstitutionBrandImageState extends State<InstitutionBrandImage> {
   bool _failed = false;
   int _epoch = 0;
 
+  /// Provider of the ticket currently on screen, kept only to evict it.
+  ///
+  /// Flutter caches decoded network images by URL, so without this the bytes of
+  /// a revoked or expired capability would survive in memory and keep
+  /// rendering. Purging them is part of the read contract, not an optimisation.
+  ImageProvider<Object>? _cached;
+
   @override
   void initState() {
     super.initState();
@@ -69,9 +76,22 @@ class _InstitutionBrandImageState extends State<InstitutionBrandImage> {
     }
   }
 
+  void _purge() {
+    final cached = _cached;
+    _cached = null;
+    if (cached != null) cached.evict().ignore();
+  }
+
+  @override
+  void dispose() {
+    _purge();
+    super.dispose();
+  }
+
   Future<void> _load() async {
     final epoch = ++_epoch;
     final reader = widget.reader;
+    _purge();
     setState(() {
       _result = null;
       _failed = false;
@@ -117,16 +137,21 @@ class _InstitutionBrandImageState extends State<InstitutionBrandImage> {
       // Available without a usable ticket is not something to render.
       return _retry();
     }
-    final builder =
-        widget.imageBuilder ??
-        (Uri url, Map<String, String> headers) => Image.network(
-          url.toString(),
-          headers: headers,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stack) => widget.placeholder,
-        );
+    final builder = widget.imageBuilder;
+    if (builder != null) {
+      return _wrap(
+        builder(ticket.url, ticket.headers),
+        key: const Key('institution-brand-image-available'),
+      );
+    }
+    final provider = NetworkImage(ticket.url.toString(), headers: ticket.headers);
+    _cached = provider;
     return _wrap(
-      builder(ticket.url, ticket.headers),
+      Image(
+        image: provider,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stack) => widget.placeholder,
+      ),
       key: const Key('institution-brand-image-available'),
     );
   }
