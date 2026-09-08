@@ -954,6 +954,7 @@ final class _LegacyAssessmentConfigurationPrototypeState
   Object? _error;
   bool _loading = true, _saving = false;
   double _footerHeight = 0;
+  int _loadGeneration = 0, _commandGeneration = 0;
 
   bool get _canActivate {
     final value = _configuration;
@@ -977,23 +978,53 @@ final class _LegacyAssessmentConfigurationPrototypeState
     unawaited(_load());
   }
 
+  @override
+  void didUpdateWidget(covariant _LegacyAssessmentConfigurationPrototype oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.repository, widget.repository) &&
+        oldWidget.activityId == widget.activityId &&
+        oldWidget.institutionId == widget.institutionId &&
+        oldWidget.unitId == widget.unitId) {
+      return;
+    }
+    _loadGeneration++;
+    _commandGeneration++;
+    _step = 0;
+    _configuration = null;
+    _competencyOptions = const [];
+    _error = null;
+    _loading = true;
+    _saving = false;
+    _footerHeight = 0;
+    unawaited(_load());
+  }
+
+  @override
+  void dispose() {
+    _loadGeneration++;
+    _commandGeneration++;
+    super.dispose();
+  }
+
   Future<void> _load() async {
+    final generation = ++_loadGeneration;
+    final repository = widget.repository;
+    final activityId = widget.activityId;
+    final institutionId = widget.institutionId;
+    final unitId = widget.unitId;
     setState(() => _error = null);
     try {
-      final value = await widget.repository.fetchConfiguration(
-        widget.activityId,
-        unitId: widget.unitId,
-      );
-      if (mounted) {
+      final value = await repository.fetchConfiguration(activityId, unitId: unitId);
+      if (_isCurrentLoad(generation, repository, activityId, institutionId, unitId)) {
         setState(() {
           _competencyOptions = value?.availableCompetencies ?? value?.competencies ?? const [];
           _configuration =
               value ??
               AssessmentConfiguration(
                 id: '',
-                activityId: widget.activityId,
-                institutionId: widget.institutionId,
-                unitId: widget.unitId,
+                activityId: activityId,
+                institutionId: institutionId,
+                unitId: unitId,
                 periodicity: 'bimonthly',
                 scaleKind: AssessmentScaleKind.numeric0To10,
                 version: 0,
@@ -1004,52 +1035,85 @@ final class _LegacyAssessmentConfigurationPrototypeState
         });
       }
     } on Exception catch (error) {
-      if (mounted) {
+      if (_isCurrentLoad(generation, repository, activityId, institutionId, unitId)) {
         setState(() => _error = error);
       }
     } finally {
-      if (mounted) {
+      if (_isCurrentLoad(generation, repository, activityId, institutionId, unitId)) {
         setState(() => _loading = false);
       }
     }
   }
+
+  bool _isCurrentLoad(
+    int generation,
+    AssessmentRepository repository,
+    String activityId,
+    String institutionId,
+    String? unitId,
+  ) =>
+      mounted &&
+      generation == _loadGeneration &&
+      identical(repository, widget.repository) &&
+      activityId == widget.activityId &&
+      institutionId == widget.institutionId &&
+      unitId == widget.unitId;
 
   Future<void> _save({bool activate = false}) async {
     final value = _configuration;
     if (value == null) {
       return;
     }
+    final generation = ++_commandGeneration;
+    final repository = widget.repository;
+    final activityId = widget.activityId;
     setState(() => _saving = true);
     try {
-      var saved = await widget.repository.saveConfiguration(value);
-      if (activate) saved = await widget.repository.activateConfiguration(saved);
-      if (mounted) {
+      var saved = await repository.saveConfiguration(value);
+      if (!_isCurrentCommand(generation, repository, activityId, value)) return;
+      if (activate) {
+        saved = await repository.activateConfiguration(saved);
+        if (!_isCurrentCommand(generation, repository, activityId, value)) return;
+      }
+      if (_isCurrentCommand(generation, repository, activityId, value)) {
         setState(() => _configuration = saved);
       }
     } on AssessmentVersionConflictException {
-      if (mounted) {
+      if (mounted && _isCurrentCommand(generation, repository, activityId, value)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('A configuração foi alterada. Recarregue e revise.')),
         );
       }
     } on AssessmentUnauthorizedException {
-      if (mounted) {
+      if (mounted && _isCurrentCommand(generation, repository, activityId, value)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Você não tem permissão para configurar avaliações.')),
         );
       }
     } on Exception {
-      if (mounted) {
+      if (mounted && _isCurrentCommand(generation, repository, activityId, value)) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Não foi possível salvar. Tente novamente.')));
       }
     } finally {
-      if (mounted) {
+      if (_isCurrentCommand(generation, repository, activityId, value)) {
         setState(() => _saving = false);
       }
     }
   }
+
+  bool _isCurrentCommand(
+    int generation,
+    AssessmentRepository repository,
+    String activityId,
+    AssessmentConfiguration value,
+  ) =>
+      mounted &&
+      generation == _commandGeneration &&
+      identical(repository, widget.repository) &&
+      activityId == widget.activityId &&
+      identical(value, _configuration);
 
   @override
   Widget build(BuildContext context) => SuperadminShell(

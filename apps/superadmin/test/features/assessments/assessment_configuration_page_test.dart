@@ -1,0 +1,106 @@
+import 'dart:async';
+
+import 'package:coelo_superadmin/features/assessments/assessment.dart';
+import 'package:coelo_superadmin/features/assessments/assessment_pages.dart';
+import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  testWidgets('configuration reloads and ignores an older A response after swapping to B', (
+    tester,
+  ) async {
+    final repository = _DelayedConfigurationRepository();
+
+    await tester.pumpWidget(_app(repository, 'activity-a'));
+    await tester.pump();
+    await tester.pumpWidget(_app(repository, 'activity-b'));
+    await tester.pump();
+
+    expect(repository.requests, contains('activity-b'));
+    repository.complete('activity-b');
+    await tester.pump();
+    expect(find.text('activity-b'), findsOneWidget);
+
+    repository.complete('activity-a');
+    await tester.pumpAndSettle();
+    expect(find.text('activity-b'), findsOneWidget);
+    expect(find.text('activity-a'), findsNothing);
+  });
+
+  testWidgets('configuration ignores an older save response after swapping from A to B', (
+    tester,
+  ) async {
+    final repository = _DelayedSaveConfigurationRepository();
+
+    await tester.pumpWidget(_app(repository, 'activity-a'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+    await tester.pump();
+
+    await tester.pumpWidget(_app(repository, 'activity-b'));
+    await tester.pumpAndSettle();
+    expect(find.text('activity-b'), findsOneWidget);
+
+    repository.pendingSave.complete(_configuration('activity-a', version: 2));
+    await tester.pumpAndSettle();
+    expect(find.text('activity-b'), findsOneWidget);
+    expect(find.text('activity-a'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+}
+
+Widget _app(AssessmentRepository repository, String activityId) => MaterialApp(
+  theme: CoeloTheme.light,
+  home: AssessmentConfigurationPage(
+    repository: repository,
+    logout: unavailableSuperadminLogout,
+    activityId: activityId,
+    institutionId: 'institution-1',
+    onCancel: () {},
+  ),
+);
+
+AssessmentConfiguration _configuration(String activityId, {int version = 1}) =>
+    AssessmentConfiguration(
+      id: 'configuration-$activityId',
+      activityId: activityId,
+      institutionId: 'institution-1',
+      periodicity: 'bimonthly',
+      scaleKind: AssessmentScaleKind.numeric0To10,
+      version: version,
+      status: 'draft',
+      instruments: const [],
+      competencies: const [],
+    );
+
+final class _DelayedConfigurationRepository implements AssessmentRepository {
+  final requests = <String, Completer<AssessmentConfiguration?>>{};
+
+  void complete(String activityId) {
+    requests[activityId]!.complete(_configuration(activityId));
+  }
+
+  @override
+  Future<AssessmentConfiguration?> fetchConfiguration(String activityId, {String? unitId}) =>
+      (requests[activityId] ??= Completer<AssessmentConfiguration?>()).future;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _DelayedSaveConfigurationRepository implements AssessmentRepository {
+  final pendingSave = Completer<AssessmentConfiguration>();
+
+  @override
+  Future<AssessmentConfiguration?> fetchConfiguration(String activityId, {String? unitId}) async =>
+      _configuration(activityId);
+
+  @override
+  Future<AssessmentConfiguration> saveConfiguration(AssessmentConfiguration value) =>
+      pendingSave.future;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
