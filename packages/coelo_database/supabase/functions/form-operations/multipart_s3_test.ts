@@ -217,6 +217,228 @@ Deno.test("rejects an embedded S3 completion error even when HTTP status is 200"
         etag: '"one"',
       }]),
     Error,
-    "multipart_s3_complete_InvalidPart",
+    "multipart_s3_complete_error",
+  );
+});
+
+Deno.test("signs and sends the same immutable part despite caller mutation", async () => {
+  const body = new Uint8Array([1, 2, 3]);
+  let sent: Uint8Array | undefined;
+  let digest: string | null = null;
+  const client = new MultipartS3Client(config, {
+    now,
+    fetch: async (request) => {
+      sent = new Uint8Array(await request.arrayBuffer());
+      digest = request.headers.get("x-amz-content-sha256");
+      return new Response(null, { headers: { etag: '"part"' } });
+    },
+  });
+  const pending = client.uploadPart(
+    "bucket",
+    "file.xlsx",
+    "upload-id",
+    1,
+    body,
+  );
+  body.fill(9);
+  await pending;
+  assertEquals(sent, new Uint8Array([1, 2, 3]));
+  assertEquals(digest, await sha256Hex(sent!));
+});
+
+Deno.test("refuses redirects and attaches a live deadline signal", async () => {
+  const client = new MultipartS3Client(config, {
+    now,
+    fetch: (request) => {
+      assertEquals(request.redirect, "error");
+      assertEquals(request.signal.aborted, false);
+      return Promise.resolve(new Response(null, { status: 302 }));
+    },
+  });
+  await assertRejects(
+    () => client.initiate("bucket", "file.xlsx", "application/octet-stream"),
+    Error,
+    "multipart_s3_http_302",
+  );
+});
+
+Deno.test("sanitizes fetch errors without leaking provider URLs or credentials", async () => {
+  const client = new MultipartS3Client(config, {
+    now,
+    fetch: () =>
+      Promise.reject(new Error("https://private.test/?token=secret")),
+  });
+  const error = await assertRejects(
+    () => client.initiate("bucket", "file.xlsx", "application/octet-stream"),
+    Error,
+  );
+  assertEquals(error.message, "multipart_s3_transport_error");
+});
+
+Deno.test("cancels oversized XML without buffering the remainder", async () => {
+  let cancelled = false;
+  let pulls = 0;
+  const client = new MultipartS3Client(config, {
+    now,
+    fetch: () =>
+      Promise.resolve(
+        new Response(
+          new ReadableStream({
+            start(controller) {
+              controller.enqueue(new Uint8Array(65 * 1024));
+            },
+            pull(controller) {
+              if (pulls++ === 0) controller.enqueue(new Uint8Array([1]));
+              else controller.close();
+            },
+            cancel() {
+              cancelled = true;
+            },
+          }),
+        ),
+      ),
+  });
+  await assertRejects(
+    () => client.initiate("bucket", "file.xlsx", "application/octet-stream"),
+    Error,
+    "multipart_s3_response_too_large",
+  );
+  assertEquals(cancelled, true);
+});
+
+Deno.test("cancels rejected HTTP response bodies", async () => {
+  let cancelled = false;
+  const client = new MultipartS3Client(config, {
+    now,
+    fetch: () =>
+      Promise.resolve(
+        new Response(
+          new ReadableStream({
+            cancel() {
+              cancelled = true;
+            },
+          }),
+          { status: 403 },
+        ),
+      ),
+  });
+  await assertRejects(() => client.abort("bucket", "file.xlsx", "upload-id"));
+  assertEquals(cancelled, true);
+});
+
+Deno.test("rejects malformed or ambiguous completion protocol fields", async () => {
+  for (
+    const xml of [
+      "<Error><Message>sensitive</Message></Error>",
+      "<CompleteMultipartUploadResult></CompleteMultipartUploadResult>",
+      "<CompleteMultipartUploadResult><ETag>unquoted</ETag></CompleteMultipartUploadResult>",
+      '<CompleteMultipartUploadResult><ETag>"one"</ETag><ETag>"two"</ETag></CompleteMultipartUploadResult>',
+    ]
+  ) {
+    const client = new MultipartS3Client(config, {
+      now,
+      fetch: () => Promise.resolve(new Response(xml)),
+    });
+    await assertRejects(() =>
+      client.complete("bucket", "file.xlsx", "upload-id", [
+        { partNumber: 1, etag: '"part"' },
+      ])
+    );
+  }
+});
+
+Deno.test("validates upload IDs and ETags before issuing another request", async () => {
+  let calls = 0;
+  const client = new MultipartS3Client(config, {
+    now,
+    fetch: () => {
+      calls++;
+      return Promise.resolve(new Response(null));
+    },
+  });
+  for (const uploadId of ["has space", "a\nb", "x".repeat(1025)]) {
+    await assertRejects(() => client.abort("bucket", "file.xlsx", uploadId));
+  }
+  for (const etag of ["unquoted", '"bad\nvalue"', `"${"x".repeat(1024)}"`]) {
+    await assertRejects(() =>
+      client.complete("bucket", "file.xlsx", "upload-id", [
+        { partNumber: 1, etag },
+      ])
+    );
+  }
+  assertEquals(calls, 0);
+});
+
+Deno.test("rejects invalid initiate IDs and XML declarations", async () => {
+  for (
+    const xml of [
+      "<InitiateMultipartUploadResult><UploadId>has space</UploadId></InitiateMultipartUploadResult>",
+      "<InitiateMultipartUploadResult><UploadIdWrong>wrong</UploadIdWrong></InitiateMultipartUploadResult>",
+      '<!DOCTYPE x [<!ENTITY x "private">]><InitiateMultipartUploadResult><UploadId>&x;</UploadId></InitiateMultipartUploadResult>',
+    ]
+  ) {
+    const client = new MultipartS3Client(config, {
+      now,
+      fetch: () => Promise.resolve(new Response(xml)),
+    });
+    await assertRejects(() =>
+      client.initiate("bucket", "file.xlsx", "application/octet-stream")
+    );
+  }
+});
+
+Deno.test("enforces the 30 second deadline through fetch and response body", async () => {
+  let fetchAborted = false;
+  let bodyCancelled = false;
+  const pendingFetch = new MultipartS3Client(config, {
+    fetch: (request) => {
+      request.signal.addEventListener("abort", () => {
+        fetchAborted = true;
+      });
+      return new Promise<Response>(() => {});
+    },
+  });
+  const pendingBody = new MultipartS3Client(config, {
+    fetch: () =>
+      Promise.resolve(
+        new Response(
+          new ReadableStream({
+            cancel() {
+              bodyCancelled = true;
+            },
+          }),
+        ),
+      ),
+  });
+  await Promise.all([pendingFetch, pendingBody].map((client) =>
+    assertRejects(
+      () => client.initiate("bucket", "file.xlsx", "application/octet-stream"),
+      Error,
+      "multipart_s3_timeout",
+    )
+  ));
+  assertEquals(fetchAborted, true);
+  assertEquals(bodyCancelled, true);
+});
+
+Deno.test("rejects non UTF8 protocol bytes and unquoted response ETags", async () => {
+  const invalidXml = new MultipartS3Client(config, {
+    fetch: () => Promise.resolve(new Response(new Uint8Array([0xff]))),
+  });
+  await assertRejects(() =>
+    invalidXml.initiate("bucket", "file.xlsx", "application/octet-stream")
+  );
+  const invalidEtag = new MultipartS3Client(config, {
+    fetch: () =>
+      Promise.resolve(new Response(null, { headers: { etag: "unquoted" } })),
+  });
+  await assertRejects(() =>
+    invalidEtag.uploadPart(
+      "bucket",
+      "file.xlsx",
+      "upload-id",
+      1,
+      new Uint8Array([1]),
+    )
   );
 });
