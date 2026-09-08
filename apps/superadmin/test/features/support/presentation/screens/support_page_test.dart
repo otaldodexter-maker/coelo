@@ -339,6 +339,41 @@ void main() {
     expect(controllerB.selectedTicket, isNull);
   });
 
+  testWidgets('controller swap removes the named fullscreen below an owner chooser', (
+    tester,
+  ) async {
+    final controllerA = SupportPrototypeController();
+    final controllerB = SupportPrototypeController(initialTickets: const []);
+    addTearDown(controllerA.dispose);
+    addTearDown(controllerB.dispose);
+    await _pump(tester, controllerA, const Size(1280, 900));
+
+    final card = find.byKey(const Key('support-card-SUP-001'));
+    await tester.tap(card);
+    await tester.pump(const Duration(milliseconds: 50));
+    await tester.tap(card);
+    await tester.pump(kDoubleTapTimeout);
+    await tester.pumpAndSettle();
+    final fullscreen = find.byKey(const Key('support-expanded-detail'));
+    await tester.tap(
+      find.descendant(of: fullscreen, matching: find.byKey(const Key('support-status-SUP-001'))),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Em andamento').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Escolha o responsável'), findsOneWidget);
+    expect(fullscreen, findsOneWidget);
+
+    await _pump(tester, controllerB, const Size(1280, 900));
+
+    expect(fullscreen, findsNothing);
+    expect(find.text('Escolha o responsável'), findsOneWidget);
+    expect(find.text('Camila Rocha'), findsNothing);
+    expect(controllerA.tickets.first.status, SupportTicketStatus.newRequest);
+    expect(controllerA.tickets.first.assigneeIds, isEmpty);
+    expect(controllerB.tickets, isEmpty);
+  });
+
   testWidgets('search field follows filters from a replacement support controller', (tester) async {
     final controllerA = SupportPrototypeController();
     final controllerB = SupportPrototypeController();
