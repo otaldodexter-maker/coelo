@@ -14,6 +14,11 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização02:03: modelos Perfis `b3294c47` rejeitam envelopes negados nos
+  quatro comandos;161/161 data no destino e analyzer focal PASS. Listagem
+  crua preservada;8testesofflinePerfis da fonte não integrados explicam169autor.
+  Persistência, autorização real e validação integral de receipt continuam abertas.
+
 - Atualização01:59: parser de metadados Cardápios `cbdc90c3` e controles do
   seletor `845f461a` integrados;48/48 serialização/wizard e analyzer2 no destino.
   CamelCase canônico com fallback snake_case preservado; seleção não prova

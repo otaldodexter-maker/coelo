@@ -14,13 +14,16 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "395CD2852276B246A23BAE2A60CE35DDC9AC97071C6C4162338A5B275890E573"
+flutter_tracker_sha256: "B5CF103AA3408F3FCCC32E536E66EF1551A48107920CD303442AFE522A2282A9"
 supabase_tracker_sha256: "2C30A18CF511A85FE5A5CBDB001AE9AFF3D2E37FE6A7A1D80CE10A504938507A"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
+
+- Atualização02:03: b3294c47 corrige negação de comandos Modelos no cliente,
+  161/161 data/analyzer destino. SemSQL/grants ou avanço de verified-e2e.
 
 - Atualização01:59: Cardápios cbdc90c3/845f461a,48/48 destino e analyzer2;
   backend People versus039 permanece aberto, sem progresso E2E inferido.
