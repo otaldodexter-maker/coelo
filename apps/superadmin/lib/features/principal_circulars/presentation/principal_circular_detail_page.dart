@@ -32,7 +32,7 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
   Object? _error;
   var _loading = true;
   var _responseVersion = 0;
-  String? _sessionId;
+  var _generation = 0;
 
   @override
   void initState() {
@@ -40,25 +40,44 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
     _load();
   }
 
+  @override
+  void didUpdateWidget(covariant PrincipalCircularDetailPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.circularId != widget.circularId ||
+        oldWidget.childContextId != widget.childContextId ||
+        !identical(oldWidget.repository, widget.repository) ||
+        !identical(oldWidget.responseRepository, widget.responseRepository)) {
+      _load();
+    }
+  }
+
+  @override
+  void dispose() {
+    _generation++;
+    super.dispose();
+  }
+
   Future<void> _load() async {
+    final generation = ++_generation;
     setState(() {
       _loading = true;
       _error = null;
+      _detail = null;
+      _responseVersion = 0;
     });
     try {
       final detail = await widget.repository.getVisible(
         widget.circularId,
         childContextId: widget.childContextId,
       );
-      if (!mounted) return;
+      if (!mounted || generation != _generation) return;
       setState(() {
         _detail = detail;
-        _sessionId = detail.responseSessionId;
         _responseVersion = detail.responseVersion;
         _loading = false;
       });
     } on Object catch (error) {
-      if (!mounted) return;
+      if (!mounted || generation != _generation) return;
       setState(() {
         _error = error;
         _loading = false;
@@ -68,20 +87,23 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
 
   Future<void> _submit(Map<String, List<String>> answers) async {
     final detail = _detail!;
-    final draft = await widget.responseRepository.saveDraft(
+    final generation = _generation;
+    final responses = widget.responseRepository;
+    final draft = await responses.saveDraft(
       requestId: _uuid(),
       revisionId: detail.revisionId,
       childContextId: widget.childContextId,
       answers: answers,
       expectedVersion: _responseVersion,
     );
-    _sessionId = draft.sessionId;
+    if (!mounted || generation != _generation) return;
     _responseVersion = draft.version;
-    final submitted = await widget.responseRepository.submit(
+    final submitted = await responses.submit(
       requestId: _uuid(),
-      sessionId: _sessionId!,
+      sessionId: draft.sessionId,
       expectedVersion: _responseVersion,
     );
+    if (!mounted || generation != _generation) return;
     _responseVersion = submitted.version;
   }
 
@@ -182,6 +204,7 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
       );
     }
     return PrincipalCircularReader(
+      key: ValueKey(_generation),
       detail: _detail!,
       initialAnswers: _detail!.initialAnswers,
       onSubmit: _submit,
