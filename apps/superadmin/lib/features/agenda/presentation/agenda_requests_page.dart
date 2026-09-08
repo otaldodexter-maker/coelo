@@ -157,6 +157,17 @@ final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
     }
   }
 
+  @override
+  void didUpdateWidget(covariant AgendaRequestsPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.store, widget.store) ||
+        oldWidget._available != widget._available ||
+        oldWidget._localFixtures != widget._localFixtures) {
+      _notice = null;
+      if (widget._available && !widget._localFixtures) widget.store!.loadRequests();
+    }
+  }
+
   void _answer(_ChildRequest item, String answerLabel) {
     final index = _fixtureItems.indexWhere((candidate) => candidate.id == item.id);
     if (index < 0 || item.status != _RequestStatus.pending) return;

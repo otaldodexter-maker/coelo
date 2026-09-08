@@ -111,6 +111,8 @@ final class AgendaApprovalsPage extends StatefulWidget {
 
 final class _AgendaApprovalsPageState extends State<AgendaApprovalsPage> {
   late final List<_AgendaApproval> _fixtureItems = _fixtureApprovals();
+  DialogRoute<void>? _decisionRoute;
+  int _contextRevision = 0;
 
   List<_AgendaApproval> get _items => [
     ...?widget.store?.publicationRequests.map(_AgendaApproval.fromPublicationRequest),
@@ -120,24 +122,78 @@ final class _AgendaApprovalsPageState extends State<AgendaApprovalsPage> {
   @override
   void initState() {
     super.initState();
+    widget.store?.addListener(_onRepositoryChanged);
     if (!widget._localFixtures) widget.store?.loadRequests();
   }
 
+  @override
+  void didUpdateWidget(covariant AgendaApprovalsPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.store, widget.store) ||
+        oldWidget._available != widget._available ||
+        oldWidget._localFixtures != widget._localFixtures) {
+      oldWidget.store?.removeListener(_onRepositoryChanged);
+      _invalidateDecision();
+      widget.store?.addListener(_onRepositoryChanged);
+      if (widget._available && !widget._localFixtures) widget.store?.loadRequests();
+    }
+  }
+
+  void _onRepositoryChanged() {
+    if (!widget._localFixtures && widget.store?.requestsRead == AgendaReadStatus.unauthorized) {
+      _invalidateDecision();
+    }
+  }
+
+  void _invalidateDecision() {
+    _contextRevision++;
+    final route = _decisionRoute;
+    _decisionRoute = null;
+    if (route == null) return;
+    // didUpdateWidget/dispose may run while the navigator is building. Remove
+    // only our captured route, never pop whichever route happens to be current.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (route.isActive) route.navigator?.removeRoute(route);
+    });
+  }
+
+  @override
+  void dispose() {
+    widget.store?.removeListener(_onRepositoryChanged);
+    _invalidateDecision();
+    super.dispose();
+  }
+
   Future<void> _openDecision(_AgendaApproval item) async {
-    await showDialog<void>(
+    if (_decisionRoute != null || !widget._available) return;
+    final store = widget.store;
+    final revision = _contextRevision;
+    final local = widget._localFixtures;
+    bool isCurrent() =>
+        mounted &&
+        revision == _contextRevision &&
+        identical(store, widget.store) &&
+        local == widget._localFixtures &&
+        widget._available;
+    if (!local && store?.requestsRead != AgendaReadStatus.ready) return;
+    final route = DialogRoute<void>(
       context: context,
       builder: (dialogContext) => _ApprovalDecisionDialog(
         item: item,
         onDecide: (status, reason) async {
-          if (!mounted) return AgendaMutationResult.unavailable;
+          if (!isCurrent()) return AgendaMutationResult.unavailable;
           final requestId = item.publicationRequestId;
           if (requestId != null) {
-            return widget.store!.decidePublicationRequest(
+            if (!local && store?.requestsRead != AgendaReadStatus.ready) {
+              return AgendaMutationResult.notAuthorized;
+            }
+            final result = await store!.decidePublicationRequest(
               requestId: requestId,
               approve: status == _ApprovalStatus.approved,
               decidedBy: 'Marina Oliveira',
               reason: reason,
             );
+            return isCurrent() ? result : AgendaMutationResult.unavailable;
           }
           final index = _fixtureItems.indexWhere((candidate) => candidate.id == item.id);
           if (index < 0) return AgendaMutationResult.notFound;
@@ -146,6 +202,12 @@ final class _AgendaApprovalsPageState extends State<AgendaApprovalsPage> {
         },
       ),
     );
+    _decisionRoute = route;
+    try {
+      await Navigator.of(context, rootNavigator: true).push(route);
+    } finally {
+      if (identical(_decisionRoute, route)) _decisionRoute = null;
+    }
   }
 
   @override
@@ -237,16 +299,29 @@ final class _ApprovalDecisionDialogState extends State<_ApprovalDecisionDialog> 
   }
 
   Future<void> _decide(_ApprovalStatus status) async {
+    if (_saving) return;
     final reason = _reason.text.trim();
     if (reason.isEmpty) {
       setState(() => _error = 'Informe a justificativa da decisão.');
       return;
     }
     setState(() => _saving = true);
-    final result = await widget.onDecide(status, reason);
+    AgendaMutationResult result;
+    try {
+      result = await widget.onDecide(status, reason);
+    } on Exception {
+      result = AgendaMutationResult.unavailable;
+    }
     if (!mounted) return;
     if (result == AgendaMutationResult.success) {
-      Navigator.of(context).pop();
+      final route = ModalRoute.of(context);
+      if (route != null && route.isActive) {
+        if (route.isCurrent) {
+          route.navigator?.pop();
+        } else {
+          route.navigator?.removeRoute(route);
+        }
+      }
       return;
     }
     setState(() {
