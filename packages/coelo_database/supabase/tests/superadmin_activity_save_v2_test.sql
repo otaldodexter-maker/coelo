@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(36);
+select plan(40);
 
 select has_function(
   'public',
@@ -149,6 +149,14 @@ create function pg_temp.activity_save_payload(
 $$;
 
 create temporary table save_results(label text primary key,body jsonb not null);
+grant select,insert on save_results to authenticated;
+create temporary table activity_auth_payload(body jsonb not null);
+insert into activity_auth_payload
+select pg_temp.activity_save_payload(
+ '8b200000-0000-4000-8000-000000000010','8b200000-0000-4000-8000-000000000011',
+ '8b200000-0000-4000-8000-000000000012',null,'Operador institucional AAL1'
+);
+grant select on activity_auth_payload to authenticated;
 select set_config('request.jwt.claims',jsonb_build_object(
  'sub','8b200000-0000-4000-8000-000000000101','session_id','8b200000-0000-4000-8000-000000000201',
  'aal','aal2','role','authenticated')::text,true);
@@ -282,6 +290,54 @@ select 'rollback_edit',public.superadmin_activity_save_v2(
 
 select set_config('request.jwt.claims',jsonb_build_object(
  'sub','8b200000-0000-4000-8000-000000000102','session_id','8b200000-0000-4000-8000-000000000202',
+ 'aal','aal1','role','authenticated')::text,true);
+update auth.sessions set aal='aal1'
+where id='8b200000-0000-4000-8000-000000000202';
+set local role authenticated;
+insert into save_results
+select 'operator_aal1',public.superadmin_activity_save_v2(
+ '8b200000-0000-4000-8000-000000000814',null,0,false,(select body from activity_auth_payload)
+);
+reset role;
+
+update auth.sessions
+set not_after=now()-interval '1 second'
+where id='8b200000-0000-4000-8000-000000000202';
+set local role authenticated;
+insert into save_results
+select 'operator_expired_replay',public.superadmin_activity_save_v2(
+ '8b200000-0000-4000-8000-000000000814',null,0,false,(select body from activity_auth_payload)
+);
+reset role;
+update auth.sessions
+set not_after=now()+interval '1 hour'
+where id='8b200000-0000-4000-8000-000000000202';
+
+update public.platform_role_permissions grant_record
+set status='inactive',revoked_at=now()
+from public.platform_roles role_record,public.platform_permissions permission_record
+where grant_record.role_id=role_record.id
+  and grant_record.permission_id=permission_record.id
+  and role_record.code='operations'
+  and permission_record.code='activities.link_units';
+set local role authenticated;
+insert into save_results
+select 'operator_revoked_capability_replay',public.superadmin_activity_save_v2(
+ '8b200000-0000-4000-8000-000000000814',null,0,false,(select body from activity_auth_payload)
+);
+reset role;
+update public.platform_role_permissions grant_record
+set status='active',revoked_at=null
+from public.platform_roles role_record,public.platform_permissions permission_record
+where grant_record.role_id=role_record.id
+  and grant_record.permission_id=permission_record.id
+  and role_record.code='operations'
+  and permission_record.code='activities.link_units';
+update auth.sessions set aal='aal2'
+where id='8b200000-0000-4000-8000-000000000202';
+
+select set_config('request.jwt.claims',jsonb_build_object(
+ 'sub','8b200000-0000-4000-8000-000000000102','session_id','8b200000-0000-4000-8000-000000000202',
  'aal','aal2','role','authenticated')::text,true);
 insert into save_results
 select 'cross_tenant_edit',public.superadmin_activity_save_v2(
@@ -349,6 +405,53 @@ select is((select body#>>'{error,code}' from save_results where label='cross_ten
  'ACTIVITY_NOT_FOUND','institution-scoped actor cannot enumerate tenant B by activity id');
 select is((select body#>>'{error,code}' from save_results where label='revoked'),
  'SAI_MEMBERSHIP_REVOKED','revoked internal membership fails closed');
+select ok((select body#>>'{ok}'='true' and body#>>'{data,management_version}'='5'
+ from save_results where label='operator_aal1'),
+ 'authenticated institution operator can save with AAL1 during the approved MVP deferral');
+select ok((select body#>>'{error,code}'='SAI_SESSION_INVALID'
+  and body#>>'{data,replayed}' is null
+ from save_results where label='operator_expired_replay'),
+ 'expired session is revalidated before an aggregate receipt can replay');
+select ok((select body#>>'{error,code}'='SAI_PERMISSION_DENIED'
+  and body#>>'{data,replayed}' is null
+ from save_results where label='operator_revoked_capability_replay'),
+ 'revoked capability is revalidated before an aggregate receipt can replay');
+select ok((select count(*)=5 and bool_and(audit_log.outcome='success')
+  and bool_and(audit_log.mfa_aal='aal1')
+ from audit.audit_logs audit_log
+ where audit_log.actor_kind='superadmin_internal'
+   and audit_log.actor_internal_identity_id='8b200000-0000-4000-8000-000000000302'
+   and audit_log.object_type='activity'
+   and audit_log.object_id=(select (body#>>'{data,activity_id}')::uuid
+     from save_results where label='operator_aal1'))
+ and (select count(*)=1
+ from audit.audit_logs audit_log
+ where audit_log.actor_kind='superadmin_internal'
+   and audit_log.actor_internal_identity_id='8b200000-0000-4000-8000-000000000302'
+   and audit_log.permission_code='activities.link_units'
+   and audit_log.action_code='activity.save'
+   and audit_log.outcome='denied'
+   and audit_log.reason_code='SAI_PERMISSION_DENIED'
+   and audit_log.mfa_aal='aal1'
+   and audit_log.institution_id='8b200000-0000-4000-8000-000000000010'
+   and audit_log.context_kind='institution'
+   and audit_log.context_id='8b200000-0000-4000-8000-000000000010'
+   and audit_log.object_type='institution'
+   and audit_log.object_id='8b200000-0000-4000-8000-000000000010'
+   and audit_log.correlation_id=(select (body#>>'{error,correlation_id}')::uuid
+     from save_results where label='operator_revoked_capability_replay'))
+ and not exists(
+  select 1 from audit.audit_logs audit_log
+  where audit_log.correlation_id=(select (body#>>'{error,correlation_id}')::uuid
+    from save_results where label='operator_expired_replay')
+ )
+ and (select count(*)=1
+ from app_private.superadmin_internal_activity_save_receipts receipt
+ where receipt.request_id='8b200000-0000-4000-8000-000000000814'
+   and receipt.internal_identity_id='8b200000-0000-4000-8000-000000000302'
+   and receipt.institution_id='8b200000-0000-4000-8000-000000000010'
+   and receipt.resulting_version=5),
+ 'denied replays add no success audit or duplicate aggregate receipt');
 select ok((select body#>>'{ok}'='true' and body#>>'{data,management_version}'='12'
  from save_results where label='selected_to_all'),
  'selected to all prunes participants before changing the group mode');
