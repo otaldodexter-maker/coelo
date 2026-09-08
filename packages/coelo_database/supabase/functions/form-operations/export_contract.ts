@@ -28,10 +28,17 @@ export function expandSubmission(submission: ExportSubmission): ExportRow[] {
     response_id: submission.responseId,
     occurrence_id: submission.occurrenceId,
     version_id: submission.versionId,
-    ...submission.metadata,
   };
+  // Separate namespaces prevent user-provided labels from replacing identity
+  // or expansion columns. Always include the item ID, even in sparse pages.
+  for (const [key, value] of Object.entries(submission.metadata)) {
+    base[`Metadado [${encodeURIComponent(key)}]`] = value;
+  }
   const simple = submission.answers.filter((answer) => !answer.multiValued);
-  for (const answer of simple) base[answer.question] = answer.values[0] ?? "";
+  for (const answer of simple) {
+    base[`Resposta [${encodeURIComponent(answer.itemId)}] ${answer.question}`] =
+      answer.values[0] ?? "";
+  }
   const multi = submission.answers.filter((answer) => answer.multiValued);
   if (multi.length === 0) return [base];
   const rows: ExportRow[] = [];
