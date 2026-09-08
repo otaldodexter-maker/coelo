@@ -38,7 +38,12 @@ LoginAction createCoeloAuthLoginAction({
             session.sessionId != null &&
             session.sessionId == latestState.sessionId &&
             session.authorizationInvalidationRevision != expectedRevision;
-        if (winningAuthorization) {
+        final recoveryArrivedDuringBootstrap =
+            latestState.isPasswordRecovery &&
+            latestState.sessionId != null &&
+            session.isPasswordRecovery &&
+            session.authorizationInvalidationRevision != expectedRevision;
+        if (winningAuthorization || recoveryArrivedDuringBootstrap) {
           return const LoginResult.failure(CoeloAuthSignInResult.genericFailureMessage);
         }
         final cleanupRevision = session.authorizationInvalidationRevision;

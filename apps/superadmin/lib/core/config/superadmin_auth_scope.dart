@@ -235,7 +235,12 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
             sessionId: initialState.sessionId!,
             expectedInvalidationRevision: expectedRevision,
           );
-      if (!authorized) {
+      final recoveryArrivedDuringBootstrap =
+          latestState.isPasswordRecovery &&
+          latestState.sessionId != null &&
+          session.isPasswordRecovery &&
+          session.authorizationInvalidationRevision != expectedRevision;
+      if (!authorized && !recoveryArrivedDuringBootstrap) {
         try {
           await auth.signOut();
         } on Exception {
