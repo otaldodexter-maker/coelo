@@ -50,6 +50,11 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   FormsAuthoringEditor? _authoringEditor;
   var _authoringDenied = false;
   FormCommand<FormDefinition>? _pendingAuthoringSave;
+  Timer? _autosaveTimer;
+  var _autosavePaused = false;
+  var _draftChanged = false;
+  var _confirmingDiscard = false;
+  String? _observedDraft;
   FormsAuthoringInstitution? _creationInstitution;
   FormsAuthoringInstitutionPage? _institutionPage;
   final _institutionSearch = TextEditingController();
@@ -106,6 +111,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   }
 
   Future<void> _loadProduction() async {
+    _autosaveTimer?.cancel();
     final generation = ++_contextGeneration;
     final authoring = widget.authoringApi;
     if (authoring != null) {
@@ -224,6 +230,8 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     } finally {
       if (_isCurrentContext(generation) && queryGeneration == _institutionQueryGeneration) {
         setState(() => _loading = false);
+        if (!_draftChanged) _observedDraft = _draftFingerprint();
+        _scheduleAutosave();
       }
     }
   }
@@ -320,6 +328,11 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       return;
     }
     _contextGeneration++;
+    _autosaveTimer?.cancel();
+    _autosavePaused = false;
+    _draftChanged = false;
+    _confirmingDiscard = false;
+    _observedDraft = null;
     _dismissOwnedOverlays();
     _editorContext = null;
     _authoringEditor = null;
@@ -359,6 +372,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   @override
   void dispose() {
     _contextGeneration++;
+    _autosaveTimer?.cancel();
     _dismissOwnedOverlays();
     _title
       ..removeListener(_markChanged)
@@ -973,7 +987,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       description: 'Adicione perguntas a esta seção.',
       questions: [],
     );
-    setState(() {
+    _changeDraft(() {
       _sections.add(section);
       _selectedSection = _sections.length - 1;
       _expandedQuestionId = null;
@@ -983,7 +997,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
 
   void _duplicateSection() {
     final copy = _section.copy(id: 'section-${_nextId++}', suffix: ' — cópia');
-    setState(() {
+    _changeDraft(() {
       _sections.insert(_selectedSection + 1, copy);
       _selectedSection++;
       _expandedQuestionId = copy.questions.firstOrNull?.id;
@@ -994,7 +1008,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   void _moveSection(int delta) {
     final target = _selectedSection + delta;
     if (target < 0 || target >= _sections.length) return;
-    setState(() {
+    _changeDraft(() {
       final value = _sections.removeAt(_selectedSection);
       _sections.insert(target, value);
       _selectedSection = target;
@@ -1004,7 +1018,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
 
   void _reorderSection(int from, int to) {
     if (from == to) return;
-    setState(() {
+    _changeDraft(() {
       final value = _sections.removeAt(from);
       _sections.insert(to, value);
       _selectedSection = to;
@@ -1035,9 +1049,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       ),
     );
     if (delete != true || !_isCurrentContext(generation)) return;
-    final removed = _sections.removeAt(_selectedSection);
-    removed.dispose();
-    setState(() {
+    _changeDraft(() {
+      final removed = _sections.removeAt(_selectedSection);
+      removed.dispose();
       if (_selectedSection >= _sections.length) {
         _selectedSection = _sections.length - 1;
       }
@@ -1054,7 +1068,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       required: kind != FormItemKind.information,
       branchEnabled: false,
     );
-    setState(() {
+    _changeDraft(() {
       _section.questions.add(question);
       _expandedQuestionId = question.id;
       _feedback = null;
@@ -1079,14 +1093,14 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       onMoveToSection: nested ? null : () => _showMoveQuestionDialog(index),
       onDuplicate: () => _duplicateQuestionIn(siblings, index),
       onDelete: () => _confirmDeleteQuestion(index, siblings: siblings),
-      onChanged: () => setState(() => _feedback = null),
+      onChanged: () => _changeDraft(() => _feedback = null),
       branchPanel:
           question.kind == FormItemKind.yesNo &&
               question.branchEnabled &&
               (_expandedQuestionId == question.id || question.branchQuestions.isNotEmpty)
           ? _BranchPanel(
               question: question,
-              onAdd: () => setState(() {
+              onAdd: () => _changeDraft(() {
                 question.branchQuestions.add(
                   _EditorQuestionDraft(
                     id: _newRequestId(),
@@ -1122,7 +1136,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
 
   void _moveQuestionIn(List<_EditorQuestionDraft> siblings, int from, int to) {
     if (to < 0 || to >= siblings.length) return;
-    setState(() {
+    _changeDraft(() {
       final value = siblings.removeAt(from);
       siblings.insert(to, value);
       _feedback = null;
@@ -1131,7 +1145,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
 
   void _reorderQuestion(int from, int to) {
     if (from == to) return;
-    setState(() {
+    _changeDraft(() {
       final value = _section.questions.removeAt(from);
       _section.questions.insert(to, value);
       _feedback = null;
@@ -1140,7 +1154,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
 
   void _duplicateQuestionIn(List<_EditorQuestionDraft> siblings, int index) {
     final copy = siblings[index].copy(id: _newRequestId());
-    setState(() {
+    _changeDraft(() {
       siblings.insert(index + 1, copy);
       _expandedQuestionId = copy.id;
       _feedback = null;
@@ -1171,9 +1185,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       ),
     );
     if (delete != true || !_isCurrentContext(generation)) return;
-    final removed = questions.removeAt(index);
-    removed.dispose();
-    setState(() {
+    _changeDraft(() {
+      final removed = questions.removeAt(index);
+      removed.dispose();
       _expandedQuestionId = _section.questions.firstOrNull?.id;
       _feedback = null;
     });
@@ -1214,16 +1228,68 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       ),
     );
     if (moved != true || !_isCurrentContext(generation)) return;
-    final question = _section.questions.removeAt(index);
-    setState(() {
+    _changeDraft(() {
+      final question = _section.questions.removeAt(index);
       _sections[destination].questions.add(question);
       _expandedQuestionId = _section.questions.firstOrNull?.id;
       _feedback = null;
     });
   }
 
+  void _changeDraft(VoidCallback mutation) {
+    if (!_canEdit) return;
+    final previousFeedback = _feedback;
+    setState(mutation);
+    if (_autosavePaused) _feedback = previousFeedback;
+    _markChanged();
+  }
+
   void _markChanged() {
-    if (mounted && _feedback != null) setState(() => _feedback = null);
+    if (!mounted) return;
+    if (widget.authoringApi == null) {
+      if (_feedback != null) setState(() => _feedback = null);
+      return;
+    }
+    if (!_canEdit || _confirmingDiscard) return;
+    final fingerprint = _draftFingerprint();
+    if (_observedDraft == fingerprint) return;
+    _observedDraft = fingerprint;
+    setState(() {
+      _draftChanged = true;
+      if (!_autosavePaused) _feedback = 'Alterações ainda não salvas.';
+    });
+    _scheduleAutosave();
+  }
+
+  String _draftFingerprint() {
+    final payload = FormDefinitionDto.fromDomain(_localDefinition()).toJson();
+    payload.remove('management_version');
+    return jsonEncode(payload);
+  }
+
+  void _scheduleAutosave() {
+    _autosaveTimer?.cancel();
+    if (widget.authoringApi == null ||
+        !_canEdit ||
+        _autosavePaused ||
+        _confirmingDiscard ||
+        !_draftChanged ||
+        _saving ||
+        _pendingAuthoringSave != null) {
+      return;
+    }
+    final generation = _contextGeneration;
+    final api = widget.authoringApi;
+    _autosaveTimer = Timer(const Duration(milliseconds: 800), () {
+      if (!_isCurrentContext(generation) ||
+          !identical(api, widget.authoringApi) ||
+          !_canEdit ||
+          _autosavePaused ||
+          !_draftChanged) {
+        return;
+      }
+      unawaited(_saveDraft(automatic: true));
+    });
   }
 
   void _saveDraftLocally() => setState(() {
@@ -1324,7 +1390,8 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     ],
   );
 
-  Future<void> _saveDraft() async {
+  Future<void> _saveDraft({bool automatic = false}) async {
+    _autosaveTimer?.cancel();
     final generation = _contextGeneration;
     if (widget.development) {
       _saveDraftLocally();
@@ -1333,6 +1400,8 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     final api = widget.api;
     final authoring = widget.authoringApi;
     if ((api == null && authoring == null) || !_canEdit || _saving) return;
+    if (automatic && _autosavePaused) return;
+    if (!automatic) _autosavePaused = false;
     final definition = _pendingAuthoringSave?.payload ?? _localDefinition();
     // Quick-poll completeness is a publish gate, not a draft-save gate.
     // Keep structural validation; the backend still authorizes every command.
@@ -1347,6 +1416,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           },
         );
     if (draftIssues.isNotEmpty) {
+      _autosavePaused = true;
       setState(
         () => _feedback = 'Revise o título, a ordem e os campos obrigatórios antes de salvar.',
       );
@@ -1374,6 +1444,8 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         _definition = saved;
         _institutionId = saved.institutionId;
         _pendingAuthoringSave = null;
+        _draftChanged = changedSinceCommand;
+        _observedDraft = _draftFingerprint();
         _feedback = changedSinceCommand
             ? 'Salvamento anterior confirmado. Há alterações locais ainda não salvas.'
             : 'Rascunho salvo.';
@@ -1381,6 +1453,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     } on FormApiException catch (error) {
       if (_isCurrentContext(generation)) {
         setState(() {
+          _autosavePaused = true;
           if (authoring != null && error.kind == FormApiFailureKind.unauthorized) {
             _authoringDenied = true;
           }
@@ -1391,8 +1464,18 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           _feedback = error.message;
         });
       }
+    } on Object {
+      if (_isCurrentContext(generation)) {
+        setState(() {
+          _autosavePaused = true;
+          _feedback = 'Falha ao salvar. Tente novamente para confirmar o rascunho.';
+        });
+      }
     } finally {
-      if (_isCurrentContext(generation)) setState(() => _saving = false);
+      if (_isCurrentContext(generation)) {
+        setState(() => _saving = false);
+        _scheduleAutosave();
+      }
     }
   }
 
@@ -1416,6 +1499,8 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     _title.text = definition.title;
     _selectedSection = 0;
     _expandedQuestionId = _sections.first.questions.firstOrNull?.id;
+    _draftChanged = false;
+    _observedDraft = _draftFingerprint();
   }
 
   List<_EditorQuestionDraft> _hydrateQuestions(List<FormItem> items) {
@@ -1519,6 +1604,8 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       );
       return;
     }
+    _autosaveTimer?.cancel();
+    _confirmingDiscard = true;
     final generation = _contextGeneration;
     final cancel = await _showOwnedDialog<bool>(
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
@@ -1543,7 +1630,12 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         ),
       ),
     );
-    if (cancel != true || !_isCurrentContext(generation)) return;
+    if (!_isCurrentContext(generation)) return;
+    if (cancel != true) {
+      _confirmingDiscard = false;
+      _scheduleAutosave();
+      return;
+    }
     if (!widget.development) {
       setState(() {
         final confirmed = _definition;
@@ -1569,6 +1661,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         _periodicity = _FormsEditorPeriodicity.weekly;
         _firstOccurrenceAt = null;
         _weekdays = {DateTime.monday, DateTime.wednesday};
+        _draftChanged = false;
+        _observedDraft = _draftFingerprint();
+        _confirmingDiscard = false;
       });
       return;
     }
@@ -1589,6 +1684,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       _periodicity = _FormsEditorPeriodicity.weekly;
       _firstOccurrenceAt = DateTime(2026, 9, 8, 8);
       _weekdays = {DateTime.monday, DateTime.wednesday};
+      _confirmingDiscard = false;
     });
   }
 
