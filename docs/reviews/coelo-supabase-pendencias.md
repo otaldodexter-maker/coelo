@@ -12,6 +12,16 @@ family_count: 37
 
 ## Rodada de 2026-09-07 — backend local e integração em curso
 
+- Mídia: o conflito derivado de domínios foi reconciliado com a ADR 0032:
+  `communication/chat-message` e `profiles/principal-context`. Spec e
+  open-questions registram a correção; não há migration/deploy por esse ajuste.
+- Atualização das 21:00 BRT: após reinício houve recidiva no socket
+  dockerInference; log registra reset pela GUI às 20:53:14, fora da execução
+  do Eng1. Recuperação reversível nominal reboot1 terminou às 20:57:58;
+  coordenador confirmou Docker 29.7.2 linux/amd64 às 20:59:52. Eng1 informou
+  smoke sem rede/volumes/pull com exit0 e cleanup; inventário atual
+  0 containers/0 volumes/28 imagens. Backups preservados, sem inferir
+  preservação/perda total de dados anteriores ao reset. N01 ainda sem replay.
 - Docker recuperado e baseline Auth-only real passou localmente: 45 migrations
   canônicas + dois preflights, pgTAP 30/30 e lifecycle GoTrue/PostgREST/Mailpit;
   cleanup nominal confirmado pelo Engenheiro 1. Não prova produção nem wiring Flutter.

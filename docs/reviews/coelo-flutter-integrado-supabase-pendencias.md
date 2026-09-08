@@ -15,13 +15,16 @@ supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
 flutter_tracker_sha256: "517BC9EC7BF0865B9289CF0AC0C79CBE09EBCFF69FFE506613D3D7AC4586E13F"
-supabase_tracker_sha256: "F65FAE702DB1CECCBF59B5E6D4AB2D795D88636A3DA55101C4F70098FCCEBCC3"
+supabase_tracker_sha256: "438FF1E8877396A02A7DE94F1DE69739BE648551A22E37630C8AC0327D43775C"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
 
+- Gate documental de mídia reconciliado: Chat usa domínio `communication`
+  e Perfil contextual usa `profiles`, conforme ADR 0032. M03 começa por
+  contratos/REDs nominais; essa correção não certifica gateway, R2 ou E2E.
 - Integração incremental iniciada pelo lote E2E 4 `c0729294` → `4e6f8dc5`:
   Formulários/Respostas/Editor e receipt de Medicação, sem SQL ou deploy.
   Seis commits integrados até `d9d1bf46`; cinco suítes no destino passaram

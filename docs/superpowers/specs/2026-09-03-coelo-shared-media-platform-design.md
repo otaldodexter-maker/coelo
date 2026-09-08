@@ -3,10 +3,15 @@ title: "Plataforma compartilhada de mídia do Coelo"
 source: "decisões explícitas do Owner em 2026-09-03; decisions/0032-mvp-private-media-r2.md; discovery Cloudflare R2/Stream; arquitetura do monorepo"
 status: "approved-design"
 generated_at: "2026-09-03"
-updated_at: "2026-09-03"
+updated_at: "2026-09-07"
 ---
 
 # Plataforma compartilhada de mídia do Coelo
+
+> Reconciliação documental de 2026-09-07: exemplos e matriz de Chat e Perfil
+> contextual seguem a ADR 0032, fonte canônica já aprovada. O domínio de
+> `chat-message` é `communication`; o de `principal-context` é `profiles`.
+> A correção não cria finalidade, catálogo, migration ou autorização remota.
 
 ## Objetivo
 
@@ -110,12 +115,13 @@ assets estáticos preferem o bundle do app/site.
 
 | Domínio | Entidades | Finalidades principais | Bucket |
 | --- | --- | --- | --- |
-| `identity` | pessoa/perfil/contexto | avatar, cover | media |
+| `identity` | pessoa | avatar | media |
+| `profiles` | principal-context | cover | media |
 | `directory` | instituição, unidade, turma, atividade | logo, avatar, cover, gallery | media |
 | `locations` | mapa, local | map-general, photo, gallery | media |
 | `communication` | Acontece, Agora, Momentos, Circular, Aviso | media, cover-frame, audio, gallery | media |
-| `chat` | mensagem | image, video, audio | media |
-| `chat` | mensagem | attachment/document | documents |
+| `communication` | chat-message | image, video, audio | media |
+| `communication` | chat-message | attachment/document | documents |
 | `agenda` | evento | cover, gallery | media |
 | `agenda` | evento | attachment/document | documents |
 | `forms` | formulário/pergunta | question-image | media |
@@ -134,12 +140,12 @@ não autoriza um tipo de mídia numa superfície que não o tenha em sua spec.
 
 ```text
 people/<person_uuid>/identity/person/<person_uuid>/avatar/<asset_uuid>/original/<object_uuid>.jpg
-tenants/<tenant_uuid>/identity/principal-context/<context_uuid>/cover/<asset_uuid>/variants/desktop/<object_uuid>.webp
+tenants/<tenant_uuid>/profiles/principal-context/<context_uuid>/cover/<asset_uuid>/variants/desktop/<object_uuid>.webp
 tenants/<tenant_uuid>/directory/institution/<institution_uuid>/logo/<asset_uuid>/original/<object_uuid>.png
 tenants/<tenant_uuid>/locations/location-map/<map_uuid>/map-general/<asset_uuid>/original/<object_uuid>.webp
 tenants/<tenant_uuid>/locations/location/<location_uuid>/photo/<asset_uuid>/original/<object_uuid>.jpg
 tenants/<tenant_uuid>/communication/now-story/<story_uuid>/media/<asset_uuid>/original/<object_uuid>.mp4
-tenants/<tenant_uuid>/chat/chat-message/<message_uuid>/attachment/<asset_uuid>/original/<object_uuid>.pdf
+tenants/<tenant_uuid>/communication/chat-message/<message_uuid>/attachment/<asset_uuid>/original/<object_uuid>.pdf
 tenants/<tenant_uuid>/agenda/event/<event_uuid>/gallery/<asset_uuid>/original/<object_uuid>.jpg
 tenants/<tenant_uuid>/forms/form-response/<response_uuid>/answer-image/<asset_uuid>/original/<object_uuid>.jpg
 tenants/<tenant_uuid>/care/health-record/<record_uuid>/evidence/<asset_uuid>/original/<object_uuid>.pdf

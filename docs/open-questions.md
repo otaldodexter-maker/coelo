@@ -3,10 +3,26 @@ title: "Perguntas abertas e conflitos"
 source: "AGENTS.md; documentos oficiais, ADRs e specs citados em cada item"
 status: "open"
 generated_at: "2026-08-11"
-updated_at: "2026-09-03"
+updated_at: "2026-09-07"
 ---
 
 # Perguntas abertas e conflitos
+
+## Conflito documental reconciliado — chave de mídia (2026-09-07)
+
+- Fontes: `decisions/0032-mvp-private-media-r2.md` (ADR aprovada) e
+  `docs/superpowers/specs/2026-09-03-coelo-shared-media-platform-design.md`
+  (design derivado da própria ADR).
+- Divergência: o design usava `chat/chat-message` e
+  `identity/principal-context`, enquanto a ADR define
+  `communication/chat-message` e `profiles/principal-context`.
+- Resolução explícita: corrigir matriz/exemplos derivados para os domínios
+  canônicos da ADR 0032, sem alterar a decisão do Owner. Não existe uma nova
+  escolha de produto pendente sobre esses dois nomes. A descoberta histórica
+  fica preservada nas evidências da E2E 3.
+- Limites: a reconciliação não decide novas finalidades de mídia, não cria
+  catálogo universal paralelo, não altera SQL/objetos nem concede lease
+  remoto. Crosswalk, contratos de finalidade e testes continuam obrigatórios.
 
 ## Atualização de decisão — 2026-09-03
 
