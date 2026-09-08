@@ -47,7 +47,11 @@ final class SupabasePrincipalHappensFeedRepository implements PrincipalHappensFe
       final signedUrl = json['signed_url'] as String?;
       final mimeType = json['mime_type'] as String?;
       final expiresIn = json['expires_in'] as num?;
-      if (signedUrl == null || mimeType == null || expiresIn == null) {
+      if (signedUrl == null ||
+          mimeType == null ||
+          expiresIn == null ||
+          !expiresIn.isFinite ||
+          expiresIn.toInt() <= 0) {
         throw const PrincipalHappensFeedUnavailable();
       }
       return PrincipalHappensMediaRead(
