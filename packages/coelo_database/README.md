@@ -250,7 +250,7 @@ reproduziu `42601` no CREATE original de `form_item_config_valid` e compilou
 a mesma função com somente quatro parênteses adicionados, no PostgreSQL17.6
 (3/3 pgTAP PASS). O conversor específico em
 `replay/profiles/FReadDirectoryContractRedDerived/` preserva a origem e fixa
-os hashes de origem/derivado; ainda não está integrado ao Prepare. Essa prova
+os hashes de origem/derivado; está integrado somente ao perfil fechado abaixo. Essa prova
 de parser não representa replay completo de uma base derivada.
 
 O diagnóstico `-NominalProfile A01DirectoryAuditRed` mantém a base54 e
@@ -266,6 +266,15 @@ uma correção posterior de auditoria nem representa GREEN final.
   -NominalProfile A01DirectoryAuditRed `
   -TestPath packages/coelo_database/supabase/tests/superadmin_internal_activities_v2_directory_contract_test.sql
 ```
+
+O perfil `-NominalProfile FReadDirectoryContractRedDerived` mantém os mesmos
+50 nomes/ordem e target20260901200206, materializando somente155005 em TEMP
+com quatro parênteses e hash derivado06b71570bbb25c84efe5efed6a6d1f2416a33a5a6fdf71bc20b4776d01833dfe.
+A origem permanece intacta e os outros49 inputs são copiados sem alteração.
+O Prepare confere recibo único, hashes, destino, bytes e origem antes dessas
+cópias. A preparação passou272Pester (39específicos e233regressões); execução
+completa ainda depende da liberação nominal do Coordenador. O reader futuro
+não pertence a esse RED; não é evidência E2E de Formulários.
 
 Nunca use
 `Prepare-SafeMigrationReplay.ps1` diretamente em operacoes normais, nem use o
