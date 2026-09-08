@@ -41,6 +41,8 @@ set search_path = ''
 as $$
 declare
   ctx app_private.superadmin_internal_context;
+  initial_ctx app_private.superadmin_internal_context;
+  capability_ctx app_private.superadmin_internal_context;
   activity public.activity_definitions%rowtype;
   correlation_id uuid := gen_random_uuid();
   institution_id uuid;
@@ -68,6 +70,7 @@ declare
     when p_activity_id is null then 'activities.create'
     else 'activities.manage'
   end;
+  required_capabilities text[];
   error_code text;
 begin
   begin
@@ -141,6 +144,9 @@ begin
     end if;
 
     definition := p_payload->'definition';
+    if pg_catalog.current_setting('transaction_isolation') <> 'read committed' then
+      raise invalid_parameter_value using detail = 'ACTIVITY_INVALID_INPUT';
+    end if;
     if p_activity_id is null then
       if p_expected_version <> 0 then
         raise invalid_parameter_value using detail = 'ACTIVITY_INVALID_INPUT';
@@ -166,18 +172,17 @@ begin
       end if;
     end if;
 
-    required_capability := 'activities.link_units';
-    perform app_private.activity_v2_require_context(required_capability, institution_id);
-    required_capability := 'activities.link_groups';
-    perform app_private.activity_v2_require_context(required_capability, institution_id);
-    required_capability := 'activities.assign_people';
-    perform app_private.activity_v2_require_context(required_capability, institution_id);
-    required_capability := 'activities.manage_permissions';
-    perform app_private.activity_v2_require_context(required_capability, institution_id);
-    if p_publish then
-      required_capability := 'activities.manage';
+    initial_ctx := ctx;
+    required_capabilities := array[
+      'activities.link_units','activities.link_groups',
+      'activities.assign_people','activities.manage_permissions'
+    ]::text[] || case when p_publish
+      then array['activities.manage']::text[]
+      else '{}'::text[]
+    end;
+    foreach required_capability in array required_capabilities loop
       perform app_private.activity_v2_require_context(required_capability, institution_id);
-    end if;
+    end loop;
 
     required_capability := case
       when p_activity_id is null then 'activities.create'
@@ -190,6 +195,57 @@ begin
     perform pg_catalog.pg_advisory_xact_lock(
       pg_catalog.hashtextextended(p_request_id::text,0)
     );
+    -- A request lock may wait behind another transaction. READ COMMITTED gives
+    -- every statement below a fresh snapshot; bind it to the original actor and
+    -- scope before a private receipt can be exposed or any child can mutate.
+    select * into strict ctx
+    from app_private.activity_v2_require_context(required_capability, institution_id);
+    if row(
+      ctx.internal_identity_id,ctx.internal_auth_link_id,ctx.internal_membership_id,
+      ctx.auth_user_id,ctx.session_id,ctx.platform_role_id,ctx.role_code,
+      ctx.scope_kind,ctx.scope_institution_id,ctx.resolved_institution_id,
+      ctx.aal,ctx.permission_code,ctx.requires_mfa
+    ) is distinct from row(
+      initial_ctx.internal_identity_id,initial_ctx.internal_auth_link_id,
+      initial_ctx.internal_membership_id,initial_ctx.auth_user_id,initial_ctx.session_id,
+      initial_ctx.platform_role_id,initial_ctx.role_code,initial_ctx.scope_kind,
+      initial_ctx.scope_institution_id,initial_ctx.resolved_institution_id,
+      initial_ctx.aal,initial_ctx.permission_code,initial_ctx.requires_mfa
+    ) then
+      raise insufficient_privilege using detail = 'SAI_INTERNAL_CONTEXT_DENIED';
+    end if;
+    foreach required_capability in array required_capabilities loop
+      select * into strict capability_ctx
+      from app_private.activity_v2_require_context(required_capability, institution_id);
+      if row(
+        capability_ctx.internal_identity_id,capability_ctx.internal_auth_link_id,
+        capability_ctx.internal_membership_id,capability_ctx.auth_user_id,
+        capability_ctx.session_id,capability_ctx.platform_role_id,capability_ctx.role_code,
+        capability_ctx.scope_kind,capability_ctx.scope_institution_id,
+        capability_ctx.resolved_institution_id,capability_ctx.aal
+      ) is distinct from row(
+        initial_ctx.internal_identity_id,initial_ctx.internal_auth_link_id,
+        initial_ctx.internal_membership_id,initial_ctx.auth_user_id,initial_ctx.session_id,
+        initial_ctx.platform_role_id,initial_ctx.role_code,initial_ctx.scope_kind,
+        initial_ctx.scope_institution_id,initial_ctx.resolved_institution_id,initial_ctx.aal
+      ) then
+        raise insufficient_privilege using detail = 'SAI_INTERNAL_CONTEXT_DENIED';
+      end if;
+    end loop;
+    if not exists(
+      select 1
+      from auth.sessions session_record
+      where session_record.id = initial_ctx.session_id
+        and session_record.user_id = initial_ctx.auth_user_id
+        and (session_record.not_after is null
+          or session_record.not_after > pg_catalog.clock_timestamp())
+    ) then
+      raise insufficient_privilege using detail = 'SAI_SESSION_INVALID';
+    end if;
+    required_capability := case
+      when p_activity_id is null then 'activities.create'
+      else 'activities.manage'
+    end;
     select * into receipt
     from app_private.superadmin_internal_activity_save_receipts candidate
     where candidate.request_id = p_request_id;

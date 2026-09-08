@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(42);
+select plan(46);
 
 select has_function(
   'public',
@@ -32,6 +32,93 @@ select ok((
   from pg_catalog.pg_class table_record
   where table_record.oid='app_private.superadmin_internal_activity_save_receipts'::regclass
 ),'aggregate receipts are force-RLS and expose no direct reads');
+
+with source as (
+  select pg_catalog.lower(pg_catalog.regexp_replace(
+    pg_catalog.pg_get_functiondef(
+      'public.superadmin_activity_save_v2(uuid,uuid,bigint,boolean,jsonb)'::regprocedure
+    ),'[[:space:]]+','','g'
+  )) as body
+)
+select ok(
+  pg_catalog.position('transaction_isolation' in body)>0
+    and pg_catalog.position('readcommitted' in body)>0,
+  'aggregate rejects isolation levels that cannot refresh authorization after waits'
+) from source;
+
+with source as (
+  select pg_catalog.substring(body from pg_catalog.position(
+    'pg_catalog.pg_advisory_xact_lock' in body
+  )) as locked_body
+  from (
+    select pg_catalog.lower(pg_catalog.regexp_replace(
+      pg_catalog.pg_get_functiondef(
+        'public.superadmin_activity_save_v2(uuid,uuid,bigint,boolean,jsonb)'::regprocedure
+      ),'[[:space:]]+','','g'
+    )) as body
+  ) definition
+)
+select ok(
+  pg_catalog.position('select*intostrictctxfromapp_private.activity_v2_require_context' in locked_body)>0
+    and pg_catalog.position('select*intostrictctxfromapp_private.activity_v2_require_context' in locked_body)
+      < pg_catalog.position('select*intoreceiptfromapp_private.superadmin_internal_activity_save_receipts' in locked_body)
+    and pg_catalog.position('isdistinctfromrow(initial_ctx.internal_identity_id' in locked_body)>0,
+  'aggregate revalidates the same internal context after the request lock and before receipt lookup'
+) from source;
+
+with source as (
+  select pg_catalog.substring(body from pg_catalog.position(
+    'pg_catalog.pg_advisory_xact_lock' in body
+  )) as locked_body
+  from (
+    select pg_catalog.lower(pg_catalog.regexp_replace(
+      pg_catalog.pg_get_functiondef(
+        'public.superadmin_activity_save_v2(uuid,uuid,bigint,boolean,jsonb)'::regprocedure
+      ),'[[:space:]]+','','g'
+    )) as body
+  ) definition
+)
+select ok(
+  pg_catalog.position('pg_catalog.clock_timestamp()' in locked_body)>0
+    and pg_catalog.position('pg_catalog.clock_timestamp()' in locked_body)
+      < pg_catalog.position('select*intoreceiptfromapp_private.superadmin_internal_activity_save_receipts' in locked_body),
+  'aggregate checks session expiry against the wall clock before receipt replay'
+) from source;
+
+with source as (
+  select pg_catalog.substring(
+    locked_body from 1 for pg_catalog.position(
+      'select*intoreceiptfromapp_private.superadmin_internal_activity_save_receipts' in locked_body
+    )-1
+  ) as before_receipt
+  from (
+    select pg_catalog.substring(body from pg_catalog.position(
+      'pg_catalog.pg_advisory_xact_lock' in body
+    )) as locked_body
+    from (
+      select pg_catalog.lower(pg_catalog.regexp_replace(
+        pg_catalog.pg_get_functiondef(
+          'public.superadmin_activity_save_v2(uuid,uuid,bigint,boolean,jsonb)'::regprocedure
+        ),'[[:space:]]+','','g'
+      )) as body
+    ) definition
+  ) locked
+)
+select ok(
+  before_receipt like '%activities.link_units%'
+    and before_receipt like '%activities.link_groups%'
+    and before_receipt like '%activities.assign_people%'
+    and before_receipt like '%activities.manage_permissions%'
+    and (
+      pg_catalog.position(
+        'thenarray[''activities.manage''::text]' in before_receipt
+      )>0
+      or pg_catalog.position(
+        'thenarray[''activities.manage'']::text[]' in before_receipt
+      )>0
+    ),
+  'aggregate refreshes every applicable capability before receipt replay or mutation'
+) from source;
 
 insert into public.institution_types(id,code,name,status) values
  ('8b200000-0000-4000-8000-000000000001','activity-save-v2','Activity save v2','active');
