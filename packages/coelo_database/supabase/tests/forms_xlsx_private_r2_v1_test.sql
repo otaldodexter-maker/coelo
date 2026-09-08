@@ -529,13 +529,13 @@ grant insert,select on xlsx_claim_results to service_role;
 grant execute on function pg_temp.xlsx_id(integer) to service_role;
 set local role service_role;
 select lives_ok($$insert into xlsx_claim_results select n,
-  app_private.form_claim_worker_job('synthetic-claim-worker',60,array['generate_occurrences'])
+  public.form_worker_claim('synthetic-claim-worker',60,array['generate_occurrences'])
   from generate_series(0,2) n$$,'three exhausted states do not poison later eligible jobs');
 reset role;
 select is((select body->>'id' from xlsx_claim_results where n=position),pg_temp.xlsx_id(41010+position)::text,
   'claim skips exhausted states and returns eligible queue position '||position) from generate_series(0,2) position;
 set local role service_role;
-select is(app_private.form_claim_worker_job('synthetic-claim-worker',60,array['generate_occurrences']),null::jsonb,
+select is(public.form_worker_claim('synthetic-claim-worker',60,array['generate_occurrences']),null::jsonb,
   'only exhausted jobs and active leases return no new claim');
 reset role;
 select is((select jsonb_agg(to_jsonb(w) order by id) from app_private.form_worker_jobs w
@@ -552,11 +552,11 @@ select is(jsonb_build_object(
 insert into app_private.form_worker_jobs(id,job_kind,state,attempts,available_at)
 values(pg_temp.xlsx_id(41020),'reconcile_audience','pending',19,now()-interval '1 day');
 set local role service_role;
-insert into xlsx_claim_results values(20,app_private.form_claim_worker_job('synthetic-final-attempt',60,array['reconcile_audience']));
+insert into xlsx_claim_results values(20,public.form_worker_claim('synthetic-final-attempt',60,array['reconcile_audience']));
 select is((select body->>'attempts' from xlsx_claim_results where n=20),'20','last permitted attempt still receives its lease');
-select is(app_private.form_claim_worker_job('synthetic-other-worker',60,array['reconcile_audience']),null::jsonb,
+select is(public.form_worker_claim('synthetic-other-worker',60,array['reconcile_audience']),null::jsonb,
   'active last lease cannot be stolen');
-select lives_ok($$select app_private.form_finish_worker_job(pg_temp.xlsx_id(41020),'synthetic-final-attempt')$$,
+select lives_ok($$select public.form_worker_finish(pg_temp.xlsx_id(41020),'synthetic-final-attempt','{}'::jsonb)$$,
   'current owner can finish an active twentieth attempt');
 reset role;
 select is((select state from app_private.form_worker_jobs where id=pg_temp.xlsx_id(41020)),'succeeded',
@@ -564,11 +564,11 @@ select is((select state from app_private.form_worker_jobs where id=pg_temp.xlsx_
 insert into app_private.form_worker_jobs(id,job_kind,state,attempts,available_at)
 values(pg_temp.xlsx_id(41021),'reconcile_audience','pending',19,now()-interval '1 day');
 set local role service_role;
-insert into xlsx_claim_results values(21,app_private.form_claim_worker_job('synthetic-last-expired',60,array['reconcile_audience']));
+insert into xlsx_claim_results values(21,public.form_worker_claim('synthetic-last-expired',60,array['reconcile_audience']));
 reset role;
 update app_private.form_worker_jobs set lease_expires_at=now()-interval '1 second' where id=pg_temp.xlsx_id(41021);
 set local role service_role;
-select is(app_private.form_claim_worker_job('synthetic-no-attempt-21',60,array['reconcile_audience']),null::jsonb,
+select is(public.form_worker_claim('synthetic-no-attempt-21',60,array['reconcile_audience']),null::jsonb,
   'expired twentieth attempt never increments to twenty-one');
 reset role;
 select is((select attempts from app_private.form_worker_jobs where id=pg_temp.xlsx_id(41021)),20,'exhaustion never resets or increments the existing counter');
