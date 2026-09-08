@@ -306,6 +306,43 @@ void main() {
     expect(authContext.bootstrapCalls, 0);
   });
 
+  for (final recoveryId in [_sessionB, null]) {
+    test('restored bootstrap cleanup respects recovery callback identity $recoveryId', () async {
+      final states = StreamController<CoeloAuthSessionState>(sync: true);
+      final auth = _FakeCoeloAuthGateway(
+        isAuthenticated: true,
+        authStateChanges: const Stream<bool>.empty(),
+        sessionStateChanges: states.stream,
+      );
+      final context = _PendingSuperadminAuthContextGateway();
+      final client = SupabaseClient('https://example.supabase.co', 'publishable-test');
+      addTearDown(client.dispose);
+      addTearDown(states.close);
+      final pendingScope = createSuperadminAuthScope(
+        supabaseUrl: 'https://example.supabase.co',
+        supabasePublishableKey: 'publishable-test',
+        initializeSupabase:
+            ({required localStorage, required publishableKey, required url}) async => client,
+        createAuthGateway:
+            ({required client, required sessionPersistence, required initialRecoveryAccessToken}) =>
+                auth,
+        createAuthContextGateway: (_) => context,
+      );
+      await context.started.future;
+      final recovery = CoeloAuthSessionState.passwordRecovery(sessionId: recoveryId);
+      auth.initialSessionState = recovery;
+      states.add(recovery);
+      context.completeAuthorized();
+      final scope = await pendingScope;
+      addTearDown(scope.session.dispose);
+
+      expect(scope.session.isAuthenticated, isFalse);
+      expect(scope.session.authContext, isNull);
+      expect(auth.signOutCalls, recoveryId == null ? 1 : 0);
+      if (recoveryId != null) expect(scope.session.isPasswordRecovery, isTrue);
+    });
+  }
+
   test('rejects and revokes a restored credential without internal context', () async {
     final auth = _FakeCoeloAuthGateway(
       isAuthenticated: true,
@@ -449,12 +486,14 @@ final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
     required this.isAuthenticated,
     required Stream<bool> authStateChanges,
     this.initialSessionState,
+    this.sessionStateChanges,
   }) : _authStateChanges = authStateChanges;
 
   @override
   bool isAuthenticated;
   String sessionId = _sessionA;
-  final CoeloAuthSessionState? initialSessionState;
+  CoeloAuthSessionState? initialSessionState;
+  final Stream<CoeloAuthSessionState>? sessionStateChanges;
 
   final Stream<bool> _authStateChanges;
   String? lastRecoveryEmail;
@@ -468,11 +507,13 @@ final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
           : const CoeloAuthSessionState.signedOut());
 
   @override
-  Stream<CoeloAuthSessionState> get authSessionStateChanges => _authStateChanges.map(
-    (authenticated) => authenticated
-        ? CoeloAuthSessionState.authenticated(sessionId: sessionId)
-        : const CoeloAuthSessionState.signedOut(),
-  );
+  Stream<CoeloAuthSessionState> get authSessionStateChanges =>
+      sessionStateChanges ??
+      _authStateChanges.map(
+        (authenticated) => authenticated
+            ? CoeloAuthSessionState.authenticated(sessionId: sessionId)
+            : const CoeloAuthSessionState.signedOut(),
+      );
 
   @override
   Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecoveryWithRedirect({

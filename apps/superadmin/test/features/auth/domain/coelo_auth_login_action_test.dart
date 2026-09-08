@@ -110,6 +110,30 @@ void main() {
     expect(session.isAuthenticated, isFalse);
   });
 
+  for (final recoveryId in [_sessionA, _sessionB, null]) {
+    test('login cleanup respects observed recovery callback $recoveryId', () async {
+      final states = StreamController<CoeloAuthSessionState>(sync: true);
+      final auth = _FakeCoeloAuthGateway();
+      final session = SuperadminSession(authSessionStateChanges: states.stream);
+      addTearDown(states.close);
+      addTearDown(session.dispose);
+      final context = _PendingSuperadminAuthContextGateway();
+      final action = createCoeloAuthLoginAction(auth: auth, authContext: context, session: session);
+      final pending = action(request);
+      await context.started.future;
+      final recovery = CoeloAuthSessionState.passwordRecovery(sessionId: recoveryId);
+      auth.stateOverride = recovery;
+      states.add(recovery);
+      context.completeDenied();
+      final result = await pending;
+
+      expect(result.isSuccess, isFalse);
+      expect(session.isAuthenticated, isFalse);
+      expect(auth.signOutCalls, recoveryId == null ? 1 : 0);
+      expect(session.isPasswordRecovery, recoveryId != null);
+    });
+  }
+
   test('does not sign out a newer winning session after stale bootstrap', () async {
     final auth = _FakeCoeloAuthGateway();
     final session = SuperadminSession();
@@ -242,6 +266,7 @@ final class _PendingSuperadminAuthContextGateway implements SuperadminAuthContex
   final _result = Completer<SuperadminAuthContext?>();
 
   void completeAuthorized() => _result.complete(_context);
+  void completeDenied() => _result.complete(null);
 
   @override
   Future<SuperadminAuthContext?> bootstrap() {
@@ -265,6 +290,7 @@ final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
   final Completer<void>? signOutStarted;
   final Completer<void>? signOutRelease;
   String sessionId = _sessionA;
+  CoeloAuthSessionState? stateOverride;
   bool _isSignedOut = false;
 
   @override
@@ -272,9 +298,11 @@ final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
       const Stream<CoeloAuthSessionState>.empty();
 
   @override
-  CoeloAuthSessionState get currentSessionState => nextResult.isSuccess && !_isSignedOut
-      ? CoeloAuthSessionState.authenticated(sessionId: sessionId)
-      : const CoeloAuthSessionState.signedOut();
+  CoeloAuthSessionState get currentSessionState =>
+      stateOverride ??
+      (nextResult.isSuccess && !_isSignedOut
+          ? CoeloAuthSessionState.authenticated(sessionId: sessionId)
+          : const CoeloAuthSessionState.signedOut());
 
   @override
   Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecoveryWithRedirect({
@@ -303,6 +331,7 @@ final class _FakeCoeloAuthGateway extends CoeloAuthLifecycleGateway {
   @override
   Future<void> signOut() async {
     signOutCalls++;
+    stateOverride = null;
     _isSignedOut = true;
     signOutStarted?.complete();
     if (signOutRelease case final release?) {
