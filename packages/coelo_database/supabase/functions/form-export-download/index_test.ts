@@ -49,12 +49,14 @@ function fixture(
     redeemed?: unknown;
     failAt?: string;
     advanceAfterSign?: boolean;
+    startTime?: number;
+    advanceAfterSignMs?: number;
   } = {},
 ) {
   const calls: Array<
     { role: string; name: string; params: Record<string, unknown> }
   > = [];
-  let signCalls = 0, currentTime = now;
+  let signCalls = 0, currentTime = options.startTime ?? now;
   const dependencies: FormExportDownloadDependencies = {
     environment: () => env,
     now: () => new Date(currentTime),
@@ -97,12 +99,45 @@ function fixture(
           bucket: "coelo-transient-prod",
         }, { now: () => new Date(currentTime) }).presignGet(key, ttl);
         if (options.advanceAfterSign) currentTime += 60_000;
+        currentTime += options.advanceAfterSignMs ?? 0;
         return signed;
       },
     }),
   };
   return { dependencies, calls, signs: () => signCalls };
 }
+
+Deno.test("fractional signing time reports the actual whole-second S3 expiry", async () => {
+  const f = fixture({
+    startTime: now + 900,
+    redeemed: { ...artifact, expires_at: new Date(now + 1900).toISOString() },
+  });
+  const response = await handleFormExportDownloadRequest(
+    request(),
+    f.dependencies,
+  );
+  assertEquals(response.status, 200);
+  const body = await response.json();
+  assertEquals(body.expires_at, new Date(now + 1000).toISOString());
+  const url = new URL(body.download_url);
+  assertEquals(url.searchParams.get("X-Amz-Date"), "20260908T170000Z");
+  assertEquals(url.searchParams.get("X-Amz-Expires"), "1");
+});
+
+Deno.test("signing that crosses the actual S3 expiry never returns a stale download", async () => {
+  const f = fixture({
+    startTime: now + 900,
+    advanceAfterSignMs: 200,
+    redeemed: { ...artifact, expires_at: new Date(now + 1900).toISOString() },
+  });
+  const response = await handleFormExportDownloadRequest(
+    request(),
+    f.dependencies,
+  );
+  assertEquals(response.status, 404);
+  assertEquals(await response.json(), { error: "export_unavailable" });
+  assertEquals(f.signs(), 1);
+});
 
 Deno.test("download authorizes user, redeems one-use token and signs only correlated R2 artifact", async () => {
   const f = fixture();
