@@ -490,3 +490,6 @@ Activities42asserts permanecem WIP, sem runtime. ObjetosGit reais:45e7602731b9b7
 
 
 Recibo 2026-09-08T19:50:49-03:00: entregaGit422583a35629b1b08d8fc4acb58447379c1024b8 confirmada emdev e C00, sem produção. C03I013 registra achado de autorização antes do advisory lock e receipt após espera sem rechecagem; clock now() não prova expiração real na espera. Novo corretivo nominal requerido antes da lease.42asserts continuam preparados/não executados; nenhum certificado de concorrência. Contrato Locaisf4f0105a confirmado byte-idêntico à origem; falta real é composição/escopo/persistência.
+
+
+Recibo I013 2026-09-08T19:52:09-03:00: C02SHA60376a32, **82/82pgTAP PASS** local19:47:54–19:50:03,exit0. C00 conferiu result/log/hash514fcc0680621a1b8b778c424cc88748b603f37f6b3e0f3b8f75bf07fc2de94a e Dockerps/volumes0. Evidência TEMPcoelo-c02-media82-vuoxhew3; perfil71/73,runner13734326/PS7.6.5/npx2.116.0. Lease R01-LOCAL-FORMS-MEDIA-82-01 encerrada. SQLleitor não está integrado/aplicado; DI/UI/R2real/E2E continuam abertos. Claim193 ainda preparado semSHA final nem runtime, não somar21novos a certificação.

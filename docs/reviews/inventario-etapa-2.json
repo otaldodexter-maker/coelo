@@ -1943,14 +1943,14 @@
       "scope": "mvp",
       "done": "Estados locais e validação de tickets implementados; nenhum objeto R2 real certificado por testes isolados. R36-r39 (origem C02; integração por lote): Visualizador+FormsMediaReader comuns e form-media actionread antes de People; correlaçãoform_assets, grant/redeem, variant exata, TTL e erro sanitizado. R40: I01360376a32 preparado, 82 asserts ainda não executados.",
       "fe": "Revalidar o aceite específico desta ação: Resolução autorizada/assinada e E2E pendentes.",
-      "be": "I01360376a32 aguarda revisão/lease local; depois DI. URL GET assinada curta permitida ADR0032, descriptor privado não exposto separadamente; janela residual até120s sem revogação instantânea após emissão. Catálogo/provider real e upload/cutover continuam abertos.",
-      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r37-viewer,r39-media; etapa-2-operacao/reports/R01-delta-1915.md (C02r40)",
+      "be": "I01360376a32 passou82/82pgTAP local; integrar SQL/handler e DI, depois provar R2real/UI/reload/negativas. Descriptor privado não exposto separadamente; URLcurta com janela residual até120s sem revogação instantânea. Upload/cutover permanecem abertos.",
+      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r37-viewer,r39-media; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); I01382 log514fcc06…fc2de94a/TEMPcoelo-c02-media82-vuoxhew3",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
-      "lastEvidenceAt": "2026-09-08T19:38:23-03:00",
+      "lastEvidenceAt": "2026-09-08T19:52:09-03:00",
       "lastSyncedHandoff": "C02/r40"
     },
     {
@@ -3342,5 +3342,5 @@
       "integratedStatus": "pending-verification"
     }
   ],
-  "updatedAt": "2026-09-08T19:50:49-03:00"
+  "updatedAt": "2026-09-08T19:52:09-03:00"
 }

@@ -514,7 +514,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T19:50:49-03:00",
+  "updated_at": "2026-09-08T19:52:09-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -837,7 +837,7 @@
   ],
   "local_replay_lease": {
     "id": "R01-LOCAL-FORMS-MEDIA-82-01",
-    "status": "granted",
+    "status": "released",
     "executor": "C02",
     "instruction": "R01-C02-I016",
     "issued_at": "2026-09-08T19:45:50-03:00",
@@ -845,7 +845,10 @@
     "expected_assertions": 82,
     "expected_source_migrations": 71,
     "expected_effective_migrations": 73,
-    "remote": false
+    "remote": false,
+    "result": "82PASS;C00 log/hash/result and cleanup checked",
+    "released_at": "2026-09-08T19:52:09-03:00",
+    "evidence_dir": "C:/Users/adrie/AppData/Local/Temp/coelo-c02-media82-vuoxhew3"
   },
   "last_delivery": {
     "branch": "origin/dev",
@@ -1348,7 +1351,7 @@
     "health_evidence": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-docker-health-1855.json",
     "preservation_evidence": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-docker-preservation-1854.json"
   },
-  "coordinator_next_steps_docker": "I01382 exclusively granted to C02 after reviewed profile; no other runtime/recovery.",
+  "coordinator_next_steps_docker": "No active lease; I01382 completed; ActivitiesI013 and claim193 await new fixed SHA review.",
   "visual_review_c07": {
     "status": "shellcompactfixedc4a7feff; C05consumerfixes and golden review pending",
     "source": "C06r5 and C07 original reports",
@@ -1411,7 +1414,7 @@
     "instruction": "R01-C02-I013",
     "migration": "20260908215522_forms_superadmin_media_read_r2_v1.sql",
     "test": "forms_superadmin_media_read_r2_v1_test.sql",
-    "status": "local-replay-granted-I016",
+    "status": "82PASSlocal; integration pending",
     "remote": false
   },
   "replay_receipts_1900": [
@@ -1460,6 +1463,21 @@
       "result": "172/172 PASS; C00 result/log/hash inspected; ps/volumes0 independently checked",
       "released_at": "2026-09-08T19:42:45-03:00",
       "evidence_dir": "C:/Users/adrie/AppData/Local/Temp/coelo-c02-xlsx172-haps4sj4"
+    },
+    {
+      "id": "R01-LOCAL-FORMS-MEDIA-82-01",
+      "status": "released",
+      "executor": "C02",
+      "instruction": "R01-C02-I016",
+      "issued_at": "2026-09-08T19:45:50-03:00",
+      "code_sha": "60376a323c039b8c0eeaa5f4b6e6e7aa97713554",
+      "expected_assertions": 82,
+      "expected_source_migrations": 71,
+      "expected_effective_migrations": 73,
+      "remote": false,
+      "result": "82PASS;C00 log/hash/result and cleanup checked",
+      "released_at": "2026-09-08T19:52:09-03:00",
+      "evidence_dir": "C:/Users/adrie/AppData/Local/Temp/coelo-c02-media82-vuoxhew3"
     }
   ],
   "next_reviewed_integration_batches": {
