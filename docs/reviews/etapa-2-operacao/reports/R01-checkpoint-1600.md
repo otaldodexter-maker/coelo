@@ -54,3 +54,6 @@ Registro operacional posterior ao corte — 2026-09-08T16:25:54-03:00: C02 relat
 
 
 Recibo de publicação — 2026-09-08T16:27:18-03:00: código/documentação028a3ee7184791ea7f3ac52dace473eabd5b43a6 publicado atomicamente em origin/dev e origin/codex/e2-r01-c00-integration; ls-remote confirmou ambas as pontas. Atualiza o estado push-pending do corte; nenhum deploy ou aplicação remota de dados.
+
+
+> Operação XLSX 2026-09-08T16:29:23-03:00: C02 relatou primeira tentativa com erro de invocação Windows PowerShell antes de pgTAP: zero asserts, sem diagnóstico de falha SQL. Source69/efetivas71 com preflights. C00 validou probe de stderr em PowerShell7.6.5 e concedeu uma reexecução idêntica nessa shell após cleanup; resultado ainda pendente. Não promove forms.responses.export.

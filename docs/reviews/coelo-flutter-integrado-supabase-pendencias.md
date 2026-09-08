@@ -370,3 +370,6 @@ Entrega origin/dev confirmada em0bf9e039 por push atômico e ls-remote às2026-0
 ## Regra de encerramento
 
 Front-end exige seus aceites de UI, estados, composição e regressão. Back-end exige os provedores aplicáveis, autorização, persistência, negativas e auditoria. E2E exige a mesma ação pela UI real, reload, tenant A/B e revogação. Só promover a linha com evidência nominal.
+
+
+> Operação XLSX 2026-09-08T16:29:23-03:00: C02 relatou primeira tentativa com erro de invocação Windows PowerShell antes de pgTAP: zero asserts, sem diagnóstico de falha SQL. Source69/efetivas71 com preflights. C00 validou probe de stderr em PowerShell7.6.5 e concedeu uma reexecução idêntica nessa shell após cleanup; resultado ainda pendente. Não promove forms.responses.export.

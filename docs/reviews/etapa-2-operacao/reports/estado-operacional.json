@@ -499,7 +499,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T16:27:18-03:00",
+  "updated_at": "2026-09-08T16:29:23-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -765,13 +765,19 @@
     "executor": "C02",
     "issued_at": "2026-09-08T16:16:11-03:00",
     "scope": "immutable0b596c85;132pgTAP;copy preserved XLSX profile;runner unchanged",
-    "status": "running-reported-by-C02",
+    "status": "first-attempt-released;second-attempt-granted-in-I008-pwsh7;awaiting-start",
     "remote": false,
     "previous_release": "C00 cleanup14:55;Docker0 inspected16:14",
     "start_report_received_at": "2026-09-08T16:25:54-03:00",
     "profile_migration_count": 69,
     "temporary_root": "C:/Users/adrie/AppData/Local/Temp/coelo-c02-xlsx-51749de5632d40d9b4e1a622b6a497ea",
-    "runner_sha256": "13734326e1fc6b4cab3e8adda68e7d1b27659b53dfc75029350b722f485f20ad"
+    "runner_sha256": "13734326e1fc6b4cab3e8adda68e7d1b27659b53dfc75029350b722f485f20ad",
+    "first_result": "exit1 before pgTAP;zero assertions;WindowsPowerShell stderr RemoteException;SQL not assessed",
+    "source_count": 69,
+    "effective_count": 71,
+    "retry_shell": "C:/Users/adrie/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+    "retry_granted_at": "2026-09-08T16:29:23-03:00",
+    "first_attempt_cleanup": "C02 confirmed zero coelo_safe containers/volumes/networks;one pre-R01 temp dir preserved"
   },
   "last_delivery": {
     "branch": "origin/dev",
@@ -938,6 +944,7 @@
   "next_local_replay": {
     "executor": "C01",
     "scope": "I005 Models31 after C02 release;manifest preparation only",
-    "execution_granted": false
+    "execution_granted": false,
+    "blocker": "C01 reports runner lacks exact51input nominal profile;C00 review needed before granting runtime"
   }
 }
