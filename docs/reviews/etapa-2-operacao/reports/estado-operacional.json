@@ -10,7 +10,7 @@
   "window_end": "2026-09-16T12:20:00-03:00",
   "delivery_branch": "dev",
   "runtime_target": "localhost normal + real Supabase; remote mutable scenarios require nominal authorization",
-  "last_poll": "2026-09-08T18:16:41-03:00",
+  "last_poll": "2026-09-08T19:42:45-03:00",
   "processed_events": [
     {
       "id": "2026-09-08T13:00:00-03:00-checkpoint",
@@ -43,7 +43,7 @@
       "thread_id": "01a08197-7b62-73c1-9673-5fd40fa40452",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01",
       "branch": "codex/e2-r01-c01-identidade",
-      "instruction_revision": 15,
+      "instruction_revision": 16,
       "received_revision": 40,
       "integrated_revision": 3,
       "last_evidence": "2026-09-08T18:13:04-03:00",
@@ -75,18 +75,18 @@
       "thread_id": "01a0819a-f1f1-7421-95dd-d645ca9f5747",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
       "branch": "codex/e2-r01-c02-forms-midia",
-      "instruction_revision": 14,
-      "received_revision": 35,
+      "instruction_revision": 16,
+      "received_revision": 40,
       "integrated_revision": 4,
-      "last_evidence": "2026-09-08T17:27:00-03:00",
+      "last_evidence": "2026-09-08T19:38:23-03:00",
       "baseline": "6cb8ba15bae15f5a6129b0db6e740a66f8f82b3f",
       "worktree_verified_at": "2026-09-08T14:25:04-03:00",
       "handoff_present_at_preparation": false,
-      "accepted_revision": 35,
-      "last_evidence_basis": "fixed handoff read and deltas synchronized; review/integration separate",
+      "accepted_revision": 40,
+      "last_evidence_basis": "C00 leu r40 incremental e reconciliou r36-r39; revisão/integracao separadas",
       "handoff_generated_at_reported": "2026-09-08T12:30:00-03:00",
       "handoff_sha256": "162216fe868a3b76b422c2d863e33df604596549ab57fc09cc1e2724c5173183",
-      "next_step": "I008 submitted edit; XLSX132 lease; source corrected69migrations;Locais dependency released",
+      "next_step": "I01382 em revisão para lease; claim21 reserva focal pendente; Safety independente continua",
       "local_test_evidence": "C00 R249/49 + static4/4 + lint; Forms editor102/102 + DTO15/15",
       "continuity_automation_id": "e2-r01-c02-retomada-30-min",
       "continuity_verification": "Native automation view and local TOML confirmed ACTIVE, 30min; actual dispatch not proven",
@@ -99,7 +99,7 @@
       "source_push_verified_sha": "fccaa2539ad7bce8580a4398b0e8cf9764531f9a",
       "native_wait_cursor": "40b4aa04-b1a8-471a-8896-64092527a62b:10",
       "native_status": "active confirmed16:01 snapshot; later instantaneous activity not inferred",
-      "handoff_commit": "9c215148e0e9ff7b2e4020275d3c2bdf2c8684e2"
+      "handoff_commit": "31f4249aa306b43e9e52d173e0b8d889a9900b4f"
     },
     "C03": {
       "name": "E2 R01 C03 — Operações",
@@ -514,7 +514,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T18:34:33-03:00",
+  "updated_at": "2026-09-08T19:45:50-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -827,7 +827,7 @@
       "production": "unchanged"
     }
   ],
-  "last_delta_processed_at": "2026-09-08T15:50:03-03:00",
+  "last_delta_processed_at": "2026-09-08T19:42:45-03:00",
   "coordinator_next_steps": [
     "Review C02 I007 upload contract when ready",
     "Replay fixed XLSX;prepare concrete Auth personas package",
@@ -836,15 +836,15 @@
     "Next poll16:00;formal17:40;closing09/09 preserved"
   ],
   "local_replay_lease": {
-    "id": "R01-LOCAL-FORMS-READ-01",
-    "status": "granted-exclusive",
+    "id": "R01-LOCAL-FORMS-MEDIA-82-01",
+    "status": "granted",
     "executor": "C02",
-    "instruction": "R01-C02-I014",
-    "issued_at": "2026-09-08T19:05:18-03:00",
-    "code_sha": "1f38fa7a8eca5b68862ada33ed4b06a888f4323f",
-    "expected_assertions": 70,
-    "expected_source_migrations": 70,
-    "expected_effective_migrations": 72,
+    "instruction": "R01-C02-I016",
+    "issued_at": "2026-09-08T19:45:50-03:00",
+    "code_sha": "60376a323c039b8c0eeaa5f4b6e6e7aa97713554",
+    "expected_assertions": 82,
+    "expected_source_migrations": 71,
+    "expected_effective_migrations": 73,
     "remote": false
   },
   "last_delivery": {
@@ -1166,7 +1166,7 @@
       "branch": "claude/e2-r01-c06-coordenacao",
       "baseline": "f0763a657ca6e5422cc42fa61c0c3c4ca724e129",
       "handoff_path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06\\docs\\reviews\\etapa-2-operacao\\handoffs\\C06.md",
-      "instruction_revision": 7,
+      "instruction_revision": 9,
       "received_revision": 10,
       "accepted_revision": 10,
       "status": "active-acknowledged",
@@ -1187,7 +1187,8 @@
       "c07_receipt_evidence": "C06r5 confirms C07 supervision, I003/I004 correction and RTK dispatch18:22-18:23",
       "next_nominal_tick": "2026-09-08T18:51:00-03:00",
       "last_proven_tick": "2026-09-08T18:57:00-03:00",
-      "timestamp_discrepancy": "r4 text18:10 versus commit18:03:39; preserve both, receipt uses actual read time"
+      "timestamp_discrepancy": "r4 text18:10 versus commit18:03:39; preserve both, receipt uses actual read time",
+      "instruction_acknowledgement": "I008 accepted r13/33c74c3b; I009 pending next material ack"
     }
   },
   "operational_routing": {
@@ -1305,9 +1306,9 @@
       40,
       50
     ],
-    "verified_at": "2026-09-08T18:10:21-03:00",
-    "next_nominal_tick": "2026-09-08T18:20:00-03:00",
-    "prompt": "updated includes C07/C06I004/RTK/safe closing; actual tick not yet proven"
+    "verified_at": "2026-09-08T19:42:45-03:00",
+    "next_nominal_tick": "2026-09-08T19:50:00-03:00",
+    "prompt": "Native view + TOML verified; closing09/09 05:30/06:00/07:40 preserved"
   },
   "tracker_sync_1815": {
     "at": "2026-09-08T18:16:41-03:00",
@@ -1347,7 +1348,7 @@
     "health_evidence": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-docker-health-1855.json",
     "preservation_evidence": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-docker-preservation-1854.json"
   },
-  "coordinator_next_steps_docker": "Docker recovered; C01 Models34 completed and released; C02 I01070 exclusive lease granted. No parallel Docker recovery or replay.",
+  "coordinator_next_steps_docker": "I01382 exclusively granted to C02 after reviewed profile; no other runtime/recovery.",
   "visual_review_c07": {
     "status": "shellcompactfixedc4a7feff; C05consumerfixes and golden review pending",
     "source": "C06r5 and C07 original reports",
@@ -1410,7 +1411,7 @@
     "instruction": "R01-C02-I013",
     "migration": "20260908215522_forms_superadmin_media_read_r2_v1.sql",
     "test": "forms_superadmin_media_read_r2_v1_test.sql",
-    "status": "granted-local-authoring-only",
+    "status": "local-replay-granted-I016",
     "remote": false
   },
   "replay_receipts_1900": [
@@ -1429,6 +1430,36 @@
       "result": "34/34PASS;loghashverifiedC00;cleanup0 independentlyconfirmed",
       "released_at": "2026-09-08T19:05:18-03:00",
       "log": "C:/Users/adrie/AppData/Local/Temp/coelo-c01-models34-replay-20260908-1857.log"
+    },
+    {
+      "id": "R01-LOCAL-FORMS-READ-01",
+      "status": "released",
+      "executor": "C02",
+      "instruction": "R01-C02-I014",
+      "issued_at": "2026-09-08T19:05:18-03:00",
+      "code_sha": "1f38fa7a8eca5b68862ada33ed4b06a888f4323f",
+      "expected_assertions": 70,
+      "expected_source_migrations": 70,
+      "expected_effective_migrations": 72,
+      "remote": false,
+      "result": "70/70PASS;C00 log/result inspected",
+      "released_at": "2026-09-08T19:19:28-03:00",
+      "evidence_dir": "C:/Users/adrie/AppData/Local/Temp/coelo-c02-read70-qxql219n"
+    },
+    {
+      "id": "R01-LOCAL-XLSX-172-01",
+      "status": "released",
+      "executor": "C02",
+      "instruction": "R01-C02-I015",
+      "issued_at": "2026-09-08T19:24:13-03:00",
+      "code_sha": "314fd92a1938f3c34125b142ea2bbb8eb8d0120f",
+      "expected_assertions": 172,
+      "expected_source_migrations": 69,
+      "expected_effective_migrations": 71,
+      "remote": false,
+      "result": "172/172 PASS; C00 result/log/hash inspected; ps/volumes0 independently checked",
+      "released_at": "2026-09-08T19:42:45-03:00",
+      "evidence_dir": "C:/Users/adrie/AppData/Local/Temp/coelo-c02-xlsx172-haps4sj4"
     }
   ],
   "next_reviewed_integration_batches": {
@@ -1443,12 +1474,53 @@
       "00297839",
       "dcb9ab4d"
     ],
-    "status": "read-only review passed;C00 integration/tests pending"
+    "status": "Support integratedbff82238/21PASS; personasOfflineintegratede57a4107/48PASS"
   },
   "central_banner_reservation": {
     "owner": "C00",
     "path": "apps/superadmin/lib/shared/presentation/widgets/superadmin_directory_create_banner.dart",
-    "status": "review and TEMP patch in progress",
-    "at": "2026-09-08T19:06:21-03:00"
+    "status": "integrated; RED4/GREEN4; analyzerclean",
+    "at": "2026-09-08T19:06:21-03:00",
+    "integration_sha": "302d4e90"
+  },
+  "central_toggle_reservation": {
+    "owner": "C00",
+    "path": "packages/coelo_ui_admin/lib/src/filter/coelo_admin_toggle_field.dart",
+    "test": "packages/coelo_ui_admin/test/filter/coelo_admin_toggle_field_test.dart",
+    "status": "integrated; RED1/GREEN7; analyzerclean",
+    "at": "2026-09-08T19:19:28-03:00",
+    "integration_sha": "302d4e90"
+  },
+  "locations_selective_package": {
+    "path": "C:/Users/adrie/AppData/Local/Temp/coelo-c00-locations-selective-kb1cmka7",
+    "sha256": "5f3e57585e2e3336255f0609122fea3f0073946955b5c252a7f9d0272458f22e",
+    "status": "prepared28files;not applied;C04 corrections and C00wiring pending"
+  },
+  "c05_visual_review_1915": {
+    "source": "5f10c0b7",
+    "status": "partial only; Chat corners/Agora anatomy remain",
+    "instruction": "C06I008",
+    "reference": "docs/reviews/evidence/etapa-2/principal-visual/2026-08-31-publicar-agora-approved.png"
+  },
+  "tracker_sync_1915": {
+    "at": "2026-09-08T19:42:45-03:00",
+    "report": "reports/R01-delta-1915.md",
+    "full_C02": 40,
+    "others_full_cuts_unchanged": true,
+    "nominal": [
+      "Support3commits",
+      "PersonasOffline4commits",
+      "C00banner/toggle",
+      "I01070",
+      "I005172",
+      "C06I008"
+    ],
+    "promotion": false
+  },
+  "claim_worker_reservation": {
+    "owner": "C02",
+    "instruction": "I016",
+    "scope": "app_private.form_claim_worker_job candidate.attempts<20 inside existing I005 candidate + nominal tests",
+    "runtime": false
   }
 }

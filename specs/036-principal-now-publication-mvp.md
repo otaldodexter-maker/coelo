@@ -1,5 +1,5 @@
 ---
-source: "referência visual aprovada call_Xf4KknVH3c3XUaOk6VWaITXM.png; plano aprovado Publicação do Agora; docs/product/prd-app.md; docs/design/design-system.md"
+source: "docs/reviews/evidence/etapa-2/principal-visual/2026-08-31-publicar-agora-approved.png; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md, item31; referência histórica de20/08 call_Xf4KknVH3c3XUaOk6VWaITXM.png; plano aprovado Publicação do Agora; docs/product/prd-app.md; docs/design/design-system.md"
 status: approved
 generated_at: 2026-08-20
 updated_at: 2026-08-31
@@ -34,6 +34,18 @@ Entregar um composer rápido e leve para publicar uma mídia vertical no Agora. 
   esquerda e rascunho/continuidade mais a única ação primária ficam à direita;
   no compacto, a primária vem primeiro em largura total. O conteúdo e as regras
   de Agora permanecem independentes.
+
+### Referência posterior preservada —31/08
+
+O item31 da spec de fechamento visual registra a aprovação de31/08. Sua imagem
+está preservada em [Publicar no Agora](../docs/reviews/evidence/etapa-2/principal-visual/2026-08-31-publicar-agora-approved.png),
+SHA256 `e096c855f13449f2a3d4e0b4a2cedb323af30c4cac3be7404755aa0d66ddc315`.
+Ela mantém “Sua publicação” e preview lateral desktop, sem trilho lateral ou
+barra de progresso segmentada. A menção de20/08 no histórico não substitui essa
+aprovação posterior. Preservar funções, seções e validações do composer; a
+correção visual não certifica backend nem autoriza regenerar masters sem revisão.
+A divergência com a redação genérica sobre etapas está registrada em
+`docs/open-questions.md`; não amplia a mudança para outros publicadores.
 
 ## Dados, permissões e segurança
 

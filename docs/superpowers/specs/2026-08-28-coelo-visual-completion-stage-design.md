@@ -1270,3 +1270,8 @@ Percentuais: programa visual 0/31 `accepted`; Flutter `local-green` 84/207
 (40,58%); Flutter `verified` 0/207; Supabase `local-green` 3/37 (8,11%);
 Supabase `done` 0/37; integração 0/202; projeto estrito 0/229. E2E e
 estrito medem conclusão integral e não anulam este GREEN local.
+
+
+## Rastreabilidade da referência de31/08 — R01
+
+Cópia preservada da referência do Agora citada no item31: `docs/reviews/evidence/etapa-2/principal-visual/2026-08-31-publicar-agora-approved.png`, SHA256e096c855f13449f2a3d4e0b4a2cedb323af30c4cac3be7404755aa0d66ddc315. Preservação C00 em 2026-09-08T19:15:11-03:00, após recuperação C07; nenhuma aprovação visual nova. Consulte o README ao lado da imagem para origem e limites.

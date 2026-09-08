@@ -689,3 +689,8 @@ Fonte `etapa-2-operacao/reports/R01-delta-1855.md`: oito cherry-picks e dois com
 
 
 Recibo 2026-09-08T19:06:21-03:00: entrega Git01c7648c verificada em origin/dev e C00, sem deploy. Models34 passou34/34; C00 conferiu log e cleanup. Nova lease exclusiva C02 I01070 concedida. C01 recebeu I015 para SecretStore local; C06 recebeu I007, definindo banner compartilhado com C00 e indicador de status de Instituições com C04. Fontes e evidências em reports/R01-delta-1855.md.
+
+
+## Integração e continuidade — 2026-09-08T19:44:20-03:00
+
+Fonte: `etapa-2-operacao/reports/R01-delta-1915.md`. C02r40 sincronizado nos três rastreadores/inventário; Support/PersonasOffline/banner/toggle integrados e testados, sem promoção de conclusão. Docker operacional: Models34,Forms70,XLSX172 PASS e leases encerradas. C06I008 ack r13; leitura operacional r15, horário narrado futuro corrigido pelo corte de inspeção. Claude ativo, sem cobrança duplicada. Referência Agora31/08 preservada; Locais/candidatos posteriores em revisão. C00 único escritor, heartbeat ativo e fechamento09/09 05:30/06:00/07:40 mantidos. Última entrega Git comprovada01c7648c; novo push será conferido separadamente.

@@ -1,0 +1,939 @@
+{
+  "source": "C02 handoff immutable r39 + C00 inventory/ownership/report1855; C00-confirmed I014 evidence",
+  "status": "reviewed-applied-by-C00; no-completion-promotion",
+  "generated_at": "2026-09-08T19:23:51.918377-03:00",
+  "source_handoff_sha": "1199f5c112c35deace24290a4b7b8ca55ef62fa5",
+  "source_handoff_path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02/docs/reviews/etapa-2-operacao/handoffs/C02.md",
+  "sync_from_revision": 35,
+  "sync_through_revision": 39,
+  "latest_source_at": "2026-09-08T19:13:49-03:00",
+  "c00_head_observed": "302d4e90b09f6acb2a9db8d5bf878b09b1aefddd",
+  "sources": [
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-c00\\docs\\reviews\\etapa-2-operacao\\reports\\R01-delta-1855.md",
+      "sha256": "fcb07ef6705d810afe33b1eb9906734b1849687123993e7338f002e9442de3c4"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-c00\\docs\\reviews\\inventario-etapa-2.json",
+      "sha256": "43a4560b1069f7640c3a02a06203b50821404bdea7b2400bae2849a4c2cdc4b0"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-c00\\docs\\reviews\\etapa-2-operacao\\assignments\\ownership.json",
+      "sha256": "fe2efb181db07cad978b73e068f3f4b990fdc527b2ef30d382f173c4f5b922c3"
+    }
+  ],
+  "evidence": {
+    "r36-api": {
+      "revision": 36,
+      "date": "2026-09-08T17:54:39-03:00",
+      "code_shas": [
+        "344e8d95ab73108b49495ff36d906f3f4d0ab6dc",
+        "23a2705813316df3f2defbb1da56c57cc0444524"
+      ],
+      "proof": "48/48 adapter; 5/5 integração cliente com double somente na fronteira RPC. Conjuntos não somados aos posteriores.",
+      "environment": "Flutter 3.44.2 / Dart 3.12.2, Windows; testes locais sintéticos na worktree C02",
+      "authority": "relatado-C02; não reexecutado por este apoio",
+      "source_handoff_sha": "1199f5c112c35deace24290a4b7b8ca55ef62fa5"
+    },
+    "r36-writer": {
+      "revision": 36,
+      "date": "2026-09-08T17:54:39-03:00",
+      "code_shas": [
+        "c94584cbe4680b0b5f7e8376f179dc7bc3fd6ac0"
+      ],
+      "proof": "22/22 Deno; XLSX parseado, 251 respostas paginadas, multipart ~5,4MiB/180 respostas sintéticas. Não prova R2 remoto.",
+      "environment": "Deno 2.9.5, Windows; dados sintéticos, sem Edge/R2 remoto",
+      "authority": "relatado-C02; não reexecutado por este apoio",
+      "source_handoff_sha": "1199f5c112c35deace24290a4b7b8ca55ef62fa5"
+    },
+    "r37-original": {
+      "revision": 37,
+      "date": "2026-09-08T18:38:00-03:00",
+      "code_shas": [
+        "ffe8ae4c6e337682a5b47440aed9da27fe9a2010",
+        "fb2f9d05f7c0cc6070a7568213bd3f59558ad3cd",
+        "91062c31bf60193fea959b7d0fe3bf4364e406ca"
+      ],
+      "proof": "52/52 API e 67/67 operações+mídia; DTO30/30 inicial; analyzer6 limpo. Fatias sobrepostas.",
+      "environment": "Flutter 3.44.2 / Dart 3.12.2, Windows; testes locais sintéticos na worktree C02",
+      "authority": "relatado-C02; não reexecutado por este apoio",
+      "source_handoff_sha": "1199f5c112c35deace24290a4b7b8ca55ef62fa5"
+    },
+    "r37-viewer": {
+      "revision": 37,
+      "date": "2026-09-08T18:38:00-03:00",
+      "code_shas": [
+        "a28e9efab48daada09a8d03370da1a1d9fe199e3"
+      ],
+      "proof": "26/26 funcionais já incluídos em67; 6/6 goldens separados sem regeneração; cache de imagem sintético.",
+      "environment": "Flutter 3.44.2 / Dart 3.12.2, Windows; testes locais sintéticos na worktree C02",
+      "authority": "relatado-C02; não reexecutado por este apoio",
+      "source_handoff_sha": "1199f5c112c35deace24290a4b7b8ca55ef62fa5"
+    },
+    "r37-schema": {
+      "revision": 37,
+      "date": "2026-09-08T18:38:00-03:00",
+      "code_shas": [
+        "b7732ed2899e8778bbd9ad7055bad8e24a6c43c6"
+      ],
+      "proof": "52/52 Deno incluindo25 export+5paging+22writer; RED2/GREEN para chaves herdadas; serializer não conectado ao schema selado produtivo.",
+      "environment": "Deno 2.9.5, Windows; dados sintéticos, sem Edge/R2 remoto",
+      "authority": "relatado-C02; não reexecutado por este apoio",
+      "source_handoff_sha": "1199f5c112c35deace24290a4b7b8ca55ef62fa5"
+    },
+    "r37-medication": {
+      "revision": 37,
+      "date": "2026-09-08T18:38:00-03:00",
+      "code_shas": [
+        "f3a362739a816211e0f1426d1ff09e10f32c7ffc"
+      ],
+      "proof": "39/39 Flutter; recusa falta de handler e recibo divergente.",
+      "environment": "Flutter 3.44.2 / Dart 3.12.2, Windows; testes locais sintéticos na worktree C02",
+      "authority": "relatado-C02; não reexecutado por este apoio",
+      "source_handoff_sha": "1199f5c112c35deace24290a4b7b8ca55ef62fa5"
+    },
+    "r37-care": {
+      "revision": 37,
+      "date": "2026-09-08T18:38:00-03:00",
+      "code_shas": [
+        "34f621287579379856a9016b7d9e920fba81353c"
+      ],
+      "proof": "23/23 Flutter; edição durante save pendente preservada; análise relatada limpa.",
+      "environment": "Flutter 3.44.2 / Dart 3.12.2, Windows; testes locais sintéticos na worktree C02",
+      "authority": "relatado-C02; não reexecutado por este apoio",
+      "source_handoff_sha": "1199f5c112c35deace24290a4b7b8ca55ef62fa5"
+    },
+    "r38-civil": {
+      "revision": 38,
+      "date": "2026-09-08T18:46:45-03:00",
+      "code_shas": [
+        "4b44108e7ca057b779302c8e7616c041e6bdaa3c"
+      ],
+      "proof": "58/58 Deno; probe Node UTC e UTC-03 de sete datas1900–9999. DenoWindows ignorou TZ e não foi usado como prova de fuso.",
+      "environment": "Deno 2.9.5, Windows; dados sintéticos, sem Edge/R2 remoto; Node para probe de fuso",
+      "authority": "relatado-C02; não reexecutado por este apoio",
+      "source_handoff_sha": "1199f5c112c35deace24290a4b7b8ca55ef62fa5"
+    },
+    "r38-safety": {
+      "revision": 38,
+      "date": "2026-09-08T18:46:45-03:00",
+      "code_shas": [
+        "6c03563fa00001e4454aed688b7fad955b7b437f"
+      ],
+      "proof": "RED de navegação para callback antigo; 16/16 Flutter incluindo A→B→A; analyzer relatado limpo.",
+      "environment": "Flutter 3.44.2 / Dart 3.12.2, Windows; testes locais sintéticos na worktree C02",
+      "authority": "relatado-C02; não reexecutado por este apoio",
+      "source_handoff_sha": "1199f5c112c35deace24290a4b7b8ca55ef62fa5"
+    },
+    "r39-i014": {
+      "revision": 39,
+      "date": "2026-09-08T19:11:17-03:00",
+      "code_shas": [
+        "f69fd154ed9847bac59c392073947ec0c5759d44",
+        "b7f1856480966c0c587b4588c51c6c17cc9f1fbe",
+        "56f9755070ed238104483bd7adc196db4b064135",
+        "1f38fa7a8eca5b68862ada33ed4b06a888f4323f"
+      ],
+      "proof": "70/70 pgTAP PASS exit0,19:09:54–19:11:17; substitui candidatos42/50/65 sem somá-los; 70canônicas/72efetivas,additional0; I005132 fixo, semI005172/I009/I013.",
+      "environment": "Postgres local via runner nominal, PowerShell7.6.5, npx supabase2.116.0; sem remoto",
+      "authority": "confirmado-C00: log original lido pelo coordenador conforme delegação; result.json inspecionado por este apoio",
+      "source_handoff_sha": "1199f5c112c35deace24290a4b7b8ca55ef62fa5",
+      "original_evidence": {
+        "root": "C:/Users/adrie/AppData/Local/Temp/coelo-c02-read70-qxql219n",
+        "log_sha256": "909c8ae3877c4a261ec7ff6b73d65f9f5812fe43031d1fc9186e76551d5d0588",
+        "manifest_sha256": "30ce548de31b8c01f453663b21141e170522ffa26ee2ccd6857aed8fcc32d257",
+        "result_path": "C:/Users/adrie/AppData/Local/Temp/coelo-c02-read70-qxql219n/result.json"
+      }
+    },
+    "r39-jobs": {
+      "revision": 39,
+      "date": "2026-09-08T19:13:49-03:00",
+      "code_shas": [
+        "b76964a3b1f14ab455366a233fb080b7518afdd2",
+        "dbde43708c11b3cff26ffeb573bf35bcf3dd9376"
+      ],
+      "proof": "76/76 Flutter do leitor e84funcionaisPASS/1goldenFAIL operations. 58/58 subrecorte do agente não é soma. Fixture real adapter recebeu form_id/management_version.",
+      "environment": "Flutter 3.44.2 / Dart 3.12.2, Windows; testes locais sintéticos na worktree C02",
+      "authority": "relatado-C02; não reexecutado por este apoio",
+      "source_handoff_sha": "1199f5c112c35deace24290a4b7b8ca55ef62fa5"
+    },
+    "r39-media": {
+      "revision": 39,
+      "date": "2026-09-08T19:13:49-03:00",
+      "code_shas": [
+        "fa1ea1e33de17d1981d3592fd62ba8e67aa06e97",
+        "9b8c4a3a6b9a0fb94b508aa2f6933f73c81d0013",
+        "008ac85def68a4698bddbb4a67570630a9e466b5"
+      ],
+      "proof": "33/33 Flutter leitor;59 do agente incluem visualizador;30/30Deno handler/contrato, fmt/lint4limpos. Assinatura real sem rede. I013 WIP33statements externos não é execução.",
+      "environment": "Flutter 3.44.2 / Dart 3.12.2, Windows; testes locais sintéticos na worktree C02; Deno 2.9.5, Windows; dados sintéticos, sem Edge/R2 remoto",
+      "authority": "relatado-C02; não reexecutado por este apoio",
+      "source_handoff_sha": "1199f5c112c35deace24290a4b7b8ca55ef62fa5"
+    },
+    "r39-overview": {
+      "revision": 39,
+      "date": "2026-09-08T19:13:49-03:00",
+      "code_shas": [
+        "3df41f949e1f4aee72a659e89c39b3e3aff9de52"
+      ],
+      "proof": "13/13 Flutter: correlação de formulário, erro inesperado e invalidação de API/form/development/dispose.",
+      "environment": "Flutter 3.44.2 / Dart 3.12.2, Windows; testes locais sintéticos na worktree C02",
+      "authority": "relatado-C02; não reexecutado por este apoio",
+      "source_handoff_sha": "1199f5c112c35deace24290a4b7b8ca55ef62fa5"
+    },
+    "r39-medication-visual": {
+      "revision": 39,
+      "date": "2026-09-08T19:13:49-03:00",
+      "code_shas": [
+        "d9cfe62a083d9a11b4418afeaefacaf986326947"
+      ],
+      "proof": "Fixture com contexto/recibo coerentes; asserts de contexto passam; categoria forms1teste/4comparaçõesgoldenFAIL. Triage inicial0/4categorias; fontes carregadas; não é aprovação visual.",
+      "environment": "Flutter 3.44.2 / Dart 3.12.2, Windows; testes locais sintéticos na worktree C02",
+      "authority": "relatado-C02; não reexecutado por este apoio",
+      "source_handoff_sha": "1199f5c112c35deace24290a4b7b8ca55ef62fa5"
+    }
+  },
+  "actions": [
+    {
+      "action_id": "forms.list",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "no-new-delta",
+      "implemented_delta": "Sem delta próprio r36–r39 identificado; preservar integralmente evidência e estado anteriores.",
+      "evidence_ids": [],
+      "first_open_criterion": "Preservar critério anterior do inventário; este recorte não o reaudita.",
+      "frontend_next": "Provar /forms com stack real, paginação/reload/negativas; /dev/forms preserva fixtures.",
+      "backend_next": "Conferir compatibilidade da derivação e pacote nominal produtivo; reusar prova117 local sem tratá-la como deploy.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "forms.create",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "no-new-delta",
+      "implemented_delta": "Sem delta próprio r36–r39 identificado; preservar integralmente evidência e estado anteriores.",
+      "evidence_ids": [],
+      "first_open_criterion": "Preservar critério anterior do inventário; este recorte não o reaudita.",
+      "frontend_next": "Conferir composição produtiva/DI e aceite da ação; preservar autosave/branching. Delta f84d1dd7 fora de dev tem falha duplicate-dependent a reproduzir.",
+      "backend_next": "Executar pacote nominal F-AUTHOR e guards preparados; depois autorização, persistência e reload. Não repetir reader FREAD117 já comprovado localmente.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "forms.overview",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "implementation-and-local-proof",
+      "implemented_delta": "Overview rejeita ID divergente/erro inesperado e invalida retornos em mudança de contexto ou dispose.",
+      "evidence_ids": [
+        "r39-overview"
+      ],
+      "first_open_criterion": "Comando/leitura interna nominal de overview: backend atual permanece legado; verificar composição normal.",
+      "frontend_next": "Conferir composição produtiva/DI e aceite da ação; preservar autosave/branching. Delta f84d1dd7 fora de dev tem falha duplicate-dependent a reproduzir.",
+      "backend_next": "Nenhum equivalente interno overview identificado neste corte; editor de rascunho não substitui overview/publicar/testar.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "forms.edit",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "no-new-delta",
+      "implemented_delta": "Sem delta próprio r36–r39 identificado; preservar integralmente evidência e estado anteriores.",
+      "evidence_ids": [],
+      "first_open_criterion": "Preservar critério anterior do inventário; este recorte não o reaudita.",
+      "frontend_next": "Conferir composição produtiva/DI e aceite da ação; preservar autosave/branching. Delta f84d1dd7 fora de dev tem falha duplicate-dependent a reproduzir.",
+      "backend_next": "Executar pacote nominal F-AUTHOR e guards preparados; depois autorização, persistência e reload. Não repetir reader FREAD117 já comprovado localmente.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "forms.publish",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "diagnosis-only",
+      "implemented_delta": "Nenhuma implementação nova da ação: investigação r39 distingue publicar/overview legados e ausência de preview produtivo sem resposta real.",
+      "evidence_ids": [
+        "r39-overview"
+      ],
+      "first_open_criterion": "Definir/implementar contrato interno próprio da ação existente sem usar editor de rascunho ou resposta real como substituto.",
+      "frontend_next": "Conferir composição produtiva/DI e aceite da ação; preservar autosave/branching. Delta f84d1dd7 fora de dev tem falha duplicate-dependent a reproduzir.",
+      "backend_next": "Diagnóstico não prova ausência de todas as implementações históricas: preserva código legado; nenhum novoRPC interno correspondente encontrado pelaC02.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "forms.test",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "diagnosis-only",
+      "implemented_delta": "Nenhuma implementação nova da ação: investigação r39 distingue publicar/overview legados e ausência de preview produtivo sem resposta real.",
+      "evidence_ids": [
+        "r39-overview"
+      ],
+      "first_open_criterion": "Definir/implementar contrato interno próprio da ação existente sem usar editor de rascunho ou resposta real como substituto.",
+      "frontend_next": "Conferir composição produtiva/DI e aceite da ação; preservar autosave/branching. Delta f84d1dd7 fora de dev tem falha duplicate-dependent a reproduzir.",
+      "backend_next": "Diagnóstico não prova ausência de todas as implementações históricas: preserva código legado; nenhum novoRPC interno correspondente encontrado pelaC02.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "forms.location-question",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "no-new-delta",
+      "implemented_delta": "Sem delta próprio r36–r39 identificado; preservar integralmente evidência e estado anteriores.",
+      "evidence_ids": [],
+      "first_open_criterion": "Preservar critério anterior do inventário; este recorte não o reaudita.",
+      "frontend_next": "Conferir composição produtiva/DI e aceite da ação; preservar autosave/branching. Delta f84d1dd7 fora de dev tem falha duplicate-dependent a reproduzir. R01/16h: Pendente decisão de opções fixadas na publicação versus catálogo dinâmico ao responder; contrato não decide política.",
+      "backend_next": "Executar pacote nominal F-AUTHOR e guards preparados; depois autorização, persistência e reload. Não repetir reader FREAD117 já comprovado localmente. R01/16h: Pendente decisão sobre manter local revogado histórico no reenvio versus exigir referência atual/substituição, inclusive obrigatório sem alternativa.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "forms.monitor",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "implementation-and-local-proof",
+      "implemented_delta": "Adapter v2, anonimato, retry e quatro leituras SQL incluindo monitor agregado.",
+      "evidence_ids": [
+        "r36-api",
+        "r39-i014",
+        "r39-jobs"
+      ],
+      "first_open_criterion": "Fechar contrato/implementação das leituras internas hierarchy/people e granularidade ancestral; agregado não conclui monitor.",
+      "frontend_next": "Conferir monitor completo e gate visual operacional; preservar contratos reais.",
+      "backend_next": "I01070 PASS local encerra a espera desse replay específico. Hierarchy/people não implementados; provedor remoto e cadeia real ainda abertos.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "forms.respond",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "no-new-delta",
+      "implemented_delta": "Sem delta próprio r36–r39 identificado; preservar integralmente evidência e estado anteriores.",
+      "evidence_ids": [],
+      "first_open_criterion": "Preservar critério anterior do inventário; este recorte não o reaudita.",
+      "frontend_next": "Conferir restante do fluxo respondente real, incluindo ramos/validação; não refazer autosave e navegação. R01/16h: Falta corrigir revisão de enviada: UI/double esperavam draft, SQL preserva submitted; edição não deve gravar no clique inicial.",
+      "backend_next": "Provar fonte autorizada, occurrence/participation, segredo anônimo quando aplicável, persistência e reload da ação. R01/16h: C00 confirmou que form_mutate_response valida obrigatórios apenas em p_submit, após substituir respostas; edição submitted precisa negativa e correção forward-only I008, ainda não implementada.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "forms.responses",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "implementation-and-local-proof",
+      "implemented_delta": "Lista interna com identidade explícita, cursor anônimo ID-only, correlação/negativa antes de data; API real conectada a UI em teste local.",
+      "evidence_ids": [
+        "r36-api",
+        "r37-original",
+        "r39-i014",
+        "r39-jobs"
+      ],
+      "first_open_criterion": "Compor/verificar a lista normal com backend real e paginação/reload/negativas; não repetir I01070 sem motivo.",
+      "frontend_next": "Revalidar o aceite específico desta ação: Ida/volta e estados locais testados; cursor autoritativo remoto pendente.",
+      "backend_next": "RPC interna de lista auditada em I01070 local; aplicação nominal e negativas do provedor real ainda não certificadas.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "forms.response-detail",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "implementation-and-local-proof",
+      "implemented_delta": "DTO/adapter/UI preservam grafo da versão respondida, ordem/branching/identityMode e clique explícito de mídia. I010 valida o grafo completo mesmo sem respostas e captura projeção no mesmo snapshot.",
+      "evidence_ids": [
+        "r36-api",
+        "r37-original",
+        "r37-viewer",
+        "r39-i014"
+      ],
+      "first_open_criterion": "Passar formId da rota e reader/session de mídia na composição C00, após I013 validado; provar cadeia normal.",
+      "frontend_next": "Revalidar o aceite específico desta ação: Fluxo selecionado e estados seguros testados; autorização/E2E pendentes.",
+      "backend_next": "Grafo completo corrigido e exercitado no I01070; não manter como implementação/correção ausente. Mídia depende I013 e catálogo R2 real.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "forms.responses.export",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "implementation-and-local-proof",
+      "implemented_delta": "WriterR2/multipart sintético, serializer com schema explícito e tipos numérico/booleano/data civil, reader de jobs com versão autorizada e UI solicitando XLSX único do formulário com retry idempotente.",
+      "evidence_ids": [
+        "r36-api",
+        "r36-writer",
+        "r37-schema",
+        "r38-civil",
+        "r39-i014",
+        "r39-jobs"
+      ],
+      "first_open_criterion": "Selar schema/ordem/metadados no snapshot e conectar writer, inclusive zero respostas; testar I005172 e ciclo falha/retry/cleanup.",
+      "frontend_next": "UI generation local testada;84funcionaisPASS/1goldenFAIL operations não certificam visual. Download ainda aberto.",
+      "backend_next": "I005132 histórico e I01070 local confirmados; I005172 não executado. Falha tipada R2, attempts/lease, cleanup fenced e órfão multipart abertos. 50.000linhas/512colunas/1900–9999 são capacidades técnicas, não limites aprovados de produto.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "forms.location-answer",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "no-new-delta",
+      "implemented_delta": "Sem delta próprio r36–r39 identificado; preservar integralmente evidência e estado anteriores.",
+      "evidence_ids": [],
+      "first_open_criterion": "Preservar critério anterior do inventário; este recorte não o reaudita.",
+      "frontend_next": "Revalidar o aceite específico desta ação: Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. R01/16h: Pendente decisão de opções fixadas na publicação versus catálogo dinâmico ao responder; contrato não decide política.",
+      "backend_next": "Provar fonte autorizada, occurrence/participation, segredo anônimo quando aplicável, persistência e reload da ação. R01/16h: Pendente decisão sobre manter local revogado histórico no reenvio versus exigir referência atual/substituição, inclusive obrigatório sem alternativa.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "forms.upload",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "dependency-and-open-criterion",
+      "implemented_delta": "Nenhum upload R2 novo certificado: reader de mídia novo não substitui pipeline legado de prepare/finalize.",
+      "evidence_ids": [
+        "r39-media"
+      ],
+      "first_open_criterion": "Decoder real e producer do catálogo/source_form_asset_id, validaçãoMIME/bytes/checksum e cutover nominal de upload.",
+      "frontend_next": "Revalidar o aceite específico desta ação: R2 privado, autorização, retomada remota e E2E pendentes.",
+      "backend_next": "Não registrar handlerread como upload implementado; legacyStorage permanece dependência concreta.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "forms.resolve-file",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "implementation-and-local-proof",
+      "implemented_delta": "Visualizador+FormsMediaReader comuns e form-media actionread antes de People; correlaçãoform_assets, grant/redeem, variant exata, TTL e erro sanitizado.",
+      "evidence_ids": [
+        "r37-viewer",
+        "r39-media"
+      ],
+      "first_open_criterion": "I01320260908215522 precisa teste nominal/revisão/replay; depois mapear catálogo e conectar DI.",
+      "frontend_next": "Revalidar o aceite específico desta ação: Resolução autorizada/assinada e E2E pendentes.",
+      "backend_next": "SQLI013WIP: nenhuma lease/execução. Reusar source_form_asset_id, answer submitted, binding/variant; preview ausente não original. Ticketaté120s não permite promessa de revogação instantânea após resgate.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "forms.download",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "dependency-and-open-criterion",
+      "implemented_delta": "Reader/handler de imagem avançaram como dependência; o botão download produtivo não foi entregue por esse lote. JobsXLSX recebem contexto, mas consumo de download existente é próximo passo.",
+      "evidence_ids": [
+        "r37-viewer",
+        "r39-media",
+        "r39-jobs"
+      ],
+      "first_open_criterion": "Conectar consumo autorizado de download e provar reautorização/expiração/reload sem caminho alternativo legado.",
+      "frontend_next": "Revalidar o aceite específico desta ação: Download autorizado real, expiração e E2E pendentes.",
+      "backend_next": "Preservar132PASSXLSXhistórico sem transferir ao I005172. Cadeia real de download com URL temporária ainda aberta.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "forms.expire-file",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "open-criterion-only",
+      "implemented_delta": "Nenhum comando novo desta ação entregue; r36 discrimina a lacuna de limpeza física R2 e multipart órfão.",
+      "evidence_ids": [
+        "r36-writer"
+      ],
+      "first_open_criterion": "Fechar fencing durável, quarentena/lease e cleanup nominal; apagar objeto não aborta multipart sem uploadId persistido.",
+      "frontend_next": "Revalidar o aceite específico desta ação: Comando autoritativo, auditoria remota e E2E pendentes.",
+      "backend_next": "Política documental existente não equivale à configuração remota comprovada; sem retenção nova e sem execução remota.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "forms.delete-file",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "open-criterion-only",
+      "implemented_delta": "Nenhum comando novo desta ação entregue; r36 discrimina a lacuna de limpeza física R2 e multipart órfão.",
+      "evidence_ids": [
+        "r36-writer"
+      ],
+      "first_open_criterion": "Fechar fencing durável, quarentena/lease e cleanup nominal; apagar objeto não aborta multipart sem uploadId persistido.",
+      "frontend_next": "Revalidar o aceite específico desta ação: Exclusão autoritativa, auditoria, retenção e E2E pendentes.",
+      "backend_next": "Política documental existente não equivale à configuração remota comprovada; sem retenção nova e sem execução remota.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "child-safety.list",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "no-new-delta",
+      "implemented_delta": "Sem delta próprio r36–r39 identificado; preservar integralmente evidência e estado anteriores.",
+      "evidence_ids": [],
+      "first_open_criterion": "Preservar critério anterior do inventário; este recorte não o reaudita.",
+      "frontend_next": "Revalidar o aceite específico desta ação: Lista/empty/error/unauthorized, 375–1440 e 200%. R01/16h: 55PASS/1goldenFAIL(2,47%,35525px) no executor;13 focais passam, sem aprovação visual nem integração.",
+      "backend_next": "Conferir a implementação e fechar o aceite backend desta ação: Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "child-safety.child",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "no-new-delta",
+      "implemented_delta": "Sem delta próprio r36–r39 identificado; preservar integralmente evidência e estado anteriores.",
+      "evidence_ids": [],
+      "first_open_criterion": "Preservar critério anterior do inventário; este recorte não o reaudita.",
+      "frontend_next": "Revalidar o aceite específico desta ação: Abrir/not-found/unauthorized e sem dado de outra criança. R01/16h: 55PASS/1goldenFAIL(2,47%,35525px) no executor;13 focais passam, sem aprovação visual nem integração.",
+      "backend_next": "Conferir a implementação e fechar o aceite backend desta ação: Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "child-safety.create",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "implementation-and-local-proof",
+      "implemented_delta": "Safety captura onSaved da intenção e ignora conclusão quando callback muda, inclusiveA→B→A, sem perder campos/carregamentos.",
+      "evidence_ids": [
+        "r38-safety"
+      ],
+      "first_open_criterion": "Integrar corrigenda e verificar fluxo/capacidade/persistência reais, com gate visual anterior preservado.",
+      "frontend_next": "16/16local no executor; conservar demais critérios de formulário e visuais.",
+      "backend_next": "Conferir a implementação e fechar o aceite backend desta ação: RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "child-safety.edit",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "implementation-and-local-proof",
+      "implemented_delta": "Safety captura onSaved da intenção e ignora conclusão quando callback muda, inclusiveA→B→A, sem perder campos/carregamentos.",
+      "evidence_ids": [
+        "r38-safety"
+      ],
+      "first_open_criterion": "Integrar corrigenda e verificar fluxo/capacidade/persistência reais, com gate visual anterior preservado.",
+      "frontend_next": "16/16local no executor; conservar demais critérios de formulário e visuais.",
+      "backend_next": "Conferir a implementação e fechar o aceite backend desta ação: RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "child-safety.suspend",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "no-new-delta",
+      "implemented_delta": "Sem delta próprio r36–r39 identificado; preservar integralmente evidência e estado anteriores.",
+      "evidence_ids": [],
+      "first_open_criterion": "Preservar critério anterior do inventário; este recorte não o reaudita.",
+      "frontend_next": "Revalidar o aceite específico desta ação: Confirmar/cancelar/negar/falhar, foco e reload.",
+      "backend_next": "Conferir a implementação e fechar o aceite backend desta ação: RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "health-care.list",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "no-new-delta",
+      "implemented_delta": "Sem delta próprio r36–r39 identificado; preservar integralmente evidência e estado anteriores.",
+      "evidence_ids": [],
+      "first_open_criterion": "Preservar critério anterior do inventário; este recorte não o reaudita.",
+      "frontend_next": "Conferir quatro categorias golden e superfícies aprovadas; não recriar detalhe legado removido por inferência.",
+      "backend_next": "Decisões clínicas específicas, gateway/RLS/retencão e mídia; persistência/reload reais ainda abertos.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "health-care.create",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "implementation-and-local-proof",
+      "implemented_delta": "Perfil preserva alterações feitas durante save; só limpa dirty/navega se a revisão enviada continuar atual.",
+      "evidence_ids": [
+        "r37-care"
+      ],
+      "first_open_criterion": "Integrar corrigenda e verificar salvamento real/negativas; quatro categorias visuais antigas continuam pendentes.",
+      "frontend_next": "23/23local; não descartar edição nova após retorno tardio; nenhum visual promovido.",
+      "backend_next": "Decisões clínicas específicas, gateway/RLS/retencão e mídia; persistência/reload reais ainda abertos.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "health-care.detail",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "no-new-delta",
+      "implemented_delta": "Sem delta próprio r36–r39 identificado; preservar integralmente evidência e estado anteriores.",
+      "evidence_ids": [],
+      "first_open_criterion": "Preservar critério anterior do inventário; este recorte não o reaudita.",
+      "frontend_next": "Conferir quatro categorias golden e superfícies aprovadas; não recriar detalhe legado removido por inferência.",
+      "backend_next": "Decisões clínicas específicas, gateway/RLS/retencão e mídia; persistência/reload reais ainda abertos.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "health-care.edit",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "implementation-and-local-proof",
+      "implemented_delta": "Perfil preserva alterações feitas durante save; só limpa dirty/navega se a revisão enviada continuar atual.",
+      "evidence_ids": [
+        "r37-care"
+      ],
+      "first_open_criterion": "Integrar corrigenda e verificar salvamento real/negativas; quatro categorias visuais antigas continuam pendentes.",
+      "frontend_next": "23/23local; não descartar edição nova após retorno tardio; nenhum visual promovido.",
+      "backend_next": "Decisões clínicas específicas, gateway/RLS/retencão e mídia; persistência/reload reais ainda abertos.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "medication.list",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "no-new-delta",
+      "implemented_delta": "Sem delta próprio r36–r39 identificado; preservar integralmente evidência e estado anteriores.",
+      "evidence_ids": [],
+      "first_open_criterion": "Preservar critério anterior do inventário; este recorte não o reaudita.",
+      "frontend_next": "Conferir visuais/estados restantes mantendo guards já implementados.",
+      "backend_next": "Resolver decisões clínicas específicas, contrato nominal, RLS, retenção e evidência; executar persistência/reload e negativas.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "medication.create",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "implementation-and-local-proof",
+      "implemented_delta": "Sem handler não anuncia sucesso; recibo de plano/criança/escopo divergentes não navega nem muta. Fixture golden foi corrigida para contexto válido, sem alterar baseline.",
+      "evidence_ids": [
+        "r37-medication",
+        "r39-medication-visual"
+      ],
+      "first_open_criterion": "Integrar guards e concluir visuais da família; persistência produtiva/decisões clínicas continuam abertas.",
+      "frontend_next": "39/39funcionais locais; fixturecontext válida não elimina1teste/4comparaçõesgoldenFAIL.",
+      "backend_next": "Resolver decisões clínicas específicas, contrato nominal, RLS, retenção e evidência; executar persistência/reload e negativas.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "medication.detail",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "no-new-delta",
+      "implemented_delta": "Sem delta próprio r36–r39 identificado; preservar integralmente evidência e estado anteriores.",
+      "evidence_ids": [],
+      "first_open_criterion": "Preservar critério anterior do inventário; este recorte não o reaudita.",
+      "frontend_next": "Conferir visuais/estados restantes mantendo guards já implementados.",
+      "backend_next": "Resolver decisões clínicas específicas, contrato nominal, RLS, retenção e evidência; executar persistência/reload e negativas.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "medication.edit",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "implementation-and-local-proof",
+      "implemented_delta": "Sem handler não anuncia sucesso; recibo de plano/criança/escopo divergentes não navega nem muta. Fixture golden foi corrigida para contexto válido, sem alterar baseline.",
+      "evidence_ids": [
+        "r37-medication",
+        "r39-medication-visual"
+      ],
+      "first_open_criterion": "Integrar guards e concluir visuais da família; persistência produtiva/decisões clínicas continuam abertas.",
+      "frontend_next": "39/39funcionais locais; fixturecontext válida não elimina1teste/4comparaçõesgoldenFAIL.",
+      "backend_next": "Resolver decisões clínicas específicas, contrato nominal, RLS, retenção e evidência; executar persistência/reload e negativas.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    },
+    {
+      "action_id": "medication.evidence",
+      "executor": "C02",
+      "classification": "ativa",
+      "inventory_scope": "mvp",
+      "delta_kind": "no-new-delta",
+      "implemented_delta": "Sem delta próprio r36–r39 identificado; preservar integralmente evidência e estado anteriores.",
+      "evidence_ids": [],
+      "first_open_criterion": "Preservar critério anterior do inventário; este recorte não o reaudita.",
+      "frontend_next": "Conferir visuais/estados restantes mantendo guards já implementados.",
+      "backend_next": "Resolver decisões clínicas específicas, contrato nominal, RLS, retenção e evidência; executar persistência/reload e negativas.",
+      "e2e_next": "UI normal + backend real + persistência/reload + negativas aplicáveis permanecem sem prova nova.",
+      "preserve_status": {
+        "frontendStatus": "pending-verification",
+        "backendStatus": "pending-verification",
+        "integratedStatus": "pending-verification"
+      },
+      "integration_state": "Não inferir integração pelo SHA de origem; C00 anexará SHAs de integração e validação próprios.",
+      "push_state": "C02 relata ls-remote conferido nos cortes r36–r39; este apoio não consultou remoto.",
+      "production_state": "Nenhum deploy ou teste remoto novo neste recorte."
+    }
+  ],
+  "action_count": 32,
+  "rules": [
+    "Não alterar status FE/BE/E2E nem denominadores por esta proposta.",
+    "Não somar48/52/76API,67/84operações,26/33/59mídia nem42/50/65/70SQL.",
+    "forms.files é alias operacional semID; jobsgeração mapeados forms.responses.export e consumo forms.download.",
+    "Retificar no estado atual I010pendente/grafofaltando paraI01070PASSlocal; preservar relatórios históricos datados.",
+    "I005132PASS permanece histórico;I005172 eI013 semruntime.",
+    "Sem novos dados de autoria/list/Local/respostarespondente/Safetyread/suspend/Carelistdetail/Medlistdetailevidence: preservar cortes anteriores."
+  ],
+  "applied_at": "2026-09-08T19:42:45-03:00",
+  "followup_r40": {
+    "sha": "31f4249aa306b43e9e52d173e0b8d889a9900b4f",
+    "source_at": "2026-09-08T19:38:23-03:00",
+    "note": "C00 leu seção nova integral; deltas nominais anexados no relatório e inventário. R36-r39 preservados como corte histórico."
+  }
+}

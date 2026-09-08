@@ -227,3 +227,16 @@ C00 consultou produção em transação read-only: versão20260901182838 tem0 re
 ## Lacuna de cobertura Circulares — 2026-09-08T15:45:15-03:00
 
 C05/r7 cruzou specs037/050 e rotas /circulars, /circulars/new, /circulars/:circularId/read e /circulars/:circularId/edit. O inventário associa Circulares à aba principal.profile-view, sem representação explícita das quatro superfícies. C00 deve reconciliar decomposição/ownership/denominador com as fontes antes de concluir cobertura; nenhum ID novo ou exclusão aprovado aqui. Composição de principal-chat/Perfil/Momentos/ParaVocê relatada pelo executor ainda requer conferência C00. Fonte: docs/reviews/etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md.
+
+
+## R01 — referências de Publicar no Agora e redação sobre etapas
+
+Registro C00 após revisão do dossiê C07 e abertura direta da referência de31/08, 2026-09-08T19:15:11-03:00. Contradições registradas antes da atualização das fontes:
+
+1. `docs/knowledge/team/coelo-visual-families.md` e `.agents/skills/coelo-ui/references/principal-visual-surfaces.md` usam “etapas existentes”; `docs/design/design-system.md` também proíbe remoção genérica de etapas. Esses trechos protegem a composição Principal e não identificam qual imagem aprova um trilho específico. A referência nominal do Agora de31/08 mostra título e preview, sem trilho lateral ou barra segmentada. A ambiguidade geral de redação permanece registrada; não estender uma decisão do Agora para todos os publicadores ou remover validações/funcionalidades.
+2. `docs/superpowers/specs/2026-08-20-coelo-happens-publication-design.md` menciona rail. O item31 de `docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md` e imagens de31/08 são referências adicionais. Acontece/Momentos exigem conferência nominal das próprias imagens antes de qualquer mudança abrangente; não copiar o veredito do Agora por associação.
+3. `docs/knowledge/team/now-publication-mvp.md` exige preview lateral, enquanto3419a89e o remove. Resolvido para Agora pela fonte aprovada de31/08: restaurar preview e “Sua publicação”; a barra nova não está nessa referência. Isso é correção de implementação, não aprovação de golden.
+4. `specs/036-principal-now-publication-mvp.md` ainda nomeava somente a imagem de20/08. C00 adiciona a referência posterior de31/08 com hash e cópia versionada, preservando a menção antiga como histórico. O item31 já registrava a aprovação, não é aprovação nova da coordenação.
+5. A imagem aprovada estava somente em `.codex/generated_images`. C00 preserva uma cópia byte a byte em evidência versionada, hash SHA256 e096c855f13449f2a3d4e0b4a2cedb323af30c4cac3be7404755aa0d66ddc315. O vínculo externo deixa de ser o único meio de recuperação.
+
+Limite: revisão da anatomia do Agora não aprova os13 masters nem resolve os77 goldens históricos de Estruturas. Não modificar regras de produto, retenção ou mídia por inferência da imagem. ADR0032 continua sendo a fonte vigente para mídia privada, independentemente das referências históricas de backend da spec036.
