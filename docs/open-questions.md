@@ -16,6 +16,13 @@ updated_at: "2026-09-07"
 - Histórico existente não deve ser apagado nem convertido em autorização. `docs/superpowers/specs/2026-08-13-superadmin-forms-end-to-end-design.md`, itens205,241–245,299–305,344,493–495, preserva versão e exige reautorização; revogação do vínculo do respondente não decide por analogia a revogação apenas do local.
 - Até decisão, preparar contratos/IDs/snapshots e demais fatias autorizadas; não implementar silenciosamente uma das duas políticas. Evidência de revisão independente: `docs/reviews/evidence/etapa-2/engenheiro-2/plano-e-revisoes-2026-09-07.md`, seção Locais/Formulários.
 
+## Decisão pendente — quantidade de anexos por mensagem Chat (2026-09-07)
+
+- Definir o máximo de anexos por mensagem Chat e sua relação com o lote operacional, para validação server-side. Nenhum número foi inferido.
+- A busca focal nos PRDs Master/App/Superadmin e DOCX preservados, ADR0032, spec028, design Chat de28/07 e contratos SQL de Chat não encontrou esse máximo. Os limites por arquivo da ADR0032 não definem quantidade; limites de Circulares/Acontece e paginação não se transferem ao Chat.
+- O bloqueio legado de qualquer anexo enquanto falta gateway não constitui decisão de limite igual a zero. A preparação local do lote prossegue, mas não autoriza habilitar batch ilimitado em produção.
+- Evidência delimitada: `docs/reviews/evidence/etapa-2/engenheiro-2/plano-e-revisoes-2026-09-07.md`, seção M03 quantidade de anexos Chat. Isto registra uma pergunta, não altera política aprovada nem bloqueia as demais telas.
+
 ## Conflito documental reconciliado — chave de mídia (2026-09-07)
 
 - Fontes: `decisions/0032-mvp-private-media-r2.md` (ADR aprovada) e

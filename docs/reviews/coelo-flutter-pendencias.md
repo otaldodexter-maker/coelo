@@ -14,6 +14,17 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Até23:55: Chat consumidor `b816bacb` + tema `4088685e`: **102/102**
+  em13 suítes, analyzer9 sem issues;8 novos candidatos visuais, duas amostras
+  inspecionadas, matriz completa aberta. Shell `6434f440`:11/11 e113/113
+  consumidores/Agenda/Avaliações, sem sobrescrever masters.
+- Models envelope `3489b85e`, expectativa Users `f1ad0eb0` e Agenda parcial
+  `1815f4ea`: **204/204** em20 suítes no destino. DTO Locais `51682d4b`:
+  API142/142, domínio32/32, analyzer6 sem issues; não conectado ao backend.
+- Atividades adapter extraído `51c02b75` + harness `9e3c4582`: lote ampliado
+ 142PASS/10FAIL; separado sem goldens142PASS/1FAIL em14 arquivos. Falha
+  funcional localizada no teste compact: tap fora da viewport; correção0558fd57
+  recebida, ainda não integrada. Nove falhas visuais continuam abertas.
 - Até23:29: Auditoria `2b1b595c` e Avaliações `8f9d5123` passaram **67/67**
   no destino, analyzer4 sem issues. Cardápios `cc54dae8` e formulário Agenda
   `c965294d` passaram outro lote **67/67**, analyzer5 sem issues. Corrigem

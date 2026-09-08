@@ -12,6 +12,20 @@ family_count: 38
 
 ## Rodada de 2026-09-07 — backend local e integração em curso
 
+- Até23:55: A01RED perfil/evidência integrados `8edac43a`, **29/29 Pester**
+  no destino. V2 recebeu review e autorização condicional ao perfil GREEN55
+  pinado/revisado; ainda sem resultado97GREEN. Users49 entra na fila Eng1;
+  Models11/17 permanece autorizado por gates. Nenhum lease remoto.
+- FREAD derivado50 fechado em b236f2c6, review central em curso; sem execução
+  full50/reader51. LOC e F-AUTHOR retidos por contexto anterior à espera de
+  locks; autores preparam revalidação nominal e gates READ COMMITTED.
+  LOC também recebeu correção de CASE/fixture TAP. Não são SQL GREEN.
+- Gerador puro XLSX `e3f3bd1d`: **14/14 Deno offline**; corrige colisões de
+  títulos/IDs/metadados. Testes legados CSV/ZIP não habilitam esses formatos.
+  Worker, autorização, job e artefato no R2 continuam pendentes.
+- AG-READ01 `191b0117` é somente proposta. Catálogo/grants internos e perfil
+  ainda precisam inventário; sem seed de produção inferido. Máximo Chat foi
+  registrado em open-questions, sem número escolhido ou batch ilimitado.
 - Até23:29: A01AuditRED55 real Eng1: **97TAP,91PASS/6FAIL** somente91–94,
   96–97;89 originais e controles authenticated passaram. Falta append de
   sucesso e falha de auditoria não impede retorno. Cleanup23:22:12BRT sem
