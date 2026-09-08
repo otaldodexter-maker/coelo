@@ -10,6 +10,39 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 const _inviteId = '50000000-0000-4000-8000-000000000001';
 
 void main() {
+  test('invitation operations accept canonical casing of a requested UUID', () async {
+    const id = 'aaaaaaaa-0000-4000-8000-000000000001';
+    final client = _client((request) async {
+      final invite = {..._invite(), 'id': id};
+      return _success(
+        request,
+        request.url.path.endsWith('superadmin_invite_detail_v2')
+            ? invite
+            : {'invite': invite, 'replayed': false, 'link': null},
+      );
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseInviteRepository(client);
+    expect((await repository.fetchById(id.toUpperCase()))?.id, id);
+    final resent = await repository.resend(
+      InviteResendCommand(
+        inviteId: id.toUpperCase(),
+        requestId: 'request-resend',
+        expectedVersion: 4,
+      ),
+    );
+    expect(resent.invite.id, id);
+    final revoked = await repository.revoke(
+      InviteRevokeCommand(
+        inviteId: id.toUpperCase(),
+        requestId: 'request-revoke',
+        expectedVersion: 4,
+        reason: 'Solicitação cancelada',
+      ),
+    );
+    expect(revoked.invite.id, id);
+  });
+
   for (final operation in ['detail', 'resend', 'revoke']) {
     test('$operation rejects a response for a different invitation', () async {
       Request? captured;

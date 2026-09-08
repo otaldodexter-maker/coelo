@@ -82,7 +82,7 @@ final class SupabaseInviteRepository implements InviteRepository {
       await _client.rpc<Object?>('superadmin_invite_detail_v2', params: {'p_invite_id': inviteId}),
     );
     final invite = _invite(_map(data));
-    if (invite.id != inviteId) throw const InviteUnavailableException();
+    if (invite.id.toLowerCase() != inviteId.toLowerCase()) throw const InviteUnavailableException();
     return invite;
   });
 
@@ -122,7 +122,9 @@ final class SupabaseInviteRepository implements InviteRepository {
       ),
     );
     final result = _commandResult(_map(data));
-    if (result.invite.id != command.inviteId) throw const InviteUnavailableException();
+    if (result.invite.id.toLowerCase() != command.inviteId.toLowerCase()) {
+      throw const InviteUnavailableException();
+    }
     return result;
   });
 
@@ -140,7 +142,9 @@ final class SupabaseInviteRepository implements InviteRepository {
       ),
     );
     final result = _commandResult(_map(data));
-    if (result.invite.id != command.inviteId) throw const InviteUnavailableException();
+    if (result.invite.id.toLowerCase() != command.inviteId.toLowerCase()) {
+      throw const InviteUnavailableException();
+    }
     return result;
   });
 }
