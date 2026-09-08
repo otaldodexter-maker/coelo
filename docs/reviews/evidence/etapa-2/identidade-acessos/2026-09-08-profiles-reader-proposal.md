@@ -41,11 +41,12 @@ sem perder total. Nenhum filtro de status novo será inserido na UI.
 
 ## Decisões ainda necessárias antes de SQL
 
-1. Escopo do ator: o guard retorna scope_kind e scope_institution_id, mas
-   não autoriza implicitamente um catálogo global para membership institucional.
-   Recomenda-se uma primeira fatia explicitamente platform-scoped; liberar
-   contexto institucional exige regra de visibilidade por instituição. Uma
-   negação nova não deve ser implementada silenciosamente como decisão final.
+1. Visibilidade de definições globais não usadas na instituição do ator.
+   No parecer Eng2 repassado pelo Coordenador após e20f2a3a, platform.read e
+   agregações restritas à instituição autorizada estão confirmados. Não
+   agregar vínculos A+B para ator A. A lacuna agora é especificamente se esse
+   ator pode descobrir definições globais sem uso em sua instituição; não
+   inventar allow/deny. Nenhum SQL foi reservado nesta atualização.
 
 ## Contratos reconciliados pelo review central
 
@@ -59,8 +60,9 @@ diretório de Usuários Internos para reduzir este contador.
 No ramo institution, preservar catálogo global e local e contar
 institution_role_assignments ativas/não expiradas. A spec 018:101 restringe
 CRIAÇÃO, não leitura. Não acrescentar join com People/Auth. A lacuna permanece
-na visibilidade/agregação para ator interno de escopo institucional; nenhuma
-negação global ou ampliação foi autorizada por conveniência técnica.
+na visibilidade de definições globais não usadas para ator interno de escopo
+institucional, conforme o refinamento acima; nenhuma negação global ou
+ampliação foi autorizada por conveniência técnica.
 
 Envelope: AccessProfile.fromJson consome `membership_count` ou o tamanho de
 `memberships`; não consome `linked_people_count`. O cursor legado devolve este
