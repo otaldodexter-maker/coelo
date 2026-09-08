@@ -37,8 +37,8 @@ convites, mutações remotas e deploy Supabase permanecem fora deste incremento.
 - `flutter test test/features/platform_users/data/supabase_platform_user_repository_test.dart` — 24/24.
 - `flutter test test/app/router/internal_user_routes_test.dart` — 4/4.
 - `flutter test test/app/router/platform_user_preview_routes_test.dart` — 2/2.
-- `flutter test test/app/router/internal_user_detail_routes_test.dart` — 4/4,
-  em viewport 800×1000: deep link permitido, capability ausente sem RPC,
+- `flutter test test/app/router/internal_user_detail_routes_test.dart` — 8/8,
+  em viewports 800×1000 e 1440×1000: deep link permitido, capability ausente sem RPC,
   negação do servidor, retry, navegação real Voltar → lista → card → detalhe,
   troca de sessão com nova consulta, perda de capability por notificação real
   de SuperadminSession e redirecionamento de logout. Usa HTTP simulado;
@@ -62,9 +62,20 @@ O pacote ainda não prova verified-e2e: falta sessão Supabase real com replay d
 foi comprovada no controlador local, sem provar seu estado no SDK/servidor após
 revogação concorrente. O hook de mídia aguarda consumidor real da E2E 3.
 
-A transição detalhe → logout → login em 1440×1000 trava no primeiro pump de
-renderização após o signOut; em 800×1000 passa. A localização foi confirmada
-por interrupções diagnósticas antes/depois das etapas, já removidas do teste.
-O gate desktop segue aberto, com causa ainda em investigação. A suíte ampla
+A transição detalhe → logout → login em 1440×1000 travava no primeiro pump.
+O NAV-LOGOUT01 da E2E2 (`c399e5ca`) corrigiu a navegação compartilhada. Com
+autorização do Coordenador, foi trazido como dependência de teste no commit
+local `00f794ec`: **dependency-only**, não duplicar na consolidação e não
+atribuir sua implementação a esta frente. Nenhum hunk de navegação foi editado.
+A regressão passou 15/15 (rotas 8 + navegação 7), incluindo logout desktop.
+Isso fecha o RED local; browser real/autenticação remota continuam abertos.
+A suíte ampla
 apresenta divergência de fixture (5 instituições versus expectativa de 12) e
 goldens; não foi provado nesta evidência que sejam todas anteriores à branch.
+
+## Regressão consolidada após NAV-LOGOUT01
+
+132/132 locais: Auth/SDK/pacote 74, repository usuários 24, detalhe 7, diretório
+normal 4, preview 2, detalhe normal responsivo 8, navegação da dependência 7 e
+Configurações 6. O comando executou essas suítes explicitamente, não toda a
+suíte do monorepo. Nenhum teste HTTP simulado foi contado como SQL ou E2E remoto.

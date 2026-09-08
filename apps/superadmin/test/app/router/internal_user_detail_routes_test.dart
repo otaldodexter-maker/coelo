@@ -62,13 +62,17 @@ void main() {
   );
   // Dispose outside the widget test's fake-async zone (Supabase uses timers).
   tearDownAll(client.dispose);
-  for (final scenario in ['allowed', 'capability-denied', 'server-denied', 'retry']) {
-    testWidgets('detail route: $scenario', (tester) async {
+  for (final (width, scenario) in [
+    for (final width in [800.0, 1440.0])
+      for (final scenario in ['allowed', 'capability-denied', 'server-denied', 'retry'])
+        (width, scenario),
+  ]) {
+    testWidgets('detail route: $scenario width=$width', (tester) async {
       mode = scenario;
       name = 'Sintético Inicial';
       requests.clear();
       tester.view.devicePixelRatio = 1;
-      tester.view.physicalSize = const Size(800, 1000);
+      tester.view.physicalSize = Size(width, 1000);
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.view.resetPhysicalSize);
       final session = SuperadminSession()

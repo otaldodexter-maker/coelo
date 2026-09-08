@@ -45,7 +45,7 @@ Docker ou deploy por esta frente nesta retomada.
 | 2/6 Backend/negativas | RPCs detail/update/change_status | Fixture e0efd98e inclui revoke/receipt/terminalidade; SQL não executado por esta frente |
 | 3/6 Cliente/estados | detail/form | Detalhe descarta fallback stale, trata negação/retry e alterações de revisão. Formulário produtivo não habilitado |
 | 4/6 Integração/reload | Deep link/lista/detalhe | 1e8f0966 prova navegação e troca de sessão via HTTP mock. Sessão/backend reais abertos |
-| 5/6 Regressão/visual | detalhe 7; rota real 4 | Quatro cenários passam em 800px. Trava 1440px pertence ao NAV-LOGOUT01 da E2E2; aguarda integração coordenada e regressão |
+| 5/6 Regressão/visual | detalhe 7; rota normal 8 | Cenários passam em 800/1440px com NAV-LOGOUT01 da E2E2 como dependency-only 00f794ec/c399e5ca; 15/15 com navegação, consolidado local 132/132. Browser real ainda aberto |
 | 6/6 Review/evidências/commit | 4206f2bb, 10730253, 1e8f0966 | Implementação local, não verified-e2e; contagens corrigidas na evidência runtime |
 
 ## Perfis e Modelos — P0 RLS
