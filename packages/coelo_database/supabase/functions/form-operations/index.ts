@@ -5,9 +5,9 @@ import {
   operationsBearerToken,
 } from "./auth_contract.ts";
 import {
-  type ExportSubmission,
   opaqueArtifactPath,
   streamXlsx,
+  streamXlsxWorkbook,
 } from "./export_contract.ts";
 import {
   MultipartS3Client,
@@ -25,7 +25,11 @@ import {
 } from "./multipart_export.ts";
 import {
   createSnapshotRows,
+  createVersionedXlsxSheets,
+  parseXlsxSnapshotSchema,
+  parseXlsxSubmission,
   type SnapshotPageLoader,
+  type XlsxSnapshotSubmission,
 } from "./snapshot_paging.ts";
 import { cleanupExpiredItems } from "./cleanup_contract.ts";
 import {
@@ -36,6 +40,22 @@ import {
 const BUCKET = "coelo-forms-private";
 const PAGE_SIZE = 250;
 const MAX_ROWS_PER_LEASE = 50_000;
+// Diagnostics do not prove absence of provider side effects or authorize cleanup.
+const R2_SCHEMA_ERRORS = new Set([
+  "zero_respostas_aberto",
+  "export_snapshot_invalid",
+  "xlsx_snapshot_changed",
+  "export_lease_row_limit",
+  "xlsx_column_limit",
+  "xlsx_row_limit",
+  "xlsx_number_unrepresentable",
+  "xlsx_currency_unrepresentable",
+  "invalid_xlsx_civil_date",
+  "xlsx_civil_date_out_of_range",
+  "invalid_xlsx_media_origin",
+  "invalid_xlsx_media_asset",
+  "invalid_xlsx_media_link",
+]);
 const SAFE_JOB_ERRORS = new Set([
   "artifact_upload_failed",
   "cleanup_complete_failed",
@@ -164,31 +184,6 @@ const jsonObject = (value: unknown): value is Json =>
 const checksum = (value: unknown): value is string =>
   typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
 
-function validSubmission(value: unknown): value is ExportSubmission {
-  if (
-    !jsonObject(value) || !uuid(value.responseId) ||
-    !uuid(value.occurrenceId) ||
-    !uuid(value.versionId) || !jsonObject(value.metadata) ||
-    !Object.values(value.metadata).every((field) =>
-      typeof field === "string"
-    ) ||
-    !Array.isArray(value.answers)
-  ) return false;
-  const ids = new Set<string>();
-  return value.answers.every((answer) => {
-    if (
-      !jsonObject(answer) || !uuid(answer.itemId) || ids.has(answer.itemId) ||
-      typeof answer.question !== "string" ||
-      typeof answer.multiValued !== "boolean" ||
-      !Array.isArray(answer.values) || !answer.values.every((field) =>
-        typeof field === "string"
-      )
-    ) return false;
-    ids.add(answer.itemId);
-    return true;
-  });
-}
-
 async function writeR2Xlsx(
   client: SupabaseClient,
   job: Json,
@@ -218,18 +213,26 @@ async function writeR2Xlsx(
     !jsonObject(begun) || begun.job_id !== job.aggregate_id ||
     begun.worker_job_id !== job.id ||
     begun.attempt !== job.attempts || !uuid(begun.asset_id) ||
+    !uuid(begun.form_id) ||
     !uuid(begun.institution_id) ||
     begun.provider !== "r2" || begun.bucket !== R2_EXPORT_BUCKET ||
     begun.mime_type !== XLSX_MIME ||
     begun.object_key !==
       `tenants/${begun.institution_id}/exports/forms/${job.aggregate_id}/${begun.asset_id}/responses.xlsx` ||
-    begun.snapshot_format_version !== 1 ||
+    begun.snapshot_format_version !== 2 ||
+    typeof begun.snapshot_schema_sha256 !== "string" ||
+    !/^[0-9a-f]{64}$/.test(begun.snapshot_schema_sha256) ||
     !Number.isSafeInteger(begun.snapshot_row_count) ||
     Number(begun.snapshot_row_count) < 0 ||
     typeof begun.expires_at !== "string" ||
     !Number.isFinite(Date.parse(begun.expires_at)) ||
     Date.parse(begun.expires_at) <= now().getTime()
   ) throw new Error("export_begin_invalid");
+  const schema = parseXlsxSnapshotSchema(begun.snapshot_schema, begun.form_id);
+  if (!schema.versions.length || begun.snapshot_row_count === 0) {
+    throw new Error("zero_respostas_aberto");
+  }
+  const schemaHash = begun.snapshot_schema_sha256;
   const prepared = Object.freeze({ ...begun });
   const scope: MultipartAttemptScope = Object.freeze({
     jobId: job.id,
@@ -239,7 +242,7 @@ async function writeR2Xlsx(
     assetId: begun.asset_id,
     bucket: R2_EXPORT_BUCKET,
     objectPath: begun.object_key as string,
-    snapshotFormatVersion: 1,
+    snapshotFormatVersion: 2,
     snapshotRowCount: begun.snapshot_row_count as number,
   });
   const wireScope = Object.freeze({
@@ -355,15 +358,19 @@ async function writeR2Xlsx(
       ),
   };
   const pageDigests = new Map<string, string>();
-  const rowsFactory = () => {
+  const submissionsFactory = async function* (): AsyncIterable<
+    XlsxSnapshotSubmission
+  > {
     const seen = new Set<string>();
-    const load: SnapshotPageLoader = async (cursor) => {
+    const seenVersions = new Set<string>();
+    let cursor: string | null = null;
+    do {
       fresh();
-      const after = cursor === null ? 0 : Number(cursor);
+      const after: number = cursor === null ? 0 : Number(cursor);
       if (!Number.isSafeInteger(after) || after < 0) {
         throw new Error("export_snapshot_invalid");
       }
-      const value = structuredClone(
+      const value: unknown = structuredClone(
         await rpc("form_worker_xlsx_snapshot_r2_v1", {
           ...params,
           p_asset_id: scope.assetId,
@@ -375,9 +382,9 @@ async function writeR2Xlsx(
       if (
         !jsonObject(value) || value.kind !== "xlsx" ||
         value.snapshot_format_version !== scope.snapshotFormatVersion ||
+        value.snapshot_schema_sha256 !== schemaHash ||
         !Array.isArray(value.submissions) ||
-        value.submissions.length > PAGE_SIZE ||
-        !value.submissions.every(validSubmission)
+        value.submissions.length > PAGE_SIZE
       ) throw new Error("export_snapshot_invalid");
       const next = after + value.submissions.length;
       if (
@@ -387,11 +394,15 @@ async function writeR2Xlsx(
           (value.submissions.length ? String(next) : null) ||
         (value.has_more && value.submissions.length === 0)
       ) throw new Error("export_snapshot_invalid");
-      for (const submission of value.submissions) {
+      const submissions = value.submissions.map((submission) =>
+        parseXlsxSubmission(submission, schema)
+      );
+      for (const submission of submissions) {
         if (seen.has(submission.responseId)) {
           throw new Error("export_snapshot_invalid");
         }
         seen.add(submission.responseId);
+        seenVersions.add(submission.versionId);
       }
       const digest = await sha256Hex(JSON.stringify(value));
       const previous = pageDigests.get(String(after));
@@ -399,9 +410,12 @@ async function writeR2Xlsx(
         throw new Error("xlsx_snapshot_changed");
       }
       pageDigests.set(String(after), digest);
-      return value as Snapshot;
-    };
-    return createSnapshotRows(load, { maxRows: MAX_ROWS_PER_LEASE });
+      for (const submission of submissions) yield submission;
+      cursor = value.has_more ? String(next) : null;
+    } while (cursor !== null);
+    if (
+      schema.versions.some((version) => !seenVersions.has(version.versionId))
+    ) throw new Error("export_snapshot_invalid");
   };
   const config = validateR2Config({
     endpoint: environment.COELO_R2_ENDPOINT ?? "",
@@ -417,7 +431,14 @@ async function writeR2Xlsx(
     ...scope,
     proposedPath: scope.objectPath,
     contentType: XLSX_MIME,
-    source: streamXlsx(rowsFactory),
+    source: streamXlsxWorkbook(
+      createVersionedXlsxSheets(
+        schema,
+        submissionsFactory,
+        environment.COELO_FORMS_WEB_ORIGIN,
+        { maxRows: MAX_ROWS_PER_LEASE },
+      ),
+    ),
     ...artifactConfig,
     persistence,
     rpc: () => Promise.reject(new Error("legacy_multipart_not_allowed")),
@@ -633,7 +654,11 @@ async function processFormOperationsRequest(
     if (job.job_kind === "export_xlsx_r2_v1") {
       // R2 failures retain the lease and attempt for reconciliation. The legacy
       // failure RPC and Storage deletion cannot operate on the R2 catalog.
-      return reply(503, { error: "export_completion_unknown" });
+      return reply(503, {
+        error: error instanceof Error && R2_SCHEMA_ERRORS.has(error.message)
+          ? error.message
+          : "export_completion_unknown",
+      });
     }
     if (completionAttempted) {
       // A dropped response or SDK error does not prove SQL rollback. Preserve

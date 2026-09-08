@@ -2,20 +2,145 @@ import { assertEquals, assertRejects, assertThrows } from "@std/assert";
 import {
   encodeCsv,
   encodeXlsx,
+  encodeXlsxWorkbook,
   encodeZip,
   expandSubmission,
   neutralizeSpreadsheetFormula,
   opaqueArtifactPath,
   streamCsv,
   streamXlsx,
+  streamXlsxWorkbook,
   streamZip,
   xlsxCivilDate,
+  xlsxMediaLink,
   type XlsxOptions,
   type XlsxRow,
 } from "./export_contract.ts";
 import * as XLSX from "xlsx";
 import { unzipSync } from "fflate";
 import { createSnapshotRows } from "./snapshot_paging.ts";
+
+Deno.test("versioned workbook preserves separate schemas, typed cells and absolute private links", async () => {
+  const link = xlsxMediaLink(
+    "https://superadmin.example.test",
+    "00000000-0000-4000-8000-000000000001",
+  );
+  const definitions = [
+    {
+      name: "Respostas v1",
+      columns: [{ key: "id", label: "ID" }, { key: "a", label: "Nome" }, {
+        key: "b",
+        label: "Nome",
+      }, { key: "media", label: "Galeria" }],
+      rows: [{ id: "r1", a: 12.5, b: false, media: link }],
+    },
+    {
+      name: "Respostas v2",
+      columns: [{ key: "id", label: "ID" }, { key: "b", label: "Nome" }, {
+        key: "a",
+        label: "Nome",
+      }],
+      rows: [{ id: "r2", b: xlsxCivilDate("2026-09-08"), a: "=unsafe" }],
+    },
+    {
+      name: "Vazia v3",
+      columns: [{ key: "never", label: "Nunca respondida" }],
+      rows: [],
+    },
+  ];
+  const chunks: Uint8Array[] = [];
+  for await (
+    const chunk of streamXlsxWorkbook(
+      definitions.map((sheet) => ({
+        ...sheet,
+        rows: async function* () {
+          yield* sheet.rows;
+        },
+      })),
+      1024,
+    )
+  ) {
+    assertEquals(chunk.length <= 1024, true);
+    chunks.push(chunk);
+  }
+  const streamBytes = new Uint8Array(
+    chunks.reduce((size, chunk) => size + chunk.length, 0),
+  );
+  let offset = 0;
+  for (const chunk of chunks) {
+    streamBytes.set(chunk, offset);
+    offset += chunk.length;
+  }
+  for (const bytes of [encodeXlsxWorkbook(definitions), streamBytes]) {
+    const book = XLSX.read(bytes, { type: "array", cellNF: true });
+    assertEquals(book.SheetNames, ["Respostas v1", "Respostas v2", "Vazia v3"]);
+    assertEquals(book.Sheets["Respostas v1"].B2.t, "n");
+    assertEquals(book.Sheets["Respostas v1"].C2.v, false);
+    assertEquals(book.Sheets["Respostas v1"].D2.v, "Ver mídia");
+    assertEquals(book.Sheets["Respostas v1"].D2.l?.Target, link.target);
+    assertEquals(book.Sheets["Respostas v2"].B2.z, "yyyy-mm-dd");
+    assertEquals(book.Sheets["Respostas v2"].C2.v, "'=unsafe");
+    assertEquals(book.Sheets["Vazia v3"].A1.v, "Nunca respondida");
+    const archive = unzipSync(bytes);
+    assertEquals(
+      Object.keys(archive).filter((name) =>
+        /^xl\/worksheets\/sheet\d+.xml$/.test(name)
+      ).length,
+      3,
+    );
+  }
+});
+
+Deno.test("private workbook link factory rejects tokens, paths and unsafe origins", () => {
+  const asset = "00000000-0000-4000-8000-000000000001";
+  for (
+    const origin of [
+      "",
+      "http://example.test",
+      "https://example.test/path",
+      "https://user:secret@example.test",
+      "https://example.test?token=secret",
+      "https://example.test#secret",
+    ]
+  ) {
+    assertThrows(
+      () => xlsxMediaLink(origin, asset),
+      Error,
+      "invalid_xlsx_media_origin",
+    );
+  }
+  assertThrows(
+    () => xlsxMediaLink("https://example.test", "asset?token=secret"),
+    Error,
+    "invalid_xlsx_media_asset",
+  );
+  assertThrows(
+    () =>
+      encodeXlsxWorkbook([{
+        name: "Bad",
+        columns: [{ key: "a", label: "A" }],
+        rows: [{
+          a: {
+            kind: "media",
+            target: "https://example.test/forms/media/" + asset +
+              "?token=secret",
+          },
+        }],
+      }]),
+    Error,
+    "invalid_xlsx_media_link",
+  );
+  assertThrows(
+    () =>
+      encodeXlsxWorkbook([{
+        name: "Same",
+        columns: [{ key: "a", label: "A" }],
+        rows: [],
+      }, { name: "same", columns: [{ key: "a", label: "A" }], rows: [] }]),
+    Error,
+    "invalid_xlsx_sheets",
+  );
+});
 
 Deno.test("XLSX civil dates validate Gregorian calendar and expose Excel range separately", () => {
   const date = xlsxCivilDate("2026-09-08");
