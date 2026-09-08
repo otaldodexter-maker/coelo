@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
@@ -58,6 +60,7 @@ final class _Unauthorized extends _LoadState {
 final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePage> {
   _LoadState _state = const _Loading();
   var _loadGeneration = 0;
+  Timer? _validityTimer;
 
   @override
   void initState() {
@@ -77,6 +80,7 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
   }
 
   Future<void> _load() async {
+    _validityTimer?.cancel();
     final generation = ++_loadGeneration;
     final repository = widget.repository;
     final supportingData = widget.supportingData;
@@ -90,14 +94,8 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
           pageSize: 100,
         ),
       );
-      final highlights = PrincipalForYouCommunicationsAdapter.highlights(page.items, now: now());
       if (!mounted || generation != _loadGeneration) return;
-      setState(
-        () => _state = _Loaded(
-          supportingData.copyWith(highlights: highlights),
-          empty: highlights.isEmpty,
-        ),
-      );
+      _project(List.unmodifiable(page.items), supportingData, now, generation);
     } on NoticeUnauthorizedException {
       if (mounted && generation == _loadGeneration) {
         setState(() => _state = const _Unauthorized());
@@ -113,9 +111,45 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
     }
   }
 
+  void _project(
+    List<PlatformNotice> communications,
+    PrincipalForYouPreviewData supportingData,
+    DateTime Function() clock,
+    int generation,
+  ) {
+    if (!mounted || generation != _loadGeneration) return;
+    _validityTimer?.cancel();
+    final now = clock();
+    final highlights = PrincipalForYouCommunicationsAdapter.highlights(communications, now: now);
+    setState(
+      () => _state = _Loaded(
+        supportingData.copyWith(highlights: highlights),
+        empty: !highlights.any((item) => item.eligible),
+      ),
+    );
+    DateTime? nextBoundary;
+    for (final item in communications) {
+      if (item.type == CommunicationType.notice || item.status != NoticeStatus.active) continue;
+      for (final boundary in [item.startsAt, item.endsAt]) {
+        if (boundary != null &&
+            boundary.isAfter(now) &&
+            (nextBoundary == null || boundary.isBefore(nextBoundary))) {
+          nextBoundary = boundary;
+        }
+      }
+    }
+    if (nextBoundary != null) {
+      _validityTimer = Timer(
+        nextBoundary.difference(now),
+        () => _project(communications, supportingData, clock, generation),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _loadGeneration += 1;
+    _validityTimer?.cancel();
     super.dispose();
   }
 
