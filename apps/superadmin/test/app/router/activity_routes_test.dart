@@ -14,6 +14,25 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../support/activities/fake_activity_directory_repository.dart';
 
 void main() {
+  testWidgets('development activity preview is blocked by default without session', (tester) async {
+    final session = SuperadminSession();
+    final directory = _TrackingActivityDirectoryRepository();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      activityDirectoryRepository: directory,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    router.go(SuperadminRoutes.devActivities);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
+    expect(directory.calls, 0);
+  });
   test('declares production and development activity routes', () {
     expect(SuperadminRoutes.activities, '/activities');
     expect(SuperadminRoutes.activityCreate, '/activities/new');
@@ -61,6 +80,7 @@ void main() {
     final productionDirectory = _TrackingActivityDirectoryRepository();
     final productionCommands = _TripwireActivityCommandRepository();
     final router = createSuperadminRouter(
+      allowDevelopmentPreview: true,
       session: session,
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
