@@ -144,15 +144,32 @@ final class _SuperadminChatImageDialogState extends State<SuperadminChatImageDia
   Widget build(BuildContext context) {
     final image = _image;
     final generation = _generation;
+    final route = ModalRoute.of(context);
+    final assetId = widget.assetId;
+    final reader = widget.reader;
+    final session = widget.session;
+    void closeOwnedRoute() {
+      if (!mounted ||
+          !_contextCurrent ||
+          widget.assetId != assetId ||
+          !identical(widget.reader, reader) ||
+          !identical(widget.session, session) ||
+          route?.isCurrent != true) {
+        return;
+      }
+      route!.navigator?.pop();
+    }
+
     final canRetry =
         _state != null && _state != MediaReadState.available && !widget.session.isInvalidated;
     final close = OutlinedButton(
-      onPressed: () => Navigator.of(context).pop(),
+      onPressed: closeOwnedRoute,
       style: OutlinedButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
       child: const Text('Fechar'),
     );
     return CoeloAdminDialogShell(
       title: 'Imagem da conversa',
+      onClose: closeOwnedRoute,
       primaryAction: canRetry
           ? FilledButton(
               onPressed: () {
