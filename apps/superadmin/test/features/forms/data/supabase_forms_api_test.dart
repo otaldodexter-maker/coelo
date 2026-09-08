@@ -5,8 +5,8 @@ import 'package:coelo_superadmin/features/forms/data/forms_backend_gateway.dart'
 import 'package:coelo_superadmin/features/forms/data/supabase_forms_api.dart';
 
 void main() {
-  test('preserves the existing XLSX job contract and concurrency envelope', () async {
-    final backend = _Backend({
+  test('queues the whole-form XLSX through the internal concurrency envelope', () async {
+    final backend = _Backend.internal({
       'id': 'job-1',
       'status': 'pending',
       'progress': 0,
@@ -21,16 +21,11 @@ void main() {
     );
     expect(job.id, 'job-1');
     expect(job.status, FormFileJobStatus.pending);
-    expect(backend.functionName, 'form_request_export');
+    expect(backend.functionName, 'superadmin_form_request_xlsx_v2');
     expect(backend.parameters, {
       'p_request_id': 'export-request',
       'p_expected_version': 4,
-      'p_payload': {
-        'form_id': 'form-1',
-        'occurrence_id': null,
-        'kind': 'xlsx',
-        'justification': null,
-      },
+      'p_payload': {'form_id': 'form-1'},
     });
   });
 
@@ -78,6 +73,31 @@ void main() {
       );
       expect(backend.functionName, isNull);
     }
+  });
+
+  test('occurrence export cannot silently broaden into whole-form export', () async {
+    final backend = _Backend(null);
+    await expectLater(
+      SupabaseFormsApi(backend).requestExport(
+        const FormCommand(
+          requestId: 'request-1',
+          expectedVersion: 1,
+          payload: FormExportPayload(
+            formId: 'form-1',
+            occurrenceId: 'occurrence-1',
+            kind: FormExportKind.xlsx,
+          ),
+        ),
+      ),
+      throwsA(
+        isA<FormApiException>().having(
+          (error) => error.kind,
+          'kind',
+          FormApiFailureKind.validation,
+        ),
+      ),
+    );
+    expect(backend.functionName, isNull);
   });
 
   test(
@@ -189,7 +209,7 @@ void main() {
   });
 
   test('monitor hierarchy sends the scoped cursor to the authorized RPC', () async {
-    final backend = _Backend({
+    final backend = _Backend.internal({
       'items': [
         {
           'scope_id': 'unit-1',
@@ -210,7 +230,7 @@ void main() {
     );
     final query = Map<String, Object?>.from(backend.parameters!['p_query']! as Map);
 
-    expect(backend.functionName, 'form_list_monitor_hierarchy');
+    expect(backend.functionName, 'superadmin_forms_monitor_hierarchy_v2');
     expect(query['scope_id'], 'institution-1');
     expect(query, isNot(contains('offset')));
     expect(page.items.single.scopeKind, FormMonitorScopeKind.unit);
@@ -445,7 +465,7 @@ void main() {
   }
 
   test('file job list maps availability without accepting a storage path', () async {
-    final backend = _Backend({
+    final backend = _Backend.internal({
       'items': [
         {
           'id': 'job-1',
@@ -465,7 +485,440 @@ void main() {
     expect(page.items.single.downloadAvailable, isTrue);
     expect(page.items.single.downloadPath, isNull);
   });
+
+  test('internal monitor preserves every existing scope filter', () async {
+    final backend = _Backend.internal({
+      'eligible_count': 40,
+      'responded_count': 13,
+      'pending_count': 27,
+      'is_anonymous': true,
+    });
+    final monitor = await SupabaseFormsApi(backend).getMonitor(
+      FormMonitorQuery(
+        formId: 'form-1',
+        applicationId: 'application-1',
+        occurrenceId: 'occurrence-1',
+        scopeId: 'scope-1',
+        startsOnOrAfter: DateTime(2026, 9, 1),
+        endsOnOrBefore: DateTime(2026, 9, 8),
+      ),
+    );
+    expect(monitor.eligibleCount, 40);
+    expect(monitor.respondedCount, 13);
+    expect(monitor.pendingCount, 27);
+    expect(monitor.isAnonymous, isTrue);
+    expect(backend.functionName, 'superadmin_forms_monitor_v2');
+    expect(backend.parameters, {
+      'p_query': {
+        'form_id': 'form-1',
+        'application_id': 'application-1',
+        'occurrence_id': 'occurrence-1',
+        'scope_id': 'scope-1',
+        'starts_on_or_after': '2026-09-01',
+        'ends_on_or_before': '2026-09-08',
+      },
+    });
+  });
+
+  test(
+    'ordinary monitor people keep scoped name cursor and never justify anonymous lookup',
+    () async {
+      final backend = _Backend.internal(
+        _operationPage([_person()], {'name': 'Pessoa', 'id': 'person-1'}),
+      );
+      final api = SupabaseFormsApi(backend);
+      final page = await api.listMonitorPeople(
+        const FormMonitorQuery(formId: 'form-1', scopeId: 'scope-1', limit: 12),
+      );
+      expect(page.items.single.displayName, 'Pessoa');
+      expect(page.items.single.responded, isTrue);
+      await api.listMonitorPeople(
+        FormMonitorQuery(formId: 'form-1', scopeId: 'scope-1', limit: 12, cursor: page.nextCursor),
+      );
+      expect(backend.functionName, 'superadmin_forms_monitor_people_v2');
+      expect(backend.parameters, {
+        'p_query': {
+          'form_id': 'form-1',
+          'application_id': null,
+          'occurrence_id': null,
+          'starts_on_or_after': null,
+          'ends_on_or_before': null,
+          'scope_id': 'scope-1',
+          'justification': null,
+          'cursor_name': 'Pessoa',
+          'cursor_id': 'person-1',
+          'limit': 12,
+        },
+      });
+    },
+  );
+
+  test('identified response cursor round trips its timestamp and response ID', () async {
+    final backend = _Backend.internal(
+      _operationPage(
+        [_summaryProjection()],
+        {'submitted_at': '2026-09-08T12:00:00Z', 'id': 'response-1'},
+      ),
+    );
+    final api = SupabaseFormsApi(backend);
+    final page = await api.listResponses(
+      const FormResponsesQuery(formId: 'form-1', occurrenceId: 'occurrence-1', limit: 10),
+    );
+    expect(page.items.single.respondentLabel, 'Pessoa');
+    expect(page.items.single.submittedAt, DateTime.utc(2026, 9, 8, 12));
+    await api.listResponses(
+      FormResponsesQuery(
+        formId: 'form-1',
+        occurrenceId: 'occurrence-1',
+        limit: 10,
+        cursor: page.nextCursor,
+      ),
+    );
+    expect(backend.functionName, 'superadmin_forms_responses_v2');
+    expect(backend.parameters, {
+      'p_query': {
+        'form_id': 'form-1',
+        'occurrence_id': 'occurrence-1',
+        'cursor_submitted_at': '2026-09-08T12:00:00Z',
+        'cursor_id': 'response-1',
+        'limit': 10,
+      },
+    });
+  });
+
+  test('anonymous response cursor needs only opaque ID and strips identity metadata', () async {
+    final backend = _Backend.internal(
+      _operationPage(
+        [
+          {..._summaryProjection(), 'identity_mode': 'anonymous'},
+        ],
+        {'id': 'response-1'},
+      ),
+    );
+    final api = SupabaseFormsApi(backend);
+    final page = await api.listResponses(const FormResponsesQuery(formId: 'form-1'));
+    expect(page.items.single.respondentLabel, isNull);
+    expect(page.items.single.submittedAt, isNull);
+    expect(const FormCursorCodec().decode(page.nextCursor!).sortKey, isEmpty);
+    await api.listResponses(FormResponsesQuery(formId: 'form-1', cursor: page.nextCursor));
+    final query = backend.parameters!['p_query']! as Map;
+    expect(query['cursor_id'], 'response-1');
+    expect(query['cursor_submitted_at'], isNull);
+  });
+
+  test('anonymous page rejects a correlation timestamp in its cursor', () async {
+    final backend = _Backend.internal(
+      _operationPage(
+        [
+          {..._summaryProjection(), 'identity_mode': 'anonymous'},
+        ],
+        {'id': 'response-1', 'submitted_at': '2026-09-08T12:00:00Z'},
+      ),
+    );
+    await expectLater(
+      SupabaseFormsApi(backend).listResponses(const FormResponsesQuery(formId: 'form-1')),
+      throwsA(
+        isA<FormApiException>().having(
+          (error) => error.kind,
+          'kind',
+          FormApiFailureKind.unavailable,
+        ),
+      ),
+    );
+  });
+
+  for (final detail in [false, true]) {
+    test(
+      '${detail ? 'detail' : 'response list'} rejects absent or invalid identity mode',
+      () async {
+        for (final mode in <Object?>[
+          null,
+          '',
+          'unknown',
+          'Anonymous',
+          1,
+          true,
+          <String, Object?>{},
+        ]) {
+          final summary = _summaryProjection()..['identity_mode'] = mode;
+          for (final omitted in [false, true]) {
+            if (omitted) summary.remove('identity_mode');
+            final data = detail
+                ? {...summary, 'answers': <Object?>[]}
+                : _operationPage([summary], {'id': 'response-1'});
+            final api = SupabaseFormsApi(_Backend.internal(data));
+            await expectLater(
+              detail
+                  ? api.getResponseDetail('response-1')
+                  : api.listResponses(const FormResponsesQuery(formId: 'form-1')),
+              throwsA(
+                isA<FormApiException>().having(
+                  (error) => error.kind,
+                  'kind',
+                  FormApiFailureKind.unavailable,
+                ),
+              ),
+              reason: 'mode=$mode; omitted=$omitted',
+            );
+          }
+        }
+      },
+    );
+  }
+
+  test('anonymous detail strips unexpected identity and timestamp from the receipt', () async {
+    final backend = _Backend.internal({
+      ..._summaryProjection(),
+      'identity_mode': 'anonymous',
+      'answers': <Object?>[],
+    });
+    final detail = await SupabaseFormsApi(backend).getResponseDetail('response-1');
+    expect(detail.summary.respondentLabel, isNull);
+    expect(detail.summary.submittedAt, isNull);
+    expect(detail.summary.id, 'response-1');
+  });
+
+  test(
+    'detail uses internal envelope and preserves typed answers without invented labels',
+    () async {
+      final backend = _Backend.internal({
+        ..._summaryProjection(),
+        'answers': [
+          FormAnswerDto.fromDomain(
+            FormAnswer.shortText(itemId: 'item-1', value: 'Resposta autorizada'),
+          ).toJson(),
+        ],
+        'definition': {'original_version': true},
+      });
+      final detail = await SupabaseFormsApi(backend).getResponseDetail('response-1');
+      expect(detail.summary.formVersionId, 'version-1');
+      expect(
+        FormAnswerDto.fromDomain(detail.answers['item-1']!).toJson()['text_value'],
+        'Resposta autorizada',
+      );
+      expect(backend.functionName, 'superadmin_forms_response_detail_v2');
+      expect(backend.parameters, {
+        'p_query': {'response_id': 'response-1'},
+      });
+    },
+  );
+
+  test('detail rejects mismatched response and duplicate answers', () async {
+    final answer = FormAnswerDto.fromDomain(
+      FormAnswer.shortText(itemId: 'item-1', value: 'Resposta'),
+    ).toJson();
+    for (final patch in [
+      {
+        'id': 'other-response',
+        'answers': [answer],
+      },
+      {
+        'answers': [answer, answer],
+      },
+    ]) {
+      await expectLater(
+        SupabaseFormsApi(
+          _Backend.internal({..._summaryProjection(), ...patch}),
+        ).getResponseDetail('response-1'),
+        throwsA(
+          isA<FormApiException>().having(
+            (error) => error.kind,
+            'kind',
+            FormApiFailureKind.unavailable,
+          ),
+        ),
+      );
+    }
+  });
+
+  test('file job cursor preserves created time without forwarding private locators', () async {
+    final backend = _Backend.internal(
+      _operationPage(
+        [
+          {
+            'id': 'job-1',
+            'status': 'processing',
+            'progress': .4,
+            'download_path': 'https://private.invalid/token',
+          },
+        ],
+        {'created_at': '2026-09-08T10:00:00Z', 'id': 'job-1'},
+      ),
+    );
+    final api = SupabaseFormsApi(backend);
+    final page = await api.listFileJobs(formId: 'form-1', limit: 8);
+    expect(page.items.single.progress, .4);
+    expect(page.items.single.downloadPath, isNull);
+    await api.listFileJobs(formId: 'form-1', limit: 8, cursor: page.nextCursor);
+    expect(backend.functionName, 'superadmin_forms_file_jobs_v2');
+    expect(backend.parameters, {
+      'p_query': {
+        'form_id': 'form-1',
+        'cursor_created_at': '2026-09-08T10:00:00Z',
+        'cursor_id': 'job-1',
+        'limit': 8,
+      },
+    });
+  });
+
+  test('every internal operation denies error envelopes before inspecting data', () async {
+    for (final operation in _internalOperations) {
+      final backend = _Backend({
+        'ok': false,
+        'data': {'secret': 'other-tenant'},
+        'error': {'code': 'SAI_PERMISSION_DENIED', 'message': 'private SQL other-tenant'},
+      });
+      await expectLater(
+        operation(SupabaseFormsApi(backend)),
+        throwsA(
+          isA<FormApiException>()
+              .having((error) => error.kind, 'kind', FormApiFailureKind.unauthorized)
+              .having((error) => error.message, 'redacted', isNot(contains('other-tenant'))),
+        ),
+      );
+    }
+  });
+
+  test('internal errors map SAI codes and hide backend diagnostics', () async {
+    for (final (code, kind) in [
+      ('SAI_AUTH_REQUIRED', FormApiFailureKind.unauthorized),
+      ('SAI_MEMBERSHIP_REVOKED', FormApiFailureKind.unauthorized),
+      ('SAI_INVALID_ARGUMENT', FormApiFailureKind.validation),
+      ('SAI_CONCURRENT_CHANGE', FormApiFailureKind.conflict),
+      ('SAI_INTERNAL_ERROR', FormApiFailureKind.unavailable),
+    ]) {
+      for (final backend in [
+        _Backend({
+          'ok': false,
+          'data': null,
+          'error': {'code': code, 'message': 'private SQL'},
+        }),
+        _Backend.failure(code, failureMessage: 'private SQL'),
+      ]) {
+        await expectLater(
+          SupabaseFormsApi(backend).getMonitor(const FormMonitorQuery(formId: 'form-1')),
+          throwsA(
+            isA<FormApiException>()
+                .having((error) => error.kind, 'kind', kind)
+                .having((error) => error.message, 'redacted', isNot(contains('SQL'))),
+          ),
+        );
+      }
+    }
+  });
+
+  test('every internal operation rejects missing or contradictory envelopes', () async {
+    for (final operation in _internalOperations) {
+      for (final envelope in [
+        null,
+        {'eligible_count': 1},
+        {
+          'ok': true,
+          'data': <String, Object?>{},
+          'error': {'code': 'SAI_PERMISSION_DENIED'},
+        },
+        {'ok': 'true', 'data': <String, Object?>{}, 'error': null},
+        {'ok': true, 'data': null, 'error': null},
+        {'ok': true, 'data': <String, Object?>{}, 'error': null, 'unexpected': true},
+      ]) {
+        await expectLater(
+          operation(SupabaseFormsApi(_Backend(envelope))),
+          throwsA(
+            isA<FormApiException>().having(
+              (error) => error.kind,
+              'kind',
+              FormApiFailureKind.unavailable,
+            ),
+          ),
+        );
+      }
+    }
+  });
+
+  test('operational pages reject contradictory cursors and oversized pages', () async {
+    for (final data in [
+      {
+        'items': <Object?>[],
+        'has_more': true,
+        'next_cursor': {'id': 'response-1'},
+      },
+      {
+        'items': [_summaryProjection()],
+        'has_more': true,
+        'next_cursor': null,
+      },
+      {
+        'items': [_summaryProjection()],
+        'has_more': false,
+        'next_cursor': {'id': 'response-1'},
+      },
+      _operationPage([_summaryProjection()], {'id': 'response-1', 'person_id': 'leaked'}),
+      _operationPage([_summaryProjection(), _summaryProjection()], null),
+    ]) {
+      await expectLater(
+        SupabaseFormsApi(
+          _Backend.internal(data),
+        ).listResponses(const FormResponsesQuery(formId: 'form-1', limit: 1)),
+        throwsA(
+          isA<FormApiException>().having(
+            (error) => error.kind,
+            'kind',
+            FormApiFailureKind.unavailable,
+          ),
+        ),
+      );
+    }
+  });
+
+  test('nominal anonymous lookup preserves legacy realm and explicit justification', () async {
+    final backend = _Backend(_operationPage([_person()], null));
+    await SupabaseFormsApi(backend).anonymousParticipationLookup(
+      const FormAnonymousParticipationQuery(
+        formId: 'form-1',
+        occurrenceId: 'occurrence-1',
+        justification: 'Motivo autorizado',
+      ),
+    );
+    expect(backend.functionName, FormsRpc.anonymousParticipationLookup.functionName);
+    expect((backend.parameters!['p_query']! as Map)['justification'], 'Motivo autorizado');
+  });
 }
+
+Map<String, Object?> _operationPage(List<Object?> items, Map<String, Object?>? cursor) => {
+  'items': items,
+  'has_more': cursor != null,
+  'next_cursor': cursor,
+};
+Map<String, Object?> _person() => {
+  'person_id': 'person-1',
+  'display_name': 'Pessoa',
+  'profile_label': 'Perfil',
+  'context_label': 'Contexto',
+  'responded': true,
+};
+Map<String, Object?> _summaryProjection() => {
+  'id': 'response-1',
+  'occurrence_id': 'occurrence-1',
+  'form_version_id': 'version-1',
+  'identity_mode': 'identified',
+  'submitted_at': '2026-09-08T12:00:00Z',
+  'respondent_label': 'Pessoa',
+};
+final _internalOperations = <Future<Object?> Function(SupabaseFormsApi)>[
+  (api) => api.getMonitor(const FormMonitorQuery(formId: 'form-1')),
+  (api) => api.listMonitorHierarchy(const FormMonitorQuery(formId: 'form-1')),
+  (api) => api.listMonitorPeople(const FormMonitorQuery(formId: 'form-1')),
+  (api) => api.listResponses(const FormResponsesQuery(formId: 'form-1')),
+  (api) => api.getResponseDetail('response-1'),
+  (api) => api.listFileJobs(formId: 'form-1'),
+  (api) => api.requestExport(
+    const FormCommand(
+      requestId: 'request-1',
+      expectedVersion: 1,
+      payload: FormExportPayload(formId: 'form-1', kind: FormExportKind.xlsx),
+    ),
+  ),
+];
 
 Map<String, Object?> _responseProjection() => {
   'id': 'response-1',
@@ -552,6 +1005,10 @@ Map<String, Object?> _applicationProjection() => {
 
 final class _Backend implements FormsBackendGateway {
   _Backend(this.response) : failureCode = null, failureMessage = '';
+  _Backend.internal(Map<String, Object?> data)
+    : response = {'ok': true, 'data': data, 'error': null},
+      failureCode = null,
+      failureMessage = '';
   _Backend.failure(this.failureCode, {this.failureMessage = 'denied'}) : response = null;
 
   final Object? response;
