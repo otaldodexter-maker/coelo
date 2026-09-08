@@ -238,7 +238,8 @@ begin
           order by j.created_at desc,j.id desc limit page_limit+1
       ), visible as materialized (
         select * from page order by created_at desc,id desc limit page_limit
-      ) select jsonb_build_object('items',coalesce(jsonb_agg(jsonb_build_object('id',j.id,
+      ) select jsonb_build_object('form_id',form_row.id,'management_version',form_row.management_version,
+        'items',coalesce(jsonb_agg(jsonb_build_object('id',j.id,
           'status',case when j.expires_at<=clock_timestamp() then 'expired' else j.state end,'progress',j.progress,
           'error_code',case when j.error_code in ('export_failed','export_timeout','empty_export','retry_exhausted') then j.error_code else null end,
           'expires_at',j.expires_at,'download_available',j.state='succeeded' and j.expires_at>clock_timestamp()

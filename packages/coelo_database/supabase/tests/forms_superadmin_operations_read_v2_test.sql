@@ -246,6 +246,11 @@ select is((select body->>'ok' from op_results where label='identity_mismatch'),'
 update public.forms set identity_mode='anonymous' where id=pg_temp.op_id(220);
 
 -- XLSX listing owns jobs by identity, across valid sessions, without locator.
+-- Export permission must not acquire an unrelated overview/editor permission.
+insert into public.platform_role_permissions(role_id,permission_id,effect,status)
+select r.id,p.id,'deny','active' from public.platform_roles r cross join public.platform_permissions p
+where r.code='operations' and p.code in ('forms.read','forms.manage')
+on conflict(role_id,permission_id) do update set effect='deny',status='active',revoked_at=null;
 set local role authenticated;
 insert into op_results values('job1',public.superadmin_form_request_xlsx_v2(pg_temp.op_id(8001),1,jsonb_build_object('form_id',pg_temp.op_id(210))));
 select pg_temp.op_claims(102);
@@ -254,9 +259,19 @@ select pg_temp.op_claims(101);
 insert into op_results values('jobs',pg_temp.op_read('jobs',210));
 reset role;
 select is((select jsonb_array_length(body#>'{data,items}') from op_results where label='jobs'),1,'same tenant export capability lists only own job');
+select is((select body#>>'{data,form_id}' from op_results where label='jobs'),pg_temp.op_id(210)::text,'file jobs carry the authorized form context for XLSX commands');
+select is((select body#>>'{data,management_version}' from op_results where label='jobs'),'1','file jobs expose the current management version without editor permission');
 select is((select body#>>'{data,items,0,id}' from op_results where label='jobs'),(select body#>>'{data,id}' from op_results where label='job1'),'own job is correlated');
 select is((select body#>>'{data,items,0,download_available}' from op_results where label='jobs'),'false','pending job has no download');
 select ok(not exists(select 1 from op_results where label='jobs' and body::text~'(object_key|artifact_path|download_path|download_token|https://)'),'job list exposes no private locator');
+update public.forms set management_version=management_version+1 where id=pg_temp.op_id(210);
+set local role authenticated;
+insert into op_results values('jobs_new_version',pg_temp.op_read('jobs',210));
+insert into op_results values('jobs_empty',pg_temp.op_read('jobs',240));
+reset role;
+select is((select body#>>'{data,management_version}' from op_results where label='jobs_new_version'),'2','subsequent file read refreshes version after another form change');
+select is((select body#>>'{data,form_id}' from op_results where label='jobs_empty'),pg_temp.op_id(240)::text,'empty jobs page still identifies its authorized form');
+select is((select jsonb_array_length(body#>'{data,items}') from op_results where label='jobs_empty'),0,'empty jobs context does not create an export implicitly');
 
 -- Authorization must precede casts, and current clock must beat transaction now.
 update app_private.superadmin_internal_memberships set status='suspended',suspended_at=clock_timestamp(),version=version+1 where id=pg_temp.op_id(501);
