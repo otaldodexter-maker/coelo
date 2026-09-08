@@ -8,6 +8,53 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final change in ['item', 'callback', 'dispose']) {
+    testWidgets('feed preview invalidates after $change', (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(1440, 900);
+      addTearDown(tester.view.reset);
+      var firstCalls = 0;
+      var secondCalls = 0;
+      void first() => firstCalls++;
+      void second() => secondCalls++;
+      final replacement = CircularSummary(
+        id: 'circular-2',
+        title: 'Circular B',
+        excerpt: 'Outro contexto',
+        authorName: 'Autor B',
+        contextLabel: 'Contexto B',
+        publishedAt: DateTime.utc(2026),
+        attachmentCount: 0,
+        questionCount: 0,
+        responseState: CircularResponseState.unanswered,
+      );
+      Widget host(bool changed) => MaterialApp(
+        home: Scaffold(
+          body: changed && change == 'dispose'
+              ? const Text('Origem')
+              : PrincipalCircularFeedCard(
+                  item: changed && change == 'item' ? replacement : _summary,
+                  onOpen: changed && change == 'callback' ? second : first,
+                ),
+        ),
+      );
+      await tester.pumpWidget(host(false));
+      await tester.tap(find.text('Ler circular'));
+      await tester.pumpAndSettle();
+      final read = tester
+          .widget<FilledButton>(find.byKey(const Key('principal-circular-preview-read')))
+          .onPressed!;
+      await tester.pumpWidget(host(true));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('principal-circular-preview-dialog')), findsNothing);
+      read();
+      await tester.pumpAndSettle();
+      expect(firstCalls, 0);
+      expect(secondCalls, 0);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   Future<void> pumpProfile(
     WidgetTester tester,
     _Repository repository, {

@@ -11,6 +11,49 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('mixed feed context swap removes its Circular preview and rejects late read', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 1200);
+    addTearDown(tester.view.reset);
+    final opened = <String>[];
+    final mixed = _MixedRepository();
+    final media = _MediaRepository();
+    final productive = _ProductiveRepository(Future.value(const []));
+    Widget host(bool changed) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: changed
+          ? PrincipalHappensPreviewPage(
+              feedRepository: productive,
+              feedScope: const PrincipalHappensFeedScope(institutionId: 'institution-b'),
+            )
+          : PrincipalHappensPreviewPage.mixed(
+              mixedFeedRepository: mixed,
+              mixedFeedScope: const CircularScope(institutionId: 'institution-a'),
+              mediaRepository: media,
+              onOpenCircular: opened.add,
+            ),
+    );
+    await tester.pumpWidget(host(false));
+    await tester.pumpAndSettle();
+    final card = find.byKey(const Key('principal-happens-circular-circular-1'));
+    await tester.ensureVisible(card);
+    await tester.tap(card);
+    await tester.pumpAndSettle();
+    final read = tester
+        .widget<FilledButton>(find.byKey(const Key('principal-circular-preview-read')))
+        .onPressed!;
+    await tester.pumpWidget(host(true));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('principal-circular-preview-dialog')), findsNothing);
+    read();
+    await tester.pumpAndSettle();
+    expect(opened, isEmpty);
+    expect(find.text('Tudo em dia por aqui'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('dispatches each sealed mixed item once and preserves post media', (tester) async {
     var openedCircular = '';
     final repository = _MixedRepository();
