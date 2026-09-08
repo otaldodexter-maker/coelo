@@ -224,6 +224,7 @@ async function processFormOperationsRequest(
     job.job_kind === "cleanup_artifacts";
   let artifactPath: string | null = null;
   let standardArtifactUploaded = false;
+  let completionAttempted = false;
   try {
     const operation = operationForJob(job.job_kind, job.aggregate_id);
     if (operation) {
@@ -274,6 +275,7 @@ async function processFormOperationsRequest(
     );
     if (uploaded.error) throw new Error("artifact_upload_failed");
     standardArtifactUploaded = true;
+    completionAttempted = true;
     const completed = await client.rpc("form_worker_complete_export", {
       p_job_id: job.id,
       p_worker_id: workerId,
@@ -288,6 +290,12 @@ async function processFormOperationsRequest(
     if (completed.error) throw new Error("export_complete_failed");
     return reply(200, { processed: true, job_id: job.id });
   } catch (error) {
+    if (completionAttempted) {
+      // A dropped response or SDK error does not prove SQL rollback. Preserve
+      // the artifact and persisted state until a nominal reconciliation; the
+      // worker must not delete a file that may already be the committed winner.
+      return reply(503, { error: "export_completion_unknown" });
+    }
     if (artifactPath && standardArtifactUploaded) {
       await client.storage.from(BUCKET).remove([artifactPath]);
     }

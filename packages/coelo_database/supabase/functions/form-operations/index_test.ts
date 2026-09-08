@@ -287,3 +287,70 @@ Deno.test("worker generates one valid XLSX and completes the form job with measu
   );
   assertEquals(completed?.params.p_manifest, { row_count: 1, media_count: 0 });
 });
+
+Deno.test("ambiguous export completion preserves uploaded artifact and persisted job", async () => {
+  for (const completion of ["error", "throw"]) {
+    const mutations: string[] = [];
+    const dependencies: FormOperationsDependencies = {
+      environment: () => environment,
+      createClient: (() => ({
+        rpc: (name: string) => {
+          if (name === "form_worker_complete_export") {
+            mutations.push("complete_attempt");
+            // The database may already have committed. Neither an SDK error
+            // nor a dropped response proves rollback of its transaction.
+            if (completion === "throw") throw new Error(sensitiveError);
+            return Promise.resolve({
+              error: { message: sensitiveError },
+              data: null,
+            });
+          }
+          if (name === "form_worker_fail_export") mutations.push("mark_failed");
+          return Promise.resolve({
+            error: null,
+            data: name === "form_worker_claim"
+              ? { id, aggregate_id: id, job_kind: "export_xlsx" }
+              : name === "form_worker_export_snapshot"
+              ? {
+                kind: "xlsx",
+                has_more: false,
+                submissions: [{
+                  responseId: id,
+                  occurrenceId: id,
+                  versionId: id,
+                  metadata: {},
+                  answers: [{
+                    itemId: id,
+                    question: "Answer",
+                    values: ["Synthetic"],
+                    multiValued: false,
+                  }],
+                }],
+              }
+              : null,
+          });
+        },
+        storage: {
+          from: () => ({
+            upload: async (
+              _path: string,
+              stream: ReadableStream<Uint8Array>,
+            ) => {
+              await new Response(stream).arrayBuffer();
+              mutations.push("uploaded");
+              return { error: null };
+            },
+            remove: () => {
+              mutations.push("deleted");
+              return Promise.resolve({ error: null });
+            },
+          }),
+        },
+      })) as unknown as FormOperationsDependencies["createClient"],
+    };
+    const response = await handleFormOperationsRequest(request(), dependencies);
+    assertEquals(mutations, ["uploaded", "complete_attempt"]);
+    assertEquals(response.status, 503);
+    assertEquals(await response.json(), { error: "export_completion_unknown" });
+  }
+});
