@@ -860,6 +860,134 @@ revoke all on function public.form_worker_complete_xlsx_r2_v1(uuid,text,uuid,uui
   public.form_worker_reconcile_xlsx_r2_v1(uuid,uuid,uuid) from public,anon,authenticated;
 grant execute on function public.form_worker_complete_xlsx_r2_v1(uuid,text,uuid,uuid,bigint,text),
   public.form_worker_reconcile_xlsx_r2_v1(uuid,uuid,uuid) to service_role;
+-- Keep historical Storage cleanup realm-specific. R2 lifecycle is handled
+-- by its own nominal operations against the same authoritative catalog.
+create or replace function app_private.form_worker_cleanup_snapshot(
+  p_job_id uuid,
+  p_worker_id text,
+  p_limit integer default 100
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare worker_job app_private.form_worker_jobs;
+declare page_limit integer := least(greatest(coalesce(p_limit, 100), 1), 200);
+declare result jsonb;
+begin
+  select * into worker_job from app_private.form_worker_jobs
+   where id = p_job_id and job_kind in ('cleanup_uploads', 'cleanup_artifacts')
+     and state = 'processing' and lease_owner = p_worker_id and lease_expires_at >= now()
+   for update;
+  if worker_job.id is null then
+    raise serialization_failure using message = 'worker lease unavailable';
+  end if;
+  if worker_job.job_kind = 'cleanup_uploads' then
+    select jsonb_build_object(
+      'kind', worker_job.job_kind,
+      'items', coalesce(jsonb_agg(jsonb_build_object('id', id, 'storage_path', storage_path)), '[]'::jsonb)
+    ) into result
+      from (
+        select id, storage_path from public.form_assets
+         where (state in ('prepared', 'uploaded') and expires_at <= now())
+            or (state = 'discarded' and discarded_at is not null)
+         order by expires_at, id limit page_limit
+      ) candidate;
+  else
+    select jsonb_build_object(
+      'kind', worker_job.job_kind,
+      'items', coalesce(jsonb_agg(jsonb_build_object(
+        'id', id,
+        'storage_path', storage_path,
+        'multipart_bucket', multipart_bucket,
+        'multipart_path', multipart_path,
+        'multipart_upload_id', multipart_upload_id
+      )), '[]'::jsonb)
+    ) into result
+      from (
+        select file_job.id, file_job.artifact_path as storage_path,
+               multipart.bucket_id as multipart_bucket,
+               multipart.object_path as multipart_path,
+               multipart.upload_id as multipart_upload_id
+          from public.form_file_jobs file_job
+          left join app_private.form_multipart_uploads multipart
+            on multipart.file_job_id = file_job.id
+           and multipart.state in ('initiated', 'uploading')
+         where file_job.artifact_provider = 'supabase_mvp'
+           and file_job.state in ('pending', 'succeeded', 'partial', 'failed')
+           and file_job.expires_at <= now()
+         order by file_job.expires_at, file_job.id limit page_limit
+      ) candidate;
+  end if;
+  return result;
+end;
+$$;
+
+create or replace function app_private.form_worker_complete_cleanup(
+  p_job_id uuid,
+  p_worker_id text,
+  p_item_ids uuid[]
+)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare worker_job app_private.form_worker_jobs;
+declare completed_count integer;
+declare requested_count integer := coalesce(cardinality(p_item_ids), 0);
+begin
+  if p_item_ids is null or requested_count > 200
+     or requested_count <> (
+       select count(distinct item_id) from unnest(p_item_ids) as items(item_id)
+     ) then
+    raise invalid_parameter_value using message = 'invalid cleanup items';
+  end if;
+  select * into worker_job from app_private.form_worker_jobs
+   where id = p_job_id and job_kind in ('cleanup_uploads', 'cleanup_artifacts')
+     and state = 'processing' and lease_owner = p_worker_id and lease_expires_at >= now()
+   for update;
+  if worker_job.id is null then
+    raise serialization_failure using message = 'worker lease unavailable';
+  end if;
+  if worker_job.job_kind = 'cleanup_uploads' then
+    update public.form_assets
+       set state = 'expired'
+     where id = any(p_item_ids) and (
+       (state in ('prepared', 'uploaded') and expires_at <= now())
+       or (state = 'discarded' and discarded_at is not null)
+     );
+  else
+    update app_private.form_multipart_uploads multipart
+       set state = 'aborted', aborted_at = now(), updated_at = now()
+      where multipart.file_job_id = any(p_item_ids)
+        and multipart.state in ('initiated', 'uploading')
+        and exists (
+          select 1 from public.form_file_jobs file_job
+           where file_job.id = multipart.file_job_id
+             and file_job.artifact_provider = 'supabase_mvp'
+             and file_job.expires_at <= now()
+        );
+    update public.form_file_jobs
+       set state = 'expired', artifact_path = null, artifact_byte_length = null
+     where id = any(p_item_ids) and artifact_provider = 'supabase_mvp'
+       and state in ('pending', 'succeeded', 'partial', 'failed') and expires_at <= now();
+  end if;
+  get diagnostics completed_count = row_count;
+  if completed_count <> requested_count then
+    raise serialization_failure using message = 'cleanup items unavailable';
+  end if;
+  update app_private.form_worker_jobs
+     set state = 'succeeded', progress_jsonb = jsonb_build_object('completed', true, 'items', completed_count),
+         completed_at = now(), lease_owner = null, lease_expires_at = null
+   where id = worker_job.id;
+end;
+$$;
+
+
+revoke all on function app_private.form_worker_cleanup_snapshot(uuid,text,integer),
+  app_private.form_worker_complete_cleanup(uuid,text,uuid[]) from public,anon,authenticated,service_role;
 -- WIP: worker failure, physical cleanup and R2 writer integration
 -- follow in this reserved candidate before a complete packet is proposed.
 commit;

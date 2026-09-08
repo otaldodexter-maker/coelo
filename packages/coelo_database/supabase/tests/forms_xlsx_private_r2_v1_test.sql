@@ -37,15 +37,16 @@ begin
     'requested_membership_id',pg_temp.xlsx_id(501),'requested_auth_session_id',pg_temp.xlsx_id(201),
     'requested_scope_kind','institution','requested_scope_institution_id',pg_temp.xlsx_id(10),
     'requested_management_version',1,'request_payload_sha256',repeat('a',64),
-    'snapshot_format_version',1,'snapshot_row_count',0,'snapshot_ready',false)||patch);
+    'snapshot_format_version',1,'snapshot_row_count',0,'snapshot_ready',false,
+    'expires_at',now()+interval '24 hours')||patch);
   insert into public.form_file_jobs(id,form_id,institution_id,requested_by_person_id,request_id,export_kind,state,
     artifact_provider,requested_by_internal_identity_id,requested_auth_link_id,requested_membership_id,
     requested_auth_session_id,requested_scope_kind,requested_scope_institution_id,requested_management_version,
-    request_payload_sha256,snapshot_format_version,snapshot_row_count,snapshot_ready)
+    request_payload_sha256,snapshot_format_version,snapshot_row_count,snapshot_ready,expires_at)
   values(j.id,j.form_id,j.institution_id,j.requested_by_person_id,j.request_id,j.export_kind,j.state,
     j.artifact_provider,j.requested_by_internal_identity_id,j.requested_auth_link_id,j.requested_membership_id,
     j.requested_auth_session_id,j.requested_scope_kind,j.requested_scope_institution_id,j.requested_management_version,
-    j.request_payload_sha256,j.snapshot_format_version,j.snapshot_row_count,j.snapshot_ready);
+    j.request_payload_sha256,j.snapshot_format_version,j.snapshot_row_count,j.snapshot_ready,j.expires_at);
 end;
 $$;
 create function pg_temp.xlsx_asset(n integer,job_number integer,patch jsonb default '{}'::jsonb)
@@ -401,6 +402,24 @@ reset role;
 select is((select body->>'state' from xlsx_worker_results where label='committed_after_logout'),'committed','service can preserve committed winner after requester logout without delivery authorization');
 select ok(not has_function_privilege('authenticated','public.form_worker_complete_xlsx_r2_v1(uuid,text,uuid,uuid,bigint,text)','execute'),'user cannot attest measured artifact');
 select ok(not has_function_privilege('authenticated','public.form_worker_reconcile_xlsx_r2_v1(uuid,uuid,uuid)','execute'),'reconciliation metadata is service-only');
+
+
+-- Old Storage cleanup must never consume a new R2 job or asset.
+select pg_temp.xlsx_job(712,jsonb_build_object('expires_at',now()-interval '1 hour'));
+update public.form_file_jobs set expires_at=now()-interval '1 hour' where id=pg_temp.xlsx_id(720);
+insert into app_private.form_worker_jobs(id,job_kind,state,attempts,lease_owner,lease_expires_at)
+values(pg_temp.xlsx_id(14000),'cleanup_artifacts','processing',1,'c02-legacy-cleanup',now()+interval '5 minutes');
+set local role service_role;
+insert into xlsx_worker_results values('legacy_cleanup',public.form_worker_cleanup_snapshot('8c021000-0000-4000-8000-000000014000','c02-legacy-cleanup',100));
+select throws_ok($$select public.form_worker_complete_cleanup('8c021000-0000-4000-8000-000000014000','c02-legacy-cleanup',array['8c021000-0000-4000-8000-000000000712'::uuid])$$,'40001','cleanup items unavailable','Storage cleanup cannot claim a forged R2 job ID');
+reset role;
+select is((select jsonb_array_length(body->'items') from xlsx_worker_results where label='legacy_cleanup'),1,'legacy cleanup only selects its provider');
+select is((select body#>>'{items,0,id}' from xlsx_worker_results where label='legacy_cleanup'),pg_temp.xlsx_id(720)::text,'legacy expired job is still offered');
+select is((select state from public.form_file_jobs where id=pg_temp.xlsx_id(712)),'pending','denied legacy cleanup leaves R2 job untouched');
+set local role service_role;
+select lives_ok($$select public.form_worker_complete_cleanup('8c021000-0000-4000-8000-000000014000','c02-legacy-cleanup',array['8c021000-0000-4000-8000-000000000720'::uuid])$$,'valid legacy cleanup keeps historical behavior');
+reset role;
+select is((select state from public.form_file_jobs where id=pg_temp.xlsx_id(720)),'expired','legacy job expires after nominal cleanup');
 
 set constraints all immediate;
 select * from finish();
