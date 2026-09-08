@@ -16,10 +16,13 @@ begin
 end
 $$;
 insert into public.platform_permissions(
-  code,module_code,screen_code,action_code,description,risk_level,requires_mfa,status
+  code,module_code,module_label,screen_code,screen_label,action_code,action_label,
+  description,risk_level,requires_mfa,status
 ) values
-  ('locations.read','locations','directory','read','LOCAL FIXTURE location read','normal',false,'active'),
-  ('locations.create','locations','management','create','LOCAL FIXTURE location create','high',false,'active');
+  ('locations.read','locations','Locais','directory','Catálogo','read','Ver',
+    'LOCAL FIXTURE location read','normal',false,'active'),
+  ('locations.create','locations','Locais','management','Catálogo','create','Criar',
+    'LOCAL FIXTURE location create','high',false,'active');
 insert into public.platform_role_permissions(role_id,permission_id,effect,status)
   select r.id,p.id,'allow','active' from public.platform_roles r
   cross join public.platform_permissions p where r.code='owner' and r.status='active'

@@ -76,15 +76,21 @@ select throws_ok($$select app_private.superadmin_create_activity_locations(null,
   '42501',null,'legacy helper cannot replay or write');
 
 select set_config('request.jwt.claims','{}',true);
+create temporary table location_no_session_responses(seq integer primary key,body jsonb);
+grant insert on location_no_session_responses to authenticated;
 set local role authenticated;
-select is(public.superadmin_location_detail_v2('10000000-0000-4000-8000-000000000001')
-  #>>'{error,code}','SAI_AUTH_REQUIRED','detail requires validated session');
-select is(public.superadmin_location_directory_v2('institution',
-  '10000000-0000-4000-8000-000000000001',null,null,24,0)
-  #>>'{error,code}','SAI_AUTH_REQUIRED','directory requires validated session');
-select is(public.superadmin_location_create_v2('{}','10000000-0000-4000-8000-000000000002')
-  #>>'{error,code}','SAI_AUTH_REQUIRED','create authenticates before processing payload');
+insert into location_no_session_responses values
+  (1,public.superadmin_location_detail_v2('10000000-0000-4000-8000-000000000001')),
+  (2,public.superadmin_location_directory_v2('institution',
+    '10000000-0000-4000-8000-000000000001',null,null,24,0)),
+  (3,public.superadmin_location_create_v2('{}','10000000-0000-4000-8000-000000000002'));
 reset role;
+select is((select body#>>'{error,code}' from location_no_session_responses where seq=1),
+  'SAI_AUTH_REQUIRED','detail requires validated session');
+select is((select body#>>'{error,code}' from location_no_session_responses where seq=2),
+  'SAI_AUTH_REQUIRED','directory requires validated session');
+select is((select body#>>'{error,code}' from location_no_session_responses where seq=3),
+  'SAI_AUTH_REQUIRED','create authenticates before processing payload');
 
 select * from finish();
 rollback;

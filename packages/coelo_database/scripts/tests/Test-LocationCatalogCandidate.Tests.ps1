@@ -1,10 +1,19 @@
-param()
+param([string]$Revision = '')
 $ErrorActionPreference = 'Stop'
+if ($Revision -and $Revision -notmatch '^[0-9a-f]{40}$') { throw 'Revision must be an exact commit hash.' }
+function Read-NominalCandidateFile([string]$RelativePath) {
+  if ($Revision) {
+    $content = & git show "$($Revision):packages/coelo_database/$RelativePath"
+    if ($LASTEXITCODE -ne 0) { throw "Missing nominal file at revision: $RelativePath" }
+    return $content -join "`n"
+  }
+  return Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot "../../$RelativePath")
+}
 $candidatePath = Join-Path $PSScriptRoot '../../migrations/20260908031000_superadmin_location_catalog_v2.sql'
 if (-not (Test-Path -LiteralPath $candidatePath)) {
   throw 'RED LOC-CATALOG01: nominal local SQL candidate is missing; no database was contacted.'
 }
-$candidateSql = Get-Content -Raw -LiteralPath $candidatePath
+$candidateSql = Read-NominalCandidateFile 'migrations/20260908031000_superadmin_location_catalog_v2.sql'
 $requirements = [ordered]@{
   'transaction' = '(?is)\bbegin;.*\bcommit;'
   'locked empty preflight' = '(?is)lock table public\.activity_locations in access exclusive mode.*if exists\(select 1 from public\.activity_locations\)'
@@ -33,4 +42,17 @@ if ($candidateSql -match '(?im)^\s*(delete from|truncate)\s+public\.activity_loc
 if ($candidateSql -match '(?im)^\s*insert into public\.platform_(permissions|role_permissions)') {
   throw 'RED LOC-CATALOG01: capability provisioning belongs to nominal fixtures, not this candidate.'
 }
-Write-Output "PASS: $($requirements.Count) static candidate gates; SQL runtime/replay NOT executed."
+foreach ($testFile in @('superadmin_location_catalog_v2_test.sql','superadmin_location_catalog_v2_authorization_test.sql')) {
+  $testSql = Read-NominalCandidateFile "supabase/tests/$testFile"
+  $actorBlocks = [regex]::Matches($testSql, '(?is)set local role authenticated;(.*?)reset role;')
+  foreach ($actorBlock in $actorBlocks) {
+    if ($actorBlock.Groups[1].Value -match '(?is)\bselect\s+(is|ok|throws_ok|lives_ok|no_plan|finish)\s*\(') {
+      throw "RED LOC-TAP01: TAP assertion executes as authenticated in $testFile"
+    }
+  }
+}
+$bootstrapSql = Read-NominalCandidateFile 'tests/fixtures/location_catalog_v2_capability_bootstrap.sql'
+if ($bootstrapSql -notmatch 'module_label' -or $bootstrapSql -notmatch 'screen_label' -or $bootstrapSql -notmatch 'action_label') {
+  throw 'RED LOC-TAP01: bootstrap must explicitly supply required permission labels.'
+}
+Write-Output "PASS: $($requirements.Count) static candidate gates plus TAP-role/label guards; SQL runtime/replay NOT executed."

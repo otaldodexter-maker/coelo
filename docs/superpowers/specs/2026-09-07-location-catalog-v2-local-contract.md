@@ -117,6 +117,24 @@ mesma conexão; não é migration de produção nem seed após reset. Engineer1
 seleciona e serializa o replay. Nenhuma execução Docker ou remota é delegada
 por esta ficha. A matriz de capabilities de produção permanece não aprovada.
 
+Dependência nominal de envelope para seleção do perfil:
+`packages/coelo_database/migrations/20260827235500_superadmin_internal_institution_list_filter.sql`,
+SHA256 `C4496229E2D004907B1C878E9719CADFA60169307EEB92BE67CD76C3AD5551AA`.
+Sua definição de `superadmin_internal_error_envelope` preserva
+`SAI_INVALID_ARGUMENT` e `SAI_CONCURRENT_CHANGE`; presença do helper Auth
+original isolado não basta. Engineer1 determina a ordem compatível das
+dependências nominais; não reaplicar migration ou extrair helper cegamente.
+O preflight candidato continua exigindo ambos os códigos, sem reparar helper.
+
+O bootstrap informa explicitamente module_label/screen_label/action_label:
+`20260811215451_access_profile_management_v2.sql` exige NOT NULL e
+`20260831130726_reconcile_permission_labels_after_replay.sql` remove defaults.
+Não se alteram constraints, defaults nem grants para viabilizar as fixtures.
+Todas as assertions TAP rodam após RESET ROLE; sob authenticated ficam apenas
+RPCs e captura em tabelas temporárias. O teste de audit rollback captura
+SQLSTATE/mensagem em bloco DO executado como authenticated, nunca chama TAP como
+ator e não concede acesso a extensions ou a funções de produção adicionais.
+
 A revisão independente identificou reautorização insuficiente do recurso
 referenciado pelo receipt e classificação incorreta do payload divergente.
 O candidato agora deriva o proprietário atual antes da projeção, filtra escopo

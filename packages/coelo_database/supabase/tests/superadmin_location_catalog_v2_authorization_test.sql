@@ -171,11 +171,23 @@ create trigger fail_location_audit before insert on audit.audit_logs
   for each row when(new.action_code='location.create') execute function pg_temp.fail_location_audit();
 select pg_temp.location_actor(1);
 set local role authenticated;
-select throws_ok($$select public.superadmin_location_create_v2(
-  (select value||'{"name":"Audit rollback"}' from location_test_payload),
-  '81800000-0000-4000-8000-000000000013')$$,'P0001','forced location audit failure',
-  'audit failure aborts creation');
+do $capture_audit_failure$
+declare captured_message text; captured_state text; captured_result jsonb;
+begin
+  begin
+    select public.superadmin_location_create_v2(
+      value||'{"name":"Audit rollback"}','81800000-0000-4000-8000-000000000013')
+      into captured_result from pg_temp.location_test_payload;
+  exception when others then
+    get stacked diagnostics captured_message=message_text,captured_state=returned_sqlstate;
+    captured_result:=jsonb_build_object('sqlstate',captured_state,'message',captured_message);
+  end;
+  insert into pg_temp.location_test_responses values(18,captured_result);
+end
+$capture_audit_failure$;
 reset role;
+select is((select (body->>'sqlstate')||':'||(body->>'message') from location_test_responses where seq=18),
+  'P0001:forced location audit failure','audit failure aborts creation');
 drop trigger fail_location_audit on audit.audit_logs;
 select ok((select locations=(select count(*) from public.activity_locations)
   and receipts=(select count(*) from app_private.superadmin_location_create_receipts)

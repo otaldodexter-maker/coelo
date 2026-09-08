@@ -29,6 +29,18 @@ Principal ou Site; nenhuma permissão para execução remota.
 
 ## Handoff obrigatório
 
+Revisão posterior da coordenação detectou três assertions TAP básicas e uma
+assertion de rollback executadas como authenticated, além de labels obrigatórios
+omitidos no bootstrap. Corrigidos: RPC/captura preserva papel real, TAP somente
+após RESET; bootstrap fornece labels sem defaults artificiais. Novo guard
+estático aplicado aos bytes do commit ce318d05 reproduziu RED por TAP sob ator;
+nos arquivos corrigidos passou junto dos 17 gates anteriores. Nenhum pgTAP
+foi executado para este resultado estático.
+
+Dependência nominal 20260827235500 do envelope registrada com SHA256 na ficha.
+Helper Auth original não comprova `SAI_INVALID_ARGUMENT`. Continua obrigatório
+o replay selecionado por Engineer1; nenhum desbloqueio remoto foi presumido.
+
 Engineer1 seleciona e executa replay local serializado. Ordem: dependências,
 bootstrap nominal de capabilities, migration candidata, duas suítes pgTAP.
 Bootstrap é opt-in explícito, separado e anterior à migration; um seed posterior
