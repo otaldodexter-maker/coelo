@@ -1,7 +1,7 @@
 ---
 title: "Locais — contrato puro de seleção compartilhada"
 source: "desenho aprovado de Locais em2026-09-02; escopo E2E2 do Owner; crosswalk local"
-status: "proposed-local-package; awaiting-coordinator-reservation"
+status: "approved-local-package; LOC-CONTRACT01-reserved"
 generated_at: "2026-09-07"
 ---
 
@@ -23,14 +23,18 @@ um incremento da fundação Locais; não implementa os sete fluxos nem os certif
 ## Contrato proposto
 
 - LocationScope representa instituição ou unidade de maneira explícita;
-  escopo da unidade inclui institutionId e unitId, sem inferir parentesco.
+  escopo é do proprietário, não consumidor; unidade inclui institutionId e
+  unitId, sem inferir parentesco.
 - LocationKind distingue interno/externo.
 - LocationReferenceSnapshot é imutável: id estável, scope, kind e label.
+  id é locationId; snapshot não prova estado atual, visibilidade ou autorização.
 - LocationSelection distingue referência catalogada de texto pontual.
   Pontual não recebe id fictício nem participação automática no catálogo.
 - Nenhum método confere capability, decide visibilidade, resolve tenant,
   reserva horário, grava vínculo ou promove texto pontual ao catálogo.
 - Nenhum parse/serializer de RPC, caminho de objeto, URL, R2 ou segredo.
+- Nenhum adapter legado infere kind a partir de ActivityFormLocationOption,
+  que não informa tipo. Versão do formulário permanece no consumidor.
 - Sem política nova de UUID, tamanho, normalização ou endereço: constraints
   server-side ficam no contrato de cadastro a aprovar nominalmente.
 
@@ -55,4 +59,5 @@ do handoff. Contratos de produção e E2E seguem abertos.
 Recorte sem dependência remota ou decisão de público/permissão. Não cria um
 catálogo paralelo, não renomeia tabela existente e não concede acesso a partir
 do tipo Dart. Endereço e proveniência pertencem ao cadastro/detalhe futuro,
-não a esta referência mínima de seleção. A reserva nominal precede código.
+não a esta referência mínima de seleção. O Coordenador concedeu LOC-CONTRACT01
+antes do código, incluindo os três arquivos nominais e nenhum consumidor.
