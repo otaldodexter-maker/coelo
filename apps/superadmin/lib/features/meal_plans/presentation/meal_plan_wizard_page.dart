@@ -1571,6 +1571,13 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
               'O cardápio publicado não corresponde ao solicitado.',
             );
           }
+          if (published.status != MealPlanStatus.published ||
+              published.isDraft ||
+              published.requiresReview) {
+            throw const MealPlanUnavailableException(
+              'Não foi possível confirmar a publicação do cardápio.',
+            );
+          }
         }
       }
       if (!isCurrent()) return;
