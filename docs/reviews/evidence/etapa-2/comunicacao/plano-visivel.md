@@ -38,6 +38,7 @@ Coordenador; este arquivo registra somente esta frente.
 | 6/6 da fatia | Avisos / imagem legada e feedback / `notices.publish` | Cliente; nenhum BD executado | `review_media_session` | RED três mensagens; GREEN 106/106 sem goldens; bloqueio preservado, zero request e conversão textual; próximo gate gateway R2 e regressão visual |
 | 6/6 da fatia | Circulares / criar-editar, salvar e retomar publicação | Controller Flutter; RPC save_draft v2 somente inspecionada | `review_chat_receipt` | RED três falhas; GREEN 68/68 não-golden; replay de save recupera ID/versão antes de edições; próximo gate publish ambíguo e integração real |
 | 6/6 da fatia leitura | Chat / anexo imagem, mídia M03 | coelo_api puro; catálogo ainda não alterado | `review_media_session`, `crosswalk_media` | 59/59 pacote, analyzer e dois reviews sem bloqueante; próximo gate asset_id canônico, catálogo/gateway e consumidor real |
+| 6/6 da fatia referência | Chat / anexo, mídia M03 | DTO e adapter Flutter; nenhum BD | `review_media_session` | 16/16 adapter e 62/62 Chat não-golden; assetId distinto da metadata; catálogo/projeção/gateway ainda abertos |
 | 6/6 da fatia | Momentos / transporte privado R2 / mídia server-side | Deno `moments-media/r2_s3.ts` e `_shared/r2_s3.ts`; nenhum BD nesta fatia | `review_media_session`, `review_chat_receipt`, `crosswalk_media` | M02 com extensão index_test autorizada; RED seis falhas, GREEN 29/29 completo, lint/typecheck; commit e integração real pendentes |
 
 Sem API de plano nativo disponível nesta sessão. Este documento é a alternativa

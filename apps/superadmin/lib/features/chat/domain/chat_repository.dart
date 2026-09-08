@@ -121,6 +121,7 @@ final class ChatAttachment {
     required this.fileName,
     required this.mediaType,
     required this.byteSize,
+    this.assetId,
     this.downloadUrl,
   });
 
@@ -128,6 +129,10 @@ final class ChatAttachment {
   final String fileName;
   final String mediaType;
   final int byteSize;
+
+  /// Canonical media catalog reference, distinct from metadata [id].
+  /// Null for legacy metadata; never infer it from an id, key or URL.
+  final String? assetId;
 
   /// Short-lived URL supplied only by an authorised server gateway.
   final Uri? downloadUrl;

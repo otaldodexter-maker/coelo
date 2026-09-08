@@ -166,12 +166,25 @@ ChatMessage _message(Map<String, dynamic> json, {required String conversationId}
 
 ChatAttachment _attachment(Map<String, dynamic> json) => ChatAttachment(
   id: _string(json, 'id'),
+  assetId: _assetId(json['asset_id']),
   fileName: _string(json, 'file_name'),
   mediaType: _string(json, 'content_type'),
   byteSize: _int(json['byte_size']),
   // R2 URLs are issued only by the server-side gateway and are not part of the
   // chat RPC. Metadata can render safely while upload/download remains gated.
   downloadUrl: null,
+);
+
+String? _assetId(Object? value) {
+  if (value == null) return null;
+  if (value is! String || !_canonicalAssetId.hasMatch(value)) {
+    throw const ChatFailureException();
+  }
+  return value.toLowerCase();
+}
+
+final _canonicalAssetId = RegExp(
+  r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
 );
 
 ChatCursor? _cursor(Object? value) {
