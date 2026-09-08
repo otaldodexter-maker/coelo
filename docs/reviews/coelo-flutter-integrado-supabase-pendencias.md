@@ -14,13 +14,19 @@ verified_e2e_count: 0
 supabase_backend_gate_count: 21
 flutter_only_general_gate_count: 1
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-flutter_tracker_sha256: "6EBC54DCA2AC3032FB2BC1622B8A0D1CC419FDD4AE70443C14AB653D15F1D773"
+flutter_tracker_sha256: "02425CB395066CF02632C32938CE925EFAC6196EABB0840E48C5867C18D80F5C"
 supabase_tracker_sha256: "72823DD534DA068ABA5F9A3675882C928D983D2EC460E66ECADFF2C647FFC6C7"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
 ## Rodada de 2026-09-07 — consolidação não é conclusão E2E
+
+- Atualização01:35: isolamento Perfil/Circulares e controller de atividades
+  integrado em1b6533bc/175acbf0/50814957,21/21 focais e analyzer3 no destino.
+  Sem SQL/mídia real. Autosave de rascunho Forms autorizado para implementação
+  cliente do requisito existente, sem validação de publicação sobre rascunho;
+  fluxo remoto/receipt real seguem pendentes.
 
 - Atualização01:32: adapter Locais `4328741a` e versão de modelo Cardápios
   `682d4483` integrados após revisão independente e leitura central; destino

@@ -14,6 +14,11 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização01:35: Perfil/Circulares `1b6533bc`/`175acbf0` invalidam páginas
+  e prévias ao trocar contexto; cabeçalho `50814957` substitui controller de
+  atividades preservando ownership externo. Destino21/21 focais e analyzer3
+  PASS; mídia privada, autorização real e E2E não certificados por este lote.
+
 - Atualização01:32: `locations.list`/`locations.detail-links` ganham adapter
   READ v2 estrito `4328741a` (fonte64ec7a6), sem rota/DI ativada; destino88/88
   Locais PASS. Cardápios preserva versão histórica e versão do detalhe copiado
