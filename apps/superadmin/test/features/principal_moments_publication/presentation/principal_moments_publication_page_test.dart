@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:coelo_superadmin/features/principal_moments_publication/application/moments_publication_controller.dart';
 import 'package:coelo_superadmin/features/principal_moments_publication/domain/moments_publication.dart';
 import 'package:coelo_superadmin/features/principal_moments_publication/presentation/principal_moments_publication_page.dart';
+import 'package:coelo_superadmin/features/principal_moments_publication/presentation/principal_moments_publication_route.dart';
 import 'package:coelo_superadmin/features/principal_shared/presentation/principal_publication_frame.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -11,6 +12,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  const contextB = MomentsPublicationContext(
+    institutionId: 'institution-b',
+    institutionName: 'Contexto B',
+    unitId: 'unit-b',
+    unitName: 'Unidade B',
+    groupId: 'group-b',
+    groupName: 'Grupo B',
+  );
   Future<MomentsPublicationController> pumpPage(
     WidgetTester tester, {
     required Size size,
@@ -65,6 +74,142 @@ void main() {
     }
     return controller;
   }
+
+  testWidgets('route replacement drops old draft and loads the new context', (tester) async {
+    final first = InMemoryMomentsPublicationRepository(draft: MomentsDraft(caption: 'Contexto A'));
+    final second = _DeferredPageLoadMomentsRepository();
+    Widget route(MomentsPublicationRepository repository) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: PrincipalMomentsPublicationRoute(
+        repository: repository,
+        publicationContext: identical(repository, first)
+            ? MomentsPublicationContext.demo
+            : contextB,
+      ),
+    );
+    await tester.pumpWidget(route(first));
+    await tester.pumpAndSettle();
+    expect(find.text('Contexto A'), findsWidgets);
+    await tester.pumpWidget(route(second));
+    await tester.pump();
+    expect(second.loadCalls, 1);
+    expect(find.text('Contexto A'), findsNothing);
+    expect(find.byKey(const Key('moments-publication-loading')), findsOneWidget);
+    second.loadCompleter.complete(MomentsDraft(caption: 'Contexto B'));
+    await tester.pumpAndSettle();
+    expect(find.text('Contexto B'), findsWidgets);
+    expect(find.text('Contexto A'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('late route load cannot restore the previous context', (tester) async {
+    final first = _DeferredPageLoadMomentsRepository();
+    final second = InMemoryMomentsPublicationRepository(draft: MomentsDraft(caption: 'Contexto B'));
+    Widget route(MomentsPublicationRepository repository) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: PrincipalMomentsPublicationRoute(
+        repository: repository,
+        publicationContext: identical(repository, first)
+            ? MomentsPublicationContext.demo
+            : contextB,
+      ),
+    );
+    await tester.pumpWidget(route(first));
+    await tester.pump();
+    await tester.pumpWidget(route(second));
+    await tester.pump();
+    first.loadCompleter.complete(MomentsDraft(caption: 'Contexto A tardio'));
+    await tester.pumpAndSettle();
+    expect(find.text('Contexto B'), findsWidgets);
+    expect(find.text('Contexto A tardio'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('late publication from a replaced controller cannot call the new page callbacks', (
+    tester,
+  ) async {
+    final first = _DeferredPagePublishMomentsRepository();
+    var callbacks = 0;
+    final oldController = await pumpPage(
+      tester,
+      size: const Size(1440, 1000),
+      repository: first,
+      onPublished: (_) => callbacks++,
+    );
+    addTearDown(oldController.dispose);
+    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('moments-publication-publish')));
+    await tester.pump();
+    final newController = await pumpPage(
+      tester,
+      size: const Size(1440, 1000),
+      repository: InMemoryMomentsPublicationRepository(draft: MomentsDraft(caption: 'Contexto B')),
+      onPublished: (_) => callbacks++,
+      onClose: () => callbacks++,
+      settle: false,
+    );
+    addTearDown(newController.dispose);
+    first.publishCompleter.complete(
+      const MomentsPublication(id: 'old-publication', status: MomentsStatus.published),
+    );
+    await tester.pumpAndSettle();
+    expect(callbacks, 0);
+    expect(find.text('Contexto B'), findsWidgets);
+    expect(find.text('Momento publicado.'), findsNothing);
+    expect(find.byKey(const Key('moments-publication-publish')), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('switching demo to a supplied controller clears fixture content', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(theme: CoeloTheme.light, home: const PrincipalMomentsPublicationPage.demo()),
+    );
+    await tester.pumpAndSettle();
+    final controller = MomentsPublicationController(
+      repository: InMemoryMomentsPublicationRepository(
+        draft: MomentsDraft(caption: 'Contexto real sintético'),
+      ),
+      context: contextB,
+    );
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalMomentsPublicationPage(controller: controller),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Contexto real sintético'), findsWidgets);
+    expect(find.textContaining('#coelomomentos'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('late save from a replaced controller cannot close the new page', (tester) async {
+    final first = _DeferredSaveMomentsRepository();
+    var callbacks = 0;
+    final oldController = await pumpPage(tester, size: const Size(1440, 1000), repository: first);
+    addTearDown(oldController.dispose);
+    await tester.tap(find.byKey(const Key('moments-publication-save')));
+    await tester.pump();
+    final newController = await pumpPage(
+      tester,
+      size: const Size(1440, 1000),
+      repository: InMemoryMomentsPublicationRepository(draft: MomentsDraft(caption: 'Contexto B')),
+      onDraftSaved: (_) => callbacks++,
+      onClose: () => callbacks++,
+      settle: false,
+    );
+    addTearDown(newController.dispose);
+    first.saveCompleter.complete(first.savedSnapshot!.copyWith(id: 'old-draft', version: 2));
+    await tester.pumpAndSettle();
+    expect(callbacks, 0);
+    expect(find.text('Contexto B'), findsWidgets);
+    expect(find.text('Rascunho salvo.'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('renders the approved composer anatomy on mobile', (tester) async {
     await pumpPage(tester, size: const Size(375, 900));
@@ -586,10 +731,14 @@ final class _DeferredSaveMomentsRepository implements MomentsPublicationReposito
 
 final class _DeferredPageLoadMomentsRepository implements MomentsPublicationRepository {
   final loadCompleter = Completer<MomentsDraft?>();
+  var loadCalls = 0;
   var saveCalls = 0;
 
   @override
-  Future<MomentsDraft?> loadDraft(MomentsPublicationContext context) => loadCompleter.future;
+  Future<MomentsDraft?> loadDraft(MomentsPublicationContext context) {
+    loadCalls++;
+    return loadCompleter.future;
+  }
 
   @override
   Future<MomentsPublication> publish(MomentsPublicationContext context, MomentsDraft draft) {

@@ -54,9 +54,10 @@ class PrincipalMomentsPublicationPage extends StatefulWidget {
 }
 
 class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublicationPage> {
-  late final MomentsPublicationController _controller;
-  late final bool _ownsController;
+  late MomentsPublicationController _controller;
+  late bool _ownsController;
   late final TextEditingController _captionController;
+  var _controllerGeneration = 0;
   int _selectedMediaIndex = 0;
   int _currentStep = 0;
 
@@ -66,6 +67,22 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
     _ownsController = widget.demo;
     _controller = widget.demo ? _createDemoController() : widget.controller!;
     _captionController = TextEditingController();
+    _controller.addListener(_syncCaption);
+    unawaited(_load());
+  }
+
+  @override
+  void didUpdateWidget(covariant PrincipalMomentsPublicationPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.demo == widget.demo && identical(oldWidget.controller, widget.controller)) return;
+    _controller.removeListener(_syncCaption);
+    if (_ownsController) _controller.dispose();
+    _controllerGeneration++;
+    _ownsController = widget.demo;
+    _controller = widget.demo ? _createDemoController() : widget.controller!;
+    _captionController.clear();
+    _selectedMediaIndex = 0;
+    _currentStep = 0;
     _controller.addListener(_syncCaption);
     unawaited(_load());
   }
@@ -86,10 +103,15 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
   }
 
   Future<void> _load() async {
-    await _controller.load();
-    if (!mounted) return;
+    final controller = _controller;
+    final generation = _controllerGeneration;
+    await controller.load();
+    if (!_isCurrentController(controller, generation)) return;
     _syncCaption();
   }
+
+  bool _isCurrentController(MomentsPublicationController controller, int generation) =>
+      mounted && identical(controller, _controller) && generation == _controllerGeneration;
 
   void _syncCaption() {
     final caption = _controller.state.draft.caption;
@@ -201,8 +223,10 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
   ).showSnackBar(SnackBar(content: Text('$label estará disponível na experiência completa.')));
 
   Future<void> _retry() async {
-    final publication = await _controller.retry();
-    if (!mounted || publication == null) return;
+    final controller = _controller;
+    final generation = _controllerGeneration;
+    final publication = await controller.retry();
+    if (!_isCurrentController(controller, generation) || publication == null) return;
     widget.onPublished?.call(publication);
     widget.onClose?.call();
   }
@@ -553,8 +577,10 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
   }
 
   Future<void> _saveDraft() async {
-    await _controller.saveDraft();
-    if (!mounted) return;
+    final controller = _controller;
+    final generation = _controllerGeneration;
+    await controller.saveDraft();
+    if (!_isCurrentController(controller, generation)) return;
     if ({
       MomentsPublicationPhase.failure,
       MomentsPublicationPhase.conflict,
@@ -571,8 +597,10 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
 
   Future<void> _publish() async {
     FocusManager.instance.primaryFocus?.unfocus();
-    final publication = await _controller.publish();
-    if (!mounted) return;
+    final controller = _controller;
+    final generation = _controllerGeneration;
+    final publication = await controller.publish();
+    if (!_isCurrentController(controller, generation)) return;
     if ({
       MomentsPublicationPhase.failure,
       MomentsPublicationPhase.conflict,
