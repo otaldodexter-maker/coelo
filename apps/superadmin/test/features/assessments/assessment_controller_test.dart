@@ -101,6 +101,67 @@ void main() {
     expect(controller.selectedStudent?.name, 'Aluno B');
   });
 
+  test('rejects a loaded gradebook whose ID differs from the request', () async {
+    final repository = _DeferredAssessmentRepository();
+    final controller = AssessmentController(repository);
+    addTearDown(controller.dispose);
+
+    final load = controller.loadGradebook('book-a');
+    repository.completeLoad('book-a', _book('book-b', 'Aluno adulterado'));
+    await load;
+
+    expect(controller.state, isA<AssessmentUnauthorized>());
+    expect(controller.gradebook, isNull);
+  });
+
+  test('rejects a saved gradebook that crosses the loaded institution', () async {
+    final repository = _DeferredAssessmentRepository();
+    final controller = AssessmentController(repository);
+    addTearDown(controller.dispose);
+    final load = controller.loadGradebook('book-a');
+    repository.completeLoad('book-a', _book('book-a', 'Aluno A'));
+    await load;
+
+    final save = controller.saveDraft();
+    repository.completeSave(
+      _book('book-a', 'Aluno B', context: _context(institutionId: 'institution-b')),
+    );
+
+    await expectLater(save, throwsA(isA<AssessmentUnauthorizedException>()));
+    expect(controller.state, isA<AssessmentUnauthorized>());
+    expect(controller.gradebook, isNull);
+  });
+
+  test('rejects a resumed diary outside the requested launch context', () async {
+    const configuration = AssessmentConfiguration(
+      id: 'configuration-a',
+      activityId: 'activity-1',
+      institutionId: 'institution-a',
+      periodicity: 'bimester',
+      scaleKind: AssessmentScaleKind.numeric0To10,
+      version: 1,
+      status: 'active',
+      instruments: [],
+      competencies: [],
+    );
+    final controller = AssessmentController(
+      _CreateAssessmentRepository(
+        _book(
+          'book-b',
+          'Aluno B',
+          context: _context(institutionId: 'institution-b'),
+          configuration: configuration,
+        ),
+      ),
+    );
+    addTearDown(controller.dispose);
+
+    await controller.start(_context(institutionId: 'institution-a'), configuration);
+
+    expect(controller.state, isA<AssessmentUnauthorized>());
+    expect(controller.gradebook, isNull);
+  });
+
   test('dispose clears loaded PII and ignores a pending command completion', () async {
     final repository = _DeferredAssessmentRepository();
     final controller = AssessmentController(repository);
@@ -145,14 +206,34 @@ void main() {
   });
 }
 
-AssessmentGradebook _book(String id, String studentName) => AssessmentGradebook(
+AssessmentGradebook _book(
+  String id,
+  String studentName, {
+  AssessmentContext context = const AssessmentContext.sample(),
+  AssessmentConfiguration? configuration,
+}) => AssessmentGradebook(
   id: id,
   version: 1,
   status: AssessmentGradebookStatus.draft,
-  context: const AssessmentContext.sample(),
+  context: context,
+  configuration: configuration,
   students: [
     AssessmentStudentEntry(id: 'student-$id', childContextId: 'child-$id', name: studentName),
   ],
+);
+
+AssessmentContext _context({required String institutionId}) => AssessmentContext(
+  activityGroupLinkId: 'link-1',
+  institutionId: institutionId,
+  institutionName: 'Instituição',
+  unitId: 'unit-1',
+  unitName: 'Unidade',
+  groupId: 'group-1',
+  groupName: 'Turma',
+  activityId: 'activity-1',
+  activityName: 'Atividade',
+  periodId: 'period-1',
+  periodName: 'Período',
 );
 
 final class _DeferredAssessmentRepository implements AssessmentRepository {
@@ -179,6 +260,20 @@ final class _DeferredAssessmentRepository implements AssessmentRepository {
     submitCalls += 1;
     return value;
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _CreateAssessmentRepository implements AssessmentRepository {
+  const _CreateAssessmentRepository(this.result);
+  final AssessmentGradebook result;
+
+  @override
+  Future<AssessmentGradebook> createOrResumeGradebook(
+    AssessmentContext context,
+    AssessmentConfiguration configuration,
+  ) async => result;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
