@@ -10,7 +10,7 @@ final class AuditActorSummary extends StatelessWidget {
   });
 
   final String actorName;
-  final String actorRole;
+  final String? actorRole;
   final String actorContext;
 
   @override
@@ -18,7 +18,7 @@ final class AuditActorSummary extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     return Semantics(
-      label: 'Ator $actorName, $actorRole, $actorContext',
+      label: ['Ator $actorName', ?actorRole, actorContext].join(', '),
       container: true,
       child: ExcludeSemantics(
         child: DecoratedBox(
@@ -40,7 +40,7 @@ final class AuditActorSummary extends StatelessWidget {
                     children: [
                       Text(actorName, style: theme.textTheme.titleSmall),
                       const SizedBox(height: CoeloSpacing.space1),
-                      Text(actorRole, style: theme.textTheme.bodyMedium),
+                      if (actorRole case final role?) Text(role, style: theme.textTheme.bodyMedium),
                       Text(
                         actorContext,
                         style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),

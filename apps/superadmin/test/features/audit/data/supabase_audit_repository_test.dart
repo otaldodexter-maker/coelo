@@ -8,6 +8,71 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  for (final actor in <Map<String, Object?>>[
+    {'kind': 'person', 'id': 'person', 'display_name': 'Ator', 'role_code': null},
+    {'kind': 'superadmin_internal', 'id': 'internal', 'display_name': 'Ator', 'role_code': null},
+    {
+      'kind': 'auth_session',
+      'id': null,
+      'display_name': 'Sessão autenticada',
+      'role_code': 'owner',
+    },
+    {
+      'kind': 'auth_session',
+      'id': 'raw-session',
+      'display_name': 'Sessão autenticada',
+      'role_code': null,
+    },
+  ]) {
+    test('rejects inconsistent actor projection $actor', () async {
+      final repository = SupabaseAuditRepository(
+        _client(
+          (request) async => Response(
+            jsonEncode({..._sessionEvent(), 'actor': actor}),
+            200,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          ),
+        ),
+      );
+      await expectLater(
+        repository.fetchDetail('event-session'),
+        throwsA(isA<AuditUnavailableException>()),
+      );
+    });
+  }
+
+  for (final detail in [false, true]) {
+    test('reads minimized auth-session event with null role detail=$detail', () async {
+      final repository = SupabaseAuditRepository(
+        _client(
+          (request) async => Response(
+            jsonEncode(
+              detail
+                  ? _sessionEvent()
+                  : {
+                      'items': [_sessionEvent()],
+                      'has_more': false,
+                      'next_cursor': null,
+                      'total_count': 1,
+                      'can_export': false,
+                    },
+            ),
+            200,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          ),
+        ),
+      );
+      final event = detail
+          ? (await repository.fetchDetail('event-session')).event
+          : (await repository.fetchPage(AuditQuery())).events.single;
+      expect(event.actor.id, isNull);
+      expect(event.actor.roleCode, isNull);
+      expect(event.actor.displayName, 'Sessão autenticada');
+    });
+  }
+
   test('fetchPage sends cursor and filters to the authorised list RPC', () async {
     late Map<String, Object?> body;
     late Uri requestUrl;
@@ -328,6 +393,35 @@ void main() {
     );
   });
 }
+
+Map<String, Object?> _sessionEvent() => {
+  'id': 'event-session',
+  'actor': {
+    'kind': 'auth_session',
+    'id': null,
+    'display_name': 'Sessão autenticada',
+    'role_code': null,
+  },
+  'institution': null,
+  'action_code': 'auth.bootstrap',
+  'object_type': null,
+  'object_id': null,
+  'outcome': 'denied',
+  'correlation_id': 'correlation-session',
+  'origin': 'admin_ui',
+  'context': {'kind': 'platform', 'id': null},
+  'occurred_at': '2026-09-07T23:00:00Z',
+  'before': null,
+  'after': null,
+  'reason': 'SAI_INTERNAL_ACTOR_REQUIRED',
+  'integrity': {
+    'version': 3,
+    'position': 1,
+    'previous_hash': null,
+    'hash': 'entry',
+    'verified': true,
+  },
+};
 
 SupabaseClient _client(Future<Response> Function(Request request) handler) => SupabaseClient(
   'https://project.supabase.co',
