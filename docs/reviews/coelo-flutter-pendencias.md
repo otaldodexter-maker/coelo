@@ -14,6 +14,13 @@ visual_program_accepted_count: 0
 
 ## Rodada de 2026-09-07 — integração incremental em curso
 
+- Atualização02:18: CHILD bb4a239d/f1fa37de/5a0c7aa2 integra adapter, estado
+  e pipeline isolados;38/38 no destino. Troca de instituição/revisão/logout
+  invalida resposta tardia, sem conexão às rotas. Cardápios c6532889 corrige
+  roundtrip plano/wrapper histórico inequívoco e conserva campos desconhecidos
+  da mesma camada;70/70 focais no destino. Analyzer dos4 arquivos PASS.
+  Não comprova autorização, persistência, mídia ou E2E reais.
+
 - Atualização02:10: Respostas `08315450`/`de51d4e7` integram retry com receipt
   retido e autosave800ms sem envio automático;52/52 no destino e analyzer2 PASS.
   Incompletude numérica não apaga valor anterior; revisão/envio seguem explícitos.
