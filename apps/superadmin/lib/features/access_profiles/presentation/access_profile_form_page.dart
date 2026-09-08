@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -12,7 +13,6 @@ import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
-import '../../institutions/presentation/widgets/institution_form_dialogs.dart';
 import '../../support/domain/support_ticket.dart';
 import '../domain/access_profile.dart';
 
@@ -85,6 +85,8 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
   String? _pendingSaveRequestId;
   String? _pendingSaveFingerprint;
   int _contextRevision = 0;
+  final Set<DialogRoute<bool>> _ownedDialogs = {};
+  bool _confirmingExit = false;
 
   bool _isCurrent(int revision) => mounted && revision == _contextRevision;
 
@@ -145,6 +147,8 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
         oldWidget.domain != widget.domain ||
         oldWidget.profileId != widget.profileId) {
       _contextRevision++;
+      _dismissOwnedDialogs();
+      _confirmingExit = false;
       _original = null;
       _loading = true;
       _saving = false;
@@ -202,27 +206,79 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
     }
   }
 
-  Future<void> _requestExit() async {
+  Future<void> _requestExit() => _confirmExit(widget.onCancel);
+
+  Future<void> _requestDestination(String destination) {
+    final onDestinationSelected = widget.onDestinationSelected;
+    return _confirmExit(() => onDestinationSelected?.call(destination));
+  }
+
+  Future<void> _confirmExit(VoidCallback onConfirmed) async {
+    if (_confirmingExit) return;
     final revision = _contextRevision;
-    final onCancel = widget.onCancel;
-    if (!_isDirty || await showInstitutionExitDialog(context, entityLabel: widget.entityLabel)) {
-      if (!_isCurrent(revision)) return;
-      onCancel();
+    _confirmingExit = true;
+    try {
+      if (!_isDirty || await _showExitDialog()) {
+        if (!_isCurrent(revision)) return;
+        onConfirmed();
+      }
+    } finally {
+      if (_isCurrent(revision)) _confirmingExit = false;
     }
   }
 
-  Future<void> _requestDestination(String destination) async {
-    final revision = _contextRevision;
-    final onDestinationSelected = widget.onDestinationSelected;
-    if (!_isDirty || await showInstitutionExitDialog(context, entityLabel: widget.entityLabel)) {
-      if (!_isCurrent(revision)) return;
-      onDestinationSelected?.call(destination);
+  // Preserve the approved Institutions confirmation content with a route owned
+  // by this form, so teardown cannot leave it over a different access context.
+  Future<bool> _showExitDialog() => _showOwnedDialog(
+    builder: (context) => CoeloAdminDialogShell(
+      dialogKey: const Key('institution-confirm-exit-dialog'),
+      title: 'Sair sem salvar?',
+      closeTooltip: 'Fechar confirmação',
+      closeButtonKey: const Key('institution-dialog-close'),
+      body: Text('As alterações feitas nesta ${widget.entityLabel} serão descartadas.'),
+      secondaryAction: OutlinedButton(
+        onPressed: () => Navigator.of(context).pop(false),
+        child: const Text('Continuar editando'),
+      ),
+      primaryAction: FilledButton(
+        onPressed: () => Navigator.of(context).pop(true),
+        child: const Text('Sair sem salvar'),
+      ),
+    ),
+  );
+
+  Future<bool> _showOwnedDialog({required WidgetBuilder builder}) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final route = DialogRoute<bool>(
+      context: context,
+      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      builder: builder,
+    );
+    _ownedDialogs.add(route);
+    try {
+      unawaited(navigator.push<bool>(route));
+      return await route.completed ?? false;
+    } finally {
+      _ownedDialogs.remove(route);
     }
+  }
+
+  void _dismissOwnedDialogs() {
+    final routes = _ownedDialogs.toList(growable: false);
+    _ownedDialogs.clear();
+    if (routes.isEmpty) return;
+    // didUpdateWidget/dispose can run while Navigator is building.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      for (final route in routes) {
+        if (route.isActive) route.navigator?.removeRoute(route);
+      }
+    });
   }
 
   @override
   void dispose() {
     _contextRevision++;
+    _dismissOwnedDialogs();
     _nameController.dispose();
     _codeController.dispose();
     _descriptionController.dispose();
@@ -307,8 +363,7 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
       if (!mounted || !_isCurrent(revision)) return;
       _pendingSaveRequestId = null;
       _pendingSaveFingerprint = null;
-      final reload = await showDialog<bool>(
-        context: context,
+      final reload = await _showOwnedDialog(
         builder: (dialogContext) => CoeloAdminDialogShell(
           title: 'Alterações em conflito',
           body: const Text(
