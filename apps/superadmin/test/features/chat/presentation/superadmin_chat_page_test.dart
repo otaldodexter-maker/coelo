@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:coelo_api/coelo_api.dart';
+import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_attachment_tile.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/chat/domain/chat_repository.dart';
 import 'package:coelo_superadmin/features/chat/presentation/screens/superadmin_chat_page.dart';
@@ -11,6 +13,58 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('page forwards canonical image reader and session without prefetch', (tester) async {
+    _viewport(tester, 1024);
+    final reader = _ImageReader();
+    final session = MediaSession();
+    final repository = _ChatRepository._(
+      inbox: _ChatRepository.standard().inbox,
+      thread: ChatThreadPage(
+        items: [
+          ChatMessage(
+            id: 'message-image',
+            conversationId: 'conversation-1',
+            body: '',
+            authorName: 'Marina',
+            sentAt: DateTime.utc(2026, 9, 7),
+            isMine: false,
+            kind: 'image',
+            attachments: const [
+              ChatAttachment(
+                id: 'metadata-image',
+                assetId: '11111111-1111-4111-8111-111111111111',
+                fileName: 'imagem.png',
+                mediaType: 'image/png',
+                byteSize: 100,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: SuperadminChatPage(
+          logout: _logout,
+          chatRepository: repository,
+          mediaReader: reader,
+          mediaSession: session,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final tile = tester.widget<SuperadminChatAttachmentTile>(
+      find.byType(SuperadminChatAttachmentTile),
+    );
+    expect(tile.mediaReader, same(reader));
+    expect(tile.mediaSession, same(session));
+    expect(reader.requests, 0);
+    await tester.tap(find.text('Abrir imagem'));
+    await tester.pumpAndSettle();
+    expect(reader.requests, 1);
+    expect(find.byKey(const Key('chat-image-processing')), findsOneWidget);
+  });
   for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
     testWidgets('renders authorised conversation data without overflow at ${width.toInt()}px', (
       tester,
@@ -582,6 +636,15 @@ void _viewport(WidgetTester tester, double width) {
 }
 
 Future<LogoutResult> _logout() async => const LogoutResult.success();
+
+final class _ImageReader implements MediaReader {
+  int requests = 0;
+  @override
+  Future<MediaReadResult> read(MediaReadRequest request) async {
+    requests++;
+    return MediaReadResult.fromJson({'asset_id': request.assetId, 'state': 'processing'});
+  }
+}
 
 final class _ChatRepository implements ChatRepository {
   _ChatRepository._({required this.inbox, required this.thread});

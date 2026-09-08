@@ -1,7 +1,9 @@
+import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/chat_repository.dart';
+import 'superadmin_chat_image_dialog.dart';
 
 enum SuperadminChatAttachmentState { pending, ready, failed, deleted }
 
@@ -10,17 +12,124 @@ enum SuperadminChatAttachmentState { pending, ready, failed, deleted }
 /// This component deliberately does not follow [ChatAttachment.downloadUrl].
 /// Download authorisation remains an explicit, server-authorised action owned
 /// by the calling flow.
-final class SuperadminChatAttachmentTile extends StatelessWidget {
+final class SuperadminChatAttachmentTile extends StatefulWidget {
   const SuperadminChatAttachmentTile({
     required this.attachment,
     required this.state,
     this.onRetry,
+    this.mediaReader,
+    this.mediaSession,
     super.key,
   });
 
   final ChatAttachment attachment;
   final SuperadminChatAttachmentState state;
   final VoidCallback? onRetry;
+  final MediaReader? mediaReader;
+  final MediaSession? mediaSession;
+
+  @override
+  State<SuperadminChatAttachmentTile> createState() => _SuperadminChatAttachmentTileState();
+}
+
+final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttachmentTile> {
+  final _openFocus = FocusNode(debugLabel: 'chat-open-image');
+  DialogRoute<void>? _imageRoute;
+  int _openingGeneration = 0;
+  void Function()? _unregister;
+
+  ChatAttachment get attachment => widget.attachment;
+  SuperadminChatAttachmentState get state => widget.state;
+  VoidCallback? get onRetry => widget.onRetry;
+
+  @override
+  void initState() {
+    super.initState();
+    _bindSession();
+  }
+
+  void _bindSession() {
+    final session = widget.mediaSession;
+    if (session != null && !session.isInvalidated) {
+      _unregister = session.registerPurge(() {
+        if (mounted) setState(() {});
+      });
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant SuperadminChatAttachmentTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.attachment.id != attachment.id ||
+        oldWidget.attachment.assetId != attachment.assetId ||
+        oldWidget.state != state ||
+        oldWidget.mediaReader != widget.mediaReader ||
+        oldWidget.mediaSession != widget.mediaSession) {
+      _dismissOwnedImage();
+      _unregister?.call();
+      _bindSession();
+    }
+  }
+
+  void _dismissOwnedImage() {
+    _openingGeneration++;
+    final route = _imageRoute;
+    _imageRoute = null;
+    if (route == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (route.isActive) route.navigator?.removeRoute(route);
+    });
+  }
+
+  bool get _canOpen {
+    final id = attachment.assetId;
+    if (id == null ||
+        widget.mediaReader == null ||
+        widget.mediaSession == null ||
+        widget.mediaSession!.isInvalidated ||
+        state != SuperadminChatAttachmentState.ready) {
+      return false;
+    }
+    try {
+      MediaReadRequest(assetId: id, rendition: MediaReadRendition.preview);
+      return true;
+    } on MediaProtocolException {
+      return false;
+    }
+  }
+
+  Future<void> _openImage() async {
+    if (!_canOpen || _imageRoute != null) return;
+    final assetId = attachment.assetId!;
+    final reader = widget.mediaReader!;
+    final session = widget.mediaSession!;
+    final generation = ++_openingGeneration;
+    final route = DialogRoute<void>(
+      context: context,
+      builder: (_) => !mounted || generation != _openingGeneration
+          ? const SizedBox.shrink()
+          : SuperadminChatImageDialog(
+              assetId: assetId,
+              reader: reader,
+              session: session,
+              isContextCurrent: () => mounted && generation == _openingGeneration,
+            ),
+    );
+    _imageRoute = route;
+    await Navigator.of(context).push(route);
+    if (mounted && identical(_imageRoute, route)) {
+      _imageRoute = null;
+      if (_canOpen) _openFocus.requestFocus();
+    }
+  }
+
+  @override
+  void dispose() {
+    _unregister?.call();
+    _dismissOwnedImage();
+    _openFocus.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +186,23 @@ final class SuperadminChatAttachmentTile extends StatelessWidget {
                       status.label,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(color: status.color),
                     ),
+                    if (const {
+                          'image/jpeg',
+                          'image/png',
+                          'image/webp',
+                        }.contains(attachment.mediaType) &&
+                        state == SuperadminChatAttachmentState.ready) ...[
+                      TextButton(
+                        focusNode: _openFocus,
+                        onPressed: _canOpen ? _openImage : null,
+                        child: const Text('Abrir imagem'),
+                      ),
+                      if (!_canOpen)
+                        Text(
+                          'Visualização indisponível neste contexto.',
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
+                    ],
                   ],
                 ),
               ),

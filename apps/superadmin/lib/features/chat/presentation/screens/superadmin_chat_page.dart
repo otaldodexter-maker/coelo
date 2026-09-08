@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -36,6 +37,8 @@ final class SuperadminChatPage extends StatefulWidget {
   const SuperadminChatPage({
     required this.logout,
     this.chatRepository,
+    this.mediaReader,
+    this.mediaSession,
     this.currentDestination = 'conversations',
     this.onDestinationSelected,
     this.onBack,
@@ -44,6 +47,8 @@ final class SuperadminChatPage extends StatefulWidget {
 
   final LogoutAction logout;
   final ChatRepository? chatRepository;
+  final MediaReader? mediaReader;
+  final MediaSession? mediaSession;
   final String currentDestination;
   final ValueChanged<String>? onDestinationSelected;
   final VoidCallback? onBack;
@@ -616,7 +621,12 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
             itemCount: thread.items.length,
             itemBuilder: (context, index) {
               final message = thread.items[index];
-              return _MessageBubble(message: message);
+              return _MessageBubble(
+                key: ValueKey(message.id),
+                message: message,
+                mediaReader: widget.mediaReader,
+                mediaSession: widget.mediaSession,
+              );
             },
           ),
         ),
@@ -634,8 +644,10 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
 }
 
 final class _MessageBubble extends StatelessWidget {
-  const _MessageBubble({required this.message});
+  const _MessageBubble({required this.message, this.mediaReader, this.mediaSession, super.key});
   final ChatMessage message;
+  final MediaReader? mediaReader;
+  final MediaSession? mediaSession;
 
   @override
   Widget build(BuildContext context) {
@@ -661,8 +673,11 @@ final class _MessageBubble extends StatelessWidget {
               for (final attachment in message.attachments) ...[
                 const SizedBox(height: CoeloSpacing.space2),
                 SuperadminChatAttachmentTile(
+                  key: ValueKey(attachment.id),
                   attachment: attachment,
                   state: SuperadminChatAttachmentState.ready,
+                  mediaReader: mediaReader,
+                  mediaSession: mediaSession,
                 ),
               ],
               const SizedBox(height: CoeloSpacing.space1),
