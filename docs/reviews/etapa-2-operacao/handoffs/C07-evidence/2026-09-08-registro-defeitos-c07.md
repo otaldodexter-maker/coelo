@@ -34,7 +34,8 @@ código, e a C00 negou a que pedi. Todos foram encaminhados pela C06 aos donos.
 | 12 | Rodapé do formulário no compacto contraria a baseline aprovada | C00 | aberto | lido |
 | 13 | Indicador de status movido no card de Comunicações | C05 | aberto | lido |
 | 14 | `_PageHeader` compacto desloca o título quando há ações | C00 | **corrigido** em `c4a7feff` | medido por mim antes |
-| 15 | `CoeloAdminToggleField` sem ativação por teclado | C00 | aberto | lido |
+| 15 | `CoeloAdminToggleField` engole Enter e Espaço na primeira parada | C00 | aberto | **medido**, com controle A/B |
+| 15b | Toggle expõe duas paradas de Tab — **no pacote e no gêmeo** | C00 e C05 | aberto | **medido** |
 | 16 | `principal_happens_publication_page.dart` com foco duplo | C05 | aberto | lido |
 | 17 | Sair não encerra a sessão local se `signOut` lançar `Error` | C01 | aberto | lido, verificado na fonte |
 | 18 | Sessão autenticada sem autorização sobrevive pelo mesmo motivo | C01 | aberto | lido, verificado na fonte |
