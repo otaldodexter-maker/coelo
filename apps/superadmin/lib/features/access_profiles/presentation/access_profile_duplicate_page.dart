@@ -48,6 +48,9 @@ final class _AccessProfileDuplicatePageState extends State<AccessProfileDuplicat
   double _footerHeight = 0;
   String? _requestId;
   String? _fingerprint;
+  int _contextRevision = 0;
+
+  bool _isCurrent(int revision) => mounted && revision == _contextRevision;
 
   @override
   void initState() {
@@ -55,26 +58,50 @@ final class _AccessProfileDuplicatePageState extends State<AccessProfileDuplicat
     _load();
   }
 
+  @override
+  void didUpdateWidget(covariant AccessProfileDuplicatePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.repository, widget.repository) ||
+        !identical(oldWidget.duplicator, widget.duplicator) ||
+        oldWidget.domain != widget.domain ||
+        oldWidget.sourceProfileId != widget.sourceProfileId) {
+      _contextRevision++;
+      _source = null;
+      _error = null;
+      _saving = false;
+      _requestId = null;
+      _fingerprint = null;
+      _name.clear();
+      _reason.clear();
+      _load();
+    }
+  }
+
   Future<void> _load() async {
+    final revision = _contextRevision;
     try {
       final source = await widget.repository.fetchDetail(widget.domain, widget.sourceProfileId);
-      if (!mounted) return;
+      if (!_isCurrent(revision)) return;
       _name.text = '${source.name} (cópia)';
       setState(() => _source = source);
     } on Object catch (error) {
-      if (mounted) setState(() => _error = error);
+      if (_isCurrent(revision)) setState(() => _error = error);
     }
   }
 
   @override
   void dispose() {
+    _contextRevision++;
     _name.dispose();
     _reason.dispose();
     super.dispose();
   }
 
   Future<void> _duplicate() async {
+    if (_saving || _source == null) return;
     if (!(_formKey.currentState?.validate() ?? false)) return;
+    final revision = _contextRevision;
+    final onDuplicated = widget.onDuplicated;
     final fingerprint = '${widget.sourceProfileId}|${_name.text.trim()}|${_reason.text.trim()}';
     if (_fingerprint != fingerprint) {
       _fingerprint = fingerprint;
@@ -89,16 +116,16 @@ final class _AccessProfileDuplicatePageState extends State<AccessProfileDuplicat
         name: _name.text.trim(),
         reason: _reason.text.trim(),
       );
-      if (!mounted) return;
+      if (!_isCurrent(revision)) return;
       _requestId = null;
       _fingerprint = null;
-      widget.onDuplicated(duplicate);
+      onDuplicated(duplicate);
     } on AccessProfileException catch (error) {
-      if (mounted) {
+      if (mounted && _isCurrent(revision)) {
         showSuperadminNotice(context, error.message, icon: Icons.error_outline_rounded);
       }
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (_isCurrent(revision)) setState(() => _saving = false);
     }
   }
 
