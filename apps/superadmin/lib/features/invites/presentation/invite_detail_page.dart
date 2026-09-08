@@ -119,7 +119,12 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
   Future<void> _load() async {
     final epoch = ++_requestEpoch;
     final inviteId = widget.inviteId;
-    if (mounted) setState(() => _state = _DetailState.loading);
+    if (mounted) {
+      setState(() {
+        _state = _DetailState.loading;
+        _result = null;
+      });
+    }
     try {
       final invite = await widget.repository.fetchById(inviteId);
       if (!mounted || epoch != _requestEpoch || inviteId != widget.inviteId) return;

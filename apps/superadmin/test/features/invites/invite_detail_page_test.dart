@@ -10,6 +10,31 @@ import 'package:flutter_test/flutter_test.dart';
 import 'invite_test_repository.dart';
 
 void main() {
+  testWidgets('conflict reload cannot restore a one-time link from the old version', (
+    tester,
+  ) async {
+    final invite = testInvite(status: InviteStatus.expired);
+    final repository = _DeferredResendRepository([invite]);
+    await tester.pumpWidget(
+      _app(InviteDetailPage(repository: repository, inviteId: invite.id, allowCommands: true)),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('invite-detail-resend')));
+    await tester.pump();
+    repository.completeNext(invite);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('invite-result-link')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('invite-detail-resend')));
+    await tester.pump();
+    repository.invites[0] = testInvite(status: InviteStatus.revoked, managementVersion: 3);
+    repository._pending.removeAt(0).completeError(const InviteConflictException());
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('invite-result-link')), findsNothing);
+    expect(find.byKey(const Key('invite-detail-resend')), findsNothing);
+    expect(find.byKey(const Key('invite-detail-revoke')), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('disposing detail removes only its confirmation beneath another route', (
     tester,
   ) async {
