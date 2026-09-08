@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -51,6 +52,7 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
   bool _deleting = false;
   String? _pendingDeleteRequestId;
   int _loadRevision = 0;
+  final Set<DialogRoute<bool>> _ownedDialogs = {};
 
   @override
   void initState() {
@@ -65,6 +67,7 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
     if (!identical(oldWidget.repository, widget.repository) ||
         oldWidget.domain != widget.domain ||
         oldWidget.profileId != widget.profileId) {
+      _dismissOwnedDialogs();
       _profile = null;
       _error = null;
       _deleting = false;
@@ -89,12 +92,24 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
 
   @override
   void dispose() {
+    _loadRevision++;
+    _dismissOwnedDialogs();
     _activityController.dispose();
     super.dispose();
   }
 
   Future<void> _delete() async {
     if (_deleting || _profile == null) return;
+    final revision = _loadRevision;
+    setState(() => _deleting = true);
+    try {
+      await _confirmAndDelete();
+    } finally {
+      if (mounted && revision == _loadRevision) setState(() => _deleting = false);
+    }
+  }
+
+  Future<void> _confirmAndDelete() async {
     final revision = _loadRevision;
     final repository = widget.repository;
     final onDeleted = widget.onDeleted;
@@ -124,11 +139,8 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
     ];
     var replacement = options.first;
     final reasonController = TextEditingController();
-    TransitionRoute<dynamic>? confirmationRoute;
-    final confirmed = await showDialog<bool>(
-      context: context,
+    final confirmed = await _showConfirmation(
       builder: (dialogContext) {
-        confirmationRoute = ModalRoute.of(dialogContext) as TransitionRoute<dynamic>?;
         return StatefulBuilder(
           builder: (context, setDialogState) => CoeloAdminDialogShell(
             title: 'Excluir perfil',
@@ -178,14 +190,11 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
         );
       },
     );
-    // The route may still render its text field during the reverse transition.
-    await confirmationRoute?.completed;
     if (!isCurrent() || confirmed != true) {
       reasonController.dispose();
       return;
     }
     _pendingDeleteRequestId ??= _newRequestId();
-    if (mounted) setState(() => _deleting = true);
     try {
       await repository.deleteAndReassign(
         requestId: _pendingDeleteRequestId!,
@@ -204,9 +213,32 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
         showSuperadminNotice(context, error.message, icon: Icons.error_outline_rounded);
       }
     } finally {
-      if (isCurrent()) setState(() => _deleting = false);
       reasonController.dispose();
     }
+  }
+
+  Future<bool?> _showConfirmation({required WidgetBuilder builder}) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final route = DialogRoute<bool>(context: context, builder: builder);
+    _ownedDialogs.add(route);
+    try {
+      unawaited(navigator.push<bool>(route));
+      // The text controller must outlive the closing transition.
+      return await route.completed;
+    } finally {
+      _ownedDialogs.remove(route);
+    }
+  }
+
+  void _dismissOwnedDialogs() {
+    final routes = _ownedDialogs.toList(growable: false);
+    _ownedDialogs.clear();
+    if (routes.isEmpty) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      for (final route in routes) {
+        if (route.isActive) route.navigator?.removeRoute(route);
+      }
+    });
   }
 
   @override
@@ -260,7 +292,7 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
                         spacing: CoeloSpacing.space2,
                         children: [
                           OutlinedButton.icon(
-                            onPressed: _delete,
+                            onPressed: _deleting ? null : _delete,
                             icon: const Icon(Icons.delete_outline_rounded),
                             label: const Text('Excluir'),
                           ),
