@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/platform_users/data/fake_platform_user_repository.dart';
 import 'package:coelo_superadmin/features/platform_users/domain/platform_user.dart';
@@ -12,6 +14,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('creates an exclusive Superadmin access through four steps', (tester) async {
+    final semantics = tester.ensureSemantics();
+    addTearDown(semantics.dispose);
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final repository = FakePlatformUserRepository();
@@ -57,6 +61,28 @@ void main() {
 
     expect(find.text('Acesso ao Superadmin'), findsWidgets);
     expect(find.byKey(const Key('platform-user-scopes-select-all')), findsOneWidget);
+    final scopesField = find.byKey(const Key('platform-user-scopes'));
+    await tester.ensureVisible(scopesField);
+    await tester.tap(scopesField);
+    await tester.pumpAndSettle();
+    final institutionOption = find.bySemanticsLabel('Instituição 1');
+    final institutionNode = tester.getSemantics(institutionOption);
+    expect(
+      institutionNode.getSemanticsData().hasAction(ui.SemanticsAction.tap),
+      isTrue,
+      reason: 'A opção nomeada deve permitir selecionar a instituição pelo leitor de tela.',
+    );
+    institutionNode.owner!.performAction(institutionNode.id, ui.SemanticsAction.tap);
+    await tester.pumpAndSettle();
+    expect(
+      tester.getSemantics(institutionOption).flagsCollection.isChecked,
+      ui.CheckedState.isTrue,
+    );
+    await tester.tap(find.text('Aplicar'));
+    await tester.pumpAndSettle();
+    expect(tester.widget<CoeloAdminMultiSelectField<String>>(scopesField).selectedValues, {
+      'institution-1',
+    });
     await tester.tap(find.byKey(const Key('platform-user-scopes-select-all')));
     await tester.pump();
     final scope = tester.widget<CoeloAdminMultiSelectField<String>>(
