@@ -5,6 +5,9 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../app/router/superadmin_routes.dart';
 
 enum FormsOperationsSurface { monitor, responses, responseDetail, files }
 
@@ -53,10 +56,10 @@ final class FormsOperationsPage extends StatefulWidget {
     this.api,
     this.formId,
     this.development = false,
+    this.anonymous = false,
     this.state = FormsOperationsState.content,
     super.key,
   }) : surface = FormsOperationsSurface.responses,
-       anonymous = false,
        developmentStore = null,
        responseId = null;
 
@@ -99,6 +102,8 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
   late FormsOperationsState _state = widget.state;
   Object? _projection;
   var _loadGeneration = 0;
+  final _cursors = <String?>[null];
+  var _pageIndex = 0;
 
   bool get _usesProductionApi => !widget.development && widget.api != null;
 
@@ -116,9 +121,14 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
         oldWidget.formId != widget.formId ||
         oldWidget.responseId != widget.responseId ||
         oldWidget.surface != widget.surface ||
+        oldWidget.anonymous != widget.anonymous ||
         oldWidget.development != widget.development) {
       _loadGeneration++;
       _projection = null;
+      _cursors
+        ..clear()
+        ..add(null);
+      _pageIndex = 0;
       _state = widget.state;
       if (_usesProductionApi) unawaited(_loadProduction());
     }
@@ -147,9 +157,14 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
     try {
       final projection = switch (widget.surface) {
         FormsOperationsSurface.monitor => api.getMonitor(FormMonitorQuery(formId: formId!)),
-        FormsOperationsSurface.responses => api.listResponses(FormResponsesQuery(formId: formId!)),
+        FormsOperationsSurface.responses => api.listResponses(
+          FormResponsesQuery(formId: formId!, cursor: _cursors[_pageIndex]),
+        ),
         FormsOperationsSurface.responseDetail => api.getResponseDetail(responseId!),
-        FormsOperationsSurface.files => api.listFileJobs(formId: formId!),
+        FormsOperationsSurface.files => api.listFileJobs(
+          formId: formId!,
+          cursor: _cursors[_pageIndex],
+        ),
       };
       final value = await projection;
       if (mounted && generation == _loadGeneration) {
@@ -242,33 +257,221 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
     ),
   };
 
-  Widget _productionContent() {
-    final (title, message) = switch (_projection) {
-      FormMonitorProjection value => (
-        'Monitoramento autorizado',
-        '${value.respondedCount} respostas de ${value.eligibleCount} pessoas elegíveis.',
+  void _nextPage(String cursor) {
+    if (_state != FormsOperationsState.content) return;
+    _cursors.removeRange(_pageIndex + 1, _cursors.length);
+    _cursors.add(cursor);
+    _pageIndex++;
+    unawaited(_loadProduction());
+  }
+
+  Widget _pagination(String? nextCursor) => Wrap(
+    alignment: WrapAlignment.end,
+    spacing: CoeloSpacing.space2,
+    runSpacing: CoeloSpacing.space2,
+    crossAxisAlignment: WrapCrossAlignment.center,
+    children: [
+      OutlinedButton(
+        onPressed: _pageIndex > 0
+            ? () {
+                if (_state != FormsOperationsState.content) return;
+                _pageIndex--;
+                unawaited(_loadProduction());
+              }
+            : null,
+        child: const Text('Anterior'),
       ),
-      FormCursorPage<FormResponseSummary> value => (
-        'Respostas autorizadas',
-        '${value.items.length} resposta(s) carregada(s) nesta página.',
+      Text('Página ${_pageIndex + 1}'),
+      OutlinedButton(
+        key: const Key('forms-cursor-next'),
+        onPressed: nextCursor == null ? null : () => _nextPage(nextCursor),
+        child: const Text('Próxima página'),
       ),
-      FormResponseDetail value => (
-        'Resposta autorizada',
-        '${value.answers.length} resposta(s) carregada(s) para consulta.',
+    ],
+  );
+
+  Widget _productionContent() => KeyedSubtree(
+    key: Key('forms-operations-production-${widget.surface.name}'),
+    child: switch (_projection) {
+      FormMonitorProjection value => _AuthorizedMonitor(value: value),
+      FormCursorPage<FormResponseSummary> value => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('${value.items.length} resposta(s) carregada(s) nesta página.'),
+          const SizedBox(height: CoeloSpacing.space4),
+          const _ExportUnavailable(),
+          const SizedBox(height: CoeloSpacing.space4),
+          if (value.items.isEmpty) const _OperationsStatePanel(state: FormsOperationsState.empty),
+          for (final summary in value.items)
+            _AuthorizedResponse(
+              summary: summary,
+              anonymous: widget.anonymous,
+              onPressed: () => context.goNamed(
+                SuperadminRoutes.formResponseDetailName,
+                pathParameters: {'formId': widget.formId!, 'responseId': summary.id},
+              ),
+            ),
+          _pagination(value.nextCursor),
+        ],
       ),
-      FormCursorPage<FormFileJob> value => (
-        'Arquivos autorizados',
-        '${value.items.length} job(s) de arquivo carregado(s).',
+      FormResponseDetail value => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _AuthorizedResponse(summary: value.summary, anonymous: widget.anonymous),
+          Text('${value.answers.length} resposta(s) carregada(s) para consulta.'),
+          const SizedBox(height: CoeloSpacing.space4),
+          const CoeloStatePanel(
+            icon: Icons.info_outline_rounded,
+            title: 'Conteúdo das perguntas indisponível',
+            message:
+                'Não foi possível recuperar os enunciados e a ordem original das perguntas desta resposta.',
+          ),
+        ],
       ),
-      _ => ('Dados indisponíveis', 'Não foi possível interpretar a projeção autorizada.'),
-    };
-    return CoeloStatePanel(
-      key: Key('forms-operations-production-${widget.surface.name}'),
-      icon: Icons.verified_user_outlined,
-      title: title,
-      message: message,
+      FormCursorPage<FormFileJob> value => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('${value.items.length} job(s) de arquivo carregado(s).'),
+          const SizedBox(height: CoeloSpacing.space4),
+          const _ExportUnavailable(),
+          const SizedBox(height: CoeloSpacing.space4),
+          if (value.items.isEmpty) const _OperationsStatePanel(state: FormsOperationsState.empty),
+          for (final job in value.items)
+            Padding(
+              padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+              child: _JobRow(
+                id: job.id,
+                status: switch (job.status) {
+                  FormFileJobStatus.pending => 'Aguardando',
+                  FormFileJobStatus.processing => 'Processando',
+                  FormFileJobStatus.succeeded => 'Concluído',
+                  FormFileJobStatus.partial => 'Dividido',
+                  FormFileJobStatus.failed => 'Falhou',
+                  FormFileJobStatus.expired => 'Expirado',
+                },
+                progress: job.progress,
+              ),
+            ),
+          _pagination(value.nextCursor),
+        ],
+      ),
+      _ => const _OperationsStatePanel(state: FormsOperationsState.unavailable),
+    },
+  );
+}
+
+final class _AuthorizedMonitor extends StatelessWidget {
+  const _AuthorizedMonitor({required this.value});
+  final FormMonitorProjection value;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text('${value.respondedCount} respostas de ${value.eligibleCount} pessoas elegíveis.'),
+      const SizedBox(height: CoeloSpacing.space4),
+      Wrap(
+        spacing: CoeloSpacing.space3,
+        runSpacing: CoeloSpacing.space3,
+        children: [
+          _Metric(
+            label: 'Elegíveis',
+            value: '${value.eligibleCount}',
+            icon: Icons.groups_outlined,
+            available: false,
+          ),
+          _Metric(
+            label: 'Responderam',
+            value: '${value.respondedCount}',
+            icon: Icons.task_alt_rounded,
+            available: false,
+          ),
+          _Metric(
+            label: 'Não responderam',
+            value: '${value.pendingCount}',
+            icon: Icons.schedule_rounded,
+            available: false,
+          ),
+        ],
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      CoeloStatePanel(
+        icon: value.isAnonymous ? Icons.visibility_off_outlined : Icons.account_tree_outlined,
+        title: value.isAnonymous ? 'Participação anônima' : 'Detalhamento indisponível',
+        message: value.isAnonymous
+            ? 'Este acompanhamento apresenta somente totais agregados, sem relacionar pessoas ao conteúdo das respostas.'
+            : 'O detalhamento por hierarquia e pessoas ainda não está disponível nesta consulta.',
+      ),
+    ],
+  );
+}
+
+final class _AuthorizedResponse extends StatelessWidget {
+  const _AuthorizedResponse({required this.summary, this.anonymous = false, this.onPressed});
+  final FormResponseSummary summary;
+  final bool anonymous;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    // A missing identity projection never authorizes correlation metadata.
+    final private =
+        anonymous || summary.respondentLabel == null || summary.respondentLabel!.trim().isEmpty;
+    final title = private ? 'Resposta anônima' : summary.respondentLabel!;
+    final date = summary.submittedAt;
+    final subtitle = private
+        ? 'Sem identificação ou horário de envio.'
+        : 'Versão: ${summary.formVersionId}\nOcorrência: ${summary.occurrenceId}'
+              '${date == null ? '' : '\nEnviada em ${MaterialLocalizations.of(context).formatFullDate(date.toLocal())}'}';
+    return Padding(
+      padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+      child: CoeloAdminInteractiveCard(
+        semanticLabel: '$title, $subtitle',
+        onPressed: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.all(CoeloSpacing.space4),
+          child: Row(
+            children: [
+              Icon(private ? Icons.visibility_off_outlined : Icons.person_outline_rounded),
+              const SizedBox(width: CoeloSpacing.space3),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: CoeloSpacing.space2),
+                    Text(subtitle),
+                    if (onPressed != null) ...[
+                      const SizedBox(height: CoeloSpacing.space2),
+                      const Text('Visualizar resposta'),
+                    ],
+                  ],
+                ),
+              ),
+              if (onPressed != null) const Icon(Icons.chevron_right_rounded),
+            ],
+          ),
+        ),
+      ),
     );
   }
+}
+
+final class _ExportUnavailable extends StatelessWidget {
+  const _ExportUnavailable();
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const FilledButton(onPressed: null, child: Text('Exportar respostas em XLSX')),
+      const SizedBox(height: CoeloSpacing.space2),
+      Text(
+        'A geração e o download do arquivo XLSX ainda estão indisponíveis.',
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+    ],
+  );
 }
 
 final class _OperationsStatePanel extends StatelessWidget {
@@ -351,7 +554,7 @@ final class _Header extends StatelessWidget {
       ),
       FormsOperationsSurface.files => (
         'Arquivos e exportações',
-        'Acompanhe uploads protegidos e jobs de CSV, XLSX e ZIP.',
+        'Acompanhe arquivos protegidos e exportações XLSX das respostas do formulário.',
       ),
     };
     return Column(
@@ -575,7 +778,7 @@ final class _ResponsesContentState extends State<_ResponsesContent> {
     final items = !widget.available
         ? const [('Nenhuma resposta autorizada carregada', 'Conteúdo indisponível')]
         : _anonymous
-        ? const [('Resposta anônima', 'Enviada em 29 ago 2026 · 18:05')]
+        ? const [('Resposta anônima', 'Sem identificação ou horário de envio.')]
         : _page == 1
         ? const [
             ('Marina Souza', 'Enviada em 30 ago 2026 · 14:32'),
@@ -791,8 +994,6 @@ final class _FilesContentState extends State<_FilesContent> {
 
   void _showFeedback(String message) => _store.showFeedback(message);
 
-  void _queueExport(String format) => _showFeedback('Exportação $format adicionada à fila local');
-
   Future<void> _confirmDelete() async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -917,23 +1118,18 @@ final class _FilesContentState extends State<_FilesContent> {
         runSpacing: CoeloSpacing.space2,
         children: [
           FilledButton.icon(
-            onPressed: widget.available ? () => _queueExport('ZIP') : null,
+            onPressed: null,
             icon: const Icon(Icons.download_outlined),
             label: const Text('Exportar'),
           ),
-          OutlinedButton(
-            onPressed: widget.available ? () => _queueExport('CSV') : null,
-            child: const Text('CSV'),
-          ),
-          OutlinedButton(
-            onPressed: widget.available ? () => _queueExport('XLSX') : null,
-            child: const Text('XLSX'),
-          ),
-          OutlinedButton(
-            onPressed: widget.available ? () => _queueExport('ZIP') : null,
-            child: const Text('ZIP'),
-          ),
+          OutlinedButton(onPressed: null, child: const Text('CSV')),
+          OutlinedButton(onPressed: null, child: const Text('XLSX')),
+          OutlinedButton(onPressed: null, child: const Text('ZIP')),
         ],
+      ),
+      const SizedBox(height: CoeloSpacing.space2),
+      const Text(
+        'Geração e download XLSX indisponíveis nesta demonstração. CSV e ZIP indisponíveis.',
       ),
       if (_store.feedback != null) ...[
         const SizedBox(height: CoeloSpacing.space3),
@@ -957,30 +1153,16 @@ final class _FilesContentState extends State<_FilesContent> {
               : const [('—', 'Indisponível', 0.0)])
         Padding(
           padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
-          child: _JobRow(
-            id: job.$1,
-            status: job.$2,
-            progress: job.$3,
-            available: widget.available,
-            onDownload: () => _showFeedback('Download local preparado para ${job.$1}'),
-          ),
+          child: _JobRow(id: job.$1, status: job.$2, progress: job.$3),
         ),
     ],
   );
 }
 
 final class _JobRow extends StatelessWidget {
-  const _JobRow({
-    required this.id,
-    required this.status,
-    required this.progress,
-    required this.available,
-    this.onDownload,
-  });
+  const _JobRow({required this.id, required this.status, required this.progress});
   final String id, status;
   final double progress;
-  final bool available;
-  final VoidCallback? onDownload;
 
   @override
   Widget build(BuildContext context) => CoeloAdminInteractiveCard(
@@ -996,16 +1178,15 @@ final class _JobRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Exportação $id', style: Theme.of(context).textTheme.titleSmall),
+                Text(status),
                 if (status == 'Processando') LinearProgressIndicator(value: progress),
               ],
             ),
           ),
-          const SizedBox(width: CoeloSpacing.space2),
-          Text(status),
           if (status == 'Concluído' || status == 'Dividido')
             IconButton(
               tooltip: 'Baixar exportação $id',
-              onPressed: available ? onDownload : null,
+              onPressed: null,
               icon: const Icon(Icons.download_rounded),
             ),
         ],
