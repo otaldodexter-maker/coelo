@@ -66,10 +66,15 @@ select is((select count(*)::integer from pg_constraint
     and pg_get_constraintdef(oid) like 'CHECK ((operation = ANY (ARRAY[%'
     and pg_get_constraintdef(oid) like '%''schedule''::text%'),1,
   'the receipt lane names the schedule verb');
-select is((select count(*)::integer from pg_class c join pg_namespace n on n.oid=c.relnamespace
+select has_table('app_private'::name,'superadmin_location_write_receipts'::name);
+-- The lane is named, not counted: the catalog foundation already owns a create receipt
+-- table, so the honest claim is that no third one was opened.
+select is((select array_agg(c.relname::text order by c.relname)
+  from pg_class c join pg_namespace n on n.oid=c.relnamespace
   where n.nspname='app_private' and c.relkind='r'
-    and c.relname like 'superadmin_location_%receipts'),1,
-  'there is still exactly one write receipt table');
+    and c.relname like 'superadmin_location_%receipts'),
+  array['superadmin_location_create_receipts','superadmin_location_write_receipts']::text[],
+  'the schedule package opened no receipt table of its own');
 
 -- The normalizer is the whole contract for what a week may say.
 select is(app_private.superadmin_location_schedule_normalize_v2('[]'::jsonb),'[]'::jsonb,

@@ -43,16 +43,21 @@ select is((select count(*)::integer from pg_constraint
 
 -- The copy joins the receipt lane that the edit package opened; it does not open a second one.
 -- Membership is asserted, not the exact list: a later package may add its own verb
--- to the same lane, and that is the point of keeping one receipt table.
+-- to the same lane, and that is the point of keeping one write receipt lane.
 select is((select count(*)::integer from pg_constraint
   where conrelid='app_private.superadmin_location_write_receipts'::regclass and contype='c'
     and pg_get_constraintdef(oid) like 'CHECK ((operation = ANY (ARRAY[%'
     and pg_get_constraintdef(oid) like '%''copy''::text%'),1,
   'the receipt lane names the copy verb');
-select is((select count(*)::integer from pg_class c join pg_namespace n on n.oid=c.relnamespace
+select has_table('app_private'::name,'superadmin_location_write_receipts'::name);
+-- The lane is named, not counted: the catalog foundation already owns a create receipt
+-- table, so the honest claim is that no third one was opened.
+select is((select array_agg(c.relname::text order by c.relname)
+  from pg_class c join pg_namespace n on n.oid=c.relnamespace
   where n.nspname='app_private' and c.relkind='r'
-    and c.relname like 'superadmin_location_%receipts'),1,
-  'there is still exactly one write receipt table');
+    and c.relname like 'superadmin_location_%receipts'),
+  array['superadmin_location_create_receipts','superadmin_location_write_receipts']::text[],
+  'the copy package opened no receipt table of its own');
 
 -- Deny by default: without an internal context the copy does nothing.
 create temporary table location_copy_responses(seq integer primary key, body jsonb);
