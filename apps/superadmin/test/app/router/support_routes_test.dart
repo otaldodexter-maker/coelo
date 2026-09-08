@@ -24,6 +24,10 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
+    router.go(SuperadminRoutes.devSupport);
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
+    expect(find.byType(SupportPage), findsNothing);
   });
 
   testWidgets('fails closed when authenticated support has no production backend', (tester) async {
@@ -44,7 +48,7 @@ void main() {
 
   testWidgets('opens dev support without a session', (tester) async {
     final session = SuperadminSession();
-    final router = _router(session);
+    final router = _router(session, allowDevelopmentPreview: true);
     addTearDown(router.dispose);
     addTearDown(session.dispose);
     router.go(SuperadminRoutes.devSupport);
@@ -57,7 +61,7 @@ void main() {
   testWidgets('dev support never reuses the injected production controller', (tester) async {
     final session = SuperadminSession();
     final production = SupportPrototypeController(initialTickets: const <SupportTicket>[]);
-    final router = _router(session, supportController: production);
+    final router = _router(session, supportController: production, allowDevelopmentPreview: true);
     addTearDown(router.dispose);
     addTearDown(session.dispose);
     addTearDown(production.dispose);
@@ -112,8 +116,13 @@ void main() {
   });
 }
 
-GoRouter _router(SuperadminSession session, {SupportPrototypeController? supportController}) {
+GoRouter _router(
+  SuperadminSession session, {
+  SupportPrototypeController? supportController,
+  bool allowDevelopmentPreview = false,
+}) {
   return createSuperadminRouter(
+    allowDevelopmentPreview: allowDevelopmentPreview,
     session: session,
     login: (_) async => const LoginResult.success(),
     logout: unavailableSuperadminLogout,

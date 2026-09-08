@@ -39,7 +39,10 @@ final class SupportPage extends StatefulWidget {
 
 class _SupportPageState extends State<SupportPage> {
   final _search = TextEditingController();
-  final _readFilterFocusScopeNode = FocusScopeNode(debugLabel: 'support-read-filter');
+  final _readFilterFocusScopeNode = FocusScopeNode(
+    debugLabel: 'support-read-filter',
+    traversalEdgeBehavior: TraversalEdgeBehavior.parentScope,
+  );
   SupportFocusRestoreCallback? _restoreDetailOriginFocus;
   SupportDisplayMode _displayMode = SupportDisplayMode.kanban;
 
@@ -56,7 +59,7 @@ class _SupportPageState extends State<SupportPage> {
     subtitle: 'Acompanhe os chamados e solicitações da operação.',
     logout: widget.logout,
     currentDestination: 'support',
-    chatLauncherBottomInset: CoeloSpacing.space20,
+    chatLauncherBottomInset: MediaQuery.textScalerOf(context).scale(CoeloSpacing.space20),
     onBugReportSubmitted: widget.controller.submitReport,
     onDestinationSelected: (d) {
       if (d == 'home') widget.onHomeOpen?.call();
@@ -75,25 +78,53 @@ class _SupportPageState extends State<SupportPage> {
     final tickets = _displayMode == SupportDisplayMode.table
         ? widget.controller.visibleTickets
         : widget.controller.filteredTickets;
+    final toolbar = Padding(
+      padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+      child: SupportFilterToolbar(
+        controller: widget.controller,
+        searchController: _search,
+        displayMode: _displayMode,
+        onDisplayModeChanged: (displayMode) => setState(() => _displayMode = displayMode),
+        readFilterFocusScopeNode: _readFilterFocusScopeNode,
+        onExportCsv: _showUnavailableExport,
+        onExportXlsx: _showUnavailableExport,
+      ),
+    );
     final content = Padding(
       key: const Key('support-page-content'),
       padding: const EdgeInsets.all(CoeloSpacing.space4),
-      child: CoeloAdminWorkspaceLayout(
-        toolbar: Padding(
-          padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
-          child: SupportFilterToolbar(
-            controller: widget.controller,
-            searchController: _search,
-            displayMode: _displayMode,
-            onDisplayModeChanged: (displayMode) => setState(() => _displayMode = displayMode),
-            readFilterFocusScopeNode: _readFilterFocusScopeNode,
-            onExportCsv: _showUnavailableExport,
-            onExportXlsx: _showUnavailableExport,
-          ),
-        ),
-        body: _listing(tickets),
-        detail: _details(),
-        detailVisible: widget.controller.selectedTicket != null,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+          // Keep the board's fixed headers plus two touch targets of usable
+          // list space. The table also reserves its create action and pager.
+          final bodyFloor = _displayMode == SupportDisplayMode.table
+              ? 128 +
+                    CoeloSpacing.space4 +
+                    CoeloSpacing.space3 +
+                    MediaQuery.textScalerOf(context).scale(CoeloSize.touchMin) +
+                    CoeloSize.touchMin * 2
+              : CoeloSize.touchMin * 4 + CoeloSpacing.space3 * 4;
+          return CoeloAdminWorkspaceLayout(
+            toolbar: compact
+                ? ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: (constraints.maxHeight - bodyFloor).clamp(
+                        0.0,
+                        constraints.maxHeight,
+                      ),
+                    ),
+                    child: SingleChildScrollView(
+                      key: const Key('support-toolbar-scroll'),
+                      child: toolbar,
+                    ),
+                  )
+                : toolbar,
+            body: _listing(tickets),
+            detail: _details(),
+            detailVisible: widget.controller.selectedTicket != null,
+          );
+        },
       ),
     );
     if (!isMobileOrTabletSurface) {

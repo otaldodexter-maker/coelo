@@ -24,13 +24,17 @@ void main() {
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
     expect(find.byType(CatalogHostPage), findsNothing);
+    router.go(SuperadminRoutes.devCatalog);
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
+    expect(find.byType(CatalogHostPage), findsNothing);
   });
 
   testWidgets('opens production catalog when authenticated and local preview without a session', (
     tester,
   ) async {
     final session = SuperadminSession()..signInForTesting();
-    final router = _router(session);
+    final router = _router(session, allowDevelopmentPreview: true);
     addTearDown(router.dispose);
     addTearDown(session.dispose);
 
@@ -52,7 +56,11 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final session = SuperadminSession();
     final openedCatalogs = <Uri>[];
-    final router = _router(session, openExternalCatalog: openedCatalogs.add);
+    final router = _router(
+      session,
+      openExternalCatalog: openedCatalogs.add,
+      allowDevelopmentPreview: true,
+    );
     addTearDown(router.dispose);
     addTearDown(session.dispose);
 
@@ -96,8 +104,13 @@ void main() {
   });
 }
 
-GoRouter _router(SuperadminSession session, {ValueChanged<Uri>? openExternalCatalog}) {
+GoRouter _router(
+  SuperadminSession session, {
+  ValueChanged<Uri>? openExternalCatalog,
+  bool allowDevelopmentPreview = false,
+}) {
   return createSuperadminRouter(
+    allowDevelopmentPreview: allowDevelopmentPreview,
     session: session,
     login: (_) async => const LoginResult.success(),
     logout: unavailableSuperadminLogout,
