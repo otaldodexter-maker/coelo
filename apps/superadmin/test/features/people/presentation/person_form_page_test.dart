@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/people/domain/person_directory.dart';
 import 'package:coelo_superadmin/features/people/presentation/person_form_page.dart';
@@ -5,6 +7,7 @@ import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_act
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -43,9 +46,14 @@ void main() {
     expect(find.textContaining('demonstrativ'), findsNothing);
   });
 
-  testWidgets('relationship demo searches adults masked and children without contact data', (
+  testWidgets('the relationship search says it is not connected, and invents nobody', (
     tester,
   ) async {
+    // This section used to answer with four invented people carrying
+    // masked-looking documents, e-mail and phone numbers, compiled into the
+    // production form. Selecting one reached nothing, so anyone who "linked"
+    // someone lost that work silently. The two tests that stood here asserted
+    // that behaviour and therefore protected it.
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_app());
@@ -61,64 +69,64 @@ void main() {
     await tester.tap(find.text('Vínculos contextuais').first);
     await tester.pump(const Duration(seconds: 1));
 
+    // The shape the design approved stays visible, so the capability reads as
+    // planned rather than forgotten.
     expect(find.text('Buscar adulto existente'), findsOneWidget);
-    expect(find.textContaining('dados mascarados'), findsOneWidget);
     expect(find.text('Buscar criança existente'), findsOneWidget);
-    expect(find.textContaining('nome, identificador ou contexto'), findsOneWidget);
-    expect(find.textContaining('E-mail obrigatório'), findsNothing);
-    expect(find.textContaining('Celular obrigatório'), findsNothing);
+    expect(find.byKey(const Key('person-adult-link-search')), findsOneWidget);
+    expect(find.byKey(const Key('person-child-link-search')), findsOneWidget);
 
-    await tester.enterText(find.byKey(const Key('person-adult-link-search')), '@ana.coelo');
-    await tester.pump();
-    expect(find.text('Ana Souza'), findsOneWidget);
-    expect(find.textContaining('***.456.***-**'), findsOneWidget);
-    await tester.tap(find.byKey(const Key('person-adult-link-result-adult-ana')));
-    await tester.pump();
-    expect(find.text('Vínculo selecionado: Ana Souza'), findsOneWidget);
+    // And it says plainly that it cannot answer.
+    final notice = find.byKey(const Key('person-relationship-search-unavailable'));
+    expect(notice, findsOneWidget);
+    expect(tester.getSemantics(notice).flagsCollection.isLiveRegion, isTrue);
+    expect(find.textContaining('ainda não está ligada ao servidor'), findsOneWidget);
 
-    await tester.enterText(find.byKey(const Key('person-child-link-search')), 'Girassol');
-    await tester.pump();
-    expect(find.text('Lia Coelo'), findsOneWidget);
-    expect(find.textContaining('Turma Girassol'), findsOneWidget);
+    // A box that cannot answer must not invite an answer.
+    for (final key in const ['person-adult-link-search', 'person-child-link-search']) {
+      expect(
+        tester.widget<CoeloSearchField>(find.byKey(Key(key))).enabled,
+        isFalse,
+        reason: key,
+      );
+    }
   });
 
-  testWidgets('relationship result is a continuous accessible state row', (tester) async {
+  testWidgets('no invented person survives anywhere in the production form', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_app());
     await tester.pump(const Duration(seconds: 1));
-    for (final entry in const {
-      'person-first-name-field': 'Ana',
-      'person-last-name-field': 'Lima',
-      'person-display-name-field': 'Ana Lima',
-      'person-legal-name-field': 'Ana Lima',
-    }.entries) {
-      await tester.enterText(find.byKey(Key(entry.key)), entry.value);
-    }
-    await tester.tap(find.byKey(const Key('person-form-continue')));
+    await tester.tap(find.text('Vínculos contextuais').first);
     await tester.pump(const Duration(seconds: 1));
-    await tester.enterText(find.byKey(const Key('person-adult-link-search')), '@ana.coelo');
-    await tester.pump();
+    for (final invented in const [
+      'Ana Souza',
+      'Caio Lima',
+      'Lia Coelo',
+      'Noah Coelo',
+      '@ana.coelo',
+      'Turma Girassol',
+    ]) {
+      expect(find.textContaining(invented), findsNothing, reason: invented);
+    }
+  });
 
-    final result = find.byKey(const Key('person-adult-link-result-adult-ana'));
-    expect(tester.widget(result), isA<TextButton>());
-    final button = tester.widget<TextButton>(result);
-    final colors = Theme.of(tester.element(find.byType(PersonFormPage))).colorScheme;
-    expect(button.onPressed, isNotNull);
-    expect(
-      button.style?.minimumSize?.resolve({})?.height,
-      greaterThanOrEqualTo(CoeloSize.touchMin),
-    );
-    expect(button.style?.foregroundColor?.resolve({}), colors.onSurface);
-    expect(button.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.primaryContainer);
-    expect(button.style?.backgroundColor?.resolve({WidgetState.focused}), colors.primaryContainer);
-    expect(button.style?.overlayColor?.resolve({WidgetState.pressed}), Colors.transparent);
-
-    await tester.tap(result);
-    await tester.pump();
-    final selected = tester.widget<TextButton>(result);
-    expect(selected.style?.backgroundColor?.resolve({}), colors.primaryContainer);
-    expect(find.text('Vínculo selecionado: Ana Souza'), findsOneWidget);
+  test('the source carries no relationship fixture to render', () {
+    // The existing production-boundary guard scans for _Demo, "demonstrativ"
+    // and "não será persistido"; none of those words appeared in the fixtures
+    // it was meant to catch, so it passed while they shipped. This names them.
+    final source = File(
+      'lib/features/people/presentation/person_form_page.dart',
+    ).readAsStringSync();
+    for (final forbidden in const [
+      '_LinkCandidate',
+      '_adultLinkCandidates',
+      '_childLinkCandidates',
+      'Ana Souza',
+      'Lia Coelo',
+    ]) {
+      expect(source.contains(forbidden), isFalse, reason: forbidden);
+    }
   });
 
   testWidgets('relationship search uses the direct form canvas without a redundant surface', (

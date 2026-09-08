@@ -16,50 +16,6 @@ import 'person_form_view_model.dart';
 
 const _emptyOption = PersonFilterOption('', 'Selecione');
 
-final class _LinkCandidate {
-  const _LinkCandidate({
-    required this.id,
-    required this.name,
-    required this.searchableData,
-    required this.summary,
-  });
-
-  final String id;
-  final String name;
-  final String searchableData;
-  final String summary;
-}
-
-const _adultLinkCandidates = [
-  _LinkCandidate(
-    id: 'adult-ana',
-    name: 'Ana Souza',
-    searchableData: 'ana souza @ana.coelo ***.456.***-** a***@exemplo.test (11) 9****-1204',
-    summary: '@ana.coelo · CPF ***.456.***-** · a***@exemplo.test · (11) 9****-1204',
-  ),
-  _LinkCandidate(
-    id: 'adult-caio',
-    name: 'Caio Lima',
-    searchableData: 'caio lima @caio.lima ***.802.***-** c***@exemplo.test (21) 9****-7712',
-    summary: '@caio.lima · CPF ***.802.***-** · c***@exemplo.test · (21) 9****-7712',
-  ),
-];
-
-const _childLinkCandidates = [
-  _LinkCandidate(
-    id: 'child-lia',
-    name: 'Lia Coelo',
-    searchableData: 'lia coelo crianca-014 turma girassol unidade centro',
-    summary: 'ID criança-014 · Turma Girassol · Unidade Centro',
-  ),
-  _LinkCandidate(
-    id: 'child-noah',
-    name: 'Noah Coelo',
-    searchableData: 'noah coelo crianca-027 turma ipê grupo unidade jardins',
-    summary: 'ID criança-027 · Turma Ipê · Unidade Jardins',
-  ),
-];
-
 final class PersonFormPage extends StatefulWidget {
   const PersonFormPage({
     required this.repository,
@@ -125,67 +81,6 @@ final class _RelationshipSearch extends StatefulWidget {
 final class _RelationshipSearchState extends State<_RelationshipSearch> {
   final _adultController = TextEditingController();
   final _childController = TextEditingController();
-  String _adultQuery = '';
-  String _childQuery = '';
-  String? _selectedAdultId;
-  String? _selectedChildId;
-
-  Iterable<_LinkCandidate> _matches(List<_LinkCandidate> candidates, String query) {
-    final normalized = query.trim().toLowerCase();
-    if (normalized.isEmpty) return const [];
-    return candidates.where(
-      (candidate) => candidate.searchableData.toLowerCase().contains(normalized),
-    );
-  }
-
-  Widget _results(
-    Iterable<_LinkCandidate> candidates, {
-    required String? selectedId,
-    required ValueChanged<_LinkCandidate> onSelected,
-    required String keyPrefix,
-  }) => Column(
-    children: [
-      for (final candidate in candidates)
-        TextButton(
-          key: Key('$keyPrefix-${candidate.id}'),
-          onPressed: () => onSelected(candidate),
-          style: ButtonStyle(
-            alignment: Alignment.centerLeft,
-            padding: const WidgetStatePropertyAll(EdgeInsets.zero),
-            minimumSize: const WidgetStatePropertyAll(Size(0, CoeloSize.touchMin)),
-            foregroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.onSurface),
-            backgroundColor: WidgetStateProperty.resolveWith((states) {
-              final highlighted =
-                  selectedId == candidate.id ||
-                  states.contains(WidgetState.hovered) ||
-                  states.contains(WidgetState.focused);
-              return highlighted
-                  ? Theme.of(context).colorScheme.primaryContainer
-                  : Colors.transparent;
-            }),
-            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-          ),
-          child: SizedBox(
-            width: double.infinity,
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [Text(candidate.name), Text(candidate.summary)],
-                  ),
-                ),
-                Icon(
-                  selectedId == candidate.id
-                      ? Icons.check_circle_rounded
-                      : Icons.add_circle_outline_rounded,
-                ),
-              ],
-            ),
-          ),
-        ),
-    ],
-  );
 
   @override
   void dispose() {
@@ -194,62 +89,74 @@ final class _RelationshipSearchState extends State<_RelationshipSearch> {
     super.dispose();
   }
 
+  Widget _field({
+    required Key fieldKey,
+    required String title,
+    required String description,
+    required String hint,
+    required String semanticLabel,
+    required TextEditingController controller,
+  }) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(title, style: Theme.of(context).textTheme.titleSmall),
+      const SizedBox(height: CoeloSpacing.space1),
+      Text(description),
+      const SizedBox(height: CoeloSpacing.space2),
+      SizedBox(
+        height: CoeloSize.touchMin,
+        child: CoeloSearchField(
+          key: fieldKey,
+          controller: controller,
+          hintText: hint,
+          semanticLabel: semanticLabel,
+          enabled: false,
+          onChanged: (_) {},
+        ),
+      ),
+    ],
+  );
+
   @override
   Widget build(BuildContext context) => Column(
     key: const Key('person-relationship-search-section'),
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       Text('Buscar vínculos existentes', style: Theme.of(context).textTheme.titleMedium),
-      const SizedBox(height: CoeloSpacing.space4),
-      Text('Buscar adulto existente', style: Theme.of(context).textTheme.titleSmall),
-      const SizedBox(height: CoeloSpacing.space1),
-      const Text('Consulte por nome ou dados mascarados de e-mail e celular.'),
       const SizedBox(height: CoeloSpacing.space2),
-      SizedBox(
-        height: CoeloSize.touchMin,
-        child: CoeloSearchField(
-          key: const Key('person-adult-link-search'),
-          controller: _adultController,
-          hintText: 'Nome, arroba, CPF ou contato mascarado',
-          semanticLabel: 'Buscar adulto por nome, arroba, CPF, e-mail ou celular mascarados',
-          onChanged: (value) => setState(() => _adultQuery = value),
+      // This search used to answer with four invented people carrying
+      // masked-looking documents, e-mail and phone numbers, compiled into the
+      // production form. Choosing one set local state and reached nothing, so a
+      // person who linked someone lost that work without being told. The fields
+      // stay visible because the capability is planned, and they stay disabled
+      // because a box that cannot answer must not invite an answer.
+      Semantics(
+        liveRegion: true,
+        child: Text(
+          'A busca de vínculos existentes ainda não está ligada ao servidor. '
+          'Nada é encontrado aqui e nada é salvo daqui.',
+          key: const Key('person-relationship-search-unavailable'),
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
-      _results(
-        _matches(_adultLinkCandidates, _adultQuery),
-        selectedId: _selectedAdultId,
-        keyPrefix: 'person-adult-link-result',
-        onSelected: (candidate) => setState(() => _selectedAdultId = candidate.id),
-      ),
-      if (_selectedAdultId case final id?)
-        Padding(
-          padding: const EdgeInsets.only(top: CoeloSpacing.space2),
-          child: Text(
-            'Vínculo selecionado: ${_adultLinkCandidates.firstWhere((item) => item.id == id).name}',
-          ),
-        ),
       const SizedBox(height: CoeloSpacing.space4),
-      Text('Buscar criança existente', style: Theme.of(context).textTheme.titleSmall),
-      const SizedBox(height: CoeloSpacing.space1),
-      const Text(
-        'Consulte por nome, identificador ou contexto; e-mail e celular não são exigidos.',
+      _field(
+        fieldKey: const Key('person-adult-link-search'),
+        title: 'Buscar adulto existente',
+        description: 'Consulte por nome ou dados mascarados de e-mail e celular.',
+        hint: 'Nome, arroba, CPF ou contato mascarado',
+        semanticLabel: 'Buscar adulto por nome, arroba, CPF, e-mail ou celular mascarados',
+        controller: _adultController,
       ),
-      const SizedBox(height: CoeloSpacing.space2),
-      SizedBox(
-        height: CoeloSize.touchMin,
-        child: CoeloSearchField(
-          key: const Key('person-child-link-search'),
-          controller: _childController,
-          hintText: 'Nome, identificador ou contexto',
-          semanticLabel: 'Buscar criança por nome, identificador ou contexto',
-          onChanged: (value) => setState(() => _childQuery = value),
-        ),
-      ),
-      _results(
-        _matches(_childLinkCandidates, _childQuery),
-        selectedId: _selectedChildId,
-        keyPrefix: 'person-child-link-result',
-        onSelected: (candidate) => setState(() => _selectedChildId = candidate.id),
+      const SizedBox(height: CoeloSpacing.space4),
+      _field(
+        fieldKey: const Key('person-child-link-search'),
+        title: 'Buscar criança existente',
+        description:
+            'Consulte por nome, identificador ou contexto; e-mail e celular não são exigidos.',
+        hint: 'Nome, identificador ou contexto',
+        semanticLabel: 'Buscar criança por nome, identificador ou contexto',
+        controller: _childController,
       ),
     ],
   );
