@@ -15,6 +15,235 @@ const config = {
 };
 const now = () => new Date("2026-08-21T12:00:00.000Z");
 
+Deno.test("GET reads actual chunks within the server-selected byte limit", async () => {
+  for (const length of [undefined, "4"]) {
+    const client = new R2Client(config, {
+      now,
+      fetch: (request) => {
+        assertEquals(request.method, "GET");
+        assertEquals(request.redirect, "error");
+        const body = new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.enqueue(new Uint8Array([1, 2]));
+            controller.enqueue(new Uint8Array([3, 4]));
+            controller.close();
+          },
+        });
+        return Promise.resolve(
+          new Response(body, {
+            headers: length ? { "content-length": length } : {},
+          }),
+        );
+      },
+    });
+    assertEquals(await client.get("a/b", 4), new Uint8Array([1, 2, 3, 4]));
+  }
+});
+
+Deno.test("GET cancels overflow even when Content-Length lies or is absent", async () => {
+  for (const length of [undefined, "2"]) {
+    let cancelled = false;
+    const client = new R2Client(config, {
+      now,
+      fetch: () =>
+        Promise.resolve(
+          new Response(
+            new ReadableStream({
+              start(controller) {
+                controller.enqueue(new Uint8Array(5));
+              },
+              cancel() {
+                cancelled = true;
+              },
+            }),
+            { headers: length ? { "content-length": length } : {} },
+          ),
+        ),
+    });
+    await assertRejects(
+      () => client.get("a/b", 4),
+      R2TransportError,
+      "r2_size_limit",
+    );
+    assertEquals(cancelled, true);
+  }
+});
+
+Deno.test("GET rejects oversized or malformed declared length before reading", async () => {
+  for (const length of ["5", "0", "-1", "1.5", "NaN", "9007199254740992"]) {
+    let cancelled = false;
+    const client = new R2Client(config, {
+      now,
+      fetch: () =>
+        Promise.resolve(
+          new Response(
+            new ReadableStream({
+              cancel() {
+                cancelled = true;
+              },
+            }),
+            { headers: { "content-length": length } },
+          ),
+        ),
+    });
+    await assertRejects(() => client.get("a/b", 4), R2TransportError);
+    assertEquals(cancelled, true);
+  }
+});
+
+Deno.test("GET rejects empty, truncated, and partial objects", async () => {
+  for (
+    const [body, headers, status] of [
+      [null, {}, 200],
+      [new Uint8Array(0), {}, 200],
+      [new Uint8Array(2), { "content-length": "4" }, 200],
+      [new Uint8Array(2), {}, 206],
+      [null, {}, 403],
+      [null, {}, 404],
+      [null, {}, 500],
+    ] as const
+  ) {
+    const client = new R2Client(config, {
+      now,
+      fetch: () => Promise.resolve(new Response(body, { headers, status })),
+    });
+    await assertRejects(() => client.get("a/b", 4), R2TransportError);
+  }
+});
+
+Deno.test("GET validates limits before any request", async () => {
+  let requests = 0;
+  const client = new R2Client(config, {
+    now,
+    fetch: () => {
+      requests++;
+      throw new Error("unexpected");
+    },
+  });
+  for (
+    const limit of [0, -1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1]
+  ) {
+    await assertRejects(
+      () => client.get("a/b", limit),
+      R2TransportError,
+      "r2_invalid_limit",
+    );
+  }
+  assertEquals(requests, 0);
+});
+
+Deno.test("GET sanitizes network and body errors without retry", async () => {
+  for (const bodyFailure of [false, true]) {
+    let requests = 0;
+    const client = new R2Client(config, {
+      now,
+      fetch: () => {
+        requests++;
+        if (!bodyFailure) throw new Error("private URL and payload");
+        return Promise.resolve(
+          new Response(
+            new ReadableStream({
+              start(controller) {
+                controller.error(new Error("private URL and payload"));
+              },
+            }),
+          ),
+        );
+      },
+    });
+    const error = await assertRejects(
+      () => client.get("a/b", 4),
+      R2TransportError,
+    );
+    assertEquals(error.message, "r2_transport_failed");
+    assertEquals(requests, 1);
+  }
+});
+
+Deno.test("PUT sends a stable copy with signed MIME and rejects redirects", async () => {
+  let requests = 0;
+  const bytes = new Uint8Array([1, 2, 3]);
+  const client = new R2Client(config, {
+    now,
+    fetch: async (request) => {
+      requests++;
+      assertEquals(request.method, "PUT");
+      assertEquals(request.redirect, "error");
+      assertEquals(
+        request.headers.get("content-type"),
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      );
+      assertEquals(
+        new Uint8Array(await request.arrayBuffer()),
+        new Uint8Array([1, 2, 3]),
+      );
+      return new Response(null);
+    },
+  });
+  const pending = client.put(
+    "exports/form/responses.xlsx",
+    bytes,
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  );
+  bytes.fill(9);
+  await pending;
+  assertEquals(requests, 1);
+});
+
+Deno.test("PUT rejects empty bytes and unsafe MIME before network", async () => {
+  let requests = 0;
+  const client = new R2Client(config, {
+    now,
+    fetch: () => {
+      requests++;
+      throw new Error("unexpected");
+    },
+  });
+  await assertRejects(
+    () => client.put("a/b", new Uint8Array(), "image/png"),
+    R2TransportError,
+  );
+  for (
+    const mime of [
+      "",
+      "image/png\r\nx-private: value",
+      " image/png",
+      "image/png ",
+    ]
+  ) {
+    await assertRejects(
+      () => client.put("a/b", new Uint8Array([1]), mime),
+      R2TransportError,
+    );
+  }
+  assertEquals(requests, 0);
+});
+
+Deno.test("PUT fails safely without retry on failed writes", async () => {
+  for (const status of [302, 403, 500, null]) {
+    let requests = 0;
+    const client = new R2Client(config, {
+      now,
+      fetch: () => {
+        requests++;
+        if (status === null) throw new Error("private URL");
+        return Promise.resolve(
+          new Response("private upstream body", { status }),
+        );
+      },
+    });
+    const error = await assertRejects(
+      () => client.put("a/b", new Uint8Array([1]), "image/png"),
+      R2TransportError,
+    );
+    assertEquals(
+      error.message,
+      status === null ? "r2_transport_failed" : `r2_http_${status}`,
+    );
+    assertEquals(requests, 1);
+  }
+});
+
 Deno.test("validates unsafe endpoints without echoing configuration", () => {
   for (
     const endpoint of [
