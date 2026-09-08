@@ -89,22 +89,35 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
     final detail = _detail!;
     final generation = _generation;
     final responses = widget.responseRepository;
-    final draft = await responses.saveDraft(
-      requestId: _uuid(),
-      revisionId: detail.revisionId,
-      childContextId: widget.childContextId,
-      answers: answers,
-      expectedVersion: _responseVersion,
-    );
-    if (!mounted || generation != _generation) return;
-    _responseVersion = draft.version;
-    final submitted = await responses.submit(
-      requestId: _uuid(),
-      sessionId: draft.sessionId,
-      expectedVersion: _responseVersion,
-    );
-    if (!mounted || generation != _generation) return;
-    _responseVersion = submitted.version;
+    try {
+      final draft = await responses.saveDraft(
+        requestId: _uuid(),
+        revisionId: detail.revisionId,
+        childContextId: widget.childContextId,
+        answers: answers,
+        expectedVersion: _responseVersion,
+      );
+      if (!mounted || generation != _generation) return;
+      _responseVersion = draft.version;
+      final submitted = await responses.submit(
+        requestId: _uuid(),
+        sessionId: draft.sessionId,
+        expectedVersion: _responseVersion,
+      );
+      if (!mounted || generation != _generation) return;
+      _responseVersion = submitted.version;
+    } on CircularUnauthorized catch (error) {
+      if (mounted && generation == _generation) {
+        _generation++;
+        setState(() {
+          _detail = null;
+          _responseVersion = 0;
+          _error = error;
+          _loading = false;
+        });
+      }
+      rethrow;
+    }
   }
 
   @override
