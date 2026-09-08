@@ -13,6 +13,52 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final editing in [false, true]) {
+    for (final missing in [false, true]) {
+      testWidgets('source template version survives page editing=$editing missing=$missing', (
+        tester,
+      ) async {
+        await tester.binding.setSurfaceSize(const Size(1440, 1000));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        final repository = _SourceTemplateRepository(editing: editing, missing: missing);
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: MealPlanWizardPage(
+                repository: repository,
+                imageRepository: const UnavailableMealPlanImageRepository(),
+                imageSelectionEnabled: false,
+                mealPlanId: editing ? 'existing-plan' : null,
+                templatePlanId: editing ? null : 'source-template',
+                onSaved: () {},
+                onCancel: () {},
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+        await tester.pump();
+        await _selectAudienceOption(tester, 'Instituições', 'Colégio Coelo');
+        await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+        await tester.pump();
+        await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+        await tester.pump();
+        expect(find.text(editing ? 'Prato histórico v1' : 'Prato detalhe v3'), findsOneWidget);
+        await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+        await tester.pump();
+        await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+        await tester.pumpAndSettle();
+        expect(repository.savedDrafts, hasLength(1));
+        final draft = repository.savedDrafts.single;
+        expect(draft.sourceTemplateId, 'source-template');
+        expect(draft.sourceTemplateVersion, editing ? 1 : 3);
+        expect(draft.menu.single.dishName, editing ? 'Prato histórico v1' : 'Prato detalhe v3');
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
   for (final status in ['draft', 'archived', 'active', 'published']) {
     testWidgets('template publication requires published response $status', (tester) async {
       await tester.binding.setSurfaceSize(const Size(1440, 1000));
@@ -604,6 +650,10 @@ MealPlan _plan(
   MealPlanStatus status = MealPlanStatus.draft,
   bool isDraft = true,
   bool requiresReview = false,
+  String? sourceTemplateId,
+  int? sourceTemplateVersion,
+  String? sourceTemplateName,
+  String? dishName,
 }) => MealPlan(
   id: id,
   tenantId: 'dev-tenant',
@@ -618,7 +668,13 @@ MealPlan _plan(
     kind: MealPlanRecurrenceKind.weekly,
     weekdays: const {1, 2, 3, 4, 5},
   ),
-  menu: [MealPlanMenuEntry.empty()],
+  menu: [
+    MealPlanMenuEntry.fromJson({
+      ...MealPlanMenuEntry.empty().toJson(),
+      'dishName': dishName ?? '',
+      if (dishName != null) 'weekdays': [1, 2, 3, 4, 5],
+    }),
+  ],
   allergens: const [],
   alerts: const [],
   attachments: const [],
@@ -629,6 +685,9 @@ MealPlan _plan(
   requiresReview: requiresReview,
   createdBy: 'dev',
   updatedBy: 'dev',
+  sourceTemplateId: sourceTemplateId,
+  sourceTemplateVersion: sourceTemplateVersion,
+  sourceTemplateName: sourceTemplateName,
 );
 
 class _OrderedMealPlanRepository implements MealPlanRepository {
@@ -686,6 +745,54 @@ class _OrderedMealPlanRepository implements MealPlanRepository {
   @override
   Future<MealPlan> fetchEffectiveSnapshot(MealPlanDraft draft) =>
       _delegate.fetchEffectiveSnapshot(draft);
+}
+
+final class _SourceTemplateRepository extends _OrderedMealPlanRepository {
+  _SourceTemplateRepository({required this.editing, required this.missing});
+  final bool editing, missing;
+  final savedDrafts = <MealPlanDraft>[];
+  MealPlanTemplate _template(int version) => MealPlanTemplate(
+    id: 'source-template',
+    name: 'Modelo v$version',
+    planVariant: MealPlanPlanVariant.complete,
+    audienceSegment: MealPlanAudienceSegment.students,
+    status: 'published',
+    version: version,
+    payload: {
+      'menu': [
+        {
+          ...MealPlanMenuEntry.empty().toJson(),
+          'dishName': 'Prato detalhe v$version',
+          'weekdays': [1, 2, 3, 4, 5],
+        },
+      ],
+    },
+    createdAt: DateTime(2026, 8, 1),
+    updatedAt: DateTime(2026, 8, 2),
+  );
+  @override
+  Future<MealPlanPage> fetchTemplatePage(MealPlanListFilter filter) async => MealPlanPage(
+    items: missing ? [] : [_template(2).toDirectoryItem()],
+    total: missing ? 101 : 1,
+    limit: filter.pageSize,
+    offset: filter.offset,
+  );
+  @override
+  Future<MealPlanTemplate> getTemplateById(String id) async => _template(3);
+  @override
+  Future<MealPlan> getById(String id) async => _plan(
+    id,
+    'Cardápio histórico',
+    sourceTemplateId: 'source-template',
+    sourceTemplateVersion: 1,
+    sourceTemplateName: 'Modelo histórico',
+    dishName: 'Prato histórico v1',
+  );
+  @override
+  Future<MealPlan> createOrUpdateDraft(MealPlanDraft draft) async {
+    savedDrafts.add(draft);
+    return _plan(draft.mealPlanId ?? 'created-plan', draft.name);
+  }
 }
 
 final class _TemplatePublicationRepository extends _OrderedMealPlanRepository {

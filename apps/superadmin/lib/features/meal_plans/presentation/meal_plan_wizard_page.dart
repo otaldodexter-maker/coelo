@@ -89,6 +89,8 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
   DateTimeRange? _period;
   DateTimeRange? _visibleDate;
   String _templateId = '';
+  int? _sourceTemplateVersion;
+  String? _sourceTemplateName;
   MealPlanAttachmentMeta? _simpleImage;
   _PendingImage? _pendingSimpleImage;
   final Set<int> _recurrenceWeekdays = {1, 2, 3, 4, 5};
@@ -301,10 +303,17 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
         CoeloAdminSingleSelectField<String>(
           label: 'Modelo-base',
           value: _templateId,
-          options: ['', ..._templates.map((value) => value.id)],
+          options: [
+            '',
+            ..._templates.map((value) => value.id),
+            if (_templateId.isNotEmpty && !_templates.any((value) => value.id == _templateId))
+              _templateId,
+          ],
           optionLabel: (id) => id.isEmpty
               ? 'Criar sem modelo'
-              : _templates.where((value) => value.id == id).first.name,
+              : id == _templateId
+              ? _sourceTemplateName ?? 'Modelo de origem'
+              : _templates.firstWhere((value) => value.id == id).name,
           onChanged: _applyTemplate,
           prefixIcon: Icons.library_books_outlined,
         ),
@@ -1038,7 +1047,9 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
       }
       setState(() {
         _audienceOptions = audienceOptions;
-        _templates = templates;
+        _templates = sourceTemplate == null
+            ? templates
+            : [...templates.where((value) => value.id != sourceTemplate!.id), sourceTemplate];
         _original = original;
         _originalTemplate = originalTemplate;
         if (originalTemplate != null) {
@@ -1047,6 +1058,8 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
           _hydratePlan(original);
         } else if (sourceTemplate != null) {
           _templateId = sourceTemplate.id;
+          _sourceTemplateVersion = sourceTemplate.version;
+          _sourceTemplateName = sourceTemplate.name;
           _hydrateTemplate(sourceTemplate, copyName: false);
         }
       });
@@ -1110,6 +1123,8 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
     _period = DateTimeRange(start: today, end: today.add(const Duration(days: 6)));
     _visibleDate = null;
     _templateId = '';
+    _sourceTemplateVersion = null;
+    _sourceTemplateName = null;
     _simpleImage = null;
     _pendingSimpleImage = null;
     _recurrenceWeekdays
@@ -1159,6 +1174,8 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
     _specificDates.text = plan.recurrence.specificDates.map(_date).join(', ');
     _priority.text = '${plan.priority}';
     _templateId = plan.sourceTemplateId ?? '';
+    _sourceTemplateVersion = plan.sourceTemplateVersion;
+    _sourceTemplateName = plan.sourceTemplateName;
     _simpleImage = plan.simpleImage;
     _simpleImageAlt.text = plan.simpleImageAlt ?? '';
     _simpleNotes.text = plan.simpleNotes ?? '';
@@ -1220,10 +1237,15 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
   }
 
   void _applyTemplate(String id) {
+    if (id == _templateId) return;
     setState(() {
       _templateId = id;
+      _sourceTemplateVersion = null;
+      _sourceTemplateName = null;
       if (id.isEmpty) return;
       final template = _templates.firstWhere((value) => value.id == id);
+      _sourceTemplateVersion = template.version;
+      _sourceTemplateName = template.name;
       _hydrateTemplate(template, copyName: false);
     });
   }
@@ -1687,9 +1709,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
       visibilityMode: _visibility,
       visibleFrom: _visibleDate?.start,
       sourceTemplateId: _templateId.isEmpty ? null : _templateId,
-      sourceTemplateVersion: _templateId.isEmpty
-          ? null
-          : _templates.firstWhere((value) => value.id == _templateId).version,
+      sourceTemplateVersion: _templateId.isEmpty ? null : _sourceTemplateVersion,
       scopeRules: {
         'institutionIds': _institutions.toList(),
         'unitIds': _units.toList(),
