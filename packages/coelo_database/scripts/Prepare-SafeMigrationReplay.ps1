@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'A01DirectoryAuditGreen')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @()
@@ -88,7 +88,9 @@ if ($NominalProfile) {
     'FReadDirectoryContractRed' { 'profiles\FReadDirectoryContractRed\Resolve-FReadDirectoryContractRed.ps1' }
     'FReadDirectoryContractGreen' { 'profiles\FReadDirectoryContractGreen\Resolve-FReadDirectoryContractGreen.ps1' }
     'ModelReadAuthorizationRed' { 'profiles\ModelReadAuthorizationRed\Resolve-ModelReadAuthorizationRed.ps1' }
+    'ModelReadAuthorizationGreen' { 'profiles\ModelReadAuthorizationGreen\Resolve-ModelReadAuthorizationGreen.ps1' }
     'A01DirectoryAuditRed' { 'profiles\A01DirectoryAuditRed\Resolve-A01DirectoryAuditRed.ps1' }
+    'A01DirectoryAuditGreen' { 'profiles\A01DirectoryAuditGreen\Resolve-A01DirectoryAuditGreen.ps1' }
     'FReadDirectoryContractRedDerived' { 'profiles\FReadDirectoryContractRedDerived\Resolve-FReadDirectoryContractRedDerived.ps1' }
   }
   $nominalResolver = Join-Path $preflightRoot $nominalResolverRelative

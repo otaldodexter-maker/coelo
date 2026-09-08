@@ -259,6 +259,9 @@ A fixture97 preserva os89 anteriores e acrescenta oito verificações de
 auditoria. O replay produziu91PASS/6FAIL, somente nas asserções91–94/96–97:
 a v1 ainda não faz append de sucesso dos readers. Essa seleção não inclui
 uma correção posterior de auditoria nem representa GREEN final.
+Esse comando histórico exige o snapshotd74a9bccdf70eabb8da2722fc27d420e5d0e05aa.
+No checkout canônico v2, o perfil RED rejeita o hash intencionalmente; a cópia
+v1 em scripts/tests/fixtures serve somente ao TestDrive, sem fallback runtime.
 
 ```powershell
 & packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
@@ -276,6 +279,13 @@ cópias. A preparação passou272Pester (39específicos e233regressões); o repl
 local aplicou50arquivos e a fixture abortou após2TAP/2FAIL por função ausente.
 O reader futuro
 não pertence a esse RED; não é evidência E2E de Formulários.
+
+Os perfis corrigidos `ModelReadAuthorizationGreen` e `A01DirectoryAuditGreen`
+fixam respectivamente50arquivos/target20260908021821 e55arquivos/target20260907222911.
+Modelos acrescenta somente a corretiva21821, com testes11+17 e prova separadaACL10.
+Atividades usa a v2 auditada (hash e72e11c5d0f8fd8d49bfe098a230530edb3d4070d80ca5b4ae04b61b72eb196f),
+com a fixture97 imutável. Ambos passaram no harness332/332Pester e revisão;
+seus resultados SQL são registrados em evidências nominais separadas.
 
 Nunca use
 `Prepare-SafeMigrationReplay.ps1` diretamente em operacoes normais, nem use o
