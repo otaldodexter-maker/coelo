@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:coelo_api/src/media/media_read_contract.dart';
-import 'package:coelo_api/src/media/media_session.dart';
-import 'package:coelo_api/src/media/media_upload_contract.dart';
-import 'package:coelo_api/src/media/media_uploader.dart';
+import 'package:coelo_api/coelo_api.dart';
 import 'package:test/test.dart';
 
 const asset = '9b400000-0000-4000-8000-000000000001';
