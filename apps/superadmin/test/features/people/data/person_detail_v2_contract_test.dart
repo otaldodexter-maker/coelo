@@ -82,16 +82,13 @@ void main() {
     );
   });
 
-  test('valid suspended status stays unavailable in the legacy model bridge', () async {
+  test('valid suspended status is represented by the model bridge', () async {
     final repository = _repository({
       'ok': true,
       'data': _data()..['status'] = 'suspended',
       'error': null,
     });
-    await expectLater(
-      repository.fetchDetail(_personId),
-      throwsA(isA<PersonDirectoryUnavailableException>()),
-    );
+    expect((await repository.fetchDetail(_personId)).status, PersonStatus.suspended);
   });
 
   for (final code in [

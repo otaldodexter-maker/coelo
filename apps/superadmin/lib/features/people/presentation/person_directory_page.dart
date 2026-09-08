@@ -825,6 +825,7 @@ final class _PersonStatusIndicatorState extends State<_PersonStatusIndicator> {
   return switch (status) {
     PersonStatus.active => (statusColors.successContainer, statusColors.onSuccessContainer),
     PersonStatus.inactive => (statusColors.errorContainer, statusColors.onErrorContainer),
+    PersonStatus.suspended => (statusColors.warningContainer, statusColors.onWarningContainer),
     PersonStatus.draft ||
     PersonStatus.archived => (colors.surfaceContainerHighest, colors.onSurfaceVariant),
   };

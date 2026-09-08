@@ -15,6 +15,7 @@ enum PersonStatus {
   draft('draft', 'Rascunho'),
   active('active', 'Ativa'),
   inactive('inactive', 'Inativa'),
+  suspended('suspended', 'Suspensa'),
   archived('archived', 'Arquivada');
 
   const PersonStatus(this.databaseValue, this.label);
