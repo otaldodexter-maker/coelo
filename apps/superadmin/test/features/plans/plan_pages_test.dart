@@ -4,6 +4,7 @@ import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/app/prototype/superadmin_prototype_store.dart';
 import 'package:coelo_superadmin/features/plans/data/fake_plan_catalog_repository.dart';
 import 'package:coelo_superadmin/features/plans/domain/plan_catalog.dart';
+import 'package:coelo_superadmin/features/plans/domain/plan_catalog_repository.dart';
 import 'package:coelo_superadmin/features/plans/presentation/plan_directory_page.dart';
 import 'package:coelo_superadmin/features/plans/presentation/plan_form_page.dart';
 import 'package:coelo_superadmin/features/plans/presentation/widgets/plan_capability_matrix.dart';
@@ -82,6 +83,44 @@ void main() {
       expect(repository.findById('coelo-essential')!.status, PlanStatus.active);
     },
   );
+
+  testWidgets('an archive dialog cannot send plan A to replacement repository B', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final first = _RecordingPlanCatalogRepository(_repository());
+    final second = _RecordingPlanCatalogRepository(_repository());
+    final current = ValueNotifier<PlanCatalogRepository>(first);
+    addTearDown(current.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: ValueListenableBuilder<PlanCatalogRepository>(
+            valueListenable: current,
+            builder: (_, repository, _) => PlanDirectoryPage(repository: repository),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Ações de Coelo Essencial'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Arquivar plano'));
+    await tester.pumpAndSettle();
+
+    current.value = second;
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.descendant(of: find.byType(CoeloAdminDialogShell), matching: find.byType(TextFormField)),
+      'Contexto anterior não pode atravessar o tenant.',
+    );
+    await tester.tap(find.text('Arquivar'));
+    await tester.pumpAndSettle();
+
+    expect(first.commands, isEmpty);
+    expect(second.commands, isEmpty);
+  });
 
   testWidgets('create uses four steps and only saves from review', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 1000));
@@ -576,4 +615,23 @@ Future<void> _openCreateCapabilities(WidgetTester tester) async {
   await tester.enterText(find.byKey(const Key('plan-description-field')), 'Descrição local.');
   await tester.tap(find.text('Continuar'));
   await tester.pumpAndSettle();
+}
+
+final class _RecordingPlanCatalogRepository implements PlanCatalogRepository {
+  _RecordingPlanCatalogRepository(this.delegate);
+
+  final PlanCatalogRepository delegate;
+  final commands = <PlanSaveCommand>[];
+
+  @override
+  Future<PlanDetails> get(String planId) => delegate.get(planId);
+
+  @override
+  Future<PlanPage> list(PlanQuery query) => delegate.list(query);
+
+  @override
+  Future<PlanDetails> save(PlanSaveCommand command) {
+    commands.add(command);
+    return delegate.save(command);
+  }
 }

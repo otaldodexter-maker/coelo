@@ -34,6 +34,7 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
   int _page = 1;
   int _pageSize = 11;
   int _loadVersion = 0;
+  int _repositoryVersion = 0;
   PlanDataState _dataState = PlanDataState.loading;
   PlanPage? _loadedPage;
 
@@ -47,6 +48,7 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
   void didUpdateWidget(covariant PlanDirectoryPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.repository != widget.repository) {
+      _repositoryVersion += 1;
       _loadedPage = null;
       unawaited(_load());
     }
@@ -54,6 +56,7 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
 
   @override
   void dispose() {
+    _repositoryVersion += 1;
     _search.dispose();
     super.dispose();
   }
@@ -342,87 +345,123 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
   }
 
   Future<void> _confirmStatusChange(PlanCatalog plan, {required bool archive}) async {
-    final reason = TextEditingController();
-    var showReasonError = false;
-    final confirmed = await showDialog<bool>(
+    final repository = widget.repository;
+    final repositoryVersion = _repositoryVersion;
+    final reason = await showDialog<String>(
       context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, setDialogState) {
-          final colors = Theme.of(dialogContext).colorScheme;
-          return CoeloAdminDialogShell(
-            title: archive ? 'Arquivar plano' : 'Restaurar plano',
-            onClose: () => Navigator.pop(dialogContext, false),
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  archive && plan.usedByInstitutionCount > 0
-                      ? '${plan.usedByInstitutionCount} instituições utilizam este plano. As subscriptions não serão alteradas automaticamente.'
-                      : 'Esta ação altera a disponibilidade do plano no catálogo.',
-                ),
-                const SizedBox(height: CoeloSpacing.space4),
-                CoeloFormTextField(
-                  controller: reason,
-                  labelText: 'Motivo de auditoria',
-                  prefixIcon: Icons.notes_rounded,
-                  maxLines: 3,
-                  errorText: showReasonError ? 'Motivo obrigatório' : null,
-                  onChanged: (value) {
-                    if (showReasonError && value.trim().isNotEmpty) {
-                      setDialogState(() => showReasonError = false);
-                    }
-                  },
-                ),
-              ],
-            ),
-            secondaryAction: OutlinedButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Cancelar'),
-            ),
-            primaryAction: FilledButton(
-              style: archive
-                  ? FilledButton.styleFrom(
-                      backgroundColor: colors.errorContainer,
-                      foregroundColor: colors.error,
-                    )
-                  : null,
-              onPressed: () {
-                if (reason.text.trim().isEmpty) {
-                  setDialogState(() => showReasonError = true);
-                  return;
-                }
-                Navigator.pop(dialogContext, true);
-              },
-              child: Text(archive ? 'Arquivar' : 'Restaurar'),
-            ),
-          );
-        },
-      ),
+      builder: (_) => _PlanStatusChangeDialog(plan: plan, archive: archive),
     );
-    if (confirmed == true) {
-      try {
-        await widget.repository.save(
-          PlanSaveCommand(
-            requestId: newPlanRequestId(),
-            expectedRevision: plan.revision,
-            reason: reason.text,
-            draft: PlanDraft(
-              id: plan.id,
-              name: plan.name,
-              code: plan.code,
-              description: plan.description,
-              status: archive ? PlanStatus.archived : PlanStatus.active,
-              features: plan.features,
-              limits: plan.limits,
-            ),
+    if (reason == null || !mounted) return;
+    if (repositoryVersion != _repositoryVersion || !identical(repository, widget.repository)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('O contexto mudou. Reabra a ação para continuar.')),
+      );
+      return;
+    }
+    try {
+      await repository.save(
+        PlanSaveCommand(
+          requestId: newPlanRequestId(),
+          expectedRevision: plan.revision,
+          reason: reason,
+          draft: PlanDraft(
+            id: plan.id,
+            name: plan.name,
+            code: plan.code,
+            description: plan.description,
+            status: archive ? PlanStatus.archived : PlanStatus.active,
+            features: plan.features,
+            limits: plan.limits,
           ),
-        );
-        if (mounted) await _load();
-      } on PlanRepositoryException catch (_) {
-        if (mounted) setState(() => _dataState = PlanDataState.error);
+        ),
+      );
+      if (!mounted ||
+          repositoryVersion != _repositoryVersion ||
+          !identical(repository, widget.repository)) {
+        return;
+      }
+      await _load();
+    } on PlanRepositoryException catch (_) {
+      if (mounted &&
+          repositoryVersion == _repositoryVersion &&
+          identical(repository, widget.repository)) {
+        setState(() => _dataState = PlanDataState.error);
       }
     }
-    reason.dispose();
+  }
+}
+
+final class _PlanStatusChangeDialog extends StatefulWidget {
+  const _PlanStatusChangeDialog({required this.plan, required this.archive});
+
+  final PlanCatalog plan;
+  final bool archive;
+
+  @override
+  State<_PlanStatusChangeDialog> createState() => _PlanStatusChangeDialogState();
+}
+
+final class _PlanStatusChangeDialogState extends State<_PlanStatusChangeDialog> {
+  final _reason = TextEditingController();
+  var _showReasonError = false;
+
+  @override
+  void dispose() {
+    _reason.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return CoeloAdminDialogShell(
+      title: widget.archive ? 'Arquivar plano' : 'Restaurar plano',
+      onClose: () => Navigator.pop(context),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            widget.archive && widget.plan.usedByInstitutionCount > 0
+                ? '${widget.plan.usedByInstitutionCount} instituições utilizam este plano. As subscriptions não serão alteradas automaticamente.'
+                : 'Esta ação altera a disponibilidade do plano no catálogo.',
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+          CoeloFormTextField(
+            controller: _reason,
+            labelText: 'Motivo de auditoria',
+            prefixIcon: Icons.notes_rounded,
+            maxLines: 3,
+            errorText: _showReasonError ? 'Motivo obrigatório' : null,
+            onChanged: (value) {
+              if (_showReasonError && value.trim().isNotEmpty) {
+                setState(() => _showReasonError = false);
+              }
+            },
+          ),
+        ],
+      ),
+      secondaryAction: OutlinedButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Cancelar'),
+      ),
+      primaryAction: FilledButton(
+        style: widget.archive
+            ? FilledButton.styleFrom(
+                backgroundColor: colors.errorContainer,
+                foregroundColor: colors.error,
+              )
+            : null,
+        onPressed: () {
+          final reason = _reason.text.trim();
+          if (reason.isEmpty) {
+            setState(() => _showReasonError = true);
+            return;
+          }
+          Navigator.pop(context, reason);
+        },
+        child: Text(widget.archive ? 'Arquivar' : 'Restaurar'),
+      ),
+    );
   }
 }
 
