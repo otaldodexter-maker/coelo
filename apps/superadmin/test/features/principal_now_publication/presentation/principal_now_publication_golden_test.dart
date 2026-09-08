@@ -84,7 +84,6 @@ void main() {
     final context = tester.element(find.byType(PrincipalNowPublicationPage));
     await tester.runAsync(() => precacheImage(MemoryImage(imageBytes), context));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
     final pointer = await tester.createGesture(kind: PointerDeviceKind.mouse);
     addTearDown(pointer.removePointer);

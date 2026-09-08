@@ -24,15 +24,17 @@ final class PrincipalPublicationStep {
 /// geometry without importing administrative components into Principal.
 final class PrincipalPublicationFrame extends StatelessWidget {
   const PrincipalPublicationFrame({
-    required this.navigation,
     required this.body,
     required this.footer,
+    this.navigation,
     this.bodyMaxWidth = 880,
     this.scrollKey,
     super.key,
   });
 
-  final Widget navigation;
+  /// Optional step rail. Composers whose approved reference has no lateral
+  /// wizard omit it and keep the shared shell, insets and footer.
+  final Widget? navigation;
   final Widget body;
   final Widget footer;
   final double bodyMaxWidth;
@@ -61,7 +63,10 @@ final class PrincipalPublicationFrame extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        if (!showRail) ...[navigation, const SizedBox(height: CoeloSpacing.space4)],
+                        if (!showRail && navigation != null) ...[
+                          navigation!,
+                          const SizedBox(height: CoeloSpacing.space4),
+                        ],
                         body,
                       ],
                     ),
@@ -78,7 +83,10 @@ final class PrincipalPublicationFrame extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (showRail) ...[navigation, const SizedBox(width: CoeloSpacing.space6)],
+            if (showRail && navigation != null) ...[
+              navigation!,
+              const SizedBox(width: CoeloSpacing.space6),
+            ],
             content,
           ],
         ),
@@ -221,6 +229,64 @@ final class PrincipalPublicationStepNavigation extends StatelessWidget {
     PrincipalPublicationStepStatus.complete => 'completa',
     PrincipalPublicationStepStatus.error => 'com erro',
     PrincipalPublicationStepStatus.incomplete => 'incompleta',
+  };
+}
+
+/// Thin segmented progress used by composers whose approved reference shows the
+/// whole form on a single scroll. It reports how far the draft is, it does not
+/// navigate: every field stays reachable regardless of the segment states.
+final class PrincipalPublicationProgressBar extends StatelessWidget {
+  const PrincipalPublicationProgressBar({required this.steps, this.barKey, super.key})
+    : assert(steps.length > 1);
+
+  final List<PrincipalPublicationStep> steps;
+  final Key? barKey;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final completed = steps
+        .where((step) => step.status == PrincipalPublicationStepStatus.complete)
+        .length;
+    return Semantics(
+      key: barKey,
+      container: true,
+      readOnly: true,
+      label:
+          'Progresso da publicação: $completed de ${steps.length} concluídos. '
+          '${steps.map((step) => '${step.label}, ${_progressLabel(step.status)}').join('. ')}.',
+      child: ExcludeSemantics(
+        child: Row(
+          children: [
+            for (var index = 0; index < steps.length; index++) ...[
+              if (index > 0) const SizedBox(width: CoeloSpacing.space1),
+              Expanded(
+                child: Container(
+                  key: steps[index].key,
+                  height: CoeloSpacing.space1,
+                  decoration: BoxDecoration(
+                    color: switch (steps[index].status) {
+                      PrincipalPublicationStepStatus.complete ||
+                      PrincipalPublicationStepStatus.current => colors.primary,
+                      PrincipalPublicationStepStatus.error => colors.error,
+                      PrincipalPublicationStepStatus.incomplete => colors.surfaceContainerHighest,
+                    },
+                    borderRadius: BorderRadius.circular(CoeloRadius.full),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _progressLabel(PrincipalPublicationStepStatus status) => switch (status) {
+    PrincipalPublicationStepStatus.current => 'em andamento',
+    PrincipalPublicationStepStatus.complete => 'concluído',
+    PrincipalPublicationStepStatus.error => 'com erro',
+    PrincipalPublicationStepStatus.incomplete => 'pendente',
   };
 }
 
