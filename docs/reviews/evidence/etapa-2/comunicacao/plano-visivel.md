@@ -3,10 +3,75 @@ title: "E2E 3 — plano visível por tela e camada"
 source: "pedido do Owner via Coordenador em 2026-09-07; reservas E2E3-M01 e E2E3-N01; evidências locais desta frente"
 status: "in-progress; not-e2e-complete"
 generated_at: "2026-09-07"
-updated_at: "2026-09-07"
+updated_at: "2026-09-08"
 ---
 
 # Plano por tela
+
+Checkpoint focal posterior a `4132c0aa`: `7cb636ef` corrige negação e cache de
+Momentos (79/79 publicação, incluindo goldens); `76a14d73` corrige duração de
+ticket, expiração e cache Acontece (56/56 funcionais + 10/10 goldens de galeria).
+Chat manteve código existente: 73/73 diálogo/tile/composição reexecutados.
+Referências por cenário e gates reais em
+`2026-09-08-media-lifecycle-handoff.md`. Nenhum PNG ou recurso remoto alterado;
+o lote amplo 898 não foi repetido. A tabela preserva também evidências anteriores.
+
+## Posição atual — escopo original integral
+
+O Owner reiterou que o escopo original não deve ser esquecido. Cada fatia
+abaixo continua subordinada à entrega real da vertical completa. Somente
+Superadmin e dependências; Coelo (Principal) é o menu, não `apps/principal`.
+Os quadros posteriores preservam a cronologia, não substituem este checkpoint.
+
+| Superfície original | Última evidência desta frente | Próximo gate real / situação |
+| --- | --- | --- |
+| Chat/Conversas canônico e Mensagens | `86e4fdad`/`0fff8779`: retry e fechar imagem por origem; 139 testes incluindo 8 goldens do diálogo | Composição/gateway/catálogo M03, transporte real, autorização/reload; goldens históricos e revisão visual completa ainda abertos |
+| Avisos | `9abd4a74` + correção central `1165ee5c`: prévia vinculada à origem e confirmação once, 111 não-golden; 46 expectativas SQL não executadas aqui | N01: replay nominal/ponte sob Eng1, geração/job/worker/auditoria e produção |
+| Convites | `e4171bdb`/`72b24d25`: 61 não-golden; confirmação própria, callbacks obsoletos e purge de negação | OQ039/spec047 de emissão continuam pendentes; não habilitar default false; prova server-side/E2E aberta |
+| Circulares administrativas e menu | `38870d1`, `17c6286a`, `8f7d9c6d`: editor, reader, contexto e purge; 112 não-golden | Respostas/publicação/mídia reais, revogação/reload e regressão visual completa |
+| Acontece | `8b48d271`: header de contexto mede espaço real, 50 funcionais/16 matriz; galeria 10 goldens; `8c2c7009`: publicação 55 testes | Catálogo/gateway e mídia reais; 422 legado recuperável; dez goldens feed abertos, diferença desktop remanescente PublishNowCard sem autorização de rebaseline |
+| Agora | `1a14784d`: ownership dos editores, 91 testes; `f353fee2`/`9219e02e`: opções, geração de mídia e purge, 59 testes de prévia, ambos incluindo goldens | Master R2, HOT privado até 24h quando necessário, fallback, expiração só da cópia Stream e prova real |
+| Momentos | `5e53ea4f`: contexto; 86 funcionais/rota e 14 goldens naquela fatia; `6e7bc23b` transporte R2 comum | Catálogo/gateway, upload/reprodução real e promoção HOT por necessidade medida |
+| Para Você | `d9942d88`/`7115a6f7`: seletor por origem e scroll em pouca altura, 55 testes incluindo 13 goldens, Tab/Enter e toque | Leitura/revogação/persistência real e conteúdo conectado |
+| Perfil/preview do menu | `19c6d6c7`/`88fb2cf1`: aba Circulares, cursor/contexto/prévia; lote 172 não-golden e 19 goldens Circulares | Avatar/capa/gateway, autorização real e revisão dos dez goldens completos obsoletos; não restaurar seguidores públicos |
+| Cabeçalho global | `da6eb4cf`: relato contextual; `e8bbad3c`: controller de notificações acompanha injeção; 101 shell/roteamento | Todas as rotas no browser e composição real; suporte/atividades em memória não são persistência; baselines históricos abertos |
+| Media Gateway/R2/Stream compartilhado | `33d7f751`, `589214b7`, `6e7bc23b`, `3efe3865`; inventário read-only dos três buckets; DDL candidato `69f5e8a` | Guard AMR/proveniência E1, máximo batch Owner, decoder/entitlement e credenciais/lease nominais; sem SQL/composiçãoScope autorizados |
+
+Coordenador confirmou em 2026-09-08: Circulares `38870d1`/`17c6286a` integrados
+com lote central 386 PASS; Chat `cdb542a5` integrado com lote Chat/Cardápios
+172 PASS/analyzer5. São resultados comunicados pela coordenação, não execução
+independente desta frente. Nenhum desses lotes promove automaticamente E2E.
+
+Próximo trabalho: continuar achados independentes do escopo enquanto os gates
+M03 são resolvidos por seus responsáveis. Não escrever SQL, conectar Scope,
+inventar máximo ou autorizar sessão por AAL isolado. ETA global segue dependente
+dos gates externos; não trocar critério de entrega por quantidade de commits.
+
+Parecer E1 retransmitido pelo Coordenador neste checkpoint: não existe guard
+AMR/proveniência pronto nas migrations e não há helper iminente. AAL persistido
+1/2 não prova origem operacional; recovery PKCE identificável não resolve OTP
+implícito ambíguo. O GoTrue congelado é fonte nominal, não versão de produção
+comprovada. Nenhuma proibição nova de OTP/magiclink foi aprovada. O gate exige
+contrato server-side e prova dos fluxos admitidos, sem ampliar lease/credenciais.
+
+## Histórico das fatias
+
+Checkpoint em `9219e02e`: 898/898 não-golden no escopo original e shell,
+55/55 rotas; cinco testes novos de negação/contexto sobre os 893 anteriores.
+API de mídia 45/45 e Deno 40/40 reexecutados em `f3f994fa`, antes dessa última
+correção Flutter. Smoke adicional das superfícies em
+`2026-09-08-browser-remaining-surfaces.md`; servidor local encerrado, aba
+fechada e viewport restaurada. Nenhuma prova substitui os gates reais da tabela.
+
+Checkpoint de regressão independente root em `e8bbad3c`: 846/846 testes
+não-golden das superfícies originais + shell; 55/55 roteamento; 45/45
+coelo_api/test/media; 40/40 Deno de métricas de imagem e transporte R2.
+Esses lotes usam fixtures/fakes/contratos locais e não são prova de E2E real.
+Detalhes e limites em `2026-09-08-original-scope-regression.md`.
+
+N01: coordenação autorizou Eng1 a preparar/executar diagnóstico local nominal
+N01PrerequisitesRed de 50+2 entradas. Não é GREEN, ponte, migration N01 ou lease
+remoto. Root continua sem operar Docker, histórico, runner ou produção.
 
 Os marcos são por tela: 1 contrato/inventário; 2 backend/segurança/negativas;
 3 cliente/estados; 4 integração real/persistência/reload; 5 regressão/visual;
@@ -31,7 +96,7 @@ Coordenador; este arquivo registra somente esta frente.
 | Passo | Tela / subtela / action_id | Backend efetivamente trabalhado | Subagente revisor | Evidência / próximo gate |
 | --- | --- | --- | --- | --- |
 | 6/6 da fatia | Conversas / recibo após refresh / `chat.receipts` | Nenhum BD nesta fatia; Flutter | `review_chat_receipt` | RED reproduzido, GREEN 29/29, analyzer e review aprovados; commit e revogação real pendentes |
-| 2/6 | Avisos / publicação e leitura / `notices.publish`, `notices.read` | Teste de `public.platform_notices`, `app_private.notice_publication_jobs`, RPCs v2 preparado; nenhum SQL executado | `crosswalk_media` | 17 assertivas e SHA enviados para replay exclusivo Eng1; aguarda baseline e lease |
+| 2/6 | Avisos / publicação, leitura, worker e métricas / `notices.publish`, `notices.read` | `public.platform_notices`, `app_private.notice_publication_jobs`, `public.notice_receipts`, RPCs v2/worker; nenhum SQL executado | `crosswalk_media`, `review_media_session`, `review_chat_receipt` | 17+19+10 assertivas preparadas e revisadas, com papéis SQL reais; NÃO executadas; aguarda perfil/baseline e lease exclusivo Eng1 |
 | 6/6 da fatia | Avisos / formulário-publicar / `notices.publish` | Nenhum BD nesta fatia; mensagem Flutter pelo status retornado | `review_chat_receipt`, `crosswalk_media` | RED scheduled, GREEN focal 2/2; ampliado 38 verdes e 2 falhas mobile preexistentes; replay/visual continuam abertos |
 | 6/6 da fatia | Avisos / criar e navegar formulário / `notices.manage` | Cliente valida receipt da RPC v2; nenhum BD executado | `review_chat_receipt`, `review_media_session` | Criação versão 1 alinhada; duas falhas mobile resolvidas por interação com rolagem; 99/99 sem goldens, analyzer/review verdes; próximo gate scheduled-edit e replay SQL |
 | 6/6 da fatia | Avisos / editar agendado e retry / `notices.manage`, `notices.publish` | Cliente; nenhum BD executado | `review_chat_receipt`, `crosswalk_media` | RED quatro falhas; GREEN 103/103 sem goldens; sem publish adicional ou retomada implícita; próximo gate geração SQL N01 |
