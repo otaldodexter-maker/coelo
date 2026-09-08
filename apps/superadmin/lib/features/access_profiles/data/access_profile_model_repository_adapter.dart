@@ -74,7 +74,9 @@ final class AccessProfileModelRepositoryAdapter
 
   @override
   Future<AccessProfile> fetchTemplate(AccessProfileDomain domain) async {
+    final revision = _authorizationRevision?.call();
     final catalog = await _models.fetchPermissionCatalog();
+    _requireCurrentRevision(revision);
     return AccessProfile(
       id: '',
       domain: domain,
