@@ -5,6 +5,42 @@ import 'package:coelo_superadmin/features/access_profiles/presentation/access_pr
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final denied in [false, true]) {
+    test('search invalidates the previous response during debounce: denied=$denied', () async {
+      final repository = _DelayedRepository();
+      final viewModel = AccessProfileViewModel(repository, principalCapabilitiesOnly: false);
+      addTearDown(viewModel.dispose);
+      final oldLoad = viewModel.load();
+      final search = viewModel.setSearch('novo modelo');
+      if (denied) {
+        repository.first.completeError(const AccessProfileUnauthorizedException());
+      } else {
+        repository.first.complete(
+          const AccessProfilePage(items: [_platformProfile], totalCount: 1, page: 0, pageSize: 11),
+        );
+      }
+      await oldLoad;
+      expect(viewModel.query.search, 'novo modelo');
+      expect(viewModel.page.items, isEmpty);
+      expect(viewModel.state, AccessProfileLoadState.loading);
+      repository.second.complete(const AccessProfilePage.empty());
+      await search;
+      expect(viewModel.state, AccessProfileLoadState.noResults);
+    });
+  }
+
+  test('changing domain cancels the pending search instead of reading twice', () async {
+    final repository = _ImmediateRepository();
+    final viewModel = AccessProfileViewModel(repository, principalCapabilitiesOnly: false);
+    addTearDown(viewModel.dispose);
+    final search = viewModel.setSearch('modelo antigo');
+    await viewModel.setDomain(AccessProfileDomain.institution);
+    await search;
+    expect(repository.profileCalls, 1);
+    expect(viewModel.query.domain, AccessProfileDomain.institution);
+    expect(viewModel.query.search, isEmpty);
+  });
+
   test('discarda resposta antiga quando uma consulta mais nova termina primeiro', () async {
     final repository = _DelayedRepository();
     final viewModel = AccessProfileViewModel(repository);

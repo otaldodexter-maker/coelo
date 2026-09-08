@@ -60,6 +60,8 @@ final class AccessProfileViewModel extends ChangeNotifier {
       : page.hasNext;
 
   Future<void> load() async {
+    if (_disposed) return;
+    _searchGeneration++;
     final requestGeneration = ++_requestGeneration;
     if (usesPrincipalCapabilities) {
       page = const AccessProfilePage.empty();
@@ -122,6 +124,7 @@ final class AccessProfileViewModel extends ChangeNotifier {
   }
 
   Future<void> setSearch(String value) async {
+    if (_disposed) return;
     query = query.copyWith(search: value, resetPage: true);
     if (usesPrincipalCapabilities) {
       state = visibleCapabilities.isEmpty
@@ -131,6 +134,11 @@ final class AccessProfileViewModel extends ChangeNotifier {
       return;
     }
     final searchGeneration = ++_searchGeneration;
+    _requestGeneration++;
+    _clearSensitiveState();
+    state = AccessProfileLoadState.loading;
+    errorMessage = null;
+    notifyListeners();
     await Future<void>.delayed(const Duration(milliseconds: 300));
     if (_disposed || searchGeneration != _searchGeneration) return;
     await load();
