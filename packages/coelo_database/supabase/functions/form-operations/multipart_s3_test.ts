@@ -421,6 +421,28 @@ Deno.test("enforces the 30 second deadline through fetch and response body", asy
   assertEquals(bodyCancelled, true);
 });
 
+Deno.test("requires a complete successful S3 response document", async () => {
+  for (
+    const [status, xml] of [
+      [
+        206,
+        '<CompleteMultipartUploadResult><ETag>"part"</ETag></CompleteMultipartUploadResult>',
+      ],
+      [200, '<Other><ETag>"part"</ETag></Other>'],
+      [200, '<CompleteMultipartUploadResult><ETag>"part"</ETag>'],
+    ] as const
+  ) {
+    const client = new MultipartS3Client(config, {
+      fetch: () => Promise.resolve(new Response(xml, { status })),
+    });
+    await assertRejects(() =>
+      client.complete("bucket", "file.xlsx", "upload-id", [
+        { partNumber: 1, etag: '"part"' },
+      ])
+    );
+  }
+});
+
 Deno.test("rejects non UTF8 protocol bytes and unquoted response ETags", async () => {
   const invalidXml = new MultipartS3Client(config, {
     fetch: () => Promise.resolve(new Response(new Uint8Array([0xff]))),
@@ -440,5 +462,71 @@ Deno.test("rejects non UTF8 protocol bytes and unquoted response ETags", async (
       1,
       new Uint8Array([1]),
     )
+  );
+});
+
+Deno.test("rejects result fields in comments and unbalanced XML children", async () => {
+  for (
+    const content of [
+      '<!--<ETag>"fake"</ETag>-->',
+      '<ETag>"ok"</ETag><broken>',
+      '<Nested><ETag>"fake"</ETag></Nested>',
+      '<ETag>"ok"</ETag><?provider data?>',
+      '<ETag><![CDATA["fake"]]></ETag>',
+      '<ETag>"&unsupported;"</ETag>',
+      '<ETag>"&#0;"</ETag>',
+      '<ETag>"&#xD800;"</ETag>',
+      '<ETag>"&#x110000;"</ETag>',
+      '<ETag>"one"</etag>',
+      '<ETag>"ok"</ETag><ChecksumSHA256>unterminated',
+      '<ETag>"ok"</ETag>unexpected text',
+    ]
+  ) {
+    const client = new MultipartS3Client(config, {
+      fetch: () =>
+        Promise.resolve(
+          new Response(
+            `<CompleteMultipartUploadResult>${content}</CompleteMultipartUploadResult>`,
+          ),
+        ),
+    });
+    await assertRejects(() =>
+      client.complete("bucket", "file.xlsx", "upload-id", [
+        { partNumber: 1, etag: '"part"' },
+      ])
+    );
+  }
+  const client = new MultipartS3Client(config, {
+    fetch: () =>
+      Promise.resolve(
+        new Response(
+          "<InitiateMultipartUploadResult><!--<UploadId>fake</UploadId>--></InitiateMultipartUploadResult>",
+        ),
+      ),
+  });
+  await assertRejects(() =>
+    client.initiate("bucket", "file.xlsx", "application/octet-stream")
+  );
+});
+
+Deno.test("accepts flat S3 result documents with declaration namespace and escaped fields", async () => {
+  const replies = [
+    '<?xml version = "1.0" encoding = "UTF-8"?>\n<InitiateMultipartUploadResult xmlns = "http://s3.amazonaws.com/doc/2006-03-01/">\n<Bucket>bucket</Bucket><Key>exports/a&amp;b.xlsx</Key><UploadId>opaque&#43;id&amp;value</UploadId>\n</InitiateMultipartUploadResult>',
+    "<?xml version='1.0' encoding='utf-8' standalone='yes'?>\n<CompleteMultipartUploadResult xmlns='http://s3.amazonaws.com/doc/2006-03-01/'><Location>https://example.test/a&amp;b</Location><Bucket>bucket</Bucket><Key>exports/a&amp;b.xlsx</Key><ETag>&#34;final&amp;etag&#x22;</ETag><ChecksumSHA256>checksum=</ChecksumSHA256><ChecksumType>FULL_OBJECT</ChecksumType></CompleteMultipartUploadResult>",
+  ];
+  const client = new MultipartS3Client(config, {
+    fetch: () => Promise.resolve(new Response(replies.shift()!)),
+  });
+  assertEquals(
+    await client.initiate("bucket", "file.xlsx", "application/octet-stream"),
+    {
+      uploadId: "opaque+id&value",
+    },
+  );
+  assertEquals(
+    await client.complete("bucket", "file.xlsx", "opaque+id&value", [
+      { partNumber: 1, etag: '"part"' },
+    ]),
+    { etag: '"final&etag"' },
   );
 });
