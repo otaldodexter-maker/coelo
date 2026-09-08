@@ -82,6 +82,34 @@ void main() {
     expect(newRepository.childReads.length, readsBefore + 1);
   });
 
+  for (final denied in [true, false]) {
+    testWidgets('detail clears cached context after directory failure: $denied', (tester) async {
+      await _surface(tester);
+      final repository = _Repository('Escopo A');
+      final controller = ChildSafetyController(repository);
+      addTearDown(controller.dispose);
+      await controller.load();
+      await tester.pumpWidget(_detail(controller, 'child-a'));
+      await tester.pumpAndSettle();
+      expect(find.text('child-a · Escopo A'), findsOneWidget);
+
+      repository.directoryFailure = denied
+          ? const ChildSafetyUnauthorizedException()
+          : const ChildSafetyUnavailableException();
+      await controller.retry();
+      await tester.pumpAndSettle();
+      expect(find.text('child-a · Escopo A'), findsNothing);
+      expect(find.text('Contexto indisponível'), findsOneWidget);
+      expect(repository.childReads, ['child-a']);
+
+      repository.directoryFailure = null;
+      await controller.retry();
+      await tester.pumpAndSettle();
+      expect(find.text('child-a · Escopo A'), findsOneWidget);
+      expect(repository.childReads, ['child-a', 'child-a']);
+    });
+  }
+
   testWidgets('directory loads the replacement controller and clears the old search', (
     tester,
   ) async {
@@ -135,6 +163,7 @@ final class _Repository implements ChildSafetyRepository {
   final String scope;
   final childReads = <String>[];
   int directoryReads = 0;
+  Exception? directoryFailure;
   Future<ChildSafetyRecord?>? pending;
 
   ChildSafetyRecord record(String id) => ChildSafetyRecord(
@@ -155,6 +184,7 @@ final class _Repository implements ChildSafetyRepository {
   @override
   Future<ChildSafetyDirectoryPage> fetchDirectory(ChildSafetyDirectoryQuery query) async {
     directoryReads++;
+    if (directoryFailure case final failure?) throw failure;
     return ChildSafetyDirectoryPage(
       records: [record('child-a')],
       totalCount: 1,

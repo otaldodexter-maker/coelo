@@ -105,6 +105,84 @@ void main() {
     expect(await first, isTrue);
   });
 
+  test('late directory success cannot undo a command authorization denial', () async {
+    final repository = _Repository();
+    final oldPage = await repository.fetchDirectory(ChildSafetyDirectoryQuery());
+    final pending = Completer<ChildSafetyDirectoryPage>();
+    repository.nextDirectory = pending.future;
+    repository.commandUnauthorized = true;
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    final oldLoad = controller.load();
+    final succeeded = await controller.transitionAuthorization(
+      const TransitionPickupAuthorizationCommand(
+        requestId: '11111111-1111-4111-8111-111111111111',
+        childId: 'child-1',
+        authorizationId: 'authorization-1',
+        status: PickupAuthorizationStatus.approved,
+        reason: 'Documento conferido',
+      ),
+    );
+    expect(succeeded, isFalse);
+    expect(controller.state, ChildSafetyLoadState.unauthorized);
+    pending.complete(oldPage);
+    await oldLoad;
+    expect(controller.state, ChildSafetyLoadState.unauthorized);
+    expect(controller.records, isEmpty);
+    expect(controller.canCreate, isFalse);
+  });
+
+  test('known access denial prevents new child lookup and child search', () async {
+    final repository = _Repository()..unauthorized = true;
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    await controller.load();
+    await expectLater(
+      controller.fetchChild('child-1'),
+      throwsA(isA<ChildSafetyUnauthorizedException>()),
+    );
+    await expectLater(
+      controller.searchChildren('Ana'),
+      throwsA(isA<ChildSafetyUnauthorizedException>()),
+    );
+    expect(repository.childReads, 0);
+    expect(repository.childSearches, 0);
+  });
+
+  test('late child read and search cannot escape a changed directory context', () async {
+    final repository = _Repository();
+    final child = Completer<ChildSafetyRecord?>();
+    final search = Completer<List<ChildSafetyChildOption>>();
+    repository.nextChild = child.future;
+    repository.nextChildSearch = search.future;
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    final childResult = expectLater(
+      controller.fetchChild('child-1'),
+      throwsA(isA<ChildSafetyUnavailableException>()),
+    );
+    final searchResult = expectLater(
+      controller.searchChildren('Ana'),
+      throwsA(isA<ChildSafetyUnavailableException>()),
+    );
+    await controller.setInstitutions({'another-institution'});
+    child.complete(null);
+    search.complete([]);
+    await Future.wait([childResult, searchResult]);
+  });
+
+  test('child response ID must match the requested child', () async {
+    final repository = _Repository();
+    final page = await repository.fetchDirectory(ChildSafetyDirectoryQuery());
+    repository.nextChild = Future.value(page.records.single);
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    await expectLater(
+      controller.fetchChild('different-child'),
+      throwsA(isA<ChildSafetyUnavailableException>()),
+    );
+  });
+
   test('disposed controller starts no directory read or search timer', () async {
     final repository = _Repository();
     final controller = ChildSafetyController(repository, searchDebounce: Duration.zero);
@@ -219,6 +297,7 @@ void main() {
 final class _Repository implements ChildSafetyRepository {
   final queries = <ChildSafetyDirectoryQuery>[];
   bool unauthorized = false;
+  bool commandUnauthorized = false;
   int transitions = 0;
   bool holdTransitions = false;
   Completer<void>? _transitionCompleter;
@@ -276,6 +355,7 @@ final class _Repository implements ChildSafetyRepository {
   @override
   Future<void> transitionAuthorization(TransitionPickupAuthorizationCommand command) async {
     transitions++;
+    if (commandUnauthorized) throw const ChildSafetyUnauthorizedException();
     if (holdTransitions) {
       _transitionCompleter = Completer<void>();
       await _transitionCompleter!.future;

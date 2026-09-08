@@ -502,7 +502,16 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
   }
 
   void _controllerChanged() {
-    if (!mounted || dataVersion == widget.controller.dataVersion) return;
+    if (!mounted) return;
+    if (widget.controller.state == ChildSafetyLoadState.unauthorized ||
+        widget.controller.state == ChildSafetyLoadState.error) {
+      dataVersion = widget.controller.dataVersion;
+      setState(() {
+        record = Future.value(null);
+      });
+      return;
+    }
+    if (dataVersion == widget.controller.dataVersion) return;
     dataVersion = widget.controller.dataVersion;
     setState(() {
       record = widget.controller.fetchChild(widget.childId);
@@ -535,7 +544,9 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
               ),
             );
           }
-          if (snapshot.hasError) {
+          if (snapshot.hasError ||
+              widget.controller.state == ChildSafetyLoadState.unauthorized ||
+              widget.controller.state == ChildSafetyLoadState.error) {
             return Center(
               child: CoeloStatePanel(
                 title: 'Contexto indisponível',

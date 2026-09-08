@@ -82,19 +82,41 @@ final class ChildSafetyController extends ChangeNotifier {
   }
 
   Future<List<ChildSafetyChildOption>> searchChildren(String query, {int limit = 20}) async {
-    if (_disposed) throw const ChildSafetyUnavailableException();
+    _checkLookupAllowed();
+    final version = _requestVersion;
     final normalized = query.trim();
     if (normalized.length < 2 || limit < 1 || limit > 50) return const [];
     final result = await _repository.searchChildren(normalized, limit: limit);
-    if (_disposed) throw const ChildSafetyUnavailableException();
+    if (_disposed ||
+        version != _requestVersion ||
+        _state == ChildSafetyLoadState.unauthorized ||
+        _state == ChildSafetyLoadState.error) {
+      throw const ChildSafetyUnavailableException();
+    }
     return result;
   }
 
   Future<ChildSafetyRecord?> fetchChild(String id) async {
-    if (_disposed) throw const ChildSafetyUnavailableException();
+    _checkLookupAllowed();
+    final version = _requestVersion;
     final result = await _repository.fetchChild(id);
-    if (_disposed) throw const ChildSafetyUnavailableException();
+    if (_disposed ||
+        version != _requestVersion ||
+        _state == ChildSafetyLoadState.unauthorized ||
+        _state == ChildSafetyLoadState.error ||
+        (result != null && result.childId != id)) {
+      throw const ChildSafetyUnavailableException();
+    }
     return result;
+  }
+
+  void _checkLookupAllowed() {
+    if (_disposed || _state == ChildSafetyLoadState.error) {
+      throw const ChildSafetyUnavailableException();
+    }
+    if (_state == ChildSafetyLoadState.unauthorized) {
+      throw const ChildSafetyUnauthorizedException();
+    }
   }
 
   Future<bool> saveAuthorization(SavePickupAuthorizationCommand command) =>
@@ -186,6 +208,8 @@ final class ChildSafetyController extends ChangeNotifier {
       if (refresh) await _load(_query);
       return !_disposed && _state == ChildSafetyLoadState.ready;
     } on ChildSafetyUnauthorizedException {
+      _requestVersion++;
+      _searchTimer?.cancel();
       _failClosed(ChildSafetyLoadState.unauthorized);
       return false;
     } on ChildSafetyValidationException {
