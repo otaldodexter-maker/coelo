@@ -68,7 +68,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
   @override
   void didUpdateWidget(covariant DailyRoutineWizardPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.repository != widget.repository ||
+    if (!identical(oldWidget.repository, widget.repository) ||
         oldWidget.entryId != widget.entryId ||
         oldWidget.entryKind != widget.entryKind ||
         oldWidget.duplicateFromModelId != widget.duplicateFromModelId ||
@@ -128,6 +128,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       )) {
         return;
       }
+      _validateLoadedEntryIdentity(entry, entryId: entryId, entryKind: entryKind);
       _bind(entry);
       setState(() {
         _entry = entry;
@@ -173,6 +174,26 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       duplicateFromModelId == widget.duplicateFromModelId &&
       applicationFromModelId == widget.applicationFromModelId;
 
+  void _validateLoadedEntryIdentity(
+    Object entry, {
+    required String? entryId,
+    required RoutineEntryKind entryKind,
+  }) {
+    if (entryId == null) return;
+    final matches = switch ((entryKind, entry)) {
+      (RoutineEntryKind.model, final RoutineModel value) => value.id == entryId,
+      (RoutineEntryKind.application, final RoutineApplication value) => value.id == entryId,
+      (RoutineEntryKind.launch, final RoutineLaunch value) => value.id == entryId,
+      _ => false,
+    };
+    if (matches) return;
+    throw FormatException(switch (entryKind) {
+      RoutineEntryKind.model => 'O modelo solicitado não pôde ser validado.',
+      RoutineEntryKind.application => 'A rotina aplicada solicitada não pôde ser validada.',
+      RoutineEntryKind.launch => 'O lançamento solicitado não pôde ser validado.',
+    });
+  }
+
   bool _isCurrentCommand(
     int generation, {
     required RoutineRepository repository,
@@ -192,6 +213,9 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     final duplicateId = duplicateFromModelId;
     if (duplicateId != null) {
       final source = await repository.fetchModel(duplicateId);
+      if (source.id != duplicateId) {
+        throw const FormatException('O modelo de origem não pôde ser validado.');
+      }
       return RoutineModel(
         id: '',
         name: '${source.name} (cópia)',
@@ -209,6 +233,9 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     final applicationModelId = applicationFromModelId;
     if (applicationModelId != null) {
       final source = await repository.fetchModel(applicationModelId);
+      if (source.id != applicationModelId) {
+        throw const FormatException('O modelo de origem não pôde ser validado.');
+      }
       return RoutineApplication(
         id: '',
         modelVersionId: '${source.id}:v${source.version}',
@@ -910,6 +937,9 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         requestId: 'save-model-${DateTime.now().microsecondsSinceEpoch}',
       );
       if (!_isCurrentCommand(generation, repository: repository, entry: current)) return;
+      if (current.id.isNotEmpty && id != current.id) {
+        throw const FormatException('O modelo salvo não corresponde ao solicitado.');
+      }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Modelo salvo.')));
       if (current.id.isEmpty) {
@@ -965,6 +995,9 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         requestId: 'save-application-${DateTime.now().microsecondsSinceEpoch}',
       );
       if (!_isCurrentCommand(generation, repository: repository, entry: current)) return;
+      if (current.id.isNotEmpty && id != current.id) {
+        throw const FormatException('A rotina aplicada salva não corresponde à solicitada.');
+      }
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
@@ -994,6 +1027,10 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
           _saving = false;
         });
       }
+    } on FormatException catch (error) {
+      if (mounted && _isCurrentCommand(generation, repository: repository, entry: current)) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
+      }
     } on Object {
       if (mounted && _isCurrentCommand(generation, repository: repository, entry: current)) {
         ScaffoldMessenger.of(
@@ -1017,11 +1054,14 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     });
     final updated = _applicationDraft(current);
     try {
-      await repository.saveApplication(
+      final id = await repository.saveApplication(
         updated,
         requestId: 'save-application-${DateTime.now().microsecondsSinceEpoch}',
       );
       if (!_isCurrentCommand(generation, repository: repository, entry: current)) return;
+      if (id != current.id) {
+        throw const FormatException('A rotina aplicada salva não corresponde à solicitada.');
+      }
       setState(() => _saving = false);
       await _load();
     } on Object {
@@ -1044,12 +1084,15 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     final generation = ++_commandGeneration;
     setState(() => _saving = true);
     try {
-      await repository.revertApplicationCustomization(
+      final id = await repository.revertApplicationCustomization(
         applicationId: application.id,
         expectedVersion: application.expectedVersion,
         requestId: 'revert-application-${DateTime.now().microsecondsSinceEpoch}',
       );
       if (!_isCurrentCommand(generation, repository: repository, entry: application)) return;
+      if (id != application.id) {
+        throw const FormatException('A rotina aplicada revertida não corresponde à solicitada.');
+      }
       setState(() => _saving = false);
       await _load();
     } on Object {
