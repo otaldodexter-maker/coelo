@@ -13,7 +13,20 @@ nominais, envelope estrito, filtros completos e projeção mínima com hierarqui
 Isso não comprova banco nem integração. Migration nominal A01 ainda vazia,
 fora deste pacote RED e não aplicada.
 
-## Replay solicitado ao Eng1
+## Replay solicitado ao Eng1 — comando anterior suspenso
+
+Atualização após review Eng2/Coordenador: foundation67 depende de
+`public.chat_attachment_metadata`, cujo criador foi excluído. O comando abaixo
+é registro da proposta anterior, NÃO uma base liberada. Eng1 delimitará a base
+nominal antes do RED; E2E5 não executa Foundation/skip/ponte por conta própria.
+
+Correção do teste: cada SELECT TAP emite uma coluna; scoped/cross-tenant,
+inputs inválidos, AAL1 e negativas executam como `authenticated`, com asserts
+de `current_user`. Somente SELECT/INSERT nas duas tabelas temporárias e EXECUTE
+no helper invoker temporário são concedidos; nenhuma permissão de produção é
+alterada. Executor recuperado antes da conferência de fontes/auditoria.
+Essas correções são estáticas, ainda sem resultado SQL. Cobertura ampliada de
+cardinalidade/paginação/ASC-DESC e multi-vínculos permanece exigida para GREEN.
 
 Operador único conforme Coordenador. Nenhum Docker iniciado por E2E5.
 
