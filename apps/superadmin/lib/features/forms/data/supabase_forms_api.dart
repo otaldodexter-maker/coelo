@@ -224,6 +224,9 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
           }),
         );
         final occurrence = _map(payload['occurrence']);
+        if (_string(occurrence, 'id') != occurrenceId) {
+          throw const WireFormatException('Response occurrence correlation is invalid.');
+        }
         final definition = FormDefinitionDto.fromJson(_map(payload['definition'])).toDomain();
         final domainOccurrence = FormOccurrence(
           id: _string(occurrence, 'id'),
@@ -499,7 +502,28 @@ final class SupabaseFormsApi implements FormsApi, FormsEditorContextApi {
     FormsRpc rpc,
     FormCommand<T> command,
     Map<String, Object?> Function(T value) encode,
-  ) => _guard(() async => _responseDraft(_map(await _command(rpc, command, encode))));
+  ) => _guard(() async {
+    final (occurrenceId, responseId) = switch (command.payload) {
+      FormResponseDraftPayload(:final occurrenceId, :final responseId) => (
+        occurrenceId,
+        responseId,
+      ),
+      FormOpenResponseDraftPayload(:final occurrenceId) => (occurrenceId, null),
+      _ => throw const WireFormatException('Response command type is invalid.'),
+    };
+    final payload = encode(command.payload);
+    final result = _responseDraft(_map(await _command(rpc, command, (_) => payload)));
+    if (result.occurrenceId != occurrenceId || (responseId != null && result.id != responseId)) {
+      throw const WireFormatException('Response receipt correlation is invalid.');
+    }
+    // Editing records another revision of a submitted response; the canonical
+    // mutation does not reopen it as a draft.
+    if ((rpc == FormsRpc.submitResponse || rpc == FormsRpc.editResponse) &&
+        result.status != FormResponseDraftStatus.submitted) {
+      throw const WireFormatException('Response transition was not confirmed.');
+    }
+    return result;
+  });
 
   Future<FormFileJob> _fileJobCommand(FormsRpc rpc, FormCommand<FormExportPayload> command) =>
       _guard(
@@ -674,13 +698,18 @@ FormResponseDraft _responseDraft(Map<String, Object?> payload) {
   final answers = _list(
     payload,
     'answers',
-  ).map(_map).map(FormAnswerDto.fromJson).map((dto) => dto.toDomain());
+  ).map(_map).map(FormAnswerDto.fromJson).map((dto) => dto.toDomain()).toList(growable: false);
+  if (answers.map((answer) => answer.itemId).toSet().length != answers.length) {
+    throw const WireFormatException('Response contains duplicate answers.');
+  }
   return FormResponseDraft(
     id: _string(payload, 'id'),
     occurrenceId: _string(payload, 'occurrence_id'),
-    status: _string(payload, 'status') == 'submitted'
-        ? FormResponseDraftStatus.submitted
-        : FormResponseDraftStatus.draft,
+    status: switch (_string(payload, 'status')) {
+      'submitted' => FormResponseDraftStatus.submitted,
+      'draft' => FormResponseDraftStatus.draft,
+      _ => throw const WireFormatException('Response status is invalid.'),
+    },
     answers: {for (final answer in answers) answer.itemId: answer},
     managementVersion: _integer(payload, 'management_version'),
   );
