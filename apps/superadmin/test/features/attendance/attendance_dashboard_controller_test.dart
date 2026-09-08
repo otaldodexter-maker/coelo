@@ -125,6 +125,24 @@ void main() {
     expect(repository.dashboardQueries, hasLength(4));
   });
 
+  test('disposed controller cannot start filter or search reads', () async {
+    final repository = _DashboardRepository();
+    final controller = AttendanceDashboardController(
+      repository: repository,
+      initialQuery: initialQuery,
+      searchDelay: Duration.zero,
+    );
+    controller.dispose();
+
+    await controller.changePageSize(50);
+    controller.changeSearch('stale tenant');
+    await Future<void>.delayed(Duration.zero);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(repository._accessRequestCount, 0);
+    expect(repository.dashboardQueries, isEmpty);
+  });
+
   test('exposes unauthorized and retryable failure states', () async {
     final unauthorized = _DashboardRepository(error: const AttendanceDashboardUnauthorized());
     final unauthorizedController = AttendanceDashboardController(
