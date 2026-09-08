@@ -85,7 +85,7 @@ final class _SuperadminChatImageDialogState extends State<SuperadminChatImageDia
   }
 
   Future<void> _read() async {
-    if (widget.session.isInvalidated || !_contextCurrent) return;
+    if (!mounted || widget.session.isInvalidated || !_contextCurrent) return;
     final generation = ++_generation;
     unawaited(_clearImage());
     setState(() => _state = null);
@@ -154,7 +154,13 @@ final class _SuperadminChatImageDialogState extends State<SuperadminChatImageDia
     return CoeloAdminDialogShell(
       title: 'Imagem da conversa',
       primaryAction: canRetry
-          ? FilledButton(onPressed: _read, child: const Text('Tentar novamente'))
+          ? FilledButton(
+              onPressed: () {
+                if (!mounted || generation != _generation) return;
+                unawaited(_read());
+              },
+              child: const Text('Tentar novamente'),
+            )
           : close,
       secondaryAction: canRetry ? close : null,
       body: image != null
