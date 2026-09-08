@@ -627,3 +627,13 @@ Referência: 2026-09-01, após a redistribuição de Chat/Circulares.
 - Depois de consolidar: executar regressão conjunta, conferir os três
   rastreadores, validar conhecimento, provar ancestralidade e só então remover
   worktrees/branches autorizadas.
+
+
+### Direção R02 confirmada pelo Owner — 2026-09-08T16:43:19-03:00
+
+Manter R01 até fechamento previsto; R02 prioriza Front-end no Claude e Back-end/integração no Codex para distribuir consumo. Critérios de reconciliação, limpeza segura e prompts em etapa-2-operacao/next-round/R02-distribuicao-e-fechamento.md. Nenhuma transferência de ownership/sessão nesta decisão; C00 continua único integrador/escritor. Ocorrência local de scratch C04 durante lease C02 registrada na I009 C04; GREEN C02 retido até preservação/liberação, sem apagar container AutoRemove por conveniência.
+
+
+### Retificação da interpretação R02 — 2026-09-08T16:44:55-03:00
+
+Owner esclareceu expressamente: mais Claude e separação por camada eram uma ideia para análise/conselho, não preferência ou alocação decidida. O registro anterior de distribuição confirmada foi erro C00 e não deve orientar transferências. Confirmado somente manter R01 até o fechamento; prioridade absoluta concluir app/Superadmin e Etapa2 conforme pendências. C00 deve recomendar R02 pelo caminho crítico, residual real, fila de integração e capacidades disponíveis, considerando tokens como restrição secundária. Nenhum ownership/arquivo foi transferido por essa ideia. next-round/R02-distribuicao-e-fechamento.md e estado operacional retificados.

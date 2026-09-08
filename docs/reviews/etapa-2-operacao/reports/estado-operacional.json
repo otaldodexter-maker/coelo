@@ -35,7 +35,7 @@
       "thread_id": "01a08197-7b62-73c1-9673-5fd40fa40452",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c01",
       "branch": "codex/e2-r01-c01-identidade",
-      "instruction_revision": 7,
+      "instruction_revision": 8,
       "received_revision": 30,
       "integrated_revision": 3,
       "last_evidence": "2026-09-08T15:54:02-03:00",
@@ -44,7 +44,7 @@
       "handoff_present_at_preparation": true,
       "accepted_revision": 30,
       "handoff_sha256": "48e891f4f5e57726afe944f90d8ffdb405b089acaf586399eb8e8e7e4ed1a10c",
-      "next_step": "Models31 nominal replay manifest; runtime queued after C02 lease; roots/personas C00",
+      "next_step": "I008 local Auth persona nominal package; Models runner extension remains C00",
       "eta_first_batch": "implementation 30–60min conditional on reproduced race; tests15–30min after local runtime; handoff5–10min; not total ETA",
       "last_evidence_basis": "fixed handoff read and deltas synchronized; review/integration separate",
       "local_test_evidence": "C00 SDK/remount11/11 and coelo_auth25/25; C01 expanded155/155 and analyzer clean",
@@ -66,7 +66,7 @@
       "thread_id": "01a0819a-f1f1-7421-95dd-d645ca9f5747",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c02",
       "branch": "codex/e2-r01-c02-forms-midia",
-      "instruction_revision": 8,
+      "instruction_revision": 9,
       "received_revision": 29,
       "integrated_revision": 4,
       "last_evidence": "2026-09-08T16:06:28-03:00",
@@ -122,7 +122,7 @@
       "thread_id": null,
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c04",
       "branch": "claude/e2-r01-c04-estruturas",
-      "instruction_revision": 8,
+      "instruction_revision": 9,
       "received_revision": 17,
       "integrated_revision": 0,
       "last_evidence": "2026-09-08T15:58:00-03:00",
@@ -499,7 +499,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-08T16:29:23-03:00",
+  "updated_at": "2026-09-08T16:44:55-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -761,23 +761,15 @@
     "Next poll16:00;formal17:40;closing09/09 preserved"
   ],
   "local_replay_lease": {
-    "id": "R01-LOCAL-XLSX-02",
+    "id": "R01-LOCAL-FORMS-EDIT-01",
     "executor": "C02",
-    "issued_at": "2026-09-08T16:16:11-03:00",
-    "scope": "immutable0b596c85;132pgTAP;copy preserved XLSX profile;runner unchanged",
-    "status": "first-attempt-released;second-attempt-granted-in-I008-pwsh7;awaiting-start",
+    "issued_at": "2026-09-08T16:34:57-03:00",
+    "status": "C02-RED-completed;GREEN-held-pending-C04-scratch-release",
+    "sha": "5ead9407f560c7f0e256976fa0590d9ba679b0e7",
+    "scope": "RED56 without new migration;GREEN56 with20260908191327;immutable test;unchanged runner;pwsh7.6.5",
     "remote": false,
-    "previous_release": "C00 cleanup14:55;Docker0 inspected16:14",
-    "start_report_received_at": "2026-09-08T16:25:54-03:00",
-    "profile_migration_count": 69,
-    "temporary_root": "C:/Users/adrie/AppData/Local/Temp/coelo-c02-xlsx-51749de5632d40d9b4e1a622b6a497ea",
-    "runner_sha256": "13734326e1fc6b4cab3e8adda68e7d1b27659b53dfc75029350b722f485f20ad",
-    "first_result": "exit1 before pgTAP;zero assertions;WindowsPowerShell stderr RemoteException;SQL not assessed",
-    "source_count": 69,
-    "effective_count": 71,
-    "retry_shell": "C:/Users/adrie/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
-    "retry_granted_at": "2026-09-08T16:29:23-03:00",
-    "first_attempt_cleanup": "C02 confirmed zero coelo_safe containers/volumes/networks;one pre-R01 temp dir preserved"
+    "red_result": "17asserts;6PASS/11FAIL;then replay mismatch after invalid edit write;reported byC02",
+    "conflict": "coelo-c04-scratch created16:38:51;no lease;AutoRemove true;no mounts;no client connections16:41:25"
   },
   "last_delivery": {
     "branch": "origin/dev",
@@ -946,5 +938,36 @@
     "scope": "I005 Models31 after C02 release;manifest preparation only",
     "execution_granted": false,
     "blocker": "C01 reports runner lacks exact51input nominal profile;C00 review needed before granting runtime"
+  },
+  "local_replay_history": [
+    {
+      "id": "R01-LOCAL-XLSX-02",
+      "executor": "C02",
+      "issued_at": "2026-09-08T16:16:11-03:00",
+      "scope": "immutable0b596c85;132pgTAP;copy preserved XLSX profile;runner unchanged",
+      "status": "released",
+      "remote": false,
+      "previous_release": "C00 cleanup14:55;Docker0 inspected16:14",
+      "start_report_received_at": "2026-09-08T16:25:54-03:00",
+      "profile_migration_count": 69,
+      "temporary_root": "C:/Users/adrie/AppData/Local/Temp/coelo-c02-xlsx-51749de5632d40d9b4e1a622b6a497ea",
+      "runner_sha256": "13734326e1fc6b4cab3e8adda68e7d1b27659b53dfc75029350b722f485f20ad",
+      "first_result": "exit1 before pgTAP;zero assertions;WindowsPowerShell stderr RemoteException;SQL not assessed",
+      "source_count": 69,
+      "effective_count": 71,
+      "retry_shell": "C:/Users/adrie/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+      "retry_granted_at": "2026-09-08T16:29:23-03:00",
+      "first_attempt_cleanup": "C02 confirmed zero coelo_safe containers/volumes/networks;one pre-R01 temp dir preserved",
+      "result": "132/132PASS;exit0;C02reported16:29:53-16:31:21;cleanupzero"
+    }
+  ],
+  "r02_planning": {
+    "updated_at": "2026-09-08T16:44:55-03:00",
+    "confirmed": "Keep R01 until planned safe closure",
+    "owner_idea_not_decision": "More Claude; possible frontend there and backend/integration Codex",
+    "primary_objective": "Finish Superadmin and Etapa2 acceptance criteria in official trackers;tool/token allocation subordinate",
+    "decision_status": "R02 allocation pending coordinator analysis of residual work,dependencies,integration queue and actual capabilities",
+    "correction": "Previous preference/confirmed-layer-allocation interpretation was C00 error;Owner explicitly corrected it",
+    "no_sessions_created": true
   }
 }

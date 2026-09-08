@@ -373,3 +373,6 @@ Front-end exige seus aceites de UI, estados, composição e regressão. Back-end
 
 
 > Operação XLSX 2026-09-08T16:29:23-03:00: C02 relatou primeira tentativa com erro de invocação Windows PowerShell antes de pgTAP: zero asserts, sem diagnóstico de falha SQL. Source69/efetivas71 com preflights. C00 validou probe de stderr em PowerShell7.6.5 e concedeu uma reexecução idêntica nessa shell após cleanup; resultado ainda pendente. Não promove forms.responses.export.
+
+
+> Evento operacional C00 2026-09-08T16:45:39-03:00, sem ampliar o corte de handoffs: XLSX0b596c85 teve132/132 pgTAP PASS relatados por C02 em16:29:53–16:31:21, shell7.6.5 e cleanup nominal; writer/multipart/R2 real continuam abertos. Nova correção forms.respond5ead9407: RED executou17asserts(6PASS/11FAIL) e abortou após edição inválida causar replay mismatch; GREEN ainda não executado. C02 reteve GREEN ao observar scratch Postgres C04 durante a lease exclusiva. C00 confirmou container com AutoRemove=true, sem volumes, e publicou I009 C04 para preservar/liberar. Não parar/apagar sem preservação; ocorrência retém esse teste, não implementação independente nem representa autorização remota.
