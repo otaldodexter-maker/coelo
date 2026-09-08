@@ -49,3 +49,18 @@ dispose com erro sem notificação ou erro não tratado naquele fluxo.
 
 Knowledge: nenhuma decisão nova de produto; preserva o contrato canônico já
 projetado em `docs/knowledge/team/superadmin-profile-settings.md`.
+
+## Ordenação de gravações
+
+RED reproduzido: duas gravações entravam no repository enquanto a primeira
+permanecia pendente. A segunda podia concluir primeiro e a primeira restaurar
+o snapshot antigo. O controller agora serializa snapshots sem bloquear a
+atualização visual. Falha chega ao chamador, mas não envenena a fila seguinte.
+Gravações já solicitadas terminam após dispose sem notificações; novos setters
+continuam sem iniciar IO após dispose.
+
+11/11 PASS (controller 7, SettingsPage 3, repository 1), analyzer sem
+diagnósticos e review independente `account_review` sem bloqueantes.
+O teste remonta o controller e relê armazenamento controlado; não constitui
+SharedPreferences/browser real. Feedback visual de falha e persistência real
+permanecem gates separados, ainda abertos.

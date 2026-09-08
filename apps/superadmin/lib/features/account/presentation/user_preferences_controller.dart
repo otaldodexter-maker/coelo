@@ -11,6 +11,7 @@ final class UserPreferencesController extends ChangeNotifier {
   bool _loaded = false;
   bool _disposed = false;
   Future<void>? _loading;
+  Future<void> _saving = Future<void>.value();
 
   UserPreferences get preferences => _preferences;
   bool get loaded => _loaded;
@@ -36,7 +37,7 @@ final class UserPreferencesController extends ChangeNotifier {
     if (_disposed) return;
     _preferences = _preferences.copyWith(themeMode: mode);
     notifyListeners();
-    await repository.save(_preferences);
+    await _save(_preferences);
   }
 
   Future<void> setReduceMotion(bool value) async {
@@ -44,7 +45,14 @@ final class UserPreferencesController extends ChangeNotifier {
     if (_disposed) return;
     _preferences = _preferences.copyWith(reduceMotion: value);
     notifyListeners();
-    await repository.save(_preferences);
+    await _save(_preferences);
+  }
+
+  Future<void> _save(UserPreferences preferences) {
+    final saving = _saving.then((_) => repository.save(preferences));
+    // Keep the queue usable after failure; the initiating caller still receives it.
+    _saving = saving.onError<Object>((error, stackTrace) {});
+    return saving;
   }
 
   @override

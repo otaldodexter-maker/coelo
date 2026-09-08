@@ -7,6 +7,46 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('failed device write reaches its caller without poisoning later writes', () async {
+    final repository = _OrderedWritesRepository();
+    final controller = UserPreferencesController(repository);
+    addTearDown(controller.dispose);
+    await controller.load();
+    final first = controller.setThemeMode(ThemeMode.dark);
+    final failed = expectLater(first, throwsA(isA<Exception>()));
+    await repository.firstStarted.future;
+    final second = controller.setReduceMotion(true);
+    repository.firstRelease.completeError(Exception('synthetic write failure'));
+    await failed;
+    await second;
+    expect(repository.writes, hasLength(2));
+    expect(
+      await repository.load(),
+      const UserPreferences(themeMode: ThemeMode.dark, reduceMotion: true),
+    );
+  });
+
+  test('device writes preserve edit order across overlapping setters', () async {
+    final repository = _OrderedWritesRepository();
+    final controller = UserPreferencesController(repository);
+    addTearDown(controller.dispose);
+    await controller.load();
+    final first = controller.setThemeMode(ThemeMode.dark);
+    await repository.firstStarted.future;
+    final second = controller.setReduceMotion(true);
+    await Future<void>.delayed(Duration.zero);
+    expect(repository.writes, hasLength(1));
+    repository.firstRelease.complete();
+    await Future.wait([first, second]);
+    final reloaded = UserPreferencesController(repository);
+    addTearDown(reloaded.dispose);
+    await reloaded.load();
+    expect(
+      reloaded.preferences,
+      const UserPreferences(themeMode: ThemeMode.dark, reduceMotion: true),
+    );
+  });
+
   test('failed initial load can retry and then save an edit', () async {
     final repository = _RetryRepository();
     final controller = UserPreferencesController(repository);
@@ -99,4 +139,24 @@ final class _RetryRepository implements UserPreferencesRepository {
 
   @override
   Future<void> save(UserPreferences preferences) async => saved = preferences;
+}
+
+final class _OrderedWritesRepository implements UserPreferencesRepository {
+  final firstStarted = Completer<void>();
+  final firstRelease = Completer<void>();
+  final writes = <UserPreferences>[];
+  UserPreferences stored = const UserPreferences();
+
+  @override
+  Future<UserPreferences> load() async => stored;
+
+  @override
+  Future<void> save(UserPreferences preferences) async {
+    writes.add(preferences);
+    if (writes.length == 1) {
+      firstStarted.complete();
+      await firstRelease.future;
+    }
+    stored = preferences;
+  }
 }
