@@ -1122,6 +1122,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
       builder: (_) => _AttendanceCorrectionDialog(
         participant: call.participants.first,
         onSubmit: (state, reason) async {
+          if (!mounted) return false;
           if (!_isCurrentCorrectionContext(contextGeneration, repository, callId)) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('O contexto mudou. Reabra a correção para continuar.')),
