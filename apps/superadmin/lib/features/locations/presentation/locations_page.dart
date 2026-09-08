@@ -197,6 +197,9 @@ final class _LocationsPageState extends State<LocationsPage> {
                 contextRevision: widget.contextRevision,
                 writer: _canManage ? widget.writer : null,
                 onEdit: _canManage ? (item) => setState(() => _editing = item) : null,
+                // A copy is a different location, so the page opens it rather
+                // than leaving the actor looking at the one they duplicated.
+                onCopied: _canManage ? _open : null,
                 onBack: _close,
               ),
       ),

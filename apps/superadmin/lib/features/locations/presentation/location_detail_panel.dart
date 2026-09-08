@@ -6,6 +6,7 @@ import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart'
 import '../../../shared/presentation/widgets/superadmin_location_map_preview.dart';
 import '../domain/location_catalog_reader.dart';
 import '../domain/location_catalog_writer.dart';
+import 'location_copy_dialog.dart';
 import 'location_detail_controller.dart';
 import 'location_read_widgets.dart';
 import 'location_status_actions.dart';
@@ -18,6 +19,7 @@ class LocationDetailPanel extends StatefulWidget {
     required this.onBack,
     this.writer,
     this.onEdit,
+    this.onCopied,
     this.requestIdFactory,
     this.reader = const UnavailableLocationCatalogReader(),
     this.sessionAvailable = false,
@@ -37,6 +39,9 @@ class LocationDetailPanel extends StatefulWidget {
 
   /// Opt-in. The panel does not own the form, so it asks the page to open it.
   final ValueChanged<LocationCatalogEntry>? onEdit;
+
+  /// Opt-in. A copy is a new location, so the page decides where to go next.
+  final ValueChanged<LocationCatalogEntry>? onCopied;
 
   final String Function()? requestIdFactory;
   @override
@@ -82,6 +87,22 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _copy(LocationCatalogEntry item) async {
+    final writer = widget.writer;
+    final onCopied = widget.onCopied;
+    if (writer == null || onCopied == null) return;
+    final created = await showDialog<LocationCatalogEntry>(
+      context: context,
+      builder: (context) => LocationCopyDialog(
+        source: item,
+        writer: writer,
+        requestIdFactory: widget.requestIdFactory,
+      ),
+    );
+    if (!mounted || created == null) return;
+    onCopied(created);
   }
 
   @override
@@ -165,6 +186,14 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
                   child: const Text('Voltar'),
                 ),
                 continuationActions: [
+                  if (widget.onCopied != null && widget.writer != null)
+                    if (_controller.data case final item?)
+                      OutlinedButton.icon(
+                        key: const Key('location-detail-copy'),
+                        onPressed: widget.sessionAvailable ? () => unawaited(_copy(item)) : null,
+                        icon: const Icon(Icons.copy_rounded),
+                        label: const Text('Duplicar'),
+                      ),
                   if (widget.onEdit case final onEdit?)
                     if (_controller.data case final item?)
                       FilledButton.icon(
