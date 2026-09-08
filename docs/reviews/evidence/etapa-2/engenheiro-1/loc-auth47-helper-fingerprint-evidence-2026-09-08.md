@@ -11,7 +11,7 @@ O probe **AuthOnly47** aplicou a base integralmente e passou nas **7 verificaç�
 
 A primeira divergência nesse catálogo é `app_private.superadmin_get_activity_form_options(uuid)`: esperado **65fe6408f0f2c6b0c1c9d71a809f2d80**, observado bruto **70700ddc38d42df4fae75765b7ff2617**, LF **b951e603ef34b7d26597356a16eb6d06**. A segunda é `app_private.superadmin_create_activity_locations(uuid,uuid[],text,uuid)`: esperado **886752274164d0d435c9df8ced18d896**, bruto **063138f31cff9ec6b5a2fe24ba036c56**, LF **3167d90039df952c9ae561f28486223c**.
 
-A normalização diagnóstica não explica as duas diferenças. O probe, isoladamente, não demonstra sua causa textual ou qual fonte deve prevalecer; não autoriza trocar os pins para os valores observados. A frente E2E2 recebeu o catálogo para confrontar as fontes canônicas e a proveniência do candidato.
+A comparação normaliza somente o texto local e mantém o hash esperado bruto. Sem o corpo ou o fingerprint LF da fonte que originou o valor esperado, essa comparação não exclui diferenças de quebra de linha entre as fontes, nem demonstra divergência semântica ou estrutural. Ela apenas confirma que os dois valores locais consultados não coincidem com o pin bruto exigido; não autoriza trocar os pins para os valores observados. A frente E2E2 recebeu o catálogo para confrontar as fontes canônicas e a proveniência do candidato.
 
 | Posição | Assinatura | Hash bruto | Hash LF | Bytes bruto/LF |
 |---|---|---|---|---:|
