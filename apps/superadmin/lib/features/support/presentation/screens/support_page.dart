@@ -46,7 +46,7 @@ class _SupportPageState extends State<SupportPage> {
   SupportFocusRestoreCallback? _restoreDetailOriginFocus;
   SupportDisplayMode _displayMode = SupportDisplayMode.kanban;
   int _controllerGeneration = 0;
-  bool _fullscreenDetailOpen = false;
+  DialogRoute<void>? _fullscreenDetailRoute;
 
   @override
   void didUpdateWidget(covariant SupportPage oldWidget) {
@@ -55,19 +55,14 @@ class _SupportPageState extends State<SupportPage> {
       _controllerGeneration++;
       _restoreDetailOriginFocus = null;
       _search.text = widget.controller.filters.search;
-      if (_fullscreenDetailOpen) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted && _fullscreenDetailOpen) {
-            Navigator.of(context, rootNavigator: true).pop();
-          }
-        });
-      }
+      _invalidateFullscreenDetail();
     }
   }
 
   @override
   void dispose() {
     _controllerGeneration++;
+    _invalidateFullscreenDetail();
     _search.dispose();
     _readFilterFocusScopeNode.dispose();
     super.dispose();
@@ -229,32 +224,53 @@ class _SupportPageState extends State<SupportPage> {
     SupportTicket ticket,
     SupportFocusRestoreCallback restoreFocus,
   ) async {
+    if (_fullscreenDetailRoute != null) return;
+    final generation = _controllerGeneration;
+    final controller = widget.controller;
+    if (!_isCurrentController(generation, controller)) return;
     _restoreDetailOriginFocus = restoreFocus;
-    widget.controller.selectTicket(ticket.id);
-    _fullscreenDetailOpen = true;
-    try {
-      await showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
-        builder: (dialogContext) => _DraggableSupportDialog(
+    controller.selectTicket(ticket.id);
+    bool isCurrent() => _isCurrentController(generation, controller);
+    final navigator = Navigator.of(context, rootNavigator: true);
+    late final DialogRoute<void> route;
+    route = DialogRoute<void>(
+      context: context,
+      themes: InheritedTheme.capture(from: context, to: navigator.context),
+      animationStyle: MediaQuery.disableAnimationsOf(context) ? AnimationStyle.noAnimation : null,
+      traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
+      barrierDismissible: false,
+      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      builder: (_) {
+        if (!isCurrent()) return const SizedBox.shrink();
+        return _DraggableSupportDialog(
           builder: (onDragUpdate, onMoveRequested, onResetRequested) => AnimatedBuilder(
-            animation: widget.controller,
-            builder: (context, _) => _details(
-              compact: true,
-              fallbackTicket: ticket,
-              onClose: () => Navigator.of(dialogContext).pop(),
-              onHeaderDragUpdate: onDragUpdate,
-              onHeaderMoveRequested: onMoveRequested,
-              onHeaderResetRequested: onResetRequested,
-            ),
+            animation: controller,
+            builder: (context, _) {
+              if (!isCurrent()) return const SizedBox.shrink();
+              return _details(
+                compact: true,
+                fallbackTicket: ticket,
+                boundController: controller,
+                boundGeneration: generation,
+                onClose: () => route.navigator?.removeRoute(route),
+                onHeaderDragUpdate: onDragUpdate,
+                onHeaderMoveRequested: onMoveRequested,
+                onHeaderResetRequested: onResetRequested,
+              );
+            },
           ),
-        ),
-      );
+        );
+      },
+    );
+    _fullscreenDetailRoute = route;
+    try {
+      await navigator.push(route);
     } finally {
-      _fullscreenDetailOpen = false;
+      if (identical(_fullscreenDetailRoute, route)) {
+        _fullscreenDetailRoute = null;
+      }
     }
-    if (mounted) {
+    if (isCurrent()) {
       _closeDetails();
     }
   }
@@ -262,12 +278,18 @@ class _SupportPageState extends State<SupportPage> {
   Widget _details({
     bool compact = false,
     SupportTicket? fallbackTicket,
+    SupportPrototypeController? boundController,
+    int? boundGeneration,
     VoidCallback? onClose,
     GestureDragUpdateCallback? onHeaderDragUpdate,
     ValueChanged<Offset>? onHeaderMoveRequested,
     VoidCallback? onHeaderResetRequested,
   }) {
-    final ticket = widget.controller.selectedTicket ?? fallbackTicket;
+    final controller = boundController ?? widget.controller;
+    bool isCurrent() =>
+        boundController == null || _isCurrentController(boundGeneration!, boundController);
+    if (!isCurrent()) return const SizedBox.shrink();
+    final ticket = controller.selectedTicket ?? fallbackTicket;
     if (ticket == null) {
       return const CoeloStatePanel(
         title: 'Selecione um chamado',
@@ -277,13 +299,18 @@ class _SupportPageState extends State<SupportPage> {
     }
     return SupportTicketDetail(
       ticket: ticket,
-      teamMembers: widget.controller.teamMembers,
-      statusBuilder: _statusMenu,
-      onAssigneesChanged: (memberIds) => widget.controller.setAssignees(ticket.id, memberIds),
+      teamMembers: controller.teamMembers,
+      statusBuilder: (ticket) =>
+          _statusMenu(ticket, boundController: boundController, boundGeneration: boundGeneration),
+      onAssigneesChanged: (memberIds) {
+        if (isCurrent()) controller.setAssignees(ticket.id, memberIds);
+      },
       onExpand: compact
           ? null
           : () => _openFullscreen(ticket, _restoreDetailOriginFocus ?? () => false),
-      onSend: (message) => widget.controller.sendReply(ticket.id, message),
+      onSend: (message) {
+        if (isCurrent()) controller.sendReply(ticket.id, message);
+      },
       onClose: onClose ?? _closeDetails,
       onHeaderDragUpdate: onHeaderDragUpdate,
       onHeaderMoveRequested: onHeaderMoveRequested,
@@ -305,9 +332,15 @@ class _SupportPageState extends State<SupportPage> {
     });
   }
 
-  Future<void> _requestStatus(SupportTicket ticket, SupportTicketStatus status) async {
-    final generation = _controllerGeneration;
-    final controller = widget.controller;
+  Future<void> _requestStatus(
+    SupportTicket ticket,
+    SupportTicketStatus status, {
+    SupportPrototypeController? boundController,
+    int? boundGeneration,
+  }) async {
+    final generation = boundGeneration ?? _controllerGeneration;
+    final controller = boundController ?? widget.controller;
+    if (!_isCurrentController(generation, controller)) return;
     if (status == SupportTicketStatus.inProgress && ticket.assigneeIds.isEmpty) {
       final ownerId = await _chooseOwner();
       if (!_isCurrentController(generation, controller) || ownerId == null) {
@@ -342,6 +375,15 @@ class _SupportPageState extends State<SupportPage> {
       'Chamado criado com sucesso.',
       icon: Icons.check_circle_outline_rounded,
     );
+  }
+
+  void _invalidateFullscreenDetail() {
+    final route = _fullscreenDetailRoute;
+    _fullscreenDetailRoute = null;
+    if (route == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (route.isActive) route.navigator?.removeRoute(route);
+    });
   }
 
   Future<String?> _chooseOwner() {
@@ -413,7 +455,11 @@ class _SupportPageState extends State<SupportPage> {
     );
   }
 
-  Widget _statusMenu(SupportTicket ticket) => CoeloAdminFlyout<SupportTicketStatus>(
+  Widget _statusMenu(
+    SupportTicket ticket, {
+    SupportPrototypeController? boundController,
+    int? boundGeneration,
+  }) => CoeloAdminFlyout<SupportTicketStatus>(
     itemWidth: 220,
     alignmentOffset: const Offset(0, CoeloSpacing.space1),
     items: [
@@ -430,7 +476,12 @@ class _SupportPageState extends State<SupportPage> {
           },
         ),
     ],
-    onSelected: (status) => _requestStatus(ticket, status),
+    onSelected: (status) => _requestStatus(
+      ticket,
+      status,
+      boundController: boundController,
+      boundGeneration: boundGeneration,
+    ),
     builder: (_, controller) {
       void open() => controller.isOpen ? controller.close() : controller.open();
       return Semantics(
