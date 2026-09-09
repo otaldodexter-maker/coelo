@@ -208,6 +208,7 @@ FormItemConfig _decodeConfig(Map<String, Object?> json) {
     'scale_max_label',
     'allow_camera',
     'allow_existing',
+    'min_images',
     'max_images',
   };
   final unknown = json.keys.where((key) => !allowed.contains(key)).toList(growable: false);
@@ -217,6 +218,19 @@ FormItemConfig _decodeConfig(Map<String, Object?> json) {
   for (final key in ['min_selections', 'max_selections']) {
     if (json.containsKey(key) && json[key] is! int) {
       throw WireFormatException('$context.$key must be an integer when present.');
+    }
+  }
+  for (final key in ['min_images', 'max_images']) {
+    if (!json.containsKey(key)) continue;
+    final value = json[key];
+    if (value is! num ||
+        !value.isFinite ||
+        value < 1 ||
+        value > 5 ||
+        value != value.truncateToDouble()) {
+      throw WireFormatException(
+        '$context.$key must be an integral number from 1 to 5 when present.',
+      );
     }
   }
   return FormItemConfig(
@@ -232,7 +246,8 @@ FormItemConfig _decodeConfig(Map<String, Object?> json) {
     scaleMaxLabel: json['scale_max_label'] as String?,
     allowCamera: json['allow_camera'] as bool?,
     allowExisting: json['allow_existing'] as bool?,
-    maxImages: json['max_images'] as int?,
+    minImages: (json['min_images'] as num?)?.toInt(),
+    maxImages: (json['max_images'] as num?)?.toInt(),
   );
 }
 
@@ -249,6 +264,7 @@ Map<String, Object?> _encodeConfig(FormItemConfig config) => <String, Object?>{
   if (config.scaleMaxLabel != null) 'scale_max_label': config.scaleMaxLabel,
   if (config.allowCamera != null) 'allow_camera': config.allowCamera,
   if (config.allowExisting != null) 'allow_existing': config.allowExisting,
+  if (config.minImages != null) 'min_images': config.minImages,
   if (config.maxImages != null) 'max_images': config.maxImages,
 };
 

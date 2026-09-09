@@ -98,6 +98,69 @@ void main() {
     }
   }
 
+  for (final config in [
+    <String, Object?>{},
+    <String, Object?>{'max_images': 5},
+    <String, Object?>{'min_images': 2},
+    <String, Object?>{'min_images': 2, 'max_images': 5},
+  ]) {
+    test('round-trips gallery image limits without inventing defaults $config', () {
+      final json = FormDefinitionDto.fromDomain(definition).toJson();
+      final section = (json['sections'] as List).first as Map<String, Object?>;
+      final item = (section['items'] as List).first as Map<String, Object?>;
+      item['kind'] = 'gallery';
+      item['options'] = <Object?>[];
+      item['config'] = config;
+      final decoded = FormDefinitionDto.fromJson(json).toDomain();
+      expect(FormDefinitionDto.fromDomain(decoded).toJson(), json);
+    });
+  }
+
+  test('normalizes integral gallery image numbers without changing their values', () {
+    final json = FormDefinitionDto.fromDomain(definition).toJson();
+    final section = (json['sections'] as List).first as Map<String, Object?>;
+    final item = (section['items'] as List).first as Map<String, Object?>;
+    item['kind'] = 'gallery';
+    item['options'] = <Object?>[];
+    item['config'] = {'min_images': 2.0, 'max_images': 5.0};
+    final decoded = FormDefinitionDto.fromJson(json).toDomain();
+    final config = decoded.sections.first.items.first.config;
+    expect(config.minImages, 2);
+    expect(config.maxImages, 5);
+    final encoded = FormDefinitionDto.fromDomain(decoded).toJson();
+    final encodedSection = (encoded['sections'] as List).first as Map<String, Object?>;
+    final encodedItem = (encodedSection['items'] as List).first as Map<String, Object?>;
+    final encodedConfig = encodedItem['config'] as Map<String, Object?>;
+    expect(encodedConfig, {'min_images': 2, 'max_images': 5});
+    expect(encodedConfig['min_images'], isA<int>());
+    expect(encodedConfig['max_images'], isA<int>());
+  });
+
+  for (final key in ['min_images', 'max_images']) {
+    for (final value in <Object?>[
+      '2',
+      2.5,
+      true,
+      null,
+      double.nan,
+      double.infinity,
+      double.negativeInfinity,
+      0,
+      -1,
+      6,
+    ]) {
+      test('rejects malformed image limit $key=$value as a wire error', () {
+        final json = FormDefinitionDto.fromDomain(definition).toJson();
+        final section = (json['sections'] as List).first as Map<String, Object?>;
+        final item = (section['items'] as List).first as Map<String, Object?>;
+        item['kind'] = 'gallery';
+        item['options'] = <Object?>[];
+        item['config'] = {key: value};
+        expect(() => FormDefinitionDto.fromJson(json), throwsA(isA<WireFormatException>()));
+      });
+    }
+  }
+
   test('rejects unknown keys at the top-level and nested boundaries', () {
     final json = FormDefinitionDto.fromDomain(definition).toJson();
     expect(

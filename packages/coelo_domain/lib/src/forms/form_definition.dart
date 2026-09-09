@@ -124,6 +124,7 @@ final class FormItemConfig {
     this.scaleMaxLabel,
     this.allowCamera,
     this.allowExisting,
+    this.minImages,
     this.maxImages,
   });
 
@@ -139,6 +140,7 @@ final class FormItemConfig {
   final String? scaleMaxLabel;
   final bool? allowCamera;
   final bool? allowExisting;
+  final int? minImages;
   final int? maxImages;
 }
 
