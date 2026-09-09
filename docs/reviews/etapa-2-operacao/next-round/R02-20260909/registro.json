@@ -7,7 +7,7 @@
   "createdAt": "2026-09-09",
   "integrationOwner": "D00",
   "observedPreparationHead": "fb2d07d34a74c91ec1f65aff361048393e590729",
-  "runtimeBaselineSha": "87390aefa395b7c530d269e4e04dcb10d103e8ff",
+  "runtimeBaselineSha": "588d38ebe7b05bf67e1013f215f3234c3102033c",
   "roles": [
     {
       "id": "D00",
@@ -46,17 +46,17 @@
       "scope": "Coordenação das três frentes Claude, revisão focal e entrega consolidada ao D00.",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude",
       "branch": "codex/e2-r02-l00-coordenacao-claude",
-      "status": "active",
+      "status": "active-native-wait-reported",
       "threadId": "d0e41a",
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude",
       "coordinator": "D00",
       "baselineSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
-      "headSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
+      "headSha": "67b728e985e643196bcfdfe69c4b80cee976ff43",
       "plannedAssignmentPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/L00.md",
       "assignmentPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/L00.md",
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L00.md",
       "handoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L00.md",
-      "receivedRevision": 1,
+      "receivedRevision": 2,
       "communicationVerified": true,
       "handoffExists": false,
       "worktreeOrigin": "D00 git worktree add",
@@ -79,16 +79,16 @@
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao",
       "branch": "codex/e2-r02-d01-autenticacao",
       "status": "active",
-      "threadId": null,
+      "threadId": "01a086d7-87e8-7273-8e47-9d23eb2152ca",
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao",
       "coordinator": "D00",
       "baselineSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
-      "headSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
+      "headSha": "953ce9d32bcf80e3c6ba7bb612367aa351031382",
       "plannedAssignmentPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D01.md",
       "assignmentPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D01.md",
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D01.md",
       "handoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D01.md",
-      "receivedRevision": 1,
+      "receivedRevision": 2,
       "communicationVerified": true,
       "handoffExists": false,
       "worktreeOrigin": "D00 git worktree add",
@@ -117,7 +117,7 @@
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d02-estrutura",
       "coordinator": "D00",
       "baselineSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
-      "headSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
+      "headSha": "5d77b5064ce126758d623fd6cda0f6f7ae5f9b3a",
       "plannedAssignmentPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D02.md",
       "assignmentPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D02.md",
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d02-estrutura/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D02.md",
@@ -150,12 +150,12 @@
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d03-acompanhamento",
       "coordinator": "D00",
       "baselineSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
-      "headSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
+      "headSha": "66780e0ea14cb39ba10c1e7447eab99a75d7aa23",
       "plannedAssignmentPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D03.md",
       "assignmentPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D03.md",
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d03-acompanhamento/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D03.md",
       "handoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d03-acompanhamento/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D03.md",
-      "receivedRevision": 1,
+      "receivedRevision": 5,
       "communicationVerified": true,
       "handoffExists": false,
       "worktreeOrigin": "D00 git worktree add",
@@ -217,7 +217,7 @@
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l01-publicacoes",
       "coordinator": "L00",
       "baselineSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
-      "headSha": "f7b07724b951cc38a02bdb9d31b312ce6d81441f",
+      "headSha": "63db8ffb81731bfc2a6e805352b27b11b34b6fdd",
       "plannedAssignmentPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/L01.md",
       "assignmentPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/L01.md",
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l01-publicacoes/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L01.md",
@@ -247,7 +247,7 @@
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l02-chat-comunicacoes",
       "coordinator": "L00",
       "baselineSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
-      "headSha": "449b326854cd6e735e784aaaf646560e5c598695",
+      "headSha": "63704da106a0da583cbcebd845e906a2721dadb4",
       "plannedAssignmentPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/L02.md",
       "assignmentPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/L02.md",
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l02-chat-comunicacoes/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L02.md",
@@ -321,7 +321,7 @@
       "apps/superadmin/test/features/auth/presentation/screens/failures/superadmin_login_light_testImage.png"
     ]
   },
-  "runtimeBaselineLimit": "Application Auth paths match HEAD after selective reconciliation; documentary coordinator WIP remains. No runtime test has yet used this baseline.",
+  "runtimeBaselineLimit": "Application code includes Auth and routine candidate integrations; focal verification in progress, coordinator documentary WIP separate.",
   "scopeRevision": "ADENDO-LOCAIS: 136 selecionados, 120 MVP E2E; Circulares e granularidade abertos",
   "sharedReservations": [
     {
@@ -329,14 +329,18 @@
       "path": "apps/superadmin/lib/app/router/superadmin_router.dart",
       "region": "Auth recovery return-to-login callback",
       "release": "first apt SHA",
-      "status": "active"
+      "status": "released",
+      "sourceSha": "db1ade4057349a57a36a13e812cee30b9dc5592d",
+      "integratedSha": "bf04a9a6"
     },
     {
       "owner": "D01",
       "path": "apps/superadmin/test/app/router/superadmin_router_test.dart",
       "region": "recovery error test",
       "release": "first apt SHA",
-      "status": "active"
+      "status": "released",
+      "sourceSha": "db1ade4057349a57a36a13e812cee30b9dc5592d",
+      "integratedSha": "bf04a9a6"
     },
     {
       "owner": "D02",
@@ -358,5 +362,24 @@
     ],
     "limit": "session-only, REPL idle; no Codex-to-Claude native wake tool available",
     "cutoff": "2026-09-09T16:45:00-03:00"
+  },
+  "integrationRunner": {
+    "sessionId": 65392,
+    "base": "588d38eb",
+    "worktree": "C:/Users/adrie/Documents/Coelo",
+    "status": "passed",
+    "campaigns": [
+      "Auth recovery 14 cases expected",
+      "Routine directory 11 cases expected"
+    ],
+    "limit": "counts expected, not yet results; sequential Flutter commands",
+    "results": {
+      "P": 25,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0,
+      "scope": "two focal campaigns, not whole app plan"
+    }
   }
 }

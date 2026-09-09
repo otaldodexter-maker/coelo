@@ -56,36 +56,50 @@
       "family": "auth",
       "screen": "Auth / Redefinir senha",
       "scope": "mvp",
-      "done": "Guards, recovery confinado, single-flight e limpeza de sessão integrados. Lifecycle Auth local registrado; não implica SMTP ou token remoto comprovado. C01I017 integrado90de1968/f7230db9; Error contido e resultado seguro, senha confirmada/cleanupfalho diferenciados, sessão nova preservada. C00122testes PASS/analyzer6limpo.",
+      "done": "Guards, recovery confinado, single-flight e limpeza de sessão integrados. Lifecycle Auth local registrado; não implica SMTP ou token remoto comprovado. C01I017 integrado90de1968/f7230db9; Error contido e resultado seguro, senha confirmada/cleanupfalho diferenciados, sessão nova preservada. C00122testes PASS/analyzer6limpo. R02 D01: retorno ao login mostra falha de revogação e mantém recuperação confinada; db1ade40 integrado bf04a9a6, 14 recovery PASS na base conjunta588d38eb.",
       "fe": "Conferir regressão visual, foco, rotas e lifecycle da ação; reutilizar guards já integrados. C01I017 corrigiu Error nas fronteiras; preservar demais aceites visuais/lifecycle e prova real, sem reimplementar o corretivo.",
       "be": "Provar a operação nominal no provedor: sessão/revogação e, para recuperar/reset, SMTP, redirect, token e senha. Respeitar AAL1 do MVP. I021 não finalizada: WIP27f7bbab contém rascunho Pester; qualificação SQL/COMMIT e bridge não implementadas. Personas remotas e cenários A/B ainda exigem pacote nominal autorizado.",
-      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00",
+      "lastEvidenceAt": "2026-09-09T13:06:20.876471-03:00",
       "lastHandoffRevision": 51,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "588d38ebe7b05bf67e1013f215f3234c3102033c",
+        "recordedAt": "2026-09-09T13:06:20.876471-03:00",
+        "note": "R02 D01: retorno ao login mostra falha de revogação e mantém recuperação confinada; db1ade40 integrado bf04a9a6, 14 recovery PASS na base conjunta588d38eb.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "auth.logout",
       "family": "auth",
       "screen": "Auth / Sair",
       "scope": "mvp",
-      "done": "Guards, recovery confinado, single-flight e limpeza de sessão integrados. Lifecycle Auth local registrado; não implica SMTP ou token remoto comprovado. C01I017 integrado90de1968/f7230db9; Error contido e resultado seguro, senha confirmada/cleanupfalho diferenciados, sessão nova preservada. C00122testes PASS/analyzer6limpo.",
+      "done": "Guards, recovery confinado, single-flight e limpeza de sessão integrados. Lifecycle Auth local registrado; não implica SMTP ou token remoto comprovado. C01I017 integrado90de1968/f7230db9; Error contido e resultado seguro, senha confirmada/cleanupfalho diferenciados, sessão nova preservada. C00122testes PASS/analyzer6limpo. R02 D01: retorno ao login mostra falha de revogação e mantém recuperação confinada; db1ade40 integrado bf04a9a6, 14 recovery PASS na base conjunta588d38eb.",
       "fe": "Conferir regressão visual, foco, rotas e lifecycle da ação; reutilizar guards já integrados. C01I017 corrigiu Error nas fronteiras; preservar demais aceites visuais/lifecycle e prova real, sem reimplementar o corretivo.",
       "be": "Provar a operação nominal no provedor: sessão/revogação e, para recuperar/reset, SMTP, redirect, token e senha. Respeitar AAL1 do MVP. I021 não finalizada: WIP27f7bbab contém rascunho Pester; qualificação SQL/COMMIT e bridge não implementadas. Personas remotas e cenários A/B ainda exigem pacote nominal autorizado.",
-      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00",
+      "lastEvidenceAt": "2026-09-09T13:06:20.876471-03:00",
       "lastHandoffRevision": 51,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "588d38ebe7b05bf67e1013f215f3234c3102033c",
+        "recordedAt": "2026-09-09T13:06:20.876471-03:00",
+        "note": "R02 D01: retorno ao login mostra falha de revogação e mantém recuperação confinada; db1ade40 integrado bf04a9a6, 14 recovery PASS na base conjunta588d38eb.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "auth.mfa",
@@ -1580,10 +1594,10 @@
       "family": "daily_routine",
       "screen": "Rotina diária / Diretório",
       "scope": "mvp",
-      "done": "Fluxos locais registrados com48 testes/quatro skips/nove goldens; filtros vazios corrigidos76f7fdf9. READ01 é proposta. C00 integrou preservação do tamanho de página0637d0a9.",
-      "fe": "Revalidar o aceite específico desta ação: Diretório/estados/filtros e matriz visual local provados; backend, remoto e E2E permanecem abertos. Erro inesperado no diretório ainda relatado como RED aberto C03r33.",
+      "done": "Fluxos locais registrados com48 testes/quatro skips/nove goldens; filtros vazios corrigidos76f7fdf9. READ01 é proposta. C00 integrou preservação do tamanho de página0637d0a9. R02 D03: TypeError/decode inesperado no diretório vira erro seguro sem dados; c440199b integrado588d38eb, 11 testes PASS na base conjunta.",
+      "fe": "Revalidar o aceite específico desta ação: Diretório/estados/filtros e matriz visual local provados; backend, remoto e E2E permanecem abertos. RED histórico de decode resolvido na R02; demais aceites visuais/integração continuam abertos.",
       "be": "Materializar reader ou comando nominal interno039 aplicável, revisão/publicação, autorização e reload; não confundir propostaREAD01 com migration.",
-      "evidence": "commit76f7fdf9; evidence/etapa-2/agenda-operacoes/plano-por-tela.md; R01-delta-1815: C03r24 36c44dc4 preserva page size11/8;14focais/34ampliados relatados, revisão em andamento.; Fechamento R01 C03/r33; C00288PASS lote; C03r33; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "commit76f7fdf9; evidence/etapa-2/agenda-operacoes/plano-por-tela.md; R01-delta-1815: C03r24 36c44dc4 preserva page size11/8;14focais/34ampliados relatados, revisão em andamento.; Fechamento R01 C03/r33; C00288PASS lote; C03r33; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
@@ -1591,7 +1605,14 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T13:06:20.876471-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "588d38ebe7b05bf67e1013f215f3234c3102033c",
+        "recordedAt": "2026-09-09T13:06:20.876471-03:00",
+        "note": "R02 D03: TypeError/decode inesperado no diretório vira erro seguro sem dados; c440199b integrado588d38eb, 11 testes PASS na base conjunta.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "daily-routine.create",

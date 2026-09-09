@@ -1,0 +1,248 @@
+{
+  "source": "D00 reviewed cherry-picks and sequential integrated verification",
+  "status": "local-integrated-verified-not-E2E",
+  "generatedAt": "2026-09-09T13:06:20.876471-03:00",
+  "revision": "588d38ebe7b05bf67e1013f215f3234c3102033c",
+  "worktree": "C:/Users/adrie/Documents/Coelo",
+  "commits": [
+    {
+      "owner": "D01",
+      "source": "db1ade4057349a57a36a13e812cee30b9dc5592d",
+      "destination": "bf04a9a6",
+      "actions": [
+        "auth.reset",
+        "auth.logout"
+      ]
+    },
+    {
+      "owner": "D03",
+      "source": "c440199bbadcd2b5aebfeea8e44f8f378443078b",
+      "destination": "588d38eb",
+      "actions": [
+        "daily-routine.list"
+      ]
+    }
+  ],
+  "campaigns": [
+    {
+      "campaign_id": "R02-D00-auth-recovery-588d38eb",
+      "layer": "FE",
+      "revision": "588d38ebe7b05bf67e1013f215f3234c3102033c",
+      "environment": "Windows local Flutter tests; synthetic repositories",
+      "runner": "flutter test --no-pub --reporter expanded",
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/auth-recovery-588d38eb.txt",
+      "P": 14,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0,
+      "cases": [
+        {
+          "test_id": "session preserves recovery separately from a normal authenticated session",
+          "action_ids": [
+            "auth.reset",
+            "auth.logout"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "session clears an authorized context when password recovery starts",
+          "action_ids": [
+            "auth.reset",
+            "auth.logout"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "redirects an authorized shell to reset when recovery starts at runtime",
+          "action_ids": [
+            "auth.reset",
+            "auth.logout"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "opens password recovery publicly and returns to login",
+          "action_ids": [
+            "auth.reset",
+            "auth.logout"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "allows direct public access to password recovery",
+          "action_ids": [
+            "auth.reset",
+            "auth.logout"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "shows an invalid state for direct reset access without recovery",
+          "action_ids": [
+            "auth.reset",
+            "auth.logout"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "keeps a valid recovery session on reset instead of redirecting home",
+          "action_ids": [
+            "auth.reset",
+            "auth.logout"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "starts a recovery session on reset instead of the initial login route",
+          "action_ids": [
+            "auth.reset",
+            "auth.logout"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "revokes a recovery session before returning to login",
+          "action_ids": [
+            "auth.reset",
+            "auth.logout"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "keeps recovery confined when revocation before login fails",
+          "action_ids": [
+            "auth.reset",
+            "auth.logout"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "confines a recovery session to reset when Home is requested",
+          "action_ids": [
+            "auth.reset",
+            "auth.logout"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "confines a recovery session to reset when a protected route is requested",
+          "action_ids": [
+            "auth.reset",
+            "auth.logout"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "confines a recovery session before development preview routes",
+          "action_ids": [
+            "auth.reset",
+            "auth.logout"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "redirects authenticated recovery visits to the shell",
+          "action_ids": [
+            "auth.reset",
+            "auth.logout"
+          ],
+          "result": "P"
+        }
+      ]
+    },
+    {
+      "campaign_id": "R02-D00-routine-directory-588d38eb",
+      "layer": "FE",
+      "revision": "588d38ebe7b05bf67e1013f215f3234c3102033c",
+      "environment": "Windows local Flutter tests; synthetic repositories",
+      "runner": "flutter test --no-pub --reporter expanded",
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/routine-directory-588d38eb.txt",
+      "P": 11,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0,
+      "cases": [
+        {
+          "test_id": "starts loading with no entries exposed",
+          "action_ids": [
+            "daily-routine.list"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "loading a new request clears previously loaded entries fail closed",
+          "action_ids": [
+            "daily-routine.list"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "failure and unauthorized never retain entries",
+          "action_ids": [
+            "daily-routine.list"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "unexpected decoding errors become a safe failure state",
+          "action_ids": [
+            "daily-routine.list"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "empty and no-results are distinct server-result states",
+          "action_ids": [
+            "daily-routine.list"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "blank filters do not turn an empty directory into no-results",
+          "action_ids": [
+            "daily-routine.list"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "stale response cannot replace a newer authorized result",
+          "action_ids": [
+            "daily-routine.list"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "structural filter is no-results: active",
+          "action_ids": [
+            "daily-routine.list"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "structural filter is no-results: institution-a",
+          "action_ids": [
+            "daily-routine.list"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "structural filter is no-results: unit-a",
+          "action_ids": [
+            "daily-routine.list"
+          ],
+          "result": "P"
+        },
+        {
+          "test_id": "structural filter is no-results: group-a",
+          "action_ids": [
+            "daily-routine.list"
+          ],
+          "result": "P"
+        }
+      ]
+    }
+  ],
+  "limits": "Partial FE acceptance; no SMTP/backend/runtime E2E. Author reruns are not additional cases."
+}

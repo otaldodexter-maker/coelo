@@ -1,0 +1,19 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:8 caractere:1
++ rtk proxy flutter test --no-pub test/features/daily_routine/routine_d ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+00:00 +0: loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/routine_directory_controller_test.dart
+00:00 +0: starts loading with no entries exposed
+00:00 +1: loading a new request clears previously loaded entries fail closed
+00:00 +2: failure and unauthorized never retain entries
+00:00 +3: unexpected decoding errors become a safe failure state
+00:00 +4: empty and no-results are distinct server-result states
+00:00 +5: blank filters do not turn an empty directory into no-results
+00:00 +6: stale response cannot replace a newer authorized result
+00:00 +7: structural filter is no-results: active
+00:00 +8: structural filter is no-results: institution-a
+00:00 +9: structural filter is no-results: unit-a
+00:00 +10: structural filter is no-results: group-a
+00:00 +11: All tests passed!
