@@ -37,3 +37,11 @@ o fluxo nominal remoto continuam dependentes da decisão e serialização D00.
 O MCP retornou apenas o último SELECT da primeira transação; a segunda
 consulta recuperou o resumo da tabela/colunas/ACL que não veio na primeira
 resposta. Não houve escrita, bootstrap, login, envio de email ou deploy.
+
+Consulta focal adicional às14:37 BRT, também READ ONLY: o corpo `prosrc`,
+normalizado de CRLF para LF, tem4711caracteres e MD5
+`5cdb28081d40e15232ef50912edd8082`. Esse fingerprint foi encaminhado para
+comparação com o corpo da migration canônica antes de fixar o preflight;
+o propósito é recusar substituição de uma função com alteração inesperada,
+mesmo que ainda contenha os nomes de verificações conhecidos. Nenhum corpo
+de sessão/usuário ou token foi lido.

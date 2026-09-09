@@ -37,6 +37,12 @@ begin
       message = 'internal auth context gateway is missing';
   end if;
 
+  if pg_catalog.md5(pg_catalog.replace(function_record.prosrc, E'\r\n', E'\n'))
+     <> '5cdb28081d40e15232ef50912edd8082' then
+    raise exception using errcode = 'P0001',
+      message = 'internal auth context exact body baseline drift';
+  end if;
+
   if pg_catalog.to_regclass('auth.mfa_amr_claims') is null
      or not exists (select 1 from information_schema.columns
        where table_schema = 'auth' and table_name = 'mfa_amr_claims'

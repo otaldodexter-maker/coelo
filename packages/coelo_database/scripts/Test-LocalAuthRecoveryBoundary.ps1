@@ -10,9 +10,21 @@ $ErrorActionPreference = 'Stop'
 $cliPackage = 'supabase@2.116.0'
 Add-Type -AssemblyName System.Net.Http
 $expectedRoot = [IO.Path]::GetFullPath((Join-Path ([IO.Path]::GetTempPath()) $ProjectId))
-if ([IO.Path]::GetFullPath($ProjectRoot) -ne $expectedRoot -or
-    -not (Test-Path -LiteralPath (Join-Path $ProjectRoot '.coelo-safe-replay'))) {
-  throw 'recovery boundary requires the marked disposable safe-replay project'
+if ([IO.Path]::GetFullPath($ProjectRoot) -ne $expectedRoot) {
+  throw 'recovery boundary rejected: SAFE_ROOT_PATH'
+}
+$ownedRoot = Get-Item -LiteralPath $expectedRoot -Force -ErrorAction Stop
+if (($ownedRoot.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+  throw 'recovery boundary rejected: SAFE_ROOT_REPARSE'
+}
+if (-not $ownedRoot.PSIsContainer) { throw 'recovery boundary rejected: SAFE_ROOT_TYPE' }
+$markerPath = Join-Path $expectedRoot '.coelo-safe-replay'
+$ownedMarker = Get-Item -LiteralPath $markerPath -Force -ErrorAction Stop
+if (($ownedMarker.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+  throw 'recovery boundary rejected: SAFE_MARKER_REPARSE'
+}
+if ($ownedMarker.PSIsContainer -or [IO.File]::ReadAllText($markerPath) -cne $ProjectId) {
+  throw 'recovery boundary rejected: SAFE_MARKER_IDENTITY'
 }
 
 # Import only named function definitions from the trusted repository helper.
@@ -76,6 +88,107 @@ function Assert-BootstrapConfined {
   }
 }
 
+function Invoke-RealColdStorageBoundary {
+  param([string]$ApiUrl, [string]$AnonKey, [string]$AccessToken, [string]$RefreshToken)
+  if (-not ([uri]$ApiUrl).IsLoopback) { throw 'D01 cold storage gate failed: NON_LOCAL_URL' }
+  $repositoryRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
+  $appRoot = Join-Path $repositoryRoot 'apps\superadmin'
+  $testPath = 'test/features/auth/domain/coelo_auth_recovery_cold_reload_test.dart'
+  $testName = 'cold reload storage failure: backend denies retained recovery after restart'
+  $flutterEntry = (Get-Command flutter -ErrorAction Stop).Source
+  $flutterRoot = Split-Path -Parent (Split-Path -Parent $flutterEntry)
+  # Match the installed flutter.bat invocation directly, without an intermediate
+  # command shell. The prepared Flutter cache is required; no SDK install here.
+  $dartPath = Join-Path $flutterRoot 'bin\cache\dart-sdk\bin\dart.exe'
+  $snapshotPath = Join-Path $flutterRoot 'bin\cache\flutter_tools.snapshot'
+  $packageConfig = Join-Path $flutterRoot 'packages\flutter_tools\.dart_tool\package_config.json'
+  foreach ($requiredFile in @($dartPath, $snapshotPath, $packageConfig, (Join-Path $appRoot $testPath))) {
+    if (-not (Test-Path -LiteralPath $requiredFile -PathType Leaf) -or $requiredFile.Contains('"')) {
+      throw 'D01 cold storage gate failed: LOCAL_RUNNER_UNAVAILABLE'
+    }
+  }
+  $start = [Diagnostics.ProcessStartInfo]::new()
+  $start.FileName = $dartPath
+  $start.Arguments = '--packages="' + $packageConfig + '" "' + $snapshotPath +
+    '" test --no-pub --reporter expanded --plain-name "' + $testName + '" "' + $testPath + '"'
+  $start.WorkingDirectory = $appRoot
+  $start.UseShellExecute = $false
+  $start.CreateNoWindow = $true
+  $start.RedirectStandardOutput = $true
+  $start.RedirectStandardError = $true
+  $start.EnvironmentVariables['FLUTTER_ROOT'] = $flutterRoot
+  $start.EnvironmentVariables['COELO_D01_LOCAL_SUPABASE_URL'] = $ApiUrl
+  $start.EnvironmentVariables['COELO_D01_LOCAL_PUBLISHABLE_KEY'] = $AnonKey
+  $start.EnvironmentVariables['COELO_D01_RECOVERY_ACCESS_TOKEN'] = $AccessToken
+  $start.EnvironmentVariables['COELO_D01_RECOVERY_REFRESH_TOKEN'] = $RefreshToken
+  $child = [Diagnostics.Process]::new()
+  $child.StartInfo = $start
+  $started = $false
+  $passed = $false
+  $failureCode = 'CHILD_EXECUTION_FAILED'
+  try {
+    $started = $child.Start()
+    if (-not $started) { throw 'CHILD_START_FAILED' }
+    # Never forward raw Flutter output: assertion failures may stringify SDK sessions.
+    $outputTask = $child.StandardOutput.ReadToEndAsync()
+    $errorTask = $child.StandardError.ReadToEndAsync()
+    if (-not $child.WaitForExit(120000)) { throw 'CHILD_TIMEOUT' }
+    if (-not [Threading.Tasks.Task]::WaitAll(
+        [Threading.Tasks.Task[]]@($outputTask, $errorTask), 5000)) {
+      throw 'CHILD_OUTPUT_INCOMPLETE'
+    }
+    $capturedOutput = $outputTask.GetAwaiter().GetResult()
+    $null = $errorTask.GetAwaiter().GetResult()
+    if ($child.ExitCode -ne 0) { throw 'CHILD_TEST_FAILED' }
+    if ($capturedOutput -notmatch '(?m)^D01_COLD_STORAGE_REAL_BE_PASS\r?$') {
+      throw 'CHILD_PASS_MARKER_MISSING'
+    }
+    $passed = $true
+  }
+  catch {
+    $knownCodes = @('CHILD_START_FAILED', 'CHILD_TIMEOUT', 'CHILD_OUTPUT_INCOMPLETE',
+      'CHILD_TEST_FAILED', 'CHILD_PASS_MARKER_MISSING')
+    if ($_.Exception.Message -in $knownCodes) { $failureCode = $_.Exception.Message }
+  }
+  finally {
+    if ($started -and -not $child.HasExited) {
+      # Windows PowerShell lacks Process.Kill(entireProcessTree). Terminate only
+      # the tree rooted at the PID created above, then wait for that owned child.
+      $stopInfo = [Diagnostics.ProcessStartInfo]::new()
+      $stopInfo.FileName = Join-Path $env:SystemRoot 'System32\taskkill.exe'
+      $stopInfo.Arguments = '/PID ' + $child.Id + ' /T /F'
+      $stopInfo.UseShellExecute = $false
+      $stopInfo.CreateNoWindow = $true
+      $stopInfo.RedirectStandardOutput = $true
+      $stopInfo.RedirectStandardError = $true
+      $stopProcess = [Diagnostics.Process]::new()
+      $stopProcess.StartInfo = $stopInfo
+      try {
+        if ($stopProcess.Start()) {
+          $null = $stopProcess.StandardOutput.ReadToEndAsync()
+          $null = $stopProcess.StandardError.ReadToEndAsync()
+          if (-not $stopProcess.WaitForExit(5000)) {
+            $stopProcess.Kill()
+            if (-not $stopProcess.WaitForExit(5000)) { $failureCode = 'CHILD_CLEANUP_FAILED' }
+          }
+        }
+        if (-not $child.HasExited) { $child.Kill() }
+        if (-not $child.WaitForExit(5000)) { $failureCode = 'CHILD_CLEANUP_FAILED' }
+      }
+      catch { $failureCode = 'CHILD_CLEANUP_FAILED' }
+      finally { $stopProcess.Dispose() }
+      $passed = $false
+    }
+    $capturedOutput = $null
+    $outputTask = $null
+    $errorTask = $null
+    $start.EnvironmentVariables.Clear()
+    $child.Dispose()
+  }
+  if (-not $passed) { throw "D01 cold storage gate failed: $failureCode" }
+  'D01 composed boundary gate=cold-restart-storage-failure-real-backend outcome=PASS'
+}
+
 $environment = Get-LocalSupabaseEnvironment
 $apiUrl = $environment['API_URL'].TrimEnd('/')
 $anonKey = $environment['ANON_KEY']
@@ -133,6 +246,7 @@ if ($AssertConfined) {
 Invoke-JsonRequest -Method Post -Uri "$apiUrl/auth/v1/recover" -Headers $headers `
   -Body @{ email = $email; redirect_to = 'http://127.0.0.1:8766/reset-password' } |
   Out-Null
+$lastRecoveryIssuedAt = [DateTime]::UtcNow
 $message = Get-RecoveryMessage -InboxUrl $inboxUrl
 $recovery = Get-RecoverySessionFromLink -Link $message.Link
 $recoveryBootstrap = Invoke-Bootstrap -ApiUrl $apiUrl -AnonKey $anonKey `
@@ -209,6 +323,24 @@ if ($AssertConfined) {
     throw 'new password login could not obtain productive context after recovery logout'
   }
   "D01 recovery boundary gate=new-password-login outcome=PASS productive_context=True methods=$(Get-SanitizedMethods $newSignin.access_token)"
+  # The real scope may sign out a denied recovery session. Give the final cold
+  # restart gate its own new recovery session, never reused by the HTTP probes.
+  $resendDelay = 1100 - ([DateTime]::UtcNow - $lastRecoveryIssuedAt).TotalMilliseconds
+  if ($resendDelay -gt 0) { Start-Sleep -Milliseconds ([int][Math]::Ceiling($resendDelay)) }
+  Invoke-JsonRequest -Method Post -Uri "$apiUrl/auth/v1/recover" -Headers $headers `
+    -Body @{ email = $email; redirect_to = 'http://127.0.0.1:8766/reset-password' } |
+    Out-Null
+  $coldMessage = Get-RecoveryMessage -InboxUrl $inboxUrl -PreviousId $message.Id
+  if ($coldMessage.Id -eq $message.Id) { throw 'cold recovery requires a new local Mailpit message' }
+  $coldRecovery = Get-RecoverySessionFromLink -Link $coldMessage.Link
+  $coldIdentityAttempt = Invoke-HttpAttempt -Method Get -Uri "$apiUrl/auth/v1/user" `
+    -Headers @{ apikey = $anonKey; Authorization = "Bearer $($coldRecovery.AccessToken)" }
+  $coldIdentity = try { $coldIdentityAttempt.Body | ConvertFrom-Json } catch { $null }
+  if ($coldIdentityAttempt.StatusCode -ne 200 -or $coldIdentity.id -ne $authUserId) {
+    throw 'new cold recovery did not resolve the intended isolated synthetic identity'
+  }
+  Invoke-RealColdStorageBoundary -ApiUrl $apiUrl -AnonKey $anonKey `
+    -AccessToken $coldRecovery.AccessToken -RefreshToken $coldRecovery.RefreshToken
   'D01 recovery confinement assertions PASS; provider password update/logout/new login remain usable; cleanup belongs to disposable wrapper volume.'
 }
 else {

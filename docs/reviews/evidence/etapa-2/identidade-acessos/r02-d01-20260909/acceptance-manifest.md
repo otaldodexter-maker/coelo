@@ -18,7 +18,7 @@ Ambiente local Windows, Flutter3.44.2/Dart3.12.2, execução Flutter serializada
 dentro da frente D01. Registros de D00 na base integrada são recibos distintos;
 não aumentam os testes únicos desta campanha.
 
-## Plano e execução até 14:26 BRT
+## Plano e execução até 14:58 BRT
 
 | Grupo de casos únicos | P | F | B | S | U | Recibo |
 |---|---:|---:|---:|---:|---:|---|
@@ -35,16 +35,18 @@ não aumentam os testes únicos desta campanha.
 | Cold reload SDK/storage, preferência ligada/desligada |2|0|0|0|0|`recovery-cold-storage-green.txt`|
 | Corrida de escrita/remoção e recuperação após erro |2|0|0|0|0|`recovery-cold-storage-green.txt`|
 | Gateway: replay/seed/erros síncrono e assíncrono de limpeza |5|0|0|0|0|`recovery-persistence-gateway-review.md` e logs referenciados|
-| **Total do plano local151** |**147**|**0**|**4**|**0**|**0**|Sem somar reruns|
+| Retry após falha transitória de purge |1|0|0|0|0|`recovery-persistence-retry-green.txt`, novo ID apenas|
+| Cold restart após falha de storage: confinamento cliente + servidor |0|1|0|0|0|RED diagnóstico em `recovery-persistence-cold-failure-red.txt`; prova corretiva real pendente|
+| **Total do plano local153** |**148**|**1**|**4**|**0**|**0**|Sem somar variantes/reruns|
 
 Resultado histórico de motion e erros iniciais de compilação do harness estão
 preservados nos logs; asserções corrigidas e mesmo ID final PASS, sem somar
 tentativas. As três falhas visuais anteriores de Login foram resolvidas por
 geometria do componente. Os onze PNGs aprovados permanecem inalterados.
-Executado147/151 neste checkpoint; bloqueados4 e não executados0 permanecem
+Executado149/153 neste checkpoint; bloqueados4 e não executados0 permanecem
 explícitos. Estes números não são avanço FE/BE/E2E nem porcentagem de produto.
-Taxa aprovada147/147=100%; falha0/147=0%; execução e aprovação do plano
-147/151=97,35%. A espera de fixture foi resolvida pelo ciclo assíncrono real
+Taxa aprovada148/149=99,33%; falha1/149=0,67%; execução do plano
+149/153=97,39% e aprovação148/153=96,73%. A espera de fixture foi resolvida pelo ciclo assíncrono real
 de criação/dispose do SDK; a expectativa incorreta de mensagem foi corrigida
 para o feedback específico do contrato. Resultados intermediários estão
 preservados e pertencem aos mesmos dois IDs finais verdes.
@@ -59,6 +61,14 @@ novos testes do gateway também foram corrigidas no teste. Não são falhas
 atuais do produto nem casos adicionais. Uma falha real de remoção do storage
 continua explicitamente fora da garantia de cold reload seguro; os testes de
 erro preservam essa limitação e exigem erro sanitizado e confinamento em memória.
+
+O checkpoint14:26 tinha147PASS/B4. D00 manteve auth.reset pendente e pediu
+o gate frio com storage falho. Retry foi corrigido após RED, com3PASS focais
+(dois casos já existentes). O diagnóstico frio usa backend sintético permissivo
+e permanece RED conhecido; não será substituído por um deny simulado. A
+variante SDK/scope/rota/RPC/logout reais foi preparada para a stack local,
+com o mesmo ID lógico de aceite, e ainda não executou. Sua seleção por ambiente
+fora de um lote não conta como teste SKIP já executado nem como novo ID.
 
 ## Browser: quatro casos bloqueados por ferramenta
 
@@ -113,7 +123,7 @@ aprovado. Servidor61459 encerrado via `q`, exit0, às13:36 BRT. B4 mantido.
   alegação de gate global limpo.
 - Pacote nominal: seis testes Node preflight e16 executor PASS, modos offline
   PASS, GET settings real e SQL READ ONLY qualificados. Recibo
-  `remote-package-qualification.md`. Categoria ferramentas, fora dos151 acima.
+  `remote-package-qualification.md`. Categoria ferramentas, fora dos153 acima.
 - Memória: gate de validação PASS; suíte da ferramenta12PASS/1SKIP por symlink
   indisponível no host, fora do produto. Nenhuma regra durável aprovada nova.
 
@@ -131,19 +141,26 @@ Saída0 do observador não significa aprovação. Correção SQL é proposta loc
 com preparação reservada por D00 r9 e janela SQL pendente; nenhum resultado GREEN dessa
 correção existe neste checkpoint. Cleanup dos dois projetos locais confirmado.
 
+Corretivo local reservado tem plano próprio de verificação:36pgTAP
+(30preservados+6novos),9HTTP e1coldcomposto =46gates, **U46 na base candidata**.
+O coldcomposto é o mesmo ID lógico frio da tabela cliente, não um caso adicional
+ao agregar campanhas. O wrapper/script aguardam janela serial D00. Guardas de
+ferramenta passaram, mas não substituem essas provas funcionais.
+
 ## Limites de certificação
 
-Reconciliação após RED: **FE1/4 certificado +1/4 restaurado proposto,
-BE0/4, E2E0/4** no recorte D01. `auth.recover` tem aceite FE verificado,
+Reconciliação após RED: **FE1/4 certificado, BE0/4, E2E0/4** no recorte D01.
+`auth.recover` tem aceite FE verificado,
 conforme `recover-fe-reconciliation.md`, após fechar adapter/VM9PASS;
 ausência de SMTP não rebaixa essa camada. `auth.reset` foi reaberto por cold
-reload; correção e147provas locais reconciliadas permitem propor nova integração
-e verificação FE pelo D00, sem antecipar o recibo da base conjunta.
+reload; correção inicial integrada a07c2a2ef e retry publicado5816f982a não
+restauram o aceite antes do gate frio com falha de storage e proteção backend,
+conforme D00 r10/recibo14:42. Não antecipar o recibo da base conjunta.
 Login/Sair têm gates de browser. Esses números
 não substituem inventário global datado nem provam integração/publicação.
 
 Pacote remoto `D01-AUTH-PROOF-R02-v1` possui dez gates nominais A1/A2,
 R1–R6,L1,C1: bloqueados para execução funcional por mailbox controlada e
 autorização nominal ainda pendentes. São gates operacionais, não dez testes
-automatizados e não entram no151. Nenhuma conta, senha, email, SMTP ou
+automatizados e não entram no153. Nenhuma conta, senha, email, SMTP ou
 configuração remota foi alterada. D00 serializa decisão e integração.

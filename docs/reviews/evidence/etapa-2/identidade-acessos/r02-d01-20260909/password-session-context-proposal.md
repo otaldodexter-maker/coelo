@@ -70,7 +70,7 @@ exige `RunAuthRecoveryBoundary` e encaminha `AssertConfined` ao script;
 combinação inválida foi recusada antes de inicializar Docker.
 
 SHA-256 candidato:
-`C42861F3A3B7BAF56FA66ADC9B3BF2AE093D2BD7C3ED73BC41069F65915A52FA`.
+`A57E3F85C3906F2E83F28AE90BFBFD58E10BED6A25AFA8352019DF0210342BD8`.
 SHA-256 script com AssertConfined:
 `C332D98587229ACF76F4F0E37D951711C6F8FB78DB439D13ABEC698FDC834059`.
 Nenhuma correção aplicada, nenhum deploy, commit ou nova projeção de memória.
