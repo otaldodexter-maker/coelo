@@ -2,6 +2,7 @@ import 'dart:async';
 
 import '../../../support/activities/fake_activity_directory_repository.dart';
 import 'package:coelo_domain/profile_about.dart';
+import 'package:coelo_domain/locations.dart';
 import 'package:coelo_superadmin/app/dev_menu/development_activity_fixture_repository.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_profile_about_repository.dart';
@@ -19,6 +20,50 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('catalog slot replaces legacy options and preserves typed draft on save', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    ActivityFormDraft? saved;
+    await tester.pumpWidget(
+      _app(
+        initialInstitutionId: 'institution-1',
+        initialStep: ActivityFormStep.structure,
+        onSaveDraft: (draft) async => saved = draft,
+        locationSelectionBuilder: (context, controller) => TextButton(
+          key: const Key('select-catalog-test'),
+          onPressed: () {
+            controller.name.text = 'Oficina';
+            controller.toggleUnit('institution-1-unit-1');
+            controller.selectCataloguedLocation(
+              const CataloguedLocationSelection(
+                LocationReferenceSnapshot(
+                  id: 'location-1',
+                  scope: LocationScope.institution(institutionId: 'institution-1'),
+                  kind: LocationKind.external,
+                  label: 'Praca',
+                ),
+              ),
+            );
+          },
+          child: const Text('Selecionar local do catalogo'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('activity-form-location')), findsNothing);
+    await tester.ensureVisible(find.byKey(const Key('select-catalog-test')));
+    await tester.tap(find.byKey(const Key('select-catalog-test')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('activity-form-save-draft')));
+    await tester.pumpAndSettle();
+    expect(saved?.locationSelection?.snapshot.id, 'location-1');
+    expect(saved?.locationSelection?.snapshot.kind, LocationKind.external);
+    expect(saved?.locationId, 'location-1');
+    expect(saved?.requestId, matches(RegExp(r'^[0-9a-f-]{36}$')));
+  });
+
   test('command signature keeps pipe-delimited free-text drafts distinct', () {
     final first = ActivityFormController.create(const ActivityFormOptions());
     final second = ActivityFormController.create(const ActivityFormOptions());
@@ -791,6 +836,7 @@ Widget _app({
   ActivityDirectoryRepository? repository,
   String? initialInstitutionId,
   ActivityFormStep? initialStep,
+  ActivityLocationSelectionBuilder? locationSelectionBuilder,
   ActivityProfileAboutRepository? aboutRepository,
   Future<void> Function(ActivityFormDraft)? onSaveDraft,
   Future<void> Function(ActivityFormDraft)? onSubmit,
@@ -807,6 +853,7 @@ Widget _app({
     initialInstitutionId: initialInstitutionId,
     initialDraft: initialDraft,
     initialStep: initialStep,
+    locationSelectionBuilder: locationSelectionBuilder,
     repository: repository ?? _TaxonomyOptionsRepository(),
     logout: () async => const LogoutResult.success(),
     onCancel: () {},
