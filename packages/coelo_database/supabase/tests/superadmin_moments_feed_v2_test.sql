@@ -16,6 +16,9 @@
 -- this candidate is not allowed to mint synthetic `public.people` identities,
 -- so the guards are asserted against `pg_get_functiondef` in the same way
 -- activity_template_unit_scope_test.sql asserts its internal-context guards.
+-- Every one of those asserts is named `source: ...`, because a pgTAP report
+-- prints one line per assert and a reviewer scanning it must not read a claim
+-- about live behaviour where only the definition was inspected.
 -- Reintroducing any of the removed defects changes that definition and turns
 -- the corresponding assert red, but a live replay with the internal identity
 -- fixture is still owed before this is declared end to end.
@@ -118,7 +121,7 @@ select ok(
   (select body from moments_feed_definitions where name = 'class') like '%else null%'
   and (select body from moments_feed_definitions where name = 'class')
     not like '%else ''school_staff''%',
-  'an unproven viewer class resolves to null, never to a privileged default');
+  'source: the class helper returns null, and never falls back to school_staff');
 select ok(
   (select body from moments_feed_definitions where name = 'list')
     like '%app_private.moments_viewer_role_class(%'
@@ -126,7 +129,7 @@ select ok(
     like '%viewer_context_not_authorized%'
   and (select body from moments_feed_definitions where name = 'list')
     not like '%role_code%',
-  'the feed classifies by links and capabilities and never reads free role_code');
+  'source: the feed classifies by links and capabilities, with no free role_code read');
 
 -- === Realm is stated, not assumed =========================================
 select ok(
@@ -134,7 +137,7 @@ select ok(
     like '%app_private.superadmin_internal_auth_links%'
   and (select body from moments_feed_definitions where name = 'list')
     like '%moments_internal_realm_unsupported%',
-  'an internal Superadmin session is denied by name instead of drifting into the people realm');
+  'source: the feed names the internal Superadmin link instead of drifting into people');
 select throws_ok(
   $$select * from public.list_visible_moments('00000000-0000-4000-8000-0000000000b1'::uuid)$$,
   '42501', 'authentication_required',
@@ -142,19 +145,19 @@ select throws_ok(
 select ok(
   (select body from moments_feed_definitions where name = 'redeem')
     like '%app_private.superadmin_internal_auth_links internal_link%',
-  'redemption applies the same realm assertion the feed applies');
+  'source: redemption keeps the same realm assertion the feed applies');
 
 -- === Redemption re-authorises the whole chain =============================
 select ok(
   (select body from moments_feed_definitions where name = 'redeem')
     like '%and ticket.expires_at > now()%',
-  'an expired ticket is rejected at redemption, not merely stored with a timestamp');
+  'source: redemption keeps the expiry clause, not just the stored timestamp');
 select ok(
   (select body from moments_feed_definitions where name = 'redeem')
     like '%and publication.status = ''published''%'
   and (select body from moments_feed_definitions where name = 'redeem')
     like '%and publication.published_at <= now()%',
-  'a ticket stops redeeming once its publication is removed or unpublished');
+  'source: redemption keeps the published-publication clauses');
 select ok(
   (select body from moments_feed_definitions where name = 'redeem')
     like '%and membership.institution_id = publication.institution_id%'
@@ -162,7 +165,7 @@ select ok(
     like '%and membership.status = ''active''%'
   and (select body from moments_feed_definitions where name = 'redeem')
     like '%and membership.revoked_at is null%',
-  'a revoked or foreign membership cannot redeem a previously issued ticket');
+  'source: redemption keeps the active, non-revoked membership clauses');
 select ok(
   (select body from moments_feed_definitions where name = 'redeem')
     like '%public.moments_publication_audiences audience%'
@@ -170,7 +173,7 @@ select ok(
     like '%app_private.moments_audience_matches_role(%'
   and (select body from moments_feed_definitions where name = 'redeem')
     like '%app_private.moments_viewer_role_class(%',
-  'the audience is rematched against the current viewer class at redemption');
+  'source: redemption keeps the audience rematch against the current class');
 select ok(
   (select body from moments_feed_definitions where name = 'redeem')
     like '%and auth_link.status = ''active''%'
@@ -178,7 +181,7 @@ select ok(
     like '%and asset.status = ''ready''%'
   and (select body from moments_feed_definitions where name = 'redeem')
     like '%and link.media_asset_id = asset.id%',
-  'a deactivated link, an unready asset or an unlinked asset all void the ticket');
+  'source: redemption keeps the active-link, ready-asset and linked-asset clauses');
 select throws_ok(
   $$select public.redeem_moments_media_read_ticket(
       '00000000-0000-4000-8000-0000000000c1'::uuid,
