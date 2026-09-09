@@ -250,9 +250,10 @@ select ok((select body#>>'{data,confirmed_over_conflict}'='true'
   'warn override requires a reason before persisting its conflict marker');
 select ok(exists(select 1 from audit.audit_logs where action_code='location.reservation.override'
   and permission_code='locations.reservations.override' and outcome='success'
-  and after_json->>'justification'='Conflito aprovado'
+  and reason_code='RESERVATION_CONFLICT_OVERRIDE'
+  and after_json='{"state":"confirmed_over_conflict"}'::jsonb
   and object_id=(select (body#>>'{data,id}')::uuid from reservation_results where label='create_override')),
-  'override audit retains the approved reason on the raw audit record');
+  'override audit records a nominal reason and reservation reference without free text');
 select ok((select body#>>'{data,state}'='cancelled' and body#>>'{data,management_version}'='2'
   from reservation_results where label='cancel_first'),'cancel updates the complete reservation once');
 select is((select body#>>'{data,id}' from reservation_results where label='cancel_replay'),

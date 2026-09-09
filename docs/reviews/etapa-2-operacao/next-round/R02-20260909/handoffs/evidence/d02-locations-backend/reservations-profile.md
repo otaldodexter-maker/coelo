@@ -1,6 +1,6 @@
 ---
-source: "D00 r23; LocationCatalogV2 bbeaafa0a; motor a37109bf; TAP f443901f+2a66709f"
-status: "review-ready; static-pass; sql-not-executed"
+source: "D00 r23/r24/r26; LocationCatalogV2 21b0d9bbe; motor sucessor r24; TAP49"
+status: "candidate-r24-fixed; static-pass; causal-sql-not-executed"
 generated_at: "2026-09-09"
 ---
 
@@ -19,11 +19,11 @@ Nenhum helper audit foi copiado ou inventado como bridge.
 
 Hashes CRLF/UTF-8 sem BOM:
 
-- Descriptor: `9e8fc9e80d8526274bbf6a7e968fe80bb958f2d020ab7fab2d1ad6ec6cddf6b5`.
-- Resolver: `943435beeb6fd4fc12899be39128bbfb676e82b87544b3b0ba9b5beec11f1f5f`.
+- Descriptor: `611fde347e1324b90c9d8af438ef062f2ec19aa25e74e330d0e11caec1401f85`.
+- Resolver: `878d566ebbfc09c93331ae24ca9f486c95d16f970d6304aca5f19ea143d2d15c`.
 - Fixture164959: `111b6e00b3e897ca2d96a36d6192c8149f2cc3cfbd1498f76338f261b84bd6aa`.
 - TestePester: `fa5404b8a6a9ebd476dbdbef18b0f1c38470f833bc309040310a69d7497425c0`.
-- Motor: `3e8c1782b753b4fd8861b29e002db0741f1f1f02a0bee73f562ca77fe79f743e`.
+- Motor: `307cce229fea0314400f827efeff089c4ea0ed254bb22edcf79fdd6a32652b84`.
 
 Pester exclusivo: **6/6PASS**, resolver direto exit0. Root executou a cópia
 de revisão do Prepare com PSScriptRoot apontado ao pacote D02, sem mudar
@@ -51,3 +51,28 @@ TAP49=29puros+20integração; inclui também a negativa sem justificativa dentro
 do caso override. Parser final104statements. Sem prova concorrente do motor,
 sem consumidor Event/Form, sem integração atômica com saveGroup/Activity,
 sem mídia ou aplicação remota. Não promover locations.schedule pelo perfil.
+
+## Sucessor r24 — 15:46 BRT
+
+Auditorias de sucesso agora participam da mesma subtransacao da reserva e
+receipt. Apos todos os appends, revalida identidade/sessao, proprietario,
+consumidor e override para create e assess confirmavel; clock final detecta
+expiracao durante espera. Qualquer negativa reverte tambem auditoria de sucesso.
+Auditoria de negativa recebe instituicao resolvida/autorizada, nunca LocalUUID.
+Override grava reason_code nominal RESERVATION_CONFLICT_OVERRIDE, referencia
+da reserva e estado minimizado; justificativa livre permanece somente na reserva.
+TAP existente foi ajustado sem mudar plan49. Parser migration/TAP aceitou;
+nao e execucao de funcao nem pgTAP.
+
+Pai atualizado para a correcao central21b0d9bbe, recebida nesta branch como
+624669525: fixture EOL comprovada, metadados/ACL e pinLF preservados.
+Descriptor pai c46f836935e8f77125bca34f3ef643f4eeb477a9c4fb327479d43519e5da850b;
+resolver pai23bc78dc67ba09c2c75f4ab8b131032db9f17b264d32c8278b2804567c9f3542.
+Pester6/6 revalidado e materializacao64/Forms novamente PASS por alteracao
+material dos pins; nao somar aos seis casos anteriores.
+
+Prova causal com lock real na auditoria continua nao executada, harness
+solicitado nominalmente ao D00. Revisao identificou risco residual de corrida
+de exclusao da instituicao apos rollback liberar lock interno: auditoria de
+negativa pode falhar por FK e RPC abortar. Nenhum efeito de sucesso persiste;
+nao foi introduzido catch que esconda falha de integridade de auditoria.
