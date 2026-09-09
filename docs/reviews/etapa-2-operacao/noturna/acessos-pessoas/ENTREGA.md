@@ -17,13 +17,13 @@ Sao31 ativos,6 adiados e1 gate MFA. ADR0019/AAL1 permanece vigente.
 | --- | --- | --- |
 | Pacote nominal Modelos preserva assinatura cursor, grants adiados e atomicidade | cc5d73bc7,63623e31f,246c9e7e1 | [Models](models/README.md):95P SQL local +6P rollback tardio; nenhuma aplicacao remota |
 | Recibos Modelos validam alvo, dominio, identidade nova e versao | 6b3777a57 | [HTTP](models/frontend-receipts.md):123P; transporte sintetico |
-| Formularios mantem gravacao confirmada quando navegacao falha | b285a6804 | [Formulario](models-form-receipt/handoff.md):17P;1F golden herdado comprovado na base, tres imagens identicas |
+| Formularios mantem gravacao confirmada quando navegacao falha | b285a6804 | [Formulario](models-form-receipt/handoff.md):18P; antigo F1 reconciliado conforme [causas aprovadas](models-form-receipt/golden-reconciliation.md), tres renders inspecionados |
 | Duplicacao mantem copia confirmada sem novo comando | 9d5ce7317 | [Duplicacao](models/duplicate-receipts.md):24P, incluindo9 rotas R02; captura375 inspecionada |
 | Safety recomposto com alvos acessiveis e escrita explicitamente qualificada | 3a96ca535,1d291711e | [Composicao](safety-composition/handoff.md):89P, incluindo18 anteriores; golden revisado; adapters reais sem escrita |
 | Safety candidato read-only exige envelope compativel | 7ce41f86b | [SQL Safety](safety-sql/handoff.md):43+63+2 casos ainda nao executados; [adapter41P atual](safety-sql/adapter-shape.md), inativo |
 | Perfis de replay reservados e carimbo Safety alinhado ao integrador | b91f9206d,cb76f5968,fa3caddd2 | [Perfil atual](safety-sql/serialized-profile-proof.json):7P preparacao,53 arquivos exatos, sem SQL; target193000 conforme ecc8eae2b |
 
-Resultado atual unico: **395P,1F,0S,120U**. U120=Safety108+Modelos concorrencia12.
+Resultado atual unico: **396P,0F,0S,120U**. U120=Safety108+Modelos concorrencia12.
 Preparacao7P separada de testes do produto. Reruns e evidencias R02 nao somam
 cobertura. Nenhum resultado local promove FE/BE/E2E integralmente. Historico
 FE2/38 corresponde aos adiamentos; ativos FE0/31,BE0/31,E2E0/31.
@@ -38,8 +38,7 @@ FE2/38 corresponde aos adiamentos; ativos FE0/31,BE0/31,E2E0/31.
    projeto anterior verificados0/0/0. Retomada do filho rejeitada pela revisao
    automatica por possivel risco de ciberseguranca.12U preservados, sem contorno,
    sem vulnerabilidade runtime afirmada ou correcao especulativa.
-3. Form golden1F exige reconciliacao da referencia visual integrada pelo dono
-   dessa referencia; nao foi atualizado para esconder a falha herdada.
+3. Form golden1F foi resolvido pela regra nominal do coordenador: sete causas integradas, tres renders inspecionados e paths/hashes registrados. Outros goldens nao foram reexecutados.
 4. Producao exige pacote nominal autorizado. Modelos necessita fundacao interna;
    Safety depende do envelope e contrato interno qualificado. Nenhuma mutacao
    remota, envio de convite, deploy ou ativacao de escrita ocorreu.
