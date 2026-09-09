@@ -47,10 +47,32 @@ fecha a sua própria).
 
 | Ordem | Arquivo | SHA256 |
 | --- | --- | --- |
-| 1 | `packages/coelo_database/migrations/20260908230039_superadmin_internal_audit_read_v2.sql` | `3a14121447bbe21aa20acd8a291bec94ac3bb9bddc5ede8a96da8806ca1729b2` |
+| 1 | `packages/coelo_database/migrations/20260909190000_superadmin_internal_audit_read_v2.sql` | `3a14121447bbe21aa20acd8a291bec94ac3bb9bddc5ede8a96da8806ca1729b2` |
 | 2 (teste) | `packages/coelo_database/supabase/tests/superadmin_internal_audit_read_v2_test.sql` | `411c4b1a1bb818e256a9e9d3923108defae791438bca9709f7829defabb3518b` |
 | 3 (teste) | `packages/coelo_database/supabase/tests/audit_production_test.sql` | `b041efaa3a6bc9662e1d97639080190ad1fcbbb51a99b03b2664d978e6ab6e97` |
 | 4 (teste) | `packages/coelo_database/supabase/tests/superadmin_internal_auth_context_test.sql` | `e4b405fe6d13459fc571654e22fcd52214bd160c5626e2fbfad70ba6d127155f` |
+
+### Carimbo renomeado
+
+O candidato nasceu como `20260908230039_superadmin_internal_audit_read_v2.sql`.
+Esse carimbo cai **antes** de cinco migrations que já existem na fila
+(`20260908235110`, `20260909165000`, `20260909173000`, `20260909173100`,
+`20260909174500`), e forward-only exige que um pacote novo entre no fim da fila,
+não no meio dela. O arquivo foi renomeado para `20260909190000`, posterior à
+cauda real. O conteúdo não mudou: SHA256 idêntico ao do candidato. Os
+rastreadores que citam o candidato pelo carimbo antigo referem-se a este mesmo
+arquivo.
+
+### Preflight conferido contra a cauda real
+
+Nenhuma das cinco migrations posteriores toca
+`audit_list_events_for_superadmin`, `audit_get_event_for_superadmin`,
+`audit_assert_permission` ou `audit_start_export_for_superadmin`, e nenhuma
+delas contém `drop function` ou `drop type`. Quatro delas são **consumidoras**
+do contexto interno (`require_superadmin_internal_context`,
+`audit_append_superadmin_internal`), o que confirma que os pré-requisitos do
+preflight continuam presentes na cauda. Verificação estática, sobre os arquivos
+da fila; não substitui a execução do preflight no alvo.
 
 Origem: `8b4dfb6a2` (migration e três suítes) e `89949f301` (separação das
 fixtures de leitor interno em `audit_production_test.sql`). Base de composição:
@@ -70,6 +92,30 @@ A migration aborta antes de qualquer alteração se algum destes faltar:
 
 É forward-only: cria funções `_v2` novas, substitui os wrappers públicos por
 `create or replace` e não altera migrations já aplicadas.
+
+## Alterações nas suítes de teste
+
+`superadmin_internal_auth_context_test.sql` muda **32 linhas inseridas contra 33
+removidas**, não cerca de 200: o número 65 do `--stat` é a soma das duas. Não é
+redução de cobertura por descuido, e sim adaptação obrigatória:
+
+- as fixtures deixam de criar a identidade por `public.people` +
+  `person_auth_links` + `platform_memberships` e passam a criar
+  `superadmin_internal_identities` + `superadmin_internal_auth_links` +
+  `superadmin_internal_memberships`, porque é exatamente esse o cutover;
+- as claims passam a incluir `session_id`, exigido pelo contexto interno;
+- a asserção de exportação deixa de verificar como o snapshot renderiza
+  `auth_session` e passa a verificar que `authenticated` **não** tem mais
+  `execute` nos três entrypoints de exportação. A asserção antiga não teria como
+  passar depois do pacote, já que o caminho que ela exercitava deixa de ser
+  alcançável pelo cliente.
+
+**Perda real a registrar:** a asserção removida também cobria a minimização do
+snapshot produzido por `audit_materialize_export_for_worker`, que continua
+existindo para o worker `service_role`. Essa cobertura não foi recriada em outro
+lugar. Não é bloqueante para o pacote, porque o worker não é superfície de
+cliente, mas fica anotada como pendência de teste a recriar quando a exportação
+geral sair do adiamento.
 
 ## O que NÃO foi feito e por quê
 
