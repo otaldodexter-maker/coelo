@@ -1,0 +1,66 @@
+{
+  "source": "Group nominal SQL candidate 20260909210000, published by root in 869174032; local tool reports from /root/bindings_review",
+  "status": "local-client-candidate-gate-closed",
+  "recorded_at": "2026-09-09T20:09:04.3028273-03:00",
+  "timestamp_scope": "Actual recording clock; prior command start/end wall-clock timestamps were not captured.",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura",
+  "working_directory": "apps/superadmin",
+  "scope": "apps/superadmin -> Turmas -> CREATE DRAFT catalogued location and optional reservation -> command/adapter only",
+  "evidence_transport": "Conversation tool runner output/report. No raw log file was retained or fabricated.",
+  "test": {
+    "command": "rtk proxy flutter test --no-pub --concurrency=1 test/features/groups/data/supabase_group_location_create_repository_test.dart --reporter expanded",
+    "session_id": 26574,
+    "start_chunk_id": "9054cb",
+    "report_chunk_id": "c32ca9",
+    "completion_chunk_id": "04af44",
+    "reported_result": "00:01 +28: All tests passed!",
+    "exit_code": 0,
+    "N": 28,
+    "E": 28,
+    "P": 28,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "analyzer": {
+    "command": "rtk proxy dart analyze lib/features/groups/domain/group_location_create.dart lib/features/groups/data/supabase_group_location_create_repository.dart test/features/groups/data/supabase_group_location_create_repository_test.dart",
+    "session_id": 37383,
+    "start_chunk_id": "54c3e4",
+    "completion_chunk_id": "98034b",
+    "reported_result": "No issues found!",
+    "exit_code": 0
+  },
+  "sha256": {
+    "apps/superadmin/lib/features/groups/domain/group_location_create.dart": "68F818A8BB820C3D64DD67F65CEDB2E7DDB457C33A4385BB9BC8457C22DEC363",
+    "apps/superadmin/lib/features/groups/data/supabase_group_location_create_repository.dart": "31ADB2C5C2001AFE2F0548C25161D4F3DC9DB26C41D4048BC5580A816BDE5B38",
+    "apps/superadmin/test/features/groups/data/supabase_group_location_create_repository_test.dart": "B3D1856F56DD66C00390C4AC236389E7A18EF447D4F8058674D834D61CAFD2CA"
+  },
+  "history": [
+    "Tests authored first. Session 87345 / completion chunk 6fc2ad exited 1 because the new domain and adapter files and types did not exist. This is the expected compilation RED, not 28 individually executed failures.",
+    "Implemented only the new domain/adapter paths. Formatted all three files in chunk 39d0e1 before the 28-test GREEN and scoped analyzer. No repeated GREEN run."
+  ],
+  "contract": [
+    "GroupLocationCreateRepository.available defaults false in both Supabase and unavailable implementations; create accepts a typed command with a CataloguedLocationSelection.",
+    "Command carries requestId/institutionId/unitId/name/groupType/groupTypeOtherText and optional GroupLocationReservationIntent without consumer ID.",
+    "Intention toJson encodes only first_occurrence/recurrence/conflict_justification and follows existing once/weekly DTO conventions. No Activity feature import or shared DTO mutation.",
+    "One RPC superadmin_group_location_create_v2. Strict envelope/result/error keys, identifiers, owner correlation, safe positive versions, draft status and reservation Group consumer/location/state correlation.",
+    "Known authorization/concurrency/input failures are typed, all other transport Object failures sanitized. No follow-up or fallback writer call."
+  ],
+  "coverage": [
+    "Default gate and unavailable implementation perform zero HTTP calls",
+    "Exact minimal payload and stable request on retry; catalog-only and optional reservation",
+    "Weekly days/zone/date encoding and justification trimming",
+    "Invalid IDs, institution/unit mismatch, blank name and other without complement before HTTP",
+    "Malformed results and negative envelopes, mismatched reservation consumer/location/state",
+    "Sanitized permission, concurrency, input, internal and unexpected transport failures"
+  ],
+  "limitations": [
+    "Only local MockClient tests. SQL candidate remains unexecuted and not enabled remotely; no backend rollback or production acceptance claim.",
+    "Legacy GroupDirectoryRepository/DTOs, UI, controller, router, Auth and shell were not changed. Getter/current selection is outside scope.",
+    "No edits, cancellation, one-off, inherited overrides or invitation composition added.",
+    "No SQL or remote operation. Commit/push by root recorded in estrutura.json."
+  ],
+  "resources": "All owned test/analyzer runners completed with exit 0; no owned children or persistent processes.",
+  "root_review": "Root read complete domain/adapter, inspected all test cases and compared five payload keys and seven result keys with nominal SQL869174032. Hashes match child qualification; no rerun without material change."
+}

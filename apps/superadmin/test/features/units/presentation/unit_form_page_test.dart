@@ -1,4 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
+
+import 'package:coelo_superadmin/features/units/data/supabase_unit_directory_repository.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
@@ -15,6 +21,105 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  final requests = <String>[];
+  final receipts = <String>{};
+  final client = SupabaseClient(
+    'https://example.test',
+    'public-test-key',
+    authOptions: const AuthClientOptions(autoRefreshToken: false),
+    httpClient: MockClient((request) async {
+      expect(request.url.path, '/rest/v1/rpc/create_unit_for_superadmin');
+      final body = jsonDecode(request.body) as Map<String, dynamic>;
+      final id = body['p_request_id'] as String;
+      requests.add(id);
+      receipts.add(id);
+      if (requests.length == 1) throw http.ClientException('response lost after commit');
+      final payload = body['p_payload'] as Map<String, dynamic>;
+      return http.Response(
+        jsonEncode({
+          ...payload,
+          'id': '22222222-2222-4222-8222-222222222222',
+          'management_version': 1,
+          'unit_type': {'id': payload['unit_type_id']},
+          'effective_plan': <String, Object?>{},
+        }),
+        200,
+        headers: {'content-type': 'application/json'},
+        request: request,
+      );
+    }),
+  );
+  tearDownAll(client.dispose);
+  testWidgets('unit create intent survives real form and HTTP ambiguous retry', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final real = SupabaseUnitDirectoryRepository(client);
+    var localIds = 0;
+    var saved = 0;
+    final repo = _LoadingUnitRepository(
+      FakeUnitDirectoryRepository(FakeInstitutionDirectoryRepository()),
+      Future.value(null),
+      save: real.upsert,
+      createIdBuilder: () => 'draft-${++localIds}',
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: UnitFormPage(
+          repository: repo,
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) => saved++,
+        ),
+      ),
+    );
+    await _prepareUnitCreate(tester);
+    await tester.tap(find.byKey(const Key('unit-form-save')));
+    await tester.pumpAndSettle();
+    expect(saved, 0);
+    await tester.tap(find.byKey(const Key('unit-form-save')));
+    await tester.pumpAndSettle();
+    expect(saved, 1);
+    expect(requests, hasLength(2));
+    expect(receipts, hasLength(1));
+    expect(localIds, 1);
+  });
+  testWidgets('unit create intent invalidates stale success after Auth revision', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final pending = Completer<void>();
+    var calls = 0;
+    var saved = 0;
+    final repo = _LoadingUnitRepository(
+      FakeUnitDirectoryRepository(FakeInstitutionDirectoryRepository()),
+      Future.value(null),
+      save: (_) {
+        calls++;
+        return pending.future;
+      },
+    );
+    Widget app(int revision) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: UnitFormPage(
+        repository: repo,
+        locationContextRevision: revision,
+        logout: () async => const LogoutResult.success(),
+        onCancel: () {},
+        onSaved: (_) => saved++,
+      ),
+    );
+    await tester.pumpWidget(app(1));
+    await _prepareUnitCreate(tester);
+    await tester.tap(find.byKey(const Key('unit-form-save')));
+    await tester.pump();
+    await tester.pumpWidget(app(2));
+    pending.complete();
+    await tester.pumpAndSettle();
+    expect(saved, 0);
+    await tester.tap(find.byKey(const Key('unit-form-save')));
+    await tester.pumpAndSettle();
+    expect(calls, 1, reason: 'invalidated attempt requires reopening form');
+  });
   testWidgets('uses the requested ten sections and the shared form foundations', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -802,18 +907,38 @@ Future<void> _tapVisible(WidgetTester tester, Finder finder) async {
   await tester.pumpAndSettle();
 }
 
+Future<void> _prepareUnitCreate(WidgetTester tester) async {
+  await tester.pumpAndSettle();
+  await tester.tap(find.byKey(const Key('unit-form-continue')));
+  await tester.pumpAndSettle();
+  await tester.enterText(find.byKey(const Key('unit-name-field')), 'Unidade retry');
+  await tester.enterText(find.byKey(const Key('unit-slug-field')), 'unidade-retry');
+  await _tapVisible(tester, find.byKey(const Key('step-plano')));
+  await tester.tap(find.byKey(const Key('unit-form-continue')));
+  await tester.pumpAndSettle();
+}
+
 final class _LoadingUnitRepository implements UnitDirectoryRepository {
-  const _LoadingUnitRepository(this.delegate, this.result, {this.failSave = false});
+  const _LoadingUnitRepository(
+    this.delegate,
+    this.result, {
+    this.failSave = false,
+    this.save,
+    this.createIdBuilder,
+  });
 
   final UnitDirectoryRepository delegate;
   final Future<UnitRecord?> result;
   final bool failSave;
+  final Future<void> Function(UnitRecord)? save;
+  final String Function()? createIdBuilder;
 
   @override
   List<UnitRecord> get records => delegate.records;
 
   @override
-  String createId(String institutionId, String slug) => delegate.createId(institutionId, slug);
+  String createId(String institutionId, String slug) =>
+      createIdBuilder?.call() ?? delegate.createId(institutionId, slug);
 
   @override
   UnitRecord? findById(String id) => delegate.findById(id);
@@ -830,11 +955,16 @@ final class _LoadingUnitRepository implements UnitDirectoryRepository {
   @override
   Future<UnitFormData> loadForm({String? unitId}) async {
     final form = await delegate.loadForm();
-    return UnitFormData(institutions: form.institutions, record: await result);
+    return UnitFormData(
+      institutions: form.institutions,
+      unitTypes: form.unitTypes,
+      record: await result,
+    );
   }
 
   @override
   Future<void> upsert(UnitRecord record) {
+    if (save != null) return save!(record);
     if (failSave) {
       throw StateError('save failed');
     }

@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-09T20:28:31.8765451-03:00",
+  "scope": "apps/superadmin -> Unidades -> criar unidade -> create_unit_for_superadmin: retry de mesma intencao",
+  "status": "local-green; sem execucao remota ou conclusao E2E",
+  "source_report": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-operacoes-sistema/docs/reviews/etapa-2-operacao/reports/E2-noturna-idempotencia-escrita-20260909.md",
+  "report_correction": "Relatorio descreve 2 sitios CREATE; inspecao da base d784462c1 e atual encontrou 1 CREATE e 1 UPDATE. UPDATE permanece intacto e foi coberto por regressao.",
+  "implementation": [
+    "ID local de criacao preservado por instancia do formulario",
+    "Receipt pendente por ID local e fingerprint JSON do payload efetivamente enviado; altera payload -> nova intencao; mesma intencao ambigua -> mesmo UUID",
+    "Cache limitada a 64 rascunhos pendentes sem eviction de receipt ambiguo; falha fechada para novo rascunho quando cheia; remove apos sucesso decodificado se tentativa ainda atual",
+    "Revisao de contexto, repositorio ou unitId alterado apos iniciar criacao invalida formulario, suprime sucesso tardio e exige reabrir antes de novo transporte",
+    "Mensagem de CREATE informa ausencia de confirmacao em vez de garantir falha de commit"
+  ],
+  "metrics": {
+    "S": 0,
+    "F": 0,
+    "N": 6,
+    "B": 0,
+    "U": 0,
+    "E": 6,
+    "P": 6
+  },
+  "commands": [
+    {
+      "runner": 41695,
+      "command": "rtk proxy flutter test --no-pub --concurrency=1 test/features/units/data/supabase_unit_directory_repository_test.dart test/features/units/presentation/unit_form_page_test.dart --plain-name \"unit create intent\" --reporter expanded",
+      "result": "RED causal formulario: receipts2 esperado1, chunk d27b50; fixture repo faltou import e nao compilou; teardown pendurou e runner interrompido exit1. Nao contar como quatro testes executados"
+    },
+    {
+      "result": "Intermediario: 2 testes repo passaram; interrompido apos orientacao para corrigir teardown fixture antes de completar lote",
+      "runner": 70316
+    },
+    {
+      "runner": 13248,
+      "command": "rtk proxy flutter test --no-pub --concurrency=1 test/features/units/data/supabase_unit_directory_repository_test.dart test/features/units/presentation/unit_form_page_test.dart --plain-name \"unit create intent\" --reporter expanded",
+      "P": 4,
+      "final_chunk": "153533",
+      "exit_code": 0
+    },
+    {
+      "runner": 24086,
+      "command": "rtk proxy flutter test --no-pub --concurrency=1 test/features/units/data/supabase_unit_directory_repository_test.dart test/features/units/presentation/unit_form_page_test.dart --name \"updates through the authoritative RPC|creates a unit with inherited plan\" --reporter expanded",
+      "P": 2,
+      "final_chunk": "d8ed86",
+      "exit_code": 0
+    },
+    {
+      "runner": 16560,
+      "command": "rtk proxy dart analyze lib/features/units/data/supabase_unit_directory_repository.dart lib/features/units/presentation/unit_form_page.dart test/features/units/data/supabase_unit_directory_repository_test.dart test/features/units/presentation/unit_form_page_test.dart",
+      "issues": 0,
+      "final_chunk": "bea153",
+      "exit_code": 0
+    },
+    {
+      "changed": 0,
+      "command": "rtk proxy dart format lib/features/units/data/supabase_unit_directory_repository.dart lib/features/units/presentation/unit_form_page.dart test/features/units/data/supabase_unit_directory_repository_test.dart test/features/units/presentation/unit_form_page_test.dart",
+      "final_chunk": "38f885",
+      "exit_code": 0
+    }
+  ],
+  "fixture_corrections": [
+    "Import de UnavailableUnitDirectoryException",
+    "SupabaseClient fora do callback testWidgets, autoRefreshToken false e tearDownAll(client.dispose), evitando descarte em fakeAsync",
+    "Braces nos dois ifs do MockClient apos informacoes do primeiro analyzer"
+  ],
+  "evidence": "Saida factual via tool runners e chunks acima; nenhum arquivo de log bruto foi preservado ou fabricado.",
+  "limitations": [
+    "HTTP MockClient simula commit por requestId; nao prova idempotencia SQL/producao",
+    "Persistencia de receipt limitada ao ciclo de vida do repositorio; nao cobre reload/process crash",
+    "Mudanca de payload representa nova intencao; nao reconcilia operacao antiga ambigua no servidor",
+    "Mensagem textual CREATE foi ajustada apos testes; nenhuma logica alterada depois de GREEN. Braces de fixture sem mudanca semantica apos execucao dos testes de repositorio",
+    "Nao altera UPDATE, exports, Auth, shell, router, SQL ou remoto",
+    "Cache pendente max64 e limite tecnico de memoria, nao regra de dominio"
+  ],
+  "hashes": [
+    {
+      "sha256": "82EB2CE0A0BCA51809F97DBFCA608EFA9903C0E767EED8E350F0DA7014C85CC8",
+      "path": "apps/superadmin/lib/features/units/data/supabase_unit_directory_repository.dart"
+    },
+    {
+      "sha256": "6C70C27ACEF82DB8306BE54A3D34C5FAE7B4F397B7742A579BEF21A6AA4BB6F5",
+      "path": "apps/superadmin/lib/features/units/presentation/unit_form_page.dart"
+    },
+    {
+      "sha256": "FB6CDEA4F945B2041D9853FA073B7FA26AA6B86985D9C4CEC1A8854C14332447",
+      "path": "apps/superadmin/test/features/units/data/supabase_unit_directory_repository_test.dart"
+    },
+    {
+      "sha256": "58201BF1C191D0ED44BEFF114BA8E72BD25D18CC78AAAF69BDF12F218D6687CC",
+      "path": "apps/superadmin/test/features/units/presentation/unit_form_page_test.dart"
+    }
+  ],
+  "root_review": "Root read complete changed paths and causal assertions; qualified hashes checked. 1CREATE+1UPDATE confirmed. No replay of six valid tests; CREATE wording-only delta already disclosed."
+}
