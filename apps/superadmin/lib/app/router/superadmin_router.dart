@@ -4210,6 +4210,7 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => InviteDetailPage(
               repository: inviteRepository,
               inviteId: state.pathParameters['inviteId']!,
+              allowCommands: inviteRepository is! UnavailableInviteRepository,
               logout: logout,
               onDestinationSelected: (value) => _navigateFromPersistentShell(context, value),
             ),
