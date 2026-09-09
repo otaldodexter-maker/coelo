@@ -49,7 +49,7 @@ void main() {
     });
   }
 
-  testWidgets('production unit routes receive only unavailable composition', (tester) async {
+  testWidgets('production unit mutations stay blocked by default', (tester) async {
     final session = SuperadminSession()..signInForTesting();
     final router = _router(session, allowDevelopmentPreview: true);
     addTearDown(router.dispose);
@@ -62,6 +62,41 @@ void main() {
     final directory = tester.widget<UnitDirectoryPage>(find.byType(UnitDirectoryPage));
     expect(directory.repository, isA<UnavailableUnitDirectoryRepository>());
     expect(directory.repository, isNot(isA<FakeUnitDirectoryRepository>()));
+    expect(directory.backendCommands, isNull);
+    expect(directory.onCreate, isNull);
+    expect(directory.onEdit, isNull);
+
+    for (final path in const ['/units/new', '/units/unit-1/edit']) {
+      router.go(path);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(UnitFormPage), findsNothing, reason: path);
+      expect(router.routeInformationProvider.value.uri.path, isNot(path), reason: path);
+    }
+  });
+
+  testWidgets('an enabled production gate still receives only unavailable composition', (
+    tester,
+  ) async {
+    final session = SuperadminSession()..signInForTesting();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
+      unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),
+      enableStructureMutations: true,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+
+    router.go('/units');
+    await tester.pumpAndSettle();
+    final directory = tester.widget<UnitDirectoryPage>(find.byType(UnitDirectoryPage));
+    expect(directory.repository, isA<UnavailableUnitDirectoryRepository>());
     expect(directory.backendCommands, isA<UnavailableUnitBackendCommandsGateway>());
 
     for (final path in const ['/units/new', '/units/unit-1/edit']) {
