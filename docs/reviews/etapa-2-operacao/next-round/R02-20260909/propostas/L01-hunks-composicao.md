@@ -5,6 +5,17 @@ status: "patch-pronto-para-aplicacao-pelo-coordenador"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
+---
+
+> **PARCIALMENTE SUPERADO em 09/09/2026.** D00 executou o movimento único de hospedagem
+> em `dev` (`f5e5d8dfc`): as rotas do Principal passaram para dentro do `ShellRoute` e
+> recebem `embedded: true`. Essa metade deste documento está feita.
+>
+> **Continua aberto:** toda a cadeia de injeção. Verificado em `origin/dev`: o router
+> ainda não usa `principalMixedFeedRepository`, `PrincipalMomentsFeedRepository` não
+> existe na composição, e `CircularMediaRepository` não é injetado. As três injeções
+> descritas abaixo continuam necessárias e nenhuma foi feita.
+
 
 # Objetivo
 

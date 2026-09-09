@@ -20,19 +20,20 @@ Compartilhar o hospedeiro não significa compartilhar as telas administrativas.
 coelo_ui_principal não importa coelo_ui_admin; tokens/controles neutros podem
 vir de coelo_ui_core.
 
-## Única ambiguidade ainda submetida ao Owner
+## Decisão final do Owner — 09/09/2026
 
-A spec050 e a referência visual da skill coelo-ui permitem que viewers
-imersivos de Agora/Momentos ocultem temporariamente o chrome e restaurem o
-contexto ao sair. O pedido atual de manter o contêiner junto ao shell pode
-abranger também esses viewers. A pergunta sobre essa exceção foi enviada
-nesta tarefa e ainda não há resposta registrada neste pacote.
+A regra vale no Superadmin web e mobile, inclusive em Agora, Momentos e na
+leitura de Circular: preservar o shell/menu hospedeiro e manter a experiência
+Principal em seu contêiner de conteúdo, conforme a navegação responsiva.
+Não ocultar o shell inteiro para abrir esses viewers. A família visual
+Principal continua própria; elementos internos concorrentes podem ser suspensos.
 
-Não interpretar silêncio como aprovação. Não alterar essa exceção nem
-certificá-la como aceita pela rodada até esclarecer o alcance da instrução
-atual. O desenvolvimento de feeds, publicadores, Perfil, Para Você e demais
-ações independentes continua. Uma resposta posterior do Owner prevalece e
-deve atualizar esta fonte e a referência canônica afetada, sem reabrir o resto.
+A confirmação final do Owner substitui a resposta intermediária de que seria
+apenas no web. Aplica-se somente ao conteúdo hospedado no Superadmin, sem
+definir o comportamento do aplicativo Principal independente. A dúvida está
+resolvida; não pedir nova confirmação nem manter bloqueio por esse motivo.
+A implementação e sua prova continuam sendo responsabilidade da frente L01,
+com compartilhados coordenados por D00. Decisão registrada não é E2E certificado.
 
 ## Referências preservadas
 
@@ -84,4 +85,3 @@ Use as rotas existentes como ponto de partida e preserve entrada normal:
  /principal-moments e /principal-moments/publish;
  /circulars, /circulars/new, /circulars/:circularId/read e /circulars/:circularId/edit.
 Uma rota existente não é prova de acesso normal, persistência ou E2E.
-
