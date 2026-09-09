@@ -266,7 +266,12 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         _loading = false;
         _loadingError = 'Sem permissão para carregar os dados desta tela.';
       });
-    } on Exception {
+    } on Object {
+      // `on Exception` misses an Error, and an Error here does not surface as a
+      // failure: it leaves `_loading` true and the screen spins forever, which
+      // reads as a frozen product rather than as something that went wrong.
+      // Three defects in this round came out of that same catch; this was the
+      // fourth place it could have.
       if (!mounted) return;
       setState(() {
         _loading = false;
