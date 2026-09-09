@@ -1,7 +1,7 @@
 ---
 title: "Circulares privadas no Principal"
 knowledge_id: "principal-circulars"
-source: "specs/050-principal-ui-ux-closure.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md"
+source: "specs/037-principal-circulars.md"
 status: "validated"
 generated_at: "2026-08-21"
 updated_at: "2026-09-09"
@@ -36,9 +36,11 @@ No web, a prévia da projeção no Acontece fica oculta por padrão e abre em po
 somente por ação explícita. Ela não reserva uma coluna lateral permanente nem
 comprime o conteúdo do Perfil. Essa decisão é específica da consulta da Circular
 no Perfil e não remove o preview lateral dos fluxos de publicação aprovados.
-Em compacto, o detalhe abre fullscreen sem cabeçalho ou dock global e apresenta
-retorno contextual `‹ Circular`; fechar ou usar Escape restaura foco e posição
-de origem.
+No Superadmin web e mobile, o detalhe preserva o shell/menu hospedeiro e abre
+na sua área de conteúdo, com retorno contextual `‹ Circular`; fechar ou usar
+Escape restaura foco e posição de origem. A decisão do Owner de 09/09/2026
+substitui a exceção de fullscreen que removia o shell nesse hospedeiro. Aplica-se
+também aos viewers Agora/Momentos no Superadmin, sem definir o app Principal independente.
 
 Publicar Circular usa a mesma família de composição do Principal que Publicar no
 Acontece, Agora e Momentos, adaptada para título, texto, anexos e perguntas. Não
