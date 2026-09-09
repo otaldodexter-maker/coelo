@@ -128,7 +128,7 @@ commit;
 '@
 
 function Get-Claims([int]$Actor) {
-  '{"sub":"d1400000-0000-4000-8000-{0}","session_id":"d1500000-0000-4000-8000-{0}","aal":"aal1","role":"authenticated"}' -f $Actor.ToString().PadLeft(12,'0')
+  '{{"sub":"d1400000-0000-4000-8000-{0}","session_id":"d1500000-0000-4000-8000-{0}","aal":"aal1","role":"authenticated"}}' -f $Actor.ToString().PadLeft(12,'0')
 }
 
 function Test-AuditAuthorizationAfterWait(

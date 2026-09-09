@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="8" errors="0" failures="1" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-09-09" time="16:01:09">
+  <environment user="adrie" machine-name="LAPTOP-67A8F4LK" cwd="C:\Users\adrie\Documents\Coelo" user-domain="LAPTOP-67A8F4LK" platform="Microsoft Windows 11 Home|C:\WINDOWS|\Device\Harddisk0\Partition3" nunit-version="2.5.8.0" os-version="10.0.26200" clr-version="4.0.30319.42000" />
+  <culture-info current-culture="pt-BR" current-uiculture="pt-BR" />
+  <test-suite type="Powershell" name="Pester" executed="True" result="Failure" success="False" time="2.0112" asserts="0">
+    <results>
+      <test-suite type="TestFixture" name="Location reservation audit authorization harness contract" executed="True" result="Failure" success="False" time="2.0112" asserts="0" description="Location reservation audit authorization harness contract">
+        <results>
+          <test-case description="generates exact valid JWT claim JSON for both causal actors without running SQL" name="Location reservation audit authorization harness contract.generates exact valid JWT claim JSON for both causal actors without running SQL" time="1.2754" asserts="0" success="False" result="Failure" executed="True">
+            <failure>
+              <message>Erro ao formatar uma cadeia de caracteres: A cadeia de caracteres de entrada não estava em um formato correto..</message>
+              <stack-trace>at line: 2 in </stack-trace>
+            </failure>
+          </test-case>
+          <test-case description="exists and parses without errors" name="Location reservation audit authorization harness contract.exists and parses without errors" time="0.4352" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="requires the owned disposable project and exact container identity" name="Location reservation audit authorization harness contract.requires the owned disposable project and exact container identity" time="0.0977" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="proves the caller reached the held audit relation lock before mutation" name="Location reservation audit authorization harness contract.proves the caller reached the held audit relation lock before mutation" time="0.0377" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="keeps caller authentication transaction local and uses independent updater sessions" name="Location reservation audit authorization harness contract.keeps caller authentication transaction local and uses independent updater sessions" time="0.0442" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="uses separate actors and a spare Owner for terminal versioned revocation" name="Location reservation audit authorization harness contract.uses separate actors and a spare Owner for terminal versioned revocation" time="0.0391" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="requires the expected denial and zero rolled-back success effects" name="Location reservation audit authorization harness contract.requires the expected denial and zero rolled-back success effects" time="0.0491" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="does not obtain credentials or bypass database guards" name="Location reservation audit authorization harness contract.does not obtain credentials or bypass database guards" time="0.0328" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

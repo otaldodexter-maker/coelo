@@ -16,6 +16,29 @@ function Parse-Script([string]$Path) {
 }
 
 Describe 'Location reservation audit authorization harness contract' {
+  It 'generates exact valid JWT claim JSON for both causal actors without running SQL' {
+    $parsed = Parse-Script $harnessPath
+    $functions = @($parsed.Ast.FindAll({param($node)
+      $node -is [Management.Automation.Language.FunctionDefinitionAst] -and
+      $node.Name -ceq 'Get-Claims'
+    }, $true))
+    $functions.Count | Should Be 1
+    # Evaluate only the actual pure function, never the harness entry point.
+    . ([scriptblock]::Create($functions[0].Extent.Text))
+    foreach ($actor in @(1,2)) {
+      $raw = Get-Claims $actor
+      $claims = $raw | ConvertFrom-Json
+      @($claims.psobject.Properties.Name | Sort-Object) | Should Be @('aal','role','session_id','sub')
+      $suffix = $actor.ToString().PadLeft(12,'0')
+      $claims.sub | Should Be ('d1400000-0000-4000-8000-' + $suffix)
+      $claims.session_id | Should Be ('d1500000-0000-4000-8000-' + $suffix)
+      ([guid]$claims.sub).ToString() | Should Be $claims.sub
+      ([guid]$claims.session_id).ToString() | Should Be $claims.session_id
+      $claims.aal | Should Be 'aal1'
+      $claims.role | Should Be 'authenticated'
+    }
+  }
+
   It 'exists and parses without errors' {
     Test-Path -LiteralPath $harnessPath -PathType Leaf | Should Be $true
     $parsed = Parse-Script $harnessPath
