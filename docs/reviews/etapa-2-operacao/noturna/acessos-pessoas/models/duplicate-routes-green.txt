@@ -1,0 +1,19 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:336
++ ... TEXITCODE}; rtk proxy flutter test --no-pub test/app/router/d04_model ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart
+00:00 +0: normal model duplicate route allowed
+00:26 +1: normal model duplicate route missing-create
+00:27 +2: normal model duplicate route institution-scope
+00:29 +3: normal model duplicate route invalid-domain
+00:30 +4: normal model duplicate route revoked-load
+00:34 +5: normal model duplicate route revoked-command
+00:40 +6: normal model duplicate route rpc-denied
+00:46 +7: normal model duplicate route rpc-invalid
+00:50 +8: normal model duplicate rejects missing and demo repositories
+00:51 +9: (tearDownAll)
+00:54 +9: All tests passed!
