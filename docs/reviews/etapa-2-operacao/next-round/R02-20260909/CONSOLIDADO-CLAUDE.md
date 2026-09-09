@@ -45,8 +45,8 @@ autorização nominal para o pacote remoto, somada aos bloqueios abaixo.
 - **L01** — widget/unidade: 216 P / 11 F; 74 P / 10 F; 88 P / 0 F; 151 P / 2 F.
   pgTAP: 32/0 (negativas comportamentais), 53/0, 16/0, 23/0, 46/0, 60/0, 50/0.
   Deno: 27/0. `dart analyze lib` limpo. B, S e U em zero.
-  As 23 falhas únicas são golden e **todas preexistentes**: 11 por sprite ausente
-  em Momentos, 10 por deriva de host no Acontece, 2 no diretório de Circulares.
+  As 23 falhas únicas são golden e **todas preexistentes**: 11 em Momentos, 10 no
+  Acontece, 2 no diretório de Circulares. **Causa não estabelecida** — ver abaixo.
 - **L02** — recorte (chat, notices, principal_chat, rotas de chat):
   **P=316, F=12, B=1, S=0, U=0**. Taxa aprovada 96,34%. O `B=1` é o pgTAP,
   bloqueado pelo achado de plataforma abaixo.
@@ -150,6 +150,56 @@ publiquei às 15:0x **não** continha a afirmação exagerada — verifiquei ant
 escrever e o item não estava entre os quatro defeitos centrais. O erro foi
 apanhado pelo próprio autor e confirmado por mim antes de virar registro. Isso é
 o processo funcionando, não um deslize a esconder.
+
+
+## Proveniência das provas — quem executou o quê
+
+Pedi a L01 que reconferisse se alguma afirmação dele dependia de leitura de
+subagente sem prova própria. Ele produziu uma tabela de proveniência que eu
+adoto como padrão para o consolidado, porque o contrato exige a distinção.
+
+**Executado pelo próprio L01:** `principal_happens` 74/10 e a base 66/10 sem as
+mudanças; os 9 testes de retirada; `principal_now` + `principal_moments` +
+`principal_circulars` 216/11; `principal_circulars` + `circulars` 156/2;
+`test/app/router/` 288/1/30 com a classificação das 30; os 3 testes de composição
+do Acontece; os 9 da rota real do Agora; e `principal_moments_publication` 88/0,
+que ele **não** havia rodado e reexecutou nesta auditoria.
+
+**Executado por subagente e NÃO reexecutado por L01:** todos os números de pgTAP
+— 32/32, 53/53, 16/16, 23/23, 46/46, 60/60 e 50/50 — mais o Deno 27/0 e os
+replays parciais de migrations (122 de 168 e 93 de 170).
+
+Classificação correta desses: foram produzidos **nesta sessão, sobre esta base,
+com relato item a item**, portanto **não** são resultado histórico não
+revalidado. Mas não foram exercidos pelo executor responsável, e **quem for
+certificar deve reexecutá-los no perfil nominal de replay** — que é exatamente o
+que o pacote remoto já exige de D00. L01 declarou que não reexecutou por decisão
+de tempo, não por confiança cega: cada um exige subir container e aplicar dezenas
+de migrations. Preferiu declarar a proveniência com precisão a rodar um e deixar
+seis sem carimbo. Concordo com a escolha.
+
+### Estreitamento: a causa das 11 falhas de golden de Momentos NÃO está estabelecida
+
+L01 vinha reportando que falham porque o sprite
+`assets/principal_moments/moments-strip.png` não resolve no ambiente de teste.
+Ele mesmo desmentiu e **eu verifiquei**: o arquivo existe, tem **2.408.205
+bytes**, e está declarado em `apps/superadmin/pubspec.yaml:58`. A execução não
+levanta erro de carregamento de asset; o que existe é diferença de 99,53% a
+100,00% dos pixels. Isso é **compatível** com a mídia não pintar no harness, mas
+é hipótese, não fato — e, como estava escrito, levaria alguém a procurar um asset
+ausente que está no repositório.
+
+**O que permanece verificado:** são preexistentes, medidas duas vezes de forma
+independente com as alterações fora da árvore, dando 0 aprovados e 11 falhos; e
+regenerá-las gravaria o que quer que este ambiente renderize como referência
+aprovada. A decisão de não regenerar continua certa; só a explicação estava firme
+demais.
+
+**Balanço do eixo:** duas afirmações de L01 foram estreitadas hoje, ambas nascidas
+do mesmo hábito de repassar conclusão de subagente sem exercer a prova — a
+varredura de alcançabilidade pegou a primeira, a auditoria de proveniência pegou
+a segunda, e **nenhuma das duas chegou a este consolidado**. Registro como
+processo funcionando.
 
 
 ## Bloqueios que não são das frentes Claude
