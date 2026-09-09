@@ -1088,6 +1088,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       key: ValueKey('forms-question-card-${question.id}'),
       index: index,
       question: question,
+      isCurrent: () => current() && _canEdit,
       expanded: (_canView && !_canEdit) || _expandedQuestionId == question.id,
       canMoveUp: index > 0,
       canMoveDown: index < siblings.length - 1,
@@ -1387,13 +1388,25 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           if (question.kind == FormItemKind.gallery)
             [question.id, question.minimumImages.text, question.maximumImages.text],
     ];
+    payload['date_rule_inputs'] = [
+      for (final section in _sections)
+        for (final question in _flattenQuestions(section.questions))
+          if (question.kind == FormItemKind.date)
+            [
+              question.id,
+              question.dateRule.name,
+              question.from?.toIso8601String(),
+              question.until?.toIso8601String(),
+            ],
+    ];
     return jsonEncode(payload);
   }
 
-  String? get _galleryLimitsIssue {
+  String? get _configurationIssue {
     for (final section in _sections) {
       for (final question in _flattenQuestions(section.questions)) {
         if (question.galleryLimitsIssue case final issue?) return issue;
+        if (question.dateLimitsIssue case final issue?) return issue;
       }
     }
     return null;
@@ -1451,7 +1464,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   }
 
   void _validateLocally() {
-    if (_galleryLimitsIssue case final issue?) {
+    if (_configurationIssue case final issue?) {
       setState(() => _feedback = issue);
       return;
     }
@@ -1504,6 +1517,17 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     isRequired: question.required,
     conditions: question.loadedConditions,
     config: FormItemConfig(
+      maxLength: question.loadedConfig.maxLength,
+      minDate:
+          question.kind == FormItemKind.date &&
+              (question.dateRule == _DateRule.from || question.dateRule == _DateRule.range)
+          ? question.from
+          : null,
+      maxDate:
+          question.kind == FormItemKind.date &&
+              (question.dateRule == _DateRule.until || question.dateRule == _DateRule.range)
+          ? question.until
+          : null,
       minSelections: question.loadedConfig.minSelections,
       maxSelections: question.loadedConfig.maxSelections,
       decimalPlaces: question.loadedConfig.decimalPlaces,
@@ -1536,7 +1560,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   Future<void> _saveDraft({bool automatic = false}) async {
     _autosaveTimer?.cancel();
     final generation = _contextGeneration;
-    if (_galleryLimitsIssue case final issue?) {
+    if (_configurationIssue case final issue?) {
       setState(() => _feedback = issue);
       return;
     }
@@ -1585,7 +1609,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       if (!_isCurrentContext(generation)) return;
       final changedSinceCommand =
           authoring != null &&
-          (_galleryLimitsIssue != null ||
+          (_configurationIssue != null ||
               jsonEncode(FormDefinitionDto.fromDomain(_localDefinition()).toJson()) !=
                   jsonEncode(FormDefinitionDto.fromDomain(command.payload).toJson()));
       setState(() {
@@ -1704,7 +1728,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
 
   Future<void> _openPublishDialog() async {
     final generation = _contextGeneration;
-    if (_galleryLimitsIssue case final issue?) {
+    if (_configurationIssue case final issue?) {
       setState(() => _feedback = issue);
       return;
     }
@@ -2042,6 +2066,9 @@ String _newRequestId() {
 
 enum _DateRule { free, from, until, range }
 
+DateTime? _civilDate(DateTime? value) =>
+    value == null ? null : DateTime.utc(value.year, value.month, value.day);
+
 bool _hasInvalidChoiceReferences(FormDefinition definition) {
   final items = {
     for (final section in definition.sections)
@@ -2132,6 +2159,13 @@ final class _EditorQuestionDraft {
        options = kind == FormItemKind.singleChoice || kind == FormItemKind.multipleChoice
            ? [TextEditingController(text: 'Opção 1'), TextEditingController(text: 'Opção 2')]
            : [] {
+    if (kind == FormItemKind.date) {
+      from = _civilDate(loadedConfig.minDate);
+      until = _civilDate(loadedConfig.maxDate);
+      dateRule = from != null
+          ? (until != null ? _DateRule.range : _DateRule.from)
+          : (until != null ? _DateRule.until : _DateRule.free);
+    }
     for (var index = 0; index < options.length; index++) {
       optionIds[options[index]] = '$id-option-$index';
     }
@@ -2155,8 +2189,22 @@ final class _EditorQuestionDraft {
   String? branchOptionId;
   bool branchExpectedYesNo = true;
   _DateRule dateRule = _DateRule.free;
-  DateTime from = DateTime(2026, 8, 1);
-  DateTime until = DateTime(2026, 8, 31);
+  DateTime? from;
+  DateTime? until;
+
+  String? get dateLimitsIssue {
+    if (kind != FormItemKind.date || dateRule == _DateRule.free) return null;
+    if ((dateRule == _DateRule.from || dateRule == _DateRule.range) && from == null) {
+      return 'Escolha a data mínima antes de salvar.';
+    }
+    if ((dateRule == _DateRule.until || dateRule == _DateRule.range) && until == null) {
+      return 'Escolha a data máxima antes de salvar.';
+    }
+    if (dateRule == _DateRule.range && from!.isAfter(until!)) {
+      return 'A data mínima deve ser anterior ou igual à data máxima.';
+    }
+    return null;
+  }
 
   String? get galleryLimitsIssue {
     if (kind != FormItemKind.gallery) return null;
@@ -2412,6 +2460,7 @@ final class _QuestionCard extends StatefulWidget {
     super.key,
     required this.index,
     required this.question,
+    required this.isCurrent,
     required this.expanded,
     required this.canMoveUp,
     required this.canMoveDown,
@@ -2431,6 +2480,7 @@ final class _QuestionCard extends StatefulWidget {
 
   final int index;
   final _EditorQuestionDraft question;
+  final bool Function() isCurrent;
   final bool expanded;
   final bool canMoveUp;
   final bool canMoveDown;
@@ -2452,6 +2502,7 @@ final class _QuestionCard extends StatefulWidget {
 }
 
 final class _QuestionCardState extends State<_QuestionCard> {
+  int _dateInputGeneration = 0;
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -2813,74 +2864,105 @@ final class _QuestionCardState extends State<_QuestionCard> {
     ],
   );
 
-  Widget _dateConfiguration() => Column(
-    key: ValueKey('forms-editor-date-config-${widget.question.dateRule.name}'),
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      CoeloAdminSingleSelectField<_DateRule>(
-        key: const Key('forms-editor-date-rule'),
-        label: 'Validação da data',
-        value: widget.question.dateRule,
-        options: _DateRule.values,
-        optionLabel: _dateRuleLabel,
-        prefixIcon: Icons.event_available_outlined,
-        onChanged: (value) {
-          setState(() => widget.question.dateRule = value);
+  Widget _dateConfiguration() {
+    final question = widget.question;
+    final generation = _dateInputGeneration;
+    final isCurrent = widget.isCurrent;
+    bool current() =>
+        mounted &&
+        identical(widget.question, question) &&
+        generation == _dateInputGeneration &&
+        isCurrent();
+    Widget dateField({required bool maximum, required String key}) {
+      final value = maximum ? question.until : question.from;
+      return CoeloDateRangeField(
+        key: Key(key),
+        value: value == null ? null : DateTimeRange(start: value, end: value),
+        labelText: maximum ? 'Data máxima' : 'Data mínima',
+        selectionMode: CoeloDateSelectionMode.single,
+        showQuickRanges: false,
+        firstDate: DateTime(1),
+        lastDate: DateTime(9999, 12, 31),
+        enabled: isCurrent(),
+        onChanged: (range) {
+          if (!current()) return;
+          final selected = range?.start;
+          final civil = _civilDate(selected);
+          setState(() {
+            _dateInputGeneration++;
+            if (maximum) {
+              question.until = civil;
+            } else {
+              question.from = civil;
+            }
+          });
           widget.onChanged();
         },
-      ),
-      if (widget.question.dateRule != _DateRule.free) ...[
-        const SizedBox(height: CoeloSpacing.space3),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final from = CoeloDateTimeField(
-              key: const Key('forms-editor-date-min'),
-              value: widget.question.from,
-              labelText: widget.question.dateRule == _DateRule.until
-                  ? 'Data máxima'
-                  : 'Data mínima',
-              firstDate: DateTime(2020),
-              lastDate: DateTime(2100, 12, 31),
-              onChanged: (value) {
-                if (value == null) return;
-                setState(() => widget.question.from = value);
-                widget.onChanged();
-              },
-            );
-            if (widget.question.dateRule != _DateRule.range) return from;
-            final until = CoeloDateTimeField(
-              key: const Key('forms-editor-date-max'),
-              value: widget.question.until,
-              labelText: 'Data máxima',
-              firstDate: widget.question.from,
-              lastDate: DateTime(2100, 12, 31),
-              onChanged: (value) {
-                if (value == null) return;
-                setState(() => widget.question.until = value);
-                widget.onChanged();
-              },
-            );
-            if (constraints.maxWidth < 560 || MediaQuery.textScalerOf(context).scale(1) > 1.3) {
-              return Column(
-                children: [
-                  from,
-                  const SizedBox(height: CoeloSpacing.space3),
-                  until,
-                ],
-              );
-            }
-            return Row(
-              children: [
-                Expanded(child: from),
-                const SizedBox(width: CoeloSpacing.space3),
-                Expanded(child: until),
-              ],
-            );
+      );
+    }
+
+    return Column(
+      key: ValueKey('forms-editor-date-config-${question.dateRule.name}'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CoeloAdminSingleSelectField<_DateRule>(
+          key: const Key('forms-editor-date-rule'),
+          label: 'Validação da data',
+          value: question.dateRule,
+          options: _DateRule.values,
+          optionLabel: _dateRuleLabel,
+          prefixIcon: Icons.event_available_outlined,
+          onChanged: (value) {
+            if (!current()) return;
+            setState(() {
+              _dateInputGeneration++;
+              question.dateRule = value;
+            });
+            widget.onChanged();
           },
         ),
+        if (question.dateRule != _DateRule.free) ...[
+          const SizedBox(height: CoeloSpacing.space3),
+          KeyedSubtree(
+            key: ValueKey((question, _dateInputGeneration)),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final from = dateField(
+                  maximum: question.dateRule == _DateRule.until,
+                  key: 'forms-editor-date-min',
+                );
+                if (question.dateRule != _DateRule.range) return from;
+                final until = dateField(maximum: true, key: 'forms-editor-date-max');
+                if (constraints.maxWidth < 560 || MediaQuery.textScalerOf(context).scale(1) > 1.3) {
+                  return Column(
+                    children: [
+                      from,
+                      const SizedBox(height: CoeloSpacing.space3),
+                      until,
+                    ],
+                  );
+                }
+                return Row(
+                  children: [
+                    Expanded(child: from),
+                    const SizedBox(width: CoeloSpacing.space3),
+                    Expanded(child: until),
+                  ],
+                );
+              },
+            ),
+          ),
+          if (question.dateLimitsIssue case final issue?)
+            Text(
+              issue,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
+            ),
+        ],
       ],
-    ],
-  );
+    );
+  }
 }
 
 final class _BranchPanel extends StatelessWidget {

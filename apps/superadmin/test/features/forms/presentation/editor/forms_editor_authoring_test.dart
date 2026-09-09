@@ -6,6 +6,7 @@ import 'package:coelo_superadmin/features/forms/data/forms_authoring_api.dart';
 import 'package:coelo_superadmin/features/forms/presentation/editor/forms_editor_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -27,6 +28,240 @@ void main() {
   );
 
   Finder imageLimit(String key) => find.byKey(ValueKey('forms-gallery-$key-gallery'));
+
+  _Api dateApi({DateTime? min, DateTime? max}) => _Api(manage: true)
+    ..customItems = [
+      FormItem(
+        id: 'date',
+        kind: FormItemKind.date,
+        label: 'Data civil',
+        position: 0,
+        config: FormItemConfig(minDate: min, maxDate: max),
+      ),
+    ];
+
+  Future<void> dateRule(WidgetTester tester, String name) async {
+    final dynamic field = tester.widget(find.byKey(const Key('forms-editor-date-rule')));
+    field.onChanged(field.options.singleWhere((dynamic value) => (value as Enum).name == name));
+    await tester.pump();
+  }
+
+  Future<void> chooseDate(WidgetTester tester, String key, DateTime? day) async {
+    tester
+        .widget<CoeloDateRangeField>(find.byKey(Key(key)))
+        .onChanged(day == null ? null : DateTimeRange(start: day, end: day));
+    await tester.pump();
+  }
+
+  for (final rule in ['free', 'from', 'until', 'range']) {
+    testWidgets('date controls preserve $rule configuration in unrelated autosave', (tester) async {
+      final min = rule == 'from' || rule == 'range' ? DateTime.utc(2024, 2, 29) : null;
+      final max = rule == 'until' || rule == 'range' ? DateTime.utc(2028, 1, 1) : null;
+      final api = dateApi(min: min, max: max);
+      await open(tester, api);
+      expect(find.byKey(ValueKey('forms-editor-date-config-$rule')), findsOneWidget);
+      expect(api.commands, isEmpty);
+      await tester.enterText(title('Authorized title'), 'Unrelated title');
+      await tester.pump(const Duration(milliseconds: 800));
+      await tester.pumpAndSettle();
+      final config = api.commands.single.payload.sections.single.items.single.config;
+      expect(config.minDate, min);
+      expect(config.maxDate, max);
+    });
+  }
+
+  for (final automatic in [false, true]) {
+    testWidgets('date controls edit and restore civil range automatic=$automatic', (tester) async {
+      final api = dateApi(min: DateTime.utc(2024, 2, 29), max: DateTime.utc(2028, 1, 1));
+      await open(tester, api);
+      await chooseDate(tester, 'forms-editor-date-min', DateTime.utc(2025, 3, 1, 23, 45));
+      await chooseDate(tester, 'forms-editor-date-max', DateTime.utc(2027, 12, 31, 13));
+      if (automatic) {
+        await tester.pump(const Duration(milliseconds: 800));
+      } else {
+        final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+        await tester.ensureVisible(save);
+        await tester.tap(save);
+      }
+      await tester.pumpAndSettle();
+      expect(api.commands, hasLength(1));
+      final config = api.commands.single.payload.sections.single.items.single.config;
+      expect(config.minDate, DateTime.utc(2025, 3, 1));
+      expect(config.maxDate, DateTime.utc(2027, 12, 31));
+      api.customItems = api.commands.single.payload.sections.single.items;
+      await tester.pumpWidget(const SizedBox());
+      await open(tester, api);
+      final field = tester.widget<CoeloDateRangeField>(
+        find.byKey(const Key('forms-editor-date-min')),
+      );
+      expect(field.value!.start, DateTime.utc(2025, 3, 1));
+      expect(api.commands, hasLength(1));
+    });
+  }
+
+  testWidgets('date controls free explicitly clears both bounds', (tester) async {
+    final api = dateApi(min: DateTime.utc(2024), max: DateTime.utc(2028));
+    await open(tester, api);
+    await dateRule(tester, 'free');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    final config = api.commands.single.payload.sections.single.items.single.config;
+    expect(config.minDate, isNull);
+    expect(config.maxDate, isNull);
+  });
+
+  testWidgets('date controls incomplete rule and inverted range never save', (tester) async {
+    final api = dateApi();
+    await open(tester, api);
+    await dateRule(tester, 'range');
+    expect(
+      tester.widget<CoeloDateRangeField>(find.byKey(const Key('forms-editor-date-min'))).value,
+      isNull,
+    );
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.commands, isEmpty);
+    expect(find.text('Escolha a data mínima antes de salvar.'), findsWidgets);
+    await chooseDate(tester, 'forms-editor-date-min', DateTime.utc(2028));
+    await chooseDate(tester, 'forms-editor-date-max', DateTime.utc(2027));
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    expect(api.commands, isEmpty);
+    expect(find.text('A data mínima deve ser anterior ou igual à data máxima.'), findsWidgets);
+    expect(
+      tester
+          .widget<CoeloDateRangeField>(find.byKey(const Key('forms-editor-date-max')))
+          .value!
+          .start,
+      DateTime.utc(2027),
+    );
+    await chooseDate(tester, 'forms-editor-date-max', DateTime.utc(2028));
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.commands, hasLength(1));
+  });
+
+  testWidgets('date controls retained callback cannot cross rule A B A or API context', (
+    tester,
+  ) async {
+    final api = dateApi(min: DateTime.utc(2024));
+    await open(tester, api);
+    final old = tester
+        .widget<CoeloDateRangeField>(find.byKey(const Key('forms-editor-date-min')))
+        .onChanged;
+    await dateRule(tester, 'free');
+    await dateRule(tester, 'from');
+    old(DateTimeRange(start: DateTime.utc(2020), end: DateTime.utc(2020)));
+    await tester.pump();
+    expect(
+      tester
+          .widget<CoeloDateRangeField>(find.byKey(const Key('forms-editor-date-min')))
+          .value!
+          .start,
+      DateTime.utc(2024),
+    );
+    final current = dateApi(min: DateTime.utc(2030));
+    await open(tester, current);
+    old(DateTimeRange(start: DateTime.utc(2020), end: DateTime.utc(2020)));
+    await tester.pump(const Duration(seconds: 2));
+    expect(current.commands, isEmpty);
+    expect(
+      tester
+          .widget<CoeloDateRangeField>(find.byKey(const Key('forms-editor-date-min')))
+          .value!
+          .start,
+      DateTime.utc(2030),
+    );
+    await tester.pumpWidget(const SizedBox());
+    old(null);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('date controls hydrate civil bounds before editing', (tester) async {
+    final api = dateApi(min: DateTime.utc(2024, 2, 29), max: DateTime.utc(2027, 1, 1));
+    await open(tester, api);
+    expect(find.text('Intervalo permitido'), findsOneWidget);
+    final minimum = tester.widget<CoeloDateRangeField>(
+      find.byKey(const Key('forms-editor-date-min')),
+    );
+    final maximum = tester.widget<CoeloDateRangeField>(
+      find.byKey(const Key('forms-editor-date-max')),
+    );
+    expect(minimum.value!.start, DateTime.utc(2024, 2, 29));
+    expect(maximum.value!.start, DateTime.utc(2027, 1, 1));
+    expect(minimum.selectionMode, CoeloDateSelectionMode.single);
+    expect(api.commands, isEmpty);
+  });
+
+  testWidgets('date controls choose a civil day at 375px without a time picker', (tester) async {
+    tester.view.physicalSize = const Size(375, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final api = dateApi(min: DateTime.utc(2024, 2, 29));
+    await open(tester, api);
+    final field = find.byKey(const Key('forms-editor-date-min'));
+    await tester.ensureVisible(field);
+    await tester.tap(field);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('coelo-date-2024-02-20')));
+    await tester.tap(find.widgetWithText(FilledButton, 'Aplicar'));
+    await tester.pumpAndSettle();
+    expect(find.byType(Dialog), findsNothing);
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(
+      api.commands.single.payload.sections.single.items.single.config.minDate,
+      DateTime.utc(2024, 2, 20),
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('date controls keep an incomplete later edit dirty after earlier receipt', (
+    tester,
+  ) async {
+    final api = dateApi()..saveWait = Completer<void>();
+    await open(tester, api);
+    await tester.enterText(title('Authorized title'), 'Earlier title');
+    await tester.pump(const Duration(milliseconds: 800));
+    await dateRule(tester, 'until');
+    api.saveWait!.complete();
+    await tester.pump();
+    expect(find.text('Rascunho salvo.'), findsNothing);
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.commands, hasLength(1));
+    await chooseDate(tester, 'forms-editor-date-min', DateTime.utc(2011, 12, 30));
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.commands, hasLength(2));
+    expect(api.commands.last.expectedVersion, 2);
+    final config = api.commands.last.payload.sections.single.items.single.config;
+    expect(config.minDate, isNull);
+    expect(config.maxDate, DateTime.utc(2011, 12, 30));
+  });
+
+  testWidgets('short text maximum length survives unrelated autosave', (tester) async {
+    final api = _Api(manage: true)
+      ..customItems = [
+        FormItem(
+          id: 'short',
+          kind: FormItemKind.shortText,
+          label: 'Short text',
+          position: 0,
+          config: const FormItemConfig(maxLength: 123),
+        ),
+      ];
+    await open(tester, api);
+    await tester.enterText(title('Authorized title'), 'Changed title');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.commands.single.payload.sections.single.items.single.config.maxLength, 123);
+  });
 
   _Api galleryApi({FormItemConfig config = const FormItemConfig()}) => _Api(manage: true)
     ..customItems = [
