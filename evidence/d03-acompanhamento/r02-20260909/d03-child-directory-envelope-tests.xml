@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="10" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-09-09" time="13:35:22">
+  <environment user="adrie" machine-name="LAPTOP-67A8F4LK" cwd="C:\Users\adrie\Documents\Coelo.worktrees\e2-r02-d03-acompanhamento" user-domain="LAPTOP-67A8F4LK" platform="Microsoft Windows 11 Home|C:\WINDOWS|\Device\Harddisk0\Partition3" nunit-version="2.5.8.0" os-version="10.0.26200" clr-version="4.0.30319.42000" />
+  <culture-info current-culture="pt-BR" current-uiculture="pt-BR" />
+  <test-suite type="Powershell" name="Pester" executed="True" result="Success" success="True" time="25.1676" asserts="0">
+    <results>
+      <test-suite type="TestFixture" name="Closed ChildDirectoryEnvelope replay selector" executed="True" result="Success" success="True" time="25.1676" asserts="0" description="Closed ChildDirectoryEnvelope replay selector">
+        <results>
+          <test-case description="selects Auth45, CHILD1, one local bridge and two inherited preflights" name="Closed ChildDirectoryEnvelope replay selector.selects Auth45, CHILD1, one local bridge and two inherited preflights" time="6.0022" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects an earlier target" name="Closed ChildDirectoryEnvelope replay selector.rejects an earlier target" time="1.7976" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects a canonical migration with the local bridge version" name="Closed ChildDirectoryEnvelope replay selector.rejects a canonical migration with the local bridge version" time="1.252" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects a reparse point in the profile path" name="Closed ChildDirectoryEnvelope replay selector.rejects a reparse point in the profile path" time="1.564" asserts="0" success="True" result="Success" executed="True" />
+          <test-suite type="ParameterizedTest" name="Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for &lt;inputKind&gt;" executed="True" result="Success" success="True" time="14.5519" asserts="0" description="rejects changed bytes for &lt;inputKind&gt;">
+            <results>
+              <test-case description="rejects changed bytes for descriptor" name="Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for descriptor" time="1.6894" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects changed bytes for manifest" name="Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for manifest" time="1.9111" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects changed bytes for child" name="Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for child" time="2.254" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects changed bytes for bridge" name="Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for bridge" time="3.3846" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects changed bytes for approvedSource" name="Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for approvedSource" time="2.4933" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects changed bytes for sourceNote" name="Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for sourceNote" time="2.8194" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

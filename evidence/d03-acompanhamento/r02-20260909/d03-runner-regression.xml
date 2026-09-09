@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="6" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-09-09" time="13:24:31">
+  <environment user="adrie" machine-name="LAPTOP-67A8F4LK" cwd="C:\Users\adrie\Documents\Coelo.worktrees\e2-r02-d03-acompanhamento" user-domain="LAPTOP-67A8F4LK" platform="Microsoft Windows 11 Home|C:\WINDOWS|\Device\Harddisk0\Partition3" nunit-version="2.5.8.0" os-version="10.0.26200" clr-version="4.0.30319.42000" />
+  <culture-info current-culture="pt-BR" current-uiculture="pt-BR" />
+  <test-suite type="Powershell" name="Pester" executed="True" result="Success" success="True" time="2.5567" asserts="0">
+    <results>
+      <test-suite type="TestFixture" name="Prepare-SafeMigrationReplay canonical ordering" executed="True" result="Success" success="True" time="1.7916" asserts="0" description="Prepare-SafeMigrationReplay canonical ordering">
+        <results>
+          <test-case description="accepts canonical migrations between the labels bridge and audit production" name="Prepare-SafeMigrationReplay canonical ordering.accepts canonical migrations between the labels bridge and audit production" time="1.7916" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="Invoke-SafeLocalMigrationReplay Supabase CLI agent mode" executed="True" result="Success" success="True" time="0.7651" asserts="0" description="Invoke-SafeLocalMigrationReplay Supabase CLI agent mode">
+        <results>
+          <test-case description="parses without errors" name="Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.parses without errors" time="0.3959" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="disables CLI agent autodetection for every npx Supabase invocation" name="Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.disables CLI agent autodetection for every npx Supabase invocation" time="0.1669" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="forwards the reviewed additional migration allowlist to replay preparation" name="Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.forwards the reviewed additional migration allowlist to replay preparation" time="0.097" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="keeps generated replay ownership, reparse and residual-resource cleanup gates" name="Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.keeps generated replay ownership, reparse and residual-resource cleanup gates" time="0.0534" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="validates additions before start without exposing migrations to automatic startup replay" name="Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.validates additions before start without exposing migrations to automatic startup replay" time="0.0519" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

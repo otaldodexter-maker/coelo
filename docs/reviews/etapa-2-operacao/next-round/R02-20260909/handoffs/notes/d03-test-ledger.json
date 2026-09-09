@@ -5,6 +5,13 @@
   "snapshot_head": "647c20b453222aef58027028e4367de954145f20",
   "snapshot_head_scope": "Flutter tested-code snapshot. Later fixture-only correction ff8bfb728a040912a551b615cb6f0d9d2a1597d3 remains unexecuted in SQL. Additional concurrency infrastructure evidence is tied to 7f300b36ed740f5390cf2438ea8bb03a8f7236e9 and its XML/hash, not to this earlier Flutter snapshot.",
   "scope": "R02 D03 focal evidence available before the 16:30 BRT consolidation cut",
+  "preserved_evidence_manifest": {
+    "path": "evidence/d03-acompanhamento/r02-20260909/manifest.json",
+    "sha256": "AC91A303756E1E18948C9098616D767FFD45A31AC3E606BC14C3368F854810FA",
+    "artifact_count": 25,
+    "bytes": 91313,
+    "note": "Byte-for-byte copies, not new executions. Source paths remain for provenance; the manifest maps them to versioned copies. Its source-ledger hash describes the earlier extraction snapshot, not this evolving ledger."
+  },
   "counting_rules": {
     "unit": "unique test case within its current focal campaign",
     "red_green_reruns_are_not_added": true,

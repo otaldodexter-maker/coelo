@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="8" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-09-09" time="14:33:01">
+  <environment user="adrie" machine-name="LAPTOP-67A8F4LK" cwd="C:\Users\adrie\Documents\Coelo.worktrees\e2-r02-d03-acompanhamento" user-domain="LAPTOP-67A8F4LK" platform="Microsoft Windows 11 Home|C:\WINDOWS|\Device\Harddisk0\Partition3" nunit-version="2.5.8.0" os-version="10.0.26200" clr-version="4.0.30319.42000" />
+  <culture-info current-culture="pt-BR" current-uiculture="pt-BR" />
+  <test-suite type="Powershell" name="Pester" executed="True" result="Success" success="True" time="14.5523" asserts="0">
+    <results>
+      <test-suite type="TestFixture" name="CHILD directory concurrency harness contract" executed="True" result="Success" success="True" time="14.5523" asserts="0" description="CHILD directory concurrency harness contract">
+        <results>
+          <test-case description="exists and parses without errors" name="CHILD directory concurrency harness contract.exists and parses without errors" time="3.8975" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="requires the owned disposable project and isolated identity" name="CHILD directory concurrency harness contract.requires the owned disposable project and isolated identity" time="1.1378" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="coordinates independent sessions through observed database locks" name="CHILD directory concurrency harness contract.coordinates independent sessions through observed database locks" time="1.1562" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="covers revocation after the first authorization read" name="CHILD directory concurrency harness contract.covers revocation after the first authorization read" time="2.3336" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="renames the third limit-plus-one row and checks the returned order and cursor" name="CHILD directory concurrency harness contract.renames the third limit-plus-one row and checks the returned order and cursor" time="0.8794" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="forces wall-clock expiry during audit and verifies rollback" name="CHILD directory concurrency harness contract.forces wall-clock expiry during audit and verifies rollback" time="1.6561" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="bounds waits and cleans every process without reading credentials" name="CHILD directory concurrency harness contract.bounds waits and cleans every process without reading credentials" time="2.0718" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="keeps a durable plan that marks runtime as not executed" name="CHILD directory concurrency harness contract.keeps a durable plan that marks runtime as not executed" time="1.42" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="8" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-09-09" time="14:51:25">
+  <environment user="adrie" machine-name="LAPTOP-67A8F4LK" cwd="C:\Users\adrie\Documents\Coelo.worktrees\e2-r02-d03-acompanhamento" user-domain="LAPTOP-67A8F4LK" platform="Microsoft Windows 11 Home|C:\WINDOWS|\Device\Harddisk0\Partition3" nunit-version="2.5.8.0" os-version="10.0.26200" clr-version="4.0.30319.42000" />
+  <culture-info current-culture="pt-BR" current-uiculture="pt-BR" />
+  <test-suite type="Powershell" name="Pester" executed="True" result="Success" success="True" time="4.148" asserts="0">
+    <results>
+      <test-suite type="TestFixture" name="CHILD concurrency safe replay runner contract" executed="True" result="Success" success="True" time="4.148" asserts="0" description="CHILD concurrency safe replay runner contract">
+        <results>
+          <test-case description="parses and exposes the new switch without removing existing runners" name="CHILD concurrency safe replay runner contract.parses and exposes the new switch without removing existing runners" time="2.077" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects a missing or different nominal profile before the mutex" name="CHILD concurrency safe replay runner contract.rejects a missing or different nominal profile before the mutex" time="0.5296" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects every other target before the mutex" name="CHILD concurrency safe replay runner contract.rejects every other target before the mutex" time="0.2102" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects incompatible profiles, additions and concurrency before the mutex" name="CHILD concurrency safe replay runner contract.rejects incompatible profiles, additions and concurrency before the mutex" time="0.3164" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="requires one canonical CHILD TAP after path resolution" name="CHILD concurrency safe replay runner contract.requires one canonical CHILD TAP after path resolution" time="0.6348" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="accepts case-insensitive canonical profile spelling and reaches the sentinel" name="CHILD concurrency safe replay runner contract.accepts case-insensitive canonical profile spelling and reaches the sentinel" time="0.1561" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="dispatches CHILD concurrency after pgTAP with the owned replay identity" name="CHILD concurrency safe replay runner contract.dispatches CHILD concurrency after pgTAP with the owned replay identity" time="0.1252" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="keeps CHILD guards ahead of mutex construction and resource inspection" name="CHILD concurrency safe replay runner contract.keeps CHILD guards ahead of mutex construction and resource inspection" time="0.0988" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

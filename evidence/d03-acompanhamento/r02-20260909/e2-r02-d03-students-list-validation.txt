@@ -1,0 +1,18 @@
+E2 R02 D03 / students.list / local validation
+Base: 56eb3f19de23e364ea5f7e4f73a6fbd9a851e230
+Worktree: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d03-acompanhamento
+
+Command:
+rtk flutter test test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart
+Result: PASS, 5/5 unique widget tests, exit 0.
+Cases: authorized list above tracking; unchanged without DI; revocation clears child names; real /students route consumes the read and redirects/clears on sign out; 375 px with 200% text has no overflow.
+
+Command:
+rtk flutter analyze lib/core/config/superadmin_auth_scope.dart lib/main.dart lib/app/superadmin_app.dart lib/app/router/superadmin_router.dart lib/features/children/presentation/child_directory_controller.dart lib/features/children/presentation/child_directory_panel.dart lib/features/student_tracking/presentation/student_tracking_page.dart test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart
+Result: PASS, no issues found, exit 0.
+
+Command:
+rtk proxy C:/src/flutter/bin/cache/dart-sdk/bin/dart.exe run tool/validate_admin_visual_contracts.dart ../.. assets/admin-visual-contract-allowlist.json
+Result: FAIL/BLOCKED by an out-of-scope existing occurrence: apps/superadmin/lib/features/locations/presentation/location_schedule_section.dart:292 uses DropdownButtonFormField. No students file was reported.
+
+Remote fact observed by the D03 parent executor: public.superadmin_child_context_directory_v2 is absent from production. This validation is local Front-end evidence only and does not establish Backend done or E2E.
