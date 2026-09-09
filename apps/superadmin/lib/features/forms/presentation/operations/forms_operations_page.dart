@@ -650,6 +650,9 @@ final class _FormsOperationsPageState extends State<FormsOperationsPage> {
                   FormFileJobStatus.expired => 'Expirado',
                 },
                 progress: job.progress,
+                errorMessage: job.status == FormFileJobStatus.failed
+                    ? _fileJobErrorMessage(job.errorCode)
+                    : null,
                 onDownload: _downloadAction(job, value),
               ),
             ),
@@ -1562,15 +1565,30 @@ final class _FilesContentState extends State<_FilesContent> {
   );
 }
 
+String _fileJobErrorMessage(String? code) => switch (code) {
+  'export_failed' => 'Não foi possível gerar o arquivo XLSX.',
+  'export_timeout' => 'A geração do arquivo excedeu o tempo disponível.',
+  'empty_export' => 'Nenhuma resposta foi encontrada para esta exportação.',
+  'retry_exhausted' => 'A geração não foi concluída após as tentativas disponíveis.',
+  _ => 'Não foi possível concluir esta exportação.',
+};
+
 final class _JobRow extends StatelessWidget {
-  const _JobRow({required this.id, required this.status, required this.progress, this.onDownload});
+  const _JobRow({
+    required this.id,
+    required this.status,
+    required this.progress,
+    this.errorMessage,
+    this.onDownload,
+  });
   final String id, status;
+  final String? errorMessage;
   final double progress;
   final VoidCallback? onDownload;
 
   @override
   Widget build(BuildContext context) => CoeloAdminInteractiveCard(
-    semanticLabel: 'Exportação $id, $status',
+    semanticLabel: 'Exportação $id, $status${errorMessage == null ? '' : ', $errorMessage'}',
     child: Padding(
       padding: const EdgeInsets.all(CoeloSpacing.space4),
       child: Row(
@@ -1583,6 +1601,8 @@ final class _JobRow extends StatelessWidget {
               children: [
                 Text('Exportação $id', style: Theme.of(context).textTheme.titleSmall),
                 Text(status),
+                if (errorMessage case final message?)
+                  Text(message, style: Theme.of(context).textTheme.bodySmall),
                 if (status == 'Processando') LinearProgressIndicator(value: progress),
               ],
             ),

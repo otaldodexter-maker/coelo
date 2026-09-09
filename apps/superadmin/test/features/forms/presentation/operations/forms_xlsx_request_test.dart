@@ -10,6 +10,88 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   final generate = find.byKey(const Key('forms-xlsx-request'));
 
+  for (final entry in {
+    'export_failed': 'Não foi possível gerar o arquivo XLSX.',
+    'export_timeout': 'A geração do arquivo excedeu o tempo disponível.',
+    'empty_export': 'Nenhuma resposta foi encontrada para esta exportação.',
+    'retry_exhausted': 'A geração não foi concluída após as tentativas disponíveis.',
+    'unknown?token=secret': 'Não foi possível concluir esta exportação.',
+  }.entries) {
+    testWidgets('file job displays a sanitized failure message for ${entry.key}', (tester) async {
+      final api = _Api()
+        ..jobs = [
+          FormFileJob(
+            id: 'job-error',
+            status: FormFileJobStatus.failed,
+            progress: 0.25,
+            errorCode: entry.key,
+          ),
+        ];
+      await _pump(tester, FormsOperationsPage.files(api: api, formId: 'form-a'));
+      expect(find.text('Falhou'), findsOneWidget);
+      expect(find.text(entry.value), findsOneWidget);
+      expect(find.textContaining('token=secret'), findsNothing);
+      expect(find.text('Tentar novamente'), findsNothing);
+      expect(find.text('Tentar novamente a solicitação'), findsNothing);
+      expect(api.commands, isEmpty);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('job errors disappear with context replacement and never label a healthy job', (
+    tester,
+  ) async {
+    final api = _Api()
+      ..jobs = [
+        const FormFileJob(
+          id: 'job-old',
+          status: FormFileJobStatus.failed,
+          progress: 0,
+          errorCode: 'empty_export',
+        ),
+      ];
+    await _pump(tester, FormsOperationsPage.files(api: api, formId: 'form-a'));
+    expect(find.text('Nenhuma resposta foi encontrada para esta exportação.'), findsOneWidget);
+    api.jobs = [
+      const FormFileJob(
+        id: 'job-healthy',
+        status: FormFileJobStatus.succeeded,
+        progress: 1,
+        errorCode: 'export_failed',
+      ),
+    ];
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: FormsOperationsPage.files(api: api, formId: 'form-b'),
+        ),
+      ),
+    );
+    expect(find.text('Exportação job-old'), findsNothing);
+    expect(find.text('Nenhuma resposta foi encontrada para esta exportação.'), findsNothing);
+    await tester.pumpAndSettle();
+    expect(find.text('Concluído'), findsOneWidget);
+    expect(find.text('Não foi possível gerar o arquivo XLSX.'), findsNothing);
+    final download = tester.widget<IconButton>(
+      find.byWidgetPredicate(
+        (widget) => widget is IconButton && widget.tooltip == 'Baixar exportação job-healthy',
+      ),
+    );
+    expect(download.onPressed, isNull);
+    await _pump(
+      tester,
+      FormsOperationsPage.files(
+        api: api,
+        formId: 'form-b',
+        state: FormsOperationsState.unauthorized,
+      ),
+    );
+    expect(find.text('Exportação job-healthy'), findsNothing);
+    expect(api.commands, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('authorized files context generates whole-form XLSX once and reloads jobs', (
     tester,
   ) async {
