@@ -865,8 +865,8 @@
   },
   "last_delivery": {
     "branch": "origin/dev",
-    "sha": "aba29322c2a34c033d08c3442046c2520d0df9ff",
-    "verified_at": "2026-09-08T21:05:14-03:00",
+    "sha": "dcbcebc11c64602c43dab31b313c173988277b4e",
+    "verified_at": "2026-09-08T21:21:43-03:00",
     "method": "atomic push and exact ls-remote",
     "deploy": "not executed"
   },
@@ -1809,7 +1809,7 @@
     "report": "R01-delta-2118.md",
     "trackers_synchronized_through_C02": 46,
     "C06_operational_revision": 25,
-    "push": "pending",
+    "push": "verified origin/dev and C00",
     "last_verified_dev": "aba29322c2a34c033d08c3442046c2520d0df9ff",
     "tests": {
       "settings": 32,
@@ -1819,7 +1819,9 @@
       "audit_adapter": 20,
       "xlsx_v2": 128
     },
-    "e2e_promotions": 0
+    "e2e_promotions": 0,
+    "delivery_sha": "dcbcebc11c64602c43dab31b313c173988277b4e",
+    "delivery_verified_at": "2026-09-08T21:21:43-03:00"
   },
   "c01_ban_proof_reservation": {
     "instruction": "I020",
