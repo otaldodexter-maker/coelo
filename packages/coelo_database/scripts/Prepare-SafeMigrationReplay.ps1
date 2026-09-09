@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @()
@@ -81,6 +81,7 @@ $preflight = @(Get-ChildItem -LiteralPath $preflightFull -File -Filter '*.sql' |
 $foundationManifestHash = $null
 $additionalCanonical = @()
 $localBridges = @()
+$locationBootstraps = @()
 $foundationBoundaryVersion = $null
 if ($NominalProfile) {
   $nominalResolverRelative = switch ($NominalProfile) {
@@ -98,6 +99,7 @@ if ($NominalProfile) {
     'ActivityAggregateConcurrencyClock' { 'profiles\ActivityAggregateConcurrencyClock\Resolve-ActivityAggregateConcurrencyClock.ps1' }
     'FReadDirectoryContractRedDerived' { 'profiles\FReadDirectoryContractRedDerived\Resolve-FReadDirectoryContractRedDerived.ps1' }
     'FReadDirectoryContractGreenDerived' { 'profiles\FReadDirectoryContractGreenDerived\Resolve-FReadDirectoryContractGreenDerived.ps1' }
+    'LocationCatalogV2' { 'profiles\LocationCatalogV2\Resolve-LocationCatalogV2.ps1' }
   }
   $nominalResolver = Join-Path $preflightRoot $nominalResolverRelative
   $nominalCursor = Get-Item -LiteralPath $nominalResolver -Force -ErrorAction Stop
@@ -113,6 +115,15 @@ if ($NominalProfile) {
   $preflight = @($nominal.Preflight)
   $additionalCanonical = @($nominal.Additional)
   $foundationManifestHash = $nominal.ManifestHash
+  if ($NominalProfile -ceq 'LocationCatalogV2') {
+    $locationBootstraps = @($nominal.LocationBootstrap)
+    if ($canonical.Count -ne 53 -or $additionalCanonical.Count -ne 4 -or
+        $locationBootstraps.Count -ne 2 -or
+        $locationBootstraps[0].Name -cne '20260908030958_location_form_options_remote_snapshot_local.sql' -or
+        $locationBootstraps[1].Name -cne '20260908030959_location_catalog_v2_capability_bootstrap_local.sql') {
+      throw 'LocationCatalogV2 requires the reviewed 53 canonical migrations and exactly two local fixtures'
+    }
+  }
   if ($NominalProfile -eq 'ChildDirectoryEnvelope') {
     $localBridges = @($nominal.LocalBridges)
     if ($canonical.Count -ne 46 -or $additionalCanonical.Count -ne 1 -or
@@ -232,7 +243,7 @@ if ($canonical.Count -eq 0 -or
   throw "unexpected replay inputs: canonical=$($canonical.Count) preflight=$($preflight.Count)"
 }
 
-$combined = @($canonical) + @($preflight) + @($localBridges) | Sort-Object Name
+$combined = @($canonical) + @($preflight) + @($localBridges) + @($locationBootstraps) | Sort-Object Name
 $versions = @($combined | ForEach-Object {
   if ($_.Name -notmatch '^(\d{14})_[a-z0-9_]+\.sql$') {
     throw "invalid migration filename: $($_.Name)"
@@ -259,7 +270,7 @@ if ($labelBridgeIndex -lt 1 -or
   throw 'label replay bridge must immediately follow access-profile management v2 and precede audit production'
 }
 
-if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryContractGreenDerived')) {
+if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryContractGreenDerived', 'LocationCatalogV2')) {
   # This reviewed local derivation runs before the remaining input copies.
   $derivedMetadata = $nominal.FormsDefinitionMaterialization
   $derivedName = '20260813155005_forms_definition_and_capabilities.sql'
@@ -317,8 +328,8 @@ if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryCon
   }
 }
 
-foreach ($source in @($canonical) + @($preflight) + @($localBridges)) {
-  if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryContractGreenDerived') -and $source.Name -ceq '20260813155005_forms_definition_and_capabilities.sql') { continue }
+foreach ($source in @($canonical) + @($preflight) + @($localBridges) + @($locationBootstraps)) {
+  if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryContractGreenDerived', 'LocationCatalogV2') -and $source.Name -ceq '20260813155005_forms_definition_and_capabilities.sql') { continue }
   $sourceFull = [IO.Path]::GetFullPath($source.FullName)
   if (($source.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
     throw "replay input cannot be a reparse point: $sourceFull"
@@ -329,7 +340,7 @@ foreach ($source in @($canonical) + @($preflight) + @($localBridges)) {
 }
 
 $generated = @(Get-ChildItem -LiteralPath $destinationFull -File -Filter '*.sql' | Sort-Object Name)
-if ($generated.Count -ne ($canonical.Count + $preflight.Count + $localBridges.Count)) {
+if ($generated.Count -ne ($canonical.Count + $preflight.Count + $localBridges.Count + $locationBootstraps.Count)) {
   throw 'generated safe replay migration count mismatch'
 }
 
@@ -355,4 +366,5 @@ else {
   ''
 }
 $localBridgeEvidence = if ($localBridges.Count -gt 0) { " + $($localBridges.Count) local bridge" } else { '' }
-"Prepared $($generated.Count) safe replay migrations ($($canonical.Count) canonical + $($preflight.Count) preflight$localBridgeEvidence); profile=$profile; additional=$($additionalCanonical.Count)$manifestEvidence; preflight_sha256=$preflightHashes."
+$localFixtureEvidence = if ($locationBootstraps.Count -gt 0) { " + $($locationBootstraps.Count) local fixtures" } else { '' }
+"Prepared $($generated.Count) safe replay migrations ($($canonical.Count) canonical + $($preflight.Count) preflight$localBridgeEvidence$localFixtureEvidence); profile=$profile; additional=$($additionalCanonical.Count)$manifestEvidence; preflight_sha256=$preflightHashes."

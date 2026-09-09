@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @(),
@@ -18,6 +18,10 @@ param(
   [switch]$RunLint,
 
   [switch]$RunAuthLifecycle,
+
+  [switch]$RunAuthRecoveryBoundary,
+
+  [switch]$AssertAuthRecoveryConfined,
 
   [switch]$RunR02AuthProofConcurrency,
 
@@ -95,6 +99,15 @@ function Get-DockerResources([string]$Identity) {
 if ($targetMigration.Count -ne 1) {
   throw "target version must identify exactly one canonical migration: $TargetVersion"
 }
+if ($AssertAuthRecoveryConfined -and -not $RunAuthRecoveryBoundary) {
+  throw 'Auth recovery confinement assertions require the focal recovery boundary runner'
+}
+if ($RunAuthRecoveryBoundary -and (
+    -not $AuthOnly -or $FoundationOnly -or $NominalProfile -or
+    $RunAuthLifecycle -or $RunR02AuthProofConcurrency -or
+    $RunChildDirectoryConcurrency -or $RunActivityV2Concurrency)) {
+  throw 'Auth recovery boundary requires Auth-only and excludes lifecycle and concurrency profiles'
+}
 if ($RunChildDirectoryConcurrency -and (
     $NominalProfile -cne 'ChildDirectoryEnvelope' -or
     $TargetVersion -cne '20260908051500' -or
@@ -140,6 +153,7 @@ if ($NominalProfile) {
     'ActivityAggregateConcurrencyClock' { 'replay\profiles\ActivityAggregateConcurrencyClock\Resolve-ActivityAggregateConcurrencyClock.ps1' }
     'FReadDirectoryContractRedDerived' { 'replay\profiles\FReadDirectoryContractRedDerived\Resolve-FReadDirectoryContractRedDerived.ps1' }
     'FReadDirectoryContractGreenDerived' { 'replay\profiles\FReadDirectoryContractGreenDerived\Resolve-FReadDirectoryContractGreenDerived.ps1' }
+    'LocationCatalogV2' { 'replay\profiles\LocationCatalogV2\Resolve-LocationCatalogV2.ps1' }
   }
   $nominalResolver = Join-Path $packageRoot $nominalResolverRelative
   Assert-NoReparseAncestors $nominalResolver
@@ -322,7 +336,7 @@ try {
     -AdditionalMigration $AdditionalMigration @nominalParameters
 
   $startAttempted = $true
-  $excludedServices = if ($RunAuthLifecycle) {
+  $excludedServices = if ($RunAuthLifecycle -or $RunAuthRecoveryBoundary) {
     $authLifecycleExcludes
   }
   else {
@@ -367,6 +381,11 @@ try {
     & (Join-Path $scriptRoot 'Test-LocalAuthLifecycle.ps1') `
       -ProjectRoot $projectRoot `
       -ProjectId $projectId
+  }
+  if ($RunAuthRecoveryBoundary) {
+    & (Join-Path $scriptRoot 'Test-LocalAuthRecoveryBoundary.ps1') `
+      -ProjectRoot $projectRoot -ProjectId $projectId `
+      -AssertConfined:$AssertAuthRecoveryConfined
   }
   if ($RunActivityV2Concurrency) {
     & (Join-Path $scriptRoot 'Test-ActivityV2Concurrency.ps1') `
