@@ -183,9 +183,50 @@ Acontece está entre as falhas** — a única do território de L01 que falhou �
 de Circulares, fora da cadeia do Acontece. Caminho próprio, mesmo ambiente, mesmo
 resultado.
 
-**Executado por subagente e NÃO reexecutado por L01:** os demais números de pgTAP
-— 53/53, 16/16, 23/23, 46/46, 60/60 e 50/50 — mais o Deno 27/0 e os replays
-parciais de migrations (122 de 168 e 93 de 170).
+**Depois disso, L01 reexecutou o bloco inteiro por conta própria.** Situação
+final da proveniência: **sete linhas "eu", uma "subagente"**. Reexecutados por
+ele e conferindo número por número com o relato dos subagentes: retirada do
+Acontece `1..32`; contrato existente do Acontece `1..53`; Momentos `1..23`;
+expiração do Agora `1..16`; Circulares em R2 `1..46`; contrato anterior de
+Circulares `1..60`; e Deno `circular-media` 27 passed, 0 failed. Dois containers
+descartáveis, ambos removidos e confirmado por listagem.
+
+**Reprodutibilidade que atesta o método:** os dois replays independentes dele
+deram **exatamente 93 aplicadas e 77 falhas**, o mesmo número do subagente.
+Nenhuma migration do Acontece, do Agora, de Momentos ou de Circulares está entre
+as falhas; a única do território de L01 que falha é a superfície administrativa
+`20260901191921_superadmin_internal_circulars_v2.sql`, fora da cadeia do Principal.
+
+### A sétima linha, e a pré-condição que ela revelou para o preflight de D00
+
+`20260909135000_private_media_catalog_chat_kind_v1.sql` — o `catalog_kind` de chat,
+do qual o `chat.attach` de L02 depende — **falha no replay completo**, com
+`constraint "media_assets_catalog_shape_ck" of relation "media_assets" does not
+exist`. L01 diagnosticou antes de classificar e **não é defeito da migration**:
+a dependência `20260908160000_private_media_catalog_r2_v1.sql` não aplica porque
+`20260813155118_forms_responses_and_private_media.sql` falha primeiro, e a cadeia
+de Formulários inteira fica de fora, levando junto `20260908170000` e
+`20260908215522`.
+
+A divergência com o 50/50 do subagente está explicada e **não é contradição**: o
+subagente montou um replay **parcial nominal de 19 migrations**, escolhidas para
+levantar a fundação do catálogo; L01 usou o replay **completo em ordem de nome**,
+onde a fundação não se levanta. Dois harnesses honestos, escopos diferentes.
+
+**Entrega concreta para D00:** o delta de `catalog_kind` de chat **só aplica sobre
+uma base que já tenha a fundação do catálogo privado de mídia**. Em produção
+presumivelmente tem, mas é **pré-condição a confirmar no preflight, não a
+presumir**, e a ordem de aplicação importa. Registrado como pré-condição, não
+como defeito.
+
+### As duas fundações quebradas, apresentadas juntas
+
+Separadas parecem azar; juntas são um fato do repositório. **L02** mostrou que
+nenhum SQL do realm interno do Superadmin é provável localmente, porque a cadeia
+de **Atividades** quebra. **L01** mostrou que o catálogo privado de mídia tem o
+mesmo problema pela cadeia de **Formulários**. Duas fundações diferentes, o mesmo
+padrão — e juntas explicam por que quase nada de backend consegue ser provado
+nesta máquina hoje, sem que isso seja falha dos pacotes de nenhuma frente.
 
 Classificação correta desses seis: foram produzidos **nesta sessão, sobre esta base,
 com relato item a item**, portanto **não** são resultado histórico não
