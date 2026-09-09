@@ -1602,3 +1602,86 @@ executável e um com medição.
 6. Pendências de decisão: contrato visual de Editar perfil, estreitamento de
    escopo das publicações, desdobramento de `chat.*`, correção arquitetural do
    badge nas 58 construções de shell, e `pg_cron` para notices.
+
+---
+
+# Eixos separados: FE, BE Supabase, BE Cloudflare e E2E
+
+O contrato exige distinguir os quatro, e o meu consolidado vinha tratando BE como
+um eixo só. **Corrijo aqui, e a separação muda a leitura do backend.**
+
+## Handoffs conferidos pelos caminhos absolutos — presença é fato, não presunção
+
+| Frente | Arquivo | Linhas | Última escrita |
+| --- | --- | ---: | --- |
+| L01 | `.../e2-r02-l01-publicacoes/.../handoffs/L01.md` | 655 | 15:48 |
+| L02 | `.../e2-r02-l02-chat-comunicacoes/.../handoffs/L02.md` | 897 | 16:01 |
+| L03 | `.../e2-r02-l03-perfil-para-voce/.../handoffs/L03.md` | 478 | 15:50 |
+
+**Os três presentes e atualizados. Nenhuma ausência a registrar.**
+
+## Os quatro eixos, por frente
+
+| Frente | FE | BE Supabase | BE Cloudflare | E2E |
+| --- | --- | --- | --- | ---: |
+| L01 | 6/23 | 6/23 contratos locais | **0 exercido em infra real** | **0/23** |
+| L02 | 4/13 | 0/13 | **não aplicável no MVP** | **0/13** |
+| L03 | 3/3 | 0/3 | **0, não exercido** | **0/3** |
+
+### BE Supabase — o que existe e em que estado
+
+**L01:** seis contratos de servidor escritos e **provados localmente** em Postgres
+17.6 descartável — 32/32, 53/53, 23/23, 16/16, 46/46 e 60/60, **sete das oito
+linhas reexecutadas por ele mesmo**. Nada aplicado em remoto.
+**L02:** pacote escrito e revisável; pgTAP **bloqueado** (`B=1`) e depois
+parcialmente executado com harness shimado dando 14 ok / 21 not ok, com controle
+provando que as falhas funcionais são do ambiente. **Mantido bloqueado.**
+**L03:** pacote da RPC de leitura de Para Você **proposto e não aplicado**.
+
+**Prova local não é certificação.** O replay é parcial em todas as medições
+(122/168, 93/170, 83/165, 123/166 conforme o harness) e há **duas fundações
+quebradas** — Atividades e Formulários — que impedem provar o realm interno e o
+catálogo de mídia nesta máquina.
+
+### BE Cloudflare — o eixo em que MENOS se avançou, e é preciso dizê-lo
+
+**Nenhuma frente exerceu infraestrutura Cloudflare real. Zero.**
+
+- Conferi por diff: só **L01** toca arquivos relacionados a R2, e são **dois**.
+  L02 e L03 não tocam nenhum.
+- A prova que existe é a suíte **Deno 27/0** da função de borda `circular-media`,
+  que exercita o **código** da função, incluindo o caminho por `_shared/r2_s3.ts`.
+  Isso prova a função, **não o R2**.
+- **Nenhum bucket foi inspecionado.** `coelo-media-prod` e `coelo-documents-prod`
+  precisam existir, estar privados e ter token S3 de escopo mínimo — e o estado
+  remoto **não foi verificado nesta rodada**, por decisão consciente de não pedir
+  acesso.
+- **Nenhum segredo foi configurado.** Os quatro do R2 exigem autorização nominal.
+- **Stream não foi tocado por ninguém**, e no MVP Chat não o exige, PDF nunca o
+  usa, e Agora/Momentos/Acontece só por necessidade medida.
+
+**Achado estrutural que pesa neste eixo:** não existe gateway de mídia único.
+São cinco Edge Functions por domínio; só `moments-media` e a leitura de Forms
+estão em R2; `happens-media`, `now-media` e `circular-media` ainda usam Supabase
+Storage; e `MediaUploadGateway` **não tem implementação em produção**. A
+conformidade com a ADR0032 é bem maior que esta rodada.
+
+### E2E — zero, e o denominador não é zero
+
+**0/39 no grupo Claude.** O denominador é 39 e é explícito; **denominador zero
+não vira 100%** e aqui ele nem é zero. Nenhuma ação foi promovida a
+`verified-e2e` por nenhuma frente.
+
+As três razões, em ordem de peso: **autorização nominal ausente** para o pacote
+remoto; **duas fundações quebradas** que impedem provar backend localmente; e
+**nenhuma infraestrutura Cloudflare exercida**. Nenhuma delas é falta de código.
+
+## Regras de contagem aplicadas
+
+- **Testes únicos**, sem somar reruns: cada frente reporta a última execução
+  pertinente do seu escopo.
+- **Sem somar suítes sobrepostas**: os três totais **não** foram somados.
+- **Denominadores explícitos** em todos os quocientes: 23, 13, 3 e 39.
+- **Falha sem baseline não vira preexistente**: as ~191 fora de recorte ficam
+  **não revalidadas**.
+- **Bloqueado é bloqueado**: o `B=1` de L02 não virou aprovado nem falho.
