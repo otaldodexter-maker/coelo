@@ -11,6 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart';
 import 'package:http/testing.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Production scope, SDK, actions, forms and router; only HTTP is synthetic.
@@ -20,6 +21,7 @@ void main() {
     testWidgets(
       'SDK recovery callback through reset form waits for logout: success=$logoutSucceeds',
       (tester) async {
+        SharedPreferences.setMockInitialValues({});
         final requests = <Request>[];
         final logoutRelease = Completer<void>();
         final logoutStarted = Completer<void>();
@@ -63,7 +65,10 @@ void main() {
             supabaseUrl: 'https://d01-recovery.invalid',
             supabasePublishableKey: 'd01-synthetic-publishable',
             initializeSupabase:
-                ({required localStorage, required publishableKey, required url}) async => client,
+                ({required localStorage, required publishableKey, required url}) async {
+                  await localStorage.initialize();
+                  return client;
+                },
           ),
         );
 

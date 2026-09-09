@@ -11,12 +11,19 @@ final class ConditionalSupabaseLocalStorage extends LocalStorage
 
   final LocalStorage _delegate;
   bool _isPersistenceEnabled = true;
+  Future<void> _pendingMutation = Future<void>.value();
 
   @override
-  Future<String?> accessToken() => _delegate.accessToken();
+  Future<String?> accessToken() async {
+    await _pendingMutation;
+    return _delegate.accessToken();
+  }
 
   @override
-  Future<bool> hasAccessToken() => _delegate.hasAccessToken();
+  Future<bool> hasAccessToken() async {
+    await _pendingMutation;
+    return _delegate.hasAccessToken();
+  }
 
   @override
   Future<void> initialize() => _delegate.initialize();
@@ -26,17 +33,32 @@ final class ConditionalSupabaseLocalStorage extends LocalStorage
     if (!_isPersistenceEnabled) {
       return Future<void>.value();
     }
-    return _delegate.persistSession(persistSessionString);
+    return _serialize(() async {
+      if (_isPersistenceEnabled) {
+        await _delegate.persistSession(persistSessionString);
+      }
+    });
   }
 
   @override
-  Future<void> removePersistedSession() => _delegate.removePersistedSession();
+  Future<void> removePersistedSession() =>
+      _serialize(_delegate.removePersistedSession);
 
   @override
   Future<void> setPersistenceEnabled({required bool value}) async {
     _isPersistenceEnabled = value;
     if (!value) {
-      await _delegate.removePersistedSession();
+      await removePersistedSession();
     }
+  }
+
+  Future<void> _serialize(Future<void> Function() operation) {
+    final result = _pendingMutation.then((_) => operation());
+    // Preserve errors for each caller without poisoning the next purge.
+    _pendingMutation = result.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace _) {},
+    );
+    return result;
   }
 }

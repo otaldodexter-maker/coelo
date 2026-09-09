@@ -1,0 +1,136 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub --concurrency=1 test/features/auth/do ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: rejected recovery OTP cannot enable password updates: invalid
+00:00 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: rejected recovery OTP cannot enable password updates: expired
+00:00 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: rejected recovery OTP cannot enable password updates: reused
+00:00 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: external SDK session replacement survives an older recovery response: sameUser=false
+00:00 +4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: external SDK session replacement survives an older recovery response: sameUser=true
+00:00 +5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: recovery update allows token refresh in the same session
+00:00 +6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: recovery response failure is sanitized without session mutation: denied
+00:00 +7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: recovery response failure is sanitized without session mutation: transport
+00:00 +8: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: recovery response failure is sanitized without session mutation: invalid-json
+00:00 +9: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: recovery response failure is sanitized without session mutation: list
+00:00 +10: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: recovery response failure is sanitized without session mutation: wrong-user
+00:00 +11: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: pending recovery password update excludes a new gateway login
+00:00 +12: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: initial recovery token for A cannot classify pending SDK session B
+00:00 +13: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: failed scope initialization releases the gateway without closing the shared SDK
+00:00 +14: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: scope synchronizes preexisting SDK session before bootstrap: recovery=false
+00:00 +15: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: scope synchronizes preexisting SDK session before bootstrap: recovery=true
+00:00 +16: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: adapter created after recovery never exposes it as productive authentication
+00:00 +17: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: replacement SDK session clears recovery and cannot update a password
+00:00 +18: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: SDK recovery remains distinct through refresh; external listener=false
+00:00 +19: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: SDK recovery remains distinct through refresh; external listener=true
+00:01 +20: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: scope disposal closes only gateway events and leaves the shared SDK usable
+══╡ EXCEPTION CAUGHT BY SUPERADMIN_SESSION ╞════════════════════════════════════════════════════════
+The following StateError was thrown while listening to auth state changes:
+Bad state: Recovery persistence cleanup failed.
+
+When the exception was thrown, this was the stack:
+#0      SharedPreferencesLocalStorage._preferences (package:supabase_flutter/src/local_storage.dart)
+#1      SharedPreferencesLocalStorage.removePersistedSession (package:supabase_flutter/src/local_storage.dart:105:13)
+#2      ConditionalSupabaseLocalStorage._serialize.<anonymous closure> (package:coelo_auth/src/conditional_supabase_local_storage.dart:56:58)
+<asynchronous suspension>
+#8      ConditionalSupabaseLocalStorage.setPersistenceEnabled (package:coelo_auth/src/conditional_supabase_local_storage.dart:51:7)
+<asynchronous suspension>
+(elided 5 frames from dart:async and package:stack_trace)
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:01 +20 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: scope disposal closes only gateway events and leaves the shared SDK usable [E]
+  Bad state: Recovery persistence cleanup failed.
+  package:supabase_flutter/src/local_storage.dart                         SharedPreferencesLocalStorage._preferences
+  package:supabase_flutter/src/local_storage.dart 105:13                  SharedPreferencesLocalStorage.removePersistedSession
+  package:coelo_auth/src/conditional_supabase_local_storage.dart 56:58    ConditionalSupabaseLocalStorage._serialize.<fn>
+  ===== asynchronous gap ===========================
+  dart:async                                                              _BroadcastStreamController.addError
+  package:coelo_auth/src/supabase_coelo_auth_gateway.dart 231:19          _SupabaseAuthApi._disableRecoveryPersistence.<fn>
+  ===== asynchronous gap ===========================
+  dart:async                                                              Future.catchError
+  package:coelo_auth/src/supabase_coelo_auth_gateway.dart 229:9           _SupabaseAuthApi._disableRecoveryPersistence
+  package:coelo_auth/src/supabase_coelo_auth_gateway.dart 211:5           _SupabaseAuthApi._handleAuthState
+  ===== asynchronous gap ===========================
+  dart:async                                                              _StreamImpl.listen
+  package:rxdart/src/streams/defer.dart 50:19                             DeferStream.listen
+  dart:async                                                              StreamView.listen
+  package:rxdart/src/subjects/behavior_subject.dart 245:16                _BehaviorSubjectStream.listen
+  package:coelo_auth/src/supabase_coelo_auth_gateway.dart 178:52          new _SupabaseAuthApi
+  package:coelo_auth/src/supabase_coelo_auth_gateway.dart 35:10           new SupabaseCoeloAuthGateway
+  test\features\auth\domain\coelo_auth_recovery_sdk_test.dart 591:23      main.<fn>.<fn>
+  package:coelo_superadmin/core/config/superadmin_auth_scope.dart 237:35  createSuperadminAuthScope
+  ===== asynchronous gap ===========================
+  dart:async                                                              _CustomZone.registerUnaryCallback
+  package:coelo_superadmin/core/config/superadmin_auth_scope.dart 232:20  createSuperadminAuthScope
+  test\features\auth\domain\coelo_auth_recovery_sdk_test.dart 584:25      main.<fn>
+
+00:01 +20 -1: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart
+00:39 +20 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart: SDK recovery callback through reset form waits for logout: success=true
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: null
+  Actual: StateError:<Bad state: Recovery persistence cleanup failed.>
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart:166:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart line 166
+The test description was:
+  SDK recovery callback through reset form waits for logout: success=true
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:44 +20 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart: SDK recovery callback through reset form waits for logout: success=true [E]
+  Test failed. See exception logs above.
+  The test description was: SDK recovery callback through reset form waits for logout: success=true
+
+Warning: At least one test in this suite creates an HttpClient. When running a test suite that uses
+TestWidgetsFlutterBinding, all HTTP requests will return status code 400, and no network request
+will actually be made. Any test expecting a real network connection and status code will fail.
+To test code that needs an HttpClient, provide your own HttpClient implementation to the code under
+test, so that your test can consistently provide a testable response to the code under test.
+00:44 +20 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart: SDK recovery callback through reset form waits for logout: success=false
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: null
+  Actual: StateError:<Bad state: Recovery persistence cleanup failed.>
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart:166:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart line 166
+The test description was:
+  SDK recovery callback through reset form waits for logout: success=false
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:45 +20 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart: SDK recovery callback through reset form waits for logout: success=false [E]
+  Test failed. See exception logs above.
+  The test description was: SDK recovery callback through reset form waits for logout: success=false
+
+00:45 +20 -3: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/packages/coelo_auth/test/conditional_supabase_local_storage_test.dart
+00:50 +20 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/packages/coelo_auth/test/conditional_supabase_local_storage_test.dart: delegates initialization and restores an existing session by default
+00:50 +21 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/packages/coelo_auth/test/conditional_supabase_local_storage_test.dart: persists auth changes while persistence is enabled
+00:50 +22 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/packages/coelo_auth/test/conditional_supabase_local_storage_test.dart: removes an old session and blocks writes when persistence is disabled
+00:50 +23 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/packages/coelo_auth/test/conditional_supabase_local_storage_test.dart: persists auth changes again after persistence is re-enabled
+00:50 +24 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/packages/coelo_auth/test/conditional_supabase_local_storage_test.dart: always delegates explicit session removal
+00:50 +25 -3: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart: SDK recovery callback through reset form waits for logout: success=false
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart: SDK recovery callback through reset form waits for logout: success=true
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_sdk_test.dart: scope disposal closes only gateway events and leaves the shared SDK usable
