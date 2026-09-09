@@ -138,7 +138,8 @@ select is((select body#>>'{error,code}' from location_test_responses where seq=1
   'SAI_INTERNAL_CONTEXT_DENIED','valid external session does not become internal actor');
 
 -- Revocation is evaluated again even for an already successful receipt.
-update app_private.superadmin_internal_memberships set status='revoked',revoked_at=now(),suspended_at=null
+update app_private.superadmin_internal_memberships set status='revoked',revoked_at=now(),suspended_at=null,
+  changed_by_internal_identity_id='81500000-0000-4000-8000-000000000002',version=version+1
   where id='81700000-0000-4000-8000-000000000001';
 select pg_temp.location_actor(1);
 set local role authenticated;
@@ -147,8 +148,9 @@ insert into location_test_responses select 14,public.superadmin_location_create_
 reset role;
 select is((select body#>>'{error,code}' from location_test_responses where seq=14),
   'SAI_MEMBERSHIP_REVOKED','revoked membership cannot replay receipt');
-update app_private.superadmin_internal_memberships set status='active',revoked_at=null,suspended_at=null
-  where id='81700000-0000-4000-8000-000000000001';
+-- Revocation is terminal. The existing platform Owner is the spare actor for
+-- the independent capability, audit rollback and wall-clock cases below.
+select pg_temp.location_actor(2);
 update public.platform_role_permissions set status='inactive',revoked_at=now()
   where role_id=(select id from public.platform_roles where code='owner')
     and permission_id=(select id from public.platform_permissions where code='locations.create');
@@ -169,7 +171,7 @@ create function pg_temp.fail_location_audit() returns trigger language plpgsql a
 begin raise exception using message='forced location audit failure'; end $$;
 create trigger fail_location_audit before insert on audit.audit_logs
   for each row when(new.action_code='location.create') execute function pg_temp.fail_location_audit();
-select pg_temp.location_actor(1);
+select pg_temp.location_actor(2);
 set local role authenticated;
 do $capture_audit_failure$
 declare captured_message text; captured_state text; captured_result jsonb;
@@ -199,8 +201,8 @@ select ok(not exists(select 1 from audit.audit_logs where action_code like 'loca
 -- not_after is later than transaction start but expires by the next statement.
 -- This distinguishes clock_timestamp from the Auth helper's transaction-time now().
 update auth.sessions set not_after=clock_timestamp()
-  where id='81400000-0000-4000-8000-000000000001';
-select pg_temp.location_actor(1);
+  where id='81400000-0000-4000-8000-000000000002';
+select pg_temp.location_actor(2);
 set local role authenticated;
 insert into location_test_responses select 19,public.superadmin_location_create_v2(
   value||'{"name":"Expired session room"}','81800000-0000-4000-8000-000000000019') from location_test_payload;
@@ -219,9 +221,9 @@ select is((select count(*) from app_private.superadmin_location_create_receipts
   where request_id='81800000-0000-4000-8000-000000000019'),0::bigint,
   'expired session leaves no creation receipt');
 select ok(not exists(select 1 from public.activity_locations
-  where created_by_internal_identity_id='81500000-0000-4000-8000-000000000001'
+  where created_by_internal_identity_id='81500000-0000-4000-8000-000000000002'
     and name='Expired session room'),'expired session rolls back inserted location');
-update auth.sessions set not_after=null where id='81400000-0000-4000-8000-000000000001';
+update auth.sessions set not_after=null where id='81400000-0000-4000-8000-000000000002';
 set local role authenticated;
 insert into location_test_responses select 22,public.superadmin_location_detail_v2((body#>>'{data,id}')::uuid)
   from location_test_responses where seq=1;
