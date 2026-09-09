@@ -1,0 +1,9 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy dart analyze test/features/auth/presentation/screens/supera ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+Analyzing superadmin_login_screen_test.dart, superadmin_forgot_password_screen_test.dart, superadmin_reset_password_screen_test.dart...
+No issues found!
