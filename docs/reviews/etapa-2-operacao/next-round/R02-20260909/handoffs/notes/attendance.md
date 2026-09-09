@@ -80,3 +80,30 @@ limites `lastDate`/`currentDate` do seletor.
 
 Este é avanço FE local. Backend, remoto e E2E do dashboard permanecem abertos
 pelos mesmos limites de OQ-040/spec 048 e pela migration local-only registrada.
+
+## Validação do motivo — `attendance.correct`
+
+O comando de correção ignorava silenciosamente a submissão quando o motivo
+continha somente espaços. O diálogo agora apresenta `Motivo obrigatório` pelo
+`errorText` do campo, permanece aberto, conserva o texto e limpa o erro quando
+o usuário digita um motivo válido. O teste interage com a abertura e o botão
+reais, comprova que nenhuma revisão foi criada no erro e conclui o mesmo rascunho
+com sucesso.
+
+- RED válido: 0/1 aprovado; a mensagem obrigatória estava ausente.
+- GREEN focal: 1/1 aprovado.
+- Regressão nominal `--name correction`: 7/7 casos únicos aprovados, 0 falhos.
+- Análise estática dos dois arquivos: 0 issues.
+- Uma tentativa RED anterior foi descartada porque a opção do popup estava fora
+  da viewport e o toque não ocorreu; ela não conta como evidência do produto.
+- Log RED `C:/Users/adrie/AppData/Local/Temp/d03-attendance-correction-required-reason-red-valid.log`
+  — SHA-256 `A218E1BDD96D6283A1344D5F0D9726517A66493F175238C5E2CB8027F1C33109`.
+- Log GREEN `C:/Users/adrie/AppData/Local/Temp/d03-attendance-correction-required-reason-green.log`
+  — SHA-256 `2EB194482235DD7DD4571C3BC3973AA793BFEE2DD6D4CE697482F0EE5043D69A`.
+- Log da regressão `C:/Users/adrie/AppData/Local/Temp/d03-attendance-correction-required-reason-regression.log`
+  — SHA-256 `BA9B573F82EE6EB11F682F9F330795B8EDAA97020054D5C6F6E54B8D82112071`.
+- Log do analyzer `C:/Users/adrie/AppData/Local/Temp/d03-attendance-correction-required-reason-analyze.log`
+  — SHA-256 `14CA337A541222740667AEAC33AB48BC7391A898BE62649C81998AA6E0D9F7D4`.
+
+Esse delta cobre a validação local do formulário. Persistência real,
+autorização backend e E2E continuam submetidas aos bloqueios já registrados.

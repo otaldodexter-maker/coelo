@@ -1426,6 +1426,64 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('correction requires a reason and preserves the draft', (tester) async {
+    final semantics = tester.ensureSemantics();
+    final repository = FakeAttendanceRepository.seeded();
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repository,
+          callId: 'call-completed',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Corrigir chamada'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('attendance-correction-reason')), '   ');
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Registrar correção'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Motivo obrigatório'), findsOneWidget);
+    expect(
+      tester
+          .getSemantics(find.text('Motivo obrigatório'))
+          .getSemanticsData()
+          .label,
+      contains('Motivo obrigatório'),
+    );
+    expect(find.text('Corrigir chamada'), findsAtLeastNWidgets(2));
+    expect(
+      tester
+          .widget<TextFormField>(find.byKey(const Key('attendance-correction-reason')))
+          .controller
+          ?.text,
+      '   ',
+    );
+    expect((await repository.fetchCall('call-completed'))!.revisions, isEmpty);
+
+    await tester.enterText(
+      find.byKey(const Key('attendance-correction-reason')),
+      'Conferido com a família',
+    );
+    await tester.pump();
+    expect(find.text('Motivo obrigatório'), findsNothing);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Registrar correção'));
+    await tester.pumpAndSettle();
+
+    final call = await repository.fetchCall('call-completed');
+    expect(call!.revisions.single.participantId, 'participant-1');
+    expect(call.revisions.single.reason, 'Conferido com a família');
+    semantics.dispose();
+  });
+
   testWidgets('correction applies to the participant selected in the dialog', (tester) async {
     final repository = FakeAttendanceRepository.seeded();
     addTearDown(repository.dispose);
