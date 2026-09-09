@@ -581,6 +581,9 @@ PrincipalPostPreviewItem _postPreview(PrincipalHappensPostItem item) => Principa
   initials: _initials(item.authorName),
   body: item.caption,
   media: item.media,
+  postId: item.id,
+  managementVersion: item.managementVersion,
+  canWithdraw: item.canWithdraw,
 );
 
 String _initials(String value) => value
