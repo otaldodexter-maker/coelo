@@ -218,7 +218,7 @@ ligado a um repositório `Unavailable` e Atividades não.
 
 ---
 
-## Medição 2 — Segurança da criança, 2026-09-08T20:53
+## Medição 2 — Segurança da criança, 2026-09-08T20:53 (dono **C02**, corrigido às 21:14)
 
 Terceira linha da família convertida em fato medido. Prova em
 `repro/child_safety_error_hang_test.dart`. Mesmo método: fora da árvore, cópia temporária para
@@ -337,7 +337,8 @@ encontrei" é exatamente a mensagem de erro que o defeito suprime.**
 Nos três pontos de captura — `child_safety_controller.dart:146`, `safety_pages.dart:887` e
 `safety_pages.dart:1132` — trocar `on Exception` por `on Object`, mantendo antes as capturas
 específicas. E, na origem, trocar as quatro conversões cruas pelos ajudantes defensivos que o arquivo
-já tem, o que elimina o produtor em vez de só tratar o sintoma.
+já tem, o que elimina o produtor em vez de só tratar o sintoma. **Dono C02**, conferido por mim em
+`ownership.json`; eu havia escrito C04 por proximidade de domínio, sem consultar a fonte.
 
 ### Nota de método que quase custou a prova
 

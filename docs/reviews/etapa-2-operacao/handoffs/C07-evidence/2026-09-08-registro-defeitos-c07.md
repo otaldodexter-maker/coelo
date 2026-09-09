@@ -48,6 +48,14 @@ texto dentro de um comando de shell e as crases viraram substituição de comand
 identificadores. Corrigido em seguida, escrevendo por arquivo intermediário. Registro porque o
 commit corrompido está no histórico.
 
+**Errata de atribuição, 2026-09-08T21:14:** os defeitos de Segurança da criança pertencem à **C02**,
+não à C04. Conferi eu mesma em `assignments/ownership.json` da C00, que é a fonte que expande os 219
+IDs com um dono por ID: `child-safety.list`, `.child`, `.create`, `.edit` e `.suspend` são todos da
+C02, assim como a família `health-care.*`. Eu havia atribuído à C04 por proximidade de domínio, sem
+consultar a fonte. Atribuição errada propagada faria alguém editar arquivo de outra frente, que é
+exatamente o que esta rodada vem tentando evitar. `students.*` continua **C04**, conferido na mesma
+consulta, então o defeito de Acompanhamento segue com dono correto.
+
 ## Quadro geral
 
 | # | Defeito | Dono | Estado | Prova |
@@ -75,7 +83,8 @@ commit corrompido está no histórico.
 | 20 | App não sobe se o bootstrap lançar `Error` | C00 | aberto | lido, estrutura verificada |
 | 21 | Salvar pessoa com campo vazio não dá retorno nenhum | C04 | aberto | lido, verificado na fonte |
 | 22 | 22 caminhos de carga travam a tela pelo mesmo padrão | C03, C04, C05 | aberto | lido |
-| 23 | Busca do formulário de autorização de retirada engole a falha e mantém resultado velho como atual | C04 | aberto | **medido**, produtor e consumidor |
+| 23 | Busca do formulário de autorização de retirada engole a falha e mantém resultado velho como atual | **C02** | aberto | **medido**, produtor e consumidor |
+| 24 | Carga de Segurança da criança trava a tela quando lança `Error` | **C02** | aberto | **medido** |
 
 ## Defeitos medidos
 
