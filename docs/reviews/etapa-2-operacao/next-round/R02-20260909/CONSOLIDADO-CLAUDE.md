@@ -586,3 +586,43 @@ mensagem de que o aplicativo quebrou. O estreitamento de quem pode publicar é
 decisão de produto que nenhum executor toma; o que está preso em teste é a
 **resposta ser indistinguível de aplicativo quebrado**, errada independentemente
 de como aquela decisão cair.
+
+## Procedimento reproduzível do replay local — entregável de L01 para D00
+
+L01 fechou o handoff com o passo a passo do harness, para que ninguém redescubra
+o que ele descobriu hoje. Ponta em `e88e0ee39`. Conteúdo, com efeitos medidos:
+
+- receita do container Postgres 17.6 descartável;
+- **shims de `auth` e `storage`** que a imagem não traz — `auth.jwt()`,
+  `auth.uid()`, `auth.role()`, tabelas `storage.buckets` e `storage.objects` e as
+  funções `foldername`, `filename` e `extension` — sem os quais a migration do
+  Acontece **falha ao registrar o bucket**;
+- **`check_function_bodies=off`**: de **93 para 112** aplicadas. Causa
+  identificada: um `if ... case ... then` em `20260813155005` que não compila no
+  PostgreSQL 17.6 com a checagem ligada;
+- **relaxar o `not null`** de `module_label`, `screen_label` e `action_label` em
+  `platform_permissions`: mais **11 numa segunda passada**;
+- **teto conhecido do harness**: a fundação do catálogo ainda exige
+  `app_private.superadmin_internal_identities`;
+- **armadilha de ambiente**: no Git Bash do Windows é preciso exportar
+  **`MSYS_NO_PATHCONV=1`** antes dos `docker exec`, senão `/tmp/arquivo.sql` é
+  convertido para caminho Windows e o `psql` dentro do container não acha o
+  arquivo, **sem erro que explique**. Repassei a L02 na hora.
+
+**A ressalva que L01 deixou escrita e que eu subscrevo:** este harness **prova
+contrato, não banco de produção**, e o perfil nominal
+`Invoke-SafeLocalMigrationReplay.ps1` continua sendo o que D00 roda antes de
+aplicar. A facilidade de subir um container **não** substitui o preflight.
+
+## Estado final de L01 no corte — verificado por L00
+
+Verifiquei em vez de aceitar o relato: HEAD e `origin/codex/e2-r02-l01-publicacoes`
+ambos em **`e88e0ee39`**. O diff desde a baseline em `apps/superadmin/lib/app/router/`
+e `apps/superadmin/test/app/router/` devolve **exatamente dois arquivos**, ambos
+**testes novos que documentam defeito** — `principal_happens_composition_gaps_test.dart`
+e `principal_now_real_route_test.dart`. **`superadmin_router.dart` intocado**,
+como a disciplina do movimento único exigia.
+
+Árvore limpa exceto as três fontes compartilhadas, preservadas e intocadas;
+nenhum container, subagente ou agendamento. Handoff em
+`C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l01-publicacoes/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L01.md`.
