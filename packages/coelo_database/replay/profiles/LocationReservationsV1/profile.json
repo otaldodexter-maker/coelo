@@ -1,0 +1,24 @@
+{
+  "id": "LocationReservationsV1",
+  "parent": {
+    "id": "LocationCatalogV2",
+    "descriptor_sha256_crlf_utf8": "357bcca0c016e82105b3cd6c54038c2faab88afc33b3cadfc619825b44dbeeb1",
+    "resolver_sha256_crlf_utf8": "100ed73790b42560f38237518cb8b0c198cc8befe344eb4866798054b843fd49"
+  },
+  "target_version": "20260909165000",
+  "canonical_additions": [
+    {"file":"20260831192831_activities_v2_actor_attribution.sql","sha256_crlf_utf8":"ad10aa26bd2c7c797ef606f9ee9cc9038c02bba10543b9930d14d36b9ad383bf"},
+    {"file":"20260831195118_activities_v2_actor_provenance_hardening.sql","sha256_crlf_utf8":"31f54a5b8bc1c8dde45f60903ae0c5ef1651db580169a83aba37fc5487af50c8"},
+    {"file":"20260831195944_activities_v2_actor_provenance_semantics.sql","sha256_crlf_utf8":"19c3168014d7710b248da92100bb1b61528e9299150a54da74080315e8b99745"},
+    {"file":"20260831203645_activities_v2_permissions_receipts.sql","sha256_crlf_utf8":"84bfc497aae6e4d8ad950fc03035896d6b9246c42531823e32ce34817b0d02b5"},
+    {"file":"20260831211945_activities_v2_internal_gateways.sql","sha256_crlf_utf8":"443be75040ca103a7a6723aa90037359c11c1681afdc6a6361c2d81f667a6dfa"},
+    {"file":"20260909165000_superadmin_location_reservations_v2.sql","sha256_crlf_utf8":"3e8c1782b753b4fd8861b29e002db0741f1f1f02a0bee73f562ca77fe79f743e"}
+  ],
+  "reservation_bootstrap": {
+    "file": "20260909164959_location_reservations_capability_bootstrap_local.sql",
+    "sha256_crlf_utf8": "111b6e00b3e897ca2d96a36d6192c8149f2cc3cfbd1498f76338f261b84bd6aa",
+    "before": "20260909165000_superadmin_location_reservations_v2.sql"
+  },
+  "extra_bridges": [],
+  "planned_counts": {"canonical":59,"preflight":2,"bootstrap":3,"total":64}
+}

@@ -1,0 +1,75 @@
+diff --git a/packages/coelo_database/scripts/Prepare-SafeMigrationReplay.ps1 b/packages/coelo_database/scripts/Prepare-SafeMigrationReplay.ps1
+--- a/packages/coelo_database/scripts/Prepare-SafeMigrationReplay.ps1
++++ b/packages/coelo_database/scripts/Prepare-SafeMigrationReplay.ps1
+@@ -8,7 +8,7 @@
+ 
+   [switch]$AuthOnly,
+ 
+-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2')]
++  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2', 'LocationReservationsV1')]
+   [string]$NominalProfile,
+ 
+   [string[]]$AdditionalMigration = @()
+@@ -100,6 +100,7 @@
+     'FReadDirectoryContractRedDerived' { 'profiles\FReadDirectoryContractRedDerived\Resolve-FReadDirectoryContractRedDerived.ps1' }
+     'FReadDirectoryContractGreenDerived' { 'profiles\FReadDirectoryContractGreenDerived\Resolve-FReadDirectoryContractGreenDerived.ps1' }
+     'LocationCatalogV2' { 'profiles\LocationCatalogV2\Resolve-LocationCatalogV2.ps1' }
++    'LocationReservationsV1' { 'profiles\LocationReservationsV1\Resolve-LocationReservationsV1.ps1' }
+   }
+   $nominalResolver = Join-Path $preflightRoot $nominalResolverRelative
+   $nominalCursor = Get-Item -LiteralPath $nominalResolver -Force -ErrorAction Stop
+@@ -115,6 +116,16 @@
+   $preflight = @($nominal.Preflight)
+   $additionalCanonical = @($nominal.Additional)
+   $foundationManifestHash = $nominal.ManifestHash
++  if ($NominalProfile -ceq 'LocationReservationsV1') {
++    $locationBootstraps = @($nominal.LocationBootstrap)
++    if ($canonical.Count -ne 59 -or $additionalCanonical.Count -ne 6 -or
++        $locationBootstraps.Count -ne 3 -or
++        $locationBootstraps[0].Name -cne '20260908030958_location_form_options_remote_snapshot_local.sql' -or
++        $locationBootstraps[1].Name -cne '20260908030959_location_catalog_v2_capability_bootstrap_local.sql' -or
++        $locationBootstraps[2].Name -cne '20260909164959_location_reservations_capability_bootstrap_local.sql') {
++      throw 'LocationReservationsV1 requires 59 reviewed canonical migrations and exactly three local fixtures'
++    }
++  }
+   if ($NominalProfile -ceq 'LocationCatalogV2') {
+     $locationBootstraps = @($nominal.LocationBootstrap)
+     if ($canonical.Count -ne 53 -or $additionalCanonical.Count -ne 4 -or
+@@ -270,7 +281,7 @@
+   throw 'label replay bridge must immediately follow access-profile management v2 and precede audit production'
+ }
+ 
+-if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryContractGreenDerived', 'LocationCatalogV2')) {
++if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryContractGreenDerived', 'LocationCatalogV2', 'LocationReservationsV1')) {
+   # This reviewed local derivation runs before the remaining input copies.
+   $derivedMetadata = $nominal.FormsDefinitionMaterialization
+   $derivedName = '20260813155005_forms_definition_and_capabilities.sql'
+@@ -329,7 +340,7 @@
+ }
+ 
+ foreach ($source in @($canonical) + @($preflight) + @($localBridges) + @($locationBootstraps)) {
+-  if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryContractGreenDerived', 'LocationCatalogV2') -and $source.Name -ceq '20260813155005_forms_definition_and_capabilities.sql') { continue }
++  if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryContractGreenDerived', 'LocationCatalogV2', 'LocationReservationsV1') -and $source.Name -ceq '20260813155005_forms_definition_and_capabilities.sql') { continue }
+   $sourceFull = [IO.Path]::GetFullPath($source.FullName)
+   if (($source.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+     throw "replay input cannot be a reparse point: $sourceFull"
+diff --git a/packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 b/packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1
+--- a/packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1
++++ b/packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1
+@@ -8,7 +8,7 @@
+ 
+   [switch]$AuthOnly,
+ 
+-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2')]
++  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2', 'LocationReservationsV1')]
+   [string]$NominalProfile,
+ 
+   [string[]]$AdditionalMigration = @(),
+@@ -154,6 +154,7 @@
+     'FReadDirectoryContractRedDerived' { 'replay\profiles\FReadDirectoryContractRedDerived\Resolve-FReadDirectoryContractRedDerived.ps1' }
+     'FReadDirectoryContractGreenDerived' { 'replay\profiles\FReadDirectoryContractGreenDerived\Resolve-FReadDirectoryContractGreenDerived.ps1' }
+     'LocationCatalogV2' { 'replay\profiles\LocationCatalogV2\Resolve-LocationCatalogV2.ps1' }
++    'LocationReservationsV1' { 'replay\profiles\LocationReservationsV1\Resolve-LocationReservationsV1.ps1' }
+   }
+   $nominalResolver = Join-Path $packageRoot $nominalResolverRelative
+   Assert-NoReparseAncestors $nominalResolver
