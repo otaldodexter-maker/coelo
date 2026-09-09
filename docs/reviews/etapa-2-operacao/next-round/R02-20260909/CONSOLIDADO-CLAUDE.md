@@ -1435,3 +1435,46 @@ frentes sobre si mesmas — L01 estreitou duas afirmações próprias, L02 rever
 uma correção por falta de prova e corrigiu o próprio achado para maior, L03
 corrigiu o próprio relato de dois para quatro arquivos varridos. **Nenhuma delas
 chegou ao consolidado como fato.**
+
+## O conflito de L02 MEDIDO — o trabalho manual é 2 pontos, não 7
+
+L02 mediu em vez de descrever, e o resultado **reduz e reordena** a instrução que
+eu ia dar a D00. **Confirmei por conta própria** com `git merge-tree`:
+**um arquivo, uma única região de conflito** em `superadmin_router.dart`.
+
+A natureza do conflito importa: **não é disputa linha a linha**. O lado de `dev`
+naquela região está **vazio** — o bloco são as rotas `/principal-*` de produção
+que `dev` **moveu** para dentro do `ShellRoute`. É "um lado acrescenta num bloco
+que o outro removeu".
+
+### O git já resolveu quase tudo, verificado no resultado
+
+Vieram **automaticamente**: as **3** inserções de `chatUnreadCountLoader`, a rota
+`/dev/principal-conversations` e suas constantes, o destino do menu de
+desenvolvimento, o destino de `/dev/principal-happens`, e as duas linhas de mídia
+da preview. Restou **um** `?from=principal` no arquivo inteiro.
+
+### Sobram exatamente dois pontos manuais
+
+1. **Reinserir a rota de produção `/principal-conversations` dentro do
+   `ShellRoute`**, com `embedded: true`. **Aqui está o risco que a medição
+   revelou:** resolver o conflito **ficando com o lado de `dev` descarta essa
+   rota**, porque ela vive dentro da região que `dev` esvaziou. É o erro mais
+   provável desta resolução e é **silencioso** — compila, e só
+   `principal_chat_route_test.dart` acusa.
+2. **Trocar o único `?from=principal` restante**, por volta da linha 1030 do
+   resultado: o `onOpenMessages` de `/principal-happens` de produção, dentro do
+   bloco que `dev` moveu.
+
+### A instrução para D00 muda de forma
+
+**Não é "aplicar 7 pontos". É "fazer 2 e não estragar 2".** Os outros dois
+perigos da tabela — a guarda do badge e a mídia da preview — **já vieram
+automaticamente** e agora só precisam **não ser desfeitos** durante a resolução
+manual.
+
+Isso é diferente e mais fácil de errar: manter algo que o git já acertou exige
+atenção passiva, que é justamente a que falta numa resolução manual apressada.
+
+**Nenhuma integração aconteceu.** `merge-tree --write-tree` não escreve na árvore
+de trabalho nem cria commit; nenhuma frente fez merge ou rebase.
