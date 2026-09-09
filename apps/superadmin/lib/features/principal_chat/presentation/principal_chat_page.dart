@@ -111,11 +111,13 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
     super.dispose();
   }
 
-  Future<void> _loadInbox() async {
+  /// [silent] recarrega sem trocar a tela por um painel de carregamento, para
+  /// reconciliar a lista depois de um envio sem piscar o que o leitor já vê.
+  Future<void> _loadInbox({bool silent = false}) async {
     final generation = ++_inboxGeneration;
     final requested = _repository;
     final search = _search.text;
-    setState(() => _inboxState = const ChatInboxState.loading());
+    if (!silent) setState(() => _inboxState = const ChatInboxState.loading());
     try {
       final page = await requested.fetchInbox(
         ChatInboxQuery(search: search, pageSize: _pageSize),
@@ -123,13 +125,16 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
       if (!_isCurrentInbox(generation, requested)) return;
       setState(() => _inboxState = ChatInboxState.loaded(page, search: search));
     } on ChatUnauthorizedException catch (error) {
+      // Negação vale mesmo em recarga silenciosa: perder acesso não é detalhe.
       if (_isCurrentInbox(generation, requested)) _denyAccess(error);
     } on ChatOfflineException catch (error) {
-      if (_isCurrentInbox(generation, requested)) {
+      // Numa reconciliação silenciosa a lista que o leitor já tem continua
+      // válida; trocá-la por um painel de falha seria pior que mantê-la.
+      if (_isCurrentInbox(generation, requested) && !silent) {
         setState(() => _inboxState = ChatInboxState.offline(error));
       }
     } catch (error) {
-      if (_isCurrentInbox(generation, requested)) {
+      if (_isCurrentInbox(generation, requested) && !silent) {
         setState(() => _inboxState = ChatInboxState.failure(error));
       }
     }
@@ -298,6 +303,10 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
         if (_composer.text.trim() == body) _composer.clear();
         _thread = thread;
       });
+      // A lista mostra a última mensagem de cada conversa; sem reconciliar, o
+      // preview e a ordenação continuariam anteriores ao que acabou de ser
+      // enviado. A recarga é silenciosa para não piscar a inbox aberta.
+      await _loadInbox(silent: true);
     } on ChatUnauthorizedException catch (error) {
       if (_isCurrentSend(generation, requested, conversation.id)) _denyAccess(error);
     } on ChatOfflineException {
