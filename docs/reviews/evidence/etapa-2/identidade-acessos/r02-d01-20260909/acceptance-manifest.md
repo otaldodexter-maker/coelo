@@ -1,7 +1,7 @@
 ---
 title: "R02 D01 — campanha local de aceites Auth"
 source: "R02-20260909/prompts/D01.md; handoff D01; logs da campanha e Git"
-status: "in-progress; client-evidence-only"
+status: "local-client-and-integrated-green; remote-pending"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
@@ -67,7 +67,7 @@ o gate frio com storage falho. Retry foi corrigido após RED, com3PASS focais
 (dois casos já existentes). O diagnóstico frio usa backend sintético permissivo
 e permanece RED conhecido; não será substituído por um deny simulado. A
 variante SDK/scope/rota/RPC/logout reais foi preparada para a stack local,
-com o mesmo ID lógico de aceite, e ainda não executou. Sua seleção por ambiente
+com o mesmo ID lógico de aceite, e naquele checkpoint ainda não havia executado. Sua seleção por ambiente
 fora de um lote não conta como teste SKIP já executado nem como novo ID.
 
 ## Browser: bloqueio histórico resolvido às15:42
