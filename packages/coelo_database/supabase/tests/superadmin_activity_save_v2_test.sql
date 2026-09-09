@@ -614,14 +614,16 @@ select ok((select count(*)=2
    and (
     unit_link.unit_id='8b200000-0000-4000-8000-000000000011'
       and unit_link.status='inactive'
+      and unit_link.ends_at>unit_link.starts_at
       and group_link.group_id='8b200000-0000-4000-8000-000000000012'
       and group_link.status='inactive'
+      and group_link.ends_at>group_link.starts_at
     or unit_link.unit_id='8b200000-0000-4000-8000-000000000013'
       and unit_link.status='active'
       and group_link.group_id='8b200000-0000-4000-8000-000000000014'
       and group_link.status='active'
    )
-),'unit and group swap removes old parents before adding the new chain');
+),'unit and group swap strictly ends old parents before adding the new chain');
 select ok(not exists(
  select 1 from public.activity_group_assignments assignment
  join public.activity_group_links link on link.id=assignment.activity_group_link_id
