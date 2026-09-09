@@ -78,6 +78,12 @@ function validate(data, trackers) {
     rows.forEach((row, j) => {
       assert.equal(row[2], actions[j].scope, 'Tracker scope: ' + ids[j]);
       assert.equal(row[i === 2 ? 6 : 5], actions[j][layers[i] + 'Status'], 'Tracker state: ' + names[i] + ' ' + ids[j]);
+      const a = actions[j];
+      const normalize = value => value.replace(/\|/g, '/').replace(/\r?\n/g, ' ').trim().replace(/^`|`$/g, '');
+      const expected = i === 2
+        ? [a.screen, a.id, a.scope, a.done, a.fe, a.be, a.integratedStatus, a.evidence]
+        : [a.screen, a.id, a.scope, a.done, i === 0 ? a.fe : a.be, a[layers[i] + 'Status'], a.evidence];
+      assert.deepEqual(row, expected.map(normalize), 'Tracker content: ' + names[i] + ' ' + ids[j]);
     });
     for (const [key, value] of Object.entries(fields)) {
       assert.match(text, new RegExp('^' + key + ': ' + value + '\\r?$', 'm'), 'Header ' + key + ': ' + names[i]);

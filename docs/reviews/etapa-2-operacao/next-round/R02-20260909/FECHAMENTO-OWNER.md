@@ -8,6 +8,12 @@ timezone: "America/Sao_Paulo"
 
 # Entrega R02 — 09/09/2026
 
+Estado documental posterior: o Owner solicitou a
+[reconciliação das pendências R01/R02](RECONCILIACAO-PENDENCIAS-R01-R02.md).
+Os três rastreadores e o inventário incorporam as correções por ação e a fila
+retida da R01, preservando os certificados e resultados deste fechamento.
+Essa manutenção não reabriu a rodada nem alterou a base funcional.
+
 O Owner antecipou o encerramento às 16:43. Os três apoios D00 encerraram;
 nenhum novo lote de Chat foi iniciado. Os oito papéis D01–D04 e L00–L03
 entregaram handoffs, commits e pendências, conferidos pelo D00. A consolidação
