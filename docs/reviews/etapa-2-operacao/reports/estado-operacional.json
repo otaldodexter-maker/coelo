@@ -852,16 +852,8 @@
     "Review C02 schema v2 contract and remaining upload bridge; no remote authorization"
   ],
   "local_replay_lease": {
-    "id": "R01-LOCAL-ACTIVITIES-CLOCK-46-03",
-    "status": "granted-await-execution",
-    "executor": "C03",
-    "instruction": "I018",
-    "issued_at": "2026-09-08T21:14:21-03:00",
-    "source_sha": "d817546b459aa065bf46d0e98e372c194dc5fb65",
-    "source_migrations": 55,
-    "effective_migrations": 57,
-    "assertions": 46,
-    "remote": false
+    "status": "none",
+    "released_at": "2026-09-08T21:23:18-03:00"
   },
   "last_delivery": {
     "branch": "origin/dev",
@@ -1821,7 +1813,8 @@
     },
     "e2e_promotions": 0,
     "delivery_sha": "dcbcebc11c64602c43dab31b313c173988277b4e",
-    "delivery_verified_at": "2026-09-08T21:21:43-03:00"
+    "delivery_verified_at": "2026-09-08T21:21:43-03:00",
+    "activities_clock46": "PASS verified; SQL integration pending full aggregate review"
   },
   "c01_ban_proof_reservation": {
     "instruction": "I020",
@@ -1835,5 +1828,23 @@
       "packages/coelo_database/scripts/e2-r01-auth-personas-local-sql.ts",
       "packages/coelo_database/scripts/e2-r01-auth-personas-local-sql_test.ts"
     ]
+  },
+  "activities_clock46": {
+    "id": "R01-LOCAL-ACTIVITIES-CLOCK-46-03",
+    "status": "closed-pass",
+    "executor": "C03",
+    "instruction": "I018",
+    "issued_at": "2026-09-08T21:14:21-03:00",
+    "source_sha": "d817546b459aa065bf46d0e98e372c194dc5fb65",
+    "source_migrations": 55,
+    "effective_migrations": 57,
+    "assertions": 46,
+    "remote": false,
+    "assertions_actual": 46,
+    "started_at": "2026-09-08T21:19:31.5279552-03:00",
+    "ended_at": "2026-09-08T21:21:01.0114855-03:00",
+    "exit_code": 0,
+    "c00_verified_at": "2026-09-08T21:23:18-03:00",
+    "stdout_sha256": "3168b6af340c0d092f6fb392336dc2666cb9e224c8baa7a6fe6f84c55228111f"
   }
 }
