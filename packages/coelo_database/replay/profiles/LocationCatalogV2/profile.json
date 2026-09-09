@@ -15,7 +15,7 @@
   "location_bootstraps": [
     {
       "file": "20260908030958_location_form_options_remote_snapshot_local.sql",
-      "sha256_crlf_utf8": "99f3ad22a387d1f5c5d274fad5b294805842997386a1d147a486d48129e56d16",
+      "sha256_crlf_utf8": "79baa5ce07501151379f2c2e17979c1338d0067ffbc9a4ecadabcfef8c9f58fa",
       "before": "20260908030959_location_catalog_v2_capability_bootstrap_local.sql"
     },
     {

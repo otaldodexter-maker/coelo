@@ -61,11 +61,51 @@ Describe 'LocationCatalogV2 nominal profile' {
 }
 
 Describe 'LocationCatalogV2 snapshot derivation' {
-  It 'derives the executable snapshot by adding only its local opt-in' {
+  It 'accepts only the three proven baseline EOL representations and rejects semantic drift' {
+    $source = [IO.File]::ReadAllText((Join-Path $packageRoot 'migrations\20260811200614_activity_read_model_contract_hardening.sql'))
+    $bodyMatch = [regex]::Match($source, '(?s)create or replace function app_private\.superadmin_get_activity_form_options\(p_institution_id uuid\).*?as \$\$(.*?)\$\$;')
+    $bodyMatch.Success | Should Be $true
+    $bodyLf = $bodyMatch.Groups[1].Value.Replace("`r`n", "`n")
+    $header = "CREATE OR REPLACE FUNCTION app_private.superadmin_get_activity_form_options(p_institution_id uuid)`n RETURNS jsonb`n LANGUAGE plpgsql`n STABLE SECURITY DEFINER`n SET search_path TO ''`nAS " + '$function$'
+    $footer = '$function$' + "`n"
+    $md5 = [Security.Cryptography.MD5]::Create()
+    try {
+      $hash = { param([string]$Text)
+        ([BitConverter]::ToString($md5.ComputeHash([Text.UTF8Encoding]::new($false).GetBytes($Text)))).Replace('-', '').ToLowerInvariant()
+      }
+      $fixture = [IO.File]::ReadAllText((Join-Path $packageRoot 'tests\fixtures\20260908030958_location_form_options_remote_snapshot_local.sql'))
+      $pinsMatch = [regex]::Match($fixture, '(?s)md5\(pg_get_functiondef\(proc_record\.oid\)\) not in \((.*?)\)')
+      $pinsMatch.Success | Should Be $true
+      $pins = @([regex]::Matches($pinsMatch.Groups[1].Value, "'[0-9a-f]{32}'") | ForEach-Object { $_.Value.Trim("'") })
+      $pins.Count | Should Be 3
+      foreach ($body in @($bodyMatch.Groups[1].Value, $bodyLf, $bodyLf.Replace("`n", "`r`n"))) {
+        $definition = $header + $body + $footer
+        $pins -contains (& $hash $definition) | Should Be $true
+        (& $hash ($definition.Replace("`r`n", "`n"))) | Should Be 'b951e603ef34b7d26597356a16eb6d06'
+      }
+      $changed = ($header + $bodyLf + $footer).Replace("activities.read", "platform.read")
+      $pins -contains (& $hash $changed) | Should Be $false
+      (& $hash $changed) | Should Not Be 'b951e603ef34b7d26597356a16eb6d06'
+    } finally { $md5.Dispose() }
+  }
+
+  It 'preserves the original snapshot apart from local opt-in and proven baseline EOL pins' {
     $resolved = & $resolverPath
     $derived = [IO.File]::ReadAllText(@($resolved.LocationBootstrap)[0].FullName).
       Replace("`r`n", "`n").Replace("`r", "`n")
     $optIn = "set local coelo.local_replay = 'location-catalog-v2-remote-options-snapshot';`n"
+    $eolGuard = @'
+  -- Same canonical body from 20260811200614: CRLF, LF, and checkout mixed EOL.
+  -- Prepare copies bytes; its source fingerprint normalizes EOL. Keep both pins.
+  if md5(pg_get_functiondef(proc_record.oid)) not in (
+      '70700ddc38d42df4fae75765b7ff2617',
+      'b951e603ef34b7d26597356a16eb6d06',
+      '7a39603e364397b5b50f1a3a1f9e4b69')
+'@
+    $eolGuard = $eolGuard.Replace("`r`n", "`n")
+    ([regex]::Matches($derived, [regex]::Escape($eolGuard))).Count | Should Be 1
+    $derived = $derived.Replace($eolGuard,
+      "  if md5(pg_get_functiondef(proc_record.oid)) <> '70700ddc38d42df4fae75765b7ff2617'")
     $withoutOptInPath = Join-Path $TestDrive 'location-options-original.sql'
 
     ([regex]::Matches($derived, [regex]::Escape($optIn))).Count | Should Be 1

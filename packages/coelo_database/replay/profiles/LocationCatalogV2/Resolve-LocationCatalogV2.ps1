@@ -25,7 +25,7 @@ function Get-LocationHash([string]$Path) {
 }
 
 $descriptorFile = Assert-LocationFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-LocationHash $descriptorFile.FullName) -cne '357bcca0c016e82105b3cd6c54038c2faab88afc33b3cadfc619825b44dbeeb1') { throw 'LocationCatalogV2 descriptor hash mismatch' }
+if ((Get-LocationHash $descriptorFile.FullName) -cne 'c46f836935e8f77125bca34f3ef643f4eeb477a9c4fb327479d43519e5da850b') { throw 'LocationCatalogV2 descriptor hash mismatch' }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json
 if ($TargetVersion -cne $descriptor.target_version) { throw "LocationCatalogV2 requires target 20260908190650; received $TargetVersion" }
 if (@($descriptor.extra_bridges).Count -ne 0) { throw 'LocationCatalogV2 does not permit extra bridges' }

@@ -27,7 +27,12 @@ begin
   if proc_record.oid is null then
     raise object_not_in_prerequisite_state using message='local options baseline missing';
   end if;
-  if md5(pg_get_functiondef(proc_record.oid)) <> '70700ddc38d42df4fae75765b7ff2617'
+  -- Same canonical body from 20260811200614: CRLF, LF, and checkout mixed EOL.
+  -- Prepare copies bytes; its source fingerprint normalizes EOL. Keep both pins.
+  if md5(pg_get_functiondef(proc_record.oid)) not in (
+      '70700ddc38d42df4fae75765b7ff2617',
+      'b951e603ef34b7d26597356a16eb6d06',
+      '7a39603e364397b5b50f1a3a1f9e4b69')
     or md5(replace(pg_get_functiondef(proc_record.oid),E'\r\n',E'\n')) <> 'b951e603ef34b7d26597356a16eb6d06'
     or pg_get_userbyid(proc_record.proowner) <> 'postgres'
     or not proc_record.prosecdef or proc_record.provolatile <> 's'
