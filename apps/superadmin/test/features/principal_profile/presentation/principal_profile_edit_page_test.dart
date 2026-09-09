@@ -136,6 +136,60 @@ void main() {
     expect(find.byKey(const Key('principal-profile-edit-save')), findsOneWidget);
   });
 
+  testWidgets('drops the previous draft when the context changes', (tester) async {
+    final repository = _StubAboutRepository(page: pageWith('Antes'));
+    await pump(tester, repository);
+    expect(repository.loaded.single.institutionId, 'institution-1');
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalProfileEditPage(
+          runtimeContext: const PrincipalRuntimeContext(
+            membershipId: 'membership-2',
+            personId: 'person-1',
+            institutionId: 'institution-2',
+            institutionName: 'Outra Instituição',
+            roleCode: 'staff',
+            scopeKind: 'institution',
+          ),
+          repository: repository,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(repository.loaded, hasLength(2));
+    expect(repository.loaded.last.institutionId, 'institution-2');
+  });
+
+  testWidgets('fails closed when the context is revoked while editing', (tester) async {
+    final repository = _StubAboutRepository(page: pageWith('Antes'));
+    await pump(tester, repository);
+
+    repository.loadError = ProfileAboutUnauthorizedException();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalProfileEditPage(
+          runtimeContext: const PrincipalRuntimeContext(
+            membershipId: 'membership-3',
+            personId: 'person-1',
+            institutionId: 'institution-3',
+            institutionName: 'Instituição Revogada',
+            roleCode: 'staff',
+            scopeKind: 'institution',
+          ),
+          repository: repository,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-profile-edit-unauthorized')), findsOneWidget);
+    expect(find.byKey(const Key('principal-profile-edit-save')), findsNothing);
+  });
+
   testWidgets('reload re-reads the authorized page on demand', (tester) async {
     final repository = _StubAboutRepository(page: pageWith('Antes'));
     await pump(tester, repository);

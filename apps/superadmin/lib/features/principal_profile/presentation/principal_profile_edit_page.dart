@@ -64,6 +64,21 @@ final class _PrincipalProfileEditPageState extends State<PrincipalProfileEditPag
   }
 
   @override
+  void didUpdateWidget(covariant PrincipalProfileEditPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.repository, widget.repository) &&
+        oldWidget.runtimeContext.institutionId == widget.runtimeContext.institutionId &&
+        oldWidget.runtimeContext.unitId == widget.runtimeContext.unitId &&
+        oldWidget.runtimeContext.groupId == widget.runtimeContext.groupId) {
+      return;
+    }
+    // A changed or revoked context must not keep editing the previous subject's
+    // draft: the page reloads and the stale controller goes away.
+    _replace(const _Loading());
+    _load();
+  }
+
+  @override
   void dispose() {
     _generation += 1;
     if (_state case _Editing(:final controller)) controller.dispose();
