@@ -4,6 +4,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_location_map_preview.dart';
+import '../domain/location_capabilities.dart';
 import '../domain/location_catalog_reader.dart';
 import '../domain/location_catalog_writer.dart';
 import 'location_copy_dialog.dart';
@@ -19,6 +20,7 @@ class LocationDetailPanel extends StatefulWidget {
     required this.scope,
     required this.onBack,
     this.writer,
+    this.capabilities = LocationCapabilities.all,
     this.onEdit,
     this.onCopied,
     this.requestIdFactory,
@@ -37,6 +39,14 @@ class LocationDetailPanel extends StatefulWidget {
   /// Opt-in. Without a writer the detail is exactly the read-only panel it was,
   /// down to the pixel, and no control appears that the composition cannot back.
   final LocationCatalogWriter? writer;
+
+  /// Which of the writes to draw, once a writer is present.
+  ///
+  /// Defaults to everything so that composing a writer behaves as it did before
+  /// the capabilities had names. Status, copy and schedule used to share the
+  /// writer's presence as their only gate, which meant granting one granted all
+  /// three.
+  final LocationCapabilities capabilities;
 
   /// Opt-in. The panel does not own the form, so it asks the page to open it.
   final ValueChanged<LocationCatalogEntry>? onEdit;
@@ -93,7 +103,7 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
   Future<void> _copy(LocationCatalogEntry item) async {
     final writer = widget.writer;
     final onCopied = widget.onCopied;
-    if (writer == null || onCopied == null) return;
+    if (writer == null || onCopied == null || !widget.capabilities.copy) return;
     final created = await showDialog<LocationCatalogEntry>(
       context: context,
       builder: (context) => LocationCopyDialog(
@@ -134,25 +144,27 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
                         'Visibilidade': locationVisibilityLabel(item.visibility),
                         'Status': locationStatusLabel(item.status),
                       }),
-                      if (widget.writer case final writer?)
-                        LocationScheduleSection(
-                          entry: item,
-                          writer: writer,
-                          enabled: widget.sessionAvailable,
-                          requestIdFactory: widget.requestIdFactory,
-                          onPublished: () => unawaited(_controller.load()),
-                        ),
-                      if (widget.writer case final writer?)
-                        LocationStatusActions(
-                          entry: item,
-                          writer: writer,
-                          enabled: widget.sessionAvailable,
-                          requestIdFactory: widget.requestIdFactory,
-                          // The catalog moved, so what this panel holds is one
-                          // version behind. Reading again is cheaper than being
-                          // subtly wrong about the version the next command needs.
-                          onChanged: (_) => unawaited(_controller.load()),
-                        ),
+                      if (widget.capabilities.schedule)
+                        if (widget.writer case final writer?)
+                          LocationScheduleSection(
+                            entry: item,
+                            writer: writer,
+                            enabled: widget.sessionAvailable,
+                            requestIdFactory: widget.requestIdFactory,
+                            onPublished: () => unawaited(_controller.load()),
+                          ),
+                      if (widget.capabilities.status)
+                        if (widget.writer case final writer?)
+                          LocationStatusActions(
+                            entry: item,
+                            writer: writer,
+                            enabled: widget.sessionAvailable,
+                            requestIdFactory: widget.requestIdFactory,
+                            // The catalog moved, so what this panel holds is one
+                            // version behind. Reading again is cheaper than being
+                            // subtly wrong about the version the next command needs.
+                            onChanged: (_) => unawaited(_controller.load()),
+                          ),
                       if (item.address case final address?) ...[
                         locationTextSection(context, 'Endereço próprio', {
                           'País': locationOptionalText(address['country']),
@@ -195,7 +207,7 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
                   child: const Text('Voltar'),
                 ),
                 continuationActions: [
-                  if (widget.onCopied != null && widget.writer != null)
+                  if (widget.onCopied != null && widget.writer != null && widget.capabilities.copy)
                     if (_controller.data case final item?)
                       OutlinedButton.icon(
                         key: const Key('location-detail-copy'),

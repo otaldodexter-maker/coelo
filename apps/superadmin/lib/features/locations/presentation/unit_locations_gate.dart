@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../auth/domain/logout_action.dart';
 import '../../units/domain/unit_detail.dart';
+import '../domain/location_capabilities.dart';
 import '../domain/location_catalog_reader.dart';
 import '../domain/location_catalog_writer.dart';
 import 'location_read_widgets.dart';
@@ -25,6 +26,7 @@ final class UnitLocationsGate extends StatefulWidget {
     this.reader = const UnavailableLocationCatalogReader(),
     this.writer = const UnavailableLocationCatalogWriter(),
     this.canCreate = false,
+    this.capabilities,
     this.sessionAvailable = false,
     this.contextRevision = 0,
     this.selectedLocationId,
@@ -40,6 +42,10 @@ final class UnitLocationsGate extends StatefulWidget {
   final LocationCatalogReader reader;
   final LocationCatalogWriter writer;
   final bool canCreate;
+
+  /// Passed straight through; null lets the page derive the old behaviour from
+  /// [canCreate].
+  final LocationCapabilities? capabilities;
   final bool sessionAvailable;
   final int contextRevision;
   final String? selectedLocationId;
@@ -123,6 +129,7 @@ final class _UnitLocationsGateState extends State<UnitLocationsGate> {
       reader: widget.reader,
       writer: widget.writer,
       canCreate: widget.canCreate,
+      capabilities: widget.capabilities,
       sessionAvailable: widget.sessionAvailable,
       contextRevision: widget.contextRevision,
       selectedLocationId: widget.selectedLocationId,
