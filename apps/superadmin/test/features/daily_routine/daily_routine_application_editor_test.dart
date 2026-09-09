@@ -113,6 +113,53 @@ void main() {
     });
   }
 
+  for (final validationCase in [
+    (
+      name: 'inverted validity',
+      inputs: const {
+        'daily-routine-application-valid-from': '2026-09-10',
+        'daily-routine-application-valid-until': '2026-09-09',
+      },
+      message: 'O inicio da validade nao pode ser posterior ao fim.',
+    ),
+    (
+      name: 'invalid start time',
+      inputs: const {'daily-routine-application-starts-at': '08:7'},
+      message: 'Informe o horario inicial no formato HH:MM.',
+    ),
+  ]) {
+    testWidgets('rejects ${validationCase.name} before saving an application', (tester) async {
+      final repository = _RoutineRepository();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: DailyRoutineWizardPage(
+            repository: repository,
+            logout: unavailableSuperadminLogout,
+            entryKind: RoutineEntryKind.application,
+            applicationFromModelId: 'source-model',
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      for (final input in validationCase.inputs.entries) {
+        await tester.enterText(find.byKey(Key(input.key)), input.value);
+      }
+      await tester.tap(find.byKey(const Key('daily-routine-application-save')));
+      await tester.pumpAndSettle();
+
+      expect(find.text(validationCase.message), findsOneWidget);
+      expect(repository.savedApplication, isNull);
+      for (final input in validationCase.inputs.entries) {
+        expect(
+          tester.widget<CoeloFormTextField>(find.byKey(Key(input.key))).controller.text,
+          input.value,
+        );
+      }
+    });
+  }
+
   testWidgets('ignores a late application load after the editor context changes', (tester) async {
     final repository = _DelayedRoutineRepository();
 

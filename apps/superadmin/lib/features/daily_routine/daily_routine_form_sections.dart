@@ -984,15 +984,13 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     final current = _entry! as RoutineApplication;
     final repository = widget.repository;
     final generation = ++_commandGeneration;
-    final application = _applicationDraft(current);
-    if (application.modelVersionId.isEmpty || application.institutionId.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Informe a versao do modelo e a instituicao.')));
-      return;
-    }
-    setState(() => _saving = true);
     try {
+      final application = _applicationDraft(current);
+      if (application.modelVersionId.isEmpty || application.institutionId.isEmpty) {
+        throw const FormatException('Informe a versao do modelo e a instituicao.');
+      }
+      application.validate();
+      setState(() => _saving = true);
       final id = await repository.saveApplication(
         application,
         requestId: 'save-application-${DateTime.now().microsecondsSinceEpoch}',
