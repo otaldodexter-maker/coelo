@@ -18,7 +18,7 @@ Ambiente local Windows, Flutter3.44.2/Dart3.12.2, execução Flutter serializada
 dentro da frente D01. Registros de D00 na base integrada são recibos distintos;
 não aumentam os testes únicos desta campanha.
 
-## Plano e execução até 13:26 BRT
+## Plano e execução até 13:33 BRT
 
 | Grupo de casos únicos | P | F | B | S | U | Recibo |
 |---|---:|---:|---:|---:|---:|---|
@@ -29,19 +29,20 @@ não aumentam os testes únicos desta campanha.
 | Recuperar/Redefinir telas23 +goldens8 +responsivo30 |61|0|0|0|0|`recover-reset-client.txt`, commit6dfec55a|
 | Persistência navegador e credencial inválida |0|0|4|0|0|Falha CUA descrita abaixo|
 | Continuidade adapter2 +VM7 de Recuperar |9|0|0|0|0|`recover-adapter-viewmodel.txt`, exit0,4s|
-| Composição SDK/callback/form/reset/logout |0|0|0|0|2|Novo teste focal em preparação|
-| **Total do plano local119** |**113**|**0**|**4**|**0**|**2**|Sem somar reruns|
+| Composição SDK/callback/form/reset/logout |2|0|0|0|0|`recovery-composition-reconciliation.md`, dois IDs finais PASS|
+| **Total do plano local119** |**115**|**0**|**4**|**0**|**0**|Sem somar reruns|
 
 Resultado histórico de motion e erros iniciais de compilação do harness estão
 preservados nos logs; asserções corrigidas e mesmo ID final PASS, sem somar
 tentativas. As três falhas visuais anteriores de Login foram resolvidas por
 geometria do componente. Os onze PNGs aprovados permanecem inalterados.
-Executado113/119 neste checkpoint; bloqueados4 e não executados2 permanecem
+Executado115/119 neste checkpoint; bloqueados4 e não executados0 permanecem
 explícitos. Estes números não são avanço FE/BE/E2E nem porcentagem de produto.
-Taxa aprovada113/113=100%; falha0/113=0%; execução e aprovação do plano
-113/119=94,96%. Os dois testes novos de composição ainda sem resultado
-conclusivo permanecem U2; sua espera de fixture não foi classificada como
-falha de produto.
+Taxa aprovada115/115=100%; falha0/115=0%; execução e aprovação do plano
+115/119=96,64%. A espera de fixture foi resolvida pelo ciclo assíncrono real
+de criação/dispose do SDK; a expectativa incorreta de mensagem foi corrigida
+para o feedback específico do contrato. Resultados intermediários estão
+preservados e pertencem aos mesmos dois IDs finais verdes.
 
 ## Browser: quatro casos bloqueados por ferramenta
 
@@ -92,11 +93,12 @@ storage por caminho alternativo nem contamos tela aberta como teste aprovado.
 
 ## Limites de certificação
 
-Reconciliação atualizada: **FE1/4 (25%), BE0/4 (0%), E2E0/4 (0%)** no recorte
+Reconciliação atualizada: **FE2/4 (50%), BE0/4 (0%), E2E0/4 (0%)** no recorte
 D01, proposta ao escritor D00. `auth.recover` tem aceite FE verificado,
 conforme `recover-fe-reconciliation.md`, após fechar adapter/VM9PASS;
-ausência de SMTP não rebaixa essa camada. Login/Sair têm gates de browser,
-e Redefinir tem a composição cliente acima ainda em execução. Esses números
+ausência de SMTP não rebaixa essa camada. `auth.reset` tem aceite FE verificado
+com a composição cliente acima fechada e demais evidências reconciliadas.
+Login/Sair têm gates de browser. Esses números
 não substituem inventário global datado nem provam integração/publicação.
 
 Pacote remoto `D01-AUTH-PROOF-R02-v1` possui dez gates nominais A1/A2,

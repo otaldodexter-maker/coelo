@@ -1,0 +1,55 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub test/features/auth/domain/coelo_auth_ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart
+00:00 +0: SDK recovery callback through reset form waits for logout: success=true
+D01 composition: initializing scope
+D01 composition: scope ready
+D01 composition: login mounted
+D01 composition: callback consumed
+D01 composition: update sent; logout pending
+D01 composition: logout response delivered
+D01 composition: reset settled
+D01 composition: returned to login
+D01 composition: unmounted
+00:02 +1: SDK recovery callback through reset form waits for logout: success=false
+D01 composition: initializing scope
+D01 composition: scope ready
+D01 composition: login mounted
+D01 composition: callback consumed
+D01 composition: update sent; logout pending
+D01 composition: logout response delivered
+D01 composition: reset settled
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Este link não é mais válido": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart:147:11)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart line 147
+The test description was:
+  SDK recovery callback through reset form waits for logout: success=false
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:03 +1 -1: SDK recovery callback through reset form waits for logout: success=false [E]
+  Test failed. See exception logs above.
+  The test description was: SDK recovery callback through reset form waits for logout: success=false
+
+00:03 +1 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart: SDK recovery callback through reset form waits for logout: success=false
