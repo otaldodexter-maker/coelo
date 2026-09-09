@@ -224,15 +224,18 @@ final class _PrincipalProfileEditPageState extends State<PrincipalProfileEditPag
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(CoeloSpacing.space4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+              // Wrap, not Row: at 200% text the two actions do not fit side by
+              // side on a narrow screen and must reflow instead of overflowing.
+              child: Wrap(
+                alignment: WrapAlignment.end,
+                spacing: CoeloSpacing.space3,
+                runSpacing: CoeloSpacing.space2,
                 children: [
                   TextButton(
                     key: const Key('principal-profile-edit-reload'),
                     onPressed: _load,
                     child: const Text('Recarregar'),
                   ),
-                  const SizedBox(width: CoeloSpacing.space3),
                   AnimatedBuilder(
                     animation: controller,
                     builder: (context, _) => FilledButton(
