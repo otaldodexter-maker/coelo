@@ -116,6 +116,53 @@ LocationConsumerBindingPage decodeLocationConsumerBindingsV2(
   );
 }
 
+/// Correlates the current choice; an empty choice is not a missing permission.
+LocationConsumerCurrentSelection decodeLocationConsumerSelectionV2(
+  Object? value, {
+  required LocationReservationConsumer requestedConsumer,
+}) {
+  final consumerId = _uuid(requestedConsumer.id);
+  final consumerKey = switch (requestedConsumer.kind) {
+    LocationReservationConsumerKind.group => 'group_id',
+    LocationReservationConsumerKind.activity => 'activity_id',
+    _ => _invalid(),
+  };
+  final data = _map(_data(value), {consumerKey, 'location'});
+  if (_uuid(data[consumerKey]) != consumerId) _invalid();
+  final consumer = LocationReservationConsumer(kind: requestedConsumer.kind, id: consumerId);
+  if (data['location'] == null) {
+    return LocationConsumerCurrentSelection(consumer: consumer, location: null, status: null);
+  }
+  final row = _map(data['location'], const {
+    'id',
+    'scope_kind',
+    'institution_id',
+    'unit_id',
+    'kind',
+    'name',
+    'status',
+  });
+  final institution = _uuid(row['institution_id']);
+  final LocationScope scope;
+  if (row['scope_kind'] == 'institution' && row['unit_id'] == null) {
+    scope = LocationScope.institution(institutionId: institution);
+  } else if (row['scope_kind'] == 'unit') {
+    scope = LocationScope.unit(institutionId: institution, unitId: _uuid(row['unit_id']));
+  } else {
+    _invalid();
+  }
+  return LocationConsumerCurrentSelection(
+    consumer: consumer,
+    location: LocationReferenceSnapshot(
+      id: _uuid(row['id']),
+      scope: scope,
+      kind: _enum(row['kind'], LocationKind.values),
+      label: _text(row['name'], 120),
+    ),
+    status: _enum(row['status'], LocationCatalogStatus.values),
+  );
+}
+
 Object? _data(Object? value) {
   final envelope = _map(value, const {'ok', 'data', 'error'});
   if (envelope['ok'] == false) {
@@ -650,7 +697,8 @@ LocationSchedule decodeLocationScheduleV2(Object? value, {required String reques
     // The catalog promises non-overlapping windows. Checking here means a
     // server that broke that promise is caught at the boundary instead of
     // becoming a schedule the screen quietly renders wrong.
-    if (windows.isNotEmpty && (parsed.compareTo(windows.last) <= 0 || parsed.overlaps(windows.last))) {
+    if (windows.isNotEmpty &&
+        (parsed.compareTo(windows.last) <= 0 || parsed.overlaps(windows.last))) {
       _invalid();
     }
     windows.add(parsed);
