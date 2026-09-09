@@ -1,0 +1,36 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/d04_principal_model_scope_test.dart
+00:00 +0: Principal model scope menu cannot select institution or unit
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: no matching candidates
+  Actual: _TextWidgetFinder:<Found 1 widget with text "Instituição": [
+            Text("Instituição", dependencies: [DefaultSelectionStyle, DefaultTextStyle,
+MediaQuery]),
+          ]>
+   Which: means one was found but none were expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/d04_principal_model_scope_test.dart:34:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/d04_principal_model_scope_test.dart line 34
+The test description was:
+  Principal model scope menu cannot select institution or unit
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:08 +0 -1: Principal model scope menu cannot select institution or unit [E]
+  Test failed. See exception logs above.
+  The test description was: Principal model scope menu cannot select institution or unit
+  
+00:09 +0 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/d04_principal_model_scope_test.dart: Principal model scope menu cannot select institution or unit
+

@@ -1,0 +1,12 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/d04_principal_model_scope_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/d04_principal_model_scope_test.dart: Principal model scope menu cannot select institution or unit
+00:09 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/d04_principal_model_scope_test.dart: Principal model scope menu cannot select institution or unit
+00:23 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/d04_principal_model_scope_test.dart: Principal model scope menu cannot select institution or unit
+00:25 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_context_test.dart: old completion cannot release the replacement save lock
+00:34 +4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_context_test.dart: form replaces context and discards old load denied=false
+00:35 +5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_context_test.dart: form replaces context and discards old load denied=true
+00:39 +6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_context_test.dart: old save cannot complete in the replacement form conflict=false
+00:46 +7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_context_test.dart: old save cannot complete in the replacement form conflict=true
+00:55 +8: All tests passed!
+

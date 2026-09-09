@@ -1,12 +1,12 @@
 ---
 title: "R02 D04 Perfis e Modelos — subagente"
 source: "prompts/D04.md; assignment D04 r3; specs/018-profiles-permissions-superadmin.md; inspeção da base 56eb3f19"
-status: "local-green-first-package; next-ui-scope-correction"
+status: "local-green-two-packages; runtime-and-remote-gates-open"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
 
-Rodada E2-R02-20260909; subagente `/root/profiles_models`; revisão 2;
+Rodada E2-R02-20260909; subagente `/root/profiles_models`; revisão 3;
 instrução processada: pai D04, ownership exclusivo feature access_profiles e
 testes; novos arquivos SQL nominais reservados via pai; sem commits próprios.
 Início observado: 14:18 BRT. Modelo requerido: gpt-6-astra, medium; runtime
@@ -132,9 +132,52 @@ não encaminha `onDuplicate`. Proposta pontual ao D00 via pai:
 4. Provar entrada normal, submit/cancel/negado/revogado, sem herdar os testes
    de /dev ou de página isolada como certificado E2E.
 
-Próxima correção própria: editor Principal oferece escopos institution/unit,
-embora o contrato aceite somente child_context (mapeado group no cliente).
-Preparar teste focal e restringir opções; sem redesenho e sem alterar enum comum.
+## Pacote 2 apto local — 14:50:28 BRT
+
+Corrigido editor de Modelos Principal: opções institution/unit não podem mais
+ser escolhidas porque contrato desse domínio aceita somente child_context
+(mapeado group no cliente). Os escopos Admin e Superadmin foram preservados.
+Baseline: formulário Criar/Editar Instituições, componente
+`CoeloAdminSingleSelectField` existente, sem novo estilo/componente/token.
+
+Arquivos aptos:
+- `apps/superadmin/lib/features/access_profiles/presentation/access_profile_form_page.dart`
+- `apps/superadmin/test/features/access_profiles/presentation/d04_principal_model_scope_test.dart`
+
+Teste RED1 comprovou opção indevida Instituição no menu aberto. GREEN8/8:
+novo teste de menu +7 testes existentes em access_profile_form_context_test.
+Analyzer2 limpo; format2 sem diferenças; git diff --check limpo.
+SHA256 form: `76822e029639bc1e63436bad3576de8e86f9f1c37c40bc41932f2d744ea3d393`;
+teste: `c09d62b758cf1f63ee5aaf8c9e685c2bd72eca5ab75cac3a44c834cc81c68821`.
+Logs: `D04-models-scope-ui-red.log`, `D04-models-scope-ui-green.log`.
+
+Validador obrigatório executado:
+`dart apps/catalog/tool/validate_admin_visual_contracts.dart . apps/catalog/assets/admin-visual-contract-allowlist.json`.
+Resultado FAIL em ocorrência preexistente fora D04:
+`locations/presentation/location_schedule_section.dart:292`, DropdownButtonFormField cru.
+Esse arquivo não tem diff contra56eb3f19; nenhum raw widget foi introduzido
+no delta D04. Não ampliar allowlist nem editar Locais por conveniência.
+Primeira invocação sem argumentos mostrou usage; invocação corrigida acima
+é o resultado atual. Gate global visual permanece aberto, sem certificado FE.
+
+Pacote1 commitado/publicado pelo pai em `c2209794b`; observado localmente,
+confirmação de remoto recebida do pai. Review independente child_safety,
+somente leitura, não encontrou bloqueante novo no SQL/ACL/cursor; não executou
+lote duplicado. Pacote2 aguardando commit/push serializado pelo pai.
+
+Total focal atual **P60/F0/B0/S0/U0 de testes de produto**:45 Flutter +15pgTAP,
+sem somar RED/reruns. Validador documental/visual separado:1 falha baseline
+fora do delta. Nenhum processo/recurso próprio permanece ativo; Flutter e SQL
+slots liberados. Memória: nenhuma nova regra de produto; projeção antiga
+reportada ao writer central. Não criar arquivo de conhecimento de atividade.
+
+Aceites locais adicionados por ID: access-models.filter (CSV+cursor+UI scope),
+access-models.create/edit/duplicate (Principal child_context),
+access-models.detail/edit (capabilities não são vínculos). Demais IDs preservam
+estado anterior. FE/BE/E2E certificados novos0/12; runtime normal/visuais por
+ação e autorização/aplicação do pacote remoto ainda abertos. Perfis depende
+da decisão de visibilidade e readers/writes/assign próprios. Duplicação normal
+depende da reserva de rotas e guards descrita acima; não é bloqueio de SQL.
 
 ## Conhecimento
 
