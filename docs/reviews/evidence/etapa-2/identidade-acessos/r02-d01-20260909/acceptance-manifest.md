@@ -18,7 +18,7 @@ Ambiente local Windows, Flutter3.44.2/Dart3.12.2, execução Flutter serializada
 dentro da frente D01. Registros de D00 na base integrada são recibos distintos;
 não aumentam os testes únicos desta campanha.
 
-## Plano e execução até 13:33 BRT
+## Plano e execução até 14:26 BRT
 
 | Grupo de casos únicos | P | F | B | S | U | Recibo |
 |---|---:|---:|---:|---:|---:|---|
@@ -30,19 +30,35 @@ não aumentam os testes únicos desta campanha.
 | Persistência navegador e credencial inválida |0|0|4|0|0|Falha CUA descrita abaixo|
 | Continuidade adapter2 +VM7 de Recuperar |9|0|0|0|0|`recover-adapter-viewmodel.txt`, exit0,4s|
 | Composição SDK/callback/form/reset/logout |2|0|0|0|0|`recovery-composition-reconciliation.md`, dois IDs finais PASS|
-| **Total do plano local119** |**115**|**0**|**4**|**0**|**0**|Sem somar reruns|
+| Demais casos SDK de recovery/scope, sem repetir as3 negativas OTP acima |18|0|0|0|0|`recovery-persistence-regression.txt` e `recovery-persistence-fixtures-green.txt`|
+| Storage condicional: contrato existente |5|0|0|0|0|`recovery-persistence-regression.txt`|
+| Cold reload SDK/storage, preferência ligada/desligada |2|0|0|0|0|`recovery-cold-storage-green.txt`|
+| Corrida de escrita/remoção e recuperação após erro |2|0|0|0|0|`recovery-cold-storage-green.txt`|
+| Gateway: replay/seed/erros síncrono e assíncrono de limpeza |5|0|0|0|0|`recovery-persistence-gateway-review.md` e logs referenciados|
+| **Total do plano local151** |**147**|**0**|**4**|**0**|**0**|Sem somar reruns|
 
 Resultado histórico de motion e erros iniciais de compilação do harness estão
 preservados nos logs; asserções corrigidas e mesmo ID final PASS, sem somar
 tentativas. As três falhas visuais anteriores de Login foram resolvidas por
 geometria do componente. Os onze PNGs aprovados permanecem inalterados.
-Executado115/119 neste checkpoint; bloqueados4 e não executados0 permanecem
+Executado147/151 neste checkpoint; bloqueados4 e não executados0 permanecem
 explícitos. Estes números não são avanço FE/BE/E2E nem porcentagem de produto.
-Taxa aprovada115/115=100%; falha0/115=0%; execução e aprovação do plano
-115/119=96,64%. A espera de fixture foi resolvida pelo ciclo assíncrono real
+Taxa aprovada147/147=100%; falha0/147=0%; execução e aprovação do plano
+147/151=97,35%. A espera de fixture foi resolvida pelo ciclo assíncrono real
 de criação/dispose do SDK; a expectativa incorreta de mensagem foi corrigida
 para o feedback específico do contrato. Resultados intermediários estão
 preservados e pertencem aos mesmos dois IDs finais verdes.
+
+O RED novo de cold reload com persistência ligada e a corrida de escrita foram
+resolvidos pela remoção serializada e recuperação somente em memória. A
+regressão de28casos apresentou25PASS/3FAIL de fixture: inicializadores SDK
+substituídos pelos testes não inicializavam o storage fornecido. Os seis casos
+afetados pela correção das fixtures (quatro scope e dois composição) passaram;
+os demais verdes não foram repetidos. Falhas iniciais nos predicados de dois
+novos testes do gateway também foram corrigidas no teste. Não são falhas
+atuais do produto nem casos adicionais. Uma falha real de remoção do storage
+continua explicitamente fora da garantia de cold reload seguro; os testes de
+erro preservam essa limitação e exigem erro sanitizado e confinamento em memória.
 
 ## Browser: quatro casos bloqueados por ferramenta
 
@@ -50,7 +66,9 @@ Harness `apps/superadmin/test/manual/auth_session_persistence_harness.dart`,
 SDK/storage/scope e rotas normais; apenas HTTP sintético. Debug obrigatório,
 origem exata `http://127.0.0.1:8921`, sem fallback remoto e sem deploy.
 
-Comando reproduzível a partir de `apps/superadmin`, porta exclusiva D01:
+Comando reproduzível a partir de `apps/superadmin`. Desde assignment D00 r7,
+o coordenador detém a porta/origem para diagnóstico; D01 não inicia runner
+concorrente:
 
 ```powershell
 rtk proxy flutter run --no-pub -d web-server --web-hostname 127.0.0.1 --web-port 8921 -t test/manual/auth_session_persistence_harness.dart
@@ -95,22 +113,37 @@ aprovado. Servidor61459 encerrado via `q`, exit0, às13:36 BRT. B4 mantido.
   alegação de gate global limpo.
 - Pacote nominal: seis testes Node preflight e16 executor PASS, modos offline
   PASS, GET settings real e SQL READ ONLY qualificados. Recibo
-  `remote-package-qualification.md`. Categoria ferramentas, fora dos119 acima.
+  `remote-package-qualification.md`. Categoria ferramentas, fora dos151 acima.
 - Memória: gate de validação PASS; suíte da ferramenta12PASS/1SKIP por symlink
   indisponível no host, fora do produto. Nenhuma regra durável aprovada nova.
 
+## Provedor real local: campanha separada
+
+Perfil AuthOnly até migration20260901200206, GoTrue2.196.0/Postgres17/
+PostgREST/Mailpit reais em recursos descartáveis próprios. Trinta testes
+pgTAP e o ciclo HTTP completo de Auth passaram (`local-auth-lifecycle-receipt.md`).
+Não equivalem a teste na revisão completa atual do banco nem a produção.
+
+Novo discriminante backend: **1PASS/2FAIL**, três casos únicos em
+`local-auth-recovery-boundary-receipt.md`. Login por senha obtém contexto;
+recovery antes do PUT e após refresh também obtiveram contexto, indevidamente.
+Saída0 do observador não significa aprovação. Correção SQL é proposta local
+com preparação reservada por D00 r9 e janela SQL pendente; nenhum resultado GREEN dessa
+correção existe neste checkpoint. Cleanup dos dois projetos locais confirmado.
+
 ## Limites de certificação
 
-Reconciliação atualizada: **FE2/4 (50%), BE0/4 (0%), E2E0/4 (0%)** no recorte
-D01, proposta ao escritor D00. `auth.recover` tem aceite FE verificado,
+Reconciliação após RED: **FE1/4 certificado +1/4 restaurado proposto,
+BE0/4, E2E0/4** no recorte D01. `auth.recover` tem aceite FE verificado,
 conforme `recover-fe-reconciliation.md`, após fechar adapter/VM9PASS;
-ausência de SMTP não rebaixa essa camada. `auth.reset` tem aceite FE verificado
-com a composição cliente acima fechada e demais evidências reconciliadas.
+ausência de SMTP não rebaixa essa camada. `auth.reset` foi reaberto por cold
+reload; correção e147provas locais reconciliadas permitem propor nova integração
+e verificação FE pelo D00, sem antecipar o recibo da base conjunta.
 Login/Sair têm gates de browser. Esses números
 não substituem inventário global datado nem provam integração/publicação.
 
 Pacote remoto `D01-AUTH-PROOF-R02-v1` possui dez gates nominais A1/A2,
 R1–R6,L1,C1: bloqueados para execução funcional por mailbox controlada e
 autorização nominal ainda pendentes. São gates operacionais, não dez testes
-automatizados e não entram no119. Nenhuma conta, senha, email, SMTP ou
+automatizados e não entram no151. Nenhuma conta, senha, email, SMTP ou
 configuração remota foi alterada. D00 serializa decisão e integração.
