@@ -230,10 +230,40 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Gerenciar dados'), findsNothing);
-    await tester.tap(find.text('Assiduidade').last);
-    await tester.pump();
-    expect(find.text('Justificar ausência'), findsNothing);
+    // The four absent inventory actions are students.link, students.transfer,
+    // students.edit and students.revoke, and none of them has a surface. This
+    // used to assert two exact labels, which fenced two words rather than the
+    // concept: a fifth affordance under a different wording walked past it.
+    //
+    // The vocabulary below is deliberately generous. The page is a read, and no
+    // verb of management belongs on it whatever it is called.
+    const management = [
+      'Gerenciar',
+      'Vincular',
+      'Desvincular',
+      'Transferir',
+      'Editar',
+      'Revogar',
+      'Remover',
+      'Excluir',
+      'Adicionar',
+      'Justificar',
+    ];
+    for (final tab in ['Assiduidade', 'Avaliações', 'Competências']) {
+      if (tab != 'Assiduidade') {
+        await tester.tap(find.text(tab).last);
+        await tester.pump();
+      }
+      for (final verb in management) {
+        expect(
+          find.textContaining(verb, findRichText: true),
+          findsNothing,
+          reason:
+              'the $tab tab offers "$verb"; students.link / .transfer / '
+              '.edit / .revoke are absent by product decision and the page is a read',
+        );
+      }
+    }
   });
 
   testWidgets('supports keyboard focus, 200 percent text and reduced motion', (tester) async {
