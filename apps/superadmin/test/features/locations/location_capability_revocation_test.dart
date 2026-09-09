@@ -30,6 +30,7 @@ const _create = Key('locations-create');
 const _bring = Key('locations-bring-from-institution');
 const _form = Key('locations-form');
 const _edit = Key('location-detail-edit');
+const _copy = Key('location-detail-copy');
 
 void main() {
   late ControlledLocationReader reader;
@@ -55,6 +56,7 @@ void main() {
     WidgetTester tester,
     LocationCapabilities capabilities, {
     String? selected,
+    int contextRevision = 0,
   }) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -65,6 +67,7 @@ void main() {
           reader: reader,
           writer: const UnavailableLocationCatalogWriter(),
           sessionAvailable: true,
+          contextRevision: contextRevision,
           capabilities: capabilities,
           selectedLocationId: selected,
         ),
@@ -91,7 +94,8 @@ void main() {
     WidgetTester tester,
     LocationCapabilities capabilities, {
     String? selected,
-  }) => show(tester, capabilities, selected: selected);
+    int contextRevision = 0,
+  }) => show(tester, capabilities, selected: selected, contextRevision: contextRevision);
 
   testWidgets('losing create closes the create form that was open', (tester) async {
     await pump(tester, const LocationCapabilities(create: true));
@@ -124,6 +128,33 @@ void main() {
 
     await regrant(tester, LocationCapabilities.none, selected: locationA);
     expect(find.byKey(Key('locations-form-$locationA')), findsNothing);
+  });
+
+  testWidgets('losing copy closes a duplication dialog that is already open', (tester) async {
+    await pump(tester, const LocationCapabilities(copy: true), selected: locationA);
+    await tester.tap(find.byKey(_copy));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('location-copy-dialog')), findsOneWidget);
+
+    await regrant(tester, LocationCapabilities.none, selected: locationA);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('location-copy-dialog')), findsNothing);
+    expect(find.byKey(Key('locations-detail-$locationA')), findsOneWidget);
+  });
+
+  testWidgets('changing authorization context closes a duplication dialog', (tester) async {
+    const copy = LocationCapabilities(copy: true);
+    await pump(tester, copy, selected: locationA);
+    await tester.tap(find.byKey(_copy));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('location-copy-dialog')), findsOneWidget);
+
+    await regrant(tester, copy, selected: locationA, contextRevision: 1);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('location-copy-dialog')), findsNothing);
+    expect(find.byKey(Key('locations-detail-$locationA')), findsNothing);
   });
 
   testWidgets('losing copy does not shut an edit someone is in the middle of', (tester) async {
