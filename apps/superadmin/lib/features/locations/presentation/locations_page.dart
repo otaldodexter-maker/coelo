@@ -97,12 +97,11 @@ final class _LocationsPageState extends State<LocationsPage> {
   LocationCatalogEntry? _editing;
   bool _bringing = false;
 
-  LocationCapabilities get _can =>
-      widget.capabilities ??
-      LocationCapabilities.fromLegacyFlags(
-        canCreate: widget.canCreate,
-        canManage: widget.canManage,
-      );
+  static LocationCapabilities _capabilitiesOf(LocationsPage page) =>
+      page.capabilities ??
+      LocationCapabilities.fromLegacyFlags(canCreate: page.canCreate, canManage: page.canManage);
+
+  LocationCapabilities get _can => _capabilitiesOf(widget);
 
   @override
   void initState() {
@@ -134,6 +133,18 @@ final class _LocationsPageState extends State<LocationsPage> {
       _editing = null;
       _bringing = false;
     }
+    // A grant taken away has to take its surface with it. A form left standing
+    // after its capability is gone still holds a writer and still has a save
+    // button, and the only thing stopping the write is the server - which is
+    // the right last line and the wrong first one.
+    //
+    // Each grant closes only what it was holding open: the selected detail is a
+    // read and survives all of this, and losing the right to copy is no reason
+    // to shut an edit.
+    final can = _can;
+    if (!can.create) _creating = false;
+    if (!can.update) _editing = null;
+    if (!can.copy) _bringing = false;
   }
 
   /// A malformed identifier never becomes a read.
