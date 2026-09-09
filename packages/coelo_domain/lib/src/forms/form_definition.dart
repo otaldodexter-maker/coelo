@@ -114,6 +114,9 @@ final class FormItemConfig {
   const FormItemConfig({
     this.minValue,
     this.maxValue,
+    this.minDate,
+    this.maxDate,
+    this.maxLength,
     this.minSelections,
     this.maxSelections,
     this.decimalPlaces,
@@ -130,6 +133,9 @@ final class FormItemConfig {
 
   final num? minValue;
   final num? maxValue;
+  final DateTime? minDate;
+  final DateTime? maxDate;
+  final int? maxLength;
   final int? minSelections;
   final int? maxSelections;
   final int? decimalPlaces;

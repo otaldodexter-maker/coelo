@@ -108,14 +108,15 @@ FormItem _decodeItem(Map<String, Object?> json) {
     'options',
     'conditions',
   }, context: context);
+  final kind = _decodeEnum(requireString(json, 'kind', context: context), _itemKinds, 'item.kind');
   return FormItem(
     id: requireString(json, 'id', context: context),
-    kind: _decodeEnum(requireString(json, 'kind', context: context), _itemKinds, 'item.kind'),
+    kind: kind,
     label: requireString(json, 'label', context: context),
     helpText: _nullableString(json, 'help_text', context),
     position: requireInt(json, 'position', context: context),
     isRequired: requireBool(json, 'is_required', context: context),
-    config: _decodeConfig(requireMap(json, 'config', context: context)),
+    config: _decodeConfig(requireMap(json, 'config', context: context), kind),
     options: requireList(
       json,
       'options',
@@ -134,7 +135,7 @@ Map<String, Object?> _encodeItem(FormItem item) => {
   'help_text': item.helpText,
   'position': item.position,
   'is_required': item.isRequired,
-  'config': _encodeConfig(item.config),
+  'config': _encodeConfig(item.config, item.kind),
   'options': item.options.map(_encodeOption).toList(growable: false),
   'conditions': item.conditions.map(_encodeCondition).toList(growable: false),
 };
@@ -193,7 +194,7 @@ Map<String, Object?> _encodeCondition(FormCondition condition) => {
   'option_ids': condition.optionIds.toList(growable: false),
 };
 
-FormItemConfig _decodeConfig(Map<String, Object?> json) {
+FormItemConfig _decodeConfig(Map<String, Object?> json, FormItemKind kind) {
   const context = 'form_item.config';
   const allowed = {
     'min_value',
@@ -210,10 +211,31 @@ FormItemConfig _decodeConfig(Map<String, Object?> json) {
     'allow_existing',
     'min_images',
     'max_images',
+    'max_length',
   };
   final unknown = json.keys.where((key) => !allowed.contains(key)).toList(growable: false);
   if (unknown.isNotEmpty) {
     throw WireFormatException('$context contains unknown keys: ${unknown.join(', ')}.');
+  }
+  int? maxLength;
+  if (json.containsKey('max_length')) {
+    final value = json['max_length'];
+    if (kind != FormItemKind.shortText ||
+        value is! num ||
+        !value.isFinite ||
+        value < 1 ||
+        value > 10000 ||
+        value != value.truncateToDouble()) {
+      throw const WireFormatException(
+        'form_item.config.max_length must be an integral number from 1 to 10000 for short text.',
+      );
+    }
+    maxLength = value.toInt();
+  }
+  final minDate = kind == FormItemKind.date ? _decodeCivilDate(json, 'min_value') : null;
+  final maxDate = kind == FormItemKind.date ? _decodeCivilDate(json, 'max_value') : null;
+  if (minDate != null && maxDate != null && minDate.isAfter(maxDate)) {
+    throw const WireFormatException('form_item.config minimum date must not exceed maximum date.');
   }
   for (final key in ['min_selections', 'max_selections']) {
     if (json.containsKey(key) && json[key] is! int) {
@@ -234,8 +256,11 @@ FormItemConfig _decodeConfig(Map<String, Object?> json) {
     }
   }
   return FormItemConfig(
-    minValue: json['min_value'] as num?,
-    maxValue: json['max_value'] as num?,
+    minValue: kind == FormItemKind.date ? null : json['min_value'] as num?,
+    maxValue: kind == FormItemKind.date ? null : json['max_value'] as num?,
+    minDate: minDate,
+    maxDate: maxDate,
+    maxLength: maxLength,
     minSelections: json['min_selections'] as int?,
     maxSelections: json['max_selections'] as int?,
     decimalPlaces: json['decimal_places'] as int?,
@@ -251,9 +276,42 @@ FormItemConfig _decodeConfig(Map<String, Object?> json) {
   );
 }
 
-Map<String, Object?> _encodeConfig(FormItemConfig config) => <String, Object?>{
-  if (config.minValue != null) 'min_value': config.minValue,
-  if (config.maxValue != null) 'max_value': config.maxValue,
+DateTime? _decodeCivilDate(Map<String, Object?> json, String key) {
+  if (!json.containsKey(key)) return null;
+  final value = json[key];
+  if (value is! String ||
+      value.length != 10 ||
+      !RegExp(r'^[0-9]{4}-[0-9]{2}-[0-9]{2}$').hasMatch(value)) {
+    throw WireFormatException('form_item.config.$key must be a civil date in YYYY-MM-DD format.');
+  }
+  final year = int.parse(value.substring(0, 4));
+  final month = int.parse(value.substring(5, 7));
+  final day = int.parse(value.substring(8, 10));
+  final parsed = DateTime.utc(year, month, day);
+  if (year < 1 || parsed.year != year || parsed.month != month || parsed.day != day) {
+    throw WireFormatException('form_item.config.$key must be a valid civil date.');
+  }
+  return parsed;
+}
+
+String _encodeCivilDate(DateTime value) {
+  if (value.year < 1 || value.year > 9999) {
+    throw const WireFormatException('form_item.config civil date year must have four digits.');
+  }
+  return '${value.year.toString().padLeft(4, '0')}-'
+      '${value.month.toString().padLeft(2, '0')}-'
+      '${value.day.toString().padLeft(2, '0')}';
+}
+
+Map<String, Object?> _encodeConfig(FormItemConfig config, FormItemKind kind) => <String, Object?>{
+  if (kind == FormItemKind.date) ...{
+    if (config.minDate != null) 'min_value': _encodeCivilDate(config.minDate!),
+    if (config.maxDate != null) 'max_value': _encodeCivilDate(config.maxDate!),
+  } else ...{
+    if (config.minValue != null) 'min_value': config.minValue,
+    if (config.maxValue != null) 'max_value': config.maxValue,
+  },
+  if (kind == FormItemKind.shortText && config.maxLength != null) 'max_length': config.maxLength,
   if (config.minSelections != null) 'min_selections': config.minSelections,
   if (config.maxSelections != null) 'max_selections': config.maxSelections,
   if (config.decimalPlaces != null) 'decimal_places': config.decimalPlaces,

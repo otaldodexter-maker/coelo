@@ -46,6 +46,172 @@ void main() {
     ],
   );
 
+  Map<String, Object?> withConfig(String kind, Map<String, Object?> config) {
+    final json = FormDefinitionDto.fromDomain(definition).toJson();
+    final section = (json['sections'] as List).first as Map<String, Object?>;
+    final item = (section['items'] as List).first as Map<String, Object?>;
+    item['kind'] = kind;
+    item['options'] = <Object?>[];
+    item['config'] = config;
+    return json;
+  }
+
+  Map<String, Object?> encodedConfig(FormDefinitionDto dto) {
+    final section = (dto.toJson()['sections'] as List).first as Map<String, Object?>;
+    final item = (section['items'] as List).first as Map<String, Object?>;
+    return item['config'] as Map<String, Object?>;
+  }
+
+  for (final config in <Map<String, Object?>>[
+    {},
+    {'min_value': '2026-09-01'},
+    {'max_value': '2026-09-30'},
+    {'min_value': '2026-09-01', 'max_value': '2026-09-30'},
+    {'min_value': '2024-02-29', 'max_value': '2024-02-29'},
+    {'min_value': '2000-02-29', 'max_value': '9999-12-31'},
+    {'min_value': '0001-01-01'},
+    {'min_value': '2011-12-30', 'max_value': '2011-12-30'},
+  ]) {
+    test('canonical civil date config round-trips $config', () {
+      final dto = FormDefinitionDto.fromJson(withConfig('date', config));
+      final typed = dto.toDomain().sections.first.items.first.config;
+      expect(typed.minValue, isNull);
+      expect(typed.maxValue, isNull);
+      expect(
+        typed.minDate,
+        config['min_value'] == null ? null : DateTime.parse('${config['min_value']}T00:00:00Z'),
+      );
+      expect(
+        typed.maxDate,
+        config['max_value'] == null ? null : DateTime.parse('${config['max_value']}T00:00:00Z'),
+      );
+      if (typed.minDate != null) expect(typed.minDate!.isUtc, isTrue);
+      if (typed.maxDate != null) expect(typed.maxDate!.isUtc, isTrue);
+      expect(encodedConfig(dto), config);
+    });
+  }
+
+  for (final utc in [true, false]) {
+    test('canonical civil date encoding preserves calendar fields utc=$utc', () {
+      final date = utc ? DateTime.utc(2026, 9, 1, 1, 30) : DateTime(2026, 9, 1, 23, 30);
+      final dto = FormDefinitionDto.fromDomain(
+        FormDefinition(
+          id: definition.id,
+          institutionId: definition.institutionId,
+          kind: definition.kind,
+          identityMode: definition.identityMode,
+          responseUnit: definition.responseUnit,
+          title: definition.title,
+          sections: [
+            FormSection(
+              id: 'section',
+              title: 'Section',
+              position: 0,
+              items: [
+                FormItem(
+                  id: 'date',
+                  kind: FormItemKind.date,
+                  label: 'Date',
+                  position: 0,
+                  config: FormItemConfig(minDate: date, maxDate: date),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+      expect(encodedConfig(dto), {'min_value': '2026-09-01', 'max_value': '2026-09-01'});
+    });
+  }
+
+  for (final key in ['min_value', 'max_value']) {
+    for (final value in <Object?>[
+      '2026-02-29',
+      '1900-02-29',
+      '2026-02-30',
+      '2026-04-31',
+      '2026-00-01',
+      '2026-13-01',
+      '2026-01-00',
+      '0000-01-01',
+      '10000-01-01',
+      '2026-9-01',
+      '2026-09-01\n',
+      ' 2026-09-01',
+      '2026-09-01T00:00:00Z',
+      '',
+      20260901,
+      true,
+      null,
+      <Object?>[],
+      <String, Object?>{},
+    ]) {
+      test('canonical civil date rejects $key=$value', () {
+        expect(
+          () => FormDefinitionDto.fromJson(withConfig('date', {key: value})),
+          throwsA(isA<WireFormatException>()),
+        );
+      });
+    }
+  }
+
+  test('canonical civil date rejects reversed range', () {
+    expect(
+      () => FormDefinitionDto.fromJson(
+        withConfig('date', {'min_value': '2026-09-30', 'max_value': '2026-09-01'}),
+      ),
+      throwsA(isA<WireFormatException>()),
+    );
+  });
+
+  for (final value in <num>[1, 120, 120.0, 10000]) {
+    test('canonical short text length round-trips $value', () {
+      final config = encodedConfig(
+        FormDefinitionDto.fromJson(withConfig('short_text', {'max_length': value})),
+      );
+      expect(config, {'max_length': value.toInt()});
+      expect(config['max_length'], isA<int>());
+    });
+  }
+  test('canonical short text absent length stays absent', () {
+    expect(encodedConfig(FormDefinitionDto.fromJson(withConfig('short_text', {}))), isEmpty);
+  });
+  test('canonical short text length is not accepted for another kind', () {
+    expect(
+      () => FormDefinitionDto.fromJson(withConfig('integer', {'max_length': 120})),
+      throwsA(isA<WireFormatException>()),
+    );
+  });
+  for (final value in <Object?>[
+    0,
+    -1,
+    10001,
+    1.5,
+    '120',
+    null,
+    true,
+    <Object?>[],
+    <String, Object?>{},
+    double.nan,
+    double.infinity,
+    double.negativeInfinity,
+  ]) {
+    test('canonical short text rejects malformed length $value', () {
+      expect(
+        () => FormDefinitionDto.fromJson(withConfig('short_text', {'max_length': value})),
+        throwsA(isA<WireFormatException>()),
+      );
+    });
+  }
+  for (final kind in ['integer', 'decimal', 'money']) {
+    test('canonical numeric config remains numeric $kind', () {
+      final config = <String, Object?>{'min_value': 1, 'max_value': 100};
+      if (kind == 'decimal') config['decimal_places'] = 2;
+      if (kind == 'money') config['currency'] = 'BRL';
+      expect(encodedConfig(FormDefinitionDto.fromJson(withConfig(kind, config))), config);
+    });
+  }
+
   test('round-trips the complete definition contract', () {
     final json = FormDefinitionDto.fromDomain(definition).toJson();
     final decoded = FormDefinitionDto.fromJson(json).toDomain();
