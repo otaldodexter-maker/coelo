@@ -10,11 +10,13 @@ final class UnitDirectoryViewModel extends ChangeNotifier {
   UnitDirectoryViewModel(
     this._repository, {
     this.searchDebounce = const Duration(milliseconds: 300),
-  });
+    int initialPageSize = 11,
+  }) : assert(UnitDirectoryQuery.allowedPageSizes.contains(initialPageSize)),
+       _query = UnitDirectoryQuery(pageSize: initialPageSize);
 
   final UnitDirectoryRepository _repository;
   final Duration searchDebounce;
-  UnitDirectoryQuery _query = UnitDirectoryQuery();
+  UnitDirectoryQuery _query;
   UnitDirectoryPage _page = const UnitDirectoryPage(items: [], totalCount: 0, page: 0);
   UnitDirectoryFilterOptions _filterOptions = const UnitDirectoryFilterOptions();
   UnitDirectoryLoadState _state = UnitDirectoryLoadState.initial;
