@@ -52,7 +52,7 @@ final class RoutineDirectoryController extends ChangeNotifier {
         status: _statusForRepositoryFailure(error.kind),
         message: 'Nao foi possivel carregar a Rotina diaria.',
       );
-    } on Exception {
+    } on Object {
       if (serial != _requestSerial) return;
       _state = const RoutineDirectoryViewState(
         status: RoutineDirectoryStatus.failure,
