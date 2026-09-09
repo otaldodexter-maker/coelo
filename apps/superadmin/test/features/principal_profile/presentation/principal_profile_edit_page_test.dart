@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_domain/profile_about.dart';
 import 'package:coelo_superadmin/features/principal_profile/presentation/principal_profile_edit_page.dart';
 import 'package:coelo_superadmin/features/principal_shared/domain/principal_runtime_context.dart';
@@ -255,6 +257,34 @@ void main() {
 
     expect(repository.loaded, hasLength(2));
   });
+
+  testWidgets('the reload action shows it is working and cannot be tapped twice', (tester) async {
+    // While editing, the page keeps the current content on screen instead of
+    // flashing a spinner. Without a busy state the action looked inert until
+    // the server answered, and a second tap started another read.
+    final repository = _StubAboutRepository(page: pageWith('Antes'));
+    await pump(tester, repository);
+    expect(repository.loaded, hasLength(1));
+
+    final gate = Completer<void>();
+    repository.gate = gate;
+    await tester.tap(find.byKey(const Key('principal-profile-edit-reload')));
+    await tester.pump();
+
+    final reload = find.byKey(const Key('principal-profile-edit-reload'));
+    expect(find.text('Recarregando…'), findsOneWidget);
+    expect(tester.widget<TextButton>(reload).onPressed, isNull);
+
+    await tester.tap(reload, warnIfMissed: false);
+    await tester.pump();
+    expect(repository.loaded, hasLength(2), reason: 'the second tap must not start another read');
+
+    gate.complete();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Recarregar'), findsOneWidget);
+    expect(tester.widget<TextButton>(reload).onPressed, isNotNull);
+  });
 }
 
 final class _StubAboutRepository implements ProfileAboutRepository {
@@ -263,6 +293,7 @@ final class _StubAboutRepository implements ProfileAboutRepository {
   ProfileAboutPage? page;
   Object? loadError;
   Object? saveError;
+  Completer<void>? gate;
   final List<ProfileAboutSubjectRef> loaded = [];
   final List<ProfileAboutPage> saved = [];
   final List<String> requestIds = [];
@@ -273,6 +304,8 @@ final class _StubAboutRepository implements ProfileAboutRepository {
     ProfileAboutAudience? preview,
   }) async {
     loaded.add(subject);
+    final pending = gate;
+    if (pending != null) await pending.future;
     final failure = loadError;
     if (failure != null) throw failure;
     return page;

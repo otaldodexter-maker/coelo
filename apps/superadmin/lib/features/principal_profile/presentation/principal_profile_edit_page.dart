@@ -55,6 +55,7 @@ final class _Denied extends _EditState {
 final class _PrincipalProfileEditPageState extends State<PrincipalProfileEditPage> {
   _EditState _state = const _Loading();
   var _generation = 0;
+  var _reloading = false;
   String? _conflictMessage;
 
   @override
@@ -127,7 +128,14 @@ final class _PrincipalProfileEditPageState extends State<PrincipalProfileEditPag
 
   Future<void> _load() async {
     final generation = ++_generation;
-    setState(() => _conflictMessage = null);
+    setState(() {
+      _conflictMessage = null;
+      // While editing, the page deliberately keeps the current content on
+      // screen instead of flashing a spinner. Without this flag the reload
+      // action would look inert until the server answered, and a second tap
+      // would start another read.
+      _reloading = true;
+    });
     if (_state is! _Editing) setState(() => _state = const _Loading());
     try {
       final page = await widget.repository.load(_subject);
@@ -139,6 +147,8 @@ final class _PrincipalProfileEditPageState extends State<PrincipalProfileEditPag
     } on Object {
       if (!mounted || generation != _generation) return;
       _replace(const _Failed());
+    } finally {
+      if (mounted && generation == _generation) setState(() => _reloading = false);
     }
   }
 
@@ -241,8 +251,8 @@ final class _PrincipalProfileEditPageState extends State<PrincipalProfileEditPag
                 children: [
                   TextButton(
                     key: const Key('principal-profile-edit-reload'),
-                    onPressed: _load,
-                    child: const Text('Recarregar'),
+                    onPressed: _reloading ? null : _load,
+                    child: Text(_reloading ? 'Recarregando…' : 'Recarregar'),
                   ),
                   AnimatedBuilder(
                     animation: controller,
