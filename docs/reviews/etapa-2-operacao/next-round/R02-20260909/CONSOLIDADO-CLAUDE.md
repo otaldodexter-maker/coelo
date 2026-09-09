@@ -1216,3 +1216,78 @@ pgTAP naquele ambiente, e ele **não afirma a causa exata porque não a isolou**
 
 Fechar o que dá e declarar o resto como não isolado é o mesmo critério que o fez
 manter o `B=1` bloqueado. Vai assim ao relatório.
+
+---
+
+# Snapshot de consolidação — verificado por L00 antes do corte das 16:00
+
+## Git das quatro branches Claude
+
+| Frente | HEAD local | Remoto | Sincronizado | Não commitado | Stash |
+| --- | --- | --- | --- | ---: | ---: |
+| L00 | `05df77889` | igual | SIM | 0 | 0 |
+| L01 | `47e1f1cc6` | igual | SIM | 2 | 0 |
+| L02 | `97407afdb` | igual | SIM | 5 | 0 |
+| L03 | `e35f33591` | igual | SIM | 0 | 0 |
+
+**Zero stashes em todas.** Nenhuma frente integrou `dev`, que está em `605e2a236`.
+
+### Separação SHA apto × WIP — o que o snapshot achou
+
+- **L01, 2 arquivos**: as duas fontes compartilhadas que **eu instruí** a manter
+  preservadas e não commitadas. Esperado, não é WIP.
+- **L03, árvore limpa.**
+- **L02, 5 arquivos** — e **dois são código real não commitado**:
+  `principal_chat_page.dart` e `principal_chat_page_test.dart`. Não estavam no
+  HEAD, não havia stash, e existiam **apenas no disco**. Alertei a cinco minutos
+  do corte, com a instrução de commitar como apto se verde ou **como WIP
+  declarado** se parcial — o contrato manda separar, não descartar. Foi o único
+  risco material que o snapshot encontrou em quatro branches, e é a justificativa
+  de fazer o snapshot **antes** e não no horário.
+
+## Handoffs lidos pelos caminhos absolutos
+
+L01 655 linhas, L02 871, L03 478 — todos presentes e atualizados nas worktrees
+registradas.
+
+## Propostas publicadas, que são o pacote real para D00
+
+**L01 (7):** negativas comportamentais do Acontece; prova local da retirada;
+mapeamento de Circulares; contrato de mídia de chat; hunks de composição;
+**pacote remoto nominal**; resolução de conflitos com dev.
+**L02 (2):** hunk do shell do chat Principal; materialização de notices.publish.
+**L03 (3):** análise de conflitos com dev; hunks de hospedagem (marcada como
+superada na colocação); **verificação pós-merge do grupo**.
+
+## Duas correções de L03 aos insumos que eu passei, ambas aceitas
+
+1. **Dois dos três destinos `?from=principal` são de L03**, não de L02 — a ação
+   Mensagem do Perfil e o launcher do hub, ambos apontando hoje para
+   `conversationsName`. Quando a rota de L02 existir na base integrada, é uma
+   linha em cada callback. Ele não fez a troca porque **a rota não existe na base
+   dele**, e registrou o motivo para ninguém ler como esquecimento.
+2. **As ~191 falhas fora de recorte NÃO são "pré-existentes".** São **não
+   revalidadas**: ninguém estabeleceu baseline. Eu as havia listado junto das
+   goldens conhecidas e a diferença importa — **as goldens têm controle, essas
+   não têm**. Correção adotada em todo o consolidado.
+
+## Varredura de capacidade concluída no recorte de L03
+
+Só existe `/principal-profile/edit`, já declarado. `/circulars/new` e
+`/circulars/:id/edit` estão cobertos pelo `startsWith('/circulars')` existente.
+`/profiles/...` e `/profile-models/...` são **isentos por desenho**, com
+comentário no código dizendo que as RPCs revalidam ator, escopo, MFA e versão no
+servidor.
+
+**Candidata fora do recorte, registrada como PERGUNTA e não como achado:**
+`/health-care/profiles/new` e `/health-care/profiles/:childId/edit` — não há
+`startsWith('/health-care')` em `hasAuthoritativeMutationCapability`, o que as
+deixaria sempre redirecionadas. **Pode ser fechamento intencional do domínio de
+saúde.** Não é do grupo Claude julgar; fica para quem responde por ele.
+
+## Disciplina de proveniência na checklist
+
+L03 marcou, item a item, **o que verificou em código e o que veio relatado** —
+incluindo declarar que **não** conferiu o perigo de Momentos, porque o arquivo
+não existe na base dele. Misturar as duas coisas é o que faz o integrador confiar
+demais numa peça e de menos noutra.
