@@ -651,7 +651,7 @@ Qualquer `insert` em `platform_permissions` que **omita os três** falha com
 
 ### Instância corrigida
 
-A migration  de L02 inseria `chat.internal.manage` **omitindo os
+A migration `20260909130000` de L02 inseria `chat.internal.manage` **omitindo os
 três**. **Não é artefato de replay local:** em qualquer base que já tenha a
 migration de agosto — e produção tem, é de um mês atrás — **o pacote falharia ao
 aplicar**. Corrigido em `98ebd975`, fornecendo os três explicitamente pela
@@ -705,3 +705,97 @@ indisponibilidade não. Correção de volta em `c68affc4`.
 Registro a sequência inteira porque ela é o método funcionando: achou, corrigiu,
 **reverteu por falta de prova**, achou o motivo da falta de prova, e reentregou
 **com** prova. Nenhum passo foi pulado.
+
+---
+
+# Fechamento das três frentes — números finais verificados
+
+## A pergunta que eu levaria ao Owner ANTES de qualquer certificação de Chat
+
+É a formulação de L02 e eu a adoto inteira, porque é a de maior consequência do
+consolidado:
+
+`20260901101500_superadmin_internal_chat_v2.sql` tem o defeito de rótulos
+`NOT NULL` e **é a baseline das RPCs que o app chama hoje**. Duas hipóteses,
+ambas materiais e nenhuma verificável daqui:
+
+- **Nunca aplicou em produção** — e então as RPCs `superadmin_chat_*_v2` não
+  existem lá, o FE de Chat está falhando fechado contra um gateway inexistente, e
+  a leitura de `chat.list`, `chat.open` e `chat.send` muda de "existentes, não
+  certificados" para **"provavelmente inoperantes"**.
+- **Foi ajustada fora do repositório** — e então o repositório não descreve a
+  produção, o que é problema de outra natureza e igualmente sério.
+
+Nenhuma frente Claude tem acesso remoto e nenhuma pediu. **Isso é preflight de
+D00 e decisão do Owner.**
+
+## Lição generalizável, na formulação de L02
+
+**Guarda de dependência bem escrita não substitui exercitar a aplicação.** Ele
+havia declarado o próprio pacote como "escrito e revisável, aguardando
+autorização" e ele **não teria aplicado**. Todo pacote de banco desta rodada que
+insere em `platform_permissions` deve ser conferido quanto a isso antes do
+preflight.
+
+## Números finais por frente
+
+| Frente | HEAD verificado por L00 | P | F | B | S | U | Taxa aprovada |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| L01 | `e88e0ee39` | ver detalhamento por lote | — | 0 | 0 | 0 | — |
+| L02 | `af9b5043` | 325 | 12 | 1 | 0 | 0 | 96,44% |
+| L03 | `fe3bbb61f` | 211 | 10 | 0 | 0 | 0 | 95,48% |
+
+L02 reporta ainda execução 99,70% e aprovação do plano 96,15%. Os 325 incluem 18
+casos da composição Principal, 5 da rota Principal, 3 da fiação do badge, 3 do
+conflito de versão em Avisos e 2 da capacidade das rotas de Avisos. As 12 falhas
+são goldens preexistentes provados na base limpa; o `B=1` é o pgTAP bloqueado.
+
+**Não somei as três.** As suítes se sobrepõem.
+
+### FE / BE / E2E no fechamento
+
+| Frente | FE | BE | **E2E** |
+| --- | --- | --- | ---: |
+| L01 | 6/23 | 6/23 | **0/23** |
+| L02 | 4/13 | 0/13 | **0/13** |
+| L03 | 3/3 | 0/3 | **0/3** |
+| **Grupo Claude** | — | — | **0/39** |
+
+**L02 deliberadamente NÃO promoveu FE** depois da segunda auditoria, e a razão é
+correta: provar que as rotas de Avisos montam a composição verifica **composição,
+não comportamento completo da ação** — a mesma regra de que leitura não vira FE
+verificado. Manteve 4/13. Registro como rigor, não como falta de entrega.
+
+## Higiene de Git no fechamento — verificada por L00, não aceita por relato
+
+- **L03**: eu detectei que os 62 PNGs de `failures/` **voltaram** à branch no
+  commit `3688f224d`, que reintroduziu exatamente os que ele havia restaurado em
+  `2af5dde69` — a execução do lote regenerou os artefatos e eles entraram junto
+  com trabalho legítimo, em três domínios alheios (auth, help center, support).
+  Ele restaurou de novo em `07a028b71`, commit próprio, sem reset, clean ou force
+  push. **Verifiquei depois**: diff da branch contra a base devolve **32
+  arquivos** e **zero resíduo** em `failures/`, `specs/`, `PRINCIPAL.md` ou nas
+  fontes compartilhadas. Handoff corrigido para r7 (`fe3bbb61f`), registrando que
+  aconteceu **duas vezes** em vez da afirmação errada de árvore limpa da r6.
+- A regra que L03 adotou e escreveu no handoff, que vale para todas as frentes:
+  **todo commit feito depois de rodar teste exige conferir o diff acumulado antes
+  de qualquer anúncio de estado final.** Ele havia enunciado essa régua de manhã,
+  aplicou uma vez e não reaplicou — anunciou "árvore limpa" olhando exatamente o
+  indicador que ele mesmo dissera não servir.
+- **L01**: verifiquei que o diff dele em `apps/superadmin/lib/app/router/` e
+  `apps/superadmin/test/app/router/` contém **apenas dois arquivos**, ambos
+  testes novos que documentam defeito. `superadmin_router.dart` **intocado**.
+
+## Total de defeitos reais achados nesta rodada pelas frentes Claude
+
+**Dezesseis**, dos quais a maioria invisível em lote verde. L03 sozinho achou
+oito, seis corrigidos com prova e dois deliberadamente registrados sem correção
+por serem decisão de composição aprovada. L02 achou o badge, o conflito de
+Avisos, a divergência de gerações em métricas e o defeito de aplicação do próprio
+pacote. L01 achou o feed misto, os quatro defeitos da retirada do Acontece, a
+composição vazia do Agora e o retorno contextual.
+
+**A frase que resume o dia, e é de L03:** nesta frente, teste de widget verde não
+provou que a tela abre, que ela lê da fonte autorizada, nem que ela cabe na tela —
+os três só apareceram auditando o caminho de composição, o redirect da rota real e
+a matriz responsiva.
