@@ -65,9 +65,15 @@ limita seu uso ao ambiente dev e não implanta código em produção por si só.
 
 [Uso opcional de uma terceira IA](TERCEIRA-IA.md).
 
+Atualização do Owner: [Locais integralmente na D02](ADENDO-LOCAIS.md).
+A seleção passa a 120 ações E2E e o restante a 67, sem promover conclusão.
+D00 reconcilia o registro/assignment na próxima leitura; D02 aguarda o comando.
+
 ## Conferência da preparação
 
-Os nove papéis, 219 IDs sem duplicação, divisão 132/87, contagem E2E116/71,
+Na preparação original foram conferidos nove papéis, 219 IDs sem duplicação,
+divisão 132/87 e contagem E2E116/71; o adendo Locais atualiza para 136/83 e 120/67.
+As
 referências locais e hashes dos dez arquivos de aplicativo herdados foram
 conferidos. A revisão independente dos prompts não encontrou conflito material.
 Nenhuma suíte do aplicativo foi executada para preparar este pacote.

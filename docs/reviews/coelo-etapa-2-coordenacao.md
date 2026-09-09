@@ -8,20 +8,26 @@ updated_at: "2026-09-09"
 
 # Coelo — Coordenação da Etapa 2
 
-## R02 preparada — ainda não iniciada em 09/09/2026
+## R02 iniciada — D00 vigente em 09/09/2026
 
-O Owner pediu prompts para duas coordenações e sete frentes por contexto.
-O [pacote R02](etapa-2-operacao/next-round/R02-20260909/README.md) contém os
-prompts, recorte, modelos, referências do Principal e cortes de hoje.
-A execução começa quando o Owner colar cada prompt; esta preparação não cria
-tarefas/worktrees, não ativa agendas e não certifica ações do aplicativo.
+O Owner iniciou D00 pelo prompt integral. D00 é o único integrador final R02
+em dev e escritor do inventário, três rastreadores e painel. O contrato,
+recorte e caminhos vivos estão no [pacote R02](etapa-2-operacao/next-round/R02-20260909/README.md)
+e em seu registro.json canônico. Cada outro papel começa quando recebe seu
+prompt do Owner; worktree preparada não comprova conversa iniciada.
 
-D00 será o único integrador final em dev; L00 coordenará as três frentes
-Claude. Os IDs e caminhos reais ainda precisam ser registrados no início.
-Os horários, tarefas e responsáveis da R01 abaixo são históricos, inclusive
-trechos antigos que se intitulam vigentes. Não reativá-los por esta leitura.
-Há delta local não commitado de Auth do turno interrompido: o pacote identifica
-sua preservação e transferência futura a D01, sem considerá-lo parte do HEAD.
+Oito worktrees R02 foram preparadas; a base documental `56eb3f19` contém as
+skills exigidas, incluindo as três antes ignoradas pelo Git. As fontes foram
+conferidas em cada destino. Delta Auth preservado externamente com 49 hashes;
+recibo D01 e reconciliação seletiva da raiz ainda pendentes. Isso não certifica produto.
+D01 mantém Auth/sessão; D04 autorização/vínculos; D02 Estrutura/Locais do recorte;
+L01 mídia comum, sob coordenação L00 e integração D00. Reservas são pontuais.
+
+Cortes de hoje: D01–D04 16:30; L00 consolidado 16:45; D00 final 17:15 BRT.
+Continuidade D00 verificada apenas durante o turno ativo; sem scheduler externo
+ou despertar após fim do turno. Nenhuma agenda antiga reativada.
+Todos os horários, responsáveis, caminhos e ordens R01 abaixo são históricos;
+a leitura não autoriza reabrir rodada encerrada.
 
 ## Base de retomada — consolidação Git de 09/09/2026
 

@@ -6,24 +6,24 @@
   "sourceClosureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "preparationHead": "fb2d07d34a74c91ec1f65aff361048393e590729",
   "selected": {
-    "total": 132,
+    "total": 136,
     "scopes": {
-      "mvp": 116,
+      "mvp": 120,
       "gate-formal-mvp": 2,
       "deferred-post-mvp": 14
     },
-    "activeE2E": 116,
+    "activeE2E": 120,
     "certifiedActiveE2E": 0
   },
   "remaining": {
-    "total": 87,
+    "total": 83,
     "scopes": {
       "flutter-only": 5,
-      "mvp": 73,
+      "mvp": 69,
       "deferred-post-mvp": 8,
       "gate-formal-mvp": 1
     },
-    "activeE2E": 71,
+    "activeE2E": 67,
     "certifiedActiveE2E": 0
   },
   "global": {
@@ -48,12 +48,12 @@
       "certifiedActiveE2E": 0
     },
     "D02": {
-      "total": 45,
+      "total": 49,
       "scopes": {
-        "mvp": 38,
+        "mvp": 42,
         "deferred-post-mvp": 7
       },
-      "activeE2E": 38,
+      "activeE2E": 42,
       "certifiedActiveE2E": 0
     },
     "D03": {
@@ -130,7 +130,7 @@
       "coordinator": "D00"
     },
     {
-      "context": "Estrutura/Locais necessários aos fluxos",
+      "context": "Estrutura e Locais completos, incluindo motor/tela de reservas",
       "technicalOwner": "D02",
       "coordinator": "D00"
     },
@@ -2746,8 +2746,8 @@
       "family": "locations",
       "screen": "Locais / Diretório",
       "scope": "mvp",
-      "owner": null,
-      "selected": false,
+      "owner": "D02",
+      "selected": true,
       "e2eActiveApplicable": true,
       "snapshotFrontendStatus": "pending-verification",
       "snapshotBackendStatus": "pending-verification",
@@ -2758,8 +2758,8 @@
       "family": "locations",
       "screen": "Local / Criar e editar",
       "scope": "mvp",
-      "owner": null,
-      "selected": false,
+      "owner": "D02",
+      "selected": true,
       "e2eActiveApplicable": true,
       "snapshotFrontendStatus": "pending-verification",
       "snapshotBackendStatus": "pending-verification",
@@ -2770,8 +2770,8 @@
       "family": "locations",
       "screen": "Local / Detalhe e vínculos",
       "scope": "mvp",
-      "owner": null,
-      "selected": false,
+      "owner": "D02",
+      "selected": true,
       "e2eActiveApplicable": true,
       "snapshotFrontendStatus": "pending-verification",
       "snapshotBackendStatus": "pending-verification",
@@ -2782,12 +2782,28 @@
       "family": "locations",
       "screen": "Locais / Agendamento",
       "scope": "mvp",
-      "owner": null,
-      "selected": false,
+      "owner": "D02",
+      "selected": true,
       "e2eActiveApplicable": true,
       "snapshotFrontendStatus": "pending-verification",
       "snapshotBackendStatus": "pending-verification",
       "snapshotIntegratedStatus": "pending-verification"
+    }
+  ],
+  "scopeAmendments": [
+    {
+      "id": "owner-20260909-locais-d02",
+      "source": "ADENDO-LOCAIS.md",
+      "owner": "D02",
+      "actionIds": [
+        "locations.list",
+        "locations.create-edit",
+        "locations.detail-links",
+        "locations.schedule"
+      ],
+      "authorization": "Owner autorizou incluir no prompt; execução da D02 aguarda seu comando",
+      "selectedActiveE2EBefore": 116,
+      "selectedActiveE2EAfter": 120
     }
   ]
 }

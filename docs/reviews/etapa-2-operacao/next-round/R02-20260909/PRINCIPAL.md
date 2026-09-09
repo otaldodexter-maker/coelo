@@ -24,8 +24,10 @@ vir de coelo_ui_core.
 
 A spec050 e a referência visual da skill coelo-ui permitem que viewers
 imersivos de Agora/Momentos ocultem temporariamente o chrome e restaurem o
-contexto ao sair. O pedido atual de manter o contêiner junto ao shell pode
-abranger também esses viewers. A pergunta sobre essa exceção foi enviada
+contexto ao sair. A spec037 também prevê detalhe de Circular fullscreen no
+compacto, sem cabeçalho/dock global e com retorno contextual. O pedido atual
+de manter o contêiner junto ao shell pode abranger essas superfícies.
+A pergunta sobre essa exceção foi enviada
 nesta tarefa e ainda não há resposta registrada neste pacote.
 
 Não interpretar silêncio como aprovação. Não alterar essa exceção nem
@@ -84,4 +86,3 @@ Use as rotas existentes como ponto de partida e preserve entrada normal:
  /principal-moments e /principal-moments/publish;
  /circulars, /circulars/new, /circulars/:circularId/read e /circulars/:circularId/edit.
 Uma rota existente não é prova de acesso normal, persistência ou E2E.
-

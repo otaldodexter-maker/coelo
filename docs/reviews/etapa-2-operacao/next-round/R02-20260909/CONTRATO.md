@@ -28,14 +28,14 @@ Cada frente responde por cliente, backend aplicável e retorno real à UI.
 Atribuição por menu não separa Front-end de Back-end entre agentes.
 Use escopo.json para os IDs existentes e lacunas; não invente ações concluídas.
 
-Na fotografia inicial há 132  IDs explicitamente atribuídos:
-116 MVP ativos E2E aplicáveis, 14 operações adiadas e 2 gates formais.
-Existem 87  IDs fora desta seleção: 73 MVP, 8 adiados, 5 flutter-only e 1 gate.
-Desses 73 MVP, 71 são E2E aplicáveis. 116/187 = 62,03% é cobertura selecionada,
+Após a inclusão expressa de Locais pelo Owner em ADENDO-LOCAIS.md, há 136 IDs explicitamente atribuídos:
+120 MVP ativos E2E aplicáveis, 14 operações adiadas e 2 gates formais.
+Existem 83 IDs fora desta seleção: 69 MVP, 8 adiados, 5 flutter-only e 1 gate.
+Desses 69 MVP, 67 são E2E aplicáveis. 120/187 = 64,17% é cobertura selecionada,
 não avanço ou percentual implementado. Circulares e granularidade de algumas
 subtelas ainda precisam de reconciliação; o denominador completo do recorte
 permanece aberto até essa reconciliação. Não certificar o contexto inteiro
-apenas pelos 116  IDs existentes.
+apenas pelos 120 IDs existentes.
 
 ## Autoridades e fontes
 
@@ -138,8 +138,10 @@ Sem agendamentos que retomem trabalho depois dos cortes abaixo.
 - D01 mantém a lógica comum de autenticação/sessão e entrega contratos para D04.
   D04 mantém autorização de domínio/perfis/vínculos. Bootstrap e rotas comuns
   têm reserva pontual coordenada por D00.
-- D02 mantém Estrutura/Locais que seus fluxos exigem e publica contratos para D03.
-  Isso não atribui automaticamente todos os IDs Locais da próxima fila.
+- D02 mantém Estrutura e Locais integralmente, incluindo catálogo, mapa,
+  detalhe/vínculos, motor e tela de reservas/conflitos, e publica contratos para D03.
+  Os quatro IDs locations.* pertencem à D02; Agenda/Eventos e Formulários completos
+  continuam fora desta atribuição. Ver ADENDO-LOCAIS.md.
 - L01 é responsável técnico inicial pelo núcleo comum de mídia R2/Stream/Gateway
   necessário a esta rodada. Publica contratos compatíveis cedo; L02/L03 são
   consumidores. D00 serializa migrations/aplicação remota e coordena alterações

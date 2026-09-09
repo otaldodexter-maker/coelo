@@ -1,0 +1,1399 @@
+{
+  "source": "inventario-etapa-2.json; escopo.json after ADENDO-LOCAIS",
+  "status": "opening-snapshot-not-new-certification",
+  "recordedAt": "2026-09-09T12:54:30.314669-03:00",
+  "inventoryUpdatedAt": "2026-09-09T08:41:13-03:00",
+  "inventorySha256": "d95a7b3e3ec1368757115e93a6bf6bc66f44acf268a9f03a607be7817e86adf8",
+  "head": "87390aefa395b7c530d269e4e04dcb10d103e8ff",
+  "selectedMvpE2E": 120,
+  "globalMvpE2E": 187,
+  "selectedCoveragePercent": 64.17,
+  "coverageGaps": [
+    {
+      "context": "Circulares",
+      "owner": "L01",
+      "integrationOwner": "D00",
+      "detail": "Spec037 tem diretório, criação/publicação, detalhe e edição sem IDs próprios suficientes; principal.profile-view cobre apenas projeção no Perfil. Mapear/reconciliar antes de certificar o contexto ou publicar percentual completo."
+    },
+    {
+      "context": "Home",
+      "owner": null,
+      "detail": "Entrada de navegação sem ID próprio. Não herda conclusão de shell.load; permanece explicitamente para reconciliação da Etapa2."
+    },
+    {
+      "context": "Chat por superfície e subtelas",
+      "owner": "L02",
+      "detail": "IDs chat.* são compartilhados. Registrar evidência de cliente administrativo e cliente Principal para o mesmo ID, sem somá-lo duas vezes nem esconder uma superfície não concluída."
+    }
+  ],
+  "tests": {
+    "P": 0,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": null,
+    "note": "No product cases executed by D00; required test plan not yet received. Action count is not test count."
+  },
+  "actions": [
+    {
+      "id": "auth.login",
+      "owner": "D01",
+      "screen": "Auth / Login",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "auth.recover",
+      "owner": "D01",
+      "screen": "Auth / Recuperar senha",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "auth.reset",
+      "owner": "D01",
+      "screen": "Auth / Redefinir senha",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "auth.logout",
+      "owner": "D01",
+      "screen": "Auth / Sair",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "auth.mfa",
+      "owner": "D01",
+      "screen": "Auth / MFA",
+      "scope": "gate-formal-mvp",
+      "e2eActiveApplicable": false,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "gate-formal-mvp",
+      "integratedStatus": "gate-formal-mvp"
+    },
+    {
+      "id": "institutions.list",
+      "owner": "D02",
+      "screen": "Instituições / Diretório",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "institutions.filter",
+      "owner": "D02",
+      "screen": "Instituições / Filtros",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "institutions.detail",
+      "owner": "D02",
+      "screen": "Instituições / Detalhe",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "institutions.create",
+      "owner": "D02",
+      "screen": "Criar Instituição",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "institutions.edit",
+      "owner": "D02",
+      "screen": "Editar Instituição",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "institutions.status",
+      "owner": "D02",
+      "screen": "Instituições / Ativar-desativar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "institutions.files",
+      "owner": "D02",
+      "screen": "Instituições / Arquivos",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "institutions.import",
+      "owner": "D02",
+      "screen": "Instituições / Importar",
+      "scope": "deferred-post-mvp",
+      "e2eActiveApplicable": false,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "deferred-post-mvp",
+      "integratedStatus": "deferred-post-mvp"
+    },
+    {
+      "id": "institutions.export",
+      "owner": "D02",
+      "screen": "Instituições / Exportar",
+      "scope": "deferred-post-mvp",
+      "e2eActiveApplicable": false,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "deferred-post-mvp",
+      "integratedStatus": "deferred-post-mvp"
+    },
+    {
+      "id": "institutions.error",
+      "owner": "D02",
+      "screen": "Instituições / Erro e retry",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "institutions.access-denied",
+      "owner": "D02",
+      "screen": "Instituições / Acesso negado",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "institutions.reload",
+      "owner": "D02",
+      "screen": "Instituições / Recarregar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "institutions.locations-map",
+      "owner": "D02",
+      "screen": "Instituição / Mapa e locais",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "units.list",
+      "owner": "D02",
+      "screen": "Unidades / Diretório",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "units.filter",
+      "owner": "D02",
+      "screen": "Unidades / Filtrar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "units.create",
+      "owner": "D02",
+      "screen": "Criar Unidade",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "units.edit",
+      "owner": "D02",
+      "screen": "Editar Unidade",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "units.status",
+      "owner": "D02",
+      "screen": "Unidades / Status",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "units.import",
+      "owner": "D02",
+      "screen": "Unidades / Importar",
+      "scope": "deferred-post-mvp",
+      "e2eActiveApplicable": false,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "deferred-post-mvp",
+      "integratedStatus": "deferred-post-mvp"
+    },
+    {
+      "id": "units.export",
+      "owner": "D02",
+      "screen": "Unidades / Exportar",
+      "scope": "deferred-post-mvp",
+      "e2eActiveApplicable": false,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "deferred-post-mvp",
+      "integratedStatus": "deferred-post-mvp"
+    },
+    {
+      "id": "units.error",
+      "owner": "D02",
+      "screen": "Unidades / Erro",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "units.access-denied",
+      "owner": "D02",
+      "screen": "Unidades / Acesso negado",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "units.reload",
+      "owner": "D02",
+      "screen": "Unidades / Recarregar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "units.people-export",
+      "owner": "D02",
+      "screen": "Unidade / Pessoas / Exportar",
+      "scope": "deferred-post-mvp",
+      "e2eActiveApplicable": false,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "deferred-post-mvp",
+      "integratedStatus": "deferred-post-mvp"
+    },
+    {
+      "id": "units.locations-map",
+      "owner": "D02",
+      "screen": "Unidade / Mapa e locais",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "units.copy-institution-location",
+      "owner": "D02",
+      "screen": "Unidade / Copiar local",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "groups.list",
+      "owner": "D02",
+      "screen": "Turmas / Diretório",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "groups.create",
+      "owner": "D02",
+      "screen": "Criar Turma",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "groups.edit",
+      "owner": "D02",
+      "screen": "Turmas / Detalhe-editar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "groups.members",
+      "owner": "D02",
+      "screen": "Turmas / Membros",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "groups.import",
+      "owner": "D02",
+      "screen": "Turmas / Importar",
+      "scope": "deferred-post-mvp",
+      "e2eActiveApplicable": false,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "deferred-post-mvp",
+      "integratedStatus": "deferred-post-mvp"
+    },
+    {
+      "id": "groups.export",
+      "owner": "D02",
+      "screen": "Turmas / Exportar",
+      "scope": "deferred-post-mvp",
+      "e2eActiveApplicable": false,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "deferred-post-mvp",
+      "integratedStatus": "deferred-post-mvp"
+    },
+    {
+      "id": "groups.location",
+      "owner": "D02",
+      "screen": "Turma / Local",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "people.list",
+      "owner": "D04",
+      "screen": "Pessoas / Diretório",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "people.create",
+      "owner": "D04",
+      "screen": "Criar Pessoa",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "people.edit",
+      "owner": "D04",
+      "screen": "Editar Pessoa",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "people.links",
+      "owner": "D04",
+      "screen": "Pessoas / Vínculos",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "people.reload",
+      "owner": "D04",
+      "screen": "Pessoas / Recarregar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "access-profiles.list",
+      "owner": "D04",
+      "screen": "Perfis de acesso / Lista",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "access-profiles.create",
+      "owner": "D04",
+      "screen": "Criar perfil de acesso",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "access-profiles.detail",
+      "owner": "D04",
+      "screen": "Perfil de acesso / Detalhe",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "access-profiles.edit",
+      "owner": "D04",
+      "screen": "Editar perfil de acesso",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "access-profiles.assign",
+      "owner": "D04",
+      "screen": "Perfis de acesso / Atribuir",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "access-profiles.delete",
+      "owner": "D04",
+      "screen": "Perfis de acesso / Excluir",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "access-models.list",
+      "owner": "D04",
+      "screen": "Modelos de acesso / Lista",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "access-models.filter",
+      "owner": "D04",
+      "screen": "Modelos de acesso / Filtrar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "access-models.create",
+      "owner": "D04",
+      "screen": "Criar modelo de acesso",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "access-models.detail",
+      "owner": "D04",
+      "screen": "Modelo de acesso / Detalhe",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "access-models.edit",
+      "owner": "D04",
+      "screen": "Editar modelo de acesso",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "access-models.duplicate",
+      "owner": "D04",
+      "screen": "Duplicar modelo de acesso",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "invites.list",
+      "owner": "D04",
+      "screen": "Convites / Lista",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "invites.create",
+      "owner": "D04",
+      "screen": "Criar Convite",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "invites.detail",
+      "owner": "D04",
+      "screen": "Convite / Detalhe",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "invites.resend",
+      "owner": "D04",
+      "screen": "Convite / Reenviar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "invites.revoke",
+      "owner": "D04",
+      "screen": "Convite / Revogar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "activities.list",
+      "owner": "D02",
+      "screen": "Atividades / Diretório",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "activities.create",
+      "owner": "D02",
+      "screen": "Criar Atividade / Wizard",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "activities.detail",
+      "owner": "D02",
+      "screen": "Atividade / Detalhe",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "activities.edit",
+      "owner": "D02",
+      "screen": "Editar Atividade",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "activities.publish",
+      "owner": "D02",
+      "screen": "Atividade / Publicar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "activities.assessment",
+      "owner": "D02",
+      "screen": "Atividade / Avaliar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "activities.location",
+      "owner": "D02",
+      "screen": "Atividade / Local",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "assessments.entry",
+      "owner": "D02",
+      "screen": "Avaliações / Lançamento",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "assessments.gradebook",
+      "owner": "D02",
+      "screen": "Avaliações / Diário",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "assessments.close",
+      "owner": "D02",
+      "screen": "Avaliações / Fechar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "assessments.reopen",
+      "owner": "D02",
+      "screen": "Avaliações / Reabrir",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "assessments.detail",
+      "owner": "D02",
+      "screen": "Avaliação / Detalhe",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "students.list",
+      "owner": "D03",
+      "screen": "Alunos / Acompanhamento",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "students.link",
+      "owner": "D03",
+      "screen": "Alunos / Vincular",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "students.transfer",
+      "owner": "D03",
+      "screen": "Alunos / Transferir",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "students.edit",
+      "owner": "D03",
+      "screen": "Alunos / Editar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "students.revoke",
+      "owner": "D03",
+      "screen": "Alunos / Revogar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "attendance.dashboard",
+      "owner": "D03",
+      "screen": "Assiduidade / Dashboard",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "attendance.create",
+      "owner": "D03",
+      "screen": "Assiduidade / Nova chamada",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "attendance.mark",
+      "owner": "D03",
+      "screen": "Assiduidade / Marcar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "attendance.correct",
+      "owner": "D03",
+      "screen": "Assiduidade / Corrigir",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "attendance.finish",
+      "owner": "D03",
+      "screen": "Assiduidade / Concluir",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "attendance.export",
+      "owner": "D03",
+      "screen": "Assiduidade / Exportar",
+      "scope": "deferred-post-mvp",
+      "e2eActiveApplicable": false,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "deferred-post-mvp",
+      "integratedStatus": "deferred-post-mvp"
+    },
+    {
+      "id": "daily-routine.list",
+      "owner": "D03",
+      "screen": "Rotina diária / Diretório",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "daily-routine.create",
+      "owner": "D03",
+      "screen": "Criar Rotina",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "daily-routine.edit",
+      "owner": "D03",
+      "screen": "Editar Rotina",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "daily-routine.apply",
+      "owner": "D03",
+      "screen": "Rotina / Aplicar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "daily-routine.publish",
+      "owner": "D03",
+      "screen": "Rotina / Publicar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "chat.list",
+      "owner": "L02",
+      "screen": "Chat / Conversas",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "chat.open",
+      "owner": "L02",
+      "screen": "Chat / Abrir conversa",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "chat.send",
+      "owner": "L02",
+      "screen": "Chat / Enviar mensagem",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "chat.edit",
+      "owner": "L02",
+      "screen": "Chat / Editar mensagem",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "chat.attach",
+      "owner": "L02",
+      "screen": "Chat / Anexar arquivo",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "chat.receipts",
+      "owner": "L02",
+      "screen": "Chat / Recibos",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "chat.revoke",
+      "owner": "L02",
+      "screen": "Chat / Revogar-remover",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "notices.list",
+      "owner": "L02",
+      "screen": "Avisos / Diretório",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "notices.create",
+      "owner": "L02",
+      "screen": "Criar Aviso",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "notices.edit",
+      "owner": "L02",
+      "screen": "Editar Aviso",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "notices.schedule",
+      "owner": "L02",
+      "screen": "Avisos / Agendar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "notices.publish",
+      "owner": "L02",
+      "screen": "Avisos / Publicar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "notices.archive",
+      "owner": "L02",
+      "screen": "Avisos / Arquivar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "acontece.feed",
+      "owner": "L01",
+      "screen": "Acontece / Feed",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "acontece.create",
+      "owner": "L01",
+      "screen": "Acontece / Criar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "acontece.publish",
+      "owner": "L01",
+      "screen": "Acontece / Publicar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "acontece.remove",
+      "owner": "L01",
+      "screen": "Acontece / Remover",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "agora.view",
+      "owner": "L01",
+      "screen": "Agora / Visualizar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "agora.create",
+      "owner": "L01",
+      "screen": "Agora / Criar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "agora.publish",
+      "owner": "L01",
+      "screen": "Agora / Publicar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "agora.expire",
+      "owner": "L01",
+      "screen": "Agora / Expirar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "momentos.view",
+      "owner": "L01",
+      "screen": "Momentos / Visualizar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "momentos.create",
+      "owner": "L01",
+      "screen": "Momentos / Criar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "momentos.publish",
+      "owner": "L01",
+      "screen": "Momentos / Publicar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "momentos.remove",
+      "owner": "L01",
+      "screen": "Momentos / Remover",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "principal.for-you",
+      "owner": "L03",
+      "screen": "Principal / Para Você",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "principal.profile-view",
+      "owner": "L03",
+      "screen": "Principal / Perfil-circulares",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "principal.profile-edit",
+      "owner": "L03",
+      "screen": "Principal / Editar perfil",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "child-safety.list",
+      "owner": "D04",
+      "screen": "Segurança infantil / Lista",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "child-safety.child",
+      "owner": "D04",
+      "screen": "Segurança infantil / Criança",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "child-safety.create",
+      "owner": "D04",
+      "screen": "Segurança infantil / Criar autorização",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "child-safety.edit",
+      "owner": "D04",
+      "screen": "Segurança infantil / Editar autorização",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "child-safety.suspend",
+      "owner": "D04",
+      "screen": "Segurança infantil / Suspender",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "profile-files.import",
+      "owner": "D04",
+      "screen": "Arquivos de perfil / Importar",
+      "scope": "deferred-post-mvp",
+      "e2eActiveApplicable": false,
+      "frontendStatus": "verified",
+      "backendStatus": "deferred-post-mvp",
+      "integratedStatus": "deferred-post-mvp"
+    },
+    {
+      "id": "profile-files.preview",
+      "owner": "D04",
+      "screen": "Arquivos de perfil / Preview",
+      "scope": "deferred-post-mvp",
+      "e2eActiveApplicable": false,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "deferred-post-mvp",
+      "integratedStatus": "deferred-post-mvp"
+    },
+    {
+      "id": "profile-files.confirm",
+      "owner": "D04",
+      "screen": "Arquivos de perfil / Confirmar",
+      "scope": "deferred-post-mvp",
+      "e2eActiveApplicable": false,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "deferred-post-mvp",
+      "integratedStatus": "deferred-post-mvp"
+    },
+    {
+      "id": "profile-files.status",
+      "owner": "D04",
+      "screen": "Arquivos de perfil / Status",
+      "scope": "deferred-post-mvp",
+      "e2eActiveApplicable": false,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "deferred-post-mvp",
+      "integratedStatus": "deferred-post-mvp"
+    },
+    {
+      "id": "profile-files.export",
+      "owner": "D04",
+      "screen": "Arquivos de perfil / Exportar",
+      "scope": "deferred-post-mvp",
+      "e2eActiveApplicable": false,
+      "frontendStatus": "verified",
+      "backendStatus": "deferred-post-mvp",
+      "integratedStatus": "deferred-post-mvp"
+    },
+    {
+      "id": "profile-files.download",
+      "owner": "D04",
+      "screen": "Arquivos de perfil / Baixar",
+      "scope": "deferred-post-mvp",
+      "e2eActiveApplicable": false,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "deferred-post-mvp",
+      "integratedStatus": "deferred-post-mvp"
+    },
+    {
+      "id": "internal-users.list",
+      "owner": "D04",
+      "screen": "Usuários internos / Lista",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "internal-users.create",
+      "owner": "D04",
+      "screen": "Criar usuário interno",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "internal-users.edit",
+      "owner": "D04",
+      "screen": "Editar usuário interno",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "internal-users.suspend",
+      "owner": "D04",
+      "screen": "Usuários internos / Suspender",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "internal-users.mfa",
+      "owner": "D04",
+      "screen": "Usuários internos / MFA",
+      "scope": "gate-formal-mvp",
+      "e2eActiveApplicable": false,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "gate-formal-mvp",
+      "integratedStatus": "gate-formal-mvp"
+    },
+    {
+      "id": "locations.list",
+      "owner": "D02",
+      "screen": "Locais / Diretório",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "locations.create-edit",
+      "owner": "D02",
+      "screen": "Local / Criar e editar",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "locations.detail-links",
+      "owner": "D02",
+      "screen": "Local / Detalhe e vínculos",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    },
+    {
+      "id": "locations.schedule",
+      "owner": "D02",
+      "screen": "Locais / Agendamento",
+      "scope": "mvp",
+      "e2eActiveApplicable": true,
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification"
+    }
+  ]
+}
