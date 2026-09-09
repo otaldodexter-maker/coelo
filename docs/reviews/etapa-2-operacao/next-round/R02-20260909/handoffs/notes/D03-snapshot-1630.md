@@ -1,6 +1,6 @@
 ---
-source: "D03 prompt; assignments D00 r1-r15; handoff D03 r23; d03-test-ledger.json; Git and Docker inventories"
-status: "prepared-before-1630; awaiting-consolidation"
+source: "D03 prompt; assignments D00 r1-r17; handoff D03 r23; d03-test-ledger.json; Git and Docker inventories"
+status: "snapshot-1630; consolidation-only"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
@@ -156,3 +156,24 @@ Nenhum agendamento criado; continuidade somente no turno/clock e assignment.
 
 Memória: no-op. Nenhuma regra durável de produto foi aprovada ou alterada;
 propostas e status permanecem no handoff, sem criar aula/projeção artificial.
+
+## Delta recebido no corte ? D00 r16/r17
+
+D00 materializou a cadeia at?61982224b na base
+e0e83ee20dab4134703417e95cbca8c92db9b657. Guards integrados6+8PASS, n?o somados
+aos autorais. Replay42656 aplicou47SQL e encerrouexit1 ap?s os marcadores
+package.prestate, package.default-acl-denied e package.negative-rollback.
+A falha ocorreu no cleanup da fixture: ainda sem causa diagnosticada.
+Classifica??o D00:3P/0F/3B, com falha de infraestrutura expl?cita; o controle
+positivo/persist?ncia n?o foi executado. Cache1U. Aprova??o do plano3/6=50%,
+execu??o de gates3/6=50%;100% dos tr?s gates conclu?dos n?o significa runner
+verde. Cleanup dos recursos Docker foi confirmado por D00 em tr?s invent?rios.
+
+Log bruto conferido: docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/
+child-package-first-replay.log na raiz can?nica, SHA256
+A18C8E8DCD75604FB1E4F7A35CBD148072384BE14F30E906D40FC20378FC6D43.
+D00 assumiu diagn?stico sanitizado e pr?ximo ensaio na raiz. D03 n?o editar?
+harness/sharedrunner nem iniciar? SQL paralelo. Primeiro gate aberto passa a
+ser diagnosticar/corrigir cleanup e completar os tr?s gates restantes; as
+provas45+3+4 anteriores permanecem sem altera??o. As se??es de prepara??o
+acima s?o superadas por este recibo para integra??o/execu??o do compositor.
