@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="12" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-09-09" time="14:53:04">
+  <environment user="adrie" machine-name="LAPTOP-67A8F4LK" cwd="C:\Users\adrie\Documents\Coelo" user-domain="LAPTOP-67A8F4LK" platform="Microsoft Windows 11 Home|C:\WINDOWS|\Device\Harddisk0\Partition3" nunit-version="2.5.8.0" os-version="10.0.26200" clr-version="4.0.30319.42000" />
+  <culture-info current-culture="pt-BR" current-uiculture="pt-BR" />
+  <test-suite type="Powershell" name="Pester" executed="True" result="Success" success="True" time="2.5143" asserts="0">
+    <results>
+      <test-suite type="TestFixture" name="Safe replay CHILD concurrency opt-in" executed="True" result="Success" success="True" time="2.104" asserts="0" description="Safe replay CHILD concurrency opt-in">
+        <results>
+          <test-suite type="ParameterizedTest" name="Safe replay CHILD concurrency opt-in.rejects &lt;label&gt; before allocating resources" executed="True" result="Success" success="True" time="1.8016" asserts="0" description="rejects &lt;label&gt; before allocating resources">
+            <results>
+              <test-case description="rejects missing profile before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects missing profile before allocating resources" time="0.9783" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects foreign profile before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects foreign profile before allocating resources" time="0.3425" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects foreign target before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects foreign target before allocating resources" time="0.0551" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects foundation before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects foundation before allocating resources" time="0.0765" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects Auth only before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects Auth only before allocating resources" time="0.0596" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects additions before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects additions before allocating resources" time="0.066" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects Auth lifecycle before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects Auth lifecycle before allocating resources" time="0.0849" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects Activity concurrency before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects Activity concurrency before allocating resources" time="0.055" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects R02 Auth concurrency before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects R02 Auth concurrency before allocating resources" time="0.0837" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+          <test-case description="allows the exact CHILD opt-in through its guard without starting services" name="Safe replay CHILD concurrency opt-in.allows the exact CHILD opt-in through its guard without starting services" time="0.2083" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="dispatches only the owned CHILD harness after lint and retains the Auth dispatch" name="Safe replay CHILD concurrency opt-in.dispatches only the owned CHILD harness after lint and retains the Auth dispatch" time="0.094" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="CHILD concurrency requires its nominal TAP gate" executed="True" result="Success" success="True" time="0.4103" asserts="0" description="CHILD concurrency requires its nominal TAP gate">
+        <results>
+          <test-case description="rejects an omitted, unrelated or additional TAP path before resources" name="CHILD concurrency requires its nominal TAP gate.rejects an omitted, unrelated or additional TAP path before resources" time="0.4103" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

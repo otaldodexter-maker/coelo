@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="20" errors="0" failures="1" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-09-09" time="14:52:38">
+  <environment user="adrie" machine-name="LAPTOP-67A8F4LK" cwd="C:\Users\adrie\Documents\Coelo" user-domain="LAPTOP-67A8F4LK" platform="Microsoft Windows 11 Home|C:\WINDOWS|\Device\Harddisk0\Partition3" nunit-version="2.5.8.0" os-version="10.0.26200" clr-version="4.0.30319.42000" />
+  <culture-info current-culture="pt-BR" current-uiculture="pt-BR" />
+  <test-suite type="Powershell" name="Pester" executed="True" result="Failure" success="False" time="13.3019" asserts="0">
+    <results>
+      <test-suite type="TestFixture" name="Safe replay CHILD concurrency opt-in" executed="True" result="Failure" success="False" time="6.6922" asserts="0" description="Safe replay CHILD concurrency opt-in">
+        <results>
+          <test-suite type="ParameterizedTest" name="Safe replay CHILD concurrency opt-in.rejects &lt;label&gt; before allocating resources" executed="True" result="Success" success="True" time="4.9059" asserts="0" description="rejects &lt;label&gt; before allocating resources">
+            <results>
+              <test-case description="rejects missing profile before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects missing profile before allocating resources" time="3.7973" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects foreign profile before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects foreign profile before allocating resources" time="0.4263" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects foreign target before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects foreign target before allocating resources" time="0.0689" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects foundation before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects foundation before allocating resources" time="0.0606" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects Auth only before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects Auth only before allocating resources" time="0.0744" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects additions before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects additions before allocating resources" time="0.0714" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects Auth lifecycle before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects Auth lifecycle before allocating resources" time="0.1017" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects Activity concurrency before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects Activity concurrency before allocating resources" time="0.0754" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects R02 Auth concurrency before allocating resources" name="Safe replay CHILD concurrency opt-in.rejects R02 Auth concurrency before allocating resources" time="0.2299" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+          <test-case description="allows the exact CHILD opt-in through its guard without starting services" name="Safe replay CHILD concurrency opt-in.allows the exact CHILD opt-in through its guard without starting services" time="0.4467" asserts="0" success="False" result="Failure" executed="True">
+            <failure>
+              <message>Expected: {1}
+But was:  {2}</message>
+              <stack-trace>at line: 28 in C:\Users\adrie\Documents\Coelo\packages\coelo_database\scripts\tests\Invoke-SafeLocalMigrationReplay.ChildConcurrency.Tests.ps1
+28:     $guards.Count | Should Be 1</stack-trace>
+            </failure>
+          </test-case>
+          <test-case description="dispatches only the owned CHILD harness after lint and retains the Auth dispatch" name="Safe replay CHILD concurrency opt-in.dispatches only the owned CHILD harness after lint and retains the Auth dispatch" time="1.3396" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="CHILD concurrency requires its nominal TAP gate" executed="True" result="Success" success="True" time="1.6213" asserts="0" description="CHILD concurrency requires its nominal TAP gate">
+        <results>
+          <test-case description="rejects an omitted, unrelated or additional TAP path before resources" name="CHILD concurrency requires its nominal TAP gate.rejects an omitted, unrelated or additional TAP path before resources" time="1.6213" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="CHILD directory concurrency harness contract" executed="True" result="Success" success="True" time="4.9885" asserts="0" description="CHILD directory concurrency harness contract">
+        <results>
+          <test-case description="exists and parses without errors" name="CHILD directory concurrency harness contract.exists and parses without errors" time="0.6778" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="requires the owned disposable project and isolated identity" name="CHILD directory concurrency harness contract.requires the owned disposable project and isolated identity" time="0.5972" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="coordinates independent sessions through observed database locks" name="CHILD directory concurrency harness contract.coordinates independent sessions through observed database locks" time="0.6474" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="covers revocation after the first authorization read" name="CHILD directory concurrency harness contract.covers revocation after the first authorization read" time="0.819" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="renames the third limit-plus-one row and checks the returned order and cursor" name="CHILD directory concurrency harness contract.renames the third limit-plus-one row and checks the returned order and cursor" time="1.2141" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="forces wall-clock expiry during audit and verifies rollback" name="CHILD directory concurrency harness contract.forces wall-clock expiry during audit and verifies rollback" time="0.2676" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="bounds waits and cleans every process without reading credentials" name="CHILD directory concurrency harness contract.bounds waits and cleans every process without reading credentials" time="0.5942" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="keeps a durable plan that marks runtime as not executed" name="CHILD directory concurrency harness contract.keeps a durable plan that marks runtime as not executed" time="0.1713" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

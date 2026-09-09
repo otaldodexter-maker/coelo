@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="1" errors="0" failures="1" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-09-09" time="14:52:04">
+  <environment user="adrie" machine-name="LAPTOP-67A8F4LK" cwd="C:\Users\adrie\Documents\Coelo" user-domain="LAPTOP-67A8F4LK" platform="Microsoft Windows 11 Home|C:\WINDOWS|\Device\Harddisk0\Partition3" nunit-version="2.5.8.0" os-version="10.0.26200" clr-version="4.0.30319.42000" />
+  <culture-info current-culture="pt-BR" current-uiculture="pt-BR" />
+  <test-suite type="Powershell" name="Pester" executed="True" result="Failure" success="False" time="0.8143" asserts="0">
+    <results>
+      <test-suite type="TestFixture" name="CHILD concurrency requires its nominal TAP gate" executed="True" result="Failure" success="False" time="0.8143" asserts="0" description="CHILD concurrency requires its nominal TAP gate">
+        <results>
+          <test-case description="rejects an omitted, unrelated or additional TAP path before resources" name="CHILD concurrency requires its nominal TAP gate.rejects an omitted, unrelated or additional TAP path before resources" time="0.8143" asserts="0" success="False" result="Failure" executed="True">
+            <failure>
+              <message>Expected: {1}
+But was:  {0}</message>
+              <stack-trace>at line: 53 in C:\Users\adrie\Documents\Coelo\packages\coelo_database\scripts\tests\Invoke-SafeLocalMigrationReplay.ChildConcurrency.Tests.ps1
+53:     $guards.Count | Should Be 1</stack-trace>
+            </failure>
+          </test-case>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

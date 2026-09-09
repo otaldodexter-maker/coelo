@@ -97,3 +97,7 @@ Harness SHA256 `8433947DD908D106BB9B8E70994D1C87F1948ADD821C367822128B53C1BB203F
 teste SHA256 `395D094723161A6C2C8F16DC6934E71643543E604CD41A902543CACCD9636810`.
 Os reruns estruturais anteriores não são somados. SQL concorrente continua
 planejado em três cenários e não executado.
+
+## Integracao D00 - 2026-09-09T14:53:36-03:00
+
+Harness integrado cc487008f e hook opt-in aplicado na raiz. Revisao independente conferiu causalidade e guard de modos. D00 acrescentou exigencia de TestPath unico do TAP CHILD nominal antes de recursos, impedindo concorrencia sem45assertivas anteriores. Infraestrutura atual20IDs PASS:8harness+12wrapper. XML child-concurrency-integrated-green registra19P1F (seletor AST de teste capturava dois guards); ajuste do seletor sem afrouxar produto e child-concurrency-wrapper-final registra12P0F. Reruns nao somados. RED inicial de11guards consta tool sessions11384/87582, sem arquivo bruto; REDnovo TAP0P1F em child-nominal-tap-guard-red.xml. SQL45+3 ainda nao executados nesta integracao; nao e aceite BE/E2E.

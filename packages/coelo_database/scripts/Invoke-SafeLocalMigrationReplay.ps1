@@ -21,6 +21,8 @@ param(
 
   [switch]$RunR02AuthProofConcurrency,
 
+  [switch]$RunChildDirectoryConcurrency,
+
   [switch]$RunActivityV2Concurrency
 )
 
@@ -92,6 +94,15 @@ function Get-DockerResources([string]$Identity) {
 
 if ($targetMigration.Count -ne 1) {
   throw "target version must identify exactly one canonical migration: $TargetVersion"
+}
+if ($RunChildDirectoryConcurrency -and (
+    $NominalProfile -cne 'ChildDirectoryEnvelope' -or
+    $TargetVersion -cne '20260908051500' -or
+    $FoundationOnly -or $AuthOnly -or
+    $AdditionalMigration.Count -gt 0 -or
+    $RunAuthLifecycle -or $RunActivityV2Concurrency -or
+    $RunR02AuthProofConcurrency)) {
+  throw 'CHILD concurrency requires exact ChildDirectoryEnvelope target without other modes or additions'
 }
 if ($RunR02AuthProofConcurrency -and (
     -not $AuthOnly -or -not $RunAuthLifecycle -or $FoundationOnly -or
@@ -218,6 +229,12 @@ $resolvedTestPaths = @($TestPath | ForEach-Object {
   Assert-NoReparseAncestors $resolved
   $resolved
 })
+$expectedChildTap = Join-Path $canonicalTestsRoot 'superadmin_child_context_directory_v2_test.sql'
+if ($RunChildDirectoryConcurrency -and (
+    $resolvedTestPaths.Count -ne 1 -or
+    $resolvedTestPaths[0] -ine $expectedChildTap)) {
+  throw 'CHILD concurrency requires exactly the nominal CHILD TAP'
+}
 Assert-NoReparseAncestors $tempRoot
 if ($projectRoot -eq $repositoryFull -or
     $projectRoot.StartsWith($repositoryFull.TrimEnd('\') + '\', [StringComparison]::OrdinalIgnoreCase)) {
@@ -358,6 +375,11 @@ try {
   if ($RunLint) {
     & npx.cmd --yes $cliPackage --agent no db lint --local --level warning --fail-on error --workdir $projectRoot
     if ($LASTEXITCODE -ne 0) { throw "safe local database lint failed with exit code $LASTEXITCODE" }
+  }
+  if ($RunChildDirectoryConcurrency) {
+    & (Join-Path $scriptRoot 'Test-ChildDirectoryConcurrency.ps1') `
+      -ProjectRoot $projectRoot `
+      -ProjectId $projectId
   }
   if ($RunR02AuthProofConcurrency) {
     & (Join-Path $scriptRoot 'Test-R02AuthProofConcurrency.ps1') `
