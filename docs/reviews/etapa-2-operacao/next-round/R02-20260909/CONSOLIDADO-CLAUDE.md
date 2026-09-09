@@ -1879,7 +1879,7 @@ preservadas — `PRINCIPAL.md` saiu da lista porque `dev` já a integrou.
 
 ---
 
-# FECHAMENTO DEFINITIVO — L02, SHA `9144f4efb`
+# FECHAMENTO DEFINITIVO — L02, SHA `45d92b9c1`
 
 **Verifiquei:** declarado, remoto e local **iguais**; zero não commitado além das
 fontes compartilhadas; zero stashes. A alteração da skill está commitada em
@@ -2046,7 +2046,7 @@ fim.
    os `headSha` do registro.
 2. **D00 corrigir os quatro `headSha`** em `registro.json`. Ele é o único
    escritor daquele arquivo; **eu não o alterei**.
-3. **D00 integrar pelas pontas reais** — `3697dd49e`, `9144f4efb`, `b209b4e0f`.
+3. **D00 integrar pelas pontas reais** — `3697dd49e`, `45d92b9c1`, `b209b4e0f`.
 
 Enquanto isso não ocorrer, o trabalho está **preservado e publicado**, mas
 **não entregue no sentido forte**. Publicar não é o mesmo que ser lido, e é a
