@@ -8,7 +8,7 @@
 
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(32);
+select plan(37);
 
 -- The extended signature exists and the previous one is gone, so the two never
 -- coexist as an ambiguous overload.
@@ -214,11 +214,49 @@ select is(
   422,
   'an unusable cursor is a client-fixable refusal, not a 500');
 
--- Not covered here, and deliberately not faked: pagination over tied sort values
--- in both directions runs through superadmin_notice_directory_v2, which needs
--- the internal-identity fixture and a local replay. R01-C05-I007 keeps that
--- behind a lease, so the tie case stays declared as uncovered rather than
--- asserted against a hand-rolled copy of the query.
+-- The tie case, as a source contract rather than as live behaviour.
+--
+-- Executing it needs the internal-identity fixture and a local replay, which
+-- stays behind a lease, so what is asserted here is the property that made the
+-- defect possible: the ORDER BY direction and the keyset comparison operator
+-- have to agree. Ascending orders id asc and resumes with `>`; descending orders
+-- id desc and resumes with `<`. Mixing them is exactly what duplicated or
+-- skipped rows whose sort value ties. Same technique the Momentos candidate uses
+-- and that activity_template_unit_scope_test.sql established in this repository:
+-- it catches the reintroduction, it does not replace the replay, and the replay
+-- is still owed before anything here is called end to end.
+-- Normalised definition: whitespace-squeezed and lowercased so the asserts track
+-- the guard itself, not the formatting around it. A temporary table, not a CTE:
+-- a `with` clause binds to one statement only, and these are five.
+create temporary table notices_directory_definition(name text primary key, body text);
+insert into notices_directory_definition values (
+  'directory',
+  regexp_replace(
+    lower(
+      pg_catalog.pg_get_functiondef(
+        'public.superadmin_notice_directory_v2(text[],text,text[],text[],timestamptz,uuid,'
+        'integer,text,boolean,text,text)'::regprocedure)),
+    '\s+', ' ', 'g'));
+
+select ok(
+  (select body from notices_directory_definition) like
+    '%case when p_sort_ascending then filtered.id end asc%',
+  'ascending pages order the id tiebreak ascending');
+select ok(
+  (select body from notices_directory_definition) like
+    '%p_sort_ascending and (filtered.sort_value, filtered.id) > (cursor_sort_value, cursor_id)%',
+  'ascending pages resume with the matching > comparison');
+select ok(
+  (select body from notices_directory_definition) like
+    '%case when not p_sort_ascending then filtered.id end desc%',
+  'descending pages order the id tiebreak descending');
+select ok(
+  (select body from notices_directory_definition) like
+    '%not p_sort_ascending and (filtered.sort_value, filtered.id) < (cursor_sort_value, cursor_id)%',
+  'descending pages resume with the matching < comparison');
+select ok(
+  (select body from notices_directory_definition) not like '%filtered.id desc) page_row%',
+  'the unconditional id desc tiebreak that disagreed with the filter is gone');
 
 select * from finish();
 rollback;
