@@ -48,18 +48,23 @@ Describe 'CHILD concurrency requires its nominal TAP gate' {
     $ast=[Management.Automation.Language.Parser]::ParseFile($wrapperPath,[ref]$tokens,[ref]$errors)
     $guards=@($ast.FindAll({param($node)
       $node -is [Management.Automation.Language.IfStatementAst] -and
-      $node.Extent.Text.Contains("throw 'CHILD concurrency requires exactly the nominal CHILD TAP'")
+      $node.Extent.Text.Contains("throw 'CHILD concurrency or HTTP requires exactly the nominal CHILD TAP'")
     },$true))
     $guards.Count | Should Be 1
-    $RunChildDirectoryConcurrency=$true
     $canonicalTestsRoot='C:\nominal\supabase\tests'
     $expectedChildTap=Join-Path $canonicalTestsRoot 'superadmin_child_context_directory_v2_test.sql'
     $condition=[scriptblock]::Create($guards[0].Clauses[0].Item1.Extent.Text)
-    $resolvedTestPaths=@(); (& $condition) | Should Be $true
-    $resolvedTestPaths=@('C:\nominal\supabase\tests\other.sql'); (& $condition) | Should Be $true
-    $resolvedTestPaths=@($expectedChildTap,$expectedChildTap); (& $condition) | Should Be $true
-    $resolvedTestPaths=@($expectedChildTap); (& $condition) | Should Be $false
-    $ast.Extent.Text.IndexOf("throw 'CHILD concurrency requires exactly the nominal CHILD TAP'") |
+    foreach ($http in @($false,$true)) {
+      $RunChildDirectoryConcurrency=-not $http
+      $RunChildDirectoryHttp=$http
+      $resolvedTestPaths=@(); (& $condition) | Should Be $true
+      $resolvedTestPaths=@('C:\nominal\supabase\tests\other.sql'); (& $condition) | Should Be $true
+      $resolvedTestPaths=@($expectedChildTap,$expectedChildTap); (& $condition) | Should Be $true
+      $resolvedTestPaths=@($expectedChildTap); (& $condition) | Should Be $false
+    }
+    $RunChildDirectoryConcurrency=$false; $RunChildDirectoryHttp=$false
+    $resolvedTestPaths=@(); (& $condition) | Should Be $false
+    $ast.Extent.Text.IndexOf("throw 'CHILD concurrency or HTTP requires exactly the nominal CHILD TAP'") |
       Should BeLessThan $ast.Extent.Text.IndexOf('$mutex = [Threading.Mutex]')
   }
 }

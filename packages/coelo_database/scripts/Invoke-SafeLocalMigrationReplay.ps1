@@ -27,6 +27,8 @@ param(
 
   [switch]$RunChildDirectoryConcurrency,
 
+  [switch]$RunChildDirectoryHttp,
+
   [switch]$RunActivityV2Concurrency
 )
 
@@ -107,6 +109,15 @@ if ($RunAuthRecoveryBoundary -and (
     $RunAuthLifecycle -or $RunR02AuthProofConcurrency -or
     $RunChildDirectoryConcurrency -or $RunActivityV2Concurrency)) {
   throw 'Auth recovery boundary requires Auth-only and excludes lifecycle and concurrency profiles'
+}
+if ($RunChildDirectoryHttp -and (
+    $NominalProfile -cne 'ChildDirectoryEnvelope' -or
+    $TargetVersion -cne '20260908051500' -or
+    $FoundationOnly -or $AuthOnly -or $AdditionalMigration.Count -gt 0 -or
+    $RunAuthLifecycle -or $RunAuthRecoveryBoundary -or
+    $RunR02AuthProofConcurrency -or $RunActivityV2Concurrency -or
+    $RunChildDirectoryConcurrency)) {
+  throw 'CHILD HTTP requires exact ChildDirectoryEnvelope target without other modes or additions'
 }
 if ($RunChildDirectoryConcurrency -and (
     $NominalProfile -cne 'ChildDirectoryEnvelope' -or
@@ -245,10 +256,10 @@ $resolvedTestPaths = @($TestPath | ForEach-Object {
   $resolved
 })
 $expectedChildTap = Join-Path $canonicalTestsRoot 'superadmin_child_context_directory_v2_test.sql'
-if ($RunChildDirectoryConcurrency -and (
+if (($RunChildDirectoryConcurrency -or $RunChildDirectoryHttp) -and (
     $resolvedTestPaths.Count -ne 1 -or
     $resolvedTestPaths[0] -ine $expectedChildTap)) {
-  throw 'CHILD concurrency requires exactly the nominal CHILD TAP'
+  throw 'CHILD concurrency or HTTP requires exactly the nominal CHILD TAP'
 }
 Assert-NoReparseAncestors $tempRoot
 if ($projectRoot -eq $repositoryFull -or
@@ -336,7 +347,7 @@ try {
     -AdditionalMigration $AdditionalMigration @nominalParameters
 
   $startAttempted = $true
-  $excludedServices = if ($RunAuthLifecycle -or $RunAuthRecoveryBoundary) {
+  $excludedServices = if ($RunAuthLifecycle -or $RunAuthRecoveryBoundary -or $RunChildDirectoryHttp) {
     $authLifecycleExcludes
   }
   else {
@@ -398,6 +409,11 @@ try {
   }
   if ($RunChildDirectoryConcurrency) {
     & (Join-Path $scriptRoot 'Test-ChildDirectoryConcurrency.ps1') `
+      -ProjectRoot $projectRoot `
+      -ProjectId $projectId
+  }
+  if ($RunChildDirectoryHttp) {
+    & (Join-Path $scriptRoot 'Test-ChildDirectoryHttp.ps1') `
       -ProjectRoot $projectRoot `
       -ProjectId $projectId
   }
