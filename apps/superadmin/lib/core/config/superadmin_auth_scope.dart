@@ -34,6 +34,10 @@ import '../../features/invites/data/supabase_invite_repository.dart';
 import '../../features/invites/domain/platform_invite.dart';
 import '../../features/notices/data/supabase_notice_repository.dart';
 import '../../features/notices/domain/notice_repository.dart';
+import '../../features/principal_circulars/data/supabase_circular_auxiliary_repositories.dart';
+import '../../features/principal_circulars/data/supabase_circular_repository.dart';
+import '../../features/principal_circulars/domain/circular_repository.dart'
+    show CircularMediaRepository, CircularRepository, CircularResponseRepository;
 import '../../features/principal_circulars/data/supabase_principal_mixed_feed_repository.dart';
 import '../../features/principal_circulars/domain/principal_happens_mixed_feed.dart';
 import '../../features/principal_happens/data/supabase_principal_happens_feed_repository.dart';
@@ -155,6 +159,9 @@ final class SuperadminAuthScope {
     this.principalRuntimeContextRepository,
     this.principalHappensFeedRepository,
     this.principalMixedFeedRepository,
+    this.principalCircularRepository,
+    this.principalCircularResponseRepository,
+    this.principalCircularMediaRepository,
     this.happensPublicationRepository,
     this.principalNowFeedRepository,
     this.momentsPublicationRepository,
@@ -207,6 +214,9 @@ final class SuperadminAuthScope {
   final PrincipalRuntimeContextRepository? principalRuntimeContextRepository;
   final PrincipalHappensFeedRepository? principalHappensFeedRepository;
   final PrincipalMixedFeedRepository? principalMixedFeedRepository;
+  final CircularRepository? principalCircularRepository;
+  final CircularResponseRepository? principalCircularResponseRepository;
+  final CircularMediaRepository? principalCircularMediaRepository;
   final HappensPublicationRepository? happensPublicationRepository;
   final PrincipalNowFeedRepository? principalNowFeedRepository;
   final MomentsPublicationRepository? momentsPublicationRepository;
@@ -370,6 +380,9 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       principalRuntimeContextRepository: SupabasePrincipalRuntimeContextRepository(client),
       principalHappensFeedRepository: SupabasePrincipalHappensFeedRepository(client),
       principalMixedFeedRepository: SupabasePrincipalMixedFeedRepository(client),
+      principalCircularRepository: SupabaseCircularRepository(client),
+      principalCircularResponseRepository: SupabaseCircularResponseRepository(client),
+      principalCircularMediaRepository: SupabaseCircularMediaRepository(client),
       happensPublicationRepository: SupabaseHappensPublicationRepository(client),
       principalNowFeedRepository: SupabasePrincipalNowFeedRepository(client),
       momentsPublicationRepository: SupabaseMomentsPublicationRepository(client),
@@ -438,6 +451,9 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthLifecycleGateway auth) {
     principalRuntimeContextRepository: null,
     principalHappensFeedRepository: null,
     principalMixedFeedRepository: null,
+    principalCircularRepository: null,
+    principalCircularResponseRepository: null,
+    principalCircularMediaRepository: null,
     happensPublicationRepository: null,
     principalNowFeedRepository: null,
     momentsPublicationRepository: null,

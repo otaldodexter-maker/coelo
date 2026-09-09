@@ -42,6 +42,8 @@ import '../features/meal_plans/domain/meal_plan_image_repository.dart';
 import '../features/meal_plans/domain/meal_plan_repository.dart';
 import '../features/invites/domain/platform_invite.dart';
 import '../features/notices/domain/notice_repository.dart';
+import '../features/principal_circulars/domain/circular_repository.dart'
+    show CircularMediaRepository, CircularRepository, CircularResponseRepository;
 import '../features/principal_circulars/domain/principal_happens_mixed_feed.dart';
 import '../features/principal_happens/domain/principal_happens_feed_repository.dart';
 import '../features/principal_happens_publication/domain/happens_publication.dart';
@@ -143,6 +145,9 @@ class SuperadminApp extends StatefulWidget {
     this.principalRuntimeContextRepository,
     this.principalHappensFeedRepository,
     this.principalMixedFeedRepository,
+    this.principalCircularRepository,
+    this.principalCircularResponseRepository,
+    this.principalCircularMediaRepository,
     this.happensPublicationRepository,
     this.principalNowFeedRepository,
     this.momentsPublicationRepository,
@@ -198,6 +203,9 @@ class SuperadminApp extends StatefulWidget {
   final PrincipalRuntimeContextRepository? principalRuntimeContextRepository;
   final PrincipalHappensFeedRepository? principalHappensFeedRepository;
   final PrincipalMixedFeedRepository? principalMixedFeedRepository;
+  final CircularRepository? principalCircularRepository;
+  final CircularResponseRepository? principalCircularResponseRepository;
+  final CircularMediaRepository? principalCircularMediaRepository;
   final HappensPublicationRepository? happensPublicationRepository;
   final PrincipalNowFeedRepository? principalNowFeedRepository;
   final MomentsPublicationRepository? momentsPublicationRepository;
@@ -279,6 +287,9 @@ class _SuperadminAppState extends State<SuperadminApp> {
           const UnavailablePrincipalRuntimeContextRepository(),
       principalHappensFeedRepository: widget.principalHappensFeedRepository,
       principalMixedFeedRepository: widget.principalMixedFeedRepository,
+      principalCircularRepository: widget.principalCircularRepository,
+      principalCircularResponseRepository: widget.principalCircularResponseRepository,
+      principalCircularMediaRepository: widget.principalCircularMediaRepository,
       happensPublicationRepository: widget.happensPublicationRepository,
       principalNowFeedRepository: widget.principalNowFeedRepository,
       momentsPublicationRepository: widget.momentsPublicationRepository,

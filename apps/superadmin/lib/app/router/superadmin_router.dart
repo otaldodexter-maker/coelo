@@ -1,4 +1,5 @@
-import '../../features/principal_circulars/domain/circular_repository.dart' show CircularScope;
+import '../../features/principal_circulars/domain/circular_repository.dart'
+    show CircularMediaRepository, CircularRepository, CircularResponseRepository, CircularScope;
 import 'dart:async';
 import '../../features/groups/domain/group_detail.dart';
 import '../../features/groups/presentation/group_detail_page.dart';
@@ -145,6 +146,7 @@ import '../../features/notices/data/development_notice_repository.dart';
 import '../../features/notices/presentation/notice_directory_page.dart';
 import '../../features/notices/presentation/notice_form_page.dart';
 import '../../features/principal_circulars/domain/principal_happens_mixed_feed.dart';
+import '../../features/principal_circulars/presentation/principal_circular_detail_page.dart';
 import '../../features/plans/data/fake_plan_catalog_repository.dart';
 import '../../features/plans/domain/plan_catalog_repository.dart';
 import '../../features/plans/presentation/plan_directory_page.dart';
@@ -282,6 +284,9 @@ GoRouter createSuperadminRouter({
       const UnavailablePrincipalRuntimeContextRepository(),
   PrincipalHappensFeedRepository? principalHappensFeedRepository,
   PrincipalMixedFeedRepository? principalMixedFeedRepository,
+  CircularRepository? principalCircularRepository,
+  CircularResponseRepository? principalCircularResponseRepository,
+  CircularMediaRepository? principalCircularMediaRepository,
   HappensPublicationRepository? happensPublicationRepository,
   PrincipalNowFeedRepository? principalNowFeedRepository,
   MomentsPublicationRepository? momentsPublicationRepository,
@@ -823,9 +828,23 @@ GoRouter createSuperadminRouter({
                     unitId: runtimeContext.unitId,
                     groupId: runtimeContext.groupId,
                   ),
-                  onOpenCircular: (_) => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('A leitura de circulares ainda não está disponível neste contexto.')),
-                  ),
+                  // Com a capacidade de leitura composta, a Circular abre no
+                  // leitor da familia Principal. Sem ela, a acao continua
+                  // informando indisponibilidade em vez de virar toque morto.
+                  onOpenCircular: (circularId) =>
+                      principalCircularRepository == null ||
+                          principalCircularResponseRepository == null
+                      ? ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'A leitura de circulares ainda não está disponível neste contexto.',
+                            ),
+                          ),
+                        )
+                      : context.pushNamed(
+                          SuperadminRoutes.principalHappensCircularName,
+                          pathParameters: {'circularId': circularId},
+                        ),
                   data: PrincipalHappensPreviewData.empty,
                   embedded: true,
                   onCreatePost: () => context.goNamed(SuperadminRoutes.principalHappensPublishName),
@@ -839,6 +858,38 @@ GoRouter createSuperadminRouter({
               },
             ),
             ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.principalHappensCircular,
+            name: SuperadminRoutes.principalHappensCircularName,
+            builder: (context, state) {
+              final circularId = state.pathParameters['circularId'];
+              final repository = principalCircularRepository;
+              final responseRepository = principalCircularResponseRepository;
+              if (circularId == null || circularId.isEmpty || repository == null || responseRepository == null) {
+                return _unavailableCompositionRootRoute(context);
+              }
+              return ListenableBuilder(
+                listenable: session,
+                builder: (context, _) => !session.isAuthenticated || session.isPasswordRecovery
+                    ? _unavailableCompositionRootRoute(context)
+                    : PrincipalCircularDetailPage(
+                        // A leitura pertence à revisão de autorização vigente: se
+                        // ela mudar, o leitor recarrega em vez de manter conteúdo
+                        // obtido sob um contexto que já não vale.
+                        key: ValueKey(
+                          'principal-circular-$circularId-${session.authorizationInvalidationRevision}',
+                        ),
+                        circularId: circularId,
+                        repository: repository,
+                        responseRepository: responseRepository,
+                        mediaRepository: principalCircularMediaRepository,
+                        embedded: true,
+                        onReturn: () =>
+                            context.canPop() ? context.pop() : context.goNamed(SuperadminRoutes.principalHappensName),
+                      ),
+              );
+            },
           ),
           GoRoute(
             path: SuperadminRoutes.principalHappensPublish,

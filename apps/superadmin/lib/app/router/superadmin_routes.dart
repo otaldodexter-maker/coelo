@@ -201,6 +201,8 @@ abstract final class SuperadminRoutes {
   static const principalHappensName = 'principal-happens';
   static const principalHappensPublish = '/principal-happens/publish';
   static const principalHappensPublishName = 'principal-happens-publish';
+  static const principalHappensCircular = '/principal-happens/circular/:circularId';
+  static const principalHappensCircularName = 'principal-happens-circular';
   static const principalForYou = '/principal-for-you';
   static const principalForYouName = 'principal-for-you';
   static const principalMoments = '/principal-moments';
