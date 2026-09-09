@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2', 'LocationReservationsV1')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2', 'LocationReservationsV1', 'SafetyInternalReads53')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @()
@@ -85,6 +85,7 @@ $locationBootstraps = @()
 $foundationBoundaryVersion = $null
 if ($NominalProfile) {
   $nominalResolverRelative = switch ($NominalProfile) {
+    'SafetyInternalReads53' { 'profiles\SafetyInternalReads53\Resolve-SafetyInternalReads53.ps1' }
     'ChildDirectoryEnvelope' { 'profiles\ChildDirectoryEnvelope\Resolve-ChildDirectoryEnvelope.ps1' }
     'N01PrerequisitesRed' { 'profiles\N01PrerequisitesRed\Resolve-N01PrerequisitesRed.ps1' }
     'A01DirectoryContractRed' { 'profiles\A01DirectoryContractRed\Resolve-A01DirectoryContractRed.ps1' }
@@ -133,6 +134,14 @@ if ($NominalProfile) {
         $locationBootstraps[0].Name -cne '20260908030958_location_form_options_remote_snapshot_local.sql' -or
         $locationBootstraps[1].Name -cne '20260908030959_location_catalog_v2_capability_bootstrap_local.sql') {
       throw 'LocationCatalogV2 requires the reviewed 53 canonical migrations and exactly two local fixtures'
+    }
+  }
+  if ($NominalProfile -ceq 'SafetyInternalReads53') {
+    $localBridges = @($nominal.LocalBridges)
+    if ($canonical.Count -ne 50 -or $additionalCanonical.Count -ne 5 -or
+        $preflight.Count -ne 2 -or $localBridges.Count -ne 1 -or
+        $localBridges[0].Name -cne '20260908051499_child_directory_error_envelope_bridge.sql') {
+      throw 'SafetyInternalReads53 requires Auth45 plus Safety5, two preflights and one inherited envelope bridge'
     }
   }
   if ($NominalProfile -eq 'ChildDirectoryEnvelope') {

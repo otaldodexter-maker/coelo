@@ -59,6 +59,59 @@ void main() {
     await tester.pumpAndSettle();
     expect(calls, 1);
   });
+
+  for (final unexpected in [false, true]) {
+    testWidgets('confirmed duplicate survives navigation failure unexpected=$unexpected', (
+      tester,
+    ) async {
+      final repository = _Repository('A')..detail.complete(_profile('A'));
+      var completions = 0;
+      await tester.pumpWidget(
+        _page(
+          repository,
+          onDuplicated: (_) {
+            completions++;
+            if (completions == 1) {
+              if (unexpected) throw StateError('Navigation failed');
+              throw const AccessProfileException('Navigation failed');
+            }
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+      await _submit(tester);
+      repository.result.complete(_profile('copy-A'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.byKey(const Key('access-profile-duplicate-submit')));
+      await tester.pumpAndSettle();
+      expect(repository.duplicates, 1);
+      expect(completions, 2);
+      expect(find.byKey(const Key('access-profile-duplicate-confirmed')), findsOneWidget);
+      expect(find.widgetWithText(CoeloFormTextField, 'Nome do novo modelo'), findsNothing);
+    });
+  }
+
+  testWidgets('confirmed duplicate is cleared when its source context changes', (tester) async {
+    final first = _Repository('A')..detail.complete(_profile('A'));
+    final second = _Repository('B')..detail.complete(_profile('B'));
+    var oldCompletions = 0;
+    var newCompletions = 0;
+    await tester.pumpWidget(_page(first, onDuplicated: (_) => oldCompletions++));
+    await tester.pumpAndSettle();
+    await _submit(tester);
+    first.result.complete(_profile('copy-A'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('access-profile-duplicate-confirmed')), findsOneWidget);
+    await tester.pumpWidget(_page(second, onDuplicated: (_) => newCompletions++));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('access-profile-duplicate-confirmed')), findsNothing);
+    expect(_name(tester), 'Modelo B (cópia)');
+    expect(oldCompletions, 1);
+    expect(newCompletions, 0);
+    expect(first.duplicates, 1);
+    expect(second.duplicates, 0);
+  });
 }
 
 String _name(WidgetTester tester) => tester
