@@ -142,7 +142,17 @@
       "removed": true
     }
   ],
-  "ignored_visual_artifacts": "Kept in original worktrees. Support archive pending; do not delete based on clean git status.",
+  "ignored_visual_artifacts": {
+    "verified_at": "2026-09-09T08:56:43-03:00",
+    "archive_path": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\e2-r01-close-20260909-support\\ignored-artifacts\\ignored-failures-preserve-20260909_084207.zip",
+    "sha256": "72ee73ee609474aa76f1552f3c9532202179674dcf85922b38e6df0863f70df2",
+    "files": 4069,
+    "directory_entries": 200,
+    "every_file_sha256_and_bytes_verified": true,
+    "manifest_path": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\e2-r01-close-20260909-support\\ignored-artifacts\\manifest-ignored-failures-20260909_084207.json",
+    "source_files_removed": false,
+    "relocation_note": "Moved only three support-created artifacts outside original checkout; original manifests preserve their creation path."
+  },
   "automations": [
     {
       "id": "e2-r01-c00-acompanhamento-30-min",
@@ -174,5 +184,6 @@
     }
   ],
   "remote_deploy": false,
-  "remote_mutations": false
+  "remote_mutations": false,
+  "updated_at": "2026-09-09T08:56:43-03:00"
 }

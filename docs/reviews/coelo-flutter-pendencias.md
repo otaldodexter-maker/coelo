@@ -14,14 +14,14 @@ formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
 tracker_sync_at: "2026-09-09T08:41:13-03:00"
-tracker_sync_revisions: "C01r51; C02r48; C03r33; C04r61; C05final; C06r51; C07r12"
+tracker_sync_revisions: "C01r51; C02r48; C03r33; C04r61; C05final; C06r53; C07r12"
 ---
 
 # Pendências Coelo — Front-end
 
 ## Estado vigente — fechamento R01 em 2026-09-09T08:41:13-03:00
 
-Sincronizados **C01r51, C02r48, C03r33, C04r61, C05final, C06r51 e C07r12**. Fontes originais, horários e hashes estão em [recibos](etapa-2-operacao/reports/R01-fechamento-fontes.json). Código integrado em `af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0`; publicação Git é estado separado no relatório final. Somente Superadmin e dependências, incluindo seu menu Coelo (Principal).
+Sincronizados **C01r51, C02r48, C03r33, C04r61, C05final, C06r53 e C07r12**. Fontes originais, horários e hashes estão em [recibos](etapa-2-operacao/reports/R01-fechamento-fontes.json). Código integrado em `af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0`; publicação Git é estado separado no relatório final. Somente Superadmin e dependências, incluindo seu menu Coelo (Principal).
 
 - **219 ações**:194 ativas (189mvp+5shellcliente),22adiadas e3gates formais. Backend212 aplicáveis/7não aplicáveis; E2E187 ativas. IDs são ações, não quantidades de testes.
 - **Conclusão FE2/219**, exclusivamente `profile-files.import` e `profile-files.export`, ambas adiadas com indisponibilidade honesta; **FE ativa0/194**, **BE0/212**, **E2E0/187**. Nenhuma promoção nesta consolidação. Zero certificado não significa zero implementado.

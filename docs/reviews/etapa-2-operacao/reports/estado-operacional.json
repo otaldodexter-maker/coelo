@@ -529,7 +529,7 @@
     "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
     "verified_at": "2026-09-08T12:25:00-03:00"
   },
-  "updated_at": "2026-09-09T08:50:57-03:00",
+  "updated_at": "2026-09-09T08:57:29-03:00",
   "integration_history": [
     {
       "executor": "C01",
@@ -1581,9 +1581,9 @@
       "baseline": "f0763a657ca6e5422cc42fa61c0c3c4ca724e129",
       "handoff_path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06\\docs\\reviews\\etapa-2-operacao\\handoffs\\C06.md",
       "instruction_revision": 13,
-      "received_revision": 51,
-      "accepted_revision": 51,
-      "status": "final-operational-delivery-accepted",
+      "received_revision": 53,
+      "accepted_revision": 53,
+      "status": "R01-closed; I015 acknowledged; monitor ended",
       "operational_ack": "I014 confirmed r50; closure originals received",
       "scope": [
         "C04",
@@ -1595,7 +1595,7 @@
       "created_at": "2026-09-08T17:29:41-03:00",
       "bootstrap_commit": "2ed8513842a1d2f3f595645c7e868ad00662fefd",
       "push_verified_at": "2026-09-08T17:34:14-03:00",
-      "last_evidence": "2026-09-09T08:41:39-03:00",
+      "last_evidence": "2026-09-09T08:51:45-03:00",
       "automation_schedule": ":21/:51 America/Sao_Paulo;session-only idle-only;reported",
       "source_commit": "b1ce4cb074fbc14f043529f72ea56d7743551460",
       "c07_receipt_evidence": "C06r5 confirms C07 supervision, I003/I004 correction and RTK dispatch18:22-18:23",
@@ -1606,8 +1606,8 @@
       "last_evidence_basis": "final body and original evidence; stale frontmatter is not latest revision",
       "operational_gap": "No direct C00 Claude wake tool; session reported live, must read current assignment before dispatch",
       "last_read_at": "2026-09-08T21:24:53-03:00",
-      "handoff_sha256": "6450e74fd8c371fa01343178c2607ac867ecc04e568616863ad990247c111f15",
-      "source_push_verified_sha": "e07a427aa523fc85bd68380ce1fb6867ca2b1932",
+      "handoff_sha256": "3a7d7831637a71565d3fc37b2828b410ead7959f33f1119efdba7f2a07d5ff25",
+      "source_push_verified_sha": "e3223e63533ba433b3c1cb5e094a174ebf63bd0b",
       "handoff_commit": "daf388fe0627d57ff7401f78b95e73285f436c19",
       "next_step": "Read I015 final receipt; no repeated acknowledgements/new R01 work",
       "continuity_status": "CronList empty reported with new command r50; no direct Codex inspection"
@@ -1691,11 +1691,14 @@
         "head": "42f8ef995a3e41a8aa1999c325e085208d874946"
       },
       "C06": {
-        "revision": 51,
-        "source_timestamp": "2026-09-09T08:41:39-03:00",
-        "sha256": "6450e74fd8c371fa01343178c2607ac867ecc04e568616863ad990247c111f15",
-        "head": "e07a427aa523fc85bd68380ce1fb6867ca2b1932",
-        "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06\\docs\\reviews\\etapa-2-operacao\\handoffs\\C06.md"
+        "revision": 53,
+        "source_timestamp": "2026-09-09T08:51:45-03:00",
+        "sha256": "3a7d7831637a71565d3fc37b2828b410ead7959f33f1119efdba7f2a07d5ff25",
+        "head": "e3223e63533ba433b3c1cb5e094a174ebf63bd0b",
+        "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06\\docs\\reviews\\etapa-2-operacao\\handoffs\\C06.md",
+        "read_at": "2026-09-09T08:57:29-03:00",
+        "remote_head": "e3223e63533ba433b3c1cb5e094a174ebf63bd0b",
+        "push_verified": true
       },
       "C07": {
         "revision": 12,
@@ -3057,15 +3060,15 @@
         "patch_comparison_limit": "Comparação textual de commits; + não prova implementação ausente (integrações por hunks/cadeias podem ser equivalentes). Toda branch preservada."
       },
       "C06": {
-        "revision": 51,
-        "source_timestamp": "2026-09-09T08:41:39-03:00",
-        "read_at": "2026-09-09T08:44:39-03:00",
+        "revision": 53,
+        "source_timestamp": "2026-09-09T08:51:45-03:00",
+        "read_at": "2026-09-09T08:57:29-03:00",
         "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06\\docs\\reviews\\etapa-2-operacao\\handoffs\\C06.md",
         "snapshot": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\e2-r01-close-20260909-c00\\handoffs\\C06\\C06.md",
-        "sha256": "6450e74fd8c371fa01343178c2607ac867ecc04e568616863ad990247c111f15",
+        "sha256": "3a7d7831637a71565d3fc37b2828b410ead7959f33f1119efdba7f2a07d5ff25",
         "branch": "claude/e2-r01-c06-coordenacao",
-        "head": "e07a427aa523fc85bd68380ce1fb6867ca2b1932",
-        "remote_head": "e07a427aa523fc85bd68380ce1fb6867ca2b1932",
+        "head": "e3223e63533ba433b3c1cb5e094a174ebf63bd0b",
+        "remote_head": "e3223e63533ba433b3c1cb5e094a174ebf63bd0b",
         "push_verified": true,
         "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06",
         "git_status": ""
@@ -3208,7 +3211,7 @@
     "completed_at": "2026-09-09T08:50:57-03:00",
     "delivery_sha_verified": "2b4f189a17146911cbe7d91ad653c67997db3610",
     "preservation_report": "reports/R01-fechamento-preservacao.json",
-    "c06_communications_received_through": 52,
+    "c06_communications_received_through": 53,
     "sources_synchronized_through": "C01r51 C02r48 C03r33 C04r61 C05final C06r51(product/closure)+r52(communication-only) C07r12",
     "automations": [
       {
@@ -3242,7 +3245,9 @@
     ],
     "writer_transfer": false,
     "active_localhost_servers": 0,
-    "active_localhost_browser_tabs": 0
+    "active_localhost_browser_tabs": 0,
+    "c06_I015_ack": "r53 received; watchdog ended, no additional product delta",
+    "support_archive": "4069 files verified individually SHA256/bytes; original worktree evidence retained"
   },
   "operational_precedence": "closure, tracker_sync and current_shared_file_reservations supersede all timestamped historical checkpoint/reservation fields; no old R01 instruction is executable"
 }

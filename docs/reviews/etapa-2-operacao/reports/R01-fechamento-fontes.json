@@ -74,15 +74,15 @@
       "git_status": ""
     },
     "C06": {
-      "revision": 51,
-      "source_timestamp": "2026-09-09T08:41:39-03:00",
-      "read_at": "2026-09-09T08:46:03-03:00",
+      "revision": 53,
+      "source_timestamp": "2026-09-09T08:51:45-03:00",
+      "read_at": "2026-09-09T08:57:29-03:00",
       "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06\\docs\\reviews\\etapa-2-operacao\\handoffs\\C06.md",
       "snapshot": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\e2-r01-close-20260909-c00\\handoffs\\C06\\C06.md",
-      "sha256": "6450e74fd8c371fa01343178c2607ac867ecc04e568616863ad990247c111f15",
+      "sha256": "3a7d7831637a71565d3fc37b2828b410ead7959f33f1119efdba7f2a07d5ff25",
       "branch": "claude/e2-r01-c06-coordenacao",
-      "head": "e07a427aa523fc85bd68380ce1fb6867ca2b1932",
-      "remote_head": "e07a427aa523fc85bd68380ce1fb6867ca2b1932",
+      "head": "e3223e63533ba433b3c1cb5e094a174ebf63bd0b",
+      "remote_head": "e3223e63533ba433b3c1cb5e094a174ebf63bd0b",
       "push_verified": true,
       "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06",
       "git_status": ""
@@ -102,5 +102,5 @@
       "git_status": ""
     }
   },
-  "updated_at": "2026-09-09T08:44:39-03:00"
+  "updated_at": "2026-09-09T08:57:29-03:00"
 }

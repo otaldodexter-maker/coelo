@@ -11,7 +11,7 @@ Consolidação local concluída às **2026-09-09T08:44:39-03:00**, após o prazo
 
 ## Recebimento e evolução mensurável
 
-**Todos os sete handoffs finais foram recebidos**, com fontes originais e evidências preservadas. C01r51, C02r48, C03r33, C04r61, C05final, C06r51 e C07r12. [Cortes, horários, hashes e commits](R01-fechamento-fontes.json). Metadados antigos no topo de alguns handoffs não substituem revisões finais do corpo. C00 não fabrica handoff próprio de executor.
+**Todos os sete handoffs finais foram recebidos**, com fontes originais e evidências preservadas. C01r51, C02r48, C03r33, C04r61, C05final, C06r53 e C07r12. [Cortes, horários, hashes e commits](R01-fechamento-fontes.json). Metadados antigos no topo de alguns handoffs não substituem revisões finais do corpo. C00 não fabrica handoff próprio de executor.
 
 O percentual abaixo mede **ações com algum critério examinado**, incluindo falhas/análise estática. Não mede quanto do app está pronto. Há **198/219 FE (90,4%)** e **63/212 BE (29,7%)**; dentro do BE,20IDs têm execução SQL local, sem somar esse subconjunto. Critérios, IDs, fontes e datas em [métricas](R01-fechamento-metricas.json).
 
@@ -75,3 +75,10 @@ Bundle completo de oito branches verificado: `C:\Users\adrie\Documents\Coelo.pre
 Heartbeats nativos C00/C01/C02/C03 **PAUSED**, verificados; nenhum próximo disparo. Cron Claude C06 encerrado conforme r50; r52 confirmou que recebeu o fechamento documental, sem nova entrega de produto. A I015 abaixo informa publicação/preservação, sem mandar reiniciar as frentes. Localhost sem servidor de app; inventário de navegadores também sem abas localhost.
 
 Fechamento operacional desta consolidação concluído. **R01 é parcial em produto**: fila retida e todos os critérios abertos continuam explícitos. Novas conversas serão iniciadas pelo Owner com base consolidada; nenhuma implementação nas antigas é retomada.
+
+
+## Complemento de preservação e ciência C06 — 2026-09-09T08:57:29-03:00
+
+Arquivo adicional do apoio concluído: **4.069 arquivos** de evidência ignorados, mais200entradas de diretório, verificados individualmente porSHA256 e tamanho pela C00. ZIP e manifestos foram realocados para `C:/Users/adrie/Documents/Coelo.preserved/e2-r01-close-20260909-support/ignored-artifacts`, fora do checkout original. SHA256 ZIP `72ee73ee609474aa76f1552f3c9532202179674dcf85922b38e6df0863f70df2`. Fontes originais continuam intactas; recibo anterior de arquivo pendente está superado.
+
+C06 **r53 confirmou I015 e encerrou a vigília**. Nenhuma entrega de produto nova; os percentuais e critérios permanecem iguais. A reverificação C07 faltou porque C00 não materializou a base conjunta na worktree, não por falta de entrega dos testes. Apoio instruído a encerrar operação contínua, sem novos lotes.
