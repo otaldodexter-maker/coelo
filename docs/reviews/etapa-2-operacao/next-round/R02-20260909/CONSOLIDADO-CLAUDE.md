@@ -1168,3 +1168,51 @@ em vez de permitir navegar entre eles. Corrigido em `0128ab8e0`.
 e vale como método: ausência de cobertura não é estado neutro.
 
 Diff acumulado de L03 conferido depois de tudo: **35 arquivos**, zero resíduo.
+
+## Conhecimento durável capturado — e por que ele vale mais que a correção
+
+L02 investigou se existia um **gerador ou modelo** que tivesse originado as três
+migrations quebradas. **Não existe.** Ele procurou template, scaffold e
+generator; os arquivos com "template" no nome são de *templates de atividade*,
+conceito de produto, não andaime de migration. Nem as skills nem os planos
+documentavam o padrão de insert de permissão. **As três se replicaram por cópia,
+numa mesma passagem de autoria.**
+
+Isso muda a natureza da prevenção: **não há modelo para consertar**. O que
+protege o futuro é a invariante estar escrita onde o agente lê **antes** de
+escrever o próximo pacote. Ele registrou em
+`.agents/skills/coelo-supabase/SKILL.md`, seção de migrations, commit `97407afd`:
+
+> Pacote revisável não é pacote aplicável: exercitar a aplicação sobre uma base
+> que já tenha as migrations anteriores, não só escrever guarda de dependência.
+> Uma guarda bem escrita recusa o que falta; ela não descobre que o próprio
+> insert viola constraint criada depois.
+
+**Aprovei a redação.** Ela separa duas coisas que se confundem com facilidade e
+explica por que o pacote dele passou por revisão e ainda assim não teria
+aplicado. O caso medido vai junto — a data, o `not null` sem default, as três
+migrations, e a **regra de comparar a data** antes de tratar ocorrência como
+defeito, que é o que salva o próximo leitor de revisar catorze arquivos sãos.
+
+**A skill precisa viajar no delta para D00 integrar**, não ficar só na worktree
+de L02 — regra do `AGENTS.md`, que ele aplicou sem eu precisar lembrar.
+
+## Convergência independente na varredura de migrations
+
+L01 e L02 varreram por caminhos próprios e chegaram ao **mesmo conjunto**:
+3 reais (`20260901101500` l.18, `20260901185008` l.136, `20260901191921` l.109)
+e **14 falsas** anteriores ao corte `20260831130726`. Convergência por caminhos
+separados é evidência melhor que confirmação de um pelo outro. Nenhuma das três
+foi alterada por nenhuma frente, conforme determinei.
+
+## Um assert que ficou honestamente sem causa
+
+L02 tinha deixado o `not ok 3` explicitamente em aberto e voltou para fechá-lo
+até onde dava: **não é tabela ausente** — o assert é qualificado corretamente, e
+o teste 10 passou dereferenciando
+`app_private.superadmin_internal_chat_message_edits::regclass`, o que falharia
+com erro duro se a relação não existisse. É nuance da asserção `has_table` do
+pgTAP naquele ambiente, e ele **não afirma a causa exata porque não a isolou**.
+
+Fechar o que dá e declarar o resto como não isolado é o mesmo critério que o fez
+manter o `B=1` bloqueado. Vai assim ao relatório.
