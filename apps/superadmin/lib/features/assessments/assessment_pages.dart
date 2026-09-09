@@ -1468,7 +1468,7 @@ final class _AssessmentClosingPageState extends State<AssessmentClosingPage> {
       if (mounted && generation == _loadGeneration) {
         setState(() => _items = items);
       }
-    } on Exception catch (error) {
+    } on Object catch (error) {
       if (mounted && generation == _loadGeneration) {
         setState(() => _error = error);
       }

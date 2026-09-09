@@ -195,6 +195,28 @@ void main() {
     });
   }
 
+  testWidgets('closing queue maps decoding Errors to a retryable failure', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AssessmentClosingPage(
+          repository: const _ClosingDecodingErrorRepository(),
+          logout: unavailableSuperadminLogout,
+          onOpen: (_) {},
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Não foi possível carregar'), findsOneWidget);
+    expect(find.text('Tentar novamente'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+  });
+
   testWidgets('closing detail swaps repository and discards late gradebook A', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -459,6 +481,19 @@ final class _PendingClosingRepository implements AssessmentRepository {
   Future<List<AssessmentClosingItem>> fetchClosingQueue() {
     requests++;
     return result.future;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _ClosingDecodingErrorRepository implements AssessmentRepository {
+  const _ClosingDecodingErrorRepository();
+
+  @override
+  Future<List<AssessmentClosingItem>> fetchClosingQueue() async {
+    final row = <String, Object?>{'items': 42};
+    return row['items']! as List<AssessmentClosingItem>;
   }
 
   @override
