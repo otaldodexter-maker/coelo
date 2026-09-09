@@ -4,6 +4,8 @@ import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_command.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
+import 'package:coelo_superadmin/features/activities/presentation/activity_form_draft.dart';
+import 'package:coelo_superadmin/features/activities/presentation/activity_form_page.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
@@ -154,6 +156,68 @@ void main() {
     expect(find.text('Criar atividade'), findsNothing);
   });
 
+  testWidgets('production draft create returns to the directory after the first save', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final session = SuperadminSession()..signInForTesting();
+    final commands = _SuccessfulActivityCommandRepository();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      activityDirectoryRepository: FakeActivityDirectoryRepository(),
+      activityCommandRepository: commands,
+      enableStructureMutations: true,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go('${SuperadminRoutes.activityCreate}?returnTo=${SuperadminRoutes.activityCreate}');
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    final page = tester.widget<ActivityFormPage>(find.byType(ActivityFormPage));
+    await page.onSaveDraft(_routeDraft);
+    await tester.pumpAndSettle();
+
+    expect(commands.saveCalls, 1);
+    expect(commands.lastSave?.activityId, isNull);
+    expect(commands.createdActivityIds, {'activity-created'});
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.activities);
+    expect(find.byType(ActivityFormPage), findsNothing);
+  });
+
+  testWidgets('development draft create returns to the directory after the first save', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final session = SuperadminSession();
+    final router = createSuperadminRouter(
+      allowDevelopmentPreview: true,
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.devActivityCreate);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    final page = tester.widget<ActivityFormPage>(find.byType(ActivityFormPage));
+    await page.onSaveDraft(_routeDraft);
+    await tester.pumpAndSettle();
+
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devActivities);
+    expect(find.byType(ActivityFormPage), findsNothing);
+  });
+
   testWidgets('production mutation deep links render fullscreen 503 without repository access', (
     tester,
   ) async {
@@ -297,3 +361,57 @@ final class _TripwireActivityCommandRepository implements ActivityCommandReposit
   @override
   Future<ActivitySaveResult> save(ActivitySaveCommand command) => _tripwire();
 }
+
+final class _SuccessfulActivityCommandRepository implements ActivityCommandRepository {
+  int saveCalls = 0;
+  ActivitySaveCommand? lastSave;
+  final Set<String> createdActivityIds = {};
+
+  @override
+  Future<ActivitySaveResult> save(ActivitySaveCommand command) async {
+    saveCalls++;
+    lastSave = command;
+    createdActivityIds.add('activity-created');
+    return const ActivitySaveResult(
+      activityId: 'activity-created',
+      managementVersion: 1,
+      status: ActivityStatus.draft,
+    );
+  }
+
+  Future<T> _unexpected<T>() => Future.error(StateError('Unexpected Activity command.'));
+
+  @override
+  Future<ActivityTemplateCopyResult> copyTemplate(ActivityTemplateCopyCommand command) =>
+      _unexpected();
+
+  @override
+  Future<ActivityTemplateCreateResult> createTemplate(ActivityTemplateCreateCommand command) =>
+      _unexpected();
+
+  @override
+  Future<List<ActivityLocationResult>> createLocations(ActivityLocationCommand command) =>
+      _unexpected();
+
+  @override
+  Future<ActivityExportResult> requestExport(
+    ActivityDirectoryQuery query, {
+    required ActivityCommandExportFormat format,
+  }) => _unexpected();
+}
+
+const _routeDraft = ActivityFormDraft(
+  requestId: 'activity-route-create-1',
+  commandSignature: 'activity-route-draft-1',
+  name: 'Robótica',
+  description: '',
+  taxonomy: ActivityTaxonomyOption(id: 'sports', label: 'Esportes'),
+  subtype: null,
+  template: null,
+  taxonomyOtherDescription: '',
+  governance: ActivityGovernance.optional,
+  institutionId: 'institution-1',
+  unitIds: {'institution-1-unit-1'},
+  groupIds: {},
+  assignments: [],
+);

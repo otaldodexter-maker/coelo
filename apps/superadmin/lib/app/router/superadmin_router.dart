@@ -1456,12 +1456,17 @@ GoRouter createSuperadminRouter({
                     aboutRepository: productionActivityAboutRepository,
                     logout: logout,
                     onCancel: () => _returnToOr(context, state, SuperadminRoutes.activitiesName),
-                    onSaveDraft: (draft) => saveActivity(
-                      draft,
-                      intent: ActivityCommandIntent.saveDraft,
-                      commandRepository: activityCommandRepository,
-                      aboutRepository: productionActivityAboutRepository,
-                    ),
+                    onSaveDraft: (draft) async {
+                      await saveActivity(
+                        draft,
+                        intent: ActivityCommandIntent.saveDraft,
+                        commandRepository: activityCommandRepository,
+                        aboutRepository: productionActivityAboutRepository,
+                      );
+                      if (context.mounted) {
+                        context.goNamed(SuperadminRoutes.activitiesName);
+                      }
+                    },
                     onSubmit: (draft) async {
                       await saveActivity(
                         draft,
@@ -2947,12 +2952,17 @@ GoRouter createSuperadminRouter({
               initialUnitId: state.uri.queryParameters['unitId'],
               logout: _previewLogout,
               onCancel: () => _returnToOr(context, state, SuperadminRoutes.devActivitiesName),
-              onSaveDraft: (draft) => saveActivity(
-                draft,
-                intent: ActivityCommandIntent.saveDraft,
-                commandRepository: developmentActivityCommandRepository,
-                aboutRepository: developmentActivityAboutRepository,
-              ),
+              onSaveDraft: (draft) async {
+                await saveActivity(
+                  draft,
+                  intent: ActivityCommandIntent.saveDraft,
+                  commandRepository: developmentActivityCommandRepository,
+                  aboutRepository: developmentActivityAboutRepository,
+                );
+                if (context.mounted) {
+                  context.goNamed(SuperadminRoutes.devActivitiesName);
+                }
+              },
               onSubmit: (draft) async {
                 await saveActivity(
                   draft,
