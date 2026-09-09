@@ -2,7 +2,6 @@
 source: "specs/050-principal-ui-ux-closure.md; specs/037-principal-circulars.md; esclarecimento do Owner em 2026-09-08"
 status: "active"
 generated_at: "2026-09-08"
-updated_at: "2026-09-09"
 ---
 
 # Superfícies visuais do Principal
@@ -48,11 +47,7 @@ de conclusão nem prova de backend conectado.
   `apps/superadmin/lib/features/principal_shared/presentation/principal_publication_frame.dart`
   quando atender. Compartilhar campos neutros não impõe a página administrativa.
 - Navegação, header, dock e launcher seguem a composição única da spec 050.
-  Decisão final do Owner em 09/09/2026: quando hospedados no Superadmin,
-  Agora, Momentos e a leitura de Circular preservam o shell/menu no web e no
-  mobile. A imersão fica dentro do contêiner; só elementos internos concorrentes
-  do Principal podem ser suspensos. Restaurar foco e contexto ao sair. Esta
-  regra pertence ao hospedeiro Superadmin, não ao app Principal independente.
+  Viewers imersivos suspendem elementos concorrentes e restauram foco ao sair.
 - O viewer do Agora possui contrato imersivo próprio. Cor/contraste e controles
   sobre mídia seguem esse contrato; não aplicar mecanicamente fundo de popup
   administrativo ou o fechamento vermelho do Bug em toda superfície imersiva.
