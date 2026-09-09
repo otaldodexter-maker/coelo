@@ -98,6 +98,36 @@ void main() {
     );
     expect(values.last, isNull);
   });
+  testWidgets('implicit owner replacement rejects retained old catalog callback', (tester) async {
+    final reader = _Reader();
+    final values = <CataloguedLocationSelection?>[];
+    await tester.pumpWidget(app(reader, values, scopes: const [(scope: scopeA, label: 'A')]));
+    await tester.pumpAndSettle();
+    final old = tester.widget<LocationSelectionField>(find.byType(LocationSelectionField));
+    await tester.pumpWidget(
+      app(
+        reader,
+        values,
+        scopes: const [(scope: LocationScope.institution(institutionId: institutionB), label: 'B')],
+      ),
+    );
+    await tester.pumpAndSettle();
+    values.clear();
+    old.onChanged(
+      const CataloguedLocationSelection(
+        LocationReferenceSnapshot(
+          id: locationA,
+          scope: scopeA,
+          kind: LocationKind.internal,
+          label: 'Obsolete owner',
+        ),
+      ),
+    );
+    expect(values, isEmpty);
+    old.onChanged(null);
+    expect(values, isEmpty);
+  });
+
   testWidgets('revocation clears selection and rejects held callback', (tester) async {
     final reader = _Reader();
     final values = <CataloguedLocationSelection?>[];
