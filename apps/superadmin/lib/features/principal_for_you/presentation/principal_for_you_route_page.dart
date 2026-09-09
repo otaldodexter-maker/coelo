@@ -14,7 +14,7 @@ final class PrincipalForYouRoutePage extends StatefulWidget {
     super.key,
     required this.repository,
     required this.supportingData,
-    this.audienceScope,
+    required this.audienceScope,
     this.embedded = false,
     this.now = DateTime.now,
     this.onOpenHappens,
@@ -30,7 +30,7 @@ final class PrincipalForYouRoutePage extends StatefulWidget {
 
   /// Server-authorized scope of the actor. Audience eligibility is evaluated
   /// against it before any communication reaches the hub.
-  final PrincipalForYouAudienceScope? audienceScope;
+  final PrincipalForYouAudienceScope audienceScope;
 
   /// Whether the Superadmin shell already provides the surrounding chrome.
   final bool embedded;

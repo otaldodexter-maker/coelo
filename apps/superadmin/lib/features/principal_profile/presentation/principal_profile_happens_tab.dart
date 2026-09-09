@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import '../../principal_happens/domain/principal_happens_feed_repository.dart';
 import '../../principal_happens/domain/principal_happens_preview_data.dart';
 
-/// Aba "Acontece" embutida no Perfil contextual.
+/// The Acontece tab embedded in the contextual Perfil.
 ///
-/// Consome a projecao autorizada do feed (`listVisiblePosts`) e resolve midia
-/// somente por URL assinada (`resolveMedia`). Nao ha repositorio paralelo,
-/// fixture local, asset de preview nem chamada direta a Supabase.
+/// It consumes the authorized feed projection (`listVisiblePosts`) and resolves
+/// media only through signed URLs (`resolveMedia`). No parallel repository, no
+/// local fixture, no preview asset and no direct Supabase call.
 final class PrincipalProfileHappensTab extends StatefulWidget {
   const PrincipalProfileHappensTab({
     required this.repository,
@@ -80,7 +80,7 @@ final class _PrincipalProfileHappensTabState extends State<PrincipalProfileHappe
       });
     } on PrincipalHappensFeedUnauthorized catch (error) {
       if (!mounted || generation != _loadGeneration) return;
-      // Fail-closed: nenhum conteudo anterior permanece e nao ha retry.
+      // Fail-closed: no previous content survives and no retry is offered.
       setState(() {
         _items.clear();
         _loading = false;
@@ -256,7 +256,7 @@ final class _ProfileHappensPostCard extends StatelessWidget {
   }
 }
 
-/// Resolve a midia por URL assinada. Falha degrada para um espaco neutro,
+/// Resolves media through a signed URL. A failure degrades to a neutral slot,
 /// sem quebrar a lista e sem cair para asset local ou URL publica.
 final class _ProfileHappensMedia extends StatefulWidget {
   const _ProfileHappensMedia({required this.media, required this.repository, super.key});

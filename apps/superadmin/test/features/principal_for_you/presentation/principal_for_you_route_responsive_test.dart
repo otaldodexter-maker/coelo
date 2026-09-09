@@ -89,7 +89,9 @@ void main() {
     WidgetTester tester, {
     required Size surface,
     List<PlatformNotice> communications = const [],
-    PrincipalForYouAudienceScope? scope,
+    PrincipalForYouAudienceScope scope = const PrincipalForYouAudienceScope(
+      institutionId: 'institution-a',
+    ),
     double textScale = 1,
     NoticeRepositoryException? error,
   }) async {
@@ -371,10 +373,10 @@ void main() {
 
         expect(find.byKey(const Key('principal-for-you-hero')), findsOneWidget);
         await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
-        // Sem asserção de contraste aqui: o chip "DESTAQUE" do herói mede
-        // 3,75:1 na composição aprovada. É defeito real, registrado no handoff
-        // L03 para decisão de coelo-ui/Owner; relaxar o guideline ou regravar o
-        // golden esconderia o problema.
+        // No contrast assertion here: the hero "DESTAQUE" chip measures
+        // 3.75:1 in the approved composition. It is a real defect, recorded in
+        // the L03 handoff for coelo-ui and the Owner; relaxing the guideline or
+        // rewriting the golden would hide it.
         expectNoLayoutError(tester);
         handle.dispose();
       });

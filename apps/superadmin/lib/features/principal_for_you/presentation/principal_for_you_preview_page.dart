@@ -342,12 +342,12 @@ final class _HeroCard extends StatelessWidget {
                     children: [
                       DecoratedBox(
                         decoration: BoxDecoration(
-                          // ACHADO A11Y (L03, 09/09/2026): branco sobre este véu
-                          // mede 3,75:1, abaixo do mínimo AA de 4,5:1 para 11 px.
-                          // Escurecer o chip resolve, mas altera a composição
-                          // aprovada e quebra os goldens de referência. Corrigir
-                          // exige decisão de coelo-ui/Owner, não preferência do
-                          // executor: registrado no handoff L03.
+                          // Accessibility finding, 09/09/2026: white over this
+                          // veil measures 3.75:1, under the 4.5:1 AA minimum for
+                          // 11 px. Darkening the chip clears it but changes an
+                          // approved composition and breaks the reference
+                          // goldens, so the fix belongs to coelo-ui and the
+                          // Owner rather than to executor preference.
                           color: scheme.onPrimary.withValues(alpha: .16),
                           borderRadius: BorderRadius.circular(CoeloRadius.full),
                         ),
