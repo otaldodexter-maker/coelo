@@ -1,0 +1,4 @@
+# Preserve source evidence bytes and hashes across checkouts.
+*.log.txt -text
+*.xml -text
+manifest.json text eol=lf
