@@ -1,19 +1,22 @@
 ---
 title: "D02 — snapshot de corte em preparação"
-source: "prompts/D02.md; escopo.json canônico; handoff D02 r26; assignment D00 r31; commits e provas locais"
+source: "prompts/D02.md; escopo.json canônico; handoff D02 r29; assignment D00 r34; commits e provas locais"
 status: "draft-before-1630"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
 
-Última apuração: 15:59 BRT. Não é reporte futuro executado nem fechamento.
+Última apuração: 16:17 BRT. Não é reporte futuro executado nem fechamento.
 Rodada E2-R02-20260909, executor D02, thread
 `01a086d7-ffa5-7593-99e7-0c2729e0ce59`, root GPT-6 (variante/esforço não
 expostos), três filhos gpt-5.6-sol médio. Worktree
 `C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d02-estrutura`, branch
 `codex/e2-r02-d02-estrutura`, baseline
-`56eb3f19de23e364ea5f7e4f73a6fbd9a851e230`. HEAD/remoto finais serão
-apurados no reporte; a integração em dev pertence exclusivamente ao D00.
+`56eb3f19de23e364ea5f7e4f73a6fbd9a851e230`. HEAD/remoto apurados antes desta atualização documental:
+d5e87e1da92de998233f176e01d2b29d138d2a8f, iguais. Diff rastreado e staged
+vazios; stash vazio. Os 23 auxiliares locais constam de
+[d02-retained-local-files.json](d02-retained-local-files.json).
+A integração em dev pertence exclusivamente ao D00.
 
 ## Avanço por tela
 
@@ -32,7 +35,7 @@ subaceites locais; nenhuma ação inteira foi promovida por D02.
 | Instituição-Unidade / Locais / catálogo-detalhe | institutions.locations-map, units.locations-map, units.copy-institution-location, locations.list, locations.create-edit, locations.detail-links | 1345af29f quatro rotas owner-scoped + parâmetros app/main + links de formulário; 7 casos únicos com prova incremental. Granularidade capability/footer7d68+9131 e guardas modal7777+192+b5a+42ad. | Catálogo57 aplicado; 165P0F0B no plano local, conforme r31. Mídia/vínculos completos e deploy remoto continuam pendentes. |
 | Locais / mapa-fotos / detalhe | locations.create-edit, locations.detail-links | cd03b9e30 seção de mapas; 80f28824 identifica prévia ilustrativa e indisponibilidade de mídia real. | Binding de location-map/photo no gateway/R2 privado compartilhado, conforme e92f4220. |
 | Locais / horário semanal | locations.schedule | 3b4f982a seletor administrativo, 19 P e gate visual P. | Janela semanal não equivale a reserva datada. |
-| Locais / reservas datadas | locations.schedule, groups.location, activities.location | Domínio3e97048a (13 P), DTO753fbd33 (21 P), gateway34d2 (7 P), painel4ac+9cad (14 casos únicos com provas incrementais; retenção r30 em retry após reload/assessment editado). Motor7dae/TAP49/perfil64 preparados com correção r24. | Reautorização após auditoria com prova causal, SQL49 ainda U, composição nos consumidores e atomicidade ainda abertas. |
+| Locais / reservas datadas | locations.schedule, groups.location, activities.location | Domínio3e97048a (13 P), DTO753fbd33 (21 P), gateway34d2 (7 P), painel4ac+9cad+d2f (16 casos únicos com provas incrementais; sucessor r30 publicado para revisão). Motor7dae/TAP49/perfil64 preparados com correção r24. | SQL64 aplicado, 29P20B/49 por helper temporário; grant exato35b corrige fixture e aguarda revalidação. Causais2B. Composição e atomicidade ainda abertas. |
 
 ## Testes e métricas
 
@@ -41,7 +44,10 @@ Resultados locais Flutter/Dart e Pester têm seus SHAs e lotes no handoff; não
 somar reruns locais e integrados. O histórico Activity40P6F foi superado pelo
 Clock46P0F, não representa seis falhas atuais. Catálogo atual: 165 casos planejados, 165P0F0B, combinando 56 casos
 focais revalidados e 109 casos dos cinco arquivos anteriores preservados.
-As duas falhas de overload TAP e o aborto de fixture foram resolvidos. Motor: 49 casos SQL U, 0 executado; Pester do perfil6P é prova estática
+As duas falhas de overload TAP e o aborto de fixture foram resolvidos. Motor: 29 casos puros P e 20 de integração B por fixture, 0F no último
+replay; dois cenários causais B pelo pré-requisito. Sucessor35b concede
+EXECUTE apenas ao helper pg_temp nominal; sem ampliar grants produtivos.
+Pester do perfil6P é prova estática
 revalidada após sucessor r24 e pins do pai21b0, sem somar seis casos anteriores.
 
 Base D02 selecionada em escopo.json canônico: 49 IDs, 42 MVP E2E, 7 adiados.
@@ -53,8 +59,11 @@ deploy remoto, aceite de produção ou percentual global recalculado por D02.
 
 D00 mantém SQL serializado, wrappers e integração central; r26 liberou a fixture corrigida21b0 e r28 concedeu a preparação do harness
 causal exclusivo, publicado em037516922 com 7PesterP e revisão independente.
-Dois cenários SQL ainda U; hook46d revisável, aguardando execução central. Mídia segue dependência L01/D00,
-sem catálogo paralelo. Motor/perfil corrigidos em7dae são candidatos sem prova SQL/causal.
+O formatador de claims foi corrigido pelo D00 emd350, recebido como5da
+com8PesterP (um caso executa a função real). Dois cenários causais B pelo
+TAP bloqueado; hook46d integrado pelo D00, sem execução paralela D02. Mídia segue dependência L01/D00,
+sem catálogo paralelo. Motor/perfil corrigidos em7dae têm64DDL aplicados,29P20B no TAP;
+a prova de integração e a causal continuam abertas.
 Não converter limites defensivos/DST/janela semanal em decisão de produto.
 
 Nenhum SQL/container/app server próprio ativo nesta apuração. Recursos de
@@ -62,3 +71,16 @@ outras frentes não foram encerrados. Sem agendamentos criados. Filhos seguem
 subtarefas locais coordenadas; parada/release deve ser registrada até17:15.
 Gate de memória: nenhuma regra durável aprovada foi alterada; não houve nova
 projeção artificial de conhecimento.
+
+## Próximo passo e critério de parada
+
+O próximo gate concreto é a revalidação nominal do motor49+2 após35b,
+serializada pelo D00. Em paralelo, revisão/integracão de d2f8ecce0 encerra
+as retenções conhecidas do painel r30; isso não injeta o painel nem amplia
+contratos de Group/Activity. Readers atuais não fornecem binding canônico
+suficiente, e save+reserva exige transação backend única.
+
+Às16:30 será emitido o reporte datado; depois, somente correções concretas
+da consolidação até17:15. Sem retomada noturna ou no dia seguinte.
+Todos os filhos terminaram suas subtarefas e liberaram arquivos/runners
+nesta apuração; podem receber apenas causas concretas ainda dentro do corte.
