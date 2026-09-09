@@ -56,7 +56,7 @@ então observado.
 Pacote composto canônico: `child-remote-package.sql`, UTF-8 sem BOM, somente LF,
 22.264 bytes, SHA-256
 `1193649F37C15EAA964A7486B83014806BC76C70AB4BD04537908CB57EE198E6`.
-Esse é o hash nominal para revisão e eventual autorização. Como o arquivo já
+Esse é o hash da composição SQL para revisão local. Para o transporte MCP proposto em r12, o hash nominal é o do payload sem wrapper definido abaixo; não enviar esta composição com COMMIT ao endpoint. Como o arquivo já
 está em LF sob `text=auto`, o mesmo fluxo de bytes entra no Git blob; o object ID
 Git calculado com e sem filtros coincide em
 `04c0d410e7b5a851548b3661b9715cff2edbdeb8`.
@@ -147,3 +147,142 @@ Casos sem ator ou dado de teste aprovado ficam bloqueados e não podem ser
 inferidos do catálogo nem substituídos por fixtures em produção. Catálogo verde
 não promove Backend ou E2E sozinho; chamada local, rota Flutter e documentação
 também não certificam o ambiente remoto.
+
+## Transporte e ledger concretos — proposta D00 r12
+
+Transporte proposto: uma única chamada à ferramenta instalada
+`mcp__codex_apps__supabase_apply_migration`. Parâmetros nominais:
+
+- `project_id`: `evvbomzejfijozbtgvpt`;
+- `name`: `r02_d03_child_directory_envelope_read01`;
+- `query`: conteúdo UTF-8/LF integral de `child-remote-apply-migration.sql`,
+  22.280 bytes, SHA-256
+  `740057756FB2A7DFA5E8F2AB2D9908DF24968F2A3E78196A1FAA0D3B422C6C2C`.
+
+Esse segundo artefato retira o `begin;` e o `commit;` externos da composição SHA `1193649F...98E6` e acrescenta, depois do postflight, exclusivamente `notify pgrst, 'reload schema';`. Pins, preflights, corpos e postflight permanecem iguais. A transação pertence ao
+endpoint; não usar o arquivo com COMMIT explícito dentro de `apply_migration`,
+nem fracionar a chamada. Nenhum dos dois artefatos foi executado nesta forma.
+
+O código oficial do MCP encaminha `name` e `query` para
+`POST /v1/projects/{ref}/database/migrations`; a API documenta o registro da
+migration e rollback das mudanças em caso de falha. Este é o contrato de
+transporte proposto, ainda sem prova de aplicação neste projeto. Fontes
+consultadas em 09/09/2026:
+[código do MCP](https://github.com/supabase/mcp/blob/main/packages/mcp-server-supabase/src/platform/api-platform.ts),
+[endpoint](https://supabase.com/docs/reference/api/v1-apply-a-migration) e
+[comportamento de migrations](https://supabase.com/docs/guides/integrations/supabase-for-platforms).
+Não atribuir ao replay psql local uma prova da Management API.
+
+Antes da chamada autorizada, D00/executor serial deve preservar
+`list_migrations` do projeto e uma leitura somente de metadata do ledger.
+Se o nome nominal já existir, ou os pins/ausência do gateway divergirem,
+interromper para reconciliar; não tentar reaplicar. O MCP disponível não aceita
+`version`; por isso não é correto declarar que criará a versão canônica
+`20260908051500`. O resultado remoto deve ser mapeado pelo nome nominal e pela
+versão realmente adicionada, mantendo a proveniência das duas fontes e do
+postflight no recibo D00. Não inserir manualmente nem reparar o ledger para
+simular a versão local.
+
+Após resposta de sucesso, repetir `list_migrations` e exigir uma única entrada
+nova com o nome nominal. Conferir metadata do registro e preservar o digest
+separado dos statements armazenados, sem confundi-lo com o hash do payload
+transmitido: o provedor pode segmentar os statements. Consulta read-only
+proposta, sujeita à conferência prévia das colunas de catálogo:
+
+```sql
+select version, name, cardinality(statements) as statement_count,
+       md5(array_to_string(statements, E'\n')) as stored_statements_md5
+from supabase_migrations.schema_migrations
+where name = 'r02_d03_child_directory_envelope_read01'
+order by version;
+```
+
+O recibo deve reunir: projeto, nome, versão real, timestamp, commit do pacote,
+SHA-256 do payload normalizado, digest/contagem dos statements retornados,
+resultado da ferramenta e postflight de catálogo/ACL. O ledger não substitui a
+conferência dos corpos e privilégios resultantes.
+
+Se houver timeout, desconexão ou resposta ambígua, não repetir a mutação.
+Primeiro ler ledger e catálogo para distinguir não aplicado, aplicado e estado
+inconsistente. Se houver DDL sem recibo de ledger, ou ledger sem metadata
+esperada, registrar bloqueio e preparar reconciliação nominal forward-only;
+nenhum repair, delete de histórico ou segunda aplicação fica autorizado por
+este documento. O novo transporte/payload exige revisão D00 e autorização
+nominal própria; o recibo do pacote anterior não a presume.
+## Cache PostgREST e qualificação ainda pendente — D00 r13
+
+A revisão r13 acrescenta somente `notify pgrst, 'reload schema';` no final do
+payload MCP, ainda dentro da transação controlada pelo endpoint. O payload
+anterior sem NOTIFY, SHA `AC7B83B22042B710D6E86FF8F9B54AF4D089CC6278831D4D8C9BAEC7B87AEF39`,
+permanece histórico no commit d554d3b3 e não identifica o candidato atual
+`740057756FB2A7DFA5E8F2AB2D9908DF24968F2A3E78196A1FAA0D3B422C6C2C`.
+A composição manual119... permanece inalterada e não contém esse NOTIFY.
+
+O comando solicita o reload após a transação; não cria trigger nem altera
+configuração global. Sua presença não garante que o listener processou a
+notificação. A [documentação PostgREST](https://docs.postgrest.org/en/stable/references/schema_cache.html)
+explica o mecanismo e a possibilidade de falha de reload. A disponibilidade
+HTTP continua sem prova neste pacote.
+
+Aceite local a qualificar na janela D00: iniciar PostgREST/Kong sobre a base
+nominal anterior ao CHILD; aplicar o payload completo em uma transação;
+verificar que a assinatura aparece na API sem reiniciar o serviço, com prazo
+limitado e sem reenviar a migration. O harness HTTP publicado cobre DTO,
+paginação/reload, negativa cross-tenant e revogação; iniciar o serviço somente
+depois da migration prova disponibilidade inicial, mas não esse aceite de
+invalidação do cache.
+
+No remoto futuramente autorizado, usar somente a consulta de disponibilidade
+ou chamada com ator previamente aprovado na matriz nominal. Falha PGRST202,
+listener indisponível ou prazo excedido fica como gate aberto; sucesso do DDL e
+ledger não o fecha. Não abrir credenciais, reiniciar serviços, instalar trigger
+ou repetir NOTIFY automaticamente para encobrir a falha. Uma correção de
+transporte deve ser revisada e incluída no escopo nominal.
+
+D00 r13 confirmou que CLI2.116 com COMMIT autoral pode gravar o ledger depois do
+commit. Esse caminho não é a proposta atual, que usa payload sem controle
+transacional no MCP. A documentação da API sustenta o comportamento esperado,
+mas não constitui ensaio local de falha do ledger nem prova remota deste pacote.
+A qualificação local da composição e de rollback por drift continua pendente,
+conforme child-package-local-plan.md. Não reutilizar perfil já pós-CHILD nem
+somar o replay45+3 anterior a esses novos aceites.
+## Crosswalk de versionamento proposto — D00 r15
+
+A aplicação MCP proposta cria uma versão gerada pelo provedor. Isso **não**
+marca a migration canônica 20260908051500 como aplicada para a CLI e não autoriza tratá-la
+como pending seguro. O mapeamento nominal abaixo ainda exige aceite D00/Owner
+junto do recibo remoto real:
+
+| Campo | Valor proposto / estado |
+| --- | --- |
+| projeto | evvbomzejfijozbtgvpt |
+| nome remoto composto | r02_d03_child_directory_envelope_read01 |
+| versão remota gerada | pendente; preencher somente após leitura do ledger |
+| payload LF | 740057756FB2A7DFA5E8F2AB2D9908DF24968F2A3E78196A1FAA0D3B422C6C2C |
+| migration reader coberta semanticamente | 20260908051500_superadmin_child_context_directory_v2.sql, corpo preservado conforme proveniência acima |
+| corpo reader sem wrapper, SHA256 LF | E950A732811C7AAFC796AAE978C6666CA29B3FDA01D45FDE6DE5461374C817E8 |
+| dependência adicional coberta | somente a mudança pinada do helper descrita em child-envelope-prerequisite.sql; não a migration histórica 20260827235500 inteira |
+| adicional exclusivo do composto | guard final ACL/metadata e NOTIFY do cache |
+| autoridade do mapeamento | proposto, não aprovado nem aplicado |
+
+Até que o recibo remoto e esse crosswalk sejam aprovados e incorporados pelo
+escritor central ao inventário de recuperação, **bloquear qualquer deploy CLI
+para produção cujo conjunto pendente inclua 20260908051500 ou a reaplicação da
+ponte do helper**. Não executar db push geral, include-all, migration repair,
+upsert/INSERT manual de ledger ou uma segunda migration para fazer o histórico
+parecer alinhado. O preflight do reader também rejeita um gateway já existente,
+mas não substitui a conferência nominal do conjunto pendente antes de executar.
+
+Uma futura implantação CLI deve partir do histórico remoto realmente observado
+em um diretório LOCAL de preparação dedicado (sem criar ambiente remoto novo) e comparar o conjunto pendente exato com o crosswalk aprovado.
+A reconciliação precisa preservar a fonte canônica do replay local e registrar
+que o reader remoto veio do pacote composto/versionado pelo MCP. Nenhuma entrada
+local é removida ou renomeada por esta proposta. Se não houver mecanismo
+revisado que exclua a reaplicação, o próximo deploy CLI continua bloqueado; a
+aprovação do pacote CHILD não concede automaticamente aprovação desse mecanismo.
+
+Esta separação evita confundir equivalência dos corpos com equivalência dos
+ledgers. A leitura/execução local do candidato e os recibos 45+3+4 continuam sem
+poder aprovar esse crosswalk de produção.
+
+Limite operacional explícito: esta proposta registra uma condição obrigatória do runbook; ela ainda não instala um hook executável no deploy CLI. Enquanto esse mecanismo não for aprovado e integrado, nenhum deploy CLI com a migration 20260908051500 pendente está liberado. O executor deve conferir o conjunto pendente antes de qualquer mutação e interromper diante dessa versão. Ausência de automação não é licença para ignorar a condição, nem deve ser relatada como guard de CI implementado.

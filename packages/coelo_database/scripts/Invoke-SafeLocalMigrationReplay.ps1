@@ -29,6 +29,8 @@ param(
 
   [switch]$RunChildDirectoryHttp,
 
+  [switch]$RunChildRemotePackage,
+
   [switch]$RunActivityV2Concurrency,
 
   [switch]$RunLocationReservationsAuditAuthorization
@@ -105,6 +107,16 @@ if ($targetMigration.Count -ne 1) {
 }
 if ($AssertAuthRecoveryConfined -and -not $RunAuthRecoveryBoundary) {
   throw 'Auth recovery confinement assertions require the focal recovery boundary runner'
+}
+if ($RunChildRemotePackage -and (
+    -not $AuthOnly -or $TargetVersion -cne '20260901200206' -or
+    $FoundationOnly -or $NominalProfile -or $AdditionalMigration.Count -gt 0 -or
+    $TestPath.Count -gt 0 -or $RunLint -or $RunAuthLifecycle -or
+    $RunAuthRecoveryBoundary -or $AssertAuthRecoveryConfined -or
+    $RunR02AuthProofConcurrency -or $RunChildDirectoryConcurrency -or
+    $RunChildDirectoryHttp -or $RunActivityV2Concurrency -or
+    $RunLocationReservationsAuditAuthorization)) {
+  throw 'CHILD package requires exact AuthOnly target without tests, additions or other modes'
 }
 if ($RunAuthRecoveryBoundary -and (
     -not $AuthOnly -or $FoundationOnly -or $NominalProfile -or
@@ -368,6 +380,9 @@ try {
   $excludedServices = if ($RunAuthLifecycle -or $RunAuthRecoveryBoundary -or $RunChildDirectoryHttp) {
     $authLifecycleExcludes
   }
+  elseif ($RunChildRemotePackage) {
+    $databaseOnlyExcludes
+  }
   else {
     $databaseOnlyExcludes
   }
@@ -405,6 +420,11 @@ try {
   if ($resolvedTestPaths.Count -gt 0) {
     & npx.cmd --yes $cliPackage --agent no test db --local @resolvedTestPaths --workdir $projectRoot
     if ($LASTEXITCODE -ne 0) { throw "safe local pgTAP failed with exit code $LASTEXITCODE" }
+  }
+  if ($RunChildRemotePackage) {
+    & (Join-Path $scriptRoot 'Test-ChildRemotePackage.ps1') `
+      -ProjectRoot $projectRoot `
+      -ProjectId $projectId
   }
   if ($RunAuthLifecycle) {
     & (Join-Path $scriptRoot 'Test-LocalAuthLifecycle.ps1') `

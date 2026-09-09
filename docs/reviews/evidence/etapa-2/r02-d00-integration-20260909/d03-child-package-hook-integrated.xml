@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="6" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-09-09" time="16:23:16">
+  <environment user="adrie" machine-name="LAPTOP-67A8F4LK" cwd="C:\Users\adrie\Documents\Coelo" user-domain="LAPTOP-67A8F4LK" platform="Microsoft Windows 11 Home|C:\WINDOWS|\Device\Harddisk0\Partition3" nunit-version="2.5.8.0" os-version="10.0.26200" clr-version="4.0.30319.42000" />
+  <culture-info current-culture="pt-BR" current-uiculture="pt-BR" />
+  <test-suite type="Powershell" name="Pester" executed="True" result="Success" success="True" time="1.0352" asserts="0">
+    <results>
+      <test-suite type="TestFixture" name="CHILD remote package runner hook structure" executed="True" result="Success" success="True" time="1.0352" asserts="0" description="CHILD remote package runner hook structure">
+        <results>
+          <test-case description="requires an existing candidate that parses" name="CHILD remote package runner hook structure.requires an existing candidate that parses" time="0.7476" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="adds the opt-in switch without removing existing modes" name="CHILD remote package runner hook structure.adds the opt-in switch without removing existing modes" time="0.1218" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects every non-AuthOnly package combination before the mutex" name="CHILD remote package runner hook structure.rejects every non-AuthOnly package combination before the mutex" time="0.0541" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="selects the database-only service composition for the package" name="CHILD remote package runner hook structure.selects the database-only service composition for the package" time="0.0446" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="dispatches the reviewed harness only after replay and the pgTAP gate" name="CHILD remote package runner hook structure.dispatches the reviewed harness only after replay and the pgTAP gate" time="0.0319" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="keeps the existing Auth, CHILD, Activity and location dispatches" name="CHILD remote package runner hook structure.keeps the existing Auth, CHILD, Activity and location dispatches" time="0.035" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
