@@ -312,43 +312,42 @@ select ok((select array_agg(distinct log_record.hash_version order by log_record
   from audit.audit_logs log_record join target_events on target_events.id=log_record.id),
   'mixed v1, v2 and v3 entries all verify through the versioned digest dispatcher');
 
--- Reuse the approved legacy audit reader authority only to exercise reader compatibility.
-insert into auth.users(id,aud,role,email,created_at,updated_at)
+-- Reader compatibility follows the internal 039 realm; no People fallback is accepted.
+insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at)
 values('10000000-0000-4000-8000-000000000004','authenticated','authenticated',
-  'synthetic-audit-reader@invalid.test',now(),now());
-insert into public.people(id,person_type,first_name,last_name,display_name,status)
-values('52000000-0000-4000-8000-000000000004','adult','Synthetic','Reader',
-  'Synthetic Audit Reader','active');
-insert into public.person_auth_links(person_id,auth_user_id,status)
-values('52000000-0000-4000-8000-000000000004',
+  'synthetic-audit-reader@invalid.test',now(),now(),now());
+insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after)
+values('20000000-0000-4000-8000-000000000004',
+  '10000000-0000-4000-8000-000000000004',now(),now(),'aal1',now()+interval '1 hour');
+insert into app_private.superadmin_internal_identities(id)
+values('30000000-0000-4000-8000-000000000004');
+insert into app_private.superadmin_internal_auth_links(
+  id,internal_identity_id,auth_user_id,status)
+values('40000000-0000-4000-8000-000000000004',
+  '30000000-0000-4000-8000-000000000004',
   '10000000-0000-4000-8000-000000000004','active');
-insert into public.platform_memberships(person_id,role_id,status,scope_kind,mfa_required)
-select '52000000-0000-4000-8000-000000000004',id,'active','platform',true
+insert into app_private.superadmin_internal_memberships(
+  id,internal_identity_id,platform_role_id,scope_kind,status)
+select '41000000-0000-4000-8000-000000000004',
+  '30000000-0000-4000-8000-000000000004',id,'platform','active'
 from public.platform_roles where code='owner';
 create temporary table auth_v3_target(id uuid primary key,hash_hex text not null);
 insert into auth_v3_target
 select id,encode(session_id_hash,'hex') from audit.audit_logs
 where correlation_id=(select (body#>>'{error,correlation_id}')::uuid
   from auth_test_responses where sequence_number=3);
-grant select on auth_v3_target to authenticated,service_role;
+grant select on auth_v3_target to authenticated;
 create temporary table auth_reader_results(
-  detail jsonb,list_result jsonb,hash_search jsonb,export_start jsonb,materialized jsonb);
-grant select,insert,update on auth_reader_results to authenticated,service_role;
+  detail jsonb,list_result jsonb,hash_search jsonb);
+grant select,insert on auth_reader_results to authenticated;
 select set_config('request.jwt.claim.sub','10000000-0000-4000-8000-000000000004',true);
-select set_config('request.jwt.claims','{"sub":"10000000-0000-4000-8000-000000000004","aal":"aal2","role":"authenticated"}',true);
+select set_config('request.jwt.claims','{"sub":"10000000-0000-4000-8000-000000000004","session_id":"20000000-0000-4000-8000-000000000004","aal":"aal1","role":"authenticated"}',true);
 set local role authenticated;
-insert into auth_reader_results(detail,list_result,hash_search,export_start)
+insert into auth_reader_results(detail,list_result,hash_search)
 select public.audit_get_event_for_superadmin(target.id),
   public.audit_list_events_for_superadmin(p_search=>'Sessão autenticada'),
-  public.audit_list_events_for_superadmin(p_search=>target.hash_hex),
-  public.audit_start_export_for_superadmin('csv','{}'::jsonb,
-    '53000000-0000-4000-8000-000000000001')
+  public.audit_list_events_for_superadmin(p_search=>target.hash_hex)
 from auth_v3_target target;
-reset role;
-select set_config('request.jwt.claims','{"role":"service_role"}',true);
-set local role service_role;
-update auth_reader_results set materialized=public.audit_materialize_export_for_worker(
-  (export_start->>'job_id')::uuid,'54000000-0000-4000-8000-000000000001');
 reset role;
 select ok((select detail#>>'{actor,kind}'='auth_session'
     and detail#>>'{actor,display_name}'='Sessão autenticada'
@@ -366,15 +365,15 @@ select ok((select (list_result->>'total_count')::integer>=2
   'audit list renders auth_session items with null identity and role and no hash');
 select is((select (hash_search->>'total_count')::integer from auth_reader_results),0,
   'audit search cannot discover an auth_session event from its session hash');
-select ok((select snapshot.row_payload->>'actor_kind'='auth_session'
-    and snapshot.row_payload->>'actor_name'='Sessão autenticada'
-    and snapshot.row_payload->'actor_id'='null'::jsonb
-    and snapshot.row_payload->'actor_role_code'='null'::jsonb
-    and position(target.hash_hex in snapshot.row_payload::text)=0
-  from auth_reader_results result
-  join public.import_jobs job on job.id=(result.export_start->>'job_id')::uuid
-  join app_private.audit_export_snapshot_rows snapshot on snapshot.export_job_id=job.id
-  join auth_v3_target target on target.id=snapshot.audit_log_id),
-  'audit export renders auth_session without identity, role or session hash');
+select ok(
+  not has_function_privilege('authenticated',
+    'public.audit_start_export_for_superadmin(text,jsonb,uuid)','execute')
+  and not has_function_privilege('authenticated',
+    'public.audit_get_export_job_for_superadmin(uuid)','execute')
+  and not has_function_privilege('authenticated',
+    'public.audit_authorize_export_download_for_superadmin(uuid)','execute')
+  and not exists(select 1 from public.import_jobs
+    where request_id='53000000-0000-4000-8000-000000000001'),
+  'the internal reader cannot create, inspect or download a deferred export');
 select * from finish();
 rollback;
