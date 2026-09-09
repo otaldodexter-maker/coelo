@@ -2,9 +2,22 @@
 source: "ajustes visuais e anexos aprovados pelo usuario em 2026-09-01; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md; docs/design/design-system.md; specs/005-principal-app.md; specs/036-principal-now-publication-mvp.md"
 status: approved
 generated_at: 2026-09-01
+updated_at: 2026-09-09
 ---
 
 # Fechamento UI/UX do Coelo Principal
+
+## Esclarecimento aprovado do Owner — 09/09/2026
+
+Quando o hospedeiro é o Superadmin, preservar o shell/menu tanto no web quanto
+no mobile, inclusive em Agora, Momentos e na leitura de Circular. A experiência
+Principal permanece no contêiner de conteúdo do shell, respeitando sua navegação
+responsiva. Não suspender nem substituir o shell hospedeiro ao abrir um viewer.
+
+Esta regra se aplica apenas ao Principal hospedado no Superadmin. Não determina
+o comportamento do aplicativo Principal independente. Substitui neste hospedeiro
+a antiga autorização genérica de fullscreen que removia o shell, sem converter
+feeds, viewers ou compositores em páginas administrativas.
 
 ## Objetivo e problema
 
@@ -68,8 +81,9 @@ nao copia seu cabecalho e nao modifica os apps privados separados.
 
 O dock canonico preserva Home, Para voce, a acao central de publicar no Agora,
 Momentos e Pesquisar. Mensagens permanece launcher contextual separado e Perfil
-permanece no cabecalho. Viewers imersivos suspendem cabecalho, shell, dock e
-launchers ate o retorno contextual.
+permanece no cabecalho. No Superadmin, viewers podem suspender elementos internos
+concorrentes do Principal, mas preservam o shell/menu hospedeiro no web e no mobile.
+O retorno contextual restaura foco e posição dentro do mesmo contêiner.
 
 Componentes neutros podem permanecer em `coelo_ui_core`. Composicoes sociais do
 Principal nao importam `coelo_ui_admin`; extracoes novas so sao feitas quando
@@ -95,9 +109,9 @@ sem copiar navegacao ou linguagem visual de outro produto.
 
 ### Agora e Momentos
 
-Agora continua imersivo. Ao abrir Momentos, a midia ocupa a tela inteira em
-mobile, tablet e desktop e todo chrome externo e suspenso. O retorno contextual
-restaura foco e posicao. Imagem e video preservam proporcao, controles legiveis,
+Agora e Momentos preservam a composição imersiva dentro da área de conteúdo.
+No Superadmin web e mobile, a mídia não assume uma tela que remova o shell/menu
+hospedeiro. O retorno contextual restaura foco e posicao. Imagem e video preservam proporcao, controles legiveis,
 contraste, alvos de toque e estados de carregamento, erro e indisponibilidade.
 
 ### Perfil
