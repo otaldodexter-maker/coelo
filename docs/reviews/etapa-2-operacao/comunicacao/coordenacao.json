@@ -1,5 +1,5 @@
 {
-  "revision": 10,
+  "revision": 11,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-09T20:05:00-03:00",
+  "updatedAt": "2026-09-09T20:20:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T19:03:25-03:00",
     "measuredBy": "date no checkout integrador",
@@ -448,7 +448,7 @@
     "claudeExecutorAddresses": "Fornecidos pelo Owner e verificados por envio real: as seis conversas Claude receberam ACK nominal por SendMessage em 18:18. Enderecos gravados em groups[].sessionName/sessionId para recuperacao."
   },
   "blocks": [],
-  "nextStep": "Rodar a suite completa sobre a base com todos os lotes, catalogar as falhas por arquivo e distribuir por dono, aplicar os deltas novos e preparar o relatorio do Owner.",
+  "nextStep": "Aplicar as revisoes corrigidas, distribuir os achados transversais, catalogar as falhas da suite completa por dono e fechar o relatorio do Owner.",
   "providers": {
     "supabase": {
       "cli": "supabase 2.117.0 autenticado; token no Credential Manager do Windows",
@@ -546,6 +546,14 @@
       "decisao": "Os PNGs sob test/**/failures/ ficam fora do indice. Em conflito de merge, prevalece o lado que nao os rastreia; os arquivos permanecem no disco.",
       "causa": "Sao diffs regenerados a cada execucao das suites de golden. O .gitignore ja exclui o diretorio, mas uma branch os havia adicionado antes disso valer, e o merge de alunos-rotina conflitou em 54 deles. Rastreados, fazem qualquer frente aparecer no fechamento com alteracoes nao identificadas que nao sao trabalho.",
       "data": "2026-09-09T20:02:00-03:00"
+    },
+    {
+      "id": "PERGUNTA-DE-COMPOSICAO-PRODUTIVA",
+      "decisao": "OBRIGATORIO para todos os grupos, antes de propor qualquer promocao de estado: responder por escrito se main.dart compoe aquele caminho, se o router monta a pagina PRODUTIVA, e se existe implementacao de producao do repositorio, nao apenas a interface. Sem as tres respostas, nao aplico promocao.",
+      "causa": "operacoes-sistema descobriu, corrigindo o proprio delta ja aplicado, que Suporte tem 61 testes verdes e nenhuma camada de dados: so domain e presentation, sem data/, sem repositorio, sem interface, e nada em packages define SupportTicket. Em producao a rota nem abre, porque nenhum ponto de composicao injeta supportController e o router devolve 503. Os 61 casos exercitam um controlador de prototipo em memoria.",
+      "regra": "Verde sobre controlador de prototipo nao e verde sobre producao. O mesmo engano e facil em qualquer feature com store de prototipo.",
+      "exemplo": "docs/reviews/etapa-2-operacao/reports/E2-noturna-composicao-producao-20260909.md mapeia as onze familias do recorte de operacoes-sistema. Oito tem caminho produtivo; imports tambem esta composto e sua indisponibilidade e de politica, nao de composicao; account e misto, com settings e theme produtivos, profile so em /dev e sessions sem tela alguma.",
+      "data": "2026-09-09T20:18:00-03:00"
     }
   ],
   "integrado": [
@@ -660,5 +668,38 @@
     "comando": "flutter test em apps/superadmin",
     "resultado": "5707 PASS, 9 SKIP, 190 FAIL",
     "nota": "Baseline datado da base integrada. alunos-rotina mediu 4667 P / 6 S / 160 F em test/features apenas, o que e coerente: o restante esta em test/app e vizinhos. Nenhuma frente deve tratar lote verde proprio como sinal de saude da base."
-  }
+  },
+  "correcoesDeGrupo": [
+    {
+      "grupo": "operacoes-sistema",
+      "revisaoAnterior": 10,
+      "revisaoCorreta": 13,
+      "oQueMudou": "support.table/kanban/detail voltam a pending-verification no frontend, com a causa correta: ausencia do seam de repository/gateway e fail-closed em producao, nao decisao de rebaseline de golden. A obsolescencia dos 24 goldens continua verdadeira, mas e o segundo problema.",
+      "avaliacao": "Autocorrecao contra o proprio numero, depois do delta ja aplicado. E o comportamento que faz o fechamento valer."
+    }
+  ],
+  "distribuicaoDeAchados": [
+    {
+      "achado": "13 sitios de escrita geram a chave de idempotencia inline; o cliente perde a capacidade de repetir a MESMA intencao",
+      "fonte": "operacoes-sistema, relatorio E2-noturna-idempotencia-escrita-20260909.md, commit 2f66e8838",
+      "donos": {
+        "alunos-rotina": "superadmin_attendance_create_call, clear_presence_marks, set_participant, complete_call",
+        "estrutura": "create_unit_for_superadmin (dois sitios), superadmin_group_export_create",
+        "publicacoes-midia": "save_happens_draft, publish_happens_post, save_now_draft, publish_now, withdraw_happens_post, withdraw_moment"
+      },
+      "prioridade": "publish_happens_post, publish_now e create_unit_for_superadmin primeiro: publicacao e criacao nao tem p_expected_revision barrando a repeticao",
+      "ressalva": "Nao afirma que as RPCs sejam nao idempotentes no servidor; afirma que o cliente perdeu a capacidade de repetir a intencao"
+    },
+    {
+      "achado": "16 divergencias source-example-fingerprint-mismatch no catalogo (o rastreador registrava 14)",
+      "fonte": "operacoes-sistema, relatorio E2-noturna-catalog-sync-20260909.md",
+      "armadilha": "validate_catalog_sync.dart usa o MESMO caminho como entrada e saida. O relatorio versionado e a LINHA DE BASE. Rodar apontando para caminho inexistente faz tudo cair em prior==null e imprimir zero diagnostico sem ter comparado nada. Regenerar o relatorio versionado ZERA os 16 sem corrigir um unico exemplo.",
+      "donos": "dois em Formularios (superadmin.forms-editor, superadmin.forms-response); a maioria em coelo_ui_core e coelo_ui_admin"
+    },
+    {
+      "achado": "O badge de nao lidas NAO tem pendencia arquitetural observavel: toda rota monta dois shells e o unico launcher renderizado sempre tem o loader",
+      "fonte": "chat-comunicacoes, sonda descartavel em 32 rotas de producao, removida e nao commitada",
+      "efeito": "Tira da fila um refactor de ~44 arquivos que nao mudaria nada visivel"
+    }
+  ]
 }
