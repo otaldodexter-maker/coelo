@@ -130,6 +130,46 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  testWidgets('real /principal-profile/edit opens the authorized About editor', (tester) async {
+    final harness = await pumpProductionRoute(
+      tester,
+      SuperadminRoutes.principalProfileEdit,
+      aboutRepository: _EmptyAboutRepository(),
+    );
+
+    expect(harness.location, SuperadminRoutes.principalProfileEdit);
+    expect(harness.location, isNot(startsWith('/dev/')));
+    expect(find.byType(SuperadminErrorScreen), findsNothing);
+    expect(find.byKey(const Key('principal-profile-edit-save')), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('real /principal-profile/edit stays fail-closed without an About repository', (
+    tester,
+  ) async {
+    await pumpProductionRoute(tester, SuperadminRoutes.principalProfileEdit);
+
+    // No About capability composed: the route must not offer an editor that
+    // cannot persist.
+    expect(find.byType(SuperadminErrorScreen), findsOneWidget);
+    expect(find.byKey(const Key('principal-profile-edit-save')), findsNothing);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('real /principal-profile/edit fails closed when Sobre denies the actor', (
+    tester,
+  ) async {
+    await pumpProductionRoute(
+      tester,
+      SuperadminRoutes.principalProfileEdit,
+      aboutRepository: _UnauthorizedAboutRepository(),
+    );
+
+    expect(find.byKey(const Key('principal-profile-edit-unauthorized')), findsOneWidget);
+    expect(find.byKey(const Key('principal-profile-edit-save')), findsNothing);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('real /principal-for-you mounts the hub with an authorized repository', (
     tester,
   ) async {

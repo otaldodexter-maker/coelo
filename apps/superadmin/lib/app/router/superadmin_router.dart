@@ -523,6 +523,12 @@ GoRouter createSuperadminRouter({
     if (location.startsWith('/circulars')) {
       return circularRepository is! UnavailableSuperadminCircularRepository;
     }
+    // Editing the contextual Perfil is the About command, which
+    // save_profile_about authorizes and versions server-side. The route stays
+    // closed until a real About repository is composed.
+    if (location.startsWith(SuperadminRoutes.principalProfile)) {
+      return profileAboutRepository != null;
+    }
     return false;
   }
 
