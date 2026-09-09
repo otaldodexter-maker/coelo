@@ -135,7 +135,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
   }
 
   Future<void> _load({required bool reset}) async {
-    if (!_mayRead || _loading) return;
+    if (!_mayRead || _loading || _busy) return;
     final generation = _generation;
     final locationId = widget.locationId;
     final consumer = widget.consumer;
@@ -174,7 +174,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
   Future<void> _savePolicy() async {
     final policy = _selectedPolicy;
     final current = _policy;
-    if (!_mayManage || policy == null || current == null || _busy) return;
+    if (!_mayManage || policy == null || current == null || _loading || _busy) return;
     final generation = _generation;
     setState(() {
       _busy = true;
@@ -247,7 +247,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
   }
 
   Future<void> _assess() async {
-    if (!_mayManage || _busy || _policy?.policy == null) return;
+    if (!_mayManage || _loading || _busy || _policy?.policy == null) return;
     final draft = _draft();
     if (draft == null) return;
     final generation = _generation;
@@ -283,7 +283,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
   }
 
   Future<void> _confirmConflict() async {
-    if (!_mayManage || _busy) return;
+    if (!_mayManage || _loading || _busy) return;
     final base = _pendingDraft;
     final justification = _justification.text.trim();
     if (base == null || justification.isEmpty) {
@@ -306,7 +306,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
   }
 
   Future<void> _create(LocationReservationDraft draft) async {
-    if (!_mayManage) return;
+    if (!_mayManage || _loading) return;
     final generation = _generation;
     final requestId = _pendingRequestId ??= (widget.requestIdFactory ?? newLocationRequestId)();
     _pendingDraft = draft;
@@ -340,13 +340,13 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
   }
 
   Future<void> _retryCreate() async {
-    if (!_mayManage) return;
+    if (!_mayManage || _loading) return;
     final draft = _pendingDraft;
     if (draft != null && !_busy) await _create(draft);
   }
 
   Future<void> _cancel(LocationReservation reservation) async {
-    if (!_mayManage || _busy) return;
+    if (!_mayManage || _loading || _busy) return;
     final generation = _generation;
     setState(() {
       _busy = true;
@@ -488,7 +488,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
               const SizedBox(height: CoeloSpacing.space2),
               OutlinedButton.icon(
                 key: const Key('location-reservation-policy-save'),
-                onPressed: _mayManage && !_busy && _selectedPolicy != null
+                onPressed: _mayManage && !_loading && !_busy && _selectedPolicy != null
                     ? () => unawaited(_savePolicy())
                     : null,
                 icon: const Icon(Icons.save_outlined),
@@ -602,7 +602,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
                 const SizedBox(height: CoeloSpacing.space3),
                 FilledButton.icon(
                   key: const Key('location-reservation-assess'),
-                  onPressed: !_busy && _pendingRequestId == null
+                  onPressed: !_loading && !_busy && _pendingRequestId == null
                       ? () => unawaited(_assess())
                       : null,
                   icon: const Icon(Icons.event_available_outlined),
@@ -622,7 +622,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
                 const SizedBox(height: CoeloSpacing.space2),
                 FilledButton(
                   key: const Key('location-reservation-confirm-conflict'),
-                  onPressed: !_busy && widget.canOverride
+                  onPressed: !_loading && !_busy && widget.canOverride
                       ? () => unawaited(_confirmConflict())
                       : null,
                   child: const Text('Confirmar sobreposição'),
@@ -632,7 +632,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
                 const SizedBox(height: CoeloSpacing.space2),
                 OutlinedButton.icon(
                   key: const Key('location-reservation-retry'),
-                  onPressed: () => unawaited(_retryCreate()),
+                  onPressed: _loading ? null : () => unawaited(_retryCreate()),
                   icon: const Icon(Icons.refresh_rounded),
                   label: const Text('Tentar novamente'),
                 ),
@@ -664,7 +664,9 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
                             style: OutlinedButton.styleFrom(
                               foregroundColor: theme.colorScheme.error,
                             ),
-                            onPressed: _busy ? null : () => unawaited(_cancel(reservation)),
+                            onPressed: _loading || _busy
+                                ? null
+                                : () => unawaited(_cancel(reservation)),
                             icon: const Icon(Icons.cancel_outlined),
                             label: const Text('Cancelar reserva'),
                           ),
@@ -675,7 +677,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
                 const SizedBox(height: CoeloSpacing.space2),
                 OutlinedButton(
                   key: const Key('location-reservation-load-more'),
-                  onPressed: _loading ? null : () => unawaited(_load(reset: false)),
+                  onPressed: _loading || _busy ? null : () => unawaited(_load(reset: false)),
                   child: Text(_loading ? 'Carregando…' : 'Carregar mais'),
                 ),
               ],
