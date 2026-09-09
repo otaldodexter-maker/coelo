@@ -84,3 +84,20 @@ A qualificação de cache fica em uma janela HTTP separada. Nela, o PostgREST de
 ## Evidência esperada
 
 Preservar o transcript bruto e um manifesto com base/manifesto, hash e tamanho do payload, IDs dos dois cenários, resultado esperado/observado, código de saída e resultado do cleanup. Não imprimir payload, senha, token ou connection string. Até que o hook seja integrado e a campanha seja executada, todos esses aceites permanecem propostos e não executados.
+
+## Candidato de harness revisado
+
+`packages/coelo_database/scripts/Test-ChildRemotePackage.ps1`, SHA256 LF
+09720F6A9424C1C48441BB755E48C3752989B590101EB53B4A6C75D0D4A3E511.
+Dois revisores conferiram SQL negativo/positivo e guards locais; correção de
+fronteira entre chamada de cleanup e atribuição foi revalidada pelo AST. Isso
+não executou banco nem os seis aceites. O payload aceita somente normalização
+CRLF/CR para LF antes de conferir o hash nominal; BOM é recusado. Stdin é enviado
+em bytes UTF-8 e stdout/stderr são drenados sem bloquear. Fixture criada numa
+transação, marcada como própria após sucesso; main/finally usam o mesmo guard
+nominal de cleanup. Nenhum shared runner foi editado.
+
+IDs emitidos apenas após o respectivo aceite: package.prestate,
+package.default-acl-denied, package.negative-rollback, package.fixture-cleanup,
+package.positive-metadata, package.persisted-after-commit. Atualmente P0/F0/B6/S0/U0,
+com os seis bloqueados por hook/janela; não adicionar às provas45+3 anteriores.

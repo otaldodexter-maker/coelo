@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-09T15:55:05-03:00",
+  "generated_at": "2026-09-09T16:04:33-03:00",
   "timezone": "America/Sao_Paulo",
   "snapshot_head": "647c20b453222aef58027028e4367de954145f20",
   "snapshot_head_scope": "Flutter snapshot identified above. Current CHILD SQL evidence is the equivalent integrated tree f3e1f732f442b2e47a2f749cba1d927eb638d5be. Infrastructure candidate-patch and structure evidence retain their own hashes; none implies full product acceptance.",
@@ -645,5 +645,29 @@
     "Analyzer, formatter, static scan, Pester infrastructure and planned SQL counts are kept outside the Flutter total.",
     "No count in this ledger establishes complete FE, Backend or E2E coverage for an action.",
     "D00 HTTP window 63e364300 repeated the same 45 TAP as one-shot base preparation; the 45 rerun is not added to the 45 unique SQL count."
-  ]
+  ],
+  "atomic_package_local": {
+    "status": "prepared-not-executed-awaiting-d00-hook-and-window",
+    "planned_cases": 6,
+    "executed_cases": 0,
+    "passed_cases": 0,
+    "failed_cases": 0,
+    "blocked_cases": 6,
+    "skipped_cases": 0,
+    "not_run_unblocked_cases": 0,
+    "case_ids": [
+      "package.prestate",
+      "package.default-acl-denied",
+      "package.negative-rollback",
+      "package.fixture-cleanup",
+      "package.positive-metadata",
+      "package.persisted-after-commit"
+    ],
+    "base": "AuthOnly 47 SQL (45 canonical + 2 preflight), target 20260901200206",
+    "manifest_lf_sha256": "1B31D0AD0D825D9420CC862808F582F08C6CE0171208018F588C0A998A0E9F46",
+    "payload_lf_sha256": "740057756FB2A7DFA5E8F2AB2D9908DF24968F2A3E78196A1FAA0D3B422C6C2C",
+    "harness_path": "packages/coelo_database/scripts/Test-ChildRemotePackage.ps1",
+    "harness_lf_sha256": "09720F6A9424C1C48441BB755E48C3752989B590101EB53B4A6C75D0D4A3E511",
+    "qualification": "Independent static reviews and PowerShell AST passed; no psql/SQL/DB execution. Six future cases cover composer behavior only, not Management API ledger or dynamic PostgREST cache."
+  }
 }
