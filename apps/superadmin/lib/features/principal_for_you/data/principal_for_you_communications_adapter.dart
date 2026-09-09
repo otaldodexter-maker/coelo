@@ -67,13 +67,12 @@ final class PrincipalForYouCommunicationsAdapter {
   /// item is projected and carries `eligible` so the UI can keep rendering the
   /// full projection while only eligible items count as content.
   ///
-  /// [scope] is optional only for backward compatibility with callers that have
-  /// no runtime context yet; when it is null the audience gate is skipped and
-  /// only status/validity are enforced, exactly as before.
+  /// [scope] must be supplied explicitly. A missing runtime context never
+  /// makes a communication eligible; callers may pass null while unavailable.
   static List<PrincipalForYouHighlight> highlights(
     Iterable<PlatformNotice> communications, {
     required DateTime now,
-    PrincipalForYouAudienceScope? scope,
+    required PrincipalForYouAudienceScope? scope,
   }) => PrincipalForYouPreviewData.orderHighlights(
     communications
         .where((item) => item.type != CommunicationType.notice)
@@ -107,13 +106,13 @@ final class PrincipalForYouCommunicationsAdapter {
   static bool isEligible(
     PlatformNotice item, {
     required DateTime now,
-    PrincipalForYouAudienceScope? scope,
+    required PrincipalForYouAudienceScope? scope,
   }) {
     if (item.type == CommunicationType.notice) return false;
     if (item.status != NoticeStatus.active) return false;
     if (item.startsAt.isAfter(now)) return false;
     if (item.endsAt != null && !item.endsAt!.isAfter(now)) return false;
-    if (scope == null) return true;
+    if (scope == null) return false;
     return matchesAudience(item, scope);
   }
 

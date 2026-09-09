@@ -1,0 +1,226 @@
+{
+  "source": [
+    "b54df13a39437e562a5f57813871325c570d78bf",
+    "1dc0f0960f937db24eeabb2fab85dbf0f7001995",
+    "0128ab8e01e746873755e99bebbc560ecf2ac694"
+  ],
+  "baseRequested": "4b2c5611eabf7e9f912d388b5fe9c4ad6c21fda4",
+  "headObservedAtManifest": "4b2c5611eabf7e9f912d388b5fe9c4ad6c21fda4",
+  "state": "five dirty source/test paths; no index change",
+  "scope": "app-local adapter hardening and isolated tab; no route/composition/backend/E2E certificate",
+  "result": {
+    "P": 35,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "baseline": {
+    "file": "L03highlights-red.jsonl",
+    "P": 14,
+    "F": 0,
+    "note": "Misnamed baseline: first editing command failed because cwd was app; unchanged adapter test ran. Preserve as historical rerun, never count as RED."
+  },
+  "causalRed": {
+    "file": "L03highlights-causal-red.jsonl",
+    "P": 13,
+    "F": 1,
+    "cause": "NULL scope incorrectly eligible; existing test changed to require false"
+  },
+  "counting": "14 adapter tests rerun (one existing ID strengthened for null/omitted);21 tab tests. Do not sum baseline/red/green. Authorial tab results are not additional unique IDs.",
+  "analyzer": "6 paths clean; includes existing nullable route caller",
+  "sourceBytes": "Tested bytes restored after broad default dart-format wrapping; no semantic changes after GREEN.",
+  "files": {
+    "apps/superadmin/lib/features/principal_for_you/data/principal_for_you_communications_adapter.dart": "94e583e623838bf8c6b69bc846f9a9f11ae9ea899cc7b750960ad698b7747627",
+    "apps/superadmin/test/features/principal_for_you/data/principal_for_you_communications_adapter_test.dart": "3f5e5b534837c660691c908963974bf73e8f7be94e4d43727c8f075d23cb5bb3",
+    "apps/superadmin/lib/features/principal_profile/presentation/principal_profile_happens_tab.dart": "59b06f26530985f698603bf89bbc854b94f18d96d6ac344f39f28454b4e8f700",
+    "apps/superadmin/test/features/principal_profile/presentation/principal_profile_happens_tab_test.dart": "9b837fb54ec7e3e6a91006f642f8edda482f2914fa775cec791dc0f8663a2c1b",
+    "apps/superadmin/test/features/principal_profile/presentation/principal_profile_happens_tab_responsive_test.dart": "29231b431dffa0b7dafe3fbf7086de3bf42ced2a4f329b063bf586324bbb522c"
+  },
+  "logs": {
+    "L03highlights-analyze.log": "92ceba4a3910e7be88b43acef48458944302f27510764ba99292d0d5d3d73285",
+    "L03highlights-causal-red.jsonl": "0efa7416d98a9e23699b5b86db61a8e5198e20d20a22c99341ccf1ae23a214fa",
+    "L03highlights-causal-red.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "L03highlights-red.jsonl": "e8d2da93023a54c64dc65b7e46be143e86f9ee834054221eb946570fcb508d40",
+    "L03highlights-red.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "L03highlights-tab-green.jsonl": "1eba89ac709fbf8006fb33c7e1d1866e14d35b509934f77b40315543fd37ecdf",
+    "L03highlights-tab-green.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "cases": [
+    {
+      "id": 7,
+      "name": "projects eligible communications and excludes popup notices",
+      "result": "success"
+    },
+    {
+      "id": 8,
+      "name": "never projects popup communications even with an actor scope",
+      "result": "success"
+    },
+    {
+      "id": 9,
+      "name": "keeps expired or inactive communications ineligible",
+      "result": "success"
+    },
+    {
+      "id": 10,
+      "name": "keeps communications ineligible before the validity window",
+      "result": "success"
+    },
+    {
+      "id": 11,
+      "name": "keeps communications eligible when there is no end date",
+      "result": "success"
+    },
+    {
+      "id": 12,
+      "name": "does not project popup-only behavior into the Principal model",
+      "result": "success"
+    },
+    {
+      "id": 14,
+      "name": "audiência everyone e platform selectAll alcançam qualquer ator",
+      "result": "success"
+    },
+    {
+      "id": 15,
+      "name": "audiência instituição correspondente e não correspondente",
+      "result": "success"
+    },
+    {
+      "id": 16,
+      "name": "audiência unidade e turma respeitam o escopo do ator",
+      "result": "success"
+    },
+    {
+      "id": 17,
+      "name": "audiência pessoa e papel alcançam apenas o ator correspondente",
+      "result": "success"
+    },
+    {
+      "id": 18,
+      "name": "audiência exclusão explícita reprova mesmo com selectAll",
+      "result": "success"
+    },
+    {
+      "id": 19,
+      "name": "audiência sem escopo o comportamento anterior é preservado",
+      "result": "success"
+    },
+    {
+      "id": 20,
+      "name": "audiência escopo derivado do runtime context reaproveita a mesma avaliação",
+      "result": "success"
+    },
+    {
+      "id": 21,
+      "name": "ordena por prioridade urgente, importante e rotina",
+      "result": "success"
+    },
+    {
+      "id": 23,
+      "name": "mostra estado de carregamento enquanto a projeção não responde",
+      "result": "success"
+    },
+    {
+      "id": 27,
+      "name": "renderiza a lista com os itens autorizados",
+      "result": "success"
+    },
+    {
+      "id": 28,
+      "name": "abre a publicação pelo callback opcional",
+      "result": "success"
+    },
+    {
+      "id": 29,
+      "name": "mostra o estado vazio quando a projeção não tem posts",
+      "result": "success"
+    },
+    {
+      "id": 26,
+      "name": "layout renders the authorized feed without overflow at 375 px",
+      "result": "success"
+    },
+    {
+      "id": 31,
+      "name": "layout renders the authorized feed without overflow at 768 px",
+      "result": "success"
+    },
+    {
+      "id": 32,
+      "name": "layout renders the authorized feed without overflow at 1024 px",
+      "result": "success"
+    },
+    {
+      "id": 30,
+      "name": "erro oferece \"Tentar novamente\" e recupera",
+      "result": "success"
+    },
+    {
+      "id": 33,
+      "name": "layout renders the authorized feed without overflow at 1440 px",
+      "result": "success"
+    },
+    {
+      "id": 35,
+      "name": "layout renders without overflow at 375 px and 200% text",
+      "result": "success"
+    },
+    {
+      "id": 34,
+      "name": "negado é fail-closed: sem retry e sem conteúdo anterior",
+      "result": "success"
+    },
+    {
+      "id": 36,
+      "name": "layout renders without overflow at 1440 px and 200% text",
+      "result": "success"
+    },
+    {
+      "id": 37,
+      "name": "recarrega ao trocar o escopo",
+      "result": "success"
+    },
+    {
+      "id": 38,
+      "name": "layout lays out several posts without overflow at 375 px",
+      "result": "success"
+    },
+    {
+      "id": 39,
+      "name": "resposta tardia da geração anterior não sobrescreve a nova",
+      "result": "success"
+    },
+    {
+      "id": 41,
+      "name": "accessibility announces each post as a container with its author",
+      "result": "success"
+    },
+    {
+      "id": 42,
+      "name": "mídia é resolvida por URL assinada e degrada sem quebrar a lista",
+      "result": "success"
+    },
+    {
+      "id": 43,
+      "name": "accessibility the loaded feed keeps readable text",
+      "result": "success"
+    },
+    {
+      "id": 44,
+      "name": "mídia autorizada usa a URL assinada retornada pelo repositório",
+      "result": "success"
+    },
+    {
+      "id": 45,
+      "name": "accessibility the denied state is readable and offers no retry",
+      "result": "success"
+    },
+    {
+      "id": 46,
+      "name": "accessibility the error state keeps its retry reachable",
+      "result": "success"
+    }
+  ]
+}

@@ -53,7 +53,7 @@ void main() {
       communication(type: CommunicationType.notice, priority: NoticePriority.urgent),
       communication(type: CommunicationType.forYou, priority: NoticePriority.important),
       communication(type: CommunicationType.highlight, priority: NoticePriority.urgent),
-    ], now: now);
+    ], now: now, scope: scope);
 
     expect(highlights, hasLength(2));
     expect(highlights.first.type, PrincipalForYouContentType.highlight);
@@ -73,7 +73,7 @@ void main() {
     final highlights = PrincipalForYouCommunicationsAdapter.highlights([
       communication(type: CommunicationType.content, endsAt: now),
       communication(type: CommunicationType.forYou, status: NoticeStatus.paused),
-    ], now: now);
+    ], now: now, scope: scope);
 
     expect(highlights.every((item) => !item.eligible), isTrue);
   });
@@ -99,7 +99,7 @@ void main() {
   test('does not project popup-only behavior into the Principal model', () {
     final item = PrincipalForYouCommunicationsAdapter.highlights([
       communication(type: CommunicationType.forYou),
-    ], now: now).single;
+    ], now: now, scope: scope).single;
 
     expect(item.cta, 'Saiba mais');
     expect(item.type, PrincipalForYouContentType.forYou);
@@ -326,7 +326,15 @@ void main() {
         ),
       );
 
-      expect(eligibleFor(item, actor: null), isTrue);
+      expect(eligibleFor(item, actor: null), isFalse);
+      expect(
+        () => Function.apply(PrincipalForYouCommunicationsAdapter.highlights, [[item]], {#now: now}),
+        throwsNoSuchMethodError,
+      );
+      expect(
+        () => Function.apply(PrincipalForYouCommunicationsAdapter.isEligible, [item], {#now: now}),
+        throwsNoSuchMethodError,
+      );
     });
 
     test('escopo derivado do runtime context reaproveita a mesma avaliação', () {
