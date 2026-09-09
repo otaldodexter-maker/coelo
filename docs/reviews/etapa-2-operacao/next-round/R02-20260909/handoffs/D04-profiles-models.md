@@ -6,7 +6,7 @@ generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
 
-Rodada E2-R02-20260909; subagente `/root/profiles_models`; revisão 6;
+Rodada E2-R02-20260909; subagente `/root/profiles_models`; revisão 7;
 instrução processada: pai D04, ownership exclusivo feature access_profiles e
 testes; novos arquivos SQL nominais reservados via pai; sem commits próprios.
 Início observado: 14:18 BRT. Modelo requerido: gpt-6-astra, medium; runtime
@@ -320,3 +320,17 @@ Rereview do delta não identificou novo bloqueante estático. Autorização ante
 lookup, scope platform/capability/AAL1, audit interno e ausência de bridge
 preservados. **Runtime Safety continua U43**, nenhum SQL/Docker executado por
 este revisor; parse não certifica app/segurança. Hash final é do autor Safety.
+
+## Capturas candidatas de confirmação, encerradas antes16:20
+
+Pai delegou evidência visual Pessoas/Usuários internos. Entrega restrita a
+`evidence/D04`: harness d04_confirmed_forms_capture_test.dart,4PNGs candidatos,
+confirmed-forms-capture-final.log e confirmed-forms-candidates.md com hashes,
+base, limitações e falhas do harness resolvidas. Final P4/F0/B0/S0/U0 em
+mobilelight375x900 e desktopdark1440x900. Quatro imagens finais abertas:
+painel/mensagem/ações íntegros, semoverflow e rodapé não cobre conteúdo final.
+PessoasVoltarativo; UsersCancelarativo e Voltardisabled preservam fluxo do autor.
+Nenhum golden oficial, código de app ou referência aprovada mudou por captura.
+Não somar reruns a4; não repetir lotes funcionais. Estado capturado é editar
+após confirmação; criação e demais cenários explicitamente fora. Slot liberado;
+nenhum processo próprio ativo. Pai fará revisão das imagens finais.
