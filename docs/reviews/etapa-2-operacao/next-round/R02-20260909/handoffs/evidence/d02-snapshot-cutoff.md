@@ -1,6 +1,6 @@
 ---
 title: "D02 — reporte do corte de 16:30"
-source: "prompts/D02.md; escopo.json canônico; handoff D02 r29; assignment D00 r35; commits e provas locais"
+source: "prompts/D02.md; escopo.json canônico; handoff D02 r31; assignment D00 r36; commits e provas locais"
 status: "reported; consolidation-only-until-1715"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
