@@ -74,7 +74,21 @@ conclusao BE nem E2E. Nenhum "local-green" desta tela certifica a acao ponta a p
 Arquivo SQL da proposta:
 `packages/coelo_database/plans/2026-09-09-principal-for-you-read-rpc.sql`
 
-Funcao proposta: `public.list_my_principal_for_you(p_limit int default 50)`.
+Funcao proposta:
+`public.list_my_principal_for_you(p_target_device text, p_limit int default 50)`.
+
+Exemplo de chamada (cliente Principal rodando em web):
+
+```sql
+select * from public.list_my_principal_for_you('web', 50);
+```
+
+```dart
+await client.rpc<List<dynamic>>(
+  'list_my_principal_for_you',
+  params: {'p_target_device': 'web', 'p_limit': 50},
+);
+```
 
 - `security definer`, `stable`, `set search_path = ''`,
   `revoke all ... from public, anon, authenticated`,
@@ -89,6 +103,11 @@ Funcao proposta: `public.list_my_principal_for_you(p_limit int default 50)`.
   `popup`, `notice` ou `critical_notice`.
 - Exige `status = 'active'`, `starts_at <= now()` e
   `ends_at is null or ends_at > now()`.
+- Filtra destino no servidor: `target_device = 'all' or target_device = p_target_device`.
+  `p_target_device` e validado contra a allowlist `('all','web','mobile','tablet')`
+  antes da consulta; valor nulo ou fora da lista levanta
+  `invalid_parameter_value` com `invalid_for_you_target_device`, em vez de ser
+  ignorado. A coluna `target_device` **nao** e projetada para o cliente.
 - Aplica no servidor os mesmos gates que hoje vivem no adapter Dart: papel via
   `audience_json.role_codes`, inclusao pela dimensao da regra
   (`platform`/`institution`/`unit`/`group`/`person`, com `select_all` ou `target_ids`),
@@ -102,6 +121,53 @@ Funcao proposta: `public.list_my_principal_for_you(p_limit int default 50)`.
 A funcao **nao substitui** as RPCs `_v2` do Superadmin. O diretorio administrativo
 continua sendo `public.superadmin_notice_directory_v2`, com o guarda de permissao
 interna. A proposta e forward-only e nao faz `drop` de nada.
+
+### Revisao de L02 (dono do contrato de notices) - APROVADA com tres notas
+
+L02, executor dono do contrato de notices, revisou e **aprovou a abordagem**. As tres
+notas foram incorporadas nesta versao do pacote:
+
+1. **`target_device` nao estava filtrado - corrigido.** O dominio tem
+   `NoticeTargetDevice {all, web, mobile, tablet}` e a spec exige exatamente um
+   destino por comunicacao. Na versao anterior, um aviso restrito a `mobile` chegaria
+   a um cliente `web`. A correcao **nao** projeta o campo para o cliente decidir -
+   isso reintroduziria o mesmo defeito de autorizacao que o pacote existe para
+   corrigir. Em vez disso a funcao aceita `p_target_device`, valida contra allowlist
+   no servidor e filtra la.
+   Coluna real confirmada nas migrations: `public.platform_notices.target_device`,
+   tipo **`text not null default 'all'`** - **nao e enum**. Declarada em
+   `20260812003000_notices_production.sql` (linha 9) e reafirmada em
+   `20260901185008_superadmin_internal_notices_v2.sql` (linha 19). A allowlist vem de
+   CHECK constraint, nao de tipo: `platform_notices_production_values_ck`
+   (`20260812003000`, linha 29) e `platform_notices_internal_v2_values_ck`
+   (`20260901185008`, linha 50), ambas com
+   `target_device in ('all','web','mobile','tablet')` - o mesmo conjunto do dominio
+   Dart. Os comandos de save/publish (`20260812003000` linha 375, `20260820204824`
+   linha 85 e `20260901185008` linha 293) validam o payload contra a mesma lista.
+2. **`content_card` incluido esta certo - endossado pelo dono do contrato.** L02
+   confirma que "Conteudo" e card legitimo do hub Para Voce. O que nunca pode virar
+   card e `popup`, que ja esta bloqueado pelo filtro de `notice_type`. A inclusao de
+   `content_card` na projecao **e endossada por L02, dono do contrato**, e nao deve
+   ser removida por revisor posterior sem passar por ele.
+3. **`status = 'active'` apenas esta correto, e o efeito colateral e aceito.**
+   Linhas legadas que ainda estejam em `published` ficam **invisiveis** para esta
+   funcao ate o cutover forward-only de `20260901185008` (linha 40,
+   `update public.platform_notices set status = 'active' where status::text = 'published'`)
+   ter rodado no destino. Isso falha fechado, que e o lado certo de errar.
+   **Aviso explicito para D00:** ausencia de resultado por essa causa **nao e defeito
+   da funcao**. Antes de tratar retorno vazio como bug, confirmar no destino se o
+   cutover de status ja rodou.
+
+### Decisao de contrato de L02 (dono) - `NoticeRepository`
+
+`NoticeRepository` continua sendo **exclusivamente** o contrato administrativo de
+autoria e ciclo de vida de comunicacoes, e **nao ganhara** um metodo de projecao para
+o hub Para Voce. A leitura do ator no Principal e um **contrato separado**, com
+repositorio proprio construido sobre `public.list_my_principal_for_you`.
+
+Consequencia direta: a tela Para Voce
+(`apps/superadmin/lib/features/principal_for_you/presentation/principal_for_you_route_page.dart`)
+**deve deixar de receber `NoticeRepository`**.
 
 ### O que muda no cliente depois da aprovacao
 
@@ -131,7 +197,12 @@ interna. A proposta e forward-only e nao faz `drop` de nada.
   ator de B; regra `unit`/`group` nao alcanca ator sem aquele escopo; `excluded_ids`
   derruba inclusao `platform`; `role_codes` preenchido bloqueia papel fora da lista;
   comunicacao `popup` nunca aparece; comunicacao fora de vigencia nunca aparece;
-  `p_limit` fora de 1..100 falha.
+  `p_limit` fora de 1..100 falha; comunicacao com `target_device = 'mobile'` nao
+  aparece para chamador que declarou `'web'`; comunicacao com
+  `target_device = 'all'` aparece para qualquer destino valido; `p_target_device`
+  nulo ou fora da allowlist falha com `invalid_for_you_target_device`.
+- Cenario de status legado: linha em `published` (pre-cutover de `20260901185008`)
+  nao retorna. Comportamento esperado, nao defeito.
 - Testes Dart do adapter permanecem validos e passam a ser teste de defesa em
   profundidade, nao de autorizacao.
 
@@ -147,8 +218,10 @@ Nada disso foi executado. Este pacote nao afirma validacao contra banco algum.
 - Forward-only: a proposta apenas cria `public.list_my_principal_for_you`. Nao faz
   `drop`, `alter` nem `revoke` sobre objetos existentes.
 - Rollback, se necessario, e um `revoke execute ... from authenticated` seguido de
-  `drop function public.list_my_principal_for_you(int)` em uma migration forward-only
-  propria, sem impacto sobre as RPCs `_v2` nem sobre `platform_notices`.
+  `drop function public.list_my_principal_for_you(text, int)` em uma migration
+  forward-only propria, sem impacto sobre as RPCs `_v2` nem sobre `platform_notices`.
+  A assinatura tem **dois** argumentos (`text, int`); `revoke`, `grant`, `comment` e
+  `drop` precisam nomear exatamente essa assinatura.
 - Enquanto a funcao nao existir remotamente, o cliente continua no caminho atual: nada
   quebra, e a acao permanece nao certificavel E2E.
 
@@ -163,8 +236,12 @@ Nada disso foi executado. Este pacote nao afirma validacao contra banco algum.
 - **`public.target_type` nao tem valor `person`**: exclusao por pessoa so existe em
   `audience_json.excluded_ids`.
 - **Indices de `public.platform_notices`**: nao foram inventariados neste pacote; um
-  indice de apoio para `(notice_type, status, starts_at)` deve ser avaliado antes de
-  carga real.
+  indice de apoio para `(notice_type, status, target_device, starts_at)` deve ser
+  avaliado antes de carga real.
+- **Origem de `p_target_device` no cliente**: quem informa o destino e o app
+  hospedeiro (`web` no Superadmin hoje). Fica como decisao de Front-end como derivar
+  esse valor por plataforma; o servidor apenas valida e filtra, e nao confia no valor
+  para nada alem do proprio destino.
 
 ## 7. O que NAO esta autorizado agora
 

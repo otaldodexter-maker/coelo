@@ -3,27 +3,28 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/profile_about_repository.dart';
 
-/// Implementacao Supabase do Sobre contextual.
+/// Supabase adapter for the contextual About page.
 ///
-/// Escrita: RPC `public.save_profile_about(p_subject_type, p_subject_id,
-/// p_payload, p_expected_version, p_request_id, p_official_updates)`, unica
-/// transacao aprovada do dominio. A idempotencia e do chamador: o `requestId`
-/// recebido e repassado sem regeneracao, porque a RPC guarda o recibo em
-/// `app_private.profile_about_command_receipts` e recusa o mesmo `request_id`
-/// com payload diferente.
+/// Writes go through `public.save_profile_about(p_subject_type, p_subject_id,
+/// p_payload, p_expected_version, p_request_id, p_official_updates)`, the only
+/// approved transaction of this domain. Idempotency belongs to the caller: the
+/// `requestId` is forwarded untouched, because the RPC keeps the receipt in
+/// `app_private.profile_about_command_receipts` and refuses the same
+/// `request_id` with a different payload.
 ///
-/// Leitura: nao existe RPC de leitura publicada para o Sobre neste repositorio
-/// (a unica migration versionada do dominio,
-/// `20260825193131_final_review_profile_about_lint_hardening.sql`, expoe apenas
-/// a RPC de escrita). Enquanto ela nao existir, `load` le as tabelas
-/// `public.profile_about_pages`, `public.profile_about_structured_fields` e
-/// `public.profile_about_sections` via PostgREST, apoiada integralmente em RLS:
-/// nenhum filtro de tenant e inventado no cliente alem do proprio sujeito
-/// solicitado, e qualquer negativa vira [ProfileAboutUnauthorizedException].
+/// Reads have no published RPC. The only versioned migration of the domain,
+/// `20260825193131_final_review_profile_about_lint_hardening.sql`, exposes the
+/// write alone, so `load` reads `public.profile_about_pages`,
+/// `public.profile_about_structured_fields` and `public.profile_about_sections`
+/// through PostgREST and leans entirely on RLS: no tenant filter is invented on
+/// the client beyond the requested subject, and any denial becomes
+/// [ProfileAboutUnauthorizedException]. If those tables turn out to be
+/// deny-by-default with revoked grants, this read fails closed until a
+/// `get_profile_about` exists.
 ///
-/// Os tokens de banco seguem o snake_case do nome do enum de dominio,
-/// convencao confirmada pelos defaults da propria RPC (`profile_access`,
-/// `manual`, `draft`).
+/// Database tokens follow the snake_case of the domain enum names, the
+/// convention the RPC's own defaults confirm (`profile_access`, `manual`,
+/// `draft`).
 final class SupabaseProfileAboutRepository implements ProfileAboutRepository {
   const SupabaseProfileAboutRepository(this._client);
 
@@ -116,7 +117,7 @@ List<Map<String, Object?>> _asRows(Object? value) {
       .toList(growable: false);
 }
 
-/// Converte o `camelCase` do dominio no token snake_case usado no Postgres.
+/// Converts the domain `camelCase` into the snake_case token Postgres stores.
 String profileAboutToken(String enumName) {
   final buffer = StringBuffer();
   for (final unit in enumName.runes) {
@@ -130,7 +131,7 @@ String profileAboutToken(String enumName) {
 
 String profileAboutSubjectTypeToken(ProfileAboutSubjectType type) => profileAboutToken(type.name);
 
-/// Coluna de `public.profile_about_pages` que guarda o id do sujeito.
+/// The `public.profile_about_pages` column that holds the subject id.
 String profileAboutSubjectColumn(ProfileAboutSubjectType type) => switch (type) {
   ProfileAboutSubjectType.institution => 'institution_subject_id',
   ProfileAboutSubjectType.unit => 'unit_subject_id',
@@ -174,13 +175,12 @@ T? _fromToken<T extends Enum>(List<T> values, Object? token) {
   return null;
 }
 
-/// Payload `p_payload` da RPC `save_profile_about`.
+/// The `p_payload` argument of the `save_profile_about` RPC.
 ///
-/// O estado da pagina (`draft`/`published`) nao e enviado: [ProfileAboutPage]
-/// nao modela estado de pagina e a RPC aplica
-/// `coalesce(p_payload->>'state', state)`, preservando o estado remoto. Enviar
-/// `published` sem intencao explicita exigiria `profiles.about.publish`. O
-/// estado por secao continua sendo enviado.
+/// The page state (`draft`/`published`) is not sent: [ProfileAboutPage] does not
+/// model page state and the RPC applies `coalesce(p_payload->>'state', state)`,
+/// preserving the remote state. Publishing without an explicit intent would
+/// demand `profiles.about.publish`. Per-section state is still sent.
 Map<String, Object?> buildProfileAboutSavePayload(ProfileAboutPage page) => <String, Object?>{
   'fields': [
     for (final field in page.fields)
@@ -254,10 +254,10 @@ ProfileAboutSaveResult parseProfileAboutSaveResult(Object? response) {
   );
 }
 
-/// Monta a pagina a partir das linhas lidas das tabelas.
+/// Builds the page from the rows read out of the tables.
 ///
-/// Campos com chave desconhecida e secoes com tipo desconhecido sao ignorados,
-/// para que um token novo no banco nao derrube a leitura inteira.
+/// Fields with an unknown key and sections with an unknown type are skipped, so
+/// a new token in the database never brings the whole read down.
 ProfileAboutPage parseProfileAboutPage({
   required ProfileAboutSubjectRef subject,
   required Map<String, Object?> pageRow,
@@ -332,7 +332,7 @@ int? _asInt(Object? value) => switch (value) {
   _ => null,
 };
 
-/// Mapeia falhas do PostgREST/Postgres nas excecoes do contrato de dominio.
+/// Maps PostgREST and Postgres failures onto the domain contract exceptions.
 Exception mapProfileAboutFailure(String? code, String message) {
   final text = message.toLowerCase();
   return switch (code) {

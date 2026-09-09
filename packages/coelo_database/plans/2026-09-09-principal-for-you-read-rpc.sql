@@ -33,6 +33,16 @@
 --     target_device, content_format, image_orientation,
 --     management_version, created_at, updated_at
 --                         -- 20260901185008_superadmin_internal_notices_v2.sql
+--
+--   public.platform_notices.target_device CONFIRMADO como coluna `text`
+--     `not null default 'all'` (NAO e enum). Adicionada em
+--     20260812003000_notices_production.sql (linha 9) e reafirmada em
+--     20260901185008_superadmin_internal_notices_v2.sql (linha 19).
+--     A allowlist vem de CHECK constraint, nao de tipo:
+--       platform_notices_production_values_ck  -- 20260812003000, linha 29
+--       platform_notices_internal_v2_values_ck -- 20260901185008, linha 50
+--     Ambas restringem target_device in ('all','web','mobile','tablet'),
+--     o mesmo conjunto do dominio Dart NoticeTargetDevice.
 --   public.institution_memberships: id, person_id, institution_id,
 --     role_code, scope_kind, scope_unit_id, scope_group_id, status,
 --     revoked_at, created_at   -- usadas por list_my_principal_contexts
@@ -79,7 +89,25 @@
 --   ser revista antes de promocao.
 -- =====================================================================
 
+-- ---------------------------------------------------------------------
+-- REVISAO L02 (dono do contrato de notices) incorporada nesta versao:
+--   1. target_device passou a ser filtrado NO SERVIDOR. O cliente informa
+--      apenas em qual destino esta rodando (p_target_device); ele NAO
+--      recebe a coluna para decidir. Projetar target_device reintroduziria
+--      exatamente o defeito de autorizacao que esta funcao existe para
+--      corrigir, entao a coluna permanece fora do `returns table`.
+--   2. content_card permanece elegivel. Endosso do dono do contrato:
+--      "Conteudo" e card legitimo do hub Para Voce. O que nunca pode virar
+--      card e popup, que ja esta bloqueado pelo filtro de notice_type.
+--   3. status = 'active' apenas esta correto e o efeito colateral e
+--      aceito: linhas legadas ainda em 'published' ficam invisiveis ate o
+--      cutover forward-only de 20260901185008 ter rodado no destino.
+--      Isso falha fechado, que e o lado certo de errar. Ausencia de
+--      resultado por essa causa NAO e defeito da funcao.
+-- ---------------------------------------------------------------------
+
 create or replace function public.list_my_principal_for_you(
+  p_target_device text,
   p_limit int default 50
 )
 returns table(
@@ -110,6 +138,17 @@ begin
 
   if p_limit is null or p_limit not between 1 and 100 then
     raise invalid_parameter_value using message = 'invalid_for_you_query';
+  end if;
+
+  -- Allowlist server-side de destino. Espelha as CHECK constraints
+  -- platform_notices_production_values_ck (20260812003000, linha 29) e
+  -- platform_notices_internal_v2_values_ck (20260901185008, linha 50), e o
+  -- dominio Dart NoticeTargetDevice {all, web, mobile, tablet}.
+  -- Valor fora da allowlist (ou null) e REJEITADO, nunca ignorado em
+  -- silencio: ignorar viraria uma leitura mais ampla do que a autorizada.
+  if p_target_device is null
+     or p_target_device not in ('all', 'web', 'mobile', 'tablet') then
+    raise invalid_parameter_value using message = 'invalid_for_you_target_device';
   end if;
 
   return query
@@ -170,7 +209,19 @@ begin
       -- Somente os tipos que o hub "Para Voce" pode exibir. popup, notice e
       -- critical_notice NUNCA saem por esta funcao.
       notice.notice_type::text in ('highlight', 'content_card', 'for_you')
+      -- status = 'active' apenas, de proposito. Linhas legadas em
+      -- 'published' ficam invisiveis ate o cutover forward-only de
+      -- 20260901185008 (linha 40) ter rodado no destino. Fail-closed.
       and notice.status::text = 'active'
+      -- Gate de destino aplicado no SERVIDOR. 'all' alcanca qualquer
+      -- cliente; qualquer outro valor exige igualdade com o destino
+      -- declarado e validado do chamador. A spec exige exatamente um
+      -- destino por comunicacao, entao um aviso restrito a 'mobile' nunca
+      -- chega a um cliente 'web'.
+      and (
+        notice.target_device = 'all'
+        or notice.target_device = p_target_device
+      )
       and notice.starts_at is not null
       and notice.starts_at <= now()
       and (notice.ends_at is null or notice.ends_at > now())
@@ -305,24 +356,28 @@ begin
 end
 $function$;
 
-revoke all on function public.list_my_principal_for_you(int)
+-- A assinatura tem dois argumentos (text, int); os comandos de privilegio
+-- abaixo precisam nomear exatamente essa assinatura.
+revoke all on function public.list_my_principal_for_you(text, int)
   from public, anon, authenticated;
-grant execute on function public.list_my_principal_for_you(int) to authenticated;
+grant execute on function public.list_my_principal_for_you(text, int) to authenticated;
 
-comment on function public.list_my_principal_for_you(int) is
-  'Leitura autorizada do hub Principal / Para Voce. Resolve o ator pelo auth.uid() e aplica tipo, vigencia e audiencia no servidor. Nao expoe popup, notice nem critical_notice. Proposta nao aplicada (E2 R02 L03).';
+comment on function public.list_my_principal_for_you(text, int) is
+  'Leitura autorizada do hub Principal / Para Voce. Resolve o ator pelo auth.uid() e aplica tipo, destino (p_target_device, allowlist all/web/mobile/tablet), vigencia e audiencia no servidor. Nao expoe popup, notice nem critical_notice. Proposta nao aplicada (E2 R02 L03).';
 
 -- =====================================================================
 -- NOTAS DE PROMOCAO (para D00/L00, nao executar daqui)
 -- 1. Renumerar como migration forward-only propria em
 --    packages/coelo_database/migrations/ com timestamp novo.
 -- 2. Avaliar indice de apoio em public.platform_notices para
---    (notice_type, status, starts_at) antes de carga real.
+--    (notice_type, status, target_device, starts_at) antes de carga real.
 --    CONFIRMAR: indices existentes de platform_notices nao foram
 --    inventariados neste pacote.
 -- 3. Testes cross-tenant obrigatorios antes de aceite: ator da instituicao
 --    A nao pode ver comunicacao dirigida so a instituicao B, unidade B ou
 --    turma B; ator excluido por excluded_ids nao pode ver mesmo quando a
---    regra e 'platform'; nenhum popup/notice/critical_notice pode sair.
+--    regra e 'platform'; nenhum popup/notice/critical_notice pode sair;
+--    comunicacao com target_device='mobile' nao pode sair para um chamador
+--    que declarou 'web'; p_target_device fora da allowlist deve falhar.
 -- 4. Nao remover nem alterar as RPCs _v2 do Superadmin.
 -- =====================================================================
