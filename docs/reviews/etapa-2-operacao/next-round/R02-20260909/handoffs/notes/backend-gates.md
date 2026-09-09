@@ -73,13 +73,52 @@ SELECT do catálogo `platform_permissions` e grants ativos confirmou:
 active, allow ativo exclusivamente owner. Essa fotografia não substitui a
 revalidação de sessão/permissão de cada operação.
 
-Próximo passo nominal solicitado a D00: recuperar os três arquivos preservados
-na worktree D03, revisar/preparar replay local serializado com FoundationOnly
-e AdditionalMigration fixada por hash, usando apenas o TAP CHILD. Nenhum
-Docker iniciado por D03; `docker ps` inicial sem containers. Antes de produção,
-resolver a dependência do envelope em pacote forward-only específico, repetir
-preflight e obter autorização nominal do pacote exato. Wiring Flutter é reserva
-separada de quatro arquivos comuns, sem nova rota e sem retirar Acompanhamento.
+Atualização 13:24 BRT: os três arquivos preservados foram recuperados mediante
+reserva D00. FoundationOnly parou em dependência de Chat antes de CHILD; zero
+casos CHILD executados, sem recurso D03 residual. Não repetir esse perfil.
+Assignment D00 r5 autorizou preparar o perfil local ChildDirectoryEnvelope:
+Auth45, CHILD preservado, ponte exata do helper e os dois preflights herdados.
+Execução depende de revisão do SHA e liberação da janela após D02. Wiring
+Flutter entregue em ef40ac5d e quatro hunks comuns liberados por SHA. Antes
+de produção, resolver a dependência do envelope em pacote forward-only
+específico, repetir preflight e obter autorização nominal do pacote exato.
+
+### Consumidores do envelope compartilhado — consulta deste turno, registrada 13:24 BRT
+
+Consulta read-only em pg_proc/pg_namespace/pg_language, limitada a SQL/PLpgSQL
+nos schemas public e app_private com referência textual ao nome do helper.
+Nenhuma chamada de RPC de produto ou escrita. Envelope mantém MD5 remoto
+`b89d2dc22f032a1c3f155a77f0eaaf08`, ACL `{postgres=X/postgres}` e zero entradas
+ACL não-owner. A verificação anterior não cobria ACL; esta cobre esse helper.
+
+| Consumidor remoto textual | MD5 prosrc CRLF→LF | Avaliação estática |
+| --- | --- | --- |
+| superadmin_auth_bootstrap_context() | cf411ecb47a0e3e42aeb4ee654f6b079 | Obtém contexto platform.read; repassa exception detail ao envelope. |
+| superadmin_auth_resolve_institution_context(uuid) | e16a3b61cffba4230c7fb4235da9382d | Obtém contexto platform.read; instituição nula/fora do escopo gera SAI_PERMISSION_DENIED; repassa exception detail. |
+
+São os dois consumidores textuais observados; não há SAI_INVALID_ARGUMENT
+literal neles. Os corpos foram inspecionados. Não inferir cobertura de chamadas
+dinâmicas ou de objetos fora dos schemas/linguagens consultados. O diff exato
+da fonte canônica adiciona somente a classificação SAI_INVALID_ARGUMENT, sua
+mensagem segura e HTTP semântico400, preservando os ramos anteriores e a
+correlação. Isso reduz a superfície esperada de regressão nos consumidores
+atuais, mas não substitui prova local das negativas nem autorização remota.
+
+Pacote revisável `child-envelope-prerequisite.sql` aplica somente o helper,
+com preflight de corpo antigo/metadata/ACL, transação e postflight do hash novo.
+Ainda proposta, não migration canônica aplicada. Falhas abortam a transação;
+reversão após commit exige novo pacote forward-only nominal e revisão dos
+consumidores. A ponte local será preservada separadamente no perfil autorizado.
+
+Complemento read-only do catálogo no mesmo turno: os cinco helpers do preflight
+têm ACL `{postgres=X/postgres}` e EXECUTE efetivo false para anon,
+authenticated e service_role. People, institutions e child_contexts são tabelas
+ordinárias, owner postgres e RLS ativo; colunas consultadas/tipos/nullability,
+PK(id), unicidade(child_person_id,institution_id) e as duas FKs validadas de
+child_contexts coincidem com as exigências do candidato. O tipo composto de
+contexto possui exatamente os 13 campos ordenados esperados. Não foi encontrado
+outro drift nesses metadados; isso não executa o preflight transacional nem
+certifica policies ou acesso real. Não foram lidos registros de pessoas.
 
 ## Gestão de alunos, Assiduidade e Rotina
 
