@@ -217,10 +217,6 @@ void main() {
         expect(find.byKey(const Key('principal-for-you-hero')), findsOneWidget);
         expectNoLayoutError(tester);
       },
-      // Skipped: the fixed-height hero overflows by 60 px with a long title at
-      // 200% text. `testWidgets` only accepts a boolean here, so the reason
-      // lives in the comment above.
-      skip: true,
     );
 
     for (final width in [375.0, 1440.0]) {
@@ -375,6 +371,10 @@ void main() {
 
         expect(find.byKey(const Key('principal-for-you-hero')), findsOneWidget);
         await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+        // Sem asserção de contraste aqui: o chip "DESTAQUE" do herói mede
+        // 3,75:1 na composição aprovada. É defeito real, registrado no handoff
+        // L03 para decisão de coelo-ui/Owner; relaxar o guideline ou regravar o
+        // golden esconderia o problema.
         expectNoLayoutError(tester);
         handle.dispose();
       });

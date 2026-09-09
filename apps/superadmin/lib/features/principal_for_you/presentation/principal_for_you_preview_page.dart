@@ -333,11 +333,21 @@ final class _HeroCard extends StatelessWidget {
                         ? constraints.maxWidth - CoeloSpacing.space5
                         : (narrow ? 210 : 330),
                   ),
-                  child: Column(
+                  // A long authorized title used to overflow the fixed card at
+                  // 200% text. The content now scrolls inside the approved
+                  // geometry: when it fits, the layout is unchanged.
+                  child: _HeroContent(
+                    child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       DecoratedBox(
                         decoration: BoxDecoration(
+                          // ACHADO A11Y (L03, 09/09/2026): branco sobre este véu
+                          // mede 3,75:1, abaixo do mínimo AA de 4,5:1 para 11 px.
+                          // Escurecer o chip resolve, mas altera a composição
+                          // aprovada e quebra os goldens de referência. Corrigir
+                          // exige decisão de coelo-ui/Owner, não preferência do
+                          // executor: registrado no handoff L03.
                           color: scheme.onPrimary.withValues(alpha: .16),
                           borderRadius: BorderRadius.circular(CoeloRadius.full),
                         ),
@@ -377,8 +387,9 @@ final class _HeroCard extends StatelessWidget {
                         ),
                         label: Text(item.cta),
                         icon: const Icon(Icons.chevron_right_rounded),
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -388,6 +399,24 @@ final class _HeroCard extends StatelessWidget {
       },
     );
   }
+}
+
+/// Keeps the approved hero geometry while letting long authorized content
+/// scroll instead of overflowing the card.
+final class _HeroContent extends StatelessWidget {
+  const _HeroContent({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) => SingleChildScrollView(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minHeight: constraints.maxHeight),
+        child: IntrinsicHeight(child: child),
+      ),
+    ),
+  );
 }
 
 final class _Shortcuts extends StatelessWidget {
