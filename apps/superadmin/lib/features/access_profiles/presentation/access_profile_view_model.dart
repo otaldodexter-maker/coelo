@@ -76,9 +76,7 @@ final class AccessProfileViewModel extends ChangeNotifier {
         final loadedCapabilities = await _repository.fetchPrincipalCapabilities();
         if (!_isCurrent(requestGeneration)) return;
         capabilities = loadedCapabilities;
-        state = capabilities.isEmpty
-            ? AccessProfileLoadState.empty
-            : AccessProfileLoadState.success;
+        state = _catalogResultState;
       } else {
         final loadedPage = await _repository.fetchProfiles(query);
         if (!_isCurrent(requestGeneration)) return;
@@ -127,9 +125,11 @@ final class AccessProfileViewModel extends ChangeNotifier {
     if (_disposed) return;
     query = query.copyWith(search: value, resetPage: true);
     if (usesPrincipalCapabilities) {
-      state = visibleCapabilities.isEmpty
-          ? AccessProfileLoadState.noResults
-          : AccessProfileLoadState.success;
+      if (state == AccessProfileLoadState.success ||
+          state == AccessProfileLoadState.empty ||
+          state == AccessProfileLoadState.noResults) {
+        state = _catalogResultState;
+      }
       if (!_disposed) notifyListeners();
       return;
     }
@@ -195,6 +195,12 @@ final class AccessProfileViewModel extends ChangeNotifier {
   }
 
   bool _isCurrent(int requestGeneration) => !_disposed && requestGeneration == _requestGeneration;
+
+  AccessProfileLoadState get _catalogResultState => capabilities.isEmpty
+      ? AccessProfileLoadState.empty
+      : visibleCapabilities.isEmpty
+      ? AccessProfileLoadState.noResults
+      : AccessProfileLoadState.success;
 
   void _clearSensitiveState({bool resetQuery = false}) {
     page = const AccessProfilePage.empty();

@@ -1,0 +1,33 @@
+00:00 +0: search during catalog load keeps loading and applies to the response
+00:00 +0 -1: search during catalog load keeps loading and applies to the response [E]
+  Expected: AccessProfileLoadState:<AccessProfileLoadState.loading>
+    Actual: AccessProfileLoadState:<AccessProfileLoadState.noResults>
+  
+  package:matcher                                                                          expect
+  package:flutter_test/src/widget_tester.dart 473:18                                       expect
+  test\features\access_profiles\presentation\d04_profile_catalog_lifecycle_test.dart 14:5  main.<fn>
+  
+00:00 +0 -1: search after catalog failure preserves the error and retry state
+00:00 +0 -2: search after catalog failure preserves the error and retry state [E]
+  Expected: AccessProfileLoadState:<AccessProfileLoadState.failure>
+    Actual: AccessProfileLoadState:<AccessProfileLoadState.noResults>
+  
+  package:matcher                                                                          expect
+  package:flutter_test/src/widget_tester.dart 473:18                                       expect
+  test\features\access_profiles\presentation\d04_profile_catalog_lifecycle_test.dart 34:5  main.<fn>
+  
+00:00 +0 -2: clearing search on an empty catalog preserves the empty state
+00:00 +0 -3: clearing search on an empty catalog preserves the empty state [E]
+  Expected: AccessProfileLoadState:<AccessProfileLoadState.empty>
+    Actual: AccessProfileLoadState:<AccessProfileLoadState.noResults>
+  
+  package:matcher                                                                          expect
+  package:flutter_test/src/widget_tester.dart 473:18                                       expect
+  test\features\access_profiles\presentation\d04_profile_catalog_lifecycle_test.dart 48:5  main.<fn>
+  
+00:00 +0 -3: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/d04_profile_catalog_lifecycle_test.dart: clearing search on an empty catalog preserves the empty state
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/d04_profile_catalog_lifecycle_test.dart: search after catalog failure preserves the error and retry state
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/d04_profile_catalog_lifecycle_test.dart: search during catalog load keeps loading and applies to the response

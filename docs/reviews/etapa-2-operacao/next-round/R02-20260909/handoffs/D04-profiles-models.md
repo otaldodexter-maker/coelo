@@ -6,7 +6,7 @@ generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
 
-Rodada E2-R02-20260909; subagente `/root/profiles_models`; revisão 4;
+Rodada E2-R02-20260909; subagente `/root/profiles_models`; revisão 5;
 instrução processada: pai D04, ownership exclusivo feature access_profiles e
 testes; novos arquivos SQL nominais reservados via pai; sem commits próprios.
 Início observado: 14:18 BRT. Modelo requerido: gpt-6-astra, medium; runtime
@@ -238,3 +238,38 @@ Não requer mudança em constantes, bootstrap, sessão ou backend para aplicar
 este patch. O pacote nominal scope_filter continua obrigatório antes do deploy
 do FE CSV/multisseleção; integração Git não equivale a deploy. Enquanto essas
 provas não existirem, access-models.duplicate não ganha certificado FE/E2E.
+
+## Retomada Perfis: catálogo e busca durante carregamento/falha
+
+Base retomada `febffc887`, após orientação do Owner para continuar dentro do
+corte. Recorte local: apps/superadmin -> Acessos -> Perfis -> catálogo Principal
+-> busca/estados de leitura, IDs access-profiles.search e access-profiles.list.
+Pendência executável: setSearch substituía loading/failure por noResults antes
+de obter catálogo válido; resposta posterior ignorava a busca atual ao calcular
+estado; limpar busca num catálogo vazio mostrava ausência de resultados em vez
+de catálogo vazio. Não depende da decisão de visibilidade institucional.
+
+Corrigido em `access_profile_view_model.dart`: busca local recalcula somente
+estados de resultado já carregado; carga aplica busca vigente ao finalizar;
+helper compartilhado mantém vazio real, resultado filtrado vazio e sucesso.
+Erro e ação de retry continuam visíveis ao digitar após falha. Nenhuma mudança
+visual, autorização, RPC ou regra de produto. Preserva guards e descarte por
+generation existentes.
+
+Teste novo `presentation/d04_profile_catalog_lifecycle_test.dart`: RED3/F3
+pelos três comportamentos descritos, GREEN3 mais10regressões já existentes em
+access_profile_view_model_test, total desta passagem **P13/F0/B0/S0/U0**.
+Comando: `flutter test test/features/access_profiles/presentation/d04_profile_catalog_lifecycle_test.dart test/features/access_profiles/presentation/access_profile_view_model_test.dart --no-pub --reporter expanded`.
+Analyzer dos dois arquivos limpo; format2 sem alterações; diff --check limpo.
+Logs `D04-profiles-catalog-red.log` e `D04-profiles-catalog-green.log` guardam
+saída de assertions/resultados, sem saída de resolução inicial de dependências.
+SHA256 VM `db75e4135384bf0345e210b91804a523c98dd6cff3cfd812c0f8fb9936e7c978`;
+teste `b31a17e4c56a699e4020ecf427246fc49713b5fc74b553fbec157c6dc8fdbb61`.
+
+Os13 testes desta passagem não repetem os60 anteriores: total focal do subagente
+agora **P73/F0/B0/S0/U0**, sendo58 Flutter e15pgTAP. Plano de proposta de router
+continua U8 separado. Gate visual baseline já registrado permanece aberto,
+sem rerun sem mudança visual. FE/BE/E2E novos0; catálogo remoto/ACL e decisões
+de Perfis não estão certificados por estes testes de VM. Slot Flutter liberado
+para Convites, nenhum processo próprio ativo. Memória: correção de execução de
+estado existente, nenhuma nova regra durável; não criar artigo de atividade.
