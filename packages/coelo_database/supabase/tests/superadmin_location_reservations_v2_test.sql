@@ -1,6 +1,7 @@
 -- D02 local candidate: normalization and surface safety. Integration/lock cases
 -- must be added before any complete acceptance; this file is not remote evidence.
 begin;
+create extension if not exists pgtap with schema extensions;
 select plan(49);
 select is(jsonb_array_length(app_private.location_reservation_normalize_v2(
   '{"location_id":"a1000000-0000-4000-8000-000000000001","consumer":{"kind":"group","id":"a1000000-0000-4000-8000-000000000002"},"first_occurrence":{"starts_at":"2026-09-09T12:00:00Z","ends_at":"2026-09-09T13:00:00Z"},"recurrence":{"kind":"once"},"conflict_justification":null}'::jsonb)->'occurrences'),1,'once expands to one occurrence');
@@ -164,6 +165,9 @@ insert into reservation_results values('policy_warn',public.superadmin_location_
   'ca000000-0000-4000-8000-000000000004'));
 insert into reservation_results values('assess_warn',public.superadmin_location_reservation_assess_v2(
   pg_temp.reservation_payload('2026-09-10T12:30:00Z','2026-09-10T13:30:00Z')));
+insert into reservation_results values('override_without_reason',public.superadmin_location_reservation_create_v2(
+  pg_temp.reservation_payload('2026-09-10T12:30:00Z','2026-09-10T13:30:00Z'),
+  'ca000000-0000-4000-8000-000000000009'));
 insert into reservation_results values('create_override',public.superadmin_location_reservation_create_v2(
   pg_temp.reservation_payload('2026-09-10T12:30:00Z','2026-09-10T13:30:00Z','Conflito aprovado'),
   'ca000000-0000-4000-8000-000000000005'));
@@ -238,7 +242,12 @@ select ok((select body#>>'{data,policy}'='warn' and body#>>'{data,management_ver
 select is((select body#>>'{data,conflict}' from reservation_results where label='assess_warn'),'confirmable',
   'warn assessment reflects the real override capability');
 select ok((select body#>>'{data,confirmed_over_conflict}'='true'
-  from reservation_results where label='create_override'),'warn override persists its conflict marker');
+  from reservation_results where label='create_override')
+  and (select body#>>'{error,code}'='SAI_INVALID_ARGUMENT'
+    from reservation_results where label='override_without_reason')
+  and not exists(select 1 from app_private.location_reservation_receipts
+    where request_id='ca000000-0000-4000-8000-000000000009'),
+  'warn override requires a reason before persisting its conflict marker');
 select ok(exists(select 1 from audit.audit_logs where action_code='location.reservation.override'
   and permission_code='locations.reservations.override' and outcome='success'
   and after_json->>'justification'='Conflito aprovado'
