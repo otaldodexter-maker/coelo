@@ -1048,3 +1048,78 @@ Depois do movimento, `/principal-moments` continua sem saída, o Acontece contin
 sem a projeção de Circulares que virou subaceite obrigatório de `acontece.feed`,
 e as duas rotas de publicação continuam com o beco do ator institucional.
 **O movimento era necessário e não era suficiente.**
+
+---
+
+# Resolução de conflitos escrita pelas frentes — instruções para D00
+
+As três analisaram os próprios conflitos e escreveram, trecho a trecho, o que
+deve prevalecer. Nenhuma integrou `dev`, nenhuma fez merge ou rebase: tudo foi
+`merge-tree` e `git show`, leitura pura. Destaco os pontos onde resolver no
+automático causa dano.
+
+## PERIGO 1 — tomar o lado de `dev` em Para Você REINTRODUZ um buraco de segurança
+
+L03 diffou `origin/dev` contra a HEAD dele arquivo a arquivo. **`dev` tem a
+versão ANTIGA dele** — o `8c041ed50` que D00 levou como `7271f4a39`. Nessa
+versão o `scope` de audiência é **opcional** e o adapter ainda injeta sprite de
+estoque em toda comunicação.
+
+A versão da branch dele tornou o escopo **obrigatório** em `highlights` e
+`isEligible`, tirou o asset, e preservou os seis atalhos aprovados.
+
+**Tomar o lado de `dev` nos quatro arquivos de Para Você reintroduz o buraco:**
+gate de autorização opcional é um argumento que se esquece de passar e desliga a
+verificação **em silêncio** — e o teste que em `dev` afirma o caminho sem escopo
+é justamente o que L03 inverteu. **Prevalece a branch de L03 nos quatro.**
+Isso é segurança, não preferência.
+
+## PERIGO 2 — sem a declaração de capacidade, a rota de edição volta a ser inalcançável
+
+Só existe do lado de L03 e **precisa ser acrescentada**: o GoRoute de
+`/principal-profile/edit` (que **não existe em `dev`**), os dois parâmetros
+opcionais, os imports, e **a declaração em `hasAuthoritativeMutationCapability`**.
+Sem ela, a guarda global de mutação volta a mandar toda visita para a tela de
+erro — que foi um dos defeitos que L03 achou e corrigiu hoje.
+
+## PERIGO 3 — sem trocar os três destinos, a hospedagem só reposiciona o defeito
+
+L02 verificou que os **três** destinos `?from=principal` continuam em `dev`
+(linhas 699, 810 e 5468). Se a resolução perder essa troca, **o launcher do
+Principal volta a abrir a página administrativa** e a hospedagem terá
+reposicionado o defeito em vez de resolvê-lo. A rota nova
+`/principal-conversations` precisa entrar **dentro** do `ShellRoute` com
+`embedded: true`, não ficar de fora. E a guarda `is UnavailableChatRepository` no
+badge tem de sobreviver intacta, senão volta o zero silencioso.
+
+`chatUnreadCountLoader` **não aparece em `dev`** — não é que não sobreviveu:
+nunca esteve lá, vem com o merge de L02.
+
+## PERIGO 4 — o conflito que exige união, repetido porque é o mais fácil de errar
+
+`principal_moments_publication_route.dart`: `dev` acrescentou `embedded`, L01
+acrescentou a porta `mediaPicker`. **Ficar com um lado apaga função** e a rota
+produtiva volta a não conseguir publicar nada. União trivial, dano silencioso.
+
+## Resolução recomendada do router, na forma que L03 propôs e eu endosso
+
+**Prevalece `dev` na colocação** — os GoRoute ficam dentro do `ShellRoute`, não
+reverter. **Prevalece a branch da frente no corpo de cada builder** — trocar
+`_unavailableCompositionRootRoute` pelo builder real e acrescentar
+`embedded: true`, que as composition roots já aceitam desde `7ca7ee63a`, feito
+exatamente para este cenário. **As duas metades são complementares, não
+concorrentes:** D00 resolveu a colocação, a composição continua nas branches.
+É por isso que o conflito do router é de forma, não de intenção.
+
+## Por que as provas não podem ser rodadas contra `dev` puro
+
+L03 respondeu com o motivo em vez de deixar em aberto: as 11 provas dele chamam
+`createSuperadminRouter` com `profileAboutRepository` e
+`principalCircularRepository`, que **não existem em `dev`** — não compilam; e
+asserem composição real, que em `dev` é **falsa por construção**. Elas exercitam
+exatamente a composição da resolução recomendada e devem ser reexecutadas
+**depois do merge**; se alguma quebrar ali, é achado do merge e não da branch.
+Cada frente deixou escrita a lista mínima a reexecutar — L02 indicou
+`principal_chat_route_test.dart`, `chat_unread_badge_wiring_test.dart` e
+`chat_routes_test.dart`, que são os que afirmam os pontos acima e falham se a
+resolução perder algum.
