@@ -63,6 +63,7 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
   late final LocationDetailController _controller;
   NavigatorState? _copyDialogNavigator;
   Route<dynamic>? _copyDialogRoute;
+  int _copyOperationGeneration = 0;
   @override
   void initState() {
     super.initState();
@@ -86,7 +87,9 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
         !identical(oldWidget.writer, widget.writer) ||
         oldWidget.sessionAvailable != widget.sessionAvailable ||
         oldWidget.contextRevision != widget.contextRevision;
-    if (contextChanged || oldWidget.capabilities.copy && !widget.capabilities.copy) {
+    if (contextChanged ||
+        oldWidget.capabilities.copy && !widget.capabilities.copy ||
+        !identical(oldWidget.onCopied, widget.onCopied)) {
       _dismissCopyDialog();
     }
     if (contextChanged) {
@@ -110,6 +113,7 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
   }
 
   void _dismissCopyDialog() {
+    _copyOperationGeneration++;
     final navigator = _copyDialogNavigator;
     final route = _copyDialogRoute;
     _copyDialogNavigator = null;
@@ -124,11 +128,15 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
     final writer = widget.writer;
     final onCopied = widget.onCopied;
     if (writer == null || onCopied == null || !widget.capabilities.copy) return;
+    final operationGeneration = ++_copyOperationGeneration;
+    final contextRevision = widget.contextRevision;
     final created = await showDialog<LocationCatalogEntry>(
       context: context,
       builder: (dialogContext) {
-        _copyDialogNavigator = Navigator.of(dialogContext);
-        _copyDialogRoute = ModalRoute.of(dialogContext);
+        if (_copyOperationGeneration == operationGeneration) {
+          _copyDialogNavigator = Navigator.of(dialogContext);
+          _copyDialogRoute = ModalRoute.of(dialogContext);
+        }
         return LocationCopyDialog(
           source: item,
           writer: writer,
@@ -136,9 +144,20 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
         );
       },
     );
+    if (_copyOperationGeneration != operationGeneration) return;
     _copyDialogNavigator = null;
     _copyDialogRoute = null;
-    if (!mounted || created == null) return;
+    if (!mounted ||
+        created == null ||
+        !widget.sessionAvailable ||
+        !widget.capabilities.copy ||
+        widget.contextRevision != contextRevision ||
+        widget.id != item.id ||
+        !sameLocationScope(widget.scope, item.scope) ||
+        !identical(widget.writer, writer) ||
+        !identical(widget.onCopied, onCopied)) {
+      return;
+    }
     onCopied(created);
   }
 
