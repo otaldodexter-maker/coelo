@@ -165,11 +165,29 @@ mudanças; os 9 testes de retirada; `principal_now` + `principal_moments` +
 do Acontece; os 9 da rota real do Agora; e `principal_moments_publication` 88/0,
 que ele **não** havia rodado e reexecutou nesta auditoria.
 
-**Executado por subagente e NÃO reexecutado por L01:** todos os números de pgTAP
-— 32/32, 53/53, 16/16, 23/23, 46/46, 60/60 e 50/50 — mais o Deno 27/0 e os
-replays parciais de migrations (122 de 168 e 93 de 170).
+**Reexecutado pelo próprio L01 depois da auditoria — o número que solta a
+retenção de D00:** a suíte comportamental do Acontece, **`1..32`, 32 `ok`,
+0 `not ok`**, sem linha `# Looks like`. Ele subiu Postgres 17.6 descartável do
+zero, reconstruiu os shims de `auth` e `storage` (`auth.jwt()`, `auth.uid()`,
+`auth.role()`, tabelas `storage.buckets` e `storage.objects` e as funções
+`foldername`, `filename` e `extension`, sem os quais a migration do Acontece
+falha ao registrar o bucket), replicou as 170 migrations uma por transação com
+`ON_ERROR_STOP=1`, confirmou que `withdraw_happens_post`,
+`list_visible_happens_posts` e a capacidade `happens.posts.remove` existem depois
+do replay, e rodou o teste.
 
-Classificação correta desses: foram produzidos **nesta sessão, sobre esta base,
+**Corroboração de método, que vale mais que o número:** o replay dele deu
+**93 aplicadas e 77 falhas**, idêntico ao do subagente, e **nenhuma migration do
+Acontece está entre as falhas** — a única do território de L01 que falhou é
+`20260901191921_superadmin_internal_circulars_v2.sql`, superfície administrativa
+de Circulares, fora da cadeia do Acontece. Caminho próprio, mesmo ambiente, mesmo
+resultado.
+
+**Executado por subagente e NÃO reexecutado por L01:** os demais números de pgTAP
+— 53/53, 16/16, 23/23, 46/46, 60/60 e 50/50 — mais o Deno 27/0 e os replays
+parciais de migrations (122 de 168 e 93 de 170).
+
+Classificação correta desses seis: foram produzidos **nesta sessão, sobre esta base,
 com relato item a item**, portanto **não** são resultado histórico não
 revalidado. Mas não foram exercidos pelo executor responsável, e **quem for
 certificar deve reexecutá-los no perfil nominal de replay** — que é exatamente o
