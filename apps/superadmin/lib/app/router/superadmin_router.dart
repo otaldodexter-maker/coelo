@@ -43,7 +43,10 @@ import '../../features/account/presentation/screens/profile_page.dart';
 import '../../features/principal_happens/presentation/principal_happens_preview_page.dart';
 import '../../features/principal_happens/domain/principal_happens_feed_repository.dart';
 import '../../features/principal_happens/domain/principal_happens_preview_data.dart';
+import '../../features/principal_for_you/data/principal_for_you_communications_adapter.dart';
+import '../../features/principal_for_you/domain/principal_for_you_preview_data.dart';
 import '../../features/principal_for_you/presentation/principal_for_you_preview_page.dart';
+import '../../features/principal_for_you/presentation/principal_for_you_route_page.dart';
 import '../../features/principal_happens_publication/domain/happens_publication.dart';
 import '../../features/principal_happens_publication/presentation/principal_happens_publication_page.dart';
 import '../../features/principal_moments/presentation/principal_moments_preview_page.dart';
@@ -55,6 +58,8 @@ import '../../features/principal_now/presentation/principal_now_preview_page.dar
 import '../../features/principal_now_publication/domain/now_publication.dart';
 import '../../features/principal_now_publication/presentation/principal_now_publication_page.dart';
 import '../../features/principal_profile/presentation/principal_profile_preview_page.dart';
+import '../../features/profile_about/domain/profile_about_repository.dart';
+import '../../features/principal_profile/presentation/principal_profile_route_page.dart';
 import '../../features/principal_shared/domain/principal_runtime_context.dart';
 import '../../features/principal_shared/presentation/principal_runtime_context_route.dart';
 import '../../features/account/presentation/screens/settings_page.dart';
@@ -275,6 +280,7 @@ GoRouter createSuperadminRouter({
   SuperadminMediaScope? formsMediaScope,
   PrincipalRuntimeContextRepository principalRuntimeContextRepository =
       const UnavailablePrincipalRuntimeContextRepository(),
+  ProfileAboutRepository? profileAboutRepository,
   PrincipalHappensFeedRepository? principalHappensFeedRepository,
   PrincipalMixedFeedRepository? principalMixedFeedRepository,
   HappensPublicationRepository? happensPublicationRepository,
@@ -828,7 +834,32 @@ GoRouter createSuperadminRouter({
         name: SuperadminRoutes.principalForYouName,
         builder: (context, state) => PrincipalRuntimeContextRoute(
           repository: principalRuntimeContextRepository,
-          builder: (context, _) => _unavailableCompositionRootRoute(context),
+          builder: (context, runtimeContext) {
+            if (noticeRepository is UnavailableNoticeRepository) {
+              return _unavailableCompositionRootRoute(context);
+            }
+            return PrincipalForYouRoutePage(
+              repository: noticeRepository,
+              audienceScope: PrincipalForYouAudienceScope.fromRuntimeContext(runtimeContext),
+              supportingData: PrincipalForYouPreviewData.contextual(
+                id: runtimeContext.membershipId,
+                label: runtimeContext.groupName ?? runtimeContext.unitName ?? runtimeContext.institutionName,
+                family: runtimeContext.institutionName,
+                institution: runtimeContext.institutionName,
+                unit: runtimeContext.unitName,
+                group: runtimeContext.groupName,
+              ),
+              onOpenHappens: () => context.goNamed(SuperadminRoutes.principalHappensName),
+              onOpenNow: () => context.pushNamed(SuperadminRoutes.principalNowName),
+              onOpenMoments: () => context.pushNamed(SuperadminRoutes.principalMomentsName),
+              onOpenAgenda: () => context.goNamed(SuperadminRoutes.agendaName),
+              onOpenProfile: () => context.goNamed(SuperadminRoutes.principalProfileName),
+              onOpenMessages: () => context.goNamed(
+                SuperadminRoutes.conversationsName,
+                queryParameters: const {'from': 'principal'},
+              ),
+            );
+          },
         ),
       ),
       GoRoute(
@@ -844,7 +875,30 @@ GoRouter createSuperadminRouter({
         name: SuperadminRoutes.principalProfileName,
         builder: (context, state) => PrincipalRuntimeContextRoute(
           repository: principalRuntimeContextRepository,
-          builder: (context, _) => _unavailableCompositionRootRoute(context),
+          builder: (context, runtimeContext) => PrincipalProfileRoutePage(
+            runtimeContext: runtimeContext,
+            circularRepository: circularRepository is UnavailableSuperadminCircularRepository
+                ? null
+                : circularRepository,
+            aboutRepository: profileAboutRepository,
+            onOpenCircular: (circularId) => context.goNamed(
+              SuperadminRoutes.circularDetailName,
+              pathParameters: {'circularId': circularId},
+            ),
+            onOpenAgenda: () => context.goNamed(SuperadminRoutes.agendaName),
+            onOpenHome: () => context.goNamed(SuperadminRoutes.principalHappensName),
+            onOpenForYou: () => context.goNamed(SuperadminRoutes.principalForYouName),
+            onOpenMoments: () => context.pushNamed(SuperadminRoutes.principalMomentsName),
+            onPublishNow: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
+            onMessage: () => context.goNamed(
+              SuperadminRoutes.conversationsName,
+              queryParameters: const {'from': 'principal'},
+            ),
+            onOpenMessages: () => context.goNamed(
+              SuperadminRoutes.conversationsName,
+              queryParameters: const {'from': 'principal'},
+            ),
+          ),
         ),
       ),
       GoRoute(

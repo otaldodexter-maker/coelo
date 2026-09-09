@@ -59,6 +59,7 @@ import '../features/health_care/domain/medication_plan_repository.dart';
 import '../features/forms/data/forms_directory_reader.dart';
 import 'router/superadmin_router.dart';
 import 'theme/superadmin_theme_mode_scope.dart';
+import '../features/profile_about/domain/profile_about_repository.dart';
 
 const _instantPageTransitions = PageTransitionsTheme(
   builders: {
@@ -139,6 +140,7 @@ class SuperadminApp extends StatefulWidget {
     this.childSafetyRepository = const UnavailableChildSafetyRepository(),
     this.medicationPlanRepository = const UnavailableMedicationPlanRepository(),
     this.principalRuntimeContextRepository,
+    this.profileAboutRepository,
     this.principalHappensFeedRepository,
     this.principalMixedFeedRepository,
     this.happensPublicationRepository,
@@ -193,6 +195,7 @@ class SuperadminApp extends StatefulWidget {
   final ChildSafetyRepository childSafetyRepository;
   final MedicationPlanRepository medicationPlanRepository;
   final PrincipalRuntimeContextRepository? principalRuntimeContextRepository;
+  final ProfileAboutRepository? profileAboutRepository;
   final PrincipalHappensFeedRepository? principalHappensFeedRepository;
   final PrincipalMixedFeedRepository? principalMixedFeedRepository;
   final HappensPublicationRepository? happensPublicationRepository;
@@ -273,6 +276,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       principalRuntimeContextRepository:
           widget.principalRuntimeContextRepository ??
           const UnavailablePrincipalRuntimeContextRepository(),
+      profileAboutRepository: widget.profileAboutRepository,
       principalHappensFeedRepository: widget.principalHappensFeedRepository,
       principalMixedFeedRepository: widget.principalMixedFeedRepository,
       happensPublicationRepository: widget.happensPublicationRepository,

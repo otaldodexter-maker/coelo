@@ -45,6 +45,8 @@ import '../../features/principal_now/domain/principal_now_feed_repository.dart';
 import '../../features/principal_now_publication/data/supabase_now_publication_repository.dart';
 import '../../features/principal_now_publication/domain/now_publication.dart';
 import '../../features/principal_shared/data/supabase_principal_runtime_context_repository.dart';
+import '../../features/profile_about/data/supabase_profile_about_repository.dart';
+import '../../features/profile_about/domain/profile_about_repository.dart';
 import '../../features/principal_shared/domain/principal_runtime_context.dart';
 import '../../features/auth/domain/login_request.dart';
 import '../../features/auth/domain/logout_action.dart';
@@ -150,6 +152,7 @@ final class SuperadminAuthScope {
     this.formsMediaReader,
     this.formsMediaScope,
     this.principalRuntimeContextRepository,
+    this.profileAboutRepository,
     this.principalHappensFeedRepository,
     this.principalMixedFeedRepository,
     this.happensPublicationRepository,
@@ -201,6 +204,7 @@ final class SuperadminAuthScope {
   final MediaReader? formsMediaReader;
   final SuperadminMediaScope? formsMediaScope;
   final PrincipalRuntimeContextRepository? principalRuntimeContextRepository;
+  final ProfileAboutRepository? profileAboutRepository;
   final PrincipalHappensFeedRepository? principalHappensFeedRepository;
   final PrincipalMixedFeedRepository? principalMixedFeedRepository;
   final HappensPublicationRepository? happensPublicationRepository;
@@ -363,6 +367,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       formsMediaReader: FormsMediaReader(gateway: formsBackend),
       formsMediaScope: formsMediaScope,
       principalRuntimeContextRepository: SupabasePrincipalRuntimeContextRepository(client),
+      profileAboutRepository: SupabaseProfileAboutRepository(client),
       principalHappensFeedRepository: SupabasePrincipalHappensFeedRepository(client),
       principalMixedFeedRepository: SupabasePrincipalMixedFeedRepository(client),
       happensPublicationRepository: SupabaseHappensPublicationRepository(client),
@@ -431,6 +436,7 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthLifecycleGateway auth) {
     mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
     formsApi: null,
     principalRuntimeContextRepository: null,
+    profileAboutRepository: null,
     principalHappensFeedRepository: null,
     principalMixedFeedRepository: null,
     happensPublicationRepository: null,
