@@ -1,0 +1,81 @@
+{
+  "source": "Approved catalog selection contract 2026-09-07; nominal Activity SQL candidate20260909200000; local tool evidence",
+  "status": "local-green-gate-closed-pending-integration",
+  "recorded_at": "2026-09-09T20:19:49.899759-03:00",
+  "base": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+  "prior_head": "106a1076538a48e02166c9d446c6d294eeeade5d",
+  "scope": "apps/superadmin -> Atividades -> Criar -> Estrutura/local -> activities.location",
+  "environment": "Flutter widget/router tests with fake directory and HTTP MockClient. No production calls.",
+  "test": {
+    "command": "rtk proxy flutter test --no-pub --concurrency 1 test/features/activities/presentation/activity_catalogued_location_section_test.dart test/features/activities/presentation/activity_form_page_test.dart test/features/activities/presentation/activity_pedagogical_configuration_draft_test.dart test/features/activities/presentation/activity_location_create_route_test.dart --reporter json",
+    "session_id": 95702,
+    "completion_chunk": "0526e4",
+    "exit_code": 0,
+    "N": 44,
+    "E": 44,
+    "P": 44,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "by_file": {
+      "activity_catalogued_location_section_test.dart": 12,
+      "activity_form_page_test.dart": 20,
+      "activity_pedagogical_configuration_draft_test.dart": 10,
+      "activity_location_create_route_test.dart": 2
+    },
+    "dedup": "18 new cases (12 field,1 form slot,3 pedagogical,2 normal route),26 existing cases. Prior focused runs reused; never add reruns.",
+    "raw_evidence": "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-catalog-ui-tests.jsonl",
+    "raw_sha256": "1fe3af94f56cf3e09e51e4d6a3e4b703116f1cdc7f70676ebbcdb3a9e7281044"
+  },
+  "analyzer": {
+    "paths": 9,
+    "session_id": 62324,
+    "completion_chunk": "99509a",
+    "result": "No issues found",
+    "exit_code": 0
+  },
+  "visual_static_gate": {
+    "session_id": 16655,
+    "completion_chunk": "2daa31",
+    "exit_code": 0,
+    "command": "rtk proxy dart run tool/validate_admin_visual_contracts.dart C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura assets/admin-visual-contract-allowlist.json",
+    "cwd": "apps/catalog"
+  },
+  "changes": [
+    "Catalog-only field with explicit institution/unit owner, typed snapshot, generation invalidation and unavailable gate with zero reads. No reservation is implied by selection.",
+    "Optional real-form slot preserves legacy preview default; typed location prevents unsupported publish.",
+    "Minimal router proposal forwards typed selection/intent and requires all existing aggregate capabilities. enableActivityLocationCreate=false by default; main remains unchanged.",
+    "Normal form exposed default disabled pedagogical object incompatible with restricted adapter. Only canonical untouched empty configuration compacts to enabled:false; populated disabled and enabled objects remain complete and unsupported by this restricted command."
+  ],
+  "coverage": [
+    "Gate closed: zero catalog/RPC calls; enabled only in test: one atomic RPC with actual institution/unit and selected catalog ID.",
+    "Owner change, duplicate scope, stale callbacks, authorization revision/revocation,375/768/1024/1440 light/dark at200% text.",
+    "Existing form20 including new typed slot and full pedagogical10; no broad historical catalog/Clock/reservation rerun."
+  ],
+  "history": [
+    "Initial component/form RED compilation recorded in runner8057 and679dc7; field12P/session41096,form slot1P/session91623.",
+    "Route RED compile26214; fixtures initially leaked auth timer or disposed client inside fake async. Only owned runner trees41644 and37284 were terminated; clients moved outside testWidgets with autoRefreshToken:false and tearDownAll. No product Auth change.",
+    "Runner17068 missed inline dropdown hit target; ensureVisible+pump settled option. Runner10947 then reproduced zero HTTP due real expanded pedagogical payload.",
+    "Pedagogical3 RED compile session89280/chunkd81590 before implementation. Runner31999 pedagogical10P plus1 nonexistent route-path load failure; correct route path rerun49847 produced2P/chunke17310 after boundary fix.",
+    "Final44P run is authoritative for these exact hashes."
+  ],
+  "limitations": [
+    "No SQL replay, no remote deploy, no production acceptance. Activity SQL33TAP still U with Claude.",
+    "No new golden approved; static visual gate and responsive widget assertions are not visual/E2E certification.",
+    "Activity edit, one-off, optional reservation editor, About, publish and pre-assessment remain outside restricted catalog create command.",
+    "Auth, CHILD and shell preserved. Central tracker state stays pending-verification; Claude applies shared router proposal."
+  ],
+  "sha256": {
+    "apps/superadmin/lib/features/activities/presentation/activity_catalogued_location_section.dart": "56c8e493331df9f095f125720f77c27c11ebcdefebdda9b494da21768cdb27c2",
+    "apps/superadmin/lib/features/activities/presentation/activity_form_page.dart": "9fdf1a31ebd34948c46a12490d1ba5a4d57d8e6af575db347fb73a82e1b16497",
+    "apps/superadmin/lib/features/activities/presentation/activity_form_sections.dart": "8c79804f2de505bdd5871bae907d971e895cbadd0e6209b2c019da4058d1bb68",
+    "apps/superadmin/lib/features/activities/presentation/activity_pedagogical_configuration_draft.dart": "aec44c5433351e6542f36ea6999e65fe943bef46994d9857fb23aeff889a0731",
+    "apps/superadmin/lib/app/router/superadmin_router.dart": "8dd1e09910c09e6b9e4a5241c09184c119b7529732735aa118a2e49553659e66",
+    "apps/superadmin/test/features/activities/presentation/activity_catalogued_location_section_test.dart": "a43e7251f98b17543eff6a7f2fd523330750daf98b86b7aaac913946abfc3ec7",
+    "apps/superadmin/test/features/activities/presentation/activity_form_page_test.dart": "a1423e20314a7561b351ce00625e0943a85f8b99c254393ca10ab0a729494203",
+    "apps/superadmin/test/features/activities/presentation/activity_pedagogical_configuration_draft_test.dart": "eb81ad385029b3b1a555324af495d76fa9abee408824a9db9cc1befb97ddc9ab",
+    "apps/superadmin/test/features/activities/presentation/activity_location_create_route_test.dart": "5f4cc673309c97c3c8be92472c7894eaf87b2309f7e66c424967bde8316aae16"
+  },
+  "memory": "No new product rule; approved catalog contract applied. No central knowledge mutation."
+}
