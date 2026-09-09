@@ -1837,8 +1837,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.formTest,
             name: SuperadminRoutes.formTestName,
-            builder: (context, state) =>
-                FormsTestPage(api: formsApi, formId: state.pathParameters['formId']),
+            builder: (context, state) => const FormsTestPage(),
           ),
           GoRoute(
             path: SuperadminRoutes.formMonitor,
