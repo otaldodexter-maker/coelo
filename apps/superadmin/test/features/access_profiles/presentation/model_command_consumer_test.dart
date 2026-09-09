@@ -91,8 +91,10 @@ void main() {
           if (operation == 'create' || operation == 'update') {
             await _checkDraft(tester, operation);
           } else if (operation == 'duplicate') {
-            expect(_fieldText(tester, 'Nome do novo modelo'), 'Cópia nominal');
-            expect(_fieldText(tester, 'Motivo da duplicação'), 'Motivo nominal');
+            expect(find.text('Cópia nominal'), findsNothing);
+            expect(find.text('Motivo nominal'), findsNothing);
+            expect(find.byKey(const Key('access-profile-duplicate-submit')), findsNothing);
+            expect(find.text('Acesso não autorizado'), findsOneWidget);
           }
         } else if (operation != 'delete') {
           expect(saved?.id, _id);

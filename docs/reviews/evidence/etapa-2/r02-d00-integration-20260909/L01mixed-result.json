@@ -1,0 +1,40 @@
+{
+  "baseAtReceipt": "803af52ad1846f003069914486e6f022fb8ce653",
+  "source": "L01 original principal_happens_composition_gaps_test.dart at3697dd49e; first defect test inverted; remaining3 preserved and unexecuted",
+  "scope": "READ mixed-feed injection only; no Circular reader, reply, withdrawal or full acontece.feed certificate",
+  "result": {
+    "P": 1,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 3
+  },
+  "uniqueTest": "READ: real route projects authorized Circular without administrative navigation",
+  "causalRed": "L01mixed-causal-red.jsonl: expected injected repository, actual null",
+  "intermediate": "L01mixed-red initial missing test after preparation failed; L01mixed-green compile blocked missing CircularScope import, corrected before final; preserve both, no product failures inflated",
+  "green": "L01mixed-green-final.jsonl: final done success true",
+  "files": {
+    "apps/superadmin/lib/app/router/superadmin_router.dart": "4340f5afcf1a079fc14dbb837f129b935d53b1cfb17e5160ba0b68409d5ac194",
+    "apps/superadmin/test/app/router/principal_happens_composition_gaps_test.dart": "1c3a70416f21d0913ad6ae66f7a784790666b2ddafaee0d3d9f70204fd33d0f3"
+  },
+  "limitations": [
+    "runtime backend not exercised",
+    "same-context authrevision triggers fresh context+feed load",
+    "Circular action snackbar unavailable and no administrative navigation",
+    "legacy server helper excludes statuses other than scheduled/published; no withdrawal successor imported",
+    "router also includes D00-owned Model changes already present, do not overwrite those"
+  ],
+  "tempPatch": "L01mixed-router.patch was a preparation artifact before missing import correction; root reviewed source is authoritative; do not apply stale patch",
+  "analyzer": "2 paths clean exit0",
+  "logs": {
+    "L01mixed-analyze.log": "c289a5a154062084dce146c3f408b5fb7e956f7180ca9c9295587ae7e46d9c12",
+    "L01mixed-causal-red.jsonl": "4a8ab3193e559456c644c3f3fcf2b072be9e0a343e5bacff25455c81dfa3c222",
+    "L01mixed-causal-red.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "L01mixed-green-final.jsonl": "ac1b8d1613958d28c83d94034785156f6f8105b3e1dd8d95edbfb0ebc0317d37",
+    "L01mixed-green-final.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "L01mixed-green.jsonl": "02042412b6a2aa273efb9f3f9c1655923eac63863cb7c978a95d9d5a91097ad7",
+    "L01mixed-green.stderr.log": "3b9307d152fc5480a63f5d4aea39ab403a799c184fbad58dd3cb1b0550ca988e",
+    "L01mixed-red.jsonl": "70bea537ff273212e94d7ce876f3a789ee0d3f0e84b99401e9cf12833b35d719",
+    "L01mixed-red.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

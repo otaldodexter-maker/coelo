@@ -1,0 +1,170 @@
+{
+  "generatedAt": "2026-09-09T16:37:35.567060-03:00",
+  "source": "Actual integrated Flutter JSON reporter",
+  "sourceRevision": "ef1927f2d navigation/test hunk; 1ac0a364a Model route hunks present",
+  "baseline": "Root4b2c5611 plus focused WIP hunks; shared router released for other coordinator work, no clean HEAD assertion",
+  "environment": "Windows local Flutter; real router and fake HTTP/repository test fixtures",
+  "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/nav-users-integrated-model-hunks.jsonl",
+  "sha256": "bd4de7f4d0a9107d90feff4a695a81bad406c5eaee45f7782c8db3110d357649",
+  "sessionId": 43209,
+  "exitCode": 0,
+  "P": 29,
+  "F": 0,
+  "B": 0,
+  "S": 0,
+  "U": 0,
+  "cases": [
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart",
+      "testName": "declares the requested top-level order and preview name",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart",
+      "testName": "guards attendance creation with an explicit capability",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart",
+      "testName": "omits every generic creation destination from the navigation tree",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart",
+      "testName": "mutation destinations fail closed without a capability resolver",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart",
+      "testName": "keeps the exact static hierarchy and excludes record-only destinations",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart",
+      "testName": "searches accents, case and retained actions with breadcrumbs",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart",
+      "testName": "inline search keeps structural results non-actionable",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart",
+      "testName": "exposes ancestors and filters development-only nodes",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart",
+      "testName": "places circulars under Coelo Principal rather than Communication",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart",
+      "testName": "exposes Coelo Principal in the production navigation",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart",
+      "testName": "applies an optional capability filter without becoming an authorization boundary",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart",
+      "testName": "navigable parents do not reveal generic creation actions",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart",
+      "testName": "restores the expansion state after clearing navigation search",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart",
+      "testName": "navigation items support keyboard activation and visible focus",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart",
+      "testName": "collapsed search renders breadcrumbs and navigates to a result",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart",
+      "testName": "collapsed search closes with Escape",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart",
+      "testName": "collapsed search keeps structural results in the dialog without closing",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/internal_user_routes_test.dart",
+      "testName": "normal directory enforces member.read=true before loading",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/internal_user_routes_test.dart",
+      "testName": "normal directory enforces member.read=false before loading",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/internal_user_routes_test.dart",
+      "testName": "normal directory rejects missing composition",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/internal_user_routes_test.dart",
+      "testName": "normal directory rejects demo composition",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart",
+      "testName": "detail route: allowed width=800.0",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart",
+      "testName": "detail route: capability-denied width=800.0",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart",
+      "testName": "detail route: server-denied width=800.0",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart",
+      "testName": "detail route: retry width=800.0",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart",
+      "testName": "detail route: allowed width=1440.0",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart",
+      "testName": "detail route: capability-denied width=1440.0",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart",
+      "testName": "detail route: server-denied width=1440.0",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart",
+      "testName": "detail route: retry width=1440.0",
+      "result": "success"
+    }
+  ],
+  "analyzer": {
+    "paths": 6,
+    "exitCode": 0,
+    "result": "No issues found",
+    "source": "model-nav-integrated-analyze.log"
+  },
+  "limit": "No whole FE/BE/E2E certification; global unique union must deduplicate these names"
+}

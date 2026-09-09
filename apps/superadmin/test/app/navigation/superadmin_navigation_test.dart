@@ -186,8 +186,8 @@ void main() {
       searchCoeloNavigation(
         'usuários internos',
         environment: CoeloNavigationEnvironment.production,
-      ),
-      isEmpty,
+      ).map((result) => result.node.id),
+      contains('internal-users'),
     );
   });
 

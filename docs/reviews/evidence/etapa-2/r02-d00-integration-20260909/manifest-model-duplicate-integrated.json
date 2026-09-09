@@ -1,0 +1,129 @@
+{
+  "source": "Actual integrated Flutter JSON reporter",
+  "generatedAt": "2026-09-09T16:40:51.657885-03:00",
+  "sourceRevisions": [
+    "ef1927f2d nav only",
+    "1ac0a364a Model router hunks",
+    "82f08af504864afbd2efc2a31a0fe3e2e51bb90a Model denied-state and successor tests"
+  ],
+  "baselineLimit": "Canonical root plus integrated focal hunks and concurrent coordinator work; no clean whole HEAD claim",
+  "environment": "Windows local Flutter; real router/adapter/page with synthetic HTTP",
+  "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/model-duplicate-integrated-82f08af50.jsonl",
+  "sha256": "5f9479cee91b53bb5ce8409e76dd76f477c13c638a7bd26c14ec564b4299d990",
+  "sessionId": 17922,
+  "exitCode": 0,
+  "P": 18,
+  "F": 0,
+  "B": 0,
+  "S": 0,
+  "U": 0,
+  "byFile": {
+    "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart": 9,
+    "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart": 9
+  },
+  "cases": [
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart",
+      "testName": "create SQL envelope reaches UI denied=false",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart",
+      "testName": "normal model duplicate route allowed",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart",
+      "testName": "normal model duplicate route missing-create",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart",
+      "testName": "normal model duplicate route institution-scope",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart",
+      "testName": "normal model duplicate route invalid-domain",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart",
+      "testName": "create SQL envelope reaches UI denied=true",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart",
+      "testName": "normal model duplicate route revoked-load",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart",
+      "testName": "normal model duplicate route revoked-command",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart",
+      "testName": "update SQL envelope reaches UI denied=false",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart",
+      "testName": "normal model duplicate route rpc-denied",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart",
+      "testName": "normal model duplicate route rpc-invalid",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart",
+      "testName": "normal model duplicate rejects missing and demo repositories",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart",
+      "testName": "update SQL envelope reaches UI denied=true",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart",
+      "testName": "duplicate SQL envelope reaches UI denied=false",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart",
+      "testName": "duplicate SQL envelope reaches UI denied=true",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart",
+      "testName": "delete SQL envelope reaches UI denied=false",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart",
+      "testName": "delete SQL envelope reaches UI denied=true",
+      "result": "success"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart",
+      "testName": "update envelope conflict offers reference reload without save callback",
+      "result": "success"
+    }
+  ],
+  "sourceHashes": {
+    "apps/superadmin/lib/features/access_profiles/presentation/access_profile_duplicate_page.dart": "ac5287b259bd120dd5b453d58ed4b9ae84d8cb05017c1de0befcf4e2e01667be",
+    "apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart": "2d7da52647d68c81ddf7109450858767c160b3f83255696eb8e95f256570983c",
+    "apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart": "3ddfdafefa22bcd7d3af76410bbabd4a6e06afc67b45cc6ce2d338c3444ab908"
+  },
+  "limit": "8 route cases plus10 existing consumer cases; replaces author4P4U and overlaps other author/consumer plans, do not add indiscriminately",
+  "analyzer": {
+    "paths": 3,
+    "exitCode": 0,
+    "result": "No issues found",
+    "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/model-duplicate-integrated-analyze.log",
+    "sha256": "fd760b10bdd8a9e14b552fe16972e7db40a24baac25302005304f8fb8342d23f"
+  }
+}

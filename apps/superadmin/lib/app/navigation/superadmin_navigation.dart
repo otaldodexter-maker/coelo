@@ -130,7 +130,6 @@ final coeloSuperadminNavigation = <CoeloNavigationNode>[
       'Usuários internos',
       Icons.badge_outlined,
       const [],
-      availability: _developmentOnly,
     ),
     _screen('profiles', 'Perfis e permissões', Icons.admin_panel_settings_outlined, const []),
   ]),

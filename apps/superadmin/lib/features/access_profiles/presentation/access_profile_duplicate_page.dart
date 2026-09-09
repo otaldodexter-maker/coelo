@@ -120,6 +120,18 @@ final class _AccessProfileDuplicatePageState extends State<AccessProfileDuplicat
       _requestId = null;
       _fingerprint = null;
       onDuplicated(duplicate);
+    } on AccessProfileUnauthorizedException catch (error) {
+      if (!_isCurrent(revision)) return;
+      setState(() {
+        _contextRevision++;
+        _source = null;
+        _error = error;
+        _name.clear();
+        _reason.clear();
+        _requestId = null;
+        _fingerprint = null;
+        _saving = false;
+      });
     } on AccessProfileException catch (error) {
       if (mounted && _isCurrent(revision)) {
         showSuperadminNotice(context, error.message, icon: Icons.error_outline_rounded);
@@ -147,8 +159,12 @@ final class _AccessProfileDuplicatePageState extends State<AccessProfileDuplicat
                     loading: true,
                   )
                 : CoeloStatePanel(
-                    title: 'Não foi possível abrir o modelo',
-                    message: 'Recarregue a lista e tente novamente.',
+                    title: _error is AccessProfileUnauthorizedException
+                        ? 'Acesso não autorizado'
+                        : 'Não foi possível abrir o modelo',
+                    message: _error is AccessProfileUnauthorizedException
+                        ? (_error! as AccessProfileUnauthorizedException).message
+                        : 'Recarregue a lista e tente novamente.',
                     icon: Icons.error_outline_rounded,
                     actionLabel: 'Voltar',
                     onAction: widget.onCancel,

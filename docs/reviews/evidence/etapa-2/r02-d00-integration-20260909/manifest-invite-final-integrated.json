@@ -1,0 +1,65 @@
+{
+  "source": "D04 ef1927f2d +444e03ccb focal root integration",
+  "status": "local-pass-no-production-certification",
+  "generated_at": "2026-09-09",
+  "session": 3509,
+  "exitCode": 0,
+  "P": 8,
+  "F": 0,
+  "B": 0,
+  "S": 0,
+  "U": 0,
+  "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/invite-final-integrated-444e03ccb.jsonl",
+  "sha256": "325bbd03051db068871660f9e1c220b900f967c287d317efacb3864f8e482aca",
+  "tests": [
+    {
+      "url": "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart",
+      "name": "authorization revision discards pending invite read on the same route",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "url": "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart",
+      "name": "authorization revision discards pending invite command on the same route",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "url": "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart",
+      "name": "authorization revision discards pending invite dialog on the same route",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "url": "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart",
+      "name": "normal invite detail commands: allowed",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "url": "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart",
+      "name": "normal invite detail commands: read-denied",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "url": "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart",
+      "name": "normal invite detail commands: command-denied",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "url": "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart",
+      "name": "normal invite detail commands: unavailable",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "url": "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart",
+      "name": "normal invite detail commands: signed-out",
+      "result": "success",
+      "skipped": false
+    }
+  ],
+  "limits": "Real router and repository with synthetic HTTP; normal context and authorization revision invalidate pending read/command/dialog; SMTP and production remain unverified."
+}
