@@ -10,6 +10,8 @@ import 'package:coelo_superadmin/features/errors/presentation/screens/superadmin
 import 'package:coelo_superadmin/features/notices/domain/notice_repository.dart';
 import 'package:coelo_superadmin/features/notices/domain/platform_notice.dart';
 import 'package:coelo_superadmin/features/principal_circulars/domain/circular.dart';
+import 'package:coelo_superadmin/features/principal_happens/domain/principal_happens_feed_repository.dart';
+import 'package:coelo_superadmin/features/principal_happens/domain/principal_happens_preview_data.dart';
 import 'package:coelo_superadmin/features/principal_circulars/domain/circular_repository.dart';
 import 'package:coelo_superadmin/features/principal_for_you/presentation/principal_for_you_preview_page.dart';
 import 'package:coelo_superadmin/features/principal_for_you/presentation/principal_for_you_route_page.dart';
@@ -32,6 +34,7 @@ void main() {
     ProfileAboutRepository? aboutRepository,
     FakeNoticeRepository? noticeRepository,
     CircularRepository? principalCircularRepository,
+    PrincipalHappensFeedRepository? happensFeedRepository,
     Size surface = const Size(1440, 1000),
   }) async {
     await tester.binding.setSurfaceSize(surface);
@@ -46,6 +49,7 @@ void main() {
       principalRuntimeContextRepository: runtimeContextRepository,
       profileAboutRepository: aboutRepository,
       principalCircularRepository: principalCircularRepository,
+      principalHappensFeedRepository: happensFeedRepository,
       noticeRepository: noticeRepository ?? const UnavailableNoticeRepository(),
       onThemeModeChanged: (_) {},
     );
@@ -99,6 +103,25 @@ void main() {
 
     expect(principal.scopes, isNotEmpty);
     expect(principal.scopes.first.institutionId, 'institution-real');
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('real /principal-profile scopes Acontece to the resolved context', (tester) async {
+    // Same guard as Circulares: the authorized projection must receive the
+    // context the server resolved, never an inherited or default scope.
+    final happens = _RecordingHappensRepository();
+    await pumpProductionRoute(
+      tester,
+      SuperadminRoutes.principalProfile,
+      aboutRepository: _EmptyAboutRepository(),
+      happensFeedRepository: happens,
+    );
+    await tester.pumpAndSettle();
+
+    expect(happens.scopes, isNotEmpty);
+    expect(happens.scopes.first.institutionId, 'institution-real');
+    expect(happens.scopes.first.unitId, 'unit-real');
+    expect(happens.scopes.first.groupId, 'group-real');
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
@@ -369,4 +392,20 @@ final class _RecordingCircularRepository implements CircularRepository {
 
   Future<T> _unused<T>() =>
       Future<T>.error(StateError('the Perfil projection only reads listProfile'));
+}
+
+final class _RecordingHappensRepository implements PrincipalHappensFeedRepository {
+  final List<PrincipalHappensFeedScope> scopes = [];
+
+  @override
+  Future<List<PrincipalPostPreviewItem>> listVisiblePosts(
+    PrincipalHappensFeedScope scope,
+  ) async {
+    scopes.add(scope);
+    return const [];
+  }
+
+  @override
+  Future<PrincipalHappensMediaRead> resolveMedia(PrincipalHappensMediaDescriptor media) =>
+      Future.error(StateError('the scope guard never resolves media'));
 }
