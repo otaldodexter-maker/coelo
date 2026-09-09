@@ -1,0 +1,15 @@
+{
+  "before_sha256": "af8e8d4509d68c2e77430ddb1eef995562801622da08c4b67880716e358ec6ff",
+  "after_sha256": "25ff4c716477fcb6e00237ba25ccdd261535a261b4ac0835adf7b191212c7e86",
+  "changed_pixels": 275048,
+  "hover_translation_y": 64,
+  "hover_crop_identical": true,
+  "causes": {
+    "320a6f09f": true,
+    "633a88ba5": true,
+    "7f918d72a": true,
+    "ad558c6f9": true,
+    "a0be1abeb": true,
+    "6c2d03450": true
+  }
+}
