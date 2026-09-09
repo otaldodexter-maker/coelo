@@ -1,9 +1,9 @@
 ---
 title: "Circulares privadas e versionadas no Principal"
-source: "PRDs App, Auth Multi-tenant, Permissões, LGPD/Segurança/Mídia e Modelo de Dados; referência visual aprovada em 2026-08-21"
+source: "decisions/0032-mvp-private-media-r2.md; PRDs App, Auth Multi-tenant, Permissões, LGPD/Segurança/Mídia e Modelo de Dados; referência visual aprovada em 2026-08-21"
 status: approved
 generated_at: "2026-08-21"
-updated_at: "2026-08-31"
+updated_at: "2026-09-09"
 ---
 
 # Circulares privadas e versionadas no Principal
@@ -61,17 +61,25 @@ do cliente. RPCs e projeções não revelam existência fora do escopo autorizad
 
 ## Mídia privada
 
-Por decisão explícita do Owner em 2026-08-21, Circulares usa o bucket privado
-Supabase `coelo-circulars-private` conforme ADR 0027. A exceção é exclusiva de
-Circulares e não altera Acontece, Agora ou Momentos.
+Circulares usa a plataforma de mídia privada comum do MVP: R2 privado conforme
+ADR 0032. Imagem e vídeo ficam em `coelo-media-prod` e PDF em
+`coelo-documents-prod`, com chave opaca versionada por escopo, domínio,
+entidade, finalidade, ativo e rendição. PDF nunca usa Cloudflare Stream.
+
+A exceção de bucket privado Supabase `coelo-circulars-private`, decidida em
+2026-08-21 pela ADR 0027, está superada desde 2026-09-03: Circulares deixou de
+ter provedor de mídia próprio. Ativos já gravados no bucket antigo permanecem
+legíveis pelo caminho legado enquanto existirem; binarios novos vão para o R2
+privado. Nenhuma credencial de R2 ou `service_role` entra no cliente.
 
 Upload e leitura passam por Edge Function autenticada: intenção autorizada,
 caminho opaco gerado no servidor, upload assinado, validação de extensão, MIME,
 assinatura real, tamanho e checksum, finalização idempotente e URL de leitura de
-120 segundos. O token nativo de upload assinado do Supabase expira em duas
-horas; a UI não o persiste, o objeto usa chave opaca exclusiva e a finalização
-server-side usa ticket adicional de dois minutos. Metadados, ownership, estado
-e auditoria ficam no Postgres.
+120 segundos. O token de upload assinado tem vida curta e a UI não o persiste;
+o objeto usa chave opaca exclusiva e a finalização
+server-side usa ticket adicional curto. Metadados, ownership, estado, retencao
+e auditoria ficam no Postgres, que continua sendo o catalogo autoritativo dos
+ativos, variantes, usos e entregas.
 
 ## UX e estados
 
