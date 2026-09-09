@@ -3,6 +3,28 @@ begin;
 set local search_path = extensions, public, pg_catalog;
 select extensions.no_plan();
 
+-- D03 complement: effective post-DDL grants and function metadata.
+select extensions.ok(not pg_catalog.has_function_privilege('anon',
+ 'public.superadmin_child_context_directory_v2(uuid,text,uuid,integer)','EXECUTE'),
+ 'anonymous role cannot execute the child gateway');
+select extensions.ok(pg_catalog.has_function_privilege('authenticated',
+ 'public.superadmin_child_context_directory_v2(uuid,text,uuid,integer)','EXECUTE'),
+ 'authenticated role can request server-authorized child reads');
+select extensions.ok(not pg_catalog.has_function_privilege('service_role',
+ 'public.superadmin_child_context_directory_v2(uuid,text,uuid,integer)','EXECUTE'),
+ 'service role has no direct child gateway execute grant');
+select extensions.ok((select p.prokind='f' and p.prosecdef and p.provolatile='v' and
+ not p.proretset and p.prorettype='jsonb'::regtype and
+ p.prolang=(select oid from pg_catalog.pg_language where lanname='plpgsql') and
+ pg_catalog.pg_get_userbyid(p.proowner)='postgres' and
+ p.proconfig=array['search_path=""']::text[] and not exists(
+  select 1 from pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) a
+  where a.grantee not in(p.proowner,(select oid from pg_catalog.pg_roles where rolname='authenticated'))
+   or a.privilege_type<>'EXECUTE' or (a.grantee<>p.proowner and a.is_grantable))
+ from pg_catalog.pg_proc p where p.oid=pg_catalog.to_regprocedure(
+ 'public.superadmin_child_context_directory_v2(uuid,text,uuid,integer)')),
+ 'child gateway preserves reviewed metadata and has no extra grantee');
+
 insert into public.institution_types(id,code,name,status) values
  ('a1000000-0000-4000-8000-000000000001','child-read-fixture','Child read fixture','active');
 insert into public.institutions(id,public_name,slug,status,institution_type_id) values
@@ -161,6 +183,53 @@ reset role;
 select extensions.is((select body#>>'{error,code}' from child_results where seq=24),'SAI_PERMISSION_DENIED','deleted institution cannot be selected');
 select extensions.is((select jsonb_array_length(body#>'{data,items}') from child_results where seq=25),3,'deleted institution excluded from platform page');
 update public.institutions set deleted_at=null where id='a1100000-0000-4000-8000-000000000002';
+
+-- Isolated fixture variants are restored before audit and revocation cases.
+update public.people set person_type='adult' where id='a1200000-0000-4000-8000-000000000003';
+set local role authenticated;
+insert into child_results values(27,public.superadmin_child_context_directory_v2());
+reset role;
+select extensions.ok((select body->>'ok'='true' and jsonb_array_length(body#>'{data,items}')=3
+ and not exists(select 1 from jsonb_array_elements(body#>'{data,items}') item
+  where item->>'person_id'='a1200000-0000-4000-8000-000000000003') from child_results where seq=27),
+ 'adult person is excluded even with an active child context');
+update public.people set person_type='service' where id='a1200000-0000-4000-8000-000000000003';
+set local role authenticated;
+insert into child_results values(28,public.superadmin_child_context_directory_v2());
+reset role;
+select extensions.ok((select body->>'ok'='true' and jsonb_array_length(body#>'{data,items}')=3
+ and not exists(select 1 from jsonb_array_elements(body#>'{data,items}') item
+  where item->>'person_id'='a1200000-0000-4000-8000-000000000003') from child_results where seq=28),
+ 'service person is excluded even with an active child context');
+update public.people set person_type='child',display_name='Álvaro'
+ where id='a1200000-0000-4000-8000-000000000003';
+set local role authenticated;
+insert into child_results values(29,public.superadmin_child_context_directory_v2(null,null,null,3));
+insert into child_results select 30,public.superadmin_child_context_directory_v2(null,
+ body#>>'{data,next_cursor,name}',(body#>>'{data,next_cursor,context_id}')::uuid,3)
+ from child_results where seq=29;
+reset role;
+select extensions.is((select body#>>'{data,next_cursor,name}' from child_results where seq=29),
+ 'alfa','accented names retain C-order after the complete case-folded tie');
+select extensions.is((select body#>>'{data,items,0,person_name}' from child_results where seq=30),
+ 'Álvaro','accented name survives keyset pagination without accent folding');
+update public.people set display_name='Synthetic'||chr(1)||'invalid'
+ where id='a1200000-0000-4000-8000-000000000003';
+set local role authenticated;
+insert into child_results values(31,public.superadmin_child_context_directory_v2());
+reset role;
+select extensions.ok((select body#>>'{error,code}'='SAI_INTERNAL_ERROR' and body->'data'='null'::jsonb
+ from child_results where seq=31),'C0 in person output fails closed without partial data');
+update public.people set display_name='Zulu' where id='a1200000-0000-4000-8000-000000000003';
+update public.institutions set public_name='Synthetic'||chr(127)||'invalid'
+ where id='a1100000-0000-4000-8000-000000000001';
+set local role authenticated;
+insert into child_results values(32,public.superadmin_child_context_directory_v2());
+reset role;
+select extensions.ok((select body#>>'{error,code}'='SAI_INTERNAL_ERROR' and body->'data'='null'::jsonb
+ from child_results where seq=32),'DEL in institution output fails closed without partial data');
+update public.institutions set public_name='Child fixture A'
+ where id='a1100000-0000-4000-8000-000000000001';
 
 -- Fault injected only in this rollback-contained local fixture, never a deployed helper.
 create function pg_temp.fail_child_audit() returns trigger language plpgsql as $$

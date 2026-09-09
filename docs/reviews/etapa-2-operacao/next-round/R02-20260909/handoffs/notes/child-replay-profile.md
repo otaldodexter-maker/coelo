@@ -55,5 +55,20 @@ D00 e liberação da janela local após D02. Nenhum replay nominal CHILD, deploy
 ou alteração de helper remoto foi realizado. Metadados e consumidores remotos
 consultados somente leitura constam em backend-gates.md.
 
+Complemento focal do TAP preparado após o perfil: dez assertivas novas,
+total planejado45. Quatro de ACL efetiva/metadados (inclui ausência de grant
+option a authenticated), duas de exclusão adult/service, duas de paginação
+com acentos em C-order e duas de saída inválida C0/DEL sem dados parciais.
+Fixtures restauradas antes dos casos de auditoria/revogação. Revisão
+independente confirmou enums/constraints/contagens/restauros; a lacuna de
+grant option/prokind/linguagem/retorno apontada foi corrigida no teste.
+Gate estático15 revalidado após o complemento, PASS; não somar à execução
+anterior. Nenhuma assertiva SQL das45 foi executada ainda, nem concorrência.
+
+Corrigenda da causa Foundation recebida de D00 r7: audit14 estava presente;
+a dependência ausente era chat_attachment_metadata, pois20260812000000 não
+integra o manifesto. A falha anterior era mensagem genérica, não prova de
+ausência de audit14. O perfil falho não será repetido.
+
 Conclusão FE/BE/E2E students.list permanece0/1 em cada camada. Memória de
 produto: no-op; este documento preserva evidência operacional da rodada.
