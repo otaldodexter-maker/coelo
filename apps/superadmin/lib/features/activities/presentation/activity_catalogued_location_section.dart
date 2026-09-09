@@ -133,7 +133,12 @@ class _ActivityCataloguedLocationSectionState extends State<ActivityCataloguedLo
               ? selection
               : null,
           onChanged: (value) {
-            if (!mounted || generation != _generation || !_allowed) return;
+            if (!mounted ||
+                generation != _generation ||
+                !_allowed ||
+                !widget.scopes.any((owner) => sameLocationScope(owner.scope, scope))) {
+              return;
+            }
             if (value != null &&
                 (value is! CataloguedLocationSelection ||
                     !sameLocationScope(value.snapshot.scope, scope))) {
