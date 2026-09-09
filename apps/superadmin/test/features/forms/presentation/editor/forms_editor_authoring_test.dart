@@ -26,6 +26,52 @@ void main() {
     (widget) => widget is TextFormField && widget.controller?.text == value,
   );
 
+  for (final automatic in [false, true]) {
+    for (final explicitLimits in [false, true]) {
+      testWidgets(
+        'gallery image limits explicit=$explicitLimits survive ${automatic ? 'autosave' : 'manual save'}',
+        (tester) async {
+          final api = _Api(manage: true);
+          final wire = FormDefinitionDto.fromDomain(
+            (await api.getEditor('form-a')).definition,
+          ).toJson();
+          final section = (wire['sections'] as List).single as Map<String, Object?>;
+          final item = (section['items'] as List).first as Map<String, Object?>;
+          final config = <String, Object?>{
+            'allow_existing': true,
+            if (explicitLimits) 'min_images': 2,
+            if (explicitLimits) 'max_images': 5,
+          };
+          section['items'] = [
+            {...item, 'kind': 'gallery', 'config': config},
+          ];
+          api.customItems = FormDefinitionDto.fromJson(wire).toDomain().sections.single.items;
+          await open(tester, api);
+          expect(api.commands, isEmpty);
+          await tester.enterText(title('Authorized title'), 'Changed gallery title');
+          if (automatic) {
+            await tester.pump(const Duration(milliseconds: 800));
+          } else {
+            final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+            await tester.ensureVisible(save);
+            await tester.tap(save);
+          }
+          await tester.pumpAndSettle();
+          expect(api.commands, hasLength(1));
+          final command = api.commands.single;
+          expect(command.payload.title, 'Changed gallery title');
+          expect(command.expectedVersion, 1);
+          final saved = FormDefinitionDto.fromDomain(command.payload).toJson();
+          final savedSection = (saved['sections'] as List).single as Map<String, Object?>;
+          final savedItem = (savedSection['items'] as List).single as Map<String, Object?>;
+          expect(savedItem['kind'], 'gallery');
+          expect(savedItem['config'], config);
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
+
   testWidgets('yes-no false branch autosave keeps selected booleans per child', (tester) async {
     final api = _Api(manage: true)
       ..customItems = [

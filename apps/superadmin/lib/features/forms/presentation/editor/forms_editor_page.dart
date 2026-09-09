@@ -1494,6 +1494,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       scaleMaxLabel: question.loadedConfig.scaleMaxLabel,
       allowCamera: question.loadedConfig.allowCamera,
       allowExisting: question.loadedConfig.allowExisting,
+      minImages: question.loadedConfig.minImages,
       maxImages: question.loadedConfig.maxImages,
       minValue: num.tryParse(question.minimum.text.trim().replaceAll(',', '.')),
       maxValue: num.tryParse(question.maximum.text.trim().replaceAll(',', '.')),
