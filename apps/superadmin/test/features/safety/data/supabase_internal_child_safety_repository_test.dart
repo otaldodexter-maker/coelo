@@ -153,6 +153,53 @@ void main() {
     expect(child.childName, 'Synthetic child');
   });
 
+  test('missing authorizations cannot imply an empty safety record', () async {
+    response = _success({..._child}..remove('authorizations'));
+    await expectLater(
+      repository.fetchChild('child-1'),
+      throwsA(isA<ChildSafetyUnavailableException>()),
+    );
+  });
+
+  test('nominal authorizations retain identity and visible names', () async {
+    response = _success({
+      ..._child,
+      'authorizations': [
+        {
+          'id': 'authorization-1',
+          'child_context_id': 'context-1',
+          'unit_id': 'unit-1',
+          'name': 'Synthetic adult',
+          'relationship_code': 'other',
+          'decision_status': 'approved',
+          'lifecycle_status': 'active',
+          'capability_codes': ['pickup'],
+          'version': 1,
+        },
+      ],
+    });
+    final child = await repository.fetchChild('child-1');
+    expect(child!.authorizations.single.id, 'authorization-1');
+    expect(child.authorizations.single.name, 'Synthetic adult');
+    expect(child.authorizations.single.unitName, 'Synthetic unit');
+  });
+
+  for (final value in <Object?>[
+    null,
+    {},
+    [null],
+    ['invalid'],
+    [<String, Object?>{}],
+  ]) {
+    test('malformed authorizations ${jsonEncode(value)} fail closed', () async {
+      response = _success({..._child, 'authorizations': value});
+      await expectLater(
+        repository.fetchChild('child-1'),
+        throwsA(isA<ChildSafetyUnavailableException>()),
+      );
+    });
+  }
+
   test('child search uses v2 and preserves limit and selected context', () async {
     response = _success([
       {
@@ -334,6 +381,7 @@ const _child = {
   'child_id': 'child-1',
   'child_name': 'Synthetic child',
   'contexts': [_context],
+  'authorizations': <Object?>[],
 };
 const _directory = {
   'items': [
