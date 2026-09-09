@@ -14,6 +14,7 @@ final class PrincipalCircularDetailPage extends StatefulWidget {
     required this.responseRepository,
     this.childContextId,
     this.onReturn,
+    this.embedded = false,
     super.key,
   });
 
@@ -22,6 +23,12 @@ final class PrincipalCircularDetailPage extends StatefulWidget {
   final CircularRepository repository;
   final CircularResponseRepository responseRepository;
   final VoidCallback? onReturn;
+
+  /// Marks the reading surface as hosted inside the Superadmin shell content
+  /// area. The host keeps its own shell/menu visible (Owner decision of
+  /// 2026-09-09) and already consumed the system insets, so the compact
+  /// reading state stops behaving as if it owned the whole window.
+  final bool embedded;
 
   @override
   State<PrincipalCircularDetailPage> createState() => _PrincipalCircularDetailPageState();
@@ -145,6 +152,10 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
                   ),
             body: compact
                 ? SafeArea(
+                    top: !widget.embedded,
+                    bottom: !widget.embedded,
+                    left: !widget.embedded,
+                    right: !widget.embedded,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -221,6 +232,7 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
       detail: _detail!,
       initialAnswers: _detail!.initialAnswers,
       onSubmit: _submit,
+      embedded: widget.embedded,
     );
   }
 }

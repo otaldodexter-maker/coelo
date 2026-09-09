@@ -18,6 +18,7 @@ final class PrincipalNowPreviewPage extends StatefulWidget {
     this.feedRepository,
     this.feedScope,
     this.refreshSignal,
+    this.embedded = false,
     this.data = PrincipalNowPreviewData.demo,
     super.key,
   });
@@ -31,6 +32,7 @@ final class PrincipalNowPreviewPage extends StatefulWidget {
     this.onReply,
     this.onShare,
     this.refreshSignal,
+    this.embedded = false,
     super.key,
   }) : assert(feedRepository != null),
        assert(feedScope != null),
@@ -44,6 +46,13 @@ final class PrincipalNowPreviewPage extends StatefulWidget {
   final PrincipalNowFeedRepository? feedRepository;
   final PrincipalNowFeedScope? feedScope;
   final PrincipalNowFeedRefreshSignal? refreshSignal;
+
+  /// Marks the viewer as hosted inside the Superadmin shell content area.
+  ///
+  /// The host keeps its own shell/menu visible (Owner decision of 2026-09-09),
+  /// so the viewer must not re-apply the system insets the host already
+  /// consumed. The immersive composition itself is unchanged.
+  final bool embedded;
   final PrincipalNowPreviewData data;
 
   @override
@@ -492,8 +501,8 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
                     backgroundColor: CoeloPalette.neutral950,
                     body: compact
                         ? _buildCompact(context, compact: true)
-                        : SafeArea(
-                            child: desktop
+                        : _hostSafeArea(
+                            desktop
                                 ? _buildDesktop(context)
                                 : _buildCompact(context, compact: false),
                           ),
@@ -504,14 +513,20 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
     );
   }
 
+  /// Applies the viewer's own system insets only when it owns the window.
+  ///
+  /// Hosted in the Superadmin shell the insets already belong to the host
+  /// chrome, so re-applying them would push the immersive composition down.
+  Widget _hostSafeArea(Widget child) => widget.embedded ? child : SafeArea(child: child);
+
   Widget _buildFeedState(BuildContext context) {
     final invalid = _feedConfigurationInvalid;
     final unauthorized = _feedFailure is PrincipalNowFeedUnauthorized;
     final empty = !_feedLoading && _feedFailure == null;
     return Scaffold(
       backgroundColor: CoeloPalette.neutral950,
-      body: SafeArea(
-        child: Stack(
+      body: _hostSafeArea(
+        Stack(
           children: [
             Center(
               child: ConstrainedBox(

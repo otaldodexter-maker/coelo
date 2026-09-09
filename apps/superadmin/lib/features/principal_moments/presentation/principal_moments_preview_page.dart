@@ -29,6 +29,11 @@ final class PrincipalMomentsPreviewPage extends StatefulWidget {
     super.key,
   });
 
+  /// Marks the viewer as hosted inside the Superadmin shell content area.
+  ///
+  /// The host keeps its own shell/menu visible (Owner decision of 2026-09-09),
+  /// so the viewer must not re-apply the system insets the host already
+  /// consumed. The immersive Momentos composition itself is unchanged.
   final bool embedded;
   final VoidCallback? onOpenHappens;
   final VoidCallback? onOpenProfile;
@@ -323,6 +328,7 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
       canWithdraw: _canWithdraw,
       withdrawingPublicationId: _withdrawingPublicationId,
       onWithdraw: _confirmWithdrawal,
+      embedded: widget.embedded,
     );
   }
 
@@ -408,6 +414,7 @@ final class _MomentPager extends StatelessWidget {
     required this.canWithdraw,
     required this.withdrawingPublicationId,
     required this.onWithdraw,
+    required this.embedded,
   });
 
   final PageController controller;
@@ -427,6 +434,7 @@ final class _MomentPager extends StatelessWidget {
   final bool Function(PrincipalMomentPreviewItem moment) canWithdraw;
   final String? withdrawingPublicationId;
   final ValueChanged<PrincipalMomentPreviewItem> onWithdraw;
+  final bool embedded;
 
   @override
   Widget build(BuildContext context) => ColoredBox(
@@ -469,6 +477,7 @@ final class _MomentPager extends StatelessWidget {
               withdrawingPublicationId != null &&
               withdrawingPublicationId == moments[index].publicationId,
           onWithdraw: () => onWithdraw(moments[index]),
+          embedded: embedded,
         ),
       ),
     ),
@@ -489,6 +498,7 @@ final class _MomentFrame extends StatelessWidget {
     required this.canWithdraw,
     required this.withdrawing,
     required this.onWithdraw,
+    required this.embedded,
   });
 
   final PrincipalMomentPreviewItem moment;
@@ -503,10 +513,13 @@ final class _MomentFrame extends StatelessWidget {
   final bool canWithdraw;
   final bool withdrawing;
   final VoidCallback onWithdraw;
+  final bool embedded;
 
   @override
   Widget build(BuildContext context) {
-    final viewPadding = MediaQuery.viewPaddingOf(context);
+    // Hosted in the Superadmin shell the system insets already belong to the
+    // host chrome; only the standalone viewer offsets its overlay controls.
+    final viewPadding = embedded ? EdgeInsets.zero : MediaQuery.viewPaddingOf(context);
     return Semantics(
       image: true,
       label: 'Momento de ${moment.author}, ${moment.context}. ${moment.caption}',

@@ -10,6 +10,7 @@ final class PrincipalCircularReader extends StatefulWidget {
     required this.onSubmit,
     this.initialAnswers = const {},
     this.mediaRepository,
+    this.embedded = false,
     super.key,
   });
 
@@ -20,6 +21,13 @@ final class PrincipalCircularReader extends StatefulWidget {
   /// Optional media capability. Without it the attachments stay honestly closed
   /// instead of pretending that an unauthorized opening is possible.
   final CircularMediaRepository? mediaRepository;
+
+  /// Marks the reader as hosted inside the Superadmin shell content area.
+  ///
+  /// The host keeps its own shell/menu visible (Owner decision of 2026-09-09)
+  /// and already consumed the system insets, so the reader must not add them
+  /// again. The reading composition itself is unchanged.
+  final bool embedded;
 
   @override
   State<PrincipalCircularReader> createState() => _PrincipalCircularReaderState();
@@ -113,6 +121,10 @@ final class _PrincipalCircularReaderState extends State<PrincipalCircularReader>
         child: ColoredBox(
           color: Theme.of(context).colorScheme.surface,
           child: SafeArea(
+            top: !widget.embedded,
+            bottom: !widget.embedded,
+            left: !widget.embedded,
+            right: !widget.embedded,
             child: SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(
                 compact ? CoeloSpacing.space4 : CoeloSpacing.space6,
