@@ -1,0 +1,52 @@
+{
+  "source": "Authorized estrutura night round; Activity catalogued create candidate",
+  "status": "local-candidate; production gate closed",
+  "recorded_at": "2026-09-09T19:46:22.933373-03:00",
+  "base_revision": "d01c318ba0c6e7cd24e4a73a31645c93f2a6f8a8",
+  "environment": "Windows local Flutter in e2-noturna-estrutura; pure controller/fake repositories",
+  "scope": "apps/superadmin -> Atividades -> Criar -> activities.location -> typed draft/attempt guards",
+  "tests": {
+    "N": 39,
+    "E": 39,
+    "P": 39,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "composition": "7 new catalogued draft +14 attempt runner (6 new,8 reused) +18 existing form controller cases",
+    "command": "rtk proxy flutter test --no-pub --concurrency 1 test/features/activities/presentation/activity_catalogued_location_draft_test.dart test/features/activities/application/activity_save_attempt_coordinator_test.dart test/features/activities/presentation/activity_form_controller_test.dart --reporter json",
+    "session_id": 99121,
+    "exit_code": 0,
+    "raw": "activity-atomic-form-flutter.jsonl",
+    "dedup": "13 new+26 reused due changed controllers/runner. Adapter31 independently recorded in activity-atomic-client-manifest.json; no reruns added."
+  },
+  "analyzer": {
+    "session_id": 85375,
+    "paths": 5,
+    "exit_code": 0,
+    "reported_result": "No issues found!"
+  },
+  "history": [
+    "Draft test compile RED session8543 exit1: typed fields/setters did not exist. Not7 individual executed failures.",
+    "Attempt runner RED chunk0acbdf exit1:5 failures+9passes. Reproduced About followup after aggregate, discarded legacy ID, unsupported publish/edit and builder dropping selection. All resolved in39P final run."
+  ],
+  "behavior": [
+    "Typed catalog snapshot remains distinct from legacy location option. Institution catalog survives unit changes; unit catalog/reservation are pruned when unit leaves; changing institution or location clears dependent reservation.",
+    "Canonical reservation payload participates in retry fingerprint, with deterministic weekly weekday order.",
+    "Runner rejects About combined with catalog create even if About writer is available; orphan reservation, legacy location ID, edit/publish and dropped selection/reservation fail before writing. Existing no-location About retry behavior retained."
+  ],
+  "sha256": {
+    "apps/superadmin/lib/features/activities/presentation/activity_form_controller.dart": "77b53566a389842ad58f90264e741ca2ca5116ff04ca52d7bf7b3fdffa6882cd",
+    "apps/superadmin/lib/features/activities/presentation/activity_form_draft.dart": "3c84563fe60a25d1cdeb2dd2efc9b743425085428b4d0d643418a5147dd6c681",
+    "apps/superadmin/lib/features/activities/application/activity_save_attempt_coordinator.dart": "c0317840ee96d939f2fe2d9c969a258899eb02a4816a001bb03e7ed813499dca",
+    "apps/superadmin/test/features/activities/application/activity_save_attempt_coordinator_test.dart": "8e40f838d0918cd64f9209b782cf53ae48f11644d52e9f6aeb820e215cd70993",
+    "apps/superadmin/test/features/activities/presentation/activity_catalogued_location_draft_test.dart": "d464c5a5a567aee9a28bccabd6835679d949ac982eef218ff7c25c5d05a65bec",
+    "apps/superadmin/test/features/activities/presentation/activity_form_controller_test.dart": "7948bc97d9d31aa24354b49e5d57930f25a07b5bc4aff4439bfdeb20f2b02d24"
+  },
+  "limitations": [
+    "Form UI and router command builder do not yet compose this selection; subsequent candidate slice required.",
+    "Adapter candidate defaults false; no main/authscope production enabling, SQL execution, remote write, or E2E proof.",
+    "Reservation conflict assessment before creating consumer unresolved; no synthetic consumer.",
+    "No action promoted to verified; memory no-op for implementation of approved rules."
+  ]
+}

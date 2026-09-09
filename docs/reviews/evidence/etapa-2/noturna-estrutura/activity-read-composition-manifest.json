@@ -1,0 +1,54 @@
+{
+  "source": "Authorized estrutura night round; existing Activity internal reader and approved Locations design",
+  "status": "local-qualified; pending-verification",
+  "recorded_at": "2026-09-09T19:42:58.443772-03:00",
+  "revision": "e06eb62de87db0ac43f311757ed7324d53ec101b",
+  "environment": "Windows local Flutter mocked repositories, own worktree e2-noturna-estrutura; no remote",
+  "scope": "apps/superadmin -> Atividades -> detalhe -> activities.location; Locais -> reservas -> locations.schedule; Turmas normal route reused regression",
+  "tests": {
+    "N": 15,
+    "E": 15,
+    "P": 15,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "dedup": "13 page +2 real route compositions; Group route1 reuses prior bindings proof. Reader46 retained unchanged by hashes in activity-reader-manifest.json. Do not sum reruns.",
+    "command": "rtk proxy flutter test --no-pub --concurrency 1 test/features/activities/presentation/activity_read_detail_page_test.dart test/features/locations/location_consumer_routes_test.dart --reporter json",
+    "session_id": 27656,
+    "exit_code": 0,
+    "raw": "activity-read-composition-flutter.jsonl"
+  },
+  "analyzer": {
+    "session_id": 64082,
+    "exit_code": 0,
+    "result": "No issues in these6 paths. Combined11path run reported2 braces infos solely in next uncommitted Activity controller slice; those are not a page finding."
+  },
+  "visual_contract_gate": {
+    "command": "rtk proxy dart run tool/validate_admin_visual_contracts.dart C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura assets/admin-visual-contract-allowlist.json",
+    "cwd": "apps/catalog",
+    "exit_code": 0,
+    "chunk_id": "1692e2"
+  },
+  "visual_evidence": "Page widgets375/768/1024/1440, light/dark,text200. Existing institution create/edit golden references inspected; no new golden or app-render certification. Panel real scope/capability/revocation covered in route, responsive panel evidence reused separately.",
+  "history": [
+    "Initial page13P omitted assessment action. Adding actual fourth action exposed5F/10P in composition session5479; raw activity-read-composition-red.jsonl.",
+    "Assessment moved to its own section; narrowviewport test still2F13P, raw red-scroll. Reload moved to top, footer2actions; test scroll assertions ran before next frame (4F11P, raw red-settle). pumpAndSettle fixed focal375 test session22882 then15P session7967.",
+    "Review found real edit reader remains unavailable; route test session60375 reproduced active edit callback. Page now keeps disabled Edit with tooltip, normal route omits callback. Final15P session27656. Legacy editor and preview unchanged."
+  ],
+  "sha256": {
+    "apps/superadmin/lib/features/activities/presentation/activity_read_detail_page.dart": "c6da1382f79f9c47996042af3a7646363fd86c95b5afc4511cbd2d14debd858c",
+    "apps/superadmin/test/features/activities/presentation/activity_read_detail_page_test.dart": "93609ee65727feafcfd3358e27923eace9826cde239943756bee389c57160a37",
+    "apps/superadmin/lib/app/router/superadmin_router.dart": "a7c773b847a5d1a0ea6f0ebe0faa3992b4b30e2c49aecd992d41d609e4965cfa",
+    "apps/superadmin/lib/app/superadmin_app.dart": "5d2140ad793438345b5a5f3e4d3794e7631ece647239151ecfa6152d243974a7",
+    "apps/superadmin/lib/main.dart": "e9a6a5c96d1b1804cfa867e2cb3c79ed5b77d415f05f51c3b03e1430bf976caa",
+    "apps/superadmin/test/features/locations/location_consumer_routes_test.dart": "e81d4e374ac94c31821eb31090f4c8d4960acc0bcb27550e078e98ee86d85bf3"
+  },
+  "limitations": [
+    "No production E2E, no SQL replay. Candidate binding RPC deployment unresolved.",
+    "Activity edit current reader unavailable; About/publish/atomic selection edits retained.",
+    "No Auth/CHILD/shell changes. Shared composition commit is proposal; Claude sole dev integrator.",
+    "These local passes do not promote an action or certify the whole detail UI."
+  ],
+  "memory": "No new durable product rule: implementation of approved sources; no central knowledge writes."
+}

@@ -1,6 +1,7 @@
 import 'package:coelo_domain/locations.dart';
 import 'package:coelo_superadmin/app/router/superadmin_router.dart';
 import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
+import 'package:coelo_superadmin/features/activities/domain/activity_read_detail.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
@@ -108,7 +109,127 @@ class _Bindings implements LocationConsumerBindingsReader {
   }
 }
 
+class _Activities implements ActivityReadDetailRepository {
+  @override
+  Future<ActivityReadDetail> fetchById(String id) async => ActivityReadDetail.fromJson({
+    'activity': {
+      'activity_id': id,
+      'institution_id': institutionA,
+      'name': 'Atividade autorizada',
+      'description': null,
+      'taxonomy_id': null,
+      'taxonomy_name': null,
+      'status': 'draft',
+      'management_version': 1,
+      'icon_key': null,
+      'initials': null,
+      'created_at': '2026-09-01T12:00:00Z',
+      'updated_at': '2026-09-01T12:00:00Z',
+    },
+    'units': [
+      {'unit_id': unitA, 'name': 'Unidade autorizada', 'status': 'active'},
+    ],
+    'groups': <Object?>[],
+    'counts': {'units': 1, 'groups': 0, 'participants': 0, 'instructors': 0, 'activity_admins': 0},
+  });
+}
+
 void main() {
+  testWidgets(
+    'normal activity route derives reservation scopes from reader and clears on revocation',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1100));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      const permissions = {
+        'activities.read',
+        'locations.read',
+        'locations.reservations.read',
+        'locations.reservations.manage',
+      };
+      final session = SuperadminSession()
+        ..authorize(
+          const SuperadminAuthContext(
+            platformRoleCode: 'test',
+            scopeKind: SuperadminAuthScopeKind.platform,
+            permissionCodes: permissions,
+            aal: 'aal1',
+          ),
+          sessionId: 'activity-consumer-session',
+        );
+      final reservations = _Reservations();
+      final bindings = _Bindings();
+      final router = createSuperadminRouter(
+        session: session,
+        login: unavailableSuperadminLogin,
+        logout: unavailableSuperadminLogout,
+        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+        activityReadDetailRepository: _Activities(),
+        locationCatalogReader: _Catalog(),
+        locationReservationGateway: reservations,
+        locationConsumerBindingsReader: bindings,
+        onThemeModeChanged: (_) {},
+      );
+      addTearDown(router.dispose);
+      addTearDown(session.dispose);
+      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+      router.go('/activities/$groupId?institutionId=$institutionB');
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<OutlinedButton>(find.byKey(const Key('activity-read-edit'))).onPressed,
+        isNull,
+      );
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('consumer-binding-open-$locationB')),
+        250,
+        scrollable: find
+            .descendant(
+              of: find.byKey(const Key('activity-read-scroll')),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
+      await Scrollable.ensureVisible(
+        tester.element(find.byKey(const Key('consumer-binding-open-$locationB'))),
+        alignment: 0.5,
+      );
+      await tester.pumpAndSettle();
+      final section = tester.widget<LocationConsumerReservations>(
+        find.byType(LocationConsumerReservations),
+      );
+      expect(
+        section.consumer,
+        const LocationReservationConsumer(
+          kind: LocationReservationConsumerKind.activity,
+          id: groupId,
+        ),
+      );
+      expect(section.scopes.map((option) => option.scope.institutionId).toSet(), {institutionA});
+      expect((section.scopes.last.scope as UnitLocationScope).unitId, unitA);
+      await tester.tap(find.byKey(const Key('consumer-binding-open-$locationB')));
+      await tester.pumpAndSettle();
+      expect(reservations.consumers.single, section.consumer);
+      expect(
+        tester.widget<LocationReservationPanel>(find.byType(LocationReservationPanel)).canManage,
+        isFalse,
+      );
+      final previousReads = bindings.consumers.length;
+      session.authorize(
+        const SuperadminAuthContext(
+          platformRoleCode: 'test',
+          scopeKind: SuperadminAuthScopeKind.platform,
+          permissionCodes: {},
+          aal: 'aal1',
+        ),
+        sessionId: 'activity-consumer-revoked',
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Atividade autorizada'), findsNothing);
+      expect(find.byType(LocationReservationPanel), findsNothing);
+      expect(bindings.consumers, hasLength(previousReads));
+      expect(reservations.consumers, hasLength(1));
+    },
+  );
+
   testWidgets(
     'normal group route composes reservations from authorized detail and confines revocation',
     (tester) async {

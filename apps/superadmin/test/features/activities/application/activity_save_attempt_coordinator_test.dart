@@ -4,9 +4,98 @@ import 'package:coelo_superadmin/features/activities/domain/activity_directory.d
 import 'package:coelo_superadmin/features/activities/domain/activity_profile_about_repository.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_form_draft.dart';
 import 'package:coelo_domain/profile_about.dart';
+import 'package:coelo_domain/locations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('catalogued create rejects About before aggregate even when About is available', () async {
+    final commands = _ReceiptActivityCommands();
+    final about = _FailOnceAboutRepository();
+    await expectLater(
+      ActivitySaveAttemptRunner(readAuthorizationRevision: () => 7).save(
+        _locationDraft(withAbout: true),
+        intent: ActivityCommandIntent.saveDraft,
+        activityId: null,
+        commandRepository: commands,
+        aboutRepository: about,
+        buildCommand: _command,
+      ),
+      throwsA(isA<ActivityCommandUnavailableException>()),
+    );
+    expect(commands.saveCalls, 0);
+    expect(about.activityIds, isEmpty);
+  });
+  test('legacy location ID cannot be silently discarded by aggregate save', () async {
+    final commands = _ReceiptActivityCommands();
+    await expectLater(
+      ActivitySaveAttemptRunner(readAuthorizationRevision: () => 7).save(
+        _locationDraft(legacy: true),
+        intent: ActivityCommandIntent.saveDraft,
+        activityId: null,
+        commandRepository: commands,
+        aboutRepository: const UnavailableActivityProfileAboutRepository(),
+        buildCommand: _command,
+      ),
+      throwsA(isA<ActivityCommandUnavailableException>()),
+    );
+    expect(commands.saveCalls, 0);
+  });
+  for (final unsupported in [
+    (ActivityCommandIntent.publish, null),
+    (ActivityCommandIntent.saveDraft, 'existing'),
+  ]) {
+    test(
+      'catalogued create rejects unsupported intent or edit $unsupported before write',
+      () async {
+        final commands = _ReceiptActivityCommands();
+        await expectLater(
+          ActivitySaveAttemptRunner(readAuthorizationRevision: () => 7).save(
+            _locationDraft(),
+            intent: unsupported.$1,
+            activityId: unsupported.$2,
+            commandRepository: commands,
+            aboutRepository: const UnavailableActivityProfileAboutRepository(),
+            buildCommand: _command,
+          ),
+          throwsA(isA<ActivityCommandUnavailableException>()),
+        );
+        expect(commands.saveCalls, 0);
+      },
+    );
+  }
+  test('builder cannot drop a catalog selection', () async {
+    final commands = _ReceiptActivityCommands();
+    await expectLater(
+      ActivitySaveAttemptRunner(readAuthorizationRevision: () => 7).save(
+        _locationDraft(),
+        intent: ActivityCommandIntent.saveDraft,
+        activityId: null,
+        commandRepository: commands,
+        aboutRepository: const UnavailableActivityProfileAboutRepository(),
+        buildCommand: (draft, {required requestId, required intent, required activityId}) =>
+            _command(_draft, requestId: requestId, intent: intent, activityId: activityId),
+      ),
+      throwsA(isA<ActivityCommandUnavailableException>()),
+    );
+    expect(commands.saveCalls, 0);
+  });
+  test('catalogued create retries the same aggregate request without About followup', () async {
+    final commands = _ReceiptActivityCommands(throwAfterFirstCommit: true);
+    final runner = ActivitySaveAttemptRunner(readAuthorizationRevision: () => 7);
+    Future<void> save() => runner.save(
+      _locationDraft(),
+      intent: ActivityCommandIntent.saveDraft,
+      activityId: null,
+      commandRepository: commands,
+      aboutRepository: const UnavailableActivityProfileAboutRepository(),
+      buildCommand: _command,
+    );
+    await expectLater(save(), throwsA(isA<_AmbiguousResponse>()));
+    await save();
+    expect(commands.requestIds, ['request-form-1', 'request-form-1']);
+    expect(commands.createdActivityIds, {'activity-1'});
+  });
+
   test('retries an ambiguous primary save under the same server request', () async {
     final coordinator = ActivitySaveAttemptCoordinator();
     var calls = 0;
@@ -316,6 +405,8 @@ ActivitySaveCommand _command(
   institutionId: draft.institutionId,
   unitIds: draft.unitIds,
   groupIds: draft.groupIds,
+  locationSelection: draft.locationSelection,
+  reservation: draft.reservation,
   assignments: const [],
   identity: const ActivityCommandIdentity(
     kind: ActivityIdentityKind.initials,
@@ -397,3 +488,32 @@ final class _FailOnceAboutRepository implements ActivityProfileAboutRepository {
     return page;
   }
 }
+
+ActivityFormDraft _locationDraft({bool withAbout = false, bool legacy = false}) =>
+    ActivityFormDraft(
+      requestId: _draft.requestId,
+      commandSignature: _draft.commandSignature,
+      name: _draft.name,
+      description: _draft.description,
+      taxonomy: null,
+      subtype: null,
+      template: null,
+      taxonomyOtherDescription: '',
+      governance: _draft.governance,
+      institutionId: _draft.institutionId,
+      unitIds: _draft.unitIds,
+      groupIds: const {},
+      assignments: const [],
+      locationId: 'location-1',
+      locationSelection: legacy
+          ? null
+          : const CataloguedLocationSelection(
+              LocationReferenceSnapshot(
+                id: 'location-1',
+                scope: LocationScope.institution(institutionId: 'institution-1'),
+                kind: LocationKind.internal,
+                label: 'Local',
+              ),
+            ),
+      aboutPage: withAbout ? _draftWithAbout().aboutPage : null,
+    );

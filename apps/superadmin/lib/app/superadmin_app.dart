@@ -13,6 +13,7 @@ import '../core/config/superadmin_media_scope.dart';
 import '../core/guards/superadmin_session.dart';
 import '../features/activities/domain/activity_command.dart';
 import '../features/activities/domain/activity_directory.dart';
+import '../features/activities/domain/activity_read_detail.dart';
 import '../features/assessments/assessment.dart';
 import '../features/auth/domain/superadmin_auth_context.dart';
 import '../features/auth/domain/login_request.dart';
@@ -125,6 +126,7 @@ class SuperadminApp extends StatefulWidget {
     this.locationReservationGateway = const UnavailableLocationReservationGateway(),
     this.locationCapabilities = _noLocationCapabilities,
     this.activityDirectoryRepository = const UnavailableActivityDirectoryRepository(),
+    this.activityReadDetailRepository = const UnavailableActivityReadDetailRepository(),
     this.activityCommandRepository = const UnavailableActivityCommandRepository(),
     this.assessmentRepository = const UnavailableAssessmentRepository(),
     this.assessmentMutationsEnabled = false,
@@ -191,6 +193,7 @@ class SuperadminApp extends StatefulWidget {
   final LocationReservationGateway locationReservationGateway;
   final LocationCapabilities Function(SuperadminAuthContext?) locationCapabilities;
   final ActivityDirectoryRepository activityDirectoryRepository;
+  final ActivityReadDetailRepository activityReadDetailRepository;
   final ActivityCommandRepository activityCommandRepository;
   final AssessmentRepository assessmentRepository;
   final bool assessmentMutationsEnabled;
@@ -281,6 +284,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       locationReservationGateway: widget.locationReservationGateway,
       locationCapabilities: widget.locationCapabilities,
       activityDirectoryRepository: widget.activityDirectoryRepository,
+      activityReadDetailRepository: widget.activityReadDetailRepository,
       activityCommandRepository: widget.activityCommandRepository,
       assessmentRepository: widget.assessmentRepository,
       enableAssessmentMutations: widget.assessmentMutationsEnabled,
