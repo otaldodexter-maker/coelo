@@ -1,6 +1,6 @@
 {
     "schema_version":  1,
-    "generated_at":  "2026-09-09T14:52:38-03:00",
+    "generated_at":  "2026-09-09T14:57:10-03:00",
     "timezone":  "America/Sao_Paulo",
     "source_ledger":  {
                           "path":  "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/d03-test-ledger.json",
@@ -10,12 +10,13 @@
                          "mode":  "byte-for-byte evidence reproduction",
                          "new_test_or_database_execution":  false,
                          "deduplicated_by":  "source_path",
-                         "artifact_count":  25,
-                         "total_bytes":  91313,
+                         "artifact_count":  26,
+                         "total_bytes":  92543,
                          "ignored_artifact_count":  0,
-                         "null_missing_or_non_temp_references_copied":  0,
                          "renamed_for_review":  "20 .log copies renamed to .log.txt without byte changes",
-                         "supplemental_artifacts":  1
+                         "supplemental_artifacts":  2,
+                         "null_or_missing_references_copied":  0,
+                         "non_temp_artifacts":  1
                      },
     "secret_scan":  {
                         "performed_before_copy":  true,
@@ -308,6 +309,22 @@
                           "git_ignore_rule":  null,
                           "ledger_reference":  false,
                           "supplemental_source":  "parent-authorized final Pester runner patch evidence from notes/child-concurrency-invoke-tests.ps1; P8/F0"
+                      },
+                      {
+                          "source_path":  "C:/Users/adrie/Documents/Coelo/docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/routine-directory-588d38eb.txt",
+                          "preserved_path":  "evidence/d03-acompanhamento/r02-20260909/routine-directory-588d38eb.txt",
+                          "sha256":  "F02516E225117BFDFE5B246EE5F596B581C53C60EF336A9D56BFF03311D64EB9",
+                          "bytes":  1230,
+                          "source_hash_verified":  true,
+                          "preserved_hash_verified":  true,
+                          "reproduction":  "byte-for-byte evidence copy; no new execution",
+                          "git_ignored":  false,
+                          "git_ignore_rule":  null,
+                          "ledger_reference":  false,
+                          "provenance":  "integrated-existing-evidence",
+                          "base_sha":  "588d38ebe7b05bf67e1013f215f3234c3102033c",
+                          "result":  "11 pass / 0 fail",
+                          "relationship":  "The two focal files match D03 c440; this integrated evidence does not replace the missing original D03 controller raw log."
                       }
                   ]
 }

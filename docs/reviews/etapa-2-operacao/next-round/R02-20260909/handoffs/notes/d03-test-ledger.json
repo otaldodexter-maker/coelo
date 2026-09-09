@@ -7,9 +7,9 @@
   "scope": "R02 D03 focal evidence available before the 16:30 BRT consolidation cut",
   "preserved_evidence_manifest": {
     "path": "evidence/d03-acompanhamento/r02-20260909/manifest.json",
-    "sha256": "AC91A303756E1E18948C9098616D767FFD45A31AC3E606BC14C3368F854810FA",
-    "artifact_count": 25,
-    "bytes": 91313,
+    "sha256": "001C3E023139E4A4DFEC395DF864BE685012F8BFE5E650D3BFF40521B6F3FCE2",
+    "artifact_count": 26,
+    "bytes": 92543,
     "note": "Byte-for-byte copies, not new executions. Source paths remain for provenance; the manifest maps them to versioned copies. Its source-ledger hash describes the earlier extraction snapshot, not this evolving ledger."
   },
   "counting_rules": {
@@ -46,9 +46,10 @@
   "summary": {
     "flutter": {
       "reported_unique_cases": 55,
-      "case_ids_recovered_verbatim_from_raw_test_logs": 39,
-      "additional_cases_described_by_summary_or_note": 6,
-      "case_ids_named_from_reviewed_source_only": 10,
+      "case_ids_recovered_verbatim_from_raw_test_logs": 50,
+      "raw_case_ids_from_integrated_equivalent_snapshot": 11,
+      "additional_cases_described_by_summary_or_note": 5,
+      "case_ids_named_from_reviewed_source_only": 0,
       "case_ids_not_recoverable": 0,
       "failed_current_cases": 0
     },
@@ -80,11 +81,9 @@
       "action_ids": ["daily-routine.list"],
       "status": "pass",
       "unique_cases": 11,
-      "case_id_completeness": "names complete from note and reviewed source; original raw test log is missing",
+      "case_id_completeness": "complete in the later integrated raw log; original D03 raw test log is still missing",
       "recovered_case_ids": [
-        "unexpected decoding errors become a safe failure state"
-      ],
-      "source_declared_case_ids": [
+        "unexpected decoding errors become a safe failure state",
         "starts loading with no entries exposed",
         "loading a new request clears previously loaded entries fail closed",
         "failure and unauthorized never retain entries",
@@ -96,9 +95,17 @@
         "structural filter is no-results: unit-a",
         "structural filter is no-results: group-a"
       ],
-      "case_name_source": "apps/superadmin/test/features/daily_routine/routine_directory_controller_test.dart at c440199bbadcd2b5aebfeea8e44f8f378443078b; declaration names are not a recovered execution transcript",
+      "case_name_source": "Existing D00 integrated raw log at 588d38ebe7b05bf67e1013f215f3234c3102033c enumerates all eleven cases. The controller and its test are byte-equivalent in Git to c440199bbadcd2b5aebfeea8e44f8f378443078b. This is additional integrated evidence, not recovery of the original missing D03 log.",
       "unrecovered_case_id_count": 0,
       "evidence": [
+        {
+          "kind": "flutter_test_green_integrated",
+          "path": "evidence/d03-acompanhamento/r02-20260909/routine-directory-588d38eb.txt",
+          "source_path": "C:/Users/adrie/Documents/Coelo/docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/routine-directory-588d38eb.txt",
+          "sha256": "F02516E225117BFDFE5B246EE5F596B581C53C60EF336A9D56BFF03311D64EB9",
+          "revision": "588d38ebe7b05bf67e1013f215f3234c3102033c",
+          "result": "11 pass / 0 fail; existing integrated execution, no new D03 rerun"
+        },
         {
           "kind": "flutter_test_green",
           "path": null,
@@ -115,7 +122,7 @@
           "result": "No issues found"
         }
       ],
-      "deduplication": "The new decoding case is included in the 11-case file result; its earlier RED is not added."
+      "deduplication": "The decoding case is included in the eleven-case campaign. The existing D00 integrated rerun provides a raw artifact for the same eleven cases and is not added to the total. Original D03 raw-log absence remains explicit."
     },
     {
       "id": "flutter.daily-routine.application-editor",
