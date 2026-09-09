@@ -386,35 +386,10 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     setState(() => _thread = thread);
   }
 
-  Future<String?> _promptForEditedBody(ChatMessage message) {
-    final controller = TextEditingController(text: message.body);
-    return showDialog<String>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Editar mensagem'),
-        content: TextField(
-          key: const Key('superadmin-chat-edit-field'),
-          controller: controller,
-          autofocus: true,
-          maxLines: 4,
-          minLines: 1,
-          maxLength: 4000,
-          decoration: const InputDecoration(labelText: 'Mensagem'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            key: const Key('superadmin-chat-edit-confirm'),
-            onPressed: () => Navigator.of(dialogContext).pop(controller.text),
-            child: const Text('Salvar'),
-          ),
-        ],
-      ),
-    ).whenComplete(controller.dispose);
-  }
+  Future<String?> _promptForEditedBody(ChatMessage message) => showDialog<String>(
+    context: context,
+    builder: (_) => _EditMessageDialog(initialBody: message.body),
+  );
 
   Future<bool?> _confirmRevocation() => showDialog<bool>(
     context: context,
@@ -970,6 +945,52 @@ final class _MessageBubble extends StatelessWidget {
 }
 
 enum _MessageAction { edit, revoke }
+
+/// Owns its own controller so the field stays alive through the dialog's exit
+/// animation. Disposing alongside the returned future tears it down too early.
+final class _EditMessageDialog extends StatefulWidget {
+  const _EditMessageDialog({required this.initialBody});
+
+  final String initialBody;
+
+  @override
+  State<_EditMessageDialog> createState() => _EditMessageDialogState();
+}
+
+final class _EditMessageDialogState extends State<_EditMessageDialog> {
+  late final _controller = TextEditingController(text: widget.initialBody);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: const Text('Editar mensagem'),
+    content: TextField(
+      key: const Key('superadmin-chat-edit-field'),
+      controller: _controller,
+      autofocus: true,
+      maxLines: 4,
+      minLines: 1,
+      maxLength: 4000,
+      decoration: const InputDecoration(labelText: 'Mensagem'),
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.of(context).pop(),
+        child: const Text('Cancelar'),
+      ),
+      FilledButton(
+        key: const Key('superadmin-chat-edit-confirm'),
+        onPressed: () => Navigator.of(context).pop(_controller.text),
+        child: const Text('Salvar'),
+      ),
+    ],
+  );
+}
 
 /// Null whenever the server projected no receipt, so an older gateway renders
 /// nothing rather than an invented "unread" or "read" claim.
