@@ -93,6 +93,8 @@ final class ActivityProfessionalAssignment {
 
 final class ActivityFormDraft {
   const ActivityFormDraft({
+    this.requestId,
+    this.commandSignature,
     required this.name,
     this.handleStem = '',
     required this.description,
@@ -119,6 +121,10 @@ final class ActivityFormDraft {
     this.expectedManagementVersion = 0,
   });
 
+  /// Stable identity of one form command attempt. A retry keeps this value.
+  /// A completed command or a new form receives another identity.
+  final String? requestId;
+  final String? commandSignature;
   final String name;
   final String handleStem;
   final String description;

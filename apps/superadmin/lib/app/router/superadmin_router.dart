@@ -26,6 +26,7 @@ import '../prototype/superadmin_prototype_store.dart';
 import '../../features/activities/data/dev/dev_activity_command_repository.dart';
 import '../../features/activities/data/dev/dev_activity_directory_repository.dart';
 import '../../features/activities/data/dev/dev_activity_session_store.dart';
+import '../../features/activities/application/activity_save_attempt_coordinator.dart';
 import '../../features/activities/domain/activity_command.dart';
 import '../../features/activities/domain/activity_directory.dart';
 import '../../features/activities/domain/activity_profile_about_repository.dart';
@@ -551,29 +552,24 @@ GoRouter createSuperadminRouter({
     child: child,
   );
 
+  final activitySaveAttemptRunner = ActivitySaveAttemptRunner(
+    readAuthorizationRevision: () => session.authorizationInvalidationRevision,
+  );
+
   Future<void> saveActivity(
     ActivityFormDraft draft, {
     required ActivityCommandIntent intent,
     String? activityId,
     required ActivityCommandRepository commandRepository,
     required ActivityProfileAboutRepository aboutRepository,
-  }) async {
-    final aboutPage = draft.aboutPage;
-    if (aboutPage != null && !aboutRepository.isAvailable) {
-      throw const ActivityProfileAboutUnavailableException();
-    }
-    final result = await commandRepository.save(
-      _activitySaveCommand(draft, intent: intent, activityId: activityId),
-    );
-    if (aboutPage != null) {
-      await aboutRepository.save(
-        page: aboutPage,
-        institutionId: draft.institutionId,
-        activityId: result.activityId,
-        requestId: _activityRequestId(),
-      );
-    }
-  }
+  }) => activitySaveAttemptRunner.save(
+    draft,
+    intent: intent,
+    activityId: activityId,
+    commandRepository: commandRepository,
+    aboutRepository: aboutRepository,
+    buildCommand: _activitySaveCommand,
+  );
 
   Future<void> createActivityTemplate(
     ActivityTemplateCreateDraft draft,
@@ -5472,10 +5468,11 @@ Future<LogoutResult> _previewLogout() async => const LogoutResult.success();
 
 ActivitySaveCommand _activitySaveCommand(
   ActivityFormDraft draft, {
+  required String requestId,
   required ActivityCommandIntent intent,
   required String? activityId,
 }) => ActivitySaveCommand(
-  requestId: _activityRequestId(),
+  requestId: requestId,
   intent: intent,
   activityId: activityId,
   templateId: activityId == null ? draft.template?.id : null,

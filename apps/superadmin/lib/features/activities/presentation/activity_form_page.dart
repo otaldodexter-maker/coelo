@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -76,6 +78,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
   _ActivityFormCommand? _failedCommand;
   var _loadGeneration = 0;
   var _commandGeneration = 0;
+  _ActivityFormAttempt? _pendingAttempt;
 
   bool get _isEditing => widget.activityId != null;
 
@@ -96,6 +99,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
     _controller?.dispose();
     _controller = null;
     _failedCommand = null;
+    _pendingAttempt = null;
     _state = _ActivityFormLoadState.loading;
     _commandGeneration++;
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
@@ -243,12 +247,20 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
       setState(() => _failedCommand = _ActivityFormCommand.saveDraft);
       return;
     }
+    final attempt = _attemptFor(controller, _ActivityFormCommand.saveDraft);
+    if (attempt == null) {
+      setState(() => _failedCommand = _ActivityFormCommand.saveDraft);
+      return;
+    }
     final generation = ++_commandGeneration;
     setState(() => _failedCommand = null);
     controller.setSubmitting(true);
     try {
-      await widget.onSaveDraft(controller.toDraft());
-      if (_isCurrentCommand(generation, controller)) controller.markSubmitted();
+      await widget.onSaveDraft(attempt.draft);
+      if (_isCurrentCommand(generation, controller)) {
+        _pendingAttempt = null;
+        controller.markSubmitted();
+      }
     } on Exception {
       if (_isCurrentCommand(generation, controller)) {
         setState(() => _failedCommand = _ActivityFormCommand.saveDraft);
@@ -265,12 +277,20 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
       setState(() => _failedCommand = _ActivityFormCommand.submit);
       return;
     }
+    final attempt = _attemptFor(controller, _ActivityFormCommand.submit);
+    if (attempt == null) {
+      setState(() => _failedCommand = _ActivityFormCommand.submit);
+      return;
+    }
     final generation = ++_commandGeneration;
     setState(() => _failedCommand = null);
     controller.setSubmitting(true);
     try {
-      await widget.onSubmit(controller.toDraft());
-      if (_isCurrentCommand(generation, controller)) controller.markSubmitted();
+      await widget.onSubmit(attempt.draft);
+      if (_isCurrentCommand(generation, controller)) {
+        _pendingAttempt = null;
+        controller.markSubmitted();
+      }
     } on Exception {
       if (_isCurrentCommand(generation, controller)) {
         setState(() => _failedCommand = _ActivityFormCommand.submit);
@@ -282,6 +302,23 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
 
   bool _isCurrentCommand(int generation, ActivityFormController controller) =>
       mounted && generation == _commandGeneration && identical(controller, _controller);
+
+  _ActivityFormAttempt? _attemptFor(
+    ActivityFormController controller,
+    _ActivityFormCommand command,
+  ) {
+    final signature = controller.commandSignature;
+    final pending = _pendingAttempt;
+    if (pending != null) {
+      return pending.command == command && pending.signature == signature ? pending : null;
+    }
+    final requestId = _newActivityRequestId();
+    return _pendingAttempt = _ActivityFormAttempt(
+      command: command,
+      signature: signature,
+      draft: controller.toDraft(requestId: requestId, commandSignature: signature),
+    );
+  }
 
   Future<void> _retryCatalogOptions() async {
     try {
@@ -356,6 +393,29 @@ ActivityFormOptions _formOptionsFromTemplates(ActivityTemplateOptions options) =
       taxonomy: options.taxonomy,
       templates: options.templates,
     );
+
+String _newActivityRequestId() {
+  final random = math.Random.secure();
+  final values = List<int>.generate(16, (_) => random.nextInt(256));
+  values[6] = (values[6] & 0x0f) | 0x40;
+  values[8] = (values[8] & 0x3f) | 0x80;
+  final hex = values.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
+  return [
+    hex.substring(0, 8),
+    hex.substring(8, 12),
+    hex.substring(12, 16),
+    hex.substring(16, 20),
+    hex.substring(20),
+  ].join('-');
+}
+
+final class _ActivityFormAttempt {
+  const _ActivityFormAttempt({required this.command, required this.signature, required this.draft});
+
+  final _ActivityFormCommand command;
+  final String signature;
+  final ActivityFormDraft draft;
+}
 
 final class _ActivityFormBody extends StatelessWidget {
   const _ActivityFormBody({

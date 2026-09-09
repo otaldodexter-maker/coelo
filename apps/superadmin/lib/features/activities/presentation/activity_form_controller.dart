@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
@@ -277,8 +278,7 @@ final class ActivityFormController extends ChangeNotifier {
       .where((group) => selectedUnitIds.contains(group.unitId))
       .toList(growable: false);
 
-  String get _signature => [
-    currentStep.name,
+  String get commandSignature => jsonEncode([
     name.text.trim(),
     handleStem.text.trim(),
     description.text.trim(),
@@ -289,32 +289,47 @@ final class ActivityFormController extends ChangeNotifier {
     template?.id ?? '',
     governance.name,
     selectedInstitutionId ?? '',
-    (selectedUnitIds.toList()..sort()).join(','),
+    selectedUnitIds.toList()..sort(),
     selectedLocationId ?? '',
-    (selectedGroupIds.toList()..sort()).join(','),
-    assignments
-        .map(
-          (item) =>
-              '${item.groupId ?? 'activity'}:${item.professionalId}:${item.role.name}:'
-              '${item.permissions.happens}:${item.permissions.now}:'
-              '${item.permissions.moments}:${item.permissions.chat}:'
-              '${item.permissions.attendance}',
-        )
-        .toList()
-      ..sort(),
+    selectedGroupIds.toList()..sort(),
+    _commandAssignmentSignature,
     imageName ?? '',
+    identityHashCode(imageBytes),
     identityStorageRef?.bucket ?? '',
     identityStorageRef?.path ?? '',
     identityColor,
     identityIcon.name,
     (groupParticipation.entries.toList()..sort((a, b) => a.key.compareTo(b.key)))
-        .map((entry) => '${entry.key}:${entry.value.name}')
-        .join(','),
+        .map((entry) => [entry.key, entry.value.name])
+        .toList(growable: false),
     (studentSelection.entries.toList()..sort((a, b) => a.key.compareTo(b.key)))
-        .map((entry) => '${entry.key}:${entry.value}')
-        .join(','),
-    pedagogicalConfiguration.toJson().toString(),
-  ].join('|');
+        .map((entry) => [entry.key, entry.value])
+        .toList(growable: false),
+    pedagogicalConfiguration.toJson(),
+    identityHashCode(aboutPage),
+    expectedManagementVersion,
+  ]);
+
+  List<List<Object?>> get _commandAssignmentSignature {
+    final signature = assignments
+        .map(
+          (item) => <Object?>[
+            item.groupId,
+            item.professionalId,
+            item.role.name,
+            item.permissions.happens.name,
+            item.permissions.now.name,
+            item.permissions.moments.name,
+            item.permissions.chat.name,
+            item.permissions.attendance.name,
+          ],
+        )
+        .toList();
+    signature.sort((a, b) => jsonEncode(a).compareTo(jsonEncode(b)));
+    return signature;
+  }
+
+  String get _signature => '${currentStep.name}|$commandSignature';
 
   void _hydrateEdit(ActivityDetail source, ActivityFormDraft? initialDraft) {
     final institutionExists = options.institutions.any(
@@ -780,7 +795,9 @@ final class ActivityFormController extends ChangeNotifier {
     return valid;
   }
 
-  ActivityFormDraft toDraft() => ActivityFormDraft(
+  ActivityFormDraft toDraft({String? requestId, String? commandSignature}) => ActivityFormDraft(
+    requestId: requestId,
+    commandSignature: commandSignature,
     name: name.text.trim(),
     handleStem: handleStem.text.trim(),
     description: description.text.trim(),
