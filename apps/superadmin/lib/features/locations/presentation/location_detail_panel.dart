@@ -125,9 +125,12 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
   }
 
   Future<void> _copy(LocationCatalogEntry item) async {
+    if (_copyDialogRoute != null || !widget.sessionAvailable || !widget.capabilities.copy) {
+      return;
+    }
     final writer = widget.writer;
     final onCopied = widget.onCopied;
-    if (writer == null || onCopied == null || !widget.capabilities.copy) return;
+    if (writer == null || onCopied == null) return;
     final operationGeneration = ++_copyOperationGeneration;
     final contextRevision = widget.contextRevision;
     final navigator = Navigator.of(context, rootNavigator: true);
