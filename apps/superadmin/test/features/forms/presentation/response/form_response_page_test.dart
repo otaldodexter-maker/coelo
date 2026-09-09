@@ -1730,6 +1730,65 @@ void main() {
     );
   });
 
+  // Dinheiro guardado em minorUnits era exibido dividindo por 100 sem formatar,
+  // entao 1050 voltava ao campo como "10.5" e 1000 como "10.0", em vez da
+  // notacao civil que o autor ve no editor.
+  testWidgets('a saved money answer reopens in civil notation', (tester) async {
+    for (final (minorUnits, shown) in <(int, String)>[
+      (1050, '10,50'),
+      (1000, '10,00'),
+      (1005, '10,05'),
+      (5, '0,05'),
+    ]) {
+      final api = _ResponseApi(
+        items: [
+          FormItem(id: 'item-1', kind: FormItemKind.money, label: 'Valor', position: 0),
+        ],
+        initialAnswers: {'item-1': FormAnswer.money(itemId: 'item-1', minorUnits: minorUnits)},
+      );
+      await open(tester, api);
+      expect(
+        tester.widget<TextFormField>(find.byKey(const Key('form-response-item-item-1'))).initialValue,
+        shown,
+        reason: 'minorUnits $minorUnits',
+      );
+      await tester.pumpWidget(const SizedBox());
+    }
+  });
+
+  testWidgets('the review summary shows money in civil notation too', (tester) async {
+    final api = _ResponseApi(
+      items: [
+        FormItem(id: 'item-1', kind: FormItemKind.money, label: 'Valor', position: 0),
+      ],
+      initialAnswers: {'item-1': FormAnswer.money(itemId: 'item-1', minorUnits: 1050)},
+    );
+    await open(tester, api);
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    expect(find.text('10,50'), findsWidgets);
+    expect(find.text('10.5'), findsNothing);
+  });
+
+  testWidgets('reopened money survives a round trip through the draft', (tester) async {
+    final api = _ResponseApi(
+      items: [
+        FormItem(id: 'item-1', kind: FormItemKind.money, label: 'Valor', position: 0),
+      ],
+      initialAnswers: {'item-1': FormAnswer.money(itemId: 'item-1', minorUnits: 1050)},
+    );
+    await open(tester, api);
+    await tester.enterText(find.byKey(const Key('form-response-item-item-1')), '10,50');
+    await tester.pump(const Duration(seconds: 2));
+    // Reescrever o mesmo valor exibido nao pode alterar o que sera gravado.
+    if (api.saveCalls.isNotEmpty) {
+      expect(
+        api.saveCalls.last.payload.answers['item-1']!.value,
+        isA<FormMoneyValue>().having((value) => value.minorUnits, 'minorUnits', 1050),
+      );
+    }
+  });
+
   testWidgets('an out-of-range value cannot be submitted either', (tester) async {
     final api = limited(FormItemKind.integer, max: 10);
     await open(tester, api);

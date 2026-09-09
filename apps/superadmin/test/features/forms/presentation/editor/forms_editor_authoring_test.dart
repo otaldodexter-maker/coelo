@@ -383,6 +383,47 @@ void main() {
     expect(find.byKey(const ValueKey('forms-editor-max-length-number')), findsNothing);
   });
 
+  // copy() passou a carregar maxLength junto dos demais controladores; sem este
+  // teste a duplicacao perderia o limite em silencio.
+  testWidgets('duplicating a question keeps its authored limits', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = shortTextApi(config: const FormItemConfig(maxLength: 140));
+    await open(tester, api);
+    final duplicate = find.byTooltip('Duplicar pergunta').first;
+    await tester.ensureVisible(duplicate);
+    await tester.pumpAndSettle();
+    await tester.tap(duplicate);
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+
+    final items = api.commands.last.payload.sections.single.items;
+    expect(items, hasLength(2));
+    expect(items.map((item) => item.config.maxLength), [140, 140]);
+    expect(items.first.id, isNot(items.last.id));
+  });
+
+  testWidgets('duplicating a money question keeps its limits in minor units', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = numericApi(
+      FormItemKind.money,
+      config: const FormItemConfig(minValue: 100, maxValue: 1050),
+    );
+    await open(tester, api);
+    final duplicate = find.byTooltip('Duplicar pergunta').first;
+    await tester.ensureVisible(duplicate);
+    await tester.pumpAndSettle();
+    await tester.tap(duplicate);
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+
+    final items = api.commands.last.payload.sections.single.items;
+    expect(items, hasLength(2));
+    expect(items.map((item) => item.config.minValue), [100, 100]);
+    expect(items.map((item) => item.config.maxValue), [1050, 1050]);
+  });
+
 
   _Api galleryApi({FormItemConfig config = const FormItemConfig()}) => _Api(manage: true)
     ..customItems = [
