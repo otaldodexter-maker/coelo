@@ -229,7 +229,12 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
                         // so only it gets a map. The preview is the shared
                         // painted placeholder: no key, no network, no claim of
                         // geographic authority over the stored address.
-                        if (item.kind == LocationKind.external)
+                        if (item.kind == LocationKind.external) ...[
+                          Text(
+                            'Prévia ilustrativa do endereço',
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          const SizedBox(height: CoeloSpacing.space2),
                           Padding(
                             padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
                             child: SuperadminLocationMapPreview(
@@ -242,7 +247,13 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
                               ].whereType<String>().where((part) => part.isNotEmpty).join(', '),
                             ),
                           ),
+                        ],
                       ],
+                      const SizedBox(height: CoeloSpacing.space3),
+                      Text(
+                        'Planta, marcadores e fotos ainda não estão disponíveis.',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
                     ] else
                       LocationReadStatePanel(state: _controller.state, prefix: 'location-detail'),
                   ],
