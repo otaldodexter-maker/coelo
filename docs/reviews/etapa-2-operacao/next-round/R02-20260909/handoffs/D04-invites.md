@@ -1,7 +1,7 @@
 ---
 source: "R02 CONTRATO.md; assignments/D04.md r3; delegação D04; AGENTS.md; código e testes focais de Convites"
 status: "local-corrections-verified; ready-for-parent-review; no-e2e-certification"
-generated_at: "2026-09-09T15:32:00-03:00"
+generated_at: "2026-09-09T16:40:00-03:00"
 timezone: "America/Sao_Paulo"
 ---
 
@@ -188,3 +188,42 @@ auditoria/persistência remota ou isolamento real. Gates de composição normal
 e proposta D00 da revisão 3 permanecem; nenhuma rota compartilhada alterada.
 Memória: sem nova regra durável; correção implementa o contrato de negação já
 vigente, portanto sem novo artigo. Nenhuma conta, envio ou mutação remota.
+
+## Revisão 5 — confinamento do detalhe, D00 r6, 16:40 BRT
+
+Correção concreta de consolidação autorizada em assignment canônica D00 r6
+de 16:34:51. Reserva excepcional exclusiva: hunk `InviteDetail` do roteador
+compartilhado e testes focais; demais hunks continuam reservados D00.
+HEAD observado nesta entrega: `f3d629e649f50e6f510689094901e682906d090a`.
+Apps/superadmin → Comunicação → Convites → Detalhe/Reenviar/Revogar →
+`invites.detail`, `invites.resend`, `invites.revoke`.
+
+O detalhe mantinha State quando apenas a revisão de autorização mudava:
+mesmo inviteId/repository/allowCommands permitia que leitura ou recibo antigos
+voltassem a aparecer. O compositor agora usa `ListenableBuilder(session)` e
+chave contendo inviteId + authorizationInvalidationRevision. Recriar o State
+executa o descarte já existente de epochs, geração de comandos, dados e diálogo
+próprio. A flag allowCommands continua exatamente no contrato de disponibilidade
+aprovado; nenhuma permissão, prefixo, MFA ou regra backend nova.
+
+Dois RED reproduziram a falha: dados de leitura antiga e link de reenvio antigo
+apareciam após alterar permissões mantendo o mesmo sessionId. Testes agora
+verificam nova leitura negada, descarte dos resultados anteriores e nenhuma
+ação residual. Terceiro cenário confirma remoção do diálogo de revogação sem
+enviar comando. Os cinco casos normais já publicados permanecem na regressão.
+
+- Evidências UTF-8 sem BOM: `../evidence/D04/invites/session-revision-red.log`
+  (P0/F2/B0/S0/U0, exit 1) e `session-revision-green.log`
+  (P8/F0/B0/S0/U0, exit 0). São 3 casos novos, não 8 novos; os cinco normais
+  já existiam. O GREEN intermediário de sete não é somado.
+- `dart analyze` somente router e teste focal: exit 0, sem issues.
+  `git diff --check` focal: exit 0. Nenhum processo próprio permanece.
+- Review independente readonly por `/root/child_safety`: nenhum achado
+  material novo; confirmou key/revisão, dispose e propriedade do diálogo.
+- Entrega contém somente o hunk de `InviteDetail` no router, teste
+  `test/app/router/d04_invite_command_routes_test.dart`, handoff e logs.
+  D00 deve integrar esse hunk sobre sua base, preservando seus demais deltas.
+
+Avanço local parcial; sem promoção FE/BE/E2E das cinco ações por este filho.
+Backend sintético não comprova realm/tenant ou autorização real. Slot Flutter
+liberado ao pai. Sem operação remota, conta, envio ou nova regra de conhecimento.

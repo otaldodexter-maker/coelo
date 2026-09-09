@@ -1,0 +1,80 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:3 caractere:1
++ rtk proxy C:/src/flutter/bin/flutter.bat test --no-pub test/app/route ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart
+00:00 +0: authorization revision discards pending invite read on the same route
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: no matching candidates
+  Actual: _TextWidgetFinder:<Found 1 widget with text "s***@invalid.test": [
+            Text("s***@invalid.test", debugLabel: (englishLike titleLarge
+2021).merge((((blackMountainView titleLarge).apply).apply).merge(unknown)), inherit: false, color:
+Color(alpha: 1.0000, red: 0.1098, green: 0.1255, blue: 0.1333, colorSpace: ColorSpace.sRGB), family:
+Nunito Sans, size: 22.0, weight: 700, letterSpacing: 0.0, baseline: alphabetic, height: 1.3x,
+leadingDistribution: even, decoration: Color(alpha: 1.0000, red: 0.1098, green: 0.1255, blue:
+0.1333, colorSpace: ColorSpace.sRGB) TextDecoration.none, dependencies: [DefaultSelectionStyle,
+DefaultTextStyle, MediaQuery]),
+          ]>
+   Which: means one was found but none were expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart:120:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart line 120
+The test description was:
+  authorization revision discards pending invite read on the same route
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:01 +0 -1: authorization revision discards pending invite read on the same route [E]
+  Test failed. See exception logs above.
+  The test description was: authorization revision discards pending invite read on the same route
+
+00:01 +0 -1: authorization revision discards pending invite command on the same route
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: no matching candidates
+  Actual: _KeyWidgetFinder:<Found 1 widget with key [<'invite-result-link'>]: [
+            SelectableText-[<'invite-result-link'>](data:
+https://app.coelo.me/convites/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,
+dependencies: [DefaultSelectionStyle, DefaultTextStyle, InheritedCupertinoTheme, _InheritedTheme,
+_LocalizationsScope-[GlobalKey#4eaec]], state: _SelectableTextState#75548),
+          ]>
+   Which: means one was found but none were expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart:119:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart line 119
+The test description was:
+  authorization revision discards pending invite command on the same route
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:03 +0 -2: authorization revision discards pending invite command on the same route [E]
+  Test failed. See exception logs above.
+  The test description was: authorization revision discards pending invite command on the same route
+
+00:03 +0 -2: (tearDownAll)
+00:03 +0 -2: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart: authorization revision discards pending invite command on the same route
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart: authorization revision discards pending invite read on the same route
+RUNNER_EXIT=1

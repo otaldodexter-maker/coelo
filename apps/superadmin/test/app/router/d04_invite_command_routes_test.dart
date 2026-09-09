@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:coelo_superadmin/app/router/superadmin_router.dart';
@@ -19,6 +20,121 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 const _id = '50000000-0000-4000-8000-000000000001';
 
 void main() {
+  for (final pending in ['read', 'command', 'dialog']) {
+    late Completer<void> gate;
+    var denyNewReads = false;
+    var reads = 0;
+    var commands = 0;
+    final deferredClient = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      authOptions: const AuthClientOptions(autoRefreshToken: false),
+      httpClient: MockClient((request) async {
+        final command = request.url.path.endsWith('superadmin_invite_resend_v2');
+        final denied = !command && denyNewReads;
+        if (command) {
+          commands++;
+          await gate.future;
+        } else {
+          reads++;
+          if (pending == 'read' && reads == 1) await gate.future;
+        }
+        return Response(
+          jsonEncode(
+            denied
+                ? {
+                    'ok': false,
+                    'data': null,
+                    'error': {'code': 'SAI_PERMISSION_DENIED'},
+                  }
+                : {
+                    'ok': true,
+                    'data': command
+                        ? {
+                            'invite': _invite,
+                            'replayed': false,
+                            'link': 'https://app.coelo.me/convites/${'a' * 64}',
+                          }
+                        : _invite,
+                    'error': null,
+                  },
+          ),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    tearDownAll(deferredClient.dispose);
+    testWidgets('authorization revision discards pending invite $pending on the same route', (
+      tester,
+    ) async {
+      gate = Completer<void>();
+      denyNewReads = false;
+      reads = 0;
+      commands = 0;
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      const context = SuperadminAuthContext(
+        platformRoleCode: 'owner',
+        scopeKind: SuperadminAuthScopeKind.platform,
+        permissionCodes: {'platform.read', 'platform.invites.read', 'platform.invites.manage'},
+        aal: 'aal1',
+      );
+      final session = SuperadminSession()..authorize(context, sessionId: 'same-session');
+      final router = createSuperadminRouter(
+        session: session,
+        login: unavailableSuperadminLogin,
+        logout: unavailableSuperadminLogout,
+        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+        inviteRepository: SupabaseInviteRepository(deferredClient),
+        onThemeModeChanged: (_) {},
+      );
+      addTearDown(router.dispose);
+      addTearDown(session.dispose);
+      router.go('/invites/$_id');
+      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+      if (pending != 'read') {
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.byKey(Key(pending == 'command' ? 'invite-detail-resend' : 'invite-detail-revoke')),
+        );
+        if (pending == 'dialog') {
+          await tester.pumpAndSettle();
+          expect(find.byKey(const Key('invite-revoke-dialog')), findsOneWidget);
+        }
+      }
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(reads, 1);
+      expect(commands, pending == 'command' ? 1 : 0);
+      denyNewReads = true;
+      session.authorize(
+        const SuperadminAuthContext(
+          platformRoleCode: 'owner',
+          scopeKind: SuperadminAuthScopeKind.platform,
+          permissionCodes: {'platform.read'},
+          aal: 'aal1',
+        ),
+        sessionId: 'same-session',
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      gate.complete();
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('invite-result-link')), findsNothing);
+      expect(find.byKey(const Key('invite-revoke-dialog')), findsNothing);
+      expect(find.text('s***@invalid.test'), findsNothing);
+      expect(find.byKey(const Key('invite-detail-resend')), findsNothing);
+      expect(find.text('Acesso não autorizado'), findsOneWidget);
+      expect(reads, 2);
+      expect(commands, pending == 'command' ? 1 : 0);
+      expect(router.routeInformationProvider.value.uri.path, '/invites/$_id');
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  }
+
   final requests = <Request>[];
   var scenario = 'allowed';
   final client = SupabaseClient(

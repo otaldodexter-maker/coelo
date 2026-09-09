@@ -4262,12 +4262,18 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.inviteDetail,
             name: SuperadminRoutes.inviteDetailName,
-            builder: (context, state) => InviteDetailPage(
-              repository: inviteRepository,
-              inviteId: state.pathParameters['inviteId']!,
-              allowCommands: inviteRepository is! UnavailableInviteRepository,
-              logout: logout,
-              onDestinationSelected: (value) => _navigateFromPersistentShell(context, value),
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, _) => InviteDetailPage(
+                key: ValueKey(
+                  'invite-detail-${state.pathParameters['inviteId']}-${session.authorizationInvalidationRevision}',
+                ),
+                repository: inviteRepository,
+                inviteId: state.pathParameters['inviteId']!,
+                allowCommands: inviteRepository is! UnavailableInviteRepository,
+                logout: logout,
+                onDestinationSelected: (value) => _navigateFromPersistentShell(context, value),
+              ),
             ),
           ),
           GoRoute(

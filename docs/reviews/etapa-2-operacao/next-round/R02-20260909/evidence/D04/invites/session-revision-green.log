@@ -1,0 +1,19 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:3 caractere:1
++ rtk proxy C:/src/flutter/bin/flutter.bat test --no-pub test/app/route ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart
+00:00 +0: authorization revision discards pending invite read on the same route
+00:01 +1: authorization revision discards pending invite command on the same route
+00:01 +2: authorization revision discards pending invite dialog on the same route
+00:02 +3: normal invite detail commands: allowed
+00:02 +4: normal invite detail commands: read-denied
+00:02 +5: normal invite detail commands: command-denied
+00:03 +6: normal invite detail commands: unavailable
+00:03 +7: normal invite detail commands: signed-out
+00:04 +8: (tearDownAll)
+00:04 +8: All tests passed!
+RUNNER_EXIT=0
