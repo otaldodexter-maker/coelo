@@ -18,7 +18,7 @@ Ambiente local Windows, Flutter3.44.2/Dart3.12.2, execução Flutter serializada
 dentro da frente D01. Registros de D00 na base integrada são recibos distintos;
 não aumentam os testes únicos desta campanha.
 
-## Plano e execução até 14:58 BRT
+## Plano e execução até 15:42 BRT
 
 | Grupo de casos únicos | P | F | B | S | U | Recibo |
 |---|---:|---:|---:|---:|---:|---|
@@ -27,7 +27,7 @@ não aumentam os testes únicos desta campanha.
 | OTP inválido/expirado/reutilizado simulado |3|0|0|0|0|`recovery-otp-negatives.txt`, commit953ce9d3|
 | Teclado4 +reduced-motion1 |5|0|0|0|0|`keyboard-motion*.txt`, `header-motion-final.txt`, commit95da937e|
 | Recuperar/Redefinir telas23 +goldens8 +responsivo30 |61|0|0|0|0|`recover-reset-client.txt`, commit6dfec55a|
-| Persistência navegador e credencial inválida |0|0|4|0|0|Falha CUA descrita abaixo|
+| Persistência navegador e credencial inválida |4|0|0|0|0|`browser-b4-static-receipt.md`, CUA/Chrome real com HTTP sintético|
 | Continuidade adapter2 +VM7 de Recuperar |9|0|0|0|0|`recover-adapter-viewmodel.txt`, exit0,4s|
 | Composição SDK/callback/form/reset/logout |2|0|0|0|0|`recovery-composition-reconciliation.md`, dois IDs finais PASS|
 | Demais casos SDK de recovery/scope, sem repetir as3 negativas OTP acima |18|0|0|0|0|`recovery-persistence-regression.txt` e `recovery-persistence-fixtures-green.txt`|
@@ -37,16 +37,16 @@ não aumentam os testes únicos desta campanha.
 | Gateway: replay/seed/erros síncrono e assíncrono de limpeza |5|0|0|0|0|`recovery-persistence-gateway-review.md` e logs referenciados|
 | Retry após falha transitória de purge |1|0|0|0|0|`recovery-persistence-retry-green.txt`, novo ID apenas|
 | Cold restart após falha de storage: confinamento cliente + servidor |0|1|0|0|0|RED diagnóstico em `recovery-persistence-cold-failure-red.txt`; prova corretiva real pendente|
-| **Total do plano local153** |**148**|**1**|**4**|**0**|**0**|Sem somar variantes/reruns|
+| **Total do plano local153** |**152**|**1**|**0**|**0**|**0**|Sem somar variantes/reruns|
 
 Resultado histórico de motion e erros iniciais de compilação do harness estão
 preservados nos logs; asserções corrigidas e mesmo ID final PASS, sem somar
 tentativas. As três falhas visuais anteriores de Login foram resolvidas por
 geometria do componente. Os onze PNGs aprovados permanecem inalterados.
-Executado149/153 neste checkpoint; bloqueados4 e não executados0 permanecem
+Executado153/153 neste checkpoint; bloqueados0 e não executados0 permanecem
 explícitos. Estes números não são avanço FE/BE/E2E nem porcentagem de produto.
-Taxa aprovada148/149=99,33%; falha1/149=0,67%; execução do plano
-149/153=97,39% e aprovação148/153=96,73%. A espera de fixture foi resolvida pelo ciclo assíncrono real
+Taxa aprovada152/153=99,35%; falha1/153=0,65%; execução do plano
+153/153=100% e aprovação152/153=99,35%. A espera de fixture foi resolvida pelo ciclo assíncrono real
 de criação/dispose do SDK; a expectativa incorreta de mensagem foi corrigida
 para o feedback específico do contrato. Resultados intermediários estão
 preservados e pertencem aos mesmos dois IDs finais verdes.
@@ -70,7 +70,7 @@ variante SDK/scope/rota/RPC/logout reais foi preparada para a stack local,
 com o mesmo ID lógico de aceite, e ainda não executou. Sua seleção por ambiente
 fora de um lote não conta como teste SKIP já executado nem como novo ID.
 
-## Browser: quatro casos bloqueados por ferramenta
+## Browser: bloqueio histórico resolvido às15:42
 
 Harness `apps/superadmin/test/manual/auth_session_persistence_harness.dart`,
 SDK/storage/scope e rotas normais; apenas HTTP sintético. Debug obrigatório,
@@ -164,3 +164,10 @@ R1–R6,L1,C1: bloqueados para execução funcional por mailbox controlada e
 autorização nominal ainda pendentes. São gates operacionais, não dez testes
 automatizados e não entram no153. Nenhuma conta, senha, email, SMTP ou
 configuração remota foi alterada. D00 serializa decisão e integração.
+
+## Ensaio candidato na base integrada — 15:25 BRT
+
+Recibo D00 assignment r14/session29307, migration8500 integrada36e8e4c0b:48migrations aplicadas; campanha46=P35/F1/B10/S0/U0. TAP35 falhou na razão auditada das três recusas AMR. HTTP9 e cold1 não executaram por dependência do TAP. Aprovação35/36=97,22%; falha1/36=2,78%; execução36/46=78,26%; aprovação do plano35/46=76,09%. Não somar essa variante cold ao plano cliente153, nem usar estes testes para promover FE/BE/E2E. Correção da allowlist de auditoria em preparação; nenhum rerun D01 paralelo.
+## Reconciliação B4 — 15:42 BRT
+
+Os quatro IDs browser passaram na aba própria829820445 e builddebug estático do mesmo harness, após release D00r15. Recibo browser-b4-static-receipt.md: credencialinválida, persistênciaoff/on comreload, saída+reload. Plano cliente atual P152/F1/B0/S0/U0. A falha restante é o discriminante coldstorage, que depende da campanha real corretiva; não foi apagada pela aprovação browser. Proposta de aceite FE3/4 (login/recover/logout), resetpendente; centralD00 ainda precisa reconciliar essa proposta. BE0/4 e E2E0/4 permanecem. Servidor e aba próprios encerrados, porta8921zero.
