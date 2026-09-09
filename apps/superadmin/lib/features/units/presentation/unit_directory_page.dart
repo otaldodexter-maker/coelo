@@ -113,7 +113,10 @@ final class _UnitDirectoryPageState extends State<UnitDirectoryPage> {
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.repository, widget.repository)) {
       _viewModel.dispose();
-      _viewModel = UnitDirectoryViewModel(widget.repository);
+      _viewModel = UnitDirectoryViewModel(
+        widget.repository,
+        initialPageSize: _display == UnitDirectoryDisplay.cards ? 11 : 8,
+      );
       _searchController.clear();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) _viewModel.load();

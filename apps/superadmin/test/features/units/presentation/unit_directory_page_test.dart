@@ -51,12 +51,19 @@ void main() {
     await tester.pumpWidget(directory(firstRepository));
     await tester.pumpAndSettle();
     expect(find.text('Unidade antes da revogacao'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('unit-view-table')));
+    await tester.pumpAndSettle();
 
     await tester.pumpWidget(directory(replacementRepository));
     await tester.pumpAndSettle();
 
     expect(find.text('Unidade antes da revogacao'), findsNothing);
-    expect(find.text('Unidade apos novo contexto'), findsOneWidget);
+    expect(find.text('Unidade apos novo contexto'), findsWidgets);
+    expect(find.byKey(const Key('unit-directory-table-grouped')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('coelo-admin-pagination-page-size')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size-8')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size-11')), findsNothing);
   });
 
   testWidgets('offers grouped, turmas, and activities table views with local metrics', (
