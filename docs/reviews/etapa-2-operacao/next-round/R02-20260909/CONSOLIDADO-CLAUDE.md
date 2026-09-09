@@ -842,3 +842,34 @@ preflight de D00 e decisão do Owner.
 estado remoto desconhecido, e mexer em migration que possa já ter sido aplicada é
 decisão de D00. A correção de referência está registrada como **recomendação**,
 não como alteração.
+
+## Atualização final de L03 — oitavo defeito preso em teste
+
+HEAD **`dfac55bf4`**, handoff r8. **Verifiquei**: diff acumulado contra a base
+devolve **33 arquivos** (os 32 anteriores mais o teste novo) e **zero resíduo**
+em `failures/`, `specs/`, `PRINCIPAL.md` ou nas fontes compartilhadas.
+
+**A regra que ele adotou funcionou:** conferiu o diff acumulado depois do commit
+que veio de execução de teste, **antes** de anunciar. Desta vez a execução não
+regenerou artefato — e ele conferiu mesmo assim, que é exatamente o ponto.
+
+O teste `principal_profile_edit_preview_affordance_test.dart` tem três provas:
+abaixo de 1120 px o botão "Pré-visualizar" renderiza com `onPressed` nulo, com
+`reason` explicando que é defeito registrado; o defeito está **confinado às telas
+estreitas**, porque a partir de 1120 px o editor mostra o painel embutido e
+nenhum botão morto chega ao usuário; e o salvar continua habilitado, para separar
+este defeito de uma tela quebrada.
+
+O cabeçalho manda **inverter** a asserção quando o handler for ligado — habilitar
+o botão e apagar a asserção de desabilitado — **em vez de relaxá-la**, e remover
+a isenção de tela estreita. O widget compartilhado não foi tocado.
+
+**Números finais de L03: P=214, F=10, B=0, S=0, U=0.** Taxa aprovada 95,54%,
+execução 100%. As 10 seguem sendo o golden drift preexistente com controle em
+worktree alheia. `flutter analyze` limpo. **FE 3/3, BE 0/3, E2E 0/3.**
+
+**Balanço da frente:** oito defeitos reais, seis corrigidos com prova e dois
+registrados por serem decisão de composição aprovada e não dele — e os dois
+registrados estão **documentados**, um com medição de contraste e o outro **preso
+em teste**. Defeito registrado sem prova executável some no próximo turno;
+com prova, não some.
