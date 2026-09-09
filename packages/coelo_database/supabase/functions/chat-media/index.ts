@@ -102,6 +102,11 @@ export async function handleChatMediaRequest(
     return reply(origins, origin, 405, { error: "method_not_allowed" });
   }
   const authorization = request.headers.get("authorization");
+  // Shape only, and deliberately not more: this gateway reaches no data yet, so
+  // there is nothing to authorise and no token to verify. The sibling
+  // moments-media calls `auth.getUser()` right after this same check, because it
+  // does reach data. Whoever wires the catalog branch here must add that
+  // verification with it — passing this check is not being authenticated.
   if (!authorization?.startsWith("Bearer ")) {
     return reply(origins, origin, 401, { error: "authentication_required" });
   }
@@ -109,7 +114,10 @@ export async function handleChatMediaRequest(
   let body: Json;
   try {
     const raw = await request.text();
-    if (raw.length > maximumRequestBytes) {
+    // Measured in bytes, which is what the limit is named for. `raw.length`
+    // counts UTF-16 code units, so an accented or emoji-heavy payload would slip
+    // through at up to three or four times the intended size.
+    if (new TextEncoder().encode(raw).length > maximumRequestBytes) {
       return reply(origins, origin, 413, { error: "request_too_large" });
     }
     const parsed = JSON.parse(raw) as unknown;

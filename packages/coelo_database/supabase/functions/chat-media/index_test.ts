@@ -27,6 +27,35 @@ function post(body: unknown, headers: Record<string, string> = {}) {
   });
 }
 
+Deno.test("the request limit counts bytes, not UTF-16 code units", async () => {
+  // 20000 accented characters: 20000 code units, under the 32768 limit, but
+  // 40000 bytes in UTF-8, over it. A limit measured on the string waves this
+  // through and the gateway buffers well past what it agreed to accept.
+  // Portuguese payloads are the normal case here, not an exotic one.
+  const accented = "á".repeat(20_000);
+  const request = new Request("https://functions.invalid/chat-media", {
+    method: "POST",
+    headers: { authorization: "Bearer token", "content-type": "application/json" },
+    body: JSON.stringify({ action: "read", read_ticket: accented }),
+  });
+
+  const response = await handleChatMediaRequest(request, dependencies);
+
+  assertEquals(response.status, 413);
+  assertEquals(await response.json(), { error: "request_too_large" });
+});
+
+Deno.test("a payload under the byte limit is still accepted", async () => {
+  // The other side of the boundary: tightening the measure must not start
+  // refusing bodies that were always legitimate.
+  const response = await handleChatMediaRequest(
+    post({ action: "read", read_ticket: "á".repeat(1_000) }),
+    dependencies,
+  );
+
+  assertEquals(response.status, 503);
+});
+
 Deno.test("CORS reflects only a configured origin", async () => {
   const allowed = await handleChatMediaRequest(
     new Request("https://functions.invalid/chat-media", {
