@@ -1106,7 +1106,12 @@ create or replace function public.superadmin_access_profile_model_detail(uuid)
 returns jsonb language sql volatile security definer set search_path=''
 as $$select app_private.access_profile_model_call('detail',
   pg_catalog.jsonb_build_object('model_id',$1))$$;
-create or replace function public.superadmin_access_profile_models_cursor(text,text,text,text,integer,text,uuid)
+create or replace function public.superadmin_access_profile_models_cursor(
+  p_query text default null, p_domain text default null,
+  p_status text default null, p_scope text default null,
+  p_limit integer default 25, p_after_name text default null,
+  p_after_id uuid default null
+)
 returns jsonb language sql volatile security definer set search_path=''
 as $$select app_private.access_profile_model_call('list',pg_catalog.jsonb_build_object(
   'query',$1,'domain',$2,'status',$3,'scope',$4,'limit',$5,
@@ -1209,13 +1214,10 @@ as $$select app_private.access_profile_model_call('detail',
   pg_catalog.jsonb_build_object('model_id',p_model_id))$$;
 
 create or replace function public.superadmin_access_profile_models_cursor(
-  p_query text,
-  p_domain text,
-  p_status text,
-  p_scope text,
-  p_limit integer,
-  p_after_name text,
-  p_after_id uuid
+  p_query text default null, p_domain text default null,
+  p_status text default null, p_scope text default null,
+  p_limit integer default 25, p_after_name text default null,
+  p_after_id uuid default null
 ) returns jsonb language sql volatile security definer set search_path=''
 as $$select app_private.access_profile_model_call('list',
   pg_catalog.jsonb_build_object(

@@ -26,6 +26,17 @@ for name in NAMES:
     assert len(re.findall(r"(?mi)^begin;\s*$", text)) == 1, name
     assert len(re.findall(r"(?mi)^commit;\s*$", text)) == 1, name
     body = re.sub(r"(?mi)^(begin|commit);[ \t]*\n?", "", text)
+    if name in NAMES[:2]:
+        # The deployed cursor already has named/defaulted arguments. Keep its
+        # signature while changing the body; DROP would lose dependent objects.
+        signature = ("create or replace function public.superadmin_access_profile_models_cursor(\n"
+                     "  p_query text default null, p_domain text default null,\n"
+                     "  p_status text default null, p_scope text default null,\n"
+                     "  p_limit integer default 25, p_after_name text default null,\n"
+                     "  p_after_id uuid default null\n)")
+        body, count = re.subn(r"(?is)create or replace function public\.superadmin_access_profile_models_cursor\([^)]*\)",
+                             signature, body)
+        assert count == 1, name
     sources.append({"path": str(path.relative_to(ROOT)).replace("\\", "/"),
                     "sha256_lf_utf8": sha(text)})
     parts.append("-- SOURCE: " + name + "\n" + body)
@@ -41,6 +52,7 @@ fixture = "-- LOCAL ONLY: exercise package over Auth45 with production label con
 for table in ("platform_permissions", "institution_permissions"):
     for label in ("module_label", "screen_label", "action_label"):
         fixture += f"alter table public.{table} alter column {label} drop default;\n"
+fixture += (HERE / "remote-cursor-local-fixture.sql").read_text(encoding="utf-8")
 checks = (HERE / "package_checks.sql").read_text(encoding="utf-8")
 test_path = ROOT / "packages/coelo_database/supabase/tests/ap_models_nominal_package_test.sql"
 test_path.write_text(fixture + payload + checks, encoding="utf-8", newline="\n")
