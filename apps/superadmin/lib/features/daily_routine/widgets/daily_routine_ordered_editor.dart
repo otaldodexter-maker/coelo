@@ -48,8 +48,8 @@ final class DailyRoutineOrderedEditor extends StatelessWidget {
       children: [
         if (ordered.isEmpty)
           const CoeloStatePanel(
-            title: 'Nenhuma secao configurada',
-            message: 'Adicione a primeira secao para definir os campos da rotina.',
+            title: 'Nenhuma seção configurada',
+            message: 'Adicione a primeira seção para definir os campos da rotina.',
             icon: Icons.view_agenda_outlined,
           )
         else
@@ -100,7 +100,7 @@ final class DailyRoutineOrderedEditor extends StatelessWidget {
           key: const Key('daily-routine-add-section'),
           onPressed: enabled ? onAddSection : null,
           icon: const Icon(Icons.add_rounded),
-          label: const Text('Adicionar secao'),
+          label: const Text('Adicionar seção'),
         ),
       ],
     );
@@ -168,7 +168,7 @@ final class _SectionCardState extends State<_SectionCard> {
                   key: Key('daily-routine-section-${section.id}-drag-handle'),
                   index: widget.index,
                   enabled: widget.enabled,
-                  child: const _DragHandle(label: 'Reordenar secao'),
+                  child: const _DragHandle(label: 'Reordenar seção'),
                 ),
                 const SizedBox(width: CoeloSpacing.space2),
                 Expanded(
@@ -189,7 +189,7 @@ final class _SectionCardState extends State<_SectionCard> {
                   ),
                 ),
                 _Action(
-                  tooltip: expanded ? 'Recolher secao' : 'Expandir secao',
+                  tooltip: expanded ? 'Recolher seção' : 'Expandir seção',
                   onPressed: () => setState(() => expanded = !expanded),
                   icon: expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
                 ),
@@ -202,28 +202,28 @@ final class _SectionCardState extends State<_SectionCard> {
               children: [
                 _Action(
                   key: Key('daily-routine-section-${section.id}-move-up'),
-                  tooltip: 'Mover secao para cima',
+                  tooltip: 'Mover seção para cima',
                   onPressed: widget.enabled ? widget.onMoveUp : null,
                   icon: Icons.keyboard_arrow_up_rounded,
                 ),
                 _Action(
                   key: Key('daily-routine-section-${section.id}-move-down'),
-                  tooltip: 'Mover secao para baixo',
+                  tooltip: 'Mover seção para baixo',
                   onPressed: widget.enabled ? widget.onMoveDown : null,
                   icon: Icons.keyboard_arrow_down_rounded,
                 ),
                 _Action(
-                  tooltip: 'Duplicar secao',
+                  tooltip: 'Duplicar seção',
                   onPressed: widget.enabled ? widget.onDuplicate : null,
                   icon: Icons.content_copy_rounded,
                 ),
                 _Action(
-                  tooltip: 'Editar secao',
+                  tooltip: 'Editar seção',
                   onPressed: widget.enabled ? widget.onEdit : null,
                   icon: Icons.edit_outlined,
                 ),
                 _Action(
-                  tooltip: 'Remover secao',
+                  tooltip: 'Remover seção',
                   onPressed: widget.enabled ? widget.onRemove : null,
                   icon: Icons.delete_outline_rounded,
                   negative: true,
@@ -446,8 +446,8 @@ int _depth(RoutineField field) {
 String _kindLabel(RoutineFieldKind kind) => switch (kind) {
   RoutineFieldKind.shortText => 'Texto curto',
   RoutineFieldKind.longText => 'Texto longo',
-  RoutineFieldKind.number => 'Numero',
-  RoutineFieldKind.boolean => 'Sim/Nao',
-  RoutineFieldKind.singleChoice => 'Escolha unica',
-  RoutineFieldKind.multipleChoice => 'Escolha multipla',
+  RoutineFieldKind.number => 'Número',
+  RoutineFieldKind.boolean => 'Sim/Não',
+  RoutineFieldKind.singleChoice => 'Escolha única',
+  RoutineFieldKind.multipleChoice => 'Escolha múltipla',
 };

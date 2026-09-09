@@ -14,7 +14,7 @@ void main() {
     const model = RoutineModel(
       id: 'model-with-sections',
       name: 'Chegada e acolhimento',
-      description: 'Modelo com uma secao para duplicar.',
+      description: 'Modelo com uma seção para duplicar.',
       version: 1,
       status: RoutineModelStatus.active,
       sections: [
@@ -42,7 +42,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final duplicate = find.byTooltip('Duplicar secao');
+    final duplicate = find.byTooltip('Duplicar seção');
     await tester.ensureVisible(duplicate);
     await tester.pump();
     await tester.tap(duplicate);

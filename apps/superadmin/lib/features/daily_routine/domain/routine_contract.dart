@@ -28,7 +28,7 @@ enum RoutineRepositoryFailureKind { unauthorized, notFound, conflict, unavailabl
 final class RoutineRepositoryException implements Exception {
   const RoutineRepositoryException(
     this.kind, [
-    this.message = 'Nao foi possivel concluir a operacao de Rotina diaria.',
+    this.message = 'Não foi possível concluir a operação de Rotina diária.',
   ]);
 
   final RoutineRepositoryFailureKind kind;
@@ -89,7 +89,7 @@ final class RoutineField {
   void validate() {
     if (label.trim().isEmpty) throw const FormatException('Informe o nome do campo.');
     if (minimumValue != null && maximumValue != null && minimumValue! > maximumValue!) {
-      throw const FormatException('O valor minimo nao pode superar o valor maximo.');
+      throw const FormatException('O valor mínimo não pode superar o valor máximo.');
     }
     if (kind != RoutineFieldKind.number && (minimumValue != null || maximumValue != null)) {
       throw const FormatException('Limites numericos so se aplicam a campos numericos.');
@@ -97,15 +97,15 @@ final class RoutineField {
     final optionIds = options.map((option) => option.id).toSet();
     if (optionIds.length != options.length ||
         options.any((option) => option.label.trim().isEmpty)) {
-      throw const FormatException('As opcoes devem ter identificadores unicos e rotulos validos.');
+      throw const FormatException('As opções devem ter identificadores únicos e rótulos válidos.');
     }
     final optionKinds =
         kind == RoutineFieldKind.singleChoice || kind == RoutineFieldKind.multipleChoice;
     if (optionKinds && options.length < 2) {
-      throw const FormatException('Cadastre pelo menos duas opcoes.');
+      throw const FormatException('Cadastre pelo menos duas opções.');
     }
     if (!optionKinds && options.isNotEmpty) {
-      throw const FormatException('Este tipo de campo nao aceita opcoes.');
+      throw const FormatException('Este tipo de campo não aceita opções.');
     }
     if (initialValue == null) return;
     final valid = switch (kind) {
@@ -119,7 +119,7 @@ final class RoutineField {
       RoutineFieldKind.multipleChoice =>
         initialValue is Iterable && (initialValue! as Iterable).every(optionIds.contains),
     };
-    if (!valid) throw const FormatException('O valor inicial nao corresponde ao tipo do campo.');
+    if (!valid) throw const FormatException('O valor inicial não corresponde ao tipo do campo.');
   }
 }
 
@@ -173,14 +173,14 @@ final class RoutineModel {
     switch (originScope) {
       case RoutineModelOriginScope.institution:
         if (institutionId == null || institutionId!.trim().isEmpty || originUnitId != null) {
-          throw const FormatException('Informe a instituicao de origem do modelo.');
+          throw const FormatException('Informe a instituição de origem do modelo.');
         }
       case RoutineModelOriginScope.unit:
         if (institutionId == null ||
             institutionId!.trim().isEmpty ||
             originUnitId == null ||
             originUnitId!.trim().isEmpty) {
-          throw const FormatException('Informe a instituicao e a unidade de origem do modelo.');
+          throw const FormatException('Informe a instituição e a unidade de origem do modelo.');
         }
     }
     final fields = sections.expand((section) => section.fields).toList(growable: false);
@@ -239,11 +239,11 @@ final class RoutineApplication {
   void validate() {
     if (modelVersionId.trim().isEmpty || institutionId.trim().isEmpty) {
       throw const FormatException(
-        'Modelo e instituicao sao obrigatorios para uma rotina aplicada.',
+        'Modelo e instituição são obrigatórios para uma rotina aplicada.',
       );
     }
     if (validFrom != null && validUntil != null && validFrom!.isAfter(validUntil!)) {
-      throw const FormatException('O inicio da validade nao pode ser posterior ao fim.');
+      throw const FormatException('O início da validade não pode ser posterior ao fim.');
     }
     if (startsAt != null && !_isClockTime(startsAt!)) {
       throw const FormatException('Informe o horario inicial no formato HH:MM.');
@@ -259,7 +259,7 @@ final class RoutineApplication {
         .toSet();
     if (keys.length != assignees.length ||
         assignees.any((value) => value.membershipId.trim().isEmpty)) {
-      throw const FormatException('Responsaveis devem ser vinculos unicos e validos.');
+      throw const FormatException('Responsaveis devem ser vinculos únicos e válidos.');
     }
   }
 }
@@ -424,7 +424,7 @@ abstract interface class RoutineRepository
     implements RoutineDirectoryRepository, RoutineDetailRepository, RoutineCommandRepository {}
 
 final class UnavailableRoutineRepository implements RoutineRepository {
-  const UnavailableRoutineRepository([this.message = 'Rotina diaria indisponivel neste ambiente.']);
+  const UnavailableRoutineRepository([this.message = 'Rotina diária indisponível neste ambiente.']);
 
   final String message;
 
@@ -488,10 +488,10 @@ void _validateConditionGraph(List<RoutineField> fields) {
   for (final field in fields) {
     for (final condition in field.conditions) {
       if (condition.depth < 1 || condition.depth > 4) {
-        throw const FormatException('Ramificacoes aceitam no maximo quatro niveis.');
+        throw const FormatException('Ramificações aceitam no máximo quatro níveis.');
       }
       if (!ids.contains(condition.parentFieldId) || !ids.contains(condition.targetFieldId)) {
-        throw const FormatException('A condicao referencia um campo inexistente.');
+        throw const FormatException('A condição referencia um campo inexistente.');
       }
       (edges[condition.parentFieldId] ??= []).add(condition.targetFieldId);
     }
@@ -510,6 +510,6 @@ void _validateConditionGraph(List<RoutineField> fields) {
   }
 
   for (final id in ids) {
-    if (!visit(id)) throw const FormatException('Ramificacoes nao podem formar ciclos.');
+    if (!visit(id)) throw const FormatException('Ramificações não podem formar ciclos.');
   }
 }
