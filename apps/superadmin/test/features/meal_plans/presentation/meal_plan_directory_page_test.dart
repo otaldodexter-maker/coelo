@@ -36,6 +36,27 @@ void main() {
     expect(find.text('Importação de cardápios estará disponível em breve.'), findsOneWidget);
   });
 
+  testWidgets('maps directory decoding Errors to a retryable failure', (tester) async {
+    await tester.pumpWidget(
+      _app(
+        repository: _DirectoryRepository(
+          item: _plan(id: 'template-a', name: 'Modelo sazonal'),
+          onFetch: (_, _) async {
+            final payload = <String, Object?>{'items': 42};
+            return payload['items']! as MealPlanPage;
+          },
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Não foi possível carregar'), findsOneWidget);
+    expect(find.text('Tentar novamente'), findsOneWidget);
+    expect(find.byKey(const Key('meal-plans-loading')), findsNothing);
+  });
+
   testWidgets('repository swap clears A filters and rejects its late response', (tester) async {
     final lateA = Completer<MealPlanPage>();
     final repositoryA = _DirectoryRepository(
