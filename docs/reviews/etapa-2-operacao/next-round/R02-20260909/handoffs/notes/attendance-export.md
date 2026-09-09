@@ -51,3 +51,6 @@ remoto e E2E não recebem promoção nesta prova.
 
 Gate de conhecimento: `no-op`; a classificação pós-MVP e o comportamento
 informativo já estavam registrados nas fontes canônicas.
+
+
+Aceite D00 em 2026-09-09T13:57:12.098713-03:00: R02 D00: FE informativo da ação adiada certificado em ee82aa67d; cinco casos PASS de D03 com hashes conferidos e fontes idênticas. CSV/XLSX exibem indisponibilidade honesta; cliques não solicitam exportação. Aceite FE do adiamento aprovado; controles visíveis/acessíveis/responsivos e aviso Disponível depois do MVP. Não implementa exportação real.

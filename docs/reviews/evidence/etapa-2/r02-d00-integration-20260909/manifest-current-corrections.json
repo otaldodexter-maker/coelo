@@ -1,0 +1,488 @@
+{
+  "source": "D00 machine reporters; exact integrated revisions",
+  "generatedAt": "2026-09-09T14:11:33.709791-03:00",
+  "status": "focal-local-pass-not-product-completion",
+  "campaigns": [
+    {
+      "campaign_id": "R02-D00-unit-gates-correction",
+      "revision": "5d1217297",
+      "environment": "Windows Flutter local; synthetic repositories or HTTP transport",
+      "layer": "FE",
+      "action_ids": [
+        "units.create",
+        "units.edit"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/unit-gates-correction.jsonl",
+      "sha256": "97b92cc0b804efb621e37dadfd23e9fe8623e7bb24a6ad15a4e25475b09c2fe4",
+      "cases": [
+        {
+          "test_id": "apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart::production unit mutations stay blocked by default",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart::an enabled production gate still receives only unavailable composition",
+          "result": "P",
+          "alreadyCounted": false
+        }
+      ],
+      "P": 2,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    },
+    {
+      "campaign_id": "R02-D00-routine-validation",
+      "revision": "2070ab8fd",
+      "environment": "Windows Flutter local; synthetic repositories or HTTP transport",
+      "layer": "FE",
+      "action_ids": [
+        "daily-routine.create",
+        "daily-routine.edit"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/routine-validation.jsonl",
+      "sha256": "e266a3f97f00c46de4fa73aaea582a27e6e466db0d8048efd11a51248177b43f",
+      "cases": [
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::rejects inverted validity before saving an application",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::rejects invalid start time before saving an application",
+          "result": "P",
+          "alreadyCounted": false
+        }
+      ],
+      "P": 2,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    },
+    {
+      "campaign_id": "R02-D00-attendance-reason",
+      "revision": "8f9b3c35b",
+      "environment": "Windows Flutter local; synthetic repositories or HTTP transport",
+      "layer": "FE",
+      "action_ids": [
+        "attendance.correct"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/attendance-reason.jsonl",
+      "sha256": "99fc125ebc1a60fe66aed5ea1e853b4de4a7c462890f8f03ed0e26428fda2107",
+      "cases": [
+        {
+          "test_id": "apps/superadmin/test/features/attendance/attendance_pages_test.dart::correction requires a reason and preserves the draft",
+          "result": "P",
+          "alreadyCounted": false
+        }
+      ],
+      "P": 1,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    },
+    {
+      "campaign_id": "R02-D00-auth-reset-composition",
+      "revision": "0f7b7cf83",
+      "environment": "Windows Flutter local; synthetic repositories or HTTP transport",
+      "layer": "FE",
+      "action_ids": [
+        "auth.reset"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/auth-reset-composition.jsonl",
+      "sha256": "7703818b7e3bacd4524b69f7230c24847830d2733fae9088086f8a2eb591d39f",
+      "cases": [
+        {
+          "test_id": "apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart::SDK recovery callback through reset form waits for logout: success=true",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart::SDK recovery callback through reset form waits for logout: success=false",
+          "result": "P",
+          "alreadyCounted": false
+        }
+      ],
+      "P": 2,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    },
+    {
+      "campaign_id": "R02-D00-routine-inheritance-final",
+      "revision": "0d6d1ca6a",
+      "environment": "Windows Flutter local; synthetic repositories or HTTP transport",
+      "layer": "FE",
+      "action_ids": [
+        "daily-routine.edit"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/routine-inheritance-final.jsonl",
+      "sha256": "c14645b35012e1e4d361a0993f3fa7a6f8878da9ecbf31b5ba2fbe54406a38af",
+      "cases": [
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::persists the newly selected inheritance mode",
+          "result": "P",
+          "alreadyCounted": true
+        },
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::rejects an invalid draft before changing inheritance mode",
+          "result": "P",
+          "alreadyCounted": false
+        }
+      ],
+      "P": 2,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    },
+    {
+      "campaign_id": "R02-D00-for-you-filter",
+      "revision": "7271f4a39",
+      "environment": "Windows Flutter local; synthetic repositories or HTTP transport",
+      "layer": "FE",
+      "action_ids": [
+        "principal.for-you"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/for-you-filter.jsonl",
+      "sha256": "f5d2b47324ffc61acb628dc14a4fd7af1249180d48e20a5d6abbf0c8e0fe4bb9",
+      "cases": [
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/data/principal_for_you_communications_adapter_test.dart::projects eligible communications and excludes popup notices",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/data/principal_for_you_communications_adapter_test.dart::never projects popup communications even with an actor scope",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/data/principal_for_you_communications_adapter_test.dart::keeps expired or inactive communications ineligible",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/data/principal_for_you_communications_adapter_test.dart::keeps communications ineligible before the validity window",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/data/principal_for_you_communications_adapter_test.dart::keeps communications eligible when there is no end date",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/data/principal_for_you_communications_adapter_test.dart::does not project popup-only behavior into the Principal model",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/data/principal_for_you_communications_adapter_test.dart::audiência everyone e platform selectAll alcançam qualquer ator",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/data/principal_for_you_communications_adapter_test.dart::audiência instituição correspondente e não correspondente",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/data/principal_for_you_communications_adapter_test.dart::audiência unidade e turma respeitam o escopo do ator",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/data/principal_for_you_communications_adapter_test.dart::audiência pessoa e papel alcançam apenas o ator correspondente",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/data/principal_for_you_communications_adapter_test.dart::audiência exclusão explícita reprova mesmo com selectAll",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/data/principal_for_you_communications_adapter_test.dart::audiência sem escopo o comportamento anterior é preservado",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/data/principal_for_you_communications_adapter_test.dart::audiência escopo derivado do runtime context reaproveita a mesma avaliação",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/data/principal_for_you_communications_adapter_test.dart::ordena por prioridade urgente, importante e rotina",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/presentation/principal_for_you_route_page_test.dart::expires a visible highlight without reopening the hub",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/presentation/principal_for_you_route_page_test.dart::an authorized active item observes its start boundary",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/presentation/principal_for_you_route_page_test.dart::old validity timer cannot replace a pending context load",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/presentation/principal_for_you_route_page_test.dart::disposing cancels an armed validity timer",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/presentation/principal_for_you_route_page_test.dart::an already expired result uses the empty hub state",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/presentation/principal_for_you_route_page_test.dart::loads Communications through repository and excludes popup notices",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/presentation/principal_for_you_route_page_test.dart::keeps the useful hub visible when Communications is empty",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/presentation/principal_for_you_route_page_test.dart::shows a safe error and retries the repository",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/presentation/principal_for_you_route_page_test.dart::loads B and ignores a late result from repository A",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/principal_for_you/presentation/principal_for_you_route_page_test.dart::shows unauthorized without a retry action",
+          "result": "P",
+          "alreadyCounted": false
+        }
+      ],
+      "P": 24,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    },
+    {
+      "campaign_id": "R02-D00-attendance-pending",
+      "revision": "d96dbd985",
+      "environment": "Windows Flutter local; synthetic repositories or HTTP transport",
+      "layer": "FE",
+      "action_ids": [
+        "attendance.create",
+        "attendance.finish",
+        "attendance.correct"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/attendance-pending.jsonl",
+      "sha256": "931938fc32482470703ba8c27244127c5b1e2d21c70f9229d739e5fea8fefe79",
+      "cases": [
+        {
+          "test_id": "apps/superadmin/test/features/attendance/attendance_pages_test.dart::new call locks its context while submission is in flight",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/attendance/attendance_pages_test.dart::completion stays disabled while its command is in flight",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/attendance/attendance_pages_test.dart::correction fields stay locked while the command is in flight",
+          "result": "P",
+          "alreadyCounted": true
+        }
+      ],
+      "P": 3,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    },
+    {
+      "campaign_id": "R02-D00-students-context",
+      "revision": "148cbb599",
+      "environment": "Windows Flutter local; synthetic repositories or HTTP transport",
+      "layer": "FE",
+      "action_ids": [
+        "students.list"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/students-context.jsonl",
+      "sha256": "62bf1440302b4188169517c0c0d511a369246ec0e1a4d96a0248b28d84cb4891",
+      "cases": [
+        {
+          "test_id": "apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart::students route discards a pending page after authenticated context changes",
+          "result": "P",
+          "alreadyCounted": false
+        }
+      ],
+      "P": 1,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    },
+    {
+      "campaign_id": "R02-D00-locations-capabilities",
+      "revision": "4eacb7b5b",
+      "environment": "Windows Flutter local; synthetic repositories",
+      "layer": "FE",
+      "action_ids": [
+        "locations.list",
+        "locations.detail",
+        "locations.copy",
+        "locations.schedule"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/locations-capabilities.jsonl",
+      "sha256": "bf66d4ac1c8003126f6929f0135a97588ee72153bb9b37c332d5c7cee8a039f2",
+      "cases": [
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capabilities_test.dart::the directory surface grants nothing by default, which is a read-only catalog",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capabilities_test.dart::the directory surface create draws creation and nothing else",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capabilities_test.dart::the directory surface copy draws bringing one down and not creation",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capabilities_test.dart::the directory surface an institution scope never offers to bring one down",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capabilities_test.dart::the detail surface a direct compositor cannot bypass the update capability",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capability_revocation_test.dart::losing create closes the create form that was open",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capabilities_test.dart::the detail surface grants nothing by default",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capabilities_test.dart::the detail surface update draws editing alone",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capability_revocation_test.dart::losing copy closes the panel that brings one down",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capabilities_test.dart::the detail surface status draws the transitions alone",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capability_revocation_test.dart::losing update closes the edit form of a location",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capabilities_test.dart::the detail surface copy draws duplication alone",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capabilities_test.dart::the detail surface schedule draws availability alone",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capability_revocation_test.dart::losing copy does not shut an edit someone is in the middle of",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capability_revocation_test.dart::the grants that stay keep drawing what they always drew",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capabilities_test.dart::the legacy pair still behaves exactly as it did canCreate alone grants all five, as before",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capabilities_test.dart::the legacy pair still behaves exactly as it did canManage false with canCreate true grants creation only",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capabilities_test.dart::the legacy pair still behaves exactly as it did capabilities win over the pair when both are passed",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capabilities_test.dart::the type itself nothing granted reads as read-only",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capabilities_test.dart::the type itself the legacy derivation is the one the catalog used",
+          "result": "P",
+          "alreadyCounted": false
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capabilities_test.dart::the type itself one granted write is enough to need a writer",
+          "result": "P",
+          "alreadyCounted": false
+        }
+      ],
+      "P": 21,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    }
+  ],
+  "supersedes": [
+    {
+      "test_id": "apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart::production unit routes receive only unavailable composition",
+      "reason": "Legacy test split into default-blocked and explicitly-enabled-unavailable cases; no production gate enabled"
+    }
+  ],
+  "newUniqueCases": 56,
+  "cumulativeCurrent": {
+    "P": 227,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "historicalFailedCases": 1,
+  "limits": [
+    "Prior103 runner totals retained; text reporter named subsets may be incomplete.",
+    "Author reruns and reused attendance.export5 excluded from D00 execution total.",
+    "Infrastructure15 Pester and15 static contracts are separate.",
+    "Interrupted routine-inheritance.jsonl has no terminal result, superseded by final run.",
+    "Para Você filter is additional local presentation; no production authorization certification."
+  ]
+}

@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="29" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-09-09" time="14:18:36">
+  <environment user="adrie" machine-name="LAPTOP-67A8F4LK" cwd="C:\Users\adrie\Documents\Coelo" user-domain="LAPTOP-67A8F4LK" platform="Microsoft Windows 11 Home|C:\WINDOWS|\Device\Harddisk0\Partition3" nunit-version="2.5.8.0" os-version="10.0.26200" clr-version="4.0.30319.42000" />
+  <culture-info current-culture="pt-BR" current-uiculture="pt-BR" />
+  <test-suite type="Powershell" name="Pester" executed="True" result="Success" success="True" time="35.9111" asserts="0">
+    <results>
+      <test-suite type="TestFixture" name="ActivityAggregateConcurrency wrapper integration" executed="True" result="Success" success="True" time="4.2576" asserts="0" description="ActivityAggregateConcurrency wrapper integration">
+        <results>
+          <test-case description="materializes exactly the 56 reviewed SQL files without starting services" name="ActivityAggregateConcurrency wrapper integration.materializes exactly the 56 reviewed SQL files without starting services" time="3.2027" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects concurrency outside the closed profile before creating resources" name="ActivityAggregateConcurrency wrapper integration.rejects concurrency outside the closed profile before creating resources" time="1.0549" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="Closed ActivityAggregateConcurrency replay selector" executed="True" result="Success" success="True" time="0.9388" asserts="0" description="Closed ActivityAggregateConcurrency replay selector">
+        <results>
+          <test-case description="derives base55 and adds only the current aggregate migration" name="Closed ActivityAggregateConcurrency replay selector.derives base55 and adds only the current aggregate migration" time="0.6735" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="pins the aggregate and both parent artifacts by normalized hash" name="Closed ActivityAggregateConcurrency replay selector.pins the aggregate and both parent artifacts by normalized hash" time="0.0598" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects every target except the aggregate migration" name="Closed ActivityAggregateConcurrency replay selector.rejects every target except the aggregate migration" time="0.2055" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="Activity v2 concurrency harness contract" executed="True" result="Success" success="True" time="0.9452" asserts="0" description="Activity v2 concurrency harness contract">
+        <results>
+          <test-case description="exists and parses without errors" name="Activity v2 concurrency harness contract.exists and parses without errors" time="0.3404" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="requires the disposable project root and isolated project identity" name="Activity v2 concurrency harness contract.requires the disposable project root and isolated project identity" time="0.1098" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="starts two independent psql processes and waits for both results" name="Activity v2 concurrency harness contract.starts two independent psql processes and waits for both results" time="0.1004" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="asserts one winner, one concurrent-change loser, and durable invariants" name="Activity v2 concurrency harness contract.asserts one winner, one concurrent-change loser, and durable invariants" time="0.0927" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="uses the exact audited eight-field internal marker fixture" name="Activity v2 concurrency harness contract.uses the exact audited eight-field internal marker fixture" time="0.1114" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="seeds the aggregate with an active unit link under the nominal marker" name="Activity v2 concurrency harness contract.seeds the aggregate with an active unit link under the nominal marker" time="0.0774" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="never obtains or prints local API or database credentials" name="Activity v2 concurrency harness contract.never obtains or prints local API or database credentials" time="0.113" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="Safe replay Activity v2 concurrency integration" executed="True" result="Success" success="True" time="0.1496" asserts="0" description="Safe replay Activity v2 concurrency integration">
+        <results>
+          <test-case description="parses and exposes the explicit switch" name="Safe replay Activity v2 concurrency integration.parses and exposes the explicit switch" time="0.0916" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="invokes the harness with only the isolated root and identity" name="Safe replay Activity v2 concurrency integration.invokes the harness with only the isolated root and identity" time="0.0581" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="Closed ChildDirectoryEnvelope replay selector" executed="True" result="Success" success="True" time="24.0581" asserts="0" description="Closed ChildDirectoryEnvelope replay selector">
+        <results>
+          <test-case description="selects Auth45, CHILD1, one local bridge and two inherited preflights" name="Closed ChildDirectoryEnvelope replay selector.selects Auth45, CHILD1, one local bridge and two inherited preflights" time="5.0086" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects an earlier target" name="Closed ChildDirectoryEnvelope replay selector.rejects an earlier target" time="1.0799" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects a canonical migration with the local bridge version" name="Closed ChildDirectoryEnvelope replay selector.rejects a canonical migration with the local bridge version" time="1.3145" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects a reparse point in the profile path" name="Closed ChildDirectoryEnvelope replay selector.rejects a reparse point in the profile path" time="1.6737" asserts="0" success="True" result="Success" executed="True" />
+          <test-suite type="ParameterizedTest" name="Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for &lt;inputKind&gt;" executed="True" result="Success" success="True" time="14.9813" asserts="0" description="rejects changed bytes for &lt;inputKind&gt;">
+            <results>
+              <test-case description="rejects changed bytes for descriptor" name="Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for descriptor" time="0.9175" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects changed bytes for manifest" name="Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for manifest" time="0.8402" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects changed bytes for child" name="Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for child" time="1.9144" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects changed bytes for bridge" name="Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for bridge" time="2.0836" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects changed bytes for approvedSource" name="Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for approvedSource" time="5.8566" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="rejects changed bytes for sourceNote" name="Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for sourceNote" time="3.3689" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="Invoke-SafeLocalMigrationReplay Supabase CLI agent mode" executed="True" result="Success" success="True" time="5.5618" asserts="0" description="Invoke-SafeLocalMigrationReplay Supabase CLI agent mode">
+        <results>
+          <test-case description="parses without errors" name="Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.parses without errors" time="5.2637" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="disables CLI agent autodetection for every npx Supabase invocation" name="Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.disables CLI agent autodetection for every npx Supabase invocation" time="0.1234" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="forwards the reviewed additional migration allowlist to replay preparation" name="Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.forwards the reviewed additional migration allowlist to replay preparation" time="0.0821" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="keeps generated replay ownership, reparse and residual-resource cleanup gates" name="Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.keeps generated replay ownership, reparse and residual-resource cleanup gates" time="0.051" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="validates additions before start without exposing migrations to automatic startup replay" name="Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.validates additions before start without exposing migrations to automatic startup replay" time="0.0416" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

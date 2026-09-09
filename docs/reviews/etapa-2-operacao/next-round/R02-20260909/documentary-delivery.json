@@ -1,0 +1,147 @@
+{
+  "sourceCommit": "eaab2df13d06d7d350cb63a3a3c825a02de68a46",
+  "generatedAt": "2026-09-09T13:24:40.422738-03:00",
+  "scope": "Approved shell/R2 sources and skill reference only; clean target files prechecked; no index/HEAD changes in active worktrees",
+  "files": [
+    {
+      "role": "l00-coordenacao-claude",
+      "path": ".agents/skills/coelo-ui/references/principal-visual-surfaces.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "fc38e22ad02f3c4d3e1f5eaaf8e47b0038eabc141f6fe59ca9b441a1a5b59f1d",
+      "afterSha256": "ac70a4c4e90c7c379cfe022ab08d596574d493555ef914379c5e8dfad2a48922"
+    },
+    {
+      "role": "l00-coordenacao-claude",
+      "path": "specs/037-principal-circulars.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "7396be4a21bdb624eaafe4c28ceea2291851c475996edbc2cb792e4cc1df3faa",
+      "afterSha256": "76acb58ba6dc7733faff3ecf96f6f0567621a3deb0f058eab7aa1d124ac627f0"
+    },
+    {
+      "role": "l00-coordenacao-claude",
+      "path": "specs/050-principal-ui-ux-closure.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "36e89646a777c08e51c8bbc14d60b747fa553c2e97e291349c80575d1e72a374",
+      "afterSha256": "8fd55068f0314a150e77429399cabf20d7418c13837ea63ab140c772ce611a67"
+    },
+    {
+      "role": "l00-coordenacao-claude",
+      "path": "docs/knowledge/team/principal-circulars.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "e21c8359bbc4c8fa24596e02352bbf5ee07f2f2aea6ae27f6063266bdd6796ed",
+      "afterSha256": "0bf3c1e2e59a43ce7fa7c31b2e74c82e3f0c71cdb5eee42e7c239995cd4a58ca"
+    },
+    {
+      "role": "l00-coordenacao-claude",
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/PRINCIPAL.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "0bed27ef744094a8a7e5aa09b82b31fcefe0766a2b886b711bad68aa2549cdbd",
+      "afterSha256": "78fbe354258c6c8d2595eb0813f439c6472c298e82edfbda4c46b7606a85cb3e"
+    },
+    {
+      "role": "l01-publicacoes",
+      "path": ".agents/skills/coelo-ui/references/principal-visual-surfaces.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "fc38e22ad02f3c4d3e1f5eaaf8e47b0038eabc141f6fe59ca9b441a1a5b59f1d",
+      "afterSha256": "ac70a4c4e90c7c379cfe022ab08d596574d493555ef914379c5e8dfad2a48922"
+    },
+    {
+      "role": "l01-publicacoes",
+      "path": "specs/037-principal-circulars.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "8b18f3b2beb926053dcbe0098781786496d4440701d6eeed1b995bf33aca299a",
+      "afterSha256": "76acb58ba6dc7733faff3ecf96f6f0567621a3deb0f058eab7aa1d124ac627f0"
+    },
+    {
+      "role": "l01-publicacoes",
+      "path": "specs/050-principal-ui-ux-closure.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "36e89646a777c08e51c8bbc14d60b747fa553c2e97e291349c80575d1e72a374",
+      "afterSha256": "8fd55068f0314a150e77429399cabf20d7418c13837ea63ab140c772ce611a67"
+    },
+    {
+      "role": "l01-publicacoes",
+      "path": "docs/knowledge/team/principal-circulars.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "9d79adc96a60828411a88709599c99c23c779d43befcecba6b015677fcd32387",
+      "afterSha256": "0bf3c1e2e59a43ce7fa7c31b2e74c82e3f0c71cdb5eee42e7c239995cd4a58ca"
+    },
+    {
+      "role": "l01-publicacoes",
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/PRINCIPAL.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "0bed27ef744094a8a7e5aa09b82b31fcefe0766a2b886b711bad68aa2549cdbd",
+      "afterSha256": "78fbe354258c6c8d2595eb0813f439c6472c298e82edfbda4c46b7606a85cb3e"
+    },
+    {
+      "role": "l02-chat-comunicacoes",
+      "path": ".agents/skills/coelo-ui/references/principal-visual-surfaces.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "fc38e22ad02f3c4d3e1f5eaaf8e47b0038eabc141f6fe59ca9b441a1a5b59f1d",
+      "afterSha256": "ac70a4c4e90c7c379cfe022ab08d596574d493555ef914379c5e8dfad2a48922"
+    },
+    {
+      "role": "l02-chat-comunicacoes",
+      "path": "specs/037-principal-circulars.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "7396be4a21bdb624eaafe4c28ceea2291851c475996edbc2cb792e4cc1df3faa",
+      "afterSha256": "76acb58ba6dc7733faff3ecf96f6f0567621a3deb0f058eab7aa1d124ac627f0"
+    },
+    {
+      "role": "l02-chat-comunicacoes",
+      "path": "specs/050-principal-ui-ux-closure.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "36e89646a777c08e51c8bbc14d60b747fa553c2e97e291349c80575d1e72a374",
+      "afterSha256": "8fd55068f0314a150e77429399cabf20d7418c13837ea63ab140c772ce611a67"
+    },
+    {
+      "role": "l02-chat-comunicacoes",
+      "path": "docs/knowledge/team/principal-circulars.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "e21c8359bbc4c8fa24596e02352bbf5ee07f2f2aea6ae27f6063266bdd6796ed",
+      "afterSha256": "0bf3c1e2e59a43ce7fa7c31b2e74c82e3f0c71cdb5eee42e7c239995cd4a58ca"
+    },
+    {
+      "role": "l02-chat-comunicacoes",
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/PRINCIPAL.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "0bed27ef744094a8a7e5aa09b82b31fcefe0766a2b886b711bad68aa2549cdbd",
+      "afterSha256": "78fbe354258c6c8d2595eb0813f439c6472c298e82edfbda4c46b7606a85cb3e"
+    },
+    {
+      "role": "l03-perfil-para-voce",
+      "path": ".agents/skills/coelo-ui/references/principal-visual-surfaces.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "fc38e22ad02f3c4d3e1f5eaaf8e47b0038eabc141f6fe59ca9b441a1a5b59f1d",
+      "afterSha256": "ac70a4c4e90c7c379cfe022ab08d596574d493555ef914379c5e8dfad2a48922"
+    },
+    {
+      "role": "l03-perfil-para-voce",
+      "path": "specs/037-principal-circulars.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "7396be4a21bdb624eaafe4c28ceea2291851c475996edbc2cb792e4cc1df3faa",
+      "afterSha256": "76acb58ba6dc7733faff3ecf96f6f0567621a3deb0f058eab7aa1d124ac627f0"
+    },
+    {
+      "role": "l03-perfil-para-voce",
+      "path": "specs/050-principal-ui-ux-closure.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "36e89646a777c08e51c8bbc14d60b747fa553c2e97e291349c80575d1e72a374",
+      "afterSha256": "8fd55068f0314a150e77429399cabf20d7418c13837ea63ab140c772ce611a67"
+    },
+    {
+      "role": "l03-perfil-para-voce",
+      "path": "docs/knowledge/team/principal-circulars.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "e21c8359bbc4c8fa24596e02352bbf5ee07f2f2aea6ae27f6063266bdd6796ed",
+      "afterSha256": "0bf3c1e2e59a43ce7fa7c31b2e74c82e3f0c71cdb5eee42e7c239995cd4a58ca"
+    },
+    {
+      "role": "l03-perfil-para-voce",
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/PRINCIPAL.md",
+      "status": "materialized-approved-doc-only",
+      "beforeSha256": "0bed27ef744094a8a7e5aa09b82b31fcefe0766a2b886b711bad68aa2549cdbd",
+      "afterSha256": "78fbe354258c6c8d2595eb0813f439c6472c298e82edfbda4c46b7606a85cb3e"
+    }
+  ]
+}

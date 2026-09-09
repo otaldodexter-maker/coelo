@@ -1,0 +1,45 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:106
++ ... -20260909'; rtk proxy flutter test --no-pub test/features/student_tra ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+00:00 +0: loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart: composes the authorized child list above tracking
+00:00 +1: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart: composes the authorized child list above tracking
+00:00 +2: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart: composes the authorized child list above tracking
+00:00 +3: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart: composes the authorized child list above tracking
+00:00 +4: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart: composes the authorized child list above tracking
+00:00 +5: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart: composes the authorized child list above tracking
+00:00 +6: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart: composes the authorized child list above tracking
+00:00 +7: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart: composes the authorized child list above tracking
+00:00 +8: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart: composes the authorized child list above tracking
+00:00 +9: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart: composes the authorized child list above tracking
+00:00 +10: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart: composes the authorized child list above tracking
+00:00 +11: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart: composes the authorized child list above tracking
+00:00 +12: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart: composes the authorized child list above tracking
+00:00 +13: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart: composes the authorized child list above tracking
+00:00 +14: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart: composes the authorized child list above tracking
+00:00 +15: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart: composes the authorized child list above tracking
+00:00 +16: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart: composes the authorized child list above tracking
+00:01 +17: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/student_tracking_fail_closed_routes_test.dart: development students use local examples while manage routes stay fail-closed
+00:01 +18: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/student_tracking_fail_closed_routes_test.dart: development students use local examples while manage routes stay fail-closed
+00:01 +19: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/student_tracking_fail_closed_routes_test.dart: development students use local examples while manage routes stay fail-closed
+00:02 +20: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/student_tracking_fail_closed_routes_test.dart: development students use local examples while manage routes stay fail-closed
+00:02 +21: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/student_tracking_fail_closed_routes_test.dart: development students use local examples while manage routes stay fail-closed
+00:02 +22: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/student_tracking_fail_closed_routes_test.dart: development students use local examples while manage routes stay fail-closed
+00:03 +23: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/student_tracking_fail_closed_routes_test.dart: development students use local examples while manage routes stay fail-closed
+00:03 +24: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart: rejects an empty id returned while creating model
+00:03 +25: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart: rejects an empty id returned while creating model
+00:03 +26: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart: rejects an empty id returned while creating application
+00:03 +27: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart: ignores a late application load after the editor context changes
+00:03 +28: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart: distinct equal repositories still replace the editor context
+00:04 +29: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart: rejects a mismatched id returned while editing model
+00:04 +30: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart: rejects a mismatched id returned while editing application
+00:04 +31: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart: fails closed when an application load returns another id
+00:04 +32: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart: fails closed when applying a model returned for another id
+00:04 +33: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart: does not surface application creation without an authorized context
+00:04 +34: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart: reverts a customized application through the repository
+00:04 +35: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart: persists the newly selected inheritance mode
+00:04 +36: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart: renders scheduled fields and never exposes raw scope identifiers
+00:04 +37: All tests passed!

@@ -1,0 +1,13 @@
+{"protocolVersion":"0.1.1","runnerVersion":null,"pid":23720,"type":"start","time":0}
+{"suite":{"id":0,"platform":"vm","path":"C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/attendance/attendance_pages_test.dart"},"type":"suite","time":0}
+{"test":{"id":1,"name":"loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/attendance/attendance_pages_test.dart","suiteID":0,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":2}
+{"count":1,"time":7,"type":"allSuites"}
+{"testID":1,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":19188}
+{"group":{"id":2,"suiteID":0,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":3,"line":null,"column":null,"url":null},"type":"group","time":19191}
+{"test":{"id":3,"name":"new call locks its context while submission is in flight","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":214,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/attendance/attendance_pages_test.dart"},"type":"testStart","time":19192}
+{"testID":3,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":20789}
+{"test":{"id":4,"name":"completion stays disabled while its command is in flight","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":984,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/attendance/attendance_pages_test.dart"},"type":"testStart","time":20790}
+{"testID":4,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":21732}
+{"test":{"id":5,"name":"correction fields stay locked while the command is in flight","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":1603,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/attendance/attendance_pages_test.dart"},"type":"testStart","time":21733}
+{"testID":5,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":22881}
+{"success":true,"type":"done","time":22943}

@@ -20,23 +20,23 @@
       "family": "auth",
       "screen": "Auth / Login",
       "scope": "mvp",
-      "done": "Guards, recovery confinado, single-flight e limpeza de sessão integrados. Lifecycle Auth local registrado; não implica SMTP ou token remoto comprovado. C01I017 integrado90de1968/f7230db9; Error contido e resultado seguro, senha confirmada/cleanupfalho diferenciados, sessão nova preservada. C00122testes PASS/analyzer6limpo. R02 D01: geometria aprovada do controle de sessão restaurada sem alterar goldens;386ad474→b8abfd59,21 testes Login PASS na base5908a330. Três goldens históricos resolvidos; browser/provedor permanecem separados.",
+      "done": "Guards, recovery confinado, single-flight e limpeza de sessão integrados. Lifecycle Auth local registrado; não implica SMTP ou token remoto comprovado. C01I017 integrado90de1968/f7230db9; Error contido e resultado seguro, senha confirmada/cleanupfalho diferenciados, sessão nova preservada. C00122testes PASS/analyzer6limpo. R02 D01: geometria aprovada do controle de sessão restaurada sem alterar goldens;386ad474→b8abfd59,21 testes Login PASS na base5908a330. Três goldens históricos resolvidos; browser/provedor permanecem separados. R02: teclado/foco Login e header reduced-motion integrados a1c6a4ba; campanha nominal D01 de 5 casos compartilhados PASS na base e9a582a0.",
       "fe": "Conferir regressão visual, foco, rotas e lifecycle da ação; reutilizar guards já integrados. C01I017 corrigiu Error nas fronteiras; preservar demais aceites visuais/lifecycle e prova real, sem reimplementar o corretivo.",
       "be": "Provar a operação nominal no provedor: sessão/revogação e, para recuperar/reset, SMTP, redirect, token e senha. Respeitar AAL1 do MVP. I021 não finalizada: WIP27f7bbab contém rascunho Pester; qualificação SQL/COMMIT e bridge não implementadas. Personas remotas e cenários A/B ainda exigem pacote nominal autorizado.",
-      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
+      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
-      "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
+      "lastEvidenceAt": "2026-09-09T13:37:29.319567-03:00",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "roundLocalAcceptance": {
         "round": "R02",
-        "revision": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
-        "recordedAt": "2026-09-09T13:19:23.171934-03:00",
-        "note": "R02 D01: geometria aprovada do controle de sessão restaurada sem alterar goldens;386ad474→b8abfd59,21 testes Login PASS na base5908a330. Três goldens históricos resolvidos; browser/provedor permanecem separados.",
+        "revision": "d1b9cbe04563cd111d7e83eadc82f432a979ade6",
+        "recordedAt": "2026-09-09T13:37:29.319567-03:00",
+        "note": "R02: teclado/foco Login e header reduced-motion integrados a1c6a4ba; campanha nominal D01 de 5 casos compartilhados PASS na base e9a582a0.",
         "certifiesWholeAction": false
       }
     },
@@ -45,43 +45,66 @@
       "family": "auth",
       "screen": "Auth / Recuperar senha",
       "scope": "mvp",
-      "done": "Guards, recovery confinado, single-flight e limpeza de sessão integrados. Lifecycle Auth local registrado; não implica SMTP ou token remoto comprovado. C01I017 integrado90de1968/f7230db9; Error contido e resultado seguro, senha confirmada/cleanupfalho diferenciados, sessão nova preservada. C00122testes PASS/analyzer6limpo.",
-      "fe": "Conferir regressão visual, foco, rotas e lifecycle da ação; reutilizar guards já integrados.",
+      "done": "Guards, recovery confinado, single-flight e limpeza de sessão integrados. Lifecycle Auth local registrado; não implica SMTP ou token remoto comprovado. C01I017 integrado90de1968/f7230db9; Error contido e resultado seguro, senha confirmada/cleanupfalho diferenciados, sessão nova preservada. C00122testes PASS/analyzer6limpo. R02: auth.recover concluiu critérios Front-end de formulário/envio/confirmação/reenvio/retorno; evidências D01 6dfec55a/14e905476 integradas be7ae564/d1b9cbe04 e revisadas D00.",
+      "fe": "Critérios Front-end reconciliados e aprovados: fluxo normal, validação, envio único, estados seguros, reenvio, semântica/teclado, temas/responsividade, adapter/ViewModel e gateway. Reabrir somente por regressão ou mudança material. SMTP/token real pertencem a BE/E2E ainda pendentes.",
       "be": "Provar a operação nominal no provedor: sessão/revogação e, para recuperar/reset, SMTP, redirect, token e senha. Respeitar AAL1 do MVP. I021 não finalizada: WIP27f7bbab contém rascunho Pester; qualificação SQL/COMMIT e bridge não implementadas. Personas remotas e cenários A/B ainda exigem pacote nominal autorizado.",
-      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/identidade-acessos/r02-d01-20260909/recover-fe-reconciliation.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00",
+      "lastEvidenceAt": "2026-09-09T13:37:29.319567-03:00",
       "lastHandoffRevision": 51,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/identidade-acessos/r02-d01-20260909/recover-fe-reconciliation.md",
+          "revision": "d1b9cbe04563cd111d7e83eadc82f432a979ade6",
+          "environment": "Windows local Flutter3.44.2/Dart3.12.2; normal composition; faithful gateway doubles, matching historical blobs and current9+61 cases; sourceD01r5",
+          "recordedAt": "2026-09-09T13:37:29.319567-03:00"
+        }
+      }
     },
     {
       "id": "auth.reset",
       "family": "auth",
       "screen": "Auth / Redefinir senha",
       "scope": "mvp",
-      "done": "Guards, recovery confinado, single-flight e limpeza de sessão integrados. Lifecycle Auth local registrado; não implica SMTP ou token remoto comprovado. C01I017 integrado90de1968/f7230db9; Error contido e resultado seguro, senha confirmada/cleanupfalho diferenciados, sessão nova preservada. C00122testes PASS/analyzer6limpo. R02 D01: retorno ao login mostra falha de revogação e mantém recuperação confinada; db1ade40 integrado bf04a9a6, 14 recovery PASS na base conjunta588d38eb. R02 D01:953ce9d3→5908a330,3 negativas OTP simuladas PASS; nenhum PUT de senha/logout após recusa. Expiração/reuso reais e SMTP não provados.",
-      "fe": "Conferir regressão visual, foco, rotas e lifecycle da ação; reutilizar guards já integrados. C01I017 corrigiu Error nas fronteiras; preservar demais aceites visuais/lifecycle e prova real, sem reimplementar o corretivo.",
-      "be": "Provar a operação nominal no provedor: sessão/revogação e, para recuperar/reset, SMTP, redirect, token e senha. Respeitar AAL1 do MVP. I021 não finalizada: WIP27f7bbab contém rascunho Pester; qualificação SQL/COMMIT e bridge não implementadas. Personas remotas e cenários A/B ainda exigem pacote nominal autorizado.",
-      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
+      "done": "Guards, recovery confinado, single-flight e limpeza de sessão integrados. Lifecycle Auth local registrado; não implica SMTP ou token remoto comprovado. C01I017 integrado90de1968/f7230db9; Error contido e resultado seguro, senha confirmada/cleanupfalho diferenciados, sessão nova preservada. C00122testes PASS/analyzer6limpo. R02 D01: retorno ao login mostra falha de revogação e mantém recuperação confinada; db1ade40 integrado bf04a9a6, 14 recovery PASS na base conjunta588d38eb. R02 D01:953ce9d3→5908a330,3 negativas OTP simuladas PASS; nenhum PUT de senha/logout após recusa. Expiração/reuso reais e SMTP não provados. R02: teclado de confirmação/envio integra a1c6a4ba; mesmo lote de 5 casos D01 PASS, sem duplicação. R02 D00: FE de redefinição certificado; composição SDK/scope/router/formulário real integrada 0f7b7cf83 e dois casos PASS na base conjunta. Sucesso aguarda logout; falha de cleanup informa resultado parcial seguro. Provas anteriores de estados, teclado, temas e responsividade reconciliadas. R02 retomada D00: certificação FE anterior suspensa por RED cold reload em D01 R9; 1P/1F no cenário novo, sem rerun D00.",
+      "fe": "FE reaberto por D01 R9: cold reload com persist=true perde confinamento recovery; corrigir gateway/storage e provar na base integrada. Aceites anteriores no mesmo processo preservados; transporte sintético não prova bypass backend.",
+      "be": "Provar a operação nominal no provedor: sessão/revogação e, para recuperar/reset, SMTP, redirect, token e senha. Respeitar AAL1 do MVP. I021 não finalizada: WIP27f7bbab contém rascunho Pester; qualificação SQL/COMMIT e bridge não implementadas. Personas remotas e cenários A/B ainda exigem pacote nominal autorizado. R02 D01R10: backend REAL LOCAL GoTrue/PostgREST/AuthOnly permite bootstrap com token recovery pré-PUT e refresh desse token (2RED), controle passwordPASS. Não é exploração remota comprovada. Preparação da migration173000 do helper canônico reservada D01; preservar AAL1 e exigir evidência server-side da sessão, sem flag cliente.",
+      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/identidade-acessos/r02-d01-20260909/recovery-composition-reconciliation.md; evidence/etapa-2/identidade-acessos/r02-d01-20260909/recovery-cold-reload-reopening.md; etapa-2-operacao/next-round/R02-20260909/handoffs/D00.md (D01R10 original e recibo local-auth-recovery-boundary-receipt.md)",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
-      "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
+      "lastEvidenceAt": "2026-09-09T14:14:13-03:00",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "roundLocalAcceptance": {
         "round": "R02",
-        "revision": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
-        "recordedAt": "2026-09-09T13:19:23.171934-03:00",
-        "note": "R02 D01:953ce9d3→5908a330,3 negativas OTP simuladas PASS; nenhum PUT de senha/logout após recusa. Expiração/reuso reais e SMTP não provados.",
+        "revision": "d1b9cbe04563cd111d7e83eadc82f432a979ade6",
+        "recordedAt": "2026-09-09T13:37:29.319567-03:00",
+        "note": "R02: teclado de confirmação/envio integra a1c6a4ba; mesmo lote de 5 casos D01 PASS, sem duplicação.",
         "certifiesWholeAction": false
-      }
+      },
+      "certifications": {},
+      "certificationHistory": [
+        {
+          "layer": "frontend",
+          "status": "reopened",
+          "reason": "D01 R9 cold reload persist=true loses client recovery confinement",
+          "priorCertificate": {
+            "evidence": "docs/reviews/evidence/etapa-2/identidade-acessos/r02-d01-20260909/recovery-composition-reconciliation.md",
+            "revision": "0d6d1ca6aaac7ae4c9868bf892b55e399088fc06",
+            "environment": "Windows local Flutter; integrated source verification and faithful doubles; D00 reviewed",
+            "recordedAt": "2026-09-09T13:57:12.098713-03:00"
+          },
+          "recordedAt": "2026-09-09T14:12:40.771440-03:00"
+        }
+      ]
     },
     {
       "id": "auth.logout",
@@ -451,10 +474,10 @@
       "family": "units",
       "screen": "Unidades / Diretório",
       "scope": "mvp",
-      "done": "Diretórios/formulários locais e adapters existentes; detalhe READ possui página/rota/DI com guards D01. Writes não herdam conclusão do detalhe. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão.",
+      "done": "Diretórios/formulários locais e adapters existentes; detalhe READ possui página/rota/DI com guards D01. Writes não herdam conclusão do detalhe. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão. R02: 85f82c88+00e69e3a→950ac4674+cdf9f532f invalidam repository anterior e preservam paginação tabela8; 1 caso integrado PASS. Teste legado de gateway em outro arquivo falhou por expectativa incompatível com gate padrão; ajuste D02 aberto.",
       "fe": "Revalidar o aceite específico desta ação: Diretório canônico, Cards/tabela, 375–1440, 200%, teclado; depois gateway nominal por realm e tenant A/B. R01/16h: 18form/7Locais/9brand/4fences relatados; conjunto410PASS/8goldenFAIL. R17 retirou causa atribuída apenas ao footer: cabeçalho, cartão criar ausente e fixtures/paginação divergem; precisa revisão nominal. UnitDetail depende wiring C00. C04mediu composição Unavailable; status viaja no save genérico sem transição própria. Mapa/cópia/agenda ainda parciais.",
       "be": "Conferir gateway nominal por ação para ator interno039, hierarquia, persistência, auditoria e negativas reais. R01/16h: Editar/status, cópia e agenda Locais receberam nomes locais I008; criação20260908031000 já candidata. Sem replay/apply. Não destruir activity_locations nem criar catálogo paralelo. Quinze RPCs ausentes no recorte Units informado pela medição C04, não apenas sete. Revisão/composição e qualificação de provedores pendentes.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
       "frontendStatus": "pending-verification",
@@ -462,7 +485,14 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00"
+      "lastEvidenceAt": "2026-09-09T13:37:29.319567-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "d1b9cbe04563cd111d7e83eadc82f432a979ade6",
+        "recordedAt": "2026-09-09T13:37:29.319567-03:00",
+        "note": "R02: 85f82c88+00e69e3a→950ac4674+cdf9f532f invalidam repository anterior e preservam paginação tabela8; 1 caso integrado PASS. Teste legado de gateway em outro arquivo falhou por expectativa incompatível com gate padrão; ajuste D02 aberto.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "units.filter",
@@ -487,10 +517,10 @@
       "family": "units",
       "screen": "Criar Unidade",
       "scope": "mvp",
-      "done": "Diretórios/formulários locais e adapters existentes; detalhe READ possui página/rota/DI com guards D01. Writes não herdam conclusão do detalhe.",
+      "done": "Diretórios/formulários locais e adapters existentes; detalhe READ possui página/rota/DI com guards D01. Writes não herdam conclusão do detalhe. R02: ebec60e0→6cf8897e remonta formulário na revisão de autorização; 2 casos criar/editar PASS. Teste legado de composição indisponível falhou; gate produtivo segue fechado. R02: teste legado corrigido em5d1217297; dois gates explícitos PASS. O gate padrão permanece fechado e a composição habilitada indisponível; falha anterior resolvida sem habilitar writes.",
       "fe": "Revalidar o aceite específico desta ação: Wizard/goldens locais; depois RPC interno nominal, erro, duplo envio e reload remoto. C04mediu composição Unavailable; status viaja no save genérico sem transição própria. Mapa/cópia/agenda ainda parciais.",
       "be": "Conferir gateway nominal por ação para ator interno039, hierarquia, persistência, auditoria e negativas reais. Quinze RPCs ausentes no recorte Units informado pela medição C04, não apenas sete. Revisão/composição e qualificação de provedores pendentes.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
       "frontendStatus": "pending-verification",
@@ -498,17 +528,24 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00"
+      "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "148cbb59982a3c6ea950a2ec9450760987109c07",
+        "recordedAt": "2026-09-09T14:08:34.021718-03:00",
+        "note": "R02: teste legado corrigido em5d1217297; dois gates explícitos PASS. O gate padrão permanece fechado e a composição habilitada indisponível; falha anterior resolvida sem habilitar writes.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "units.edit",
       "family": "units",
       "screen": "Editar Unidade",
       "scope": "mvp",
-      "done": "Diretórios/formulários locais e adapters existentes; detalhe READ possui página/rota/DI com guards D01. Writes não herdam conclusão do detalhe.",
+      "done": "Diretórios/formulários locais e adapters existentes; detalhe READ possui página/rota/DI com guards D01. Writes não herdam conclusão do detalhe. R02: mesmo remount 6cf8897e e dois casos compartilhados PASS; sem certificar writer nem teste legado falho. R02: mesmo par de gates corrigido em5d1217297, contado uma vez; remount por autorização preservado.",
       "fe": "Revalidar o aceite específico desta ação: Herdar/personalizar local; depois conflito, salvar/falhar/abandonar e reload remoto. C04mediu composição Unavailable; status viaja no save genérico sem transição própria. Mapa/cópia/agenda ainda parciais.",
       "be": "Conferir gateway nominal por ação para ator interno039, hierarquia, persistência, auditoria e negativas reais. Quinze RPCs ausentes no recorte Units informado pela medição C04, não apenas sete. Revisão/composição e qualificação de provedores pendentes.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
       "frontendStatus": "pending-verification",
@@ -516,7 +553,14 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00"
+      "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "148cbb59982a3c6ea950a2ec9450760987109c07",
+        "recordedAt": "2026-09-09T14:08:34.021718-03:00",
+        "note": "R02: mesmo par de gates corrigido em5d1217297, contado uma vez; remount por autorização preservado.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "units.status",
@@ -664,10 +708,10 @@
       "family": "units",
       "screen": "Unidade / Copiar local",
       "scope": "mvp",
-      "done": "Diretórios/formulários locais e adapters existentes; detalhe READ possui página/rota/DI com guards D01. Writes não herdam conclusão do detalhe.",
+      "done": "Diretórios/formulários locais e adapters existentes; detalhe READ possui página/rota/DI com guards D01. Writes não herdam conclusão do detalhe. R02 D00: grants separados e fechamento de superfícies integrados24480c732/4eacb7b5b,mesma campanha21PASS. Modal7777não integrado: precisa geração/identidade após await para impedir onCopied antigo.",
       "fe": "Revalidar o aceite específico desta ação: Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. C04mediu composição Unavailable; status viaja no save genérico sem transição própria. Mapa/cópia/agenda ainda parciais.",
       "be": "Conferir gateway nominal por ação para ator interno039, hierarquia, persistência, auditoria e negativas reais. Quinze RPCs ausentes no recorte Units informado pela medição C04, não apenas sete. Revisão/composição e qualificação de provedores pendentes.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
       "historicalFrontend": "not-reviewed",
       "historicalBackend": "not-reviewed",
       "frontendStatus": "pending-verification",
@@ -675,7 +719,14 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00"
+      "lastEvidenceAt": "2026-09-09T14:26:45.455315-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "c5bcaf9e1fe1ad933fde9e375aa6d3d46d08d7aa",
+        "recordedAt": "2026-09-09T14:26:45.455315-03:00",
+        "note": "R02 D00: grants separados e fechamento de superfícies integrados24480c732/4eacb7b5b,mesma campanha21PASS. Modal7777não integrado: precisa geração/identidade após await para impedir onCopied antigo.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "groups.list",
@@ -700,10 +751,10 @@
       "family": "groups",
       "screen": "Criar Turma",
       "scope": "mvp",
-      "done": "Detalhe READ com adapter, página, rota/DI e logout D01 já composto; diretório, membros e writes têm gates próprios. R02 D02:2e563e8a→b185a481 confirma só uma etapa agregada real;3 testes repository PASS na base conjuntae9fdd88d. Persistência real não certificada.",
+      "done": "Detalhe READ com adapter, página, rota/DI e logout D01 já composto; diretório, membros e writes têm gates próprios. R02 D02:2e563e8a→b185a481 confirma só uma etapa agregada real;3 testes repository PASS na base conjuntae9fdd88d. Persistência real não certificada. R02: 583bfd0d→6865fe18 recupera formulário após Error e conserva draft; 1 caso novo PASS na base e9a582a0.",
       "fe": "Revalidar o aceite específico desta ação: Criar/validar/salvar local provado; não declarar CRUD produtivo/remoto. Diretório recebe Unavailable; ausência honesta de localização não satisfaz groups.location. GroupDirectorySaveResult pode transformar1success em5 e ignorar skipped; sobrescrita da seleção de membros ainda demanda correção.",
       "be": "Conferir gateway nominal interno da ação e hierarquia/tenant. Provar membros, conflitos e reload conforme o comando. Provedores/composição de Grupos continuam incompletos; cliente não autoriza mutação.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
@@ -711,12 +762,12 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
+      "lastEvidenceAt": "2026-09-09T13:37:29.319567-03:00",
       "roundLocalAcceptance": {
         "round": "R02",
-        "revision": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
-        "recordedAt": "2026-09-09T13:19:23.171934-03:00",
-        "note": "R02 D02:2e563e8a→b185a481 confirma só uma etapa agregada real;3 testes repository PASS na base conjuntae9fdd88d. Persistência real não certificada.",
+        "revision": "d1b9cbe04563cd111d7e83eadc82f432a979ade6",
+        "recordedAt": "2026-09-09T13:37:29.319567-03:00",
+        "note": "R02: 583bfd0d→6865fe18 recupera formulário após Error e conserva draft; 1 caso novo PASS na base e9a582a0.",
         "certifiesWholeAction": false
       }
     },
@@ -725,10 +776,10 @@
       "family": "groups",
       "screen": "Turmas / Detalhe-editar",
       "scope": "mvp",
-      "done": "Detalhe READ com adapter, página, rota/DI e logout D01 já composto; diretório, membros e writes têm gates próprios. R02 D02:2e563e8a→b185a481 confirma só uma etapa agregada real;mesmos3 testes repository, sem duplicar casos. Persistência real não certificada.",
+      "done": "Detalhe READ com adapter, página, rota/DI e logout D01 já composto; diretório, membros e writes têm gates próprios. R02 D02:2e563e8a→b185a481 confirma só uma etapa agregada real;mesmos3 testes repository, sem duplicar casos. Persistência real não certificada. R02: mesmo tratamento compartilhado 583bfd0d→6865fe18; caso de Error contado uma vez.",
       "fe": "Revalidar o aceite específico desta ação: Abrir/editar/cancelar local; depois gateway nominal e prova remota classificada. Diretório recebe Unavailable; ausência honesta de localização não satisfaz groups.location. GroupDirectorySaveResult pode transformar1success em5 e ignorar skipped; sobrescrita da seleção de membros ainda demanda correção.",
       "be": "Conferir gateway nominal interno da ação e hierarquia/tenant. Provar membros, conflitos e reload conforme o comando. Provedores/composição de Grupos continuam incompletos; cliente não autoriza mutação.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
@@ -736,12 +787,12 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
+      "lastEvidenceAt": "2026-09-09T13:37:29.319567-03:00",
       "roundLocalAcceptance": {
         "round": "R02",
-        "revision": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
-        "recordedAt": "2026-09-09T13:19:23.171934-03:00",
-        "note": "R02 D02:2e563e8a→b185a481 confirma só uma etapa agregada real;mesmos3 testes repository, sem duplicar casos. Persistência real não certificada.",
+        "revision": "d1b9cbe04563cd111d7e83eadc82f432a979ade6",
+        "recordedAt": "2026-09-09T13:37:29.319567-03:00",
+        "note": "R02: mesmo tratamento compartilhado 583bfd0d→6865fe18; caso de Error contado uma vez.",
         "certifiesWholeAction": false
       }
     },
@@ -1464,10 +1515,10 @@
       "family": "students",
       "screen": "Alunos / Acompanhamento",
       "scope": "mvp",
-      "done": "Lista canônica read-only; CHILD DTO/adapter/controller/pipeline com 38 testes locais registrados, sem UI/DI conectadas. C04 confirmou leitura CHILD real; C00 integrou recuperação do acompanhamento a5844cd8.",
+      "done": "Lista canônica read-only; CHILD DTO/adapter/controller/pipeline com 38 testes locais registrados, sem UI/DI conectadas. C04 confirmou leitura CHILD real; C00 integrou recuperação do acompanhamento a5844cd8. R02: ef40ac5d→f24ca5f3 compõe lista CHILD mínima em /students com reader produtivo e invalidação real; 5 composição+16 controller+2 rotas PASS na base4041bd81. RPC remota ausente; não certifica diretório completo. R02: CHILD49 integrado b1271d1a4 com45 assertivas SQL preparadas; replay local D03 em execução, nenhum resultado SQL ainda. 148cbb599 comprova descarte de página A tardia após autenticar contexto B com gesto real;1 novo PASS integrado.",
       "fe": "Revalidar o aceite específico desta ação: 22 testes passam em 375–1440, 200%, teclado, offline/unavailable e sem ação falsa; gerenciamento e E2E continuam separados.",
       "be": "Leitura CHILD precisa replay nominal; comandos de vínculo/transferência/edição/revogação exigem seus contratos aprovados.",
-      "evidence": "evidence/etapa-2/estruturas/2026-09-08-child-read-state.md; Fechamento R01 C04/r61; C04r61/estado47; C00288PASS; composição do acompanhamento permanece Unavailable; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "evidence/etapa-2/estruturas/2026-09-08-child-read-state.md; Fechamento R01 C04/r61; C04r61/estado47; C00288PASS; composição do acompanhamento permanece Unavailable; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
@@ -1475,7 +1526,14 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00"
+      "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "148cbb59982a3c6ea950a2ec9450760987109c07",
+        "recordedAt": "2026-09-09T14:08:34.021718-03:00",
+        "note": "R02: CHILD49 integrado b1271d1a4 com45 assertivas SQL preparadas; replay local D03 em execução, nenhum resultado SQL ainda. 148cbb599 comprova descarte de página A tardia após autenticar contexto B com gesto real;1 novo PASS integrado.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "students.link",
@@ -1554,10 +1612,10 @@
       "family": "attendance",
       "screen": "Assiduidade / Dashboard",
       "scope": "mvp",
-      "done": "55 testes funcionais e dois goldens históricos; overflow da chamada corrigido em0fbdef95 com38 testes e quatro novos goldens registrados. C00 integrou bloqueio de leitura após dispose c962ae99.",
+      "done": "55 testes funcionais e dois goldens históricos; overflow da chamada corrigido em0fbdef95 com38 testes e quatro novos goldens registrados. C00 integrou bloqueio de leitura após dispose c962ae99. R02: 852dc15e→4041bd81 fixa data civil inicial nos testes; 1 caso período/picker PASS. Produção mantém DateTime.now; não é conclusão da ação.",
       "fe": "Revalidar o aceite específico desta ação: Estados, clock determinístico e dois goldens reais; ainda exigir backend, remoto, tenant A/B e E2E.",
       "be": "Resolver contrato interno específico OQ040/spec048, capability, escopo/DTO e cutover; legado people-based não prova backend039. Depois runtime/reload.",
-      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01-delta-1815: C03r24 b7082644 evita leituras apósdispose;7controller/10dashboard relatados, revisão em andamento.; Fechamento R01 C03/r33; C00288PASS; b7082644 origem; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01-delta-1815: C03r24 b7082644 evita leituras apósdispose;7controller/10dashboard relatados, revisão em andamento.; Fechamento R01 C03/r33; C00288PASS; b7082644 origem; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
@@ -1565,24 +1623,39 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T13:37:29.319567-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "d1b9cbe04563cd111d7e83eadc82f432a979ade6",
+        "recordedAt": "2026-09-09T13:37:29.319567-03:00",
+        "note": "R02: 852dc15e→4041bd81 fixa data civil inicial nos testes; 1 caso período/picker PASS. Produção mantém DateTime.now; não é conclusão da ação.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "attendance.create",
       "family": "attendance",
       "screen": "Assiduidade / Nova chamada",
       "scope": "mvp",
-      "done": "55 testes funcionais e dois goldens históricos; overflow da chamada corrigido em0fbdef95 com38 testes e quatro novos goldens registrados.",
+      "done": "55 testes funcionais e dois goldens históricos; overflow da chamada corrigido em0fbdef95 com38 testes e quatro novos goldens registrados. R02: d96dbd985 bloqueia seletores, data e cancelar durante envio; caso integrado PASS.",
       "fe": "Revalidar o aceite específico desta ação: Criar/cancelar/falhar, contexto correto e foco.",
       "be": "Resolver contrato interno específico OQ040/spec048, capability, escopo/DTO e cutover; legado people-based não prova backend039. Depois runtime/reload.",
-      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01/C00 2026-09-08T19:00:55-03:00 5f0163c1: Recibo de criação exige ID/contexto/data da chamada solicitada. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.",
+      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01/C00 2026-09-08T19:00:55-03:00 5f0163c1: Recibo de criação exige ID/contexto/data da chamada solicitada. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "148cbb59982a3c6ea950a2ec9450760987109c07",
+        "recordedAt": "2026-09-09T14:08:34.021718-03:00",
+        "note": "R02: d96dbd985 bloqueia seletores, data e cancelar durante envio; caso integrado PASS.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "attendance.mark",
@@ -1606,10 +1679,10 @@
       "family": "attendance",
       "screen": "Assiduidade / Corrigir",
       "scope": "mvp",
-      "done": "55 testes funcionais e dois goldens históricos; overflow da chamada corrigido em0fbdef95 com38 testes e quatro novos goldens registrados. R02 D03:58e1d0fe→e9fdd88d corrige participante selecionado e bloqueia campos durante envio;6 casos correction PASS na base conjunta. Backend real permanece aberto.",
+      "done": "55 testes funcionais e dois goldens históricos; overflow da chamada corrigido em0fbdef95 com38 testes e quatro novos goldens registrados. R02 D03:58e1d0fe→e9fdd88d corrige participante selecionado e bloqueia campos durante envio;6 casos correction PASS na base conjunta. Backend real permanece aberto. R02: 8f9b3c35b exige motivo de correção; novo caso PASS; bloqueio de campos durante envio revalidado sem somar rerun.",
       "fe": "Revalidar o aceite específico desta ação: Corrigir/validar/conflito/falhar e reload.",
       "be": "Resolver contrato interno específico OQ040/spec048, capability, escopo/DTO e cutover; legado people-based não prova backend039. Depois runtime/reload.",
-      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r23 b592dc4b corrige perda de draft de6504610a;65testes relatados. Par ainda RETIDO: C00 encontrou lookup ScaffoldMessenger usando context da página descartada no ramo em que mounted=false. Correção e cenário dialog sobrevivendo dispose pedidos nominalmente C03. Sem afirmar reprodução runtime desse achado estático.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
+      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r23 b592dc4b corrige perda de draft de6504610a;65testes relatados. Par ainda RETIDO: C00 encontrou lookup ScaffoldMessenger usando context da página descartada no ramo em que mounted=false. Correção e cenário dialog sobrevivendo dispose pedidos nominalmente C03. Sem afirmar reprodução runtime desse achado estático.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
@@ -1617,12 +1690,12 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
+      "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
       "roundLocalAcceptance": {
         "round": "R02",
-        "revision": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
-        "recordedAt": "2026-09-09T13:19:23.171934-03:00",
-        "note": "R02 D03:58e1d0fe→e9fdd88d corrige participante selecionado e bloqueia campos durante envio;6 casos correction PASS na base conjunta. Backend real permanece aberto.",
+        "revision": "148cbb59982a3c6ea950a2ec9450760987109c07",
+        "recordedAt": "2026-09-09T14:08:34.021718-03:00",
+        "note": "R02: 8f9b3c35b exige motivo de correção; novo caso PASS; bloqueio de campos durante envio revalidado sem somar rerun.",
         "certifiesWholeAction": false
       }
     },
@@ -1631,34 +1704,51 @@
       "family": "attendance",
       "screen": "Assiduidade / Concluir",
       "scope": "mvp",
-      "done": "55 testes funcionais e dois goldens históricos; overflow da chamada corrigido em0fbdef95 com38 testes e quatro novos goldens registrados.",
+      "done": "55 testes funcionais e dois goldens históricos; overflow da chamada corrigido em0fbdef95 com38 testes e quatro novos goldens registrados. R02: 65bd5c287 desabilita concluir durante Future, preservando guard de duplicidade; caso integrado PASS.",
       "fe": "Revalidar o aceite específico desta ação: Concluir/cancelar/duplo envio/erro e estado final.",
       "be": "Resolver contrato interno específico OQ040/spec048, capability, escopo/DTO e cutover; legado people-based não prova backend039. Depois runtime/reload.",
-      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r25 dcd34924 valida call.id/receipt.callId;68testes não-golden relatados/sobrepostos. Revisão estática sem defeito novo; integração depende parAttendance retido. attendance.detail no handoff é alias de superfície, não action_idnovo.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.",
+      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r25 dcd34924 valida call.id/receipt.callId;68testes não-golden relatados/sobrepostos. Revisão estática sem defeito novo; integração depende parAttendance retido. attendance.detail no handoff é alias de superfície, não action_idnovo.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "148cbb59982a3c6ea950a2ec9450760987109c07",
+        "recordedAt": "2026-09-09T14:08:34.021718-03:00",
+        "note": "R02: 65bd5c287 desabilita concluir durante Future, preservando guard de duplicidade; caso integrado PASS.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "attendance.export",
       "family": "attendance",
       "screen": "Assiduidade / Exportar",
       "scope": "deferred-post-mvp",
-      "done": "Botão informativo já integrado35a08f29; casos responsivos registrados, sem job/download.",
-      "fe": "Conferir botão visível e mensagem de indisponibilidade; nenhuma chamada de arquivo/job. Não implementar a operação real nesta rodada.",
+      "done": "Botão informativo já integrado35a08f29; casos responsivos registrados, sem job/download. R02 D00: FE informativo da ação adiada certificado em ee82aa67d; cinco casos PASS de D03 com hashes conferidos e fontes idênticas. CSV/XLSX exibem indisponibilidade honesta; cliques não solicitam exportação.",
+      "fe": "Aceite FE do adiamento aprovado; controles visíveis/acessíveis/responsivos e aviso Disponível depois do MVP. Não implementa exportação real.",
       "be": "Operação real fora do MVP. Preservar legado sem executar, remover ou habilitar jobs.",
-      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md",
+      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; etapa-2-operacao/next-round/R02-20260909/handoffs/notes/attendance-export.md",
       "historicalFrontend": "audited",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "deferred-post-mvp",
       "integratedStatus": "deferred-post-mvp",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "lastEvidenceAt": "2026-09-09T13:57:12.098713-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/attendance-export.md",
+          "revision": "0d6d1ca6aaac7ae4c9868bf892b55e399088fc06",
+          "environment": "Windows local Flutter; integrated source verification and faithful doubles; D00 reviewed",
+          "recordedAt": "2026-09-09T13:57:12.098713-03:00"
+        }
+      }
     },
     {
       "id": "daily-routine.list",
@@ -1690,51 +1780,75 @@
       "family": "daily_routine",
       "screen": "Criar Rotina",
       "scope": "mvp",
-      "done": "Fluxos locais registrados com48 testes/quatro skips/nove goldens; filtros vazios corrigidos76f7fdf9. READ01 é proposta.",
+      "done": "Fluxos locais registrados com48 testes/quatro skips/nove goldens; filtros vazios corrigidos76f7fdf9. READ01 é proposta. R02: 5d5a250b→f2624f4b rejeita ID vazio/espaços no recibo; 14 casos editor PASS na base4041bd81, compartilhados criar/editar/aplicar. R02: 2070ab8fd valida draft antes de salvar e0d6d1ca6a também antes de alterar herança;2 negativas de validade/horário e1 negativa nova de herança PASS; sucesso existente revalidado, sem duplicação.",
       "fe": "Revalidar o aceite específico desta ação: Criar/validar/falhar local e baseline de formulário; ainda exigir command autorizado, reload remoto e E2E.",
       "be": "Materializar reader ou comando nominal interno039 aplicável, revisão/publicação, autorização e reload; não confundir propostaREAD01 com migration.",
-      "evidence": "commit76f7fdf9; evidence/etapa-2/agenda-operacoes/plano-por-tela.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: 5bc29739+2a01c785 integrados como0a01769f+ee2efb40. C00:7/7 testes application_editor e análise2arquivos sem problemas; logTEMP coelo-c00-daily-routine-1815.log/-analyze.log. IDs reais retornados liberam segundo save; isolamento A→B mantido. Backend produtivo unavailable e E2E continuam abertos.; R01/C00 2026-09-08T19:00:55-03:00 15b6a2dd: Valida identidade/tipo/fonte do retorno em edição e herança. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.",
+      "evidence": "commit76f7fdf9; evidence/etapa-2/agenda-operacoes/plano-por-tela.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: 5bc29739+2a01c785 integrados como0a01769f+ee2efb40. C00:7/7 testes application_editor e análise2arquivos sem problemas; logTEMP coelo-c00-daily-routine-1815.log/-analyze.log. IDs reais retornados liberam segundo save; isolamento A→B mantido. Backend produtivo unavailable e E2E continuam abertos.; R01/C00 2026-09-08T19:00:55-03:00 15b6a2dd: Valida identidade/tipo/fonte do retorno em edição e herança. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "148cbb59982a3c6ea950a2ec9450760987109c07",
+        "recordedAt": "2026-09-09T14:08:34.021718-03:00",
+        "note": "R02: 2070ab8fd valida draft antes de salvar e0d6d1ca6a também antes de alterar herança;2 negativas de validade/horário e1 negativa nova de herança PASS; sucesso existente revalidado, sem duplicação.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "daily-routine.edit",
       "family": "daily_routine",
       "screen": "Editar Rotina",
       "scope": "mvp",
-      "done": "Fluxos locais registrados com48 testes/quatro skips/nove goldens; filtros vazios corrigidos76f7fdf9. READ01 é proposta.",
+      "done": "Fluxos locais registrados com48 testes/quatro skips/nove goldens; filtros vazios corrigidos76f7fdf9. READ01 é proposta. R02: mesmo recibo vazio rejeitado f2624f4b; 14 casos compartilhados contados uma vez. R02: 2070ab8fd valida draft antes de salvar e0d6d1ca6a também antes de alterar herança;2 negativas de validade/horário e1 negativa nova de herança PASS; sucesso existente revalidado, sem duplicação.",
       "fe": "Revalidar o aceite específico desta ação: Editar/salvar/falhar/abandonar e 200%.",
       "be": "Materializar reader ou comando nominal interno039 aplicável, revisão/publicação, autorização e reload; não confundir propostaREAD01 com migration.",
-      "evidence": "commit76f7fdf9; evidence/etapa-2/agenda-operacoes/plano-por-tela.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: 5bc29739+2a01c785 integrados como0a01769f+ee2efb40. C00:7/7 testes application_editor e análise2arquivos sem problemas; logTEMP coelo-c00-daily-routine-1815.log/-analyze.log. IDs reais retornados liberam segundo save; isolamento A→B mantido. Backend produtivo unavailable e E2E continuam abertos.; R01/C00 2026-09-08T19:00:55-03:00 15b6a2dd: Valida identidade/tipo/fonte do retorno em edição e herança. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.",
+      "evidence": "commit76f7fdf9; evidence/etapa-2/agenda-operacoes/plano-por-tela.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: 5bc29739+2a01c785 integrados como0a01769f+ee2efb40. C00:7/7 testes application_editor e análise2arquivos sem problemas; logTEMP coelo-c00-daily-routine-1815.log/-analyze.log. IDs reais retornados liberam segundo save; isolamento A→B mantido. Backend produtivo unavailable e E2E continuam abertos.; R01/C00 2026-09-08T19:00:55-03:00 15b6a2dd: Valida identidade/tipo/fonte do retorno em edição e herança. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "148cbb59982a3c6ea950a2ec9450760987109c07",
+        "recordedAt": "2026-09-09T14:08:34.021718-03:00",
+        "note": "R02: 2070ab8fd valida draft antes de salvar e0d6d1ca6a também antes de alterar herança;2 negativas de validade/horário e1 negativa nova de herança PASS; sucesso existente revalidado, sem duplicação.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "daily-routine.apply",
       "family": "daily_routine",
       "screen": "Rotina / Aplicar",
       "scope": "mvp",
-      "done": "Fluxos locais registrados com48 testes/quatro skips/nove goldens; filtros vazios corrigidos76f7fdf9. READ01 é proposta.",
+      "done": "Fluxos locais registrados com48 testes/quatro skips/nove goldens; filtros vazios corrigidos76f7fdf9. READ01 é proposta. R02: mesmo recibo vazio rejeitado f2624f4b; 14 casos compartilhados contados uma vez. R02: 2070ab8fd valida draft antes de salvar e0d6d1ca6a também antes de alterar herança;2 negativas de validade/horário e1 negativa nova de herança PASS; sucesso existente revalidado, sem duplicação.",
       "fe": "Revalidar o aceite específico desta ação: Aplicar/cancelar/falhar e resultado após reload.",
       "be": "Materializar reader ou comando nominal interno039 aplicável, revisão/publicação, autorização e reload; não confundir propostaREAD01 com migration.",
-      "evidence": "commit76f7fdf9; evidence/etapa-2/agenda-operacoes/plano-por-tela.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: 5bc29739+2a01c785 integrados como0a01769f+ee2efb40. C00:7/7 testes application_editor e análise2arquivos sem problemas; logTEMP coelo-c00-daily-routine-1815.log/-analyze.log. IDs reais retornados liberam segundo save; isolamento A→B mantido. Backend produtivo unavailable e E2E continuam abertos.; R01/C00 2026-09-08T19:00:55-03:00 15b6a2dd: Valida identidade/tipo/fonte do retorno em edição e herança. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.",
+      "evidence": "commit76f7fdf9; evidence/etapa-2/agenda-operacoes/plano-por-tela.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: 5bc29739+2a01c785 integrados como0a01769f+ee2efb40. C00:7/7 testes application_editor e análise2arquivos sem problemas; logTEMP coelo-c00-daily-routine-1815.log/-analyze.log. IDs reais retornados liberam segundo save; isolamento A→B mantido. Backend produtivo unavailable e E2E continuam abertos.; R01/C00 2026-09-08T19:00:55-03:00 15b6a2dd: Valida identidade/tipo/fonte do retorno em edição e herança. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "148cbb59982a3c6ea950a2ec9450760987109c07",
+        "recordedAt": "2026-09-09T14:08:34.021718-03:00",
+        "note": "R02: 2070ab8fd valida draft antes de salvar e0d6d1ca6a também antes de alterar herança;2 negativas de validade/horário e1 negativa nova de herança PASS; sucesso existente revalidado, sem duplicação.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "daily-routine.publish",
@@ -2662,17 +2776,25 @@
       "family": "principal_profile",
       "screen": "Principal / Para Você",
       "scope": "mvp",
-      "done": "Menu dentro do Superadmin; Para Você com seleção/contexto/rolagem3e16dfec/5e762eb4 e Perfil/Circulares com isolamento de contextos.",
-      "fe": "Concluir aceites das rotas existentes no Superadmin. Não criar apps/principal. Circulares não possui IDs próprios neste inventário: cruzar subtelas com principal_profile e fontes aprovadas antes de declarar cobertura integral. C05/r7 relata rota real sempre indisponível na baseline do executor; existe projeção pura de Comunicacoes, sem repository produtivo. Composição C00 e adapter do consumidor pendentes. R01/16h: Composição produtiva continua ausente/indisponível no corte; profile_about existe em Activities, mas não está ligado ao Perfil Principal. Não afirmar que não há contrato em lugar algum.",
+      "done": "Menu dentro do Superadmin; Para Você com seleção/contexto/rolagem3e16dfec/5e762eb4 e Perfil/Circulares com isolamento de contextos. R02: 8c041ed50 integrado7271f4a39 como filtro adicional local;24 casos PASS. Rotas produtivas, autorização server-side e critérios completos de audiência permanecem pendentes.",
+      "fe": "Concluir aceites das rotas existentes no Superadmin. Não criar apps/principal. R02 reconciliou11 IDs próprios circulars.*; abas/preview de Perfil seguem subaceites principal.profile-view. Não duplicar esses IDs. C05/r7 relata rota real sempre indisponível na baseline do executor; existe projeção pura de Comunicacoes, sem repository produtivo. Composição C00 e adapter do consumidor pendentes. R01/16h: Composição produtiva continua ausente/indisponível no corte; profile_about existe em Activities, mas não está ligado ao Perfil Principal. Não afirmar que não há contrato em lugar algum.",
       "be": "Conferir repository/capability/audiência da ação, R2 privado onde há mídia, persistência e reload.",
-      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md",
+      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "148cbb59982a3c6ea950a2ec9450760987109c07",
+        "recordedAt": "2026-09-09T14:08:34.021718-03:00",
+        "note": "R02: 8c041ed50 integrado7271f4a39 como filtro adicional local;24 casos PASS. Rotas produtivas, autorização server-side e critérios completos de audiência permanecem pendentes.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "principal.profile-view",
@@ -2680,7 +2802,7 @@
       "screen": "Principal / Perfil-circulares",
       "scope": "mvp",
       "done": "Menu dentro do Superadmin; Para Você com seleção/contexto/rolagem3e16dfec/5e762eb4 e Perfil/Circulares com isolamento de contextos.",
-      "fe": "Concluir aceites das rotas existentes no Superadmin. Não criar apps/principal. Circulares não possui IDs próprios neste inventário: cruzar subtelas com principal_profile e fontes aprovadas antes de declarar cobertura integral. C05/r7 relata rota real indisponível e dados de preview. ID cobre aba Circulares do Perfil; não fecha diretório/compositor/detalhe/edição em /circulars. Reconciliar lacuna de inventário antes de certificação, sem criar IDs silenciosamente. R01/16h: Composição produtiva continua ausente/indisponível no corte; profile_about existe em Activities, mas não está ligado ao Perfil Principal. Não afirmar que não há contrato em lugar algum.",
+      "fe": "Concluir aceites das rotas existentes no Superadmin. Não criar apps/principal. R02 reconciliou11 IDs próprios circulars.*; abas/preview de Perfil seguem subaceites principal.profile-view. Não duplicar esses IDs. C05/r7 relata rota real indisponível e dados de preview. ID cobre aba Circulares do Perfil; não fecha diretório/compositor/detalhe/edição em /circulars. Reconciliar lacuna de inventário antes de certificação, sem criar IDs silenciosamente. R01/16h: Composição produtiva continua ausente/indisponível no corte; profile_about existe em Activities, mas não está ligado ao Perfil Principal. Não afirmar que não há contrato em lugar algum.",
       "be": "Conferir repository/capability/audiência da ação, R2 privado onde há mídia, persistência e reload. Contrato de perfil produtivo não localizado por C05 nas fontes inspecionadas; cruzar PRDs/specs/evidências antes de pedir nova regra. Permissões/repository/persistência permanecem abertos.",
       "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.",
       "historicalFrontend": "local-green",
@@ -2697,7 +2819,7 @@
       "screen": "Principal / Editar perfil",
       "scope": "mvp",
       "done": "Menu dentro do Superadmin; Para Você com seleção/contexto/rolagem3e16dfec/5e762eb4 e Perfil/Circulares com isolamento de contextos.",
-      "fe": "Concluir aceites das rotas existentes no Superadmin. Não criar apps/principal. Circulares não possui IDs próprios neste inventário: cruzar subtelas com principal_profile e fontes aprovadas antes de declarar cobertura integral. C05/r7 relata rota real indisponível e ausência de contrato produtivo nas fontes inspecionadas; edição com preview não certifica composição. R01/16h: Composição produtiva continua ausente/indisponível no corte; profile_about existe em Activities, mas não está ligado ao Perfil Principal. Não afirmar que não há contrato em lugar algum. Cliente cobre somente biografia; outros campos/contrato de Perfil institucional permanecem abertos.",
+      "fe": "Concluir aceites das rotas existentes no Superadmin. Não criar apps/principal. R02 reconciliou11 IDs próprios circulars.*; abas/preview de Perfil seguem subaceites principal.profile-view. Não duplicar esses IDs. C05/r7 relata rota real indisponível e ausência de contrato produtivo nas fontes inspecionadas; edição com preview não certifica composição. R01/16h: Composição produtiva continua ausente/indisponível no corte; profile_about existe em Activities, mas não está ligado ao Perfil Principal. Não afirmar que não há contrato em lugar algum. Cliente cobre somente biografia; outros campos/contrato de Perfil institucional permanecem abertos.",
       "be": "Conferir repository/capability/audiência da ação, R2 privado onde há mídia, persistência e reload. C00 deve reconciliar fontes do Perfil institucional antes de reservar contrato/adapter; não inventar payload/visibilidade/permissões.",
       "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C05/rfinal; C05final reconhece entrega parcial; etapa-2-operacao/reports/R01-fechamento-20260909.md",
       "historicalFrontend": "blocked-decision",
@@ -3945,72 +4067,100 @@
       "family": "locations",
       "screen": "Locais / Diretório",
       "scope": "mvp",
-      "done": "DTO, reader e painéis implementados;27 focais/88 suíte registrados, DI ainda aberta. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão. C00188cf2ba integra componentes/catálogo/writer/seleção/cópia/status/semana e correções de estado adf5feb1;266funcionais+36DTO PASS, não equivale ao aceite individual.",
+      "done": "DTO, reader e painéis implementados;27 focais/88 suíte registrados, DI ainda aberta. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão. C00188cf2ba integra componentes/catálogo/writer/seleção/cópia/status/semana e correções de estado adf5feb1;266funcionais+36DTO PASS, não equivale ao aceite individual. R02 D00: capacidades/revogação de superfícies integradas24480c732/4eacb7b5b;21casos locais PASS compartilhados, sem somar por ação. Rotas/persistência e prova completa pendentes.",
       "fe": "Conectar DI/rota ao contrato nominal depois dos gates; reusar reader/painéis. R01/16h: 18form/7Locais/9brand/4fences relatados; conjunto410PASS/8goldenFAIL. R17 retirou causa atribuída apenas ao footer: cabeçalho, cartão criar ausente e fixtures/paginação divergem; precisa revisão nominal. UnitDetail depende wiring C00. PróximoC00: rotas/DI, hints separados create/update/status/copy/schedule eURL apóscópia; visuais/aceite específico aindaabertos. Pacote seletivo Locais já integrado no histórico; ligação de superfície/router e capacidades por ação continuam pendentes. Agenda semanal não equivale a reservas datadas; não ampliar autorização do cliente por canCreate.",
       "be": "Revisar snapshot remoto nominal e compatibilidade de helpers; executar script estático diretamente e depois replay SQL nominal. Não atualizar pins para mascarar drift. C04/r14 retirou risco AAL2 do helper central pela corretiva20260901200206; fixture Owner-only e replay do catálogo permanecem necessários. Não equivale a runtime remoto verificado. R01/16h: Editar/status, cópia e agenda Locais receberam nomes locais I008; criação20260908031000 já candidata. Sem replay/apply. Não destruir activity_locations nem criar catálogo paralelo. Cadeia de provedores/SQL candidato requer revisão e runtime nominal; perfil de capacidade precisa backend real.",
-      "evidence": "evidence/etapa-2/estruturas/2026-09-08-location-read-adapter.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/reports/R01-delta-2005.md; R01-locations-integration-manifest.json; Fechamento R01 C04/r61; C04r61/estado47;188cf2ba histórico266Flutter+36DTO; não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "evidence/etapa-2/estruturas/2026-09-08-location-read-adapter.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/reports/R01-delta-2005.md; R01-locations-integration-manifest.json; Fechamento R01 C04/r61; C04r61/estado47;188cf2ba histórico266Flutter+36DTO; não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
       "historicalFrontend": "not-reviewed",
       "historicalBackend": "not-reviewed",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00",
+      "lastEvidenceAt": "2026-09-09T14:26:45.455315-03:00",
       "lastHandoffRevision": 61,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "c5bcaf9e1fe1ad933fde9e375aa6d3d46d08d7aa",
+        "recordedAt": "2026-09-09T14:26:45.455315-03:00",
+        "note": "R02 D00: capacidades/revogação de superfícies integradas24480c732/4eacb7b5b;21casos locais PASS compartilhados, sem somar por ação. Rotas/persistência e prova completa pendentes.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "locations.create-edit",
       "family": "locations",
       "screen": "Local / Criar e editar",
       "scope": "mvp",
-      "done": "Contrato nominal de Locais, DTO e painéis existentes; SQL candidato sem GREEN integral comprovado. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão. C00188cf2ba integra componentes/catálogo/writer/seleção/cópia/status/semana e correções de estado adf5feb1;266funcionais+36DTO PASS, não equivale ao aceite individual.",
+      "done": "Contrato nominal de Locais, DTO e painéis existentes; SQL candidato sem GREEN integral comprovado. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão. C00188cf2ba integra componentes/catálogo/writer/seleção/cópia/status/semana e correções de estado adf5feb1;266funcionais+36DTO PASS, não equivale ao aceite individual. R02 D00: revogação de create/update/copy fecha superfície correspondente;24480c732/4eacb7b5b, mesma campanha21PASS, sem duplicação. Retorno de escrita em voo exige negativa backend e prova completa.",
       "fe": "Revalidar o aceite específico desta ação: Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. R01/16h: 18form/7Locais/9brand/4fences relatados; conjunto410PASS/8goldenFAIL. R17 retirou causa atribuída apenas ao footer: cabeçalho, cartão criar ausente e fixtures/paginação divergem; precisa revisão nominal. UnitDetail depende wiring C00. PróximoC00: rotas/DI, hints separados create/update/status/copy/schedule eURL apóscópia; visuais/aceite específico aindaabertos. Pacote seletivo Locais já integrado no histórico; ligação de superfície/router e capacidades por ação continuam pendentes. Agenda semanal não equivale a reservas datadas; não ampliar autorização do cliente por canCreate.",
       "be": "Revisar snapshot remoto nominal e compatibilidade de helpers; executar script estático diretamente e depois replay SQL nominal. Não atualizar pins para mascarar drift. C04/r14 retirou risco AAL2 do helper central: corretiva20260901200206 aceita AAL1. Preservar preflight de capabilities locations.read/create Owner-only; candidato não as semeia. Edição/status propostos aguardam reserva nominal e replay, sem apagar catálogo para satisfazer preflight. R01/16h: Editar/status, cópia e agenda Locais receberam nomes locais I008; criação20260908031000 já candidata. Sem replay/apply. Não destruir activity_locations nem criar catálogo paralelo. Cadeia de provedores/SQL candidato requer revisão e runtime nominal; perfil de capacidade precisa backend real.",
-      "evidence": "codex/e2e-estruturas-pessoas-locais@9e689374; evidence/etapa-2/estruturas/2026-09-08-location-read-adapter.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 27236a5a/ae7e8f5f/15516da9 retidos:fundação,capabilities,assertionsrecibos e schedule só disponibilidade semanal. ScratchAuthstub não é replay. Release confirmado;timestamp20:09r20 incoerente. Adapters posteriores observadosC06 sem handoff novo.; etapa-2-operacao/reports/R01-delta-2005.md; R01-locations-integration-manifest.json; Fechamento R01 C04/r61; C04r61/estado47;188cf2ba histórico266Flutter+36DTO; não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "codex/e2e-estruturas-pessoas-locais@9e689374; evidence/etapa-2/estruturas/2026-09-08-location-read-adapter.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 27236a5a/ae7e8f5f/15516da9 retidos:fundação,capabilities,assertionsrecibos e schedule só disponibilidade semanal. ScratchAuthstub não é replay. Release confirmado;timestamp20:09r20 incoerente. Adapters posteriores observadosC06 sem handoff novo.; etapa-2-operacao/reports/R01-delta-2005.md; R01-locations-integration-manifest.json; Fechamento R01 C04/r61; C04r61/estado47;188cf2ba histórico266Flutter+36DTO; não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
       "historicalFrontend": "not-reviewed",
       "historicalBackend": "not-reviewed",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00",
+      "lastEvidenceAt": "2026-09-09T14:26:45.455315-03:00",
       "lastHandoffRevision": 61,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "c5bcaf9e1fe1ad933fde9e375aa6d3d46d08d7aa",
+        "recordedAt": "2026-09-09T14:26:45.455315-03:00",
+        "note": "R02 D00: revogação de create/update/copy fecha superfície correspondente;24480c732/4eacb7b5b, mesma campanha21PASS, sem duplicação. Retorno de escrita em voo exige negativa backend e prova completa.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "locations.detail-links",
       "family": "locations",
       "screen": "Local / Detalhe e vínculos",
       "scope": "mvp",
-      "done": "Reader/painéis locais existentes; vínculo/mídia e composição produtiva completos não certificados. C04/r13 e05495c2: mapa pintado do endereço do local externo no detalhe,3 testes focais;203 testes Locais PASS relatados. Preview sem rede não comprova geolocalização. Código ainda em revisão C00. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão. C00188cf2ba integra componentes/catálogo/writer/seleção/cópia/status/semana e correções de estado adf5feb1;266funcionais+36DTO PASS, não equivale ao aceite individual.",
+      "done": "Reader/painéis locais existentes; vínculo/mídia e composição produtiva completos não certificados. C04/r13 e05495c2: mapa pintado do endereço do local externo no detalhe,3 testes focais;203 testes Locais PASS relatados. Preview sem rede não comprova geolocalização. Código ainda em revisão C00. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão. C00188cf2ba integra componentes/catálogo/writer/seleção/cópia/status/semana e correções de estado adf5feb1;266funcionais+36DTO PASS, não equivale ao aceite individual. R02 D00: footer respeita update em composição direta,4eacb7b5b;campanha21PASS compartilhada. Modal7777retido por callback tardio após troca de contexto; aguardando sucessor.",
       "fe": "Conectar DI/rota e completar links autorizados/mapa/foto conforme contrato; não reconstruir reader. Permanecem vínculos autorizados, planta/fotos e integração do consumidor; mapa externo não fecha detail-links. R01/16h: 18form/7Locais/9brand/4fences relatados; conjunto410PASS/8goldenFAIL. R17 retirou causa atribuída apenas ao footer: cabeçalho, cartão criar ausente e fixtures/paginação divergem; precisa revisão nominal. UnitDetail depende wiring C00. PróximoC00: rotas/DI, hints separados create/update/status/copy/schedule eURL apóscópia; visuais/aceite específico aindaabertos. Pacote seletivo Locais já integrado no histórico; ligação de superfície/router e capacidades por ação continuam pendentes. Agenda semanal não equivale a reservas datadas; não ampliar autorização do cliente por canCreate.",
       "be": "Revisar snapshot remoto nominal e compatibilidade de helpers; executar script estático diretamente e depois replay SQL nominal. Não atualizar pins para mascarar drift. R01/16h: Editar/status, cópia e agenda Locais receberam nomes locais I008; criação20260908031000 já candidata. Sem replay/apply. Não destruir activity_locations nem criar catálogo paralelo. Cadeia de provedores/SQL candidato requer revisão e runtime nominal; perfil de capacidade precisa backend real.",
-      "evidence": "evidence/etapa-2/estruturas/2026-09-08-location-read-adapter.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 27236a5a/ae7e8f5f/15516da9 retidos:fundação,capabilities,assertionsrecibos e schedule só disponibilidade semanal. ScratchAuthstub não é replay. Release confirmado;timestamp20:09r20 incoerente. Adapters posteriores observadosC06 sem handoff novo.; etapa-2-operacao/reports/R01-delta-2005.md; R01-locations-integration-manifest.json; Fechamento R01 C04/r61; C04r61/estado47;188cf2ba histórico266Flutter+36DTO; não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "evidence/etapa-2/estruturas/2026-09-08-location-read-adapter.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 27236a5a/ae7e8f5f/15516da9 retidos:fundação,capabilities,assertionsrecibos e schedule só disponibilidade semanal. ScratchAuthstub não é replay. Release confirmado;timestamp20:09r20 incoerente. Adapters posteriores observadosC06 sem handoff novo.; etapa-2-operacao/reports/R01-delta-2005.md; R01-locations-integration-manifest.json; Fechamento R01 C04/r61; C04r61/estado47;188cf2ba histórico266Flutter+36DTO; não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
       "historicalFrontend": "not-reviewed",
       "historicalBackend": "not-reviewed",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00",
+      "lastEvidenceAt": "2026-09-09T14:26:45.455315-03:00",
       "lastHandoffRevision": 61,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "c5bcaf9e1fe1ad933fde9e375aa6d3d46d08d7aa",
+        "recordedAt": "2026-09-09T14:26:45.455315-03:00",
+        "note": "R02 D00: footer respeita update em composição direta,4eacb7b5b;campanha21PASS compartilhada. Modal7777retido por callback tardio após troca de contexto; aguardando sucessor.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "locations.schedule",
       "family": "locations",
       "screen": "Locais / Agendamento",
       "scope": "mvp",
-      "done": "Contrato nominal de Locais, DTO e painéis existentes; SQL candidato sem GREEN integral comprovado. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão. C00188cf2ba integra componentes/catálogo/writer/seleção/cópia/status/semana e correções de estado adf5feb1;266funcionais+36DTO PASS, não equivale ao aceite individual.",
+      "done": "Contrato nominal de Locais, DTO e painéis existentes; SQL candidato sem GREEN integral comprovado. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão. C00188cf2ba integra componentes/catálogo/writer/seleção/cópia/status/semana e correções de estado adf5feb1;266funcionais+36DTO PASS, não equivale ao aceite individual. R02: 3b4f982a→e9a582a0 usa seletor canônico de dia; 19 casos de disponibilidade semanal PASS e gate visual administrativo limpo. Não implementa reservas datadas. R02 D00: contratos datados/fuso e DTO correlacionado integrados937d7b54b/6eb66fff3;13domain+21DTO PASS na base conjunta. Contrato parcial, sem motor/backend/rotas produtivas certificados; janela semanal continua distinta de reserva datada.",
       "fe": "Revalidar o aceite específico desta ação: Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. R01/16h: 18form/7Locais/9brand/4fences relatados; conjunto410PASS/8goldenFAIL. R17 retirou causa atribuída apenas ao footer: cabeçalho, cartão criar ausente e fixtures/paginação divergem; precisa revisão nominal. UnitDetail depende wiring C00. PróximoC00: rotas/DI, hints separados create/update/status/copy/schedule eURL apóscópia; visuais/aceite específico aindaabertos. Pacote seletivo Locais já integrado no histórico; ligação de superfície/router e capacidades por ação continuam pendentes. Agenda semanal não equivale a reservas datadas; não ampliar autorização do cliente por canCreate.",
       "be": "Revisar snapshot remoto nominal e compatibilidade de helpers; executar script estático diretamente e depois replay SQL nominal. Não atualizar pins para mascarar drift. Ownership C04 confirmado I006; pacote de agenda/política de conflito proposto r8/r14 aguarda revisão/reserva local. Risco AAL2 do helper central retirado pela corretiva20260901200206, sem dispensar demais autorizações. R01/16h: Editar/status, cópia e agenda Locais receberam nomes locais I008; criação20260908031000 já candidata. Sem replay/apply. Não destruir activity_locations nem criar catálogo paralelo. Cadeia de provedores/SQL candidato requer revisão e runtime nominal; perfil de capacidade precisa backend real.",
-      "evidence": "codex/e2e-estruturas-pessoas-locais@9e689374; evidence/etapa-2/estruturas/2026-09-08-location-read-adapter.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 27236a5a/ae7e8f5f/15516da9 retidos:fundação,capabilities,assertionsrecibos e schedule só disponibilidade semanal. ScratchAuthstub não é replay. Release confirmado;timestamp20:09r20 incoerente. Adapters posteriores observadosC06 sem handoff novo.; etapa-2-operacao/reports/R01-delta-2005.md; R01-locations-integration-manifest.json; Fechamento R01 C04/r61; C04r61/estado47;188cf2ba histórico266Flutter+36DTO; não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "codex/e2e-estruturas-pessoas-locais@9e689374; evidence/etapa-2/estruturas/2026-09-08-location-read-adapter.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 27236a5a/ae7e8f5f/15516da9 retidos:fundação,capabilities,assertionsrecibos e schedule só disponibilidade semanal. ScratchAuthstub não é replay. Release confirmado;timestamp20:09r20 incoerente. Adapters posteriores observadosC06 sem handoff novo.; etapa-2-operacao/reports/R01-delta-2005.md; R01-locations-integration-manifest.json; Fechamento R01 C04/r61; C04r61/estado47;188cf2ba histórico266Flutter+36DTO; não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-reservations-profiles-resume.json",
       "historicalFrontend": "not-reviewed",
       "historicalBackend": "not-reviewed",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00",
+      "lastEvidenceAt": "2026-09-09T14:26:45.455315-03:00",
       "lastHandoffRevision": 61,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "c5bcaf9e1fe1ad933fde9e375aa6d3d46d08d7aa",
+        "recordedAt": "2026-09-09T14:26:45.455315-03:00",
+        "note": "R02 D00: contratos datados/fuso e DTO correlacionado integrados937d7b54b/6eb66fff3;13domain+21DTO PASS na base conjunta. Contrato parcial, sem motor/backend/rotas produtivas certificados; janela semanal continua distinta de reserva datada.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "circulars.list",
@@ -4255,7 +4405,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-09T13:20:58.702584-03:00",
+  "updatedAt": "2026-09-09T13:37:29.319567-03:00",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

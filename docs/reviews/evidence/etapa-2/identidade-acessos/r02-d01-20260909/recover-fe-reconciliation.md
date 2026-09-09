@@ -10,7 +10,7 @@ observed_at: "2026-09-09T13:20:11-03:00"
 
 Etapa 2 → apps/superadmin → Autenticação → Recuperar senha → formulário,
 envio, confirmação neutra, reenvio e retorno → `auth.recover`.
-Inspeção somente leitura, sem testes novos nesta reconciliação. Base R02
+Inspeção inicial somente leitura, seguida do gate focal de nove casos descrito abaixo. Base R02
 `56eb3f19de23e364ea5f7e4f73a6fbd9a851e230`; HEAD observado ao concluir
 `6dfec55a49e1caa9808807dbea5068836f419ab8`.
 
@@ -116,3 +116,5 @@ para reabrir a apresentação da solicitação de recuperação.
 A falha do validador global em Locais é preexistente e externa a Auth; permanece
 registrada no handoff e não é uma falha nova destes aceites.
 Nenhuma decisão de produto nova; memória durável não alterada.
+
+Aceite D00: evidência integrada em d1b9cbe04; fontes Auth equivalentes conferidas. Certificação exclusivamente Front-end registrada nas três matrizes. O gate visual Locais foi corrigido e passou na base e9a582a0; o relato anterior permanece histórico.

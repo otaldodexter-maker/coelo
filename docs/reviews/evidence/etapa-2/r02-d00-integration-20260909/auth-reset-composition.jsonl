@@ -1,0 +1,11 @@
+{"protocolVersion":"0.1.1","runnerVersion":null,"pid":49100,"type":"start","time":0}
+{"suite":{"id":0,"platform":"vm","path":"C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart"},"type":"suite","time":0}
+{"test":{"id":1,"name":"loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart","suiteID":0,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":1}
+{"count":1,"time":4,"type":"allSuites"}
+{"testID":1,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":13364}
+{"group":{"id":2,"suiteID":0,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":2,"line":null,"column":null,"url":null},"type":"group","time":13369}
+{"test":{"id":3,"name":"SDK recovery callback through reset form waits for logout: success=true","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":20,"root_column":5,"root_url":"file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart"},"type":"testStart","time":13370}
+{"testID":3,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":16804}
+{"test":{"id":4,"name":"SDK recovery callback through reset form waits for logout: success=false","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":20,"root_column":5,"root_url":"file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_composition_test.dart"},"type":"testStart","time":16805}
+{"testID":4,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":17621}
+{"success":true,"type":"done","time":17694}

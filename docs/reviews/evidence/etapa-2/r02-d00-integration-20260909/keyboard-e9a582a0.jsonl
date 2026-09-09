@@ -1,0 +1,29 @@
+{"protocolVersion":"0.1.1","runnerVersion":null,"pid":67208,"type":"start","time":0}
+{"suite":{"id":0,"platform":"vm","path":"C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart"},"type":"suite","time":0}
+{"test":{"id":1,"name":"loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart","suiteID":0,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":0}
+{"suite":{"id":2,"platform":"vm","path":"C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart"},"type":"suite","time":3}
+{"test":{"id":3,"name":"loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart","suiteID":2,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":3}
+{"suite":{"id":4,"platform":"vm","path":"C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart"},"type":"suite","time":4}
+{"test":{"id":5,"name":"loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart","suiteID":4,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":4}
+{"suite":{"id":6,"platform":"vm","path":"C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart"},"type":"suite","time":5}
+{"test":{"id":7,"name":"loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart","suiteID":6,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":5}
+{"count":4,"time":5,"type":"allSuites"}
+{"testID":1,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":9262}
+{"group":{"id":8,"suiteID":0,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":2,"line":null,"column":null,"url":null},"type":"group","time":9267}
+{"test":{"id":9,"name":"D01 keyboard login advances to password and submits once with done","suiteID":0,"groupIDs":[8],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":45,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart"},"type":"testStart","time":9268}
+{"testID":3,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":9586}
+{"group":{"id":10,"suiteID":2,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":1,"line":null,"column":null,"url":null},"type":"group","time":9588}
+{"test":{"id":11,"name":"D01 keyboard recovery submits the email once with done","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":40,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart"},"type":"testStart","time":9588}
+{"testID":9,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":10687}
+{"test":{"id":12,"name":"D01 keyboard login follows visual focus order with Tab","suiteID":0,"groupIDs":[8],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":79,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart"},"type":"testStart","time":10688}
+{"testID":11,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":10920}
+{"testID":12,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":11037}
+{"testID":7,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":14668}
+{"group":{"id":13,"suiteID":6,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":1,"line":null,"column":null,"url":null},"type":"group","time":14669}
+{"test":{"id":14,"name":"D01 reduced motion completes auth brand theme changes without animation","suiteID":6,"groupIDs":[13],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":9,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart"},"type":"testStart","time":14669}
+{"testID":14,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":15231}
+{"testID":5,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":16176}
+{"group":{"id":15,"suiteID":4,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":1,"line":null,"column":null,"url":null},"type":"group","time":16176}
+{"test":{"id":16,"name":"D01 keyboard reset advances to confirmation and submits once with done","suiteID":4,"groupIDs":[15],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":54,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart"},"type":"testStart","time":16177}
+{"testID":16,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":18724}
+{"success":true,"type":"done","time":18871}

@@ -1,0 +1,13 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:106
++ ... -20260909'; rtk proxy flutter test --no-pub test/features/auth/presen ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+00:00 +0: loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: D01 keyboard login advances to password and submits once with done
+00:01 +1: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart: D01 keyboard recovery submits the email once with done
+00:01 +2: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: D01 keyboard login follows visual focus order with Tab
+00:05 +3: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart: D01 reduced motion completes auth brand theme changes without animation
+00:06 +4: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart: D01 keyboard reset advances to confirmation and submits once with done
+00:09 +5: All tests passed!

@@ -1,0 +1,568 @@
+{
+  "source": "D00 integrated campaigns55636/27289/40684; static gate reviewed",
+  "generatedAt": "2026-09-09T13:37:29.319567-03:00",
+  "status": "partial-acceptance-one-legacy-test-failure",
+  "revision": "d1b9cbe04563cd111d7e83eadc82f432a979ade6",
+  "campaigns": [
+    {
+      "campaign_id": "R02-D00-keyboard-e9a582a0",
+      "revision": "e9a582a0",
+      "environment": "Windows Flutter local; synthetic inputs/repositories",
+      "layer": "FE",
+      "action_ids": [
+        "auth.login",
+        "auth.recover",
+        "auth.reset"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/keyboard-e9a582a0.jsonl",
+      "sha256": "837d55f2b72ddcaad86e7684fd690c571c87267ab41fb793bb213a5cfb42d601",
+      "cases": [
+        {
+          "test_id": "apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart::D01 keyboard login advances to password and submits once with done",
+          "file": "apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart",
+          "name": "D01 keyboard login advances to password and submits once with done",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart::D01 keyboard recovery submits the email once with done",
+          "file": "apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart",
+          "name": "D01 keyboard recovery submits the email once with done",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart::D01 keyboard login follows visual focus order with Tab",
+          "file": "apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart",
+          "name": "D01 keyboard login follows visual focus order with Tab",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart::D01 reduced motion completes auth brand theme changes without animation",
+          "file": "apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart",
+          "name": "D01 reduced motion completes auth brand theme changes without animation",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart::D01 keyboard reset advances to confirmation and submits once with done",
+          "file": "apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart",
+          "name": "D01 keyboard reset advances to confirmation and submits once with done",
+          "result": "P"
+        }
+      ],
+      "P": 5,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    },
+    {
+      "campaign_id": "R02-D00-group-error-e9a582a0",
+      "revision": "e9a582a0",
+      "environment": "Windows Flutter local; synthetic inputs/repositories",
+      "layer": "FE",
+      "action_ids": [
+        "groups.create",
+        "groups.edit"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/group-error-e9a582a0.jsonl",
+      "sha256": "a46852abe888c8c5faac7c8c496d6cc8449321f91bd4c61be04bc3be51e4a8cd",
+      "cases": [
+        {
+          "test_id": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart::restores the save action when the repository throws an Error",
+          "file": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+          "name": "restores the save action when the repository throws an Error",
+          "result": "P"
+        }
+      ],
+      "P": 1,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    },
+    {
+      "campaign_id": "R02-D00-units-locations-e9a582a0",
+      "revision": "e9a582a0",
+      "environment": "Windows Flutter local; synthetic inputs/repositories",
+      "layer": "FE",
+      "action_ids": [
+        "units.list",
+        "units.create",
+        "units.edit",
+        "locations.schedule"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/units-locations-e9a582a0.jsonl",
+      "sha256": "2b02c34eba310baeb9baf78fb138a694fed04b9c21a3b33b4d251488d9a960e5",
+      "cases": [
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::clock formatting midnight at the end of the day reads as 24:00, never as 00:00",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "clock formatting midnight at the end of the day reads as 24:00, never as 00:00",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::clock formatting parsing accepts a clock and refuses everything else",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "clock formatting parsing accepts a clock and refuses everything else",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::reading nothing is read until the actor asks",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "reading nothing is read until the actor asks",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::reading an empty week says nothing was declared, not that it is always open",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "reading an empty week says nothing was declared, not that it is always open",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::reading a published week is shown by day and clock",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "reading a published week is shown by day and clock",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::reading a denial says permission and reads nothing further",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "reading a denial says permission and reads nothing further",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::reading without a session nothing can be read",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "reading without a session nothing can be read",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::editing the draft publishing is offered only once something changed",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "editing the draft publishing is offered only once something changed",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::editing the draft a window is added on the chosen day and kept in order",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "editing the draft a window is added on the chosen day and kept in order",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart::remounts /units/new when the authorization revision changes",
+          "file": "apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart",
+          "name": "remounts /units/new when the authorization revision changes",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::editing the draft a time that is not a time is refused before anything is added",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "editing the draft a time that is not a time is refused before anything is added",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart::remounts /units/unit-1/edit when the authorization revision changes",
+          "file": "apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart",
+          "name": "remounts /units/unit-1/edit when the authorization revision changes",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::editing the draft an end before its start is refused",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "editing the draft an end before its start is refused",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::editing the draft an overlap is caught here, while the offending window is on screen",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "editing the draft an overlap is caught here, while the offending window is on screen",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::editing the draft a window that merely touches another is accepted",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "editing the draft a window that merely touches another is accepted",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::publishing sends the whole week with the version the actor was looking at",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "publishing sends the whole week with the version the actor was looking at",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::publishing a published week becomes the new baseline and tells the detail",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "publishing a published week becomes the new baseline and tells the detail",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::publishing a conflict says the screen went stale",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "publishing a conflict says the screen went stale",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::publishing a retry after a transport failure is the same request",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "publishing a retry after a transport failure is the same request",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart::production unit routes receive only unavailable composition",
+          "file": "apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart",
+          "name": "production unit routes receive only unavailable composition",
+          "result": "F"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::publishing a rejected week starts a new request on the next attempt",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "publishing a rejected week starts a new request on the next attempt",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_schedule_section_test.dart::accessibility the loaded section meets tap size, labelling and contrast",
+          "file": "apps/superadmin/test/features/locations/location_schedule_section_test.dart",
+          "name": "accessibility the loaded section meets tap size, labelling and contrast",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart::development unit routes receive cached fake repository and null gateway",
+          "file": "apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart",
+          "name": "development unit routes receive cached fake repository and null gateway",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart::release guard keeps development unit routes unreachable",
+          "file": "apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart",
+          "name": "release guard keeps development unit routes unreachable",
+          "result": "P"
+        }
+      ],
+      "P": 23,
+      "F": 1,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    },
+    {
+      "campaign_id": "R02-D00-students-routine-4041bd81",
+      "revision": "4041bd81",
+      "environment": "Windows Flutter local; synthetic inputs/repositories",
+      "layer": "FE",
+      "action_ids": [
+        "students.list",
+        "daily-routine.create",
+        "daily-routine.edit",
+        "daily-routine.apply"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/students-routine-4041bd81.jsonl",
+      "sha256": "95a910a205b2e62e2256f2a9c47d9872c40fd965958077ac6b0d2af167c1c6e5",
+      "cases": [
+        {
+          "test_id": "apps/superadmin/test/features/children/child_directory_controller_test.dart::invalid institution prevents transport",
+          "file": "apps/superadmin/test/features/children/child_directory_controller_test.dart",
+          "name": "invalid institution prevents transport",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/children/child_directory_controller_test.dart::wrong owner response never becomes visible",
+          "file": "apps/superadmin/test/features/children/child_directory_controller_test.dart",
+          "name": "wrong owner response never becomes visible",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/children/child_directory_controller_test.dart::clearing institution filter resets page and cursor",
+          "file": "apps/superadmin/test/features/children/child_directory_controller_test.dart",
+          "name": "clearing institution filter resets page and cursor",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/children/child_directory_controller_test.dart::listener context replacement uses new reader and never starts old request",
+          "file": "apps/superadmin/test/features/children/child_directory_controller_test.dart",
+          "name": "listener context replacement uses new reader and never starts old request",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/children/child_directory_controller_test.dart::absent session never reads",
+          "file": "apps/superadmin/test/features/children/child_directory_controller_test.dart",
+          "name": "absent session never reads",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/children/child_directory_controller_test.dart::default unavailable never becomes fixture data",
+          "file": "apps/superadmin/test/features/children/child_directory_controller_test.dart",
+          "name": "default unavailable never becomes fixture data",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/children/child_directory_controller_test.dart::first page request has defaults and explicit institution",
+          "file": "apps/superadmin/test/features/children/child_directory_controller_test.dart",
+          "name": "first page request has defaults and explicit institution",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/children/child_directory_controller_test.dart::next page uses opaque cursor once and clears previous page while loading",
+          "file": "apps/superadmin/test/features/children/child_directory_controller_test.dart",
+          "name": "next page uses opaque cursor once and clears previous page while loading",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/children/child_directory_controller_test.dart::scope replacement clears cursor and ignores old success",
+          "file": "apps/superadmin/test/features/children/child_directory_controller_test.dart",
+          "name": "scope replacement clears cursor and ignores old success",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/children/child_directory_controller_test.dart::same institution revision ignores late denial",
+          "file": "apps/superadmin/test/features/children/child_directory_controller_test.dart",
+          "name": "same institution revision ignores late denial",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/children/child_directory_controller_test.dart::logout clears data and no late request resurrects it",
+          "file": "apps/superadmin/test/features/children/child_directory_controller_test.dart",
+          "name": "logout clears data and no late request resurrects it",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/children/child_directory_controller_test.dart::reader replacement invalidates previous transport and data",
+          "file": "apps/superadmin/test/features/children/child_directory_controller_test.dart",
+          "name": "reader replacement invalidates previous transport and data",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/children/child_directory_controller_test.dart::reload drops previous pagination cursor",
+          "file": "apps/superadmin/test/features/children/child_directory_controller_test.dart",
+          "name": "reload drops previous pagination cursor",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/children/child_directory_controller_test.dart::current failure and denied remove all previous data",
+          "file": "apps/superadmin/test/features/children/child_directory_controller_test.dart",
+          "name": "current failure and denied remove all previous data",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/children/child_directory_controller_test.dart::dispose ignores pending completion and future requests",
+          "file": "apps/superadmin/test/features/children/child_directory_controller_test.dart",
+          "name": "dispose ignores pending completion and future requests",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/children/child_directory_controller_test.dart::listener logout before transport prevents call",
+          "file": "apps/superadmin/test/features/children/child_directory_controller_test.dart",
+          "name": "listener logout before transport prevents call",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart::composes the authorized child list above tracking",
+          "file": "apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart",
+          "name": "composes the authorized child list above tracking",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart::without an injected child read keeps the tracking page unchanged",
+          "file": "apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart",
+          "name": "without an injected child read keeps the tracking page unchanged",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart::revoked session clears the authorized child list",
+          "file": "apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart",
+          "name": "revoked session clears the authorized child list",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart::students route consumes the authorized read and clears it on sign out",
+          "file": "apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart",
+          "name": "students route consumes the authorized read and clears it on sign out",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart::embedded child list has no overflow at 375 and 200 percent text",
+          "file": "apps/superadmin/test/features/student_tracking/presentation/student_tracking_child_directory_composition_test.dart",
+          "name": "embedded child list has no overflow at 375 and 200 percent text",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::new model save unlocks after the repository returns its created id",
+          "file": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart",
+          "name": "new model save unlocks after the repository returns its created id",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::new application save unlocks after the repository returns its created id",
+          "file": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart",
+          "name": "new application save unlocks after the repository returns its created id",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/app/router/student_tracking_fail_closed_routes_test.dart::development students use local examples while manage routes stay fail-closed",
+          "file": "apps/superadmin/test/app/router/student_tracking_fail_closed_routes_test.dart",
+          "name": "development students use local examples while manage routes stay fail-closed",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/app/router/student_tracking_fail_closed_routes_test.dart::release guard keeps development students unreachable",
+          "file": "apps/superadmin/test/app/router/student_tracking_fail_closed_routes_test.dart",
+          "name": "release guard keeps development students unreachable",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::rejects an empty id returned while creating model",
+          "file": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart",
+          "name": "rejects an empty id returned while creating model",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::rejects an empty id returned while creating application",
+          "file": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart",
+          "name": "rejects an empty id returned while creating application",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::ignores a late application load after the editor context changes",
+          "file": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart",
+          "name": "ignores a late application load after the editor context changes",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::distinct equal repositories still replace the editor context",
+          "file": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart",
+          "name": "distinct equal repositories still replace the editor context",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::rejects a mismatched id returned while editing model",
+          "file": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart",
+          "name": "rejects a mismatched id returned while editing model",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::rejects a mismatched id returned while editing application",
+          "file": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart",
+          "name": "rejects a mismatched id returned while editing application",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::fails closed when an application load returns another id",
+          "file": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart",
+          "name": "fails closed when an application load returns another id",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::fails closed when applying a model returned for another id",
+          "file": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart",
+          "name": "fails closed when applying a model returned for another id",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::does not surface application creation without an authorized context",
+          "file": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart",
+          "name": "does not surface application creation without an authorized context",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::reverts a customized application through the repository",
+          "file": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart",
+          "name": "reverts a customized application through the repository",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::persists the newly selected inheritance mode",
+          "file": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart",
+          "name": "persists the newly selected inheritance mode",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart::renders scheduled fields and never exposes raw scope identifiers",
+          "file": "apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart",
+          "name": "renders scheduled fields and never exposes raw scope identifiers",
+          "result": "P"
+        }
+      ],
+      "P": 37,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    },
+    {
+      "campaign_id": "R02-D00-attendance-date-4041bd81",
+      "revision": "4041bd81",
+      "environment": "Windows Flutter local; synthetic inputs/repositories",
+      "layer": "FE",
+      "action_ids": [
+        "attendance.dashboard"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/attendance-date-4041bd81.jsonl",
+      "sha256": "ae614f0d4648d7c8acb794db0d3ff21299d2d3063f35e4e96e1e6c0da12655fa",
+      "cases": [
+        {
+          "test_id": "apps/superadmin/test/features/attendance/attendance_pages_test.dart::dashboard uses the supplied civil date for its period and picker limit",
+          "file": "apps/superadmin/test/features/attendance/attendance_pages_test.dart",
+          "name": "dashboard uses the supplied civil date for its period and picker limit",
+          "result": "P"
+        }
+      ],
+      "P": 1,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    },
+    {
+      "campaign_id": "R02-D00-unit-context-cdf9f532f",
+      "revision": "cdf9f532f",
+      "environment": "Windows Flutter local; synthetic inputs/repositories",
+      "layer": "FE",
+      "action_ids": [
+        "units.list"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/unit-context-cdf9f532f.jsonl",
+      "sha256": "e12d43e86bd3439321cfb5b60323348dc1e0b223669934012afd0ed112e9f48a",
+      "cases": [
+        {
+          "test_id": "apps/superadmin/test/features/units/presentation/unit_directory_page_test.dart::reloads through the replacement repository after authorization changes",
+          "file": "apps/superadmin/test/features/units/presentation/unit_directory_page_test.dart",
+          "name": "reloads through the replacement repository after authorization changes",
+          "result": "P"
+        }
+      ],
+      "P": 1,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    }
+  ],
+  "counts": {
+    "P": 68,
+    "F": 1,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "qualityGates": [
+    {
+      "gate": "dart analyze10sources",
+      "revision": "4041bd81",
+      "exitCode": 0,
+      "evidence": "analyze-4041bd81.txt"
+    },
+    {
+      "gate": "admin visual contracts",
+      "revision": "e9a582a0",
+      "command": "dart run apps/catalog/tool/validate_admin_visual_contracts.dart . apps/catalog/assets/admin-visual-contract-allowlist.json",
+      "exitCode": 0,
+      "source": "D00 tool result; no repeat solely for log"
+    }
+  ],
+  "failure": {
+    "test": "production unit routes receive only unavailable composition",
+    "cause": "Legacy test assumes mutation gateway/form despite enableStructureMutations=false. Relevant router condition identical before ebec60e0.",
+    "status": "open-test-correction-with-D02",
+    "productRegressionIntroducedByRound": false
+  },
+  "limits": "No duplicate author reruns. Counts cover six campaigns, not all app criteria; prior manifests remain valid for unaffected cases."
+}

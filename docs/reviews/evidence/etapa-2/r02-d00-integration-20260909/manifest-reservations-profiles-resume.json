@@ -1,0 +1,539 @@
+{
+  "source": "D00 resumed integration; existing JSONL and NUnit XML reporters",
+  "generatedAt": "2026-09-09T14:24:08.417644-03:00",
+  "status": "focal-local-pass-not-product-completion",
+  "campaigns": [
+    {
+      "campaign_id": "R02-D00-reservations-domain-6eb66fff3",
+      "revision": "6eb66fff3",
+      "environment": "Windows local Dart package tests; no relevant package WIP per D00 execution context",
+      "layer": "client-contract",
+      "action_ids": [
+        "locations.schedule"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservations-domain-6eb66fff3.jsonl",
+      "sha256": "a4ead54ce797ed1f0f52501e14cf24177d2af4223f1f44872e1ab56036c889ae",
+      "runnerDoneSuccess": true,
+      "cases": [
+        {
+          "test_id": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart::an occurrence is a dated moment, not a clock rule it is stored in UTC, because a wall clock does not survive a DST boundary",
+          "package": "packages/coelo_domain",
+          "file": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart",
+          "name": "an occurrence is a dated moment, not a clock rule it is stored in UTC, because a wall clock does not survive a DST boundary",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart::an occurrence is a dated moment, not a clock rule it must last",
+          "package": "packages/coelo_domain",
+          "file": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart",
+          "name": "an occurrence is a dated moment, not a clock rule it must last",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart::an occurrence is a dated moment, not a clock rule touching occurrences do not overlap, matching the availability rule",
+          "package": "packages/coelo_domain",
+          "file": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart",
+          "name": "an occurrence is a dated moment, not a clock rule touching occurrences do not overlap, matching the availability rule",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart::recurrence copies the weekdays so an outstanding request cannot change",
+          "package": "packages/coelo_domain",
+          "file": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart",
+          "name": "recurrence copies the weekdays so an outstanding request cannot change",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart::recurrence rejects empty or invalid weekdays and a non-date end boundary",
+          "package": "packages/coelo_domain",
+          "file": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart",
+          "name": "recurrence rejects empty or invalid weekdays and a non-date end boundary",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart::recurrence only the two approved shapes exist",
+          "package": "packages/coelo_domain",
+          "file": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart",
+          "name": "recurrence only the two approved shapes exist",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart::recurrence weekday numbering matches the availability contract, so no translation is needed",
+          "package": "packages/coelo_domain",
+          "file": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart",
+          "name": "recurrence weekday numbering matches the availability contract, so no translation is needed",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart::the conflict answer belongs to the server a justification is demanded only when an overlap is confirmable",
+          "package": "packages/coelo_domain",
+          "file": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart",
+          "name": "the conflict answer belongs to the server a justification is demanded only when an overlap is confirmable",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart::the conflict answer belongs to the server the assessment never carries the other consumer, only the occupied moments",
+          "package": "packages/coelo_domain",
+          "file": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart",
+          "name": "the conflict answer belongs to the server the assessment never carries the other consumer, only the occupied moments",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart::a reservation always belongs to something the consumer is a kind plus that consumer own id",
+          "package": "packages/coelo_domain",
+          "file": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart",
+          "name": "a reservation always belongs to something the consumer is a kind plus that consumer own id",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart::a reservation always belongs to something occurrences come expanded from the server and cannot be edited locally",
+          "package": "packages/coelo_domain",
+          "file": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart",
+          "name": "a reservation always belongs to something occurrences come expanded from the server and cannot be edited locally",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart::a reservation always belongs to something a confirmed overlap is visible on the reservation, not only in the audit trail",
+          "package": "packages/coelo_domain",
+          "file": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart",
+          "name": "a reservation always belongs to something a confirmed overlap is visible on the reservation, not only in the audit trail",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart::availability and reservation answer different questions",
+          "package": "packages/coelo_domain",
+          "file": "packages/coelo_domain/test/locations/location_reservations_contract_test.dart",
+          "name": "availability and reservation answer different questions",
+          "result": "P"
+        }
+      ],
+      "P": 13,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    },
+    {
+      "campaign_id": "R02-D00-reservations-api-6eb66fff3",
+      "revision": "6eb66fff3",
+      "environment": "Windows local Dart package tests; no relevant package WIP per D00 execution context",
+      "layer": "client-contract",
+      "action_ids": [
+        "locations.schedule"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservations-api-6eb66fff3.jsonl",
+      "sha256": "2d931a9cb261013fef712da07ea94c6d68f5c9fb9854415d524128fd720d492b",
+      "runnerDoneSuccess": true,
+      "cases": [
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::encodes explicit weekly zone and calendar end without expanding occurrences",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "encodes explicit weekly zone and calendar end without expanding occurrences",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::decodes a reservation bound to the requested location and consumer",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "decodes a reservation bound to the requested location and consumer",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::rejects wrong location",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "rejects wrong location",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::rejects wrong consumer kind",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "rejects wrong consumer kind",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::rejects wrong consumer id",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "rejects wrong consumer id",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::rejects unknown field",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "rejects unknown field",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::rejects non-positive version",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "rejects non-positive version",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::rejects invalid boolean",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "rejects invalid boolean",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::rejects empty occurrences",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "rejects empty occurrences",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::rejects multiple once occurrences",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "rejects multiple once occurrences",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::rejects local timestamp",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "rejects local timestamp",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::rejects reversed duration",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "rejects reversed duration",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::rejects invalid recurrence date",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "rejects invalid recurrence date",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::rejects duplicate weekdays",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "rejects duplicate weekdays",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::rejects unknown state",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "rejects unknown state",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::assessment keeps only conflict intervals and requires justification",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "assessment keeps only conflict intervals and requires justification",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::block cannot be confirmable",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "block cannot be confirmable",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::none cannot carry conflicts",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "none cannot carry conflicts",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::conflict must contain an interval",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "conflict must contain an interval",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::assessment cannot disclose holders",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "assessment cannot disclose holders",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_api/test/locations/location_reservation_dto_test.dart::assessment must correlate location",
+          "package": "packages/coelo_api",
+          "file": "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+          "name": "assessment must correlate location",
+          "result": "P"
+        }
+      ],
+      "P": 21,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    }
+  ],
+  "applicationContractCounts": {
+    "P": 34,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "infrastructureCampaigns": [
+    {
+      "campaign_id": "R02-D00-activity-child-profiles-eb0564f2",
+      "revision": "eb0564f2",
+      "environment": "Windows local Pester; profile materialization and harness contracts; no SQL execution",
+      "layer": "infrastructure",
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/activity-child-profiles-eb0564f2.xml",
+      "sha256": "20430ddcfd9ee970b5c045364081f2dcbfba233d7b465a934546387a97ecdc27",
+      "cases": [
+        {
+          "test_id": "packages/coelo_database/scripts/tests/ActivityAggregateConcurrencyProfile.Tests.ps1::ActivityAggregateConcurrency wrapper integration.materializes exactly the 56 reviewed SQL files without starting services",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/ActivityAggregateConcurrencyProfile.Tests.ps1",
+          "name": "ActivityAggregateConcurrency wrapper integration.materializes exactly the 56 reviewed SQL files without starting services",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/ActivityAggregateConcurrencyProfile.Tests.ps1::ActivityAggregateConcurrency wrapper integration.rejects concurrency outside the closed profile before creating resources",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/ActivityAggregateConcurrencyProfile.Tests.ps1",
+          "name": "ActivityAggregateConcurrency wrapper integration.rejects concurrency outside the closed profile before creating resources",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/ActivityAggregateConcurrencyProfile.Tests.ps1::Closed ActivityAggregateConcurrency replay selector.derives base55 and adds only the current aggregate migration",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/ActivityAggregateConcurrencyProfile.Tests.ps1",
+          "name": "Closed ActivityAggregateConcurrency replay selector.derives base55 and adds only the current aggregate migration",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/ActivityAggregateConcurrencyProfile.Tests.ps1::Closed ActivityAggregateConcurrency replay selector.pins the aggregate and both parent artifacts by normalized hash",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/ActivityAggregateConcurrencyProfile.Tests.ps1",
+          "name": "Closed ActivityAggregateConcurrency replay selector.pins the aggregate and both parent artifacts by normalized hash",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/ActivityAggregateConcurrencyProfile.Tests.ps1::Closed ActivityAggregateConcurrency replay selector.rejects every target except the aggregate migration",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/ActivityAggregateConcurrencyProfile.Tests.ps1",
+          "name": "Closed ActivityAggregateConcurrency replay selector.rejects every target except the aggregate migration",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1::Activity v2 concurrency harness contract.exists and parses without errors",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1",
+          "name": "Activity v2 concurrency harness contract.exists and parses without errors",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1::Activity v2 concurrency harness contract.requires the disposable project root and isolated project identity",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1",
+          "name": "Activity v2 concurrency harness contract.requires the disposable project root and isolated project identity",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1::Activity v2 concurrency harness contract.starts two independent psql processes and waits for both results",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1",
+          "name": "Activity v2 concurrency harness contract.starts two independent psql processes and waits for both results",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1::Activity v2 concurrency harness contract.asserts one winner, one concurrent-change loser, and durable invariants",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1",
+          "name": "Activity v2 concurrency harness contract.asserts one winner, one concurrent-change loser, and durable invariants",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1::Activity v2 concurrency harness contract.uses the exact audited eight-field internal marker fixture",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1",
+          "name": "Activity v2 concurrency harness contract.uses the exact audited eight-field internal marker fixture",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1::Activity v2 concurrency harness contract.seeds the aggregate with an active unit link under the nominal marker",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1",
+          "name": "Activity v2 concurrency harness contract.seeds the aggregate with an active unit link under the nominal marker",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1::Activity v2 concurrency harness contract.never obtains or prints local API or database credentials",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1",
+          "name": "Activity v2 concurrency harness contract.never obtains or prints local API or database credentials",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1::Safe replay Activity v2 concurrency integration.parses and exposes the explicit switch",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1",
+          "name": "Safe replay Activity v2 concurrency integration.parses and exposes the explicit switch",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1::Safe replay Activity v2 concurrency integration.invokes the harness with only the isolated root and identity",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1",
+          "name": "Safe replay Activity v2 concurrency integration.invokes the harness with only the isolated root and identity",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1::Closed ChildDirectoryEnvelope replay selector.selects Auth45, CHILD1, one local bridge and two inherited preflights",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1",
+          "name": "Closed ChildDirectoryEnvelope replay selector.selects Auth45, CHILD1, one local bridge and two inherited preflights",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1::Closed ChildDirectoryEnvelope replay selector.rejects an earlier target",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1",
+          "name": "Closed ChildDirectoryEnvelope replay selector.rejects an earlier target",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1::Closed ChildDirectoryEnvelope replay selector.rejects a canonical migration with the local bridge version",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1",
+          "name": "Closed ChildDirectoryEnvelope replay selector.rejects a canonical migration with the local bridge version",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1::Closed ChildDirectoryEnvelope replay selector.rejects a reparse point in the profile path",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1",
+          "name": "Closed ChildDirectoryEnvelope replay selector.rejects a reparse point in the profile path",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1::Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for descriptor",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1",
+          "name": "Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for descriptor",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1::Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for manifest",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1",
+          "name": "Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for manifest",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1::Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for child",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1",
+          "name": "Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for child",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1::Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for bridge",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1",
+          "name": "Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for bridge",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1::Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for approvedSource",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1",
+          "name": "Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for approvedSource",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1::Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for sourceNote",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/ChildDirectoryEnvelope.Tests.ps1",
+          "name": "Closed ChildDirectoryEnvelope replay selector.rejects changed bytes for sourceNote",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/Invoke-SafeLocalMigrationReplay.AgentMode.Tests.ps1::Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.parses without errors",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/Invoke-SafeLocalMigrationReplay.AgentMode.Tests.ps1",
+          "name": "Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.parses without errors",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/Invoke-SafeLocalMigrationReplay.AgentMode.Tests.ps1::Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.disables CLI agent autodetection for every npx Supabase invocation",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/Invoke-SafeLocalMigrationReplay.AgentMode.Tests.ps1",
+          "name": "Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.disables CLI agent autodetection for every npx Supabase invocation",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/Invoke-SafeLocalMigrationReplay.AgentMode.Tests.ps1::Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.forwards the reviewed additional migration allowlist to replay preparation",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/Invoke-SafeLocalMigrationReplay.AgentMode.Tests.ps1",
+          "name": "Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.forwards the reviewed additional migration allowlist to replay preparation",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/Invoke-SafeLocalMigrationReplay.AgentMode.Tests.ps1::Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.keeps generated replay ownership, reparse and residual-resource cleanup gates",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/Invoke-SafeLocalMigrationReplay.AgentMode.Tests.ps1",
+          "name": "Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.keeps generated replay ownership, reparse and residual-resource cleanup gates",
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/scripts/tests/Invoke-SafeLocalMigrationReplay.AgentMode.Tests.ps1::Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.validates additions before start without exposing migrations to automatic startup replay",
+          "package": "packages/coelo_database",
+          "file": "packages/coelo_database/scripts/tests/Invoke-SafeLocalMigrationReplay.AgentMode.Tests.ps1",
+          "name": "Invoke-SafeLocalMigrationReplay Supabase CLI agent mode.validates additions before start without exposing migrations to automatic startup replay",
+          "result": "P"
+        }
+      ],
+      "P": 29,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    }
+  ],
+  "infrastructureCounts": {
+    "P": 29,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "runnerAttempts": [
+    {
+      "attempt_id": "R02-D00-reservations-contract-6eb66fff3",
+      "revision": "6eb66fff3",
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservations-contract-6eb66fff3.jsonl",
+      "sha256": "afe177a1c5013846c189588b895567b46ee8c88d37ea6618b4853f77c8b75f5e",
+      "status": "runner-configuration-error",
+      "reason": "Repository root has no pubspec.yaml; no tests executed.",
+      "executedTests": 0,
+      "productFailures": 0,
+      "supersededBy": [
+        "R02-D00-reservations-domain-6eb66fff3",
+        "R02-D00-reservations-api-6eb66fff3"
+      ]
+    }
+  ],
+  "limits": [
+    "Package/file/name case identity; hidden loading cases excluded.",
+    "34 local application contract cases and 29 infrastructure cases are separate. Infrastructure does not increase application totals.",
+    "D00 reconciles identities with historical cases; author reruns add no unique cases.",
+    "No whole-action FE/BE/E2E certification, SQL replay or remote acceptance."
+  ]
+}

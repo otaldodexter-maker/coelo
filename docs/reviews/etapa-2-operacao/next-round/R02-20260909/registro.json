@@ -7,7 +7,7 @@
   "createdAt": "2026-09-09",
   "integrationOwner": "D00",
   "observedPreparationHead": "fb2d07d34a74c91ec1f65aff361048393e590729",
-  "runtimeBaselineSha": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
+  "runtimeBaselineSha": "c5bcaf9e1fe1ad933fde9e375aa6d3d46d08d7aa",
   "roles": [
     {
       "id": "D00",
@@ -21,19 +21,20 @@
       "worktree": "C:/Users/adrie/Documents/Coelo",
       "branch": "dev",
       "status": "active-integrating",
-      "threadId": "01a086d5-7bd9-7b12-8537-d29236b2e6ca",
+      "threadId": "01a086d4-dd71-7020-a761-daecbc687813",
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo",
       "coordinator": null,
       "baselineSha": "fb2d07d34a74c91ec1f65aff361048393e590729",
-      "headSha": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
+      "headSha": "c5bcaf9e1fe1ad933fde9e375aa6d3d46d08d7aa",
       "plannedAssignmentPath": null,
       "assignmentPath": null,
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D00.md",
       "handoffPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D00.md",
-      "receivedRevision": null,
+      "receivedRevision": "resume-after-original-transfer",
       "communicationVerified": false,
-      "actualModel": "GPT-6 (runtime identity); Astra variant and medium effort not independently exposed",
-      "actualAgentId": "/root"
+      "actualModel": "GPT-6 runtime identity; Astra variant and medium effort not independently exposed",
+      "actualAgentId": "/root",
+      "handoffExists": true
     },
     {
       "id": "L00",
@@ -51,14 +52,14 @@
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude",
       "coordinator": "D00",
       "baselineSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
-      "headSha": "67b728e985e643196bcfdfe69c4b80cee976ff43",
+      "headSha": "088f8c5861843d4eaf631bcabe8fd5aa512b47d4",
       "plannedAssignmentPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/L00.md",
       "assignmentPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/L00.md",
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L00.md",
       "handoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L00.md",
       "receivedRevision": 2,
       "communicationVerified": true,
-      "handoffExists": false,
+      "handoffExists": true,
       "worktreeOrigin": "D00 git worktree add",
       "sourceVerification": "Eight required skill files match canonical content; documentary base ancestor verified",
       "actualSessionName": "coelo-fe",
@@ -78,19 +79,19 @@
       "scope": "Login, recuperação, redefinição, sessão e saída. MFA permanece gate formal adiado, conforme ADR0019.",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao",
       "branch": "codex/e2-r02-d01-autenticacao",
-      "status": "active",
+      "status": "local-snapshot-received-provider-gates-open",
       "threadId": "01a086d7-87e8-7273-8e47-9d23eb2152ca",
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao",
       "coordinator": "D00",
       "baselineSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
-      "headSha": "953ce9d32bcf80e3c6ba7bb612367aa351031382",
+      "headSha": "61a58ebb9c117e519faefa7dbfe142be4a8f3313",
       "plannedAssignmentPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D01.md",
       "assignmentPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D01.md",
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D01.md",
       "handoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D01.md",
-      "receivedRevision": 2,
+      "receivedRevision": 7,
       "communicationVerified": true,
-      "handoffExists": false,
+      "handoffExists": true,
       "worktreeOrigin": "D00 git worktree add",
       "sourceVerification": "Eight required skill files match canonical content; documentary base ancestor verified"
     },
@@ -117,18 +118,18 @@
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d02-estrutura",
       "coordinator": "D00",
       "baselineSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
-      "headSha": "5d77b5064ce126758d623fd6cda0f6f7ae5f9b3a",
+      "headSha": "3c7d26103086eae2c9428f8ff507b16e89eaf8de",
       "plannedAssignmentPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D02.md",
       "assignmentPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D02.md",
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d02-estrutura/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D02.md",
       "handoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d02-estrutura/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D02.md",
       "receivedRevision": 2,
       "communicationVerified": true,
-      "handoffExists": false,
+      "handoffExists": true,
       "worktreeOrigin": "D00 git worktree add",
       "sourceVerification": "Eight required skill files match canonical content; documentary base ancestor verified",
       "scopeRevision": "ADENDO-LOCAIS.md; quatro locations.* adicionados; 42 E2E MVP",
-      "scopeExpansionExecutionStatus": "Adendo exige comando do Owner; D02 já ativo no recorte original. Confirmação de leitura/comando da ampliação ainda pendente.",
+      "scopeExpansionExecutionStatus": "Ativo: comando Owner confirmado no handoff D02r4; adendo incorporado.",
       "scopeExpansion": {
         "status": "active-owner-command-received",
         "source": "handoff D02 r4",
@@ -155,14 +156,14 @@
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d03-acompanhamento",
       "coordinator": "D00",
       "baselineSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
-      "headSha": "66780e0ea14cb39ba10c1e7447eab99a75d7aa23",
+      "headSha": "647c20b453222aef58027028e4367de954145f20",
       "plannedAssignmentPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D03.md",
       "assignmentPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D03.md",
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d03-acompanhamento/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D03.md",
       "handoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d03-acompanhamento/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D03.md",
-      "receivedRevision": 5,
+      "receivedRevision": 14,
       "communicationVerified": true,
-      "handoffExists": false,
+      "handoffExists": true,
       "worktreeOrigin": "D00 git worktree add",
       "sourceVerification": "Eight required skill files match canonical content; documentary base ancestor verified",
       "actualModel": "GPT-6 as reported by executor; gpt-5.6-sol requested but parent variant not exposed"
@@ -198,7 +199,7 @@
       "handoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04.md",
       "receivedRevision": null,
       "communicationVerified": false,
-      "handoffExists": false,
+      "handoffExists": true,
       "worktreeOrigin": "D00 git worktree add",
       "sourceVerification": "Eight required skill files match canonical content; documentary base ancestor verified"
     },
@@ -222,7 +223,7 @@
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l01-publicacoes",
       "coordinator": "L00",
       "baselineSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
-      "headSha": "63db8ffb81731bfc2a6e805352b27b11b34b6fdd",
+      "headSha": "251a7ec952abc9ea141d73639c40b2061eebf0d5",
       "plannedAssignmentPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/L01.md",
       "assignmentPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/L01.md",
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l01-publicacoes/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L01.md",
@@ -252,7 +253,7 @@
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l02-chat-comunicacoes",
       "coordinator": "L00",
       "baselineSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
-      "headSha": "63704da106a0da583cbcebd845e906a2721dadb4",
+      "headSha": "65e5c4b5bfc2664affcb7c2bdaacd3f26a2e0fd2",
       "plannedAssignmentPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/L02.md",
       "assignmentPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/L02.md",
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l02-chat-comunicacoes/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L02.md",
@@ -276,31 +277,32 @@
       "scope": "Perfil contextual do Principal e Para Você. Não inclui Minha conta/configurações administrativas nem perfis de acesso.",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l03-perfil-para-voce",
       "branch": "codex/e2-r02-l03-perfil-para-voce",
-      "status": "prepared-awaiting-owner-start",
+      "status": "active-handoff-received",
       "threadId": null,
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l03-perfil-para-voce",
       "coordinator": "L00",
       "baselineSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
-      "headSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
+      "headSha": "9c60427326954358c2de7a9a4b69c9f40b12503f",
       "plannedAssignmentPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/L03.md",
       "assignmentPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/L03.md",
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l03-perfil-para-voce/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L03.md",
       "handoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l03-perfil-para-voce/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L03.md",
-      "receivedRevision": null,
+      "receivedRevision": 1,
       "communicationVerified": false,
-      "handoffExists": false,
+      "handoffExists": true,
       "worktreeOrigin": "D00 git worktree add",
       "sourceVerification": "Eight required skill files match canonical content; documentary base ancestor verified"
     }
   ],
   "startedAt": "2026-09-09T12:45:04.436456-03:00",
   "continuity": {
-    "mechanism": "native clock.sleep plus exec reads during active turn; collaboration events for D00 helpers",
-    "taskId": "01a086d5-7bd9-7b12-8537-d29236b2e6ca",
+    "mechanism": "active turn; native tool waits and bounded collaboration; no scheduler/cross-root wake tool available",
+    "taskId": "01a086d4-dd71-7020-a761-daecbc687813",
     "firstOccurrenceAt": "2026-09-09T12:50:42.090699-03:00",
     "cutoff": "2026-09-09T17:15:00-03:00",
-    "limitation": "No callable native scheduler or cross-root session messaging discovered; active turn only, no wake after turn ends.",
-    "firstOccurrenceEvidence": "clock.sleep(1000) returned 1.0051s; active turn resumed successfully; no external scheduler installed"
+    "limitation": "Continues only while this task turn remains active; no external wake configured",
+    "firstOccurrenceEvidence": "clock.sleep(1000) returned 1.0051s; active turn resumed successfully; no external scheduler installed",
+    "resumedAt": "2026-09-09T14:21:45.220512-03:00"
   },
   "documentaryBaseSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
   "authPreservation": {
@@ -326,7 +328,7 @@
       "apps/superadmin/test/features/auth/presentation/screens/failures/superadmin_login_light_testImage.png"
     ]
   },
-  "runtimeBaselineLimit": "Focal application campaigns103PASS across588d38eb,5908a330,e9fdd88d; documentary WIP separate. No whole-action/remote/E2E certification.",
+  "runtimeBaselineLimit": "Reviewed source through 7271f4a39fda3ff24d4c1bf545eda290d891f8c4; focal proof manifests by actual source revision, documentation WIP identified separately. FE certificates 5/230; no BE/E2E certificate.",
   "scopeRevision": "R02 Circulares r1:147 selecionados,131 MVP E2E; global230/198; Home/granularidade explícitos",
   "sharedReservations": [
     {
@@ -352,49 +354,56 @@
       "path": "apps/superadmin/lib/app/router/superadmin_router.dart",
       "region": "two UnitFormPage create/edit builders, authorizationInvalidationRevision only",
       "release": "apt SHA",
-      "status": "active"
+      "status": "released",
+      "integratedSha": "6cf8897e"
     },
     {
       "owner": "D03",
       "path": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart",
       "region": "CHILD reader composition only; no new route or UnitForm hunks",
-      "status": "active",
-      "release": "apt SHA"
+      "status": "released",
+      "release": "apt SHA",
+      "integratedSha": "f24ca5f3"
     },
     {
       "owner": "D03",
       "path": "apps/superadmin/lib/main.dart",
       "region": "CHILD reader composition only; no new route or UnitForm hunks",
-      "status": "active",
-      "release": "apt SHA"
+      "status": "released",
+      "release": "apt SHA",
+      "integratedSha": "f24ca5f3"
     },
     {
       "owner": "D03",
       "path": "apps/superadmin/lib/app/superadmin_app.dart",
       "region": "CHILD reader composition only; no new route or UnitForm hunks",
-      "status": "active",
-      "release": "apt SHA"
+      "status": "released",
+      "release": "apt SHA",
+      "integratedSha": "f24ca5f3"
     },
     {
       "owner": "D03",
       "path": "apps/superadmin/lib/app/router/superadmin_router.dart",
       "region": "CHILD reader composition only; no new route or UnitForm hunks",
-      "status": "active",
-      "release": "apt SHA"
+      "status": "released",
+      "release": "apt SHA",
+      "integratedSha": "f24ca5f3"
     },
     {
       "owner": "D03",
       "path": "packages/coelo_database/scripts/Prepare-SafeMigrationReplay.ps1",
       "region": "ChildDirectoryEnvelope allowlist/dispatch/materialization only",
-      "status": "active",
-      "release": "apt SHA"
+      "status": "released",
+      "release": "apt SHA",
+      "integratedSha": "4687f0460"
     },
     {
       "owner": "D03",
       "path": "packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1",
       "region": "ChildDirectoryEnvelope allowlist/dispatch/materialization only",
-      "status": "active",
-      "release": "apt SHA"
+      "status": "released",
+      "release": "apt SHA",
+      "integratedSha": "4687f0460"
     },
     {
       "owner": "D02",
@@ -425,28 +434,52 @@
     "cutoff": "2026-09-09T16:45:00-03:00"
   },
   "integrationRunner": {
-    "status": "passed",
+    "status": "focal-passed",
     "sessions": [
       65392,
       4592,
       12881
     ],
-    "P": 103,
+    "P": 261,
     "F": 0,
     "B": 0,
     "S": 0,
     "U": 0,
-    "limit": "Six focal campaigns, author reruns excluded; not total app plan",
+    "limit": "261 unique focal D00 application/contract cases; infrastructure29 profiles and36 executor cases separate; author cold-reload1F known; browser4B separate. No whole-app-plan inference.",
     "manifests": [
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest.json",
-      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json"
+      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
+      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json",
+      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
+      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-reservations-profiles-resume.json"
     ]
   },
   "localSqlSlot": {
     "owner": "D02",
-    "assignmentRevision": 6,
-    "status": "granted-after-D03-cleanup",
-    "next": "D03 after reviewed profile and explicit release",
-    "foreignContainer": "coelo-l01-circ-sqlcheck untouched"
+    "assignmentRevision": 17,
+    "status": "granted-ActivityAggregateConcurrency-awaiting-receipt",
+    "next": "D03 corrected CHILD ff8bfb728 after cleanup",
+    "remoteMutation": false,
+    "priorCleanup": "D03 handoff 14:07 confirmed; docker ps no containers on D00 check"
+  },
+  "checkpointAt": "2026-09-09T14:26:45.455315-03:00",
+  "coordinatorResume": {
+    "previousThreadId": "01a086d5-7bd9-7b12-8537-d29236b2e6ca",
+    "threadId": "01a086d4-dd71-7020-a761-daecbc687813",
+    "at": "2026-09-09T14:07:37.7524177-03:00",
+    "authorization": "Owner: Sim, Continue, o notebook reiniciou foi isso que aconteceu",
+    "observedHead": "148cbb59982a3c6ea950a2ec9450760987109c07",
+    "concurrentActivity": "Integrations at 14:04 and 14:05 plus active dart processes observed; do not interrupt or duplicate running checks",
+    "status": "active-exclusive-original-writer-stopped",
+    "originalStoppedAt": "2026-09-09T14:14:34.292387-03:00",
+    "receipt": "handoffs/D00-original-transfer.md"
+  },
+  "browserRunner": {
+    "owner": "D00",
+    "sessionId": 8863,
+    "port": 8921,
+    "status": "compiled; create-tab timeout then browser inventory empty; B4 remain",
+    "base": "eb0564f22566df9382b2b339ce203fd48b7e3c55",
+    "realProvider": false
   }
 }

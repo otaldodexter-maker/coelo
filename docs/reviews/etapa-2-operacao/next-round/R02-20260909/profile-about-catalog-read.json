@@ -1,0 +1,59 @@
+{
+  "source": "D00 Supabase MCP execute_sql catalog queries; BEGIN READ ONLY/ROLLBACK",
+  "generatedAt": "2026-09-09T13:40:03.380222-03:00",
+  "projectId": "evvbomzejfijozbtgvpt",
+  "status": "read-only-observation-not-runtime-certification",
+  "userDataRead": false,
+  "mutations": false,
+  "tables": [
+    {
+      "name": "profile_about_pages",
+      "schema": "public",
+      "rls": true,
+      "forceRls": true,
+      "authenticatedSelect": false
+    },
+    {
+      "name": "profile_about_revisions",
+      "schema": "public",
+      "rls": true,
+      "forceRls": true,
+      "authenticatedSelect": false
+    },
+    {
+      "name": "profile_about_sections",
+      "schema": "public",
+      "rls": true,
+      "forceRls": true,
+      "authenticatedSelect": false
+    },
+    {
+      "name": "profile_about_structured_fields",
+      "schema": "public",
+      "rls": true,
+      "forceRls": true,
+      "authenticatedSelect": false
+    }
+  ],
+  "functions": [
+    {
+      "name": "get_profile_about",
+      "signature": "p_subject_type text,p_subject_id uuid,p_preview_audience text DEFAULT NULL",
+      "authenticatedExecute": true,
+      "securityDefiner": true,
+      "bodyMd5": "223ac58eb3bd1eef8e665c5c0dfb62f4",
+      "limits": "person explicitly denied; institutional subjects use authorization helpers and membership checks; no runtime claim"
+    },
+    {
+      "name": "save_profile_about",
+      "signature": "p_subject_type text,p_subject_id uuid,p_payload jsonb,p_expected_version bigint,p_request_id uuid,p_official_updates jsonb",
+      "authenticatedExecute": true,
+      "securityDefiner": true
+    }
+  ],
+  "notFoundInExactFunctionLookup": [
+    "load_profile_about",
+    "list_my_principal_for_you"
+  ],
+  "conclusion": "Existing read RPC available; authenticated direct table SELECT unavailable. Verify adapter/subject/DTO contract instead of inventing missing get_profile_about."
+}

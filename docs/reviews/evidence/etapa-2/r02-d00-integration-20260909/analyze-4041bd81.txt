@@ -1,0 +1,8 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:106
++ ... -20260909'; rtk proxy dart analyze lib/app/router/superadmin_router.d ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+Analyzing superadmin_router.dart, superadmin_app.dart, superadmin_auth_scope.dart, main.dart, child_directory_controller.dart, child_directory_panel.dart, student_tracking_page.dart, daily_routine_form_sections.dart, attendance_dashboard_page.dart, location_schedule_section.dart...
+No issues found!

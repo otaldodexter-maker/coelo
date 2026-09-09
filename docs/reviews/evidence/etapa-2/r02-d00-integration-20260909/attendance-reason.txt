@@ -1,0 +1,10 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:682
++ ... STEXITCODE; rtk proxy flutter test --no-pub test/features/attendance/ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+00:00 +0: loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/attendance/attendance_pages_test.dart
+00:00 +0: correction requires a reason and preserves the draft
+00:01 +1: All tests passed!

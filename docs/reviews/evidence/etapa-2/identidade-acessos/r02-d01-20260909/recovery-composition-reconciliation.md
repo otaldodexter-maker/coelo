@@ -79,3 +79,6 @@ double e restrito ao transporte externo, permitido no gate FE da skill.
 O gate cliente antes aberto foi fechado. BE/E2E continuam pendentes; nao se
 afirma revogacao do provedor nem troca de senha real. Nao promover auth.logout
 por este fluxo de recovery: sua saida normal e reload continuam B no browser.
+
+
+Aceite D00 em 2026-09-09T13:57:12.098713-03:00: R02 D00: FE de redefinição certificado; composição SDK/scope/router/formulário real integrada 0f7b7cf83 e dois casos PASS na base conjunta. Sucesso aguarda logout; falha de cleanup informa resultado parcial seguro. Provas anteriores de estados, teclado, temas e responsividade reconciliadas. Critérios FE aprovados com transporte HTTP sintético fiel. SMTP, senha persistida e revogação real continuam pendentes em BE/E2E.

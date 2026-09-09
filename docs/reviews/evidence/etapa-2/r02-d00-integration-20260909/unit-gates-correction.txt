@@ -1,0 +1,11 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:106
++ ... -20260909'; rtk proxy flutter test --no-pub test/app/router/unit_fail ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+00:00 +0: loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart
+00:00 +0: production unit mutations stay blocked by default
+00:01 +1: an enabled production gate still receives only unavailable composition
+00:02 +2: All tests passed!

@@ -1,7 +1,7 @@
 {
   "round": "E2-R02-20260909",
   "source": "D00 direct review and bounded helper; exact git commits",
-  "generatedAt": "2026-09-09T12:58:23.712134-03:00",
+  "generatedAt": "2026-09-09T14:05:18.589819-03:00",
   "candidates": [
     {
       "owner": "L02",
@@ -40,14 +40,48 @@
     {
       "owner": "D02",
       "sourceSha": "85f82c88",
-      "status": "review-blocked-not-integrated",
+      "status": "integrated-corrected",
       "actions": [
         "units.list"
       ],
       "finding": "Repository replacement retains table display but fresh VM uses pageSize11 instead of table8.",
-      "required": "Align page size/display and test table repository replacement.",
+      "required": "Whole-action acceptance remains open.",
+      "testsExecutedByD00": true,
+      "communicatedVia": "assignments/D02.md r7",
+      "integratedSha": "950ac4674+cdf9f532f"
+    },
+    {
+      "owner": "D02",
+      "sourceSha": "233fbb2c",
+      "actions": [
+        "activities.create"
+      ],
+      "status": "review-blocked-not-integrated",
+      "finding": "Two-stage save creates new request ID/activity after lost response or about failure; keep retry identity stable before integration.",
       "testsExecutedByD00": false,
-      "communicatedVia": "assignments/D02.md r7"
+      "remoteApplied": false
+    },
+    {
+      "owner": "L01",
+      "sourceSha": "8b83784e",
+      "actions": [
+        "acontece.remove"
+      ],
+      "status": "review-blocked-not-integrated",
+      "finding": "Withdraw null expected version, visibility projections, context-generation and capability enforcement unresolved.",
+      "testsExecutedByD00": false,
+      "remoteApplied": false
+    },
+    {
+      "owner": "L03",
+      "sourceSha": "3437f25b/7d2d09c8/0270af5d",
+      "actions": [
+        "principal.profile-view"
+      ],
+      "status": "review-blocked-not-integrated",
+      "finding": "Direct SELECT revoked; canonical get_profile_about exists. Unknown visibility fallback and full replacement data loss; context revision and false-success editor require corrections.",
+      "testsExecutedByD00": false,
+      "remoteApplied": false
     }
   ]
 }

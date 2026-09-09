@@ -1,0 +1,9 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:603
++ ... STEXITCODE; rtk proxy flutter test --no-pub test/features/groups/pres ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+00:00 +0: loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/groups/presentation/group_form_page_test.dart
+00:00 +0: restores the save action when the repository throws an Error
+00:01 +1: All tests passed!

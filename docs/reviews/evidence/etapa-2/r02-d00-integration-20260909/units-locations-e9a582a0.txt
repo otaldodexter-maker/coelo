@@ -1,0 +1,56 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:882
++ ... STEXITCODE; rtk proxy flutter test --no-pub test/app/router/unit_fail ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+00:00 +0: loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: remounts /units/new when the authorization revision changes
+00:01 +1: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: remounts /units/new when the authorization revision changes
+00:01 +2: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: remounts /units/new when the authorization revision changes
+00:01 +3: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: remounts /units/new when the authorization revision changes
+00:02 +4: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: remounts /units/new when the authorization revision changes
+00:02 +5: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: remounts /units/new when the authorization revision changes
+00:02 +6: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: remounts /units/new when the authorization revision changes
+00:02 +7: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: remounts /units/new when the authorization revision changes
+00:02 +8: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: remounts /units/new when the authorization revision changes
+00:03 +9: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: remounts /units/new when the authorization revision changes
+00:04 +10: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_schedule_section_test.dart: editing the draft a time that is not a time is refused before anything is added
+00:04 +11: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: remounts /units/unit-1/edit when the authorization revision changes
+00:04 +12: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_schedule_section_test.dart: editing the draft an end before its start is refused
+00:04 +13: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: production unit routes receive only unavailable composition
+00:04 +14: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: production unit routes receive only unavailable composition
+00:05 +15: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: production unit routes receive only unavailable composition
+00:05 +16: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: production unit routes receive only unavailable composition
+00:06 +17: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: production unit routes receive only unavailable composition
+00:06 +18: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: production unit routes receive only unavailable composition
+00:07 +19: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: production unit routes receive only unavailable composition
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: <Instance of 'UnavailableUnitBackendCommandsGateway'>
+  Actual: <null>
+   Which: is not an instance of 'UnavailableUnitBackendCommandsGateway'
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart:65:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart line 65
+The test description was:
+  production unit routes receive only unavailable composition
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:07 +19 -1: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_schedule_section_test.dart: publishing a rejected week starts a new request on the next attempt
+00:07 +19 -1: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: production unit routes receive only unavailable composition [E]
+  Test failed. See exception logs above.
+  The test description was: production unit routes receive only unavailable composition
+00:07 +20 -1: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: development unit routes receive cached fake repository and null gateway
+00:07 +21 -1: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: development unit routes receive cached fake repository and null gateway
+00:09 +22 -1: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: release guard keeps development unit routes unreachable
+00:10 +23 -1: Some tests failed.
+Failing tests:
+  C:/Users/adrie/Documents/Coelo/apps/superadmin/test/app/router/unit_fail_closed_routes_test.dart: production unit routes receive only unavailable composition

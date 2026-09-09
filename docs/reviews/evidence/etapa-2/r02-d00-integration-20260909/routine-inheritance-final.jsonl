@@ -1,0 +1,11 @@
+{"protocolVersion":"0.1.1","runnerVersion":null,"pid":23724,"type":"start","time":0}
+{"suite":{"id":0,"platform":"vm","path":"C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart"},"type":"suite","time":0}
+{"test":{"id":1,"name":"loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart","suiteID":0,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":0}
+{"count":1,"time":4,"type":"allSuites"}
+{"testID":1,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":24199}
+{"group":{"id":2,"suiteID":0,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":2,"line":null,"column":null,"url":null},"type":"group","time":24201}
+{"test":{"id":3,"name":"persists the newly selected inheritance mode","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":358,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart"},"type":"testStart","time":24202}
+{"testID":3,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":25485}
+{"test":{"id":4,"name":"rejects an invalid draft before changing inheritance mode","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":379,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/daily_routine/daily_routine_application_editor_test.dart"},"type":"testStart","time":25486}
+{"testID":4,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":25851}
+{"success":true,"type":"done","time":25900}
