@@ -1,0 +1,173 @@
+{
+  "source": [
+    "C03 immutable Git source chain",
+    "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c03-activities-clock46-run3-20260908-2117\\manifest.json",
+    "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c03-activities-clock46-run3-20260908-2117\\stdout.log",
+    "C00 bounded technical review"
+  ],
+  "status": "integrated-exact-tested-blobs;no-remote",
+  "generated_at": "2026-09-08T21:25:17.013275-03:00",
+  "destination_head_observed": "21abc30a264f2cf2cd919fc3758add06096fb0b1",
+  "source_worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c03",
+  "destination_worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-c00",
+  "integration_mode": "add three exact final Git blobs from d817546b; preserve full nine-commit provenance; no whole branch integration",
+  "files": [
+    {
+      "path": "packages/coelo_database/migrations/20260908154257_superadmin_activity_save_v2.sql",
+      "source_commit": "d817546b459aa065bf46d0e98e372c194dc5fb65",
+      "source_git_blob": "a685e31d48a123b36b4c5fc419a14fa42dfbd742",
+      "sha256_git_lf": "80d36d9e4bdfa8ba4ed22e97c90565b583eb7f9d39722fffdad6558c7723ff95",
+      "destination_absolute": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-c00\\packages\\coelo_database\\migrations\\20260908154257_superadmin_activity_save_v2.sql",
+      "destination_exists": false,
+      "tested_source_absolute": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c03-activities-clock46-run3-20260908-2117\\source\\packages\\coelo_database\\migrations\\20260908154257_superadmin_activity_save_v2.sql",
+      "tested_source_equal_bytes": true,
+      "tested_source_equal_lf": true,
+      "operation": "add exact final blob; do not overwrite existing destination"
+    },
+    {
+      "path": "packages/coelo_database/migrations/20260908235110_superadmin_activity_link_end_clock_v1.sql",
+      "source_commit": "d817546b459aa065bf46d0e98e372c194dc5fb65",
+      "source_git_blob": "497dfb40dba6bf6ab061d0992091183edbee2993",
+      "sha256_git_lf": "acf444d4144f993038c9ed63736613ec5a880afe3709fffda891393becd9da15",
+      "destination_absolute": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-c00\\packages\\coelo_database\\migrations\\20260908235110_superadmin_activity_link_end_clock_v1.sql",
+      "destination_exists": false,
+      "tested_source_absolute": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c03-activities-clock46-run3-20260908-2117\\source\\packages\\coelo_database\\migrations\\20260908235110_superadmin_activity_link_end_clock_v1.sql",
+      "tested_source_equal_bytes": true,
+      "tested_source_equal_lf": true,
+      "operation": "add exact final blob; do not overwrite existing destination"
+    },
+    {
+      "path": "packages/coelo_database/supabase/tests/superadmin_activity_save_v2_test.sql",
+      "source_commit": "d817546b459aa065bf46d0e98e372c194dc5fb65",
+      "source_git_blob": "c6ed8e2f3b6f9a2bfba9b4724942d5574e833034",
+      "sha256_git_lf": "d9da34e41dc9642d78695827782f90185c2e46f3fc7002cc78425f718eb44b3a",
+      "destination_absolute": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-c00\\packages\\coelo_database\\supabase\\tests\\superadmin_activity_save_v2_test.sql",
+      "destination_exists": false,
+      "tested_source_absolute": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c03-activities-clock46-run3-20260908-2117\\source\\packages\\coelo_database\\supabase\\tests\\superadmin_activity_save_v2_test.sql",
+      "tested_source_equal_bytes": true,
+      "tested_source_equal_lf": true,
+      "operation": "add exact final blob; do not overwrite existing destination"
+    }
+  ],
+  "full_selected_chain": [
+    {
+      "sha": "b9a58002700a31561728f6a3155eb6dd02012fa2",
+      "subject": "feat(activities): add transactional v2 save gateway",
+      "paths": [
+        "packages/coelo_database/migrations/20260908154257_superadmin_activity_save_v2.sql",
+        "packages/coelo_database/supabase/tests/superadmin_activity_save_v2_test.sql"
+      ],
+      "parents_match_accumulated_selected_chain": true
+    },
+    {
+      "sha": "45e7602731b9b78698948bcc7b7c7b524b633601",
+      "subject": "wip(activities): stage structural snapshot ordering",
+      "paths": [
+        "packages/coelo_database/migrations/20260908154257_superadmin_activity_save_v2.sql",
+        "packages/coelo_database/supabase/tests/superadmin_activity_save_v2_test.sql"
+      ],
+      "parents_match_accumulated_selected_chain": true
+    },
+    {
+      "sha": "56f1b0bb8a5c719a2175afe42f8cc3318b259b76",
+      "subject": "test(activities): stage authorization replay matrix",
+      "paths": [
+        "packages/coelo_database/supabase/tests/superadmin_activity_save_v2_test.sql"
+      ],
+      "parents_match_accumulated_selected_chain": true
+    },
+    {
+      "sha": "e94eecab5a247c5a0a0f5186ab1b85b812bf67c1",
+      "subject": "test(activities): cover participation snapshot validation",
+      "paths": [
+        "packages/coelo_database/supabase/tests/superadmin_activity_save_v2_test.sql"
+      ],
+      "parents_match_accumulated_selected_chain": true
+    },
+    {
+      "sha": "06edb34a8572b887cb59b2664a779127eb2b2803",
+      "subject": "wip(activities): reauthorize aggregate after request lock",
+      "paths": [
+        "packages/coelo_database/migrations/20260908154257_superadmin_activity_save_v2.sql",
+        "packages/coelo_database/supabase/tests/superadmin_activity_save_v2_test.sql"
+      ],
+      "parents_match_accumulated_selected_chain": true
+    },
+    {
+      "sha": "1358e85262028adf059ed60cd9781041bfdf298d",
+      "subject": "wip(activities): fix canonical post-lock context proof",
+      "paths": [
+        "packages/coelo_database/migrations/20260908154257_superadmin_activity_save_v2.sql",
+        "packages/coelo_database/supabase/tests/superadmin_activity_save_v2_test.sql"
+      ],
+      "parents_match_accumulated_selected_chain": true
+    },
+    {
+      "sha": "e87e896bc19a54ef23acbdfa624c7bc1a87d4151",
+      "subject": "test(activities): avoid reserved body alias",
+      "paths": [
+        "packages/coelo_database/supabase/tests/superadmin_activity_save_v2_test.sql"
+      ],
+      "parents_match_accumulated_selected_chain": true
+    },
+    {
+      "sha": "36b52394480c0786f4df074365514555e9646eaf",
+      "subject": "test(activities): use ordinary catalog string functions",
+      "paths": [
+        "packages/coelo_database/supabase/tests/superadmin_activity_save_v2_test.sql"
+      ],
+      "parents_match_accumulated_selected_chain": true
+    },
+    {
+      "sha": "d817546b459aa065bf46d0e98e372c194dc5fb65",
+      "subject": "fix(activities): end fresh links with wall clock",
+      "paths": [
+        "packages/coelo_database/migrations/20260908235110_superadmin_activity_link_end_clock_v1.sql",
+        "packages/coelo_database/supabase/tests/superadmin_activity_save_v2_test.sql"
+      ],
+      "parents_match_accumulated_selected_chain": true
+    }
+  ],
+  "omitted_in_six_sha_request": [
+    "56f1b0bb8a5c719a2175afe42f8cc3318b259b76",
+    "e94eecab5a247c5a0a0f5186ab1b85b812bf67c1",
+    "e87e896bc19a54ef23acbdfa624c7bc1a87d4151"
+  ],
+  "chain_final_equivalent_to_source": true,
+  "tested_prerequisite_migrations_compared": 53,
+  "tested_prerequisite_differences_vs_c00": [],
+  "runtime": {
+    "lease": "R01-LOCAL-ACTIVITIES-CLOCK-46-03",
+    "result": "46/46 PASS",
+    "canonical": 55,
+    "preflight": 2,
+    "effective": 57,
+    "result_path": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c03-activities-clock46-run3-20260908-2117\\result.json",
+    "stdout_path": "C:\\Users\\adrie\\AppData\\Local\\Temp\\coelo-c03-activities-clock46-run3-20260908-2117\\stdout.log",
+    "result_sha256": "d2c48013eb2cb1de78be7a11c1c022b818891ea13a567a58afe71ca0c5861c6d",
+    "stdout_sha256": "3168b6af340c0d092f6fb392336dc2666cb9e224c8baa7a6fe6f84c55228111f",
+    "started_at": "2026-09-08T21:19:31.5279552-03:00",
+    "finished_at": "2026-09-08T21:21:01.0114855-03:00",
+    "cleanup": "zero residual resources recorded in stdout and confirmed by C00"
+  },
+  "review": {
+    "transaction": "every child failure raised inside common exception subtransaction; rolls back all successful child commands/receipts/audits before denied envelope",
+    "ordering": "update definition; prune affected participants/professionals/settings; bridge groups before dropping units; final units/groups/participants/professionals/permissions; optional publish; aggregate receipt",
+    "authority": "READ COMMITTED; reauthorize all required capabilities after request advisory lock; compare canonical actor/session/scope/AAL fields; check auth.sessions.not_after with clock_timestamp before private receipt lookup",
+    "acl": "private receipt table forced RLS; no direct grants; aggregate SECURITY DEFINER empty search_path, authenticated execute only; clock preserves existing ACL through CREATE OR REPLACE",
+    "replay": "request hash includes payload, expected version, activity and publish intent; receipt owner/institution/hash correlated after fresh authorization"
+  },
+  "remaining": [
+    "two-connection revocation/expiry during wait is not certified by 46 single-connection assertions",
+    "normal UI real backend/persistence/reload and complete Activities product fields remain outside this SQL integration",
+    "remote application requires nominal authorization; this manifest grants none"
+  ],
+  "excluded": [
+    "Dart/root/DI",
+    "other migrations and fixtures",
+    "runner/profile changes",
+    "branch merge",
+    "remote apply",
+    "additional SQL runtime"
+  ]
+}
