@@ -29,7 +29,7 @@ ChildSafetyRecord decodeChildSafetyRecord(Object? payload) {
   return ChildSafetyRecord(
     childId: _string(json['child_id']),
     childName: _string(json['child_name'] ?? json['display_name']),
-    internalId: _string(context['internal_id']),
+    internalId: _nullableString(context['internal_id']) ?? '',
     institutionName: _string(context['institution_name']),
     unitName: _string(context['unit_name']),
     childContextId: _nullableString(json['child_context_id'] ?? context['child_context_id']),
@@ -81,11 +81,11 @@ List<ChildSafetyChildOption> decodeChildSafetyOptions(Object? payload) {
       return ChildSafetyChildOption(
         id: _string(child['id'] ?? child['child_id']),
         name: _string(child['display_name'] ?? child['child_name']),
-        internalId: child['internal_id'] as String?,
-        childContextId: context['child_context_id'] as String?,
-        institutionId: context['institution_id'] as String?,
+        internalId: _nullableString(child['internal_id']),
+        childContextId: _nullableString(context['child_context_id']),
+        institutionId: _nullableString(context['institution_id']),
         institutionName: _string(context['institution_name']),
-        unitId: context['unit_id'] as String?,
+        unitId: _nullableString(context['unit_id']),
         unitName: _string(context['unit_name']),
       );
     });
@@ -96,7 +96,12 @@ Map<String, Object?> _map(Object? value) =>
     value is Map ? value.map((key, item) => MapEntry(key.toString(), item)) : const {};
 List<Object?> _list(Object? value) => value is List ? value : const [];
 String _string(Object? value) => value is String ? value : '';
-String? _nullableString(Object? value) => value is String && value.isNotEmpty ? value : null;
+String? _nullableString(Object? value) {
+  if (value == null) return null;
+  if (value is! String) throw const ChildSafetyUnavailableException();
+  return value.isEmpty ? null : value;
+}
+
 int _integer(Object? value, {int fallback = 0}) =>
     value is int ? value : int.tryParse(value?.toString() ?? '') ?? fallback;
 DateTime? _date(Object? value) => value is String ? DateTime.tryParse(value) : null;

@@ -188,7 +188,7 @@ final class ChildSafetyController extends ChangeNotifier {
       _dataVersion++;
     } on ChildSafetyUnauthorizedException {
       if (version == _requestVersion) _failClosed(ChildSafetyLoadState.unauthorized);
-    } on Exception {
+    } catch (_) {
       if (version == _requestVersion) {
         _failClosed(ChildSafetyLoadState.error);
         _errorMessage = 'Não foi possível carregar a segurança da criança.';
@@ -235,7 +235,7 @@ final class ChildSafetyController extends ChangeNotifier {
       _commandFailure = ChildSafetyCommandFailure.conflict;
       _errorMessage = 'A autorização mudou. Recarregue e tente novamente.';
       return false;
-    } on Exception {
+    } catch (_) {
       _commandFailure = ChildSafetyCommandFailure.unavailable;
       _errorMessage = 'Não foi possível concluir a ação.';
       return false;

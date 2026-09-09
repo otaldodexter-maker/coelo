@@ -1,8 +1,98 @@
 import 'package:coelo_superadmin/features/safety/data/child_safety_response_decoder.dart';
 import 'package:coelo_superadmin/features/safety/domain/child_safety.dart';
+import 'package:coelo_superadmin/features/safety/domain/child_safety_contract.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final field in ['internal_id', 'child_context_id', 'institution_id', 'unit_id']) {
+    test('child option rejects malformed nullable $field with a typed failure', () {
+      for (final invalid in <Object>[42, true, <Object>[], <String, Object>{}]) {
+        final context = <String, Object?>{
+          'child_context_id': 'context-1',
+          'institution_id': 'institution-1',
+          'unit_id': 'unit-1',
+          if (field != 'internal_id') field: invalid,
+        };
+        expect(
+          () => decodeChildSafetyOptions([
+            {
+              'id': 'child-1',
+              'display_name': 'Ana',
+              'internal_id': field == 'internal_id' ? invalid : 'RA 1',
+              'contexts': [context],
+            },
+          ]),
+          throwsA(isA<ChildSafetyUnavailableException>()),
+          reason: '$field must reject ${invalid.runtimeType}',
+        );
+      }
+    });
+    test('child record rejects malformed context $field with a typed failure', () {
+      for (final invalid in <Object>[42, true, <Object>[], <String, Object>{}]) {
+        expect(
+          () => decodeChildSafetyRecord({
+            'child_id': 'child-1',
+            'child_name': 'Ana',
+            'contexts': [
+              {field: invalid},
+            ],
+          }),
+          throwsA(isA<ChildSafetyUnavailableException>()),
+          reason: '$field must reject ${invalid.runtimeType}',
+        );
+      }
+    });
+  }
+
+  test('child options preserve valid strings and accept null or absent optional fields', () {
+    for (final fields in <Map<String, Object?>>[
+      {},
+      {'internal_id': null, 'child_context_id': null, 'institution_id': null, 'unit_id': null},
+      {
+        'internal_id': 'RA 1',
+        'child_context_id': 'context-1',
+        'institution_id': 'institution-1',
+        'unit_id': 'unit-1',
+      },
+    ]) {
+      final option = decodeChildSafetyOptions([
+        {
+          'id': 'child-1',
+          'display_name': 'Ana',
+          ...fields,
+          'contexts': [fields],
+        },
+      ]).single;
+      expect(option.internalId, fields['internal_id']);
+      expect(option.childContextId, fields['child_context_id']);
+      expect(option.institutionId, fields['institution_id']);
+      expect(option.unitId, fields['unit_id']);
+    }
+  });
+
+  test('child records preserve valid strings and accept null or absent context fields', () {
+    for (final fields in <Map<String, Object?>>[
+      {},
+      {'internal_id': null, 'child_context_id': null, 'institution_id': null, 'unit_id': null},
+      {
+        'internal_id': 'RA 1',
+        'child_context_id': 'context-1',
+        'institution_id': 'institution-1',
+        'unit_id': 'unit-1',
+      },
+    ]) {
+      final record = decodeChildSafetyRecord({
+        'child_id': 'child-1',
+        'child_name': 'Ana',
+        'contexts': [fields],
+      });
+      expect(record.internalId, fields['internal_id'] ?? '');
+      expect(record.childContextId, fields['child_context_id']);
+      expect(record.institutionId, fields['institution_id']);
+      expect(record.unitId, fields['unit_id']);
+    }
+  });
+
   test('decodes the exclusive directory counts and child identity', () {
     final page = decodeChildSafetyDirectory({
       'items': [

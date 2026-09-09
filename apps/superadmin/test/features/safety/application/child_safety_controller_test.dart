@@ -6,6 +6,72 @@ import 'package:coelo_superadmin/features/safety/domain/child_safety_repository.
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('unexpected directory error clears prior data and retry recovers', () async {
+    final repository = _Repository();
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    await controller.load();
+    final states = <ChildSafetyLoadState>[];
+    controller.addListener(() => states.add(controller.state));
+    final pending = Completer<ChildSafetyDirectoryPage>();
+    repository.nextDirectory = pending.future;
+    final reload = controller.retry();
+    pending.completeError(StateError('untrusted provider detail'));
+    await reload;
+    expect(controller.state, ChildSafetyLoadState.error);
+    expect(states.last, ChildSafetyLoadState.error);
+    expect(controller.records, isEmpty);
+    expect(controller.totalCount, 0);
+    expect(controller.canCreate, isFalse);
+    expect(controller.errorMessage, 'Não foi possível carregar a segurança da criança.');
+    repository.nextDirectory = null;
+    await controller.retry();
+    expect(controller.records.single.childName, 'Ana');
+    expect(controller.errorMessage, isNull);
+  });
+
+  test('unexpected stale directory error cannot replace a newer successful load', () async {
+    final repository = _Repository();
+    final pending = Completer<ChildSafetyDirectoryPage>();
+    repository.nextDirectory = pending.future;
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    final oldLoad = controller.load();
+    repository.nextDirectory = null;
+    await controller.retry();
+    pending.completeError(StateError('old context'));
+    await oldLoad;
+    expect(controller.state, ChildSafetyLoadState.ready);
+    expect(controller.records.single.childName, 'Ana');
+    expect(controller.errorMessage, isNull);
+  });
+
+  test('unexpected mutation error releases saving without confirming or refreshing', () async {
+    final repository = _Repository()..saveFailure = StateError('private provider detail');
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    await controller.load();
+    const command = SavePickupAuthorizationCommand(
+      requestId: '11111111-1111-4111-8111-111111111111',
+      childId: 'child-1',
+      childContextId: 'context-1',
+      unitId: 'unit-1',
+      personId: 'person-1',
+      relationshipCode: 'mother',
+      capabilityCodes: {'pickup'},
+      requestReason: 'Revisão sintética',
+    );
+    var confirmed = 0;
+    expect(await controller.saveAuthorization(command, onConfirmed: () => confirmed++), isFalse);
+    expect(controller.isSaving, isFalse);
+    expect(controller.commandFailure, ChildSafetyCommandFailure.unavailable);
+    expect(controller.errorMessage, 'Não foi possível concluir a ação.');
+    expect(repository.queries, hasLength(1));
+    expect(confirmed, 0);
+    repository.saveFailure = null;
+    expect(await controller.saveAuthorization(command, onConfirmed: () => confirmed++), isTrue);
+    expect(confirmed, 1);
+  });
   test('confirmation precedes failed refresh and retry performs no new mutation', () async {
     final repository = _Repository();
     final controller = ChildSafetyController(repository);
@@ -354,7 +420,7 @@ void main() {
 
 final class _Repository implements ChildSafetyRepository {
   int saves = 0;
-  Exception? saveFailure;
+  Object? saveFailure;
   final queries = <ChildSafetyDirectoryQuery>[];
   bool unauthorized = false;
   bool commandUnauthorized = false;
