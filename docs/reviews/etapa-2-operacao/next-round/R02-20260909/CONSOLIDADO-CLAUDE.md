@@ -1876,3 +1876,128 @@ Tudo encerrado e verificado: nenhum container, subagente, agendamento, processo
 em background ou stash. Árvore limpa exceto duas fontes compartilhadas
 preservadas — `PRINCIPAL.md` saiu da lista porque `dev` já a integrou.
 **`superadmin_router.dart` e o resto de `lib/app/` nunca foram tocados por ele.**
+
+---
+
+# FECHAMENTO DEFINITIVO — L02, SHA `9144f4efb`
+
+**Verifiquei:** declarado, remoto e local **iguais**; zero não commitado além das
+fontes compartilhadas; zero stashes. A alteração da skill está commitada em
+`97407afd`, **dentro da branch** — viaja no delta.
+
+## Feito — tudo FE; nenhum eixo BE ou E2E fechado
+
+- `chat.edit`, `chat.receipts`, `chat.revoke` — FE verificado. **As três não
+  existiam em camada nenhuma** antes desta rodada.
+- `notices.schedule` — FE corrigido e verificado (hora explícita contra colunas
+  `timestamptz`).
+- `notices.publish`, `notices.archive` — FE, com o defeito de conflito de versão
+  corrigido e provado.
+- `chat.list`, `chat.open`, `chat.send` — FE **da superfície Principal** entregue:
+  composição própria, rota, paginação nos dois eixos, isolamento na troca de ator,
+  reconciliação da inbox. **A metade administrativa continua sem verificação dele,
+  e por isso nenhum dos três está fechado.**
+- Fora de ID, mas real: badge de não lidas ligado nos shells do router, e
+  dependências de mídia na preview `/dev`.
+
+## Pendente
+
+**Por bloqueio de plataforma:** **BE de todos os 13** — os dois pacotes de banco
+escritos e **não aplicados**, porque remoto é produção. **E2E de todos os 13**,
+consequência do anterior. E o **`B=1`** do pgTAP.
+
+**Por decisão pendente:** `chat.attach` (falta a RPC de staging/commit e a Edge
+Function de L01); materialização de `notices.publish` (falta D00 confirmar
+`pg_cron` e o consumidor `service_role`); Realtime (decisão de plataforma).
+
+**Por falta de tempo: nada. Não deixou item começado.**
+
+## Defeitos registrados e não corrigidos
+
+As duas migrations de 01/09 do recorte dele com rótulos omitidos — **não
+alteradas**, por determinação minha. **Se nunca aplicaram, as RPCs de chat não
+existem em produção.** As ~58 construções de `SuperadminShell` fora do router
+seguem sem o badge, correção arquitetural que não é dele. E `refreshAfterRealtime`
+sem caller, com o diagnóstico de por que o caminho óbvio não serve.
+
+## O que só L02 sabia, escrito em `9144f4ef`, seção "O que só existe aqui"
+
+A **cadeia dupla de fundações quebradas** (Atividades e Formulários) e por que
+explica quase todo o backend não provável; o **controle com teste alheio, sem o
+qual ele teria reportado o próprio pacote como defeituoso**; o motivo de
+`postgres_changes` nunca entregar evento ao realm interno; **por que resolver o
+conflito pelo lado de `dev` descarta silenciosamente a rota dele**; e que guarda
+de dependência não é prova de aplicabilidade.
+
+## Recursos
+
+Cinco containers Postgres removidos e confirmados por `docker ps -a`
+(`coelo-l02-pgtap`, `-pgtap2`, `-notices`, `-try`, `-proof`). Os seis subagentes
+terminaram. Nenhum agendamento, nenhum processo em background. **Não desligou
+nada de terceiros.**
+
+---
+
+# FECHAMENTO DEFINITIVO — L03, SHA `b209b4e0f`
+
+**Verifiquei:** declarado, remoto e local **iguais**; `git status` vazio; zero
+stashes; diff acumulado 36 arquivos, zero resíduo.
+
+**Os DOIS patches de delta alheio estão commitados e publicados**, conferidos por
+ele na árvore do origin: `L03-preserved-foreign-delta.patch` com 2 deltas em 70
+linhas e `L03-preserved-foreign-delta-specs.patch` com 3 deltas em 171 — **os
+cinco arquivos alheios íntegros**. Os 8 PNGs de login são artefatos do domínio
+auth e não escondem trabalho.
+
+## Feito, por `action_id` e eixo — nenhuma ação dele usa Cloudflare
+
+- `principal.profile-view` — **FE concluído**: rota real fora do fail-closed,
+  composition root sob contexto autorizado, três abas nas projeções autorizadas,
+  **fixture eliminada inclusive capa e avatar**, 20 provas responsivas e de a11y,
+  11 da aba Acontece, 6 da projeção de Circulares. **BE Supabase parcial** —
+  consome três RPCs existentes, nada novo aplicado.
+- `principal.profile-edit` — **FE concluído**: rota real nova, persistência,
+  releitura do servidor após aceite, conflito e negação com estado próprio,
+  recarga em troca e **fail-closed em revogação de contexto**, 9 provas.
+  **BE Supabase parcial** — primeira implementação do contrato ProfileAbout.
+- `principal.for-you` — **FE concluído**: hub real sob contexto autorizado,
+  elegibilidade por status, vigência, prioridade e audiência **com exclusão
+  vencendo inclusão**, popup excluído, atalhos aprovados no vazio, ações
+  navegando de verdade, 25 provas. **BE Supabase bloqueado.**
+
+**FE 3/3 · BE 0/3 concluído · E2E 0/3.** Não executou rota real contra Supabase
+autenticado e **não certifica ponta a ponta**.
+
+## Pendente
+
+**Por decisão, não por falta de trabalho:** contraste 3,75:1 do chip DESTAQUE
+(corrigir quebra 20 goldens aprovados); afordância morta da pré-visualização
+(widget compartilhado com Atividades); composição visual de "Editar perfil", que
+**nenhuma fonte canônica define**.
+
+**Por bloqueio de plataforma:** `principal.for-you` lendo pela RPC interna com
+audiência decidida no cliente — pacote proposto e **não aplicado**; ausência de
+RPC de leitura do Sobre, que pode fazer o `load` falhar fechado em produção; e o
+schema do ProfileAbout remote-only.
+
+**Por falta de tempo: nada material.** Momentos e Chat Principal **não** são
+falta de tempo — os contratos existem nas branches de L01 e L02 e não estão na
+base dele; **cada um vira uma linha nos callbacks quando D00 integrar.**
+
+## Os nove defeitos
+
+**Sete corrigidos com prova:** Circulares lendo o diretório administrativo
+(`bb8a1b546`, guardado em `a6bf6910b`); rota de edição inalcançável pela guarda
+de mutação (`5cccf84fb`); Perfil e hub se anunciando como protótipo (`33544a0ec`,
+`6c2d59c15`); editor sem reagir a troca de contexto (`993c41100`); overflow do
+herói (`83d1c8a2f`); overflow do rodapé a 200% (`5d8a951a7`); publicação anunciada
+como **bloco único ao leitor de tela** (`0128ab8e0`).
+
+**Dois registrados sem correção:** contraste do chip, com medição, e afordância
+morta, **presa em teste** (`ea80c0fab`). **Sete dos nove eram invisíveis em lote verde.**
+
+## Recursos
+
+Nenhum processo, nenhum subagente vivo (os oito terminaram e reportaram), nenhum
+agendamento, **nenhuma mutação remota**, nenhuma worktree criada. Não integrou
+`dev` nem commitou nele: toda medição foi leitura pura.
