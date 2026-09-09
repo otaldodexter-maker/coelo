@@ -84,13 +84,28 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
   @override
   void didUpdateWidget(covariant PrincipalForYouRoutePage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (identical(oldWidget.repository, widget.repository) &&
-        identical(oldWidget.supportingData, widget.supportingData) &&
-        identical(oldWidget.audienceScope, widget.audienceScope) &&
-        identical(oldWidget.now, widget.now)) {
+    // The route builder constructs the scope and the supporting labels fresh on
+    // every build. Comparing them by instance treated each rebuild as a new
+    // actor: the hub re-read the whole directory and flashed its spinner
+    // whenever anything above it rebuilt. Only a different actor, repository or
+    // clock is a reason to ask the server again.
+    if (!identical(oldWidget.repository, widget.repository) ||
+        oldWidget.audienceScope != widget.audienceScope ||
+        !identical(oldWidget.now, widget.now)) {
+      _load();
       return;
     }
-    _load();
+    if (identical(oldWidget.supportingData, widget.supportingData)) return;
+    // Only the surrounding labels changed. They are re-rendered over the
+    // projection the server already authorized, never re-fetched.
+    if (_state case _Loaded(:final data, :final empty)) {
+      setState(
+        () => _state = _Loaded(
+          widget.supportingData.copyWith(highlights: data.highlights),
+          empty: empty,
+        ),
+      );
+    }
   }
 
   Future<void> _load() async {

@@ -6,6 +6,7 @@ import 'package:coelo_superadmin/features/principal_for_you/data/principal_for_y
 import 'package:coelo_superadmin/features/principal_for_you/domain/principal_for_you_preview_data.dart';
 import 'package:coelo_superadmin/features/principal_for_you/presentation/principal_for_you_preview_page.dart';
 import 'package:coelo_superadmin/features/principal_for_you/presentation/principal_for_you_route_page.dart';
+import 'package:coelo_superadmin/features/principal_shared/domain/principal_runtime_context.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -267,6 +268,126 @@ void main() {
     expect(find.text('Acesso não disponível.'), findsOneWidget);
     expect(find.text('Tentar novamente'), findsNothing);
     expect(find.byType(PrincipalForYouPreviewPage), findsNothing);
+  });
+
+  testWidgets('a rebuild with the same authorized scope does not re-read the directory', (
+    tester,
+  ) async {
+    // The route builder constructs the scope and the supporting labels fresh on
+    // every build, so comparing them by identity treats each rebuild as a new
+    // context: the hub refetched 100 communications and flashed its spinner
+    // whenever anything above it rebuilt. Equality here is by value.
+    final repository = _ControlledNoticeRepository();
+    // One clock instance across builds, as in production: the route does not
+    // pass `now`, so the widget keeps the same DateTime.now tear-off.
+    DateTime clock() => now;
+    Widget routeWith(PrincipalForYouAudienceScope scope) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: PrincipalForYouRoutePage(
+        repository: repository,
+        audienceScope: scope,
+        supportingData: PrincipalForYouPreviewData.contextual(
+          id: 'membership-1',
+          label: 'Unidade Centro',
+          family: 'Instituição Autorizada',
+          institution: 'Instituição Autorizada',
+        ),
+        now: clock,
+      ),
+    );
+
+    // Built exactly as the route builds it: a fresh instance out of the runtime
+    // context, never a const literal, which the compiler would canonicalize and
+    // make identical for free.
+    PrincipalForYouAudienceScope scopeOf(String groupId) =>
+        PrincipalForYouAudienceScope.fromRuntimeContext(
+          PrincipalRuntimeContext(
+            membershipId: 'membership-1',
+            personId: 'person-1',
+            institutionId: 'institution-1',
+            institutionName: 'Instituição Autorizada',
+            roleCode: 'staff',
+            scopeKind: 'group',
+            unitId: 'unit-1',
+            groupId: groupId,
+          ),
+        );
+
+    await tester.pumpWidget(routeWith(scopeOf('group-1')));
+    repository.page.complete(NoticePage(items: [communication(CommunicationType.forYou)]));
+    await tester.pumpAndSettle();
+    expect(repository.calls, 1);
+
+    // A different instance carrying the same authorized scope: same actor.
+    await tester.pumpWidget(routeWith(scopeOf('group-1')));
+    await tester.pumpAndSettle();
+
+    expect(repository.calls, 1, reason: 'the actor did not change, so nothing was re-read');
+    expect(find.byKey(const Key('principal-for-you-loading')), findsNothing);
+    expect(find.byType(PrincipalForYouPreviewPage), findsOneWidget);
+  });
+
+  testWidgets('a rebuild with a different authorized scope does re-read', (tester) async {
+    final repository = _ControlledNoticeRepository();
+    DateTime clock() => now;
+    Widget routeWith(PrincipalForYouAudienceScope scope) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: PrincipalForYouRoutePage(
+        repository: repository,
+        audienceScope: scope,
+        supportingData: PrincipalForYouPreviewData.demo,
+        now: clock,
+      ),
+    );
+
+    await tester.pumpWidget(routeWith(const PrincipalForYouAudienceScope(institutionId: 'i-1')));
+    repository.page.complete(NoticePage(items: [communication(CommunicationType.forYou)]));
+    await tester.pumpAndSettle();
+    expect(repository.calls, 1);
+
+    await tester.pumpWidget(
+      routeWith(
+        const PrincipalForYouAudienceScope(institutionId: 'i-1', groupId: 'group-outra'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(repository.calls, 2, reason: 'a different actor scope must be answered again');
+  });
+
+  test('the authorized scope compares by value, not by instance', () {
+    const a = PrincipalForYouAudienceScope(
+      institutionId: 'i',
+      unitId: 'u',
+      groupId: 'g',
+      personId: 'p',
+      roleCode: 'r',
+      membershipId: 'm',
+    );
+    const b = PrincipalForYouAudienceScope(
+      institutionId: 'i',
+      unitId: 'u',
+      groupId: 'g',
+      personId: 'p',
+      roleCode: 'r',
+      membershipId: 'm',
+    );
+    expect(a, b);
+    expect(a.hashCode, b.hashCode);
+    // Every field takes part: none of these may compare equal to `a`.
+    expect(a == const PrincipalForYouAudienceScope(institutionId: 'outro'), isFalse);
+    expect(
+      a ==
+          const PrincipalForYouAudienceScope(
+            institutionId: 'i',
+            unitId: 'u',
+            groupId: 'g',
+            personId: 'p',
+            roleCode: 'r',
+            membershipId: 'outro',
+          ),
+      isFalse,
+    );
   });
 }
 

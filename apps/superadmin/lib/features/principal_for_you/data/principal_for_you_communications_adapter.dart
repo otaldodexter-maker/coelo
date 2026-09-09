@@ -53,6 +53,24 @@ final class PrincipalForYouAudienceScope {
     // PrincipalRuntimeContext today, so neither can be resolved to an actor id.
     NoticeAudienceDimension.platform || NoticeAudienceDimension.plan => null,
   };
+
+  /// Value equality, because this scope is rebuilt from the runtime context on
+  /// every route build. Comparing it by instance would make each rebuild look
+  /// like a new actor and send the hub back to the server for nothing.
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PrincipalForYouAudienceScope &&
+          other.institutionId == institutionId &&
+          other.unitId == unitId &&
+          other.groupId == groupId &&
+          other.personId == personId &&
+          other.roleCode == roleCode &&
+          other.membershipId == membershipId;
+
+  @override
+  int get hashCode =>
+      Object.hash(institutionId, unitId, groupId, personId, roleCode, membershipId);
 }
 
 /// Projects the shared Communications contract into the read-only Principal hub.
