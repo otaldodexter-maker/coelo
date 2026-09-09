@@ -1,0 +1,10 @@
+Analyzing supabase_internal_child_safety_repository.dart, supabase_internal_child_safety_repository_test.dart...
+
+  error - lib\features\safety\data\supabase_internal_child_safety_repository.dart:101:12 - A value of type 'dynamic' can't be returned from the method '_read' because it has a return type of 'Future<Object>'. - return_of_invalid_type
+warning - test\features\safety\data\supabase_internal_child_safety_repository_test.dart:133:5 - The type argument(s) of 'List' can't be inferred. Use explicit type argument(s) for 'List'. - inference_failure_on_collection_literal
+warning - test\features\safety\data\supabase_internal_child_safety_repository_test.dart:134:5 - The type argument(s) of 'Map' can't be inferred. Use explicit type argument(s) for 'Map'. - inference_failure_on_collection_literal
+warning - test\features\safety\data\supabase_internal_child_safety_repository_test.dart:135:28 - The type argument(s) of 'List' can't be inferred. Use explicit type argument(s) for 'List'. - inference_failure_on_collection_literal
+warning - test\features\safety\data\supabase_internal_child_safety_repository_test.dart:139:15 - The type argument(s) of 'List' can't be inferred. Use explicit type argument(s) for 'List'. - inference_failure_on_collection_literal
+warning - test\features\safety\data\supabase_internal_child_safety_repository_test.dart:142:27 - The type argument(s) of 'List' can't be inferred. Use explicit type argument(s) for 'List'. - inference_failure_on_collection_literal
+
+6 issues found.

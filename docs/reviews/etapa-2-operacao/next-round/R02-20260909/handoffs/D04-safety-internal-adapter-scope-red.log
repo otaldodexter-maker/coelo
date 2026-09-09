@@ -1,0 +1,15 @@
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart
+00:00 +0: required context identity cannot collapse to missing scope
+00:00 +0 -1: required context identity cannot collapse to missing scope [E]
+  Expected: throws <Instance of 'ChildSafetyUnavailableException'>
+    Actual: <Instance of 'Future<List<ChildSafetyChildOption>>'>
+     Which: emitted [Instance of 'ChildSafetyChildOption']
+  
+  package:matcher                                                                      expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 96:11  main.<fn>
+  
+00:00 +0 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart: required context identity cannot collapse to missing scope

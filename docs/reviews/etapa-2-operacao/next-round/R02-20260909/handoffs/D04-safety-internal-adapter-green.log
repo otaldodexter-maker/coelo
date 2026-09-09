@@ -1,0 +1,30 @@
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart
+00:00 +0: directory uses v2 parameters and retains counts while writes stay disabled
+00:00 +1: child detail uses v2 and decodes the requested record
+00:00 +2: child search uses v2 and preserves limit and selected context
+00:00 +3: valid empty search result remains empty
+00:00 +4: HTTP 200 denial SAI_AUTH_REQUIRED is typed and never decoded as data
+00:00 +5: HTTP 200 denial SAI_SESSION_INVALID is typed and never decoded as data
+00:00 +6: HTTP 200 denial SAI_INTERNAL_CONTEXT_DENIED is typed and never decoded as data
+00:00 +7: HTTP 200 denial SAI_MEMBERSHIP_SUSPENDED is typed and never decoded as data
+00:00 +8: HTTP 200 denial SAI_MEMBERSHIP_REVOKED is typed and never decoded as data
+00:00 +9: HTTP 200 denial SAI_PERMISSION_DENIED is typed and never decoded as data
+00:00 +10: business error SAI_INVALID_ARGUMENT is mapped without exposing message
+00:00 +11: business error SAI_CONCURRENT_CHANGE is mapped without exposing message
+00:00 +12: business error SAI_INTERNAL_ERROR is mapped without exposing message
+00:00 +13: business error unknown is mapped without exposing message
+00:00 +14: malformed envelope null fails closed
+00:00 +15: malformed envelope [] fails closed
+00:00 +16: malformed envelope {} fails closed
+00:00 +17: malformed envelope {"ok":"true","data":[]} fails closed
+00:00 +18: malformed envelope {"ok":true,"data":null,"error":null} fails closed
+00:00 +19: malformed envelope {"ok":true,"data":[],"error":{"code":"unknown"}} fails closed
+00:00 +20: malformed envelope {"ok":false,"data":[],"error":null} fails closed
+00:00 +21: wrong success shape is not converted into an empty search
+00:00 +22: wrong success shape is not converted into an empty directory
+00:00 +23: different child response cannot be attributed to requested child
+00:00 +24: invalid cursor fails before any HTTP call
+00:00 +25: transport authorization denial is typed
+00:00 +26: RPC unavailable never falls back to legacy
+00:00 +27: all unsupported commands fail without HTTP or legacy fallback
+00:01 +28: All tests passed!

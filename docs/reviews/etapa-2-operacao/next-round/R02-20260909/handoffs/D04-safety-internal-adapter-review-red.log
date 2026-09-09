@@ -1,0 +1,63 @@
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart
+00:00 +0: review regressions transport PGRST301 invalidates authorization
+00:00 +0 -1: review regressions transport PGRST301 invalidates authorization [E]
+  Expected: throws <Instance of 'ChildSafetyUnauthorizedException'>
+    Actual: <Instance of 'Future<ChildSafetyRecord?>'>
+     Which: threw <Instance of 'ChildSafetyUnavailableException'>
+            stack package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 72:7  SupabaseInternalChildSafetyRepository._read
+                  ===== asynchronous gap ===========================
+                  package:matcher                                                                                    expectLater
+                  package:flutter_test/src/widget_tester.dart 507:8                                                  expectLater
+                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 45:15                main.<fn>.<fn>
+                  
+            which is not an instance of 'ChildSafetyUnauthorizedException'
+  
+  package:matcher                                                                      expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 45:15  main.<fn>.<fn>
+  
+00:00 +0 -1: review regressions transport PGRST302 invalidates authorization
+00:00 +0 -2: review regressions transport PGRST302 invalidates authorization [E]
+  Expected: throws <Instance of 'ChildSafetyUnauthorizedException'>
+    Actual: <Instance of 'Future<ChildSafetyRecord?>'>
+     Which: threw <Instance of 'ChildSafetyUnavailableException'>
+            stack package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 72:7  SupabaseInternalChildSafetyRepository._read
+                  ===== asynchronous gap ===========================
+                  package:matcher                                                                                    expectLater
+                  package:flutter_test/src/widget_tester.dart 507:8                                                  expectLater
+                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 45:15                main.<fn>.<fn>
+                  
+            which is not an instance of 'ChildSafetyUnauthorizedException'
+  
+  package:matcher                                                                      expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 45:15  main.<fn>.<fn>
+  
+00:00 +0 -2: review regressions nested optional identifier has a typed decoding failure
+00:00 +1 -2: review regressions malformed nested search context cannot become an empty option
+00:00 +1 -3: review regressions malformed nested search context cannot become an empty option [E]
+  Expected: throws <Instance of 'ChildSafetyUnavailableException'>
+    Actual: <Instance of 'Future<List<ChildSafetyChildOption>>'>
+     Which: emitted [Instance of 'ChildSafetyChildOption']
+  
+  package:matcher                                                                      expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 71:13  main.<fn>.<fn>
+  
+00:00 +1 -3: review regressions malformed directory row cannot become an empty record
+00:00 +1 -4: review regressions malformed directory row cannot become an empty record [E]
+  Expected: throws <Instance of 'ChildSafetyUnavailableException'>
+    Actual: <Instance of 'Future<ChildSafetyDirectoryPage>'>
+     Which: emitted <Instance of 'ChildSafetyDirectoryPage'>
+  
+  package:matcher                                                                      expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 81:13  main.<fn>.<fn>
+  
+00:00 +1 -4: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart: review regressions malformed directory row cannot become an empty record
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart: review regressions malformed nested search context cannot become an empty option
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart: review regressions transport PGRST301 invalidates authorization
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart: review regressions transport PGRST302 invalidates authorization
