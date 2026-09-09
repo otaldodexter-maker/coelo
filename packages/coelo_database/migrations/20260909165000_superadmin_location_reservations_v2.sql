@@ -329,7 +329,7 @@ declare ctx app_private.superadmin_internal_context; initial_actor uuid; initial
   receipt app_private.location_reservation_receipts%rowtype;
   normalized jsonb; consumer jsonb; requested_hash bytea; result jsonb;
   conflicts jsonb; can_override boolean:=false; is_write boolean;
-  error_code text; error_detail text; new_id uuid; expected_version bigint;
+  error_code text; error_detail text; new_id uuid; expected_version bigint; audit_institution_id uuid;
   page_limit integer; after_id uuid; after_created timestamptz; page_ids uuid[];
 begin
   is_write:=p_operation in('create','cancel','policy_set');
@@ -374,6 +374,9 @@ begin
       and (s.not_after is null or s.not_after>clock_timestamp())) then
       raise insufficient_privilege using detail='SAI_SESSION_INVALID';
     end if;
+    -- Set only after the canonical location lock has resolved and authorized
+    -- ownership. Client location UUIDs are never institution audit targets.
+    audit_institution_id:=target.institution_id;
     if p_operation in('create','assess') then
       if (normalized->>'location_id')::uuid is distinct from target.id then
         raise invalid_parameter_value using message='reservation location mismatch';
@@ -503,21 +506,35 @@ begin
           from unnest(page_ids[1:page_limit]) with ordinality x(id,position)),
         'next_id',case when cardinality(page_ids)>page_limit then page_ids[page_limit] end);
     end if;
-    -- Recheck after all potentially blocking row locks. Raising inside this
-    -- subtransaction removes every data effect, receipt and binding on revocation.
+    if is_write and receipt.request_id is null then
+      insert into app_private.location_reservation_receipts(actor_id,request_id,operation,request_hash,location_id,reservation_id,result)
+        values(initial_actor,p_request_id,p_operation,requested_hash,target.id,new_id,result);
+    end if;
+    -- Audit can wait on the shared chain lock. Keep success records inside the
+    -- same rollback boundary and authorize again AFTER every append completes.
+    perform app_private.audit_append_superadmin_internal(ctx.internal_identity_id,ctx.internal_auth_link_id,
+      ctx.internal_membership_id,ctx.session_id,capability,ctx.aal,'location.reservation.'||p_operation,'success',null,
+      correlation,target.institution_id,case when new_id is not null then 'location_reservation' else 'location' end,
+      coalesce(new_id,target.id));
+    if p_operation='create' and receipt.request_id is null and jsonb_array_length(conflicts)>0 then
+      perform app_private.audit_append_superadmin_internal(ctx.internal_identity_id,ctx.internal_auth_link_id,
+        ctx.internal_membership_id,ctx.session_id,'locations.reservations.override',ctx.aal,
+        'location.reservation.override','success','RESERVATION_CONFLICT_OVERRIDE',correlation,
+        target.institution_id,'location_reservation',new_id,
+        jsonb_build_object('state','confirmed_over_conflict'));
+    end if;
+    -- Recheck after all potentially blocking writes/audits. Raising inside this
+    -- subtransaction removes data, receipt, binding AND success audit records.
+    select * into strict ctx from app_private.require_superadmin_internal_context(capability);
+    perform app_private.superadmin_location_owner_v2(ctx,target.scope_kind,target.institution_id,target.unit_id);
+    if consumer is not null then perform app_private.location_reservation_consumer_v2(ctx,target,consumer,is_write); end if;
+    if p_operation in('create','assess') and can_override and jsonb_array_length(conflicts)>0 then
+      perform app_private.require_superadmin_internal_context('locations.reservations.override');
+    end if;
     select * into strict ctx from app_private.require_superadmin_internal_context(capability);
     if ctx.internal_identity_id is distinct from initial_actor or ctx.session_id is distinct from initial_session
       or not exists(select 1 from auth.sessions s where s.id=initial_session and (s.not_after is null or s.not_after>clock_timestamp())) then
       raise insufficient_privilege using detail='SAI_SESSION_INVALID';
-    end if;
-    perform app_private.superadmin_location_owner_v2(ctx,target.scope_kind,target.institution_id,target.unit_id);
-    if consumer is not null then perform app_private.location_reservation_consumer_v2(ctx,target,consumer,is_write); end if;
-    if p_operation='create' and receipt.request_id is null and jsonb_array_length(conflicts)>0 then
-      perform app_private.require_superadmin_internal_context('locations.reservations.override');
-    end if;
-    if is_write and receipt.request_id is null then
-      insert into app_private.location_reservation_receipts(actor_id,request_id,operation,request_hash,location_id,reservation_id,result)
-        values(initial_actor,p_request_id,p_operation,requested_hash,target.id,new_id,result);
     end if;
   exception when insufficient_privilege then
     get stacked diagnostics error_detail=pg_exception_detail;
@@ -528,18 +545,8 @@ begin
   when others then error_code:='SAI_INTERNAL_ERROR';
   end;
   if error_code is not null then
-    perform app_private.audit_superadmin_internal_denial_if_identified(capability,'location.reservation.'||p_operation,error_code,correlation,p_location_id);
+    perform app_private.audit_superadmin_internal_denial_if_identified(capability,'location.reservation.'||p_operation,error_code,correlation,audit_institution_id);
     return app_private.superadmin_internal_error_envelope(error_code,correlation);
-  end if;
-  perform app_private.audit_append_superadmin_internal(ctx.internal_identity_id,ctx.internal_auth_link_id,
-    ctx.internal_membership_id,ctx.session_id,capability,ctx.aal,'location.reservation.'||p_operation,'success',null,
-    correlation,target.institution_id,case when new_id is not null then 'location_reservation' else 'location' end,
-    coalesce(new_id,target.id));
-  if p_operation='create' and receipt.request_id is null and jsonb_array_length(conflicts)>0 then
-    perform app_private.audit_append_superadmin_internal(ctx.internal_identity_id,ctx.internal_auth_link_id,
-      ctx.internal_membership_id,ctx.session_id,'locations.reservations.override',ctx.aal,
-      'location.reservation.override','success',null,correlation,target.institution_id,'location_reservation',new_id,
-      jsonb_build_object('location_id',target.id,'policy','warn','justification',normalized->>'conflict_justification'));
   end if;
   return jsonb_build_object('ok',true,'data',result,'error',null);
 end

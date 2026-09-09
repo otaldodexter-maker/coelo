@@ -30,7 +30,7 @@ function Get-ReservationHash([string]$Path) {
 }
 
 $descriptorFile = Assert-ReservationFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-ReservationHash $descriptorFile.FullName) -cne '9e8fc9e80d8526274bbf6a7e968fe80bb958f2d020ab7fab2d1ad6ec6cddf6b5') {
+if ((Get-ReservationHash $descriptorFile.FullName) -cne '611fde347e1324b90c9d8af438ef062f2ec19aa25e74e330d0e11caec1401f85') {
   throw 'LocationReservationsV1 descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json
