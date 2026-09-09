@@ -385,6 +385,73 @@ void main() {
 
   // copy() passou a carregar maxLength junto dos demais controladores; sem este
   // teste a duplicacao perderia o limite em silencio.
+  // Os goldens do editor ja falham na base e esta rodada nao regrava golden,
+  // entao os controles novos ficariam sem nenhuma verificacao visual. Esta e a
+  // parte que um golden pegaria e que ainda da para provar sem regravar: que
+  // eles cabem nas larguras reais e a 200% de texto, e que a mensagem de erro
+  // nao empurra o layout para fora.
+  for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+    testWidgets('the maximum length control fits at $width px and 200% text', (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = Size(width, 2200);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+            child: Scaffold(
+              body: FormsEditorPage.authoring(
+                authoringApi: shortTextApi(config: const FormItemConfig(maxLength: 140)),
+                formId: 'form-a',
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('forms-editor-max-length-short')), findsOneWidget);
+      expect(tester.takeException(), isNull, reason: 'overflow at $width px');
+    });
+
+    testWidgets('the inverted range message fits at $width px and 200% text', (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = Size(width, 2200);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+            child: Scaffold(
+              body: FormsEditorPage.authoring(
+                authoringApi: numericApi(
+                  FormItemKind.money,
+                  config: const FormItemConfig(minValue: 10050, maxValue: 100),
+                ),
+                formId: 'form-a',
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('O valor mínimo deve ser menor ou igual ao máximo.'), findsWidgets);
+      expect(tester.takeException(), isNull, reason: 'overflow at $width px');
+    });
+  }
+
+  testWidgets('the maximum length control is reachable and labelled for assistive tech', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    await open(tester, shortTextApi());
+    expect(find.bySemanticsLabel(RegExp('Máximo de caracteres')), findsWidgets);
+    semantics.dispose();
+  });
+
   // Galeria e datas ja recusam intervalo invertido. Os limites numericos nao
   // recusavam, entao o autor podia gravar minimo 100 e maximo 10 e tornar a
   // pergunta impossivel de responder, sem nenhum aviso.
