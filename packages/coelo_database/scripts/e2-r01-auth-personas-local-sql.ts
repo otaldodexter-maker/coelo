@@ -2,6 +2,11 @@
 // C00 must grant a live local lease before using the default runtime.
 import { win32 as path } from "node:path";
 import {
+  type LocalBanSqlRequest,
+  nominalBanSql,
+  validateBanProof,
+} from "./e2-r01-auth-personas-ban-proof.ts";
+import {
   PackageError,
   PERSONAS,
   type Plan,
@@ -233,6 +238,40 @@ const defaultRuntime: LocalSqlRuntime = {
   run: runProcess,
 };
 
+// Read only the canonical API fields needed for an optional local Auth binding.
+// Invalid/ambiguous/missing declarations disable ban proof, not verify/revoke.
+function apiAuthUrl(config: string): string | undefined {
+  let table = "";
+  const sections = new Set<string>();
+  const values = new Map<string, string>();
+  for (const line of config.split(/\r?\n/)) {
+    if (/^\s*(?:#|$)/.test(line)) continue;
+    const section = /^\s*\[([^\]]+)\]\s*(?:#.*)?$/.exec(line);
+    if (section) {
+      table = section[1];
+      if (table === "api" || table === "api.tls") {
+        if (sections.has(table)) return undefined;
+        sections.add(table);
+      }
+      continue;
+    }
+    if (table !== "api" && table !== "api.tls") continue;
+    const field = /^\s*([\w."']+)\s*=\s*([^#]+?)(?:\s*#.*)?$/.exec(line);
+    if (!field) continue;
+    const name = field[1].replaceAll('"', "").replaceAll("'", "");
+    if (name !== "enabled" && !(table === "api" && name === "port")) continue;
+    if (field[1] !== name || values.has(`${table}.${name}`)) return undefined;
+    values.set(`${table}.${name}`, field[2].trim());
+  }
+  const port = values.get("api.port") ?? "";
+  if (
+    values.get("api.enabled") !== "true" ||
+    values.get("api.tls.enabled") !== "false" ||
+    !/^[1-9]\d{0,4}$/.test(port) || Number(port) > 65535
+  ) return undefined;
+  return `http://127.0.0.1:${port}/auth/v1`;
+}
+
 export async function localPersonaSqlExecutor(
   context: LocalSqlContext,
   runtime: LocalSqlRuntime = defaultRuntime,
@@ -343,8 +382,94 @@ export async function localPersonaSqlExecutor(
     );
     await assertIdentity();
     let executing = false;
+    const runSql = async (sql: string) => {
+      await assertIdentity();
+      const output = await runtime.run({
+        executable: local.dockerPath,
+        args: [
+          "--host",
+          local.dockerHost,
+          "exec",
+          "-i",
+          "--env",
+          "PGOPTIONS=-c statement_timeout=60000",
+          "--env",
+          "PGHOSTADDR=",
+          "--env",
+          "PGSERVICE=",
+          "--env",
+          "PGSERVICEFILE=/dev/null",
+          "--env",
+          "PGPASSFILE=/dev/null",
+          "--env",
+          "PGCLIENTENCODING=UTF8",
+          local.containerId,
+          "psql",
+          "-X",
+          "-A",
+          "-t",
+          "--host",
+          "/var/run/postgresql",
+          "--port",
+          "5432",
+          "--username",
+          "postgres",
+          "--dbname",
+          "postgres",
+          "--set",
+          "ON_ERROR_STOP=1",
+        ],
+        stdin: sql,
+        timeoutMs,
+      });
+      successful(output);
+      await assertIdentity();
+      return output;
+    };
+    const localAuthUrl = apiAuthUrl(fixedConfig!);
     return Object.freeze({
       environment,
+      localAuthUrl,
+      async readBan(request: LocalBanSqlRequest) {
+        let acquired = false;
+        try {
+          exact(request, ["planId", "authUserId", "correlation", "sql"]);
+          requireValue(
+            request.planId === plan.id && localAuthUrl !== undefined,
+          );
+          const { authUserId, correlation, sql } = request;
+          requireValue(sql === nominalBanSql(plan, authUserId, correlation));
+          requireValue(!executing);
+          executing = true;
+          acquired = true;
+          const output = await runSql(sql);
+          requireValue(
+            request.planId === plan.id && request.authUserId === authUserId &&
+              request.correlation === correlation && request.sql === sql,
+          );
+          const lines = output.stdout.replaceAll("\r\n", "\n").split("\n");
+          requireValue(
+            lines.length === 4 && lines[0] === "BEGIN" &&
+              lines[2] === "COMMIT" && lines[3] === "",
+          );
+          const proof = validateBanProof(
+            strictJson(lines[1]),
+            plan,
+            authUserId,
+            correlation,
+          );
+          return {
+            environment,
+            authUrl: localAuthUrl,
+            completed: true as const,
+            rows: [proof],
+          };
+        } catch (_) {
+          throw new PackageError("LOCAL_BAN_PROOF_UNCONFIRMED");
+        } finally {
+          if (acquired) executing = false;
+        }
+      },
       async execute(
         request: {
           readonly planId: string;
@@ -367,47 +492,7 @@ export async function localPersonaSqlExecutor(
           requireValue(!executing);
           executing = true;
           acquired = true;
-          await assertIdentity();
-          const output = await runtime.run({
-            executable: local.dockerPath,
-            args: [
-              "--host",
-              local.dockerHost,
-              "exec",
-              "-i",
-              "--env",
-              "PGOPTIONS=-c statement_timeout=60000",
-              "--env",
-              "PGHOSTADDR=",
-              "--env",
-              "PGSERVICE=",
-              "--env",
-              "PGSERVICEFILE=/dev/null",
-              "--env",
-              "PGPASSFILE=/dev/null",
-              "--env",
-              "PGCLIENTENCODING=UTF8",
-              local.containerId,
-              "psql",
-              "-X",
-              "-A",
-              "-t",
-              "--host",
-              "/var/run/postgresql",
-              "--port",
-              "5432",
-              "--username",
-              "postgres",
-              "--dbname",
-              "postgres",
-              "--set",
-              "ON_ERROR_STOP=1",
-            ],
-            stdin: sql,
-            timeoutMs,
-          });
-          successful(output);
-          await assertIdentity();
+          const output = await runSql(sql);
           requireValue(
             request.planId === plan.id && request.kind === kind &&
               request.sql === sql,
