@@ -1,0 +1,88 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart
+00:00 +0: model filter preserves selected scopes {} across cursor pages
+00:00 +1: model filter preserves selected scopes {AccessProfileScope.unit} across cursor pages
+00:00 +2: model filter preserves selected scopes {AccessProfileScope.unit, AccessProfileScope.group} across cursor pages
+00:00 +2 -1: model filter preserves selected scopes {AccessProfileScope.unit, AccessProfileScope.group} across cursor pages [E]
+  Expected: ['unit,group', 'unit,group']
+    Actual: MappedListIterable<Map<String, dynamic>, dynamic>:[null, null]
+     Which: at location [0] is <null> instead of 'unit,group'
+  
+  package:matcher                                                             expect
+  package:flutter_test/src/widget_tester.dart 473:18                          expect
+  test\features\access_profiles\data\d04_model_scope_contract_test.dart 40:7  main.<fn>
+  
+00:00 +2 -1: model capabilities never become person assignments in the shared profile UI
+00:00 +2 -2: model capabilities never become person assignments in the shared profile UI [E]
+  Expected: <0>
+    Actual: <1>
+  
+  package:matcher                                                             expect
+  package:flutter_test/src/widget_tester.dart 473:18                          expect
+  test\features\access_profiles\data\d04_model_scope_contract_test.dart 69:5  main.<fn>
+  
+00:00 +2 -2: Principal model filter uses the server child context scope
+00:00 +2 -3: Principal model filter uses the server child context scope [E]
+  Expected: 'child_context'
+    Actual: 'group'
+     Which: is different.
+            Expected: child_cont ...
+              Actual: group
+                      ^
+             Differ at offset 0
+  
+  package:matcher                                                             expect
+  package:flutter_test/src/widget_tester.dart 473:18                          expect
+  test\features\access_profiles\data\d04_model_scope_contract_test.dart 84:5  main.<fn>
+  
+00:00 +2 -3: Principal model create preserves child context at the RPC boundary
+00:00 +2 -4: Principal model create preserves child context at the RPC boundary [E]
+  Expected: 'child_context'
+    Actual: 'group'
+     Which: is different.
+            Expected: child_cont ...
+              Actual: group
+                      ^
+             Differ at offset 0
+  
+  package:matcher                                                              expect
+  package:flutter_test/src/widget_tester.dart 473:18                           expect
+  test\features\access_profiles\data\d04_model_scope_contract_test.dart 119:7  main.<fn>
+  
+00:00 +2 -4: Principal model update preserves child context at the RPC boundary
+00:00 +2 -5: Principal model update preserves child context at the RPC boundary [E]
+  Expected: 'child_context'
+    Actual: 'group'
+     Which: is different.
+            Expected: child_cont ...
+              Actual: group
+                      ^
+             Differ at offset 0
+  
+  package:matcher                                                              expect
+  package:flutter_test/src/widget_tester.dart 473:18                           expect
+  test\features\access_profiles\data\d04_model_scope_contract_test.dart 119:7  main.<fn>
+  
+00:00 +2 -5: Principal model duplicate preserves child context at the RPC boundary
+00:00 +2 -6: Principal model duplicate preserves child context at the RPC boundary [E]
+  Expected: 'child_context'
+    Actual: 'group'
+     Which: is different.
+            Expected: child_cont ...
+              Actual: group
+                      ^
+             Differ at offset 0
+  
+  package:matcher                                                              expect
+  package:flutter_test/src/widget_tester.dart 473:18                           expect
+  test\features\access_profiles\data\d04_model_scope_contract_test.dart 119:7  main.<fn>
+  
+00:00 +2 -6: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart: Principal model create preserves child context at the RPC boundary
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart: Principal model duplicate preserves child context at the RPC boundary
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart: Principal model filter uses the server child context scope
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart: Principal model update preserves child context at the RPC boundary
+  ... and 2 more
+

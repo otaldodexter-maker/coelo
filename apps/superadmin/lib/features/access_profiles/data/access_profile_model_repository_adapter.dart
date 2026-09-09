@@ -26,7 +26,9 @@ final class AccessProfileModelRepositoryAdapter
           domain: query.domain,
           search: query.search,
           status: query.statuses.length == 1 ? query.statuses.single : null,
-          scope: query.scopes.length == 1 ? query.scopes.single.databaseValue : null,
+          scope: query.scopes.isEmpty
+              ? null
+              : query.scopes.map((scope) => _scopeDatabaseValue(query.domain, scope)).join(','),
           limit: query.pageSize,
           afterName: afterName,
           afterId: afterId,
@@ -122,7 +124,7 @@ final class AccessProfileModelRepositoryAdapter
       domain: draft.domain,
       name: draft.name,
       description: draft.description,
-      maxScopeKind: draft.maxScope.databaseValue,
+      maxScopeKind: _scopeDatabaseValue(draft.domain, draft.maxScope),
       status: draft.status,
       capabilities: [
         for (final code in selectedCodes)
@@ -171,7 +173,7 @@ final class AccessProfileModelRepositoryAdapter
         domain: domain,
         name: name,
         description: '',
-        maxScopeKind: _defaultScope(domain).databaseValue,
+        maxScopeKind: _scopeDatabaseValue(domain, _defaultScope(domain)),
         status: AccessProfileStatus.inactive,
         capabilities: const [],
         reason: reason,
@@ -195,7 +197,8 @@ AccessProfile _toProfile(
   status: model.status,
   maxScope: _scope(model.maxScopeKind),
   version: model.version,
-  membershipCount: model.capabilities.length,
+  // Models configure capabilities; they are not directly assigned to people.
+  membershipCount: 0,
   isSystem: model.isSystem,
   permissions: _permissions(catalog, model.domain, model.capabilities),
 );
@@ -243,3 +246,8 @@ AccessProfileScope _defaultScope(AccessProfileDomain domain) => switch (domain) 
   AccessProfileDomain.institution => AccessProfileScope.institution,
   AccessProfileDomain.principal => AccessProfileScope.group,
 };
+
+String _scopeDatabaseValue(AccessProfileDomain domain, AccessProfileScope scope) =>
+    domain == AccessProfileDomain.principal && scope == AccessProfileScope.group
+    ? 'child_context'
+    : scope.databaseValue;
