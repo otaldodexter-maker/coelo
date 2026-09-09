@@ -1,5 +1,5 @@
 {
-  "revision": 9,
+  "revision": 10,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-09T19:50:00-03:00",
+  "updatedAt": "2026-09-09T20:05:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T19:03:25-03:00",
     "measuredBy": "date no checkout integrador",
@@ -30,7 +30,7 @@
   "base": {
     "root": "C:/Users/adrie/Documents/Coelo",
     "branch": "dev",
-    "head": "ecc8eae2b",
+    "head": "414b82b29",
     "previousHead": "d784462c168d22fdb7090b7de1ef7db554ad5107",
     "upstream": "origin/dev",
     "divergence": "0/0",
@@ -448,7 +448,7 @@
     "claudeExecutorAddresses": "Fornecidos pelo Owner e verificados por envio real: as seis conversas Claude receberam ACK nominal por SendMessage em 18:18. Enderecos gravados em groups[].sessionName/sessionId para recuperacao."
   },
   "blocks": [],
-  "nextStep": "Coletar tracker_delta_proposto de todos os grupos, rodar a suite completa como baseline datado e aplicar a atualizacao consolidada de inventario e dos tres rastreadores.",
+  "nextStep": "Rodar a suite completa sobre a base com todos os lotes, catalogar as falhas por arquivo e distribuir por dono, aplicar os deltas novos e preparar o relatorio do Owner.",
   "providers": {
     "supabase": {
       "cli": "supabase 2.117.0 autenticado; token no Credential Manager do Windows",
@@ -533,6 +533,19 @@
       "registro": "docs/reviews/etapa-2-operacao/reports/NOTURNA-fila-sql-serializada.md contem o mapeamento autoritativo dos carimbos originais que os manifests dos grupos ainda citam.",
       "regra": "Novos candidatos escolhem carimbo posterior a 20260909200000 e avisam o coordenador.",
       "data": "2026-09-09T19:35:00-03:00"
+    },
+    {
+      "id": "BARRA-DE-VERIFIED-COM-GOLDEN-VERMELHO",
+      "decisao": "Uma acao nao vai a frontend verified enquanto os goldens da propria tela estiverem vermelhos na base, mesmo que a deriva nao seja culpa do lote. Nesses casos o estado e local-green, e a promocao fica esperando a decisao de rebaseline do Owner.",
+      "causa": "chat-comunicacoes propos verified para 12 acoes com 9 goldens de chat e 3 de notices vermelhos, enquanto operacoes-sistema recusou promover meal-plans, plans e agenda exatamente por goldens vermelhos. Aceitar as duas barras faria o painel medir quem escreveu o delta em vez do estado do produto.",
+      "efeito": "As 12 acoes entraram como local-green com o texto do autor preservado mais a justificativa. Sobem sem retrabalho quando a decisao vier.",
+      "data": "2026-09-09T20:00:00-03:00"
+    },
+    {
+      "id": "ARTEFATOS-FAILURES-PNG",
+      "decisao": "Os PNGs sob test/**/failures/ ficam fora do indice. Em conflito de merge, prevalece o lado que nao os rastreia; os arquivos permanecem no disco.",
+      "causa": "Sao diffs regenerados a cada execucao das suites de golden. O .gitignore ja exclui o diretorio, mas uma branch os havia adicionado antes disso valer, e o merge de alunos-rotina conflitou em 54 deles. Rastreados, fazem qualquer frente aparecer no fechamento com alteracoes nao identificadas que nao sao trabalho.",
+      "data": "2026-09-09T20:02:00-03:00"
     }
   ],
   "integrado": [
@@ -614,6 +627,11 @@
       "erro": "Repassei a publicacoes-midia uma atribuicao de 3 vermelhos em principal_real_route_test.dart vinda de alunos-rotina, sem medir.",
       "correcao": "publicacoes-midia mediu contra worktree destacada em d784462c1 e mostrou que esse arquivo nao aparece entre as 33 falhas da base. Atribuicao retirada. Passo a medir antes de rotear.",
       "data": "2026-09-09T19:38:00-03:00"
+    },
+    {
+      "erro": "Segurei 21 commits de integracao sem publicar em origin/dev enquanto verificava, e publicacoes-midia teve de me alertar.",
+      "correcao": "Publicado em 4d119b4f3. Passo a publicar a cada merge validado, nao a cada lote de merges. O risco de perder trabalho de sete frentes numa queda supera o de dev ficar minutos com erro de analise.",
+      "data": "2026-09-09T19:52:00-03:00"
     }
   ],
   "censoGoldens": {
@@ -635,5 +653,12 @@
       "Se nada mudou de estado, enviar array vazio com uma nota. Array ausente e diferente de nenhuma mudanca."
     ],
     "exemploBom": "alunos-rotina revisao 3 publicou tracker_delta_proposto correto, inclusive recusando promover qualquer acao a verified por ter apenas restaurado baseline vermelha."
+  },
+  "baselineIntegrado": {
+    "medidoEm": "2026-09-09T19:30:00-03:00",
+    "base": "ecc8eae2b",
+    "comando": "flutter test em apps/superadmin",
+    "resultado": "5707 PASS, 9 SKIP, 190 FAIL",
+    "nota": "Baseline datado da base integrada. alunos-rotina mediu 4667 P / 6 S / 160 F em test/features apenas, o que e coerente: o restante esta em test/app e vizinhos. Nenhuma frente deve tratar lote verde proprio como sinal de saude da base."
   }
 }
