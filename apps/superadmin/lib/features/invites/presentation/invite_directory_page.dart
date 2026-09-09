@@ -119,7 +119,14 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
       });
     } on InviteUnauthorizedException catch (error) {
       if (mounted && epoch == _requestEpoch) {
-        setState(() => _snapshot = InviteDirectorySnapshot.unauthorized(error));
+        _commandGeneration++;
+        _dismissOwnedOverlays();
+        setState(() {
+          _snapshot = InviteDirectorySnapshot.unauthorized(error);
+          _busyInviteId = null;
+          _actionInProgress = false;
+          _actionRequestIds.clear();
+        });
       }
     } on Object catch (error) {
       if (mounted && epoch == _requestEpoch) {
@@ -160,7 +167,12 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
       widget.onOpen?.call(invite.id);
       return;
     }
-    if (!widget.allowCommands || _actionInProgress) return;
+    if (!mounted ||
+        !widget.allowCommands ||
+        _actionInProgress ||
+        _snapshot.state != InviteDirectoryLoadState.ready) {
+      return;
+    }
     _actionInProgress = true;
     final repository = widget.repository;
     final generation = _commandGeneration;

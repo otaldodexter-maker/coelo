@@ -1,7 +1,7 @@
 ---
 source: "R02 CONTRATO.md; assignments/D04.md r3; delegação D04; AGENTS.md; código e testes focais de Convites"
 status: "local-corrections-verified; ready-for-parent-review; no-e2e-certification"
-generated_at: "2026-09-09"
+generated_at: "2026-09-09T15:32:00-03:00"
 timezone: "America/Sao_Paulo"
 ---
 
@@ -148,3 +148,43 @@ Teste mínimo de composição a executar após a reserva:
 Estado da proposta: três cenários de composição U; fora do lote focal já verde
 de 25 casos. Não somar a aplicabilidade do patch aos testes do produto nem
 promover invites.detail/resend/revoke antes dessa verificação.
+
+## Revisão 4 — negação durante comando, 15:32 BRT
+
+Base retomada `febffc8879c30cdb982e1078527def7a86777c74`; os deltas anteriores
+foram commitados pelo pai. Este delta está local e aguarda revisão/commit D04.
+Recorte: apps/superadmin → Comunicação → Convites → Lista/Reenviar/Revogar →
+`invites.list`, `invites.resend`, `invites.revoke`. Fonte: contrato vigente,
+negação server-side `InviteUnauthorizedException`, geração de comandos e
+overlays existentes na feature; não altera capabilities nem regra de produto.
+
+Dois defeitos reproduzidos antes da correção: uma resposta tardia de reenvio
+abria o link após a lista receber negação de leitura; um callback de ação
+capturado antes da negação ainda enviava comando. O diretório agora invalida
+a geração de comandos, fecha seus overlays e limpa estado/ledger ao receber
+negação de leitura vigente. Novas mutações exigem estado ready. Negação apenas
+de uma mutação continua sem implicar perda da capacidade independente de ler.
+
+Arquivos próprios: `invite_directory_page.dart` e
+`invite_directory_page_test.dart`. Testes novos conferem explicitamente a
+negação recebida e o estado não autorizado antes de completar o recibo ou
+chamar a ação capturada. O finder foi limitado ao toolbar de Convites: em
+desktop, o primeiro TextField é a busca global. Tentativas iniciais com esse
+finder incorreto e espera de animação não contam como regressões de produto.
+
+Evidências em `../evidence/D04/invites/read-denial-{red,green}.log`:
+
+- RED focal final: 0 P / 2 F / 0 B / 0 S / 0 U, exit 1; link encontrado quando
+  esperado ausente e um comando recebido quando esperado zero.
+- GREEN diretório: 22 P / 0 F / 0 B / 0 S / 0 U, exit 0; inclui os dois novos
+  casos e regressões de revoke, troca de repositório, single-flight e retry
+  idempotente. Os 25 casos anteriores de wizard/parser não foram repetidos.
+- `dart analyze` nos dois arquivos: exit 0, sem issues. `git diff --check`
+  focal: exit 0. Slot Flutter liberado ao pai às 15:31 BRT; analyzer concluído.
+
+Avanço local parcial das três ações; certificação permanece FE 0/5, BE 0/5,
+E2E 0/5. Repositórios sintéticos não comprovam sessão real, entrega SMTP,
+auditoria/persistência remota ou isolamento real. Gates de composição normal
+e proposta D00 da revisão 3 permanecem; nenhuma rota compartilhada alterada.
+Memória: sem nova regra durável; correção implementa o contrato de negação já
+vigente, portanto sem novo artigo. Nenhuma conta, envio ou mutação remota.
