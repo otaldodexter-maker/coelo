@@ -2,6 +2,22 @@ import 'dart:collection';
 
 export 'domain/routine_contract.dart';
 
+String routineStatusLabel(String status) => switch (status.trim().toLowerCase()) {
+  'active' || 'ativo' => 'Ativo',
+  'published' || 'publicado' => 'Publicado',
+  'draft' || 'rascunho' => 'Rascunho',
+  'in_review' || 'em revisao' => 'Em revisão',
+  'inactive' || 'inativo' => 'Inativo',
+  'archived' || 'arquivado' => 'Arquivado',
+  'corrected' || 'corrigido' => 'Corrigido',
+  'cancelled' || 'cancelado' => 'Cancelado',
+  _ => status,
+};
+
+String routineCivilDate(DateTime value) =>
+    '${value.day.toString().padLeft(2, '0')}/'
+    '${value.month.toString().padLeft(2, '0')}/${value.year}';
+
 enum DailyRoutineOrigin { institution, unit }
 
 enum DailyRoutineFieldType { shortText, longText, singleChoice, multipleChoice, number, boolean }
