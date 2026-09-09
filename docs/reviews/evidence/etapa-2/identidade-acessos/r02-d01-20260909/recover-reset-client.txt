@@ -1,0 +1,78 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub --concurrency=1 test/features/auth/pr ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart: does not expose theme switching from password recovery
+00:01 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart: renders the recovery form with existing auth components
+00:01 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart: validates empty and malformed email before requesting
+00:01 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart: shows loading and disables the email field
+00:01 +4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart: keeps the form visible after a safe request failure
+00:01 +5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart: shows neutral success and resends the normalized email
+00:01 +6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart: keeps success visible when resend fails
+00:01 +7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart: shows resend loading and disables the resend action
+00:02 +8: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart: returns to login from form and success
+00:02 +9: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart: uses semantic success colors in the dark theme
+00:02 +10: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart: announces the neutral success state to assistive technology
+00:02 +11: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_screen_test.dart: does not overflow on a compact window with enlarged text
+00:02 +12: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart
+00:08 +12: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart: does not expose theme switching from new password
+00:09 +13: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart: renders the reset password form with Coelo auth context
+00:09 +14: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart: validates required, minimum length, and matching passwords
+00:10 +15: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart: toggles both password fields independently
+00:10 +16: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart: shows loading, disables fields, and forwards the password
+00:10 +17: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart: shows a semantic failure returned by the action
+00:11 +18: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart: shows success and returns to login
+00:11 +19: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart: shows recovery link processing state
+00:11 +20: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart: shows invalid link state and returns to login
+00:11 +21: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart: supports 320x568 at 200 percent text in light theme
+00:11 +22: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart: supports 320x568 at 200 percent text in dark theme
+00:11 +23: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_golden_test.dart
+00:12 +23: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_golden_test.dart: (setUpAll)
+00:12 +23: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_golden_test.dart: renders the light password recovery form reference
+00:13 +24: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_golden_test.dart: renders the light password recovery success reference
+00:14 +25: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_golden_test.dart: renders the dark password recovery form reference
+00:14 +26: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_golden_test.dart: renders the dark password recovery success reference
+00:14 +27: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_golden_test.dart: renders the light mobile password recovery form reference
+00:14 +28: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_forgot_password_golden_test.dart: (tearDownAll)
+00:14 +28: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_golden_test.dart
+00:15 +28: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_golden_test.dart: (setUpAll)
+00:15 +28: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_golden_test.dart: renders the light reset password form
+00:16 +29: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_golden_test.dart: renders the dark reset password form
+00:16 +30: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_golden_test.dart: renders the light mobile reset password form
+00:16 +31: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_golden_test.dart: (tearDownAll)
+00:16 +31: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart
+00:19 +31: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: login supports 375 in light
+00:20 +32: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: login supports 768 in light
+00:20 +33: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: login supports 1024 in light
+00:20 +34: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: login supports 1440 in light
+00:20 +35: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: login supports 375 at 200% text in light
+00:20 +36: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: login supports 375 in dark
+00:20 +37: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: login supports 768 in dark
+00:20 +38: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: login supports 1024 in dark
+00:20 +39: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: login supports 1440 in dark
+00:21 +40: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: login supports 375 at 200% text in dark
+00:21 +41: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: forgotPassword supports 375 in light
+00:21 +42: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: forgotPassword supports 768 in light
+00:21 +43: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: forgotPassword supports 1024 in light
+00:21 +44: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: forgotPassword supports 1440 in light
+00:21 +45: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: forgotPassword supports 375 at 200% text in light
+00:21 +46: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: forgotPassword supports 375 in dark
+00:21 +47: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: forgotPassword supports 768 in dark
+00:21 +48: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: forgotPassword supports 1024 in dark
+00:21 +49: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: forgotPassword supports 1440 in dark
+00:21 +50: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: forgotPassword supports 375 at 200% text in dark
+00:21 +51: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: resetPassword supports 375 in light
+00:21 +52: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: resetPassword supports 768 in light
+00:21 +53: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: resetPassword supports 1024 in light
+00:21 +54: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: resetPassword supports 1440 in light
+00:21 +55: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: resetPassword supports 375 at 200% text in light
+00:21 +56: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: resetPassword supports 375 in dark
+00:21 +57: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: resetPassword supports 768 in dark
+00:21 +58: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: resetPassword supports 1024 in dark
+00:22 +59: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: resetPassword supports 1440 in dark
+00:22 +60: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_auth_responsive_matrix_test.dart: resetPassword supports 375 at 200% text in dark
+00:22 +61: All tests passed!
