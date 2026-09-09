@@ -1,74 +1,75 @@
 {
-  "source": "D04 isolated internal read adapter; SQL48141c195; specs030+039",
-  "status": "final HTTP synthetic tests green; inactive adapter; SQL runtime U43",
-  "generated_at": "2026-09-09T18:58:23.793894+00:00",
-  "files": [
-    {
-      "path": "apps/superadmin/lib/features/safety/data/supabase_internal_child_safety_repository.dart",
-      "sha256": "67776a41dce6152a2020de23d710aa539c6db831c2d18bdc994507eeb41aa85e"
-    },
-    {
-      "path": "apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart",
-      "sha256": "27b86ca5ccb338f5a63e62b1a21399437a3a2a21e8c20c262b33f60116dc8bc1"
-    }
-  ],
-  "tests": {
-    "kind": "HTTP synthetic final exact code",
-    "P": 34,
-    "F": 0,
-    "B": 0,
-    "S": 0,
-    "U": 0
-  },
-  "analysis": "final 2 paths: no issues; exit0",
-  "review": {
-    "reviewer": "/root/profiles_models",
-    "result": "final context shape delta reviewed; no additional static blocker"
-  },
-  "runtime_limits": [
-    "adapter not composed in bootstrap/router",
-    "no live session/RLS/SQL/E2E certification"
-  ],
-  "logs": [
-    {
-      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-analyze-final.log",
-      "sha256": "186e0c9562a2c0f4c03a84810ff3c0e160e82c5ccce8ffdb816d605978d4f92a"
-    },
-    {
-      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-analyze.log",
-      "sha256": "2a259863f062fc25cebcdc97d83b7f48c43efbb33888f2a30115e449e02c0fce"
-    },
-    {
-      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-final-analyze.log",
-      "sha256": "186e0c9562a2c0f4c03a84810ff3c0e160e82c5ccce8ffdb816d605978d4f92a"
-    },
-    {
-      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-final-green.log",
-      "sha256": "39ed86784bf7999f2888761520813c78bcae834010e813dc751aa33b003cb934"
-    },
-    {
-      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-green.log",
-      "sha256": "af08409a4b61bc602e0b95d2c6e6f23ced17434abfa51a0303fc21219be43ee4"
-    },
-    {
-      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-red.log",
-      "sha256": "83aa6e9c78b128bbb292549f9c2cedf3a018381ef929ff02ee91fb83852e6a4f"
-    },
-    {
-      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-review-red.log",
-      "sha256": "69c484d42c81b3a452a0a323ba3714b5ddccc94e45306bc8912dcb9ce6a432de"
-    },
-    {
-      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-scope-final-analyze.log",
-      "sha256": "186e0c9562a2c0f4c03a84810ff3c0e160e82c5ccce8ffdb816d605978d4f92a"
-    },
-    {
-      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-scope-final-green.log",
-      "sha256": "48ad3907d3fbd2d7845f88a977bf04ee33a7f566778f8344713212c9b16cb1fa"
-    },
-    {
-      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-scope-red.log",
-      "sha256": "75510c3ed5873eeb95a8c6c368f1159dcf366547796fdee0af1af4cd70380e9c"
-    }
-  ]
+    "source":  "D04 isolated internal read adapter; SQL48141c195; specs030+039",
+    "status":  "final HTTP synthetic tests green; inactive adapter; SQL runtime U43",
+    "generated_at":  "2026-09-09T18:58:23.793894+00:00",
+    "files":  [
+                  {
+                      "path":  "apps/superadmin/lib/features/safety/data/supabase_internal_child_safety_repository.dart",
+                      "sha256":  "67776a41dce6152a2020de23d710aa539c6db831c2d18bdc994507eeb41aa85e"
+                  },
+                  {
+                      "path":  "apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart",
+                      "sha256":  "27b86ca5ccb338f5a63e62b1a21399437a3a2a21e8c20c262b33f60116dc8bc1"
+                  }
+              ],
+    "tests":  {
+                  "kind":  "HTTP synthetic final exact code",
+                  "P":  34,
+                  "F":  0,
+                  "B":  0,
+                  "S":  0,
+                  "U":  0
+              },
+    "analysis":  "final 2 paths: no issues; exit0",
+    "review":  {
+                   "reviewer":  "/root/profiles_models",
+                   "result":  "final context shape delta reviewed; no additional static blocker"
+               },
+    "runtime_limits":  [
+                           "adapter not composed in bootstrap/router",
+                           "no live session/RLS/SQL/E2E certification"
+                       ],
+    "logs":  [
+                 {
+                     "path":  "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-analyze-final.log",
+                     "sha256":  "4ab1f82ac5fb2622e78fb9e95ef9e4d390c9fb2e69ede730b2fdcb9db95e6e45"
+                 },
+                 {
+                     "path":  "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-analyze.log",
+                     "sha256":  "ea270b618b2588f0fa90b9a69f9f3a2b93795f30e02d6bdccf339108f815c69b"
+                 },
+                 {
+                     "path":  "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-final-analyze.log",
+                     "sha256":  "4ab1f82ac5fb2622e78fb9e95ef9e4d390c9fb2e69ede730b2fdcb9db95e6e45"
+                 },
+                 {
+                     "path":  "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-final-green.log",
+                     "sha256":  "a689e8c2906d2005cc4166c07e3aa99e48bd76c94affe5822adcc75d319cb385"
+                 },
+                 {
+                     "path":  "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-green.log",
+                     "sha256":  "18e3c13e87bce18e49d958020596888335461a1f88a2b8b83a744107b89648d0"
+                 },
+                 {
+                     "path":  "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-red.log",
+                     "sha256":  "f121d865e8bf1c4f6f4cbe1aeeeb5f64c9c8592ef700719ac57991dd61f25e42"
+                 },
+                 {
+                     "path":  "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-review-red.log",
+                     "sha256":  "b562b107718d5d6f57f9317f8415a82018a11aaceb73272897c23fd8ca09c02a"
+                 },
+                 {
+                     "path":  "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-scope-final-analyze.log",
+                     "sha256":  "4ab1f82ac5fb2622e78fb9e95ef9e4d390c9fb2e69ede730b2fdcb9db95e6e45"
+                 },
+                 {
+                     "path":  "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-scope-final-green.log",
+                     "sha256":  "4a77af8c1a3500229d0adb3b133a51a98194ca980ef2b42b083c93ed953af2f5"
+                 },
+                 {
+                     "path":  "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-safety-internal-adapter-scope-red.log",
+                     "sha256":  "c7ce831125f90014b9f83d1a02bdcf622ca00240bb34837f20126ae68203a2b4"
+                 }
+             ],
+    "log_normalization":  "CRCRLF normalized to LF and line-end spaces removed; runner text preserved; no rerun."
 }

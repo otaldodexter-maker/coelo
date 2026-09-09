@@ -1,238 +1,238 @@
-00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart
-00:00 +0: directory uses v2 parameters and retains counts while writes stay disabled
-00:00 +0 -1: directory uses v2 parameters and retains counts while writes stay disabled [E]
-  Instance of 'ChildSafetyUnavailableException'
-  dart:async                                                                                          new Future.error
-  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
-  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 234:87                   UnavailableChildSafetyRepository.fetchDirectory
-  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 9:100  SupabaseInternalChildSafetyRepository.fetchDirectory
-  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 33:35                 main.<fn>
-  
-00:00 +0 -1: child detail uses v2 and decodes the requested record
-00:00 +0 -2: child detail uses v2 and decodes the requested record [E]
-  Instance of 'ChildSafetyUnavailableException'
-  dart:async                                                                                          new Future.error
-  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
-  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 236:60                   UnavailableChildSafetyRepository.fetchChild
-  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 11:73  SupabaseInternalChildSafetyRepository.fetchChild
-  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 50:36                 main.<fn>
-  
-00:00 +0 -2: child search uses v2 and preserves limit and selected context
-00:00 +0 -3: child search uses v2 and preserves limit and selected context [E]
-  Instance of 'ChildSafetyUnavailableException'
-  dart:async                                                                                           new Future.error
-  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                    UnavailableChildSafetyRepository._fail
-  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 238:90                    UnavailableChildSafetyRepository.searchChildren
-  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 13:103  SupabaseInternalChildSafetyRepository.searchChildren
-  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 59:38                  main.<fn>
-  
-00:00 +0 -3: valid empty search result remains empty
-00:00 +0 -4: valid empty search result remains empty [E]
-  Instance of 'ChildSafetyUnavailableException'
-  dart:async                                                                                           new Future.error
-  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                    UnavailableChildSafetyRepository._fail
-  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 238:90                    UnavailableChildSafetyRepository.searchChildren
-  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 13:103  SupabaseInternalChildSafetyRepository.searchChildren
-  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 67:29                  main.<fn>
-  
-00:00 +0 -4: HTTP 200 denial SAI_AUTH_REQUIRED is typed and never decoded as data
-00:00 +0 -5: HTTP 200 denial SAI_AUTH_REQUIRED is typed and never decoded as data [E]
-  Expected: throws <Instance of 'ChildSafetyUnauthorizedException'>
-    Actual: <Instance of 'Future<ChildSafetyDirectoryPage>'>
-     Which: threw <Instance of 'ChildSafetyUnavailableException'>
-            stack dart:async                                                                                          new Future.error
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 234:87                   UnavailableChildSafetyRepository.fetchDirectory
-                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 9:100  SupabaseInternalChildSafetyRepository.fetchDirectory
-                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:36                 main.<fn>
-                  
-            which is not an instance of 'ChildSafetyUnauthorizedException'
-  
-  package:matcher                                                                      expectLater
-  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
-  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:13  main.<fn>
-  
-00:00 +0 -5: HTTP 200 denial SAI_SESSION_INVALID is typed and never decoded as data
-00:00 +0 -6: HTTP 200 denial SAI_SESSION_INVALID is typed and never decoded as data [E]
-  Expected: throws <Instance of 'ChildSafetyUnauthorizedException'>
-    Actual: <Instance of 'Future<ChildSafetyDirectoryPage>'>
-     Which: threw <Instance of 'ChildSafetyUnavailableException'>
-            stack dart:async                                                                                          new Future.error
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 234:87                   UnavailableChildSafetyRepository.fetchDirectory
-                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 9:100  SupabaseInternalChildSafetyRepository.fetchDirectory
-                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:36                 main.<fn>
-                  
-            which is not an instance of 'ChildSafetyUnauthorizedException'
-  
-  package:matcher                                                                      expectLater
-  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
-  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:13  main.<fn>
-  
-00:00 +0 -6: HTTP 200 denial SAI_INTERNAL_CONTEXT_DENIED is typed and never decoded as data
-00:00 +0 -7: HTTP 200 denial SAI_INTERNAL_CONTEXT_DENIED is typed and never decoded as data [E]
-  Expected: throws <Instance of 'ChildSafetyUnauthorizedException'>
-    Actual: <Instance of 'Future<ChildSafetyDirectoryPage>'>
-     Which: threw <Instance of 'ChildSafetyUnavailableException'>
-            stack dart:async                                                                                          new Future.error
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 234:87                   UnavailableChildSafetyRepository.fetchDirectory
-                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 9:100  SupabaseInternalChildSafetyRepository.fetchDirectory
-                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:36                 main.<fn>
-                  
-            which is not an instance of 'ChildSafetyUnauthorizedException'
-  
-  package:matcher                                                                      expectLater
-  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
-  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:13  main.<fn>
-  
-00:00 +0 -7: HTTP 200 denial SAI_MEMBERSHIP_SUSPENDED is typed and never decoded as data
-00:00 +0 -8: HTTP 200 denial SAI_MEMBERSHIP_SUSPENDED is typed and never decoded as data [E]
-  Expected: throws <Instance of 'ChildSafetyUnauthorizedException'>
-    Actual: <Instance of 'Future<ChildSafetyDirectoryPage>'>
-     Which: threw <Instance of 'ChildSafetyUnavailableException'>
-            stack dart:async                                                                                          new Future.error
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 234:87                   UnavailableChildSafetyRepository.fetchDirectory
-                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 9:100  SupabaseInternalChildSafetyRepository.fetchDirectory
-                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:36                 main.<fn>
-                  
-            which is not an instance of 'ChildSafetyUnauthorizedException'
-  
-  package:matcher                                                                      expectLater
-  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
-  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:13  main.<fn>
-  
-00:00 +0 -8: HTTP 200 denial SAI_MEMBERSHIP_REVOKED is typed and never decoded as data
-00:00 +0 -9: HTTP 200 denial SAI_MEMBERSHIP_REVOKED is typed and never decoded as data [E]
-  Expected: throws <Instance of 'ChildSafetyUnauthorizedException'>
-    Actual: <Instance of 'Future<ChildSafetyDirectoryPage>'>
-     Which: threw <Instance of 'ChildSafetyUnavailableException'>
-            stack dart:async                                                                                          new Future.error
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 234:87                   UnavailableChildSafetyRepository.fetchDirectory
-                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 9:100  SupabaseInternalChildSafetyRepository.fetchDirectory
-                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:36                 main.<fn>
-                  
-            which is not an instance of 'ChildSafetyUnauthorizedException'
-  
-  package:matcher                                                                      expectLater
-  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
-  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:13  main.<fn>
-  
-00:00 +0 -9: HTTP 200 denial SAI_PERMISSION_DENIED is typed and never decoded as data
-00:00 +0 -10: HTTP 200 denial SAI_PERMISSION_DENIED is typed and never decoded as data [E]
-  Expected: throws <Instance of 'ChildSafetyUnauthorizedException'>
-    Actual: <Instance of 'Future<ChildSafetyDirectoryPage>'>
-     Which: threw <Instance of 'ChildSafetyUnavailableException'>
-            stack dart:async                                                                                          new Future.error
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 234:87                   UnavailableChildSafetyRepository.fetchDirectory
-                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 9:100  SupabaseInternalChildSafetyRepository.fetchDirectory
-                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:36                 main.<fn>
-                  
-            which is not an instance of 'ChildSafetyUnauthorizedException'
-  
-  package:matcher                                                                      expectLater
-  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
-  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:13  main.<fn>
-  
-00:00 +0 -10: business error SAI_INVALID_ARGUMENT is mapped without exposing message
-00:00 +0 -11: business error SAI_INVALID_ARGUMENT is mapped without exposing message [E]
-  Expected: throws <Instance of 'ChildSafetyValidationException'>
-    Actual: <Instance of 'Future<ChildSafetyRecord?>'>
-     Which: threw <Instance of 'ChildSafetyUnavailableException'>
-            stack dart:async                                                                                          new Future.error
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 236:60                   UnavailableChildSafetyRepository.fetchChild
-                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 11:73  SupabaseInternalChildSafetyRepository.fetchChild
-                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 87:36                 main.<fn>
-                  
-            which is not an instance of 'ChildSafetyValidationException'
-  
-  package:matcher                                                                      expectLater
-  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
-  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 87:13  main.<fn>
-  
-00:00 +0 -11: business error SAI_CONCURRENT_CHANGE is mapped without exposing message
-00:00 +0 -12: business error SAI_CONCURRENT_CHANGE is mapped without exposing message [E]
-  Expected: throws <Instance of 'ChildSafetyConflictException'>
-    Actual: <Instance of 'Future<ChildSafetyRecord?>'>
-     Which: threw <Instance of 'ChildSafetyUnavailableException'>
-            stack dart:async                                                                                          new Future.error
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 236:60                   UnavailableChildSafetyRepository.fetchChild
-                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 11:73  SupabaseInternalChildSafetyRepository.fetchChild
-                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 87:36                 main.<fn>
-                  
-            which is not an instance of 'ChildSafetyConflictException'
-  
-  package:matcher                                                                      expectLater
-  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
-  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 87:13  main.<fn>
-  
-00:00 +0 -12: business error SAI_INTERNAL_ERROR is mapped without exposing message
-00:00 +1 -12: business error unknown is mapped without exposing message
-00:00 +2 -12: malformed envelope null fails closed
-00:00 +3 -12: malformed envelope [] fails closed
-00:00 +4 -12: malformed envelope {} fails closed
-00:00 +5 -12: malformed envelope {"ok":"true","data":[]} fails closed
-00:00 +6 -12: malformed envelope {"ok":true,"data":null,"error":null} fails closed
-00:00 +7 -12: malformed envelope {"ok":true,"data":[],"error":{"code":"unknown"}} fails closed
-00:00 +8 -12: malformed envelope {"ok":false,"data":[],"error":null} fails closed
-00:00 +9 -12: wrong success shape is not converted into an empty search
-00:00 +10 -12: wrong success shape is not converted into an empty directory
-00:00 +11 -12: different child response cannot be attributed to requested child
-00:00 +12 -12: invalid cursor fails before any HTTP call
-00:00 +12 -13: invalid cursor fails before any HTTP call [E]
-  Expected: throws <Instance of 'ChildSafetyValidationException'>
-    Actual: <Instance of 'Future<ChildSafetyDirectoryPage>'>
-     Which: threw <Instance of 'ChildSafetyUnavailableException'>
-            stack dart:async                                                                                          new Future.error
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 234:87                   UnavailableChildSafetyRepository.fetchDirectory
-                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 9:100  SupabaseInternalChildSafetyRepository.fetchDirectory
-                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 111:34                main.<fn>
-                  
-            which is not an instance of 'ChildSafetyValidationException'
-  
-  package:matcher                                                                       expectLater
-  package:flutter_test/src/widget_tester.dart 507:8                                     expectLater
-  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 111:11  main.<fn>
-  
-00:00 +12 -13: transport authorization denial is typed
-00:00 +12 -14: transport authorization denial is typed [E]
-  Expected: throws <Instance of 'ChildSafetyUnauthorizedException'>
-    Actual: <Instance of 'Future<ChildSafetyRecord?>'>
-     Which: threw <Instance of 'ChildSafetyUnavailableException'>
-            stack dart:async                                                                                          new Future.error
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
-                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 236:60                   UnavailableChildSafetyRepository.fetchChild
-                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 11:73  SupabaseInternalChildSafetyRepository.fetchChild
-                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 118:34                main.<fn>
-                  
-            which is not an instance of 'ChildSafetyUnauthorizedException'
-  
-  package:matcher                                                                       expectLater
-  package:flutter_test/src/widget_tester.dart 507:8                                     expectLater
-  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 118:11  main.<fn>
-  
-00:00 +12 -14: RPC unavailable never falls back to legacy
-00:00 +12 -15: RPC unavailable never falls back to legacy [E]
-  Expected: an object with length of <1>
-    Actual: []
-     Which: has length of <0>
-  
-  package:matcher                                                                      expect
-  package:flutter_test/src/widget_tester.dart 473:18                                   expect
-  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 124:5  main.<fn>
-  
-00:00 +12 -15: all unsupported commands fail without HTTP or legacy fallback
-00:01 +13 -15: Some tests failed.
-
-Failing tests:
-  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart: HTTP 200 denial SAI_AUTH_REQUIRED is typed and never decoded as data
-  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart: HTTP 200 denial SAI_INTERNAL_CONTEXT_DENIED is typed and never decoded as data
-  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart: HTTP 200 denial SAI_MEMBERSHIP_REVOKED is typed and never decoded as data
-  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart: HTTP 200 denial SAI_MEMBERSHIP_SUSPENDED is typed and never decoded as data
-  ... and 11 more
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart
+00:00 +0: directory uses v2 parameters and retains counts while writes stay disabled
+00:00 +0 -1: directory uses v2 parameters and retains counts while writes stay disabled [E]
+  Instance of 'ChildSafetyUnavailableException'
+  dart:async                                                                                          new Future.error
+  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
+  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 234:87                   UnavailableChildSafetyRepository.fetchDirectory
+  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 9:100  SupabaseInternalChildSafetyRepository.fetchDirectory
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 33:35                 main.<fn>
+
+00:00 +0 -1: child detail uses v2 and decodes the requested record
+00:00 +0 -2: child detail uses v2 and decodes the requested record [E]
+  Instance of 'ChildSafetyUnavailableException'
+  dart:async                                                                                          new Future.error
+  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
+  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 236:60                   UnavailableChildSafetyRepository.fetchChild
+  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 11:73  SupabaseInternalChildSafetyRepository.fetchChild
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 50:36                 main.<fn>
+
+00:00 +0 -2: child search uses v2 and preserves limit and selected context
+00:00 +0 -3: child search uses v2 and preserves limit and selected context [E]
+  Instance of 'ChildSafetyUnavailableException'
+  dart:async                                                                                           new Future.error
+  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                    UnavailableChildSafetyRepository._fail
+  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 238:90                    UnavailableChildSafetyRepository.searchChildren
+  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 13:103  SupabaseInternalChildSafetyRepository.searchChildren
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 59:38                  main.<fn>
+
+00:00 +0 -3: valid empty search result remains empty
+00:00 +0 -4: valid empty search result remains empty [E]
+  Instance of 'ChildSafetyUnavailableException'
+  dart:async                                                                                           new Future.error
+  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                    UnavailableChildSafetyRepository._fail
+  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 238:90                    UnavailableChildSafetyRepository.searchChildren
+  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 13:103  SupabaseInternalChildSafetyRepository.searchChildren
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 67:29                  main.<fn>
+
+00:00 +0 -4: HTTP 200 denial SAI_AUTH_REQUIRED is typed and never decoded as data
+00:00 +0 -5: HTTP 200 denial SAI_AUTH_REQUIRED is typed and never decoded as data [E]
+  Expected: throws <Instance of 'ChildSafetyUnauthorizedException'>
+    Actual: <Instance of 'Future<ChildSafetyDirectoryPage>'>
+     Which: threw <Instance of 'ChildSafetyUnavailableException'>
+            stack dart:async                                                                                          new Future.error
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 234:87                   UnavailableChildSafetyRepository.fetchDirectory
+                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 9:100  SupabaseInternalChildSafetyRepository.fetchDirectory
+                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:36                 main.<fn>
+
+            which is not an instance of 'ChildSafetyUnauthorizedException'
+
+  package:matcher                                                                      expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:13  main.<fn>
+
+00:00 +0 -5: HTTP 200 denial SAI_SESSION_INVALID is typed and never decoded as data
+00:00 +0 -6: HTTP 200 denial SAI_SESSION_INVALID is typed and never decoded as data [E]
+  Expected: throws <Instance of 'ChildSafetyUnauthorizedException'>
+    Actual: <Instance of 'Future<ChildSafetyDirectoryPage>'>
+     Which: threw <Instance of 'ChildSafetyUnavailableException'>
+            stack dart:async                                                                                          new Future.error
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 234:87                   UnavailableChildSafetyRepository.fetchDirectory
+                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 9:100  SupabaseInternalChildSafetyRepository.fetchDirectory
+                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:36                 main.<fn>
+
+            which is not an instance of 'ChildSafetyUnauthorizedException'
+
+  package:matcher                                                                      expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:13  main.<fn>
+
+00:00 +0 -6: HTTP 200 denial SAI_INTERNAL_CONTEXT_DENIED is typed and never decoded as data
+00:00 +0 -7: HTTP 200 denial SAI_INTERNAL_CONTEXT_DENIED is typed and never decoded as data [E]
+  Expected: throws <Instance of 'ChildSafetyUnauthorizedException'>
+    Actual: <Instance of 'Future<ChildSafetyDirectoryPage>'>
+     Which: threw <Instance of 'ChildSafetyUnavailableException'>
+            stack dart:async                                                                                          new Future.error
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 234:87                   UnavailableChildSafetyRepository.fetchDirectory
+                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 9:100  SupabaseInternalChildSafetyRepository.fetchDirectory
+                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:36                 main.<fn>
+
+            which is not an instance of 'ChildSafetyUnauthorizedException'
+
+  package:matcher                                                                      expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:13  main.<fn>
+
+00:00 +0 -7: HTTP 200 denial SAI_MEMBERSHIP_SUSPENDED is typed and never decoded as data
+00:00 +0 -8: HTTP 200 denial SAI_MEMBERSHIP_SUSPENDED is typed and never decoded as data [E]
+  Expected: throws <Instance of 'ChildSafetyUnauthorizedException'>
+    Actual: <Instance of 'Future<ChildSafetyDirectoryPage>'>
+     Which: threw <Instance of 'ChildSafetyUnavailableException'>
+            stack dart:async                                                                                          new Future.error
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 234:87                   UnavailableChildSafetyRepository.fetchDirectory
+                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 9:100  SupabaseInternalChildSafetyRepository.fetchDirectory
+                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:36                 main.<fn>
+
+            which is not an instance of 'ChildSafetyUnauthorizedException'
+
+  package:matcher                                                                      expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:13  main.<fn>
+
+00:00 +0 -8: HTTP 200 denial SAI_MEMBERSHIP_REVOKED is typed and never decoded as data
+00:00 +0 -9: HTTP 200 denial SAI_MEMBERSHIP_REVOKED is typed and never decoded as data [E]
+  Expected: throws <Instance of 'ChildSafetyUnauthorizedException'>
+    Actual: <Instance of 'Future<ChildSafetyDirectoryPage>'>
+     Which: threw <Instance of 'ChildSafetyUnavailableException'>
+            stack dart:async                                                                                          new Future.error
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 234:87                   UnavailableChildSafetyRepository.fetchDirectory
+                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 9:100  SupabaseInternalChildSafetyRepository.fetchDirectory
+                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:36                 main.<fn>
+
+            which is not an instance of 'ChildSafetyUnauthorizedException'
+
+  package:matcher                                                                      expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:13  main.<fn>
+
+00:00 +0 -9: HTTP 200 denial SAI_PERMISSION_DENIED is typed and never decoded as data
+00:00 +0 -10: HTTP 200 denial SAI_PERMISSION_DENIED is typed and never decoded as data [E]
+  Expected: throws <Instance of 'ChildSafetyUnauthorizedException'>
+    Actual: <Instance of 'Future<ChildSafetyDirectoryPage>'>
+     Which: threw <Instance of 'ChildSafetyUnavailableException'>
+            stack dart:async                                                                                          new Future.error
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 234:87                   UnavailableChildSafetyRepository.fetchDirectory
+                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 9:100  SupabaseInternalChildSafetyRepository.fetchDirectory
+                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:36                 main.<fn>
+
+            which is not an instance of 'ChildSafetyUnauthorizedException'
+
+  package:matcher                                                                      expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 74:13  main.<fn>
+
+00:00 +0 -10: business error SAI_INVALID_ARGUMENT is mapped without exposing message
+00:00 +0 -11: business error SAI_INVALID_ARGUMENT is mapped without exposing message [E]
+  Expected: throws <Instance of 'ChildSafetyValidationException'>
+    Actual: <Instance of 'Future<ChildSafetyRecord?>'>
+     Which: threw <Instance of 'ChildSafetyUnavailableException'>
+            stack dart:async                                                                                          new Future.error
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 236:60                   UnavailableChildSafetyRepository.fetchChild
+                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 11:73  SupabaseInternalChildSafetyRepository.fetchChild
+                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 87:36                 main.<fn>
+
+            which is not an instance of 'ChildSafetyValidationException'
+
+  package:matcher                                                                      expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 87:13  main.<fn>
+
+00:00 +0 -11: business error SAI_CONCURRENT_CHANGE is mapped without exposing message
+00:00 +0 -12: business error SAI_CONCURRENT_CHANGE is mapped without exposing message [E]
+  Expected: throws <Instance of 'ChildSafetyConflictException'>
+    Actual: <Instance of 'Future<ChildSafetyRecord?>'>
+     Which: threw <Instance of 'ChildSafetyUnavailableException'>
+            stack dart:async                                                                                          new Future.error
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 236:60                   UnavailableChildSafetyRepository.fetchChild
+                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 11:73  SupabaseInternalChildSafetyRepository.fetchChild
+                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 87:36                 main.<fn>
+
+            which is not an instance of 'ChildSafetyConflictException'
+
+  package:matcher                                                                      expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 87:13  main.<fn>
+
+00:00 +0 -12: business error SAI_INTERNAL_ERROR is mapped without exposing message
+00:00 +1 -12: business error unknown is mapped without exposing message
+00:00 +2 -12: malformed envelope null fails closed
+00:00 +3 -12: malformed envelope [] fails closed
+00:00 +4 -12: malformed envelope {} fails closed
+00:00 +5 -12: malformed envelope {"ok":"true","data":[]} fails closed
+00:00 +6 -12: malformed envelope {"ok":true,"data":null,"error":null} fails closed
+00:00 +7 -12: malformed envelope {"ok":true,"data":[],"error":{"code":"unknown"}} fails closed
+00:00 +8 -12: malformed envelope {"ok":false,"data":[],"error":null} fails closed
+00:00 +9 -12: wrong success shape is not converted into an empty search
+00:00 +10 -12: wrong success shape is not converted into an empty directory
+00:00 +11 -12: different child response cannot be attributed to requested child
+00:00 +12 -12: invalid cursor fails before any HTTP call
+00:00 +12 -13: invalid cursor fails before any HTTP call [E]
+  Expected: throws <Instance of 'ChildSafetyValidationException'>
+    Actual: <Instance of 'Future<ChildSafetyDirectoryPage>'>
+     Which: threw <Instance of 'ChildSafetyUnavailableException'>
+            stack dart:async                                                                                          new Future.error
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 234:87                   UnavailableChildSafetyRepository.fetchDirectory
+                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 9:100  SupabaseInternalChildSafetyRepository.fetchDirectory
+                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 111:34                main.<fn>
+
+            which is not an instance of 'ChildSafetyValidationException'
+
+  package:matcher                                                                       expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                                     expectLater
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 111:11  main.<fn>
+
+00:00 +12 -13: transport authorization denial is typed
+00:00 +12 -14: transport authorization denial is typed [E]
+  Expected: throws <Instance of 'ChildSafetyUnauthorizedException'>
+    Actual: <Instance of 'Future<ChildSafetyRecord?>'>
+     Which: threw <Instance of 'ChildSafetyUnavailableException'>
+            stack dart:async                                                                                          new Future.error
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 232:27                   UnavailableChildSafetyRepository._fail
+                  package:coelo_superadmin/features/safety/domain/child_safety_contract.dart 236:60                   UnavailableChildSafetyRepository.fetchChild
+                  package:coelo_superadmin/features/safety/data/supabase_internal_child_safety_repository.dart 11:73  SupabaseInternalChildSafetyRepository.fetchChild
+                  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 118:34                main.<fn>
+
+            which is not an instance of 'ChildSafetyUnauthorizedException'
+
+  package:matcher                                                                       expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                                     expectLater
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 118:11  main.<fn>
+
+00:00 +12 -14: RPC unavailable never falls back to legacy
+00:00 +12 -15: RPC unavailable never falls back to legacy [E]
+  Expected: an object with length of <1>
+    Actual: []
+     Which: has length of <0>
+
+  package:matcher                                                                      expect
+  package:flutter_test/src/widget_tester.dart 473:18                                   expect
+  test\features\safety\data\supabase_internal_child_safety_repository_test.dart 124:5  main.<fn>
+
+00:00 +12 -15: all unsupported commands fail without HTTP or legacy fallback
+00:01 +13 -15: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart: HTTP 200 denial SAI_AUTH_REQUIRED is typed and never decoded as data
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart: HTTP 200 denial SAI_INTERNAL_CONTEXT_DENIED is typed and never decoded as data
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart: HTTP 200 denial SAI_MEMBERSHIP_REVOKED is typed and never decoded as data
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_internal_child_safety_repository_test.dart: HTTP 200 denial SAI_MEMBERSHIP_SUSPENDED is typed and never decoded as data
+  ... and 11 more
