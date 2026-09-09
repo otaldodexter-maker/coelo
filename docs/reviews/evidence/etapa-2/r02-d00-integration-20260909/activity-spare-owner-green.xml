@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="12" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-09-09" time="15:13:37">
+  <environment user="adrie" machine-name="LAPTOP-67A8F4LK" cwd="C:\Users\adrie\Documents\Coelo" user-domain="LAPTOP-67A8F4LK" platform="Microsoft Windows 11 Home|C:\WINDOWS|\Device\Harddisk0\Partition3" nunit-version="2.5.8.0" os-version="10.0.26200" clr-version="4.0.30319.42000" />
+  <culture-info current-culture="pt-BR" current-uiculture="pt-BR" />
+  <test-suite type="Powershell" name="Pester" executed="True" result="Success" success="True" time="18.3637" asserts="0">
+    <results>
+      <test-suite type="TestFixture" name="Activity v2 concurrency harness contract" executed="True" result="Success" success="True" time="17.883" asserts="0" description="Activity v2 concurrency harness contract">
+        <results>
+          <test-case description="seeds a separate active Owner chain so actor revocation preserves the last-owner guard" name="Activity v2 concurrency harness contract.seeds a separate active Owner chain so actor revocation preserves the last-owner guard" time="8.2206" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="advances only the actor membership version on terminal revocation" name="Activity v2 concurrency harness contract.advances only the actor membership version on terminal revocation" time="3.8031" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects reused fixture identities before the atomic one-shot seed" name="Activity v2 concurrency harness contract.rejects reused fixture identities before the atomic one-shot seed" time="1.6962" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="exists and parses without errors" name="Activity v2 concurrency harness contract.exists and parses without errors" time="1.268" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="requires the disposable project root and isolated project identity" name="Activity v2 concurrency harness contract.requires the disposable project root and isolated project identity" time="1.2792" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="starts two independent psql processes and waits for both results" name="Activity v2 concurrency harness contract.starts two independent psql processes and waits for both results" time="0.3413" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="asserts one winner, one concurrent-change loser, and durable invariants" name="Activity v2 concurrency harness contract.asserts one winner, one concurrent-change loser, and durable invariants" time="0.3906" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="uses the exact audited eight-field internal marker fixture" name="Activity v2 concurrency harness contract.uses the exact audited eight-field internal marker fixture" time="0.3556" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="seeds the aggregate with an active unit link under the nominal marker" name="Activity v2 concurrency harness contract.seeds the aggregate with an active unit link under the nominal marker" time="0.4186" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="never obtains or prints local API or database credentials" name="Activity v2 concurrency harness contract.never obtains or prints local API or database credentials" time="0.1098" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="Safe replay Activity v2 concurrency integration" executed="True" result="Success" success="True" time="0.4807" asserts="0" description="Safe replay Activity v2 concurrency integration">
+        <results>
+          <test-case description="parses and exposes the explicit switch" name="Safe replay Activity v2 concurrency integration.parses and exposes the explicit switch" time="0.4264" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="invokes the harness with only the isolated root and identity" name="Safe replay Activity v2 concurrency integration.invokes the harness with only the isolated root and identity" time="0.0543" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

@@ -13,6 +13,32 @@ function Parse-Script([string]$Path) {
 }
 
 Describe 'Activity v2 concurrency harness contract' {
+  It 'seeds a separate active Owner chain so actor revocation preserves the last-owner guard' {
+    $parsed = Parse-Script $harnessPath
+    $fixture = @($parsed.Ast.FindAll({param($node)
+      $node -is [Management.Automation.Language.AssignmentStatementAst] -and
+      $node.Left.Extent.Text -eq '$fixtureSql'
+    },$true))[0].Right.Extent.Text
+    ($fixture -match "'8c100000-0000-4000-8000-000000000102','authenticated','authenticated','concurrency-spare@invalid.test'") | Should Be $true
+    ($fixture -match "\('8c100000-0000-4000-8000-000000000302'\)") | Should Be $true
+    ($fixture -match "'8c100000-0000-4000-8000-000000000402','8c100000-0000-4000-8000-000000000302','8c100000-0000-4000-8000-000000000102'") | Should Be $true
+    ($fixture -match "select '8c100000-0000-4000-8000-000000000502','8c100000-0000-4000-8000-000000000302',id,'platform'\s+from public.platform_roles where code='owner' and status='active'") | Should Be $true
+    ($parsed.Text -match 'session_replication_role|disable trigger') | Should Be $false
+  }
+
+  It 'advances only the actor membership version on terminal revocation' {
+    $parsed = Parse-Script $harnessPath
+    ($parsed.Text -match "set status='revoked',revoked_at=clock_timestamp\(\),version=version\+1\s+where id='8c100000-0000-4000-8000-000000000501'") | Should Be $true
+  }
+
+  It 'rejects reused fixture identities before the atomic one-shot seed' {
+    $parsed = Parse-Script $harnessPath
+    ($parsed.Text -match 'ACTIVITY_CONCURRENCY_FIXTURE_COLLISION') | Should Be $true
+    ($parsed.Text -match "auth.users where id in\('8c100000-0000-4000-8000-000000000101','8c100000-0000-4000-8000-000000000102'\)") | Should Be $true
+    ($parsed.Text -match "superadmin_internal_memberships where id in\('8c100000-0000-4000-8000-000000000501','8c100000-0000-4000-8000-000000000502'\)") | Should Be $true
+    $parsed.Text.IndexOf('ACTIVITY_CONCURRENCY_FIXTURE_COLLISION') | Should BeLessThan $parsed.Text.IndexOf('insert into public.institution_types')
+  }
+
   It 'exists and parses without errors' {
     Test-Path -LiteralPath $harnessPath -PathType Leaf | Should Be $true
     $parsed = Parse-Script $harnessPath

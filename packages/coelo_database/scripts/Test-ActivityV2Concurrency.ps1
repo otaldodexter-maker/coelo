@@ -80,6 +80,20 @@ function Get-JsonResult([string]$Output) {
 
 $fixtureSql = @'
 begin;
+-- One-shot fixture: never adopt a prior actor or overwrite a previous run.
+do $fixture_preflight$
+begin
+ if exists(select 1 from auth.users where id in('8c100000-0000-4000-8000-000000000101','8c100000-0000-4000-8000-000000000102'))
+ or exists(select 1 from auth.sessions where id='8c100000-0000-4000-8000-000000000201')
+ or exists(select 1 from app_private.superadmin_internal_identities where id in('8c100000-0000-4000-8000-000000000301','8c100000-0000-4000-8000-000000000302'))
+ or exists(select 1 from app_private.superadmin_internal_auth_links where id in('8c100000-0000-4000-8000-000000000401','8c100000-0000-4000-8000-000000000402'))
+ or exists(select 1 from app_private.superadmin_internal_memberships where id in('8c100000-0000-4000-8000-000000000501','8c100000-0000-4000-8000-000000000502'))
+ or exists(select 1 from audit.audit_logs where actor_internal_identity_id in('8c100000-0000-4000-8000-000000000301','8c100000-0000-4000-8000-000000000302'))
+ then raise exception 'ACTIVITY_CONCURRENCY_FIXTURE_COLLISION'; end if;
+ if (select count(*) from public.platform_roles where code='owner' and status='active')<>1
+ then raise exception 'ACTIVITY_CONCURRENCY_ACTIVE_OWNER_ROLE_REQUIRED'; end if;
+end
+$fixture_preflight$;
 insert into public.institution_types(id,code,name,status) values
  ('8c100000-0000-4000-8000-000000000001','activities-v2-concurrency','Activities v2 concurrency','active');
 insert into public.institutions(id,public_name,slug,status,institution_type_id) values
@@ -87,16 +101,23 @@ insert into public.institutions(id,public_name,slug,status,institution_type_id) 
 insert into public.units(id,institution_id,institution_type_id,name,slug,status) values
  ('8c100000-0000-4000-8000-000000000011','8c100000-0000-4000-8000-000000000010','8c100000-0000-4000-8000-000000000001','Concurrency Unit','activities-v2-concurrency-unit','active');
 insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,raw_app_meta_data,raw_user_meta_data) values
- ('8c100000-0000-4000-8000-000000000101','authenticated','authenticated','concurrency@invalid.test',now(),now(),now(),'{}','{}');
+ ('8c100000-0000-4000-8000-000000000101','authenticated','authenticated','concurrency@invalid.test',now(),now(),now(),'{}','{}'),
+ ('8c100000-0000-4000-8000-000000000102','authenticated','authenticated','concurrency-spare@invalid.test',now(),now(),now(),'{}','{}');
 insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after) values
  ('8c100000-0000-4000-8000-000000000201','8c100000-0000-4000-8000-000000000101',now(),now(),'aal2',now()+interval '1 hour');
 insert into app_private.superadmin_internal_identities(id) values
- ('8c100000-0000-4000-8000-000000000301');
+ ('8c100000-0000-4000-8000-000000000301'),
+ ('8c100000-0000-4000-8000-000000000302');
 insert into app_private.superadmin_internal_auth_links(id,internal_identity_id,auth_user_id) values
- ('8c100000-0000-4000-8000-000000000401','8c100000-0000-4000-8000-000000000301','8c100000-0000-4000-8000-000000000101');
+ ('8c100000-0000-4000-8000-000000000401','8c100000-0000-4000-8000-000000000301','8c100000-0000-4000-8000-000000000101'),
+ ('8c100000-0000-4000-8000-000000000402','8c100000-0000-4000-8000-000000000302','8c100000-0000-4000-8000-000000000102');
 insert into app_private.superadmin_internal_memberships(id,internal_identity_id,platform_role_id,scope_kind)
 select '8c100000-0000-4000-8000-000000000501','8c100000-0000-4000-8000-000000000301',id,'platform'
-from public.platform_roles where code='owner';
+from public.platform_roles where code='owner' and status='active';
+-- A separate Owner remains active when the concurrency actor is revoked.
+insert into app_private.superadmin_internal_memberships(id,internal_identity_id,platform_role_id,scope_kind)
+select '8c100000-0000-4000-8000-000000000502','8c100000-0000-4000-8000-000000000302',id,'platform'
+from public.platform_roles where code='owner' and status='active';
 insert into public.platform_role_permissions(role_id,permission_id,effect,status)
 select role_record.id,permission_record.id,'allow','active'
 from public.platform_roles role_record cross join public.platform_permissions permission_record
@@ -264,7 +285,7 @@ from auth.sessions where id='8c100000-0000-4000-8000-000000000201';
   else {
     $null = Complete-IsolatedPsql (Start-IsolatedPsql @'
 update app_private.superadmin_internal_memberships
-set status='revoked',revoked_at=clock_timestamp()
+set status='revoked',revoked_at=clock_timestamp(),version=version+1
 where id='8c100000-0000-4000-8000-000000000501';
 '@)
     $expectedCode = 'SAI_MEMBERSHIP_REVOKED'
