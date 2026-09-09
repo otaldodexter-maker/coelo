@@ -938,6 +938,38 @@ void main() {
     await tester.pumpAndSettle();
   });
 
+  testWidgets('completion stays disabled while its command is in flight', (tester) async {
+    final delegate = FakeAttendanceRepository.seeded();
+    final initialCall = (await delegate.fetchCall('call-progress'))!;
+    await delegate.markRemainingPresent('call-progress', expectedVersion: initialCall.version);
+    final repository = _DelayedCompletionRepository(delegate);
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repository,
+          callId: 'call-progress',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final complete = find.byKey(const Key('attendance-call-complete'));
+
+    await tester.tap(complete);
+    await tester.pump();
+
+    expect(repository.completeCalls, 1);
+    expect(tester.widget<FilledButton>(complete).onPressed, isNull);
+
+    repository.complete();
+    await tester.pumpAndSettle();
+    expect(find.widgetWithText(OutlinedButton, 'Corrigir chamada'), findsOneWidget);
+  });
+
   testWidgets('bulk failure keeps snapshot and reload never clears manual marks', (tester) async {
     final repository = FakeAttendanceRepository.seeded()
       ..commandError = const AttendanceUnavailableException();
@@ -1882,6 +1914,30 @@ final class _DelayedAttendanceCallRepository implements AttendanceRepository {
   @override
   Future<AttendanceCall?> fetchCall(String callId) =>
       (_requests[callId] ??= Completer<AttendanceCall?>()).future;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _DelayedCompletionRepository implements AttendanceRepository {
+  _DelayedCompletionRepository(this._delegate);
+
+  final FakeAttendanceRepository _delegate;
+  final _gate = Completer<void>();
+  int completeCalls = 0;
+
+  void complete() => _gate.complete();
+  void dispose() => _delegate.dispose();
+
+  @override
+  Future<AttendanceCall?> fetchCall(String callId) => _delegate.fetchCall(callId);
+
+  @override
+  Future<AttendanceCall> completeCall(String callId, {required int expectedVersion}) async {
+    completeCalls++;
+    await _gate.future;
+    return _delegate.completeCall(callId, expectedVersion: expectedVersion);
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);

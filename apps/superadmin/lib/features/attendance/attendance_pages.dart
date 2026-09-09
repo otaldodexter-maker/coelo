@@ -840,7 +840,8 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
               else
                 FilledButton(
                   key: const Key('attendance-call-complete'),
-                  onPressed: call.hasUnmarked || widget.routinePendingParticipantIds.isNotEmpty
+                  onPressed:
+                      !writable || call.hasUnmarked || widget.routinePendingParticipantIds.isNotEmpty
                       ? null
                       : () => _applyCall(
                           () => widget.repository.completeCall(

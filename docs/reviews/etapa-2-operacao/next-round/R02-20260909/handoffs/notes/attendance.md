@@ -107,3 +107,29 @@ com sucesso.
 
 Esse delta cobre a validação local do formulário. Persistência real,
 autorização backend e E2E continuam submetidas aos bloqueios já registrados.
+
+## Estado de envio da conclusão — `attendance.finish`
+
+O guard de `_applyCall` já impedia uma segunda operação, mas o botão
+`Concluir chamada` continuava visualmente habilitado durante a Future. A condição
+do footer agora também exige `writable`, alinhando o estado visual ao guard sem
+alterar o comando nem seu contrato. Um repository controlado comprova uma única
+chamada, botão desabilitado enquanto pendente e transição final para o estado
+concluído.
+
+- RED: 0/1; o `onPressed` ainda era uma closure durante o envio.
+- GREEN focal intermediário: 1/1 aprovado, não somado ao conjunto final.
+- Conjunto final: 3/3 casos únicos aprovados, incluindo troca de contexto A→B
+  e rejeição de resposta vinculada a outra chamada.
+- Análise estática dos dois arquivos: 0 issues.
+- Log RED `C:/Users/adrie/AppData/Local/Temp/d03-attendance-finish-pending-red.log`
+  — SHA-256 `5ABBBBC2EAF3CE983C9F0E3C6B6B0C1684F439493B8D6D54B94D05EC6F5D1FB6`.
+- Log GREEN `C:/Users/adrie/AppData/Local/Temp/d03-attendance-finish-pending-green.log`
+  — SHA-256 `38AEE77296B832FB10D80A8F502D35933E4586033D658E8383F7BF3D2E7C3D38`.
+- Log do conjunto final `C:/Users/adrie/AppData/Local/Temp/d03-attendance-finish-pending-regression.log`
+  — SHA-256 `9BCFB739B08CE977CAA6D9AE4860EED9083C18BDD0C73CCA7E7BB9FD24ED5153`.
+- Log do analyzer `C:/Users/adrie/AppData/Local/Temp/d03-attendance-finish-pending-analyze.log`
+  — SHA-256 `9BC5CBDC25C970A08FCAD06D07F0CF5BBCC695D8D92343F24EF3B516EC9D1E1A`.
+
+Trata-se de avanço FE local de `attendance.finish`; persistência real,
+autorização, cancelamento decisório e E2E não são promovidos por este caso.
