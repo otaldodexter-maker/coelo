@@ -1,0 +1,89 @@
+{
+    "tests":  {
+                  "S":  0,
+                  "P":  1,
+                  "F":  0,
+                  "U":  0
+              },
+    "causes":  [
+                   {
+                       "ancestor":  true,
+                       "commit":  "2c0dbe84b"
+                   },
+                   {
+                       "ancestor":  true,
+                       "commit":  "f546561d4"
+                   },
+                   {
+                       "ancestor":  true,
+                       "commit":  "d8800300d"
+                   },
+                   {
+                       "ancestor":  true,
+                       "commit":  "d9232a94d"
+                   },
+                   {
+                       "ancestor":  true,
+                       "commit":  "bd476af8d"
+                   },
+                   {
+                       "ancestor":  true,
+                       "commit":  "7f918d72a"
+                   },
+                   {
+                       "ancestor":  true,
+                       "commit":  "ad558c6f9"
+                   }
+               ],
+    "renders":  [
+                    {
+                        "inspected_before_update":  true,
+                        "path":  "apps/superadmin/test/goldens/people/person_directory_cards_light_375.png",
+                        "before":  "db064d199130d44b3a0a800d08f4414acab38e9599b97a474db8e7aa6d550282",
+                        "after":  "4fcd0774b141855662982551d523d9447de25e7bd5e6c6d0a640a4572d1cf34b"
+                    },
+                    {
+                        "inspected_before_update":  true,
+                        "path":  "apps/superadmin/test/goldens/people/person_directory_table_dark_375.png",
+                        "before":  "02a231304914d00997f2475a4fd10c6080573809bedf83546343c8f3a739785c",
+                        "after":  "29df5df0596f6a3c710ae1595d4e3fd6a01ed65d873a213c6809fae9d46e4e0b"
+                    },
+                    {
+                        "inspected_before_update":  true,
+                        "path":  "apps/superadmin/test/goldens/people/person_directory_cards_light_768.png",
+                        "before":  "98b60300febc64b0362c05816224d8a479f74fbb03ef48760d95945a225efa0c",
+                        "after":  "0baf9b39cd63169ce9c1643a584740988f6afce22f777e2b24b1b26f9e5ad832"
+                    },
+                    {
+                        "inspected_before_update":  true,
+                        "path":  "apps/superadmin/test/goldens/people/person_directory_table_dark_768.png",
+                        "before":  "eef5ab802035f2348352d7666d613cc0d744795e64206715e8ad19f4f9f7cff1",
+                        "after":  "e5982d105e653489a67996b7cdf996f10a781baa04024530cc68ff64f408e9fc"
+                    },
+                    {
+                        "inspected_before_update":  true,
+                        "path":  "apps/superadmin/test/goldens/people/person_directory_cards_light_1024.png",
+                        "before":  "06e11aaaf65d1626e0a4b423c30d4a47bb73fa6caaa817086960343bf0983101",
+                        "after":  "90fc30476be25028bb9fe87a1de093168436abf3359aea59147f99599dcba0bc"
+                    },
+                    {
+                        "inspected_before_update":  true,
+                        "path":  "apps/superadmin/test/goldens/people/person_directory_table_dark_1024.png",
+                        "before":  "503ae80444710526acbb27885170fa5e54a8f18e28a984605e3b215163ed90cf",
+                        "after":  "51477c645396a92f4d871a3b548454f240aefc1d716a4ccabec21c92a5017186"
+                    },
+                    {
+                        "inspected_before_update":  true,
+                        "path":  "apps/superadmin/test/goldens/people/person_directory_cards_light_1440.png",
+                        "before":  "3a0d9c824291e7c240fbff21b30065d903dae4ffc2dd71d54738d794c9674c10",
+                        "after":  "7b3b1b5e15d14bf4235f5bf370891908cee40d9267d8cd389c4cd06c4429c5de"
+                    },
+                    {
+                        "inspected_before_update":  true,
+                        "path":  "apps/superadmin/test/goldens/people/person_directory_table_dark_1440.png",
+                        "before":  "345822dad473fa7280caac81888288a11b724e2ba255a2a0d1d829cf13b0f4b3",
+                        "after":  "c6b50c2e5442ae565ef40309a76461604dcca00fb57bc44b2ca2f07f231f7499"
+                    }
+                ],
+    "base":  "d784462c1"
+}
