@@ -19,6 +19,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('command signature keeps pipe-delimited free-text drafts distinct', () {
+    final first = ActivityFormController.create(const ActivityFormOptions());
+    final second = ActivityFormController.create(const ActivityFormOptions());
+    addTearDown(first.dispose);
+    addTearDown(second.dispose);
+    first.name.text = 'Alpha|Beta';
+    first.handleStem.text = 'gamma';
+    second.name.text = 'Alpha';
+    second.handleStem.text = 'Beta|gamma';
+
+    expect(first.commandSignature, isNot(second.commandSignature));
+  });
+
   testWidgets('uses the six-step institution baseline and chained categories', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -454,10 +467,12 @@ void main() {
 
   testWidgets('failed draft save exposes retry and preserves the draft', (tester) async {
     var attempts = 0;
+    final requestIds = <String?>[];
     await tester.pumpWidget(
       _app(
-        onSaveDraft: (_) async {
+        onSaveDraft: (draft) async {
           attempts++;
+          requestIds.add(draft.requestId);
           if (attempts == 1) throw const ActivityDirectoryUnavailableException();
         },
       ),
@@ -483,17 +498,32 @@ void main() {
     expect(find.text('Tentar novamente'), findsOneWidget);
 
     final retry = find.text('Tentar novamente');
+    await tester.tap(find.byKey(const Key('activity-form-previous')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('activity-form-name')), 'Outro rascunho');
+    await tester.ensureVisible(retry);
+    await tester.tap(retry);
+    await tester.pumpAndSettle();
+    expect(attempts, 1);
+    expect(find.byKey(const Key('activity-form-command-error')), findsOneWidget);
+
+    await tester.enterText(find.byKey(const Key('activity-form-name')), 'Rob\u00F3tica');
     await tester.ensureVisible(retry);
     await tester.tap(retry);
     await tester.pumpAndSettle();
     expect(attempts, 2);
+    expect(requestIds.first, isNotNull);
+    expect(requestIds.toSet(), hasLength(1));
     expect(find.byKey(const Key('activity-form-command-error')), findsNothing);
-    await tester.tap(find.byKey(const Key('activity-form-previous')));
-    await tester.pumpAndSettle();
     expect(
       tester.widget<TextFormField>(find.byKey(const Key('activity-form-name'))).controller?.text,
       'Robótica',
     );
+    await tester.enterText(find.byKey(const Key('activity-form-name')), 'Robotica 2');
+    await tester.tap(find.byKey(const Key('activity-form-save-draft')));
+    await tester.pumpAndSettle();
+    expect(attempts, 3);
+    expect(requestIds.last, isNot(requestIds.first));
   });
 
   testWidgets('preserves a complete initial draft through the edit page contract', (tester) async {
