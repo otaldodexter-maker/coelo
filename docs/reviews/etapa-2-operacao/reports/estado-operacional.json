@@ -3247,7 +3247,14 @@
     "active_localhost_servers": 0,
     "active_localhost_browser_tabs": 0,
     "c06_I015_ack": "r53 received; watchdog ended, no additional product delta",
-    "support_archive": "4069 files verified individually SHA256/bytes; original worktree evidence retained"
+    "support_archive": "4069 files verified individually SHA256/bytes; original worktree evidence retained",
+    "latest_complete_branch_bundle": {
+      "path": "C:/Users/adrie/Documents/Coelo.preserved/e2-r01-close-20260909-c00/round-final-branches-0909-0908.bundle",
+      "sha256": "a7caa14d494b9196b8a4a944f4680e1db6eaa8511b99de5e817401e5754eb8b9",
+      "contains_C00": "86eda2eca3d01913601892f3d0470572f6ec20fc",
+      "contains_C06": "e3223e63533ba433b3c1cb5e094a174ebf63bd0b",
+      "verify": "PASS; eight refs, complete history"
+    }
   },
   "operational_precedence": "closure, tracker_sync and current_shared_file_reservations supersede all timestamped historical checkpoint/reservation fields; no old R01 instruction is executable",
   "measurement_dashboard": {
@@ -3265,7 +3272,12 @@
     "tracked_modified_files": 37,
     "untracked_present": true,
     "original_untouched": true,
-    "reason": "Pre-R01 skills/documentation/config work differs from clean round worktrees; cannot claim all unified"
+    "reason": "Pre-R01 skills/documentation/config work differs from clean round worktrees; cannot claim all unified",
+    "tracked_equivalent_to_delivery": 28,
+    "tracked_residual": 9,
+    "untracked_files": 140,
+    "untracked_paths_colliding_with_delivery": 21,
+    "comparison": "C:/Users/adrie/Documents/Coelo.preserved/e2-r01-close-20260909-c00/original-checkout-comparison.json"
   },
   "support_status": {
     "native_status": "idle",
