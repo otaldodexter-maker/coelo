@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-09T14:44:00-03:00",
+  "generated_at": "2026-09-09T15:11:29-03:00",
   "timezone": "America/Sao_Paulo",
   "snapshot_head": "647c20b453222aef58027028e4367de954145f20",
-  "snapshot_head_scope": "Flutter tested-code snapshot. Later fixture-only correction ff8bfb728a040912a551b615cb6f0d9d2a1597d3 remains unexecuted in SQL. Additional concurrency infrastructure evidence is tied to 7f300b36ed740f5390cf2438ea8bb03a8f7236e9 and its XML/hash, not to this earlier Flutter snapshot.",
+  "snapshot_head_scope": "Flutter snapshot identified above. Current CHILD SQL evidence is the equivalent integrated tree f3e1f732f442b2e47a2f749cba1d927eb638d5be. Infrastructure candidate-patch and structure evidence retain their own hashes; none implies full product acceptance.",
   "scope": "R02 D03 focal evidence available before the 16:30 BRT consolidation cut",
   "preserved_evidence_manifest": {
     "path": "evidence/d03-acompanhamento/r02-20260909/manifest.json",
-    "sha256": "001C3E023139E4A4DFEC395DF864BE685012F8BFE5E650D3BFF40521B6F3FCE2",
-    "artifact_count": 26,
-    "bytes": 92543,
+    "sha256": "844FC30443A122C228D4F76C0A260C600A4F8AC60237A81EAB944D6658C766C8",
+    "artifact_count": 28,
+    "bytes": 101447,
     "note": "Byte-for-byte copies, not new executions. Source paths remain for provenance; the manifest maps them to versioned copies. Its source-ledger hash describes the earlier extraction snapshot, not this evolving ledger."
   },
   "counting_rules": {
@@ -40,7 +40,7 @@
     },
     {
       "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-replay-profile.md",
-      "sha256": "172AC7973453B9A0954893B947CFAB964947B62E694BA0FA1CB08621DC1D976E"
+      "sha256": "886B2E2D06DB37EB9CCF6254B4832DECDD7F52C744726C63012327134C0A4E6D"
     }
   ],
   "summary": {
@@ -63,12 +63,12 @@
     },
     "sql": {
       "child_tap_assertions_planned": 45,
-      "child_tap_assertions_executed": 21,
-      "child_tap_assertions_passed": 21,
+      "child_tap_assertions_executed": 45,
+      "child_tap_assertions_passed": 45,
       "child_tap_assertions_failed": 0,
-      "child_tap_assertions_blocked_not_reached": 24,
-      "nominal_child_replay_attempts": 1,
-      "nominal_child_replay_green": 0
+      "child_tap_assertions_blocked_not_reached": 0,
+      "nominal_child_replay_attempts": 2,
+      "nominal_child_replay_green": 1
     },
     "memory": {
       "result": "no-op",
@@ -78,7 +78,9 @@
   "flutter_campaigns": [
     {
       "id": "flutter.daily-routine.directory-controller",
-      "action_ids": ["daily-routine.list"],
+      "action_ids": [
+        "daily-routine.list"
+      ],
       "status": "pass",
       "unique_cases": 11,
       "case_id_completeness": "complete in the later integrated raw log; original D03 raw test log is still missing",
@@ -126,7 +128,11 @@
     },
     {
       "id": "flutter.daily-routine.application-editor",
-      "action_ids": ["daily-routine.create", "daily-routine.edit", "daily-routine.apply"],
+      "action_ids": [
+        "daily-routine.create",
+        "daily-routine.edit",
+        "daily-routine.apply"
+      ],
       "status": "pass-union",
       "unique_cases": 17,
       "case_id_completeness": "complete",
@@ -190,7 +196,9 @@
     },
     {
       "id": "flutter.attendance.correction",
-      "action_ids": ["attendance.correct"],
+      "action_ids": [
+        "attendance.correct"
+      ],
       "status": "pass",
       "unique_cases": 7,
       "case_id_completeness": "complete",
@@ -227,7 +235,9 @@
     },
     {
       "id": "flutter.attendance.dashboard-clock",
-      "action_ids": ["attendance.dashboard"],
+      "action_ids": [
+        "attendance.dashboard"
+      ],
       "status": "pass",
       "unique_cases": 1,
       "case_id_completeness": "complete",
@@ -251,7 +261,9 @@
     },
     {
       "id": "flutter.attendance.finish",
-      "action_ids": ["attendance.finish"],
+      "action_ids": [
+        "attendance.finish"
+      ],
       "status": "pass",
       "unique_cases": 3,
       "case_id_completeness": "complete",
@@ -278,7 +290,9 @@
     },
     {
       "id": "flutter.attendance.create",
-      "action_ids": ["attendance.create"],
+      "action_ids": [
+        "attendance.create"
+      ],
       "status": "pass",
       "unique_cases": 5,
       "case_id_completeness": "complete",
@@ -307,7 +321,9 @@
     },
     {
       "id": "flutter.attendance.export-deferred",
-      "action_ids": ["attendance.export"],
+      "action_ids": [
+        "attendance.export"
+      ],
       "status": "pass",
       "unique_cases": 5,
       "case_id_completeness": "complete",
@@ -336,7 +352,9 @@
     },
     {
       "id": "flutter.students.child-directory-composition",
-      "action_ids": ["students.list"],
+      "action_ids": [
+        "students.list"
+      ],
       "status": "pass-union",
       "unique_cases": 6,
       "case_id_completeness": "one exact raw-log ID plus five summarized case descriptions",
@@ -377,12 +395,14 @@
       "status": "pass-candidate-patch-only",
       "unique_cases": 8,
       "runner_sha256_lf": "881120b1e83ef9789997412ff134ffa6bdcb12b7b37393543a1a11f241070b66",
-      "evidence": [{
-        "kind": "nunit_xml",
-        "path": "C:/Users/adrie/AppData/Local/Temp/d03-child-directory-concurrency-runner-final-tests.xml",
-        "sha256": "75BDC5A406B670B5033628D78D2A6D81B5323A608BC530F6FB68F2797A3C48FB",
-        "result": "P8/F0/B0/S0/U0 on candidate patch in a sentinel fixture; no Docker or real replay"
-      }],
+      "evidence": [
+        {
+          "kind": "nunit_xml",
+          "path": "C:/Users/adrie/AppData/Local/Temp/d03-child-directory-concurrency-runner-final-tests.xml",
+          "sha256": "75BDC5A406B670B5033628D78D2A6D81B5323A608BC530F6FB68F2797A3C48FB",
+          "result": "P8/F0/B0/S0/U0 on candidate patch in a sentinel fixture; no Docker or real replay"
+        }
+      ],
       "product_acceptance_credit": 0,
       "deduplication": "Final run replaces earlier eight-case run. D00 integrates its own shared runner; this does not certify that different tree."
     },
@@ -398,14 +418,22 @@
         "renames the third limit-plus-one row and checks the returned order and cursor",
         "forces wall-clock expiry during audit and verifies rollback",
         "bounds waits and cleans every process without reading credentials",
-        "keeps a durable plan that marks runtime as not executed"
+        "keeps a durable plan that distinguishes runtime status from structure checks"
       ],
-      "evidence": [{
-        "kind": "nunit_xml",
-        "path": "C:/Users/adrie/AppData/Local/Temp/d03-child-directory-concurrency-structural.xml",
-        "sha256": "945309DD4B53B00E95DA06A17F910BC10A580F9CA1C1850777B82FC5AC06736F",
-        "result": "P8/F0/B0/S0/U0; runtime SQL not executed"
-      }],
+      "evidence": [
+        {
+          "kind": "nunit_xml",
+          "path": "C:/Users/adrie/AppData/Local/Temp/d03-child-directory-concurrency-structural.xml",
+          "sha256": "945309DD4B53B00E95DA06A17F910BC10A580F9CA1C1850777B82FC5AC06736F",
+          "result": "P8/F0/B0/S0/U0; runtime SQL not executed"
+        },
+        {
+          "kind": "nunit_xml",
+          "path": "evidence/d03-acompanhamento/r02-20260909/d03-child-directory-concurrency-status-tests.xml",
+          "sha256": "15135078DE48FA0C9D88A124A4926434A6D952A496955C5A33E5F4CECCD95682",
+          "result": "P8/F0; doc-status check updated after integrated SQL proof, same eight-case campaign, no new SQL run"
+        }
+      ],
       "product_acceptance_credit": 0,
       "deduplication": "Only the final eight-case structural run counts; earlier revisions are not added. This does not prove the three SQL interleavings."
     },
@@ -475,47 +503,79 @@
   ],
   "sql": {
     "id": "sql.child-directory-tap",
-    "status": "partial-blocked-not-green",
+    "status": "pass-integrated-local",
     "planned_assertions": 45,
     "composition": {
       "original_assertions": 35,
       "new_assertions": 10
     },
     "migrations_applied": 49,
-    "executed_assertions": 21,
-    "passed_assertions": 21,
+    "executed_assertions": 45,
+    "passed_assertions": 45,
     "failed_assertions": 0,
-    "blocked_not_reached_assertions": 24,
+    "blocked_not_reached_assertions": 0,
     "skipped_assertions": 0,
     "unknown_assertions": 0,
-    "process_exit_code": 1,
-    "tap_plan_found": false,
-    "nominal_replay_attempts": 1,
-    "green_nominal_replays": 0,
+    "process_exit_code": 0,
+    "tap_plan_found": true,
+    "nominal_replay_attempts": 2,
+    "green_nominal_replays": 1,
     "evidence": [
       {
         "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-replay-profile.md",
-        "sha256": "172AC7973453B9A0954893B947CFAB964947B62E694BA0FA1CB08621DC1D976E"
+        "sha256": "886B2E2D06DB37EB9CCF6254B4832DECDD7F52C744726C63012327134C0A4E6D"
       },
       {
         "path": "C:/Users/adrie/AppData/Local/Temp/d03-child-envelope-replay.log",
         "sha256": "78E1322A9A5E00D3FF2197BDE62101C2F6C2CF3DA14A6DBA1E20AFD0520BF055",
         "result": "49 migrations applied; P21/F0/B24/S0/U0; exit 1; no TAP plan; not GREEN"
+      },
+      {
+        "path": "evidence/d03-acompanhamento/r02-20260909/child-integrated-replay-f3e1f732f.log.txt",
+        "sha256": "6561DF4DBEB1E11407569663F3A6D39C99A752A978D0C99A6BA5F096ED5F9EF7",
+        "result": "Existing D00 integrated run: 49 SQL, TAP45 PASS, concurrency3 PASS, exit0 and zero residual resources"
       }
     ],
-    "blocker": "The synthetic membership revocation fixture did not increment membership.version, so Auth039 stopped the TAP after 21 passing assertions. The migration and replay profile were unchanged; cleanup completed.",
-    "deduplication": "The 21 partial passes must not be added to a future rerun of the same 45-assertion plan.",
-    "excluded": "The earlier FoundationOnly run failed before CHILD on the missing chat_attachment_metadata dependency. It executed zero CHILD assertions and is not added to this nominal attempt."
+    "blocker": null,
+    "deduplication": "Current total is 45 passing assertions. The earlier 21 partial passes and 24 blocked assertions are historical, not added to the completed plan.",
+    "excluded": "The earlier FoundationOnly run failed before CHILD on the missing chat_attachment_metadata dependency. It executed zero CHILD assertions and is not added to this nominal attempt.",
+    "revision": "f3e1f732f442b2e47a2f749cba1d927eb638d5be",
+    "execution_owner": "D00",
+    "cleanup": "zero residual resources confirmed by D00 and successful runner output",
+    "history": [
+      {
+        "revision": "647c20b453222aef58027028e4367de954145f20",
+        "passed": 21,
+        "failed": 0,
+        "blocked": 24,
+        "exit_code": 1,
+        "cause": "synthetic membership fixture omitted version increment"
+      },
+      {
+        "revision": "f3e1f732f442b2e47a2f749cba1d927eb638d5be",
+        "passed": 45,
+        "failed": 0,
+        "blocked": 0,
+        "exit_code": 0,
+        "executor": "D00"
+      }
+    ]
   },
   "sql_concurrency": {
     "id": "sql.child-directory-concurrency",
-    "status": "prepared-not-executed",
+    "status": "pass-integrated-local",
     "planned_scenarios": 3,
-    "executed_scenarios": 0,
-    "passed_scenarios": 0,
+    "executed_scenarios": 3,
+    "passed_scenarios": 3,
     "failed_scenarios": 0,
-    "blocked_scenarios": 3,
-    "blocker": "Requires reviewed harness, nominal CHILD TAP green, serialized runner integration and next D00 local replay window."
+    "blocked_scenarios": 0,
+    "blocker": null,
+    "revision": "f3e1f732f442b2e47a2f749cba1d927eb638d5be",
+    "evidence": {
+      "path": "evidence/d03-acompanhamento/r02-20260909/child-integrated-replay-f3e1f732f.log.txt",
+      "sha256": "6561DF4DBEB1E11407569663F3A6D39C99A752A978D0C99A6BA5F096ED5F9EF7",
+      "result": "Existing D00 integrated run: 49 SQL, TAP45 PASS, concurrency3 PASS, exit0 and zero residual resources"
+    }
   },
   "memory": {
     "status": "no-op",

@@ -1,12 +1,20 @@
 ---
 title: "R02 D03 — plano focal de concorrência do diretório CHILD"
 source: "prompts/D03.md; assignment D00 revisão 8; migration 20260908051500; contrato CHILD de 2026-09-08"
-status: "prepared-not-executed"
+status: "local-sql-green-in-integrated-base"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
 
 # Concorrência do diretório CHILD
+
+Resultado corrente: D00 executou os três cenários na base integrada
+`f3e1f732f442b2e47a2f749cba1d927eb638d5be`, após TAP45 verde, com **P3/F0**,
+exit 0 e cleanup integral confirmado. Log e hash em `child-replay-profile.md`.
+Parent confirmou equivalência do harness com a árvore executada. Isso é prova
+SQL local, sem aplicação remota nem conclusão E2E. O plano e os checkpoints
+de preparação abaixo são históricos; os oito testes estruturais não substituem
+essa execução SQL.
 
 Etapa 2 → `apps/superadmin` → Acompanhamento → Acompanhamento de alunos →
 lista autorizada → `students.list`.
@@ -25,7 +33,7 @@ fixtures permanecem somente até o cleanup do runner que remove todo o projeto
 descartável. O harness não tenta apagá-las nem contorna os guards de lifecycle
 para permitir uma segunda execução in-place.
 
-SQL concorrente não executado. O replay nominal de 49 migrations passou, mas o
+Na preparação original, SQL concorrente não executado. O replay nominal de 49 migrations passou, mas o
 TAP CHILD corrente parou depois de 21 assertivas aprovadas; portanto, este plano
 não promove o backend a verde nem afirma prova E2E. A execução depende do TAP
 nominal verde, de nova autorização de janela e da integração serializada pelo

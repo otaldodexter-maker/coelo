@@ -1,12 +1,26 @@
 ---
 title: "D03 — perfil local ChildDirectoryEnvelope"
 source: "assignment D00 r5; candidato 2173cbd0; Auth45; fonte canônica 20260827235500; evidências Pester deste turno"
-status: "local-structure-verified-awaiting-d00-sha-review-and-sql-slot"
+status: "local-sql-green-in-integrated-base-no-remote-application"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
 
 Etapa 2 → apps/superadmin → Acompanhamento → Alunos / lista → students.list.
+
+Resultado corrente, recibo D00 r11 de 15:00 BRT: base integrada
+`f3e1f732f442b2e47a2f749cba1d927eb638d5be`, 49 SQL aplicados,
+**TAP P45/F0/B0/S0/U0 e concorrência P3/F0/B0/S0/U0**, exit 0.
+Log `child-integrated-replay-f3e1f732f.log`, SHA256
+`6561DF4DBEB1E11407569663F3A6D39C99A752A978D0C99A6BA5F096ED5F9EF7`.
+D00 confirmou zero container/volume/rede/diretório temporário restantes para
+`coelo_safe_e4db7faa964243a492450a831b100`. Parent leu o log e conferiu diff
+vazio para migration, TAP, perfil e harness entre esta árvore e a base testada.
+Os 24 casos antes bloqueados pela fixture foram alcançados e aprovados; os
+21 PASS parciais abaixo são históricos e não se somam aos 45 finais.
+Sem aplicação remota ou conclusão integral de BE/E2E. Os checkpoints seguintes
+preservam a preparação e a primeira tentativa, não substituem este resultado.
+
 O perfil nominal materializa 49 SQL: 46 migrations canônicas (Auth45 + CHILD),
 uma ponte local de envelope e os dois preflights herdados. A ponte vive somente
 em replay/profiles/ChildDirectoryEnvelope; não é migration de produção.

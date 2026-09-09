@@ -99,10 +99,10 @@ Describe 'CHILD directory concurrency harness contract' {
     $parsed.Text | Should Not Match '(?i)(service_role|anon_key|password|secret)'
   }
 
-  It 'keeps a durable plan that marks runtime as not executed' {
+  It 'keeps a durable plan that distinguishes runtime status from structure checks' {
     Test-Path -LiteralPath $notePath -PathType Leaf | Should Be $true
     $note = [IO.File]::ReadAllText($notePath)
-    $note | Should Match 'status: "prepared-not-executed"'
+    $note | Should Match 'status: "(prepared-not-executed|local-sql-green-in-integrated-base)"'
     $note | Should Match 'SQL concorrente n.o executado'
   }
 }
