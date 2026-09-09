@@ -8,9 +8,180 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('directory status keeps 48 px target and isolates touch and keyboard from card', (
+    tester,
+  ) async {
+    var opened = 0;
+    await tester.pumpWidget(
+      _app(
+        Scaffold(
+          body: SizedBox(
+            width: 540,
+            child: SafetyChildDirectoryCard(
+              record: _Repository.records.first,
+              onPressed: () => opened++,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final status = find.byKey(const Key('safety-child-status-child-1'));
+    final bounds = tester.getRect(status);
+    expect(bounds.width, greaterThanOrEqualTo(CoeloSize.touchMin));
+    expect(bounds.height, greaterThanOrEqualTo(CoeloSize.touchMin));
+    final label = find.descendant(of: status, matching: find.text('Aguardando aprovação'));
+    expect(label, findsNothing);
+    // The right edge is outside the 24 px dot but inside its 48 px target.
+    await tester.tapAt(bounds.centerRight - const Offset(2, 0));
+    await tester.pumpAndSettle();
+    expect(label, findsOneWidget);
+    expect(opened, 0);
+    final detector = find.descendant(of: status, matching: find.byType(FocusableActionDetector));
+    Focus.of(
+      tester.element(find.descendant(of: detector, matching: find.byType(GestureDetector))),
+    ).requestFocus();
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
+    expect(label, findsNothing);
+    expect(opened, 0);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('table renders authoritative count without loading authorization details', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final controller = ChildSafetyController(_Repository());
+    addTearDown(controller.dispose);
+    await controller.setView(ChildSafetyDirectoryView.table);
+    await tester.pumpWidget(
+      _app(SafetyLandingPage(controller: controller, logout: _logout, onOpenChild: (_) {})),
+    );
+    await tester.pumpAndSettle();
+    final table = tester.widget<CoeloAdminResizableTable<ChildSafetyRecord>>(
+      find.byKey(const Key('safety-children-table')),
+    );
+    final column = table.columns.singleWhere((column) => column.id == 'authorized');
+    final cell =
+        column.cellBuilder(
+              tester.element(find.byKey(const Key('safety-children-table'))),
+              _Repository.records.last,
+            )
+            as Text;
+    expect(cell.data, '1');
+  });
+
+  testWidgets('detail discards prior child when route child changes', (tester) async {
+    final controller = ChildSafetyController(_Repository());
+    addTearDown(controller.dispose);
+    await controller.load();
+    Widget page(String id) => _app(
+      ChildSecurityPage(childId: id, controller: controller, logout: _logout, onBack: () {}),
+    );
+    await tester.pumpWidget(page('child-1'));
+    await tester.pumpAndSettle();
+    expect(find.text('Ana Criança'), findsOneWidget);
+    await tester.pumpWidget(page('child-2'));
+    await tester.pumpAndSettle();
+    expect(find.text('Bia Criança'), findsOneWidget);
+    expect(find.text('Ana Criança'), findsNothing);
+  });
+
+  testWidgets('detail removes cached private content after authorization is lost', (tester) async {
+    final repository = _Repository();
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    await controller.load();
+    await tester.pumpWidget(
+      _app(
+        ChildSecurityPage(
+          childId: 'child-1',
+          controller: controller,
+          logout: _logout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    repository.unauthorized = true;
+    await controller.retry();
+    await tester.pumpAndSettle();
+    expect(find.text('Ana Criança'), findsNothing);
+    expect(find.text('Contexto indisponível'), findsOneWidget);
+  });
+
+  testWidgets('edit rejects a nonpending authorization before enabling continuation', (
+    tester,
+  ) async {
+    final controller = ChildSafetyController(_Repository());
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(
+      _app(
+        ChildSafetyWizardPage(
+          childId: 'child-1',
+          authorizationId: 'auth-1',
+          controller: controller,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Não foi possível carregar o contexto solicitado.'), findsOneWidget);
+    expect(
+      tester.widget<FilledButton>(find.byKey(const Key('safety-wizard-primary'))).onPressed,
+      isNull,
+    );
+  });
+
+  testWidgets('edit preserves the authorized child and person identity', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final controller = ChildSafetyController(_Repository(editPending: true));
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(
+      _app(
+        ChildSafetyWizardPage(
+          childId: 'child-1',
+          authorizationId: 'auth-1',
+          controller: controller,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<CoeloFormTextField>(find.byType(CoeloFormTextField).first).enabled,
+      isFalse,
+    );
+    expect(
+      tester
+          .widget<IconButton>(
+            find.byWidgetPredicate((widget) => widget is IconButton && widget.tooltip == 'Buscar'),
+          )
+          .onPressed,
+      isNull,
+    );
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<CoeloFormTextField>(find.byType(CoeloFormTextField).first).enabled,
+      isFalse,
+    );
+  });
+
   testWidgets('directory uses exclusive counted tabs, canonical cards and table', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -281,7 +452,7 @@ void main() {
   testWidgets('wizard preselects deep-linked child and loads edit version', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final repository = _Repository();
+    final repository = _Repository(editPending: true);
     final controller = ChildSafetyController(repository);
     var saved = false;
     await tester.pumpWidget(
@@ -387,8 +558,14 @@ Widget _app(
 Future<LogoutResult> _logout() async => const LogoutResult.success();
 
 final class _Repository implements ChildSafetyRepository {
-  _Repository({this.unauthorized = false, this.totalCount = 3, this.canCreate = true});
-  final bool unauthorized;
+  _Repository({
+    this.unauthorized = false,
+    this.totalCount = 3,
+    this.canCreate = true,
+    this.editPending = false,
+  });
+  final bool editPending;
+  bool unauthorized;
   final int totalCount;
   final bool canCreate;
   SavePickupAuthorizationCommand? savedCommand;
@@ -475,7 +652,15 @@ final class _Repository implements ChildSafetyRepository {
   @override
   Future<ChildSafetyRecord?> fetchChild(String childId) async {
     for (final record in records) {
-      if (record.childId == childId) return record;
+      if (record.childId == childId) {
+        return editPending
+            ? record.withAuthorizations(
+                record.authorizations
+                    .map((item) => item.withStatus(PickupAuthorizationStatus.pending))
+                    .toList(),
+              )
+            : record;
+      }
     }
     return null;
   }
