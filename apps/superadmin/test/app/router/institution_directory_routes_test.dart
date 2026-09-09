@@ -21,6 +21,7 @@ void main() {
       login: (_) async => const LoginResult.success(),
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       institutionDirectoryRepository: repository,
       onThemeModeChanged: (_) {},
     );
@@ -41,6 +42,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
       onThemeModeChanged: (_) {},
     );
@@ -63,6 +65,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
       onThemeModeChanged: (_) {},
     );
@@ -84,6 +87,7 @@ void main() {
       login: (_) async => const LoginResult.success(),
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
       onThemeModeChanged: (_) {},
     );
@@ -107,6 +111,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       institutionDirectoryRepository: repository,
       onThemeModeChanged: (_) {},
     );
@@ -141,6 +146,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
       onThemeModeChanged: (_) {},
     );
@@ -164,6 +170,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       institutionDirectoryRepository: repository,
       onThemeModeChanged: (_) {},
     );
@@ -194,6 +201,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       institutionDirectoryRepository: repository,
       onThemeModeChanged: (_) {},
     );
