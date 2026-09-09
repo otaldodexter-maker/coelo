@@ -106,7 +106,7 @@
       "thread_id": "01a0819b-a12e-7110-88cb-99e51a82f384",
       "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r01-c03",
       "branch": "codex/e2-r01-c03-operacoes",
-      "instruction_revision": 18,
+      "instruction_revision": 19,
       "received_revision": 25,
       "integrated_revision": 2,
       "last_evidence": "2026-09-08T18:16:41-03:00",
@@ -852,8 +852,20 @@
     "Review C02 schema v2 contract and remaining upload bridge; no remote authorization"
   ],
   "local_replay_lease": {
-    "status": "none",
-    "released_at": "2026-09-08T21:23:18-03:00"
+    "id": "R01-LOCAL-AUDIT-145-01",
+    "executor": "C03",
+    "instruction": "I019",
+    "status": "granted-await-execution",
+    "issued_at": "2026-09-08T21:27:26-03:00",
+    "source_sha": "89949f301865fa86b93767715c30fb45a53034ab",
+    "source_migrations": 54,
+    "effective_migrations": 56,
+    "expected_assertions": [
+      37,
+      78,
+      30
+    ],
+    "remote": false
   },
   "last_delivery": {
     "branch": "origin/dev",
@@ -1814,7 +1826,7 @@
     "e2e_promotions": 0,
     "delivery_sha": "dcbcebc11c64602c43dab31b313c173988277b4e",
     "delivery_verified_at": "2026-09-08T21:21:43-03:00",
-    "activities_clock46": "PASS verified; SQL integration pending full aggregate review"
+    "activities_clock46": "integrated258593e4 exact tested blobs"
   },
   "c01_ban_proof_reservation": {
     "instruction": "I020",
@@ -1845,7 +1857,8 @@
     "ended_at": "2026-09-08T21:21:01.0114855-03:00",
     "exit_code": 0,
     "c00_verified_at": "2026-09-08T21:23:18-03:00",
-    "stdout_sha256": "3168b6af340c0d092f6fb392336dc2666cb9e224c8baa7a6fe6f84c55228111f"
+    "stdout_sha256": "3168b6af340c0d092f6fb392336dc2666cb9e224c8baa7a6fe6f84c55228111f",
+    "integrated_sha": "258593e4"
   },
   "safety_search_c07_delta": {
     "source": "327be3b1",
