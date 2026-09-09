@@ -78,8 +78,20 @@ Os 16 pertencem majoritariamente a pacotes compartilhados — `coelo_ui_core`,
 revisão do Catálogo fora do app apenas como dependência, então a distribuição
 por dono é decisão da coordenação.
 
-## Efeito colateral já visível ao usuário
+## Correção de uma afirmação anterior deste documento
 
-O app lê esse arquivo como asset para decidir o aviso de catálogo desatualizado.
-Enquanto o relatório versionado registrar um único diagnóstico enquanto existem
-16, o aviso exibido ao usuário está subnotificando o estado real.
+A primeira versão deste relatório afirmou que "o aviso exibido ao usuário está
+subnotificando o estado real". Fui verificar o widget e **a afirmação estava
+imprecisa**. `CatalogStaleBanner` exibe um texto fixo — "Componente implementado;
+índice e catálogo desatualizados" — e não mostra contagem nem lista de
+diagnósticos. Ele é binário, e hoje está correto, porque o relatório versionado
+já diz `catalogStale`.
+
+O que de fato subnotifica é o **arquivo**, que é o que um revisor lê: ele
+registra um diagnóstico enquanto existem 16.
+
+E o risco real é o oposto do que eu escrevi: como o aviso é binário e deriva de
+`status == catalogStale || diagnostics.isNotEmpty`, **regenerar o relatório
+apagaria o aviso por completo**, deixando o catálogo verde aos olhos do usuário
+enquanto as 16 divergências continuam no código. O perigo não é o aviso
+subnotificar; é ele desaparecer.
