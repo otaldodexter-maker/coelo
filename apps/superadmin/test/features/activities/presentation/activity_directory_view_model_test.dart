@@ -70,6 +70,17 @@ void main() {
     expect(failure.state, ActivityDirectoryLoadState.failure);
   });
 
+  test('maps page and filter decoding Errors to a retryable failure', () async {
+    for (final source in _DecodingErrorSource.values) {
+      final viewModel = ActivityDirectoryViewModel(_DecodingErrorRepository(source));
+      addTearDown(viewModel.dispose);
+
+      await viewModel.load();
+
+      expect(viewModel.state, ActivityDirectoryLoadState.failure, reason: source.name);
+    }
+  });
+
   test('clears descendant unit and group filters when the institution changes', () async {
     final viewModel = ActivityDirectoryViewModel(
       _RelationalFilterRepository(),
@@ -217,4 +228,57 @@ final class _ThrowingRepository implements ActivityDirectoryRepository {
         ? const ActivityDirectoryUnauthorizedException()
         : const ActivityDirectoryUnavailableException(),
   );
+}
+
+enum _DecodingErrorSource { page, filters }
+
+final class _DecodingErrorRepository implements ActivityDirectoryRepository {
+  const _DecodingErrorRepository(this.source);
+
+  final _DecodingErrorSource source;
+
+  @override
+  Future<ActivityDirectoryResult> fetchPage(ActivityDirectoryQuery query) async {
+    if (source == _DecodingErrorSource.page) {
+      return _decodeWithRawCast<ActivityDirectoryResult>();
+    }
+    return ActivityDirectoryResult(
+      items: const [],
+      totalCount: 0,
+      page: query.page,
+      pageSize: query.pageSize,
+    );
+  }
+
+  @override
+  Future<ActivityFilterOptions> fetchFilterOptions() async {
+    if (source == _DecodingErrorSource.filters) {
+      return _decodeWithRawCast<ActivityFilterOptions>();
+    }
+    return const ActivityFilterOptions();
+  }
+
+  @override
+  Future<ActivityDetail?> fetchById(String activityId) async => null;
+
+  @override
+  Future<ActivityFormOptions> fetchFormOptions({required String institutionId}) async =>
+      const ActivityFormOptions();
+
+  @override
+  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) async =>
+      const ActivityTemplateOptions();
+
+  @override
+  Future<List<ActivityFormProfessionalOption>> searchProfessionals({
+    required String institutionId,
+    required String query,
+    int limit = 20,
+  }) async => const [];
+}
+
+T _decodeWithRawCast<T>() {
+  final row = <String, Object?>{'id': 42};
+  final id = row['id']! as String;
+  throw StateError('expected a decoding cast error, got $id');
 }

@@ -169,6 +169,10 @@ final class ActivityDirectoryViewModel extends ChangeNotifier {
       if (version == _requestVersion) {
         _state = ActivityDirectoryLoadState.failure;
       }
+    } on Error {
+      if (version == _requestVersion) {
+        _state = ActivityDirectoryLoadState.failure;
+      }
     }
     if (version == _requestVersion) notifyListeners();
   }
