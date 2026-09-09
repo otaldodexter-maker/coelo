@@ -1,0 +1,59 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:00 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:00 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:00 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:00 +4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:00 +5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:00 +6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:01 +7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:01 +8: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:01 +9: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:01 +10: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:01 +11: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:01 +12: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:01 +13: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:01 +14: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:01 +15: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:02 +16: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:02 +17: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:02 +18: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following StateError was thrown running a test:
+Bad state: No element
+
+When the exception was thrown, this was the stack:
+#0      Iterable.single (dart:core/iterable.dart:694:25)
+#1      WidgetController.state (package:flutter_test/src/controller.dart:932:42)
+#2      WidgetTester.showKeyboard.<anonymous closure> (package:flutter_test/src/widget_tester.dart:1125:42)
+#5      TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#6      WidgetTester.showKeyboard (package:flutter_test/src/widget_tester.dart:1124:27)
+#7      WidgetTester.enterText.<anonymous closure> (package:flutter_test/src/widget_tester.dart:1160:13)
+#10     TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#11     WidgetTester.enterText (package:flutter_test/src/widget_tester.dart:1159:27)
+#12     main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart:105:20)
+<asynchronous suspension>
+#13     testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#14     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 5 frames from dart:async and package:stack_trace)
+
+The test description was:
+  normal model duplicate route allowed
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:02 +18 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/internal_user_routes_test.dart: normal directory enforces member.read=true before loading
+00:02 +18 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed [E]
+  Test failed. See exception logs above.
+  The test description was: normal model duplicate route allowed
+
+00:02 +19 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/internal_user_routes_test.dart: normal directory enforces member.read=true before loading
+00:02 +20 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart: normal invite detail commands: command-denied
+00:02 +21 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart: normal invite detail commands: unavailable
+00:02 +22 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/internal_user_routes_test.dart: normal directory enforces member.read=false before loading
+00:02 +23 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart: normal invite detail commands: signed-out
+00:02 +24 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_invite_command_routes_test.dart: normal invite detail commands: signed-out
+00:02 +25 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/internal_user_routes_test.dart: normal directory rejects demo composition
+00:03 +26 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/internal_user_routes_test.dart: (tearDownAll)

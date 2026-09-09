@@ -1,0 +1,9 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart
+00:00 +0: normal model duplicate route allowed
+D04 RPCs [superadmin_access_profile_models_cursor, superadmin_access_profile_model_detail, superadmin_access_permission_catalog]; texts [Superadmin, Buscar na navegação, Home, Estrutura, Acompanhamento, Acessos, Saúde e Cuidado, Operação, Comunicação, Governança, Coelo (Principal), Fazer tour, Aparência, Claro, Duplicar modelo de perfil, Crie uma base independente e inativa para revisar antes do uso., OC, Owner Coelo, Superadmin, Modelo original, Nova cópia e auditoria, Nova cópia, Permissões e teto de alcance serão copiados de “Modelo sintético”. Vínculos e estado ativo nunca são herdados., Nome do novo modelo, 24/120, Motivo da duplicação, 0/500, Cancelar, Duplicar modelo, Mens.]
+00:01 +1: normal model duplicate route missing-create
+00:01 +2: normal model duplicate route institution-scope
+00:02 +3: normal model duplicate route invalid-domain
+00:02 +4: (tearDownAll)
+00:02 +4: All tests passed!
