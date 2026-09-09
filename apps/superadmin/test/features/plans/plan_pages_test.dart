@@ -445,6 +445,27 @@ void main() {
     expect(find.text('Acesso não autorizado'), findsOneWidget);
   });
 
+  testWidgets('edit form leaves loading when the repository fails unexpectedly', (tester) async {
+    // O repositorio ja tipa falha de transporte, mas a leitura do payload
+    // acontece fora dele: sem captura ampla o formulario ficava preso no
+    // indicador de progresso.
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      _app(
+        PlanFormPage(
+          repository: _ThrowingPlanCatalogRepository(const FormatException('payload invalido')),
+          planId: 'coelo-essential',
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.text('Não foi possível carregar o plano'), findsOneWidget);
+  });
+
   testWidgets('edit shows explicit loading, error and unauthorized states', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
