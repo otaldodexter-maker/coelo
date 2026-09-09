@@ -156,12 +156,10 @@ Transporte proposto: uma única chamada à ferramenta instalada
 - `project_id`: `evvbomzejfijozbtgvpt`;
 - `name`: `r02_d03_child_directory_envelope_read01`;
 - `query`: conteúdo UTF-8/LF integral de `child-remote-apply-migration.sql`,
-  22.249 bytes, SHA-256
-  `AC7B83B22042B710D6E86FF8F9B54AF4D089CC6278831D4D8C9BAEC7B87AEF39`.
+  22.280 bytes, SHA-256
+  `740057756FB2A7DFA5E8F2AB2D9908DF24968F2A3E78196A1FAA0D3B422C6C2C`.
 
-Esse segundo artefato deriva exclusivamente da retirada do `begin;` e do
-`commit;` externos da composição SHA `1193649F...98E6`. Nenhuma instrução
-interna, pin, preflight, corpo ou postflight muda. A transação pertence ao
+Esse segundo artefato retira o `begin;` e o `commit;` externos da composição SHA `1193649F...98E6` e acrescenta, depois do postflight, exclusivamente `notify pgrst, 'reload schema';`. Pins, preflights, corpos e postflight permanecem iguais. A transação pertence ao
 endpoint; não usar o arquivo com COMMIT explícito dentro de `apply_migration`,
 nem fracionar a chamada. Nenhum dos dois artefatos foi executado nesta forma.
 
@@ -211,3 +209,40 @@ esperada, registrar bloqueio e preparar reconciliação nominal forward-only;
 nenhum repair, delete de histórico ou segunda aplicação fica autorizado por
 este documento. O novo transporte/payload exige revisão D00 e autorização
 nominal própria; o recibo do pacote anterior não a presume.
+## Cache PostgREST e qualificação ainda pendente — D00 r13
+
+A revisão r13 acrescenta somente `notify pgrst, 'reload schema';` no final do
+payload MCP, ainda dentro da transação controlada pelo endpoint. O payload
+anterior sem NOTIFY, SHA `AC7B83B22042B710D6E86FF8F9B54AF4D089CC6278831D4D8C9BAEC7B87AEF39`,
+permanece histórico no commit d554d3b3 e não identifica o candidato atual
+`740057756FB2A7DFA5E8F2AB2D9908DF24968F2A3E78196A1FAA0D3B422C6C2C`.
+A composição manual119... permanece inalterada e não contém esse NOTIFY.
+
+O comando solicita o reload após a transação; não cria trigger nem altera
+configuração global. Sua presença não garante que o listener processou a
+notificação. A [documentação PostgREST](https://docs.postgrest.org/en/stable/references/schema_cache.html)
+explica o mecanismo e a possibilidade de falha de reload. A disponibilidade
+HTTP continua sem prova neste pacote.
+
+Aceite local a qualificar na janela D00: iniciar PostgREST/Kong sobre a base
+nominal anterior ao CHILD; aplicar o payload completo em uma transação;
+verificar que a assinatura aparece na API sem reiniciar o serviço, com prazo
+limitado e sem reenviar a migration. O harness HTTP publicado cobre DTO,
+paginação/reload, negativa cross-tenant e revogação; iniciar o serviço somente
+depois da migration prova disponibilidade inicial, mas não esse aceite de
+invalidação do cache.
+
+No remoto futuramente autorizado, usar somente a consulta de disponibilidade
+ou chamada com ator previamente aprovado na matriz nominal. Falha PGRST202,
+listener indisponível ou prazo excedido fica como gate aberto; sucesso do DDL e
+ledger não o fecha. Não abrir credenciais, reiniciar serviços, instalar trigger
+ou repetir NOTIFY automaticamente para encobrir a falha. Uma correção de
+transporte deve ser revisada e incluída no escopo nominal.
+
+D00 r13 confirmou que CLI2.116 com COMMIT autoral pode gravar o ledger depois do
+commit. Esse caminho não é a proposta atual, que usa payload sem controle
+transacional no MCP. A documentação da API sustenta o comportamento esperado,
+mas não constitui ensaio local de falha do ledger nem prova remota deste pacote.
+A qualificação local da composição e de rollback por drift continua pendente,
+conforme child-package-local-plan.md. Não reutilizar perfil já pós-CHILD nem
+somar o replay45+3 anterior a esses novos aceites.

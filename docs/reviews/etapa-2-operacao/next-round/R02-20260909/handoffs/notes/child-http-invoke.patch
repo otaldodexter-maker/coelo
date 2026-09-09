@@ -1,0 +1,71 @@
+--- a/packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1
++++ b/packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1
+@@ -27,6 +27,8 @@ param(
+ 
+   [switch]$RunChildDirectoryConcurrency,
+ 
++  [switch]$RunChildDirectoryHttp,
++
+   [switch]$RunActivityV2Concurrency
+ )
+ 
+@@ -48,6 +50,7 @@ $validatedMigrationRoot = Join-Path $projectRoot 'validated-migrations'
+ $configPath = Join-Path $supabaseRoot 'config.toml'
+ $databaseOnlyExcludes = 'gotrue,realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor'
+ $authLifecycleExcludes = 'realtime,storage-api,imgproxy,postgres-meta,studio,edge-runtime,logflare,vector,supavisor'
++$childHttpExcludes = 'realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor'
+ $allocatedPorts = [Collections.Generic.HashSet[int]]::new()
+ $cliPackage = 'supabase@2.116.0'
+ $mutex = $null
+@@ -108,6 +111,16 @@ if ($RunAuthRecoveryBoundary -and (
+     $RunChildDirectoryConcurrency -or $RunActivityV2Concurrency)) {
+   throw 'Auth recovery boundary requires Auth-only and excludes lifecycle and concurrency profiles'
+ }
++if ($RunChildDirectoryHttp -and (
++    $NominalProfile -cne 'ChildDirectoryEnvelope' -or
++    $TargetVersion -cne '20260908051500' -or
++    $FoundationOnly -or $AuthOnly -or
++    $AdditionalMigration.Count -gt 0 -or
++    $RunAuthLifecycle -or $RunAuthRecoveryBoundary -or
++    $AssertAuthRecoveryConfined -or $RunActivityV2Concurrency -or
++    $RunR02AuthProofConcurrency)) {
++  throw 'CHILD HTTP requires exact ChildDirectoryEnvelope target without other modes or additions'
++}
+ if ($RunChildDirectoryConcurrency -and (
+     $NominalProfile -cne 'ChildDirectoryEnvelope' -or
+     $TargetVersion -cne '20260908051500' -or
+@@ -245,10 +258,10 @@ $resolvedTestPaths = @($TestPath | ForEach-Object {
+   $resolved
+ })
+ $expectedChildTap = Join-Path $canonicalTestsRoot 'superadmin_child_context_directory_v2_test.sql'
+-if ($RunChildDirectoryConcurrency -and (
++if (($RunChildDirectoryConcurrency -or $RunChildDirectoryHttp) -and (
+     $resolvedTestPaths.Count -ne 1 -or
+     $resolvedTestPaths[0] -ine $expectedChildTap)) {
+-  throw 'CHILD concurrency requires exactly the nominal CHILD TAP'
++  throw 'CHILD local harnesses require exactly the nominal CHILD TAP'
+ }
+ Assert-NoReparseAncestors $tempRoot
+ if ($projectRoot -eq $repositoryFull -or
+@@ -339,6 +352,9 @@ try {
+   $excludedServices = if ($RunAuthLifecycle -or $RunAuthRecoveryBoundary) {
+     $authLifecycleExcludes
+   }
++  elseif ($RunChildDirectoryHttp) {
++    $childHttpExcludes
++  }
+   else {
+     $databaseOnlyExcludes
+   }
+@@ -401,6 +417,11 @@ try {
+       -ProjectRoot $projectRoot `
+       -ProjectId $projectId
+   }
++  if ($RunChildDirectoryHttp) {
++    & (Join-Path $scriptRoot 'Test-ChildDirectoryHttp.ps1') `
++      -ProjectRoot $projectRoot `
++      -ProjectId $projectId
++  }
+   if ($RunR02AuthProofConcurrency) {
+     & (Join-Path $scriptRoot 'Test-R02AuthProofConcurrency.ps1') `
+       -ProjectRoot $projectRoot `

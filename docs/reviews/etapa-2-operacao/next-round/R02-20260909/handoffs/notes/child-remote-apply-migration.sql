@@ -378,3 +378,4 @@ begin
   end if;
 end
 $child_package_postflight$;
+notify pgrst, 'reload schema';
