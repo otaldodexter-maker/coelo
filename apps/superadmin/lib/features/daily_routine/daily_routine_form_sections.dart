@@ -1125,6 +1125,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Rotina aplicada salva.')));
+      _completeIntent('save-application');
       if (current.id.isEmpty) {
         setState(() {
           _entry = RoutineApplication(
@@ -1186,6 +1187,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       if (id != current.id) {
         throw const FormatException('A rotina aplicada salva não corresponde à solicitada.');
       }
+      _completeIntent('save-application-mode');
       setState(() => _saving = false);
       await _load();
     } on Object {
@@ -1217,6 +1219,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       if (id != application.id) {
         throw const FormatException('A rotina aplicada revertida não corresponde à solicitada.');
       }
+      _completeIntent('revert-application');
       setState(() => _saving = false);
       await _load();
     } on Object {

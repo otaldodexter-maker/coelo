@@ -82,4 +82,19 @@ void main() {
       reason: 'a changed draft is a different intent',
     );
   });
+
+  testWidgets('a save that succeeded releases its intent', (tester) async {
+    final repository = FakeRoutineRepository(models: const [_model], canManage: true);
+    await _open(tester, repository);
+
+    await _save(tester);
+    await _save(tester);
+
+    expect(repository.saveModelRequestIds, hasLength(2));
+    expect(
+      repository.saveModelRequestIds.first,
+      isNot(repository.saveModelRequestIds.last),
+      reason: 'the first attempt landed, so saving again is a deliberate new intent',
+    );
+  });
 }
