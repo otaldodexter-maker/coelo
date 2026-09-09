@@ -22,11 +22,7 @@ final class PlatformUserFormPage extends StatefulWidget {
     required this.capability,
     required this.logout,
     this.internalUserId,
-    this.institutions = const {
-      'institution-1': 'Instituição 1',
-      'institution-2': 'Instituição 2',
-      'institution-3': 'Instituição 3',
-    },
+    this.institutions = const {},
     this.onCreated,
     this.onUpdated,
     this.onCancel,
@@ -112,6 +108,29 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   ];
 
   bool get _editing => widget.internalUserId != null;
+  Map<String, String> get _institutions => widget.institutions.isNotEmpty
+      ? widget.institutions
+      : widget.repository.isDemo
+      ? const {
+          'institution-1': 'Instituição 1',
+          'institution-2': 'Instituição 2',
+          'institution-3': 'Instituição 3',
+        }
+      : const {};
+  bool get _scopeCatalogUnavailable =>
+      _institutions.isEmpty ||
+      {..._scopeIds, ...?_record?.membership.scopeIds}.any((id) => !_institutions.containsKey(id));
+  bool get _preserveExistingAccess => _scopeCatalogUnavailable && _record != null;
+  PlatformAccessProfile get _effectiveProfile =>
+      _preserveExistingAccess ? _record!.profile : _profile;
+  PlatformUserScope get _effectiveScope => _preserveExistingAccess ? _record!.scope : _scope;
+  List<String> get _effectiveScopeIds =>
+      _preserveExistingAccess ? _record!.membership.scopeIds : _scopeIds.toList();
+  List<String> get _scopeNames => _preserveExistingAccess
+      ? _record!.membership.scopeNames
+      : _scopeCatalogUnavailable
+      ? const []
+      : _effectiveScopeIds.map((id) => _institutions[id]!).toList();
   PlatformUserRecord? get _record => widget.internalUserId == null
       ? null
       : _loadedRecord ?? widget.repository.findById(widget.internalUserId!);
@@ -271,7 +290,13 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     if ((_step == 0 || _step == 1) && !_validateIdentity()) {
       return;
     }
-    if (_step == 2 && _scope == PlatformUserScope.limited && _scopeIds.isEmpty) {
+    if (_step == 2 && !_editing && _scopeCatalogUnavailable) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Aguarde o catálogo de instituições para definir o acesso.')),
+      );
+      return;
+    }
+    if (_step == 2 && _effectiveScope == PlatformUserScope.limited && _effectiveScopeIds.isEmpty) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Selecione ao menos um escopo permitido.')));
@@ -305,10 +330,10 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
       country: _country.text,
       avatarBytes: _avatarBytes,
     ),
-    profile: _profile,
-    scope: _scope,
-    scopeIds: _scopeIds.toList(),
-    scopeNames: _scopeIds.map((id) => widget.institutions[id]!).toList(),
+    profile: _effectiveProfile,
+    scope: _effectiveScope,
+    scopeIds: _effectiveScopeIds,
+    scopeNames: _scopeNames,
   );
 
   Future<void> _save() async {
@@ -318,6 +343,12 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
       return;
     }
     if (widget.capability != PlatformUserCapability.owner || !_validateIdentity()) return;
+    if (!_editing && _scopeCatalogUnavailable) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Aguarde o catálogo de instituições para definir o acesso.')),
+      );
+      return;
+    }
     final revision = _contextRevision;
     final onUpdated = widget.onUpdated;
     final onCreated = widget.onCreated;
@@ -784,7 +815,26 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   );
 
   Widget _accessSection() {
-    final institutionIds = widget.institutions.keys.toList(growable: false);
+    if (_scopeCatalogUnavailable) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CoeloStatePanel(
+            title: 'Catálogo de instituições indisponível',
+            message: _editing
+                ? 'O acesso existente será preservado. A edição de perfil e escopos aguarda o catálogo de instituições.'
+                : 'A definição de perfil e escopos aguarda o catálogo de instituições.',
+            icon: Icons.info_outline,
+          ),
+          if (_editing) ...[
+            _summary('Perfil', _effectiveProfile.name),
+            _summary('Alcance', _effectiveScope.label),
+            if (_effectiveScopeIds.isNotEmpty) _summary('Escopos', _scopeSummary),
+          ],
+        ],
+      );
+    }
+    final institutionIds = _institutions.keys.toList(growable: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -864,7 +914,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
             label: 'Instituições permitidas',
             options: institutionIds,
             selectedValues: _scopeIds,
-            optionLabel: (id) => widget.institutions[id]!,
+            optionLabel: (id) => _institutions[id]!,
             onChanged: (values) {
               setState(() => _scopeIds = values);
               _changed();
@@ -891,6 +941,14 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   }
 
   Widget _reviewSection() {
+    if (!_editing && _scopeCatalogUnavailable) {
+      return const CoeloStatePanel(
+        title: 'Catálogo de instituições indisponível',
+        message:
+            'Não é possível criar o cadastro até que o catálogo esteja disponível. Nenhum vínculo foi criado.',
+        icon: Icons.info_outline,
+      );
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -900,10 +958,9 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
         _summary('CPF', maskPlatformUserCpf(_cpf.text)),
         _summary('E-mail', maskPlatformUserEmail(_email.text.trim())),
         _summary('Cargo', _jobTitle.text.trim()),
-        _summary('Perfil', _profile.name),
-        _summary('Alcance', _scope.label),
-        if (_scopeIds.isNotEmpty)
-          _summary('Escopos', _scopeIds.map((id) => widget.institutions[id]!).join(', ')),
+        _summary('Perfil', _effectiveProfile.name),
+        _summary('Alcance', _effectiveScope.label),
+        if (_effectiveScopeIds.isNotEmpty) _summary('Escopos', _scopeSummary),
         _summary('Vínculo', (_record?.status ?? PlatformMembershipStatus.invited).label),
         _summary('Convite', (_record?.invitationStatus ?? PlatformInvitationStatus.pending).label),
         _summary(
@@ -928,6 +985,12 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
       ],
     );
   }
+
+  String get _scopeSummary => _scopeNames.length == _effectiveScopeIds.length
+      ? _scopeNames.join(', ')
+      : _editing
+      ? '${_effectiveScopeIds.length} vínculo(s) existente(s); nomes indisponíveis.'
+      : 'Escopos indisponíveis.';
 
   Widget _field(
     TextEditingController controller,
