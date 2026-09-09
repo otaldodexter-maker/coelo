@@ -76,3 +76,21 @@ solicitado nominalmente ao D00. Revisao identificou risco residual de corrida
 de exclusao da instituicao apos rollback liberar lock interno: auditoria de
 negativa pode falhar por FK e RPC abortar. Nenhum efeito de sucesso persiste;
 nao foi introduzido catch que esconda falha de integridade de auditoria.
+
+## Hook causal r28 — preparacao revisavel
+
+Patch de wrappers atualizado para RunLocationReservationsAuditAuthorization,
+fechado em LocationReservationsV1/20260909165000, sem additional, Auth,
+Foundation, lint ou outros runners. Invoca os dois parametros ProjectRoot e
+ProjectId no harness nominal depois do TAP e dentro do try/finally ja existente.
+Nao altera cleanup/mutex/servicos nem wrappers centrais. Apply-check sobre
+a raiz D00 atual passou. Source Invoke CRLF/UTF8 agora
+9c7f2f73ee488f0d931866a018b378eff91c6a77d9e3d9c43cc1b08f5212bca5.
+
+Verify-ReservationAuditHook.ps1 -CandidatePath <copia revisada Invoke>
+extrai AST do parametro/guard reais, aceita par nominal e nega14combinacoes
+indevidas antes de qualquer setup. Resultado observado:15P/0F estaticos.
+Primeiro ensaio do verificador falhou ao passar null explicito no ValidateSet;
+corrigido para omitir parametro, preservando a negativa real de perfil ausente.
+Nenhum SQL/processoDocker foi executado por este verificador. Nao equivale
+aos dois cenarios causais que ainda dependem do harness e da janela D00.
