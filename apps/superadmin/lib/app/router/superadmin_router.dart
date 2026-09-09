@@ -58,6 +58,7 @@ import '../../features/principal_now/presentation/principal_now_preview_page.dar
 import '../../features/principal_now_publication/domain/now_publication.dart';
 import '../../features/principal_now_publication/presentation/principal_now_publication_page.dart';
 import '../../features/principal_profile/presentation/principal_profile_preview_page.dart';
+import '../../features/principal_circulars/domain/circular_repository.dart';
 import '../../features/profile_about/domain/profile_about_repository.dart';
 import '../../features/principal_profile/presentation/principal_profile_edit_page.dart';
 import '../../features/principal_profile/presentation/principal_profile_route_page.dart';
@@ -282,6 +283,7 @@ GoRouter createSuperadminRouter({
   PrincipalRuntimeContextRepository principalRuntimeContextRepository =
       const UnavailablePrincipalRuntimeContextRepository(),
   ProfileAboutRepository? profileAboutRepository,
+  CircularRepository? principalCircularRepository,
   PrincipalHappensFeedRepository? principalHappensFeedRepository,
   PrincipalMixedFeedRepository? principalMixedFeedRepository,
   HappensPublicationRepository? happensPublicationRepository,
@@ -878,9 +880,10 @@ GoRouter createSuperadminRouter({
           repository: principalRuntimeContextRepository,
           builder: (context, runtimeContext) => PrincipalProfileRoutePage(
             runtimeContext: runtimeContext,
-            circularRepository: circularRepository is UnavailableSuperadminCircularRepository
-                ? null
-                : circularRepository,
+            // The Principal projection, never the administrative directory:
+            // the actor is authorized on the server by institution, unit and
+            // group, not by the Superadmin circulars permission.
+            circularRepository: principalCircularRepository,
             aboutRepository: profileAboutRepository,
             happensFeedRepository: principalHappensFeedRepository,
             onOpenCircular: (circularId) => context.goNamed(

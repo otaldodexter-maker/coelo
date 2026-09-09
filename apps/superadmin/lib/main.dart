@@ -54,6 +54,7 @@ Future<void> main() async {
       childSafetyRepository: authScope.childSafetyRepository,
       principalRuntimeContextRepository: authScope.principalRuntimeContextRepository,
       profileAboutRepository: authScope.profileAboutRepository,
+      principalCircularRepository: authScope.principalCircularRepository,
       principalHappensFeedRepository: authScope.principalHappensFeedRepository,
       principalMixedFeedRepository: authScope.principalMixedFeedRepository,
       happensPublicationRepository: authScope.happensPublicationRepository,
