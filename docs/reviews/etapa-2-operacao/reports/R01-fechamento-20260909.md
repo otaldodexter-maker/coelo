@@ -46,7 +46,7 @@ Código C00: `af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0`. [Manifesto nominal](R01
 
 Verificação desta consolidação: **288/288** no lote Identidade/Estruturas/Comunicação/Operações (25arquivosnão-golden); **173/173**Formscliente; **110/110**DTOForms; **6/6**domínio; **74/74**primeiro loteOperações. Algumas suítes se sobrepõem: não somar para cobertura global. **34arquivosprodução analisados,0issues**. O primeiro lote de288teve286PASS/2FAIL porque testeAgora não percorria “Continuar”; ajuste preservou contadores, TypeError e retry e rerun passou. Goldens não foram aprovadas automaticamente.
 
-Estados separados: commits de executores e C00 existem; integração é seletiva; **push final desta consolidação aguarda recibo abaixo**; **produção/deploy: nenhum**. Sourcebranches finais foram verificadas com ls-remote; localC00 possui os novos commits. Localhost de app encerrado, nenhum aberto neste turno. Audit145 não executado; leaseI020 devolvida sem consumo. Remotos permanecem produção e nenhuma autorização nominal nova foi criada.
+Estados separados: commits de executores e C00 existem; integração é seletiva; **push da consolidação verificado em dev/C00 no commit `2b4f189a17146911cbe7d91ad653c67997db3610`**; **produção/deploy: nenhum**. Sourcebranches finais foram verificadas com ls-remote; localC00 possui os novos commits. Localhost de app encerrado, nenhum aberto neste turno. Audit145 não executado; leaseI020 devolvida sem consumo. Remotos permanecem produção e nenhuma autorização nominal nova foi criada.
 
 ## Preservação, documentação e comunicação
 
@@ -64,3 +64,14 @@ JanelaOwner:08/09 12:20→16/09 12:20BRT. Riscoalto: caminho até término passa
 
 Owner decidiu abrir conversas novas; **não retomar implementação nas antigas**. Esta passagem preserva base e residual para alinhar o recorte novo. Próximos prompts devem consumir este relatório e os três rastreadores, sem copiar histórico bruto nem reimplementar lotes já integrados. Não houve autorização de pacote remoto/deploy por causa do fechamento.
 
+
+
+## Recibo final de publicação e preservação — 2026-09-09T08:50:57-03:00
+
+Push atômico e `git ls-remote` confirmaram **origin/dev e origin/codex/e2-r01-c00-integration em `2b4f189a17146911cbe7d91ad653c67997db3610`**. Contém as integrações e os três rastreadores reconciliados. Este recibo documental será publicado em commit subsequente nas mesmas branches, sem novo código.
+
+Bundle completo de oito branches verificado: `C:\Users\adrie\Documents\Coelo.preserved\e2-r01-close-20260909-c00\round-final-branches.bundle`, SHA256 `5c35e8550ea205ebbb9915770b3e9c24550e0ee47afce49ff9e85b6643393b12`. Snapshot dos handoffs originais, arquivos de evidência e seis locks gerados preservados fora da branch. [Manifesto material](R01-fechamento-preservacao.json): C00, C01–C07 e C07-c04ro limpas no Git, mantidas para consulta/retomada segura; nenhuma branch única foi apagada. Artefatos ignorados permanecem em suas origens até confirmação do arquivo externo, portanto não houve perda por limpeza.
+
+Heartbeats nativos C00/C01/C02/C03 **PAUSED**, verificados; nenhum próximo disparo. Cron Claude C06 encerrado conforme r50; r52 confirmou que recebeu o fechamento documental, sem nova entrega de produto. A I015 abaixo informa publicação/preservação, sem mandar reiniciar as frentes. Localhost sem servidor de app; inventário de navegadores também sem abas localhost.
+
+Fechamento operacional desta consolidação concluído. **R01 é parcial em produto**: fila retida e todos os critérios abertos continuam explícitos. Novas conversas serão iniciadas pelo Owner com base consolidada; nenhuma implementação nas antigas é retomada.

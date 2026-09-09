@@ -1,6 +1,6 @@
 {
   "source": "C00 cherry-pick trailers; independent bounded code reviews; preserved logs",
-  "status": "selective-integration-verified; retained-review-queue; pending-push",
+  "status": "selective-integration-verified-and-delivered; retained-review-queue",
   "generated_at": "2026-09-09T08:41:13-03:00",
   "baseline_before": "e9da072ac8af2979e95bc51c9f904ef4e42be201",
   "code_head": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
@@ -13,7 +13,7 @@
         "apps/superadmin/lib/features/assessments/assessment_controller.dart",
         "apps/superadmin/test/features/assessments/assessment_controller_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "125b31edfc6e75a56975604ca707896cb12fe503",
@@ -23,7 +23,7 @@
         "apps/superadmin/lib/features/assessments/assessment_pages.dart",
         "apps/superadmin/test/features/assessments/assessment_entry_page_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "3bd45694944ee411c1992a8de47ae28567297c84",
@@ -33,7 +33,7 @@
         "apps/superadmin/lib/features/support/presentation/view_models/support_prototype_controller.dart",
         "apps/superadmin/test/features/support/presentation/view_models/support_prototype_controller_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "4bf767a4f68e8101f1e6dc3cd7ed12515c781338",
@@ -43,7 +43,7 @@
         "apps/superadmin/lib/features/meal_plans/presentation/meal_plan_directory_page.dart",
         "apps/superadmin/test/features/meal_plans/presentation/meal_plan_directory_page_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "a294684a4ffdb139f135a2332e16763056d01f9a",
@@ -53,7 +53,7 @@
         "apps/superadmin/lib/features/audit/presentation/audit_controller.dart",
         "apps/superadmin/test/features/audit/presentation/audit_controller_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "d8e6f841272281eaf34d04683781e33a582ef824",
@@ -63,7 +63,7 @@
         "apps/superadmin/lib/features/forms/presentation/operations/forms_operations_page.dart",
         "apps/superadmin/test/features/forms/presentation/operations/forms_xlsx_request_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "e9bf0a0ab91c5ce27a7340dfe8e2498d42979ed6",
@@ -76,7 +76,7 @@
         "packages/coelo_api/test/forms/form_definition_dto_test.dart",
         "packages/coelo_domain/lib/src/forms/form_definition.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "3559141e3ae70cecb564c4540cd268c2ede5b2bd",
@@ -88,7 +88,7 @@
         "packages/coelo_domain/lib/src/forms/form_services.dart",
         "packages/coelo_domain/test/forms/form_services_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "eab7a9bdd5711416d0d4047682dec604bed1ce2d",
@@ -98,7 +98,7 @@
         "apps/superadmin/lib/features/forms/presentation/editor/forms_editor_page.dart",
         "apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "a9d880a704e6fc0b22801467c450f7ddef567567",
@@ -109,7 +109,7 @@
         "packages/coelo_api/test/forms/form_definition_dto_test.dart",
         "packages/coelo_domain/lib/src/forms/form_definition.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "18cdd6bb580a7b8e8d7d64a4580e2f4c9b3ddade",
@@ -119,7 +119,7 @@
         "apps/superadmin/lib/features/forms/presentation/editor/forms_editor_page.dart",
         "apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "ef1dd82ea47f4d5f79671a8cd1d8716052c130da",
@@ -129,7 +129,7 @@
         "apps/superadmin/lib/features/platform_users/data/supabase_platform_user_repository.dart",
         "apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "25f4dabd408f356790da014abd28bc4f7f1827ec",
@@ -139,7 +139,7 @@
         "apps/superadmin/lib/features/access_profiles/data/supabase_access_profile_repository.dart",
         "apps/superadmin/test/features/access_profiles/data/supabase_access_profile_repository_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "495b89c9bbe09f1293421ce50ff736096be1fd7a",
@@ -152,7 +152,7 @@
         "apps/superadmin/test/features/access_profiles/data/access_profile_models_read_envelope_test.dart",
         "apps/superadmin/test/features/access_profiles/data/supabase_access_profile_repository_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "d606aac935c42a885f153d904a03c82323a0303d",
@@ -162,7 +162,7 @@
         "apps/superadmin/lib/features/access_profiles/presentation/access_profile_view_model.dart",
         "apps/superadmin/test/features/access_profiles/presentation/access_profile_view_model_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "88e846b1d8cf9f06401c04f7e205e74611bed4d8",
@@ -174,7 +174,7 @@
         "apps/superadmin/test/features/invites/invite_directory_page_test.dart",
         "apps/superadmin/test/features/platform_users/presentation/platform_user_directory_page_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "45f6c68bf23963dccd73038ca7959b665aa9718c",
@@ -184,7 +184,7 @@
         "apps/superadmin/lib/features/invites/data/supabase_invite_repository.dart",
         "apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "f58ac259fae131620161ae19064f98c579156ed3",
@@ -194,7 +194,7 @@
         "apps/superadmin/lib/features/access_profiles/presentation/access_profile_detail_page.dart",
         "apps/superadmin/lib/features/access_profiles/presentation/access_profile_form_page.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "7d499cf299cb91a659b99552694cf6a056ea9213",
@@ -204,7 +204,7 @@
         "apps/superadmin/lib/features/student_tracking/presentation/student_tracking_view_model.dart",
         "apps/superadmin/test/features/student_tracking/student_tracking_error_escape_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "fa08a5c6f59dec4ad92d81da6a3139d818b153a5",
@@ -214,7 +214,7 @@
         "apps/superadmin/lib/features/people/presentation/person_directory_page.dart",
         "apps/superadmin/test/features/people/presentation/person_status_keyboard_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "8e71d4fb31fae61e6490835ab8759e5d17135946",
@@ -225,7 +225,7 @@
         "apps/superadmin/lib/features/people/presentation/person_directory_view_model.dart",
         "apps/superadmin/test/features/people/presentation/person_directory_query_survival_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "82a3c7deff9f92838f956719dee3c71892d24130",
@@ -236,7 +236,7 @@
         "apps/superadmin/test/features/people/people_production_boundary_test.dart",
         "apps/superadmin/test/features/people/presentation/person_form_page_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "5aae74bc3d5abf86f8ab30465f81c3c819009496",
@@ -248,7 +248,7 @@
         "apps/superadmin/lib/features/people/presentation/person_form_view_model.dart",
         "apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "116231bd4102e411df37b35ac8454d4d3599e46e",
@@ -258,7 +258,7 @@
         "apps/superadmin/lib/features/notices/presentation/notice_directory_page.dart",
         "apps/superadmin/test/features/notices/notice_card_status_layout_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "428b62b04a88cc851ffc9a837bcc49c07df75554",
@@ -268,7 +268,7 @@
         "apps/superadmin/lib/features/principal_happens_publication/presentation/principal_happens_publication_page.dart",
         "apps/superadmin/test/features/principal_happens_publication/presentation/principal_happens_publication_focus_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "61eab0011f7f27e318393ccd6d40f2e87ba3882d",
@@ -282,7 +282,7 @@
         "apps/superadmin/test/features/principal_moments_publication/presentation/principal_moments_publication_error_recovery_test.dart",
         "apps/superadmin/test/features/principal_now_publication/presentation/principal_now_publication_error_recovery_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "d2ea1f36ea3b2a2eb564c9da7582754c327e25d1",
@@ -292,7 +292,7 @@
         "apps/superadmin/lib/features/activities/presentation/activity_directory_page.dart",
         "apps/superadmin/test/features/activities/presentation/activity_directory_page_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "258376366f25d00d9ddba9dd428ef3827a9a3260",
@@ -302,7 +302,7 @@
         "apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart",
         "apps/superadmin/test/features/audit/audit_directory_page_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "52f2075feaf8769b3d99647a20f73afe5222792c",
@@ -312,7 +312,7 @@
         "apps/superadmin/lib/features/plans/presentation/plan_directory_page.dart",
         "apps/superadmin/test/features/plans/plan_pages_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "7b09750226045c66d5176fd50ddbabeb5cc1a83b",
@@ -322,7 +322,7 @@
         "apps/superadmin/lib/features/activities/presentation/activity_directory_page.dart",
         "apps/superadmin/test/features/activities/presentation/activity_directory_page_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "f9e681f80944694c82c03cb709f1d6716f1d3417",
@@ -332,7 +332,7 @@
         "apps/superadmin/lib/features/activities/presentation/activity_profile_about_section.dart",
         "apps/superadmin/test/features/activities/presentation/activity_profile_about_section_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "36c44dc419fae8410ff40e0d62e196960882b9e6",
@@ -342,7 +342,7 @@
         "apps/superadmin/lib/features/daily_routine/daily_routine_pages.dart",
         "apps/superadmin/test/features/daily_routine/daily_routine_production_page_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": "b70826441a09f39c2748e7fcb5244495550fe392",
@@ -352,7 +352,7 @@
         "apps/superadmin/lib/features/attendance/attendance_dashboard_controller.dart",
         "apps/superadmin/test/features/attendance/attendance_dashboard_controller_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     },
     {
       "source": null,
@@ -361,7 +361,7 @@
       "files": [
         "apps/superadmin/test/features/principal_now_publication/presentation/principal_now_publication_error_recovery_test.dart"
       ],
-      "status": "integrated-local; tested; pending-push"
+      "status": "integrated-tested-delivered-dev; not-product-certified"
     }
   ],
   "holds": [
@@ -546,5 +546,7 @@
   ],
   "remote_application": "none",
   "deploy": "none",
-  "localhost": "closed; no persistent app server started in closure"
+  "localhost": "closed; no persistent app server started in closure",
+  "delivery_sha_verified": "2b4f189a17146911cbe7d91ad653c67997db3610",
+  "delivery_verified_at": "2026-09-09T08:50:57-03:00"
 }

@@ -1,0 +1,178 @@
+{
+  "source": "C00 Git/fs hashes; native automations; original final handoffs",
+  "status": "preserved; worktrees-clean-and-retained; no-forced-cleanup",
+  "generated_at": "2026-09-09T08:50:57-03:00",
+  "delivery_sha_verified": "2b4f189a17146911cbe7d91ad653c67997db3610",
+  "bundle": {
+    "path": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\e2-r01-close-20260909-c00\\round-final-branches.bundle",
+    "bytes": 263311830,
+    "sha256": "5c35e8550ea205ebbb9915770b3e9c24550e0ee47afce49ff9e85b6643393b12",
+    "git_bundle_verify": "PASS; complete history, eight refs"
+  },
+  "worktrees": [
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-c00",
+      "head": "2b4f189a17146911cbe7d91ad653c67997db3610",
+      "branch": "codex/e2-r01-c00-integration",
+      "status_porcelain": "",
+      "clean": true,
+      "removed": false,
+      "reason_retained": "Preserve direct evidence access and unique reviewed/unreviewed candidates; no new R01 implementation. C06 only communication."
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c01",
+      "head": "8899f3c211555c252ed5da5374b48871c4fd5bd6",
+      "branch": "codex/e2-r01-c01-identidade",
+      "status_porcelain": "",
+      "clean": true,
+      "removed": false,
+      "reason_retained": "Preserve direct evidence access and unique reviewed/unreviewed candidates; no new R01 implementation. C06 only communication."
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c02",
+      "head": "99f7283a20c78112c323786533975db5ce7947ce",
+      "branch": "codex/e2-r01-c02-forms-midia",
+      "status_porcelain": "",
+      "clean": true,
+      "removed": false,
+      "reason_retained": "Preserve direct evidence access and unique reviewed/unreviewed candidates; no new R01 implementation. C06 only communication."
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c03",
+      "head": "bfdd5f0e6c0085f93ca32bcd812f32e91fe124a8",
+      "branch": "codex/e2-r01-c03-operacoes",
+      "status_porcelain": "",
+      "clean": true,
+      "removed": false,
+      "reason_retained": "Preserve direct evidence access and unique reviewed/unreviewed candidates; no new R01 implementation. C06 only communication."
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c04",
+      "head": "59867239c39afacdf6e6830334d1ae8503fa4984",
+      "branch": "claude/e2-r01-c04-estruturas",
+      "status_porcelain": "",
+      "clean": true,
+      "removed": false,
+      "reason_retained": "Preserve direct evidence access and unique reviewed/unreviewed candidates; no new R01 implementation. C06 only communication."
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c05",
+      "head": "42f8ef995a3e41a8aa1999c325e085208d874946",
+      "branch": "claude/e2-r01-c05-comunicacao",
+      "status_porcelain": "",
+      "clean": true,
+      "removed": false,
+      "reason_retained": "Preserve direct evidence access and unique reviewed/unreviewed candidates; no new R01 implementation. C06 only communication."
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06",
+      "head": "4dc42730945c36d9105f75474362deb9c9eb8876",
+      "branch": "claude/e2-r01-c06-coordenacao",
+      "status_porcelain": "",
+      "clean": true,
+      "removed": false,
+      "reason_retained": "Preserve direct evidence access and unique reviewed/unreviewed candidates; no new R01 implementation. C06 only communication."
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c07",
+      "head": "b9be43f438124be61ce4537b6db0a985ac1caaf3",
+      "branch": "claude/e2-r01-c07-validacao-visual",
+      "status_porcelain": "",
+      "clean": true,
+      "removed": false,
+      "reason_retained": "Preserve direct evidence access and unique reviewed/unreviewed candidates; no new R01 implementation. C06 only communication."
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c07-c04ro",
+      "head": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
+      "branch": "",
+      "status_porcelain": "",
+      "clean": true,
+      "removed": false,
+      "reason_retained": "Preserve direct evidence access and unique reviewed/unreviewed candidates; no new R01 implementation. C06 only communication."
+    }
+  ],
+  "generated_cleanup": [
+    {
+      "code": "C00",
+      "source": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-c00\\packages\\coelo_api\\pubspec.lock",
+      "backup": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\e2-r01-close-20260909-c00\\generated-locks\\C00\\packages\\coelo_api\\pubspec.lock",
+      "sha256": "D13534BB5F92BD24215D1441F32F19BFFC2A20C883F70F03B10260371C50BB30",
+      "tracked": false,
+      "removed": true
+    },
+    {
+      "code": "C00",
+      "source": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-c00\\packages\\coelo_domain\\pubspec.lock",
+      "backup": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\e2-r01-close-20260909-c00\\generated-locks\\C00\\packages\\coelo_domain\\pubspec.lock",
+      "sha256": "346534B135CB3DD196260C524418782C0A28AAA19B688744EE9D2CF67760CF39",
+      "tracked": false,
+      "removed": true
+    },
+    {
+      "code": "C02",
+      "source": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c02\\packages\\coelo_api\\pubspec.lock",
+      "backup": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\e2-r01-close-20260909-c00\\generated-locks\\C02\\packages\\coelo_api\\pubspec.lock",
+      "sha256": "D13534BB5F92BD24215D1441F32F19BFFC2A20C883F70F03B10260371C50BB30",
+      "tracked": false,
+      "removed": true
+    },
+    {
+      "code": "C02",
+      "source": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c02\\packages\\coelo_domain\\pubspec.lock",
+      "backup": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\e2-r01-close-20260909-c00\\generated-locks\\C02\\packages\\coelo_domain\\pubspec.lock",
+      "sha256": "346534B135CB3DD196260C524418782C0A28AAA19B688744EE9D2CF67760CF39",
+      "tracked": false,
+      "removed": true
+    },
+    {
+      "code": "C04",
+      "source": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c04\\packages\\coelo_api\\pubspec.lock",
+      "backup": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\e2-r01-close-20260909-c00\\generated-locks\\C04\\packages\\coelo_api\\pubspec.lock",
+      "sha256": "D13534BB5F92BD24215D1441F32F19BFFC2A20C883F70F03B10260371C50BB30",
+      "tracked": false,
+      "removed": true
+    },
+    {
+      "code": "C04",
+      "source": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c04\\packages\\coelo_domain\\pubspec.lock",
+      "backup": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\e2-r01-close-20260909-c00\\generated-locks\\C04\\packages\\coelo_domain\\pubspec.lock",
+      "sha256": "346534B135CB3DD196260C524418782C0A28AAA19B688744EE9D2CF67760CF39",
+      "tracked": false,
+      "removed": true
+    }
+  ],
+  "ignored_visual_artifacts": "Kept in original worktrees. Support archive pending; do not delete based on clean git status.",
+  "automations": [
+    {
+      "id": "e2-r01-c00-acompanhamento-30-min",
+      "status": "PAUSED",
+      "timezone": "America/Sao_Paulo",
+      "next_trigger": null,
+      "verified_at": "2026-09-09T08:50:57-03:00"
+    },
+    {
+      "id": "e2-r01-c01-retomada-espa-ada",
+      "status": "PAUSED",
+      "timezone": "America/Sao_Paulo",
+      "next_trigger": null,
+      "verified_at": "2026-09-09T08:50:57-03:00"
+    },
+    {
+      "id": "e2-r01-c02-retomada-30-min",
+      "status": "PAUSED",
+      "timezone": "America/Sao_Paulo",
+      "next_trigger": null,
+      "verified_at": "2026-09-09T08:50:57-03:00"
+    },
+    {
+      "id": "c03-opera-o-at-06h",
+      "status": "PAUSED",
+      "timezone": "America/Sao_Paulo",
+      "next_trigger": null,
+      "verified_at": "2026-09-09T08:50:57-03:00"
+    }
+  ],
+  "remote_deploy": false,
+  "remote_mutations": false
+}

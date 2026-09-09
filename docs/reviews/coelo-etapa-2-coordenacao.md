@@ -8,6 +8,8 @@ updated_at: "2026-09-09"
 
 # Coelo — Coordenação da Etapa 2
 
+> Fechamento publicado em dev/C00 `2b4f189a17146911cbe7d91ad653c67997db3610`; heartbeats R01 pausados em 2026-09-09T08:50:57-03:00. Worktrees limpas e preservadas; R01 parcial, novas conversas aguardam recorte.
+
 ## Fechamento vigente R01 — 2026-09-09T08:41:13-03:00
 
 Este bloco e o relatório de fechamento prevalecem sobre agendas e ownership históricos abaixo. C00 (`01a0818b-2a34-7fa3-a9aa-f191fc91cc8d`) continua único integrador/escritor; não houve transferência.
@@ -15,9 +17,9 @@ Este bloco e o relatório de fechamento prevalecem sobre agendas e ownership his
 - Handoffs finais recebidos C01r51/C02r48/C03r33/C04r61/C05final/C06r51/C07r12; fontes originais e snapshots/hashes em [recibos](etapa-2-operacao/reports/R01-fechamento-fontes.json). Frontmatter antigo C03/C04/C06 não substitui a revisão final do corpo.
 - C00 interrompeu após21:44 de08/09 e retomou pela manhã; prazo07:40 não cumprido.33commits R01 foram integrados seletivamente, mais teste Agora adaptado. Base código `af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0`. Verificação288PASS,173FormsPASS,110DTO,6domínio,74operações em suítes distintas; analyzer34limpo. Não somar para alegar cobertura global.
 - Estado por ação nos três rastreadores reconciliado, sem novas certificações. Contradições C04/C05/C06 registradas em docs/open-questions.md. Medidas/filas/limites em [fechamento](etapa-2-operacao/reports/R01-fechamento-20260909.md).
-- C06 I014 publicada: C00 ativo e recebeu originais; ACK I014 confirmado em r50, cron encerrado e release das frentes recebido. Sessão Claude não pode ser acordada por ferramenta Codex; Owner comunicou que consultará a assignment. Sem cobranças duplicadas.
+- C06 I014 e recibos recebidos r50–r52; I015 informa publicação final. C00 leu originais; cron encerrado e release das frentes confirmado. Sessão Claude não pode ser acordada por ferramenta Codex; Owner comunicou que consultará a assignment. Sem cobranças duplicadas.
 - Execução R01 encerrada; C01–C03 heartbeats pausados, AuditI020 liberada sem execução. Não iniciar R02 antes do alinhamento solicitado. Todos localhost de app encerrados; nenhum aberto nesta consolidação. Sem deploy/mutações remotas.
-- Branches com trabalho único preservadas. Limpeza somente de arquivos gerados com backup/hash; não remover worktree ativa nem perder evidência. Estado material/publicação final será registrado no mesmo relatório.
+- Branches com trabalho único preservadas. Limpeza somente de arquivos gerados com backup/hash; não remover worktree ativa nem perder evidência. Estado material e publicação verificados no recibo final do relatório.
 - Conhecimento: fontes canônicas de acompanhamento atualizadas; nenhuma regra nova aprovada para projeção ou memória de aprendizagem.54artigos válidos e harness12PASS/1skip (symlink indisponível).
 
 
