@@ -245,3 +245,8 @@ Limite: revisão da anatomia do Agora não aprova os13 masters nem resolve os77 
 ## R01 Audit: divergência histórica de realm, limite e exportação — 2026-09-08T20:01:32-03:00
 
 Inspeção C03 e C00: spec027/SQL20260812000847 e wrappers20260901190927 preservam autorização People/platform_memberships e AAL2/exportação real; spec039/ADR0019aditivo01/09 e AGENTS atuais exigem principal interno exclusivo, sessão real,AAL1 permitido MVP e exportação geral adiada. Esta precedência já aprovada orienta candidato local nominal, sem ponte ORentre realms ou retomada de exportação. NULLlimit passa pelo NOTBETWEEN e retira LIMIT; erro técnico a corrigir. Revogar3RPCscliente não autoriza apagar jobs/arquivos/workershistóricos. Estado remoto não foi inspecionado; pacote novo permanece sem autorização remota. Planos039×051 e semânticaassign/activate seguem em reconciliação separada, sem decisão implícita de produto.
+
+
+## Reconciliação R01 Audit — 2026-09-08T20:53:20-03:00
+
+C00 identificou assertions históricas em audit_production_test.sql:53–58/235–370 e superadmin_internal_auth_context_test.sql:315–378 que exigem exportação geral e autoridade People. São superadas pela instrução Owner de adiamento (exceção apenas Forms XLSX), AGENTS.md e spec039/ADR0019 aplicadas na reserva Audit I014. Decisão operacional C00 I017: atualizar somente essas provas para exportação recusada e reader interno com sessão; preservar workers/digest/minimização e registrar crosswalk no handoff C03. Nenhuma nova exportação, realm híbrido ou regra de produto autorizada.

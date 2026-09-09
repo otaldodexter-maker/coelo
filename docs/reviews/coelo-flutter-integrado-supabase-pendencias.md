@@ -514,3 +514,10 @@ Activities I015: 6/46 executados antes de erro42601 da fixture; 40 não atingido
 ### Recibo posterior I019 — 2026-09-08T20:34:28-03:00
 
 C02 c261afd3: **193/193 pgTAP PASS**, exit0,20:29:06.4539541–20:30:43.6124373−03:00. C00 conferiu log52873e6f…6df74d, manifesto6ad0ad0a…bb0492, result d1bec508…a30673 e Docker vazio. Evidência TEMP coelo-c02-xlsx193-fixed-j85u7u3d. Perfil69/71 e runner13734326 preservados.193 inclui172; não somar. Claim697c8aef+c261afd3 integrado por C00 após revisão e prova; schema I018 não incluído, sem aplicação remota. Lease encerrada; C03 I016 recebeu repetição nominal46 com fixture corrigida36b52394.
+
+
+## R01 — delta nominal 2026-09-08T21:04:08-03:00
+
+[Relatório e evidências2105](etapa-2-operacao/reports/R01-delta-2105.md). Forms DI/Auth3f544994:72 testes distintos PASS/analyzer limpo; lifetime por autorização e rotas normais conectados. Toggle C05b44d5c08 integradofc092aad junto ao central302d4e90:7+7PASS. IDs Forms respond/monitor/responses/response-detail/responses.export/resolve-file/download/expire-file. Upload, escrita completa, XLSX completo, goldens e E2E seguem abertos.
+
+SQL candidato98fe1083:313/313 confirmado C00, lease encerrada; integração conjunta writer v2 pendente. Activities I016 falhou;40/46PASS é relato sem stdout individual preservado. I017 nova migration/fixture Audit reservadas, replay pendente. C02 corte integralr43, r44/r45 recebidos nominalmente; C06r21 operacional, I011/I012 ACK pendente. Outros cortes integrais preservados. Docker saudável Support I00321:01:38. Medidas17:40 históricas inalteradas; nenhuma promoção de conclusão nem remoto aplicado. C00 único escritor; horários05:30/06:00/07:40 preservados.

@@ -712,3 +712,10 @@ Recibo Git 2026-09-08T20:14:41-03:00: push atômico e ls-remote confirmaram `e55
 
 
 Entrega confirmada 2026-09-08T20:36:22-03:00: `8b1e95c6d29ac59ad00d9b43c5b4a354da9c86c2` em dev e C00, push atômico/ls-remote; produção inalterada. Próximo lote central: Forms DI e testes de segunda sessão. Revisões read-only em andamento para candidatos XLSX v2 TS911c6afe/SQL98fe1083; C03 I016 retém lease local46.
+
+
+## R01 — delta nominal 2026-09-08T21:04:08-03:00
+
+[Relatório e evidências2105](etapa-2-operacao/reports/R01-delta-2105.md). Forms DI/Auth3f544994:72 testes distintos PASS/analyzer limpo; lifetime por autorização e rotas normais conectados. Toggle C05b44d5c08 integradofc092aad junto ao central302d4e90:7+7PASS. IDs Forms respond/monitor/responses/response-detail/responses.export/resolve-file/download/expire-file. Upload, escrita completa, XLSX completo, goldens e E2E seguem abertos.
+
+SQL candidato98fe1083:313/313 confirmado C00, lease encerrada; integração conjunta writer v2 pendente. Activities I016 falhou;40/46PASS é relato sem stdout individual preservado. I017 nova migration/fixture Audit reservadas, replay pendente. C02 corte integralr43, r44/r45 recebidos nominalmente; C06r21 operacional, I011/I012 ACK pendente. Outros cortes integrais preservados. Docker saudável Support I00321:01:38. Medidas17:40 históricas inalteradas; nenhuma promoção de conclusão nem remoto aplicado. C00 único escritor; horários05:30/06:00/07:40 preservados.
