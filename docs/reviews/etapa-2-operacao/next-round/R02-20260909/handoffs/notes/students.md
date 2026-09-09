@@ -75,7 +75,9 @@ contrato CHILD. Depois de abrir uma paginação de A com o cursor
 A página de B permanece renderizada quando a resposta pendente de A chega.
 
 O teste focal terminou com 1/1 caso aprovado e o analyzer do arquivo não
-encontrou issues. A paginação foi disparada pelo callback já exposto no
-`FilledButton`, porque o botão fica fora da área visível do harness largo; esta
-prova cobre o ciclo de request, invalidação e descarte tardio, mas não certifica
-o gesto de toque nem interação visual da paginação.
+encontrou issues. A prova revisada usa `ensureVisible` para rolar a `ListView`
+normal `student-tracking-scroll` até o controle e então executa um toque real no
+`FilledButton`. O deslocamento inicial era uma limitação da viewport do harness,
+não um defeito reproduzido no layout. O caso cobre o gesto, o request, a
+invalidação e o descarte tardio nessa composição local; não certifica Backend,
+persistência/reload remoto, E2E nem `students.list` completo.

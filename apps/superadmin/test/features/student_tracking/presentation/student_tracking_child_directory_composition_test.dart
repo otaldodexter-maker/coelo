@@ -214,7 +214,9 @@ void main() {
     );
     await tester.pump();
     final nextPage = find.byKey(const Key('child-directory-next'));
-    tester.widget<FilledButton>(nextPage).onPressed!();
+    await tester.ensureVisible(nextPage);
+    await tester.pumpAndSettle();
+    await tester.tap(nextPage);
     await tester.pump();
     expect(read.requests, hasLength(2));
     expect(read.requests[1].after?.name, 'aluna a');
