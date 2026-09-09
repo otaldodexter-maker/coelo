@@ -1,0 +1,70 @@
+diff --git a/.agents/skills/coelo-ui/references/principal-visual-surfaces.md b/.agents/skills/coelo-ui/references/principal-visual-surfaces.md
+index d36f81d5b..df79acbb7 100644
+--- a/.agents/skills/coelo-ui/references/principal-visual-surfaces.md
++++ b/.agents/skills/coelo-ui/references/principal-visual-surfaces.md
+@@ -2,6 +2,7 @@
+ source: "specs/050-principal-ui-ux-closure.md; specs/037-principal-circulars.md; esclarecimento do Owner em 2026-09-08"
+ status: "active"
+ generated_at: "2026-09-08"
++updated_at: "2026-09-09"
+ ---
+ 
+ # Superfícies visuais do Principal
+@@ -47,7 +48,11 @@ de conclusão nem prova de backend conectado.
+   `apps/superadmin/lib/features/principal_shared/presentation/principal_publication_frame.dart`
+   quando atender. Compartilhar campos neutros não impõe a página administrativa.
+ - Navegação, header, dock e launcher seguem a composição única da spec 050.
+-  Viewers imersivos suspendem elementos concorrentes e restauram foco ao sair.
++  Decisão final do Owner em 09/09/2026: quando hospedados no Superadmin,
++  Agora, Momentos e a leitura de Circular preservam o shell/menu no web e no
++  mobile. A imersão fica dentro do contêiner; só elementos internos concorrentes
++  do Principal podem ser suspensos. Restaurar foco e contexto ao sair. Esta
++  regra pertence ao hospedeiro Superadmin, não ao app Principal independente.
+ - O viewer do Agora possui contrato imersivo próprio. Cor/contraste e controles
+   sobre mídia seguem esse contrato; não aplicar mecanicamente fundo de popup
+   administrativo ou o fechamento vermelho do Bug em toda superfície imersiva.
+diff --git a/docs/knowledge/team/principal-circulars.md b/docs/knowledge/team/principal-circulars.md
+index e30d20dc8..c79798013 100644
+--- a/docs/knowledge/team/principal-circulars.md
++++ b/docs/knowledge/team/principal-circulars.md
+@@ -1,10 +1,10 @@
+ ---
+ title: "Circulares privadas no Principal"
+ knowledge_id: "principal-circulars"
+-source: "specs/050-principal-ui-ux-closure.md"
++source: "specs/037-principal-circulars.md"
+ status: "validated"
+ generated_at: "2026-08-21"
+-updated_at: "2026-09-01"
++updated_at: "2026-09-09"
+ audience: "team"
+ surfaces: [principal, perfil, acontece, supabase, authorization]
+ visibility: "internal"
+@@ -36,9 +36,11 @@ No web, a prévia da projeção no Acontece fica oculta por padrão e abre em po
+ somente por ação explícita. Ela não reserva uma coluna lateral permanente nem
+ comprime o conteúdo do Perfil. Essa decisão é específica da consulta da Circular
+ no Perfil e não remove o preview lateral dos fluxos de publicação aprovados.
+-Em compacto, o detalhe abre fullscreen sem cabeçalho ou dock global e apresenta
+-retorno contextual `‹ Circular`; fechar ou usar Escape restaura foco e posição
+-de origem.
++No Superadmin web e mobile, o detalhe preserva o shell/menu hospedeiro e abre
++na sua área de conteúdo, com retorno contextual `‹ Circular`; fechar ou usar
++Escape restaura foco e posição de origem. A decisão do Owner de 09/09/2026
++substitui a exceção de fullscreen que removia o shell nesse hospedeiro. Aplica-se
++também aos viewers Agora/Momentos no Superadmin, sem definir o app Principal independente.
+ 
+ Publicar Circular usa a mesma família de composição do Principal que Publicar no
+ Acontece, Agora e Momentos, adaptada para título, texto, anexos e perguntas. Não
+@@ -51,6 +53,9 @@ compartilhada permite que qualquer responsável autorizado responda pela crianç
+ sem criar respostas duplicadas entre responsáveis. Prazo é opcional e o
+ encerramento manual é auditado.
+ 
+-Mídia usa o bucket Supabase privado definido pela ADR 0027, com upload e leitura
+-assinados pelo backend, validação do arquivo e metadados no Postgres. A exceção
+-é exclusiva de Circulares e não muda o provedor das outras superfícies.
++Mídia nova de Circulares usa o R2 privado definido pela ADR 0032, igual às demais
++superfícies do MVP, com upload e leitura autorizados pelo backend, validação de
++MIME real, bytes e checksum, e metadados, permissões, vínculos e auditoria no
++Postgres. A exceção de bucket Supabase privado que a ADR 0027 concedia a
++Circulares está superada: não há mais provedor de mídia próprio desta superfície.
++PDF nunca usa Cloudflare Stream.

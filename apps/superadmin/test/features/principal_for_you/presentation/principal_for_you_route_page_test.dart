@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:coelo_superadmin/features/notices/domain/notice_repository.dart';
 import 'package:coelo_superadmin/features/notices/domain/platform_notice.dart';
+import 'package:coelo_superadmin/features/principal_for_you/data/principal_for_you_communications_adapter.dart';
 import 'package:coelo_superadmin/features/principal_for_you/domain/principal_for_you_preview_data.dart';
 import 'package:coelo_superadmin/features/principal_for_you/presentation/principal_for_you_preview_page.dart';
 import 'package:coelo_superadmin/features/principal_for_you/presentation/principal_for_you_route_page.dart';
@@ -13,6 +14,7 @@ import '../../notices/support/fake_notice_repository.dart';
 
 void main() {
   final now = DateTime.utc(2026, 8, 21, 12);
+  const actorScope = PrincipalForYouAudienceScope(institutionId: 'institution-1');
 
   PlatformNotice communication(CommunicationType type, {DateTime? endsAt, DateTime? startsAt}) =>
       PlatformNotice(
@@ -37,6 +39,7 @@ void main() {
         theme: CoeloTheme.light,
         home: PrincipalForYouRoutePage(
           repository: repository,
+          audienceScope: actorScope,
           supportingData: PrincipalForYouPreviewData.demo,
           now: () => now,
         ),
@@ -52,6 +55,7 @@ void main() {
         theme: CoeloTheme.light,
         home: PrincipalForYouRoutePage(
           repository: repository,
+          audienceScope: actorScope,
           supportingData: PrincipalForYouPreviewData.demo,
           now: () => current,
         ),
@@ -84,6 +88,7 @@ void main() {
         theme: CoeloTheme.light,
         home: PrincipalForYouRoutePage(
           repository: repository,
+          audienceScope: actorScope,
           supportingData: PrincipalForYouPreviewData.demo,
           now: () => current,
         ),
@@ -115,6 +120,7 @@ void main() {
       theme: CoeloTheme.light,
       home: PrincipalForYouRoutePage(
         repository: repository,
+        audienceScope: actorScope,
         supportingData: PrincipalForYouPreviewData.demo,
         now: clock,
       ),
@@ -210,6 +216,7 @@ void main() {
         theme: CoeloTheme.light,
         home: PrincipalForYouRoutePage(
           repository: repositoryB,
+          audienceScope: actorScope,
           supportingData: PrincipalForYouPreviewData.demo,
           now: () => now.add(const Duration(minutes: 1)),
         ),

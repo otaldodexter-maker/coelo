@@ -14,7 +14,8 @@ final class PrincipalForYouRoutePage extends StatefulWidget {
     super.key,
     required this.repository,
     required this.supportingData,
-    this.audienceScope,
+    required this.audienceScope,
+    this.embedded = false,
     this.now = DateTime.now,
     this.onOpenHappens,
     this.onOpenNow,
@@ -22,6 +23,7 @@ final class PrincipalForYouRoutePage extends StatefulWidget {
     this.onOpenAgenda,
     this.onOpenProfile,
     this.onOpenMessages,
+    this.onOpenActivities,
   });
 
   final NoticeRepository repository;
@@ -29,7 +31,10 @@ final class PrincipalForYouRoutePage extends StatefulWidget {
 
   /// Server-authorized scope of the actor. Audience eligibility is evaluated
   /// against it before any communication reaches the hub.
-  final PrincipalForYouAudienceScope? audienceScope;
+  final PrincipalForYouAudienceScope audienceScope;
+
+  /// Whether the Superadmin shell already provides the surrounding chrome.
+  final bool embedded;
   final DateTime Function() now;
   final VoidCallback? onOpenHappens;
   final VoidCallback? onOpenNow;
@@ -37,6 +42,7 @@ final class PrincipalForYouRoutePage extends StatefulWidget {
   final VoidCallback? onOpenAgenda;
   final VoidCallback? onOpenProfile;
   final VoidCallback? onOpenMessages;
+  final VoidCallback? onOpenActivities;
 
   @override
   State<PrincipalForYouRoutePage> createState() => _PrincipalForYouRoutePageState();
@@ -165,6 +171,25 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
     super.dispose();
   }
 
+  /// Routes a hub action to a real destination, or says plainly that the
+  /// capability is not available yet. A production route never answers with the
+  /// preview message.
+  void _handleAction(String label) {
+    final destination = switch (label) {
+      'Agenda' => widget.onOpenAgenda,
+      'Mensagens' => widget.onOpenMessages,
+      'Atividades' => widget.onOpenActivities,
+      _ => null,
+    };
+    if (destination != null) {
+      destination();
+      return;
+    }
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text('$label ainda não está disponível.')));
+  }
+
   @override
   Widget build(BuildContext context) => switch (_state) {
     _Loading() => Scaffold(
@@ -232,6 +257,7 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
     _Loaded(:final data, :final empty) => KeyedSubtree(
       key: empty ? const Key('principal-for-you-empty') : null,
       child: PrincipalForYouPreviewPage(
+        embedded: widget.embedded,
         data: data,
         onOpenHappens: widget.onOpenHappens,
         onOpenNow: widget.onOpenNow,
@@ -239,6 +265,7 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
         onOpenAgenda: widget.onOpenAgenda,
         onOpenProfile: widget.onOpenProfile,
         onOpenMessages: widget.onOpenMessages,
+        onAction: _handleAction,
       ),
     ),
   };

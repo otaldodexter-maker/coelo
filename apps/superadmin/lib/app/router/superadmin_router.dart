@@ -1,4 +1,3 @@
-import '../../features/principal_circulars/domain/circular_repository.dart' show CircularScope;
 import 'dart:async';
 import '../../features/groups/domain/group_detail.dart';
 import '../../features/groups/presentation/group_detail_page.dart';
@@ -45,7 +44,10 @@ import '../../features/account/presentation/screens/profile_page.dart';
 import '../../features/principal_happens/presentation/principal_happens_preview_page.dart';
 import '../../features/principal_happens/domain/principal_happens_feed_repository.dart';
 import '../../features/principal_happens/domain/principal_happens_preview_data.dart';
+import '../../features/principal_for_you/data/principal_for_you_communications_adapter.dart';
+import '../../features/principal_for_you/domain/principal_for_you_preview_data.dart';
 import '../../features/principal_for_you/presentation/principal_for_you_preview_page.dart';
+import '../../features/principal_for_you/presentation/principal_for_you_route_page.dart';
 import '../../features/principal_happens_publication/domain/happens_publication.dart';
 import '../../features/principal_happens_publication/presentation/principal_happens_publication_page.dart';
 import '../../features/principal_moments/presentation/principal_moments_preview_page.dart';
@@ -57,6 +59,10 @@ import '../../features/principal_now/presentation/principal_now_preview_page.dar
 import '../../features/principal_now_publication/domain/now_publication.dart';
 import '../../features/principal_now_publication/presentation/principal_now_publication_page.dart';
 import '../../features/principal_profile/presentation/principal_profile_preview_page.dart';
+import '../../features/principal_circulars/domain/circular_repository.dart';
+import '../../features/profile_about/domain/profile_about_repository.dart';
+import '../../features/principal_profile/presentation/principal_profile_edit_page.dart';
+import '../../features/principal_profile/presentation/principal_profile_route_page.dart';
 import '../../features/principal_shared/domain/principal_runtime_context.dart';
 import '../../features/principal_shared/presentation/principal_runtime_context_route.dart';
 import '../../features/account/presentation/screens/settings_page.dart';
@@ -280,6 +286,8 @@ GoRouter createSuperadminRouter({
   SuperadminMediaScope? formsMediaScope,
   PrincipalRuntimeContextRepository principalRuntimeContextRepository =
       const UnavailablePrincipalRuntimeContextRepository(),
+  ProfileAboutRepository? profileAboutRepository,
+  CircularRepository? principalCircularRepository,
   PrincipalHappensFeedRepository? principalHappensFeedRepository,
   PrincipalMixedFeedRepository? principalMixedFeedRepository,
   HappensPublicationRepository? happensPublicationRepository,
@@ -532,6 +540,12 @@ GoRouter createSuperadminRouter({
     }
     if (location.startsWith('/circulars')) {
       return circularRepository is! UnavailableSuperadminCircularRepository;
+    }
+    // Editing the contextual Perfil is the About command, which
+    // save_profile_about authorizes and versions server-side. The route stays
+    // closed until a real About repository is composed.
+    if (location.startsWith(SuperadminRoutes.principalProfile)) {
+      return profileAboutRepository != null;
     }
     return false;
   }
@@ -977,7 +991,34 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.principalForYouName,
             builder: (context, state) => PrincipalRuntimeContextRoute(
               repository: principalRuntimeContextRepository,
-              builder: (context, _) => _unavailableCompositionRootRoute(context),
+              builder: (context, runtimeContext) {
+                if (noticeRepository is UnavailableNoticeRepository) {
+                  return _unavailableCompositionRootRoute(context);
+                }
+                return PrincipalForYouRoutePage(
+                  embedded: true,
+                  repository: noticeRepository,
+                  audienceScope: PrincipalForYouAudienceScope.fromRuntimeContext(runtimeContext),
+                  supportingData: PrincipalForYouPreviewData.contextual(
+                    id: runtimeContext.membershipId,
+                    label: runtimeContext.groupName ?? runtimeContext.unitName ?? runtimeContext.institutionName,
+                    family: runtimeContext.institutionName,
+                    institution: runtimeContext.institutionName,
+                    unit: runtimeContext.unitName,
+                    group: runtimeContext.groupName,
+                  ),
+                  onOpenHappens: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                  onOpenNow: () => context.pushNamed(SuperadminRoutes.principalNowName),
+                  onOpenMoments: () => context.pushNamed(SuperadminRoutes.principalMomentsName),
+                  onOpenAgenda: () => context.goNamed(SuperadminRoutes.agendaName),
+                  onOpenProfile: () => context.goNamed(SuperadminRoutes.principalProfileName),
+                  onOpenActivities: () => context.goNamed(SuperadminRoutes.activitiesName),
+                  onOpenMessages: () => context.goNamed(
+                    SuperadminRoutes.conversationsName,
+                    queryParameters: const {'from': 'principal'},
+                  ),
+                );
+              },
             ),
           ),
           GoRoute(
@@ -993,7 +1034,50 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.principalProfileName,
             builder: (context, state) => PrincipalRuntimeContextRoute(
               repository: principalRuntimeContextRepository,
-              builder: (context, _) => _unavailableCompositionRootRoute(context),
+              builder: (context, runtimeContext) => PrincipalProfileRoutePage(
+                embedded: true,
+                runtimeContext: runtimeContext,
+                // The Principal projection, never the administrative directory:
+                // the actor is authorized on the server by institution, unit and
+                // group, not by the Superadmin circulars permission.
+                circularRepository: principalCircularRepository,
+                aboutRepository: profileAboutRepository,
+                happensFeedRepository: principalHappensFeedRepository,
+                onOpenCircular: (circularId) => context.goNamed(
+                  SuperadminRoutes.circularDetailName,
+                  pathParameters: {'circularId': circularId},
+                ),
+                onOpenEdit: () => context.goNamed(SuperadminRoutes.principalProfileEditName),
+                onOpenAgenda: () => context.goNamed(SuperadminRoutes.agendaName),
+                onOpenHome: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                onOpenForYou: () => context.goNamed(SuperadminRoutes.principalForYouName),
+                onOpenMoments: () => context.pushNamed(SuperadminRoutes.principalMomentsName),
+                onPublishNow: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
+                onMessage: () => context.goNamed(
+                  SuperadminRoutes.conversationsName,
+                  queryParameters: const {'from': 'principal'},
+                ),
+                onOpenMessages: () => context.goNamed(
+                  SuperadminRoutes.conversationsName,
+                  queryParameters: const {'from': 'principal'},
+                ),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.principalProfileEdit,
+            name: SuperadminRoutes.principalProfileEditName,
+            builder: (context, state) => PrincipalRuntimeContextRoute(
+              repository: principalRuntimeContextRepository,
+              builder: (context, runtimeContext) {
+                final repository = profileAboutRepository;
+                if (repository == null) return _unavailableCompositionRootRoute(context);
+                return PrincipalProfileEditPage(
+                  runtimeContext: runtimeContext,
+                  repository: repository,
+                  onClose: () => context.goNamed(SuperadminRoutes.principalProfileName),
+                );
+              },
             ),
           ),
           GoRoute(
