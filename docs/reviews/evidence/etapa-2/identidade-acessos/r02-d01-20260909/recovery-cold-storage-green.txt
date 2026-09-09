@@ -1,0 +1,14 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:300
++ ... _test.dart; rtk proxy flutter test --no-pub ../../packages/coelo_auth ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/packages/coelo_auth/test/recovery_storage_ordering_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/packages/coelo_auth/test/recovery_storage_ordering_test.dart: disabling persistence removes a recovery write that was already pending
+00:00 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/packages/coelo_auth/test/recovery_storage_ordering_test.dart: a failed pending write does not prevent the queued recovery purge
+00:00 +2: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_cold_reload_test.dart
+00:23 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_cold_reload_test.dart: cold reload never upgrades recovery into normal context: persist=true
+00:25 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_cold_reload_test.dart: cold reload never upgrades recovery into normal context: persist=false
+00:25 +4: All tests passed!

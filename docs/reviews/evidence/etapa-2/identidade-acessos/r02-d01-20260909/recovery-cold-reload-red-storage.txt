@@ -1,0 +1,57 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub test/features/auth/domain/coelo_auth_ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_cold_reload_test.dart
+00:00 +0: cold reload never upgrades recovery into normal context: persist=true
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: {
+            'bootstrapCalls': 0,
+            'authenticated': false,
+            'hasContext': false,
+            'route': '/reset-password',
+            'resetScreen': 1
+          }
+  Actual: {
+            'bootstrapCalls': 1,
+            'authenticated': true,
+            'hasContext': true,
+            'route': '/',
+            'resetScreen': 0
+          }
+   Which: at location ['bootstrapCalls'] is <1> instead of <0>
+Persisted recovery must remain confined or require a new link, never become normal auth.
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_cold_reload_test.dart:123:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_cold_reload_test.dart line 123
+The test description was:
+  cold reload never upgrades recovery into normal context: persist=true
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:04 +0 -1: cold reload never upgrades recovery into normal context: persist=true [E]
+  Test failed. See exception logs above.
+  The test description was: cold reload never upgrades recovery into normal context: persist=true
+
+Warning: At least one test in this suite creates an HttpClient. When running a test suite that uses
+TestWidgetsFlutterBinding, all HTTP requests will return status code 400, and no network request
+will actually be made. Any test expecting a real network connection and status code will fail.
+To test code that needs an HttpClient, provide your own HttpClient implementation to the code under
+test, so that your test can consistently provide a testable response to the code under test.
+00:04 +0 -1: cold reload never upgrades recovery into normal context: persist=false
+00:05 +1 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_cold_reload_test.dart: cold reload never upgrades recovery into normal context: persist=true

@@ -1,0 +1,16 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy dart analyze test/recovery_persistence_gateway_test.dart li ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+Analyzing recovery_persistence_gateway_test.dart, supabase_coelo_auth_gateway.dart, conditional_supabase_local_storage.dart...
+
+   info - test\recovery_persistence_gateway_test.dart:1:8 - The import of 'dart:async' is unnecessary because all of the used elements are also provided by the import of 'package:flutter_test/flutter_test.dart'. Try removing the import directive. - unnecessary_import
+
+1 issue found.
+
+Final targeted analysis after removing unnecessary dart:async import (tool session 95629):
+No issues found!
+Exit code: 0

@@ -35,6 +35,7 @@ final class SupabaseCoeloAuthGateway extends CoeloAuthLifecycleGateway {
          _SupabaseAuthApi(
            client,
            initialRecoveryAccessToken: initialRecoveryAccessToken,
+           sessionPersistence: sessionPersistence,
          ),
          sessionPersistence: sessionPersistence,
        );
@@ -166,12 +167,14 @@ final class _SupabaseAuthApi implements CoeloSupabaseAuthApi {
   _SupabaseAuthApi(
     this._client, {
     required String? initialRecoveryAccessToken,
-  }) {
+    required CoeloAuthSessionPersistence sessionPersistence,
+  }) : _sessionPersistence = sessionPersistence {
     _recoverySessionId = initialRecoveryAccessToken == null
         ? null
         : coeloAuthSessionIdFromAccessToken(initialRecoveryAccessToken);
     _isRecovery = _recoverySessionId != null;
     _initialStateObserved = _client.auth.currentSession == null;
+    _disableRecoveryPersistence(_client.auth.currentSession);
     _subscription = _client.auth.onAuthStateChange.listen(
       _handleAuthState,
       onError: _states.addError,
@@ -179,9 +182,11 @@ final class _SupabaseAuthApi implements CoeloSupabaseAuthApi {
   }
 
   final SupabaseClient _client;
+  final CoeloAuthSessionPersistence _sessionPersistence;
   final _states = StreamController<CoeloAuthSessionState>.broadcast(sync: true);
   late final StreamSubscription<AuthState> _subscription;
   String? _recoverySessionId;
+  String? _persistenceDisabledForRecoverySessionId;
   bool _isRecovery = false;
   bool _disposed = false;
   bool _initialStateObserved = false;
@@ -194,14 +199,42 @@ final class _SupabaseAuthApi implements CoeloSupabaseAuthApi {
     if (session == null) {
       _isRecovery = false;
       _recoverySessionId = null;
+      _persistenceDisabledForRecoverySessionId = null;
     } else if (data.event == AuthChangeEvent.passwordRecovery) {
       _isRecovery = true;
       _recoverySessionId = sessionId;
     } else if (sessionId != _recoverySessionId) {
       _isRecovery = false;
       _recoverySessionId = null;
+      _persistenceDisabledForRecoverySessionId = null;
     }
+    _disableRecoveryPersistence(session);
     _states.add(_stateFor(session));
+  }
+
+  void _disableRecoveryPersistence(Session? session) {
+    final sessionId = session == null ? null : _validatedSessionId(session);
+    if (!_isRecovery ||
+        sessionId == null ||
+        sessionId != _recoverySessionId ||
+        sessionId == _persistenceDisabledForRecoverySessionId) {
+      return;
+    }
+    _persistenceDisabledForRecoverySessionId = sessionId;
+    // Recovery remains usable in memory. A cold restart must require another
+    // recovery link instead of restoring this credential as normal login.
+    unawaited(
+      Future<void>.sync(
+        () => _sessionPersistence.setPersistenceEnabled(value: false),
+      ).catchError((Object _, StackTrace stack) {
+        if (!_disposed) {
+          _states.addError(
+            StateError('Recovery persistence cleanup failed.'),
+            stack,
+          );
+        }
+      }),
+    );
   }
 
   @override

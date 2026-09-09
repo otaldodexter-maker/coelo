@@ -8,9 +8,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:http/testing.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUp(() => SharedPreferences.setMockInitialValues({}));
   for (final scenario in ['invalid', 'expired', 'reused']) {
     test('rejected recovery OTP cannot enable password updates: $scenario', () async {
       final requests = <Request>[];
@@ -373,8 +376,10 @@ void main() {
     final scope = await createSuperadminAuthScope(
       supabaseUrl: 'https://example.supabase.co',
       supabasePublishableKey: 'publishable-test',
-      initializeSupabase: ({required localStorage, required publishableKey, required url}) async =>
-          client,
+      initializeSupabase: ({required localStorage, required publishableKey, required url}) async {
+        await localStorage.initialize();
+        return client;
+      },
       createAuthGateway:
           ({required client, required sessionPersistence, required initialRecoveryAccessToken}) {
             gateway = SupabaseCoeloAuthGateway(client, sessionPersistence: sessionPersistence);
@@ -426,7 +431,10 @@ void main() {
           supabaseUrl: 'https://example.supabase.co',
           supabasePublishableKey: 'publishable-test',
           initializeSupabase:
-              ({required localStorage, required publishableKey, required url}) async => client,
+              ({required localStorage, required publishableKey, required url}) async {
+                await localStorage.initialize();
+                return client;
+              },
           createAuthContextGateway: (_) => context,
         );
         addTearDown(scope.session.dispose);
@@ -584,8 +592,10 @@ void main() {
     final scope = await createSuperadminAuthScope(
       supabaseUrl: 'https://example.supabase.co',
       supabasePublishableKey: 'publishable-test',
-      initializeSupabase: ({required localStorage, required publishableKey, required url}) async =>
-          client,
+      initializeSupabase: ({required localStorage, required publishableKey, required url}) async {
+        await localStorage.initialize();
+        return client;
+      },
       createAuthGateway:
           ({required client, required sessionPersistence, required initialRecoveryAccessToken}) {
             gateway = SupabaseCoeloAuthGateway(client, sessionPersistence: sessionPersistence);

@@ -1,0 +1,22 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub ../../packages/coelo_auth/test/recove ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/packages/coelo_auth/test/recovery_storage_ordering_test.dart
+00:00 +0: disabling persistence removes a recovery write that was already pending
+00:00 +0 -1: disabling persistence removes a recovery write that was already pending [E]
+  Expected: null
+    Actual: 'synthetic-recovery-session'
+
+  package:matcher                                                          expect
+  package:flutter_test/src/widget_tester.dart 473:18                       expect
+  ..\..\packages\coelo_auth\test\recovery_storage_ordering_test.dart 19:5  main.<fn>
+
+00:00 +0 -1: a failed pending write does not prevent the queued recovery purge
+00:00 +1 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/packages/coelo_auth/test/recovery_storage_ordering_test.dart: disabling persistence removes a recovery write that was already pending
