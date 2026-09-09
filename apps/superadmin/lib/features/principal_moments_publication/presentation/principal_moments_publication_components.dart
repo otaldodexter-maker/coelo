@@ -120,6 +120,9 @@ class _MomentAssetState extends State<_MomentAsset> {
         key: const Key('moments-media-image'),
         fit: BoxFit.cover,
         semanticLabel: 'Capa do momento selecionado',
+        // Locally selected bytes may be corrupt or truncated; show the honest
+        // placeholder instead of letting the decoder blow up the surface.
+        errorBuilder: (context, _, _) => _unavailableMomentMedia(context),
       );
     } else if (remoteUrl != null) {
       image = Image(
@@ -219,18 +222,28 @@ class _MediaBadge extends StatelessWidget {
 }
 
 class _AddMediaButton extends StatelessWidget {
-  const _AddMediaButton({required this.onPressed});
+  const _AddMediaButton({required this.onPressed, this.busy = false});
 
   final VoidCallback onPressed;
+  final bool busy;
 
   @override
   Widget build(BuildContext context) => SizedBox.square(
     dimension: 64,
-    child: OutlinedButton(
-      key: const Key('moments-publication-add-media'),
-      onPressed: onPressed,
-      style: OutlinedButton.styleFrom(padding: EdgeInsets.zero),
-      child: const Icon(Icons.add_rounded),
+    child: Tooltip(
+      message: busy ? 'Selecionando mídia' : 'Adicionar mídia',
+      child: OutlinedButton(
+        key: const Key('moments-publication-add-media'),
+        onPressed: busy ? null : onPressed,
+        style: OutlinedButton.styleFrom(padding: EdgeInsets.zero),
+        child: busy
+            ? const SizedBox.square(
+                key: Key('moments-publication-add-media-busy'),
+                dimension: CoeloSize.iconSm,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Icon(Icons.add_rounded, semanticLabel: 'Adicionar mídia'),
+      ),
     ),
   );
 }
@@ -582,9 +595,10 @@ class _MomentPreview extends StatelessWidget {
 }
 
 class _EmptyMomentMedia extends StatelessWidget {
-  const _EmptyMomentMedia({this.onPressed});
+  const _EmptyMomentMedia({this.onPressed, this.busy = false});
 
   final VoidCallback? onPressed;
+  final bool busy;
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
@@ -609,7 +623,11 @@ class _EmptyMomentMedia extends StatelessWidget {
             const Text('Adicione uma mídia para começar.', textAlign: TextAlign.center),
             if (onPressed != null) ...[
               const SizedBox(height: CoeloSpacing.space3),
-              FilledButton.tonal(onPressed: onPressed, child: const Text('Adicionar mídia')),
+              FilledButton.tonal(
+                key: const Key('moments-publication-empty-add-media'),
+                onPressed: busy ? null : onPressed,
+                child: Text(busy ? 'Selecionando…' : 'Adicionar mídia'),
+              ),
             ],
           ],
         ),
