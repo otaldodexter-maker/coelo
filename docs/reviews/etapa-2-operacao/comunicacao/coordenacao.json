@@ -1,5 +1,5 @@
 {
-  "revision": 5,
+  "revision": 8,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,14 +8,15 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-09T18:40:00-03:00",
+  "updatedAt": "2026-09-09T19:40:00-03:00",
   "clockCorrection": {
-    "referenceNow": "2026-09-09T18:09:02-03:00",
+    "referenceNow": "2026-09-09T19:03:25-03:00",
     "measuredBy": "date no checkout integrador",
     "warning": "Duas revisoes chegaram carimbadas 21:06 e 21:25 com sufixo -03:00. Isso e horario UTC rotulado como Brasilia. Reconferir o relogio local: faltam cerca de 5h ate o corte Codex 23:30 e cerca de 10h50 ate o corte Claude 05:00. Nao antecipar congelamento por leitura errada de relogio.",
     "affected": [
-      "chat-comunicacoes",
-      "operacoes-sistema"
+      "chat-comunicacoes (corrigido)",
+      "operacoes-sistema (corrigido)",
+      "alunos-rotina (revisao 3 carimbada 19:50 quando o relogio real marcava 19:03)"
     ]
   },
   "exclusivity": {
@@ -29,13 +30,13 @@
   "base": {
     "root": "C:/Users/adrie/Documents/Coelo",
     "branch": "dev",
-    "head": "ee01a06e9",
+    "head": "ecc8eae2b",
     "previousHead": "d784462c168d22fdb7090b7de1ef7db554ad5107",
     "upstream": "origin/dev",
     "divergence": "0/0",
     "workingTree": "clean",
     "stash": "empty",
-    "note": "ee01a06e9 e apenas o commit documental que abriu este canal. A base de codigo das worktrees continua d784462c1 e nao precisa de rebase.",
+    "note": "dev avancou com tres merges de lote integrados nesta rodada.",
     "runtimeBaselinePreserved": "d019c109a",
     "documentaryReconciliation": "8954de221",
     "verifiedAt": "2026-09-09T18:10:00-03:00"
@@ -140,6 +141,76 @@
       "lidoEm": "2026-09-09T18:38:00-03:00",
       "estado": "item 1 aceito em revisao de codigo; entra na proxima integracao",
       "nota": "1ac657de6 corrige a causa raiz no ponto compartilhado e cobre tambem submitForReview. Alerta enviado: o candidato 20260908230039 de 0e7678895 tem carimbo anterior a cinco migrations ja existentes e nao e aplicavel forward-only como esta; e preciso tambem justificar a reducao de ~200 linhas em superadmin_internal_auth_context_test.sql."
+    },
+    {
+      "grupo": "perfil-para-voce",
+      "revisao": "lote 2 76e8ada8f",
+      "lidoEm": "2026-09-09T18:30:00-03:00",
+      "estado": "aceito para integracao com ressalva registrada",
+      "nota": "Fallback restrito a 42883/PGRST202 e a decisao correta: negacao continua negacao. RESSALVA: enquanto get_profile_about nao existir no remoto, o caminho real e sempre o fallback por tabela, entao FE avanca e BE nao certifica. Regra de visibilidade do leitor Principal vira pergunta aberta de produto."
+    },
+    {
+      "grupo": "chat-comunicacoes",
+      "revisao": 2,
+      "lidoEm": "2026-09-09T18:32:00-03:00",
+      "estado": "aceito; router isolado recebido",
+      "nota": "Patch de router isolado 61bb58350 na branch work/etapa2-noturna-chat-comunicacoes-router. CONFLITO LOGICO que o executor nao podia ver: os builders de perfil-para-voce ja integrados em 790e215f3 chamam onOpenMessages para conversationsName, e o patch redireciona para principalConversationsName. Reconciliacao e minha."
+    },
+    {
+      "grupo": "formularios-cuidado",
+      "revisao": 4,
+      "lidoEm": "2026-09-09T18:34:00-03:00",
+      "estado": "aceito; em integracao",
+      "nota": "Guarda unica em FormNumericLimits no dominio, RED antes da correcao e comparacao por git stash na mesma base: 699+11 sem o lote contra 712+11 com ele. Delta de rastreador acatado, inclusive a recusa de declarar criterio proprio para forms.location-answer."
+    },
+    {
+      "grupo": "operacoes-sistema",
+      "revisao": "6 e 0626c7655",
+      "lidoEm": "2026-09-09T18:35:00-03:00",
+      "estado": "aceito; item 1-2-3 integrado",
+      "nota": "Carimbo corrigido para 20260909190000 com SHA256 identico. Reducao em superadmin_internal_auth_context_test.sql explicada como adaptacao do cutover, com perda de cobertura registrada em vez de escondida."
+    },
+    {
+      "grupo": "perfil-para-voce",
+      "revisao": "lotes 3 e 4, 60f32e292 e 6e58b624f",
+      "lidoEm": "2026-09-09T19:00:00-03:00",
+      "estado": "aceitos; entram na proxima integracao",
+      "nota": "Afordancia morta abaixo de 1120px escondida em vez de desabilitada; didUpdateWidget passa a comparar membership e pessoa, fechando rascunho vivo sob autorizacao nao reavaliada; rotulos de enum deixam de vazar para a interface, com switch exaustivo e controle negativo executado."
+    },
+    {
+      "grupo": "formularios-cuidado",
+      "revisao": "5 e 7, ate 75b2cebdb",
+      "lidoEm": "2026-09-09T19:00:00-03:00",
+      "estado": "aceito; entra na proxima integracao",
+      "nota": "maxLength autoral fecha o lado de autoria. Limite registrado a pedido do proprio executor: a aparencia do campo novo NAO tem golden verde e fica verificacao visual pendente, blocked-decision. Progressao 699/712/720 com as mesmas 11 falhas."
+    },
+    {
+      "grupo": "operacoes-sistema",
+      "revisao": "7 e 8, 0626c7655",
+      "lidoEm": "2026-09-09T19:00:00-03:00",
+      "estado": "aceito",
+      "nota": "errors.409 fica skip com motivo e blocked-decision, sem contar como FE verificado. Goldens de Suporte: 24 casos em U, referencia obsoleta desde ed23ec20f com quatro commits posteriores. Autorizei destrackear os 96 PNGs de failures/ por git rm --cached mais gitignore, sem tocar em goldens/."
+    },
+    {
+      "grupo": "alunos-rotina",
+      "revisao": 3,
+      "lidoEm": "2026-09-09T19:03:00-03:00",
+      "estado": "recebido e aceito",
+      "nota": "Achado relevante: a base integrada tinha 12 testes vermelhos em attendance e daily_routine que NAO constavam em nenhum rastreador. Resolvidos sem tocar em codigo de produto: 235P/4S/12F viraram 247P/4S/0F. Lote 063f19c35 entra na fila de integracao."
+    },
+    {
+      "grupo": "acessos-pessoas",
+      "revisao": 15,
+      "lidoEm": "2026-09-09T19:03:00-03:00",
+      "estado": "recebido",
+      "nota": "Safety 3a96ca535 e candidatos locais. Propostas Safety53 (b91f9206d) e wrapper de concorrencia de Modelos (485df698f) aguardam reserva nominal; concedo os hunks desde que fiquem na sua branch e nao toquem router nem migrations aplicadas. Producao continua retida: o Owner saiu."
+    },
+    {
+      "grupo": "estrutura",
+      "revisao": 11,
+      "lidoEm": "2026-09-09T19:03:00-03:00",
+      "estado": "recebido",
+      "nota": "Bom RED funcional reproduzindo canManage=true sem groups.manage. Publique bindings e o candidato Activity atomico; o replay continua na minha fila e nao sai desta noite."
     }
   ],
   "approvedSequences": [
@@ -377,7 +448,7 @@
     "claudeExecutorAddresses": "Fornecidos pelo Owner e verificados por envio real: as seis conversas Claude receberam ACK nominal por SendMessage em 18:18. Enderecos gravados em groups[].sessionName/sessionId para recuperacao."
   },
   "blocks": [],
-  "nextStep": "Concluir a verificacao dos goldens do lote perfil-para-voce, publicar o merge em dev, depois integrar operacoes-sistema item 1 e resolver o router conjunto com estrutura.",
+  "nextStep": "Rodar a suite completa de apps/superadmin sobre a base integrada para produzir o baseline datado do fechamento, integrar os lotes seguintes e comecar a atualizacao de inventario e rastreadores.",
   "providers": {
     "supabase": {
       "cli": "supabase 2.117.0 autenticado; token no Credential Manager do Windows",
@@ -418,5 +489,139 @@
       "formularios-cuidado": "nada publicado ainda"
     },
     "observadoEm": "2026-09-09T18:36:00-03:00"
+  },
+  "decisoes": [
+    {
+      "id": "GOLDEN-DRIFT",
+      "decisao": "Nenhum grupo regrava golden nesta rodada.",
+      "causa": "Deriva de golden PREEXISTENTE na base d784462c1, confirmada pelo coordenador em worktree destacada intocada (C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-verificacao), sempre nas variantes dark e text_200: principal_profile 10 falhas; principal_happens e vizinhas 21; chat e notices 12; meal_plans e plans 7. Em todos os casos o mesmo numero de falhas aparece sem nenhum lote aplicado.",
+      "efeito": "Registrada como falha conhecida da base, estado blocked-decision. Regravar gravaria a deriva como referencia. O ambiente de referencia de golden e decisao do Owner.",
+      "data": "2026-09-09T18:33:00-03:00"
+    },
+    {
+      "id": "ERRORS-409-BASELINE",
+      "decisao": "Manter os dois casos de errors.409 como skip com motivo, nao como vermelho permanente.",
+      "causa": "Os goldens 409 nunca existiram; o diretorio tem 403, 404, 500 e 503 em light e dark. A spec 2026-07-28-superadmin-error-pages-design.md exige aprovacao nominal e proibe rebaseline automatico. Problema distinto da deriva: aqui a referencia nunca existiu.",
+      "efeito": "errors.409 fica blocked-decision e NAO conta como FE verificado; os dois casos contam em S, nunca em P. Vermelho fixo escondia regressao real nas outras quatro variantes.",
+      "data": "2026-09-09T18:35:00-03:00"
+    },
+    {
+      "id": "FORMS-MONEY-MIGRACAO",
+      "decisao": "Nao criar migracao de dados para converter limites de money para minorUnits agora.",
+      "causa": "Backend esta 0/223 e nao houve cutover; nao ha base de definicoes persistidas em producao gravadas por este cliente. Migrar dados que nao se sabe existir e pior que a fronteira registrada.",
+      "efeito": "A convergencia fica registrada como dependencia de contrato de dados para quando o BE de forms for ao remoto.",
+      "data": "2026-09-09T18:34:00-03:00"
+    },
+    {
+      "id": "GOLDEN-REBASELINE-CRITERIO",
+      "decisao": "Rebaseline de golden e permitido quando as tres condicoes forem cumpridas JUNTAS: (i) a causa e rastreavel a um commit aprovado especifico OU a uma mudanca intencional e testada do proprio lote; (ii) cada render foi inspecionado antes de regenerar; (iii) os arquivos ficam listados por caminho no registro. Fora disso, proibido.",
+      "causa": "A regra anterior era cega demais. O que ela precisa proibir e mascarar deriva de origem desconhecida, nao impedir que um golden acompanhe uma mudanca intencional e testada, que e TDD normal.",
+      "casos": "alunos-rotina regenerou 10 goldens de daily_routine e attendance com causa em c4a7feff8 e ec9826f3e, inspecao por render e lista por caminho: ACEITO. Deriva de tema escuro, Suporte e Minha conta: NAO cumprem e continuam U/blocked-decision. Correcao de acentuacao de Rotina: AUTORIZADA em commit isolado com antes/depois.",
+      "data": "2026-09-09T19:20:00-03:00"
+    },
+    {
+      "id": "ATTENDANCE-FAIL-CLOSED",
+      "decisao": "NAO abrir a navegacao de /attendance (onCreate e onOpenCall nulos, capacidade de mutacao negada) antes de OQ-040. Qualquer patch nesse sentido sera rejeitado.",
+      "causa": "As RPCs superadmin_attendance_* nao existem em nenhuma das 173 migrations vivas, apenas em .recovery-archives; as vivas so tem a familia legada attendance_dashboard_*. Abrir a navegacao criaria acao falsa contra RPC inexistente. Achado de alunos-rotina.",
+      "efeito": "Mesmo tratamento para routineRepository e studentTrackingRepository, ambos Unavailable. O fail-closed e o comportamento correto.",
+      "data": "2026-09-09T19:15:00-03:00"
+    },
+    {
+      "id": "FILA-SQL-SERIALIZADA",
+      "decisao": "Quatro candidatos renomeados para uma fila forward-only unica depois da cauda 20260909174500, na ordem real de integracao em dev. Conteudo intocado, SHA256 identico antes e depois.",
+      "causa": "Tres grupos escolheram independentemente o carimbo 20260909190000 e chat-comunicacoes escolheu 130000 e 140000, anteriores a cinco migrations ja existentes. Worktrees separadas nao impedem colisao logica: a ordem da fila e global.",
+      "registro": "docs/reviews/etapa-2-operacao/reports/NOTURNA-fila-sql-serializada.md contem o mapeamento autoritativo dos carimbos originais que os manifests dos grupos ainda citam.",
+      "regra": "Novos candidatos escolhem carimbo posterior a 20260909200000 e avisam o coordenador.",
+      "data": "2026-09-09T19:35:00-03:00"
+    }
+  ],
+  "integrado": [
+    {
+      "grupo": "perfil-para-voce",
+      "lote": "b09da7c15",
+      "merge": "790e215f3",
+      "verificacao": "analyze limpo; P=225 F=10; as 10 identicas na base intocada"
+    },
+    {
+      "grupo": "publicacoes-midia",
+      "lote": "1e39b2fcf",
+      "merge": "d502350ce",
+      "verificacao": "analyze limpo; 229P/21F contra 138P/21F na base intocada: +91 casos, zero regressao"
+    },
+    {
+      "grupo": "operacoes-sistema",
+      "lote": "aafde0b3d",
+      "merge": "264684020",
+      "verificacao": "159P/7F contra 153P/7F na base intocada: +6 casos, zero regressao"
+    },
+    {
+      "grupo": "formularios-cuidado",
+      "lote": "94b9fa18d",
+      "merge": "bfb6a7c00",
+      "verificacao": "coelo_domain test/forms todos verdes; forms do superadmin 711P/9F, falhas conhecidas da base"
+    },
+    {
+      "grupo": "estrutura",
+      "lote": "e6c25bb94",
+      "merge": "946cc0274",
+      "verificacao": "analyze limpo; 688P/36F contra 645P/36F em dev antes do merge: +43 casos, zero regressao"
+    },
+    {
+      "grupo": "chat-comunicacoes",
+      "lote": "e4d03a427",
+      "merge": "60b98f98a",
+      "verificacao": "55 falhas antes e 55 depois nas mesmas suites; conflito logico de onOpenMessages reconciliado pelo coordenador"
+    },
+    {
+      "grupo": "alunos-rotina",
+      "lote": "bf69016f3",
+      "merge": "dba34c9e6",
+      "verificacao": "analyze limpo no conjunto"
+    },
+    {
+      "grupo": "perfil-para-voce",
+      "lote": "6e58b624f (lotes 2-4)",
+      "merge": "23044a276",
+      "verificacao": "analyze limpo no conjunto"
+    },
+    {
+      "grupo": "formularios-cuidado",
+      "lote": "75b2cebdb",
+      "merge": "8d4991a2e",
+      "verificacao": "analyze limpo no conjunto"
+    },
+    {
+      "grupo": "operacoes-sistema",
+      "lote": "d3ddc4a76",
+      "merge": "aa0e54d0c",
+      "verificacao": "analyze limpo no conjunto; inclui censo de goldens e correcoes de Agenda"
+    },
+    {
+      "grupo": "estrutura",
+      "lote": "bf422d4f9",
+      "merge": "8a520c547",
+      "verificacao": "analyze limpo no conjunto"
+    },
+    {
+      "grupo": "acessos-pessoas",
+      "lote": "b285a6804",
+      "merge": "69ce62c43",
+      "verificacao": "analyze limpo no conjunto"
+    }
+  ],
+  "correcoesDoCoordenador": [
+    {
+      "erro": "Repassei a publicacoes-midia uma atribuicao de 3 vermelhos em principal_real_route_test.dart vinda de alunos-rotina, sem medir.",
+      "correcao": "publicacoes-midia mediu contra worktree destacada em d784462c1 e mostrou que esse arquivo nao aparece entre as 33 falhas da base. Atribuicao retirada. Passo a medir antes de rotear.",
+      "data": "2026-09-09T19:38:00-03:00"
+    }
+  ],
+  "censoGoldens": {
+    "fonte": "operacoes-sistema, commit d3ddc4a76",
+    "relatorio": "docs/reviews/etapa-2-operacao/reports/E2-noturna-golden-census-20260909.md",
+    "medida": "49 suites *_golden_test.dart de apps/superadmin sobre d784462c1: 226 PASS, 6 SKIP, 151 FAIL em 27 features",
+    "maiores": "agenda 20, principal_moments 11, principal_profile 10, principal_happens 10, chat 9, activities 9, institutions 8, groups 8, forms 8, account 8",
+    "padroes": "referencia ausente (nunca existiu), referencia obsoleta com commits rastreados, e deriva de tema escuro",
+    "limite": "A medicao nao classifica sozinha obsolescencia aceitavel versus regressao real; isso exige abrir a referencia aprovada de cada tela e e decisao do Owner"
   }
 }
