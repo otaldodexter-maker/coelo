@@ -26,6 +26,212 @@ void main() {
     (widget) => widget is TextFormField && widget.controller?.text == value,
   );
 
+  Finder imageLimit(String key) => find.byKey(ValueKey('forms-gallery-$key-gallery'));
+
+  _Api galleryApi({FormItemConfig config = const FormItemConfig()}) => _Api(manage: true)
+    ..customItems = [
+      FormItem(
+        id: 'gallery',
+        kind: FormItemKind.gallery,
+        label: 'Galeria',
+        position: 0,
+        config: config,
+      ),
+    ];
+
+  for (final automatic in [false, true]) {
+    testWidgets('gallery controls persist explicit limits automatic=$automatic', (tester) async {
+      final api = galleryApi(config: const FormItemConfig(minImages: 2, maxImages: 5));
+      await open(tester, api);
+      expect(tester.widget<TextFormField>(imageLimit('min')).controller!.text, '2');
+      expect(tester.widget<TextFormField>(imageLimit('max')).controller!.text, '5');
+      expect(api.commands, isEmpty);
+      await tester.enterText(imageLimit('min'), '3');
+      await tester.enterText(imageLimit('max'), '4');
+      if (automatic) {
+        await tester.pump(const Duration(milliseconds: 800));
+      } else {
+        final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+        await tester.ensureVisible(save);
+        await tester.tap(save);
+      }
+      await tester.pumpAndSettle();
+      expect(api.commands, hasLength(1));
+      final config = api.commands.single.payload.sections.single.items.single.config;
+      expect(config.minImages, 3);
+      expect(config.maxImages, 4);
+      api.customItems = api.commands.single.payload.sections.single.items;
+      await tester.pumpWidget(const SizedBox());
+      await open(tester, api);
+      expect(tester.widget<TextFormField>(imageLimit('min')).controller!.text, '3');
+      expect(tester.widget<TextFormField>(imageLimit('max')).controller!.text, '4');
+      expect(api.commands, hasLength(1));
+    });
+  }
+
+  testWidgets('gallery controls keep absent limits absent and allow explicit defaults', (
+    tester,
+  ) async {
+    final api = galleryApi();
+    await open(tester, api);
+    expect(tester.widget<TextFormField>(imageLimit('min')).controller!.text, isEmpty);
+    expect(tester.widget<TextFormField>(imageLimit('max')).controller!.text, isEmpty);
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.commands, isEmpty);
+    await tester.enterText(imageLimit('min'), '1');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    var config = api.commands.last.payload.sections.single.items.single.config;
+    expect(config.minImages, 1);
+    expect(config.maxImages, isNull);
+    await tester.enterText(imageLimit('min'), '');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    config = api.commands.last.payload.sections.single.items.single.config;
+    expect(config.minImages, isNull);
+    expect(config.maxImages, isNull);
+  });
+
+  for (final invalid in ['0', '6', '2.5', 'abc', '4']) {
+    testWidgets('gallery controls reject $invalid before save and recover after correction', (
+      tester,
+    ) async {
+      final api = galleryApi(config: const FormItemConfig(minImages: 2, maxImages: 3));
+      await open(tester, api);
+      await tester.enterText(imageLimit('min'), invalid);
+      await tester.pump(const Duration(milliseconds: 800));
+      await tester.pumpAndSettle();
+      expect(api.commands, isEmpty);
+      final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+      await tester.ensureVisible(save);
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      expect(api.commands, isEmpty);
+      expect(
+        find.text(
+          invalid == '4'
+              ? 'O mínimo de imagens deve ser menor ou igual ao máximo.'
+              : 'Informe limites de imagens inteiros entre 1 e 5.',
+        ),
+        findsWidgets,
+      );
+      expect(tester.widget<TextFormField>(imageLimit('max')).controller!.text, '3');
+      await tester.enterText(imageLimit('min'), '3');
+      await tester.pump(const Duration(milliseconds: 800));
+      await tester.pumpAndSettle();
+      expect(api.commands, hasLength(1));
+      expect(api.commands.single.payload.sections.single.items.single.config.minImages, 3);
+    });
+  }
+
+  testWidgets('gallery controls reject a maximum below minimum without changing minimum', (
+    tester,
+  ) async {
+    final api = galleryApi(config: const FormItemConfig(minImages: 2, maxImages: 5));
+    await open(tester, api);
+    await tester.enterText(imageLimit('max'), '1');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.commands, isEmpty);
+    expect(tester.widget<TextFormField>(imageLimit('min')).controller!.text, '2');
+    await tester.enterText(imageLimit('max'), '2');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.commands.single.payload.sections.single.items.single.config.maxImages, 2);
+  });
+
+  testWidgets('gallery controls retain invalid input entered during an earlier save', (
+    tester,
+  ) async {
+    final api = galleryApi()..saveWait = Completer<void>();
+    await open(tester, api);
+    await tester.enterText(title('Authorized title'), 'Earlier edit');
+    await tester.pump(const Duration(milliseconds: 800));
+    expect(api.commands, hasLength(1));
+    await tester.enterText(imageLimit('min'), 'abc');
+    api.saveWait!.complete();
+    await tester.pump();
+    expect(find.text('Rascunho salvo.'), findsNothing);
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.commands, hasLength(1));
+    expect(tester.widget<TextFormField>(imageLimit('min')).controller!.text, 'abc');
+    await tester.enterText(imageLimit('min'), '2');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.commands, hasLength(2));
+    expect(api.commands.last.expectedVersion, 2);
+    expect(api.commands.last.requestId, isNot(api.commands.first.requestId));
+    expect(api.commands.last.payload.sections.single.items.single.config.minImages, 2);
+  });
+
+  testWidgets('gallery controls remain absent for photo', (tester) async {
+    final api = _Api(manage: true)
+      ..customItems = [FormItem(id: 'photo', kind: FormItemKind.photo, label: 'Foto', position: 0)];
+    await open(tester, api);
+    expect(find.text('Mínimo de imagens'), findsNothing);
+    expect(find.text('Máximo de imagens'), findsNothing);
+    expect(api.commands, isEmpty);
+  });
+
+  testWidgets('gallery controls duplicate edited limits without sharing controllers', (
+    tester,
+  ) async {
+    final api = galleryApi();
+    await open(tester, api);
+    await tester.enterText(imageLimit('min'), '2');
+    await tester.enterText(imageLimit('max'), '4');
+    final duplicate = find.byTooltip('Duplicar pergunta');
+    await tester.ensureVisible(duplicate);
+    await tester.tap(duplicate);
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.commands, hasLength(1));
+    final items = api.commands.single.payload.sections.single.items;
+    expect(items, hasLength(2));
+    expect(items.map((item) => item.config.minImages), [2, 2]);
+    expect(items.map((item) => item.config.maxImages), [4, 4]);
+    final copiedMin = find.byKey(ValueKey('forms-gallery-min-${items.last.id}'));
+    await tester.enterText(copiedMin, '3');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.commands.last.payload.sections.single.items.map((item) => item.config.minImages), [
+      2,
+      3,
+    ]);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('gallery controls stack at 375px and support keyboard input', (tester) async {
+    tester.view.physicalSize = const Size(375, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final api = galleryApi();
+    await open(tester, api);
+    expect(
+      tester.getTopLeft(imageLimit('max')).dy,
+      greaterThan(tester.getBottomLeft(imageLimit('min')).dy),
+    );
+    await tester.ensureVisible(imageLimit('min'));
+    await tester.tap(imageLimit('min'));
+    await tester.pump();
+    expect(tester.testTextInput.isVisible, isTrue);
+    expect(
+      tester
+          .widget<EditableText>(
+            find.descendant(of: imageLimit('min'), matching: find.byType(EditableText)),
+          )
+          .keyboardType,
+      TextInputType.number,
+    );
+    tester.testTextInput.enterText('2');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.commands.single.payload.sections.single.items.single.config.minImages, 2);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final automatic in [false, true]) {
     for (final explicitLimits in [false, true]) {
       testWidgets(

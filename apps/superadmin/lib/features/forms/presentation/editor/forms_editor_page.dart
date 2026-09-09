@@ -1381,7 +1381,22 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   String _draftFingerprint() {
     final payload = FormDefinitionDto.fromDomain(_localDefinition()).toJson();
     payload.remove('management_version');
+    payload['gallery_limit_inputs'] = [
+      for (final section in _sections)
+        for (final question in _flattenQuestions(section.questions))
+          if (question.kind == FormItemKind.gallery)
+            [question.id, question.minimumImages.text, question.maximumImages.text],
+    ];
     return jsonEncode(payload);
+  }
+
+  String? get _galleryLimitsIssue {
+    for (final section in _sections) {
+      for (final question in _flattenQuestions(section.questions)) {
+        if (question.galleryLimitsIssue case final issue?) return issue;
+      }
+    }
+    return null;
   }
 
   void _scheduleAutosave() {
@@ -1436,6 +1451,10 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   }
 
   void _validateLocally() {
+    if (_galleryLimitsIssue case final issue?) {
+      setState(() => _feedback = issue);
+      return;
+    }
     final issues = const FormDefinitionValidator().validate(_localDefinition());
     final scheduleIssue = _scheduleIssue;
     setState(
@@ -1494,8 +1513,12 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       scaleMaxLabel: question.loadedConfig.scaleMaxLabel,
       allowCamera: question.loadedConfig.allowCamera,
       allowExisting: question.loadedConfig.allowExisting,
-      minImages: question.loadedConfig.minImages,
-      maxImages: question.loadedConfig.maxImages,
+      minImages: question.kind == FormItemKind.gallery
+          ? int.tryParse(question.minimumImages.text.trim())
+          : question.loadedConfig.minImages,
+      maxImages: question.kind == FormItemKind.gallery
+          ? int.tryParse(question.maximumImages.text.trim())
+          : question.loadedConfig.maxImages,
       minValue: num.tryParse(question.minimum.text.trim().replaceAll(',', '.')),
       maxValue: num.tryParse(question.maximum.text.trim().replaceAll(',', '.')),
       currency: question.kind == FormItemKind.money ? 'BRL' : null,
@@ -1513,6 +1536,10 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   Future<void> _saveDraft({bool automatic = false}) async {
     _autosaveTimer?.cancel();
     final generation = _contextGeneration;
+    if (_galleryLimitsIssue case final issue?) {
+      setState(() => _feedback = issue);
+      return;
+    }
     if (widget.development) {
       _saveDraftLocally();
       return;
@@ -1558,8 +1585,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       if (!_isCurrentContext(generation)) return;
       final changedSinceCommand =
           authoring != null &&
-          jsonEncode(FormDefinitionDto.fromDomain(_localDefinition()).toJson()) !=
-              jsonEncode(FormDefinitionDto.fromDomain(command.payload).toJson());
+          (_galleryLimitsIssue != null ||
+              jsonEncode(FormDefinitionDto.fromDomain(_localDefinition()).toJson()) !=
+                  jsonEncode(FormDefinitionDto.fromDomain(command.payload).toJson()));
       setState(() {
         _definition = saved;
         _institutionId = saved.institutionId;
@@ -1676,6 +1704,10 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
 
   Future<void> _openPublishDialog() async {
     final generation = _contextGeneration;
+    if (_galleryLimitsIssue case final issue?) {
+      setState(() => _feedback = issue);
+      return;
+    }
     final issues = const FormDefinitionValidator().validate(_localDefinition());
     if (issues.isNotEmpty) {
       setState(
@@ -2095,6 +2127,8 @@ final class _EditorQuestionDraft {
        details = TextEditingController(),
        minimum = TextEditingController(),
        maximum = TextEditingController(),
+       minimumImages = TextEditingController(text: loadedConfig.minImages?.toString() ?? ''),
+       maximumImages = TextEditingController(text: loadedConfig.maxImages?.toString() ?? ''),
        options = kind == FormItemKind.singleChoice || kind == FormItemKind.multipleChoice
            ? [TextEditingController(text: 'Opção 1'), TextEditingController(text: 'Opção 2')]
            : [] {
@@ -2111,6 +2145,8 @@ final class _EditorQuestionDraft {
   final TextEditingController details;
   final TextEditingController minimum;
   final TextEditingController maximum;
+  final TextEditingController minimumImages;
+  final TextEditingController maximumImages;
   final List<TextEditingController> options;
   final Map<TextEditingController, String> optionIds = {};
   final List<_EditorQuestionDraft> branchQuestions = [];
@@ -2121,6 +2157,19 @@ final class _EditorQuestionDraft {
   _DateRule dateRule = _DateRule.free;
   DateTime from = DateTime(2026, 8, 1);
   DateTime until = DateTime(2026, 8, 31);
+
+  String? get galleryLimitsIssue {
+    if (kind != FormItemKind.gallery) return null;
+    final minimum = minimumImages.text.trim();
+    final maximum = maximumImages.text.trim();
+    final min = minimum.isEmpty ? 1 : int.tryParse(minimum);
+    final max = maximum.isEmpty ? 5 : int.tryParse(maximum);
+    if (min == null || max == null || min < 1 || min > 5 || max < 1 || max > 5) {
+      return 'Informe limites de imagens inteiros entre 1 e 5.';
+    }
+    if (min > max) return 'O mínimo de imagens deve ser menor ou igual ao máximo.';
+    return null;
+  }
 
   String optionLabel(String id) => options.firstWhere((option) => optionIds[option] == id).text;
 
@@ -2186,7 +2235,9 @@ final class _EditorQuestionDraft {
       ..until = until
       ..details.text = details.text
       ..minimum.text = minimum.text
-      ..maximum.text = maximum.text;
+      ..maximum.text = maximum.text
+      ..minimumImages.text = minimumImages.text
+      ..maximumImages.text = maximumImages.text;
     value.replaceOptions([
       for (var index = 0; index < options.length; index++)
         FormOption(
@@ -2211,6 +2262,8 @@ final class _EditorQuestionDraft {
     details.dispose();
     minimum.dispose();
     maximum.dispose();
+    minimumImages.dispose();
+    maximumImages.dispose();
     for (final option in options) {
       option.dispose();
     }
@@ -2691,6 +2744,61 @@ final class _QuestionCardState extends State<_QuestionCard> {
           const SizedBox(height: CoeloSpacing.space3),
           widget.branchPanel!,
         ],
+      ],
+      if (widget.question.kind == FormItemKind.gallery) ...[
+        const SizedBox(height: CoeloSpacing.space3),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            void changed(String _) {
+              setState(() {});
+              widget.onChanged();
+            }
+
+            final minimum = CoeloFormTextField(
+              fieldKey: ValueKey('forms-gallery-min-${widget.question.id}'),
+              controller: widget.question.minimumImages,
+              labelText: 'Mínimo de imagens',
+              hintText: '1 (padrão)',
+              prefixIcon: Icons.vertical_align_bottom_rounded,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.next,
+              onChanged: changed,
+            );
+            final maximum = CoeloFormTextField(
+              fieldKey: ValueKey('forms-gallery-max-${widget.question.id}'),
+              controller: widget.question.maximumImages,
+              labelText: 'Máximo de imagens',
+              hintText: '5 (padrão)',
+              prefixIcon: Icons.vertical_align_top_rounded,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.done,
+              onChanged: changed,
+            );
+            if (constraints.maxWidth < 520 || MediaQuery.textScalerOf(context).scale(1) > 1.3) {
+              return Column(
+                children: [
+                  minimum,
+                  const SizedBox(height: CoeloSpacing.space3),
+                  maximum,
+                ],
+              );
+            }
+            return Row(
+              children: [
+                Expanded(child: minimum),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(child: maximum),
+              ],
+            );
+          },
+        ),
+        if (widget.question.galleryLimitsIssue case final issue?)
+          Text(
+            issue,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
+          ),
       ],
       if (widget.question.kind == FormItemKind.photo ||
           widget.question.kind == FormItemKind.gallery) ...[
