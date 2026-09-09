@@ -1,5 +1,5 @@
 {
-  "revision": 8,
+  "revision": 9,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-09T19:40:00-03:00",
+  "updatedAt": "2026-09-09T19:50:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T19:03:25-03:00",
     "measuredBy": "date no checkout integrador",
@@ -448,7 +448,7 @@
     "claudeExecutorAddresses": "Fornecidos pelo Owner e verificados por envio real: as seis conversas Claude receberam ACK nominal por SendMessage em 18:18. Enderecos gravados em groups[].sessionName/sessionId para recuperacao."
   },
   "blocks": [],
-  "nextStep": "Rodar a suite completa de apps/superadmin sobre a base integrada para produzir o baseline datado do fechamento, integrar os lotes seguintes e comecar a atualizacao de inventario e rastreadores.",
+  "nextStep": "Coletar tracker_delta_proposto de todos os grupos, rodar a suite completa como baseline datado e aplicar a atualizacao consolidada de inventario e dos tres rastreadores.",
   "providers": {
     "supabase": {
       "cli": "supabase 2.117.0 autenticado; token no Credential Manager do Windows",
@@ -623,5 +623,17 @@
     "maiores": "agenda 20, principal_moments 11, principal_profile 10, principal_happens 10, chat 9, activities 9, institutions 8, groups 8, forms 8, account 8",
     "padroes": "referencia ausente (nunca existiu), referencia obsoleta com commits rastreados, e deriva de tema escuro",
     "limite": "A medicao nao classifica sozinha obsolescencia aceitavel versus regressao real; isso exige abrir a referencia aprovada de cada tela e e decisao do Owner"
+  },
+  "deltaObrigatorio": {
+    "exigencia": "A partir desta revisao, TODA revisao de <grupo>.json inclui o campo tracker_delta_proposto. Sem ele eu nao consigo atualizar inventario e rastreadores no fechamento, e o trabalho do grupo aparece como commit sem estado.",
+    "formato": "Array de objetos: {action_id, camada: frontend|backend|integrated, estado_atual, estado_proposto, delta (frase que entra na linha do rastreador), evidencia (commit e/ou caminho de teste)}.",
+    "regras": [
+      "action_id exatamente como no inventario. Nao inventar ID nem agrupar familia como se fosse acao.",
+      "estado_proposto so pode ser terminal (verified, done, verified-e2e) com certificacao completa: evidencia em arquivo do repo, revisao, ambiente e data. Na duvida, manter pending-verification e escrever o motivo.",
+      "Correcao de baseline vermelha, teste novo ou golden reconciliado NAO promove acao. Sao condicao do aceite, nao o aceite.",
+      "Bloqueio vira estado explicito: blocked-decision quando falta decisao do Owner, blocked-environment quando falta ambiente ou autorizacao remota.",
+      "Se nada mudou de estado, enviar array vazio com uma nota. Array ausente e diferente de nenhuma mudanca."
+    ],
+    "exemploBom": "alunos-rotina revisao 3 publicou tracker_delta_proposto correto, inclusive recusando promover qualquer acao a verified por ter apenas restaurado baseline vermelha."
   }
 }
