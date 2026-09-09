@@ -463,19 +463,44 @@ select set_config('request.jwt.claims',jsonb_build_object(
   'user_metadata',jsonb_build_object('authentication_method','password','password_authenticated',true)
 )::text,true);
 set local role authenticated;
-insert into auth_test_responses values(104,public.superadmin_auth_bootstrap_context());
+-- The session gate runs before institution resolution, so NULL exercises the
+-- second wrapper without adding a tenant fixture or relaxing its authorization.
+insert into auth_test_responses values(104,public.superadmin_auth_resolve_institution_context(null));
 reset role;
 select ok((select body->>'ok'='false' and body->'data'='null'::jsonb
   and body#>>'{error,code}'='SAI_SESSION_INVALID'
   from auth_test_responses where sequence_number=104),
   'claimed password AMR and mutable user metadata cannot override provider OTP-only session');
 
-select ok((select count(*)=3 and bool_and(app_private.audit_verify_entry(id))
-  from audit.audit_logs
-  where correlation_id in(select (body#>>'{error,correlation_id}')::uuid
-    from auth_test_responses where sequence_number in(102,103,104))
-    and outcome='denied' and reason_code='SAI_SESSION_INVALID'
-    and action_code='superadmin.auth.bootstrap'),
+select ok((select count(*)=3 and count(distinct log_record.correlation_id)=3
+  and bool_and(coalesce(
+    app_private.audit_verify_entry(log_record.id)
+    and log_record.outcome='denied' and log_record.reason_code='SAI_SESSION_INVALID'
+    and log_record.reason='SAI_SESSION_INVALID'
+    and log_record.action_code=case when response.sequence_number=104
+      then 'superadmin.auth.resolve_institution' else 'superadmin.auth.bootstrap' end
+    and log_record.hash_version=2 and log_record.payload_contract_version=2
+    and log_record.actor_kind='superadmin_internal' and log_record.actor_role_code='operations'
+    and log_record.actor_internal_identity_id='30000000-0000-4000-8000-000000000005'::uuid
+    and log_record.actor_internal_auth_link_id='40000000-0000-4000-8000-000000000005'::uuid
+    and membership.internal_identity_id=log_record.actor_internal_identity_id
+    and log_record.actor_person_id is null and log_record.actor_membership_id is null
+    and log_record.support_session_id is null
+    and log_record.permission_code='platform.read' and log_record.mfa_aal='aal1'
+    and log_record.session_id_hash=extensions.digest(pg_catalog.convert_to(
+      case when response.sequence_number=103 then '20000000-0000-4000-8000-000000000007'
+        else '20000000-0000-4000-8000-000000000006' end,'UTF8'),'sha256')
+    and log_record.origin='database' and log_record.context_kind='global'
+    and log_record.context_id is null and log_record.institution_id is null
+    and log_record.object_type is null and log_record.object_id is null
+    and log_record.before_json is null and log_record.after_json is null,
+    false))
+  from auth_test_responses response
+  join audit.audit_logs log_record
+    on log_record.correlation_id=(response.body#>>'{error,correlation_id}')::uuid
+  left join app_private.superadmin_internal_memberships membership
+    on membership.id=log_record.actor_internal_membership_id
+  where response.sequence_number in(102,103,104)),
   'password-session denials append three correlated verified minimized audit records');
 
 set local role authenticated;

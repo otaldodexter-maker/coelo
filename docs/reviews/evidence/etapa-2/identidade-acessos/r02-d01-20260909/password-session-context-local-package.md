@@ -45,7 +45,8 @@ SHA-256 da preparação:
 | Artefato | SHA-256 |
 | --- | --- |
 | migration canônica | `A57E3F85C3906F2E83F28AE90BFBFD58E10BED6A25AFA8352019DF0210342BD8` |
-| TAP Auth compartilhado, plano 36 | `DC3EDBD471306174ED866BCA3EA337594D822F052903B4C4F25BE7EC351E4D1D` |
+| sucessor 173100 de auditoria | `F47F96D4F1C7CAB124A2A7608C50BF5CFBCC11E4FD502AB90C8893657166F863` |
+| TAP Auth compartilhado, plano 36, gate 35 fortalecido | `D0A37156E218AA1C445A6412338184292D13664FE92CCD6C7B5AECE6D127600B` |
 | script focal HTTP | `C51BA5858C1D2C1008F733C78EF949F3B09AF8312D9BF8762C3A92BFEB5A02BE` |
 | wrapper WIP entregue ao MAIN, hash anterior à edição central | `13FFE2C4DC08E80751D97BF934B6511BD4F896A471FF1BB3F0ECFCC47C27B00D` |
 
@@ -64,7 +65,11 @@ são evidência separada de ferramenta, não incrementam os 46 gates do plano.
 Comando previsto, sujeito à liberação do slot D00 e wrapper central:
 
 ```powershell
-rtk proxy powershell -NoProfile -File packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 -TargetVersion 20260909173000 -AuthOnly -AdditionalMigration '20260909173000_superadmin_password_session_context.sql|a57e3f85c3906f2e83f28ae90bfbfd58e10bed6a25afa8352019df0210342bd8' -TestPath packages/coelo_database/supabase/tests/superadmin_internal_auth_context_test.sql -RunAuthRecoveryBoundary -AssertAuthRecoveryConfined
+$authAdditionalMigrations = @(
+  '20260909173000_superadmin_password_session_context.sql|a57e3f85c3906f2e83f28ae90bfbfd58e10bed6a25afa8352019df0210342bd8'
+  '20260909173100_superadmin_password_session_denial_audit.sql|f47f96d4f1c7cab124a2a7608c50bf5cfbcc11e4fd502ab90c8893657166f863'
+)
+& .\packages\coelo_database\scripts\Invoke-SafeLocalMigrationReplay.ps1 -TargetVersion 20260909173100 -AuthOnly -AdditionalMigration $authAdditionalMigrations -TestPath packages/coelo_database/supabase/tests/superadmin_internal_auth_context_test.sql -RunAuthRecoveryBoundary -AssertAuthRecoveryConfined
 ```
 
 Achado AAL ausente permanece separado e não corrigido neste pacote. Nenhum
@@ -135,3 +140,11 @@ O mecanismo físico, comandos usados e limites da prova estão detalhados em
 
 O SQL continua `stable` e preserva `not_after > now()` da base; nenhum ganho de
 expiração após espera em lock foi implementado ou alegado nesta correção.
+
+Atualização após D00 r14: o primeiro ensaio do predecessor terminou com
+35 pgTAP PASS, um FAIL no gate 35 e HTTP9+cold1 bloqueados. O pacote agora inclui
+o sucessor 173100, que preserva `SAI_SESSION_INVALID` na auditoria dos dois
+wrappers; 173000 não mudou. O gate 35 foi fortalecido sem remover sua exigência
+de auditoria verificada. Causa, fingerprints e estado de execução constam em
+`password-session-denial-audit-successor.md`. Os 46 gates da nova revisão ainda
+aguardam execução coordenada; o resultado predecessor não foi apagado.
