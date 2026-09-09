@@ -20,6 +20,8 @@ final class FakeRoutineRepository implements RoutineRepository {
   final List<RoutineLaunch> _launches;
 
   final List<RoutineDirectoryQuery> pageQueries = [];
+  final List<String> saveModelRequestIds = [];
+  int failSaveModelTimes = 0;
   List<RoutineAnswerCorrection> lastCorrections = [];
   String? lastCorrectionReason;
 
@@ -91,6 +93,11 @@ final class FakeRoutineRepository implements RoutineRepository {
 
   @override
   Future<String> saveModel(RoutineModel model, {required String requestId}) async {
+    saveModelRequestIds.add(requestId);
+    if (failSaveModelTimes > 0) {
+      failSaveModelTimes -= 1;
+      throw StateError('save failed');
+    }
     _replaceById(_models, model, (value) => value.id);
     return model.id;
   }
