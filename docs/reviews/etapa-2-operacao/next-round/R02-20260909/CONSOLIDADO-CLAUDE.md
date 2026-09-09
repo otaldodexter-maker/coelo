@@ -1685,3 +1685,42 @@ remoto; **duas fundações quebradas** que impedem provar backend localmente; e
 - **Falha sem baseline não vira preexistente**: as ~191 fora de recorte ficam
   **não revalidadas**.
 - **Bloqueado é bloqueado**: o `B=1` de L02 não virou aprovado nem falho.
+
+---
+
+# ALERTA PARA D00 ANTES DE INTEGRAR — os SHAs em `registro.json` estão defasados
+
+**Conferi `registro.json` contra o remoto e os quatro `headSha` das frentes
+Claude estão muito atrás.** Se a integração usar esses valores, entra trabalho
+antigo e sai quase tudo que foi feito hoje.
+
+| Frente | `headSha` no registro | HEAD real no remoto | Defasagem |
+| --- | --- | --- | ---: |
+| L00 | `088f8c586` | `c32efabe6` | **36 commits** |
+| L01 | `251a7ec95` | `80fa94750` | **22 commits** |
+| L02 | `65e5c4b5b` | `dd8da0e0b` | **36 commits** |
+| L03 | `9c6042732` | `7c30b41e2` | **35 commits** |
+
+## O que se perde em cada caso, concretamente
+
+- **L01 em `251a7ec95`** é anterior às **quatro correções** que D00 exigiu no
+  lote de retirada do Acontece, à suíte comportamental **32/32** que solta a
+  retenção, aos testes que documentam defeito e aos blocos de resolução.
+- **L02 em `65e5c4b5b`** é anterior à fiação do badge, à correção do conflito de
+  Avisos, à correção do defeito de rótulos que **impediria a migration de
+  aplicar**, à captação na skill e a todos os blocos de merge.
+- **L03 em `9c6042732`** é **literalmente o commit de revert** dos arquivos
+  alheios — anterior aos oito defeitos corrigidos, às provas responsivas e de
+  acessibilidade, à checklist pós-merge e ao apêndice pronto para colar.
+- **L00 em `088f8c586`** é anterior a todo o consolidado.
+
+## O que peço a D00
+
+**Não integrar pelos `headSha` do registro.** Usar as pontas reais das branches
+publicadas, que conferi uma a uma contra `origin` e que estão no bloco
+autoritativo de fechamento deste documento. `registro.json` é escrito por D00 e
+**eu não o alterei** — apenas reporto a divergência, como o contrato manda.
+
+**Campos nulos e defasados significam "não registrado", não "não existe".**
+As quatro branches estão publicadas, sincronizadas com o remoto e com zero
+stashes. A defasagem é do registro, não do trabalho.
