@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-09T16:30:19-03:00",
+  "generated_at": "2026-09-09T16:32:16-03:00",
   "timezone": "America/Sao_Paulo",
   "snapshot_head": "647c20b453222aef58027028e4367de954145f20",
   "snapshot_head_scope": "Flutter snapshot identified above. Current CHILD SQL evidence is the equivalent integrated tree f3e1f732f442b2e47a2f749cba1d927eb638d5be. Infrastructure candidate-patch and structure evidence retain their own hashes; none implies full product acceptance.",
   "scope": "R02 D03 focal evidence available before the 16:30 BRT consolidation cut",
   "preserved_evidence_manifest": {
     "path": "evidence/d03-acompanhamento/r02-20260909/manifest.json",
-    "sha256": "2B39E6AF438BDAFB54FE4FA0A5CB3C3A2B7BC464D0ED86FC20D5B4187655BECC",
-    "artifact_count": 31,
-    "bytes": 115225,
+    "sha256": "1926A994B0F59B19C77FB5828D246C28B620D0748E83D804440BDE2DCC76151A",
+    "artifact_count": 33,
+    "bytes": 122930,
     "note": "Byte-for-byte copies, not new executions. Source paths remain for provenance; the manifest maps them to versioned copies. Its source-ledger hash describes the earlier extraction snapshot, not this evolving ledger."
   },
   "counting_rules": {
@@ -55,7 +55,7 @@
     },
     "infrastructure": {
       "pester_unique_cases": 54,
-      "pester_console_report_only_cases": 14,
+      "pester_console_report_only_cases": 8,
       "failed": 0,
       "blocked": 0,
       "skipped": 0,
@@ -531,40 +531,26 @@
     },
     {
       "id": "infra.child-package-invoke-structure",
-      "status": "pass-reported-console-only",
+      "status": "pass-integrated-existing-evidence",
       "unique_cases": 6,
       "case_ids": [
-        {
-          "name": "requires an existing candidate that parses",
-          "origin": "reviewed source; execution reported console-only"
-        },
-        {
-          "name": "adds the opt-in switch without removing existing modes",
-          "origin": "reviewed source; execution reported console-only"
-        },
-        {
-          "name": "rejects every non-AuthOnly package combination before the mutex",
-          "origin": "reviewed source; execution reported console-only"
-        },
-        {
-          "name": "selects the database-only service composition for the package",
-          "origin": "reviewed source; execution reported console-only"
-        },
-        {
-          "name": "dispatches the reviewed harness only after replay and the pgTAP gate",
-          "origin": "reviewed source; execution reported console-only"
-        },
-        {
-          "name": "keeps the existing Auth, CHILD, Activity and location dispatches",
-          "origin": "reviewed source; execution reported console-only"
-        }
+        "CHILD remote package runner hook structure.requires an existing candidate that parses",
+        "CHILD remote package runner hook structure.adds the opt-in switch without removing existing modes",
+        "CHILD remote package runner hook structure.rejects every non-AuthOnly package combination before the mutex",
+        "CHILD remote package runner hook structure.selects the database-only service composition for the package",
+        "CHILD remote package runner hook structure.dispatches the reviewed harness only after replay and the pgTAP gate",
+        "CHILD remote package runner hook structure.keeps the existing Auth, CHILD, Activity and location dispatches"
       ],
       "evidence": {
         "source_path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-package-invoke-tests.ps1",
         "source_sha256": "9492C015DF0FF7BC451EFE6E8360881E5CA52B288C9E42E5F84EC84104B4B19E",
         "raw_log_path": null,
         "xml_path": null,
-        "report": "attendance: 6 pass, 0 fail, 807ms; not rerun to manufacture artifacts"
+        "report": "attendance: 6 pass, 0 fail, 807ms; not rerun to manufacture artifacts",
+        "integrated_xml_path": "evidence/d03-acompanhamento/r02-20260909/d03-child-package-hook-integrated.xml",
+        "integrated_xml_sha256": "8DD8FF8D7F1272ED046C1A38AD9E7C8FE75C286EEFE33E06C906AF76C030185C",
+        "integrated_base": "e0e83ee20dab4134703417e95cbca8c92db9b657",
+        "relationship": "Original author run remains console-only. Existing D00 6-case XML now supplies verbatim cases; test source matches via empty Git diff. No 6-case rerun added."
       }
     },
     {
@@ -736,7 +722,8 @@
     "exit_code": 1,
     "evidence": {
       "path": "C:/Users/adrie/Documents/Coelo/docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/child-package-first-replay.log",
-      "sha256": "A18C8E8DCD75604FB1E4F7A35CBD148072384BE14F30E906D40FC20378FC6D43"
+      "sha256": "A18C8E8DCD75604FB1E4F7A35CBD148072384BE14F30E906D40FC20378FC6D43",
+      "preserved_path": "evidence/d03-acompanhamento/r02-20260909/child-package-first-replay.log.txt"
     }
   },
   "schema_cache": {

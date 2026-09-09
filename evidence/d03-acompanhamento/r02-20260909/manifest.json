@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-09T16:17:23-03:00",
+  "generated_at": "2026-09-09T16:32:16-03:00",
   "timezone": "America/Sao_Paulo",
   "source_ledger": {
     "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/d03-test-ledger.json",
@@ -10,13 +10,13 @@
     "mode": "byte-for-byte evidence reproduction",
     "new_test_or_database_execution": false,
     "deduplicated_by": "source_path",
-    "artifact_count": 31,
-    "total_bytes": 115225,
+    "artifact_count": 33,
+    "total_bytes": 122930,
     "ignored_artifact_count": 0,
     "renamed_for_review": "Log copies use .log.txt names without byte changes; .gitattributes preserves source bytes.",
     "supplemental_artifacts": 4,
     "null_or_missing_references_copied": 0,
-    "non_temp_artifacts": 3
+    "non_temp_artifacts": 5
   },
   "secret_scan": {
     "performed_before_copy": false,
@@ -384,6 +384,30 @@
       "reproduction": "byte-for-byte evidence copy; no new execution",
       "git_ignored": false,
       "provenance": "local-offline-package-guard-tests-final-safe-cleanup"
+    },
+    {
+      "source_path": "C:/Users/adrie/Documents/Coelo/docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/child-package-first-replay.log",
+      "preserved_path": "evidence/d03-acompanhamento/r02-20260909/child-package-first-replay.log.txt",
+      "sha256": "A18C8E8DCD75604FB1E4F7A35CBD148072384BE14F30E906D40FC20378FC6D43",
+      "bytes": 4863,
+      "source_hash_verified": true,
+      "preserved_hash_verified": true,
+      "reproduction": "existing D00 evidence copied byte-for-byte; no new execution",
+      "git_ignored": false,
+      "provenance": "integrated-compositor-first-attempt-or-hook-proof",
+      "base_sha": "e0e83ee20dab4134703417e95cbca8c92db9b657"
+    },
+    {
+      "source_path": "C:/Users/adrie/Documents/Coelo/docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d03-child-package-hook-integrated.xml",
+      "preserved_path": "evidence/d03-acompanhamento/r02-20260909/d03-child-package-hook-integrated.xml",
+      "sha256": "8DD8FF8D7F1272ED046C1A38AD9E7C8FE75C286EEFE33E06C906AF76C030185C",
+      "bytes": 2842,
+      "source_hash_verified": true,
+      "preserved_hash_verified": true,
+      "reproduction": "existing D00 evidence copied byte-for-byte; no new execution",
+      "git_ignored": false,
+      "provenance": "integrated-compositor-first-attempt-or-hook-proof",
+      "base_sha": "e0e83ee20dab4134703417e95cbca8c92db9b657"
     }
   ]
 }
