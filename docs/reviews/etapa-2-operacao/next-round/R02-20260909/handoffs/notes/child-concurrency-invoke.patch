@@ -1,0 +1,52 @@
+--- a/packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1
++++ b/packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1
+@@ -21,7 +21,9 @@
+ 
+   [switch]$RunR02AuthProofConcurrency,
+ 
+-  [switch]$RunActivityV2Concurrency
++  [switch]$RunActivityV2Concurrency,
++
++  [switch]$RunChildDirectoryConcurrency
+ )
+ 
+ $ErrorActionPreference = 'Stop'
+@@ -93,6 +95,13 @@
+ if ($targetMigration.Count -ne 1) {
+   throw "target version must identify exactly one canonical migration: $TargetVersion"
+ }
++if ($RunChildDirectoryConcurrency -and (
++    $NominalProfile -ine 'ChildDirectoryEnvelope' -or
++    $TargetVersion -ne '20260908051500' -or
++    $FoundationOnly -or $AuthOnly -or $AdditionalMigration.Count -gt 0 -or
++    $RunAuthLifecycle -or $RunActivityV2Concurrency -or $RunR02AuthProofConcurrency)) {
++  throw 'CHILD concurrency requires exact ChildDirectoryEnvelope target without other profiles, additions or concurrency'
++}
+ if ($RunR02AuthProofConcurrency -and (
+     -not $AuthOnly -or -not $RunAuthLifecycle -or $FoundationOnly -or
+     $NominalProfile -or $AdditionalMigration.Count -gt 0 -or
+@@ -218,6 +227,12 @@
+   Assert-NoReparseAncestors $resolved
+   $resolved
+ })
++if ($RunChildDirectoryConcurrency) {
++  $childTapPath = [IO.Path]::GetFullPath((Join-Path $canonicalTestsRoot 'superadmin_child_context_directory_v2_test.sql'))
++  if ($resolvedTestPaths.Count -ne 1 -or $resolvedTestPaths[0] -ine $childTapPath) {
++    throw 'CHILD concurrency requires exactly the canonical child directory TAP'
++  }
++}
+ Assert-NoReparseAncestors $tempRoot
+ if ($projectRoot -eq $repositoryFull -or
+     $projectRoot.StartsWith($repositoryFull.TrimEnd('\') + '\', [StringComparison]::OrdinalIgnoreCase)) {
+@@ -345,6 +360,11 @@
+     & npx.cmd --yes $cliPackage --agent no test db --local @resolvedTestPaths --workdir $projectRoot
+     if ($LASTEXITCODE -ne 0) { throw "safe local pgTAP failed with exit code $LASTEXITCODE" }
+   }
++  if ($RunChildDirectoryConcurrency) {
++    & (Join-Path $scriptRoot 'Test-ChildDirectoryConcurrency.ps1') `
++      -ProjectRoot $projectRoot `
++      -ProjectId $projectId
++  }
+   if ($RunAuthLifecycle) {
+     & (Join-Path $scriptRoot 'Test-LocalAuthLifecycle.ps1') `
+       -ProjectRoot $projectRoot `
