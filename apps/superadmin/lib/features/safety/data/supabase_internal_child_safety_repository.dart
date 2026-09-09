@@ -40,7 +40,8 @@ final class SupabaseInternalChildSafetyRepository implements ChildSafetyReposito
         payload['child_id'] != childId ||
         !_identifier(payload['child_id']) ||
         payload['child_name'] is! String ||
-        !_contextRows(payload['contexts'])) {
+        !_contextRows(payload['contexts']) ||
+        !_authorizationRows(payload['authorizations'])) {
       throw const ChildSafetyUnavailableException();
     }
     return _decode(() => decodeChildSafetyRecord(payload));
@@ -138,6 +139,16 @@ bool _contextRow(Object? value) =>
     value['institution_name'] is String &&
     value['unit_name'] is String;
 bool _contextRows(Object? value) => value is List && value.every(_contextRow);
+bool _authorizationRows(Object? value) =>
+    value is List &&
+    value.every(
+      (item) =>
+          item is Map &&
+          _identifier(item['id']) &&
+          _identifier(item['child_context_id']) &&
+          _identifier(item['unit_id']) &&
+          item['name'] is String,
+    );
 bool _childRows(Object? value) =>
     value is List &&
     value.every(

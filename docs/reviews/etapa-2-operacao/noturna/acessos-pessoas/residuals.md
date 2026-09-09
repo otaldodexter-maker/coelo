@@ -43,7 +43,7 @@ BE0/223,E2E0/198, histórico e não recontado nesta rodada.
 | invites.resend | Receipt tardio/revisão descartados no R02 | Envio real nominal e composição normal |
 | invites.revoke | Overlay/revisão R02 preservados | Revogação e recarga reais com autorização nominal |
 | child-safety.list | Golden reconciliado; composição89P inclui prova anterior18 | SQL interno43, legado63, guard2; perfil53 reservado e publicado; sequência SQL pendente; depois runtime normal |
-| child-safety.child | Reader interno candidato; comandos explicitamente bloqueados | SQL nominal e HTTP/UI autorizado, sem ativar escrita |
+| child-safety.child | Reader interno41P; resposta sem autorizacoes recusada; comandos explicitamente bloqueados | SQL nominal e HTTP/UI autorizado, sem ativar escrita |
 | child-safety.create | Wizard indisponível em adapters reais, confirmado localmente | Lookup adulto minimizado e contrato de ator/receipt interno |
 | child-safety.edit | Somente pending; transporte não qualificado bloqueia ação | Contrato interno e persistência/recarga; UUID People não representa ator interno |
 | child-safety.suspend | Composição bloqueia despacho em transporte não qualificado | Contrato de realm/receipt e prova real de suspensão |
@@ -64,7 +64,7 @@ Provas e hashes por lote: `models/README.md`, `models/frontend-receipts.md`,
 `safety-composition/handoff.md`, `safety-sql/handoff.md` e
 `safety-sql/profile-proposal/README.md`. Contagens SQL, Flutter e preparação
 são separadas; reruns não aumentam cobertura. Rollback tardio6P em
-`models/rollback-01.txt`; formulário17P/1F herdado em models-form-receipt/handoff.md e duplicação24P em models/duplicate-receipts.md. Total atual354P/1F/120U: Safety108U e concorrênciaModels12U.
+`models/rollback-01.txt`; formulário17P/1F herdado em models-form-receipt/handoff.md e duplicação24P em models/duplicate-receipts.md. Total atual395P/1F/120U: Safety108U e concorrênciaModels12U.
 
 Produção: catálogo Supabase lido sem dados pessoais, zero mutação remota.
 Ausência do Owner não autoriza pacote novo. Modelos precisa da fundação nominal
