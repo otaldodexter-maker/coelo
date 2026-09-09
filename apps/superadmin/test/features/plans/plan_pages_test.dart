@@ -391,6 +391,25 @@ void main() {
     expect(find.byKey(const Key('superadmin-form-step-summary')), findsOneWidget);
   });
 
+  testWidgets('directory leaves loading when the repository fails unexpectedly', (tester) async {
+    // Antes, so PlanRepositoryException era capturada: qualquer outra falha
+    // deixava o diretorio preso no indicador de progresso.
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      _app(
+        PlanDirectoryPage(
+          repository: _ThrowingPlanCatalogRepository(const FormatException('resposta invalida')),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.text('Não foi possível carregar os planos'), findsOneWidget);
+  });
+
   testWidgets('directory distinguishes empty, no-results, error and unauthorized states', (
     tester,
   ) async {
@@ -635,6 +654,21 @@ Future<void> _openCreateCapabilities(WidgetTester tester) async {
   await tester.enterText(find.byKey(const Key('plan-description-field')), 'Descrição local.');
   await tester.tap(find.text('Continuar'));
   await tester.pumpAndSettle();
+}
+
+final class _ThrowingPlanCatalogRepository implements PlanCatalogRepository {
+  _ThrowingPlanCatalogRepository(this.error);
+
+  final Object error;
+
+  @override
+  Future<PlanPage> list(PlanQuery query) async => throw error;
+
+  @override
+  Future<PlanDetails> get(String planId) async => throw error;
+
+  @override
+  Future<PlanDetails> save(PlanSaveCommand command) async => throw error;
 }
 
 final class _RecordingPlanCatalogRepository implements PlanCatalogRepository {

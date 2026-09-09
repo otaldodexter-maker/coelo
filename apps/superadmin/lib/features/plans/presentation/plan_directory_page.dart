@@ -105,6 +105,13 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
             ? PlanDataState.unauthorized
             : PlanDataState.error;
       });
+    } on Object {
+      // Falha inesperada tambem precisa sair de loading: sem isto o diretorio
+      // fica preso no indicador de progresso e o erro vira unhandled.
+      if (!mounted || !identical(repository, widget.repository) || loadVersion != _loadVersion) {
+        return;
+      }
+      setState(() => _dataState = PlanDataState.error);
     }
   }
 
@@ -386,6 +393,12 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
       }
       await _load();
     } on PlanRepositoryException catch (_) {
+      if (mounted &&
+          repositoryVersion == _repositoryVersion &&
+          identical(repository, widget.repository)) {
+        setState(() => _dataState = PlanDataState.error);
+      }
+    } on Object {
       if (mounted &&
           repositoryVersion == _repositoryVersion &&
           identical(repository, widget.repository)) {
