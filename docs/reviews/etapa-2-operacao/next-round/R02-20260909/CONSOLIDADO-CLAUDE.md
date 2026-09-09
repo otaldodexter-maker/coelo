@@ -626,3 +626,82 @@ como a disciplina do movimento único exigia.
 Árvore limpa exceto as três fontes compartilhadas, preservadas e intocadas;
 nenhum container, subagente ou agendamento. Handoff em
 `C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l01-publicacoes/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L01.md`.
+
+## DEFEITO QUE FARIA MIGRATION FALHAR NA APLICAÇÃO — achado por L02, corroborado por L00
+
+**É o achado de maior consequência prática do dia**, e só existe porque mandei as
+frentes voltarem a trabalhar em vez de ficarem em estado seguro. L02 tentou os
+ajustes de harness que L01 mapeou, **não** obteve o número que procurava, e no
+lugar dele achou um defeito no **próprio pacote** que o faria falhar em produção.
+
+### O defeito
+
+`module_label`, `screen_label` e `action_label` são **`NOT NULL` sem default** em
+`public.platform_permissions` desde `20260811215451_access_profile_management_v2.sql`.
+L02 confirmou no banco (`pg_attrdef` vazio para as três).
+
+**Corroborei por leitura**, com uma nuance que reforça o diagnóstico: naquela
+migration as três colunas são acrescentadas **sem default** e recebem
+`alter column ... set not null` nas linhas 62-68, enquanto uma **tabela irmã**
+ganha `not null default 'Principal'` na linha 15. Ou seja, o padrão não é
+uniforme no próprio arquivo, o que explica o erro passar despercebido.
+
+Qualquer `insert` em `platform_permissions` que **omita os três** falha com
+`null value in column "module_label" ... violates not-null constraint`.
+
+### Instância corrigida
+
+A migration  de L02 inseria `chat.internal.manage` **omitindo os
+três**. **Não é artefato de replay local:** em qualquer base que já tenha a
+migration de agosto — e produção tem, é de um mês atrás — **o pacote falharia ao
+aplicar**. Corrigido em `98ebd975`, fornecendo os três explicitamente pela
+convenção de `20260901210000_superadmin_internal_users_directory.sql` e incluindo
+os rótulos também no `on conflict do update`.
+
+### Duas instâncias latentes, que NÃO são para as frentes corrigirem
+
+Verifiquei por conta própria: **nenhuma das duas menciona `module_label`**.
+
+1. **`20260901101500_superadmin_internal_chat_v2.sql`** — mesmo defeito, e é a
+   **baseline das RPCs de chat que o app chama hoje**. Ou ela **nunca aplicou em
+   produção**, e então as RPCs `superadmin_chat_*_v2` não existem lá e o FE de
+   chat está falhando fechado contra um gateway inexistente; **ou** alguém a
+   ajustou fora do repositório. Nenhuma frente consegue distinguir daqui sem
+   acesso remoto, que não temos e não pedimos. **As duas hipóteses são materiais
+   para o preflight de D00.**
+2. **`20260901191921_superadmin_internal_circulars_v2.sql`** — território de L01,
+   mesmo defeito latente. É justamente a única migration do território dele que
+   falha no replay, e agora há causa provável que **não é o harness**.
+
+**Instruí L01 a diagnosticar e registrar, NÃO a corrigir.** A migration dele é de
+01/09 e o estado remoto dela é desconhecido; alterar migration que possa já ter
+sido aplicada exige decisão de D00. A de L02 era desta rodada e nunca aplicada, o
+que torna a correção em lugar segura — a diferença importa e está declarada.
+
+### O que L02 recusou fazer, e estava certo
+
+Usou **apenas** `check_function_bodies=off` e **não** relaxou os `not null`,
+porque o pgTAP dele afirma **estrutura** e passar por cima de constraint tornaria
+qualquer verde enganoso. Foi exatamente essa recusa que expôs o defeito: quem
+relaxa a constraint nunca o veria. Replay foi de **83 para 123 de 166**, e
+`20260831211945_activities_v2_internal_gateways.sql` **passou a aplicar** — o
+bloqueio raiz dele caiu, e o erro seguinte foi o defeito acima.
+
+**O `B=1` dele continua bloqueado** e será reportado assim: chat v2 e notices v2
+seguem sem aplicar, esta última por outro motivo,
+`relation "public.notice_events" does not exist`. Ele parou dentro do teto que
+L01 mediu, a minutos do corte. E declarou junto: replay com
+`check_function_bodies=off` **prova contrato, não banco de produção**.
+
+## Defeito de conflito em Avisos: reaberto e fechado COM prova
+
+L02 tinha revertido a correção por não conseguir dirigir o flyout. **O problema
+era o harness, não o comportamento:** o diretório só expõe o flyout na composição
+**compacta**; ele testava na tabela ampla. Com `375x800` o menu abre.
+`notice_directory_conflict_test.dart`, 3 casos verdes, provando **pela contagem
+de leituras do repositório** — conflito recarrega, ausência recarrega,
+indisponibilidade não. Correção de volta em `c68affc4`.
+
+Registro a sequência inteira porque ela é o método funcionando: achou, corrigiu,
+**reverteu por falta de prova**, achou o motivo da falta de prova, e reentregou
+**com** prova. Nenhum passo foi pulado.
