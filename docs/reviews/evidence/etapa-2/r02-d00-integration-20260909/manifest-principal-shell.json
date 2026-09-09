@@ -1,0 +1,38 @@
+{
+  "source": "D00 delegated local execution tool receipts; no raw log saved",
+  "generatedAt": "2026-09-09T14:59:24.720589-03:00",
+  "revision": "f5e5d8dfc",
+  "environment": "Windows local Flutter widget routes at1440x900 and390x844; source WIP subsequently integrated with matching blobs; no browser/backend",
+  "red": {
+    "session": 97774,
+    "chunk": "905ea3",
+    "exit": 1,
+    "P": 0,
+    "F": 2
+  },
+  "green": {
+    "session": 24302,
+    "chunks": [
+      "0cbbe4",
+      "39a3d9"
+    ],
+    "exit": 0,
+    "P": 14,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "newCases": [
+    "production Principal keeps its host at Size(1440.0, 900.0)",
+    "production Principal keeps its host at Size(390.0, 844.0)"
+  ],
+  "newUniqueCount": 2,
+  "otherCases": 12,
+  "countingLimit": "Only two new causal IDs added to D00 focal ledger; 12 existing tests retained as regression evidence, not added again. No action completion promotion.",
+  "testBlobs": {
+    "principal_real_route_test.dart": "9149f1f16db2d94ca021914fc0805a4815aa30c5",
+    "principal_moments_publication_route_test.dart": "712342455eff075679af15ac5ec4ce2984316cd6",
+    "principal_now_preview_route_test.dart": "9617d899801aa5774a75667c02ee18a23ebff5be"
+  }
+}

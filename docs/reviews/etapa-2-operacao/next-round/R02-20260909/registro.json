@@ -440,30 +440,34 @@
       4592,
       12881
     ],
-    "P": 270,
+    "P": 272,
     "F": 0,
     "B": 0,
     "S": 0,
     "U": 0,
-    "limit": "270 unique D00 focal application/contract cases. Infrastructure separate: profiles29 (20 rerun unchanged), auth executor36, new auth harness8. Browser4B. No whole-plan certification.",
+    "limit": "272 unique focal D00 app/contract cases, includes only two new shell cases. Infrastructure and nominal SQL separate. No global plan or action certification.",
     "manifests": [
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest.json",
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json",
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-reservations-profiles-resume.json",
-      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-auth-cold-integrated.json"
+      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-auth-cold-integrated.json",
+      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-principal-shell.json"
     ]
   },
   "localSqlSlot": {
-    "owner": "D03",
+    "owner": "D00",
     "assignmentRevision": 10,
-    "status": "reserved-awaiting-reviewed-CHILD-hook",
-    "next": "D00 Auth proof; D02 Clock successor after reviewed SHA",
+    "status": "AuthOnly-proof6-running",
+    "next": "AuthBoundary after reviewed candidate; ActivityClock; LocationCatalogV2",
     "remoteMutation": false,
-    "priorCleanup": "D02 r13 cleanup confirmed; docker ps empty D00 14:40"
+    "priorCleanup": "CHILD session45062 exit0; named container/volume/network empty and TEMP absent independently confirmed",
+    "sessionId": 13406,
+    "projectId": null,
+    "base": "2de1dc1b2"
   },
-  "checkpointAt": "2026-09-09T14:43:10.793230-03:00",
+  "checkpointAt": "2026-09-09T15:01:29.834755-03:00",
   "coordinatorResume": {
     "previousThreadId": "01a086d5-7bd9-7b12-8537-d29236b2e6ca",
     "threadId": "01a086d4-dd71-7020-a761-daecbc687813",

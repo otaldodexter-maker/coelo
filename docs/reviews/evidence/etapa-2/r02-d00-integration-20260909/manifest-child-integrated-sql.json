@@ -1,0 +1,27 @@
+{
+  "source": "D00 actual tool output from exec45062 after initial RTK warning; canonical nominal replay",
+  "recordedAt": "2026-09-09T15:01:29.836751-03:00",
+  "revision": "f3e1f732f",
+  "treeLimit": "Other UI/docs/profile files changed independently while SQL ran; selected CHILD migrations/TAP/harness unchanged; do not infer clean whole HEAD",
+  "migrations": 49,
+  "TAP": {
+    "P": 45,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "concurrency": {
+    "P": 3,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "exit": 0,
+  "projectId": "coelo_safe_e4db7faa964243a492450a831b100",
+  "cleanup": "zero confirmed by wrapper and separate inventory including TEMP absence",
+  "log": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/child-integrated-replay-f3e1f732f.log",
+  "sha256": "6561df4dbeb1e11407569663f3a6d39c99a752a978d0c99a6ba5f096ed5f9ef7",
+  "limit": "LocalSQL contract not production or E2E; replaces earlier21P24B; no duplicate counts"
+}
