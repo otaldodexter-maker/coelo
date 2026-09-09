@@ -1,4 +1,4 @@
-﻿---
+---
 title: "R02 D00 — harness local de revalidação Auth pós-lock"
 source: "Executor D01 corrigido; AuthOnly; Test-ActivityV2Concurrency.ps1; guard canônico internal Auth; delegação D00"
 status: "prepared-local-harness; pester-pass; sql-not-executed; wrapper-hook-integrated-local"
@@ -13,9 +13,9 @@ a auth.login/recover/reset/logout. Não é execução Auth real nem aceite E2E.
 ## Artefatos e prova atual
 
 - `packages/coelo_database/scripts/Test-R02AuthProofConcurrency.ps1`:
-  SHA256 `C9BDBBECC17C8CCA4E176E647B2DDED5529ACC90CDF48B4B02859ECA97D1D639`.
+  SHA256 `A59EBF2C9563E3327999ADE2AF070ECA85338376CC2A66DEFBA744D2B6F7D860`.
 - `packages/coelo_database/scripts/tests/Test-R02AuthProofConcurrency.Tests.ps1`:
-  SHA256 `8265C6550F2046AD9BF278A5385F7CEB806255A52CBCBDCED38B510AB3B09F28`.
+  SHA256 `7DF7C05328B4B34722AD1A1E1626918FB1438082ED12C3F803A644303DDADF1C`.
 - Dependência fixada, `r02-d01-auth-proof-executor.mjs`:
   SHA256 `8A5ABFBAECB1DC4134542F3F016837CC51521C3CCF1C6F61BD9DE84F45BC2E86`.
 
@@ -127,3 +127,9 @@ O hunk acima foi aplicado por D00 na raiz. Nenhum dos arquivos
 do executor ou dos seus documentos anteriores foi alterado por
 este lote. D00 mantém stage/commit, slot e qualificação final.
 
+
+## Correcao do gerador apos prova real - 2026-09-09T15:08:12-03:00
+
+Primeiro replay AuthOnly47 aplicou migrations e passou lifecycle real GoTrue/Mailpit/PostgREST. Concorrencia parou antes do primeiro cenario com ARGUMENTS_NOT_ALLOWED: Node-e posicionava executorPath em argv1, ativando a propria guarda CLI ao importar. Nao foi falha de autorizacao nem6testesexecutados. Session13406 exit1; teardown confirmado sem container/volume/network eTEMPproprioausente. Log auth-proof-first-replay-blocked.log.
+
+Harness corrigido sem alterar executor nominal: sentinelargv1, pathargv2, action/expiry slice3. Dois testes novos executam o generator real offline para provision/cleanup e exigem Nodeexit0, unicaJSON e SQLreal. RED8P2F; GREEN10P0F (8anteriores+2novos). Primeira saida shell1 foi warningRTK redirecionado; confirmacao explicita shell0 ja emcurso terminou sem aumentarcontagem. Logs/XML auth-proof-generator-{red,green,green-confirmed} preservados. SQL6 seguem bloqueados ate novo replay corrigido; dados ficticios permanecem locais e cleanup anterior confirmado.

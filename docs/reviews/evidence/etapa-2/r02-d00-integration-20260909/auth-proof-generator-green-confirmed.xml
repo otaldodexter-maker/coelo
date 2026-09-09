@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="10" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-09-09" time="15:06:48">
+  <environment user="adrie" machine-name="LAPTOP-67A8F4LK" cwd="C:\Users\adrie\Documents\Coelo" user-domain="LAPTOP-67A8F4LK" platform="Microsoft Windows 11 Home|C:\WINDOWS|\Device\Harddisk0\Partition3" nunit-version="2.5.8.0" os-version="10.0.26200" clr-version="4.0.30319.42000" />
+  <culture-info current-culture="pt-BR" current-uiculture="pt-BR" />
+  <test-suite type="Powershell" name="Pester" executed="True" result="Success" success="True" time="1.8026" asserts="0">
+    <results>
+      <test-suite type="TestFixture" name="R02 Auth proof concurrency local harness" executed="True" result="Success" success="True" time="1.5107" asserts="0" description="R02 Auth proof concurrency local harness">
+        <results>
+          <test-suite type="ParameterizedTest" name="R02 Auth proof concurrency local harness.generates real &lt;action&gt; SQL offline without invoking the executor CLI" executed="True" result="Success" success="True" time="1.3105" asserts="0" description="generates real &lt;action&gt; SQL offline without invoking the executor CLI">
+            <results>
+              <test-case description="generates real provision SQL offline without invoking the executor CLI" name="R02 Auth proof concurrency local harness.generates real provision SQL offline without invoking the executor CLI" time="0.8376" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="generates real cleanup SQL offline without invoking the executor CLI" name="R02 Auth proof concurrency local harness.generates real cleanup SQL offline without invoking the executor CLI" time="0.4729" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+          <test-case description="parses without errors" name="R02 Auth proof concurrency local harness.parses without errors" time="0.0149" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="describes exactly six distinct cases without resources" name="R02 Auth proof concurrency local harness.describes exactly six distinct cases without resources" time="0.0496" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects a foreign project before Docker discovery" name="R02 Auth proof concurrency local harness.rejects a foreign project before Docker discovery" time="0.0662" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects missing ownership marker before Docker discovery" name="R02 Auth proof concurrency local harness.rejects missing ownership marker before Docker discovery" time="0.0274" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects a stale executor hash before Docker discovery" name="R02 Auth proof concurrency local harness.rejects a stale executor hash before Docker discovery" time="0.0281" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="uses real generated SQL, observed blocking and strict negative receipts" name="R02 Auth proof concurrency local harness.uses real generated SQL, observed blocking and strict negative receipts" time="0.0139" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="R02 Auth proof wrapper integration" executed="True" result="Success" success="True" time="0.2919" asserts="0" description="R02 Auth proof wrapper integration">
+        <results>
+          <test-case description="exposes a separate explicit proof switch" name="R02 Auth proof wrapper integration.exposes a separate explicit proof switch" time="0.1243" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects incompatible combinations before starting resources" name="R02 Auth proof wrapper integration.rejects incompatible combinations before starting resources" time="0.1676" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

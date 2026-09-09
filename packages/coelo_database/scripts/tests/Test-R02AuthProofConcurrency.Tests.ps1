@@ -1,5 +1,41 @@
 $harnessPath = Join-Path $PSScriptRoot '..\Test-R02AuthProofConcurrency.ps1'
 Describe 'R02 Auth proof concurrency local harness' {
+  It 'generates real <action> SQL offline without invoking the executor CLI' -TestCases @(
+    @{action='provision'}, @{action='cleanup'}
+  ) {
+    param($action)
+    $tokens=$null; $errors=$null
+    $ast=[Management.Automation.Language.Parser]::ParseFile($harnessPath,[ref]$tokens,[ref]$errors)
+    $generatorAssignment=@($ast.FindAll({param($node)
+      $node -is [Management.Automation.Language.AssignmentStatementAst] -and
+      $node.Left.Extent.Text -eq '$generator'
+    },$true))
+    $generatorAssignment.Count | Should Be 1
+    . ([scriptblock]::Create($generatorAssignment[0].Extent.Text))
+    $definition=@($ast.FindAll({param($node)
+      $node -is [Management.Automation.Language.FunctionDefinitionAst] -and
+      $node.Name -eq 'New-ActualCommand'
+    },$true))
+    $definition.Count | Should Be 1
+    . ([scriptblock]::Create($definition[0].Extent.Text))
+    $executorPath=Join-Path $PSScriptRoot '..\r02-d01-auth-proof-executor.mjs'
+    $executorHash=(Get-FileHash -LiteralPath $executorPath -Algorithm SHA256).Hash
+    $executorHash | Should Be '8A5ABFBAECB1DC4134542F3F016837CC51521C3CCF1C6F61BD9DE84F45BC2E86'
+    $nodePath=(Get-Command node -ErrorAction Stop).Source
+    $command=New-ActualCommand $action ([DateTimeOffset]::UtcNow.ToUnixTimeSeconds()+3600)
+    $LASTEXITCODE | Should Be 0
+    @($command).Count | Should Be 1
+    $command.plan.authUserId | Should Match '^[0-9a-f-]{36}$'
+    $command.sql | Should Match '^begin;'
+    $command.sql | Should Match 'require_superadmin_internal_context'
+    $command.sql | Should Match "e2.r02.auth.$action"
+    if ($action -eq 'provision') {
+      $command.sql | Should Match 'insert into app_private.superadmin_internal_identities'
+    } else {
+      $command.sql | Should Match 'delete from auth.sessions'
+    }
+  }
+
   It 'parses without errors' {
     $tokens=$null; $errors=$null
     $null=[Management.Automation.Language.Parser]::ParseFile($harnessPath,[ref]$tokens,[ref]$errors)

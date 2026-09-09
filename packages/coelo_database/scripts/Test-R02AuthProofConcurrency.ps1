@@ -35,14 +35,15 @@ $mailbox='r02-auth-proof@invalid.test'
 # Imports the real executor without invoking its CLI; emits only local SQL/IDs.
 $generator=@'
 import {pathToFileURL} from 'node:url';
-const {mutationSql,plan}=await import(pathToFileURL(process.argv[1]));
-const [action,exp]=process.argv.slice(2);
+const {mutationSql,plan}=await import(pathToFileURL(process.argv[2]));
+const [action,exp]=process.argv.slice(3);
 const actor={sub:'a9020000-0000-4000-8000-000000000101',session_id:'a9020000-0000-4000-8000-000000000201',aal:'aal1',exp:Number(exp)};
 console.log(JSON.stringify({plan,sql:mutationSql(action,'r02-auth-proof@invalid.test',actor)}));
 '@
 function New-ActualCommand([string]$Action,[double]$Expires) {
   if ((Get-FileHash -LiteralPath $executorPath -Algorithm SHA256).Hash -ne $executorHash) { throw 'AUTH_PROOF_EXECUTOR_CHANGED' }
-  $output=@(& $nodePath --input-type=module -e $generator $executorPath $Action ($Expires.ToString('R',[Globalization.CultureInfo]::InvariantCulture)) 2>$null)
+  # argv[1] must differ from the imported module, whose entrypoint guard uses it.
+  $output=@(& $nodePath --input-type=module -e $generator 'r02-auth-proof-generator' $executorPath $Action ($Expires.ToString('R',[Globalization.CultureInfo]::InvariantCulture)) 2>$null)
   if ($LASTEXITCODE -ne 0 -or $output.Count -ne 1) { throw 'AUTH_PROOF_GENERATION_FAILED' }
   return $output[0] | ConvertFrom-Json
 }
