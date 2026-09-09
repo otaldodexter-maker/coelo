@@ -378,7 +378,7 @@ final class ProfileAboutEditor extends StatelessWidget {
         closeTooltip: 'Fechar edição da informação',
         body: CoeloFormTextField(
           controller: value,
-          labelText: field.key.name,
+          labelText: _fieldKeyLabel(field.key),
           prefixIcon: Icons.edit_outlined,
           maxLines: field.key == ProfileAboutFieldKey.importantInformation ? 5 : 2,
           maxLength: 4000,
@@ -514,7 +514,7 @@ final class _FieldRow extends StatelessWidget {
           children: [
             ListTile(
               leading: Icon(location ? Icons.location_on_outlined : Icons.info_outline),
-              title: Text(field.key.name),
+              title: Text(_fieldKeyLabel(field.key)),
               subtitle: Text(field.value),
               onTap: onEdit,
               trailing: CoeloAdminFlyout<ProfileAboutVisibility>(
@@ -570,7 +570,7 @@ final class _Preview extends StatelessWidget {
           Text('Prévia do perfil', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: CoeloSpacing.space4),
           for (final field in page.fields) ...[
-            Text(field.key.name, style: Theme.of(context).textTheme.labelLarge),
+            Text(_fieldKeyLabel(field.key), style: Theme.of(context).textTheme.labelLarge),
             Text(field.value),
             const SizedBox(height: CoeloSpacing.space3),
           ],
@@ -603,6 +603,44 @@ String _audienceLabel(ProfileAboutAudience value) => switch (value) {
   ProfileAboutAudience.profileAccess => 'Todos com acesso ao perfil',
   ProfileAboutAudience.linked => 'Somente vinculados',
   ProfileAboutAudience.team => 'Somente equipe',
+};
+
+/// Human label of an About field, in the same idiom as [_sectionTypeLabel].
+///
+/// Every field used to be labelled with `field.key.name`, so the editor showed
+/// the raw enum identifier — "displayAddress", "preciseLocation" — as the name
+/// of the thing being edited. The switch is exhaustive on purpose: a new key
+/// stops compiling here instead of leaking an identifier into the interface.
+String _fieldKeyLabel(ProfileAboutFieldKey value) => switch (value) {
+  ProfileAboutFieldKey.displayName => 'Nome exibido',
+  ProfileAboutFieldKey.description => 'Descrição',
+  ProfileAboutFieldKey.displayAddress => 'Endereço exibido',
+  ProfileAboutFieldKey.preciseLocation => 'Localização precisa',
+  ProfileAboutFieldKey.institutionalLocation => 'Localização institucional',
+  ProfileAboutFieldKey.phone => 'Telefone',
+  ProfileAboutFieldKey.mobile => 'Celular',
+  ProfileAboutFieldKey.email => 'E-mail',
+  ProfileAboutFieldKey.website => 'Site',
+  ProfileAboutFieldKey.serviceHours => 'Horário de atendimento',
+  ProfileAboutFieldKey.generalHours => 'Horário geral',
+  ProfileAboutFieldKey.cityState => 'Cidade e estado',
+  ProfileAboutFieldKey.foundedOn => 'Fundação',
+  ProfileAboutFieldKey.institutionType => 'Tipo de instituição',
+  ProfileAboutFieldKey.visibleLinks => 'Vínculos visíveis',
+  ProfileAboutFieldKey.institutionLink => 'Vínculo com a instituição',
+  ProfileAboutFieldKey.unitLink => 'Vínculo com a unidade',
+  ProfileAboutFieldKey.activityLinks => 'Vínculos com atividades',
+  ProfileAboutFieldKey.teamLinks => 'Vínculos com a equipe',
+  ProfileAboutFieldKey.proposal => 'Proposta',
+  ProfileAboutFieldKey.methodology => 'Metodologia',
+  ProfileAboutFieldKey.objective => 'Objetivo',
+  ProfileAboutFieldKey.audience => 'Público',
+  ProfileAboutFieldKey.materials => 'Materiais',
+  ProfileAboutFieldKey.generalGuidance => 'Orientações gerais',
+  ProfileAboutFieldKey.importantInformation => 'Informações importantes',
+  ProfileAboutFieldKey.identityInstitutional => 'Identidade institucional',
+  ProfileAboutFieldKey.inheritanceOrigin => 'Origem da herança',
+  ProfileAboutFieldKey.professionalRole => 'Função profissional',
 };
 
 const _addableSectionTypes = [
