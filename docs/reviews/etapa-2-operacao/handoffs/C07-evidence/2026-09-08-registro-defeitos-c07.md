@@ -75,6 +75,7 @@ commit corrompido está no histórico.
 | 20 | App não sobe se o bootstrap lançar `Error` | C00 | aberto | lido, estrutura verificada |
 | 21 | Salvar pessoa com campo vazio não dá retorno nenhum | C04 | aberto | lido, verificado na fonte |
 | 22 | 22 caminhos de carga travam a tela pelo mesmo padrão | C03, C04, C05 | aberto | lido |
+| 23 | Busca do formulário de autorização de retirada engole a falha e mantém resultado velho como atual | C04 | aberto | **medido**, produtor e consumidor |
 
 ## Defeitos medidos
 

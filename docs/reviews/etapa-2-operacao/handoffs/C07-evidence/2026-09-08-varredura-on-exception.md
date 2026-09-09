@@ -279,3 +279,74 @@ no mesmo arquivo se houver interesse em fechar o macrotema.
 Três linhas medidas das 22 que travam: Acompanhamento, Atividades e Segurança da criança. As duas
 últimas estão ligadas a repositórios reais. Restam Avaliações e os três compositores do Principal
 como próximos candidatos por consequência.
+
+---
+
+## Medição 3 — a busca silenciosa do formulário de autorização de retirada, 2026-09-08T21:09
+
+**Conclusão da medição de Segurança da criança que a `R01-C06-I012` mandou terminar com segurança.**
+Esta é a última medição desta frente; nada novo foi aberto depois dela.
+
+Prova em `repro/child_safety_silent_search_test.dart`, **9 casos: 3 verdes e 6 vermelhos**, `analyze`
+limpo. Cobre **produtor e consumidor** do mesmo defeito.
+
+### Consumidor — a tela
+
+| Caso | Resultado | Estado medido |
+|---|---|---|
+| **Controle** com `Exception` comum | **verde** | a mensagem "Não foi possível buscar crianças." aparece. A tela já cumpre o contrato para `Exception` |
+| Busca que lança `Error` | **vermelho** | `indicador desligado, mensagem de falha ausente, 0 opção(ões) na tela` |
+| Busca que lança `Error` com resultado anterior na tela | **vermelho** | `indicador desligado, mensagem de falha ausente, 1 opção(ões) na tela` |
+| **Vazio legítimo** | **verde** | sem mensagem de falha, sem cartão, sem indicador |
+
+### O achado que é pior do que eu havia descrito
+
+Eu vinha dizendo que a busca "termina fingindo que não encontrou ninguém". A medição mostra um
+segundo sintoma, mais grave: **quando já havia um resultado na tela, ele permanece como se fosse a
+resposta da busca nova.**
+
+No caso medido, a operadora busca "Ana", encontra Ana, depois busca "Bia" e a segunda busca falha.
+A tela continua mostrando **Ana**, sem indicador e sem mensagem de erro, como se Ana fosse o
+resultado de "Bia". O teste confirma que a segunda consulta chegou ao repositório, então não é
+cache: é falha engolida com resultado velho apresentado como atual.
+
+Num formulário que autoriza **quem pode retirar uma criança**, isso deixa de ser um problema de
+carregamento e passa a ser risco de o operador selecionar a criança errada.
+
+O caso do vazio legítimo passar é o que dá força ao conjunto: prova que o defeito não é "vazio
+some", e sim **falha vira vazio, ou pior, falha vira resultado errado**.
+
+### Produtor — o decodificador
+
+Os quatro campos com conversão crua lançam `TypeError` com payload numérico, **todos os quatro
+medidos**: `internal_id`, `child_context_id`, `institution_id`, `unit_id`
+(`child_safety_response_decoder.dart:84-88`). O controle com payload dentro do contrato passa.
+
+Os campos **vizinhos, na mesma linha** — `institution_name` e `unit_name` — já usam os ajudantes
+defensivos do próprio arquivo. Ou seja, a correção não precisa inventar nada: é aplicar aos quatro o
+que os vizinhos já fazem.
+
+### Agravante lido na tela, que explica por que o sintoma é silencioso
+
+O passo inicial do formulário **não tem mensagem própria de "nenhum resultado"**: renderiza só o
+campo de busca e o laço sobre as opções. Portanto **o único sinal que separa "falhou" de "não
+encontrei" é exatamente a mensagem de erro que o defeito suprime.**
+
+### Correção mínima
+
+Nos três pontos de captura — `child_safety_controller.dart:146`, `safety_pages.dart:887` e
+`safety_pages.dart:1132` — trocar `on Exception` por `on Object`, mantendo antes as capturas
+específicas. E, na origem, trocar as quatro conversões cruas pelos ajudantes defensivos que o arquivo
+já tem, o que elimina o produtor em vez de só tratar o sintoma.
+
+### Nota de método que quase custou a prova
+
+O `finally` de `_search` desliga o indicador **sem restaurar nada**, e é justamente ele que converte
+uma falha em "busca concluída sem resultados". É a segunda vez nesta rodada que a existência de um
+`finally` induz à conclusão errada. A regra que fica: ler o que há dentro, não que ele existe.
+
+### Estado final da frente encerrada
+
+Quatro medições entregues: Acompanhamento, Atividades, Segurança da criança (carga) e Segurança da
+criança (busca silenciosa). As demais linhas da varredura permanecem **leitura**, e a frente está
+**encerrada por decisão da C00**. Não abri nada depois desta.
