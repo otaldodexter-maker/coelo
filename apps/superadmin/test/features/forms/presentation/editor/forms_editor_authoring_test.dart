@@ -263,6 +263,70 @@ void main() {
     expect(api.commands.single.payload.sections.single.items.single.config.maxLength, 123);
   });
 
+  // Residual C02/R01: o editor gravava os limites de dinheiro em unidades enquanto a
+  // resposta grava minorUnits, então 10,50 virava 10.5 em vez de 1050.
+  _Api numericApi(FormItemKind kind, {FormItemConfig config = const FormItemConfig()}) =>
+      _Api(manage: true)
+        ..customItems = [
+          FormItem(id: 'number', kind: kind, label: 'Número', position: 0, config: config),
+        ];
+
+  Future<FormItemConfig> saveAfterTyping(
+    WidgetTester tester,
+    _Api api, {
+    required String minimum,
+    required String maximum,
+  }) async {
+    await open(tester, api);
+    await tester.enterText(find.widgetWithText(TextFormField, 'Mínimo').first, minimum);
+    await tester.enterText(find.widgetWithText(TextFormField, 'Máximo').first, maximum);
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    return api.commands.last.payload.sections.single.items.single.config;
+  }
+
+  testWidgets('money limits are authored in minor units', (tester) async {
+    final api = numericApi(FormItemKind.money);
+    await open(tester, api);
+    await tester.enterText(find.widgetWithText(TextFormField, 'Valor mínimo').first, '1,00');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Valor máximo').first, '10,50');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    final config = api.commands.last.payload.sections.single.items.single.config;
+    expect(config.minValue, 100);
+    expect(config.maxValue, 1050);
+  });
+
+  testWidgets('authored money limits are restored in the same civil notation', (tester) async {
+    final api = numericApi(
+      FormItemKind.money,
+      config: const FormItemConfig(minValue: 100, maxValue: 1050),
+    );
+    await open(tester, api);
+    expect(find.widgetWithText(TextFormField, '1,00'), findsOneWidget);
+    expect(find.widgetWithText(TextFormField, '10,50'), findsOneWidget);
+  });
+
+  testWidgets('integer and decimal limits keep their plain unit', (tester) async {
+    final integer = await saveAfterTyping(
+      tester,
+      numericApi(FormItemKind.integer),
+      minimum: '1',
+      maximum: '10',
+    );
+    expect(integer.minValue, 1);
+    expect(integer.maxValue, 10);
+    await tester.pumpWidget(const SizedBox());
+    final decimal = await saveAfterTyping(
+      tester,
+      numericApi(FormItemKind.decimal),
+      minimum: '1,5',
+      maximum: '10,5',
+    );
+    expect(decimal.minValue, 1.5);
+    expect(decimal.maxValue, 10.5);
+  });
+
   _Api galleryApi({FormItemConfig config = const FormItemConfig()}) => _Api(manage: true)
     ..customItems = [
       FormItem(

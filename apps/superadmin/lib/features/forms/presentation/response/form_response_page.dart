@@ -259,7 +259,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   int _savedAnswerRevision = 0;
   Timer? _autosaveTimer;
   bool _autosavePaused = false;
-  final _invalidNumericIds = <String>{};
+  final _invalidAnswerReasons = <String, String>{};
   String? _activeSectionId;
   final _sectionFocus = <String, FocusNode>{};
   ({_ResponseCommandKind kind, FormCommand<FormResponseDraftPayload> command, int answerRevision})?
@@ -319,7 +319,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       _answerRevision = 0;
       _savedAnswerRevision = 0;
       _autosavePaused = false;
-      _invalidNumericIds.clear();
+      _invalidAnswerReasons.clear();
       _activeSectionId = null;
     });
     if (api == null || occurrenceId == null || occurrenceId.isEmpty) {
@@ -654,9 +654,9 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         initialValue: _textValue(item.id),
         minLines: 2,
         maxLines: 6,
-        onChanged: (value) => update(
-          value.trim().isEmpty ? null : FormAnswer.shortText(itemId: item.id, value: value),
-        ),
+        onChanged: (value) {
+          if (_isCurrent(generation)) _setTextAnswer(item, value);
+        },
         validator: (_) => _requiredMessage(item),
         decoration: const InputDecoration(border: OutlineInputBorder()),
       ),
@@ -826,7 +826,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   void _pruneHiddenAnswers() {
     final visible = _visibleItemIds;
     _answers.removeWhere((id, _) => !visible.contains(id));
-    _invalidNumericIds.removeWhere((id) => !visible.contains(id));
+    _invalidAnswerReasons.removeWhere((id, _) => !visible.contains(id));
     final sections = _presentedSections;
     if (!sections.any((section) => section.id == _activeSectionId)) {
       final hadActiveSection = _activeSectionId != null;
@@ -882,7 +882,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         _saving ||
         _review ||
         _autosavePaused ||
-        _invalidNumericIds.isNotEmpty ||
+        _invalidAnswerReasons.isNotEmpty ||
         _pendingCommand != null ||
         _answerRevision == _savedAnswerRevision) {
       return;
@@ -900,44 +900,69 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     });
   }
 
+  /// One refusal path for every answer that fails its authored limit, so the
+  /// draft, the autosave and the submit gate all see the same state.
+  void _refuseAnswer(FormItem item, String reason) {
+    _autosaveTimer?.cancel();
+    setState(() {
+      _invalidAnswerReasons[item.id] = reason;
+      _answerRevision++;
+      if (_pendingCommand?.kind != _ResponseCommandKind.submit) _review = false;
+      _message = 'Revise os valores numéricos antes de salvar.';
+    });
+  }
+
+  /// Short text shares the same refusal path so an authored maxLength is a real
+  /// gate, not only a hint on the field.
+  void _setTextAnswer(FormItem item, String raw) {
+    if (!mounted || _state != _ProductionResponseState.content || _occurrence?.canEdit != true) {
+      return;
+    }
+    if (FormNumericLimits.textViolation(item.config, raw) case final reason?) {
+      _refuseAnswer(item, reason);
+      return;
+    }
+    final repaired = _invalidAnswerReasons.remove(item.id) != null;
+    _setAnswer(
+      item,
+      raw.trim().isEmpty ? null : FormAnswer.shortText(itemId: item.id, value: raw),
+    );
+    if (repaired && !_autosavePaused) {
+      setState(() => _message = 'Alterações ainda não salvas.');
+    }
+  }
+
   void _setNumericAnswer(FormItem item, String raw) {
     if (!mounted || _state != _ProductionResponseState.content || _occurrence?.canEdit != true) {
       return;
     }
     final value = raw.trim();
-    final normalized = value.replaceAll(',', '.');
-    final parsed = double.tryParse(normalized);
-    final valid =
-        value.isEmpty ||
-        (item.kind == FormItemKind.integer
-            ? int.tryParse(normalized) != null
-            : parsed != null &&
-                  parsed.isFinite &&
-                  (item.kind != FormItemKind.money || (parsed * 100).isFinite));
-    if (!valid) {
-      _autosaveTimer?.cancel();
-      setState(() {
-        _invalidNumericIds.add(item.id);
-        _answerRevision++;
-        if (_pendingCommand?.kind != _ResponseCommandKind.submit) _review = false;
-        _message = 'Revise os valores numéricos antes de salvar.';
-      });
+    // FormNumericLimits is the single representation: money parses to minor
+    // units, so the authored range and the stored answer share one unit.
+    final parsed = FormNumericLimits.parse(item.kind, value);
+    final reason = value.isEmpty
+        ? null
+        : parsed == null
+        ? 'Revise os valores numéricos antes de salvar.'
+        : FormNumericLimits.violation(item.kind, item.config, parsed);
+    if (reason != null) {
+      _refuseAnswer(item, reason);
       return;
     }
-    final repaired = _invalidNumericIds.remove(item.id);
-    final answer = switch (item.kind) {
-      FormItemKind.integer => switch (int.tryParse(normalized)) {
-        final number? => FormAnswer.integer(itemId: item.id, value: number),
-        null => null,
-      },
-      FormItemKind.decimal => switch (double.tryParse(normalized)) {
-        final number? => FormAnswer.decimal(itemId: item.id, value: number),
-        null => null,
-      },
-      FormItemKind.money => switch (double.tryParse(normalized)) {
-        final number? => FormAnswer.money(itemId: item.id, minorUnits: (number * 100).round()),
-        null => null,
-      },
+    final repaired = _invalidAnswerReasons.remove(item.id) != null;
+    final answer = switch ((item.kind, parsed)) {
+      (FormItemKind.integer, final number?) => FormAnswer.integer(
+        itemId: item.id,
+        value: number.toInt(),
+      ),
+      (FormItemKind.decimal, final number?) => FormAnswer.decimal(
+        itemId: item.id,
+        value: number.toDouble(),
+      ),
+      (FormItemKind.money, final number?) => FormAnswer.money(
+        itemId: item.id,
+        minorUnits: number.toInt(),
+      ),
       _ => null,
     };
     _setAnswer(item, answer);
@@ -1008,7 +1033,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   }
 
   String? _itemValidationMessage(FormItem item) {
-    if (_invalidNumericIds.contains(item.id)) return 'Revise os valores numéricos antes de salvar.';
+    if (_invalidAnswerReasons[item.id] case final reason?) return reason;
     if (item.kind == FormItemKind.gallery) {
       final value = _answers[item.id]?.value;
       if (value is FormAssetValue && value.assetIds.isNotEmpty) {
@@ -1068,7 +1093,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       _answers
         ..clear()
         ..addAll(_draft!.answers);
-      _invalidNumericIds.clear();
+      _invalidAnswerReasons.clear();
       _answerRevision = _savedAnswerRevision;
       _review = false;
       _message = null;
@@ -1090,7 +1115,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       return;
     }
     if (_pendingCommand != null && _pendingCommand!.kind != kind) return;
-    if (_pendingCommand == null && _invalidNumericIds.isNotEmpty) {
+    if (_pendingCommand == null && _invalidAnswerReasons.isNotEmpty) {
       setState(() => _message = 'Revise os valores numéricos antes de salvar.');
       return;
     }
@@ -1132,7 +1157,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         if (answerRevision == _answerRevision ||
             submitted ||
             updated.status == FormResponseDraftStatus.submitted) {
-          _invalidNumericIds.clear();
+          _invalidAnswerReasons.clear();
           _answers
             ..clear()
             ..addAll(updated.answers);

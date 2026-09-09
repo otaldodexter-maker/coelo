@@ -150,6 +150,63 @@ final class FormItemConfig {
   final int? maxImages;
 }
 
+/// One representation for the numeric and text limits of a form item.
+///
+/// Money travels in minor units everywhere: in the authored `minValue`/
+/// `maxValue`, in the stored [FormMoneyValue] and in the comparison below.
+/// The other numeric kinds travel as plain numbers. Authoring and answering
+/// share this guard so a limit cannot be written in one unit and checked in
+/// another.
+abstract final class FormNumericLimits {
+  static const _minorUnitsPerUnit = 100;
+
+  static bool isNumeric(FormItemKind kind) =>
+      kind == FormItemKind.integer || kind == FormItemKind.decimal || kind == FormItemKind.money;
+
+  /// Reads civil notation (`10,50`) into the item's own unit.
+  /// Money yields minor units, so `10,50` becomes `1050`.
+  static num? parse(FormItemKind kind, String raw) {
+    final normalized = raw.trim().replaceAll(',', '.');
+    if (normalized.isEmpty) return null;
+    if (kind == FormItemKind.integer) return int.tryParse(normalized);
+    final parsed = double.tryParse(normalized);
+    if (parsed == null || !parsed.isFinite) return null;
+    if (kind != FormItemKind.money) return parsed;
+    final minorUnits = parsed * _minorUnitsPerUnit;
+    return minorUnits.isFinite ? minorUnits.round() : null;
+  }
+
+  /// Writes the item's own unit back into civil notation.
+  static String format(FormItemKind kind, num value) {
+    if (kind != FormItemKind.money) return '$value';
+    final negative = value < 0;
+    final minorUnits = value.abs().round();
+    final units = minorUnits ~/ _minorUnitsPerUnit;
+    final cents = (minorUnits % _minorUnitsPerUnit).toString().padLeft(2, '0');
+    return '${negative ? '-' : ''}$units,$cents';
+  }
+
+  /// Non-null when [value], already in the item's own unit, falls outside the
+  /// authored range.
+  static String? violation(FormItemKind kind, FormItemConfig config, num value) {
+    if (config.minValue case final minimum? when value < minimum) {
+      return 'O valor mínimo é ${format(kind, minimum)}.';
+    }
+    if (config.maxValue case final maximum? when value > maximum) {
+      return 'O valor máximo é ${format(kind, maximum)}.';
+    }
+    return null;
+  }
+
+  /// Non-null when [value] is longer than the authored maximum length.
+  static String? textViolation(FormItemConfig config, String value) {
+    if (config.maxLength case final maximum? when value.length > maximum) {
+      return 'O máximo é $maximum caracteres.';
+    }
+    return null;
+  }
+}
+
 final class FormOption {
   const FormOption({required this.id, required this.label, required this.position});
 
