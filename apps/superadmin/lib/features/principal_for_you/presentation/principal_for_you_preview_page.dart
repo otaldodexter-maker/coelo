@@ -306,14 +306,15 @@ final class _HeroCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Positioned.fill(
-                child: _SpriteImage(
-                  assetPath: item.assetPath,
-                  index: item.assetIndex,
-                  count: _spriteCount(item.assetPath),
-                  semanticLabel: 'Estudante participando de atividade escolar',
+              if (item.assetPath.isNotEmpty)
+                Positioned.fill(
+                  child: _SpriteImage(
+                    assetPath: item.assetPath,
+                    index: item.assetIndex,
+                    count: _spriteCount(item.assetPath),
+                    semanticLabel: 'Estudante participando de atividade escolar',
+                  ),
                 ),
-              ),
               Positioned.fill(
                 child: DecoratedBox(
                   decoration: BoxDecoration(

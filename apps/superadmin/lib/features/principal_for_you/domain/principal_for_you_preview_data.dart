@@ -22,8 +22,8 @@ final class PrincipalForYouHighlight {
     required this.title,
     required this.body,
     required this.cta,
-    required this.assetPath,
-    required this.assetIndex,
+    this.assetPath = '',
+    this.assetIndex = 0,
   });
 
   final String id;
@@ -33,6 +33,12 @@ final class PrincipalForYouHighlight {
   final String title;
   final String body;
   final String cta;
+
+  /// Optional approved sprite for the preview fixtures.
+  ///
+  /// A real communication carries no authorized image contract yet, so the
+  /// projection leaves this empty and the card renders text over the brand
+  /// background — the `textBackground` format the domain already defines.
   final String assetPath;
   final int assetIndex;
 

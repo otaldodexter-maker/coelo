@@ -1,10 +1,10 @@
 ---
 title: "Circulares privadas no Principal"
 knowledge_id: "principal-circulars"
-source: "specs/050-principal-ui-ux-closure.md"
+source: "specs/037-principal-circulars.md"
 status: "validated"
 generated_at: "2026-08-21"
-updated_at: "2026-09-01"
+updated_at: "2026-09-09"
 audience: "team"
 surfaces: [principal, perfil, acontece, supabase, authorization]
 visibility: "internal"
@@ -36,9 +36,11 @@ No web, a prévia da projeção no Acontece fica oculta por padrão e abre em po
 somente por ação explícita. Ela não reserva uma coluna lateral permanente nem
 comprime o conteúdo do Perfil. Essa decisão é específica da consulta da Circular
 no Perfil e não remove o preview lateral dos fluxos de publicação aprovados.
-Em compacto, o detalhe abre fullscreen sem cabeçalho ou dock global e apresenta
-retorno contextual `‹ Circular`; fechar ou usar Escape restaura foco e posição
-de origem.
+No Superadmin web e mobile, o detalhe preserva o shell/menu hospedeiro e abre
+na sua área de conteúdo, com retorno contextual `‹ Circular`; fechar ou usar
+Escape restaura foco e posição de origem. A decisão do Owner de 09/09/2026
+substitui a exceção de fullscreen que removia o shell nesse hospedeiro. Aplica-se
+também aos viewers Agora/Momentos no Superadmin, sem definir o app Principal independente.
 
 Publicar Circular usa a mesma família de composição do Principal que Publicar no
 Acontece, Agora e Momentos, adaptada para título, texto, anexos e perguntas. Não
@@ -51,6 +53,9 @@ compartilhada permite que qualquer responsável autorizado responda pela crianç
 sem criar respostas duplicadas entre responsáveis. Prazo é opcional e o
 encerramento manual é auditado.
 
-Mídia usa o bucket Supabase privado definido pela ADR 0027, com upload e leitura
-assinados pelo backend, validação do arquivo e metadados no Postgres. A exceção
-é exclusiva de Circulares e não muda o provedor das outras superfícies.
+Mídia nova de Circulares usa o R2 privado definido pela ADR 0032, igual às demais
+superfícies do MVP, com upload e leitura autorizados pelo backend, validação de
+MIME real, bytes e checksum, e metadados, permissões, vínculos e auditoria no
+Postgres. A exceção de bucket Supabase privado que a ADR 0027 concedia a
+Circulares está superada: não há mais provedor de mídia próprio desta superfície.
+PDF nunca usa Cloudflare Stream.

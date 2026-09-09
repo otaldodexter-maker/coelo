@@ -882,6 +882,7 @@ GoRouter createSuperadminRouter({
                 ? null
                 : circularRepository,
             aboutRepository: profileAboutRepository,
+            happensFeedRepository: principalHappensFeedRepository,
             onOpenCircular: (circularId) => context.goNamed(
               SuperadminRoutes.circularDetailName,
               pathParameters: {'circularId': circularId},

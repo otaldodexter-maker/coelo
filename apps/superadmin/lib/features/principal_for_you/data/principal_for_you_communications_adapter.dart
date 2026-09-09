@@ -86,8 +86,6 @@ final class PrincipalForYouCommunicationsAdapter {
             title: item.title,
             body: item.message,
             cta: item.linkLabel ?? item.buttonLabel,
-            assetPath: 'assets/principal_happens/now-strip.png',
-            assetIndex: 2,
           ),
         ),
   );

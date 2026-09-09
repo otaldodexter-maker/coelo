@@ -3,9 +3,11 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../principal_circulars/domain/circular_repository.dart';
+import '../../principal_happens/domain/principal_happens_feed_repository.dart';
 import '../../principal_shared/domain/principal_runtime_context.dart';
 import '../../profile_about/domain/profile_about_repository.dart';
 import '../domain/principal_profile_preview_data.dart';
+import 'principal_profile_happens_tab.dart';
 import 'principal_profile_preview_page.dart';
 
 /// Production composition root for `principal.profile-view`.
@@ -20,6 +22,7 @@ final class PrincipalProfileRoutePage extends StatefulWidget {
     required this.onOpenAgenda,
     this.circularRepository,
     this.aboutRepository,
+    this.happensFeedRepository,
     this.onOpenCircular,
     this.onMessage,
     this.onOpenEdit,
@@ -37,6 +40,7 @@ final class PrincipalProfileRoutePage extends StatefulWidget {
   final PrincipalRuntimeContext runtimeContext;
   final CircularRepository? circularRepository;
   final ProfileAboutRepository? aboutRepository;
+  final PrincipalHappensFeedRepository? happensFeedRepository;
   final VoidCallback onOpenAgenda;
   final ValueChanged<String>? onOpenCircular;
   final VoidCallback? onMessage;
@@ -180,6 +184,19 @@ final class _PrincipalProfileRoutePageState extends State<PrincipalProfileRouteP
     );
   }
 
+  Widget? get _happensTab {
+    final repository = widget.happensFeedRepository;
+    if (repository == null) return null;
+    return PrincipalProfileHappensTab(
+      repository: repository,
+      scope: PrincipalHappensFeedScope(
+        institutionId: widget.runtimeContext.institutionId,
+        unitId: widget.runtimeContext.unitId,
+        groupId: widget.runtimeContext.groupId,
+      ),
+    );
+  }
+
   CircularScope get _circularScope => CircularScope(
     institutionId: widget.runtimeContext.institutionId,
     unitId: widget.runtimeContext.unitId,
@@ -215,6 +232,7 @@ final class _PrincipalProfileRoutePageState extends State<PrincipalProfileRouteP
       key: const Key('principal-profile-content'),
       data: _data,
       showPreviewFeeds: false,
+      happensTab: _happensTab,
       aboutPage: page,
       circularRepository: widget.circularRepository,
       circularScope: widget.circularRepository == null ? null : _circularScope,
