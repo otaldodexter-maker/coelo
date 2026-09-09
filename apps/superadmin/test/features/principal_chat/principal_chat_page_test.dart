@@ -288,6 +288,33 @@ void main() {
     expect(find.byKey(const Key('principal-chat-inbox-empty')), findsOneWidget);
   });
 
+  testWidgets('an empty thread by absence never looks like an empty thread by permission', (
+    tester,
+  ) async {
+    // Mesmo princípio do zero silencioso que recusei no badge, um nível acima:
+    // "não há mensagens" e "você não pode ver as mensagens" não podem produzir
+    // a mesma tela. O servidor distingue os dois, e a UI precisa preservar isso.
+    final absent = _PrincipalChatRepository(emptyThread: true);
+    await _pump(tester, absent);
+    await tester.tap(find.byKey(const ValueKey('principal-chat-conversation-conversation-1')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-chat-thread-empty')), findsOneWidget);
+    expect(find.byKey(const Key('principal-chat-inbox-unauthorized')), findsNothing);
+    // Uma conversa vazia mas autorizada continua permitindo escrever.
+    expect(find.byKey(const Key('principal-chat-composer')), findsOneWidget);
+
+    final denied = _PrincipalChatRepository(threadError: const ChatUnauthorizedException());
+    await _pump(tester, denied);
+    await tester.tap(find.byKey(const ValueKey('principal-chat-conversation-conversation-1')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-chat-thread-empty')), findsNothing);
+    expect(find.byKey(const Key('principal-chat-inbox-unauthorized')), findsOneWidget);
+    // Negação purga o composer junto com o resto do instantâneo privado.
+    expect(find.byKey(const Key('principal-chat-composer')), findsNothing);
+  });
+
   testWidgets('lays out without overflow across canonical breakpoints', (tester) async {
     for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
       await tester.binding.setSurfaceSize(Size(width, 900));
@@ -329,6 +356,7 @@ final class _PrincipalChatRepository implements ChatRepository {
     this.withReceipts = true,
     this.continuationError,
     this.pagedThread = false,
+    this.emptyThread = false,
   }) : inbox = inbox ?? _defaultInbox(readOnly: readOnly);
 
   ChatInboxPage inbox;
@@ -338,6 +366,7 @@ final class _PrincipalChatRepository implements ChatRepository {
   final bool withReceipts;
   final Object? continuationError;
   final bool pagedThread;
+  final bool emptyThread;
 
   final List<ChatThreadQuery> threadQueries = [];
   ChatInboxPage? nextInbox;
@@ -381,6 +410,7 @@ final class _PrincipalChatRepository implements ChatRepository {
     if (threadError != null) throw threadError!;
     threadQueries.add(query);
     threadFetches++;
+    if (emptyThread) return const ChatThreadPage(items: []);
     if (query.cursor != null) {
       return ChatThreadPage(
         items: [
