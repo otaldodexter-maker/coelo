@@ -30,10 +30,15 @@ begin
       where rolname='$probeRole' and not rolcanlogin
         and not rolsuper and not rolcreaterole and not rolcreatedb
         and not rolreplication and not rolbypassrls)
-    or exists(select 1 from pg_catalog.pg_auth_members membership
-      join pg_catalog.pg_roles role_record
-       on role_record.oid in(membership.roleid,membership.member)
-      where role_record.rolname='$probeRole') then
+    or (select oid from pg_catalog.pg_roles where rolname='$probeRole') is distinct from __OWNED_PROBE_OID__::oid
+    or not exists(select 1 from pg_catalog.pg_roles where rolname='postgres' and not rolsuper and rolcreaterole)
+    or not exists(select 1 from pg_catalog.pg_roles where oid=10 and rolsuper)
+    or (select count(*) from pg_catalog.pg_auth_members m
+      where __OWNED_PROBE_OID__::oid in(m.roleid,m.member,m.grantor))<>1
+    or not exists(select 1 from pg_catalog.pg_auth_members m
+      where m.roleid=__OWNED_PROBE_OID__::oid
+        and m.member=(select oid from pg_catalog.pg_roles where rolname='postgres')
+        and m.grantor=10 and m.admin_option and not m.inherit_option and not m.set_option) then
     raise object_not_in_prerequisite_state
       using message='CHILD package fixture ownership drift';
   end if;
@@ -143,6 +148,38 @@ function Get-SingleJson([string]$Output, [string]$Description) {
   return $lines[0] | ConvertFrom-Json
 }
 
+# PostgreSQL16 grants a new role back to its non-superuser creator through
+# bootstrap superuser OID10: ADMIN true, INHERIT/SET false. Pin this exact grant.
+function Assert-ChildFixtureMembership($State) {
+  $grants = @($State.memberships)
+  if ($State.probe_oid -le 0 -or $State.creator_oid -le 0 -or
+      $State.probe_oid -eq $State.creator_oid -or $State.probe_oid -eq 10 -or
+      $State.creator_superuser -ne $false -or $State.creator_createrole -ne $true -or
+      $State.bootstrap_superuser -ne $true -or $grants.Count -ne 1 -or
+      $grants[0].roleid -ne $State.probe_oid -or $grants[0].member -ne $State.creator_oid -or
+      $grants[0].grantor -ne 10 -or $grants[0].admin_option -ne $true -or
+      $grants[0].inherit_option -ne $false -or $grants[0].set_option -ne $false) {
+    throw 'CHILD fixture creator membership drift'
+  }
+}
+
+function Get-ChildFixtureMembership {
+  Get-SingleJson (Invoke-OwnedPsql @"
+select pg_catalog.jsonb_build_object(
+ 'probe_oid',(select oid from pg_catalog.pg_roles where rolname='$probeRole'),
+ 'creator_oid',(select oid from pg_catalog.pg_roles where rolname='postgres'),
+ 'creator_superuser',(select rolsuper from pg_catalog.pg_roles where rolname='postgres'),
+ 'creator_createrole',(select rolcreaterole from pg_catalog.pg_roles where rolname='postgres'),
+ 'bootstrap_superuser',(select rolsuper from pg_catalog.pg_roles where oid=10),
+ 'memberships',coalesce((select jsonb_agg(jsonb_build_object(
+   'roleid',m.roleid,'member',m.member,'grantor',m.grantor,
+   'admin_option',m.admin_option,'inherit_option',m.inherit_option,'set_option',m.set_option))
+   from pg_catalog.pg_auth_members m where
+   (select oid from pg_catalog.pg_roles where rolname='$probeRole') in(m.roleid,m.member,m.grantor)), '[]'::jsonb)
+)::text;
+"@).Output 'fixture membership'
+}
+
 function Get-BaseState {
   Get-SingleJson (Invoke-OwnedPsql @"
 select pg_catalog.jsonb_build_object(
@@ -250,6 +287,10 @@ alter default privileges for role postgres in schema public
 commit;
 "@
   $fixtureAttempted = $true
+  $fixtureOwnership = Get-ChildFixtureMembership
+  Assert-ChildFixtureMembership $fixtureOwnership
+  $fixtureCleanupSql = $fixtureCleanupSql.Replace('__OWNED_PROBE_OID__', [string][long]$fixtureOwnership.probe_oid)
+  'CHILD_CREATOR_GRANT_CONFIRMED stage=created exact=True'
 
   $fixtureState = Get-SingleJson (Invoke-OwnedPsql @"
 select pg_catalog.jsonb_build_object(
@@ -281,15 +322,13 @@ select pg_catalog.jsonb_build_object(
   }
   'package.negative-rollback'
 
-  $cleanupProbe = Get-SingleJson (Invoke-OwnedPsql @"
-select pg_catalog.jsonb_build_object(
- 'nologin', exists(select 1 from pg_catalog.pg_roles where rolname='$probeRole' and not rolcanlogin),
- 'elevated', exists(select 1 from pg_catalog.pg_roles where rolname='$probeRole' and (rolsuper or rolcreaterole or rolcreatedb or rolreplication or rolbypassrls)),
- 'memberships', (select count(*) from pg_catalog.pg_auth_members m
-   join pg_catalog.pg_roles r on r.oid in(m.roleid,m.member) where r.rolname='$probeRole')
-)::text;
-"@).Output 'cleanup probe'
-  "CHILD_CLEANUP_PROBE nologin=$($cleanupProbe.nologin) elevated=$($cleanupProbe.elevated) memberships=$($cleanupProbe.memberships)"
+  $cleanupOwnership = Get-ChildFixtureMembership
+  Assert-ChildFixtureMembership $cleanupOwnership
+  if ($cleanupOwnership.probe_oid -ne $fixtureOwnership.probe_oid -or
+      $cleanupOwnership.creator_oid -ne $fixtureOwnership.creator_oid) {
+    throw 'CHILD fixture identity changed since creation'
+  }
+  'CHILD_CREATOR_GRANT_CONFIRMED stage=cleanup exact=True unchanged=True'
   $null = Invoke-OwnedPsql -Sql $fixtureCleanupSql
   $fixtureAttempted = $false
   Assert-OriginalBase (Get-BaseState) 'post-fixture cleanup'

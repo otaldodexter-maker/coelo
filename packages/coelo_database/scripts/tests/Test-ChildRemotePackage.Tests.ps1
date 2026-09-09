@@ -180,3 +180,42 @@ Describe 'CHILD remote package offline guards' {
     }
   }
 }
+Describe 'CHILD exact creator membership contract' {
+  BeforeAll {
+    $tokens=$null;$errors=$null
+    $ast=[Management.Automation.Language.Parser]::ParseFile((Resolve-Path $harnessPath),[ref]$tokens,[ref]$errors)
+    $definition=@($ast.FindAll({param($n) $n -is [Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq 'Assert-ChildFixtureMembership'},$true))
+    if($definition.Count -eq 1){. ([scriptblock]::Create($definition[0].Extent.Text))}
+  }
+  function New-NominalCreatorState {
+    [pscustomobject]@{probe_oid=17000;creator_oid=17001;creator_superuser=$false;creator_createrole=$true;bootstrap_superuser=$true;memberships=@([pscustomobject]@{roleid=17000;member=17001;grantor=10;admin_option=$true;inherit_option=$false;set_option=$false})}
+  }
+  It 'accepts only the nominal bootstrap grant to the postgres creator' {
+    { Assert-ChildFixtureMembership (New-NominalCreatorState) } | Should Not Throw
+  }
+  It 'rejects zero or additional memberships instead of tolerating arbitrary grants' {
+    foreach($extra in @($false,$true)) {
+      $state=New-NominalCreatorState
+      if($extra){$state.memberships+= $state.memberships[0]}else{$state.memberships=@()}
+      { Assert-ChildFixtureMembership $state } | Should Throw 'CHILD fixture creator membership drift'
+    }
+  }
+  It 'rejects changed role member or grantor identities' {
+    foreach($key in @('roleid','member','grantor')) {
+      $state=New-NominalCreatorState;$state.memberships[0].$key=99999
+      { Assert-ChildFixtureMembership $state } | Should Throw 'CHILD fixture creator membership drift'
+    }
+  }
+  It 'rejects changed membership privilege options' {
+    foreach($key in @('admin_option','inherit_option','set_option')) {
+      $state=New-NominalCreatorState;$state.memberships[0].$key= -not $state.memberships[0].$key
+      { Assert-ChildFixtureMembership $state } | Should Throw 'CHILD fixture creator membership drift'
+    }
+  }
+  It 'rejects an unexpected creator or bootstrap authority' {
+    foreach($key in @('creator_superuser','creator_createrole','bootstrap_superuser')) {
+      $state=New-NominalCreatorState;$state.$key= -not $state.$key
+      { Assert-ChildFixtureMembership $state } | Should Throw 'CHILD fixture creator membership drift'
+    }
+  }
+}

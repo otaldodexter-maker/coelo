@@ -1,0 +1,91 @@
+{
+  "source": "D00 delegated diagnostic and local fix; PostgreSQL16 role-attributes; sessions24114/80424",
+  "status": "local-package-six-pass; cache-not-executed; remote-not-authorized",
+  "generated_at": "2026-09-09",
+  "base_commit": "803af52ad1846f003069914486e6f022fb8ce653",
+  "root_cause": {
+    "diagnostic_session": 24114,
+    "project": "coelo_safe_1e3d1c629f48426499d3577949b23",
+    "exit_code": 1,
+    "package_result": {
+      "passed": 3,
+      "failed": 0,
+      "blocked": 3
+    },
+    "sqlstate": "55000",
+    "observed": {
+      "creator_superuser": false,
+      "creator_createrole": true,
+      "membership_count": 1,
+      "exact_creator_grant_count": 1,
+      "bootstrap_superuser": true
+    },
+    "expected_pg16_grant": "role=synthetic probe; member=postgres; grantor=bootstrap OID10; admin=true; inherit=false; set=false",
+    "cleanup": {
+      "containers": 0,
+      "volumes": 0,
+      "networks": 0,
+      "temp_exists": false
+    },
+    "log": "d03-child-membership-diagnostic-native.log"
+  },
+  "fix": "Capture synthetic probe and postgres creator OIDs after CREATE ROLE; validate exact PG16 creator grant; compare identities before cleanup; SQL cleanup pins created probe OID, role attrs, exact membership count/tuple and creator/bootstrap attributes. Reject extra, missing, changed membership and role replacement. No generic membership allowance or revoke of creator ADMIN OPTION.",
+  "offline": {
+    "contract_red": {
+      "passed": 0,
+      "failed": 5,
+      "log": "d03-child-membership-contract-red.log"
+    },
+    "contract_green": {
+      "passed": 5,
+      "failed": 0,
+      "log": "d03-child-membership-contract-green.log"
+    },
+    "existing_guards": {
+      "passed": 8,
+      "failed": 0,
+      "log": "d03-child-membership-guards.log"
+    }
+  },
+  "replay": {
+    "session": 80424,
+    "project": "coelo_safe_2d9f673079a443d1b48caf63b8e45",
+    "exit_code": 0,
+    "sql_count": 47,
+    "canonical_sql_count": 45,
+    "preflight_sql_count": 2,
+    "target": "20260901200206",
+    "profile": "AuthOnly + RunChildRemotePackage",
+    "passed": 6,
+    "failed": 0,
+    "blocked": 0,
+    "ids": [
+      "package.prestate",
+      "package.default-acl-denied",
+      "package.negative-rollback",
+      "package.fixture-cleanup",
+      "package.positive-metadata",
+      "package.persisted-after-commit"
+    ],
+    "log": "d03-child-membership-fixed-replay.log",
+    "log_sha256": "78b7a31c3330c7ad159c76f6a9acd1e2294c1b5b04d97489617e00909fd48e97",
+    "cleanup_wrapper": "zero",
+    "cleanup_independent": {
+      "containers": 0,
+      "volumes": 0,
+      "networks": 0,
+      "temp_exists": false
+    }
+  },
+  "artifact_hashes": {
+    "packages/coelo_database/scripts/Test-ChildRemotePackage.ps1": "4e399bdc2e9340a0fbeb557265294b3bc3445b9b6d71713c4192b98b9e9900d1",
+    "packages/coelo_database/scripts/tests/Test-ChildRemotePackage.Tests.ps1": "d7579139e579d085801dd5a246f70fcd81a63d2691db85b251a6ea3ce9993625"
+  },
+  "source_url": "https://www.postgresql.org/docs/16/role-attributes.html",
+  "limitations": [
+    "Database-only six acceptances; PostgREST cache proof remains U1",
+    "No remote mutation, no productive payload/migration change",
+    "Initial51404 terminated at PowerShell NativeCommandError before harness due outer shell redirection; excluded from package result; rerun used OS output routing then final direct invocation",
+    "Historical TEMP coelo_safe_af5bdf571cff41309f5b6845b713a created2026-09-01 left untouched; unrelated to owned diagnostic/fix projects"
+  ]
+}

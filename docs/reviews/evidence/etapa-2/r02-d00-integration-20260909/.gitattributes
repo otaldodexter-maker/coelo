@@ -1,0 +1,4 @@
+# Preserve original evidence bytes and their recorded SHA256 values.
+*.log -text -whitespace
+*.jsonl -text -whitespace
+*.xml -text -whitespace
