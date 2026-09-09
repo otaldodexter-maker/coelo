@@ -863,6 +863,7 @@ GoRouter createSuperadminRouter({
               onOpenMoments: () => context.pushNamed(SuperadminRoutes.principalMomentsName),
               onOpenAgenda: () => context.goNamed(SuperadminRoutes.agendaName),
               onOpenProfile: () => context.goNamed(SuperadminRoutes.principalProfileName),
+              onOpenActivities: () => context.goNamed(SuperadminRoutes.activitiesName),
               onOpenMessages: () => context.goNamed(
                 SuperadminRoutes.conversationsName,
                 queryParameters: const {'from': 'principal'},

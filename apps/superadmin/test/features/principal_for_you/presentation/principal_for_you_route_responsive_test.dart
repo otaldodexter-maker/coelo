@@ -94,6 +94,7 @@ void main() {
     ),
     double textScale = 1,
     NoticeRepositoryException? error,
+    VoidCallback? onOpenAgenda,
   }) async {
     await tester.binding.setSurfaceSize(surface);
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -115,6 +116,7 @@ void main() {
           supportingData: supportingData,
           audienceScope: scope,
           now: () => now,
+          onOpenAgenda: onOpenAgenda,
           onOpenMessages: () {},
         ),
       ),
@@ -348,6 +350,45 @@ void main() {
       expect(find.text('Comunicado autorizado da instituição'), findsNothing);
       expectApprovedShortcuts();
       expectNoLayoutError(tester);
+    });
+  });
+
+  group('hub actions', () {
+    testWidgets('routes a shortcut that has a real destination', (tester) async {
+      var openedAgenda = 0;
+      await pumpRoute(
+        tester,
+        surface: const Size(1440, 1400),
+        communications: [institutionCommunication()],
+        onOpenAgenda: () => openedAgenda += 1,
+      );
+
+      await tester.ensureVisible(find.text('Agenda'));
+      await tester.tap(find.text('Agenda'));
+      await tester.pumpAndSettle();
+
+      expect(openedAgenda, 1);
+    });
+
+    testWidgets('says plainly that a shortcut without a destination is unavailable', (
+      tester,
+    ) async {
+      await pumpRoute(
+        tester,
+        surface: const Size(1440, 1400),
+        communications: [institutionCommunication()],
+      );
+
+      await tester.ensureVisible(find.text('Cardápio'));
+      await tester.tap(find.text('Cardápio'));
+      await tester.pumpAndSettle();
+
+      // A production route never answers with the preview message.
+      expect(find.text('Cardápio ainda não está disponível.'), findsOneWidget);
+      expect(
+        find.textContaining('estará disponível na experiência completa'),
+        findsNothing,
+      );
     });
   });
 

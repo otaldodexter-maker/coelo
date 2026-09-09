@@ -22,6 +22,7 @@ final class PrincipalForYouPreviewPage extends StatefulWidget {
     this.onPublishNow,
     this.onOpenSearch,
     this.onOpenMessages,
+    this.onAction,
     super.key,
   });
 
@@ -40,6 +41,13 @@ final class PrincipalForYouPreviewPage extends StatefulWidget {
   final VoidCallback? onPublishNow;
   final VoidCallback? onOpenSearch;
   final VoidCallback? onOpenMessages;
+
+  /// Handles a hub action by its label: shortcuts, the hero CTA and the
+  /// editorial cards.
+  ///
+  /// A production composition root supplies it so the hub navigates instead of
+  /// answering with the preview message.
+  final ValueChanged<String>? onAction;
 
   @override
   State<PrincipalForYouPreviewPage> createState() => _PrincipalForYouPreviewPageState();
@@ -160,7 +168,7 @@ final class _PrincipalForYouPreviewPageState extends State<PrincipalForYouPrevie
               compact: compact,
               navigationVisible: !widget.embedded,
               onContext: _showContextSelector,
-              onAction: _feedback,
+              onAction: widget.onAction ?? _feedback,
             ),
             if (!widget.embedded)
               PrincipalGlobalNavigation(

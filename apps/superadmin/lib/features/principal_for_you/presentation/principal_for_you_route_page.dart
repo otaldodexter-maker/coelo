@@ -23,6 +23,7 @@ final class PrincipalForYouRoutePage extends StatefulWidget {
     this.onOpenAgenda,
     this.onOpenProfile,
     this.onOpenMessages,
+    this.onOpenActivities,
   });
 
   final NoticeRepository repository;
@@ -41,6 +42,7 @@ final class PrincipalForYouRoutePage extends StatefulWidget {
   final VoidCallback? onOpenAgenda;
   final VoidCallback? onOpenProfile;
   final VoidCallback? onOpenMessages;
+  final VoidCallback? onOpenActivities;
 
   @override
   State<PrincipalForYouRoutePage> createState() => _PrincipalForYouRoutePageState();
@@ -169,6 +171,25 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
     super.dispose();
   }
 
+  /// Routes a hub action to a real destination, or says plainly that the
+  /// capability is not available yet. A production route never answers with the
+  /// preview message.
+  void _handleAction(String label) {
+    final destination = switch (label) {
+      'Agenda' => widget.onOpenAgenda,
+      'Mensagens' => widget.onOpenMessages,
+      'Atividades' => widget.onOpenActivities,
+      _ => null,
+    };
+    if (destination != null) {
+      destination();
+      return;
+    }
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text('$label ainda não está disponível.')));
+  }
+
   @override
   Widget build(BuildContext context) => switch (_state) {
     _Loading() => Scaffold(
@@ -244,6 +265,7 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
         onOpenAgenda: widget.onOpenAgenda,
         onOpenProfile: widget.onOpenProfile,
         onOpenMessages: widget.onOpenMessages,
+        onAction: _handleAction,
       ),
     ),
   };
