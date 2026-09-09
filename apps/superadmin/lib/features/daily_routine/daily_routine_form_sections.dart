@@ -58,11 +58,35 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
   var _canManage = false;
   var _loadGeneration = 0;
   var _commandGeneration = 0;
+  String? _baseline;
+  var _guarded = false;
 
   @override
   void initState() {
     super.initState();
+    for (final controller in _draftControllers) {
+      controller.addListener(_handleDraftChanged);
+    }
     _load();
+  }
+
+  List<TextEditingController> get _draftControllers => [
+    _name,
+    _description,
+    _modelInstitutionId,
+    _modelOriginUnitId,
+    _startsAt,
+    _endsAt,
+    _validFrom,
+    _validUntil,
+  ];
+
+  /// Typing does not call setState, so the exit guard would keep the value it
+  /// was built with. Rebuild only when the draft crosses into or out of dirty.
+  void _handleDraftChanged() {
+    if (!mounted) return;
+    final dirty = _isDirty;
+    if (dirty != _guarded) setState(() => _guarded = dirty);
   }
 
   @override
@@ -140,6 +164,8 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         };
         _loading = false;
       });
+      _baseline = _draftSignature();
+      _guarded = false;
     } on Object catch (error) {
       if (!_isCurrentLoad(
         generation,
@@ -299,17 +325,75 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     title: _title,
     subtitle: 'Configuracao versionada e validada no servidor.',
     activityController: widget.activityController,
-    child: ColoredBox(
-      color: Theme.of(context).colorScheme.surface,
-      child: SuperadminFormFrame(
-        viewportWidth: MediaQuery.sizeOf(context).width,
-        navigation: const SizedBox.shrink(),
-        scrollKey: const Key('daily-routine-editor-scroll'),
-        body: _body(),
-        footer: _footer(),
+    child: PopScope(
+      canPop: !_isDirty,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _confirmExit();
+      },
+      child: ColoredBox(
+        color: Theme.of(context).colorScheme.surface,
+        child: SuperadminFormFrame(
+          viewportWidth: MediaQuery.sizeOf(context).width,
+          navigation: const SizedBox.shrink(),
+          scrollKey: const Key('daily-routine-editor-scroll'),
+          body: _body(),
+          footer: _footer(),
+        ),
       ),
     ),
   );
+
+  /// The draft is compared against the state captured when it finished loading,
+  /// so no editing path has to remember to flag itself as dirty.
+  String _draftSignature() => [
+    _name.text,
+    _description.text,
+    _modelInstitutionId.text,
+    _modelOriginUnitId.text,
+    _startsAt.text,
+    _endsAt.text,
+    _validFrom.text,
+    _validUntil.text,
+    _modelOriginScope.name,
+    _applicationStatus.name,
+    _applicationInheritance.name,
+    _applicationVisibility,
+    for (final section in _sections)
+      '${section.id}|${section.name}|${section.sortOrder}|'
+          '${section.fields.map(_fieldSignature).join(',')}',
+  ].join(String.fromCharCode(31));
+
+  String _fieldSignature(RoutineField field) =>
+      '${field.id}:${field.label}:${field.kind.name}:${field.sortOrder}:'
+      '${field.isRequired}:${field.initialValue}:${field.minimumValue}:${field.maximumValue}:'
+      '${field.options.map((option) => '${option.id}=${option.label}=${option.sortOrder}').join('+')}:'
+      '${field.conditions.length}';
+
+  bool get _isDirty =>
+      _canManage && !_saving && _baseline != null && _draftSignature() != _baseline;
+
+  Future<void> _confirmExit() async {
+    final discard = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => CoeloAdminDialogShell(
+        dialogKey: const Key('daily-routine-exit-dialog'),
+        title: 'Sair sem salvar?',
+        body: const Text(
+          'As alterações feitas nesta rotina serão perdidas se você sair agora.',
+        ),
+        secondaryAction: OutlinedButton(
+          onPressed: () => Navigator.of(dialogContext).pop(false),
+          child: const Text('Continuar editando'),
+        ),
+        primaryAction: FilledButton(
+          onPressed: () => Navigator.of(dialogContext).pop(true),
+          child: const Text('Sair sem salvar'),
+        ),
+      ),
+    );
+    if (!(discard ?? false) || !mounted) return;
+    Navigator.of(context).pop();
+  }
 
   String get _title => switch (widget.entryKind) {
     RoutineEntryKind.model => widget.entryId == null ? 'Criar modelo' : 'Editar modelo',
@@ -945,6 +1029,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Modelo salvo.')));
+      _baseline = _draftSignature();
       if (current.id.isEmpty) {
         setState(() {
           _entry = RoutineModel(
