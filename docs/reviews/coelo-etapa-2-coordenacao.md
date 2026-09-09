@@ -736,3 +736,16 @@ O conjunto SQL Activities ainda não foi integrado: a migration agregada 2026090
 
 
 Recibo 2026-09-08T21:27:26-03:00: Activities SQL integrado em258593e4 com os três arquivos finais idênticos aos blobs d817 e ao perfil que passou46/46. Manifesto R01-activities-green46-integration.json preserva os nove commits de origem; nenhuma histórica existente sobrescrita. Revisão pós-integração por equivalência exata, sem novo replay. Audit89949f30 resolveu os dois bloqueios de fixture; nova lease local C03I019 concedida no perfil54/56 para37+78+30 assertivas preparadas, resultado pendente. Nenhuma aplicação remota ou promoção E2E.
+
+
+### Recibo operacional — 2026-09-08T21:43:55-03:00
+
+C01 r50: código 6a546f2f integrado em75c0f7ec após duas revisões independentes; C00 executou77/77 testes Deno tipados offline PASS. Ban proof nominal e transporte/SDK estão implementados localmente, mas processo SQL/Auth/API real e isolamento ainda exigem qualificação. I021 concede apenas autoria offline do harness em quatro paths exclusivos, não runtime. Nenhuma conclusão de ação ou E2E promovida.
+
+Audit I019 terminou antes de Docker/SQL por binding de argumentos do processo externo: **0/145 assertivas atingidas**, não145 falhas; stderr89f340991aa7b9e0c2dc0e8dd9b5888fbb14a364448e10721b75cd9f662dfa7b. I020 concede uma repetição local exclusiva do mesmo89949f30, perfil54/56, corrigindo apenas invocação child.ps1. Resultado ainda pendente.
+
+C02 I021 concede question-image e processamento real com contrato mínimo cedo, reutilizando catálogo/form-media, sem mudança de plataforma ou runtime remoto. Data/texto a9d880a7 deve aguardar o par Editor/resposta para integração, evitando perda de limites. Support3bd45694 e MealPlans4bf767a4 recebidos para revisão; testes informados pelos executores ainda não são verificação C00. Corte integral anterior C02r46 preservado, complementado por essas entregas nominais.
+
+Instruções C01I021, C02I021 e C03I020 enviadas pelos canais nativos. C06 confirmou I013 e C07I004, checkpoint às21:31 sem trabalho em voo; a janela não é presumida atual às21:43. Materialização do baseline C07 aguarda o próximo limite seguro com nova conferência, preservando o lote em andamento. C00 continua único escritor e integrador.
+
+Heartbeat C00 confirmado ACTIVE a cada dez minutos, próxima ocorrência nominal21:50 America/Sao_Paulo; retomadas C01/C02/C03 ACTIVE. Docker confirmado operacional pelo apoio às21:01:38 e por C00 após as leases anteriores; nenhum reset adicional. Fechamento05:30/06:00 e feedback/prompts07:40 de09/09 preservados. Medições históricas não alteradas por contagem de testes. Sem aplicação remota ou deploy.
