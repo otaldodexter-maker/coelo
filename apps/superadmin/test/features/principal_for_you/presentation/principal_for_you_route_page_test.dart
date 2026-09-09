@@ -389,6 +389,84 @@ void main() {
       isFalse,
     );
   });
+
+  testWidgets('never greets a real actor by the fixture name', (tester) async {
+    // The hub greeted everyone as "Fernanda", the preview fixture's name.
+    // PrincipalRuntimeContext carries the person id and the role, never the
+    // person's name, so the real route drops the name instead of inventing one.
+    final repository = _ControlledNoticeRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalForYouRoutePage(
+          repository: repository,
+          audienceScope: actorScope,
+          supportingData: PrincipalForYouPreviewData.contextual(
+            id: 'membership-1',
+            label: 'Unidade Centro',
+            family: 'Instituição Autorizada',
+            institution: 'Instituição Autorizada',
+            unit: 'Unidade Centro',
+          ),
+          now: () => now,
+        ),
+      ),
+    );
+    repository.page.complete(NoticePage(items: [communication(CommunicationType.forYou)]));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Fernanda'), findsNothing);
+    expect(find.text('Bom dia!'), findsOneWidget);
+  });
+
+  testWidgets('offers no context switch when there is a single authorized context', (
+    tester,
+  ) async {
+    // The selector refuses to open below two contexts, so both triggers would
+    // be controls that answer nothing. The card naming the resolved context
+    // stays: that one carries information.
+    final repository = _ControlledNoticeRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalForYouRoutePage(
+          repository: repository,
+          audienceScope: actorScope,
+          supportingData: PrincipalForYouPreviewData.contextual(
+            id: 'membership-1',
+            label: 'Unidade Centro',
+            family: 'Instituição Autorizada',
+            institution: 'Instituição Autorizada',
+            unit: 'Unidade Centro',
+          ),
+          now: () => now,
+        ),
+      ),
+    );
+    repository.page.complete(NoticePage(items: [communication(CommunicationType.forYou)]));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-for-you-context-trigger')), findsNothing);
+    expect(find.text('Trocar contexto'), findsNothing);
+    expect(find.text('Unidade Centro'), findsWidgets);
+  });
+
+  testWidgets('keeps the greeting name and the context switch where they are real', (
+    tester,
+  ) async {
+    // The preview fixture names the actor and carries three contexts, so both
+    // survive exactly as the approved composition has them.
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalForYouPreviewPage(data: PrincipalForYouPreviewData.demo, embedded: true),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Bom dia, Fernanda!'), findsOneWidget);
+    expect(find.byKey(const Key('principal-for-you-context-trigger')), findsWidgets);
+  });
 }
 
 final class _ControlledNoticeRepository implements NoticeRepository {

@@ -222,7 +222,12 @@ final class _ForYouScroll extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _Greeting(contextData: activeContext, onContext: onContext),
+              _Greeting(
+                contextData: activeContext,
+                onContext: onContext,
+                greetingName: data.greetingName,
+                canSwitchContext: data.contexts.length > 1,
+              ),
               const SizedBox(height: CoeloSpacing.space4),
               _HeroCard(highlight: data.primaryHighlight, onAction: onAction),
               const SizedBox(height: CoeloSpacing.space5),
@@ -235,7 +240,11 @@ final class _ForYouScroll extends StatelessWidget {
               ],
               if (activeContext != null) ...[
                 const SizedBox(height: CoeloSpacing.space5),
-                _CurrentContext(contextData: activeContext!, onContext: onContext),
+                _CurrentContext(
+                  contextData: activeContext!,
+                  onContext: onContext,
+                  canSwitchContext: data.contexts.length > 1,
+                ),
               ],
             ],
           ),
@@ -246,9 +255,20 @@ final class _ForYouScroll extends StatelessWidget {
 }
 
 final class _Greeting extends StatelessWidget {
-  const _Greeting({required this.contextData, required this.onContext});
+  const _Greeting({
+    required this.contextData,
+    required this.onContext,
+    required this.greetingName,
+    required this.canSwitchContext,
+  });
   final PrincipalForYouContext? contextData;
   final VoidCallback onContext;
+
+  /// Null when no authorized source names the actor.
+  final String? greetingName;
+
+  /// Whether there is more than one context to switch between.
+  final bool canSwitchContext;
 
   @override
   Widget build(BuildContext context) => Wrap(
@@ -260,7 +280,10 @@ final class _Greeting extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Bom dia, Fernanda!',
+            // Never a fabricated name: the real route has no authorized source
+            // for one, and greeting every actor as the fixture's "Fernanda" is
+            // worse than greeting them without a name.
+            greetingName == null ? 'Bom dia!' : 'Bom dia, $greetingName!',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: CoeloSpacing.space1),
@@ -272,7 +295,10 @@ final class _Greeting extends StatelessWidget {
           ),
         ],
       ),
-      if (contextData != null)
+      // Only where there is somewhere to switch to. With a single authorized
+      // context the selector refuses to open, so the trigger would be a control
+      // that answers nothing.
+      if (contextData != null && canSwitchContext)
         OutlinedButton.icon(
           key: const Key('principal-for-you-context-trigger'),
           onPressed: onContext,
@@ -696,9 +722,17 @@ final class _DayRow extends StatelessWidget {
 }
 
 final class _CurrentContext extends StatelessWidget {
-  const _CurrentContext({required this.contextData, required this.onContext});
+  const _CurrentContext({
+    required this.contextData,
+    required this.onContext,
+    required this.canSwitchContext,
+  });
   final PrincipalForYouContext contextData;
   final VoidCallback onContext;
+
+  /// Whether there is more than one context to switch between. The card itself
+  /// stays either way: it names the context the server resolved.
+  final bool canSwitchContext;
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
@@ -735,12 +769,13 @@ final class _CurrentContext extends StatelessWidget {
                 _ContextFact(Icons.location_on_outlined, 'Unidade', contextData.unit!),
               if (contextData.group != null)
                 _ContextFact(Icons.groups_outlined, 'Turma', contextData.group!),
-              TextButton.icon(
-                key: const Key('principal-for-you-context-trigger'),
-                onPressed: onContext,
-                label: const Text('Trocar contexto'),
-                icon: const Icon(Icons.chevron_right_rounded),
-              ),
+              if (canSwitchContext)
+                TextButton.icon(
+                  key: const Key('principal-for-you-context-trigger'),
+                  onPressed: onContext,
+                  label: const Text('Trocar contexto'),
+                  icon: const Icon(Icons.chevron_right_rounded),
+                ),
             ],
           ),
         ],
