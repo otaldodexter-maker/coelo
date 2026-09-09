@@ -20,12 +20,12 @@ BE0/223,E2E0/198, histórico e não recontado nesta rodada.
 
 | action_id | Estado/subtela e delta local | Primeiro gate restante |
 | --- | --- | --- |
-| people.list | Diretório; lifecycle R02 preservado | Contrato interno de listagem/filtros server-side; legado não atende spec046 |
-| people.create | Formulário; recibo R02 preservado | Write interno aprovado e identity repository |
-| people.edit | Formulário; receipt/retry R02 preservados | Write interno, persistência e recarga autorizadas |
+| people.list | Diretório; lifecycle R02 preservado; golden8renders/1P reconciliado5ffce5441 | Contrato interno de listagem/filtros server-side; legado não atende spec046 |
+| people.create | Formulário; recibo R02 preservado; visual e alcancefooter2P c76a0eb23 | Write interno aprovado e identity repository |
+| people.edit | Formulário; receipt/retry R02 preservados; visual2P compartilhados c76a0eb23 | Write interno, persistência e recarga autorizadas |
 | people.links | Vínculos minimizados | Contrato interno e negativas de escopo; consulta v2 não libera edição |
 | people.reload | Consulta por pessoa e diretório são contratos distintos | Runtime interno com reautorização; não certificar diretório pela spec046 |
-| access-profiles.list | Catálogo; lifecycle R02 preservado | Decisão de visibilidade institucional global e ACL/helpers |
+| access-profiles.list | Catálogo; lifecycle R02 preservado; hover1P e diretorio1P/16renders reconciliados | Decisão de visibilidade institucional global e ACL/helpers |
 | access-profiles.create | Formulário compartilhado; recibo confirmado preservado,18P e goldenF1 reconciliado | Write interno e personas; callback não deve repetir comando confirmado |
 | access-profiles.detail | Detalhe | Reader autorizado do perfil real |
 | access-profiles.edit | Formulário compartilhado; recibo confirmado preservado,18P e goldenF1 reconciliado | Persistência/recarga autorizada por ator |
@@ -64,7 +64,7 @@ Provas e hashes por lote: `models/README.md`, `models/frontend-receipts.md`,
 `safety-composition/handoff.md`, `safety-sql/handoff.md` e
 `safety-sql/profile-proposal/README.md`. Contagens SQL, Flutter e preparação
 são separadas; reruns não aumentam cobertura. Rollback tardio6P em
-`models/rollback-01.txt`; formulário18P/0F em models-form-receipt/golden-reconciliation.md e duplicação24P em models/duplicate-receipts.md. Total atual396P/0F/120U: Safety108U e concorrênciaModels12U.
+`models/rollback-01.txt`; formulário18P/0F em models-form-receipt/golden-reconciliation.md e duplicação24P em models/duplicate-receipts.md. Total atual401P/0F/120U: Safety108U e concorrênciaModels12U.
 
 Produção: catálogo Supabase lido sem dados pessoais, zero mutação remota.
 Ausência do Owner não autoriza pacote novo. Modelos precisa da fundação nominal
@@ -78,3 +78,5 @@ central deve reconciliar suas fontes/aditivos sem alterar a política ADR0019.
 Checkpoint 19:25 BRT: Claude r9 registra integração até b285a6804 por69ce62c43. Os commits9d5ce7317/cb76f5968 posteriores estão publicados para integração. A retomada do ensaio concorrente de Modelos foi rejeitada pela revisão automática por possível risco de cibersegurança;12 critérios permanecem não executados, sem contorno. Docker recuperou e o projeto anterior foi verificado sem containers/volumes/networks. Slot Models liberado; Safety108 aguarda ordem nominal após prioridade Forms I008.
 
 Reconciliacao Formgolden: F1 substituido porP1, tres imagens com causa integrada e inspecao anterior conforme coordenacao r10. Evidencia models-form-receipt/golden-reconciliation.md; nenhum certificado completo novo.
+
+Checkpoint visual: f60b2c2fe hoverPerfis1P, c76a0eb23 formularioPessoas2P, 5ffce5441 diretorioPessoas1P e7956dda48 diretorioPerfis1P. Inspecao por render, causas integradas e manifests nos quatro handoffs. Nenhuma certificacao nova. O censo historico tinha14 testes golden falhos nestas familias; cinco foram reconciliados em lotes focais (inclui formularioPerfis c8c8b0fba). Restam nove do censo em Convites/Usuarios internos, ainda nao reexecutados neste checkpoint. Medicao ampla190F da base ecc8eae2b permanece historica separada.
