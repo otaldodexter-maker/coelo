@@ -937,6 +937,9 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         requestId: 'save-model-${DateTime.now().microsecondsSinceEpoch}',
       );
       if (!_isCurrentCommand(generation, repository: repository, entry: current)) return;
+      if (id.trim().isEmpty) {
+        throw const FormatException('O modelo salvo não pôde ser validado.');
+      }
       if (current.id.isNotEmpty && id != current.id) {
         throw const FormatException('O modelo salvo não corresponde ao solicitado.');
       }
@@ -995,6 +998,9 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         requestId: 'save-application-${DateTime.now().microsecondsSinceEpoch}',
       );
       if (!_isCurrentCommand(generation, repository: repository, entry: current)) return;
+      if (id.trim().isEmpty) {
+        throw const FormatException('A rotina aplicada salva não pôde ser validada.');
+      }
       if (current.id.isNotEmpty && id != current.id) {
         throw const FormatException('A rotina aplicada salva não corresponde à solicitada.');
       }
