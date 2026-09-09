@@ -92,11 +92,13 @@ final class SupabaseCircularMediaRepository implements CircularMediaRepository {
     if ((!alreadyUploaded && uri == null) || expiresAt == null) {
       throw const CircularUnavailable();
     }
+    final provider = data['storage_provider']?.toString().trim();
     return CircularMediaUploadIntent(
       assetId: _text(data, 'asset_id'),
       uploadUrl: uri,
       requiredHeaders: Map<String, String>.from((data['required_headers'] as Map?) ?? const {}),
       expiresAt: expiresAt,
+      storageProvider: provider == null || provider.isEmpty ? null : provider,
     );
   }
 
@@ -129,11 +131,23 @@ final class SupabaseCircularMediaRepository implements CircularMediaRepository {
   }
 
   @override
-  Future<Uri> resolveRead(String assetId) async {
+  Future<CircularMediaReadTicket> resolveRead(String assetId) async {
     final data = await _invoke({'action': 'read', 'asset_id': assetId});
     final uri = Uri.tryParse(_text(data, 'signed_url'));
     if (uri == null || uri.scheme != 'https') throw const CircularUnavailable();
-    return uri;
+    final seconds = data['expires_in'];
+    final name = data['name']?.toString().trim();
+    final byteSize = data['size_bytes'];
+    return CircularMediaReadTicket(
+      assetId: assetId,
+      url: uri,
+      mimeType: _text(data, 'mime_type'),
+      expiresAt: DateTime.now().toUtc().add(
+        Duration(seconds: seconds is num && seconds > 0 ? seconds.toInt() : 60),
+      ),
+      name: name == null || name.isEmpty ? null : name,
+      byteSize: byteSize is num && byteSize >= 0 ? byteSize.toInt() : null,
+    );
   }
 
   @override

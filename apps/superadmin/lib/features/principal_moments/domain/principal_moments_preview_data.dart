@@ -74,6 +74,23 @@ final class PrincipalMomentsPreviewData {
   );
 }
 
+/// A single authorized media rendition of a moment.
+///
+/// [signedUrl] is a short lived, server-issued read URL. The client never sees
+/// the bucket, the object key or any credential.
+@immutable
+final class PrincipalMomentMedia {
+  const PrincipalMomentMedia({
+    required this.signedUrl,
+    required this.mimeType,
+    required this.displayOrder,
+  });
+
+  final String signedUrl;
+  final String mimeType;
+  final int displayOrder;
+}
+
 @immutable
 final class PrincipalMomentPreviewItem {
   const PrincipalMomentPreviewItem({
@@ -86,6 +103,10 @@ final class PrincipalMomentPreviewItem {
     required this.shares,
     required this.saves,
     required this.imageIndex,
+    this.publicationId,
+    this.canWithdraw = false,
+    this.media = const [],
+    this.initials,
   });
 
   final String author;
@@ -97,6 +118,28 @@ final class PrincipalMomentPreviewItem {
   final int shares;
   final int saves;
   final int imageIndex;
+
+  /// Server-issued publication identifier. Null for local preview fixtures,
+  /// which are never withdrawable.
+  final String? publicationId;
+
+  /// Server-computed authorship affordance. The client only renders it; the
+  /// backend re-authorizes every withdrawal request.
+  final bool canWithdraw;
+
+  final List<PrincipalMomentMedia> media;
+
+  /// Server-provided author initials. Falls back to a locally derived value.
+  final String? initials;
+
+  String get resolvedInitials {
+    final provided = initials?.trim();
+    if (provided != null && provided.isNotEmpty) return provided.toUpperCase();
+    final words = author.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+    if (words.isEmpty) return 'CO';
+    if (words.length == 1) return words.first.substring(0, 1).toUpperCase();
+    return (words.first.substring(0, 1) + words.last.substring(0, 1)).toUpperCase();
+  }
 }
 
 @immutable

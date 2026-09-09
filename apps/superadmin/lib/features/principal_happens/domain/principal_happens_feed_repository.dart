@@ -26,6 +26,30 @@ final class PrincipalHappensMediaRead {
   final Duration expiresIn;
 }
 
+/// Retirada de uma publicacao propria ja publicada ou agendada
+/// (Etapa 2 -> apps/superadmin -> Coelo (Principal) -> Acontece -> acontece.remove).
+///
+/// Contrato separado do feed de leitura de proposito: quem so consome o feed
+/// nao precisa implementar a retirada, e a ausencia deste contrato na
+/// composicao mantem a acao fechada em vez de aparente.
+abstract interface class PrincipalHappensPostWithdrawal {
+  /// Retira do feed a publicacao [postId] na versao [expectedVersion].
+  ///
+  /// A autorizacao e sempre do servidor: o cliente apenas solicita. Lanca
+  /// [PrincipalHappensFeedUnauthorized] quando o ator nao pode retirar,
+  /// [PrincipalHappensWithdrawalConflict] quando a versao ficou obsoleta e
+  /// [PrincipalHappensFeedUnavailable] para qualquer outra falha.
+  Future<void> withdrawPost({
+    required String postId,
+    required int expectedVersion,
+    String? reason,
+  });
+}
+
+final class PrincipalHappensWithdrawalConflict implements Exception {
+  const PrincipalHappensWithdrawalConflict();
+}
+
 final class PrincipalHappensFeedUnauthorized implements Exception {
   const PrincipalHappensFeedUnauthorized();
 }

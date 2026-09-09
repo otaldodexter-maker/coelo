@@ -27,10 +27,18 @@ final class PrincipalHappensPostItem extends PrincipalHappensFeedItem {
     required super.contextLabel,
     required this.caption,
     this.media = const [],
+    this.managementVersion,
+    this.canWithdraw = false,
   });
 
   final String caption;
   final List<PrincipalHappensMediaDescriptor> media;
+
+  /// Versao otimista devolvida pela projecao, exigida pela retirada.
+  final int? managementVersion;
+
+  /// O servidor decide quem pode retirar; o cliente apenas obedece.
+  final bool canWithdraw;
 }
 
 @immutable

@@ -19,6 +19,41 @@ final class CircularSelectedFile {
   final String name;
   final String mimeType;
   final Uint8List bytes;
+
+  /// Client side convenience check. It never authorizes anything: the server
+  /// re-validates MIME, signature, byte count and quota on prepare/finalize.
+  bool get acceptedLocally =>
+      CircularMediaLimits.mimeForFileName(name) == mimeType &&
+      bytes.isNotEmpty &&
+      bytes.length <= CircularMediaLimits.maxBytesFor(mimeType);
+}
+
+/// Media constraints of spec037 mirrored for fast local feedback. The numbers
+/// come from [CircularLimits]; nothing is redefined here.
+abstract final class CircularMediaLimits {
+  static const acceptedExtensions = <String, String>{
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'webp': 'image/webp',
+    'mp4': 'video/mp4',
+    'pdf': 'application/pdf',
+  };
+
+  static int maxBytesFor(String mimeType) => switch (mimeType) {
+    'image/jpeg' || 'image/png' || 'image/webp' => CircularLimits.imageBytes,
+    'video/mp4' => CircularLimits.videoBytes,
+    'application/pdf' => CircularLimits.pdfBytes,
+    _ => 0,
+  };
+
+  static String? mimeForFileName(String name) {
+    final parts = name.toLowerCase().split('.');
+    if (parts.length < 2) return null;
+    return acceptedExtensions[parts.last];
+  }
+
+  static String newRequestId() => _uuid();
 }
 
 final class CircularMediaUploadCoordinator {
@@ -45,11 +80,19 @@ final class CircularMediaUploadCoordinator {
       byteSize: file.bytes.length,
     );
     if (intent.uploadUrl case final uploadUrl?) {
+      // The R2 branch signs a short window (300s). Transferring against an
+      // expired signature is reported as an expired window, never as success.
+      if (intent.expiredAt(DateTime.now())) {
+        throw const CircularInvalid('media_upload_expired');
+      }
       final response = await _httpClient.put(
         uploadUrl,
         headers: {...intent.requiredHeaders, 'content-type': file.mimeType},
         body: file.bytes,
       );
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        throw const CircularInvalid('media_upload_expired');
+      }
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw const CircularUnavailable();
       }
@@ -73,12 +116,7 @@ final class CircularMediaUploadCoordinator {
   }
 
   static void _validate(CircularSelectedFile file) {
-    final maxBytes = switch (file.mimeType) {
-      'image/jpeg' || 'image/png' || 'image/webp' => CircularLimits.imageBytes,
-      'video/mp4' => CircularLimits.videoBytes,
-      'application/pdf' => CircularLimits.pdfBytes,
-      _ => 0,
-    };
+    final maxBytes = CircularMediaLimits.maxBytesFor(file.mimeType);
     if (file.bytes.isEmpty || file.bytes.length > maxBytes || maxBytes == 0) {
       throw const CircularInvalid('media_invalid');
     }

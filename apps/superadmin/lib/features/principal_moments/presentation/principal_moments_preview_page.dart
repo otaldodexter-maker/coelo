@@ -23,11 +23,17 @@ final class PrincipalMomentsPreviewPage extends StatefulWidget {
     this.onOpenMessages,
     this.feedRepository,
     this.feedScope,
+    this.withdrawalRepository,
     this.refreshSignal,
     this.data = PrincipalMomentsPreviewData.demo,
     super.key,
   });
 
+  /// Marks the viewer as hosted inside the Superadmin shell content area.
+  ///
+  /// The host keeps its own shell/menu visible (Owner decision of 2026-09-09),
+  /// so the viewer must not re-apply the system insets the host already
+  /// consumed. The immersive Momentos composition itself is unchanged.
   final bool embedded;
   final VoidCallback? onOpenHappens;
   final VoidCallback? onOpenProfile;
@@ -43,6 +49,10 @@ final class PrincipalMomentsPreviewPage extends StatefulWidget {
   final VoidCallback? onOpenMessages;
   final PrincipalMomentsFeedRepository? feedRepository;
   final PrincipalMomentsFeedScope? feedScope;
+
+  /// Optional author-only withdrawal seam. The affordance is rendered only for
+  /// moments the backend already marked as withdrawable.
+  final PrincipalMomentsWithdrawalRepository? withdrawalRepository;
   final PrincipalMomentsFeedRefreshSignal? refreshSignal;
   final PrincipalMomentsPreviewData data;
 
@@ -61,6 +71,7 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
   PrincipalMomentsFeedFailure? _feedFailure;
   var _feedLoading = false;
   var _loadGeneration = 0;
+  String? _withdrawingPublicationId;
 
   bool get _feedConfigurationInvalid =>
       (widget.feedRepository == null) != (widget.feedScope == null);
@@ -147,6 +158,68 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
         _feedFailure = const PrincipalMomentsFeedUnavailable();
       });
     }
+  }
+
+  bool _canWithdraw(PrincipalMomentPreviewItem moment) =>
+      widget.withdrawalRepository != null &&
+      moment.canWithdraw &&
+      (moment.publicationId?.isNotEmpty ?? false);
+
+  Future<void> _confirmWithdrawal(PrincipalMomentPreviewItem moment) async {
+    final repository = widget.withdrawalRepository;
+    final publicationId = moment.publicationId;
+    if (repository == null || publicationId == null || publicationId.isEmpty) return;
+    if (_withdrawingPublicationId != null) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        key: const Key('principal-moments-withdraw-dialog'),
+        title: const Text('Retirar este momento?'),
+        content: const Text(
+          'Ele deixa de aparecer para quem podia ver. A mídia não é apagada e a '
+          'retirada fica registrada.',
+        ),
+        actions: [
+          TextButton(
+            key: const Key('principal-moments-withdraw-cancel'),
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Manter publicado'),
+          ),
+          FilledButton(
+            key: const Key('principal-moments-withdraw-confirm'),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Retirar'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _withdrawingPublicationId = publicationId);
+    try {
+      await repository.withdrawMoment(publicationId);
+      if (!mounted) return;
+      setState(() => _withdrawingPublicationId = null);
+      _announce('Momento retirado.');
+      await _loadFeed();
+    } on PrincipalMomentsWithdrawalFailure catch (failure) {
+      if (!mounted) return;
+      setState(() => _withdrawingPublicationId = null);
+      _announce(
+        failure is PrincipalMomentsWithdrawalDenied
+            ? 'Você não tem permissão para retirar este momento.'
+            : 'Não foi possível retirar agora. Tente novamente.',
+      );
+    } on Exception {
+      if (!mounted) return;
+      setState(() => _withdrawingPublicationId = null);
+      _announce('Não foi possível retirar agora. Tente novamente.');
+    }
+  }
+
+  void _announce(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _prototypeMessage(String label) {
@@ -252,6 +325,10 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
       }),
       onMute: () => setState(() => _muted = !_muted),
       onAction: _prototypeMessage,
+      canWithdraw: _canWithdraw,
+      withdrawingPublicationId: _withdrawingPublicationId,
+      onWithdraw: _confirmWithdrawal,
+      embedded: widget.embedded,
     );
   }
 
@@ -334,6 +411,10 @@ final class _MomentPager extends StatelessWidget {
     required this.onSave,
     required this.onMute,
     required this.onAction,
+    required this.canWithdraw,
+    required this.withdrawingPublicationId,
+    required this.onWithdraw,
+    required this.embedded,
   });
 
   final PageController controller;
@@ -350,6 +431,10 @@ final class _MomentPager extends StatelessWidget {
   final VoidCallback onSave;
   final VoidCallback onMute;
   final ValueChanged<String> onAction;
+  final bool Function(PrincipalMomentPreviewItem moment) canWithdraw;
+  final String? withdrawingPublicationId;
+  final ValueChanged<PrincipalMomentPreviewItem> onWithdraw;
+  final bool embedded;
 
   @override
   Widget build(BuildContext context) => ColoredBox(
@@ -387,6 +472,12 @@ final class _MomentPager extends StatelessWidget {
           onSave: onSave,
           onMute: onMute,
           onAction: onAction,
+          canWithdraw: canWithdraw(moments[index]),
+          withdrawing:
+              withdrawingPublicationId != null &&
+              withdrawingPublicationId == moments[index].publicationId,
+          onWithdraw: () => onWithdraw(moments[index]),
+          embedded: embedded,
         ),
       ),
     ),
@@ -404,6 +495,10 @@ final class _MomentFrame extends StatelessWidget {
     required this.onSave,
     required this.onMute,
     required this.onAction,
+    required this.canWithdraw,
+    required this.withdrawing,
+    required this.onWithdraw,
+    required this.embedded,
   });
 
   final PrincipalMomentPreviewItem moment;
@@ -415,17 +510,23 @@ final class _MomentFrame extends StatelessWidget {
   final VoidCallback onSave;
   final VoidCallback onMute;
   final ValueChanged<String> onAction;
+  final bool canWithdraw;
+  final bool withdrawing;
+  final VoidCallback onWithdraw;
+  final bool embedded;
 
   @override
   Widget build(BuildContext context) {
-    final viewPadding = MediaQuery.viewPaddingOf(context);
+    // Hosted in the Superadmin shell the system insets already belong to the
+    // host chrome; only the standalone viewer offsets its overlay controls.
+    final viewPadding = embedded ? EdgeInsets.zero : MediaQuery.viewPaddingOf(context);
     return Semantics(
       image: true,
       label: 'Momento de ${moment.author}, ${moment.context}. ${moment.caption}',
       child: Stack(
         fit: StackFit.expand,
         children: [
-          _SpriteImage(index: moment.imageIndex, count: 5),
+          _MomentSurface(moment: moment),
           const DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -471,6 +572,9 @@ final class _MomentFrame extends StatelessWidget {
               onLike: onLike,
               onSave: onSave,
               onAction: onAction,
+              canWithdraw: canWithdraw,
+              withdrawing: withdrawing,
+              onWithdraw: onWithdraw,
             ),
           ),
           Positioned(
@@ -493,6 +597,9 @@ final class _ActionRail extends StatelessWidget {
     required this.onLike,
     required this.onSave,
     required this.onAction,
+    required this.canWithdraw,
+    required this.withdrawing,
+    required this.onWithdraw,
   });
 
   final PrincipalMomentPreviewItem moment;
@@ -501,6 +608,9 @@ final class _ActionRail extends StatelessWidget {
   final VoidCallback onLike;
   final VoidCallback onSave;
   final ValueChanged<String> onAction;
+  final bool canWithdraw;
+  final bool withdrawing;
+  final VoidCallback onWithdraw;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -533,6 +643,28 @@ final class _ActionRail extends StatelessWidget {
         count: moment.saves,
         onPressed: onSave,
       ),
+      if (canWithdraw)
+        withdrawing
+            ? const Padding(
+                key: Key('principal-moments-withdraw-progress'),
+                padding: EdgeInsets.only(bottom: CoeloSpacing.space2),
+                child: SizedBox.square(
+                  dimension: CoeloSize.touchMin,
+                  child: Center(
+                    child: SizedBox.square(
+                      dimension: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    ),
+                  ),
+                ),
+              )
+            : _OverlayIcon(
+                actionKey: const Key('principal-moments-withdraw'),
+                icon: Icons.remove_circle_outline_rounded,
+                label: 'Retirar momento',
+                onPressed: onWithdraw,
+                circularBackground: true,
+              ),
       _OverlayIcon(
         icon: Icons.more_horiz_rounded,
         label: 'Mais opções',
@@ -619,9 +751,9 @@ final class _MomentContext extends StatelessWidget {
             CircleAvatar(
               radius: 18,
               backgroundColor: Theme.of(context).colorScheme.primary,
-              child: const Text(
-                'CO',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+              child: Text(
+                moment.resolvedInitials,
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
               ),
             ),
             const SizedBox(width: CoeloSpacing.space2),
@@ -641,6 +773,29 @@ final class _MomentContext extends StatelessWidget {
       ],
     ),
   );
+}
+
+/// Renders the authorized media rendition when the backend provided one, and
+/// falls back to the local preview sprite for fixture data only.
+final class _MomentSurface extends StatelessWidget {
+  const _MomentSurface({required this.moment});
+
+  final PrincipalMomentPreviewItem moment;
+
+  @override
+  Widget build(BuildContext context) {
+    if (moment.media.isEmpty) {
+      return _SpriteImage(index: moment.imageIndex, count: 5);
+    }
+    return Image.network(
+      moment.media.first.signedUrl,
+      key: const Key('principal-moments-media'),
+      fit: BoxFit.cover,
+      alignment: Alignment.topCenter,
+      excludeFromSemantics: true,
+      errorBuilder: (context, error, stackTrace) => const ColoredBox(color: Colors.black),
+    );
+  }
 }
 
 final class _SpriteImage extends StatelessWidget {
