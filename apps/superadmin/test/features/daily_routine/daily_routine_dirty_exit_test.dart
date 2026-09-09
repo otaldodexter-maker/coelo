@@ -147,4 +147,63 @@ void main() {
     expect(find.byKey(const Key('daily-routine-exit-dialog')), findsNothing);
     expect(taken, ['attendance']);
   });
+
+  testWidgets('the exit confirmation survives 375 wide at 200 percent text', (tester) async {
+    tester.view.physicalSize = const Size(375, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: Scaffold(key: _home, body: const SizedBox.shrink()),
+      ),
+    );
+    Navigator.of(_home.currentContext!).push(
+      MaterialPageRoute<void>(
+        builder: (context) => DailyRoutineEditorPage(
+          repository: FakeRoutineRepository(models: const [_model], canManage: true),
+          logout: unavailableSuperadminLogout,
+          modelId: _model.id,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await _typeName(tester, 'Chegada e acolhimento revisado');
+
+    await _requestExit(tester);
+
+    expect(tester.takeException(), isNull);
+    expect(find.byKey(const Key('daily-routine-exit-dialog')), findsOneWidget);
+    expect(find.text('Continuar editando'), findsOneWidget);
+    expect(find.text('Sair sem salvar'), findsOneWidget);
+  });
+
+  testWidgets('both exit choices are reachable by keyboard', (tester) async {
+    await _openEditor(tester);
+    await _typeName(tester, 'Chegada e acolhimento revisado');
+    await _requestExit(tester);
+
+    for (final label in const ['Continuar editando', 'Sair sem salvar']) {
+      final action = find.ancestor(
+        of: find.text(label),
+        matching: find.byWidgetPredicate((widget) => widget is ButtonStyleButton),
+      );
+      expect(action, findsOneWidget, reason: label);
+      expect(
+        tester.widget<ButtonStyleButton>(action).enabled,
+        isTrue,
+        reason: '$label must be operable, not decorative',
+      );
+      expect(
+        Focus.maybeOf(tester.element(find.text(label)), scopeOk: true),
+        isNotNull,
+        reason: '$label must sit inside a focus scope',
+      );
+    }
+  });
 }
