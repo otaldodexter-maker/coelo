@@ -327,6 +327,63 @@ void main() {
     expect(decimal.maxValue, 10.5);
   });
 
+  // Residual C02/R01: maxLength de texto curto era persistido e respeitado ao
+  // responder, mas o autor não tinha onde declará-lo.
+  _Api shortTextApi({FormItemConfig config = const FormItemConfig()}) => _Api(manage: true)
+    ..customItems = [
+      FormItem(
+        id: 'short',
+        kind: FormItemKind.shortText,
+        label: 'Texto curto',
+        position: 0,
+        config: config,
+      ),
+    ];
+
+  Finder maxLengthField() => find.byKey(const ValueKey('forms-editor-max-length-short'));
+
+  testWidgets('short text exposes a maximum length control the author can set', (tester) async {
+    final api = shortTextApi();
+    await open(tester, api);
+    expect(maxLengthField(), findsOneWidget);
+    await tester.enterText(maxLengthField(), '140');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.commands.last.payload.sections.single.items.single.config.maxLength, 140);
+  });
+
+  testWidgets('an authored maximum length is restored into its control', (tester) async {
+    await open(tester, shortTextApi(config: const FormItemConfig(maxLength: 140)));
+    expect(tester.widget<TextFormField>(maxLengthField()).controller?.text, '140');
+  });
+
+  testWidgets('clearing the control removes the maximum length', (tester) async {
+    final api = shortTextApi(config: const FormItemConfig(maxLength: 140));
+    await open(tester, api);
+    await tester.enterText(maxLengthField(), '');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.commands.last.payload.sections.single.items.single.config.maxLength, isNull);
+  });
+
+  for (final raw in ['0', '-5', 'abc', '2,5']) {
+    testWidgets('a maximum length of $raw never saves a draft', (tester) async {
+      final api = shortTextApi();
+      await open(tester, api);
+      await tester.enterText(maxLengthField(), raw);
+      await tester.pump(const Duration(milliseconds: 800));
+      await tester.pumpAndSettle();
+      expect(api.commands, isEmpty);
+      expect(find.text('Informe um máximo de caracteres inteiro e maior que zero.'), findsWidgets);
+    });
+  }
+
+  testWidgets('only short text carries the maximum length control', (tester) async {
+    await open(tester, numericApi(FormItemKind.integer));
+    expect(find.byKey(const ValueKey('forms-editor-max-length-number')), findsNothing);
+  });
+
+
   _Api galleryApi({FormItemConfig config = const FormItemConfig()}) => _Api(manage: true)
     ..customItems = [
       FormItem(

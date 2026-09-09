@@ -1406,6 +1406,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     for (final section in _sections) {
       for (final question in _flattenQuestions(section.questions)) {
         if (question.galleryLimitsIssue case final issue?) return issue;
+        if (question.textLimitsIssue case final issue?) return issue;
         if (question.dateLimitsIssue case final issue?) return issue;
       }
     }
@@ -1517,7 +1518,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     isRequired: question.required,
     conditions: question.loadedConditions,
     config: FormItemConfig(
-      maxLength: question.loadedConfig.maxLength,
+      maxLength: question.kind == FormItemKind.shortText
+          ? int.tryParse(question.maxLength.text.trim())
+          : question.loadedConfig.maxLength,
       minDate:
           question.kind == FormItemKind.date &&
               (question.dateRule == _DateRule.from || question.dateRule == _DateRule.range)
@@ -2160,6 +2163,7 @@ final class _EditorQuestionDraft {
        details = TextEditingController(),
        minimum = TextEditingController(),
        maximum = TextEditingController(),
+       maxLength = TextEditingController(text: loadedConfig.maxLength?.toString() ?? ''),
        minimumImages = TextEditingController(text: loadedConfig.minImages?.toString() ?? ''),
        maximumImages = TextEditingController(text: loadedConfig.maxImages?.toString() ?? ''),
        options = kind == FormItemKind.singleChoice || kind == FormItemKind.multipleChoice
@@ -2185,6 +2189,7 @@ final class _EditorQuestionDraft {
   final TextEditingController details;
   final TextEditingController minimum;
   final TextEditingController maximum;
+  final TextEditingController maxLength;
   final TextEditingController minimumImages;
   final TextEditingController maximumImages;
   final List<TextEditingController> options;
@@ -2208,6 +2213,17 @@ final class _EditorQuestionDraft {
     }
     if (dateRule == _DateRule.range && from!.isAfter(until!)) {
       return 'A data mínima deve ser anterior ou igual à data máxima.';
+    }
+    return null;
+  }
+
+  String? get textLimitsIssue {
+    if (kind != FormItemKind.shortText) return null;
+    final declared = maxLength.text.trim();
+    if (declared.isEmpty) return null;
+    final value = int.tryParse(declared);
+    if (value == null || value < 1) {
+      return 'Informe um máximo de caracteres inteiro e maior que zero.';
     }
     return null;
   }
@@ -2290,6 +2306,7 @@ final class _EditorQuestionDraft {
       ..details.text = details.text
       ..minimum.text = minimum.text
       ..maximum.text = maximum.text
+      ..maxLength.text = maxLength.text
       ..minimumImages.text = minimumImages.text
       ..maximumImages.text = maximumImages.text;
     value.replaceOptions([
@@ -2316,6 +2333,7 @@ final class _EditorQuestionDraft {
     details.dispose();
     minimum.dispose();
     maximum.dispose();
+    maxLength.dispose();
     minimumImages.dispose();
     maximumImages.dispose();
     for (final option in options) {
@@ -2659,6 +2677,30 @@ final class _QuestionCardState extends State<_QuestionCard> {
           prefixIcon: Icons.notes_rounded,
           onChanged: (_) => widget.onChanged(),
         ),
+      ],
+      if (widget.question.kind == FormItemKind.shortText) ...[
+        const SizedBox(height: CoeloSpacing.space3),
+        CoeloFormTextField(
+          fieldKey: ValueKey('forms-editor-max-length-${widget.question.id}'),
+          controller: widget.question.maxLength,
+          labelText: 'Máximo de caracteres',
+          hintText: 'Sem limite',
+          prefixIcon: Icons.short_text_rounded,
+          keyboardType: TextInputType.number,
+          onChanged: (_) {
+            setState(() {});
+            widget.onChanged();
+          },
+        ),
+        if (widget.question.textLimitsIssue case final issue?) ...[
+          const SizedBox(height: CoeloSpacing.space2),
+          Text(
+            issue,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
+          ),
+        ],
       ],
       if (_isNumericKind(widget.question.kind)) ...[
         const SizedBox(height: CoeloSpacing.space3),
