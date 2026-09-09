@@ -424,7 +424,9 @@ final class _FailureRepository implements HappensPublicationRepository {
   Future<HappensPublication> publish(
     HappensPublicationContext context,
     HappensPostDraft draft,
-  ) async {
+  {
+    required String requestId,
+  }) async {
     _deny('publish');
     return HappensPublication(
       id: draft.id!,
@@ -469,7 +471,9 @@ final class _BlockingRepository implements HappensPublicationRepository {
   Future<HappensPublication> publish(
     HappensPublicationContext context,
     HappensPostDraft draft,
-  ) async {
+  {
+    required String requestId,
+  }) async {
     publishCalls++;
     return HappensPublication(
       id: draft.id!,
@@ -506,7 +510,9 @@ final class _DeferredLoadRepository implements HappensPublicationRepository {
       throw UnimplementedError();
 
   @override
-  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft) =>
+  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft, {
+    required String requestId,
+  }) =>
       throw UnimplementedError();
 }
 
@@ -545,7 +551,9 @@ final class _DeferredRemoveRepository implements HappensPublicationRepository {
       throw UnimplementedError();
 
   @override
-  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft) =>
+  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft, {
+    required String requestId,
+  }) =>
       throw UnimplementedError();
 }
 
@@ -571,7 +579,9 @@ final class _FailOnceAfterSaveRepository implements HappensPublicationRepository
   Future<HappensPublication> publish(
     HappensPublicationContext context,
     HappensPostDraft draft,
-  ) async {
+  {
+    required String requestId,
+  }) async {
     publishCalls++;
     if (publishCalls == 1) throw Exception('response_lost');
     return HappensPublication(

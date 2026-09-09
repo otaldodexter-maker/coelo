@@ -146,10 +146,12 @@ final class _ThrowingRepository implements NowPublicationRepository {
   }
 
   @override
-  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) async {
+  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft, {
+    required String requestId,
+  }) async {
     publishCalls++;
     if (onPublish && publishCalls == 1) throw TypeError();
-    return _inner.publish(context, draft);
+    return _inner.publish(context, draft, requestId: requestId);
   }
 
   @override

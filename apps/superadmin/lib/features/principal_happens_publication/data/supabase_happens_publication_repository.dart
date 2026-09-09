@@ -171,14 +171,15 @@ final class SupabaseHappensPublicationRepository implements HappensPublicationRe
   @override
   Future<HappensPublication> publish(
     HappensPublicationContext context,
-    HappensPostDraft draft,
-  ) async {
+    HappensPostDraft draft, {
+    required String requestId,
+  }) async {
     final saved = draft.id == null ? await saveDraft(context, draft) : draft;
     try {
       final data = await _client.rpc<Object>(
         'publish_happens_post',
         params: {
-          'p_request_id': _uuid(),
+          'p_request_id': requestId,
           'p_post_id': saved.id,
           'p_expected_version': saved.version,
           'p_publish_at': saved.publishAt?.toUtc().toIso8601String(),
