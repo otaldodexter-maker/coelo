@@ -98,6 +98,60 @@ a URL, rodando com repositório nulo** — passava verde enquanto a tela renderi
 indisponível. Era teste de path, não de composição. É a resposta factual para por
 que contagens de teste nunca demonstraram entrega E2E nesta Etapa.
 
+## Veredito da varredura dirigida de L01 — seis IDs implementados e não verificados
+
+Eu havia mandado L01 verificar, no eixo FE, os seis IDs que ele mesmo apontou
+como implementados **antes** desta rodada e pendentes de verificação, não de
+implementação. Resultado, já com uma correção que ele fez do próprio achado:
+
+| ID | Veredito |
+| --- | --- |
+| `agora.create` | **Verificado com evidência** na rota real |
+| `agora.publish` | **Verificado com evidência** na rota real |
+| `acontece.create` | Verificado **para escopo com turma** |
+| `acontece.publish` | Verificado **para escopo com turma** |
+| `acontece.feed` | **Parcial, não fecha** — projeção de Circulares ausente, subaceite obrigatório |
+| `agora.view` | **Dois defeitos**: composição e retorno contextual |
+
+### Correção de escopo que L01 fez sozinho, e que eu verifiquei
+
+L01 havia relatado `agora.view` como **rota inalcançável pela navegação real**,
+afirmando que `onOpenNow` era a única referência a `principalNowName` no app.
+**Ele mesmo desmentiu antes de eu consolidar**, e eu confirmei por conta própria:
+`principalNowName` aparece em `superadmin_router.dart` nas linhas 810, 857, 912 e
+— o ponto que derruba a afirmação — **4899 e 5287**, os dois despachantes de
+navegação; e o menu do hospedeiro expõe o destino `principal-now` em
+`app/navigation/superadmin_navigation.dart:176`, com a folha de publicar na 177.
+**A rota é alcançável pelo menu.**
+
+Causa do erro, declarada por ele: um subagente concluiu "única referência" por
+busca, e ele repassou sem reconferir — depois de passar o dia inteiro insistindo
+que leitura não é verificação.
+
+**O que sobrevive e continua sendo defeito real:** a Acontece real é montada com
+`PrincipalHappensPreviewData.empty`, cujo `nowItems` é vazio, então o carrossel
+Agora exigido pela spec050 aparece **vazio** e nenhum card de história é
+construído — a entrada em contexto não existe, embora a entrada pelo menu exista.
+É **defeito de composição**, não de acesso, e entra no movimento único em outra
+ordem de gravidade. Os testes dele sempre asseriram exatamente isso e continuam
+válidos; errada estava a moldura em volta, corrigida dentro do próprio arquivo em
+`36ba21db5` para ninguém reconstruir a afirmação larga a partir dele.
+
+O segundo defeito de `agora.view` permanece como reportado e foi medido por
+teste: o retorno contextual usa `go` em vez de `pop`, então a origem é
+**remontada** em vez de restaurada, e o feed da Acontece é relido ao fechar o
+viewer. A rota `/dev` equivalente já faz `pop` quando pode — a preview está mais
+correta que a produção. Correção exata para o movimento único: no builder de
+`principalNow`, `if (context.canPop()) { context.pop(); return; }` com o
+`goNamed` como fallback, espelhando `_closePrincipalViewer`.
+
+**Nota de método, e é o motivo de eu registrar este episódio:** o consolidado que
+publiquei às 15:0x **não** continha a afirmação exagerada — verifiquei antes de
+escrever e o item não estava entre os quatro defeitos centrais. O erro foi
+apanhado pelo próprio autor e confirmado por mim antes de virar registro. Isso é
+o processo funcionando, não um deslize a esconder.
+
+
 ## Bloqueios que não são das frentes Claude
 
 ### 1. Realm interno do Superadmin não é provável nesta máquina
