@@ -554,12 +554,18 @@ final class _IdentitySection extends StatelessWidget {
           const SizedBox(height: CoeloSpacing.space3),
           actions,
         ],
-        const SizedBox(height: CoeloSpacing.space3),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 760),
-          child: Text(data.bio, style: Theme.of(context).textTheme.bodyMedium),
-        ),
-        TextButton(onPressed: onOpenBio, child: const Text('Ver mais')),
+        // The bio is the authorized `description` of the About page and can be
+        // legitimately absent. Rendering an empty paragraph plus "Ver mais"
+        // offers to expand nothing: on the real route it reads as content that
+        // failed to arrive. With a bio present the composition is unchanged.
+        if (data.bio.trim().isNotEmpty) ...[
+          const SizedBox(height: CoeloSpacing.space3),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 760),
+            child: Text(data.bio, style: Theme.of(context).textTheme.bodyMedium),
+          ),
+          TextButton(onPressed: onOpenBio, child: const Text('Ver mais')),
+        ],
       ],
     );
   }
