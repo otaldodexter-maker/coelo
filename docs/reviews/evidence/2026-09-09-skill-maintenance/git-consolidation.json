@@ -1,5 +1,5 @@
 {
-  "status": "local-consolidation-prepared; remote-publication-pending",
+  "status": "published; archived-history-not-product-completion",
   "baseline": "ed37c04dbfb7a8722ba6cee312a206d6c52d5e3f",
   "backup": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\skills-consolidation-20260909",
   "retiredWorktrees": [
@@ -490,5 +490,48 @@
       "kind": "detached-checkout"
     }
   ],
-  "retainedWork": "Archived history includes WIP and patch-equivalent commits; no archive is an E2E or merge claim."
+  "retainedWork": "Archived history includes WIP and patch-equivalent commits; no archive is an E2E or merge claim.",
+  "publication": {
+    "deliveredCommit": "325dcc028c04c409c8a0802f4ef45f85728c3f3d",
+    "remoteDev": "325dcc028c04c409c8a0802f4ef45f85728c3f3d",
+    "archivedRemoteTags": 19,
+    "retiredRemoteBranches": [
+      "refs/heads/claude/e2-r01-c04-estruturas",
+      "refs/heads/claude/e2-r01-c05-comunicacao",
+      "refs/heads/claude/e2-r01-c06-coordenacao",
+      "refs/heads/claude/e2-r01-c07-validacao-visual",
+      "refs/heads/codex/e1-a01-client-20260908",
+      "refs/heads/codex/e1-replay-harness-20260907",
+      "refs/heads/codex/e2-r01-c00-integration",
+      "refs/heads/codex/e2-r01-c01-identidade",
+      "refs/heads/codex/e2-r01-c02-forms-midia",
+      "refs/heads/codex/e2-r01-c03-operacoes",
+      "refs/heads/codex/e2e-agenda-operacoes",
+      "refs/heads/codex/e2e-comunicacao-midia-principal",
+      "refs/heads/codex/e2e-estruturas-pessoas-locais",
+      "refs/heads/codex/e2e-formularios-cuidado",
+      "refs/heads/codex/e2e-identidade-acessos",
+      "refs/heads/codex/pre-consolidation-wip-20260908"
+    ],
+    "remoteHeads": [
+      "refs/heads/dev",
+      "refs/heads/main"
+    ]
+  },
+  "verification": {
+    "at": "2026-09-09T11:10:52.282950-03:00",
+    "dev": "325dcc028c04c409c8a0802f4ef45f85728c3f3d",
+    "originDev": "325dcc028c04c409c8a0802f4ef45f85728c3f3d",
+    "ahead": 0,
+    "behind": 0,
+    "worktrees": 1,
+    "stash": 0,
+    "uncommittedFiles": 0,
+    "unreferencedCommits": 0,
+    "localBranches": [
+      "dev",
+      "main"
+    ],
+    "gitFsck": "no integrity errors; dangling trees/blobs are not commits and were not deleted"
+  }
 }

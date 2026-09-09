@@ -1,7 +1,7 @@
 ---
 title: "Consolidação do repositório e das skills"
 source: "Pedido do Owner de 2026-09-09; Git local/origin; backup verificado; fechamento R01"
-status: "consolidação local verificada; publicação em preparação"
+status: "consolidado e publicado; histórico retido identificado"
 generated_at: "2026-09-09"
 ---
 
@@ -66,6 +66,22 @@ destino e responsável de integração. Conversas/ordens R01 permanecem históri
 
 ## Validação e publicação
 
-O estado remoto será registrado após o push verificado. A igualdade de `dev`
-e `origin/dev` é conferida por SHA e contagem ahead/behind; existência de commit
-local não é publicação. Esta manutenção não implanta o app nem certifica E2E.
+As melhorias foram publicadas no commit `325dcc028c04c409c8a0802f4ef45f85728c3f3d`.
+O push atômico publicou 19 tags de preservação e retirou 16 branches remotas
+encerradas. Somente `dev` e `main` permanecem como branches locais/remotas.
+Não havia PR aberto no repositório durante essa retirada.
+
+Conferência em 09/09/2026 às 11:10:52 BRT: uma worktree, zero stash, zero arquivos
+sem commit, `dev`/`origin/dev` iguais (0 à frente / 0 atrás), nenhum commit sem
+referência e nenhuma falha de integridade Git. O recibo externo
+`Coelo.preserved/skills-consolidation-20260909/final-verification.json` registra
+os SHAs e é atualizado após a publicação deste próprio recibo documental.
+
+Validação do delta: dez testes do validador documental aprovados; 219 IDs e três
+matrizes consistentes; cinco entradas de skill válidas; 54 artigos de conhecimento
+válidos; diff sem erros de whitespace. A inspeção do conteúdo preparado para
+commit não encontrou os padrões de credenciais examinados. Não houve alteração
+de código do app, teste do app ou implantação remota nesta consolidação.
+
+O E2E do produto continua separado desse fechamento Git. Consultar a fila
+retida e os aceites por ação para a implementação que ainda falta.

@@ -104,5 +104,6 @@
       "deltaPlus": 134,
       "deltaMinus": 0
     }
-  ]
+  ],
+  "currentDisposition": "Historical synchronization; superseded by consolidation on dev in commit 325dcc028c04c409c8a0802f4ef45f85728c3f3d. Destination worktree retired; see git-consolidation.json."
 }
