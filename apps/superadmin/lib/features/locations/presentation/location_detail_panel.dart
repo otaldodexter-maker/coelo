@@ -215,14 +215,15 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
                         icon: const Icon(Icons.copy_rounded),
                         label: const Text('Duplicar'),
                       ),
-                  if (widget.onEdit case final onEdit?)
-                    if (_controller.data case final item?)
-                      FilledButton.icon(
-                        key: const Key('location-detail-edit'),
-                        onPressed: widget.sessionAvailable ? () => onEdit(item) : null,
-                        icon: const Icon(Icons.edit_rounded),
-                        label: const Text('Editar local'),
-                      ),
+                  if (widget.capabilities.update)
+                    if (widget.onEdit case final onEdit?)
+                      if (_controller.data case final item?)
+                        FilledButton.icon(
+                          key: const Key('location-detail-edit'),
+                          onPressed: widget.sessionAvailable ? () => onEdit(item) : null,
+                          icon: const Icon(Icons.edit_rounded),
+                          label: const Text('Editar local'),
+                        ),
                   OutlinedButton.icon(
                     key: const Key('location-detail-reload'),
                     onPressed: _controller.state == LocationReadState.loading
