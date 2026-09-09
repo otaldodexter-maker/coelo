@@ -242,7 +242,14 @@ final class _ProfileHappensPostCard extends StatelessWidget {
       ),
     );
     if (onOpen == null) {
-      return Semantics(container: true, label: 'Publicação de ${item.author}', child: card);
+      // explicitChildNodes keeps author, context, body and metrics traversable
+      // instead of collapsing the whole post into one long announcement.
+      return Semantics(
+        container: true,
+        explicitChildNodes: true,
+        label: 'Publicação de ${item.author}',
+        child: card,
+      );
     }
     return Semantics(
       button: true,
