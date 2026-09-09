@@ -15,13 +15,17 @@ import 'package:flutter_test/flutter_test.dart';
 /// Supabase payloads with raw casts, so a `TypeError` there is not a remote
 /// hypothesis.
 void main() {
-  Future<void> pump(WidgetTester tester, NowPublicationRepository repository) async {
+  Future<void> pump(
+    WidgetTester tester,
+    NowPublicationRepository repository, {
+    ValueChanged<NowPublication>? onCompleted,
+  }) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
-        home: PrincipalNowPublicationPage.demo(repository: repository),
+        home: PrincipalNowPublicationPage.demo(repository: repository, onCompleted: onCompleted),
       ),
     );
     await tester.pumpAndSettle();
@@ -41,7 +45,10 @@ void main() {
   });
 
   testWidgets('an Error while saving leaves the surface usable', (tester) async {
-    await pump(tester, _ThrowingRepository(onSave: true));
+    final repository = _ThrowingRepository(onSave: true);
+    await pump(tester, repository);
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Salvar rascunho'));
     await tester.pumpAndSettle();
@@ -49,20 +56,43 @@ void main() {
     // The proof that the screen is not locked: the composer left the busy phase
     // and handed the operator a failure panel they can act on. While it stayed
     // locked, this surface never appeared at all.
-    expect(find.textContaining('Não foi possível'), findsWidgets);
+    expect(repository.saveCalls, 1);
+    expect(find.text('Não foi possível salvar o rascunho.'), findsOneWidget);
     expect(find.text('Tentar novamente'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pumpAndSettle();
+
+    expect(repository.saveCalls, 2);
+    expect(find.byKey(const Key('now-publication-failure')), findsNothing);
+    expect(find.text('Salvar rascunho'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('an Error while publishing leaves the surface usable', (tester) async {
     // Seeded so the draft is publishable: an empty one is refused by validation
     // and never reaches the repository, which would make the case vacuous.
-    await pump(tester, _ThrowingRepository(onPublish: true, publishable: true));
+    final repository = _ThrowingRepository(onPublish: true, publishable: true);
+    NowPublication? completed;
+    await pump(tester, repository, onCompleted: (value) => completed = value);
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Publicar agora'));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Não foi possível'), findsWidgets);
+    expect(repository.publishCalls, 1);
+    expect(completed, isNull);
+    expect(find.text('Não foi possível publicar no Agora.'), findsOneWidget);
     expect(find.text('Tentar novamente'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pumpAndSettle();
+
+    expect(repository.publishCalls, 2);
+    expect(completed?.id, 'publication-1');
+    expect(find.byKey(const Key('now-publication-failure')), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 }
 
@@ -96,6 +126,8 @@ final class _ThrowingRepository implements NowPublicationRepository {
   final bool onSave;
   final bool onPublish;
   final _inner = InMemoryNowPublicationRepository();
+  var saveCalls = 0;
+  var publishCalls = 0;
 
   @override
   Future<NowPublicationDraft?> loadDraft(NowPublicationContext context) async {
@@ -108,13 +140,15 @@ final class _ThrowingRepository implements NowPublicationRepository {
     NowPublicationContext context,
     NowPublicationDraft draft,
   ) async {
-    if (onSave) throw TypeError();
+    saveCalls++;
+    if (onSave && saveCalls == 1) throw TypeError();
     return _inner.saveDraft(context, draft);
   }
 
   @override
   Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) async {
-    if (onPublish) throw TypeError();
+    publishCalls++;
+    if (onPublish && publishCalls == 1) throw TypeError();
     return _inner.publish(context, draft);
   }
 
