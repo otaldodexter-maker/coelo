@@ -108,7 +108,11 @@ void main() {
   });
 
   testWidgets('selects the preview audience without changing field visibility', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(800, 1200));
+    // 1440 px, not 800: the audience selector only steers the preview, so it is
+    // offered where a preview is reachable — the inline panel at 1120 px and
+    // above, or a caller that supplies onPreview. Below that it would change
+    // nothing the user can see, and a control that changes nothing is dead.
+    await tester.binding.setSurfaceSize(const Size(1440, 1200));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final controller = _controller(withSections: true);
     await tester.pumpWidget(_app(controller));

@@ -209,29 +209,34 @@ final class ProfileAboutEditor extends StatelessWidget {
                 ),
               ),
             ],
-            const SizedBox(height: CoeloSpacing.space5),
-            Align(
-              alignment: Alignment.centerRight,
-              child: CoeloAdminFlyout<ProfileAboutAudience>(
-                items: [
-                  for (final audience in ProfileAboutAudience.values)
-                    CoeloAdminFlyoutItem(
-                      value: audience,
-                      label: _audienceLabel(audience),
-                      selected: audience == controller.previewAudience,
+            // The audience selector only steers the preview. Where no preview
+            // is reachable -- narrow layout and no [onPreview] -- it would
+            // change nothing the user can see, so it is not offered.
+            if (showPreview || onPreview != null) ...[
+              const SizedBox(height: CoeloSpacing.space5),
+              Align(
+                alignment: Alignment.centerRight,
+                child: CoeloAdminFlyout<ProfileAboutAudience>(
+                  items: [
+                    for (final audience in ProfileAboutAudience.values)
+                      CoeloAdminFlyoutItem(
+                        value: audience,
+                        label: _audienceLabel(audience),
+                        selected: audience == controller.previewAudience,
+                      ),
+                  ],
+                  onSelected: controller.setPreviewAudience,
+                  builder: (context, flyout) => OutlinedButton.icon(
+                    onPressed: () => flyout.isOpen ? flyout.close() : flyout.open(),
+                    icon: const Icon(Icons.visibility_outlined),
+                    label: Text('Prévia: ${_audienceLabel(controller.previewAudience)}'),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(CoeloSize.touchMin, CoeloSize.touchMin),
                     ),
-                ],
-                onSelected: controller.setPreviewAudience,
-                builder: (context, flyout) => OutlinedButton.icon(
-                  onPressed: () => flyout.isOpen ? flyout.close() : flyout.open(),
-                  icon: const Icon(Icons.visibility_outlined),
-                  label: Text('Prévia: ${_audienceLabel(controller.previewAudience)}'),
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(CoeloSize.touchMin, CoeloSize.touchMin),
                   ),
                 ),
               ),
-            ),
+            ],
             const SizedBox(height: CoeloSpacing.space3),
             if (page.fields.isEmpty && sections.isEmpty)
               const CoeloStatePanel(
@@ -281,7 +286,12 @@ final class ProfileAboutEditor extends StatelessWidget {
                 label: const Text('Adicionar seção'),
               ),
             ),
-            if (!showPreview) ...[
+            // Narrow layouts trade the inline preview panel for this button.
+            // It is rendered only when a caller actually supplies a handler:
+            // a disabled, unexplained control is a dead affordance, not a
+            // degraded one, and hiding it is honest where wiring a preview
+            // surface would need a visual contract nobody has approved.
+            if (!showPreview && onPreview != null) ...[
               const SizedBox(height: CoeloSpacing.space3),
               OutlinedButton.icon(
                 onPressed: onPreview,

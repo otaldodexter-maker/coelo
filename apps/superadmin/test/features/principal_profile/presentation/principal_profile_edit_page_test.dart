@@ -190,6 +190,62 @@ void main() {
     expect(find.byKey(const Key('principal-profile-edit-save')), findsNothing);
   });
 
+  testWidgets('reloads when only the membership changes inside the same scope', (tester) async {
+    // Two contexts can name the same institution, unit and group and still be a
+    // different actor or a different role. Authorization to manage this About
+    // belongs to the membership, not to the scope, so keeping the draft alive
+    // here would edit under an authorization the server never re-answered.
+    final repository = _StubAboutRepository(page: pageWith('Antes'));
+    await pump(tester, repository);
+    expect(repository.loaded, hasLength(1));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalProfileEditPage(
+          runtimeContext: const PrincipalRuntimeContext(
+            membershipId: 'membership-outra',
+            personId: 'person-1',
+            institutionId: 'institution-1',
+            institutionName: 'Instituição Autorizada',
+            roleCode: 'coordinator',
+            scopeKind: 'institution',
+          ),
+          repository: repository,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(repository.loaded, hasLength(2));
+    expect(repository.loaded.last.institutionId, 'institution-1');
+  });
+
+  testWidgets('reloads when the person in context changes', (tester) async {
+    final repository = _StubAboutRepository(page: pageWith('Antes'));
+    await pump(tester, repository);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalProfileEditPage(
+          runtimeContext: const PrincipalRuntimeContext(
+            membershipId: 'membership-1',
+            personId: 'person-outra',
+            institutionId: 'institution-1',
+            institutionName: 'Instituição Autorizada',
+            roleCode: 'staff',
+            scopeKind: 'institution',
+          ),
+          repository: repository,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(repository.loaded, hasLength(2));
+  });
+
   testWidgets('reload re-reads the authorized page on demand', (tester) async {
     final repository = _StubAboutRepository(page: pageWith('Antes'));
     await pump(tester, repository);
