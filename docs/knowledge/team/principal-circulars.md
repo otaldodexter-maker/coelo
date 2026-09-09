@@ -1,10 +1,10 @@
 ---
 title: "Circulares privadas no Principal"
 knowledge_id: "principal-circulars"
-source: "specs/050-principal-ui-ux-closure.md"
+source: "specs/050-principal-ui-ux-closure.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md"
 status: "validated"
 generated_at: "2026-08-21"
-updated_at: "2026-09-01"
+updated_at: "2026-09-09"
 audience: "team"
 surfaces: [principal, perfil, acontece, supabase, authorization]
 visibility: "internal"
@@ -51,6 +51,9 @@ compartilhada permite que qualquer responsável autorizado responda pela crianç
 sem criar respostas duplicadas entre responsáveis. Prazo é opcional e o
 encerramento manual é auditado.
 
-Mídia usa o bucket Supabase privado definido pela ADR 0027, com upload e leitura
-assinados pelo backend, validação do arquivo e metadados no Postgres. A exceção
-é exclusiva de Circulares e não muda o provedor das outras superfícies.
+Mídia nova de Circulares usa o R2 privado definido pela ADR 0032, igual às demais
+superfícies do MVP, com upload e leitura autorizados pelo backend, validação de
+MIME real, bytes e checksum, e metadados, permissões, vínculos e auditoria no
+Postgres. A exceção de bucket Supabase privado que a ADR 0027 concedia a
+Circulares está superada: não há mais provedor de mídia próprio desta superfície.
+PDF nunca usa Cloudflare Stream.
