@@ -312,7 +312,6 @@ GoRouter createSuperadminRouter({
   CircularRepository? principalCircularRepository,
   PrincipalHappensFeedRepository? principalHappensFeedRepository,
   PrincipalMixedFeedRepository? principalMixedFeedRepository,
-  CircularRepository? principalCircularRepository,
   CircularResponseRepository? principalCircularResponseRepository,
   CircularMediaRepository? principalCircularMediaRepository,
   PrincipalMomentsFeedRepository? principalMomentsFeedRepository,

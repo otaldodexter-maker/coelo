@@ -164,7 +164,6 @@ class SuperadminApp extends StatefulWidget {
     this.principalCircularRepository,
     this.principalHappensFeedRepository,
     this.principalMixedFeedRepository,
-    this.principalCircularRepository,
     this.principalCircularResponseRepository,
     this.principalCircularMediaRepository,
     this.principalMomentsFeedRepository,
@@ -231,7 +230,6 @@ class SuperadminApp extends StatefulWidget {
   final CircularRepository? principalCircularRepository;
   final PrincipalHappensFeedRepository? principalHappensFeedRepository;
   final PrincipalMixedFeedRepository? principalMixedFeedRepository;
-  final CircularRepository? principalCircularRepository;
   final CircularResponseRepository? principalCircularResponseRepository;
   final CircularMediaRepository? principalCircularMediaRepository;
   final PrincipalMomentsFeedRepository? principalMomentsFeedRepository;
@@ -324,7 +322,6 @@ class _SuperadminAppState extends State<SuperadminApp> {
       principalCircularRepository: widget.principalCircularRepository,
       principalHappensFeedRepository: widget.principalHappensFeedRepository,
       principalMixedFeedRepository: widget.principalMixedFeedRepository,
-      principalCircularRepository: widget.principalCircularRepository,
       principalCircularResponseRepository: widget.principalCircularResponseRepository,
       principalCircularMediaRepository: widget.principalCircularMediaRepository,
       principalMomentsFeedRepository: widget.principalMomentsFeedRepository,
