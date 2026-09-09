@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @()
@@ -80,9 +80,11 @@ $canonical = @(Get-ChildItem -LiteralPath $canonicalFull -File -Filter '*.sql' |
 $preflight = @(Get-ChildItem -LiteralPath $preflightFull -File -Filter '*.sql' | Sort-Object Name)
 $foundationManifestHash = $null
 $additionalCanonical = @()
+$localBridges = @()
 $foundationBoundaryVersion = $null
 if ($NominalProfile) {
   $nominalResolverRelative = switch ($NominalProfile) {
+    'ChildDirectoryEnvelope' { 'profiles\ChildDirectoryEnvelope\Resolve-ChildDirectoryEnvelope.ps1' }
     'N01PrerequisitesRed' { 'profiles\N01PrerequisitesRed\Resolve-N01PrerequisitesRed.ps1' }
     'A01DirectoryContractRed' { 'profiles\A01DirectoryContractRed\Resolve-A01DirectoryContractRed.ps1' }
     'FReadDirectoryContractRed' { 'profiles\FReadDirectoryContractRed\Resolve-FReadDirectoryContractRed.ps1' }
@@ -109,6 +111,14 @@ if ($NominalProfile) {
   $preflight = @($nominal.Preflight)
   $additionalCanonical = @($nominal.Additional)
   $foundationManifestHash = $nominal.ManifestHash
+  if ($NominalProfile -eq 'ChildDirectoryEnvelope') {
+    $localBridges = @($nominal.LocalBridges)
+    if ($canonical.Count -ne 46 -or $additionalCanonical.Count -ne 1 -or
+        $localBridges.Count -ne 1 -or
+        $localBridges[0].Name -cne '20260908051499_child_directory_error_envelope_bridge.sql') {
+      throw 'ChildDirectoryEnvelope requires 46 canonical migrations and exactly the reviewed local envelope bridge'
+    }
+  }
 }
 if ($AdditionalMigration.Count -gt 0 -and -not ($FoundationOnly -or $AuthOnly)) {
   throw 'additional migrations require FoundationOnly or AuthOnly'
@@ -220,7 +230,7 @@ if ($canonical.Count -eq 0 -or
   throw "unexpected replay inputs: canonical=$($canonical.Count) preflight=$($preflight.Count)"
 }
 
-$combined = @($canonical) + @($preflight) | Sort-Object Name
+$combined = @($canonical) + @($preflight) + @($localBridges) | Sort-Object Name
 $versions = @($combined | ForEach-Object {
   if ($_.Name -notmatch '^(\d{14})_[a-z0-9_]+\.sql$') {
     throw "invalid migration filename: $($_.Name)"
@@ -305,7 +315,7 @@ if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryCon
   }
 }
 
-foreach ($source in @($canonical) + @($preflight)) {
+foreach ($source in @($canonical) + @($preflight) + @($localBridges)) {
   if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryContractGreenDerived') -and $source.Name -ceq '20260813155005_forms_definition_and_capabilities.sql') { continue }
   $sourceFull = [IO.Path]::GetFullPath($source.FullName)
   if (($source.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
@@ -317,7 +327,7 @@ foreach ($source in @($canonical) + @($preflight)) {
 }
 
 $generated = @(Get-ChildItem -LiteralPath $destinationFull -File -Filter '*.sql' | Sort-Object Name)
-if ($generated.Count -ne ($canonical.Count + $preflight.Count)) {
+if ($generated.Count -ne ($canonical.Count + $preflight.Count + $localBridges.Count)) {
   throw 'generated safe replay migration count mismatch'
 }
 
@@ -342,4 +352,5 @@ $manifestEvidence = if ($FoundationOnly -or $AuthOnly -or $NominalProfile) {
 else {
   ''
 }
-"Prepared $($generated.Count) safe replay migrations ($($canonical.Count) canonical + $($preflight.Count) preflight); profile=$profile; additional=$($additionalCanonical.Count)$manifestEvidence; preflight_sha256=$preflightHashes."
+$localBridgeEvidence = if ($localBridges.Count -gt 0) { " + $($localBridges.Count) local bridge" } else { '' }
+"Prepared $($generated.Count) safe replay migrations ($($canonical.Count) canonical + $($preflight.Count) preflight$localBridgeEvidence); profile=$profile; additional=$($additionalCanonical.Count)$manifestEvidence; preflight_sha256=$preflightHashes."
