@@ -61,6 +61,9 @@ void main() {
     expect(body['p_expected_version'], 2);
     expect(body['p_request_id'], matches(RegExp(r'^[0-9a-f-]{36}$')));
     expect(result.isSuccess, isTrue);
+    expect(result.steps, hasLength(1));
+    expect(result.steps.single.stage, GroupDirectorySaveStage.group);
+    expect(result.steps.single.status, GroupDirectorySaveStepStatus.success);
   });
 
   test('maps authorization denials without falling back to fake data', () async {

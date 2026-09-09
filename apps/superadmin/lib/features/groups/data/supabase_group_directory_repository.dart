@@ -58,10 +58,7 @@ final class SupabaseGroupDirectoryRepository implements GroupDirectoryRepository
       _cache[saved.id] = saved;
       return GroupDirectorySaveResult(
         requestId: request.requestId,
-        steps: [
-          for (final stage in GroupDirectorySaveStage.values)
-            GroupDirectorySaveStepResult.success(stage: stage),
-        ],
+        steps: [GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.group)],
       );
     } on PostgrestException catch (error) {
       throw _mapError(error);
