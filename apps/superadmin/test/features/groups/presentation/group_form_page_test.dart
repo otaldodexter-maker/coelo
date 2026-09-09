@@ -401,4 +401,78 @@ void main() {
     expect(find.text('Turma não encontrada'), findsOneWidget);
     expect(find.byKey(const Key('group-form-save')), findsNothing);
   });
+
+  testWidgets('restores the save action when the repository throws an Error', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupFormPage(
+          repository: _ErrorOnSaveGroupDirectoryRepository(
+            FakeGroupDirectoryRepository(institutions),
+          ),
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma resiliente');
+    await tester.tap(find.byKey(const Key('step-convites')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('group-form-save')));
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(
+      find.text('Não foi possível salvar a turma. Revise os dados e tente novamente.'),
+      findsOneWidget,
+    );
+    expect(
+      tester.widget<FilledButton>(find.byKey(const Key('group-form-save'))).onPressed,
+      isNotNull,
+    );
+  });
+}
+
+final class _ErrorOnSaveGroupDirectoryRepository implements GroupDirectoryRepository {
+  const _ErrorOnSaveGroupDirectoryRepository(this._delegate);
+
+  final GroupDirectoryRepository _delegate;
+
+  @override
+  String createId(String institutionId, String unitId, String name) =>
+      _delegate.createId(institutionId, unitId, name);
+
+  @override
+  Future<GroupDirectoryPage> fetchPage(GroupDirectoryQuery query) => _delegate.fetchPage(query);
+
+  @override
+  Future<GroupDirectoryFilterOptions> fetchFilterOptions({Set<String> institutionIds = const {}}) =>
+      _delegate.fetchFilterOptions(institutionIds: institutionIds);
+
+  @override
+  Future<GroupDirectoryFormContext> fetchFormContext({String? institutionId}) =>
+      _delegate.fetchFormContext(institutionId: institutionId);
+
+  @override
+  Future<GroupRecord?> findById(String id) => _delegate.findById(id);
+
+  @override
+  Future<GroupDirectoryExportResult> requestExport(GroupDirectoryQuery query) =>
+      _delegate.requestExport(query);
+
+  @override
+  Future<GroupDirectorySaveResult> saveComposition(GroupDirectorySaveRequest request) =>
+      throw UnimplementedError('synthetic save Error');
+
+  @override
+  Future<void> upsert(GroupRecord record) => _delegate.upsert(record);
 }

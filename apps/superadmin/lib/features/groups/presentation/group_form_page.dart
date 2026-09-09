@@ -585,7 +585,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         _saving = false;
       });
       widget.onSaved(original == null ? GroupFormSaveResult.created : GroupFormSaveResult.updated);
-    } on Exception {
+    } on Object {
+      // An Error escaping here leaves `_saving` true and the save action
+      // permanently disabled, so every failed save must restore an actionable UI.
       if (!mounted) return;
       setState(() {
         _saving = false;
