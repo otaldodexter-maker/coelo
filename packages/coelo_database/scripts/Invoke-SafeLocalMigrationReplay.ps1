@@ -19,6 +19,8 @@ param(
 
   [switch]$RunAuthLifecycle,
 
+  [switch]$RunR02AuthProofConcurrency,
+
   [switch]$RunActivityV2Concurrency
 )
 
@@ -90,6 +92,12 @@ function Get-DockerResources([string]$Identity) {
 
 if ($targetMigration.Count -ne 1) {
   throw "target version must identify exactly one canonical migration: $TargetVersion"
+}
+if ($RunR02AuthProofConcurrency -and (
+    -not $AuthOnly -or -not $RunAuthLifecycle -or $FoundationOnly -or
+    $NominalProfile -or $AdditionalMigration.Count -gt 0 -or
+    $RunActivityV2Concurrency -or $TargetVersion -ne '20260901200206')) {
+  throw 'R02 Auth proof concurrency requires exact AuthOnly lifecycle base without additions'
 }
 $activityAggregateConcurrencyRun =
   $RunActivityV2Concurrency -and
@@ -350,6 +358,12 @@ try {
   if ($RunLint) {
     & npx.cmd --yes $cliPackage --agent no db lint --local --level warning --fail-on error --workdir $projectRoot
     if ($LASTEXITCODE -ne 0) { throw "safe local database lint failed with exit code $LASTEXITCODE" }
+  }
+  if ($RunR02AuthProofConcurrency) {
+    & (Join-Path $scriptRoot 'Test-R02AuthProofConcurrency.ps1') `
+      -ProjectRoot $projectRoot `
+      -ProjectId $projectId `
+      -ExpectedExecutorSha256 '8A5ABFBAECB1DC4134542F3F016837CC51521C3CCF1C6F61BD9DE84F45BC2E86'
   }
 }
 catch {
