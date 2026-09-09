@@ -1,0 +1,39 @@
+{
+  "revision": 1,
+  "updated_at": "2026-09-09T18:06:00-03:00",
+  "group": "perfil-para-voce",
+  "task": "/root",
+  "model": "Claude Opus 5 (1M context)",
+  "status": "activation-requested; read-only-review",
+  "coordinator": "Claude",
+  "worktree": null,
+  "branch": null,
+  "head": null,
+  "upstream": null,
+  "base_observed": "d784462c1",
+  "scope": [
+    "apps/superadmin -> menu Coelo (Principal) -> Perfil contextual -> visualizar/editar Sobre",
+    "apps/superadmin -> menu Coelo (Principal) -> Perfil contextual -> Para Voce"
+  ],
+  "not_in_scope": ["Minha conta", "Perfis de acesso", "demais apps", "import/export adiados"],
+  "action_ids_status": "familia principal_profile, 3 IDs do contrato; mapeamento focal em andamento",
+  "changed": "Contrato TRABALHO-ATUAL.md lido integralmente; worktrees R02 localizadas; L03 b209b4e0f identificada em C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l03-perfil-para-voce; coordenacao.json ainda ausente no caminho compartilhado.",
+  "closed_criteria": [],
+  "tests": {"note": "Nenhum teste iniciado.", "P": null, "F": null, "B": null, "S": null, "U": null},
+  "reservations": [],
+  "reservations_requested": [
+    "arquivos de perfil contextual/Para Voce em apps/superadmin (a definir apos mapeamento)",
+    "RPC/migrations de principal_profile em packages/coelo_database (se necessario, via coordenador)"
+  ],
+  "blocker": "Coordenador ainda nao publicou coordenacao.json nem registrou atribuicao/worktree/branch para este grupo; escrita de produto retida conforme contrato.",
+  "next_step": "Ler handoff L03 e mapear os 3 IDs principal_profile nos tres rastreadores; iniciar correcao apos atribuicao/worktree confirmadas.",
+  "wip": [],
+  "artifacts": [],
+  "children": [],
+  "processes": [],
+  "ports": [],
+  "ack": null,
+  "limitations": "Sem canal nativo verificado ate agora; arquivo publicado nao comprova leitura pelo coordenador.",
+  "deadline": "2026-09-10T05:00:00-03:00",
+  "eta": "Delta ainda nao inspecionado."
+}

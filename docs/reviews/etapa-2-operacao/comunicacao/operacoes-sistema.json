@@ -1,0 +1,101 @@
+{
+  "revision": 3,
+  "updated_at": "2026-09-09T21:25:00-03:00",
+  "group": "operacoes-sistema",
+  "task": "/root",
+  "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
+  "status": "revisao-1-publicada; worktree atribuida pelo coordenador; AGUARDANDO ATIVACAO NOMINAL para escrita de produto",
+  "coordinator": "Claude",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-operacoes-sistema",
+  "branch": "work/etapa2-noturna-operacoes-sistema",
+  "head": null,
+  "upstream": null,
+  "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+  "scope": [
+    "apps/superadmin -> Agenda",
+    "apps/superadmin -> Auditoria",
+    "apps/superadmin -> Suporte",
+    "apps/superadmin -> Planos",
+    "apps/superadmin -> Cardapios",
+    "apps/superadmin -> Catalogo",
+    "apps/superadmin -> Minha conta",
+    "apps/superadmin -> Auth (FE4 certificado; reabrir so por regressao/dependencia/pacote nominal)",
+    "apps/superadmin -> shell/navegacao (COMPARTILHADO: exige reserva exclusiva)",
+    "apps/superadmin -> paginas de erro",
+    "importacoes adiadas (politica vigente mantida, sem picker/parser/job)"
+  ],
+  "action_ids_status": "61 IDs mapeados no inventario (base d784462c1): auth 5 (login/recover/reset/logout FE=verified; mfa gate-formal-mvp), shell 5 (flutter-only, FE=pending-verification), agenda 7, imports 7 (deferred-post-mvp), audit 4 (export deferred), support 6, account 6 (mfa gate), catalog 4, plans 5, meal_plans 6, error_pages 6. Nenhuma reauditoria do zero.",
+  "changed": "TRABALHO-ATUAL.md lido integralmente (contrato comum, bloco Executores Claude e recorte operacoes-sistema). Git observado: dev d784462c1, limpo exceto comunicacao/ nao rastreada. Worktrees R02 e e2-noturna-publicacoes-midia localizadas. coordenacao.json ainda ausente no caminho compartilhado.",
+  "closed_criteria": [],
+  "tests": {
+    "P": 0,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "note": "nenhum teste executado; escrita de produto retida ate ativacao"
+  },
+  "reservations": [],
+  "reservations_requested": [
+    "Nenhuma reserva exclusiva necessaria para a sequencia proposta abaixo: itens 1 e 2 nao tocam router/shell nem migrations aplicadas.",
+    "Se o cutover de Auditoria exigir migration nova, ela nasce como candidato local na minha worktree e fica sob a reserva do coordenador."
+  ],
+  "first_candidates": [
+    "Auditoria 145U",
+    "Cardapios 932003b1 / requestId",
+    "Agenda e Planos conforme contrato"
+  ],
+  "blocker": "Ativacao nominal do coordenador (coordenacao.json rev1 exige 'ativacao nominal' para operacoes-sistema). Revisao 1 publicada as 21:10; solicitacao tambem enviada por SendMessage a coelo-73.",
+  "next_step": "Aguardando ACK nominal. Sequencia pequena proposta: (1) meal-plans.publish requestId em recibo divergente + teste; (2) parte local do cutover Auditoria 039 / export SQL exposto no cliente; (3) primeira acao executavel de Agenda ou Planos. Enquanto aguardo, sigo em leitura focal de Auditoria/Agenda/Planos, sem escrita de produto.",
+  "wip": [],
+  "artifacts": [],
+  "children": [],
+  "processes": [],
+  "ports": [],
+  "ack": null,
+  "limitations": "Sem canal nativo verificado com o coordenador; publicar este arquivo nao comprova leitura nem desperta conversa. Shell/router e compartilhado com outros grupos: sem reserva registrada nao ha escrita segura nesses arquivos.",
+  "deadline": "2026-09-10T05:00:00-03:00",
+  "freeze": "2026-09-10T04:40:00-03:00",
+  "pre_delivery": "2026-09-10T04:50:00-03:00",
+  "eta": "item 1 inspecionado: diff pequeno (1 arquivo + 1 teste); estimativa apos ativacao. Itens 2 e 3 ainda nao inspecionados.",
+  "native_channel": {
+    "tool": "ListAgents/SendMessage disponiveis nesta sessao Claude",
+    "my_session_name": "coelo-9e",
+    "my_session_ref": "659c9e",
+    "note": "Coordenador pode me enviar SendMessage para 'coelo-9e'. Nao sei qual peer e o coordenador; nao vou emitir broadcast. 14 sessoes peer listadas as 21:05."
+  },
+  "findings": [
+    {
+      "candidate": "932003b1 (Cardapios / Publicar, meal-plans.publish)",
+      "status": "defeito confirmado por leitura de codigo; correcao NAO aplicada (sem ativacao)",
+      "file": "apps/superadmin/lib/features/meal_plans/presentation/meal_plan_directory_page.dart",
+      "diagnosis": "O candidato gera operationId estavel por (id:revision:tenant:institution) e o preserva para retry idempotente. Porem, quando o recibo diverge, ele lanca MealPlanValidationException, que e subclasse de MealPlanRepositoryException (domain/meal_plan_repository.dart:662,679). O catch 'on MealPlanRepositoryException' executa _clearPublishOperation antes do rethrow. Resultado: recibo divergente limpa o requestId embora a escrita possa ter ocorrido no servidor; o retry seguinte emite NOVA intencao e pode duplicar a publicacao. Exatamente a pendencia registrada nos tres rastreadores.",
+      "root_cause": "conflacao de dois casos no mesmo tipo de excecao: rejeicao do servidor (sem escrita, pode limpar) versus divergencia de recibo local (escrita possivelmente ocorrida, nao pode limpar).",
+      "planned_fix": "menor diff correto: sinalizar a divergencia local antes do throw e nao limpar a operacao nesse caminho (if (!receiptDiverged) _clearPublishOperation(operationKey)). MealPlanUnavailableException ja preserva por rethrow direto. Acrescentar teste que prova que o requestId e reusado no retry apos recibo divergente.",
+      "blocked_by": "ativacao/worktree/reserva"
+    },
+    {
+      "candidate": "Auditoria 145U (audit.list/filter/detail)",
+      "status": "em leitura",
+      "note": "Commits candidatos 8b4dfb6a (migration superadmin_internal_audit_read_v2 + testes SQL) e 89949f30 (fixtures). Rastreador registra Runtime 0/145 e exige nova lease nominal. Replay SQL e mutacao remota sao PRODUCAO e serializados pelo coordenador: sem lease nominal, so ha trabalho local (cutover wrappers audit_*_for_superadmin people-based -> principal 039, helper legado current_person_id, export SQL ainda exposto no cliente)."
+    }
+  ],
+  "proposed_first_sequence": [
+    "1. meal-plans.publish: preservar requestId em recibo divergente + teste de retry idempotente (local, sem remoto)",
+    "2. audit: parte local do cutover 039 e exposicao de export SQL no cliente (sem replay remoto)",
+    "3. agenda/plans: primeira acao executavel apos mapeamento"
+  ],
+  "coordinator_file_observed": {
+    "revision": 1,
+    "updatedAt": "2026-09-09T18:10:00-03:00",
+    "sessionName": "coelo-73",
+    "sessionRef": "4aacb8"
+  },
+  "assigned_base_sha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+  "assigned_source": "codex/e2-r02-d01-autenticacao @ dc44df9e1",
+  "reservations_acknowledged": [
+    "router/shell/composition root do Superadmin -> escritor: coordenador-claude. NAO vou escrever esses arquivos; proporei hunks pequenos aqui se necessario.",
+    "packages/coelo_database/migrations e replays SQL -> escritor: coordenador-claude. Candidato local permitido na minha worktree; aplicacao remota serializada.",
+    "inventario e tres rastreadores -> escritor: coordenador-claude. Enviarei deltas propostos neste arquivo."
+  ]
+}

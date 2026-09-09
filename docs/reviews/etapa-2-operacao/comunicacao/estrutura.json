@@ -1,0 +1,86 @@
+{
+    "revision":  3,
+    "updated_at":  "2026-09-09T18:08:19.4840816-03:00",
+    "group":  "estrutura",
+    "task":  "/root",
+    "model":  "GPT-6 (variante nao exposta)",
+    "status":  "active",
+    "coordinator":  "Claude",
+    "worktree":  "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura",
+    "branch":  "work/etapa2-noturna-estrutura",
+    "head":  "d784462c168d22fdb7090b7de1ef7db554ad5107",
+    "upstream":  null,
+    "base_observed":  "d784462c1",
+    "scope":  [
+                  "apps/superadmin -\u003e Instituicoes",
+                  "apps/superadmin -\u003e Unidades",
+                  "apps/superadmin -\u003e Turmas",
+                  "apps/superadmin -\u003e Atividades",
+                  "apps/superadmin -\u003e Avaliacoes",
+                  "apps/superadmin -\u003e Locais"
+              ],
+    "action_ids_status":  "49 IDs confirmados no inventario: 42 MVP e 7 adiados. Recorte inicial institutions.locations-map,units.locations-map,units.copy-institution-location,locations.list,locations.create-edit,locations.detail-links; seguinte groups.location/activities.location/locations.schedule.",
+    "changed":  "Revisao estatica dos tres candidatos e dependencias atuais concluida. cd03 acrescenta secao de catalogo (midia explicitamente indisponivel); 1345 compoe quatro rotas com scope e revisao de sessao; 42ad impede segunda abertura do modal. Nenhum produto escrito.",
+    "closed_criteria":  [
+
+                        ],
+    "tests":  {
+                  "note":  "Nenhum teste iniciado; preservar catalogo165, Clock46+3, reservas49+2",
+                  "S":  null,
+                  "F":  null,
+                  "B":  null,
+                  "U":  null,
+                  "P":  null
+              },
+    "reservations":  [
+                         "Router/composition: hunks pequenos na branch como proposta; integrador Claude",
+                         "Migrations: candidatos locais permitidos; replay e remoto serializados Claude"
+                     ],
+    "blocker":  null,
+    "next_step":  "Aplicar cd03 e 42ad; integrar hunks 1345 na branch atribuida. Validar delta conjunto sem repetir SQL.",
+    "wip":  [
+
+            ],
+    "artifacts":  [
+
+                  ],
+    "children":  [
+
+                 ],
+    "processes":  [
+
+                  ],
+    "ports":  [
+
+              ],
+    "ack":  "coordenacao r1 lida; atribuicao autorizada, sem receipt nominal do executor ainda",
+    "limitations":  "Sem canal nativo Claude verificado; arquivo publicado nao comprova leitura nem desperta conversa encerrada.",
+    "deadline":  "2026-09-09T23:30:00-03:00",
+    "eta":  "Delta de implementacao ainda nao inspecionado; espera de atribuicao indeterminada.",
+    "candidate_review":  [
+                             {
+                                 "paths":  6,
+                                 "status":  "static-review; integration pending",
+                                 "sha":  "cd03b9e30f49a286ff691b993179efbe9cafc19f"
+                             },
+                             {
+                                 "status":  "static-review; shared-path reservation pending",
+                                 "note":  "Location writes usam capabilities; conferir preservacao gate enableStructureMutations na integracao; testes de origem cobrem leituras (sem teste de escrita pelo main).",
+                                 "sha":  "1345af29ff180fa8bcf7757b27663bb3964c669d"
+                             },
+                             {
+                                 "sha":  "42ad0467e69f1667a31f0cf9db51ac82a061e87f",
+                                 "status":  "static-review; focused copy guard consistent with current generation protection"
+                             }
+                         ],
+    "memory":  "Consulta knowledge com Root explicito concluida; fonte aprovada de Locais conferida; nenhuma regra nova, no-op.",
+    "opening_contract":  {
+                             "stop":  "Recorte fechado, bloqueio sem independente ou 23:30 BRT",
+                             "eta":  "Atribuicao externa pendente; ainda sem estimativa fundamentada do delta SQL/consumidores",
+                             "evidence":  "Diff seletivo, testes proporcionais causal/negativas, logs e SHAs publicados",
+                             "included":  "6 familias/49 IDs e contratos aplicaveis",
+                             "objective":  "Fechar proximo aceite executavel Estrutura reutilizando R02",
+                             "order":  "Tres candidatos -\u003e consumidores e bindings -\u003e save atomico",
+                             "excluded":  "Outros apps; adiados; Auth/CHILD/shell preservados; producao sem pacote nominal"
+                         }
+}

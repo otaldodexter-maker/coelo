@@ -1,0 +1,66 @@
+﻿{
+    "revision":  2,
+    "updated_at":  "2026-09-09T18:05:19.0592903-03:00",
+    "group":  "acessos-pessoas",
+    "task_id":  "/root",
+    "native_thread_id":  null,
+    "model":  "GPT-6 (variante não exposta)",
+    "status":  "activation-requested-awaiting-assignment",
+    "worktree":  null,
+    "branch":  null,
+    "head":  null,
+    "upstream":  null,
+    "base_observed":  "d784462c1",
+    "scope":  "apps/superadmin -\u003e Pessoas, Perfis, Modelos, Convites, Usuários internos, Segurança infantil, Arquivos de perfil",
+    "action_ids_status":  "38 IDs reconciliados com matriz D04:31 ativos,6 adiados,1 gate MFA; nenhuma certificação nova",
+    "changes":  [
+
+                ],
+    "criteria_closed":  [
+
+                        ],
+    "tests":  {
+                  "S":  null,
+                  "P":  null,
+                  "F":  null,
+                  "B":  null,
+                  "U":  null
+              },
+    "reservations":  [
+
+                     ],
+    "blocker":  "coordenacao.json ausente; atribuição/isolamento/reservas ainda não confirmados",
+    "next_step":  "Claude confirmar worktree/branch e reservas. Primeiro lote proposto: qualificação nominal de 20260909174500_d04_access_models_scope_filter.sql sobre ModelAal1PhasePolicy, sem repetir15P históricos salvo alteração/base nominal. Segundo: Safety48141c195 + f84db0412, preparar perfil/replay43 sob slot SQL; revisar golden adc902eaf preservando status48px e shell atual.",
+    "wip":  [
+
+            ],
+    "processes":  [
+
+                  ],
+    "children":  [
+
+                 ],
+    "cutoff":  "2026-09-09T23:30:00-03:00",
+    "ack_observed":  false,
+    "historical_evidence":  {
+                                "source":  "R02 D04 r14/FECHAMENTO-OWNER",
+                                "held":  "Safety adc902eaf/48141c195/f84db0412/963796ddf",
+                                "author_tests":  "440P1F, SafetySQL43U; históricos, não resultados desta rodada",
+                                "integrated":  "Modelos duplicate82f08af50 e Convites444e03ccb consolidados em d019c109a",
+                                "general_snapshot":  "R02 FE7/230 BE0/223 E2E0/198",
+                                "scope_certification":  "FE2/38 históricos; ativos FE0/31 BE0/31 E2E0/31"
+                            },
+    "providers":  {
+                      "cloudflare":  "cloudflare_api docs/search/execute disponíveis; sem acesso testado",
+                      "supabase":  "MCP instalado descoberto; sem operação remota"
+                  },
+    "knowledge":  "Consulta realizada; projeções access-profiles/child-safety ainda contêm MFA/AAL2 histórico. Preservar ADR0019 AAL1 vigente; writer central deve reconciliar. Nenhuma regra nova.",
+    "contract":  {
+                     "stop":  "aceites completos, bloqueio demonstrado, ou corte23:30 BRT",
+                     "eta":  "não calculável antes de atribuição/slot; leitura focal concluída para primeiros gates",
+                     "evidence":  "testes focais, manifests/hashes, commits publicados e0/0 upstream na branch atribuída",
+                     "included":  "38 IDs apps/superadmin",
+                     "objective":  "Corrigir/provar ações restantes do grupo",
+                     "excluded":  "outros apps, import/export adiados, MFA novo, produção sem pacote nominal"
+                 }
+}

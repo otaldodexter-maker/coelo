@@ -1,0 +1,47 @@
+{
+  "revision": 1,
+  "updated_at": "2026-09-09T21:06:00-03:00",
+  "group": "chat-comunicacoes",
+  "task": "/root",
+  "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
+  "status": "activation-requested; read-only-review",
+  "coordinator": "Claude",
+  "worktree": null,
+  "branch": null,
+  "head": null,
+  "upstream": null,
+  "base_observed": "d784462c1",
+  "scope": [
+    "apps/superadmin -> Chat administrativo",
+    "apps/superadmin -> menu Coelo (Principal) -> Chat/Conversas",
+    "apps/superadmin -> Comunicados/Avisos (notices)"
+  ],
+  "action_ids_status": "13 IDs do contrato (familias chat, notices); mapeamento focal em andamento",
+  "changed": "Contrato TRABALHO-ATUAL.md lido integralmente. Worktrees R02 localizadas; L02 preservada em C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l02-chat-comunicacoes (branch codex/e2-r02-l02-chat-comunicacoes, HEAD 45d92b9c1, contem 9144f4efb). coordenacao.json ainda ausente no caminho compartilhado.",
+  "closed_criteria": [],
+  "tests": {
+    "note": "Nenhum teste iniciado nesta rodada; provas L02 serao reusadas quando validas",
+    "P": null,
+    "F": null,
+    "B": null,
+    "S": null,
+    "U": null
+  },
+  "reservations": [],
+  "requested_reservations": [
+    "apps/superadmin: rota/shell /principal-conversations (compartilhado com router — depende de reserva do coordenador)",
+    "dominio chat: paginacao/envio, receipts, reautorizacao pos-lock",
+    "dominio notices: worker/metricas"
+  ],
+  "blocker": "Coordenador precisa registrar atribuicao, worktree e branch (preferencia C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-chat-comunicacoes, work/etapa2-noturna-chat-comunicacoes) e resolver a reserva de router/shell. Escrita de produto retida ate la, conforme contrato.",
+  "next_step": "Ler skills obrigatorias e o handoff L02 em modo leitura; mapear os 13 action_ids reais nos rastreadores; iniciar correcao apos atribuicao/worktree confirmadas.",
+  "wip": [],
+  "artifacts": [],
+  "children": [],
+  "processes": [],
+  "ports": [],
+  "ack": null,
+  "limitations": "Sem canal nativo verificado com o coordenador; publicar este arquivo nao comprova leitura. Midia comum exige coordenacao com publicacoes-midia (worktree ja criada em e2-noturna-publicacoes-midia).",
+  "deadline": "2026-09-10T05:00:00-03:00",
+  "eta": "Delta ainda nao inspecionado; estimativa apos leitura do handoff L02 e mapeamento de IDs."
+}
