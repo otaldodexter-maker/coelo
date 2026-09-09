@@ -1,0 +1,113 @@
+{
+  "source": "Existing D00 replay log; D00 process and independent cleanup tool receipts",
+  "generatedAt": "2026-09-09T15:40:00.405650-03:00",
+  "status": "six-concurrency-cases-local-pass-not-E2E",
+  "environment": "Owned disposable local Supabase AuthOnly replay",
+  "targetVersion": "20260901200206",
+  "canonicalMigrations": 45,
+  "preflights": 2,
+  "harnessRevision": "0e8750716",
+  "harnessRevisionScope": "Integrated harness correction; full execution HEAD is not present in log",
+  "executorSha256": "8A5ABFBAECB1DC4134542F3F016837CC51521C3CCF1C6F61BD9DE84F45BC2E86",
+  "campaign_id": "R02-D00-auth-proof-third",
+  "layer": "local-backend-concurrency",
+  "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/auth-proof-third-replay.log",
+  "sha256": "0073e5d7b6b23a5c14b677b6fbc12b0c4423909984c970fa84b01f216738980b",
+  "cases": [
+    {
+      "test_id": "packages/coelo_database/scripts/Test-R02AuthProofConcurrency.ps1::provision-session",
+      "name": "provision-session",
+      "result": "P",
+      "sqlSha256": "8C3BBB1ED260F9F4E5B12561B4F891B5CA1D902EA743EDA646584B1E2BC48908",
+      "completionOrdinal": 1,
+      "lockObserved": true,
+      "unchanged": true,
+      "assertionEvidence": "PASS marker follows required lock and unchanged checks in the executed harness"
+    },
+    {
+      "test_id": "packages/coelo_database/scripts/Test-R02AuthProofConcurrency.ps1::provision-jwt",
+      "name": "provision-jwt",
+      "result": "P",
+      "sqlSha256": "9671D40689CF4BE9A95FD4AE2EBE160D0DE65576BD085ED65C17E244157C2A1A",
+      "completionOrdinal": 2,
+      "lockObserved": true,
+      "unchanged": true,
+      "assertionEvidence": "PASS marker follows required lock and unchanged checks in the executed harness"
+    },
+    {
+      "test_id": "packages/coelo_database/scripts/Test-R02AuthProofConcurrency.ps1::provision-membership",
+      "name": "provision-membership",
+      "result": "P",
+      "sqlSha256": "FCA120C091D1C6C389065A563F91A5CF515EF6C24A697D6F4E90EDDDBCEA36B1",
+      "completionOrdinal": 3,
+      "lockObserved": true,
+      "unchanged": true,
+      "assertionEvidence": "PASS marker follows required lock and unchanged checks in the executed harness"
+    },
+    {
+      "test_id": "packages/coelo_database/scripts/Test-R02AuthProofConcurrency.ps1::cleanup-session",
+      "name": "cleanup-session",
+      "result": "P",
+      "sqlSha256": "1D3FEAAAE3DD20ACBA403BE9AC32273B4E9A3F7593D594ACD24BC6FCBB1614DB",
+      "completionOrdinal": 4,
+      "lockObserved": true,
+      "unchanged": true,
+      "assertionEvidence": "PASS marker follows required lock and unchanged checks in the executed harness"
+    },
+    {
+      "test_id": "packages/coelo_database/scripts/Test-R02AuthProofConcurrency.ps1::cleanup-jwt",
+      "name": "cleanup-jwt",
+      "result": "P",
+      "sqlSha256": "CBAC7F7CB8437459B890A2C0F655ECF357DB654BBD9286DF3EEE11830FED49B9",
+      "completionOrdinal": 5,
+      "lockObserved": true,
+      "unchanged": true,
+      "assertionEvidence": "PASS marker follows required lock and unchanged checks in the executed harness"
+    },
+    {
+      "test_id": "packages/coelo_database/scripts/Test-R02AuthProofConcurrency.ps1::cleanup-membership",
+      "name": "cleanup-membership",
+      "result": "P",
+      "sqlSha256": "E522396B962B061AB5A6DAEF09836BC1CFB3C22D0527D101F1221983370B86B0",
+      "completionOrdinal": 6,
+      "lockObserved": true,
+      "unchanged": true,
+      "assertionEvidence": "PASS marker follows required lock and unchanged checks in the executed harness"
+    }
+  ],
+  "P": 6,
+  "F": 0,
+  "B": 0,
+  "S": 0,
+  "U": 0,
+  "process": {
+    "sessionId": 40492,
+    "exitCode": 0,
+    "source": "D00 supplied process receipt"
+  },
+  "lifecycle": {
+    "result": "PASS",
+    "evidence": "Explicit Local Supabase Auth lifecycle PASS line",
+    "counting": "Separate lifecycle gate; no invented per-case count"
+  },
+  "cleanup": {
+    "projectId": "coelo_safe_55d5b10cd10c41b282e6f21684440",
+    "wrapperZeroResidualResources": true,
+    "independentInventory": {
+      "containers": 0,
+      "volumes": 0,
+      "networks": 0,
+      "tempExists": false,
+      "source": "D00 observed tool chunk 7b54be"
+    }
+  },
+  "supersedes": {
+    "previousStatus": "6 blocked after failed fixture attempts",
+    "rule": "Replace current status for the same six identities; never add attempts as extra cases"
+  },
+  "limits": [
+    "No remote write or app E2E certification.",
+    "Log renders only the first four detailed case objects; all six names and SQL hashes come from explicit PASS markers.",
+    "Execution wall-clock is not invented; elapsed lifecycle and case timing are not extrapolated."
+  ]
+}

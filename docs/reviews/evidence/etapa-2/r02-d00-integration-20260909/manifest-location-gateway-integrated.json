@@ -1,0 +1,99 @@
+{
+  "source": "Existing D00 Flutter JSON reporter plus process receipt",
+  "generatedAt": "2026-09-09T15:40:00.436461-03:00",
+  "status": "focal-local-pass-not-product-completion",
+  "campaigns": [
+    {
+      "campaign_id": "R02-D00-location-gateway-0f77c364b",
+      "revision": "0f77c364b",
+      "environment": "Local Flutter typed RPC gateway tests; synthetic transport and unavailable composition",
+      "layer": "FE",
+      "action_ids": [
+        "locations.schedule"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/location-gateway-0f77c364b.jsonl",
+      "sha256": "8ac11eb2a593f0cfe52640c7b7a99a09f6901223f28e862c7534b87c45653ed5",
+      "runnerDoneSuccess": true,
+      "runnerElapsedMilliseconds": 4457,
+      "process": {
+        "sessionId": 1776,
+        "exitCode": 0,
+        "source": "D00 tool chunk 3336a9"
+      },
+      "cases": [
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_reservation_gateway_test.dart::the default gateway reports unavailability and never succeeds silently",
+          "file": "apps/superadmin/test/features/locations/location_reservation_gateway_test.dart",
+          "package": "apps/superadmin",
+          "name": "the default gateway reports unavailability and never succeeds silently",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/supabase_location_reservation_gateway_test.dart::assess and create use nominal payloads and caller-owned request id",
+          "file": "apps/superadmin/test/features/locations/supabase_location_reservation_gateway_test.dart",
+          "package": "apps/superadmin",
+          "name": "assess and create use nominal payloads and caller-owned request id",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/supabase_location_reservation_gateway_test.dart::cancel carries exact consumer, version and stable request id",
+          "file": "apps/superadmin/test/features/locations/supabase_location_reservation_gateway_test.dart",
+          "package": "apps/superadmin",
+          "name": "cancel carries exact consumer, version and stable request id",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/supabase_location_reservation_gateway_test.dart::list uses all four public arguments and validates page correlations",
+          "file": "apps/superadmin/test/features/locations/supabase_location_reservation_gateway_test.dart",
+          "package": "apps/superadmin",
+          "name": "list uses all four public arguments and validates page correlations",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/supabase_location_reservation_gateway_test.dart::policy get preserves unset and set correlates scope, owner and policy",
+          "file": "apps/superadmin/test/features/locations/supabase_location_reservation_gateway_test.dart",
+          "package": "apps/superadmin",
+          "name": "policy get preserves unset and set correlates scope, owner and policy",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/supabase_location_reservation_gateway_test.dart::invalid consumer scope, ids, cursor and limit never invoke transport",
+          "file": "apps/superadmin/test/features/locations/supabase_location_reservation_gateway_test.dart",
+          "package": "apps/superadmin",
+          "name": "invalid consumer scope, ids, cursor and limit never invoke transport",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/supabase_location_reservation_gateway_test.dart::error envelopes stay typed while malformed and mismatched data are unavailable",
+          "file": "apps/superadmin/test/features/locations/supabase_location_reservation_gateway_test.dart",
+          "package": "apps/superadmin",
+          "name": "error envelopes stay typed while malformed and mismatched data are unavailable",
+          "result": "P"
+        }
+      ],
+      "P": 7,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    }
+  ],
+  "counts": {
+    "P": 7,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "reconciliation": {
+    "priorD00AppUnique": 278,
+    "newUnique": 7,
+    "expectedD00AppUnique": 285,
+    "matchingPriorManifestIdentities": []
+  },
+  "limits": [
+    "Non-JSON dependency chatter excluded; raw evidence retained intact.",
+    "No SQL, remote, runtime UI or whole-action FE/BE/E2E promotion.",
+    "Full historical 278-case ledger remains D00 responsibility; identities checked against existing manifests here."
+  ]
+}

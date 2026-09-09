@@ -7,7 +7,7 @@
   "createdAt": "2026-09-09",
   "integrationOwner": "D00",
   "observedPreparationHead": "fb2d07d34a74c91ec1f65aff361048393e590729",
-  "runtimeBaselineSha": "0f77c364b9c9476b69373374a3e72485eb6fd977",
+  "runtimeBaselineSha": "a796c0784d9559b57deb508b2dec0171b3daa81c",
   "roles": [
     {
       "id": "D00",
@@ -25,7 +25,7 @@
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo",
       "coordinator": null,
       "baselineSha": "fb2d07d34a74c91ec1f65aff361048393e590729",
-      "headSha": "0f77c364b9c9476b69373374a3e72485eb6fd977",
+      "headSha": "a796c0784d9559b57deb508b2dec0171b3daa81c",
       "plannedAssignmentPath": null,
       "assignmentPath": null,
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D00.md",
@@ -328,7 +328,7 @@
       "apps/superadmin/test/features/auth/presentation/screens/failures/superadmin_login_light_testImage.png"
     ]
   },
-  "runtimeBaselineLimit": "Reviewed integrated source through 0f77c364b9c9476b69373374a3e72485eb6fd977; focal app/contract278P0F, SQL and infrastructure separate. FE4/230, BE0/223, E2E0/198. Source proofs use their actual recorded revisions; Owner WIP preserved.",
+  "runtimeBaselineLimit": "Integrated source a796c0784d9559b57deb508b2dec0171b3daa81c; D00 focal app/contract288P0F. FE7/230 including Auth4/4; BE0/223 E2E0/198. SQL/harness separate; no remote mutation.",
   "scopeRevision": "R02 Circulares r1:147 selecionados,131 MVP E2E; global230/198; Home/granularidade explícitos",
   "sharedReservations": [
     {
@@ -440,12 +440,12 @@
       4592,
       12881
     ],
-    "P": 278,
+    "P": 288,
     "F": 0,
     "B": 0,
     "S": 0,
     "U": 0,
-    "limit": "278 unique D00 focal application/contract cases; SQL/harness separate; no whole-plan certification",
+    "limit": "288 unique D00 focal application/contract cases; no author double counting; SQL/harness separate; no whole-plan certification",
     "manifests": [
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest.json",
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
@@ -456,19 +456,20 @@
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-principal-shell.json",
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-activity-create-integrated.json",
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-auth-purge-retry-integrated.json",
-      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-location-copy-integrated.json"
+      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-location-copy-integrated.json",
+      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-location-gateway-integrated.json",
+      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-notices-conflict-integrated.json"
     ]
   },
   "localSqlSlot": {
     "owner": "D00",
-    "status": "AuthProof third replay running after terminal-membership harness fix",
-    "sessionId": 40492,
-    "base": "0f77c364b9c9476b69373374a3e72485eb6fd977",
+    "status": "free after Catalog focal56 PASS and cleanup",
     "remoteMutation": false,
-    "priorCleanup": "LocationCatalog first replay exited1 before TAP; all coelo_safe containers/volumes/networks absent",
-    "next": "Clock corrected fixture; AMR audit successor; Catalog baseline correction"
+    "priorSessionId": 1381,
+    "priorCleanup": "coelo_safe_907e56f0b0cf4b7291101d59190c1 wrapperzero plus independent zero container/volume/network/TEMP",
+    "next": "Reservation motor49 plus audit2 after reviewed harness; Auth CLI atomic transport2 after review"
   },
-  "checkpointAt": "2026-09-09T15:35:39.987890-03:00",
+  "checkpointAt": "2026-09-09T15:57:45.129531-03:00",
   "coordinatorResume": {
     "previousThreadId": "01a086d5-7bd9-7b12-8537-d29236b2e6ca",
     "threadId": "01a086d4-dd71-7020-a761-daecbc687813",
@@ -482,8 +483,62 @@
   },
   "browserRunner": {
     "owner": "D01",
-    "port": 8921,
-    "status": "Released in D00 r15 for four synthetic B4 cases; D00 server8863 Application finished observed",
-    "realProvider": false
+    "status": "B4 complete4P0F; owned tab closed and server35959 intentionally interrupted; port8921 free per receipt",
+    "realProvider": false,
+    "source": "feb3e3932"
+  },
+  "localSqlResults": {
+    "child": {
+      "TAP": {
+        "P": 45,
+        "F": 0
+      },
+      "concurrency": {
+        "P": 3,
+        "F": 0
+      },
+      "status": "local-pass",
+      "http": {
+        "P": 4,
+        "F": 0,
+        "B": 0
+      }
+    },
+    "authProof": {
+      "P": 6,
+      "F": 0,
+      "B": 0,
+      "status": "local-pass-third-replay-supersedes-prior-harness-blocks"
+    },
+    "activityClock": {
+      "TAP": {
+        "P": 46,
+        "F": 0
+      },
+      "concurrency": {
+        "P": 3,
+        "F": 0,
+        "B": 0
+      },
+      "status": "local-pass-second-replay"
+    },
+    "locationCatalog": {
+      "planned": 165,
+      "P": 165,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0,
+      "status": "third focal56 plus prior valid109; no rerun double count"
+    },
+    "authBoundary": {
+      "P": 46,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0,
+      "groups": "36TAP+9HTTP+1cold shared with D01 client153",
+      "status": "second replay local-pass; prior35P1F10B superseded"
+    }
   }
 }

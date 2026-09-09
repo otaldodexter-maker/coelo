@@ -1,0 +1,162 @@
+{
+  "source": "Existing D00 second Auth boundary replay log; source review; supplied process and cleanup receipts",
+  "generatedAt": "2026-09-09T15:48:03.919493-03:00",
+  "status": "local-auth-boundary-and-cold-composition-pass-not-remote-E2E",
+  "executionBaseline": "232e6519",
+  "baselineSource": "D00 execution receipt; documentation baseline",
+  "migrationSourceRevision": "9e7e23f18",
+  "profile": "AuthOnly with exact two additional migrations",
+  "targetVersion": "20260909173100",
+  "migrationApply": {
+    "P": 49,
+    "F": 0,
+    "canonical": 47,
+    "preflight": 2,
+    "additions": [
+      {
+        "path": "packages/coelo_database/migrations/20260909173000_superadmin_password_session_context.sql",
+        "sha256": "7325a24cf315d00317b614b8242dbe1328046d675aeef8619f9106e75cbf0e5a"
+      },
+      {
+        "path": "packages/coelo_database/migrations/20260909173100_superadmin_password_session_denial_audit.sql",
+        "sha256": "c358a6df21242947c24df06b9e1b32f43edacd13efbe2245dbebe4da3b465ba7"
+      }
+    ]
+  },
+  "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/auth-boundary-second-replay.log",
+  "sha256": "e2255866f0a43e0f1c0e98d7c0ad1a5b0dcdbe3bc9b46001816565bd6e038a51",
+  "process": {
+    "sessionId": 78850,
+    "exitCode": 0,
+    "source": "D00 chunk 4e4eda"
+  },
+  "provider": {
+    "image": "public.ecr.aws/supabase/gotrue:v2.196.0",
+    "environment": "Real provider inside owned disposable local replay"
+  },
+  "tap": {
+    "file": "packages/coelo_database/supabase/tests/superadmin_internal_auth_context_test.sql",
+    "P": 36,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "source": "One-file runner summary"
+  },
+  "http": {
+    "P": 9,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "cases": [
+      {
+        "test_id": "packages/coelo_database/scripts/Test-LocalAuthRecoveryBoundary.ps1::password-control",
+        "name": "password-control",
+        "result": "P",
+        "observedDetails": "productive_context=True methods=password"
+      },
+      {
+        "test_id": "packages/coelo_database/scripts/Test-LocalAuthRecoveryBoundary.ps1::refreshed-password-control",
+        "name": "refreshed-password-control",
+        "result": "P",
+        "observedDetails": "productive_context=True methods=password"
+      },
+      {
+        "test_id": "packages/coelo_database/scripts/Test-LocalAuthRecoveryBoundary.ps1::recovery-before-reset",
+        "name": "recovery-before-reset",
+        "result": "P",
+        "observedDetails": "productive_context=False methods=otp error_code=SAI_SESSION_INVALID"
+      },
+      {
+        "test_id": "packages/coelo_database/scripts/Test-LocalAuthRecoveryBoundary.ps1::refreshed-recovery-before-reset",
+        "name": "refreshed-recovery-before-reset",
+        "result": "P",
+        "observedDetails": "productive_context=False methods=otp error_code=SAI_SESSION_INVALID"
+      },
+      {
+        "test_id": "packages/coelo_database/scripts/Test-LocalAuthRecoveryBoundary.ps1::mutable-metadata-recovery-before-reset",
+        "name": "mutable-metadata-recovery-before-reset",
+        "result": "P",
+        "observedDetails": "productive_context=False methods=otp error_code=SAI_SESSION_INVALID"
+      },
+      {
+        "test_id": "packages/coelo_database/scripts/Test-LocalAuthRecoveryBoundary.ps1::confined-recovery-password-update",
+        "name": "confined-recovery-password-update",
+        "result": "P",
+        "observedDetails": ""
+      },
+      {
+        "test_id": "packages/coelo_database/scripts/Test-LocalAuthRecoveryBoundary.ps1::recovery-after-reset-before-logout",
+        "name": "recovery-after-reset-before-logout",
+        "result": "P",
+        "observedDetails": "productive_context=False methods=otp error_code=SAI_SESSION_INVALID"
+      },
+      {
+        "test_id": "packages/coelo_database/scripts/Test-LocalAuthRecoveryBoundary.ps1::post-reset-recovery-logout",
+        "name": "post-reset-recovery-logout",
+        "result": "P",
+        "observedDetails": "productive_context=False provider_error_code=refresh_token_not_found"
+      },
+      {
+        "test_id": "packages/coelo_database/scripts/Test-LocalAuthRecoveryBoundary.ps1::new-password-login",
+        "name": "new-password-login",
+        "result": "P",
+        "observedDetails": "productive_context=True methods=password"
+      }
+    ]
+  },
+  "coldComposition": {
+    "P": 1,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "test_id": "apps/superadmin/test/features/auth/domain/coelo_auth_recovery_cold_reload_test.dart::cold reload storage failure: backend denies retained recovery after restart",
+    "file": "apps/superadmin/test/features/auth/domain/coelo_auth_recovery_cold_reload_test.dart",
+    "sourceSha256": "5ac86f9f36c2a4b62300cd85e9239435d6f269bfdda178e79ec776a631be4305",
+    "result": "P",
+    "receipt": "D01 composed boundary gate=cold-restart-storage-failure-real-backend outcome=PASS",
+    "hookSha256": "c51ba5858c1d2c1008f733c78ef949f3b09af8312d9bf8762c3a92bfeb5a02be",
+    "acceptance": [
+      "Recreates SDK and production auth scope with retained recovery storage after permanently failed purge.",
+      "Mounts SuperadminApp and explicitly navigates /reset-password after reinitialization.",
+      "Requires exactly one real bootstrap call; authenticated=false, authContext absent, route remains /reset-password.",
+      "Requires actual RPC denial SAI_SESSION_INVALID, confirmed logout, no current SDK session, and still-retained disk credential."
+    ],
+    "limits": [
+      "Flutter widget composition with mocked SharedPreferences storage; real local HTTP/provider backend.",
+      "Not an operating-system process restart or browser reload; does not by itself certify the entire auth.reset action."
+    ]
+  },
+  "cleanup": {
+    "projectId": "coelo_safe_6710a12b49e943ec9564e2106e1b8",
+    "wrapperZeroResidualResources": true,
+    "independent": {
+      "containers": 0,
+      "volumes": 0,
+      "networks": 0,
+      "tempExists": false,
+      "source": "D00 chunk e2c58c"
+    }
+  },
+  "supersedes": {
+    "previous": {
+      "tapP": 35,
+      "tapF": 1,
+      "blockedHttpAndCold": 10
+    },
+    "current": {
+      "tapP": 36,
+      "httpP": 9,
+      "coldP": 1
+    },
+    "rule": "Replace outcomes for these gates; reruns add no additional unique cases"
+  },
+  "provenanceLimit": "D00 reports documentation/HTTP-hook work during execution; migration bodies and boundary hash remained unchanged. Hashes above verified from current files, not inferred from execution HEAD.",
+  "limits": [
+    "No remote deployment, remote BE completion, or production E2E certification.",
+    "Raw Flutter child output intentionally not saved by the harness; its PASS marker requires child exit0 and the fixed assertion receipt.",
+    "SQL, HTTP and client-composition counts remain separated; do not add them indiscriminately to app-only totals."
+  ]
+}

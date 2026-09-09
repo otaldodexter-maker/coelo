@@ -1,0 +1,35 @@
+{
+  "source": "D00 integrated Flutter reporter and shell receipt a96540",
+  "generatedAt": "2026-09-09T15:48:31.428022-03:00",
+  "status": "focal-local-pass-not-whole-action",
+  "base": "ac298c788",
+  "campaign_id": "R02-D00-notices-conflict",
+  "layer": "application-widget",
+  "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/notices-conflict-ac298c788.jsonl",
+  "sha256": "bab8eb356e6ce475f1f09bb3e05bf585c8507079e65b669d1d6c068e5c81abb1",
+  "sessionId": 87911,
+  "exitCode": 0,
+  "cases": [
+    {
+      "test_id": "package:flutter_test/src/widget_tester.dart::a version conflict reloads the directory instead of dead-ending",
+      "name": "a version conflict reloads the directory instead of dead-ending",
+      "result": "success"
+    },
+    {
+      "test_id": "package:flutter_test/src/widget_tester.dart::a missing notice also reloads, since the local snapshot is stale",
+      "name": "a missing notice also reloads, since the local snapshot is stale",
+      "result": "success"
+    },
+    {
+      "test_id": "package:flutter_test/src/widget_tester.dart::an unavailable repository reports without reloading",
+      "name": "an unavailable repository reports without reloading",
+      "result": "success"
+    }
+  ],
+  "P": 3,
+  "F": 0,
+  "B": 0,
+  "S": 0,
+  "U": 0,
+  "limit": "Three focal cases; no backend or E2E certification; author reruns not added"
+}

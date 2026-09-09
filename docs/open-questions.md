@@ -276,3 +276,8 @@ Inspeção C03 e C00: spec027/SQL20260812000847 e wrappers20260901190927 preserv
 ## Reconciliação R01 Audit — 2026-09-08T20:53:20-03:00
 
 C00 identificou assertions históricas em audit_production_test.sql:53–58/235–370 e superadmin_internal_auth_context_test.sql:315–378 que exigem exportação geral e autoridade People. São superadas pela instrução Owner de adiamento (exceção apenas Forms XLSX), AGENTS.md e spec039/ADR0019 aplicadas na reserva Audit I014. Decisão operacional C00 I017: atualizar somente essas provas para exportação recusada e reader interno com sessão; preservar workers/digest/minimização e registrar crosswalk no handoff C03. Nenhuma nova exportação, realm híbrido ou regra de produto autorizada.
+
+## R02 - IDs de Sair em Auth e Conta - 2026-09-09T15:54:53.4387056-03:00
+
+O inventario vigente docs/reviews/inventario-etapa-2.json contem auth.logout e account.logout separadamente. O escopo R02 seleciona auth.logout para D01 e deixa account.logout fora; a nota historica R01 de14:30 nos rastreadores tratava auth.logout como shorthand de account.logout. Ha divergencia de mapeamento documental, nao evidencia de duas operacoes distintas. Decisao necessaria: confirmar decomposicao por superficie ou aprovar unificacao futura com recalculo de denominadores. Nesta rodada preservam-se os dois IDs e o denominador230; o aceite FE de Sair e atribuido apenas ao ID explicitamente selecionado auth.logout, sem promover account.logout. Fonte do certificado: docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/auth-fe-reconciliation.md; lacuna tambem em escopo.json.
+

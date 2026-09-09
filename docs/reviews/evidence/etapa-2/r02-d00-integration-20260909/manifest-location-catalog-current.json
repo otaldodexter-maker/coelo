@@ -1,0 +1,43 @@
+{
+  "source": "D00 session1381 full log plus independent cleanup8de7b1; prior second replay manifest for unchanged five files",
+  "generatedAt": "2026-09-09T15:58:24.109895-03:00",
+  "status": "catalog-local-pass-not-remote",
+  "base": "605e2a236",
+  "profile": "LocationCatalogV2",
+  "target": "20260908190650",
+  "migrations": 57,
+  "campaign_id": "R02-D00-location-catalog-current",
+  "layer": "local-backend",
+  "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/location-catalog-third-replay.log",
+  "sha256": "c5a467d98a5117b26ee1113917f09863233db57e88247bc7c72a2022909b931e",
+  "sessionId": 1381,
+  "exitCode": 0,
+  "focalExecuted": {
+    "files": [
+      "superadmin_location_catalog_v2_test.sql",
+      "superadmin_location_catalog_v2_authorization_test.sql"
+    ],
+    "P": 56,
+    "F": 0
+  },
+  "reused": {
+    "P": 109,
+    "source": "manifest-location-catalog-second-integrated.json",
+    "reason": "Five unchanged files already passed against identical57SQL; only two test fixtures changed"
+  },
+  "currentUniquePlan": {
+    "P": 165,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "cleanup": {
+    "projectId": "coelo_safe_907e56f0b0cf4b7291101d59190c1",
+    "wrapperZero": true,
+    "independentContainersVolumesNetworksEmpty": true,
+    "tempExists": false,
+    "toolReceipt": "8de7b1"
+  },
+  "limit": "No remote mutation/certification. Prior152P2F11B superseded, not summed."
+}

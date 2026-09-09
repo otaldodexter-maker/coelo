@@ -1,0 +1,267 @@
+{
+  "source": "Existing D00 replay log; static authorization assertion enumeration; supplied cleanup receipt",
+  "generatedAt": "2026-09-09T15:44:20.992998-03:00",
+  "status": "local-partial-tap-failure-no-completion",
+  "profile": "LocationCatalogV2",
+  "targetVersion": "20260908190650",
+  "executionHead": null,
+  "layer": "local-backend",
+  "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/location-catalog-second-replay.log",
+  "sha256": "45132274854b974d41b843d8cd8cb8c4bc6386332b742b01b9042fb7f73d5fa0",
+  "process": {
+    "sessionId": 79907,
+    "exitCode": 1,
+    "source": "D00 supplied execution result"
+  },
+  "migrationApply": {
+    "P": 57,
+    "F": 0,
+    "canonical": 53,
+    "preflight": 2,
+    "localFixtures": 2,
+    "source": "Prepared57 and Finished supabase db reset in log; not TAP cases"
+  },
+  "tap": {
+    "executed": 154,
+    "P": 152,
+    "F": 2,
+    "B": 11,
+    "S": 0,
+    "U": 0,
+    "scope": "Seven selected files; blocked11 from static remaining authorization statements",
+    "catalog": {
+      "file": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_test.sql",
+      "executed": 30,
+      "P": 28,
+      "F": 2,
+      "failedCases": [
+        {
+          "ordinal": 4,
+          "description": "scope_kind"
+        },
+        {
+          "ordinal": 5,
+          "description": "created_by_internal_identity_id"
+        }
+      ],
+      "cause": "Unclassified assertion failures; logs do not prove missing columns or the has_column overload hypothesis"
+    },
+    "authorization": {
+      "evidence": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql",
+      "sha256": "f6e3b911c41b5bc416bf82c03c9961ef5b869a76efc01baa425ab4afcac25f37",
+      "executed": 15,
+      "P": 15,
+      "F": 0,
+      "B": 11,
+      "staticallyEnumeratedAssertions": 26,
+      "caseMapping": "Names and line numbers read from current hashed source; result split follows emitted15 passed and abort at142",
+      "cases": [
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::Owner A creates at AAL1",
+          "name": "Owner A creates at AAL1",
+          "sourceLine": 70,
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::identical replay preserves id",
+          "name": "identical replay preserves id",
+          "sourceLine": 71,
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::divergent replay is a conflict",
+          "name": "divergent replay is a conflict",
+          "sourceLine": 73,
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::case-insensitive duplicate owner name conflicts",
+          "name": "case-insensitive duplicate owner name conflicts",
+          "sourceLine": 75,
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::same name in unit owner is independent",
+          "name": "same name in unit owner is independent",
+          "sourceLine": 77,
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::cross-institution unit is denied",
+          "name": "cross-institution unit is denied",
+          "sourceLine": 78,
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::institution directory excludes unit-owned locations",
+          "name": "institution directory excludes unit-owned locations",
+          "sourceLine": 80,
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::no synthetic people authors",
+          "name": "no synthetic people authors",
+          "sourceLine": 82,
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::only two authorized creations have receipts",
+          "name": "only two authorized creations have receipts",
+          "sourceLine": 84,
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::receipt cannot disclose relocated resource",
+          "name": "receipt cannot disclose relocated resource",
+          "sourceLine": 98,
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::cross-scope and nonexistent ids are indistinguishable",
+          "name": "cross-scope and nonexistent ids are indistinguishable",
+          "sourceLine": 100,
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::platform Owner replay projects current owner",
+          "name": "platform Owner replay projects current owner",
+          "sourceLine": 118,
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::platform Owner replay audit identifies current tenant",
+          "name": "platform Owner replay audit identifies current tenant",
+          "sourceLine": 120,
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::non-Owner cannot manage even when audience is guardians",
+          "name": "non-Owner cannot manage even when audience is guardians",
+          "sourceLine": 130,
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::valid external session does not become internal actor",
+          "name": "valid external session does not become internal actor",
+          "sourceLine": 137,
+          "result": "P"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::revoked membership cannot replay receipt",
+          "name": "revoked membership cannot replay receipt",
+          "sourceLine": 148,
+          "result": "B"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::removed effective capability cannot replay receipt",
+          "name": "removed effective capability cannot replay receipt",
+          "sourceLine": 159,
+          "result": "B"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::audit failure aborts creation",
+          "name": "audit failure aborts creation",
+          "sourceLine": 189,
+          "result": "B"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::audit failure rolls back location and receipt",
+          "name": "audit failure rolls back location and receipt",
+          "sourceLine": 192,
+          "result": "B"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::location audit is minimized and verifies",
+          "name": "location audit is minimized and verifies",
+          "sourceLine": 195,
+          "result": "B"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::create respects wall-clock session expiration",
+          "name": "create respects wall-clock session expiration",
+          "sourceLine": 212,
+          "result": "B"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::detail respects wall-clock session expiration",
+          "name": "detail respects wall-clock session expiration",
+          "sourceLine": 214,
+          "result": "B"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::directory respects wall-clock session expiration",
+          "name": "directory respects wall-clock session expiration",
+          "sourceLine": 216,
+          "result": "B"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::expired session leaves no creation receipt",
+          "name": "expired session leaves no creation receipt",
+          "sourceLine": 218,
+          "result": "B"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::expired session rolls back inserted location",
+          "name": "expired session rolls back inserted location",
+          "sourceLine": 221,
+          "result": "B"
+        },
+        {
+          "test_id": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_authorization_test.sql::null expiration preserves canonical unbounded-session meaning",
+          "name": "null expiration preserves canonical unbounded-session meaning",
+          "sourceLine": 229,
+          "result": "B"
+        }
+      ],
+      "abort": {
+        "line": 142,
+        "message": "internal membership version mismatch",
+        "function": "app_private.guard_superadmin_internal_membership_lifecycle",
+        "tapPlan": "no_plan; finish never reached; runner reports No plan found"
+      }
+    },
+    "otherFiles": [
+      {
+        "file": "packages/coelo_database/supabase/tests/superadmin_location_catalog_v2_isolation_test.sql",
+        "result": "PASS"
+      },
+      {
+        "file": "packages/coelo_database/supabase/tests/superadmin_location_remote_options_cutover_test.sql",
+        "result": "PASS"
+      },
+      {
+        "file": "packages/coelo_database/supabase/tests/superadmin_locations_update_status_v2_test.sql",
+        "result": "PASS"
+      },
+      {
+        "file": "packages/coelo_database/supabase/tests/superadmin_locations_copy_v2_test.sql",
+        "result": "PASS"
+      },
+      {
+        "file": "packages/coelo_database/supabase/tests/superadmin_locations_schedule_v2_test.sql",
+        "result": "PASS"
+      }
+    ],
+    "otherFilesCombinedPassed": 109
+  },
+  "cleanup": {
+    "projectId": null,
+    "projectIdLimit": "Independent cleanup receipt does not print the project identity; no identity inferred",
+    "independentInventory": {
+      "containers": 0,
+      "volumes": 0,
+      "networks": 0,
+      "source": "D00 chunk f9b1aa"
+    }
+  },
+  "followUp": [
+    "Correct fixture lifecycle update at142 without bypassing version/terminal-state guards.",
+    "The later reactivation of the same revoked membership at150 is independently incompatible with terminal revocation; address before retry.",
+    "Investigate the two catalog assertions; do not label them product/schema failures without evidence."
+  ],
+  "limits": [
+    "No SQL executed by this reconciliation task.",
+    "154 executed is distinct from11 downstream blocked; migration files are not test counts.",
+    "Local evidence only; no complete BE/E2E promotion."
+  ]
+}

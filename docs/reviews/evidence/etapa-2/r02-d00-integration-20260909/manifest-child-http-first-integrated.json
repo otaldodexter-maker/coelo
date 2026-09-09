@@ -1,0 +1,95 @@
+{
+  "source": "Actual D00 CHILD HTTP replay log; static checkpoint mapping from harness and four-case plan; supplied process and independent cleanup receipts",
+  "generatedAt": "2026-09-09T15:55:30.447810-03:00",
+  "status": "local-child-http-pass-not-remote-or-app-E2E",
+  "executionBaseline": "63e364300",
+  "baselineSource": "D00 execution receipt; no clean whole-tree assertion",
+  "profile": "ChildDirectoryEnvelope",
+  "targetVersion": "20260908051500",
+  "migrationApply": {
+    "P": 49,
+    "F": 0,
+    "canonical": 46,
+    "preflight": 2,
+    "localBridge": 1,
+    "manifestSha256": "4279e67c9651f4049329591b6e8aad82e3a9052506c1a4e16ba8bbb693249d59"
+  },
+  "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/child-http-first-replay.log",
+  "sha256": "1eaa328decd169844e62c716ebda54e0a23de9a6c0745d8a281dfa465297ab3f",
+  "process": {
+    "sessionId": 58693,
+    "exitCode": 0,
+    "source": "D00 chunk 6d3027"
+  },
+  "tap": {
+    "file": "packages/coelo_database/supabase/tests/superadmin_child_context_directory_v2_test.sql",
+    "P": 45,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "counting": "Same 45 unique TAP cases rerun for this one-shot base; do not add to previous 45"
+  },
+  "http": {
+    "P": 4,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "observedSummary": "CHILD HTTP local PASS: canonical pagination and reload succeeded; foreign, unknown and revoked reads returned no data.",
+    "caseEvidenceLimit": "Harness prints only one final success summary, after all assertions. Individual results below map static required checkpoints and the declared four-case plan; they are not invented per-case stdout.",
+    "plan": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-http-plan.md",
+    "harness": "packages/coelo_database/scripts/Test-ChildDirectoryHttp.ps1",
+    "currentHarnessSha256": "3f81ca9ae729c57642ba9dc4057079b976850b73b5a04c227c7d5c34ab252396",
+    "cases": [
+      {
+        "test_id": "packages/coelo_database/scripts/Test-ChildDirectoryHttp.ps1::first-page-dto-cursor",
+        "name": "Initial page canonical IDs, DTO, names, limit and cursor",
+        "result": "P",
+        "sourceLines": "261-271"
+      },
+      {
+        "test_id": "packages/coelo_database/scripts/Test-ChildDirectoryHttp.ps1::second-page-reload",
+        "name": "Second page, terminal cursor and authoritative reload equality",
+        "result": "P",
+        "sourceLines": "272-293"
+      },
+      {
+        "test_id": "packages/coelo_database/scripts/Test-ChildDirectoryHttp.ps1::foreign-unknown-no-enumeration",
+        "name": "Foreign and unknown institution deny without public response differences",
+        "result": "P",
+        "sourceLines": "295-312"
+      },
+      {
+        "test_id": "packages/coelo_database/scripts/Test-ChildDirectoryHttp.ps1::revoked-same-jwt-minimized-audit",
+        "name": "Versioned membership revocation denies same JWT; 3 successes, 3 denials and minimized audit",
+        "result": "P",
+        "sourceLines": "314-340"
+      }
+    ]
+  },
+  "previousConcurrency": {
+    "manifest": "manifest-child-integrated-sql.json",
+    "P": 3,
+    "preserved": true,
+    "executedThisCampaign": false,
+    "counting": "Preserved earlier evidence; no new concurrency results or duplicate count"
+  },
+  "cleanup": {
+    "projectId": "coelo_safe_9ec855e569bf4cad967310368f4d9",
+    "wrapper": "Zero residual resources explicitly confirmed in raw log",
+    "independentReceipt": {
+      "source": "D00 chunk 144be6",
+      "containers": 0,
+      "volumes": 0,
+      "networks": 0,
+      "tempExists": false,
+      "limit": "Parent supplied independent tool receipt; no reconstructed raw inventory output"
+    }
+  },
+  "limits": [
+    "Owned disposable local SQL and real local HTTP/PostgREST only",
+    "No remote deployment or product FE/BE/E2E certification",
+    "Four HTTP business cases are separate from structural Pester tests and application test union"
+  ]
+}

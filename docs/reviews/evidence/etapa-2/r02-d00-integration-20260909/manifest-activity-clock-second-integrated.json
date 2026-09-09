@@ -1,0 +1,73 @@
+{
+  "source": "Existing D00 replay log and supplied process/cleanup tool receipts",
+  "generatedAt": "2026-09-09T15:44:20.826491-03:00",
+  "status": "local-sql-and-concurrency-pass-not-E2E",
+  "profile": "ActivityAggregateConcurrencyClock",
+  "targetVersion": "20260908235110",
+  "executionHead": null,
+  "executionHeadLimit": "Exact Git HEAD not recorded in replay log",
+  "layer": "local-backend",
+  "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/activity-clock-second-replay.log",
+  "sha256": "5518b84b75502ecb13ebf85f62fe943dfc5950289ec79dcce3043dad95378ac4",
+  "process": {
+    "sessionId": 2817,
+    "exitCode": 0,
+    "source": "D00 chunk 84de3c"
+  },
+  "tap": {
+    "file": "packages/coelo_database/supabase/tests/superadmin_activity_save_v2_test.sql",
+    "P": 46,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "executed": 46,
+    "source": "Runner summary; individual TAP lines not emitted"
+  },
+  "concurrency": {
+    "P": 3,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "cases": [
+      {
+        "test_id": "packages/coelo_database/scripts/Test-ActivityV2Concurrency.ps1::optimistic-version-race",
+        "result": "P",
+        "signal": "Activity v2 concurrency passed: one winner, one version conflict, one receipt, one success audit and one denied audit."
+      },
+      {
+        "test_id": "packages/coelo_database/scripts/Test-ActivityV2Concurrency.ps1::expiry-after-lock",
+        "result": "P",
+        "signal": "Activity aggregate expiry passed: confirmed advisory wait, SAI_SESSION_INVALID, no save receipt or version change, one denial audit."
+      },
+      {
+        "test_id": "packages/coelo_database/scripts/Test-ActivityV2Concurrency.ps1::revocation-after-lock",
+        "result": "P",
+        "signal": "Activity aggregate revocation passed: confirmed advisory wait, SAI_MEMBERSHIP_REVOKED, no save receipt or version change, one denial audit."
+      }
+    ]
+  },
+  "cleanup": {
+    "projectId": "coelo_safe_90e85e63fe7941309c7fc2bc297c3",
+    "wrapperZeroResidualResources": true,
+    "independentInventory": {
+      "containers": 0,
+      "volumes": 0,
+      "networks": 0,
+      "tempExists": false,
+      "source": "D00 chunk 876a17"
+    }
+  },
+  "supersedes": {
+    "previousConcurrency": {
+      "P": 2,
+      "B": 1
+    },
+    "rule": "Same three concurrency cases; replace latest status without adding retries. TAP rerun does not create 46 additional identities."
+  },
+  "limits": [
+    "Local disposable database only; not app E2E or production certification.",
+    "No execution clock time invented."
+  ]
+}

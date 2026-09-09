@@ -117,6 +117,12 @@
       "context": "Chat por superfície e subtelas",
       "owner": "L02",
       "detail": "IDs chat.* são compartilhados. Registrar evidência de cliente administrativo e cliente Principal para o mesmo ID, sem somá-lo duas vezes nem esconder uma superfície não concluída."
+    },
+    {
+      "context": "Sair em Auth e Conta",
+      "owner": "D00",
+      "detail": "Inventario contem auth.logout selecionado D01 e account.logout fora do recorte. Referencia historica R01 chamou auth.logout de shorthand, mas nao houve fusao de IDs. Certificado R02 pertence somente auth.logout; preservar denominadores ate decisao documental de eventual duplicidade.",
+      "mappingStatus": "distinct-ids-preserved-reconciliation-needed"
     }
   ],
   "sharedDependencies": [
