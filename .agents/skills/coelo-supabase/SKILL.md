@@ -223,6 +223,17 @@ achados de RLS em `app_private`; consultar a evidência datada e o rastreador
 atual para a quantidade e estado. Não tratar contagem histórica como fato vivo.
 Não aplicar cauda de migrations em lote diante do drift de ledger.
 
+Pacote revisável não é pacote aplicável: exercitar a aplicação sobre uma base que
+já tenha as migrations anteriores, não só escrever guarda de dependência. Uma
+guarda bem escrita recusa o que falta; ela não descobre que o próprio insert
+viola constraint criada depois. Caso medido em 09/09/2026: `platform_permissions`
+ganhou `module_label`, `screen_label` e `action_label` como `not null` **sem
+default** em `20260811215451`, e três migrations posteriores do lote
+`superadmin_internal_*_v2` inserem permissões sem esses rótulos — falham na
+aplicação. Ao semear permissão, fornecer sempre os três, inclusive no
+`on conflict do update`. Omissão anterior àquela data é inofensiva porque o
+default ainda existia; comparar a data antes de tratar ocorrência como defeito.
+
 ## Estados e encerramento
 
 - `pending-verification`: certificado atual ainda ausente; não significa inexistência
