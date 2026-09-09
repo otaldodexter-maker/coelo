@@ -155,6 +155,30 @@ final class NoticeFormController extends ChangeNotifier {
   }
 
   bool get hasAccessibleContrast => contrastRatio >= 4.5;
+
+  /// Vigência é comparada com data e hora locais do operador: `starts_at` e
+  /// `ends_at` são timestamps, não datas puras.
+  bool get hasEndBeforeStart => endsAt != null && endsAt!.isBefore(startsAt);
+
+  /// O fim da recorrência é uma data pura; comparar com o dia de início evita
+  /// recusar uma recorrência que termina no próprio dia em que começa.
+  bool get hasRecurrenceEndBeforeStart =>
+      recurrenceUntil != null && _dayOf(recurrenceUntil!).isBefore(_dayOf(startsAt));
+
+  /// Mensagem honesta da etapa de vigência. A validação do servidor continua
+  /// sendo a autoridade; esta mensagem apenas explica o bloqueio local.
+  String get scheduleErrorMessage {
+    if (hasEndBeforeStart) {
+      return 'O término não pode ser anterior ao início. '
+          'Ajuste a data e a hora de término.';
+    }
+    if (hasRecurrenceEndBeforeStart) {
+      return 'O fim da recorrência não pode ser anterior à data de início.';
+    }
+    return 'Revise as datas e a configuração de recorrência.';
+  }
+
+  static DateTime _dayOf(DateTime value) => DateTime(value.year, value.month, value.day);
   bool get hasMoreAudienceOptions =>
       _audienceNextCursorLabel != null && _audienceNextCursorId != null;
 
@@ -266,8 +290,8 @@ final class NoticeFormController extends ChangeNotifier {
     NoticeFormStep.audience =>
       _allowedAudiences.contains(audience) && audienceLabelController.text.trim().isNotEmpty,
     NoticeFormStep.schedule =>
-      (endsAt == null || !endsAt!.isBefore(startsAt)) &&
-          (recurrenceUntil == null || !recurrenceUntil!.isBefore(startsAt)) &&
+      !hasEndBeforeStart &&
+          !hasRecurrenceEndBeforeStart &&
           switch (recurrence) {
             NoticeRecurrence.oneTime || NoticeRecurrence.daily => true,
             NoticeRecurrence.weekly =>
