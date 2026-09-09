@@ -773,6 +773,51 @@ void main() {
     expect(repository.items.single.revision, 2);
   });
 
+  test('retry da mesma criacao reenvia a mesma intencao e a descarta apos confirmar', () async {
+    // Criacao nao tem p_expected_revision para barrar repeticao. Se cada
+    // tentativa levar um p_request_id novo, um retry apos falha incerta cria um
+    // segundo evento.
+    final sent = <String>[];
+    var failNext = true;
+    final client = _client((request) async {
+      final body = jsonDecode(request.body) as Map<String, dynamic>;
+      sent.add(body['p_request_id'] as String);
+      if (failNext) {
+        failNext = false;
+        throw ClientException('synthetic network failure');
+      }
+      return _json(request, _eventJson(id: _eventId, revision: 1));
+    });
+    addTearDown(client.dispose);
+    var generated = 0;
+    final repository = SupabaseAgendaRepository(
+      client,
+      requestId: () => 'intent-${++generated}',
+    );
+    final item = AgendaItem.fixture(
+      id: 'local-agenda-retry',
+      title: 'Reuniao pedagogica',
+      audience: const AgendaAudience(institutionId: _institutionId, unitIds: {_unitId}),
+      startsAt: DateTime.utc(2026, 9, 3, 13),
+      endsAt: DateTime.utc(2026, 9, 3, 14),
+      status: AgendaItemStatus.draft,
+    );
+
+    final failed = await repository.saveItem(item, actorContextId: _unitId);
+    final retried = await repository.saveItem(item, actorContextId: _unitId);
+
+    expect(failed, isNot(AgendaMutationResult.success));
+    expect(retried, AgendaMutationResult.success);
+    expect(sent, hasLength(2));
+    expect(sent.first, sent.last, reason: 'o retry precisa reenviar a mesma intencao');
+
+    // Confirmada a escrita, a intencao e descartada: uma criacao posterior do
+    // mesmo rascunho e um comando novo, nao uma repeticao.
+    await repository.saveItem(item, actorContextId: _unitId);
+    expect(sent, hasLength(3));
+    expect(sent.last, isNot(sent.first));
+  });
+
   test('cria evento sem IDs de fixture e conserva a identidade gerada pelo servidor', () async {
     Request? captured;
     final client = _client((request) async {
