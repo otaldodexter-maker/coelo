@@ -146,7 +146,8 @@ class _KeepSessionOpenControlState extends State<_KeepSessionOpenControl> {
         label: 'Manter sessão aberta',
         onTap: widget.enabled ? _toggle : null,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+          // Preserve the approved login row geometry and its full-width target.
+          constraints: const BoxConstraints(minHeight: CoeloSize.touchMin + CoeloSpacing.space2),
           child: DecoratedBox(
             key: _focused ? const ValueKey('superadmin-login-keep-session-focus-ring') : null,
             decoration: BoxDecoration(
@@ -179,13 +180,16 @@ class _KeepSessionOpenControlState extends State<_KeepSessionOpenControl> {
                   child: Row(
                     children: [
                       ExcludeFocus(
-                        child: Checkbox(
-                          value: widget.value,
-                          onChanged: widget.enabled ? (_) => _toggle() : null,
-                          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                        child: SizedBox(
+                          width: CoeloSize.touchMin - CoeloSpacing.space2,
+                          child: Checkbox(
+                            value: widget.value,
+                            onChanged: widget.enabled ? (_) => _toggle() : null,
+                            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                          ),
                         ),
                       ),
-                      const SizedBox(width: CoeloSpacing.space1),
+                      const SizedBox(width: CoeloSpacing.space4),
                       Expanded(
                         child: Text(
                           'Manter sessão aberta',

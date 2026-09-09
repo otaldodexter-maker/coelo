@@ -1,0 +1,9 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy dart run apps/catalog/tool/validate_admin_visual_contracts. ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+apps/superadmin/lib/features/locations/presentation/location_schedule_section.dart:292 [DropdownButtonFormField] uso 
+cru proibido; substitua por CoeloAdminSingleSelectField ou componente Coelo especializado
