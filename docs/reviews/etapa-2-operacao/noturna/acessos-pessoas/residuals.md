@@ -26,9 +26,9 @@ BE0/223,E2E0/198, histórico e não recontado nesta rodada.
 | people.links | Vínculos minimizados | Contrato interno e negativas de escopo; consulta v2 não libera edição |
 | people.reload | Consulta por pessoa e diretório são contratos distintos | Runtime interno com reautorização; não certificar diretório pela spec046 |
 | access-profiles.list | Catálogo; lifecycle R02 preservado | Decisão de visibilidade institucional global e ACL/helpers |
-| access-profiles.create | Formulário compartilhado; recibo confirmado preservado,17P e golden1F herdado | Write interno e personas; callback não deve repetir comando confirmado |
+| access-profiles.create | Formulário compartilhado; recibo confirmado preservado,18P e goldenF1 reconciliado | Write interno e personas; callback não deve repetir comando confirmado |
 | access-profiles.detail | Detalhe | Reader autorizado do perfil real |
-| access-profiles.edit | Formulário compartilhado; recibo confirmado preservado,17P e golden1F herdado | Persistência/recarga autorizada por ator |
+| access-profiles.edit | Formulário compartilhado; recibo confirmado preservado,18P e goldenF1 reconciliado | Persistência/recarga autorizada por ator |
 | access-profiles.assign | Atribuição | Contrato interno, hierarquia e negativas de escopo |
 | access-profiles.delete | Exclusão/reassign | Dependências, negativas e comando interno autorizado |
 | access-models.list | Pacote nominal95P local | Revisão e autorização nominal remota; HTTP/UI normal |
@@ -64,7 +64,7 @@ Provas e hashes por lote: `models/README.md`, `models/frontend-receipts.md`,
 `safety-composition/handoff.md`, `safety-sql/handoff.md` e
 `safety-sql/profile-proposal/README.md`. Contagens SQL, Flutter e preparação
 são separadas; reruns não aumentam cobertura. Rollback tardio6P em
-`models/rollback-01.txt`; formulário17P/1F herdado em models-form-receipt/handoff.md e duplicação24P em models/duplicate-receipts.md. Total atual395P/1F/120U: Safety108U e concorrênciaModels12U.
+`models/rollback-01.txt`; formulário18P/0F em models-form-receipt/golden-reconciliation.md e duplicação24P em models/duplicate-receipts.md. Total atual396P/0F/120U: Safety108U e concorrênciaModels12U.
 
 Produção: catálogo Supabase lido sem dados pessoais, zero mutação remota.
 Ausência do Owner não autoriza pacote novo. Modelos precisa da fundação nominal
@@ -76,3 +76,5 @@ As projeções históricas de Perfis/Safety ainda mencionam MFA/AAL2; o escritor
 central deve reconciliar suas fontes/aditivos sem alterar a política ADR0019.
 
 Checkpoint 19:25 BRT: Claude r9 registra integração até b285a6804 por69ce62c43. Os commits9d5ce7317/cb76f5968 posteriores estão publicados para integração. A retomada do ensaio concorrente de Modelos foi rejeitada pela revisão automática por possível risco de cibersegurança;12 critérios permanecem não executados, sem contorno. Docker recuperou e o projeto anterior foi verificado sem containers/volumes/networks. Slot Models liberado; Safety108 aguarda ordem nominal após prioridade Forms I008.
+
+Reconciliacao Formgolden: F1 substituido porP1, tres imagens com causa integrada e inspecao anterior conforme coordenacao r10. Evidencia models-form-receipt/golden-reconciliation.md; nenhum certificado completo novo.
