@@ -7,6 +7,7 @@ import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/features/auth/domain/superadmin_auth_context.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_detail.dart';
 import 'package:coelo_superadmin/features/locations/domain/location_catalog_reader.dart';
+import 'package:coelo_superadmin/features/locations/domain/location_consumer_bindings_reader.dart';
 import 'package:coelo_superadmin/features/locations/domain/location_reservation_gateway.dart';
 import 'package:coelo_superadmin/features/locations/presentation/location_consumer_reservations.dart';
 import 'package:coelo_superadmin/features/locations/presentation/location_reservation_panel.dart';
@@ -80,13 +81,45 @@ class _Reservations implements LocationReservationGateway {
   dynamic noSuchMethod(Invocation invocation) => throw StateError('Unexpected mutation');
 }
 
+class _Bindings implements LocationConsumerBindingsReader {
+  final consumers = <LocationReservationConsumer>[];
+  @override
+  Future<LocationConsumerBindingPage> fetchPage({
+    required LocationReservationConsumer consumer,
+    String? afterLocationId,
+    int limit = 20,
+  }) async {
+    consumers.add(consumer);
+    return LocationConsumerBindingPage(
+      consumer: consumer,
+      items: [
+        const LocationConsumerBinding(
+          location: LocationReferenceSnapshot(
+            id: locationB,
+            scope: scopeUnitA,
+            kind: LocationKind.internal,
+            label: 'Sala antiga da unidade',
+          ),
+          status: LocationCatalogStatus.inactive,
+        ),
+      ],
+      nextLocationId: null,
+    );
+  }
+}
+
 void main() {
   testWidgets(
     'normal group route composes reservations from authorized detail and confines revocation',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(1440, 1100));
       addTearDown(() => tester.binding.setSurfaceSize(null));
-      const permissions = {'groups.read', 'locations.read', 'locations.reservations.read'};
+      const permissions = {
+        'groups.read',
+        'locations.read',
+        'locations.reservations.read',
+        'locations.reservations.manage',
+      };
       final session = SuperadminSession()
         ..authorize(
           const SuperadminAuthContext(
@@ -98,6 +131,7 @@ void main() {
           sessionId: 'consumer-route-session',
         );
       final gateway = _Reservations();
+      final bindings = _Bindings();
       final router = createSuperadminRouter(
         session: session,
         login: unavailableSuperadminLogin,
@@ -106,6 +140,7 @@ void main() {
         groupDetailRepository: _Groups(),
         locationCatalogReader: _Catalog(),
         locationReservationGateway: gateway,
+        locationConsumerBindingsReader: bindings,
         onThemeModeChanged: (_) {},
       );
       addTearDown(router.dispose);
@@ -151,6 +186,22 @@ void main() {
         tester.widget<LocationReservationPanel>(find.byType(LocationReservationPanel)).canManage,
         isFalse,
       );
+      expect(bindings.consumers.single, section.consumer);
+      await Scrollable.ensureVisible(
+        tester.element(find.byKey(const Key('consumer-binding-open-$locationB'))),
+        alignment: 0.5,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('consumer-binding-open-$locationB')));
+      await tester.pumpAndSettle();
+      final historicalPanel = tester.widget<LocationReservationPanel>(
+        find.byType(LocationReservationPanel),
+      );
+      expect(historicalPanel.locationId, locationB);
+      expect(historicalPanel.scope, isA<UnitLocationScope>());
+      expect(gateway.consumers.last, section.consumer);
+      expect(bindings.consumers, hasLength(1));
+      final historyReadsBeforeRevocation = bindings.consumers.length;
       session.authorize(
         const SuperadminAuthContext(
           platformRoleCode: 'test',
@@ -162,7 +213,9 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.byType(LocationReservationPanel), findsNothing);
-      expect(gateway.consumers, hasLength(1));
+      expect(gateway.consumers, hasLength(2));
+      expect(find.text('Sala antiga da unidade'), findsNothing);
+      expect(bindings.consumers, hasLength(historyReadsBeforeRevocation));
     },
   );
 }

@@ -139,6 +139,7 @@ import '../../features/locations/domain/location_capabilities.dart';
 import '../../features/locations/domain/location_catalog_reader.dart';
 import '../../features/locations/domain/location_catalog_writer.dart';
 import '../../features/locations/domain/location_reservation_gateway.dart';
+import '../../features/locations/domain/location_consumer_bindings_reader.dart';
 import '../../features/locations/presentation/location_consumer_reservations.dart';
 import '../../features/locations/presentation/locations_page.dart';
 import '../../features/locations/presentation/unit_locations_gate.dart';
@@ -248,6 +249,8 @@ GoRouter createSuperadminRouter({
   GroupDetailRepository groupDetailRepository = const UnavailableGroupDetailRepository(),
   UnitDetailRepository unitDetailRepository = const UnavailableUnitDetailRepository(),
   LocationCatalogReader locationCatalogReader = const UnavailableLocationCatalogReader(),
+  LocationConsumerBindingsReader locationConsumerBindingsReader =
+      const UnavailableLocationConsumerBindingsReader(),
   LocationCatalogWriter locationCatalogWriter = const UnavailableLocationCatalogWriter(),
   LocationReservationGateway locationReservationGateway =
       const UnavailableLocationReservationGateway(),
@@ -1732,6 +1735,7 @@ GoRouter createSuperadminRouter({
                         ],
                         reader: locationCatalogReader,
                         gateway: locationReservationGateway,
+                        bindingsReader: locationConsumerBindingsReader,
                         sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
                         contextRevision: session.authorizationInvalidationRevision,
                         canRead:
@@ -1742,9 +1746,10 @@ GoRouter createSuperadminRouter({
                             }) ==
                             true,
                         canManage:
-                            session.authContext?.permissionCodes.contains(
+                            session.authContext?.permissionCodes.containsAll({
                               'locations.reservations.manage',
-                            ) ==
+                              'groups.manage',
+                            }) ==
                             true,
                         canOverride:
                             session.authContext?.permissionCodes.contains(
