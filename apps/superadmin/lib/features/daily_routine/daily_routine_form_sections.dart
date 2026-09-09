@@ -810,7 +810,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         ..._sections,
         RoutineSection(
           id: 'section-$id',
-          name: '${section.name} (copia)',
+          name: '${section.name} (cópia)',
           sortOrder: _sections.length,
           fields: [
             for (var index = 0; index < section.fields.length; index++)
