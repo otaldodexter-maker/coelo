@@ -6,7 +6,7 @@ generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
 
-Rodada E2-R02-20260909; subagente `/root/profiles_models`; revisão 9;
+Rodada E2-R02-20260909; subagente `/root/profiles_models`; revisão 10;
 instrução processada: pai D04, ownership exclusivo feature access_profiles e
 testes; novos arquivos SQL nominais reservados via pai; sem commits próprios.
 Início observado: 14:18 BRT. Modelo requerido: gpt-6-astra, medium; runtime
@@ -402,10 +402,21 @@ Arquivos aptos, sem alteração adicional de router:
 Comando final, de apps/superadmin:
 `flutter test test/app/router/d04_model_duplicate_routes_test.dart test/features/access_profiles/presentation/model_command_consumer_test.dart --no-pub --reporter expanded`.
 **P18/F0/B0/S0/U0** =9router+9consumer. Consumer já estava nos37 originais;
-não somar rerun. Delta líquido do pai é **+5IDs únicos**,429→434P e F1baseline
-visual mantido, conforme reconciliação do writer. Plano8 original agoraP8/U0.
-access_profile_duplicate_context_test3 também passou na execução intermediária;
-nenhuma necessidade de rerun sem mudança de código posterior.
+não somar rerun. Reconciliação documental r10: delta líquido correto desta
+consolidação é **+8IDs únicos**,429→437P e F1baseline visual mantido:
+5 novos router +3 duplicate_context executados pela primeira vez nesta campanha.
+A conta anterior +5/434 omitia esses3. Plano8 original agoraP8/U0.
+access_profile_duplicate_context_test3 passou na execução intermediária;
+não constava no lote37 original nem nos lotes posteriores deste subagente.
+Nenhum rerun foi feito para esta reconciliação; nenhuma mudança de código após
+sua prova. Evidência preservada emD04-models-consolidation-intermediate20.log:
+20 executados =8router+9consumer+3context,19P/1F; único erro do consumer já
+resolvido no green18. O reporter concorrente intercala nomes; não imprime cada
+teste separadamente. Os3 casos do arquivo que passaram são:
+
+- replacement repository loads its source and discards the previous response;
+- pending duplicate cannot invoke the replacement context callback;
+- repeated activation before a frame sends only one duplication.
 
 Regressão intermediária única era a asserção antiga duplicate-denied do
 consumer que exigia preservar rascunho mesmo sem autorização. Ajustada somente
@@ -416,7 +427,8 @@ D04-models-authorization-denial-red.log,
 D04-models-consolidation-green18.log,
 D04-models-consolidation-analyzer3.log. Analyzer3 limpo14.7s; format/check limpos.
 
-Pai notificou publicação anterior1ac0a364a e snapshot54e910ffb; este delta final
-aguarda commit/push serializado. SlotFlutter liberado diretamente paraInvites;
+Pai notificou publicação anterior1ac0a364a e snapshot54e910ffb; delta final
+publicado pelo pai em82f08af50. R10 altera apenas documentação/evidência dos3
+casos omitidos, sem tocar os3 arquivos de código/teste. SlotFlutter liberado diretamente paraInvites;
 nenhum processo/recurso próprio ativo. Memória no-op: aplicação de invariantes
 existentes, sem novo conhecimento durável. Nenhuma nova certificação E2E/remota.

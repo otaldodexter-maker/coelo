@@ -1,0 +1,53 @@
+Command metadata: flutter test test/app/router/d04_model_duplicate_routes_test.dart test/features/access_profiles/presentation/model_command_consumer_test.dart test/features/access_profiles/presentation/access_profile_duplicate_context_test.dart --no-pub --reporter expanded
+Exit code: 1. Executed 20: 8 router + 9 consumer + 3 duplicate_context. Result 19 passed, 1 failed (consumer duplicate denied only; fixed in later green18).
+Original captured output follows; concurrent expanded reporter labels interleave and do not print every test name separately.
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=false
+00:01 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=false
+00:01 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=false
+00:02 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=false
+00:02 +4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:02 +5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=true
+00:03 +6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=true
+00:03 +7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=true
+00:03 +8: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=true
+00:04 +9: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route revoked-load
+00:04 +10: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: update SQL envelope reaches UI denied=false
+00:05 +11: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: update SQL envelope reaches UI denied=false
+00:05 +12: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route rpc-denied
+00:06 +13: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: update SQL envelope reaches UI denied=true
+00:06 +14: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: update SQL envelope reaches UI denied=true
+00:07 +15: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: duplicate SQL envelope reaches UI denied=false
+00:07 +16: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: duplicate SQL envelope reaches UI denied=true
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following StateError was thrown running a test:
+Bad state: No element
+
+When the exception was thrown, this was the stack:
+#0      Iterable.single (dart:core/iterable.dart:694:25)
+#1      WidgetController.widget (package:flutter_test/src/controller.dart:828:30)
+#2      _fieldText (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart:175:6)
+#3      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart:94:20)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  duplicate SQL envelope reaches UI denied=true
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:09 +16 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: duplicate SQL envelope reaches UI denied=true [E]
+  Test failed. See exception logs above.
+  The test description was: duplicate SQL envelope reaches UI denied=true
+
+00:09 +16 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: delete SQL envelope reaches UI denied=false
+00:09 +17 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: delete SQL envelope reaches UI denied=true
+00:09 +18 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: update envelope conflict offers reference reload without save callback
+00:10 +19 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: duplicate SQL envelope reaches UI denied=true

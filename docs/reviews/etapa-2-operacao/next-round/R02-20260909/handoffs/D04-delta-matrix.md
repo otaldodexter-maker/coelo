@@ -7,10 +7,10 @@ timezone: "America/Sao_Paulo"
 
 # Delta nominal D04 para o escritor central
 
-Base56eb3f19, revisão4 do corte16:30 BRT; HEAD publicado1ac0a364a. App único: apps/superadmin.
+Base56eb3f19, revisão5 da consolidação16:41 BRT; HEAD publicado444e03ccb. App único: apps/superadmin.
 Menu Acessos para todas as linhas exceto invites.*, em Comunicação.
 As provas locais não encerram FE/BE/E2E de nenhum dos31IDs ativos.
-ReservasD00r4 aplicadas em ef1927f2d/1ac0a364a; integração central pendente.
+ReservasD00r4/r6 aplicadas; sucessores82f08af50/444e03ccb aguardam recibo central.
 
 | action_id | Subtela/estado; delta local | Primeiro critério aberto |
 | --- | --- | --- |
@@ -33,9 +33,9 @@ ReservasD00r4 aplicadas em ef1927f2d/1ac0a364a; integração central pendente.
 | access-models.duplicate | Rota1ac0a364a+denial82f08af50;plano8P/U0 evalidation1P | Integração central do sucessor; runtime real |
 | invites.list | Debounce invalida retorno anterior;negação de leitura descarta comandos/overlays | Runtime do diretório com persona qualificada |
 | invites.create | Wizard invalida contexto e preserva seleção | Persona/SMTP e envio real nominal |
-| invites.detail | Link HTTPS/origem/token restritos | Flag normal aplicadaef1927f2d e5P; runtime real |
-| invites.resend | Receipt tardio após negação descartado;callback antigo não reenvia | Composição normal e envio nominal autorizado |
-| invites.revoke | Comando existente; nenhuma mutação remota | Composição normal, revogação e recarga reais |
+| invites.detail | Link HTTPS/origem/token restritos;State vinculado à revisão de autorização | Integrar sucessor444e03ccb (8P) e runtime real |
+| invites.resend | Receipt tardio/negação/revisão descartado;8P de composição | Composição normal e envio nominal autorizado |
+| invites.revoke | Diálogo removido na revisão de autorização;nenhuma mutação remota | Composição normal, revogação e recarga reais |
 | child-safety.list | Candidato held-golden adc902eaf: epochs/count;SQLv2 candidato48141c195 U43;adapter963796ddf 34P inativo | Revisar golden;replay/decisão nominal SQL interno;FEv2 não ativado |
 | child-safety.child | Contexto ausente não usa unidade alheia;read interno candidato U43;adapter estrito34P sem ativação | Replay/decisão nominal SQL interno;runtime/FEv2 não ativado |
 | child-safety.create | Candidato held-golden adc902eaf: erros e lookup assíncrono protegidos | Lookup adulto minimizado autorizado e realm interno |
