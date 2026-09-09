@@ -1,5 +1,5 @@
 {
-  "revision": 3,
+  "revision": 4,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-09T18:20:00-03:00",
+  "updatedAt": "2026-09-09T18:28:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T18:09:02-03:00",
     "measuredBy": "date no checkout integrador",
@@ -337,8 +337,8 @@
     "cloudflare": "R2, Stream e Workers de producao. Mesma regra.",
     "escalation": "Preparar o pacote ate revisavel, registrar o bloqueio nominal no proprio <grupo>.json e continuar o trabalho independente. Bloqueio remoto retem apenas a acao dependente.",
     "pendingNominalDecisions": [
-      "acessos-pessoas: replay do pacote Modelos",
-      "operacoes-sistema: replay Auditoria 145 casos (0/145)"
+      "acessos-pessoas: replay do pacote Modelos - BLOQUEADO ate o Owner voltar; entregar pacote revisavel",
+      "operacoes-sistema: replay Auditoria 145 casos (0/145) - BLOQUEADO ate o Owner voltar; entregar pacote revisavel"
     ]
   },
   "resumeMechanisms": {
@@ -349,5 +349,27 @@
     "claudeExecutorAddresses": "Fornecidos pelo Owner e verificados por envio real: as seis conversas Claude receberam ACK nominal por SendMessage em 18:18. Enderecos gravados em groups[].sessionName/sessionId para recuperacao."
   },
   "blocks": [],
-  "nextStep": "Integrar continuamente os lotes publicados por cada branch. Enquanto nenhum lote chega, o coordenador confirma acesso aos MCPs, le os tres rastreadores e prepara o ciclo de atualizacao de inventario."
+  "nextStep": "Integrar continuamente os lotes publicados por cada branch e atualizar inventario e rastreadores no mesmo ciclo. Nenhuma mutacao remota nesta rodada.",
+  "providers": {
+    "supabase": {
+      "cli": "supabase 2.117.0 autenticado; token no Credential Manager do Windows",
+      "projeto": "coelo / ref evvbomzejfijozbtgvpt, sa-east-1, Postgres 17, ACTIVE_HEALTHY, linked",
+      "workdir": "comandos exigem --workdir packages/coelo_database",
+      "acessoVerificado": "leitura (projects list) em 2026-09-09T18:25-03:00",
+      "escrita": "NAO autorizada nesta rodada"
+    },
+    "cloudflare": {
+      "mcp": "cloudflare-api (docs/search/execute), conta 2363eb1eadce9b73279d3c8ce46eb424",
+      "acessoVerificado": "leitura real: GET /r2/buckets retornou coelo-documents-prod, coelo-media-prod e coelo-transient-prod em 2026-09-09T18:27-03:00, coerente com a ADR 0032",
+      "wrangler": "4.130.0 instalado, sem credencial propria (whoami nao autenticado)",
+      "escrita": "NAO autorizada nesta rodada"
+    },
+    "segredos": "Nenhuma credencial exposta em arquivo, log ou evidencia. O MCP Cloudflare tem consentimento amplo; tratado como leitura por padrao."
+  },
+  "ownerAvailability": {
+    "estado": "AUSENTE a partir de 2026-09-09T18:26-03:00, por aviso direto do Owner ao coordenador",
+    "consequencia": "Nenhuma autorizacao nominal nova sera concedida durante a noite. Toda aplicacao remota em Supabase e Cloudflare fica BLOQUEADA ate o Owner voltar.",
+    "instrucao": "Nao esperar decisao. Preparar o pacote ate revisavel, registrar o bloqueio nominal e seguir para a proxima acao local executavel. Isso vale explicitamente para o replay do pacote Modelos (acessos-pessoas) e para o replay Auditoria 145 (operacoes-sistema), que permanecem 0/145.",
+    "ordemDoOwner": "Nao parar por nada, respeitar os horarios, publicar commits e entregar pendencias ao coordenador."
+  }
 }
