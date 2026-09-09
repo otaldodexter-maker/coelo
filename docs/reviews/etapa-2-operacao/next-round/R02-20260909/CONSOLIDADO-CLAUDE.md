@@ -1511,3 +1511,94 @@ cometi mais de uma vez hoje, estimando horários em prosa em vez de ler o
 relógio, e que também precisei corrigir. Não é um deslize de executor — é um
 hábito que aparece quando o relatório é escrito em paralelo ao trabalho, e a
 correção é a mesma nos dois casos: **ler antes de afirmar, inclusive o relógio.**
+
+---
+
+# BLOCO AUTORITATIVO DE FECHAMENTO — substitui números anteriores deste documento
+
+**Auditei o próprio consolidado e encontrei números defasados**, resultado de ter
+sido escrito por acréscimos ao longo do dia enquanto as frentes ainda produziam.
+Este bloco é o que vale; onde houver divergência com seções acima, **vale este**.
+
+## SHAs finais, verificados por L00 contra o remoto
+
+| Frente | Branch | HEAD final | Sincronizado | Stash |
+| --- | --- | --- | --- | ---: |
+| L00 | `codex/e2-r02-l00-coordenacao-claude` | ver ponta da branch | sim | 0 |
+| L01 | `codex/e2-r02-l01-publicacoes` | `80fa94750` | sim | 0 |
+| L02 | `codex/e2-r02-l02-chat-comunicacoes` | `201affd2` | sim | 0 |
+| L03 | `codex/e2-r02-l03-perfil-para-voce` | `7c30b41e2` | sim | 0 |
+
+Todas com árvore limpa **exceto as fontes compartilhadas que instruí a preservar**.
+**Nenhuma integrou `dev`.** Nenhuma aplicou nada em Supabase ou Cloudflare remoto.
+
+## Testes — última medição reportada por frente, com escopo
+
+| Frente | P | F | B | S | U | Escopo |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| L01 | ver lotes | 23 F únicas | 0 | 0 | 0 | widget/unidade em 4 lotes + 7 pgTAP + Deno |
+| L02 | 325+ | 12 | 1 | 0 | 0 | chat, notices, principal_chat, rotas de chat |
+| L03 | 225 | 10 | 0 | 0 | 0 | recorte Perfil e Para Você |
+
+**Correção da minha própria escrita:** seções acima citam L03 com **P=211** e
+**P=214**. Esses eram estados intermediários; **o último reportado é P=225**, com
+o ganho vindo das 11 provas responsivas e de acessibilidade da aba Acontece.
+L02 reportou **P=325** e depois acrescentou trabalho commitado em `14566055c`
+(20/20 em `test/features/principal_chat`), então o total final é **maior que 325**
+e eu **não o recalculei** — registro como "325+" em vez de inventar um número.
+
+**Não somei as três frentes.** As suítes se sobrepõem e o contrato proíbe.
+
+**Falhas, todas preexistentes e com controle:** 23 goldens em L01, 12 em L02
+(provadas na base limpa revertendo lib+test), 10 em L03 (reproduzidas em worktree
+alheia intocada). O **B=1** de L02 é o pgTAP, mantido bloqueado por decisão dele
+com justificativa aceita.
+
+**As ~191 falhas fora de recorte são NÃO REVALIDADAS** — não são preexistentes,
+não são de ninguém, ninguém estabeleceu baseline. Correção de L03 adotada.
+
+## FE / BE / E2E — o número que responde à pergunta da rodada
+
+| Frente | FE | BE | **E2E certificado** |
+| --- | --- | --- | ---: |
+| L01 | 6/23 | 6/23 | **0/23** |
+| L02 | 4/13 | 0/13 | **0/13** |
+| L03 | 3/3 | 0/3 | **0/3** |
+| **Grupo Claude** | — | — | **0/39** |
+
+**E2E é zero em toda leitura, e a causa não é falta de código.** É a ausência de
+autorização nominal para o pacote remoto, somada aos bloqueios de plataforma
+registrados. Nenhuma frente promoveu ação a `verified-e2e`.
+
+**Distinção que não pode se perder:** dos 17 IDs restantes de L01, **seis já
+tinham implementação antes desta rodada** — `acontece.feed`, `acontece.create`,
+`acontece.publish`, `agora.view`, `agora.create` e `agora.publish`. A pendência
+deles é de **verificação**, não de implementação. Ler "6 de 23" como "17 ações
+por construir" é **falso**.
+
+## Defeitos reais achados nesta rodada
+
+**Dezoito**, contando os nove de L03, os cinco de L01 e os quatro de L02.
+A **maioria era invisível em lote verde**. Sete corrigidos com prova em L03, os
+quatro de L01 corrigidos e verificados por mim no remoto, três de L02 corrigidos
+e um **deliberadamente não entregue por falta de prova**. Três de L03 e L02 estão
+**registrados sem correção** por serem decisão de composição aprovada ou de
+plataforma, e **todos os três estão documentados** — dois presos em teste
+executável e um com medição.
+
+## O que fica para D00 e para o Owner
+
+1. **Autorização nominal do pacote remoto** — bloco A (Postgres puro) e bloco B
+   (R2, com quatro segredos e buckets não inspecionados). O defeito de rótulos
+   **não** alcança nenhum dos dois, verificado.
+2. **Concessão das duas capacidades catalogadas** — sem elas as ações seguem
+   negadas mesmo com tudo aplicado.
+3. **A pergunta sobre a baseline das RPCs de Chat** — nunca aplicou, ou foi
+   ajustada fora do repositório? Muda a leitura de três IDs de "não certificados"
+   para "provavelmente inoperantes".
+4. **Merge**: dois pontos manuais e dois a não estragar, com blocos prontos.
+5. **Hospedagem ≠ composição**: três rotas Principal continuam mostrando
+   indisponível dentro do shell novo, e o feed misto continua sem chegar à tela.
+6. Pendências de decisão: contrato visual de Editar perfil, estreitamento de
+   escopo das publicações, desdobramento de `chat.*`, correção arquitetural do
+   badge nas 58 construções de shell, e `pg_cron` para notices.
