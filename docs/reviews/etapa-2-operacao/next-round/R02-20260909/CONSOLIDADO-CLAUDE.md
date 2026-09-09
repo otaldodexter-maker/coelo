@@ -1123,3 +1123,48 @@ Cada frente deixou escrita a lista mínima a reexecutar — L02 indicou
 `principal_chat_route_test.dart`, `chat_unread_badge_wiring_test.dart` e
 `chat_routes_test.dart`, que são os que afirmam os pontos acima e falham se a
 resolução perder algum.
+
+## pgTAP de L02 passou a executar — resultado misto, mantido bloqueado
+
+Com os ajustes de harness de L01 mais dois shims que ele próprio criou
+(`auth.users.email_confirmed_at` e a tabela `auth.sessions`), L02 conseguiu
+montar a base: replay com `check_function_bodies=off` (123/166), baseline
+`20260901101500` aplicada com os rótulos destravados **no container**,
+`not null` restaurado — e então **o pacote dele aplicou sem nenhum ajuste**.
+**Prova direta de que a correção de rótulos funciona.**
+
+**Resultado: 14 `ok`, 21 `not ok`.** Ele não maquiou.
+
+**E rodou um controle de propósito:** executou no mesmo ambiente o pgTAP
+**pré-existente** `superadmin_internal_chat_v2_test.sql`, que não é dele —
+**8 `ok`, 13 `not ok`**, mesmo padrão: estrutural e grants passam, funcional
+falha em bloco. Isso **identifica a causa**: o ambiente shimado não estabelece
+contexto interno autenticado, `require_superadmin_internal_context` nega tudo, e
+qualquer gateway falha, dele ou não. **As falhas funcionais são do harness.**
+
+**Ficou provado:** as duas funções existem com assinatura exata; `authenticated`
+invoca e `PUBLIC` não; `chat.internal.manage` existe com MFA e pertence ao
+`owner`; a trilha é RPC-only sob RLS forçada; o envelope da spec 039 é
+respeitado; e o pacote **aplica** com o `not null` ativo.
+
+**NÃO ficou provado:** nenhum comportamento de editar, revogar ou projetar recibo.
+
+**Ele manteve o `B=1` bloqueado**, e a justificativa é exatamente certa: verde
+nesse ambiente não valeria, e o vermelho não condena o pacote. Um assert ele se
+recusou a classificar como harness sem verificar — `not ok 3`, `has_table` da
+trilha de edição, que pode ser qualificação de schema no teste.
+
+Rodar um controle com teste alheio para separar falha de produto de falha de
+ambiente é o método correto e vale registrar como padrão para a Etapa 2.
+
+## Nono achado de L03 — acessibilidade, encontrado ao escrever a cobertura
+
+A aba Acontece ganhou 11 provas responsivas e de acessibilidade, e escrevê-las
+achou o defeito: o card de publicação **não tinha `explicitChildNodes`**, então o
+leitor de tela anunciava autor, contexto, corpo e métricas como **um bloco único**
+em vez de permitir navegar entre eles. Corrigido em `0128ab8e0`.
+
+É a segunda vez no dia que **escrever a prova que faltava** produz um defeito,
+e vale como método: ausência de cobertura não é estado neutro.
+
+Diff acumulado de L03 conferido depois de tudo: **35 arquivos**, zero resíduo.
