@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { win32 } from "node:path";
 import {
+  PACKAGE,
   PackageError,
   type Plan,
   planPersonas,
@@ -15,6 +16,7 @@ import {
   type LocalSqlProcessResult,
   type LocalSqlRuntime,
 } from "./e2-r01-auth-personas-local-sql.ts";
+import { nominalBanSql } from "./e2-r01-auth-personas-ban-proof.ts";
 
 // Controlled runtime contract only. No Docker, database or network is exercised.
 // Canonical psql output fixtures express the protocol, not an observed runtime
@@ -623,4 +625,288 @@ Deno.test("local SQL prevents overlapping executions and permits a later explici
     2,
     "explicit new call, never an automatic retry",
   );
+});
+
+const correlation = "66666666-6666-4666-8666-666666666666";
+const nextCorrelation = "77777777-7777-4777-8777-777777777777";
+const apiConfig =
+  "[api]\nenabled = true\nport = 54321\n[api.tls]\nenabled = false\n";
+function banRuntime(c: LocalSqlContext, api = apiConfig) {
+  const runtime = new Runtime(c);
+  const configPath = key(
+    win32.join(c.local.projectRoot, "supabase", "config.toml"),
+  );
+  runtime.files.set(configPath, runtime.files.get(configPath)! + api);
+  runtime.output.stdout = banOutput(banPayload(c.plan));
+  return runtime;
+}
+function banPayload(p: Plan, index = 0, requestCorrelation = correlation) {
+  const persona = p.personas[index];
+  return {
+    planId: p.id,
+    authUserId: persona.authUserId,
+    correlation: requestCorrelation,
+    email: persona.email,
+    package: PACKAGE,
+    persona: persona.persona,
+    planMarker: p.id,
+    bannedUntil: "2026-09-08T23:00:00.123457Z" as string | null,
+    observedAt: "2026-09-08T23:00:00.123456Z",
+    isBanned: true,
+  };
+}
+function banOutput(proof: unknown) {
+  return `BEGIN\n${JSON.stringify(proof)}\nCOMMIT\n`;
+}
+function banRequest(p: Plan, index = 0, requestCorrelation = correlation) {
+  const authUserId = p.personas[index].authUserId;
+  return {
+    planId: p.id,
+    authUserId,
+    correlation: requestCorrelation,
+    sql: nominalBanSql(p, authUserId, requestCorrelation),
+  };
+}
+
+Deno.test("local ban returns one bound proof for each nominal AuthID using the configured local Auth URL", async () => {
+  const c = context();
+  const runtime = banRuntime(c);
+  const executor = await localPersonaSqlExecutor(c, runtime);
+  const authUrl = "http://127.0.0.1:54321/auth/v1";
+  assert.equal(executor.localAuthUrl, authUrl);
+  for (let index = 0; index < c.plan.personas.length; index++) {
+    const proof = banPayload(c.plan, index);
+    if (index % 2 === 1) {
+      proof.bannedUntil = null;
+      proof.isBanned = false;
+    }
+    runtime.output.stdout = banOutput(proof);
+    const input = banRequest(c.plan, index);
+    const result = await executor.readBan(input);
+    assert.deepEqual(result, {
+      environment: { kind: "local", projectId, containerId },
+      authUrl,
+      completed: true,
+      rows: [proof],
+    });
+    assert(!Object.hasOwn(result, "projectRef"));
+    assert.equal(runtime.sqlCalls.at(-1)?.stdin, input.sql);
+    assert(runtime.sqlCalls.at(-1)?.args.includes("PGHOSTADDR="));
+    assert(!runtime.sqlCalls.at(-1)?.args.includes(input.sql));
+  }
+  assert.equal(runtime.sqlCalls.length, 5);
+});
+
+Deno.test("local ban requires an unambiguous enabled HTTP API while old verification does not", async () => {
+  for (
+    const config of [
+      "",
+      apiConfig.replace("enabled = true", "enabled = false"),
+      apiConfig.replace("port = 54321\n", ""),
+      apiConfig.replace("port = 54321", "port = 0"),
+      apiConfig.replace("port = 54321", "port = 65536"),
+      apiConfig.replace("port = 54321", 'port = "54321"'),
+      apiConfig.replace("port = 54321", "port = 54321\nport = 54322"),
+      apiConfig.replace("enabled = false", "enabled = true"),
+      apiConfig.replace("[api.tls]\nenabled = false\n", ""),
+    ]
+  ) {
+    const c = context();
+    const runtime = banRuntime(c, config);
+    const executor = await localPersonaSqlExecutor(c, runtime);
+    assert.equal(executor.localAuthUrl, undefined);
+    await sanitizedFailure(() => executor.readBan(banRequest(c.plan)));
+    assert.equal(runtime.sqlCalls.length, 0);
+    runtime.output.stdout = verifyOutput(c.plan, "active");
+    assert.equal((await executor.execute(request(c.plan))).completed, true);
+    assert.equal(runtime.sqlCalls.length, 1);
+  }
+});
+
+Deno.test("local ban rejects foreign IDs, correlations and noncanonical SQL before execution", async () => {
+  const c = context();
+  const runtime = banRuntime(c);
+  const executor = await localPersonaSqlExecutor(c, runtime);
+  const valid = banRequest(c.plan);
+  const wrongId = "88888888-8888-4888-8888-888888888888";
+  for (
+    const input of [
+      { ...valid, planId: wrongId },
+      { ...valid, authUserId: wrongId },
+      { ...valid, authUserId: c.plan.personas[1].authUserId },
+      { ...valid, correlation: "not-a-uuid" },
+      { ...valid, correlation: nextCorrelation },
+      { ...valid, sql: valid.sql + "select 1;" },
+      { ...valid, sql: privateVerifySql(c.plan, "active") },
+      { ...valid, sql: valid.sql.replace("begin read only;", "begin;") },
+      { ...valid, extra: true },
+    ]
+  ) {
+    await sanitizedFailure(() => executor.readBan(input));
+  }
+  await sanitizedFailure(() =>
+    executor.execute({
+      planId: c.plan.id,
+      kind: "verify",
+      sql: valid.sql,
+    })
+  );
+  assert.equal(runtime.sqlCalls.length, 0);
+});
+
+Deno.test("local ban requires exactly one complete proof and rejects framing, duplicate keys and process errors", async () => {
+  const c = context();
+  const runtime = banRuntime(c);
+  const executor = await localPersonaSqlExecutor(c, runtime);
+  const proof = banPayload(c.plan);
+  const valid = banOutput(proof);
+  const invalid = [
+    "BEGIN\nCOMMIT\n",
+    "BEGIN\n\nCOMMIT\n",
+    `BEGIN\n${JSON.stringify(proof)}\n${JSON.stringify(proof)}\nCOMMIT\n`,
+    valid.replace("COMMIT\n", ""),
+    valid.replace("COMMIT", "ROLLBACK"),
+    valid + "extra\n",
+    valid.slice(0, -1),
+    "\ufeff" + valid,
+    `BEGIN\n${JSON.stringify(proof, null, 2)}\nCOMMIT\n`,
+    valid.replace('"correlation":', '"correlation":"other","correlation":'),
+    valid.replace(
+      '"correlation":',
+      '"correlat\\u0069on":"other","correlation":',
+    ),
+  ];
+  for (const stdout of invalid) {
+    runtime.output.stdout = stdout;
+    await sanitizedFailure(() => executor.readBan(banRequest(c.plan)));
+  }
+  assert.equal(runtime.sqlCalls.length, invalid.length);
+  runtime.output.stdout = valid;
+  for (
+    const output of [
+      { code: 1, stdout: valid, stderr: "" },
+      { code: 0, stdout: valid, stderr: "synthetic-private-secret late error" },
+    ]
+  ) {
+    runtime.output = output;
+    await sanitizedFailure(() => executor.readBan(banRequest(c.plan)));
+  }
+  assert.equal(runtime.sqlCalls.length, invalid.length + 2);
+});
+
+Deno.test("local ban validates identity, explicit null and microsecond boolean consistency in the transport", async () => {
+  const c = context();
+  const runtime = banRuntime(c);
+  const executor = await localPersonaSqlExecutor(c, runtime);
+  const proof = banPayload(c.plan);
+  const omitted: Record<string, unknown> = { ...proof };
+  delete omitted.bannedUntil;
+  for (
+    const invalid of [
+      { ...proof, planId: nextCorrelation },
+      { ...proof, authUserId: c.plan.personas[1].authUserId },
+      { ...proof, correlation: nextCorrelation },
+      { ...proof, email: c.plan.personas[1].email },
+      { ...proof, package: "other" },
+      { ...proof, persona: "op-b" },
+      { ...proof, planMarker: nextCorrelation },
+      { ...proof, isBanned: "true" },
+      { ...proof, isBanned: false },
+      { ...proof, bannedUntil: null },
+      { ...proof, bannedUntil: proof.observedAt },
+      { ...proof, observedAt: "2026-09-08T23:00:00.123456+00:00" },
+      { ...proof, observedAt: "2026-02-30T23:00:00.123456Z" },
+      { ...proof, extra: true },
+      omitted,
+      null,
+      [proof],
+    ]
+  ) {
+    runtime.output.stdout = banOutput(invalid);
+    await sanitizedFailure(() => executor.readBan(banRequest(c.plan)));
+  }
+  for (
+    const bannedUntil of [null, proof.observedAt, "2026-09-08T23:00:00.123455Z"]
+  ) {
+    const valid = { ...proof, bannedUntil, isBanned: false };
+    runtime.output.stdout = banOutput(valid);
+    assert.deepEqual((await executor.readBan(banRequest(c.plan))).rows, [
+      valid,
+    ]);
+  }
+});
+
+Deno.test("local ban rechecks local identity and API config before and after its subprocess", async () => {
+  for (const phase of ["before", "during"] as const) {
+    for (const target of ["config", "marker", "root"] as const) {
+      const c = context();
+      const runtime = banRuntime(c);
+      const executor = await localPersonaSqlExecutor(c, runtime);
+      const change = () => {
+        if (target === "config") {
+          const configPath = key(
+            win32.join(c.local.projectRoot, "supabase", "config.toml"),
+          );
+          runtime.files.set(
+            configPath,
+            runtime.files.get(configPath)!.replace("54321", "54323"),
+          );
+        } else if (target === "marker") {
+          runtime.files.set(
+            key(win32.join(c.local.projectRoot, ".coelo-safe-replay")),
+            "other",
+          );
+        } else {
+          runtime.paths.set(key(c.local.projectRoot), "C:\\foreign");
+        }
+      };
+      if (phase === "before") change();
+      else runtime.afterSql = change;
+      await sanitizedFailure(() => executor.readBan(banRequest(c.plan)));
+      assert.equal(runtime.sqlCalls.length, phase === "before" ? 0 : 1);
+    }
+  }
+});
+
+Deno.test("local ban refuses request identity or SQL changed while its subprocess is pending", async () => {
+  for (const field of ["planId", "authUserId", "correlation", "sql"] as const) {
+    const c = context();
+    const runtime = banRuntime(c);
+    const executor = await localPersonaSqlExecutor(c, runtime);
+    const input = banRequest(c.plan);
+    runtime.afterSql = () => {
+      input[field] = "synthetic-private-secret changed";
+    };
+    await sanitizedFailure(() => executor.readBan(input));
+    assert.equal(runtime.sqlCalls.length, 1);
+  }
+});
+
+Deno.test("local ban shares the execution lock and allows only an explicit fresh reconciliation after response loss", async () => {
+  const c = context();
+  const runtime = banRuntime(c);
+  const executor = await localPersonaSqlExecutor(c, runtime);
+  const released = Promise.withResolvers<LocalSqlProcessResult>();
+  const entered = Promise.withResolvers<void>();
+  runtime.deferred = released.promise;
+  runtime.afterSql = () => entered.resolve();
+  const pending = executor.readBan(banRequest(c.plan));
+  const failed = sanitizedFailure(() => pending);
+  await entered.promise;
+  await sanitizedFailure(() =>
+    executor.readBan(banRequest(c.plan, 0, nextCorrelation))
+  );
+  await sanitizedFailure(() => executor.execute(request(c.plan)));
+  assert.equal(runtime.sqlCalls.length, 1);
+  released.reject(new Error("synthetic-private-secret response lost"));
+  await failed;
+  runtime.deferred = undefined;
+  runtime.afterSql = undefined;
+  const proof = banPayload(c.plan, 0, nextCorrelation);
+  runtime.output.stdout = banOutput(proof);
+  assert.deepEqual(
+    (await executor.readBan(banRequest(c.plan, 0, nextCorrelation))).rows,
+    [proof],
+  );
+  assert.equal(runtime.sqlCalls.length, 2);
 });

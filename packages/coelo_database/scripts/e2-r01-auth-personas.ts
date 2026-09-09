@@ -2,6 +2,7 @@
 // Auth creation uses the existing Supabase SDK. Private bindings require a
 // separately reviewed PostgreSQL adapter: service_role has no table grants.
 import type { SupabaseClient, User } from "@supabase/supabase-js";
+import type { LocalBanProofReader } from "./e2-r01-auth-personas-ban-proof.ts";
 
 export const PACKAGE = "C01-AUTH-PERSONAS-v1";
 export const DENIED_PERMISSION = "institution.update";
@@ -487,7 +488,117 @@ export async function revokeScenario(
 
 export function sdkAuthAdapter(
   client: Pick<SupabaseClient, "auth">,
+  options?: { plan: Plan; localBanReader: LocalBanProofReader },
 ): AuthAdapter {
+  // A configured URL binds the intended local endpoint, not a running listener.
+  // C00 must separately qualify API/container correspondence in its live lease.
+  const local = options === undefined ? undefined : (() => {
+    try {
+      const sourcePlan = options.plan;
+      const plan = structuredClone(sourcePlan);
+      validatePlan(plan);
+      const fingerprint = JSON.stringify(plan);
+      const reader = options.localBanReader;
+      const environment = reader.environment;
+      const environmentFingerprint = JSON.stringify(environment);
+      const authUrl = reader.authUrl;
+      requireValue(
+        Object.isFrozen(environment) && environment.kind === "local" &&
+          /^coelo_safe_[0-9a-f]{29}$/.test(environment.projectId) &&
+          /^[0-9a-f]{64}$/.test(environment.containerId),
+        "AUTH_LOCAL_BINDING_INVALID",
+      );
+      const canonicalAuthUrl = (value: unknown): string => {
+        requireValue(
+          typeof value === "string" &&
+            /^http:\/\/127\.0\.0\.1(?::[1-9][0-9]{0,4})?\/auth\/v1$/.test(
+              value,
+            ),
+          "AUTH_LOCAL_BINDING_INVALID",
+        );
+        const url = new URL(value);
+        requireValue(
+          Number(url.port || "80") <= 65535,
+          "AUTH_LOCAL_BINDING_INVALID",
+        );
+        return url.href;
+      };
+      const auth = client.auth;
+      const admin = auth.admin;
+      // The SDK normalizes :80 away. Compare destinations once, then pin each
+      // raw property so later endpoint mutations cannot hide behind normalization.
+      const authRawUrl = Reflect.get(auth, "url");
+      const adminRawUrl = Reflect.get(admin, "url");
+      const canonicalUrl = canonicalAuthUrl(authUrl);
+      requireValue(
+        canonicalAuthUrl(authRawUrl) === canonicalUrl &&
+          canonicalAuthUrl(adminRawUrl) === canonicalUrl,
+        "AUTH_LOCAL_BINDING_INVALID",
+      );
+      const authFetch = Reflect.get(auth, "fetch");
+      const adminFetch = Reflect.get(admin, "fetch");
+      const read = reader.read;
+      const assertBinding = () => {
+        try {
+          requireValue(
+            options.plan === sourcePlan &&
+              JSON.stringify(sourcePlan) === fingerprint &&
+              options.localBanReader === reader &&
+              reader.environment === environment &&
+              JSON.stringify(environment) === environmentFingerprint &&
+              reader.authUrl === authUrl &&
+              reader.read === read && typeof read === "function" &&
+              client.auth === auth && auth.admin === admin &&
+              Reflect.get(auth, "url") === authRawUrl &&
+              Reflect.get(admin, "url") === adminRawUrl &&
+              Reflect.get(auth, "fetch") === authFetch &&
+              typeof authFetch === "function" &&
+              Reflect.get(admin, "fetch") === adminFetch &&
+              typeof adminFetch === "function",
+            "AUTH_LOCAL_BINDING_INVALID",
+          );
+        } catch (_) {
+          throw new PackageError("AUTH_LOCAL_BINDING_INVALID");
+        }
+      };
+      assertBinding();
+      return { plan, reader, assertBinding };
+    } catch (_) {
+      throw new PackageError("AUTH_LOCAL_BINDING_INVALID");
+    }
+  })();
+  const nominalPersona = (id: string) => {
+    local?.assertBinding();
+    const item = local?.plan.personas.find((item) => item.authUserId === id);
+    requireValue(!local || item !== undefined, "AUTH_LOCAL_ID_INVALID");
+    return item;
+  };
+  const localProof = async (
+    id: string,
+    banned: boolean,
+    code: string,
+  ): Promise<AuthRecord> => {
+    const item = nominalPersona(id);
+    requireValue(local && item, code);
+    const proof = await guarded(() => local.reader.read(id), code);
+    local.assertBinding();
+    requireValue(
+      proof && proof.authUserId === id && proof.planId === local.plan.id &&
+        proof.email === item.email && proof.package === PACKAGE &&
+        proof.persona === item.persona && proof.planMarker === local.plan.id &&
+        proof.isBanned === banned && Object.hasOwn(proof, "bannedUntil") &&
+        (proof.bannedUntil === null || typeof proof.bannedUntil === "string"),
+      code,
+    );
+    // The reader validates freshness/correlation and server-clock ban semantics.
+    // Do not compare its microsecond timestamp with this machine's clock.
+    return {
+      id,
+      email: proof.email,
+      appMetadata: metadata(local.plan, item),
+      bannedUntil: proof.bannedUntil,
+    };
+  };
   // The pinned SDK User type omits this Admin response field. Preserve its
   // runtime value without treating a missing field as an explicit unban.
   const bannedUntil = (user: User): unknown =>
@@ -495,6 +606,9 @@ export function sdkAuthAdapter(
   const hasBanState = (user: User, banned: boolean): boolean => {
     const until = bannedUntil(user);
     if (until === null) return !banned;
+    // With a local reader, timestamps need its server clock (including
+    // microseconds). The SDK alone has no authoritative observation time.
+    if (local) return false;
     if (
       typeof until !== "string" ||
       !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/
@@ -512,30 +626,48 @@ export function sdkAuthAdapter(
       ? { bannedUntil: bannedUntil(user) as string | null }
       : {}),
   });
+  const matchesNominal = (user: User, id: string): boolean => {
+    if (!local) return true;
+    const item = local.plan.personas.find((item) => item.authUserId === id);
+    return item !== undefined && user.id === id &&
+      user.email?.toLowerCase() === item.email &&
+      Object.entries(metadata(local.plan, item)).every(([key, value]) =>
+        user.app_metadata?.[key] === value
+      );
+  };
   const readBack = async (
     id: string,
     confirms: (user: User) => boolean,
     code: string,
   ): Promise<User> => {
+    local?.assertBinding();
     const { data, error } = await guarded(
       () => client.auth.admin.getUserById(id),
       code,
     );
+    local?.assertBinding();
     requireValue(!error && data.user?.id === id && confirms(data.user), code);
     return data.user;
   };
   return {
     async inspect(plan) {
+      local?.assertBinding();
+      requireValue(
+        !local || JSON.stringify(plan) === JSON.stringify(local.plan),
+        "AUTH_LOCAL_BINDING_INVALID",
+      );
+      const inspectionPlan = local?.plan ?? plan;
       const found: AuthRecord[] = [];
       for (let page = 1; page <= 1000; page++) {
         const { data, error } = await client.auth.admin.listUsers({
           page,
           perPage: 100,
         });
+        local?.assertBinding();
         if (error) throw new PackageError("AUTH_CATALOG_UNAVAILABLE");
         found.push(
           ...data.users.filter((user) =>
-            plan.personas.some((item) =>
+            inspectionPlan.personas.some((item) =>
               user.id === item.authUserId ||
               user.email?.toLowerCase() === item.email
             )
@@ -546,6 +678,18 @@ export function sdkAuthAdapter(
       throw new PackageError("AUTH_CATALOG_LIMIT_REQUIRES_REVIEW");
     },
     async create(input) {
+      const item = nominalPersona(input.id);
+      if (local && item) {
+        input = structuredClone(input);
+        requireValue(
+          input.email === item.email &&
+            Object.keys(input.appMetadata).length === 3 &&
+            Object.entries(metadata(local.plan, item)).every(([key, value]) =>
+              input.appMetadata[key] === value
+            ),
+          "AUTH_LOCAL_ID_INVALID",
+        );
+      }
       const confirms = (user: User) =>
         user.id === input.id && user.email?.toLowerCase() === input.email &&
         Object.entries(input.appMetadata).every(([key, value]) =>
@@ -560,22 +704,44 @@ export function sdkAuthAdapter(
           ban_duration: "876000h",
           app_metadata: input.appMetadata,
         });
+        local?.assertBinding();
         if (!error && data.user && confirms(data.user)) {
           return record(data.user);
         }
       } catch (_) {
         // A lost response does not authorize another create. Read the exact ID.
       }
-      return record(
-        await readBack(input.id, confirms, "AUTH_CREATE_UNCONFIRMED"),
+      local?.assertBinding();
+      try {
+        const user = await readBack(
+          input.id,
+          confirms,
+          "AUTH_CREATE_UNCONFIRMED",
+        );
+        local?.assertBinding();
+        return record(user);
+      } catch (_) {
+        if (!local) throw new PackageError("AUTH_CREATE_UNCONFIRMED");
+      }
+      const proven = await localProof(
+        input.id,
+        true,
+        "AUTH_CREATE_UNCONFIRMED",
       );
+      local?.assertBinding();
+      return proven;
     },
     async setBanned(id, banned) {
+      nominalPersona(id);
       try {
         const { data, error } = await client.auth.admin.updateUserById(id, {
           ban_duration: banned ? "876000h" : "none",
         });
-        if (!error && data.user?.id === id && hasBanState(data.user, banned)) {
+        local?.assertBinding();
+        if (
+          !error && data.user?.id === id && matchesNominal(data.user, id) &&
+          hasBanState(data.user, banned)
+        ) {
           return;
         }
       } catch (_) {
@@ -583,11 +749,20 @@ export function sdkAuthAdapter(
       }
       // GoTrue can omit banned_until for nil. Absence remains inconclusive;
       // C00 must obtain separate authoritative proof for that serialization.
-      await readBack(
-        id,
-        (user) => hasBanState(user, banned),
-        "AUTH_STATUS_UNCONFIRMED",
-      );
+      local?.assertBinding();
+      try {
+        await readBack(
+          id,
+          (user) => matchesNominal(user, id) && hasBanState(user, banned),
+          "AUTH_STATUS_UNCONFIRMED",
+        );
+        local?.assertBinding();
+        return;
+      } catch (_) {
+        if (!local) throw new PackageError("AUTH_STATUS_UNCONFIRMED");
+      }
+      await localProof(id, banned, "AUTH_STATUS_UNCONFIRMED");
+      local?.assertBinding();
     },
   };
 }
