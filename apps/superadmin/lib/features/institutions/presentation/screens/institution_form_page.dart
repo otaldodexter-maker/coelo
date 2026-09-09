@@ -183,7 +183,7 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
     } on InstitutionDirectoryValidationException catch (error) {
       fail(error.message);
     } on InstitutionDirectoryUnsupportedRelationException {
-      fail('Representantes e administradores ainda não podem ser salvos neste fluxo.');
+      fail('Alguns campos ou vínculos alterados ainda não podem ser salvos neste fluxo.');
     } on InstitutionDirectoryUnavailableException {
       fail('Não foi possível conectar ao serviço. Tente novamente.');
     } catch (_) {

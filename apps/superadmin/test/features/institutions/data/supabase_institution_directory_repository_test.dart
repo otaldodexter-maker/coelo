@@ -11,6 +11,113 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  for (final (field, draft) in <(String, InstitutionRecord)>[
+    ('documentType', _draft().copyWith(documentType: 'sentinel-documentType')),
+    ('document', _draft().copyWith(document: 'sentinel-document')),
+    ('slug', _draft().copyWith(slug: 'sentinel-slug')),
+    ('primaryDomain', _draft().copyWith(primaryDomain: 'sentinel-primaryDomain')),
+    ('contactPhone', _draft().copyWith(contactPhone: 'sentinel-contactPhone')),
+    ('contactMobilePhone', _draft().copyWith(contactMobilePhone: 'sentinel-contactMobilePhone')),
+    ('websiteUrl', _draft().copyWith(websiteUrl: 'sentinel-websiteUrl')),
+    ('whatsappNumber', _draft().copyWith(whatsappNumber: 'sentinel-whatsappNumber')),
+    ('ownerFirstName', _draft().copyWith(ownerFirstName: 'sentinel-ownerFirstName')),
+    ('ownerLastName', _draft().copyWith(ownerLastName: 'sentinel-ownerLastName')),
+    ('ownerDisplayName', _draft().copyWith(ownerDisplayName: 'sentinel-ownerDisplayName')),
+    ('ownerEmail', _draft().copyWith(ownerEmail: 'sentinel-ownerEmail')),
+    ('ownerMobilePhone', _draft().copyWith(ownerMobilePhone: 'sentinel-ownerMobilePhone')),
+    ('brandDisplayName', _draft().copyWith(brandDisplayName: 'sentinel-brandDisplayName')),
+    ('profileBio', _draft().copyWith(profileBio: 'sentinel-profileBio')),
+    ('accentColor', _draft().copyWith(accentColor: 'sentinel-accentColor')),
+    ('secondaryColor', _draft().copyWith(secondaryColor: 'sentinel-secondaryColor')),
+    ('tertiaryColor', _draft().copyWith(tertiaryColor: 'sentinel-tertiaryColor')),
+    ('textColor', _draft().copyWith(textColor: 'sentinel-textColor')),
+    ('secondaryTextColor', _draft().copyWith(secondaryTextColor: 'sentinel-secondaryTextColor')),
+    ('tertiaryTextColor', _draft().copyWith(tertiaryTextColor: 'sentinel-tertiaryTextColor')),
+    ('surfaceColor', _draft().copyWith(surfaceColor: 'sentinel-surfaceColor')),
+    (
+      'subscriptionJustification',
+      _draft().copyWith(subscriptionJustification: 'sentinel-subscriptionJustification'),
+    ),
+    ('typeName', _draft().copyWith(typeName: 'sentinel-typeName')),
+  ]) {
+    test('rejects unsupported $field without a partial write', () async {
+      var writes = 0;
+      final repository = _repository((request) async {
+        if (request.url.pathSegments.contains('superadmin_institution_edit_core_v2')) {
+          writes++;
+          return _json(request, _ok({'institution_id': 'institution-1', 'management_version': 8}));
+        }
+        return _json(request, _ok(_detailRow()));
+      });
+      await expectLater(
+        repository.update(draft, expectedVersion: 7),
+        throwsA(isA<InstitutionDirectoryUnsupportedRelationException>()),
+      );
+      expect(writes, 0);
+    });
+  }
+
+  test('retry does not discard a newly changed type label', () async {
+    var writes = 0;
+    final repository = _repository((request) async {
+      if (request.url.pathSegments.contains('superadmin_institution_edit_core_v2')) {
+        writes++;
+        throw ClientException('response lost');
+      }
+      return _json(request, _ok(_detailRow()));
+    });
+    await expectLater(
+      repository.update(_draft(), expectedVersion: 7),
+      throwsA(isA<InstitutionDirectoryUnavailableException>()),
+    );
+    await expectLater(
+      repository.update(_draft().copyWith(typeName: 'Changed'), expectedVersion: 7),
+      throwsA(isA<InstitutionDirectoryUnsupportedRelationException>()),
+    );
+    expect(writes, 1);
+  });
+
+  test('does not discard contact edits while reporting core save success', () async {
+    var writes = 0;
+    final repository = _repository((request) async {
+      if (request.url.pathSegments.contains('superadmin_institution_edit_core_v2')) {
+        writes++;
+        return _json(request, _ok({'institution_id': 'institution-1', 'management_version': 8}));
+      }
+      return _json(request, _ok(_detailRow()));
+    });
+
+    await expectLater(
+      repository.update(
+        _draft().copyWith(contactEmail: 'changed@example.test'),
+        expectedVersion: 7,
+      ),
+      throwsA(isA<InstitutionDirectoryUnsupportedRelationException>()),
+    );
+    expect(writes, 0);
+  });
+
+  test('keeps existing non-core values while editing approved core fields', () async {
+    var writes = 0;
+    final row = {
+      ..._detailRow(),
+      'contact': {'email': 'existing@example.test'},
+      'branding': {'display_name': 'Marca existente', 'profile_bio': 'Bio existente'},
+    };
+    final repository = _repository((request) async {
+      if (request.url.pathSegments.contains('superadmin_institution_edit_core_v2')) {
+        writes++;
+        return _json(request, _ok({'institution_id': 'institution-1', 'management_version': 8}));
+      }
+      return _json(request, _ok({...row, 'management_version': writes == 0 ? 7 : 8}));
+    });
+    final draft = InstitutionRecord.fromRpcPayload(row).copyWith(legalName: 'Novo nome legal');
+    final saved = await repository.update(draft, expectedVersion: 7);
+    expect(writes, 1);
+    expect(saved.contactEmail, 'existing@example.test');
+    expect(saved.profileBio, 'Bio existente');
+  });
+
   test('terminal reload denial clears the pending edit request', () async {
     final requestIds = <String>[];
     var detailCalls = 0;
@@ -19,7 +126,7 @@ void main() {
         requestIds.add((jsonDecode(request.body) as Map)['p_request_id'] as String);
         return _json(request, _ok({'institution_id': 'institution-1', 'management_version': 8}));
       }
-      if (++detailCalls == 1) {
+      if (++detailCalls == 2) {
         return _json(request, {
           'ok': false,
           'error': {'code': 'SAI_PERMISSION_DENIED'},
@@ -44,7 +151,7 @@ void main() {
         requestIds.add((jsonDecode(request.body) as Map)['p_request_id'] as String);
         return _json(request, _ok({'institution_id': 'institution-1', 'management_version': 8}));
       }
-      if (++detailCalls == 1) throw ClientException('connection interrupted');
+      if (++detailCalls == 2) throw ClientException('connection interrupted');
       return _json(request, _ok(_detailRow(version: 8)));
     });
     await expectLater(
@@ -174,8 +281,8 @@ void main() {
 
     final saved = await repository.update(_draft(), expectedVersion: 7);
 
-    expect(calls, hasLength(2));
-    final body = jsonDecode(calls.first.body) as Map<String, dynamic>;
+    expect(calls, hasLength(3));
+    final body = jsonDecode(calls[1].body) as Map<String, dynamic>;
     expect(body['p_expected_version'], 7);
     final payload = Map<String, dynamic>.from(body['p_payload'] as Map);
     expect(payload.keys.toSet(), {
