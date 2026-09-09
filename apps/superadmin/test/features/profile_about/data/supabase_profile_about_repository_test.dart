@@ -323,4 +323,99 @@ void main() {
       );
     });
   });
+
+  group('leitura autorizada por RPC', () {
+    test('le a pagina, os campos e as secoes do retorno de get_profile_about', () {
+      final page = parseProfileAboutReadResponse(
+        subject: _institution,
+        response: <String, Object?>{
+          'page': <String, Object?>{
+            'id': '22222222-2222-4222-8222-222222222222',
+            'version': 7,
+            'state': 'published',
+          },
+          'fields': [
+            <String, Object?>{
+              'field_key': 'display_name',
+              'value': 'Escola Coelo',
+              'visibility': 'profile_access',
+              'origin': 'manual',
+            },
+          ],
+          'sections': [
+            <String, Object?>{
+              'id': '33333333-3333-4333-8333-333333333333',
+              'section_type': 'icon_list',
+              'title': 'Estrutura',
+              'body': '',
+              'items': ['Biblioteca'],
+              'position': 0,
+              'visibility': 'profile_access',
+              'state': 'published',
+              'origin': 'manual',
+              'revision': 3,
+            },
+          ],
+        },
+      );
+
+      expect(page, isNotNull);
+      expect(page!.version, 7);
+      expect(page.fields.single.key, ProfileAboutFieldKey.displayName);
+      expect(page.fields.single.value, 'Escola Coelo');
+      expect(page.sections.single.type, ProfileAboutSectionType.iconList);
+      expect(page.sections.single.items, ['Biblioteca']);
+      expect(page.sections.single.revision, 3);
+    });
+
+    test('pagina nula e ausencia de conteudo, nao falha nem negacao', () {
+      expect(
+        parseProfileAboutReadResponse(
+          subject: _institution,
+          response: <String, Object?>{'page': null, 'fields': [], 'sections': []},
+        ),
+        isNull,
+      );
+    });
+
+    test('retorno que nao e objeto vira FormatException, que o load traduz em Unavailable', () {
+      expect(
+        () => parseProfileAboutReadResponse(subject: _institution, response: 'nao e json'),
+        throwsA(isA<FormatException>()),
+      );
+      expect(
+        () => parseProfileAboutReadResponse(
+          subject: _institution,
+          response: <String, Object?>{'page': 'nao e objeto'},
+        ),
+        throwsA(isA<FormatException>()),
+      );
+    });
+
+    test('somente ausencia da funcao autoriza o fallback para a leitura por tabela', () {
+      // 42883 e undefined_function; PGRST202 e o cache de schema do PostgREST.
+      expect(isMissingProfileAboutReadFunction('42883', 'function does not exist'), isTrue);
+      expect(
+        isMissingProfileAboutReadFunction('PGRST202', 'Could not find the function'),
+        isTrue,
+      );
+      expect(
+        isMissingProfileAboutReadFunction(
+          null,
+          'Could not find the function public.get_profile_about',
+        ),
+        isTrue,
+      );
+    });
+
+    test('negacao nunca e confundida com ausencia da funcao', () {
+      // Assercao de seguranca do fallback: se uma negacao passasse por aqui,
+      // um grant revogado viraria select direto na tabela.
+      expect(isMissingProfileAboutReadFunction('42501', 'insufficient_privilege'), isFalse);
+      expect(isMissingProfileAboutReadFunction('PGRST301', 'jwt expired'), isFalse);
+      expect(isMissingProfileAboutReadFunction('403', 'forbidden'), isFalse);
+      expect(isMissingProfileAboutReadFunction('40001', 'version conflict'), isFalse);
+      expect(isMissingProfileAboutReadFunction(null, 'network'), isFalse);
+    });
+  });
 }
