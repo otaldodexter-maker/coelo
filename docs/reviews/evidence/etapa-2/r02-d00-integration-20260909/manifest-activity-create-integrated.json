@@ -1,0 +1,25 @@
+{
+  "source": "D00 integrated Flutter JSON reporter",
+  "revision": "839570cd7",
+  "generatedAt": "2026-09-09T15:12:55.833526-03:00",
+  "environment": "Local Flutter route/callback tests; no UI browser or backend",
+  "P": 2,
+  "F": 0,
+  "B": 0,
+  "S": 0,
+  "U": 0,
+  "exit": 0,
+  "cases": [
+    {
+      "id": "production draft create returns to the directory after the first save",
+      "result": "success"
+    },
+    {
+      "id": "development draft create returns to the directory after the first save",
+      "result": "success"
+    }
+  ],
+  "sha256": "46f50681cfa971a4271e1e68ad555fa298bf8413fe5ef64b6975b0bdbf558216",
+  "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/activity-create-839570cd7.jsonl",
+  "limit": "Two CREATE callbacks only; reused author coordinator/repository tests not recounted; not E2E"
+}

@@ -1,0 +1,49 @@
+{
+  "source": "D00 integrated machine reporter; revision identified by existing evidence filename and D00 execution record",
+  "generatedAt": "2026-09-09T15:33:29.098226-03:00",
+  "status": "focal-local-pass-not-product-completion",
+  "campaigns": [
+    {
+      "campaign_id": "R02-D00-auth-purge-retry-eb2a889d0",
+      "revision": "eb2a889d0",
+      "layer": "FE",
+      "environment": "Local Flutter tests; no browser or remote backend evidence",
+      "action_ids": [
+        "auth.recover",
+        "auth.reset"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/auth-purge-retry-eb2a889d0.jsonl",
+      "sha256": "1d3492c20a124d54679c9069b9f11808167e6dff3eb3242a736b43fdc08d174c",
+      "runnerDoneSuccess": true,
+      "runnerElapsedMilliseconds": 8125,
+      "cases": [
+        {
+          "test_id": "packages/coelo_auth/test/recovery_persistence_gateway_test.dart::recovery persistence retry: refresh retries a failed purge in the same session",
+          "package": "packages/coelo_auth",
+          "file": "packages/coelo_auth/test/recovery_persistence_gateway_test.dart",
+          "name": "recovery persistence retry: refresh retries a failed purge in the same session",
+          "result": "P"
+        }
+      ],
+      "P": 1,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    }
+  ],
+  "counts": {
+    "P": 1,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "executionWallClock": null,
+  "limits": [
+    "Reporter contains elapsed milliseconds only; no execution wall-clock time or shell exit status inferred.",
+    "Hidden loading events excluded; case identity is package/file/name.",
+    "Application FE evidence only; no whole-action FE/BE/E2E promotion.",
+    "Activity create 839570cd7 already belongs to the prior 274-case D00 baseline and is not counted again."
+  ]
+}

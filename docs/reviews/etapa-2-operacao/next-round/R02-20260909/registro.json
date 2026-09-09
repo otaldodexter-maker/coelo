@@ -7,7 +7,7 @@
   "createdAt": "2026-09-09",
   "integrationOwner": "D00",
   "observedPreparationHead": "fb2d07d34a74c91ec1f65aff361048393e590729",
-  "runtimeBaselineSha": "c5bcaf9e1fe1ad933fde9e375aa6d3d46d08d7aa",
+  "runtimeBaselineSha": "0f77c364b9c9476b69373374a3e72485eb6fd977",
   "roles": [
     {
       "id": "D00",
@@ -25,7 +25,7 @@
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo",
       "coordinator": null,
       "baselineSha": "fb2d07d34a74c91ec1f65aff361048393e590729",
-      "headSha": "c5bcaf9e1fe1ad933fde9e375aa6d3d46d08d7aa",
+      "headSha": "0f77c364b9c9476b69373374a3e72485eb6fd977",
       "plannedAssignmentPath": null,
       "assignmentPath": null,
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D00.md",
@@ -328,7 +328,7 @@
       "apps/superadmin/test/features/auth/presentation/screens/failures/superadmin_login_light_testImage.png"
     ]
   },
-  "runtimeBaselineLimit": "Reviewed source through 7271f4a39fda3ff24d4c1bf545eda290d891f8c4; focal proof manifests by actual source revision, documentation WIP identified separately. FE certificates 5/230; no BE/E2E certificate.",
+  "runtimeBaselineLimit": "Reviewed integrated source through 0f77c364b9c9476b69373374a3e72485eb6fd977; focal app/contract278P0F, SQL and infrastructure separate. FE4/230, BE0/223, E2E0/198. Source proofs use their actual recorded revisions; Owner WIP preserved.",
   "scopeRevision": "R02 Circulares r1:147 selecionados,131 MVP E2E; global230/198; Home/granularidade explícitos",
   "sharedReservations": [
     {
@@ -440,12 +440,12 @@
       4592,
       12881
     ],
-    "P": 272,
+    "P": 278,
     "F": 0,
     "B": 0,
     "S": 0,
     "U": 0,
-    "limit": "272 unique focal D00 app/contract cases, includes only two new shell cases. Infrastructure and nominal SQL separate. No global plan or action certification.",
+    "limit": "278 unique D00 focal application/contract cases; SQL/harness separate; no whole-plan certification",
     "manifests": [
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest.json",
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
@@ -453,21 +453,22 @@
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-reservations-profiles-resume.json",
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-auth-cold-integrated.json",
-      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-principal-shell.json"
+      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-principal-shell.json",
+      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-activity-create-integrated.json",
+      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-auth-purge-retry-integrated.json",
+      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-location-copy-integrated.json"
     ]
   },
   "localSqlSlot": {
     "owner": "D00",
-    "assignmentRevision": 10,
-    "status": "AuthOnly-proof6-running",
-    "next": "AuthBoundary after reviewed candidate; ActivityClock; LocationCatalogV2",
+    "status": "AuthProof third replay running after terminal-membership harness fix",
+    "sessionId": 40492,
+    "base": "0f77c364b9c9476b69373374a3e72485eb6fd977",
     "remoteMutation": false,
-    "priorCleanup": "CHILD session45062 exit0; named container/volume/network empty and TEMP absent independently confirmed",
-    "sessionId": 13406,
-    "projectId": null,
-    "base": "2de1dc1b2"
+    "priorCleanup": "LocationCatalog first replay exited1 before TAP; all coelo_safe containers/volumes/networks absent",
+    "next": "Clock corrected fixture; AMR audit successor; Catalog baseline correction"
   },
-  "checkpointAt": "2026-09-09T15:01:29.834755-03:00",
+  "checkpointAt": "2026-09-09T15:35:39.987890-03:00",
   "coordinatorResume": {
     "previousThreadId": "01a086d5-7bd9-7b12-8537-d29236b2e6ca",
     "threadId": "01a086d4-dd71-7020-a761-daecbc687813",
@@ -480,11 +481,9 @@
     "receipt": "handoffs/D00-original-transfer.md"
   },
   "browserRunner": {
-    "owner": "D00",
-    "sessionId": 8863,
+    "owner": "D01",
     "port": 8921,
-    "status": "B4; CUA inventory empty again; own server8863 stop requested with q",
-    "base": "eb0564f22566df9382b2b339ce203fd48b7e3c55",
+    "status": "Released in D00 r15 for four synthetic B4 cases; D00 server8863 Application finished observed",
     "realProvider": false
   }
 }

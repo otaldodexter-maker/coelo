@@ -1,0 +1,62 @@
+{
+  "source": "D00 integrated machine reporter; revision identified by existing evidence filename and D00 execution record",
+  "generatedAt": "2026-09-09T15:33:29.109854-03:00",
+  "status": "focal-local-pass-not-product-completion",
+  "campaigns": [
+    {
+      "campaign_id": "R02-D00-location-copy-89a29d6d9",
+      "revision": "89a29d6d9",
+      "layer": "FE",
+      "environment": "Local Flutter tests; no browser or remote backend evidence",
+      "action_ids": [
+        "locations.create-edit"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/location-copy-89a29d6d9.jsonl",
+      "sha256": "e7c654f70fb817c0d1dc977dba3cf5cf35d3d747651df34bcfd90e93413e48cf",
+      "runnerDoneSuccess": true,
+      "runnerElapsedMilliseconds": 14735,
+      "cases": [
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_copy_flow_test.dart::from the detail a copy response from context A cannot notify context B",
+          "package": "apps/superadmin",
+          "file": "apps/superadmin/test/features/locations/location_copy_flow_test.dart",
+          "name": "from the detail a copy response from context A cannot notify context B",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_copy_flow_test.dart::from the detail an in-flight copy cannot cross to a new id and revision",
+          "package": "apps/superadmin",
+          "file": "apps/superadmin/test/features/locations/location_copy_flow_test.dart",
+          "name": "from the detail an in-flight copy cannot cross to a new id and revision",
+          "result": "P"
+        },
+        {
+          "test_id": "apps/superadmin/test/features/locations/location_capability_revocation_test.dart::revocation before the first dialog frame leaves no old writer action",
+          "package": "apps/superadmin",
+          "file": "apps/superadmin/test/features/locations/location_capability_revocation_test.dart",
+          "name": "revocation before the first dialog frame leaves no old writer action",
+          "result": "P"
+        }
+      ],
+      "P": 3,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0
+    }
+  ],
+  "counts": {
+    "P": 3,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "executionWallClock": null,
+  "limits": [
+    "Reporter contains elapsed milliseconds only; no execution wall-clock time or shell exit status inferred.",
+    "Hidden loading events excluded; case identity is package/file/name.",
+    "Application FE evidence only; no whole-action FE/BE/E2E promotion.",
+    "Activity create 839570cd7 already belongs to the prior 274-case D00 baseline and is not counted again."
+  ]
+}
