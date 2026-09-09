@@ -22,8 +22,8 @@ select ok(
 );
 
 select ok(
-  (select proconfig from pg_proc where oid='public.withdraw_happens_post(uuid,uuid,bigint,text)'::regprocedure)
-    @> array['search_path='],
+  (select coalesce(proconfig,'{}'::text[]) from pg_proc where oid='public.withdraw_happens_post(uuid,uuid,bigint,text)'::regprocedure)
+    @> array['search_path=""']::text[],
   'withdrawal command pins an empty search path'
 );
 
