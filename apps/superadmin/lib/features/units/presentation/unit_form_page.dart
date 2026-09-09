@@ -72,6 +72,8 @@ final class _UnitFormPageState extends State<UnitFormPage> {
   List<InstitutionRecord> _institutions = const [];
   List<UnitFilterOption> _unitTypes = const [];
   UnitRecord? _original;
+  String? _creationId;
+  bool _creationInvalidated = false;
   UnitStatus _status = UnitStatus.draft;
   late String _typeId;
   bool _inheritPlan = true;
@@ -106,6 +108,17 @@ final class _UnitFormPageState extends State<UnitFormPage> {
     'contactPhone',
     'contactMobilePhone',
   ];
+
+  @override
+  void didUpdateWidget(covariant UnitFormPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_creationId != null &&
+        (oldWidget.locationContextRevision != widget.locationContextRevision ||
+            oldWidget.repository != widget.repository ||
+            oldWidget.unitId != widget.unitId)) {
+      _creationInvalidated = true;
+    }
+  }
 
   @override
   void initState() {
@@ -239,6 +252,10 @@ final class _UnitFormPageState extends State<UnitFormPage> {
   }
 
   Future<void> _save() async {
+    if (_creationInvalidated) {
+      _formController.setSaveError('O contexto mudou. Reabra o formulário para continuar.');
+      return;
+    }
     if (!_formController.validateForSave(
       profileFormKey: _profileFormKey,
       locationFormKey: _locationFormKey,
@@ -249,7 +266,9 @@ final class _UnitFormPageState extends State<UnitFormPage> {
     _formController.setSaveError(null);
     try {
       final type = _typeOptions.firstWhere((option) => option.id == _typeId);
-      final id = _original?.id ?? widget.repository.createId(_institution.id, _text('slug'));
+      final id =
+          _original?.id ??
+          (_creationId ??= widget.repository.createId(_institution.id, _text('slug')));
       final unit = InstitutionUnit(
         id: id,
         name: _text('name'),
@@ -296,6 +315,10 @@ final class _UnitFormPageState extends State<UnitFormPage> {
       );
       if (!mounted) return;
       _formController.setSaving(false);
+      if (_creationInvalidated) {
+        _formController.setSaveError('O contexto mudou. Reabra o formulário para continuar.');
+        return;
+      }
       _formController.markSaved();
       if (_original != null) {
         ScaffoldMessenger.of(
@@ -308,7 +331,9 @@ final class _UnitFormPageState extends State<UnitFormPage> {
       if (!mounted) return;
       _formController.setSaving(false);
       _formController.setSaveError(
-        'Não foi possível salvar a unidade. Revise os dados e tente novamente.',
+        _original == null
+            ? 'Não foi possível confirmar a criação da unidade. Tente novamente.'
+            : 'Não foi possível salvar a unidade. Revise os dados e tente novamente.',
       );
     }
   }

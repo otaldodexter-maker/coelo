@@ -15,6 +15,7 @@ final class SupabaseUnitDirectoryRepository implements UnitDirectoryRepository {
   final SupabaseClient _client;
   final Map<String, UnitRecord> _cache = {};
   final Map<String, String> _planIdsByCode = {};
+  final Map<String, ({String fingerprint, String requestId})> _pendingCreates = {};
 
   @override
   List<UnitRecord> get records => List.unmodifiable(_cache.values);
@@ -28,11 +29,24 @@ final class SupabaseUnitDirectoryRepository implements UnitDirectoryRepository {
   @override
   Future<void> upsert(UnitRecord record) async {
     final payload = _payload(record, _planIdsByCode);
+    ({String fingerprint, String requestId})? intent;
+    if (record.managementVersion == 0) {
+      final fingerprint = jsonEncode(payload);
+      intent = _pendingCreates[record.id];
+      if (intent?.fingerprint != fingerprint) {
+        // Never evict an ambiguous receipt: a retry must retain its request ID.
+        if (intent == null && _pendingCreates.length >= 64) {
+          throw const UnavailableUnitDirectoryException();
+        }
+        intent = (fingerprint: fingerprint, requestId: _uuidV4());
+        _pendingCreates[record.id] = intent;
+      }
+    }
     try {
       final response = record.managementVersion == 0
           ? await _client.rpc<Object?>(
               'create_unit_for_superadmin',
-              params: {'p_request_id': _uuidV4(), 'p_payload': payload},
+              params: {'p_request_id': intent!.requestId, 'p_payload': payload},
             )
           : await _client.rpc<Object?>(
               'update_unit_for_superadmin',
@@ -45,6 +59,9 @@ final class SupabaseUnitDirectoryRepository implements UnitDirectoryRepository {
             );
       final saved = _record(_map(response), fallbackInstitution: record.institution);
       _cache[saved.id] = saved;
+      if (intent != null && _pendingCreates[record.id] == intent) {
+        _pendingCreates.remove(record.id);
+      }
     } on PostgrestException catch (error) {
       throw _mapError(error);
     } on ClientException {
