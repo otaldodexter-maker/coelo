@@ -4,6 +4,8 @@ import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
+import 'package:coelo_superadmin/features/auth/domain/superadmin_auth_context.dart';
+import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/units/data/fake_unit_directory_repository.dart';
 import 'package:coelo_superadmin/features/units/data/unavailable_unit_composition.dart';
 import 'package:coelo_superadmin/features/units/presentation/unit_directory_page.dart';
@@ -14,6 +16,39 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 void main() {
+  for (final path in const ['/units/new', '/units/unit-1/edit']) {
+    testWidgets('remounts $path when the authorization revision changes', (tester) async {
+      final session = SuperadminSession()..authorize(_institutionAContext, sessionId: 'session-a');
+      final router = createSuperadminRouter(
+        session: session,
+        login: unavailableSuperadminLogin,
+        logout: unavailableSuperadminLogout,
+        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+        unitDirectoryRepository: FakeUnitDirectoryRepository(FakeInstitutionDirectoryRepository()),
+        enableStructureMutations: true,
+        onThemeModeChanged: (_) {},
+      );
+      addTearDown(router.dispose);
+      addTearDown(session.dispose);
+
+      router.go(path);
+      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<UnitFormPage>(find.byType(UnitFormPage)).key,
+        ValueKey(session.authorizationInvalidationRevision),
+      );
+
+      session.authorize(_institutionBContext, sessionId: 'session-a');
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.widget<UnitFormPage>(find.byType(UnitFormPage)).key,
+        ValueKey(session.authorizationInvalidationRevision),
+      );
+    });
+  }
+
   testWidgets('production unit routes receive only unavailable composition', (tester) async {
     final session = SuperadminSession()..signInForTesting();
     final router = _router(session, allowDevelopmentPreview: true);
@@ -82,6 +117,22 @@ void main() {
     expect(find.byType(UnitFormPage), findsNothing);
   });
 }
+
+const _institutionAContext = SuperadminAuthContext(
+  platformRoleCode: 'operations',
+  scopeKind: SuperadminAuthScopeKind.institution,
+  scopeInstitutionId: 'institution-a',
+  permissionCodes: {'platform.read'},
+  aal: 'aal2',
+);
+
+const _institutionBContext = SuperadminAuthContext(
+  platformRoleCode: 'operations',
+  scopeKind: SuperadminAuthScopeKind.institution,
+  scopeInstitutionId: 'institution-b',
+  permissionCodes: {'platform.read'},
+  aal: 'aal2',
+);
 
 GoRouter _router(SuperadminSession session, {required bool allowDevelopmentPreview}) {
   return createSuperadminRouter(
