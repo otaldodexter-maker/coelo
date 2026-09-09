@@ -408,17 +408,25 @@ Exception _mapEnvelope(Map<String, dynamic> error) {
 }
 
 PlatformInvitationStatus _invitationStatus(String value) => switch (value) {
+  'accepted' => PlatformInvitationStatus.accepted,
   'pending' => PlatformInvitationStatus.pending,
   'revoked' => PlatformInvitationStatus.revoked,
   'expired' => PlatformInvitationStatus.expired,
-  _ => PlatformInvitationStatus.accepted,
+  _ => throw const PlatformUserRuleException(
+    'backend',
+    'Não foi possível carregar o usuário interno.',
+  ),
 };
 
 SuperadminCredentialStatus _credentialStatus(String value) => switch (value) {
+  'active' => SuperadminCredentialStatus.active,
   'blocked' => SuperadminCredentialStatus.blocked,
   'recoveryPending' || 'recovery_pending' => SuperadminCredentialStatus.recoveryPending,
   'noAccess' || 'no_access' => SuperadminCredentialStatus.noAccess,
-  _ => SuperadminCredentialStatus.active,
+  _ => throw const PlatformUserRuleException(
+    'backend',
+    'Não foi possível carregar o usuário interno.',
+  ),
 };
 
 DateTime? _date(Object? value) => value == null ? null : DateTime.tryParse(value as String);

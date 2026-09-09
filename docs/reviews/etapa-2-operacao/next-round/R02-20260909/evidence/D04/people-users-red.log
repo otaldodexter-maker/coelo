@@ -1,0 +1,388 @@
+﻿rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub test/features/people/presentation/per ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart: legal name is optional under spec019
+00:00 +0 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart: legal name is optional under spec019 [E]
+  Instance of 'PersonFormIncompleteException'
+  dart:async                                                                                new Future.error
+  package:coelo_superadmin/features/people/presentation/person_form_view_model.dart 157:21  PersonFormViewModel.save
+  test\features\people\presentation\person_form_incomplete_save_test.dart 43:33             main.<fn>
+  
+00:10 +0 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:14 +0 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:14 +0 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart: unknown credential status is rejected instead of displayed as active or accepted [E]
+  Expected: throws <Instance of 'PlatformUserRuleException'>
+    Actual: <Instance of 'Future<PlatformUserRecord?>'>
+     Which: emitted <Instance of 'PlatformUserRecord'>
+  
+  package:matcher                                                                      expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
+  test\features\platform_users\data\supabase_platform_user_repository_test.dart 29:13  main.<fn>
+  
+00:14 +0 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:14 +0 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart: unknown invitation status is rejected instead of displayed as active or accepted [E]
+  Expected: throws <Instance of 'PlatformUserRuleException'>
+    Actual: <Instance of 'Future<PlatformUserRecord?>'>
+     Which: emitted <Instance of 'PlatformUserRecord'>
+  
+  package:matcher                                                                      expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                                    expectLater
+  test\features\platform_users\data\supabase_platform_user_repository_test.dart 29:13  main.<fn>
+  
+00:19 +0 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly 3 matching candidates
+  Actual: _TextWidgetFinder:<Found 4 widgets with text "Campo obrigatório": [
+            Text("Campo obrigatório", debugLabel: (((englishLike bodySmall
+2021).merge((((blackMountainView bodySmall).apply).apply).merge(unknown))).copyWith).merge(unknown),
+inherit: false, color: Color(alpha: 1.0000, red: 0.7059, green: 0.1373, blue: 0.0941, colorSpace:
+ColorSpace.sRGB), family: Nunito Sans, size: 12.0, weight: 400, letterSpacing: 0.0, baseline:
+alphabetic, height: 1.3x, leadingDistribution: even, decoration: Color(alpha: 1.0000, red: 0.1098,
+green: 0.1255, blue: 0.1333, colorSpace: ColorSpace.sRGB) TextDecoration.none, textAlign: start,
+overflow: ellipsis, dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+            Text("Campo obrigatório", debugLabel: (((englishLike bodySmall
+2021).merge((((blackMountainView bodySmall).apply).apply).merge(unknown))).copyWith).merge(unknown),
+inherit: false, color: Color(alpha: 1.0000, red: 0.7059, green: 0.1373, blue: 0.0941, colorSpace:
+ColorSpace.sRGB), family: Nunito Sans, size: 12.0, weight: 400, letterSpacing: 0.0, baseline:
+alphabetic, height: 1.3x, leadingDistribution: even, decoration: Color(alpha: 1.0000, red: 0.1098,
+green: 0.1255, blue: 0.1333, colorSpace: ColorSpace.sRGB) TextDecoration.none, textAlign: start,
+overflow: ellipsis, dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+            Text("Campo obrigatório", debugLabel: (((englishLike bodySmall
+2021).merge((((blackMountainView bodySmall).apply).apply).merge(unknown))).copyWith).merge(unknown),
+inherit: false, color: Color(alpha: 1.0000, red: 0.7059, green: 0.1373, blue: 0.0941, colorSpace:
+ColorSpace.sRGB), family: Nunito Sans, size: 12.0, weight: 400, letterSpacing: 0.0, baseline:
+alphabetic, height: 1.3x, leadingDistribution: even, decoration: Color(alpha: 1.0000, red: 0.1098,
+green: 0.1255, blue: 0.1333, colorSpace: ColorSpace.sRGB) TextDecoration.none, textAlign: start,
+overflow: ellipsis, dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+            Text("Campo obrigatório", debugLabel: (((englishLike bodySmall
+2021).merge((((blackMountainView bodySmall).apply).apply).merge(unknown))).copyWith).merge(unknown),
+inherit: false, color: Color(alpha: 1.0000, red: 0.7059, green: 0.1373, blue: 0.0941, colorSpace:
+ColorSpace.sRGB), family: Nunito Sans, size: 12.0, weight: 400, letterSpacing: 0.0, baseline:
+alphabetic, height: 1.3x, leadingDistribution: even, decoration: Color(alpha: 1.0000, red: 0.1098,
+green: 0.1255, blue: 0.1333, colorSpace: ColorSpace.sRGB) TextDecoration.none, textAlign: start,
+overflow: ellipsis, dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+          ]>
+   Which: is too many
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart:27:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart line 27
+The test description was:
+  optional legal name does not prevent continuing or saving a person
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:19 +0 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person [E]
+  Test failed. See exception logs above.
+  The test description was: optional legal name does not prevent continuing or saving a person
+  
+00:44 +0 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: transient editor read failure offers retry without claiming denial
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Não foi possível carregar o usuário
+interno": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart:16:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart line 16
+The test description was:
+  transient editor read failure offers retry without claiming denial
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:45 +0 -5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: transient editor read failure offers retry without claiming denial [E]
+  Test failed. See exception logs above.
+  The test description was: transient editor read failure offers retry without claiming denial
+  
+00:45 +0 -5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles unexpected error safely
+00:51 +0 -5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart: remote suspension uses honest confirmation and reloads the detail
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: no matching candidates
+  Actual: _TextContainingWidgetFinder:<Found 1 widget with text containing dados fake: [
+            Text("O acesso de Contexto A Exclusivo ficará suspenso e poderá ser reativado. Esta
+operação altera somente os dados fake desta demonstração e não executa Auth, e-mail ou persistência
+externa.", dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+          ]>
+   Which: means one was found but none were expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart:17:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart line 17
+The test description was:
+  remote suspension uses honest confirmation and reloads the detail
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:51 +0 -6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles unexpected error safely
+00:51 +0 -6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart: remote suspension uses honest confirmation and reloads the detail [E]
+  Test failed. See exception logs above.
+  The test description was: remote suspension uses honest confirmation and reloads the detail
+  
+00:58 +0 -6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart: status command handles unexpected failure
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following StateError was thrown running a test:
+Bad state: private failure
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart:34:37)
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart:29:7)
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+#9      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:189:25)
+#10     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:19)
+#12     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1941:5)
+#15     TestWidgetsFlutterBinding._runTest (package:flutter_test/src/binding.dart:1926:10)
+#16     AutomatedTestWidgetsFlutterBinding.runTest.<anonymous closure> (package:flutter_test/src/binding.dart:2489:24)
+#17     FakeAsync.run.<anonymous closure>.<anonymous closure> (package:fake_async/fake_async.dart:182:47)
+#22     withClock (package:clock/src/default.dart:52:10)
+#23     FakeAsync.run.<anonymous closure> (package:fake_async/fake_async.dart:182:15)
+#28     FakeAsync.run (package:fake_async/fake_async.dart:181:52)
+#29     AutomatedTestWidgetsFlutterBinding.runTest (package:flutter_test/src/binding.dart:2486:15)
+#30     testWidgets.<anonymous closure> (package:flutter_test/src/widget_tester.dart:184:24)
+#31     Declarer.test.<anonymous closure>.<anonymous closure> (package:test_api/src/backend/declarer.dart:253:25)
+#33     Declarer.test.<anonymous closure>.<anonymous closure> (package:test_api/src/backend/declarer.dart:252:15)
+#38     Declarer.test.<anonymous closure> (package:test_api/src/backend/declarer.dart:250:17)
+#39     Invoker._waitForOutstandingCallbacks.<anonymous closure> (package:test_api/src/backend/invoker.dart:318:17)
+#44     Invoker._waitForOutstandingCallbacks (package:test_api/src/backend/invoker.dart:314:5)
+#45     Invoker._onRun.<anonymous closure>.<anonymous closure>.<anonymous closure> (package:test_api/src/backend/invoker.dart:457:21)
+#47     Invoker._onRun.<anonymous closure>.<anonymous closure>.<anonymous closure> (package:test_api/src/backend/invoker.dart:455:15)
+#52     Invoker._onRun.<anonymous closure>.<anonymous closure> (package:test_api/src/backend/invoker.dart:445:11)
+#53     Invoker._guardIfGuarded (package:test_api/src/backend/invoker.dart:500:15)
+#54     Invoker._onRun.<anonymous closure> (package:test_api/src/backend/invoker.dart:444:9)
+#61     Invoker._onRun (package:test_api/src/backend/invoker.dart:442:11)
+#62     LiveTestController.run (package:test_api/src/backend/live_test_controller.dart:161:11)
+#63     RemoteListener._runLiveTest.<anonymous closure> (package:test_api/src/backend/remote_listener.dart:323:16)
+#68     RemoteListener._runLiveTest (package:test_api/src/backend/remote_listener.dart:322:5)
+#69     RemoteListener._serializeTest.<anonymous closure> (package:test_api/src/backend/remote_listener.dart:263:7)
+#87     _GuaranteeSink.add (package:stream_channel/src/guarantee_channel.dart:125:12)
+#88     new _MultiChannel.<anonymous closure> (package:stream_channel/src/multi_channel.dart:159:31)
+#90     CastStreamSubscription._onData (dart:_internal/async_cast.dart:95:11)
+#116    new _WebSocketImpl._fromSocket.<anonymous closure> (dart:_http/websocket_impl.dart:1252:27)
+#122    _WebSocketProtocolTransformer._messageFrameEnd (dart:_http/websocket_impl.dart:348:23)
+#123    _WebSocketProtocolTransformer.add (dart:_http/websocket_impl.dart:238:46)
+#131    _Socket._onData (dart:io-patch/socket_patch.dart:2874:41)
+#138    new _RawSocket.<anonymous closure> (dart:io-patch/socket_patch.dart:2312:31)
+#139    _NativeSocket.issueReadEvent.issue (dart:io-patch/socket_patch.dart:1647:14)
+(elided 103 frames from dart:async and package:stack_trace)
+
+The test description was:
+  status command handles unexpected failure
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:58 +0 -7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles unexpected error safely
+00:58 +0 -7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart: status command handles unexpected failure [E]
+  Test failed. See exception logs above.
+  The test description was: status command handles unexpected failure
+  
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test (but after the test had completed):
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Não foi possível confirmar a operação. Tente
+novamente.": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#0      fail (package:matcher/src/expect/expect.dart:187:31)
+#1      _expect (package:matcher/src/expect/expect.dart:182:3)
+#2      expect (package:matcher/src/expect/expect.dart:65:3)
+#3      expect (package:flutter_test/src/widget_tester.dart:473:18)
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart:44:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+════════════════════════════════════════════════════════════════════════════════════════════════════
+  Test failed. See exception logs above.
+  The test description was: status command handles unexpected failure
+  
+00:59 +0 -7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles unexpected error safely
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following StateError was thrown running a test:
+Bad state: synthetic private failure
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart:41:15)
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart:28:7)
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+#9      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:189:25)
+#10     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:19)
+#12     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1941:5)
+#15     TestWidgetsFlutterBinding._runTest (package:flutter_test/src/binding.dart:1926:10)
+#16     AutomatedTestWidgetsFlutterBinding.runTest.<anonymous closure> (package:flutter_test/src/binding.dart:2489:24)
+#17     FakeAsync.run.<anonymous closure>.<anonymous closure> (package:fake_async/fake_async.dart:182:47)
+#22     withClock (package:clock/src/default.dart:52:10)
+#23     FakeAsync.run.<anonymous closure> (package:fake_async/fake_async.dart:182:15)
+#28     FakeAsync.run (package:fake_async/fake_async.dart:181:52)
+#29     AutomatedTestWidgetsFlutterBinding.runTest (package:flutter_test/src/binding.dart:2486:15)
+#30     testWidgets.<anonymous closure> (package:flutter_test/src/widget_tester.dart:184:24)
+#31     Declarer.test.<anonymous closure>.<anonymous closure> (package:test_api/src/backend/declarer.dart:253:25)
+#33     Declarer.test.<anonymous closure>.<anonymous closure> (package:test_api/src/backend/declarer.dart:252:15)
+#38     Declarer.test.<anonymous closure> (package:test_api/src/backend/declarer.dart:250:17)
+#39     Invoker._waitForOutstandingCallbacks.<anonymous closure> (package:test_api/src/backend/invoker.dart:318:17)
+#44     Invoker._waitForOutstandingCallbacks (package:test_api/src/backend/invoker.dart:314:5)
+#45     Invoker._onRun.<anonymous closure>.<anonymous closure>.<anonymous closure> (package:test_api/src/backend/invoker.dart:457:21)
+#47     Invoker._onRun.<anonymous closure>.<anonymous closure>.<anonymous closure> (package:test_api/src/backend/invoker.dart:455:15)
+#52     Invoker._onRun.<anonymous closure>.<anonymous closure> (package:test_api/src/backend/invoker.dart:445:11)
+#53     Invoker._guardIfGuarded (package:test_api/src/backend/invoker.dart:500:15)
+#54     Invoker._onRun.<anonymous closure> (package:test_api/src/backend/invoker.dart:444:9)
+#61     Invoker._onRun (package:test_api/src/backend/invoker.dart:442:11)
+#62     LiveTestController.run (package:test_api/src/backend/live_test_controller.dart:161:11)
+#63     RemoteListener._runLiveTest.<anonymous closure> (package:test_api/src/backend/remote_listener.dart:323:16)
+#68     RemoteListener._runLiveTest (package:test_api/src/backend/remote_listener.dart:322:5)
+#69     RemoteListener._serializeTest.<anonymous closure> (package:test_api/src/backend/remote_listener.dart:263:7)
+#87     _GuaranteeSink.add (package:stream_channel/src/guarantee_channel.dart:125:12)
+#88     new _MultiChannel.<anonymous closure> (package:stream_channel/src/multi_channel.dart:159:31)
+#90     CastStreamSubscription._onData (dart:_internal/async_cast.dart:95:11)
+#116    new _WebSocketImpl._fromSocket.<anonymous closure> (dart:_http/websocket_impl.dart:1252:27)
+#122    _WebSocketProtocolTransformer._messageFrameEnd (dart:_http/websocket_impl.dart:348:23)
+#123    _WebSocketProtocolTransformer.add (dart:_http/websocket_impl.dart:238:46)
+#131    _Socket._onData (dart:io-patch/socket_patch.dart:2874:41)
+#138    new _RawSocket.<anonymous closure> (dart:io-patch/socket_patch.dart:2312:31)
+#139    _NativeSocket.issueReadEvent.issue (dart:io-patch/socket_patch.dart:1647:14)
+(elided 103 frames from dart:async and package:stack_trace)
+
+The test description was:
+  failed save handles unexpected error safely
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:59 +0 -8: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart: status command handles server denial
+00:59 +0 -8: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles unexpected error safely [E]
+  Test failed. See exception logs above.
+  The test description was: failed save handles unexpected error safely
+  
+Warning: At least one test in this suite creates an HttpClient. When running a test suite that uses
+TestWidgetsFlutterBinding, all HTTP requests will return status code 400, and no network request
+will actually be made. Any test expecting a real network connection and status code will fail.
+To test code that needs an HttpClient, provide your own HttpClient implementation to the code under
+test, so that your test can consistently provide a testable response to the code under test.
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test (but after the test had completed):
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Não foi possível salvar. Tente novamente.":
+[]>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#0      fail (package:matcher/src/expect/expect.dart:187:31)
+#1      _expect (package:matcher/src/expect/expect.dart:182:3)
+#2      expect (package:matcher/src/expect/expect.dart:65:3)
+#3      expect (package:flutter_test/src/widget_tester.dart:473:18)
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart:52:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+════════════════════════════════════════════════════════════════════════════════════════════════════
+  Test failed. See exception logs above.
+  The test description was: failed save handles unexpected error safely
+  
+01:03 +0 -8: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart: status command handles server denial
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Acesso não autorizado": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart:40:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart line 40
+The test description was:
+  status command handles server denial
+════════════════════════════════════════════════════════════════════════════════════════════════════
+01:03 +0 -9: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles revocation safely
+01:03 +0 -9: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart: status command handles server denial [E]
+  Test failed. See exception logs above.
+  The test description was: status command handles server denial
+  
+01:08 +0 -9: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles revocation safely
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Acesso não autorizado": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart:48:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart line 48
+The test description was:
+  failed save handles revocation safely
+════════════════════════════════════════════════════════════════════════════════════════════════════
+01:08 +0 -10: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles revocation safely [E]
+  Test failed. See exception logs above.
+  The test description was: failed save handles revocation safely
+  
+01:08 +0 -10: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart: legal name is optional under spec019
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart: unknown credential status is rejected instead of displayed as active or accepted
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart: unknown invitation status is rejected instead of displayed as active or accepted
+  ... and 6 more

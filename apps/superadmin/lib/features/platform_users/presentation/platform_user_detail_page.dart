@@ -184,7 +184,7 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
               padding: const EdgeInsets.all(CoeloSpacing.space6),
               child: CoeloStatePanel(
                 title: 'Não foi possível carregar o usuário interno',
-                message: 'Tente novamente. Nenhuma alteração foi realizada.',
+                message: 'Não foi possível consultar os dados. Tente novamente.',
                 icon: Icons.error_outline,
                 actionLabel: 'Tentar novamente',
                 onAction: _startLoad,
@@ -473,7 +473,9 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
         builder: (dialogContext) => CoeloAdminDialogShell(
           title: _actionLabel(action),
           body: Text(
-            '${_actionDescription(action, record.fullName)} Esta operação altera somente os dados fake desta demonstração e não executa Auth, e-mail ou persistência externa.',
+            repository.isDemo
+                ? '${_actionDescription(action, record.fullName)} Esta operação altera somente os dados fake desta demonstração e não executa Auth, e-mail ou persistência externa.'
+                : _actionDescription(action, record.fullName),
           ),
           secondaryAction: OutlinedButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
@@ -487,7 +489,9 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
                   )
                 : null,
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(negative ? 'Confirmar ação' : 'Confirmar demonstração'),
+            child: Text(
+              negative || !repository.isDemo ? 'Confirmar ação' : 'Confirmar demonstração',
+            ),
           ),
         ),
       );
@@ -505,13 +509,31 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Demonstração local: ${_actionLabel(action).toLowerCase()} registrada sem operação externa.',
+            repository.isDemo
+                ? 'Demonstração local: ${_actionLabel(action).toLowerCase()} registrada sem operação externa.'
+                : 'Operação registrada. Atualizando os dados do usuário interno.',
           ),
         ),
       );
+      if (repository is PlatformUserRemoteLoader) {
+        setState(() => _actionPending = false);
+        await _load(repository as PlatformUserRemoteLoader);
+      }
     } on PlatformUserRuleException catch (error) {
       if (!mounted || !_isCurrent(generation)) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
+      if (error.code == 'unauthorized') {
+        setState(() {
+          _loadedRecord = null;
+          _loadError = error;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
+      }
+    } on Object {
+      if (!mounted || !_isCurrent(generation)) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Não foi possível confirmar a operação. Tente novamente.')),
+      );
     } finally {
       if (_isCurrent(generation)) setState(() => _actionPending = false);
     }

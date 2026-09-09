@@ -1,0 +1,24 @@
+﻿rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub test/features/platform_users/presenta ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart
+00:00 +0: reload failure after confirmed suspension retries only the read
+00:01 +1: remote suspension uses honest confirmation and reloads the detail
+00:01 +2: status command handles unexpected failure
+00:01 +3: status command handles server denial
+00:01 +4: disposing the detail removes its dialog and preserves an unrelated dialog
+00:02 +5: context change removes the old action confirmation without sending it
+00:02 +6: revocation discards the result of an already submitted action
+00:02 +7: pending action disables another submission until completion
+00:02 +8: remote denial never renders a previously cached identity
+00:02 +9: missing read capability does not query remote detail
+00:02 +10: remote not found does not fall back to cached identity
+00:02 +11: transient failure offers retry and reauthorizes detail
+00:03 +12: late detail A cannot replace detail B after repository change
+00:03 +13: back action returns to the directory callback
+00:03 +14: authorization revision clears the detail before rendering denial
+00:04 +15: All tests passed!

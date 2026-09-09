@@ -1,0 +1,149 @@
+﻿rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub test/features/people/presentation/per ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart: a complete identity saves
+00:00 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart: legal name is optional under spec019
+00:00 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart: clearing the first name after filling it refuses with an Exception
+00:00 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart: clearing the last name after filling it refuses with an Exception
+00:00 +4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart: clearing the display name after filling it refuses with an Exception
+00:00 +5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart: the refusal is an Exception, so an `on Exception` catch sees it
+00:00 +6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart: an incomplete save leaves nothing behind to retry against
+00:01 +7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:01 +8: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:01 +9: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:01 +10: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:01 +11: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:01 +12: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:01 +13: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:03 +14: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:03 +15: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:03 +16: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:03 +17: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:03 +18: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:03 +19: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:03 +20: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:03 +21: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:03 +22: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +23: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +24: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +25: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +26: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +27: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +28: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +29: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +30: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +31: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +32: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +33: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +34: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +35: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +36: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +37: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +38: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +39: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +40: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +41: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +42: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +43: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +44: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +45: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +46: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +47: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +48: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +49: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +50: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +51: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +52: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +53: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +54: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +55: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +56: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +57: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:04 +58: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:05 +59: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: optional legal name does not prevent continuing or saving a person
+00:06 +60: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart: remote suspension uses honest confirmation and reloads the detail
+00:07 +61: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles unexpected error safely
+00:07 +62: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles unexpected error safely
+00:07 +63: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles unexpected error safely
+00:08 +64: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles unexpected error safely
+00:08 +65: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles unexpected error safely
+00:08 +66: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles unexpected error safely
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:09 +67: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:09 +68: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:10 +69: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:10 +70: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:12 +71: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:13 +72: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:13 +73: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:13 +74: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:13 +75: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:13 +76: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:13 +77: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:14 +77: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles revocation safely
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:14 +78: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:14 +79: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:14 +80: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:14 +81: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:14 +82: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:14 +83: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: discard confirmation leaves with its form: dispose=false
+00:15 +84: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: membership cards have tokenized separation
+00:15 +85: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: membership cards have tokenized separation
+00:15 +86: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: discard confirmation leaves with its form: dispose=true
+00:16 +87: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: active credential keeps professional email read only during edit
+00:17 +88: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: active credential keeps professional email read only during edit
+00:18 +89: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: active credential keeps professional email read only during edit
+00:18 +90: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: active credential keeps professional email read only during edit
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:19 +91: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: revoke child context is semantically negative at rest hover and focus
+00:20 +92: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: revoke child context is semantically negative at rest hover and focus
+00:20 +93: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: revoking editor capability discards a pending update callback
+00:20 +94: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: revoking editor capability discards a pending update callback
+00:21 +95: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: revoking editor capability discards a pending update callback
+00:22 +96: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: revoking editor capability discards a pending update callback
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:22 +97: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: uses shared step navigation laterally from medium width
+00:23 +98: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: uses the shared compact step summary at 375
+00:23 +99: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: separates relationships from progressive institutional access context
+00:23 +100: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: context step requires explicit adult membership selections
+00:24 +101: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: edit shows auth, platform and guardian summaries as read-only
+00:24 +102: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: desktop edit uses side navigation and one-row footer like Institutions
+00:25 +103: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: service deep-link is read-only and has no save action
+00:25 +104: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: future step navigation validates identity before advancing
+00:26 +105: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: child contexts never render editable adult memberships
+00:26 +106: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_test.dart: filter option failure renders a retryable state
+00:27 +107: All tests passed!

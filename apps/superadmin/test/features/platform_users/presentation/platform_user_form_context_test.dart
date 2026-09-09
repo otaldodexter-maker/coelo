@@ -9,6 +9,61 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('transient editor read failure offers retry without claiming denial', (tester) async {
+    final repository = _Repository('A')..detailError = StateError('private read failure');
+    await tester.pumpWidget(_app(repository));
+    await tester.pumpAndSettle();
+    expect(find.text('Não foi possível carregar o usuário interno'), findsOneWidget);
+    expect(find.text('Acesso não autorizado'), findsNothing);
+    repository.detailError = null;
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pumpAndSettle();
+    expect(_firstName(tester), 'A');
+    expect(repository.detailIds, hasLength(2));
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final denied in [false, true]) {
+    testWidgets('failed save handles ${denied ? 'revocation' : 'unexpected error'} safely', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final pending = Completer<PlatformUserRecord>();
+      final repository = _Repository('A', saving: pending.future);
+      var updates = 0;
+      await tester.pumpWidget(_app(repository, onUpdated: (_) => updates++));
+      await tester.pumpAndSettle();
+      for (var step = 0; step < 3; step++) {
+        await tester.tap(find.text('Continuar'));
+        await tester.pumpAndSettle();
+      }
+      await tester.tap(find.text('Salvar alterações'));
+      await tester.pump();
+      pending.completeError(
+        denied
+            ? const PlatformUserRuleException('unauthorized', 'Acesso não autorizado.')
+            : StateError('synthetic private failure'),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(updates, 0);
+      if (denied) {
+        expect(find.text('Acesso não autorizado'), findsOneWidget);
+        expect(find.text('Salvar alterações'), findsNothing);
+        expect(find.textContaining('Sintético'), findsNothing);
+      } else {
+        expect(find.text('Não foi possível salvar. Tente novamente.'), findsOneWidget);
+        expect(
+          tester
+              .widget<FilledButton>(find.widgetWithText(FilledButton, 'Salvar alterações'))
+              .onPressed,
+          isNotNull,
+        );
+      }
+    });
+  }
+
   for (final dispose in [false, true]) {
     testWidgets('discard confirmation leaves with its form: dispose=$dispose', (tester) async {
       final repository = _Repository('A');
@@ -143,6 +198,7 @@ final class _Repository implements PlatformUserRepository, PlatformUserRemoteLoa
   final Future<PlatformUserRecord>? saving;
   var catalogReads = 0;
   var updates = 0;
+  Object? detailError;
   final detailIds = <String>[];
   @override
   bool get isDemo => false;
@@ -161,6 +217,7 @@ final class _Repository implements PlatformUserRepository, PlatformUserRemoteLoa
   @override
   Future<PlatformUserRecord?> fetchById(String id) async {
     detailIds.add(id);
+    if (detailError case final error?) throw error;
     return record;
   }
 
