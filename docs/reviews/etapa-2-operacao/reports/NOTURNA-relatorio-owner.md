@@ -44,6 +44,12 @@ A rodada somou casos que passam e **reduziu 8 falhas**. Nenhum número soma
 reexecuções. O catálogo das 182, por arquivo e por dono, está no
 [catálogo de falhas](NOTURNA-catalogo-falhas.md).
 
+O número que importa mais que o total: das 182, **144 são suítes de golden e
+apenas 38 não são**. A metade de golden depende da sua decisão de rebaseline, não
+de código. Dez das 38 foram recuperadas logo depois dessa medição, com uma linha
+por construção de router numa flag que voltou a ser necessária desde
+`b20a9c205`.
+
 ## Conclusão certificada
 
 | Camada | Antes | Agora |
