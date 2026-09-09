@@ -1,0 +1,182 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub test/features/auth/presentation/widge ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart
+00:00 +0: D01 reduced motion completes auth brand theme changes without animation
+══╡ EXCEPTION CAUGHT BY SCHEDULER LIBRARY ╞═════════════════════════════════════════════════════════
+The following message was thrown:
+D01 header pending ticker in ThemeMode.dark
+
+There were 2 transient callbacks left. The stack traces for when they were registered are as
+follows:
+── callback 3 ──
+#2      SchedulerBinding.scheduleFrameCallback (package:flutter/src/scheduler/binding.dart:617:49)
+#3      Ticker.scheduleTick (package:flutter/src/scheduler/ticker.dart:298:46)
+#4      Ticker.start (package:flutter/src/scheduler/ticker.dart:200:7)
+#5      AnimationController._startSimulation (package:flutter/src/animation/animation_controller.dart:866:42)
+#6      AnimationController._animateToInternal (package:flutter/src/animation/animation_controller.dart:687:12)
+#7      AnimationController.forward (package:flutter/src/animation/animation_controller.dart:484:12)
+#8      ImplicitlyAnimatedWidgetState.didUpdateWidget (package:flutter/src/widgets/implicit_animations.dart:404:18)
+#9      StatefulElement.update (package:flutter/src/widgets/framework.dart:5991:55)
+#10     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#11     ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#12     StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#13     Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#14     StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#15     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#16     ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#17     Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#18     ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#19     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#20     ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#21     Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#22     ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#23     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#24     ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#25     Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#26     ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#27     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#28     ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#29     StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#30     Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#31     StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#32     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#33     ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#34     Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#35     ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#36     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#37     ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#38     StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#39     Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#40     BuildScope._tryRebuild (package:flutter/src/widgets/framework.dart:2750:15)
+#41     BuildScope._flushDirtyElements (package:flutter/src/widgets/framework.dart:2807:11)
+#42     BuildOwner.buildScope (package:flutter/src/widgets/framework.dart:3111:18)
+#43     AutomatedTestWidgetsFlutterBinding.drawFrame (package:flutter_test/src/binding.dart:2431:19)
+#44     RendererBinding._handlePersistentFrameCallback (package:flutter/src/rendering/binding.dart:509:5)
+#45     SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1430:15)
+#46     SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1345:9)
+#47     AutomatedTestWidgetsFlutterBinding.pump.<anonymous closure> (package:flutter_test/src/binding.dart:2260:9)
+#50     TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#51     AutomatedTestWidgetsFlutterBinding.pump (package:flutter_test/src/binding.dart:2249:27)
+#52     WidgetTester.pumpWidget.<anonymous closure> (package:flutter_test/src/widget_tester.dart:598:22)
+#55     TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#56     WidgetTester.pumpWidget (package:flutter_test/src/widget_tester.dart:595:27)
+#57     main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart:13:20)
+<asynchronous suspension>
+#58     testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#59     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 7 frames from class _FrameCallbackEntry, dart:async, and package:stack_trace)
+── callback 4 ──
+#2      SchedulerBinding.scheduleFrameCallback (package:flutter/src/scheduler/binding.dart:617:49)
+#3      Ticker.scheduleTick (package:flutter/src/scheduler/ticker.dart:298:46)
+#4      Ticker.start (package:flutter/src/scheduler/ticker.dart:200:7)
+#5      AnimationController._startSimulation (package:flutter/src/animation/animation_controller.dart:866:42)
+#6      AnimationController._animateToInternal (package:flutter/src/animation/animation_controller.dart:687:12)
+#7      AnimationController.forward (package:flutter/src/animation/animation_controller.dart:484:12)
+#8      ImplicitlyAnimatedWidgetState.didUpdateWidget (package:flutter/src/widgets/implicit_animations.dart:404:18)
+#9      StatefulElement.update (package:flutter/src/widgets/framework.dart:5991:55)
+#10     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#11     SingleChildRenderObjectElement.update (package:flutter/src/widgets/framework.dart:7122:14)
+#12     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#13     ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#14     Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#15     ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#16     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#17     SingleChildRenderObjectElement.update (package:flutter/src/widgets/framework.dart:7122:14)
+#18     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#19     ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#20     StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#21     Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#22     StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#23     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#24     ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#25     StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#26     Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#27     StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#28     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#29     ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#30     Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#31     ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#32     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#33     ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#34     Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#35     ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#36     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#37     ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#38     Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#39     ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#40     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#41     ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#42     StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#43     Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#44     StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#45     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#46     ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#47     Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#48     ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#49     Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#50     ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#51     StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#52     Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#53     BuildScope._tryRebuild (package:flutter/src/widgets/framework.dart:2750:15)
+#54     BuildScope._flushDirtyElements (package:flutter/src/widgets/framework.dart:2807:11)
+#55     BuildOwner.buildScope (package:flutter/src/widgets/framework.dart:3111:18)
+#56     AutomatedTestWidgetsFlutterBinding.drawFrame (package:flutter_test/src/binding.dart:2431:19)
+#57     RendererBinding._handlePersistentFrameCallback (package:flutter/src/rendering/binding.dart:509:5)
+#58     SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1430:15)
+#59     SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1345:9)
+#60     AutomatedTestWidgetsFlutterBinding.pump.<anonymous closure> (package:flutter_test/src/binding.dart:2260:9)
+#63     TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#64     AutomatedTestWidgetsFlutterBinding.pump (package:flutter_test/src/binding.dart:2249:27)
+#65     WidgetTester.pumpWidget.<anonymous closure> (package:flutter_test/src/widget_tester.dart:598:22)
+#68     TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#69     WidgetTester.pumpWidget (package:flutter_test/src/widget_tester.dart:595:27)
+#70     main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart:13:20)
+<asynchronous suspension>
+#71     testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#72     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 7 frames from class _FrameCallbackEntry, dart:async, and package:stack_trace)
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: false
+  Actual: <true>
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart:35:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart line 35
+The test description was:
+  D01 reduced motion completes auth brand theme changes without animation
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following message was thrown:
+Multiple exceptions (2) were detected during the running of the current test, and at least one was
+unexpected.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:01 +0 -1: D01 reduced motion completes auth brand theme changes without animation [E]
+  Test failed. See exception logs above.
+  The test description was: D01 reduced motion completes auth brand theme changes without animation
+  
+00:01 +0 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart: D01 reduced motion completes auth brand theme changes without animation

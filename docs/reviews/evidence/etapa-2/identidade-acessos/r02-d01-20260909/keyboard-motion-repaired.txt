@@ -1,0 +1,40 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub test/features/auth/presentation/scree ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: D01 keyboard login advances to password and submits once with done
+00:01 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: D01 keyboard login follows visual focus order with Tab
+00:01 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/screens/superadmin_reset_password_screen_test.dart: D01 keyboard reset advances to confirmation and submits once with done
+00:03 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart: D01 reduced motion completes auth brand theme changes without animation
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: false
+  Actual: <true>
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart:34:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart line 34
+The test description was:
+  D01 reduced motion completes auth brand theme changes without animation
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:03 +3 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart: D01 reduced motion completes auth brand theme changes without animation [E]
+  Test failed. See exception logs above.
+  The test description was: D01 reduced motion completes auth brand theme changes without animation
+  
+00:04 +3 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart: D01 reduced motion completes auth brand theme changes without animation

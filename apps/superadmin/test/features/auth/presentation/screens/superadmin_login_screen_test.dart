@@ -42,6 +42,73 @@ void main() {
     );
   }
 
+  testWidgets('D01 keyboard login advances to password and submits once with done', (tester) async {
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+    final requests = <LoginRequest>[];
+    await pumpLogin(
+      tester,
+      session: session,
+      login: (request) async {
+        requests.add(request);
+        return const LoginResult.success();
+      },
+    );
+
+    final email = find.byKey(const ValueKey('superadmin-login-email'));
+    final password = find.byKey(const ValueKey('superadmin-login-password'));
+    await tester.enterText(email, 'keyboard@example.invalid');
+    await tester.testTextInput.receiveAction(TextInputAction.next);
+    await tester.pump();
+    expect(
+      tester.widget<EditableText>(find.descendant(of: password, matching: find.byType(EditableText)))
+          .focusNode.hasPrimaryFocus,
+      isTrue,
+    );
+    expect(requests, isEmpty);
+
+    await tester.enterText(password, 'synthetic-password');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+    expect(requests, hasLength(1));
+    expect(requests.single.email, 'keyboard@example.invalid');
+    expect(requests.single.password, 'synthetic-password');
+    expect(requests.single.keepSessionOpen, isFalse);
+  });
+
+  testWidgets('D01 keyboard login follows visual focus order with Tab', (tester) async {
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+    await pumpLogin(tester, session: session, login: unavailableSuperadminLogin);
+    final email = find.byKey(const ValueKey('superadmin-login-email'));
+    final password = find.byKey(const ValueKey('superadmin-login-password'));
+    await tester.tap(email);
+    await tester.pump();
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(
+      tester.widget<EditableText>(find.descendant(of: password, matching: find.byType(EditableText)))
+          .focusNode.hasPrimaryFocus,
+      isTrue,
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(Focus.of(tester.element(find.byIcon(Icons.visibility_outlined))).hasFocus, isTrue);
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    final keepSession = tester.widget<FocusableActionDetector>(
+      find.byKey(const ValueKey('superadmin-login-keep-session-control')),
+    );
+    expect(keepSession.focusNode!.hasPrimaryFocus, isTrue);
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(Focus.of(tester.element(find.text('Entrar'))).hasFocus, isTrue);
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(Focus.of(tester.element(find.text('Esqueci minha senha'))).hasFocus, isTrue);
+  });
+
   testWidgets('renders the private access context and form', (tester) async {
     final session = SuperadminSession();
     addTearDown(session.dispose);

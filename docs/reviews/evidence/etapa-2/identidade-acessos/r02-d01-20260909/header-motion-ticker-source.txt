@@ -1,0 +1,39 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub test/features/auth/presentation/widge ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart
+00:00 +0: D01 reduced motion completes auth brand theme changes without animation
+D01 active implicit: AnimatedPhysicalModel AnimatedPhysicalModel(duration: 200ms, shape: rectangle, borderRadius: null, elevation: 0.0, color: Color(alpha: 1.0000, red: 0.0667, green: 0.0784, blue: 0.0863, colorSpace: ColorSpace.sRGB), animateColor: false, shadowColor: Color(alpha: 1.0000, red: 0.0667, green: 0.0784, blue: 0.0863, colorSpace: ColorSpace.sRGB), animateShadowColor: true)
+D01 active implicit: AnimatedDefaultTextStyle AnimatedDefaultTextStyle(duration: 200ms, debugLabel: (englishLike bodyMedium 2021).merge((((whiteMountainView bodyMedium).apply).apply).merge(unknown)), inherit: false, color: Color(alpha: 1.0000, red: 0.7686, green: 0.7882, blue: 0.8000, colorSpace: ColorSpace.sRGB), family: Nunito Sans, size: 14.0, weight: 400, letterSpacing: 0.0, baseline: alphabetic, height: 1.4x, leadingDistribution: even, decoration: Color(alpha: 1.0000, red: 0.9608, green: 0.9686, blue: 0.9725, colorSpace: ColorSpace.sRGB) TextDecoration.none, softWrap: wrapping at box width, overflow: clip)
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: false
+  Actual: <true>
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart:40:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart line 40
+The test description was:
+  D01 reduced motion completes auth brand theme changes without animation
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:00 +0 -1: D01 reduced motion completes auth brand theme changes without animation [E]
+  Test failed. See exception logs above.
+  The test description was: D01 reduced motion completes auth brand theme changes without animation
+  
+00:00 +0 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/widgets/login_header_test.dart: D01 reduced motion completes auth brand theme changes without animation

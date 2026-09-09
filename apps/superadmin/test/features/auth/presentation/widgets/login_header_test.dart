@@ -6,6 +6,37 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('D01 reduced motion completes auth brand theme changes without animation', (
+    tester,
+  ) async {
+    for (final mode in [ThemeMode.light, ThemeMode.dark]) {
+      await tester.pumpWidget(
+        MaterialApp(
+          // Isolate the header transition from the host app's theme animation.
+          themeAnimationDuration: Duration.zero,
+          theme: mode == ThemeMode.light ? CoeloTheme.light : CoeloTheme.dark,
+          home: MediaQuery(
+            data: const MediaQueryData(disableAnimations: true),
+            child: SuperadminThemeModeScope(
+              mode: mode,
+              onChanged: (_) {},
+              // The header needs no Material ancestor. A Scaffold would add
+              // its own animated physical model and default text style.
+              child: const LoginHeader(),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(
+        tester.widget<AnimatedSwitcher>(find.byType(AnimatedSwitcher)).duration,
+        Duration.zero,
+      );
+      expect(find.byKey(const Key('superadmin-brand-mark')), findsOneWidget);
+      expect(tester.hasRunningAnimations, isFalse);
+    }
+  });
+
   testWidgets('uses the official circular brand assets in light and dark themes', (tester) async {
     for (final configuration in [
       (
