@@ -44,8 +44,8 @@ select ok(position('publish_at' in pg_get_functiondef('public.list_visible_happe
 select ok(position('published_media_immutable' in pg_get_functiondef('public.remove_happens_media(uuid)'::regprocedure))>0,'published media cannot be removed');
 select ok(
   pg_get_function_result('public.list_visible_happens_posts(uuid,uuid,uuid,integer)'::regprocedure)
-    = 'TABLE(author_name text, author_initials text, context_label text, caption text, published_at timestamp with time zone, media jsonb)',
-  'feed exposes only the minimum presentation projection'
+    = 'TABLE(post_id uuid, author_name text, author_initials text, context_label text, caption text, published_at timestamp with time zone, management_version bigint, can_withdraw boolean, media jsonb)',
+  'feed exposes only the minimum presentation projection plus the withdrawal handle'
 );
 select ok(
   position('post_audiences' in pg_get_functiondef('public.list_visible_happens_posts(uuid,uuid,uuid,integer)'::regprocedure))>0,

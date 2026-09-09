@@ -111,6 +111,9 @@ final class PrincipalPostPreviewItem {
     this.comments,
     this.shares,
     this.likedBy,
+    this.postId,
+    this.managementVersion,
+    this.canWithdraw = false,
   });
   final String author;
   final String context;
@@ -118,6 +121,18 @@ final class PrincipalPostPreviewItem {
   final String initials;
   final String body;
   final List<PrincipalHappensMediaDescriptor> media;
+
+  /// Identidade da publicacao no servidor. Nulo nas fixtures visuais.
+  final String? postId;
+
+  /// Versao otimista devolvida pelo feed, exigida pela retirada.
+  final int? managementVersion;
+
+  /// O servidor decide quem pode retirar; o cliente apenas obedece.
+  final bool canWithdraw;
+
+  /// Verdadeiro so quando o servidor autorizou e devolveu identidade e versao.
+  bool get isWithdrawable => canWithdraw && postId != null && managementVersion != null;
   final List<int> mediaIndices;
   final int? likes;
   final int? comments;

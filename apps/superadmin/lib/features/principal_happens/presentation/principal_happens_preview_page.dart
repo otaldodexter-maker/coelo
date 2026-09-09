@@ -121,6 +121,7 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
   Object? _feedError;
   var _feedLoading = false;
   var _feedRequest = 0;
+  String? _withdrawingPostId;
   DialogRoute<void>? _galleryRoute;
 
   @override
@@ -193,6 +194,75 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
         _feedLoading = false;
       });
     }
+  }
+
+  /// Retirada de publicacao (acontece.remove).
+  ///
+  /// A afordancia so existe quando o servidor devolveu identidade, versao e
+  /// autorizacao para este ator. O sucesso so aparece depois da resposta
+  /// autorizada, e o feed e relido em vez de ser corrigido em memoria.
+  Future<void> _withdrawPost(PrincipalPostPreviewItem post) async {
+    final source = widget.feedRepository;
+    final postId = post.postId;
+    final expectedVersion = post.managementVersion;
+    if (source is! PrincipalHappensPostWithdrawal ||
+        postId == null ||
+        expectedVersion == null ||
+        _withdrawingPostId != null) {
+      return;
+    }
+    final repository = source as PrincipalHappensPostWithdrawal;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        key: const Key('principal-happens-withdraw-dialog'),
+        title: const Text('Retirar publicação?'),
+        content: const Text(
+          'A publicação sai do feed de quem já a recebeu. '
+          'O conteúdo e a mídia são preservados para auditoria.',
+        ),
+        actions: [
+          TextButton(
+            key: const Key('principal-happens-withdraw-cancel'),
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            key: const Key('principal-happens-withdraw-confirm'),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Retirar'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() => _withdrawingPostId = postId);
+    try {
+      await repository.withdrawPost(postId: postId, expectedVersion: expectedVersion);
+      if (!mounted) return;
+      setState(() => _withdrawingPostId = null);
+      _notify('Publicação retirada do feed.');
+      await _loadFeed();
+    } on PrincipalHappensFeedUnauthorized {
+      if (!mounted) return;
+      setState(() => _withdrawingPostId = null);
+      _notify('Você não tem permissão para retirar esta publicação.');
+    } on PrincipalHappensWithdrawalConflict {
+      if (!mounted) return;
+      setState(() => _withdrawingPostId = null);
+      _notify('A publicação mudou desde a última leitura. Feed atualizado.');
+      await _loadFeed();
+    } on Object {
+      if (!mounted) return;
+      setState(() => _withdrawingPostId = null);
+      _notify('Não foi possível retirar agora. Tente novamente.');
+    }
+  }
+
+  void _notify(String message) {
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _prototypeMessage(String label) {
@@ -324,6 +394,10 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
                     }),
                     onPrototypeAction: _prototypeMessage,
                     onOpenGallery: _galleryOpener(),
+                    onWithdraw: widget.feedRepository is PrincipalHappensPostWithdrawal
+                        ? _withdrawPost
+                        : null,
+                    withdrawingPostId: _withdrawingPostId,
                     embedded: widget.embedded,
                   ),
                 ),
@@ -374,6 +448,8 @@ final class _Feed extends StatelessWidget {
     required this.onSave,
     required this.onPrototypeAction,
     required this.onOpenGallery,
+    required this.onWithdraw,
+    required this.withdrawingPostId,
     required this.embedded,
   });
 
@@ -397,6 +473,8 @@ final class _Feed extends StatelessWidget {
   final ValueChanged<int> onSave;
   final ValueChanged<String> onPrototypeAction;
   final ValueChanged<PrincipalPostPreviewItem> onOpenGallery;
+  final ValueChanged<PrincipalPostPreviewItem>? onWithdraw;
+  final String? withdrawingPostId;
   final bool embedded;
 
   @override
@@ -491,6 +569,8 @@ final class _Feed extends StatelessWidget {
     onSave: () => onSave(index),
     onAction: onPrototypeAction,
     onOpenGallery: () => onOpenGallery(post),
+    onWithdraw: onWithdraw == null || !post.isWithdrawable ? null : () => onWithdraw!(post),
+    withdrawing: withdrawingPostId != null && withdrawingPostId == post.postId,
   );
 }
 
@@ -870,6 +950,8 @@ final class _PostCard extends StatelessWidget {
     required this.onSave,
     required this.onAction,
     required this.onOpenGallery,
+    required this.onWithdraw,
+    required this.withdrawing,
     super.key,
   });
   final int index;
@@ -883,6 +965,8 @@ final class _PostCard extends StatelessWidget {
   final VoidCallback onSave;
   final ValueChanged<String> onAction;
   final VoidCallback onOpenGallery;
+  final VoidCallback? onWithdraw;
+  final bool withdrawing;
 
   @override
   Widget build(BuildContext context) {
@@ -928,10 +1012,11 @@ final class _PostCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                IconButton(
-                  tooltip: 'Mais opções da publicação',
-                  onPressed: () => onAction('Opções da publicação'),
-                  icon: const Icon(Icons.more_horiz_rounded),
+                _PostOverflowAction(
+                  index: index,
+                  onAction: onAction,
+                  onWithdraw: onWithdraw,
+                  withdrawing: withdrawing,
                 ),
               ],
             ),
@@ -1007,6 +1092,60 @@ final class _PostCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Menu da publicacao. Sem contrato de retirada autorizado, permanece
+/// exatamente o botao anterior: esconder a acao e o comportamento fechado.
+final class _PostOverflowAction extends StatelessWidget {
+  const _PostOverflowAction({
+    required this.index,
+    required this.onAction,
+    required this.onWithdraw,
+    required this.withdrawing,
+  });
+
+  final int index;
+  final ValueChanged<String> onAction;
+  final VoidCallback? onWithdraw;
+  final bool withdrawing;
+
+  @override
+  Widget build(BuildContext context) {
+    if (withdrawing) {
+      return const Padding(
+        padding: EdgeInsets.all(CoeloSpacing.space2),
+        child: SizedBox(
+          key: Key('principal-happens-withdraw-progress'),
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+      );
+    }
+    final withdraw = onWithdraw;
+    if (withdraw == null) {
+      return IconButton(
+        tooltip: 'Mais opções da publicação',
+        onPressed: () => onAction('Opções da publicação'),
+        icon: const Icon(Icons.more_horiz_rounded),
+      );
+    }
+    return PopupMenuButton<String>(
+      key: Key('principal-happens-options-post-$index'),
+      tooltip: 'Mais opções da publicação',
+      icon: const Icon(Icons.more_horiz_rounded),
+      onSelected: (value) => value == 'withdraw' ? withdraw() : onAction('Opções da publicação'),
+      itemBuilder: (context) => [
+        const PopupMenuItem<String>(
+          value: 'withdraw',
+          child: Text(
+            'Retirar publicação',
+            key: Key('principal-happens-withdraw-label'),
+          ),
+        ),
+      ],
     );
   }
 }
