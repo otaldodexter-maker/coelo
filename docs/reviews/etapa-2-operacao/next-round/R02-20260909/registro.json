@@ -440,29 +440,30 @@
       4592,
       12881
     ],
-    "P": 261,
+    "P": 270,
     "F": 0,
     "B": 0,
     "S": 0,
     "U": 0,
-    "limit": "261 unique focal D00 application/contract cases; infrastructure29 profiles and36 executor cases separate; author cold-reload1F known; browser4B separate. No whole-app-plan inference.",
+    "limit": "270 unique D00 focal application/contract cases. Infrastructure separate: profiles29 (20 rerun unchanged), auth executor36, new auth harness8. Browser4B. No whole-plan certification.",
     "manifests": [
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest.json",
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json",
       "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
-      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-reservations-profiles-resume.json"
+      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-reservations-profiles-resume.json",
+      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-auth-cold-integrated.json"
     ]
   },
   "localSqlSlot": {
-    "owner": "D02",
-    "assignmentRevision": 17,
-    "status": "granted-ActivityAggregateConcurrency-awaiting-receipt",
-    "next": "D03 corrected CHILD ff8bfb728 after cleanup",
+    "owner": "D03",
+    "assignmentRevision": 10,
+    "status": "reserved-awaiting-reviewed-CHILD-hook",
+    "next": "D00 Auth proof; D02 Clock successor after reviewed SHA",
     "remoteMutation": false,
-    "priorCleanup": "D03 handoff 14:07 confirmed; docker ps no containers on D00 check"
+    "priorCleanup": "D02 r13 cleanup confirmed; docker ps empty D00 14:40"
   },
-  "checkpointAt": "2026-09-09T14:26:45.455315-03:00",
+  "checkpointAt": "2026-09-09T14:43:10.793230-03:00",
   "coordinatorResume": {
     "previousThreadId": "01a086d5-7bd9-7b12-8537-d29236b2e6ca",
     "threadId": "01a086d4-dd71-7020-a761-daecbc687813",
@@ -478,7 +479,7 @@
     "owner": "D00",
     "sessionId": 8863,
     "port": 8921,
-    "status": "compiled; create-tab timeout then browser inventory empty; B4 remain",
+    "status": "B4; CUA inventory empty again; own server8863 stop requested with q",
     "base": "eb0564f22566df9382b2b339ce203fd48b7e3c55",
     "realProvider": false
   }

@@ -1,0 +1,54 @@
+{
+  "source": "D00 integrated actual Flutter JSON reporter",
+  "generatedAt": "2026-09-09T14:43:10.785220-03:00",
+  "base": "a07c2a2ef",
+  "environment": "Windows local SDK and synthetic transport; actual storage fixture; no remote; unrelated SQL/docs WIP excluded from client claim",
+  "P": 9,
+  "F": 0,
+  "B": 0,
+  "S": 0,
+  "U": 0,
+  "cases": [
+    {
+      "id": "cold reload never upgrades recovery into normal context: persist=true",
+      "result": "success"
+    },
+    {
+      "id": "cold reload never upgrades recovery into normal context: persist=false",
+      "result": "success"
+    },
+    {
+      "id": "disabling persistence removes a recovery write that was already pending",
+      "result": "success"
+    },
+    {
+      "id": "a failed pending write does not prevent the queued recovery purge",
+      "result": "success"
+    },
+    {
+      "id": "recovery persistence: gateway created after SDK callback purges on replay",
+      "result": "success"
+    },
+    {
+      "id": "recovery persistence: matching seed purges when latest SDK replay is refresh",
+      "result": "success"
+    },
+    {
+      "id": "recovery persistence: seed A preserves normal SDK session B",
+      "result": "success"
+    },
+    {
+      "id": "recovery persistence: cleanup failure remains confined; sync=false",
+      "result": "success"
+    },
+    {
+      "id": "recovery persistence: cleanup failure remains confined; sync=true",
+      "result": "success"
+    }
+  ],
+  "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/auth-cold-a07c2a2ef.jsonl",
+  "sha256": "b25546dae8431bae2d091c710dd51c108daf7d548e00c5d6bab56fd9f9e30d65",
+  "shellExit": 1,
+  "shellExitExplanation": "PowerShell redirected RTK hook warning to NativeCommandError; JSON testDone nine success and done.success=true. No rerun count; no claim of zero shell exit.",
+  "remaining": "Cold reload after failed disk purge needs backend denial; auth.reset not promoted. Browser four blocked."
+}
