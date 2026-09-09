@@ -119,7 +119,13 @@ function Invoke-OwnedPsql(
   $output = $outputTask.GetAwaiter().GetResult()
   $errorOutput = $errorTask.GetAwaiter().GetResult()
   if (-not $AllowFailure -and $process.ExitCode -ne 0) {
-    throw 'CHILD package local psql failed'
+    $sqlState = 'UNKNOWN'
+    if ($errorOutput -match '(?m)^ERROR:\s+([0-9A-Z]{5}):' -and
+        $Matches[1] -cin @('55000','42501','2BP01','42704','42P01','42710','P0001')) {
+      $sqlState = $Matches[1]
+    }
+    $knownGuard = $errorOutput -match 'CHILD package fixture ownership drift'
+    throw "CHILD package local psql failed; SQLSTATE=$sqlState; fixtureOwnershipGuard=$knownGuard; raw output withheld"
   }
   [pscustomobject]@{
     ExitCode = $process.ExitCode
@@ -275,6 +281,15 @@ select pg_catalog.jsonb_build_object(
   }
   'package.negative-rollback'
 
+  $cleanupProbe = Get-SingleJson (Invoke-OwnedPsql @"
+select pg_catalog.jsonb_build_object(
+ 'nologin', exists(select 1 from pg_catalog.pg_roles where rolname='$probeRole' and not rolcanlogin),
+ 'elevated', exists(select 1 from pg_catalog.pg_roles where rolname='$probeRole' and (rolsuper or rolcreaterole or rolcreatedb or rolreplication or rolbypassrls)),
+ 'memberships', (select count(*) from pg_catalog.pg_auth_members m
+   join pg_catalog.pg_roles r on r.oid in(m.roleid,m.member) where r.rolname='$probeRole')
+)::text;
+"@).Output 'cleanup probe'
+  "CHILD_CLEANUP_PROBE nologin=$($cleanupProbe.nologin) elevated=$($cleanupProbe.elevated) memberships=$($cleanupProbe.memberships)"
   $null = Invoke-OwnedPsql -Sql $fixtureCleanupSql
   $fixtureAttempted = $false
   Assert-OriginalBase (Get-BaseState) 'post-fixture cleanup'
