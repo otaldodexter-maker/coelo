@@ -142,6 +142,7 @@ final class UnitDirectoryViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _requestVersion++;
     _searchTimer?.cancel();
     super.dispose();
   }

@@ -62,7 +62,7 @@ final class UnitDirectoryPage extends StatefulWidget {
 }
 
 final class _UnitDirectoryPageState extends State<UnitDirectoryPage> {
-  late final UnitDirectoryViewModel _viewModel;
+  late UnitDirectoryViewModel _viewModel;
   late final TextEditingController _searchController;
   late final SuperadminActivityController _activityController;
   UnitDirectoryDisplay _display = UnitDirectoryDisplay.cards;
@@ -111,6 +111,14 @@ final class _UnitDirectoryPageState extends State<UnitDirectoryPage> {
   @override
   void didUpdateWidget(covariant UnitDirectoryPage oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.repository, widget.repository)) {
+      _viewModel.dispose();
+      _viewModel = UnitDirectoryViewModel(widget.repository);
+      _searchController.clear();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _viewModel.load();
+      });
+    }
     if (oldWidget.successMessage != widget.successMessage) {
       _noticeShown = false;
     }
