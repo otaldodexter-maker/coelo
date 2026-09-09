@@ -63,6 +63,21 @@ final class _PrincipalCircularReaderState extends State<PrincipalCircularReader>
     }
   }
 
+  /// Uma falha de envio precisa dizer o que aconteceu.
+  ///
+  /// Convidar a tentar de novo depois de um conflito de versao ou de um
+  /// encerramento repete um envio que nunca vai passar: quem responde precisa
+  /// saber que o conteudo mudou, ou que as respostas fecharam, para agir.
+  String _submitFailureMessage(CircularFailure failure) => switch (failure) {
+    CircularVersionConflict() =>
+      'Esta circular foi atualizada enquanto você respondia. '
+          'Confira o conteúdo recarregado e responda novamente.',
+    CircularNotAvailable() => 'As respostas desta circular foram encerradas.',
+    CircularUnauthorized() => 'Você não pode responder esta circular neste contexto.',
+    CircularInvalid() => 'Revise suas respostas antes de enviar.',
+    CircularUnavailable() => 'Não foi possível enviar. Tente novamente.',
+  };
+
   Iterable<CircularQuestionBlock> get _questions =>
       widget.detail.blocks.whereType<CircularQuestionBlock>();
 
@@ -105,6 +120,9 @@ final class _PrincipalCircularReaderState extends State<PrincipalCircularReader>
       });
       if (!mounted || generation != _generation) return;
       setState(() => _submitted = true);
+    } on CircularFailure catch (failure) {
+      if (!mounted || generation != _generation) return;
+      setState(() => _error = _submitFailureMessage(failure));
     } on Object {
       if (!mounted || generation != _generation) return;
       setState(() => _error = 'Não foi possível enviar. Tente novamente.');
