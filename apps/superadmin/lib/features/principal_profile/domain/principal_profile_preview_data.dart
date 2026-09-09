@@ -12,13 +12,26 @@ final class PrincipalProfilePreviewData {
     required this.nextEvent,
   });
 
+  /// Contextual identity resolved from the server-authorized Principal context.
+  ///
+  /// Sections without an authorized source stay empty so a production route
+  /// never renders preview fixtures.
+  const PrincipalProfilePreviewData.contextual({
+    required this.name,
+    required this.typeLabel,
+    this.bio = '',
+  }) : metrics = const [],
+       highlights = const [],
+       links = const [],
+       nextEvent = null;
+
   final String name;
   final String typeLabel;
   final String bio;
   final List<PrincipalProfileMetric> metrics;
   final List<PrincipalProfileHighlight> highlights;
   final List<String> links;
-  final PrincipalProfileEvent nextEvent;
+  final PrincipalProfileEvent? nextEvent;
 
   static const horizon = PrincipalProfilePreviewData(
     name: 'Colégio Horizonte',

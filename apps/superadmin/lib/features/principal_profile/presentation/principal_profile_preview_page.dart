@@ -34,6 +34,7 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
     this.circularScope,
     this.onOpenCircular,
     this.data = PrincipalProfilePreviewData.horizon,
+    this.showPreviewFeeds = true,
     this.aboutPage,
     super.key,
   });
@@ -56,6 +57,13 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
   final VoidCallback? onOpenSearch;
   final VoidCallback? onOpenMessages;
   final PrincipalProfilePreviewData data;
+
+  /// Whether the Acontece/Momentos tabs may render the local preview fixtures.
+  ///
+  /// Production composition roots pass `false`: a real route never shows
+  /// fixture feeds, it shows an honest pending state until the authorized
+  /// projection is wired.
+  final bool showPreviewFeeds;
   final ProfileAboutPage? aboutPage;
   final CircularRepository? circularRepository;
   final CircularScope? circularScope;
@@ -161,17 +169,25 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
         onMessage: () => _runOrPreview(context, widget.onMessage, 'Mensagem'),
         onOpenBio: () => _runOrPreview(context, widget.onOpenBio, 'Biografia completa'),
       ),
-      const SizedBox(height: CoeloSpacing.space4),
-      _MetricsPanel(metrics: widget.data.metrics, compact: compact),
-      const SizedBox(height: CoeloSpacing.space5),
-      _HighlightsSection(items: widget.data.highlights, compact: compact),
-      const SizedBox(height: CoeloSpacing.space5),
-      _LinksSection(
-        links: widget.data.links,
-        onOpenAll: () => _runOrPreview(context, widget.onOpenLinks, 'Todos os vínculos'),
-      ),
-      const SizedBox(height: CoeloSpacing.space4),
-      _AgendaSummary(event: widget.data.nextEvent, onOpenAgenda: widget.onOpenAgenda),
+      if (widget.data.metrics.isNotEmpty) ...[
+        const SizedBox(height: CoeloSpacing.space4),
+        _MetricsPanel(metrics: widget.data.metrics, compact: compact),
+      ],
+      if (widget.data.highlights.isNotEmpty) ...[
+        const SizedBox(height: CoeloSpacing.space5),
+        _HighlightsSection(items: widget.data.highlights, compact: compact),
+      ],
+      if (widget.data.links.isNotEmpty) ...[
+        const SizedBox(height: CoeloSpacing.space5),
+        _LinksSection(
+          links: widget.data.links,
+          onOpenAll: () => _runOrPreview(context, widget.onOpenLinks, 'Todos os vínculos'),
+        ),
+      ],
+      if (widget.data.nextEvent case final event?) ...[
+        const SizedBox(height: CoeloSpacing.space4),
+        _AgendaSummary(event: event, onOpenAgenda: widget.onOpenAgenda),
+      ],
       const SizedBox(height: CoeloSpacing.space4),
       _ProfileTabs(
         selected: _selectedTab,
@@ -192,6 +208,7 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
       const SizedBox(height: CoeloSpacing.space4),
       _TabContent(
         tab: _selectedTab,
+        showPreviewFeeds: widget.showPreviewFeeds,
         aboutPage: widget.aboutPage,
         onOpenAboutMap: widget.onOpenAboutMap,
         circularRepository: widget.circularRepository,
@@ -243,14 +260,16 @@ final class _ProfileContextAside extends StatelessWidget {
           Text(data.name, style: Theme.of(context).textTheme.labelLarge),
           Text(data.typeLabel, style: Theme.of(context).textTheme.bodySmall),
           const SizedBox(height: CoeloSpacing.space4),
-          const _ProfileContextFact(Icons.location_on_outlined, 'São Paulo, SP'),
-          const SizedBox(height: CoeloSpacing.space2),
-          const _ProfileContextFact(Icons.groups_outlined, 'Comunidade escolar'),
-          const SizedBox(height: CoeloSpacing.space4),
-          Text('Próximo evento', style: Theme.of(context).textTheme.labelMedium),
-          const SizedBox(height: CoeloSpacing.space1),
-          Text(data.nextEvent.title, style: Theme.of(context).textTheme.bodyMedium),
-          Text('${data.nextEvent.day} ${data.nextEvent.month} · ${data.nextEvent.context}'),
+          if (data.nextEvent case final event?) ...[
+            const _ProfileContextFact(Icons.location_on_outlined, 'São Paulo, SP'),
+            const SizedBox(height: CoeloSpacing.space2),
+            const _ProfileContextFact(Icons.groups_outlined, 'Comunidade escolar'),
+            const SizedBox(height: CoeloSpacing.space4),
+            Text('Próximo evento', style: Theme.of(context).textTheme.labelMedium),
+            const SizedBox(height: CoeloSpacing.space1),
+            Text(event.title, style: Theme.of(context).textTheme.bodyMedium),
+            Text('${event.day} ${event.month} · ${event.context}'),
+          ],
           const SizedBox(height: CoeloSpacing.space3),
           TextButton.icon(
             onPressed: onOpenAgenda,
@@ -871,6 +890,7 @@ final class _ProfileTabButton extends StatelessWidget {
 final class _TabContent extends StatelessWidget {
   const _TabContent({
     required this.tab,
+    required this.showPreviewFeeds,
     required this.aboutPage,
     required this.onOpenAboutMap,
     required this.circularRepository,
@@ -879,6 +899,7 @@ final class _TabContent extends StatelessWidget {
   });
 
   final _ProfileTab tab;
+  final bool showPreviewFeeds;
   final ProfileAboutPage? aboutPage;
   final VoidCallback? onOpenAboutMap;
   final CircularRepository? circularRepository;
@@ -887,8 +908,22 @@ final class _TabContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => switch (tab) {
-    _ProfileTab.happens => const _ProfileHappensFeed(),
-    _ProfileTab.moments => const _ProfileMomentsFeed(),
+    _ProfileTab.happens => showPreviewFeeds
+        ? const _ProfileHappensFeed()
+        : const _PlaceholderContent(
+            key: Key('principal-profile-happens-pending'),
+            icon: Icons.article_outlined,
+            title: 'Acontece ainda não disponível aqui',
+            message: 'A projeção autorizada de publicações ainda não foi ligada a este perfil.',
+          ),
+    _ProfileTab.moments => showPreviewFeeds
+        ? const _ProfileMomentsFeed()
+        : const _PlaceholderContent(
+            key: Key('principal-profile-moments-pending'),
+            icon: Icons.play_circle_outline_rounded,
+            title: 'Momentos ainda não disponível aqui',
+            message: 'A projeção autorizada de Momentos ainda não foi ligada a este perfil.',
+          ),
     _ProfileTab.circulars =>
       circularRepository == null || circularScope == null
           ? const _PlaceholderContent(
@@ -1118,7 +1153,12 @@ final class _ProfileMetric extends StatelessWidget {
 }
 
 final class _PlaceholderContent extends StatelessWidget {
-  const _PlaceholderContent({required this.icon, required this.title, required this.message});
+  const _PlaceholderContent({
+    required this.icon,
+    required this.title,
+    required this.message,
+    super.key,
+  });
 
   final IconData icon;
   final String title;
