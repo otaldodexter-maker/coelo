@@ -1543,8 +1543,8 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       maxImages: question.kind == FormItemKind.gallery
           ? int.tryParse(question.maximumImages.text.trim())
           : question.loadedConfig.maxImages,
-      minValue: num.tryParse(question.minimum.text.trim().replaceAll(',', '.')),
-      maxValue: num.tryParse(question.maximum.text.trim().replaceAll(',', '.')),
+      minValue: FormNumericLimits.parse(question.kind, question.minimum.text),
+      maxValue: FormNumericLimits.parse(question.kind, question.maximum.text),
       currency: question.kind == FormItemKind.money ? 'BRL' : null,
     ),
     options: [
@@ -1720,8 +1720,14 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     );
     draft
       ..details.text = item.helpText ?? ''
-      ..minimum.text = item.config.minValue?.toString() ?? ''
-      ..maximum.text = item.config.maxValue?.toString() ?? '';
+      ..minimum.text = switch (item.config.minValue) {
+        final value? => FormNumericLimits.format(item.kind, value),
+        null => '',
+      }
+      ..maximum.text = switch (item.config.maxValue) {
+        final value? => FormNumericLimits.format(item.kind, value),
+        null => '',
+      };
     draft.replaceOptions(item.options);
     return draft;
   }
@@ -3141,7 +3147,7 @@ const _catalogGroups = [
 ];
 
 bool _isNumericKind(FormItemKind kind) =>
-    kind == FormItemKind.integer || kind == FormItemKind.decimal || kind == FormItemKind.money;
+    FormNumericLimits.isNumeric(kind);
 
 String _kindLabel(FormItemKind kind) => switch (kind) {
   FormItemKind.shortText => 'Texto curto',

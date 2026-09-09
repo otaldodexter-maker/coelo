@@ -1633,6 +1633,116 @@ void main() {
     expect(find.byKey(const Key('form-response-upload-progress')), findsNothing);
     expect(find.text('Não perder'), findsOneWidget);
   });
+
+  // Limites numéricos e de texto — residual C02/R01 (forms.respond, forms.location-answer).
+  // Os quatro RED da r48: a resposta aceitava valores fora da faixa declarada na autoria.
+  _ResponseApi limited(FormItemKind kind, {num? min, num? max, int? maxLength}) => _ResponseApi(
+    items: [
+      FormItem(
+        id: 'item-1',
+        kind: kind,
+        label: 'Limitada',
+        position: 0,
+        config: FormItemConfig(minValue: min, maxValue: max, maxLength: maxLength),
+      ),
+    ],
+  );
+
+  Future<void> typeAndSettle(WidgetTester tester, String raw) async {
+    await tester.enterText(find.byKey(const Key('form-response-item-item-1')), raw);
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pump();
+  }
+
+  for (final (kind, max, refused, accepted) in <(FormItemKind, num, String, String)>[
+    (FormItemKind.integer, 10, '11', '10'),
+    (FormItemKind.decimal, 10, '10,5', '10'),
+    // Money limits are declared in minor units, the same unit the answer stores.
+    (FormItemKind.money, 100000, '1100', '1000'),
+  ]) {
+    testWidgets('${kind.name} above the declared maximum never reaches the draft', (tester) async {
+      final api = limited(kind, max: max);
+      await open(tester, api);
+      await typeAndSettle(tester, refused);
+      expect(api.saveCalls, isEmpty);
+      expect(find.text('Revise os valores numéricos antes de salvar.'), findsWidgets);
+
+      await tester.tap(find.byKey(const Key('form-response-save-draft')));
+      await tester.pump();
+      expect(api.saveCalls, isEmpty);
+
+      await typeAndSettle(tester, accepted);
+      expect(api.saveCalls, hasLength(1));
+    });
+
+    testWidgets('${kind.name} below the declared minimum never reaches the draft', (tester) async {
+      final api = limited(kind, min: kind == FormItemKind.money ? 100000 : 10);
+      await open(tester, api);
+      await typeAndSettle(tester, kind == FormItemKind.integer ? '9' : '9,5');
+      expect(api.saveCalls, isEmpty);
+
+      await typeAndSettle(tester, accepted);
+      expect(api.saveCalls, hasLength(1));
+    });
+  }
+
+  testWidgets('money answer is compared against the declared limit in the same unit', (
+    tester,
+  ) async {
+    // R$ 10,50 is 1050 minor units; a maximum of R$ 10,00 is 1000 minor units.
+    final api = limited(FormItemKind.money, max: 1000);
+    await open(tester, api);
+    await typeAndSettle(tester, '10,50');
+    expect(api.saveCalls, isEmpty);
+
+    await typeAndSettle(tester, '10,00');
+    expect(api.saveCalls, hasLength(1));
+    expect(
+      api.saveCalls.single.payload.answers['item-1']!.value,
+      isA<FormMoneyValue>().having((value) => value.minorUnits, 'minorUnits', 1000),
+    );
+  });
+
+  testWidgets('a value inside the declared range still saves', (tester) async {
+    final api = limited(FormItemKind.integer, min: 1, max: 10);
+    await open(tester, api);
+    await typeAndSettle(tester, '10');
+    expect(api.saveCalls, hasLength(1));
+    expect(
+      api.saveCalls.single.payload.answers['item-1']!.value,
+      isA<FormIntegerValue>().having((value) => value.value, 'value', 10),
+    );
+  });
+
+  testWidgets('short text longer than the declared maximum never reaches the draft', (
+    tester,
+  ) async {
+    final api = limited(FormItemKind.shortText, maxLength: 5);
+    await open(tester, api);
+    await typeAndSettle(tester, 'abcdef');
+    expect(api.saveCalls, isEmpty);
+
+    await typeAndSettle(tester, 'abcde');
+    expect(api.saveCalls, hasLength(1));
+    expect(
+      api.saveCalls.single.payload.answers['item-1']!.value,
+      isA<FormShortTextValue>().having((value) => value.value, 'value', 'abcde'),
+    );
+  });
+
+  testWidgets('an out-of-range value cannot be submitted either', (tester) async {
+    final api = limited(FormItemKind.integer, max: 10);
+    await open(tester, api);
+    await typeAndSettle(tester, '5');
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pump();
+    expect(find.byKey(const Key('form-response-submit')), findsOneWidget);
+
+    // An out-of-range edit withdraws the reviewed state, so send is unreachable.
+    await typeAndSettle(tester, '11');
+    expect(find.byKey(const Key('form-response-submit')), findsNothing);
+    expect(api.submitCommand, isNull);
+  });
 }
 
 final class _ResponseApi implements FormsApi {
