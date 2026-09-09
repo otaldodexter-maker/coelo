@@ -286,3 +286,16 @@ ledgers. A leitura/execução local do candidato e os recibos 45+3+4 continuam s
 poder aprovar esse crosswalk de produção.
 
 Limite operacional explícito: esta proposta registra uma condição obrigatória do runbook; ela ainda não instala um hook executável no deploy CLI. Enquanto esse mecanismo não for aprovado e integrado, nenhum deploy CLI com a migration 20260908051500 pendente está liberado. O executor deve conferir o conjunto pendente antes de qualquer mutação e interromper diante dessa versão. Ausência de automação não é licença para ignorar a condição, nem deve ser relatada como guard de CI implementado.
+
+
+## Qualifica??o local atualizada ? D00 r18
+
+O payload740057... foi executado integralmente na baseAuthOnly anterior ao
+CHILD: seis gates PASS, incluindo negativa no postflight com rollback e
+controle positivo persistido. A corre??o necess?ria foi somente no cleanup
+da fixture local, commitd0c0a992; n?o alterou SQL produtivo nem o payload.
+O log/recibo e os hashes da ?rvore executada est?o no acervo D03, descritos
+em child-package-local-plan.md. Os tr?s passes parciais anteriores s?o hist?ricos,
+n?o adicionais aos seis. Cache din?mico1U, transporte/ledgerMCP, crosswalk e
+autoriza??o nominal remota permanecem pendentes; este resultado n?o prova o
+endpoint de aplica??o ou a disponibilidade HTTP sem restart.

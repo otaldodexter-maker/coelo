@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-09T16:32:16-03:00",
+  "generated_at": "2026-09-09T16:44:30-03:00",
   "timezone": "America/Sao_Paulo",
   "snapshot_head": "647c20b453222aef58027028e4367de954145f20",
   "snapshot_head_scope": "Flutter snapshot identified above. Current CHILD SQL evidence is the equivalent integrated tree f3e1f732f442b2e47a2f749cba1d927eb638d5be. Infrastructure candidate-patch and structure evidence retain their own hashes; none implies full product acceptance.",
   "scope": "R02 D03 focal evidence available before the 16:30 BRT consolidation cut",
   "preserved_evidence_manifest": {
     "path": "evidence/d03-acompanhamento/r02-20260909/manifest.json",
-    "sha256": "1926A994B0F59B19C77FB5828D246C28B620D0748E83D804440BDE2DCC76151A",
-    "artifact_count": 33,
-    "bytes": 122930,
+    "sha256": "CF03E1CCD386BE512D439461F93E746E5E8AFE5734BF8928567491B91ADCC4AD",
+    "artifact_count": 38,
+    "bytes": 144812,
     "note": "Byte-for-byte copies, not new executions. Source paths remain for provenance; the manifest maps them to versioned copies. Its source-ledger hash describes the earlier extraction snapshot, not this evolving ledger."
   },
   "counting_rules": {
@@ -54,13 +54,15 @@
       "failed_current_cases": 0
     },
     "infrastructure": {
-      "pester_unique_cases": 54,
+      "pester_unique_cases": 59,
       "pester_console_report_only_cases": 8,
       "failed": 0,
       "blocked": 0,
       "skipped": 0,
       "not_run": 0,
-      "static_gate_assertions_passed": 15
+      "static_gate_assertions_passed": 15,
+      "pester_cases_with_xml": 46,
+      "pester_raw_log_no_xml_cases": 5
     },
     "sql": {
       "child_tap_assertions_planned": 45,
@@ -573,9 +575,31 @@
         "xml_path": "evidence/d03-acompanhamento/r02-20260909/d03-child-remote-package-tests.xml",
         "xml_sha256": "84A509AF13CD1B47F62354F400DE50CAD4FF43FB29F164A203B7150EA6EF8C75",
         "raw_log_path": "evidence/d03-acompanhamento/r02-20260909/d03-child-remote-package-tests.log.txt",
-        "raw_log_sha256": "6C0352EA2B3104164D08356C8E4B67D5E6E6C1FDC6B56974AB547A214CB6B0EC"
+        "raw_log_sha256": "6C0352EA2B3104164D08356C8E4B67D5E6E6C1FDC6B56974AB547A214CB6B0EC",
+        "final_integrated_guard_xml": "evidence/d03-acompanhamento/r02-20260909/d03-child-membership-guards.xml",
+        "final_integrated_guard_xml_sha256": "FE2042DA9328B050B8C461D3F17FA81FCF00BFE7959E1024455D34AF3D06073C",
+        "final_source_lf_sha256": "502131EC34C966EA9CF7469BBA231207FE53D2024E66F0F6FE4EB52675A7A926"
       },
-      "history": "Initial fixture resolver omitted 2 replay sources; fixed. Later fixture CRLF portability fixed and causal rerun passed. Unique total remains 8; harness 09720 unchanged; no Docker/SQL/HTTP. Final test-cleanup confinement correction qualified by the same 8-case causal rerun; zero fixture directories remained. No additional unique cases."
+      "history": "Initial fixture resolver omitted 2 replay sources; fixed. Later fixture CRLF portability fixed and causal rerun passed. Unique total remains 8; harness 09720 unchanged; no Docker/SQL/HTTP. Final test-cleanup confinement correction qualified by the same 8-case causal rerun; zero fixture directories remained. No additional unique cases. D00 fixed exact creator-membership cleanup and reran the existing 8 guards; XML retained against final harness, no +8."
+    },
+    {
+      "id": "infra.child-exact-creator-membership",
+      "status": "pass-integrated-raw-log",
+      "unique_cases": 5,
+      "case_ids": [
+        "accepts only the nominal bootstrap grant to the postgres creator",
+        "rejects zero or additional memberships instead of tolerating arbitrary grants",
+        "rejects changed role member or grantor identities",
+        "rejects changed membership privilege options",
+        "rejects an unexpected creator or bootstrap authority"
+      ],
+      "evidence": {
+        "log_path": "evidence/d03-acompanhamento/r02-20260909/d03-child-membership-contract-green.log.txt",
+        "log_sha256": "3B7C59BF263DFE9BEE393C5391A5DC9E6B689826C8331EF8D7CB1BA206AA6A28",
+        "fix_commit": "d0c0a9920a51edba80b8652982849de0277ca329",
+        "source_lf_sha256": "502131EC34C966EA9CF7469BBA231207FE53D2024E66F0F6FE4EB52675A7A926"
+      },
+      "history": "5 RED -> 5 PASS reported in D00 receipt; only 5 unique current passes, not 10. No new D03 execution."
     }
   ],
   "sql": {
@@ -695,12 +719,12 @@
     "D00 HTTP window 63e364300 repeated the same 45 TAP as one-shot base preparation; the 45 rerun is not added to the 45 unique SQL count."
   ],
   "atomic_package_local": {
-    "status": "partial-integrated-local-infrastructure-cleanup-blocked",
+    "status": "pass-integrated-local",
     "planned_cases": 6,
-    "executed_cases": 3,
-    "passed_cases": 3,
+    "executed_cases": 6,
+    "passed_cases": 6,
     "failed_cases": 0,
-    "blocked_cases": 3,
+    "blocked_cases": 0,
     "skipped_cases": 0,
     "not_run_unblocked_cases": 0,
     "case_ids": [
@@ -715,16 +739,38 @@
     "manifest_lf_sha256": "1B31D0AD0D825D9420CC862808F582F08C6CE0171208018F588C0A998A0E9F46",
     "payload_lf_sha256": "740057756FB2A7DFA5E8F2AB2D9908DF24968F2A3E78196A1FAA0D3B422C6C2C",
     "harness_path": "packages/coelo_database/scripts/Test-ChildRemotePackage.ps1",
-    "harness_lf_sha256": "09720F6A9424C1C48441BB755E48C3752989B590101EB53B4A6C75D0D4A3E511",
-    "qualification": "Three gates observed before fixture cleanup failed. D00 classification 3P0F3B, infrastructure exit1. SQLSTATE/root cause not yet diagnosed; D00 owns diagnosis and next replay. No parallel D03 edits or SQL.",
-    "revision": "e0e83ee20dab4134703417e95cbca8c92db9b657",
+    "harness_lf_sha256": "12328A21EA62657CE411B0575CF55C2E0E166A4373D0A89648557200CB040873",
+    "qualification": "D00 final replay 80424: 47 SQL; six unique gates pass; zero owned resources. Root cause was exact PostgreSQL creator membership, now pinned by identity and options. SQL payload 740057 unchanged. Cache1U and remote Management API ledger unproved.",
+    "revision": "d0c0a9920a51edba80b8652982849de0277ca329",
     "executor": "D00",
-    "exit_code": 1,
+    "exit_code": 0,
     "evidence": {
-      "path": "C:/Users/adrie/Documents/Coelo/docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/child-package-first-replay.log",
-      "sha256": "A18C8E8DCD75604FB1E4F7A35CBD148072384BE14F30E906D40FC20378FC6D43",
-      "preserved_path": "evidence/d03-acompanhamento/r02-20260909/child-package-first-replay.log.txt"
-    }
+      "path": "evidence/d03-acompanhamento/r02-20260909/d03-child-membership-fixed-replay.log.txt",
+      "sha256": "78B7A31C3330C7AD159C76F6A9ACD1E2294C1B5B04D97489617E00909FD48E97",
+      "receipt_path": "evidence/d03-acompanhamento/r02-20260909/d03-child-membership-final.json",
+      "receipt_sha256": "D19DFE20227DEB7EB9A50971BF9C0F8B140AECFF2E7A08B20E35581349196247",
+      "executed_tree_base": "803af52ad1846f003069914486e6f022fb8ce653",
+      "executed_harness_raw_sha256": "4e399bdc2e9340a0fbeb557265294b3bc3445b9b6d71713c4192b98b9e9900d1",
+      "fix_commit": "d0c0a9920a51edba80b8652982849de0277ca329"
+    },
+    "history": [
+      {
+        "revision": "e0e83ee20dab4134703417e95cbca8c92db9b657",
+        "passed": 3,
+        "failed": 0,
+        "blocked": 3,
+        "exit_code": 1,
+        "phase": "first attempt"
+      },
+      {
+        "revision": "803af52ad1846f003069914486e6f022fb8ce653 plus diagnostic tree",
+        "passed": 3,
+        "failed": 0,
+        "blocked": 3,
+        "exit_code": 1,
+        "phase": "diagnosis; not extra unique passes"
+      }
+    ]
   },
   "schema_cache": {
     "id": "cache.child-discovery-without-restart",

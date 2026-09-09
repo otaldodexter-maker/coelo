@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-09T16:32:16-03:00",
+  "generated_at": "2026-09-09T16:44:30-03:00",
   "timezone": "America/Sao_Paulo",
   "source_ledger": {
     "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/d03-test-ledger.json",
@@ -10,13 +10,13 @@
     "mode": "byte-for-byte evidence reproduction",
     "new_test_or_database_execution": false,
     "deduplicated_by": "source_path",
-    "artifact_count": 33,
-    "total_bytes": 122930,
+    "artifact_count": 38,
+    "total_bytes": 144812,
     "ignored_artifact_count": 0,
     "renamed_for_review": "Log copies use .log.txt names without byte changes; .gitattributes preserves source bytes.",
     "supplemental_artifacts": 4,
     "null_or_missing_references_copied": 0,
-    "non_temp_artifacts": 5
+    "non_temp_artifacts": 10
   },
   "secret_scan": {
     "performed_before_copy": false,
@@ -408,6 +408,71 @@
       "git_ignored": false,
       "provenance": "integrated-compositor-first-attempt-or-hook-proof",
       "base_sha": "e0e83ee20dab4134703417e95cbca8c92db9b657"
+    },
+    {
+      "source_path": "C:/Users/adrie/Documents/Coelo/docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d03-child-membership-final.json",
+      "preserved_path": "evidence/d03-acompanhamento/r02-20260909/d03-child-membership-final.json",
+      "sha256": "D19DFE20227DEB7EB9A50971BF9C0F8B140AECFF2E7A08B20E35581349196247",
+      "bytes": 3627,
+      "source_hash_verified": true,
+      "preserved_hash_verified": true,
+      "reproduction": "D00 existing final composer evidence; byte-for-byte copy; no new execution",
+      "git_ignored": false,
+      "provenance": "integrated-composer-fix-d0c0a992",
+      "base_sha": "803af52ad1846f003069914486e6f022fb8ce653",
+      "fix_commit": "d0c0a9920a51edba80b8652982849de0277ca329"
+    },
+    {
+      "source_path": "C:/Users/adrie/Documents/Coelo/docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d03-child-membership-fixed-replay.log",
+      "preserved_path": "evidence/d03-acompanhamento/r02-20260909/d03-child-membership-fixed-replay.log.txt",
+      "sha256": "78B7A31C3330C7AD159C76F6A9ACD1E2294C1B5B04D97489617E00909FD48E97",
+      "bytes": 4961,
+      "source_hash_verified": true,
+      "preserved_hash_verified": true,
+      "reproduction": "D00 existing final composer evidence; byte-for-byte copy; no new execution",
+      "git_ignored": false,
+      "provenance": "integrated-composer-fix-d0c0a992",
+      "base_sha": "803af52ad1846f003069914486e6f022fb8ce653",
+      "fix_commit": "d0c0a9920a51edba80b8652982849de0277ca329"
+    },
+    {
+      "source_path": "C:/Users/adrie/Documents/Coelo/docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d03-child-membership-contract-green.log",
+      "preserved_path": "evidence/d03-acompanhamento/r02-20260909/d03-child-membership-contract-green.log.txt",
+      "sha256": "3B7C59BF263DFE9BEE393C5391A5DC9E6B689826C8331EF8D7CB1BA206AA6A28",
+      "bytes": 4634,
+      "source_hash_verified": true,
+      "preserved_hash_verified": true,
+      "reproduction": "D00 existing final composer evidence; byte-for-byte copy; no new execution",
+      "git_ignored": false,
+      "provenance": "integrated-composer-fix-d0c0a992",
+      "base_sha": "803af52ad1846f003069914486e6f022fb8ce653",
+      "fix_commit": "d0c0a9920a51edba80b8652982849de0277ca329"
+    },
+    {
+      "source_path": "C:/Users/adrie/Documents/Coelo/docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d03-child-membership-guards.xml",
+      "preserved_path": "evidence/d03-acompanhamento/r02-20260909/d03-child-membership-guards.xml",
+      "sha256": "FE2042DA9328B050B8C461D3F17FA81FCF00BFE7959E1024455D34AF3D06073C",
+      "bytes": 3566,
+      "source_hash_verified": true,
+      "preserved_hash_verified": true,
+      "reproduction": "D00 existing final composer evidence; byte-for-byte copy; no new execution",
+      "git_ignored": false,
+      "provenance": "integrated-composer-fix-d0c0a992",
+      "base_sha": "803af52ad1846f003069914486e6f022fb8ce653",
+      "fix_commit": "d0c0a9920a51edba80b8652982849de0277ca329"
+    },
+    {
+      "source_path": "C:/Users/adrie/Documents/Coelo/docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d03-child-membership-diagnostic-native.log",
+      "preserved_path": "evidence/d03-acompanhamento/r02-20260909/d03-child-membership-diagnostic-native.log.txt",
+      "sha256": "0D35C15473265251CCA4DE4567A63306F4F000881C1023D13DE7F2B760F2FE1C",
+      "bytes": 5094,
+      "source_hash_verified": true,
+      "preserved_hash_verified": true,
+      "reproduction": "D00 existing final composer evidence; byte-for-byte copy; no new execution",
+      "git_ignored": false,
+      "provenance": "integrated-composer-fix-d0c0a992",
+      "base_sha": "803af52ad1846f003069914486e6f022fb8ce653",
+      "fix_commit": "d0c0a9920a51edba80b8652982849de0277ca329"
     }
   ]
 }

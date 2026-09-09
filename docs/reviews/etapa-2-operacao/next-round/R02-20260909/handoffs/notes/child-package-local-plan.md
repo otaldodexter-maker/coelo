@@ -5,7 +5,7 @@ source:
   - docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-remote-apply-migration.sql
   - packages/coelo_database/scripts/Prepare-SafeMigrationReplay.ps1
   - packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1
-status: proposed-not-executed
+status: local-six-pass-integrated-d00-r18
 generated_at: 2026-09-09
 ---
 
@@ -117,3 +117,28 @@ cache dinâmico continua U. Não aplicar o antigo patch HTTP interrompido.
 Os seis Pester verificam estrutura do modo, não executam os seis aceites SQL do
 compositor. O snapshot da fonte tem modos que podem evoluir: D00 deve preservar
 novos switches/hunks próprios ao integrar; este patch não substitui o wrapper.
+
+## Recibo final D00 r18 ? seis gates PASS
+
+O primeiro ensaio 3P/3B revelou que CREATE ROLE pelo postgres n?o-superuser
+produz uma associa??o autom?tica espec?fica via bootstrap OID10: ADMIN true,
+INHERIT false, SET false. D00 diagnosticou SQLSTATE55000 no guard que recusava
+qualquer associa??o; a corre??o captura OIDs e admite somente a tupla exata,
+revalidando role/criador/atributos antes do cleanup. Associa??es extras, op??es
+alteradas e substitui??o da identidade permanecem recusadas. Portanto a regra
+hist?rica de aus?ncia de qualquer membership ? substitu?da por esse pin nominal.
+
+Fix integrado d0c0a9920a51edba80b8652982849de0277ca329; harness SHA256 LF
+12328A21EA62657CE411B0575CF55C2E0E166A4373D0A89648557200CB040873, testeLF
+502131EC34C966EA9CF7469BBA231207FE53D2024E66F0F6FE4EB52675A7A926. D03 sincronizou
+somente esses dois arquivos j? commitados, sem criar outro fix ou repetir SQL.
+
+Replay80424:47SQL, seis gates PASS/0F/0B, exit0 e cleanup independente zero.
+Log preservado d03-child-membership-fixed-replay.log.txt, SHA256
+78B7A31C3330C7AD159C76F6A9ACD1E2294C1B5B04D97489617E00909FD48E97.
+Recibo d03-child-membership-final.json SHA256
+D19DFE20227DEB7EB9A50971BF9C0F8B140AECFF2E7A08B20E35581349196247.
+A evid?ncia inclui a ?rvore executada base803af52a com os hashesraw dos arquivos
+e o commit final d0c0a992. Novos5contratosoffline PASS;8guards existentes PASS
+sem soma. Payload740057 e manifesto1B31 inalterados. Cache1U e transporte/ledger
+MCP remoto continuam fora da prova. Nenhum banco foi aberto por D03 nesta consolida??o.

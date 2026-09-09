@@ -1,4 +1,5 @@
 # Preserve source evidence bytes, including original whitespace, across checkouts.
 *.log.txt -text -whitespace
 *.xml -text -whitespace
-manifest.json text eol=lf
+*.json -text -whitespace
+manifest.json text eol=lf whitespace
