@@ -1,0 +1,31 @@
+{
+  "package": "AP-MODELS-NOMINAL-20260909-v1",
+  "status": "local-candidate",
+  "sources": [
+    {
+      "path": "packages/coelo_database/migrations/20260901170731_access_profile_models_crud_and_catalog.sql",
+      "sha256_lf_utf8": "d00de32930d3a8bbfb098b9d77865d3dd2cf4274262c230c1f48a238de6aa0c1"
+    },
+    {
+      "path": "packages/coelo_database/migrations/20260901193000_name_access_profile_model_rpc_arguments.sql",
+      "sha256_lf_utf8": "dfb6968077af2f0e8e8435da1b2c449a57fd04604968fae1d729ec6c44770f77"
+    },
+    {
+      "path": "packages/coelo_database/migrations/20260908021821_access_profile_models_read_prelookup_authorization.sql",
+      "sha256_lf_utf8": "6258f28e19237d2141746291d33afc3e6e54a6b81d4060cd0ec5f876a6c0ea34"
+    },
+    {
+      "path": "packages/coelo_database/migrations/20260908182839_access_profile_models_aal1_phase_policy.sql",
+      "sha256_lf_utf8": "3ab0cb76c433de00a6c1d32ebb475c6d5ddcda50515eaa8b106d9b1f1a3a0c04"
+    },
+    {
+      "path": "packages/coelo_database/migrations/20260909174500_d04_access_models_scope_filter.sql",
+      "sha256_lf_utf8": "7151ff7653ff37ec80ba55fb35d894600d7bc674a865a586f548693574dfd8a1"
+    }
+  ],
+  "preflight_sha256": "f02361ecc0ba9d19316d8c391676b1d3d2497e16abe1b34958c268b57f7d6788",
+  "postflight_sha256": "94f97e4870b713559edb9689e2acaa0c7755d6a01c4e4b1c602d73a7c3206a94",
+  "package_sha256": "ee750d8bbc5ec445bde958d148df58e9b47f9a808137dfd1466b7a1fd0d77511",
+  "local_test_sha256": "5454fe850f01f73cc151792ad110f909d45afc1c3b6eea97db97fb26ec83f139",
+  "remote_authorized": false
+}
