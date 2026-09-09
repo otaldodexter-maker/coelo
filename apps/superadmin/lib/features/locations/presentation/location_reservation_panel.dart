@@ -71,8 +71,8 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
   bool _weekly = false;
   LocationReservationDraft? _pendingDraft;
   String? _pendingRequestId;
-  String? _policyRequestId;
-  final Map<String, String> _cancelRequestIds = {};
+  ({LocationSchedulingPolicy policy, int expectedVersion, String requestId})? _policyAttempt;
+  final Map<String, ({int expectedVersion, String requestId})> _cancelAttempts = {};
   bool _loading = false;
   bool _busy = false;
   int _generation = 0;
@@ -106,8 +106,8 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
         oldWidget.canOverride != widget.canOverride) {
       _generation++;
       _clearAttempt();
-      _policyRequestId = null;
-      _cancelRequestIds.clear();
+      _policyAttempt = null;
+      _cancelAttempts.clear();
       _loading = false;
       _busy = false;
       _policy = null;
@@ -158,7 +158,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
       setState(() {
         _loading = false;
         _policy = policy;
-        _selectedPolicy = policy.policy;
+        _selectedPolicy = _policyAttempt?.policy ?? policy.policy;
         _items = reset ? page.items : [..._items, ...page.items];
         _nextId = page.nextId;
       });
@@ -172,9 +172,17 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
   }
 
   Future<void> _savePolicy() async {
-    final policy = _selectedPolicy;
+    final policy = _policyAttempt?.policy ?? _selectedPolicy;
     final current = _policy;
     if (!_mayManage || policy == null || current == null || _loading || _busy) return;
+    final attempt =
+        _policyAttempt ??
+        (
+          policy: policy,
+          expectedVersion: current.managementVersion,
+          requestId: (widget.requestIdFactory ?? newLocationRequestId)(),
+        );
+    _policyAttempt = attempt;
     final generation = _generation;
     setState(() {
       _busy = true;
@@ -185,21 +193,21 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
       final result = await widget.gateway.setPolicy(
         locationId: widget.locationId,
         scope: widget.scope,
-        policy: policy,
-        expectedVersion: current.managementVersion,
-        requestId: _policyRequestId ??= (widget.requestIdFactory ?? newLocationRequestId)(),
+        policy: attempt.policy,
+        expectedVersion: attempt.expectedVersion,
+        requestId: attempt.requestId,
       );
       if (!_isCurrent(generation, manage: true)) return;
       setState(() {
         _busy = false;
         _policy = result;
         _selectedPolicy = result.policy;
-        _policyRequestId = null;
+        _policyAttempt = null;
         _notice = 'Política de conflito atualizada.';
       });
     } on LocationReservationConflictException {
       if (!_isCurrent(generation, manage: true)) return;
-      _policyRequestId = null;
+      _policyAttempt = null;
       _fail('A política mudou enquanto esta tela estava aberta. Recarregue.');
     } on LocationReservationDeniedException {
       if (!_isCurrent(generation, manage: true)) return;
@@ -347,6 +355,13 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
 
   Future<void> _cancel(LocationReservation reservation) async {
     if (!_mayManage || _loading || _busy) return;
+    final attempt = _cancelAttempts.putIfAbsent(
+      reservation.id,
+      () => (
+        expectedVersion: reservation.managementVersion,
+        requestId: (widget.requestIdFactory ?? newLocationRequestId)(),
+      ),
+    );
     final generation = _generation;
     setState(() {
       _busy = true;
@@ -357,16 +372,13 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
         locationId: widget.locationId,
         consumer: widget.consumer,
         reservationId: reservation.id,
-        expectedVersion: reservation.managementVersion,
-        requestId: _cancelRequestIds.putIfAbsent(
-          reservation.id,
-          widget.requestIdFactory ?? newLocationRequestId,
-        ),
+        expectedVersion: attempt.expectedVersion,
+        requestId: attempt.requestId,
       );
       if (!_isCurrent(generation, manage: true)) return;
       setState(() {
         _busy = false;
-        _cancelRequestIds.remove(reservation.id);
+        _cancelAttempts.remove(reservation.id);
         _items = [
           for (final item in _items)
             if (item.id == cancelled.id) cancelled else item,
@@ -375,7 +387,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
       });
     } on LocationReservationConflictException {
       if (!_isCurrent(generation, manage: true)) return;
-      _cancelRequestIds.remove(reservation.id);
+      _cancelAttempts.remove(reservation.id);
       _fail('A reserva mudou enquanto esta tela estava aberta. Recarregue.');
     } on LocationReservationDeniedException {
       if (!_isCurrent(generation, manage: true)) return;
@@ -389,6 +401,16 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
   void _clearAttempt() {
     _pendingDraft = null;
     _pendingRequestId = null;
+  }
+
+  void _changeDraft(VoidCallback change) {
+    setState(() {
+      change();
+      if (_pendingRequestId == null) {
+        _pendingDraft = null;
+        _justification.clear();
+      }
+    });
   }
 
   void _fail(String message) {
@@ -469,7 +491,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
                   _PolicyChoice.block => 'Bloquear sobreposição',
                   _PolicyChoice.warn => 'Alertar e exigir confirmação',
                 },
-                enabled: _mayManage && !_busy && _policyRequestId == null,
+                enabled: _mayManage && !_busy && _policyAttempt == null,
                 onChanged: (value) => setState(
                   () => _selectedPolicy = switch (value) {
                     _PolicyChoice.unset => null,
@@ -512,7 +534,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
                       child: CoeloDateTimeField(
                         key: const Key('location-reservation-start'),
                         value: _startsAt,
-                        onChanged: (value) => setState(() => _startsAt = value),
+                        onChanged: (value) => _changeDraft(() => _startsAt = value),
                         firstDate: DateTime(1),
                         lastDate: DateTime(9999, 12, 31),
                         labelText: 'Início',
@@ -525,7 +547,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
                       child: CoeloDateTimeField(
                         key: const Key('location-reservation-end'),
                         value: _endsAt,
-                        onChanged: (value) => setState(() => _endsAt = value),
+                        onChanged: (value) => _changeDraft(() => _endsAt = value),
                         firstDate: _startsAt ?? DateTime(1),
                         lastDate: DateTime(9999, 12, 31),
                         labelText: 'Fim',
@@ -543,7 +565,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
                         options: const [false, true],
                         optionLabel: (weekly) => weekly ? 'Semanal' : 'Uma vez',
                         enabled: !_busy && _pendingRequestId == null,
-                        onChanged: (weekly) => setState(() => _weekly = weekly),
+                        onChanged: (weekly) => _changeDraft(() => _weekly = weekly),
                       ),
                     ),
                   ],
@@ -562,7 +584,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
                           options: const [0, 1, 2, 3, 4, 5, 6],
                           selectedValues: _weekdays,
                           optionLabel: (value) => _weekdayLabels[value],
-                          onChanged: (values) => setState(() {
+                          onChanged: (values) => _changeDraft(() {
                             _weekdays
                               ..clear()
                               ..addAll(values);
@@ -578,7 +600,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
                           value: _until == null
                               ? null
                               : DateTimeRange(start: _until!, end: _until!),
-                          onChanged: (value) => setState(() => _until = value?.start),
+                          onChanged: (value) => _changeDraft(() => _until = value?.start),
                           firstDate: _startsAt ?? DateTime(1),
                           lastDate: DateTime(9999, 12, 31),
                           selectionMode: CoeloDateSelectionMode.single,
@@ -591,6 +613,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
                         child: CoeloFormTextField(
                           fieldKey: const Key('location-reservation-time-zone'),
                           controller: _timeZone,
+                          onChanged: (_) => _changeDraft(() {}),
                           labelText: 'Fuso da recorrência',
                           prefixIcon: Icons.public_rounded,
                           enabled: !_busy && _pendingRequestId == null,

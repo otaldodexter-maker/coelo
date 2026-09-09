@@ -353,6 +353,95 @@ void main() {
     expect(gateway.creates.single.draft.conflictJustification, 'Reunião pedagógica excepcional');
   });
 
+  testWidgets('editing an assessed conflict requires a fresh assessment', (tester) async {
+    gateway.assessment = LocationReservationAssessment(
+      policy: LocationSchedulingPolicy.warn,
+      conflict: LocationReservationConflict.confirmable,
+      conflicting: [reservation().occurrences.single],
+    );
+    await tester.pumpWidget(panel());
+    await tester.pumpAndSettle();
+    await fillOnce(tester);
+    await tester.tap(find.byKey(const Key('location-reservation-assess')));
+    await tester.pumpAndSettle();
+
+    expect(
+      tester
+          .widget<CoeloDateTimeField>(find.byKey(const Key('location-reservation-start')))
+          .enabled,
+      isTrue,
+    );
+    tester
+        .widget<CoeloDateTimeField>(find.byKey(const Key('location-reservation-start')))
+        .onChanged(DateTime(2026, 9, 9, 14));
+    tester
+        .widget<CoeloDateTimeField>(find.byKey(const Key('location-reservation-end')))
+        .onChanged(DateTime(2026, 9, 9, 15));
+    await tester.pump();
+
+    expect(find.byKey(const Key('location-reservation-confirm-conflict')), findsNothing);
+    gateway.assessment = LocationReservationAssessment(
+      policy: LocationSchedulingPolicy.warn,
+      conflict: LocationReservationConflict.none,
+      conflicting: const [],
+    );
+    await tester.tap(find.byKey(const Key('location-reservation-assess')));
+    await tester.pumpAndSettle();
+
+    expect(gateway.assessed, hasLength(2));
+    expect(gateway.creates.single.draft.firstOccurrence.startsAt, DateTime(2026, 9, 9, 14).toUtc());
+  });
+
+  testWidgets('editing a weekly time zone invalidates its assessed conflict', (tester) async {
+    gateway.assessment = LocationReservationAssessment(
+      policy: LocationSchedulingPolicy.warn,
+      conflict: LocationReservationConflict.confirmable,
+      conflicting: [reservation().occurrences.single],
+    );
+    await tester.pumpWidget(panel());
+    await tester.pumpAndSettle();
+    await fillOnce(tester);
+    tester
+        .widget<CoeloAdminSingleSelectField<bool>>(
+          find.byKey(const Key('location-reservation-recurrence')),
+        )
+        .onChanged(true);
+    await tester.pump();
+    tester
+        .widget<CoeloAdminMultiSelectField<int>>(
+          find.byKey(const Key('location-reservation-weekdays')),
+        )
+        .onChanged({1});
+    tester
+        .widget<CoeloDateRangeField>(find.byKey(const Key('location-reservation-until')))
+        .onChanged(DateTimeRange(start: DateTime(2026, 12, 18), end: DateTime(2026, 12, 18)));
+    await tester.enterText(
+      find.byKey(const Key('location-reservation-time-zone')),
+      'America/Sao_Paulo',
+    );
+    await tester.tap(find.byKey(const Key('location-reservation-assess')));
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<TextFormField>(find.byKey(const Key('location-reservation-time-zone'))).enabled,
+      isTrue,
+    );
+    await tester.enterText(find.byKey(const Key('location-reservation-time-zone')), 'UTC');
+    await tester.pump();
+
+    expect(find.byKey(const Key('location-reservation-confirm-conflict')), findsNothing);
+    gateway.assessment = LocationReservationAssessment(
+      policy: LocationSchedulingPolicy.warn,
+      conflict: LocationReservationConflict.none,
+      conflicting: const [],
+    );
+    await tester.tap(find.byKey(const Key('location-reservation-assess')));
+    await tester.pumpAndSettle();
+
+    expect(gateway.assessed, hasLength(2));
+    expect((gateway.creates.single.draft.recurrence as LocationReservationWeekly).timeZone, 'UTC');
+  });
+
   testWidgets('transport retry preserves the request id and frozen draft', (tester) async {
     gateway.createError = const LocationReservationGatewayUnavailableException();
     await tester.pumpWidget(panel());
@@ -434,6 +523,13 @@ void main() {
     await tester.tap(find.byKey(const Key('location-reservation-policy-save')));
     await tester.pumpAndSettle();
 
+    gateway.policy = const LocationSchedulingPolicyState(
+      scope: scope,
+      policy: LocationSchedulingPolicy.block,
+      managementVersion: 99,
+    );
+    await tester.tap(find.byKey(const Key('location-reservation-reload')));
+    await tester.pumpAndSettle();
     gateway.policyError = null;
     await tester.tap(find.byKey(const Key('location-reservation-policy-save')));
     await tester.pumpAndSettle();
@@ -457,6 +553,9 @@ void main() {
     await tester.tap(cancel);
     await tester.pumpAndSettle();
 
+    gateway.listed = [reservation(version: 99)];
+    await tester.tap(find.byKey(const Key('location-reservation-reload')));
+    await tester.pumpAndSettle();
     gateway.cancelError = null;
     await tester.tap(cancel);
     await tester.pumpAndSettle();
