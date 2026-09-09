@@ -733,6 +733,15 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
         _unauthorized = false;
         _loading = false;
       });
+    } on Object {
+      if (!_isCurrentLoad(requestVersion, repository)) return;
+      setState(() {
+        _items = const [];
+        _total = 0;
+        _errorMessage = 'Verifique sua conexão e tente novamente.';
+        _unauthorized = false;
+        _loading = false;
+      });
     }
   }
 
