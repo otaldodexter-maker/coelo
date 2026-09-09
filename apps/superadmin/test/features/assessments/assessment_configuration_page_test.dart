@@ -67,6 +67,23 @@ void main() {
     expect(tester.widget<OutlinedButton>(saveButton).onPressed, isNotNull);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('configuration recovers when saving throws an Error', (tester) async {
+    final repository = _DelayedSaveConfigurationRepository();
+
+    await tester.pumpWidget(_app(repository, 'activity-a'));
+    await tester.pumpAndSettle();
+
+    final saveButton = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.tap(saveButton);
+    await tester.pump();
+    repository.pendingSave.completeError(AssertionError('invalid response'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Não foi possível salvar. Tente novamente.'), findsOneWidget);
+    expect(tester.widget<OutlinedButton>(saveButton).onPressed, isNotNull);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 Widget _app(AssessmentRepository repository, String activityId) => MaterialApp(
