@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:coelo_api/locations.dart';
 import 'package:coelo_domain/locations.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_superadmin/features/locations/domain/location_capabilities.dart';
 import 'package:coelo_superadmin/features/locations/domain/location_catalog_writer.dart';
 import 'package:coelo_superadmin/features/locations/presentation/location_copy_dialog.dart';
+import 'package:coelo_superadmin/features/locations/presentation/location_detail_panel.dart';
 import 'package:coelo_superadmin/features/locations/presentation/locations_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -245,7 +247,9 @@ void main() {
       await tester.tap(find.byKey(const Key('location-copy-confirm')));
       await tester.pump();
       final readsBefore = reader.details.length;
-      writer.results.single.complete(locationFixture(id: locationB, name: 'Sala de leitura (cópia)'));
+      writer.results.single.complete(
+        locationFixture(id: locationB, name: 'Sala de leitura (cópia)'),
+      );
       await tester.pump(const Duration(milliseconds: 400));
 
       // The page opens the copy, which means a read of the new location, not of
@@ -269,6 +273,105 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('location-copy-dialog')), findsNothing);
       expect(writer.calls, isEmpty);
+    });
+
+    testWidgets('a copy response from context A cannot notify context B', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final notified = <String>[];
+
+      Widget panel({required String id, required int revision, required String callbackOwner}) =>
+          MaterialApp(
+            theme: CoeloTheme.light,
+            home: Scaffold(
+              body: LocationDetailPanel(
+                id: id,
+                scope: scopeA,
+                reader: reader,
+                writer: writer,
+                capabilities: const LocationCapabilities(copy: true),
+                sessionAvailable: true,
+                contextRevision: revision,
+                requestIdFactory: () => issuedIds.removeAt(0),
+                onBack: () {},
+                onCopied: (_) => notified.add(callbackOwner),
+              ),
+            ),
+          );
+
+      await tester.pumpWidget(panel(id: locationA, revision: 0, callbackOwner: 'A'));
+      await tester.pump();
+      reader.details.last.result.complete(locationFixture());
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('location-detail-copy')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('location-copy-confirm')));
+      await tester.pump();
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        writer.results.single.complete(locationFixture(id: locationB));
+      });
+      await tester.pumpWidget(panel(id: locationA, revision: 0, callbackOwner: 'B'));
+      await tester.pump();
+
+      expect(notified, isEmpty);
+    });
+
+    testWidgets('an in-flight copy cannot cross to a new id and revision', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final notified = <String>[];
+
+      Widget panel({
+        required String id,
+        required int revision,
+        required String callbackOwner,
+        bool completeCopyDuringBuild = false,
+      }) => MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) {
+              if (completeCopyDuringBuild && !writer.results.single.isCompleted) {
+                writer.results.single.complete(locationFixture(id: locationB));
+              }
+              return LocationDetailPanel(
+                id: id,
+                scope: scopeA,
+                reader: reader,
+                writer: writer,
+                capabilities: const LocationCapabilities(copy: true),
+                sessionAvailable: true,
+                contextRevision: revision,
+                requestIdFactory: () => issuedIds.removeAt(0),
+                onBack: () {},
+                onCopied: (_) => notified.add(callbackOwner),
+              );
+            },
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(panel(id: locationA, revision: 0, callbackOwner: 'A'));
+      await tester.pump();
+      reader.details.last.result.complete(locationFixture());
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('location-detail-copy')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('location-copy-confirm')));
+      await tester.pump();
+
+      await tester.pumpWidget(
+        panel(
+          id: locationB,
+          revision: 1,
+          callbackOwner: 'B',
+          completeCopyDuringBuild: true,
+        ),
+      );
+      await tester.pump();
+
+      expect(notified, isEmpty);
     });
   });
 }
