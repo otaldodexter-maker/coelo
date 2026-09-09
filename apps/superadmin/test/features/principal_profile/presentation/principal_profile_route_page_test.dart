@@ -148,6 +148,17 @@ void main() {
     expect(find.text('Unidade Centro'), findsNothing);
   });
 
+  testWidgets('never tells a real user the Perfil is a prototype', (tester) async {
+    await pump(tester, repository: _StubAboutRepository(page: null));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Mensagem'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Mensagem ainda não está disponível.'), findsOneWidget);
+    expect(find.textContaining('experiência completa'), findsNothing);
+  });
+
   testWidgets('requests the About page for the authorized subject only', (tester) async {
     final repository = _StubAboutRepository(page: null);
     await pump(tester, repository: repository);

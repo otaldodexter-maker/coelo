@@ -101,13 +101,13 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
           ? null
           : PrincipalGlobalHeader(
               keyPrefix: 'principal-profile',
-              onOpenMenu: () => _runOrPreview(context, widget.onOpenMenu, 'Menu'),
+              onOpenMenu: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenMenu, 'Menu'),
               onOpenNotifications: () =>
-                  _runOrPreview(context, widget.onOpenNotifications, 'Notificações'),
+                  _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenNotifications, 'Notificações'),
               onReportProblem: () =>
-                  _runOrPreview(context, widget.onReportBug, 'Reportar problema'),
+                  _runOrPreview(context, widget.showPreviewFeeds, widget.onReportBug, 'Reportar problema'),
               onOpenProfile: () =>
-                  _runOrPreview(context, widget.onOpenContext, 'Troca de contexto'),
+                  _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenContext, 'Troca de contexto'),
             ),
       body: Stack(
         fit: StackFit.expand,
@@ -169,12 +169,12 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
             PrincipalGlobalNavigation(
               selected: PrincipalDestination.home,
               onHome: () =>
-                  _runOrPreview(context, widget.onOpenHome ?? widget.onOpenHappens, 'Home'),
-              onForYou: () => _runOrPreview(context, widget.onOpenForYou, 'Para você'),
-              onPublishNow: () => _runOrPreview(context, widget.onPublishNow, 'Publicar no Agora'),
-              onMoments: () => _runOrPreview(context, widget.onOpenMoments, 'Momentos'),
-              onSearch: () => _runOrPreview(context, widget.onOpenSearch, 'Pesquisar'),
-              onMessages: () => _runOrPreview(context, widget.onOpenMessages, 'Mensagens'),
+                  _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenHome ?? widget.onOpenHappens, 'Home'),
+              onForYou: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenForYou, 'Para você'),
+              onPublishNow: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onPublishNow, 'Publicar no Agora'),
+              onMoments: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenMoments, 'Momentos'),
+              onSearch: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenSearch, 'Pesquisar'),
+              onMessages: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenMessages, 'Mensagens'),
             ),
         ],
       ),
@@ -187,9 +187,9 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
       _IdentitySection(
         data: widget.data,
         wide: !compact,
-        onMessage: () => _runOrPreview(context, widget.onMessage, 'Mensagem'),
+        onMessage: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onMessage, 'Mensagem'),
         onOpenEdit: widget.onOpenEdit,
-        onOpenBio: () => _runOrPreview(context, widget.onOpenBio, 'Biografia completa'),
+        onOpenBio: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenBio, 'Biografia completa'),
       ),
       if (widget.data.metrics.isNotEmpty) ...[
         const SizedBox(height: CoeloSpacing.space4),
@@ -203,7 +203,7 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
         const SizedBox(height: CoeloSpacing.space5),
         _LinksSection(
           links: widget.data.links,
-          onOpenAll: () => _runOrPreview(context, widget.onOpenLinks, 'Todos os vínculos'),
+          onOpenAll: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenLinks, 'Todos os vínculos'),
         ),
       ],
       if (widget.data.nextEvent case final event?) ...[
@@ -243,18 +243,35 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
   );
 }
 
-void _showPrototypeMessage(BuildContext context, String label) {
-  ScaffoldMessenger.of(
-    context,
-  ).showSnackBar(SnackBar(content: Text('$label estará disponível na experiência completa.')));
+/// Answers an action that has no destination.
+///
+/// A production surface never tells the user it is a prototype: it says the
+/// capability is not available yet. The preview keeps its own wording.
+void _showUnavailableMessage(BuildContext context, String label, {required bool preview}) {
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        content: Text(
+          preview
+              ? '$label estará disponível na experiência completa.'
+              : '$label ainda não está disponível.',
+        ),
+      ),
+    );
 }
 
-void _runOrPreview(BuildContext context, VoidCallback? action, String fallbackLabel) {
+void _runOrPreview(
+  BuildContext context,
+  bool preview,
+  VoidCallback? action,
+  String fallbackLabel,
+) {
   if (action != null) {
     action();
     return;
   }
-  _showPrototypeMessage(context, fallbackLabel);
+  _showUnavailableMessage(context, fallbackLabel, preview: preview);
 }
 
 final class _ProfileContextAside extends StatelessWidget {
