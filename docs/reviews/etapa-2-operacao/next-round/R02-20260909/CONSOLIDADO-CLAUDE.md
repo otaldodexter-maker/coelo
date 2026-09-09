@@ -1787,3 +1787,92 @@ pela própria evidência.
 **Uma alteração de skill** em `.agents/skills/coelo-supabase/SKILL.md`, commitada
 na branch de L02 para viajar até D00, com a invariante durável sobre pacote
 revisável não ser pacote aplicável.
+
+---
+
+# FECHAMENTO DEFINITIVO — L01, SHA `3697dd49e`
+
+HEAD e `origin/codex/e2-r02-l01-publicacoes` iguais. Alerta sobre o registro
+defasado reforçado no handoff dele, para haver dois avisos independentes.
+
+## Feito, por `action_id` e por eixo
+
+**Eixo Cloudflare: nada, e não era aplicável a nenhum ID dele nesta rodada.**
+
+| `action_id` | Eixos | Situação |
+| --- | --- | --- |
+| `acontece.remove` | FE + BE Supabase (local) | RPC `withdraw_happens_post`, capacidade, projeção com identidade/versão/autorização; cliente com afordância, confirmação, negação, conflito e releitura. **pgTAP 32/32 reexecutado por ele** + 9 widget |
+| `agora.expire` | BE Supabase (local) | Transição material de estado com varredura e auditoria — o enum tinha `expired` **inalcançável**. pgTAP 16/16 reexecutado |
+| `momentos.view` | FE + BE Supabase (local) | `list_visible_moments` com cursor e ids opacos + repositório que não existia. **PARCIAL: o contrato existe e está testado, mas não chega à tela**, porque a rota resolve incondicionalmente para indisponível |
+| `momentos.remove` | FE + BE Supabase (local) | `withdraw_moment` espelhando o Acontece. pgTAP 23/23 reexecutado |
+| `momentos.create`, `momentos.publish` | FE | A porta de mídia que faltava; **sem ela a rota produtiva não publicava nada**. 88 verdes |
+| `circulars.attach` | FE + BE Supabase | Anexos selecionáveis e legíveis nas rotas reais, mídia nova em R2 privado, gateway reescrito. pgTAP 46/46 e Deno 27/0 reexecutados; contrato anterior ainda 60/60 |
+| `agora.create`, `agora.publish` | **FE verificado com evidência** | Não implementou nada — **estavam implementados e sem verificação** |
+| `acontece.create`, `acontece.publish` | FE verificado **para escopo com turma** | |
+| `acontece.feed` | **PARCIAL, NÃO FECHA** | Feed de publicações verificado; a projeção de Circulares **nunca chega**, e é subaceite obrigatório deste ID |
+
+**E2E: 0 de 23.** Nenhuma ação atravessou aplicação remota, persistência e
+releitura autenticada.
+
+## Pendente, pela distinção que importa
+
+**(a) Por decisão do Owner ou de D00:** aplicação do pacote remoto — seis
+migrations e a Edge Function com os segredos R2, pronto e revisável, **é o que
+sozinho decide se a rodada produz E2E**; o estreitamento de quem pode publicar,
+divergente do esquema; as três injeções de composição e a correção dos defeitos
+no router; a decisão sobre as três migrations de 01/09 com rótulos omitidos; e a
+retirada manual no Agora, sem decisão canônica.
+
+**(b) Por bloqueio de plataforma:** a varredura de expiração do Agora **não tem
+agendador implantado**; o viewer do Agora não reproduz vídeo, à espera de decisão
+sobre o player canônico; e o `catalog_kind` de chat não aplica sem a cadeia de
+Formulários mais auth interno — **pré-condição de preflight**.
+
+**(c) Por falta de tempo:** a RPC de staging/commit e a Edge Function
+`chat-media`, que são dele e faltam para o `chat.attach` de L02; a audiência do
+Agora, que exigiria mexer em `list_my_principal_contexts`, **compartilhada**, e
+que ele **não abriu perto do corte**; e a oitava linha da proveniência, com
+motivo mapeado.
+
+## Defeitos registrados e não corrigidos
+
+**Presos em teste executável** — `principal_happens_composition_gaps_test.dart`
+(4 casos) e `principal_now_real_route_test.dart`: feed misto nunca repassado;
+publicar exige turma; **recusa de escopo indistinguível de falha de configuração,
+no Acontece E no Agora**; carrossel Agora vazio na Acontece real; retorno
+contextual do Agora remontando em vez de restaurar.
+**Todos verificados como sobreviventes ao movimento de hospedagem em `dev`.**
+
+**Só descritos, em `handoffs/L01.md`:** `/principal-moments` e, em `dev`,
+`/principal-profile` resolvendo incondicionalmente para indisponível; as três
+migrations de 01/09, com a varredura completa e a **exclusão dos 14 falsos
+positivos pela data**; e a observação calibrada de que `save_now_draft` não
+restringe audiência por papel — **não é defeito de segurança**, é pré-condição
+para quando as audiências forem abertas.
+
+## O que só L01 sabia, escrito antes de encerrar
+
+1. **A semântica dos testes de defeito é invertida.** Verde é o esperado;
+   vermelho significa que a composição foi corrigida e o teste deve ser
+   **invertido, não apagado**.
+2. **`.mixed` fixa `feedScope = null`** — ao aplicar a injeção 1, a página passa
+   a ler **só** o feed misto. É o desejado, mas **muda o caminho de leitura e não
+   é óbvio no diff**.
+3. **Prioridade entre as três injeções:** a do feed misto é sítio único, cadeia
+   pronta, e fecha o subaceite obrigatório de `acontece.feed`. **Se D00 fizer uma
+   só, é essa.**
+4. **O padrão dos rótulos:** as três migrations quebradas são o mesmo lote de
+   01/09, do módulo `communication`, escritas juntas depois da remoção do default.
+   **Provavelmente do mesmo modelo — se ele existir, a próxima nasce quebrada.**
+   Vale procurar o modelo, não só corrigir os três arquivos.
+5. **`MSYS_NO_PATHCONV=1`** antes de `docker exec` no Git Bash do Windows, senão
+   o `psql` não acha o arquivo **sem erro que explique**.
+6. **A união do conflito de Momentos é a coisa mais frágil da integração inteira:**
+   é a única em que resolver no automático **apaga função sem quebrar compilação**.
+
+## Recursos
+
+Tudo encerrado e verificado: nenhum container, subagente, agendamento, processo
+em background ou stash. Árvore limpa exceto duas fontes compartilhadas
+preservadas — `PRINCIPAL.md` saiu da lista porque `dev` já a integrou.
+**`superadmin_router.dart` e o resto de `lib/app/` nunca foram tocados por ele.**
