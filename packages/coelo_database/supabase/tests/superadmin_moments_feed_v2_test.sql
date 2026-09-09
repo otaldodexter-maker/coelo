@@ -25,7 +25,7 @@
 
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(47);
+select plan(51);
 
 -- === Contract surface =====================================================
 select has_function('public', 'list_visible_moments',
@@ -36,6 +36,36 @@ select has_function('app_private', 'moments_audience_matches_role',
 select has_function('app_private', 'moments_viewer_role_class',
   array['uuid','uuid','uuid','uuid','uuid']);
 select has_table('app_private', 'moments_media_read_tickets', 'the ticket store exists');
+-- The store is created with `if not exists`, which is right for a re-runnable
+-- package and wrong as a shape guarantee: a replay after this candidate is
+-- revised keeps whatever shape ran first, silently. These asserts turn that into
+-- a red line instead of a surprise — a ticket that lost its expiry, or gained a
+-- nullable viewer, would still pass `has_table`.
+select columns_are(
+  'app_private',
+  'moments_media_read_tickets',
+  array['token', 'media_asset_id', 'viewer_person_id', 'expires_at', 'created_at'],
+  'the ticket store carries exactly the columns the redemption relies on');
+select col_not_null(
+  'app_private', 'moments_media_read_tickets', 'viewer_person_id',
+  'a ticket is always bound to a viewer');
+select col_not_null(
+  'app_private', 'moments_media_read_tickets', 'expires_at',
+  'a ticket always carries an expiry, so redemption can compare against it');
+-- Checked as "relative to now()", not as an exact default string: how Postgres
+-- renders an interval literal is a formatting detail, and pinning it would make
+-- this assert fail for the wrong reason on replay. What must not drift is that
+-- the expiry is computed at insert from the clock, never a fixed timestamp or
+-- nothing at all.
+select ok(
+  (select pg_catalog.pg_get_expr(attribute_default.adbin, attribute_default.adrelid)
+     from pg_catalog.pg_attrdef attribute_default
+     join pg_catalog.pg_attribute attribute
+       on attribute.attrelid = attribute_default.adrelid
+      and attribute.attnum = attribute_default.adnum
+    where attribute_default.adrelid = 'app_private.moments_media_read_tickets'::regclass
+      and attribute.attname = 'expires_at') like '%now()%',
+  'the ticket expiry is computed from the clock at insert, not fixed or absent');
 
 -- The projection returns descriptors, never storage coordinates.
 select set_eq(
