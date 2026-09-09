@@ -376,6 +376,32 @@ void main() {
     expect(repository.savedApplication?.inheritanceMode, RoutineInheritanceMode.inherited);
   });
 
+  testWidgets('rejects an invalid draft before changing inheritance mode', (tester) async {
+    final repository = _RoutineRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: DailyRoutineWizardPage(
+          repository: repository,
+          logout: unavailableSuperadminLogout,
+          entryId: 'application-id',
+          entryKind: RoutineEntryKind.application,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    const invalidTime = '08:7';
+    final startTime = find.byKey(const Key('daily-routine-application-starts-at'));
+    await tester.enterText(startTime, invalidTime);
+    await tester.tap(find.byKey(const Key('daily-routine-inheritance-toggle')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nao foi possivel alterar a heranca.'), findsOneWidget);
+    expect(repository.savedApplication, isNull);
+    expect(tester.widget<CoeloFormTextField>(startTime).controller.text, invalidTime);
+  });
+
   testWidgets('renders scheduled fields and never exposes raw scope identifiers', (tester) async {
     final repository = _RoutineRepository();
     await tester.pumpWidget(
