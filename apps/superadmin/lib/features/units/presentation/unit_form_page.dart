@@ -1,3 +1,4 @@
+import 'package:coelo_domain/locations.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -9,6 +10,8 @@ import '../../auth/domain/logout_action.dart';
 import '../../institutions/data/institution_location_service.dart';
 import '../../institutions/domain/institution_record.dart';
 import '../../institutions/presentation/widgets/institution_form_dialogs.dart';
+import '../../locations/domain/location_catalog_reader.dart';
+import '../../locations/presentation/locations_map_section.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_location_map_preview.dart';
@@ -32,6 +35,10 @@ final class UnitFormPage extends StatefulWidget {
     this.onEditGroup,
     this.onCreateActivity,
     this.onEditActivity,
+    this.locationCatalogReader = const UnavailableLocationCatalogReader(),
+    this.locationSessionAvailable = false,
+    this.locationContextRevision = 0,
+    this.onOpenLocations,
     super.key,
   });
 
@@ -46,6 +53,10 @@ final class UnitFormPage extends StatefulWidget {
   final ValueChanged<String>? onEditGroup;
   final void Function(String institutionId, String? unitId)? onCreateActivity;
   final ValueChanged<String>? onEditActivity;
+  final LocationCatalogReader locationCatalogReader;
+  final bool locationSessionAvailable;
+  final int locationContextRevision;
+  final VoidCallback? onOpenLocations;
 
   @override
   State<UnitFormPage> createState() => _UnitFormPageState();
@@ -797,6 +808,17 @@ final class _UnitFormPageState extends State<UnitFormPage> {
             _text('city'),
             _text('state'),
           ].where((part) => part.isNotEmpty).join(', '),
+        ),
+        const SizedBox(height: CoeloSpacing.space5),
+        LocationsMapSection(
+          ownerKind: LocationOwnerKind.unit,
+          scope: _original == null
+              ? null
+              : LocationScope.unit(institutionId: _original!.institutionId, unitId: _original!.id),
+          reader: widget.locationCatalogReader,
+          sessionAvailable: widget.locationSessionAvailable,
+          contextRevision: widget.locationContextRevision,
+          onOpenCatalog: widget.onOpenLocations,
         ),
       ],
     ),
