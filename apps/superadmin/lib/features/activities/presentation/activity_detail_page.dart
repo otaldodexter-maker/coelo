@@ -20,6 +20,7 @@ final class ActivityDetailPage extends StatefulWidget {
     this.onAssessmentSettings,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
+    this.reservationBuilder,
     super.key,
   });
 
@@ -31,6 +32,7 @@ final class ActivityDetailPage extends StatefulWidget {
   final ValueChanged<ActivityDetail>? onAssessmentSettings;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
+  final Widget Function(BuildContext, ActivityDetail)? reservationBuilder;
 
   @override
   State<ActivityDetailPage> createState() => _ActivityDetailPageState();
@@ -167,6 +169,7 @@ final class _ActivityDetailPageState extends State<ActivityDetailPage> {
       detail: _detail!,
       onEdit: widget.onEdit,
       onAssessmentSettings: widget.onAssessmentSettings,
+      reservationBuilder: widget.reservationBuilder,
     ),
   };
 }
@@ -176,11 +179,13 @@ final class _ActivityDetailContent extends StatelessWidget {
     required this.detail,
     required this.onEdit,
     required this.onAssessmentSettings,
+    required this.reservationBuilder,
   });
 
   final ActivityDetail detail;
   final VoidCallback? onEdit;
   final ValueChanged<ActivityDetail>? onAssessmentSettings;
+  final Widget Function(BuildContext, ActivityDetail)? reservationBuilder;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -284,6 +289,10 @@ final class _ActivityDetailContent extends StatelessWidget {
                 ],
               ),
       ),
+      if (reservationBuilder != null) ...[
+        const SizedBox(height: CoeloSpacing.space4),
+        reservationBuilder!(context, detail),
+      ],
     ],
   );
 }
