@@ -117,3 +117,152 @@ provas das três rotas), `test/features/principal_profile`,
 `test/features/principal_for_you` e `test/features/profile_about`. Na minha
 branch esse conjunto está em P=214, F=10, com as 10 sendo o golden drift
 pré-existente da base.
+
+## Apêndice — builders resolvidos, prontos para colar
+
+Extraídos da minha HEAD `40294a201` e reindentados para a lista `routes:` do
+`ShellRoute` de `dev`, com `embedded: true` já acrescentado nas duas composition
+roots. Substituem, em `dev`, os três blocos que hoje resolvem para
+`_unavailableCompositionRootRoute` — e o terceiro é novo, porque
+`/principal-profile/edit` não existe lá.
+
+A indentação assume o mesmo nível dos `GoRoute` vizinhos dentro do `ShellRoute`
+(dez espaços). Confirmar com `dart format` depois de colar.
+
+```dart
+          GoRoute(
+            path: SuperadminRoutes.principalForYou,
+            name: SuperadminRoutes.principalForYouName,
+            builder: (context, state) => PrincipalRuntimeContextRoute(
+              repository: principalRuntimeContextRepository,
+              builder: (context, runtimeContext) {
+                if (noticeRepository is UnavailableNoticeRepository) {
+                  return _unavailableCompositionRootRoute(context);
+                }
+                return PrincipalForYouRoutePage(
+                  embedded: true,
+                  repository: noticeRepository,
+                  audienceScope: PrincipalForYouAudienceScope.fromRuntimeContext(runtimeContext),
+                  supportingData: PrincipalForYouPreviewData.contextual(
+                    id: runtimeContext.membershipId,
+                    label: runtimeContext.groupName ?? runtimeContext.unitName ?? runtimeContext.institutionName,
+                    family: runtimeContext.institutionName,
+                    institution: runtimeContext.institutionName,
+                    unit: runtimeContext.unitName,
+                    group: runtimeContext.groupName,
+                  ),
+                  onOpenHappens: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                  onOpenNow: () => context.pushNamed(SuperadminRoutes.principalNowName),
+                  onOpenMoments: () => context.pushNamed(SuperadminRoutes.principalMomentsName),
+                  onOpenAgenda: () => context.goNamed(SuperadminRoutes.agendaName),
+                  onOpenProfile: () => context.goNamed(SuperadminRoutes.principalProfileName),
+                  onOpenActivities: () => context.goNamed(SuperadminRoutes.activitiesName),
+                  onOpenMessages: () => context.goNamed(
+                    SuperadminRoutes.conversationsName,
+                    queryParameters: const {'from': 'principal'},
+                  ),
+                );
+              },
+            ),
+          ),
+
+          GoRoute(
+            path: SuperadminRoutes.principalProfile,
+            name: SuperadminRoutes.principalProfileName,
+            builder: (context, state) => PrincipalRuntimeContextRoute(
+              repository: principalRuntimeContextRepository,
+              builder: (context, runtimeContext) => PrincipalProfileRoutePage(
+                embedded: true,
+                runtimeContext: runtimeContext,
+                // The Principal projection, never the administrative directory:
+                // the actor is authorized on the server by institution, unit and
+                // group, not by the Superadmin circulars permission.
+                circularRepository: principalCircularRepository,
+                aboutRepository: profileAboutRepository,
+                happensFeedRepository: principalHappensFeedRepository,
+                onOpenCircular: (circularId) => context.goNamed(
+                  SuperadminRoutes.circularDetailName,
+                  pathParameters: {'circularId': circularId},
+                ),
+                onOpenEdit: () => context.goNamed(SuperadminRoutes.principalProfileEditName),
+                onOpenAgenda: () => context.goNamed(SuperadminRoutes.agendaName),
+                onOpenHome: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                onOpenForYou: () => context.goNamed(SuperadminRoutes.principalForYouName),
+                onOpenMoments: () => context.pushNamed(SuperadminRoutes.principalMomentsName),
+                onPublishNow: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
+                onMessage: () => context.goNamed(
+                  SuperadminRoutes.conversationsName,
+                  queryParameters: const {'from': 'principal'},
+                ),
+                onOpenMessages: () => context.goNamed(
+                  SuperadminRoutes.conversationsName,
+                  queryParameters: const {'from': 'principal'},
+                ),
+              ),
+            ),
+          ),
+
+          GoRoute(
+            path: SuperadminRoutes.principalProfileEdit,
+            name: SuperadminRoutes.principalProfileEditName,
+            builder: (context, state) => PrincipalRuntimeContextRoute(
+              repository: principalRuntimeContextRepository,
+              builder: (context, runtimeContext) {
+                final repository = profileAboutRepository;
+                if (repository == null) return _unavailableCompositionRootRoute(context);
+                return PrincipalProfileEditPage(
+                  runtimeContext: runtimeContext,
+                  repository: repository,
+                  onClose: () => context.goNamed(SuperadminRoutes.principalProfileName),
+                );
+              },
+            ),
+          ),
+```
+
+### O que precisa acompanhar os builders
+
+1. Assinatura de `createSuperadminRouter`, dois parâmetros opcionais:
+
+```dart
+  ProfileAboutRepository? profileAboutRepository,
+  CircularRepository? principalCircularRepository,
+```
+
+2. Imports novos no router:
+
+```dart
+import '../../features/principal_circulars/domain/circular_repository.dart';
+import '../../features/principal_for_you/data/principal_for_you_communications_adapter.dart';
+import '../../features/principal_for_you/domain/principal_for_you_preview_data.dart';
+import '../../features/principal_profile/presentation/principal_profile_edit_page.dart';
+import '../../features/principal_profile/presentation/principal_profile_route_page.dart';
+import '../../features/profile_about/domain/profile_about_repository.dart';
+```
+
+3. Constantes em `superadmin_routes.dart`:
+
+```dart
+  static const principalProfileEdit = '/principal-profile/edit';
+  static const principalProfileEditName = 'principal-profile-edit';
+```
+
+4. Capacidade da rota de edição, dentro de `hasAuthoritativeMutationCapability`,
+   antes do `return false` final. **Sem isto a rota volta a ser inalcançável**:
+   ela termina em `/edit`, então a guarda global de mutação a redireciona para
+   `/errors/mutation-capability-unavailable`.
+
+```dart
+    // Editing the contextual Perfil is the About command, which
+    // save_profile_about authorizes and versions server-side. The route stays
+    // closed until a real About repository is composed.
+    if (location.startsWith(SuperadminRoutes.principalProfile)) {
+      return profileAboutRepository != null;
+    }
+```
+
+5. Cadeia de injeção, um campo e uma passagem em cada:
+   `superadmin_auth_scope.dart` instancia `SupabaseProfileAboutRepository(client)`
+   e `SupabaseCircularRepository(client)`; `superadmin_app.dart` e `main.dart`
+   apenas repassam. Os dois ficam `null` no escopo indisponível, que é o
+   comportamento fail-closed correto.
