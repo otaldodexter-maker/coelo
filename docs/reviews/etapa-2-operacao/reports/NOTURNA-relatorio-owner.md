@@ -104,10 +104,19 @@ Dart, está ligada, e chama funções que não existem no servidor**. As RPCs
 
 ## Decisões que dependem de você
 
-1. **Rebaseline de goldens.** O censo mediu 49 suítes sobre `d784462c1`:
-   226 PASS, 6 SKIP, 151 FAIL em 27 features. São três problemas distintos —
-   referência ausente, referência obsoleta com commits rastreados, e deriva de
-   tema escuro. Nenhuma imagem foi regravada fora do critério acordado.
+1. **Goldens: são duas populações, não uma.** O censo mediu 49 suítes sobre
+   `d784462c1`: 226 PASS, 6 SKIP, 151 FAIL em 27 features. Eu vinha tratando o
+   conjunto como deriva de ambiente, e a medição de magnitude desmontou isso. Em
+   28 comparações medidas, **21 estão acima de 8%, 12 acima de 15% e a maior é
+   43,94%**; existe uma cauda de sete entre 0,16% e 4,08%, essa sim compatível
+   com renderização de fonte. As duas populações pedem decisões diferentes: a
+   cauda pequena é reaprovar referência; a grande **só pode ser mudança visual
+   real nunca reaprovada**, e a decisão é descobrir o que mudou na tela e se
+   aquilo foi aprovado alguma vez. Foi medida magnitude, não natureza — nenhuma
+   imagem de diferença foi aberta. A consequência, se a leitura se confirmar, é
+   maior que qualquer pendência do painel: o produto mudou de aparência sem
+   passar por aprovação visual em algum ponto. Nenhuma imagem foi regravada fora
+   do critério acordado.
 2. **Baseline visual de `errors.409`**, que nunca existiu.
 3. **Visibilidade do leitor Principal no Sobre.** Não existe token de leitura em
    `profiles.about.*`, apenas manage, publish e update_official_data.
