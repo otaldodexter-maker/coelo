@@ -14,6 +14,27 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('unsupported edit preserves draft and never shows save success', (tester) async {
+    final repository = _Repository();
+    await _mount(tester, repository);
+    await _beginSave(tester, repository);
+    final controller = _controller(tester);
+    repository.pending.single.completeError(
+      const InstitutionDirectoryUnsupportedRelationException('server details must stay private'),
+    );
+    await tester.pumpAndSettle();
+    expect(_controller(tester), same(controller));
+    expect(controller.isDirty, isTrue);
+    expect(controller.isSaving, isFalse);
+    expect(controller.text(InstitutionFormField.publicName), 'Nome enviado');
+    expect(find.text('Alterações salvas.'), findsNothing);
+    expect(
+      find.text('Alguns campos ou vínculos alterados ainda não podem ser salvos neste fluxo.'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('server details'), findsNothing);
+  });
+
   testWidgets('saved snapshot replaces original and values while preserving step', (tester) async {
     final repository = _Repository();
     await _mount(tester, repository);

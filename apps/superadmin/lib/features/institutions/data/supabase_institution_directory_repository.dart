@@ -95,8 +95,24 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
       operation: 'update',
       institutionId: draft.id,
       expectedVersion: expectedVersion,
-      payload: payload,
+      payload: {
+        'core': payload,
+        'read_only': _readOnlyEditValues(draft),
+        'type_name': draft.typeName,
+      },
     );
+    // A retry must replay its receipt even when the accepted write changed detail.
+    if (_pendingRequest?.signature != signature) {
+      _pendingRequest = null;
+      final current = await fetchById(draft.id);
+      if (current.id != draft.id) throw const InstitutionDirectoryUnavailableException();
+      if (jsonEncode(_readOnlyEditValues(draft)) != jsonEncode(_readOnlyEditValues(current)) ||
+          (draft.typeId == current.typeId && draft.typeName != current.typeName)) {
+        throw const InstitutionDirectoryUnsupportedRelationException(
+          'Alguns campos ou vínculos alterados ainda não podem ser salvos neste fluxo.',
+        );
+      }
+    }
     final requestId = _requestIdFor(signature);
     try {
       final response = await _client.rpc<Object?>(
@@ -296,6 +312,33 @@ Map<String, Object?> _institutionEditCorePayload(InstitutionRecord record) {
       'complement': record.complement.isEmpty ? null : record.complement,
       'postal_code': record.postalCode.replaceAll(RegExp(r'\D'), ''),
     },
+  };
+}
+
+Map<String, Object?> _readOnlyEditValues(InstitutionRecord record) {
+  // Spec 042 owns only core/address. Never silently drop edits to other fields.
+  final values = record.toRpcPayload()
+    ..removeWhere(
+      (key, _) => const {
+        'public_name',
+        'trade_name',
+        'legal_name',
+        'timezone',
+        'locale',
+        'institution_type_name',
+        'address',
+      }.contains(key),
+    );
+  return {
+    ...values,
+    'owner_first_name': record.ownerFirstName,
+    'owner_last_name': record.ownerLastName,
+    'owner_display_name': record.ownerDisplayName,
+    'owner_email': record.ownerEmail,
+    'owner_mobile_phone': record.ownerMobilePhone,
+    'has_logo': record.hasSimulatedLogo,
+    'has_cover': record.hasSimulatedCover,
+    'secondary_surface_color': record.secondarySurfaceColor,
   };
 }
 
