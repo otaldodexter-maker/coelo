@@ -194,6 +194,10 @@ void main() {
     testWidgets('a window is added on the chosen day and kept in order', (tester) async {
       await tester.pumpWidget(section());
       await loadWith(tester, [window(3, 480, 720)]);
+      await tester.tap(find.byKey(const Key('location-schedule-weekday')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Terça').last);
+      await tester.pumpAndSettle();
       await tester.enterText(find.byKey(const Key('location-schedule-start')), '14:00');
       await tester.enterText(find.byKey(const Key('location-schedule-end')), '16:00');
       await tester.pump();
@@ -202,7 +206,7 @@ void main() {
 
       await tester.tap(find.byKey(const Key('location-schedule-publish')));
       await tester.pump();
-      expect(writer.publishes.single.windows.map((w) => w.weekday).toList(), [1, 3]);
+      expect(writer.publishes.single.windows.map((w) => w.weekday).toList(), [2, 3]);
       expect(writer.publishes.single.windows.first.startsMinute, 840);
     });
 

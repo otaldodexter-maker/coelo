@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:coelo_api/locations.dart';
 import 'package:coelo_domain/locations.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
@@ -289,20 +290,15 @@ class _LocationScheduleSectionState extends State<LocationScheduleSection> {
                 children: [
                   SizedBox(
                     width: 180,
-                    child: DropdownButtonFormField<int>(
+                    child: CoeloAdminSingleSelectField<int>(
                       key: const Key('location-schedule-weekday'),
-                      initialValue: _weekday,
-                      // Constrained width plus a day name that can be long: let
-                      // the text shrink to the box instead of overflowing it.
-                      isExpanded: true,
-                      decoration: const InputDecoration(labelText: 'Dia'),
-                      items: [
-                        for (var index = 0; index < _weekdays.length; index++)
-                          DropdownMenuItem(value: index, child: Text(_weekdays[index])),
-                      ],
-                      onChanged: widget.enabled && !_busy
-                          ? (value) => setState(() => _weekday = value ?? _weekday)
-                          : null,
+                      value: _weekday,
+                      label: 'Dia',
+                      prefixIcon: Icons.calendar_today_outlined,
+                      options: List.generate(_weekdays.length, (index) => index),
+                      optionLabel: (value) => _weekdays[value],
+                      enabled: widget.enabled && !_busy,
+                      onChanged: (value) => setState(() => _weekday = value),
                     ),
                   ),
                   SizedBox(
