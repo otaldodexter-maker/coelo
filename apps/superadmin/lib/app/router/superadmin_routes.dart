@@ -213,6 +213,8 @@ abstract final class SuperadminRoutes {
   static const principalNowPublicationName = 'principal-now-publication';
   static const principalProfile = '/principal-profile';
   static const principalProfileName = 'principal-profile';
+  static const principalProfileEdit = '/principal-profile/edit';
+  static const principalProfileEditName = 'principal-profile-edit';
   static const profile = '/profile';
   static const profileName = 'profile';
   static const settings = '/settings';

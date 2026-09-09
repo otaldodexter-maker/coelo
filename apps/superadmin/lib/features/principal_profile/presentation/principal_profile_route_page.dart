@@ -22,6 +22,7 @@ final class PrincipalProfileRoutePage extends StatefulWidget {
     this.aboutRepository,
     this.onOpenCircular,
     this.onMessage,
+    this.onOpenEdit,
     this.onOpenHome,
     this.onOpenForYou,
     this.onOpenMoments,
@@ -39,6 +40,7 @@ final class PrincipalProfileRoutePage extends StatefulWidget {
   final VoidCallback onOpenAgenda;
   final ValueChanged<String>? onOpenCircular;
   final VoidCallback? onMessage;
+  final VoidCallback? onOpenEdit;
   final VoidCallback? onOpenHome;
   final VoidCallback? onOpenForYou;
   final VoidCallback? onOpenMoments;
@@ -219,6 +221,7 @@ final class _PrincipalProfileRoutePageState extends State<PrincipalProfileRouteP
       onOpenCircular: widget.onOpenCircular,
       onOpenAgenda: widget.onOpenAgenda,
       onMessage: widget.onMessage,
+      onOpenEdit: widget.aboutRepository == null ? null : widget.onOpenEdit,
       onOpenHome: widget.onOpenHome,
       onOpenForYou: widget.onOpenForYou,
       onOpenMoments: widget.onOpenMoments,

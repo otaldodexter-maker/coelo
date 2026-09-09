@@ -21,6 +21,7 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
     this.onOpenNotifications,
     this.onOpenContext,
     this.onMessage,
+    this.onOpenEdit,
     this.onOpenBio,
     this.onOpenLinks,
     this.onOpenAboutMap,
@@ -47,6 +48,12 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
   final VoidCallback? onOpenNotifications;
   final VoidCallback? onOpenContext;
   final VoidCallback? onMessage;
+
+  /// Optional entry point to `principal.profile-edit`.
+  ///
+  /// The affordance only renders when a caller supplies it, so surfaces
+  /// without an approved edit contract stay exactly as approved.
+  final VoidCallback? onOpenEdit;
   final VoidCallback? onOpenBio;
   final VoidCallback? onOpenLinks;
   final VoidCallback? onOpenAboutMap;
@@ -167,6 +174,7 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
         data: widget.data,
         wide: !compact,
         onMessage: () => _runOrPreview(context, widget.onMessage, 'Mensagem'),
+        onOpenEdit: widget.onOpenEdit,
         onOpenBio: () => _runOrPreview(context, widget.onOpenBio, 'Biografia completa'),
       ),
       if (widget.data.metrics.isNotEmpty) ...[
@@ -376,12 +384,14 @@ final class _IdentitySection extends StatelessWidget {
     required this.data,
     required this.wide,
     required this.onMessage,
+    required this.onOpenEdit,
     required this.onOpenBio,
   });
 
   final PrincipalProfilePreviewData data;
   final bool wide;
   final VoidCallback onMessage;
+  final VoidCallback? onOpenEdit;
   final VoidCallback onOpenBio;
 
   @override
@@ -454,6 +464,13 @@ final class _IdentitySection extends StatelessWidget {
           icon: const Icon(Icons.chat_bubble_outline_rounded),
           label: const Text('Mensagem'),
         ),
+        if (onOpenEdit case final openEdit?)
+          OutlinedButton.icon(
+            key: const Key('principal-profile-edit'),
+            onPressed: openEdit,
+            icon: const Icon(Icons.edit_outlined),
+            label: const Text('Editar perfil'),
+          ),
       ],
     );
     return Column(

@@ -59,6 +59,7 @@ import '../../features/principal_now_publication/domain/now_publication.dart';
 import '../../features/principal_now_publication/presentation/principal_now_publication_page.dart';
 import '../../features/principal_profile/presentation/principal_profile_preview_page.dart';
 import '../../features/profile_about/domain/profile_about_repository.dart';
+import '../../features/principal_profile/presentation/principal_profile_edit_page.dart';
 import '../../features/principal_profile/presentation/principal_profile_route_page.dart';
 import '../../features/principal_shared/domain/principal_runtime_context.dart';
 import '../../features/principal_shared/presentation/principal_runtime_context_route.dart';
@@ -885,6 +886,7 @@ GoRouter createSuperadminRouter({
               SuperadminRoutes.circularDetailName,
               pathParameters: {'circularId': circularId},
             ),
+            onOpenEdit: () => context.goNamed(SuperadminRoutes.principalProfileEditName),
             onOpenAgenda: () => context.goNamed(SuperadminRoutes.agendaName),
             onOpenHome: () => context.goNamed(SuperadminRoutes.principalHappensName),
             onOpenForYou: () => context.goNamed(SuperadminRoutes.principalForYouName),
@@ -899,6 +901,22 @@ GoRouter createSuperadminRouter({
               queryParameters: const {'from': 'principal'},
             ),
           ),
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.principalProfileEdit,
+        name: SuperadminRoutes.principalProfileEditName,
+        builder: (context, state) => PrincipalRuntimeContextRoute(
+          repository: principalRuntimeContextRepository,
+          builder: (context, runtimeContext) {
+            final repository = profileAboutRepository;
+            if (repository == null) return _unavailableCompositionRootRoute(context);
+            return PrincipalProfileEditPage(
+              runtimeContext: runtimeContext,
+              repository: repository,
+              onClose: () => context.goNamed(SuperadminRoutes.principalProfileName),
+            );
+          },
         ),
       ),
       GoRoute(
