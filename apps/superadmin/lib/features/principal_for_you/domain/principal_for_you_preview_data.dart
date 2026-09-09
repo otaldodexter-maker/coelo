@@ -143,6 +143,35 @@ final class PrincipalForYouPreviewData {
         contexts: contexts,
       );
 
+  /// Production hub scaffolding for `principal.for-you`.
+  ///
+  /// Carries only the server-authorized context; editorial fixtures stay out of
+  /// a real route. Highlights arrive from the Communications projection.
+  static PrincipalForYouPreviewData contextual({
+    required String id,
+    required String label,
+    required String family,
+    String? institution,
+    String? unit,
+    String? group,
+  }) => PrincipalForYouPreviewData(
+    highlights: const [],
+    shortcuts: const [],
+    editorialItems: const [],
+    dayItems: const [],
+    contexts: [
+      PrincipalForYouContext(
+        id: id,
+        label: label,
+        family: family,
+        childCount: 0,
+        institution: institution,
+        unit: unit,
+        group: group,
+      ),
+    ],
+  );
+
   static List<PrincipalForYouHighlight> orderHighlights(Iterable<PrincipalForYouHighlight> items) {
     final ordered = items.toList()..sort((a, b) => a.priority.compareTo(b.priority));
     return UnmodifiableListView(ordered);

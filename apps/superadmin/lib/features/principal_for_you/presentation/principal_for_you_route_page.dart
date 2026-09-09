@@ -14,22 +14,29 @@ final class PrincipalForYouRoutePage extends StatefulWidget {
     super.key,
     required this.repository,
     required this.supportingData,
+    this.audienceScope,
     this.now = DateTime.now,
     this.onOpenHappens,
     this.onOpenNow,
     this.onOpenMoments,
     this.onOpenAgenda,
     this.onOpenProfile,
+    this.onOpenMessages,
   });
 
   final NoticeRepository repository;
   final PrincipalForYouPreviewData supportingData;
+
+  /// Server-authorized scope of the actor. Audience eligibility is evaluated
+  /// against it before any communication reaches the hub.
+  final PrincipalForYouAudienceScope? audienceScope;
   final DateTime Function() now;
   final VoidCallback? onOpenHappens;
   final VoidCallback? onOpenNow;
   final VoidCallback? onOpenMoments;
   final VoidCallback? onOpenAgenda;
   final VoidCallback? onOpenProfile;
+  final VoidCallback? onOpenMessages;
 
   @override
   State<PrincipalForYouRoutePage> createState() => _PrincipalForYouRoutePageState();
@@ -73,6 +80,7 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
     super.didUpdateWidget(oldWidget);
     if (identical(oldWidget.repository, widget.repository) &&
         identical(oldWidget.supportingData, widget.supportingData) &&
+        identical(oldWidget.audienceScope, widget.audienceScope) &&
         identical(oldWidget.now, widget.now)) {
       return;
     }
@@ -120,7 +128,11 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
     if (!mounted || generation != _loadGeneration) return;
     _validityTimer?.cancel();
     final now = clock();
-    final highlights = PrincipalForYouCommunicationsAdapter.highlights(communications, now: now);
+    final highlights = PrincipalForYouCommunicationsAdapter.highlights(
+      communications,
+      now: now,
+      scope: widget.audienceScope,
+    );
     setState(
       () => _state = _Loaded(
         supportingData.copyWith(highlights: highlights),
@@ -226,6 +238,7 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
         onOpenMoments: widget.onOpenMoments,
         onOpenAgenda: widget.onOpenAgenda,
         onOpenProfile: widget.onOpenProfile,
+        onOpenMessages: widget.onOpenMessages,
       ),
     ),
   };
