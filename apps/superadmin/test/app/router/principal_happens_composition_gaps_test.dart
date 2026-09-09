@@ -4,6 +4,7 @@ import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
+import 'package:coelo_superadmin/features/errors/presentation/screens/superadmin_error_screen.dart';
 import 'package:coelo_superadmin/features/principal_circulars/domain/circular_repository.dart';
 import 'package:coelo_superadmin/features/principal_circulars/domain/principal_happens_mixed_feed.dart';
 import 'package:coelo_superadmin/features/principal_happens/domain/principal_happens_feed_repository.dart';
@@ -105,6 +106,77 @@ void main() {
       // dizer isso em vez de devolver a mesma tela de composição indisponível
       // que sinaliza falha de configuração. Como está, o ator não distingue
       // "você não publica neste escopo" de "o app está quebrado".
+    },
+  );
+  testWidgets(
+    'DEFEITO: recusa de escopo e falha de configuração devolvem a MESMA tela, '
+    'então o ator não distingue uma da outra',
+    (tester) async {
+      // Caso A: falha real de configuração — o repositório de publicação não
+      // foi fornecido à composição.
+      final brokenSession = SuperadminSession()..signInForTesting();
+      final brokenRouter = createSuperadminRouter(
+        session: brokenSession,
+        login: unavailableSuperadminLogin,
+        logout: unavailableSuperadminLogout,
+        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+        principalRuntimeContextRepository: const _GroupScopedContext(),
+        onThemeModeChanged: (_) {},
+      );
+      addTearDown(brokenRouter.dispose);
+      addTearDown(brokenSession.dispose);
+
+      brokenRouter.go(SuperadminRoutes.principalHappensPublish);
+      await tester.pumpWidget(
+        MaterialApp.router(theme: CoeloTheme.light, routerConfig: brokenRouter),
+      );
+      await tester.pumpAndSettle();
+
+      final brokenScreens = tester.widgetList<SuperadminErrorScreen>(
+        find.byType(SuperadminErrorScreen),
+      );
+      expect(brokenScreens, hasLength(1));
+      final brokenKind = brokenScreens.single.kind;
+
+      // Caso B: configuração correta, recusa legítima de escopo — o ator é
+      // institucional e a composição exige unidade e turma.
+      final scopedSession = SuperadminSession()..signInForTesting();
+      final scopedRouter = createSuperadminRouter(
+        session: scopedSession,
+        login: unavailableSuperadminLogin,
+        logout: unavailableSuperadminLogout,
+        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+        principalRuntimeContextRepository: const _InstitutionScopedContext(),
+        happensPublicationRepository: InMemoryHappensPublicationRepository(),
+        onThemeModeChanged: (_) {},
+      );
+      addTearDown(scopedRouter.dispose);
+      addTearDown(scopedSession.dispose);
+
+      scopedRouter.go(SuperadminRoutes.principalHappensPublish);
+      await tester.pumpWidget(
+        MaterialApp.router(theme: CoeloTheme.light, routerConfig: scopedRouter),
+      );
+      await tester.pumpAndSettle();
+
+      final scopedScreens = tester.widgetList<SuperadminErrorScreen>(
+        find.byType(SuperadminErrorScreen),
+      );
+      expect(scopedScreens, hasLength(1));
+
+      // Os dois fatos são diferentes e hoje recebem a mesma resposta.
+      expect(
+        scopedScreens.single.kind,
+        brokenKind,
+        reason: 'defeito observado: recusa de escopo usa a tela de indisponibilidade '
+            'que sinaliza falha de configuração',
+      );
+
+      // Comportamento esperado depois da correção, para orientar a inversão:
+      // o ator de escopo institucional deve receber uma resposta que diga que
+      // ele não publica NESTE escopo, distinta da indisponibilidade técnica.
+      // Se o estreitamento for revertido pelo Owner, este caso deixa de existir
+      // e o teste deve ser removido junto com a regra.
     },
   );
 }
