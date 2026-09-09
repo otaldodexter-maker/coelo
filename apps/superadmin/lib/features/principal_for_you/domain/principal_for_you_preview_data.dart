@@ -121,6 +121,7 @@ final class PrincipalForYouPreviewData {
     required List<PrincipalForYouEditorialItem> editorialItems,
     required List<PrincipalForYouDayItem> dayItems,
     required List<PrincipalForYouContext> contexts,
+    this.greetingName,
   }) : highlights = UnmodifiableListView(highlights),
        shortcuts = UnmodifiableListView(shortcuts),
        editorialItems = UnmodifiableListView(editorialItems),
@@ -132,6 +133,14 @@ final class PrincipalForYouPreviewData {
   final List<PrincipalForYouEditorialItem> editorialItems;
   final List<PrincipalForYouDayItem> dayItems;
   final List<PrincipalForYouContext> contexts;
+
+  /// Name to greet the actor by, when an authorized source provides one.
+  ///
+  /// Null on the real route: `PrincipalRuntimeContext` carries the person id and
+  /// the role, never the person's name. The greeting then drops the name instead
+  /// of inventing one. The hub used to greet every real actor as "Fernanda",
+  /// which is the name of the preview fixture.
+  final String? greetingName;
 
   PrincipalForYouHighlight? get primaryHighlight {
     for (final item in highlights) {
@@ -147,6 +156,7 @@ final class PrincipalForYouPreviewData {
         editorialItems: editorialItems,
         dayItems: dayItems,
         contexts: contexts,
+        greetingName: greetingName,
       );
 
   /// Production hub scaffolding for `principal.for-you`.
@@ -304,5 +314,6 @@ final class PrincipalForYouPreviewData {
         group: '2º ano A',
       ),
     ],
+    greetingName: 'Fernanda',
   );
 }
