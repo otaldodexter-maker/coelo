@@ -1,0 +1,248 @@
+---
+title: "E2 R02 — consolidado das frentes Claude (L00 → D00)"
+source: "handoffs L01/L02/L03 pelos caminhos absolutos; verificações próprias de L00 no remoto e no código"
+status: "consolidado-parcial-antes-do-corte"
+generated_at: "2026-09-09"
+timezone: "America/Sao_Paulo"
+---
+
+# Consolidado L00 → D00
+
+Montado a partir dos handoffs originais das três frentes e de verificações que
+**eu mesmo fiz** no remoto e no código. Onde afirmo algo que não verifiquei
+pessoalmente, digo que é relato do executor. Este documento **não substitui** os
+handoffs originais de L01, L02 e L03; D00 os lê pelos caminhos do registro.
+
+## Identidades e SHAs verificados
+
+| Frente | Sessão | Branch | HEAD verificado por L00 |
+| --- | --- | --- | --- |
+| L01 | `coelo-0f` | `codex/e2-r02-l01-publicacoes` | `e8a2a087e` (relato); base técnica `aec0c4afe` |
+| L02 | `coelo-b7` | `codex/e2-r02-l02-chat-comunicacoes` | `811aac6e` (relato) |
+| L03 | `coelo-03` | `codex/e2-r02-l03-perfil-para-voce` | `ae17f59b1` **verificado** |
+| L00 | `coelo-ed` | `codex/e2-r02-l00-coordenacao-claude` | `1eb01b4c0` **verificado**, push conferido |
+
+Todas as branches publicadas em `origin`. Nenhuma integrou `dev`: integração é de D00.
+
+## Números por frente — sem somar suítes sobrepostas
+
+**Denominador do grupo Claude: 39 IDs MVP** (L01 23, L02 13, L03 3), depois da
+reconciliação de Circulares. Anterior era 28. O crescimento é **cobertura de
+inventário**, não regressão.
+
+| Frente | Implementação fechada | Contrato/BE local | **E2E certificado** |
+| --- | --- | --- | ---: |
+| L01 | 6/23 | 6/23 | **0/23** |
+| L02 | 4/13 | 0/13 | **0/13** |
+| L03 | 3/3 (base atual) | 0/3 | **0/3** |
+| **Grupo Claude** | — | — | **0/39** |
+
+**E2E é zero em toda leitura.** A causa não é falta de código: é a ausência de
+autorização nominal para o pacote remoto, somada aos bloqueios abaixo.
+
+### Testes únicos, por frente, com escopo declarado
+
+- **L01** — widget/unidade: 216 P / 11 F; 74 P / 10 F; 88 P / 0 F; 151 P / 2 F.
+  pgTAP: 32/0 (negativas comportamentais), 53/0, 16/0, 23/0, 46/0, 60/0, 50/0.
+  Deno: 27/0. `dart analyze lib` limpo. B, S e U em zero.
+  As 23 falhas únicas são golden e **todas preexistentes**: 11 por sprite ausente
+  em Momentos, 10 por deriva de host no Acontece, 2 no diretório de Circulares.
+- **L02** — recorte (chat, notices, principal_chat, rotas de chat):
+  **P=316, F=12, B=1, S=0, U=0**. Taxa aprovada 96,34%. O `B=1` é o pgTAP,
+  bloqueado pelo achado de plataforma abaixo.
+- **L03** — recorte: **192 P / 10 F**, as 10 sendo golden drift preexistente,
+  reproduzido por controle em worktree intocada. Suíte completa do app:
+  **5104 P / 201 F / 5 S**, com as ~191 falhas fora do recorte classificadas como
+  **NÃO REVALIDADAS** — nem preexistentes, nem dele. Aprovei a classificação.
+
+**Não somei os três.** As suítes se sobrepõem e o contrato proíbe.
+
+### Controle de regressão que L02 fez e que vale registrar
+
+Comparou contra a base em vez de presumir: `test/app` na árvore dele 473 P / 33 F;
+com router e rotas revertidos, 457 P / 34 F. A base tem **uma falha a mais**, e a
+diferença é explicada pelo teste reescrito rodando contra o router antigo.
+Verificação dirigida: zero falhas nos três arquivos do recorte dele. O candidato
+mais provável a regressão, `persistent_shell_routes_test.dart`, dá `+6 -9` nas
+**três** versões testadas — não é dele.
+
+## O achado central da rodada
+
+**Teste de widget verde não prova que a tela abre.** Quatro defeitos apareceram
+hoje, todos sobreviveriam a lote verde, e todos só aparecem seguindo o caminho de
+composição e o redirect da rota real:
+
+1. **Feed misto nunca consultado** (L01). `principalMixedFeedRepository` é
+   instanciado em `superadmin_auth_scope.dart:372` e declarado em
+   `superadmin_router.dart:281` — e **nenhum builder o consome**. Verifiquei por
+   contagem própria: dos dez repositórios Principal, nove têm parâmetro mais um
+   uso; este tem **só a declaração**. Como `circulars.happens-card` virou
+   subaceite obrigatório, **`acontece.feed` não fecha**.
+2. **Repositório administrativo no lugar do autorizado** (L03). A aba Circulares
+   do Perfil recebia o repositório administrativo, cujo `listProfile` delega ao
+   diretório do Superadmin guardado por permissão administrativa — **o servidor
+   respondia por permissão administrativa em vez de por visibilidade do ator**.
+   Verifiquei: o repositório correto nunca era instanciado em `lib/`.
+   Os testes de L03 **passavam nas duas configurações**, porque injetam direto.
+3. **Rota inalcançável por guarda global** (L03). `/principal-profile/edit`
+   termina em `/edit`, a guarda classifica como mutação autoritativa, e sem
+   capacidade declarada o redirect mandava toda visita para a tela de erro.
+   Rota, persistência e oito provas de widget entregues — **e a tela não abria**.
+4. **Badge de não lidas nunca alimentado** (L02). Vertical completa —
+   RPC com grant, método no domínio e nas implementações, parâmetro declarado e
+   consumido pelo launcher — e **nenhum caller em `lib/`** fornecia o parâmetro.
+
+**A explicação mais concreta veio de L01:** todos os testes de rota do Agora
+exercitavam `/dev/`, e o único que tocava a rota real de publicação **só afirmava
+a URL, rodando com repositório nulo** — passava verde enquanto a tela renderizava
+indisponível. Era teste de path, não de composição. É a resposta factual para por
+que contagens de teste nunca demonstraram entrega E2E nesta Etapa.
+
+## Bloqueios que não são das frentes Claude
+
+### 1. Realm interno do Superadmin não é provável nesta máquina
+
+Achado por L02. `20260831211945_activities_v2_internal_gateways.sql` falha com
+`relation "app_private.superadmin_internal_activity_command_receipts" does not
+exist`; sem ela, `app_private.audit_append_superadmin_internal` só existe com 13
+argumentos e a de 14 nunca aparece; por isso as migrations de chat v2 e notices
+v2 são recusadas pelas próprias guardas.
+
+**Nenhum SQL do realm interno pode ser provado localmente, por nenhuma frente.**
+Explica a assimetria: L01 rodou pgTAP de mídia porque não depende do realm
+interno. **A causa raiz é do domínio de Atividades, de D02.** As guardas
+funcionaram como desenhadas — é qualidade, não defeito.
+
+### 2. Medições de replay divergem
+
+**122/168**, **93/170** e **83/165** nesta rodada. Perfis e momentos diferentes;
+nenhuma é "a" medição. D00 precisa reexecutar no perfil nominal
+(`scripts/Invoke-SafeLocalMigrationReplay.ps1`) antes de considerar pacote pronto.
+
+### 3. Guarda de mutação por sufixo — candidatos a rota inalcançável
+
+Achado meu, generalizando o defeito 3. Status: **leitura da guarda e das rotas,
+não execução do app**. A guarda cobre `/new`, `/edit`, `/duplicate` e
+`/assessment-settings`; `hasAuthoritativeMutationCapability` declara **apenas**
+`/invites`, `/notices` e `/circulars`. Rotas com repositório **real** e sem
+capacidade declarada:
+
+`/people/new` e `/people/:personId/edit` (D04); `/safety/new` e a edição de
+autorizações (D04); `/internal-users/new` e `/edit` (D04); `/attendance/new` (D03).
+
+Onde o repositório é `Unavailable`, a rota já falharia fechada e a guarda é
+redundante. **Não instruí ninguém a corrigir**: são de D03 e D04, e alargar
+capacidade é mudança de superfície de autorização. **Se D01–D04 contarem FE
+dessas telas por prova de widget, o número está errado.**
+
+## Movimento único de hospedagem — para D00 montar
+
+As rotas Principal são declaradas como **irmãs** da `ShellRoute`, então o shell
+nunca é construído para elas: a decisão do Owner sobre preservar o shell é
+**estrutural, não visual**. Achado independentemente por L01 e L03.
+
+**Não pode ser serializado em três hunks**: se só uma frente mover as suas, o
+menu some ao navegar entre telas irmãs. Exige inverter 17 asserções em 6 arquivos
+de `test/app/router/`. Eu havia autorizado L03 a mover só as dele e **reverti** a
+autorização quando L01 mostrou a consequência; L03 confirmou por diff que router
+e testes de router ficaram intactos, e eu verifiquei o mesmo em L01.
+
+Hunks publicados: `propostas/L01-hunks-composicao.md` (L01) e
+`propostas/L03-hunks-hospedagem-rotas.md` (L03). **Escopo maior do que mover
+rotas**: `/principal-moments` precisa da cadeia completa por auth scope, app e
+main, porque `PrincipalMomentsFeedRepository` não aparece em `app/` nem `core/`.
+
+**Peço que a inversão do teste `principal_happens_composition_gaps_test.dart`
+(`167cbd584`) seja critério de aceite do movimento.** Ele prende o defeito do feed
+misto e manda inverter, não apagar. Sem isso, a correção pode ser feita sem
+ninguém saber se funcionou.
+
+### Reservas concedidas, sem sobreposição
+
+L03 nos builders de Perfil e Para Você mais `superadmin_routes.dart`,
+`superadmin_auth_scope.dart`, `superadmin_app.dart` e `main.dart` (retroativa,
+concedida, **não mandei reverter**); L01 em `/principal-happens` (l.669),
+`/principal-moments` (l.835) e as duas construções de
+`ProductionCircularComposerHost` (~l.4391 e ~l.4431); L02 nas construções do shell
+(l.450, l.465, l.966) e na rota nova `/principal-conversations`.
+**Ordem de integração: L03 → L01 → L02.**
+
+## Decisões que tomei e que D00 pode reverter
+
+1. **Assimetria de `withdraw_moment` aceita** — versão opcional em Momentos,
+   obrigatória no Acontece. A projeção de Momentos não expõe versão; autoria,
+   tenant, escopo e capacidade seguem validados no servidor; retirada idempotente
+   e soft. Nenhuma fonte aprovada impõe simetria.
+2. **Corrigir dentro da migration não aplicada** em vez de empilhar remendo.
+   Forward-only vale para o que já foi aplicado.
+3. **Tela indistinguível do Acontece é defeito**, mesmo com o estreitamento sendo
+   decisão de produto: devolver ao ator recusado a mesma tela que sinaliza
+   aplicativo quebrado faz o produto mentir sobre a causa.
+4. **`enableInlinePreview` em `/notices` é pergunta, não defeito.** Não há fonte
+   aprovada exigindo a prévia em produção; proibi implementar.
+5. **Composição Principal sem editar/revogar é decisão declarada**, não lacuna:
+   o ator do Principal não é o autor interno e `can_manage` viria falso.
+6. **Proibi a correção geral do badge** — 58 construções de `SuperadminShell` em
+   46 arquivos, contadas por mim, atingindo D01–D04. Lote incompatível com o tempo.
+7. **Propriedade das fontes compartilhadas**: `specs/050` e a referência
+   `coelo-ui` são commit meu (`03969969a`); as frentes preservam as suas.
+
+## Pendências que exigem decisão do Owner ou de D00
+
+- **Autorização nominal do pacote remoto de L01** — é o que separa E2E zerado de
+  E2E real. Bloco A (Postgres puro: Momentos, expiração do Agora, retirada do
+  Acontece) e bloco B (Circulares em R2: migration, Edge Function e quatro
+  segredos, com buckets **não inspecionados** nesta rodada). Recomendei A primeiro.
+- **Concessão das capacidades** `moments.publications.remove` e
+  `happens.posts.remove`: catalogadas, **não concedidas**. Sem atribuição a
+  perfil, as ações seguem negadas mesmo com tudo aplicado.
+- **`pg_cron` e consumidor `service_role`** para a materialização de
+  `notices.publish` (L02 pediu a D00).
+- **Verificação remota de `get_profile_about`** (L03): sem RPC de leitura, o
+  `load` via PostREST retorna negado se as tabelas estiverem sob RLS
+  deny-by-default.
+- **`principal.profile-edit` sem contrato visual aprovado** — gate por entregável
+  exige aprovação de imagem. D00 registra "editor Principal próprio já aprovado";
+  se cobrir esta composição, resolve.
+- **Estreitamento de escopo do Acontece** (unidade e turma não nulas) versus
+  esquema que aceita publicação institucional.
+- **Desdobrar `chat.*` em `.admin` e `.principal`** — proposta de L02, endossada
+  por mim. Muda denominador, não implementação.
+- **Correção arquitetural do badge** nas 58 construções de shell.
+- **Política de audiências na escrita** (L01): `save_now_draft` insere o
+  `audience_kind` que o cliente enviar. L01 **calibrou e não chamou de defeito de
+  segurança** — não há vazamento cross-tenant e não achou regra aprovada violada.
+  A afirmação que fica: se existir política sobre quais públicos cada papel pode
+  endereçar, ela precisa ser imposta no servidor **antes** de abrir audiências na UI.
+
+## Higiene de Git — incidentes registrados, nada perdido
+
+- **L03**, `git add -A`, varreu **quatro** arquivos alheios e 62 PNGs de
+  `**/failures/`. Corrigiu o próprio relato de dois para quatro. Devolvidos em
+  `9c6042732`, `d1b6e0f39` e `4b40083fb`, com deltas preservados em patch.
+  **Verifiquei**: o diff da branch contra a base devolve 31 arquivos, todos dele,
+  e **nenhum arquivo alheio remanescente**. Sem reset, clean ou force push.
+- **L01**, subagente rodou `git stash` uma vez; recuperado com `stash pop`, nada
+  perdido, e comandos git proibidos nominalmente aos subagentes. Índice git
+  corrompido pelo reinício do host às 14:03, reconstruído a partir do HEAD sem
+  tocar na árvore.
+- **Nada foi apagado para deixar Git limpo** em nenhuma frente.
+
+## Erros meus, declarados
+
+1. Afirmei que não havia runner de pgTAP nesta máquina. **Falso** — há, e L01
+   executou várias suítes. A ressalva verdadeira é que o replay local é parcial.
+2. Chamei o contrato de mídia de chat de **desbloqueio** de `chat.attach`. Errado:
+   faltam a RPC de staging/commit e a Edge Function, e a migration não concede grant.
+3. **Autorizei L03 a mover só as rotas dele** para o `ShellRoute`; revertido
+   quando L01 mostrou que o menu sumiria entre telas irmãs.
+4. Cobrei de L01 um teste pgTAP que ele **já havia atualizado** — li a baseline,
+   não a ponta da branch.
+5. Estimei horários em prosa mais adiantados que o relógio, mais de uma vez.
+
+## Estado das frentes
+
+As três em execução até 16:00 e disponíveis na janela de consolidação até 16:45.
+Nenhum processo pesado ativo; L02 removeu os três containers Postgres que subiu e
+L01 removeu o dele. Nenhuma frente criou agendamento. **Nada foi aplicado em
+Supabase ou Cloudflare remoto por nenhuma frente Claude.**
