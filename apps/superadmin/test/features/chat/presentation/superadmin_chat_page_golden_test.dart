@@ -113,6 +113,14 @@ final class _GoldenChatRepository implements ChatRepository {
 
   @override
   Future<ChatMessage> sendMessage(ChatSendMessageCommand command) => throw UnimplementedError();
+
+  @override
+  Future<ChatMessage> editMessage(ChatEditMessageCommand command) =>
+      Future<ChatMessage>.error(const ChatFailureException());
+
+  @override
+  Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) =>
+      Future<ChatMessageRevocation>.error(const ChatFailureException());
 }
 
 Future<void> _loadGoldenFonts() async {

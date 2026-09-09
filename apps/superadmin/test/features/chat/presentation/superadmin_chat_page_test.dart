@@ -725,6 +725,14 @@ final class _ChatRepository implements ChatRepository {
       kind: 'text',
     );
   }
+
+  @override
+  Future<ChatMessage> editMessage(ChatEditMessageCommand command) =>
+      Future<ChatMessage>.error(const ChatFailureException());
+
+  @override
+  Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) =>
+      Future<ChatMessageRevocation>.error(const ChatFailureException());
 }
 
 final class _ControlledSearchRepository implements ChatRepository {
@@ -776,6 +784,14 @@ final class _ControlledSearchRepository implements ChatRepository {
 
   @override
   Future<ChatMessage> sendMessage(ChatSendMessageCommand command) => _fallback.sendMessage(command);
+
+  @override
+  Future<ChatMessage> editMessage(ChatEditMessageCommand command) =>
+      Future<ChatMessage>.error(const ChatFailureException());
+
+  @override
+  Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) =>
+      Future<ChatMessageRevocation>.error(const ChatFailureException());
 }
 
 final class _PaginatedChatRepository implements ChatRepository {
@@ -859,6 +875,14 @@ final class _ControlledThreadSearchRepository implements ChatRepository {
 
   @override
   Future<ChatMessage> sendMessage(ChatSendMessageCommand command) => _fallback.sendMessage(command);
+
+  @override
+  Future<ChatMessage> editMessage(ChatEditMessageCommand command) =>
+      Future<ChatMessage>.error(const ChatFailureException());
+
+  @override
+  Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) =>
+      Future<ChatMessageRevocation>.error(const ChatFailureException());
 }
 
 final class _UnauthorizedChatRepository implements ChatRepository {
