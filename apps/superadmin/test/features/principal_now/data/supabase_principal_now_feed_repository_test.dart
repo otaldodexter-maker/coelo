@@ -70,6 +70,50 @@ void main() {
     });
   });
 
+  test('descarta item expirado mesmo quando o servidor o devolve', () async {
+    final client = SupabaseClient(
+      'https://coelo.test',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => http.Response(
+          jsonEncode([
+            _row(
+              id: 'expirado-por-estado',
+              publishedAt: now.subtract(const Duration(hours: 26)),
+              expiresAt: now.subtract(const Duration(hours: 2)),
+            ),
+            _row(
+              id: 'expirado-no-limite',
+              publishedAt: now.subtract(const Duration(hours: 24)),
+              expiresAt: now,
+            ),
+          ]),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabasePrincipalNowFeedRepository(client, now: () => now);
+
+    final stories = await repository.listVisibleStories(scope);
+
+    expect(stories, isEmpty);
+    await expectLater(
+      repository.resolveMedia(
+        scope: scope,
+        publicationId: 'expirado-por-estado',
+        media: const PrincipalNowMediaDescriptor(
+          readTicket: 'ticket-expirado-por-estado',
+          mimeType: 'image/webp',
+          kind: PrincipalNowMediaKind.media,
+        ),
+      ),
+      throwsA(isA<PrincipalNowFeedUnavailable>()),
+    );
+  });
+
   test('resgata ticket público pela Edge e rejeita URL não HTTPS', () async {
     final requests = <Map<String, dynamic>>[];
     var secure = true;
