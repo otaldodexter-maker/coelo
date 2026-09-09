@@ -70,5 +70,34 @@ a dependência ausente era chat_attachment_metadata, pois20260812000000 não
 integra o manifesto. A falha anterior era mensagem genérica, não prova de
 ausência de audit14. O perfil falho não será repetido.
 
+## Primeiro replay nominal — resultado parcial e fixture corrigida
+
+D00 r8 autorizou o perfil 9551be50 com TAP 5e21e132. TestPath absoluto
+confirmado; TAP D03/D00 idênticos após CRLF→LF apenas. Hash normalizado CRLF
+UTF8 AB757635C0DEB9F1FA9DBAE39A9523CC1ED888FC224984410292F4457B19450F.
+Exec session64297 em 09/09 14:05–14:07 BRT, recurso próprio
+supabase_db_coelo_safe_42818dc7073d43168455afcae071d.
+
+As 49 migrations foram aplicadas, incluindo ponte e CHILD. O TAP aprovou
+21 assertivas e parou no UPDATE sintético de revogação de membership:
+`internal membership version mismatch`, linha121, guard Auth039. A fixture
+histórica omitia o incremento obrigatório de version. Resultado de execução
+exit1/no plan, sem assertiva CHILD falha e sem GREEN do lote.
+Plano45: P21/F0/B24/S0/U0; as24 bloqueadas não foram alcançadas. Log stdout:
+C:/Users/adrie/AppData/Local/Temp/d03-child-envelope-replay.log, SHA256
+78E1322A9A5E00D3FF2197BDE62101C2F6C2CF3DA14A6DBA1E20AFD0520BF055.
+O erro PostgreSQL detalhado está no transcript da session64297; o log stdout
+registra21 PASS e encerramento sem plano, não contém todo stderr nativo.
+
+Correção mínima no TAP: incrementar `version=version+1` ao revogar a membership
+sintética. O guard, a migration e o perfil ficam intactos. A correção ainda
+não foi reexecutada em SQL; exige nova janela coordenada após D02. Não somar
+as21 provas parciais a um eventual rerun das mesmas assertivas.
+
+Cleanup confirmado por consultas de container/volume/rede da identidade
+própria e ausência do diretório temporário. Slot liberado a D02 às14:07 BRT.
+Docker Desktop estava desligado e foi iniciado com janela oculta para a prova;
+permanece disponível para outras frentes, sem banco D03 residual.
+
 Conclusão FE/BE/E2E students.list permanece0/1 em cada camada. Memória de
 produto: no-op; este documento preserva evidência operacional da rodada.

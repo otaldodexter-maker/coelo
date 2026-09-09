@@ -117,7 +117,7 @@ set local role authenticated;
 insert into child_results values (11,public.superadmin_child_context_directory_v2());
 reset role;
 select extensions.is((select body#>>'{error,code}' from child_results where seq=11),'SAI_PERMISSION_DENIED','non-Owner denied');
-update app_private.superadmin_internal_memberships set status='revoked',revoked_at=now()
+update app_private.superadmin_internal_memberships set status='revoked',revoked_at=now(),version=version+1
  where id='a1800000-0000-4000-8000-000000000001';
 select pg_temp.child_actor(1);
 set local role authenticated;
