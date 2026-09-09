@@ -75,6 +75,13 @@ Nenhum dos quatro casos chegou ao seu aceite. Os servidores próprios foram
 encerrados; a segunda sessão37967 saiu0 com `q`, às13:10 BRT. Não acessamos
 storage por caminho alternativo nem contamos tela aberta como teste aprovado.
 
+Terceira tentativa, motivada por mudança material do inventário: aba109 ausente
+e nova aba116 da mesma origem selecionável. Compilação debug176,4s do mesmo
+harness, servidor61459. Com servidor pronto, reload perdeu conexão de controle
+(`Debugger unattached`); novo inventário e tentativa de selecionar a aba116
+confirmaram a mesma falha. Sem interação de credenciais/storage nem caso
+aprovado. Servidor61459 encerrado via `q`, exit0, às13:36 BRT. B4 mantido.
+
 ## Verificações separadas do denominador de testes Auth
 
 - Build normal `flutter build web --no-pub --release`: PASS322,9s, fonte
@@ -86,8 +93,9 @@ storage por caminho alternativo nem contamos tela aberta como teste aprovado.
   `location_schedule_section.dart`, idêntico à base56eb3f19. Encaminhado a D00,
   nenhuma alteração de Locais/allowlist. Não invalida goldens Auth, mas impede
   alegação de gate global limpo.
-- Preflight nominal: seis testes Node PASS, modo local PASS, GET settings real
-  e SQL READ ONLY qualificados. Categoria ferramentas, fora dos119 acima.
+- Pacote nominal: seis testes Node preflight e16 executor PASS, modos offline
+  PASS, GET settings real e SQL READ ONLY qualificados. Recibo
+  `remote-package-qualification.md`. Categoria ferramentas, fora dos119 acima.
 - Memória: gate de validação PASS; suíte da ferramenta12PASS/1SKIP por symlink
   indisponível no host, fora do produto. Nenhuma regra durável aprovada nova.
 
