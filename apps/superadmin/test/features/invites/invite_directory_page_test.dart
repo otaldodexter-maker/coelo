@@ -323,6 +323,81 @@ void main() {
     expect(find.text('tenant-a@coelo.test'), findsNothing);
   });
 
+  testWidgets('directory read denial discards a resend receipt already in flight', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _DeferredResendRepository();
+    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository, allowCommands: true)));
+    await tester.pumpAndSettle(
+      const Duration(milliseconds: 100),
+      EnginePhase.sendSemanticsUpdate,
+      const Duration(seconds: 2),
+    );
+    _flyout(tester).onSelected(InviteRowAction.resend);
+    await tester.pump();
+    repository.denyReads = true;
+    await tester.enterText(
+      find.descendant(of: find.byType(InviteDirectoryToolbar), matching: find.byType(TextField)),
+      'busca',
+    );
+    await tester.pump(const Duration(milliseconds: 301));
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(repository.deniedReads, 1);
+    expect(find.text('Acesso não autorizado'), findsOneWidget);
+    repository.pending.complete(
+      InviteCommandResult(
+        invite: repository.invite,
+        replayed: false,
+        link: Uri.parse('https://app.coelo.me/convites/${'a' * 64}'),
+      ),
+    );
+    await tester.pumpAndSettle(
+      const Duration(milliseconds: 100),
+      EnginePhase.sendSemanticsUpdate,
+      const Duration(seconds: 2),
+    );
+    expect(find.byKey(const Key('invite-resend-link')), findsNothing);
+    expect(find.textContaining('Reenvio solicitado'), findsNothing);
+    expect(find.text('Acesso não autorizado'), findsOneWidget);
+  });
+
+  testWidgets('captured directory action cannot start after a server read denial', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _DeferredResendRepository();
+    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository, allowCommands: true)));
+    await tester.pumpAndSettle(
+      const Duration(milliseconds: 100),
+      EnginePhase.sendSemanticsUpdate,
+      const Duration(seconds: 2),
+    );
+    final flyout = _flyout(tester);
+    repository.denyReads = true;
+    await tester.enterText(
+      find.descendant(of: find.byType(InviteDirectoryToolbar), matching: find.byType(TextField)),
+      'busca',
+    );
+    await tester.pump(const Duration(milliseconds: 301));
+    await tester.pumpAndSettle(
+      const Duration(milliseconds: 100),
+      EnginePhase.sendSemanticsUpdate,
+      const Duration(seconds: 2),
+    );
+    expect(repository.deniedReads, 1);
+    expect(find.text('Acesso não autorizado'), findsOneWidget);
+    flyout.onSelected(InviteRowAction.resend);
+    await tester.pump();
+    final commands = repository.commands.length;
+    await tester.pumpWidget(const SizedBox.shrink());
+    repository.pending.complete(InviteCommandResult(invite: repository.invite, replayed: false));
+    await tester.pumpAndSettle(
+      const Duration(milliseconds: 100),
+      EnginePhase.sendSemanticsUpdate,
+      const Duration(seconds: 2),
+    );
+    expect(commands, 0);
+  });
+
   testWidgets('revoking command permission removes the pending confirmation', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -512,15 +587,22 @@ final class _DeferredResendRepository implements InviteRepository {
   final invite = testInvite(status: InviteStatus.expired);
   final pending = Completer<InviteCommandResult>();
   final List<InviteResendCommand> commands = [];
+  bool denyReads = false;
+  int deniedReads = 0;
 
   @override
-  Future<InviteDirectoryResult> fetchPage(InviteDirectoryQuery query) async =>
-      InviteDirectoryResult(
-        items: [invite],
-        totalCount: 1,
-        page: query.page,
-        pageSize: query.pageSize,
-      );
+  Future<InviteDirectoryResult> fetchPage(InviteDirectoryQuery query) async {
+    if (denyReads) {
+      deniedReads++;
+      throw const InviteUnauthorizedException();
+    }
+    return InviteDirectoryResult(
+      items: [invite],
+      totalCount: 1,
+      page: query.page,
+      pageSize: query.pageSize,
+    );
+  }
 
   @override
   Future<InviteCommandResult> resend(InviteResendCommand command) {
