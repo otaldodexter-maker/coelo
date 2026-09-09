@@ -1,0 +1,58 @@
+﻿**********************
+Início da transcrição do Windows PowerShell
+Hora de início: 20260909142125
+Nome de Usuário: LAPTOP-67A8F4LK\adrie
+Executar como Usuário: LAPTOP-67A8F4LK\adrie
+Nome da Configuração: 
+Computador: LAPTOP-67A8F4LK (Microsoft Windows NT 10.0.26200.0)
+Aplicativo Host: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -Command Start-Transcript -Path '../../docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-activities-concurrency/nominal-activity-replay-20260909.txt'; try { & './scripts/Invoke-SafeLocalMigrationReplay.ps1' -TargetVersion '20260908154257' -NominalProfile 'ActivityAggregateConcurrency' -TestPath 'supabase/tests/superadmin_activity_save_v2_test.sql' -RunActivityV2Concurrency } finally { Stop-Transcript }
+ID do Processo: 34108
+PSVersion: 5.1.26100.9168
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9168
+BuildVersion: 10.0.26100.9168
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcrição iniciada, o arquivo de saída é ../../docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-activities-concurrency/nominal-activity-replay-20260909.txt
+Prepared 56 safe replay migrations (54 canonical + 2 preflight); profile=ActivityAggregateConcurrency; additional=1; manifest_sha256=4279e67c9651f4049329591b6e8aad82e3a9052506c1a4e16ba8bbb693249d59; preflight_sha256=20260811151253_assert_function_execute_preflight=718C2DE052E9DF29ABC42642806D9A5E4D98C8964665453DE6F14F0F8B61AB75,20260811215452_access_profile_labels_replay_bridge=D97E02796FCD5897707B5657B7A1C1DF690F831E09ED98DF6ED21886F75F9EF3.
+npx.cmd : Starting database...
+No C:\Users\adrie\Documents\Coelo.worktrees\e2-r02-d02-estrutura\packages\coelo_database\scripts\Invoke-SafeLocalMigrati
+onReplay.ps1:313 caractere:7
++       & npx.cmd --yes $cliPackage --agent no start --workdir $project ...
++       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Starting database...:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+Initialising schema...
+Seeding globals from roles.sql...
+WARN: no files matched pattern: supabase/seed.sql
+Starting containers...
+Waiting for health checks...
+Started supabase local development setup.
+
+Local dev security notice
+All services bind to 0.0.0.0 (network-accessible, not just localhost)
+API keys and JWT secrets are shared defaults. Do not use in production
+Studio, pgMeta (/pg/*), and analytics have no authentication
+
+A new version of Supabase CLI is available: v2.117.0 (currently installed v2.116.0)
+We recommend updating regularly for new features and bug fixes: 
+https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+
+
+npx.cmd : A new version of Supabase CLI is available: v2.117.0 (currently installed v2.116.0)
+No C:\Users\adrie\Documents\Coelo.worktrees\e2-r02-d02-estrutura\packages\coelo_database\scripts\Invoke-SafeLocalMigrati
+onReplay.ps1:364 caractere:9
++         & npx.cmd --yes $cliPackage --agent no stop --workdir $projec ...
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (A new version o...alled v2.116.0):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+We recommend updating regularly for new features and bug fixes: 
+https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+PS>TerminatingError(): "safe local pgTAP failed with exit code 1"
+**********************
+Fim da transcrição do Windows PowerShell
+Hora de término: 20260909142511
+**********************
