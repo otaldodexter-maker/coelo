@@ -491,6 +491,7 @@ void main() {
     expect(session.isPasswordRecovery, isTrue);
     expect(session.isAuthenticated, isFalse);
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.resetPassword);
+    expect(find.text(LogoutResult.genericFailureMessage), findsOneWidget);
   });
 
   testWidgets('confines a recovery session to reset when Home is requested', (tester) async {

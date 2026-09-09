@@ -1,0 +1,23 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub test/app/router/superadmin_router_tes ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/app/router/superadmin_router_test.dart
+00:00 +0: session preserves recovery separately from a normal authenticated session
+00:00 +1: session clears an authorized context when password recovery starts
+00:00 +2: redirects an authorized shell to reset when recovery starts at runtime
+00:01 +3: opens password recovery publicly and returns to login
+00:01 +4: allows direct public access to password recovery
+00:01 +5: shows an invalid state for direct reset access without recovery
+00:01 +6: keeps a valid recovery session on reset instead of redirecting home
+00:01 +7: starts a recovery session on reset instead of the initial login route
+00:01 +8: revokes a recovery session before returning to login
+00:02 +9: keeps recovery confined when revocation before login fails
+00:02 +10: confines a recovery session to reset when Home is requested
+00:02 +11: confines a recovery session to reset when a protected route is requested
+00:02 +12: confines a recovery session before development preview routes
+00:02 +13: redirects authenticated recovery visits to the shell
+00:02 +14: All tests passed!

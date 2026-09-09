@@ -999,7 +999,13 @@ GoRouter createSuperadminRouter({
               onBackToLogin: () async {
                 if (session.isPasswordRecovery) {
                   final result = await logout();
-                  if (!result.isSuccess) return;
+                  if (!context.mounted) return;
+                  if (!result.isSuccess) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(result.message ?? LogoutResult.genericFailureMessage)),
+                    );
+                    return;
+                  }
                 }
                 if (context.mounted) {
                   context.goNamed(SuperadminRoutes.loginName);
