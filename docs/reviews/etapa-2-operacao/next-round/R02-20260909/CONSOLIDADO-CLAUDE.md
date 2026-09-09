@@ -873,3 +873,66 @@ registrados por serem decisão de composição aprovada e não dele — e os doi
 registrados estão **documentados**, um com medição de contraste e o outro **preso
 em teste**. Defeito registrado sem prova executável some no próximo turno;
 com prova, não some.
+
+---
+
+# Mapa de integração — simulação de merge feita por L00
+
+Ninguém tinha previsto os conflitos que D00 vai encontrar. Fiz a simulação com
+`git merge-tree --write-tree`, que é **leitura pura**: nada foi integrado, nenhuma
+branch foi tocada, `dev` não foi mexido.
+
+## Fato que muda o plano: D00 JÁ executou o movimento único de hospedagem
+
+`dev` avançou **76 commits** desde a base comum `56eb3f19d` e está em `d7ce6976b`.
+Dois desses commits tocam território Principal:
+
+- **`f5e5d8dfc fix(superadmin): preserve the host across Principal routes`** —
+  **366 linhas** alteradas em `superadmin_router.dart`, mais
+  `principal_moments_publication_route.dart`, `principal_now_preview_page.dart` e
+  `test/app/router/principal_real_route_test.dart`. **Confirmei no arquivo de
+  dev**: `ShellRoute` na linha 755, e `principalNow` (852), `principalForYou`
+  (949), `principalMoments` (957) e `principalProfile` (965) **todos dentro dele**.
+  **O movimento que escalei foi feito.**
+- **`7271f4a39 feat(principal): filter Para Você by authorized audience scope`** —
+  mesmo assunto do `8c041ed50` de L03. D00 levou o trabalho dele para dev.
+
+## Conflitos por frente, medidos
+
+| Frente | Arquivos em conflito com `origin/dev` |
+| --- | --- |
+| **L01** | 2: `principal_moments_publication_route.dart` e `principal_now_preview_page.dart` |
+| **L02** | 1: `superadmin_router.dart` |
+| **L03** | 5: `superadmin_router.dart` e quatro de Para Você (adapter, preview data, route page e o teste do adapter) |
+
+### Leitura dos conflitos
+
+- **L01 não conflita no router.** A disciplina de não tocar no arquivo, que
+  cobrei e ele cumpriu, é exatamente o motivo. Os dois arquivos que conflitam
+  foram alterados **pelo próprio commit de hospedagem de D00**. É a demonstração
+  prática de por que a regra valia.
+- **L02 conflita só no router**, onde estava a reserva dele. Pedi que ele diga,
+  trecho a trecho, o que precisa sobreviver — e em especial que a rota nova
+  `/principal-conversations` provavelmente deve entrar **dentro** do `ShellRoute`
+  como as outras, para D00 não deixá-la fora do shell.
+- **Os quatro conflitos de Para Você em L03 são a mesma mudança chegando por dois
+  caminhos**: o commit dele e o cherry-pick de D00. Não são divergência de
+  conteúdo até prova em contrário — pedi que ele verifique se a versão de dev
+  divergiu da dele e em quê.
+
+## O que pedi às três frentes, e é trabalho de integração real
+
+1. **Rodar as próprias provas contra a composição de dev.** É a pergunta de maior
+   retorno agora: a hospedagem de D00 **corrigiu, manteve ou mudou** os defeitos
+   que cada uma prendeu em teste? Para L01 especificamente, se o feed misto
+   continua nunca sendo consultado, o teste dele segue válido; se D00 ligou a
+   composição, o teste precisa ser **invertido**, como o próprio cabeçalho manda.
+2. **Escrever, conflito a conflito, qual lado deve prevalecer e por quê.** Quem
+   conhece o código é o autor; a análise economiza D00 e reduz risco de escolha
+   errada.
+3. **Marcar as propostas de hunks como superadas ou apontar o que ficou de fora.**
+   Proposta obsoleta que fica no pacote sem aviso vira retrabalho para quem ler
+   depois. Em particular, verificar se a cadeia por auth scope, app e main para
+   `/principal-moments` — que L01 dizia ser maior que mover a rota — foi coberta.
+
+**Nenhuma frente deve integrar `dev`.** Isso é de D00 e eu não pedi a ninguém.
