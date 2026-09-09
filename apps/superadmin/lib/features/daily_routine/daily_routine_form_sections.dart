@@ -22,6 +22,7 @@ final class DailyRoutineWizardPage extends StatefulWidget {
     this.duplicateFromModelId,
     this.applicationFromModelId,
     this.activityController,
+    this.onDestinationSelected,
     super.key,
   });
 
@@ -32,6 +33,7 @@ final class DailyRoutineWizardPage extends StatefulWidget {
   final String? duplicateFromModelId;
   final String? applicationFromModelId;
   final SuperadminActivityController? activityController;
+  final ValueChanged<String>? onDestinationSelected;
 
   @override
   State<DailyRoutineWizardPage> createState() => _DailyRoutineWizardPageState();
@@ -59,6 +61,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
   var _loadGeneration = 0;
   var _commandGeneration = 0;
   String? _baseline;
+  final _intents = <String, (String, String)>{};
   var _guarded = false;
 
   @override
@@ -322,6 +325,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
   Widget build(BuildContext context) => SuperadminShell(
     logout: widget.logout,
     currentDestination: 'daily-routine',
+    onDestinationSelected: widget.onDestinationSelected == null ? null : _selectDestination,
     title: _title,
     subtitle: 'Configuração versionada e validada no servidor.',
     activityController: widget.activityController,
@@ -369,10 +373,35 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       '${field.options.map((option) => '${option.id}=${option.label}=${option.sortOrder}').join('+')}:'
       '${field.conditions.length}';
 
+  /// A retry of the same draft is the same intent, so it must carry the same
+  /// request id; editing the draft first makes it a different one.
+  String _requestIdFor(String intent) {
+    final signature = _draftSignature();
+    final held = _intents[intent];
+    if (held != null && held.$1 == signature) return held.$2;
+    final id = '$intent-${DateTime.now().microsecondsSinceEpoch}';
+    _intents[intent] = (signature, id);
+    return id;
+  }
+
+  void _completeIntent(String intent) => _intents.remove(intent);
+
   bool get _isDirty =>
       _canManage && !_saving && _baseline != null && _draftSignature() != _baseline;
 
-  Future<void> _confirmExit() async {
+  /// The shell can leave the editor without popping the route, so the same
+  /// confirmation has to guard it. Five other Superadmin forms do exactly this.
+  Future<void> _selectDestination(String destination) async {
+    final callback = widget.onDestinationSelected;
+    if (callback == null) return;
+    if (!_isDirty) {
+      callback(destination);
+      return;
+    }
+    if (await _confirmDiscard()) callback(destination);
+  }
+
+  Future<bool> _confirmDiscard() async {
     final discard = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => CoeloAdminDialogShell(
@@ -391,8 +420,12 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         ),
       ),
     );
-    if (!(discard ?? false) || !mounted) return;
-    Navigator.of(context).pop();
+    return (discard ?? false) && mounted;
+  }
+
+  Future<void> _confirmExit() async {
+    final navigator = Navigator.of(context);
+    if (await _confirmDiscard()) navigator.pop();
   }
 
   String get _title => switch (widget.entryKind) {
@@ -1018,7 +1051,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       setState(() => _saving = true);
       final id = await repository.saveModel(
         model,
-        requestId: 'save-model-${DateTime.now().microsecondsSinceEpoch}',
+        requestId: _requestIdFor('save-model'),
       );
       if (!_isCurrentCommand(generation, repository: repository, entry: current)) return;
       if (id.trim().isEmpty) {
@@ -1029,6 +1062,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Modelo salvo.')));
+      _completeIntent('save-model');
       _baseline = _draftSignature();
       if (current.id.isEmpty) {
         setState(() {
@@ -1078,7 +1112,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       setState(() => _saving = true);
       final id = await repository.saveApplication(
         application,
-        requestId: 'save-application-${DateTime.now().microsecondsSinceEpoch}',
+        requestId: _requestIdFor('save-application'),
       );
       if (!_isCurrentCommand(generation, repository: repository, entry: current)) return;
       if (id.trim().isEmpty) {
@@ -1146,7 +1180,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       updated.validate();
       final id = await repository.saveApplication(
         updated,
-        requestId: 'save-application-${DateTime.now().microsecondsSinceEpoch}',
+        requestId: _requestIdFor('save-application-mode'),
       );
       if (!_isCurrentCommand(generation, repository: repository, entry: current)) return;
       if (id != current.id) {
@@ -1177,7 +1211,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       final id = await repository.revertApplicationCustomization(
         applicationId: application.id,
         expectedVersion: application.expectedVersion,
-        requestId: 'revert-application-${DateTime.now().microsecondsSinceEpoch}',
+        requestId: _requestIdFor('revert-application'),
       );
       if (!_isCurrentCommand(generation, repository: repository, entry: application)) return;
       if (id != application.id) {

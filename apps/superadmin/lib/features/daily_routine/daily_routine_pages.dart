@@ -553,6 +553,7 @@ class DailyRoutineEditorPage extends StatefulWidget {
     this.duplicateFromModelId,
     this.applicationFromModelId,
     this.activityController,
+    this.onDestinationSelected,
     super.key,
   }) : assert(duplicateFromModelId == null || applicationFromModelId == null);
 
@@ -563,6 +564,7 @@ class DailyRoutineEditorPage extends StatefulWidget {
   final String? duplicateFromModelId;
   final String? applicationFromModelId;
   final SuperadminActivityController? activityController;
+  final ValueChanged<String>? onDestinationSelected;
 
   @override
   State<DailyRoutineEditorPage> createState() => _DailyRoutineEditorPageState();
@@ -578,5 +580,6 @@ class _DailyRoutineEditorPageState extends State<DailyRoutineEditorPage> {
     duplicateFromModelId: widget.duplicateFromModelId,
     applicationFromModelId: widget.applicationFromModelId,
     activityController: widget.activityController,
+    onDestinationSelected: widget.onDestinationSelected,
   );
 }
