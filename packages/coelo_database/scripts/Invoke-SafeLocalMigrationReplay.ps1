@@ -19,6 +19,10 @@ param(
 
   [switch]$RunAuthLifecycle,
 
+  [switch]$RunAuthRecoveryBoundary,
+
+  [switch]$AssertAuthRecoveryConfined,
+
   [switch]$RunActivityV2Concurrency
 )
 
@@ -93,7 +97,7 @@ if ($targetMigration.Count -ne 1) {
 }
 if ($NominalProfile) {
   if ($FoundationOnly -or $AuthOnly -or $AdditionalMigration.Count -gt 0 -or
-      $RunAuthLifecycle -or $RunActivityV2Concurrency) {
+      $RunAuthLifecycle -or $RunAuthRecoveryBoundary -or $AssertAuthRecoveryConfined -or $RunActivityV2Concurrency) {
     throw 'nominal replay cannot be combined with other replay profiles, additions, Auth lifecycle or concurrency'
   }
   $nominalResolverRelative = switch ($NominalProfile) {
@@ -182,6 +186,14 @@ if ($AuthOnly) {
 }
 if ($RunAuthLifecycle -and -not $AuthOnly) {
   throw 'Auth lifecycle requires the constrained Auth-only replay profile'
+}
+if ($RunAuthRecoveryBoundary -and (
+    -not $AuthOnly -or $RunAuthLifecycle -or $RunActivityV2Concurrency -or
+    $PSBoundParameters['RunR02AuthProofConcurrency'] -eq $true)) {
+  throw 'Auth recovery boundary requires Auth-only and excludes lifecycle and concurrency profiles'
+}
+if ($AssertAuthRecoveryConfined -and -not $RunAuthRecoveryBoundary) {
+  throw 'Auth recovery confinement assertions require the focal recovery boundary runner'
 }
 if (-not (Test-Path -LiteralPath $canonicalConfig -PathType Leaf)) {
   throw 'canonical Supabase config is missing'
@@ -284,7 +296,7 @@ try {
     -AdditionalMigration $AdditionalMigration @nominalParameters
 
   $startAttempted = $true
-  $excludedServices = if ($RunAuthLifecycle) {
+  $excludedServices = if ($RunAuthLifecycle -or $RunAuthRecoveryBoundary) {
     $authLifecycleExcludes
   }
   else {
@@ -329,6 +341,12 @@ try {
     & (Join-Path $scriptRoot 'Test-LocalAuthLifecycle.ps1') `
       -ProjectRoot $projectRoot `
       -ProjectId $projectId
+  }
+  if ($RunAuthRecoveryBoundary) {
+    & (Join-Path $scriptRoot 'Test-LocalAuthRecoveryBoundary.ps1') `
+      -ProjectRoot $projectRoot `
+      -ProjectId $projectId `
+      -AssertConfined:$AssertAuthRecoveryConfined
   }
   if ($RunActivityV2Concurrency) {
     & (Join-Path $scriptRoot 'Test-ActivityV2Concurrency.ps1') `

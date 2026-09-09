@@ -1,0 +1,4 @@
+﻿PASS fixture=productive classification=RED
+PASS fixture=exact-session-denial classification=PASS
+PASS fixture=unrelated-denial classification=INCONCLUSIVE
+PASS fixture=denial-with-data classification=INCONCLUSIVE
