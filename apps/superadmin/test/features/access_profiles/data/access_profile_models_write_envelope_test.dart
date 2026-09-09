@@ -134,6 +134,65 @@ void main() {
       );
     });
   }
+
+  for (final operation in ['create', 'update', 'duplicate']) {
+    for (final malformed in <String, Map<String, Object?>>{
+      'receipt identity': {..._receipt(operation), 'model_id': 'different-model'},
+      'receipt version': {..._receipt(operation), 'version': 5},
+      'receipt replay type': {..._receipt(operation), 'replayed': 'false'},
+      'missing receipt identity': {..._receipt(operation)}..remove('model_id'),
+      'missing model version': {
+        ..._receipt(operation),
+        'model': {..._model}..remove('version'),
+      },
+      'fractional model version': {
+        ..._receipt(operation),
+        'version': 4.5,
+        'model': {..._model, 'version': 4.5},
+      },
+      'model domain': {
+        ..._receipt(operation),
+        'model': {..._model, 'domain': 'institution'},
+      },
+    }.entries) {
+      test('$operation rejects inconsistent ${malformed.key}', () async {
+        await expectLater(
+          _invoke(_repository(_success(malformed.value)), operation),
+          throwsA(isA<AccessProfileException>()),
+        );
+      });
+    }
+  }
+  test('update rejects a self-consistent receipt for another model', () async {
+    await expectLater(
+      _invoke(
+        _repository(
+          _success({
+            ..._receipt('update'),
+            'model_id': 'different-model',
+            'model': {..._model, 'id': 'different-model'},
+          }),
+        ),
+        'update',
+      ),
+      throwsA(isA<AccessProfileException>()),
+    );
+  });
+  test('duplicate rejects a receipt reusing its source identity', () async {
+    await expectLater(
+      _invoke(
+        _repository(
+          _success({
+            ..._receipt('duplicate'),
+            'model_id': _draft.sourceModelId,
+            'model': {..._model, 'id': _draft.sourceModelId},
+          }),
+        ),
+        'duplicate',
+      ),
+      throwsA(isA<AccessProfileException>()),
+    );
+  });
 }
 
 const _operations = ['delete', 'create', 'update', 'duplicate'];

@@ -186,6 +186,12 @@ final class SuspendPickupAuthorizationCommand {
   final int expectedVersion;
 }
 
+/// Transport support only; this never replaces server-side authorization.
+/// Real adapters must opt in only after their write contract is qualified.
+abstract interface class ChildSafetyMutationSupport {
+  bool get mutationsEnabled;
+}
+
 abstract interface class ChildSafetyRepository {
   Future<ChildSafetyDirectoryPage> fetchDirectory(ChildSafetyDirectoryQuery query);
   Future<ChildSafetyRecord?> fetchChild(String childId);
