@@ -31,6 +31,7 @@ import '../features/institutions/domain/institution_directory_repository.dart';
 import '../features/locations/domain/location_capabilities.dart';
 import '../features/locations/domain/location_catalog_reader.dart';
 import '../features/locations/domain/location_catalog_writer.dart';
+import '../features/locations/domain/location_reservation_gateway.dart';
 import '../features/units/data/unavailable_unit_composition.dart';
 import '../features/units/domain/unit_backend_commands.dart';
 import '../features/units/domain/unit_directory.dart';
@@ -114,6 +115,7 @@ class SuperadminApp extends StatefulWidget {
     this.unitDetailRepository = const UnavailableUnitDetailRepository(),
     this.locationCatalogReader = const UnavailableLocationCatalogReader(),
     this.locationCatalogWriter = const UnavailableLocationCatalogWriter(),
+    this.locationReservationGateway = const UnavailableLocationReservationGateway(),
     this.locationCapabilities = _noLocationCapabilities,
     this.activityDirectoryRepository = const UnavailableActivityDirectoryRepository(),
     this.activityCommandRepository = const UnavailableActivityCommandRepository(),
@@ -172,6 +174,7 @@ class SuperadminApp extends StatefulWidget {
   final UnitDetailRepository unitDetailRepository;
   final LocationCatalogReader locationCatalogReader;
   final LocationCatalogWriter locationCatalogWriter;
+  final LocationReservationGateway locationReservationGateway;
   final LocationCapabilities Function(SuperadminAuthContext?) locationCapabilities;
   final ActivityDirectoryRepository activityDirectoryRepository;
   final ActivityCommandRepository activityCommandRepository;
@@ -254,6 +257,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       unitDetailRepository: widget.unitDetailRepository,
       locationCatalogReader: widget.locationCatalogReader,
       locationCatalogWriter: widget.locationCatalogWriter,
+      locationReservationGateway: widget.locationReservationGateway,
       locationCapabilities: widget.locationCapabilities,
       activityDirectoryRepository: widget.activityDirectoryRepository,
       activityCommandRepository: widget.activityCommandRepository,

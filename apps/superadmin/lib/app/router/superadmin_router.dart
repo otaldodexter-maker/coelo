@@ -132,6 +132,8 @@ import '../../features/institutions/presentation/screens/institution_form_page.d
 import '../../features/locations/domain/location_capabilities.dart';
 import '../../features/locations/domain/location_catalog_reader.dart';
 import '../../features/locations/domain/location_catalog_writer.dart';
+import '../../features/locations/domain/location_reservation_gateway.dart';
+import '../../features/locations/presentation/location_consumer_reservations.dart';
 import '../../features/locations/presentation/locations_page.dart';
 import '../../features/locations/presentation/unit_locations_gate.dart';
 import '../../features/audit/presentation/audit_directory_page.dart';
@@ -240,6 +242,8 @@ GoRouter createSuperadminRouter({
   UnitDetailRepository unitDetailRepository = const UnavailableUnitDetailRepository(),
   LocationCatalogReader locationCatalogReader = const UnavailableLocationCatalogReader(),
   LocationCatalogWriter locationCatalogWriter = const UnavailableLocationCatalogWriter(),
+  LocationReservationGateway locationReservationGateway =
+      const UnavailableLocationReservationGateway(),
   LocationCapabilities Function(SuperadminAuthContext?) locationCapabilities =
       _noLocationCapabilities,
   ActivityDirectoryRepository activityDirectoryRepository =
@@ -1593,6 +1597,46 @@ GoRouter createSuperadminRouter({
                       key: ValueKey(session.authorizationInvalidationRevision),
                       repository: groupDetailRepository,
                       id: state.pathParameters['groupId']!,
+                      reservationBuilder: (context, detail) => LocationConsumerReservations(
+                        consumer: LocationReservationConsumer(
+                          kind: LocationReservationConsumerKind.group,
+                          id: detail.id,
+                        ),
+                        scopes: [
+                          (
+                            scope: LocationScope.institution(institutionId: detail.institutionId),
+                            label: detail.institutionName,
+                          ),
+                          (
+                            scope: LocationScope.unit(
+                              institutionId: detail.institutionId,
+                              unitId: detail.unitId,
+                            ),
+                            label: detail.unitName,
+                          ),
+                        ],
+                        reader: locationCatalogReader,
+                        gateway: locationReservationGateway,
+                        sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
+                        contextRevision: session.authorizationInvalidationRevision,
+                        canRead:
+                            session.authContext?.permissionCodes.containsAll({
+                              'groups.read',
+                              'locations.read',
+                              'locations.reservations.read',
+                            }) ==
+                            true,
+                        canManage:
+                            session.authContext?.permissionCodes.contains(
+                              'locations.reservations.manage',
+                            ) ==
+                            true,
+                        canOverride:
+                            session.authContext?.permissionCodes.contains(
+                              'locations.reservations.override',
+                            ) ==
+                            true,
+                      ),
                       logout: logout,
                       onBack: () => context.goNamed(SuperadminRoutes.groupsName),
                       onDestinationSelected: (destination) =>

@@ -7,9 +7,11 @@ import 'core/config/superadmin_auth_scope.dart';
 import 'features/auth/domain/superadmin_auth_context.dart';
 import 'features/locations/data/supabase_location_catalog_reader.dart';
 import 'features/locations/data/supabase_location_catalog_writer.dart';
+import 'features/locations/data/supabase_location_reservation_gateway.dart';
 import 'features/locations/domain/location_capabilities.dart';
 import 'features/locations/domain/location_catalog_reader.dart';
 import 'features/locations/domain/location_catalog_writer.dart';
+import 'features/locations/domain/location_reservation_gateway.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +36,7 @@ Future<void> main() async {
       unitDetailRepository: authScope.unitDetailRepository,
       locationCatalogReader: _locationCatalogReader(),
       locationCatalogWriter: _locationCatalogWriter(),
+      locationReservationGateway: _locationReservationGateway(),
       locationCapabilities: _locationCapabilities,
       activityDirectoryRepository: authScope.activityDirectoryRepository,
       activityCommandRepository: authScope.activityCommandRepository,
@@ -100,4 +103,12 @@ LocationCapabilities _locationCapabilities(SuperadminAuthContext? context) {
     copy: permissionCodes.contains('locations.copy'),
     schedule: permissionCodes.contains('locations.schedule'),
   );
+}
+
+LocationReservationGateway _locationReservationGateway() {
+  try {
+    return SupabaseLocationReservationGateway(Supabase.instance.client);
+  } on Object {
+    return const UnavailableLocationReservationGateway();
+  }
 }
