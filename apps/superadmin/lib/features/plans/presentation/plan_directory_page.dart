@@ -590,7 +590,10 @@ final class _Metric extends StatelessWidget {
     children: [
       Icon(icon, size: CoeloSize.iconSm),
       const SizedBox(width: CoeloSpacing.space1),
-      Text(label, style: Theme.of(context).textTheme.bodySmall),
+      // O rotulo precisa poder encolher: dentro do Wrap a linha recebe a largura
+      // disponivel como maximo, e com texto a 150% ou 200% um Text rigido
+      // transbordava para fora do cartao.
+      Flexible(child: Text(label, style: Theme.of(context).textTheme.bodySmall)),
     ],
   );
 }
