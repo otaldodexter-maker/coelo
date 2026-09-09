@@ -1,0 +1,2 @@
+# Preserve the exact qualifier bytes used by the recorded local CLI proof.
+/Test-ProposedCliLedgerAtomicityV2.ps1 -text !eol
