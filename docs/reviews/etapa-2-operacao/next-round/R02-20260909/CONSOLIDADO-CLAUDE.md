@@ -1478,3 +1478,36 @@ atenção passiva, que é justamente a que falta numa resolução manual apressa
 
 **Nenhuma integração aconteceu.** `merge-tree --write-tree` não escreve na árvore
 de trabalho nem cria commit; nenhuma frente fez merge ou rebase.
+
+## Validação mecânica da resolução — L02, `201affd2`
+
+L02 aplicou os dois pontos manuais ao resultado do `merge-tree`, **num rascunho
+fora do controle de versão**, e conferiu a estrutura:
+
+- âncora da inserção encontrada **exatamente uma vez** — sem ambiguidade sobre
+  onde a rota entra;
+- o `?from=principal` restante encontrado **exatamente uma vez**;
+- chaves e parênteses **balanceados**, delta 0, depois da resolução;
+- **zero** marcadores de conflito, **zero** `?from=principal`, e **3**
+  `chatUnreadCountLoader` — as três que devem sobreviver.
+
+**O que a validação NÃO cobre, declarado por ele:** tipos e compilação. Analisar
+exigiria materializar a base conjunta, **que é do integrador**, e ele não fez.
+O rascunho foi removido.
+
+Com isso a peça de merge está completa: conflito **medido**, trabalho manual
+reduzido a dois pontos, blocos prontos para colar, **âncoras validadas** e a
+tabela de qual teste pega cada perigo.
+
+## Um deslize simétrico, registrado nos dois lados
+
+L02 corrigiu espontaneamente ter escrito "16:01 pelo relógio do host" **sem ter
+lido o relógio** — eram 15:58. Ele classificou como erro pequeno e sem
+consequência técnica, e registrou em vez de deixar passar, por ser o mesmo
+deslize que já corrigira duas vezes no dia.
+
+**Registro a simetria porque ela é honesta:** foi exatamente o erro que eu
+cometi mais de uma vez hoje, estimando horários em prosa em vez de ler o
+relógio, e que também precisei corrigir. Não é um deslize de executor — é um
+hábito que aparece quando o relatório é escrito em paralelo ao trabalho, e a
+correção é a mesma nos dois casos: **ler antes de afirmar, inclusive o relógio.**
