@@ -46,7 +46,7 @@
       "failed_current_cases": 0
     },
     "infrastructure": {
-      "pester_unique_cases": 16,
+      "pester_unique_cases": 24,
       "failed": 0,
       "blocked": 0,
       "skipped": 0,
@@ -359,6 +359,29 @@
   ],
   "infrastructure_campaigns": [
     {
+      "id": "infra.child-directory-concurrency-structure",
+      "status": "pass",
+      "unique_cases": 8,
+      "case_ids": [
+        "exists and parses without errors",
+        "requires the owned disposable project and isolated identity",
+        "coordinates independent sessions through observed database locks",
+        "covers revocation after the first authorization read",
+        "renames the third limit-plus-one row and checks the returned order and cursor",
+        "forces wall-clock expiry during audit and verifies rollback",
+        "bounds waits and cleans every process without reading credentials",
+        "keeps a durable plan that marks runtime as not executed"
+      ],
+      "evidence": [{
+        "kind": "nunit_xml",
+        "path": "C:/Users/adrie/AppData/Local/Temp/d03-child-directory-concurrency-structural.xml",
+        "sha256": "945309DD4B53B00E95DA06A17F910BC10A580F9CA1C1850777B82FC5AC06736F",
+        "result": "P8/F0/B0/S0/U0; runtime SQL not executed"
+      }],
+      "product_acceptance_credit": 0,
+      "deduplication": "Only the final eight-case structural run counts; earlier revisions are not added. This does not prove the three SQL interleavings."
+    },
+    {
       "id": "infra.child-directory-envelope-profile",
       "status": "pass",
       "unique_cases": 10,
@@ -455,6 +478,16 @@
     "blocker": "The synthetic membership revocation fixture did not increment membership.version, so Auth039 stopped the TAP after 21 passing assertions. The migration and replay profile were unchanged; cleanup completed.",
     "deduplication": "The 21 partial passes must not be added to a future rerun of the same 45-assertion plan.",
     "excluded": "The earlier FoundationOnly run failed before CHILD on the missing chat_attachment_metadata dependency. It executed zero CHILD assertions and is not added to this nominal attempt."
+  },
+  "sql_concurrency": {
+    "id": "sql.child-directory-concurrency",
+    "status": "prepared-not-executed",
+    "planned_scenarios": 3,
+    "executed_scenarios": 0,
+    "passed_scenarios": 0,
+    "failed_scenarios": 0,
+    "blocked_scenarios": 3,
+    "blocker": "Requires reviewed harness, nominal CHILD TAP green, serialized runner integration and next D00 local replay window."
   },
   "memory": {
     "status": "no-op",
