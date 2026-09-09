@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-09T15:11:29-03:00",
+  "generated_at": "2026-09-09T15:55:05-03:00",
   "timezone": "America/Sao_Paulo",
   "source_ledger": {
     "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/d03-test-ledger.json",
@@ -10,13 +10,13 @@
     "mode": "byte-for-byte evidence reproduction",
     "new_test_or_database_execution": false,
     "deduplicated_by": "source_path",
-    "artifact_count": 28,
-    "total_bytes": 101447,
+    "artifact_count": 29,
+    "total_bytes": 107666,
     "ignored_artifact_count": 0,
     "renamed_for_review": "21 .log copies renamed to .log.txt without byte changes",
     "supplemental_artifacts": 4,
     "null_or_missing_references_copied": 0,
-    "non_temp_artifacts": 2
+    "non_temp_artifacts": 3
   },
   "secret_scan": {
     "performed_before_copy": true,
@@ -347,6 +347,19 @@
       "reproduction": "byte-for-byte evidence copy; no new execution",
       "git_ignored": false,
       "provenance": "local-structure-status-update"
+    },
+    {
+      "source_path": "C:/Users/adrie/Documents/Coelo/docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/child-http-first-replay.log",
+      "preserved_path": "evidence/d03-acompanhamento/r02-20260909/child-http-first-replay.log.txt",
+      "sha256": "1EAA328DECD169844E62C716EBDA54E0A23DE9A6C0745D8A281DFA465297AB3F",
+      "bytes": 6219,
+      "source_hash_verified": true,
+      "preserved_hash_verified": true,
+      "reproduction": "byte-for-byte evidence copy; no new execution",
+      "git_ignored": false,
+      "provenance": "integrated-existing-evidence",
+      "base_sha": "63e364300c062ca0b52bb79958cc465a9b16cd60",
+      "result": "4 HTTP pass / 0 fail; 45 TAP rerun not added"
     }
   ]
 }

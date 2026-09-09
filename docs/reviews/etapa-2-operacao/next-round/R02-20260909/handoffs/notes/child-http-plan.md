@@ -1,16 +1,18 @@
 ---
 title: "R02 D03 — plano focal HTTP local do diretório CHILD"
 source: "prompt D03; assignment D00; contrato CHILD-READ01; Test-LocalAuthLifecycle.ps1"
-status: "prepared-not-executed-awaiting-nominal-runner-mode"
+status: "pass-integrated-local-d00-r14"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
 
 # Prova HTTP local do diretório CHILD
 
+Atualização D00 r14, 15:53 BRT: quatro cenários HTTP PASS na base63e364300c062ca0b52bb79958cc465a9b16cd60, exit0 e cleanupzero. Log preservado em evidence/d03-acompanhamento/r02-20260909/child-http-first-replay.log.txt, SHA2561EAA328DECD169844E62C716EBDA54E0A23DE9A6C0745D8A281DFA465297AB3F. A prova usa startup após a migration; não certifica invalidação dinâmica do cache ou o pacote atômico novo. A preparação e os bloqueios abaixo são históricos, superados por este recibo.
+
 O harness `packages/coelo_database/scripts/Test-ChildDirectoryHttp.ps1` prepara
 uma prova PostgREST local do reader CHILD sem alterar migrations, perfil ou
-realm. Sua execução continua bloqueada até D00 aprovar e integrar o modo HTTP
+realm. Na preparação, sua execução estava bloqueada até D00 aprovar e integrar o modo HTTP
 restrito do runner seguro. Nenhum HTTP, Docker ou SQL deste harness foi
 executado durante a preparação.
 
@@ -82,7 +84,7 @@ reportou **P8/F0/B0/S0/U0**, 2,88 segundos. A execução produziu somente saída
 console; **não há XML/log bruto preservado** dessa campanha. Nenhum XML foi
 reconstruído e o teste não foi repetido apenas para criar outro artefato.
 
-HTTP/PostgREST continua não executado. O plano tem quatro cenários de negócio:
+Na preparação15:17, HTTP/PostgREST ainda não havia sido executado. O plano tem quatro cenários de negócio:
 página inicial/DTO/cursor; segunda página/reload; B/desconhecido sem enumeração;
 revogação versionada com mesmo JWT e auditoria minimizada. Os oito casos
 estruturais não são oito cenários HTTP nem aceites integrais de `students.list`.

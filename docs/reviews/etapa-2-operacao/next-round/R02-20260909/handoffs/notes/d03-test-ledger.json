@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-09T15:11:29-03:00",
+  "generated_at": "2026-09-09T15:55:05-03:00",
   "timezone": "America/Sao_Paulo",
   "snapshot_head": "647c20b453222aef58027028e4367de954145f20",
   "snapshot_head_scope": "Flutter snapshot identified above. Current CHILD SQL evidence is the equivalent integrated tree f3e1f732f442b2e47a2f749cba1d927eb638d5be. Infrastructure candidate-patch and structure evidence retain their own hashes; none implies full product acceptance.",
   "scope": "R02 D03 focal evidence available before the 16:30 BRT consolidation cut",
   "preserved_evidence_manifest": {
     "path": "evidence/d03-acompanhamento/r02-20260909/manifest.json",
-    "sha256": "844FC30443A122C228D4F76C0A260C600A4F8AC60237A81EAB944D6658C766C8",
-    "artifact_count": 28,
-    "bytes": 101447,
+    "sha256": "7B00170A87834003F8035584D38C7724EFC3B6CDA852E71E0C3C5C02BEBC6918",
+    "artifact_count": 29,
+    "bytes": 107666,
     "note": "Byte-for-byte copies, not new executions. Source paths remain for provenance; the manifest maps them to versioned copies. Its source-ledger hash describes the earlier extraction snapshot, not this evolving ledger."
   },
   "counting_rules": {
@@ -408,13 +408,15 @@
       ],
       "test_sha256": "CC0C100A97035E8E32DCD69B7F9C184B6C48A257FC8833798C5DDCF9ABD37A95",
       "harness_sha256": "3F81CA9AE729C57642BA9DC4057079B976850B73B5A04C227C7D5C34AB252396",
-      "evidence": [{
-        "path": null,
-        "sha256": null,
-        "availability": "subagent-console-report-only",
-        "result": "P8/F0/B0/S0/U0; Invoke-Pester -PassThru; no XML or raw log preserved",
-        "note_path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-http-plan.md"
-      }],
+      "evidence": [
+        {
+          "path": null,
+          "sha256": null,
+          "availability": "subagent-console-report-only",
+          "result": "P8/F0/B0/S0/U0; Invoke-Pester -PassThru; no XML or raw log preserved",
+          "note_path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-http-plan.md"
+        }
+      ],
       "product_acceptance_credit": 0
     },
     {
@@ -605,13 +607,22 @@
     }
   },
   "http_child": {
-    "status": "prepared-not-executed",
+    "status": "pass-integrated-local",
     "planned_scenarios": 4,
-    "executed_scenarios": 0,
-    "passed_scenarios": 0,
+    "executed_scenarios": 4,
+    "passed_scenarios": 4,
     "failed_scenarios": 0,
-    "blocked_scenarios": 4,
-    "blocker": "Requires nominal D00 approval of the shared HTTP runner mode and serialized local window. No HTTP, Docker or remote mutation executed for this harness."
+    "blocked_scenarios": 0,
+    "blocker": null,
+    "revision": "63e364300c062ca0b52bb79958cc465a9b16cd60",
+    "executor": "D00",
+    "exit_code": 0,
+    "resource_cleanup": "confirmed zero by wrapper and independent D00 inventory",
+    "evidence": {
+      "path": "evidence/d03-acompanhamento/r02-20260909/child-http-first-replay.log.txt",
+      "sha256": "1EAA328DECD169844E62C716EBDA54E0A23DE9A6C0745D8A281DFA465297AB3F"
+    },
+    "scope_limit": "Existing post-migration startup proves HTTP wire behavior, not dynamic schema-cache invalidation or the new atomic package/Management API ledger."
   },
   "memory": {
     "status": "no-op",
@@ -632,6 +643,7 @@
     "Students initial 5 plus the A-to-B case produce 6 unique cases; fixture and real-gesture reruns do not increase the count.",
     "RED runs and harness-only failures establish causality but do not add passing cases.",
     "Analyzer, formatter, static scan, Pester infrastructure and planned SQL counts are kept outside the Flutter total.",
-    "No count in this ledger establishes complete FE, Backend or E2E coverage for an action."
+    "No count in this ledger establishes complete FE, Backend or E2E coverage for an action.",
+    "D00 HTTP window 63e364300 repeated the same 45 TAP as one-shot base preparation; the 45 rerun is not added to the 45 unique SQL count."
   ]
 }
