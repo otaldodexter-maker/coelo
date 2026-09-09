@@ -93,3 +93,67 @@ existing regression IDs, not six newly added tests. Targeted dart analyze of
 both changed test files returned `No issues found!`, exit 0. Diff check passed
 without trailing whitespace. No runner or analyzer remains active; no commit
 was created.
+
+## Follow-up: transient retry and cold restart after failed disk removal
+
+D00's later gate keeps auth.reset FE pending until cold restart with failing
+storage is protected by backend authorization. Two new logical acceptance IDs
+are tracked: transient purge retry and cold restart with retained recovery.
+Diagnostic variants/reruns are not additional acceptance IDs.
+
+The new retry test demonstrated RED: after one failed removal, refresh of the
+same SDK session left `purgeAttempts=1` and `persisted=true`, instead of two
+attempts and cleared storage. Parent's four-line production correction clears
+the matching cached SID on failure, allowing the next SDK event to retry.
+Only the new retry and two existing synchronous/asynchronous cleanup negatives
+were run after that change: **3/3 PASS, exit 0**, recorded in
+`recovery-persistence-retry-green.txt`. Earlier green cases were not rerun.
+
+Cold restart diagnostic uses actual Supabase initialization and gateway/scope,
+ConditionalSupabaseLocalStorage and SharedPreferences; only the first delegate
+removal fails. Callback is consumed by the SDK before gateway creation, which
+then handles recovery through replay. The failed purge retains the actual
+serialized credential. Cold initialization restores it and the deliberately
+permissive HTTP backend returns context: bootstrap 1, authenticated true,
+context present, route `/`. This is a valid client RED, recorded in
+`recovery-persistence-cold-failure-red.txt`; it is not remote/backend proof.
+
+An earlier attempt mishandled FlutterError.onError around a failing assertion
+and timed out. That fixture failure and the valid retry RED remain in
+`recovery-persistence-retry-red-cold-fixture.txt`; the invalid cold result is
+not counted as a product failure. Restoring the handler before assertions
+allowed the single diagnostic rerun to expose the actual cold-restart result.
+
+The permissive diagnostic is now outside default execution and requires
+`COELO_D01_RUN_STORAGE_FAILURE_DIAGNOSTIC=true`. It is not relabeled green or
+replaced by a hardcoded denial. A separate mode of the same logical cold gate,
+`cold reload storage failure: backend denies retained recovery after restart`,
+requires four process-only variables: `COELO_D01_LOCAL_SUPABASE_URL`,
+`COELO_D01_LOCAL_PUBLISHABLE_KEY`, `COELO_D01_RECOVERY_ACCESS_TOKEN` and
+`COELO_D01_RECOVERY_REFRESH_TOKEN`. Without them it is skipped, not passed.
+
+The real mode pins HTTP to a loopback origin and forwards GET user, POST
+bootstrap and POST logout to the actual local server. It retains the real
+scope, route and automatic sign-out after bootstrap denial. Disk removal fails
+permanently across initializations; the key must still exist. Acceptance
+requires exact real RPC denial (`ok=false`, `data=null`,
+`SAI_SESSION_INVALID`), one confirmed logout, SDK session cleared, no UI auth
+context and `/reset-password`. The fixed sentinel
+`D01_COLD_STORAGE_REAL_BE_PASS` is emitted only after those assertions; runner
+exit 0 is also required. Assertion diagnostics do not print session objects
+or credentials. No refresh is initiated by the test.
+
+The backend hook must use a fresh dedicated recovery after its nine earlier
+HTTP gates, because the production scope legitimately revokes that session.
+This variant is prepared but **not executed/green in this receipt**; it awaits
+the coordinated real backend campaign. No production E2E completion follows
+from the retry fix or synthetic RED.
+
+Static validation of this increment: retry test file analyzed separately,
+`No issues found!`, exit 0. Cold variant initially used an unsupported nullable
+HttpOverrides argument; its direct IOClient construction was corrected to use
+the standard HttpOverrides.createHttpClient implementation, bypassing only the
+Flutter test binding's synthetic HTTP 400 client. The local transport still
+restricts every request to the configured loopback origin and allowed paths.
+Final targeted analysis of the cold test file: `No issues found!`, exit 0.
+Diff check passed. No runner/analyzer remains active.

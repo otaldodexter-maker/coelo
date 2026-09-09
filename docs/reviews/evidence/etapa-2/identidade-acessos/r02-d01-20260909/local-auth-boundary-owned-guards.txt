@@ -1,0 +1,4 @@
+﻿PASS SAFE_MARKER_IDENTITY before endpoints/Docker
+PASS SAFE_ROOT_REPARSE before endpoints/Docker
+PASS SAFE_MARKER_REPARSE before endpoints/Docker
+PASS cleanup: all owned TEMP fixtures removed; no Docker started
