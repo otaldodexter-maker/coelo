@@ -409,3 +409,68 @@ As três em execução até 16:00 e disponíveis na janela de consolidação at�
 Nenhum processo pesado ativo; L02 removeu os três containers Postgres que subiu e
 L01 removeu o dele. Nenhuma frente criou agendamento. **Nada foi aplicado em
 Supabase ou Cloudflare remoto por nenhuma frente Claude.**
+
+## Achado convergente: o ator institucional é excluído das DUAS rotas de publicação
+
+Dois executores, por caminhos independentes, encontraram a mesma causa em telas
+diferentes. Registro junto porque separados parecem casos isolados.
+
+- **L01, no Acontece:** publicar exige unidade e turma não nulas, enquanto o
+  esquema aceita publicação institucional com os dois nulos.
+- **L03, no Agora:** `/principal-now/publication` exige `unitId`, `unitName`,
+  `groupId` e `groupName` e cai em `_unavailableCompositionRootRoute` se faltar
+  qualquer um. Um ator com vínculo em **nível de instituição** — que o Perfil
+  atende normalmente, porque trata unit e group nulos — toca "Publicar no Agora"
+  no dock e recebe a tela de indisponível.
+
+**Mantenho a separação que fiz, com peso alterado.** O estreitamento de escopo
+continua sendo **decisão de produto**, do Owner e de D00, e proibi implementar a
+abertura. Mas a **tela indistinguível** continua sendo **defeito** e agora tem
+**duas ocorrências**, o que a tira da categoria de descuido pontual: é o
+comportamento das duas rotas de publicação do Principal para um ator legítimo.
+Ele encontra dois becos e nos dois recebe a mensagem de aplicativo quebrado.
+
+L03 não alterou nada, corretamente: esconder a ação central mudaria a composição
+aprovada do dock, e a rota é de L01.
+
+## Sexto defeito de L03, nascido de escrever a cobertura que faltava
+
+A tela de edição **não tinha nenhuma cobertura responsiva**, e escrevê-la achou o
+defeito: a 375 px com texto a 200%, o rodapé com "Recarregar" e "Salvar"
+estourava **173 px à direita** — num celular com texto ampliado o botão de salvar
+saía da tela. Corrigido em `5d8a951a7`, trocando `Row` por `Wrap`. Nove provas
+cobrem 375/768/1024/1440 a 200%, com as duas ações alcançáveis e os estados
+negado e de erro anunciados, legíveis, passando contraste e alvo de toque.
+
+Vale registrar o método: o defeito não apareceu auditando o que existia, apareceu
+**escrevendo a prova que faltava**. Ausência de cobertura não é neutra.
+
+## Vazio distinguível de erro — provado nas três telas de L03
+
+No hub: vazio por audiência mantém os seis atalhos e o bloco de contexto e não
+exibe erro nem não autorizado; falha mostra o erro com "Tentar novamente" e nunca
+o vazio; negação não mostra nem vazio nem erro e não oferece retry. No Perfil:
+Sobre sem conteúdo publicado ainda renderiza a identidade autorizada com a aba
+dizendo pendente e nunca cai em erro; Sobre que falha nunca renderiza como perfil
+sem conteúdo.
+
+É o mesmo princípio do zero silencioso que recusei no badge de L02 e da tela
+indistinguível que classifiquei como defeito no Acontece: **"não há o que mostrar
+para este ator" e "não consegui mostrar" são fatos diferentes** e não podem ter a
+mesma resposta.
+
+## Escopo das projeções consumidas por L03 — conferido pela composição
+
+As duas projeções que L03 consome e não produz recebem escopo **derivado do
+contexto autorizado**, nunca herdado nem padrão: a aba Acontece monta
+`PrincipalHappensFeedScope(institutionId, unitId, groupId)` a partir do
+`runtimeContext` resolvido por `list_my_principal_contexts`, e a aba Circulares
+monta `CircularScope` do mesmo contexto. Prova de rota para Circulares — o teste
+assere que o escopo que chega ao repositório tem o `institutionId` do contexto —
+e prova de widget para Acontece, onde trocar o escopo recarrega e envia o novo
+`unitId`. Foi essa checagem que expôs o defeito do diretório administrativo, e
+ele a repetiu para as duas.
+
+Números de L03 no fim da auditoria: **210 P / 10 F**, as mesmas 10 goldens
+preexistentes; nenhum teste novo alterou a contagem de falhas; `flutter analyze
+lib` limpo.
