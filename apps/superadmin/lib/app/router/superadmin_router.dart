@@ -93,6 +93,7 @@ import '../../features/daily_routine/daily_routine_pages.dart';
 import '../../features/catalog/presentation/catalog_host_page.dart';
 import '../../features/chat/data/development_chat_repository.dart';
 import '../../features/chat/domain/chat_repository.dart';
+import '../../features/children/presentation/child_directory_controller.dart';
 import '../../features/chat/presentation/screens/superadmin_chat_page.dart';
 import '../../features/circulars/data/development_circular_repository.dart';
 import '../../features/circulars/domain/superadmin_circular_repository.dart';
@@ -259,6 +260,7 @@ GoRouter createSuperadminRouter({
   InviteRepository inviteRepository = const UnavailableInviteRepository(),
   NoticeRepository noticeRepository = const UnavailableNoticeRepository(),
   AttendanceRepository attendanceRepository = const UnavailableAttendanceRepository(),
+  ChildDirectoryRead childDirectoryRead = unavailableChildDirectoryRead,
   StudentTrackingRepository studentTrackingRepository =
       const UnavailableStudentTrackingRepository(),
   AttendancePermissions attendancePermissions = const AttendancePermissions.readOnly(),
@@ -1616,11 +1618,18 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.students,
             name: SuperadminRoutes.studentsName,
-            builder: (context, state) => StudentTrackingPage(
-              repository: studentTrackingRepository,
-              logout: logout,
-              onDestinationSelected: (destination) =>
-                  _navigateFromPersistentShell(context, destination),
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, child) => StudentTrackingPage(
+                key: ValueKey(session.authorizationInvalidationRevision),
+                repository: studentTrackingRepository,
+                logout: logout,
+                childDirectoryRead: childDirectoryRead,
+                sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
+                revision: session.authorizationInvalidationRevision,
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
+              ),
             ),
           ),
           GoRoute(
