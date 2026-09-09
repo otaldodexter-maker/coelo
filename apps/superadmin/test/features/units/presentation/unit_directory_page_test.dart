@@ -16,6 +16,49 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('reloads through the replacement repository after authorization changes', (
+    tester,
+  ) async {
+    final originalInstitution = demoInstitutionRecords.first;
+    final originalUnit = originalInstitution.units.first;
+    final firstRepository = FakeUnitDirectoryRepository(
+      FakeInstitutionDirectoryRepository(
+        records: [
+          originalInstitution.copyWith(
+            units: [originalUnit.copyWith(name: 'Unidade antes da revogacao')],
+          ),
+        ],
+      ),
+    );
+    final replacementRepository = FakeUnitDirectoryRepository(
+      FakeInstitutionDirectoryRepository(
+        records: [
+          originalInstitution.copyWith(
+            units: [originalUnit.copyWith(name: 'Unidade apos novo contexto')],
+          ),
+        ],
+      ),
+    );
+
+    Widget directory(domain.UnitDirectoryRepository repository) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: UnitDirectoryPage(
+        repository: repository,
+        logout: () async => const LogoutResult.success(),
+      ),
+    );
+
+    await tester.pumpWidget(directory(firstRepository));
+    await tester.pumpAndSettle();
+    expect(find.text('Unidade antes da revogacao'), findsOneWidget);
+
+    await tester.pumpWidget(directory(replacementRepository));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Unidade antes da revogacao'), findsNothing);
+    expect(find.text('Unidade apos novo contexto'), findsOneWidget);
+  });
+
   testWidgets('offers grouped, turmas, and activities table views with local metrics', (
     tester,
   ) async {
