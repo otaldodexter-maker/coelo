@@ -29,14 +29,22 @@ end
 $$;
 
 -- 1. Permissao dedicada as acoes de gestao da propria mensagem.
+-- Os tres rotulos sao NOT NULL em public.platform_permissions desde
+-- 20260811215451_access_profile_management_v2.sql, e foram acrescentados SEM
+-- default. Um insert que os omita falha na aplicacao. Fornece-los explicitamente
+-- e obrigatorio, nao cosmetico.
 insert into public.platform_permissions(
-  code,module_code,screen_code,action_code,description,risk_level,requires_mfa,status,updated_at
+  code,module_code,module_label,screen_code,screen_label,action_code,action_label,
+  description,risk_level,requires_mfa,status,updated_at
 ) values
- ('chat.internal.manage','communication','chat','manage',
+ ('chat.internal.manage','communication','Comunicação','chat','Chat','manage','Gerenciar',
   'Editar e revogar mensagens proprias enviadas pelo realm interno do Superadmin.',
   'critical',true,'active',now())
-on conflict(code) do update set module_code=excluded.module_code,screen_code=excluded.screen_code,
- action_code=excluded.action_code,description=excluded.description,risk_level=excluded.risk_level,
+on conflict(code) do update set module_code=excluded.module_code,
+ module_label=excluded.module_label,screen_code=excluded.screen_code,
+ screen_label=excluded.screen_label,action_code=excluded.action_code,
+ action_label=excluded.action_label,description=excluded.description,
+ risk_level=excluded.risk_level,
  requires_mfa=excluded.requires_mfa,status='active',updated_at=now();
 
 insert into public.platform_role_permissions(role_id,permission_id,effect,status)
