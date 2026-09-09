@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import '../domain/child_safety.dart';
 import '../domain/child_safety_contract.dart';
 
+enum ChildSafetyCommandFailure { unauthorized, validation, conflict, unavailable }
+
 final class ChildSafetyController extends ChangeNotifier {
   ChildSafetyController(
     this._repository, {
@@ -21,6 +23,7 @@ final class ChildSafetyController extends ChangeNotifier {
   bool _canCreate = false;
   bool _saving = false;
   String? _errorMessage;
+  ChildSafetyCommandFailure? _commandFailure;
   Timer? _searchTimer;
   int _requestVersion = 0;
   int _dataVersion = 0;
@@ -33,6 +36,7 @@ final class ChildSafetyController extends ChangeNotifier {
   ChildSafetyDirectoryQuery get query => _query;
   bool get canCreate => _canCreate;
   String? get errorMessage => _errorMessage;
+  ChildSafetyCommandFailure? get commandFailure => _commandFailure;
   ChildSafetySegmentCounts get segmentCounts => _segmentCounts;
   int get currentPage => _query.pageIndex;
   int get pageSize => _query.pageSize;
@@ -44,9 +48,13 @@ final class ChildSafetyController extends ChangeNotifier {
   Future<void> retry() => _load(_query);
 
   void setSearch(String value) {
+    if (_disposed) return;
     _searchTimer?.cancel();
+    _requestVersion++;
     _resetCursors();
     _query = _replaceQuery(search: value);
+    _failClosed(ChildSafetyLoadState.loading);
+    _errorMessage = null;
     _notify();
     _searchTimer = Timer(searchDebounce, () => _load(_query));
   }
@@ -77,15 +85,50 @@ final class ChildSafetyController extends ChangeNotifier {
     return _replaceAndLoad(_replaceQuery(pageSize: value));
   }
 
-  Future<List<ChildSafetyChildOption>> searchChildren(String query, {int limit = 20}) {
+  Future<List<ChildSafetyChildOption>> searchChildren(String query, {int limit = 20}) async {
+    _checkLookupAllowed();
+    final version = _requestVersion;
     final normalized = query.trim();
-    if (normalized.length < 2 || limit < 1 || limit > 50) return Future.value(const []);
-    return _repository.searchChildren(normalized, limit: limit);
+    if (normalized.length < 2 || limit < 1 || limit > 50) return const [];
+    final result = await _repository.searchChildren(normalized, limit: limit);
+    if (_disposed ||
+        version != _requestVersion ||
+        _state == ChildSafetyLoadState.unauthorized ||
+        _state == ChildSafetyLoadState.error) {
+      throw const ChildSafetyUnavailableException();
+    }
+    return result;
   }
 
-  Future<ChildSafetyRecord?> fetchChild(String id) => _repository.fetchChild(id);
-  Future<bool> saveAuthorization(SavePickupAuthorizationCommand command) =>
-      _runCommand(() => _repository.saveAuthorization(command));
+  Future<ChildSafetyRecord?> fetchChild(String id) async {
+    _checkLookupAllowed();
+    final version = _requestVersion;
+    final result = await _repository.fetchChild(id);
+    if (_disposed ||
+        version != _requestVersion ||
+        _state == ChildSafetyLoadState.unauthorized ||
+        _state == ChildSafetyLoadState.error ||
+        (result != null && result.childId != id)) {
+      throw const ChildSafetyUnavailableException();
+    }
+    return result;
+  }
+
+  void _checkLookupAllowed() {
+    if (_disposed || _state == ChildSafetyLoadState.error) {
+      throw const ChildSafetyUnavailableException();
+    }
+    if (_state == ChildSafetyLoadState.unauthorized) {
+      throw const ChildSafetyUnauthorizedException();
+    }
+  }
+
+  /// Confirmation belongs to the mutation; the returned bool also requires a
+  /// successful directory refresh. Retrying that read must not resubmit it.
+  Future<bool> saveAuthorization(
+    SavePickupAuthorizationCommand command, {
+    VoidCallback? onConfirmed,
+  }) => _runCommand(() => _repository.saveAuthorization(command), onConfirmed: onConfirmed);
   Future<bool> transitionAuthorization(TransitionPickupAuthorizationCommand command) =>
       _runCommand(() => _repository.transitionAuthorization(command));
   Future<bool> suspendAuthorization(SuspendPickupAuthorizationCommand command) =>
@@ -115,6 +158,7 @@ final class ChildSafetyController extends ChangeNotifier {
   );
 
   Future<void> _replaceAndLoad(ChildSafetyDirectoryQuery query) {
+    if (_disposed) return Future.value();
     _searchTimer?.cancel();
     if (query.pageIndex == 0) {
       _resetCursors();
@@ -124,6 +168,7 @@ final class ChildSafetyController extends ChangeNotifier {
   }
 
   Future<void> _load(ChildSafetyDirectoryQuery query) async {
+    if (_disposed) return;
     final version = ++_requestVersion;
     _state = ChildSafetyLoadState.loading;
     _errorMessage = null;
@@ -143,7 +188,7 @@ final class ChildSafetyController extends ChangeNotifier {
       _dataVersion++;
     } on ChildSafetyUnauthorizedException {
       if (version == _requestVersion) _failClosed(ChildSafetyLoadState.unauthorized);
-    } on Exception {
+    } catch (_) {
       if (version == _requestVersion) {
         _failClosed(ChildSafetyLoadState.error);
         _errorMessage = 'Não foi possível carregar a segurança da criança.';
@@ -160,26 +205,38 @@ final class ChildSafetyController extends ChangeNotifier {
     _state = state;
   }
 
-  Future<bool> _runCommand(Future<void> Function() command, {bool refresh = true}) async {
+  Future<bool> _runCommand(
+    Future<void> Function() command, {
+    bool refresh = true,
+    VoidCallback? onConfirmed,
+  }) async {
     if (_saving || _disposed) return false;
     _saving = true;
     _errorMessage = null;
+    _commandFailure = null;
     _notify();
     try {
       await command();
       if (_disposed) return false;
+      onConfirmed?.call();
       if (refresh) await _load(_query);
       return !_disposed && _state == ChildSafetyLoadState.ready;
     } on ChildSafetyUnauthorizedException {
+      _commandFailure = ChildSafetyCommandFailure.unauthorized;
+      _requestVersion++;
+      _searchTimer?.cancel();
       _failClosed(ChildSafetyLoadState.unauthorized);
       return false;
     } on ChildSafetyValidationException {
+      _commandFailure = ChildSafetyCommandFailure.validation;
       _errorMessage = 'Revise os dados da autorização.';
       return false;
     } on ChildSafetyConflictException {
+      _commandFailure = ChildSafetyCommandFailure.conflict;
       _errorMessage = 'A autorização mudou. Recarregue e tente novamente.';
       return false;
-    } on Exception {
+    } catch (_) {
+      _commandFailure = ChildSafetyCommandFailure.unavailable;
       _errorMessage = 'Não foi possível concluir a ação.';
       return false;
     } finally {

@@ -1,0 +1,180 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:303
++ ... _test.dart; rtk proxy flutter test --no-pub test/features/safety --re ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: unexpected directory error clears prior data and retry recovers
+00:00 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: unexpected stale directory error cannot replace a newer successful load
+00:00 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: unexpected mutation error releases saving without confirming or refreshing
+00:00 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: confirmation precedes failed refresh and retry performs no new mutation
+00:00 +4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: command failure exposes conflict separately and resets after a new attempt
+00:00 +5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: loads server page and exposes server segment counts
+00:00 +6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: filters and pagination always trigger scoped server queries
+00:00 +7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: fails closed and does not retain records on authorization failure
+00:00 +8: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: commands refresh only after backend success
+00:00 +9: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: new search clears cursors from the previous result set
+00:00 +10: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: a concurrent command reports failure instead of false success
+00:00 +11: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: late directory success cannot undo a command authorization denial
+00:00 +12: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: known access denial prevents new child lookup and child search
+00:00 +13: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: late child read and search cannot escape a changed directory context
+00:00 +14: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: child response ID must match the requested child
+00:00 +15: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: disposed controller starts no directory read or search timer
+00:00 +16: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: disposed controller rejects child reads without contacting repository
+00:00 +17: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: debounced search invalidates the previous response before its timer fires
+00:00 +18: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: debounced search hides prior records and capabilities immediately
+00:00 +19: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: child data completing after dispose is not delivered to retained callbacks
+00:00 +20: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: old authorization error cannot replace a debounced search
+00:00 +21: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_controller_test.dart: child search completing after dispose is rejected
+00:01 +22: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: carga que lança Error conclui e cai em erro, não em loading
+00:01 +23: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error é anunciada e o retry recupera a listagem
+00:01 +24: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: controle - carga que lança Exception já cai em erro
+00:01 +25: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:01 +26: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:01 +27: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:01 +28: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:01 +29: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:01 +30: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:01 +31: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:01 +32: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:01 +33: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:01 +34: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:01 +35: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:01 +36: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:01 +37: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:01 +38: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:01 +39: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:01 +40: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:01 +41: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:01 +42: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:02 +43: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:02 +44: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:02 +45: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:02 +46: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/application/child_safety_error_hang_test.dart: safety.list: a falha com Error sai do esqueleto e mostra retry
+00:03 +47: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_child_safety_repository_test.dart: create sends the mandatory audited request reason
+00:03 +48: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_child_safety_repository_test.dart: create sends the mandatory audited request reason
+00:03 +49: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_child_safety_repository_test.dart: create sends the mandatory audited request reason
+00:03 +50: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_child_safety_repository_test.dart: edit uses optimistic version and the dedicated pending RPC
+00:03 +51: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_child_safety_repository_test.dart: suspension maps to the suspended database lifecycle
+00:03 +52: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/supabase_child_safety_repository_test.dart: export creates an audited server job with the active filters
+00:04 +53: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: table renders authoritative count without loading authorization details
+00:06 +54: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: retained primary does not skip a step on a double invocation
+00:06 +55: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: retained primary does not skip a step on a double invocation
+00:06 +56: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: retained primary does not skip a step on a double invocation
+00:07 +57: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: retained primary does not skip a step on a double invocation
+00:08 +58: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_unexpected_error_test.dart: search hides old results and recovers explicitly after StateError
+00:10 +59: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: edit preserves the authorized child and person identity
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following _TypeError was thrown running a test:
+type 'RawTooltip' is not a subtype of type 'IconButton' in type cast
+
+When the exception was thrown, this was the stack:
+#0      WidgetController.widget (package:flutter_test/src/controller.dart:828:44)
+#1      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart:125:19)
+<asynchronous suspension>
+#2      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#3      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  edit preserves the authorized child and person identity
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:12 +59 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: retained primary cannot submit a replacement context, restored: false
+00:12 +59 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: edit preserves the authorized child and person identity [E]
+  Test failed. See exception logs above.
+  The test description was: edit preserves the authorized child and person identity
+  
+00:12 +60 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: retained primary cannot submit a replacement context, restored: false
+00:13 +61 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: retained primary cannot submit a replacement context, restored: false
+00:13 +62 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: retained primary cannot submit a replacement context, restored: false
+00:13 +63 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: retained primary cannot submit a replacement context, restored: false
+00:14 +64 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: keeps unavailable export visible with honest feedback
+00:14 +65 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_unexpected_error_test.dart: initial context offers a guarded read retry after StateError
+00:15 +66 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: retained primary cannot submit a replacement context, restored: true
+00:15 +67 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: retained primary cannot submit a replacement context, restored: true
+00:16 +68 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: retained primary cannot submit a replacement context, restored: true
+00:17 +69 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: retained primary cannot submit a replacement context, restored: true
+00:17 +70 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: retained primary cannot submit a replacement context, restored: true
+00:18 +71 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: retained primary cannot submit a replacement context, restored: true
+00:19 +72 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: retained primary cannot submit a replacement context, restored: true
+00:19 +73 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_unexpected_error_test.dart: initial denial clears context without offering an authorization bypass
+00:20 +74 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_unexpected_error_test.dart: initial denial clears context without offering an authorization bypass
+00:20 +75 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: confirmed save retries only reads after reload failure: success
+00:21 +76 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: confirmed save retries only reads after reload failure: success
+00:22 +77 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: wizard searches server-side and requires child selection
+00:22 +78 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_unexpected_error_test.dart: context retry first restores an unavailable directory and stays retryable after another failure
+00:22 +79 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: confirmed save retries only reads after reload failure: denied
+00:23 +80 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: confirmed save retries only reads after reload failure: denied
+00:23 +81 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_unexpected_error_test.dart: confirmed save keeps data hidden on recovery failure (denied: false)
+00:24 +82 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: directory stays responsive in light and dark at 200 percent text
+00:25 +83 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: directory stays responsive in light and dark at 200 percent text
+00:26 +84 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: directory stays responsive in light and dark at 200 percent text
+00:28 +85 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: directory stays responsive in light and dark at 200 percent text
+00:29 +86 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: confirmed save retries only reads after reload failure: restored-context
+00:30 +87 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: directory golden matches approved institution-card anatomy
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown while running async test code:
+Golden "goldens/child_safety_directory_light_1440.png": Pixel test failed, 2.47%, 35525px diff
+detected.
+Failure feedback can be found at
+/C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/failures
+
+When the exception was thrown, this was the stack:
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+<asynchronous suspension>
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+<asynchronous suspension>
+<asynchronous suspension>
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+<asynchronous suspension>
+<asynchronous suspension>
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+<asynchronous suspension>
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart:486:5)
+<asynchronous suspension>
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 3 frames from dart:async and package:stack_trace)
+
+The exception was caught asynchronously.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:31 +87 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: pending intention cannot survive a child A B A context replacement
+00:31 +87 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: directory golden matches approved institution-card anatomy [E]
+  Test failed. See exception logs above.
+  The test description was: directory golden matches approved institution-card anatomy
+  
+00:32 +88 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: pending intention cannot survive a controller A B A context replacement
+00:35 +89 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: changing a submitted draft preserves edits without announcing their persistence
+00:37 +90 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: create conflict cannot submit again without a new authorized context
+00:39 +91 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: wizard retries an immutable authorization intention after unchanged
+00:40 +92 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: wizard retries an immutable authorization intention after edited
+00:41 +93 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: conflict blocks obsolete submit until edit context is explicitly reloaded
+00:43 +94 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: detail hides the previous child while the next child is loading
+00:44 +95 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: detail ignores a late result from the replaced controller
+00:44 +96 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: detail moves its refresh listener to the new controller
+00:44 +97 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: detail clears cached context after directory failure: true
+00:45 +98 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: detail clears cached context after directory failure: false
+00:45 +99 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: directory loads the replacement controller and clears the old search
+00:47 +100 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: wizard clears prior fields and reloads when its controller changes
+00:49 +101 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: wizard rejects late initial context after controller replacement
+00:50 +102 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: wizard reloads when the child changes on the same controller
+00:50 +103 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: wizard clears selected context and disables continuation after denial
+00:51 +104 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: wizard rejects late search results after controller replacement
+00:52 +105 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: wizard ignores the replaced controller listener
+00:52 +106 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: wizard save cannot navigate through a unchanged completion handler
+00:53 +107 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: wizard save cannot navigate through a replaced completion handler
+00:54 +108 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: wizard save cannot navigate through a replaced-and-restored completion handler
+00:56 +109 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_page_context_test.dart: wizard never reports an old save through the new context callback
+00:57 +110 -2: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: directory golden matches approved institution-card anatomy
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: edit preserves the authorized child and person identity

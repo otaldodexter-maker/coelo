@@ -1,0 +1,70 @@
+[
+    {
+        "path":  "apps/superadmin/test/features/safety\\presentation\\safety_unexpected_error_test.dart",
+        "sha256":  "d553c94a889363c0c202a324d0790199da8e5e3471eea3de7cc563253bcc91ea"
+    },
+    {
+        "path":  "apps/superadmin/test/features/safety\\presentation\\safety_page_context_test.dart",
+        "sha256":  "fb9c245afc337699edbbc479ddac97cb09663b5d3e9e9dde78aedb04d3ce4050"
+    },
+    {
+        "path":  "apps/superadmin/test/features/safety\\presentation\\safety_pages_test.dart",
+        "sha256":  "2b9a7e95671ae3b503cfd62514ccbf2ec7ffb492bbe3f5d9d45a3ac9ceaf1efc"
+    },
+    {
+        "path":  "apps/superadmin/test/features/safety\\application\\child_safety_error_hang_test.dart",
+        "sha256":  "e301833e0f8ad80e428ef17f96c180ad700c2e85e44fd904e431f9bd4ff23b96"
+    },
+    {
+        "path":  "apps/superadmin/test/features/safety\\application\\child_safety_controller_test.dart",
+        "sha256":  "eaaaa334d0dc7c56a00f1406d7d03c100a794f8810ba7b5b8fa6116e2180b5d8"
+    },
+    {
+        "path":  "apps/superadmin/test/features/safety\\domain\\child_safety_repository_test.dart",
+        "sha256":  "702312bbba0f5e45d163ae73b6a3de3d5d4edb5a994f75e0add93d50a7beee3c"
+    },
+    {
+        "path":  "apps/superadmin/test/features/safety\\data\\supabase_child_safety_repository_test.dart",
+        "sha256":  "c69fbfe43c1fd674652e882b30bfee9e0f5104ed2f455aadd99aed77c37bf364"
+    },
+    {
+        "path":  "apps/superadmin/test/features/safety\\data\\child_safety_response_decoder_test.dart",
+        "sha256":  "e73d2352f4e85d36a89c823e6dd2e4d84eaf25dd8ac43263f0827106515d6a07"
+    },
+    {
+        "path":  "apps/superadmin/lib/features/safety\\application\\child_safety_controller.dart",
+        "sha256":  "a3eb98ff44ca418e8681983aeea17ce47e2f06b38ae56310f90d1efb4b978166"
+    },
+    {
+        "path":  "apps/superadmin/test/features/safety\\data\\dev\\dev_child_safety_repository_test.dart",
+        "sha256":  "6c668b4522797835be6dde65d9cb84398b5d9cbf93198a96738238b1cf2c7225"
+    },
+    {
+        "path":  "apps/superadmin/lib/features/safety\\presentation\\safety_pages.dart",
+        "sha256":  "1dfd59fd80b2bc536f94a30db1ea6fbcce4e93778a236cfc3760462fadbe98ff"
+    },
+    {
+        "path":  "apps/superadmin/lib/features/safety\\data\\supabase_child_safety_repository.dart",
+        "sha256":  "0846b0810c108b70f4c04753e4271df8075f67fcabc8b480f04aa9cd34f0feff"
+    },
+    {
+        "path":  "apps/superadmin/lib/features/safety\\data\\dev\\dev_child_safety_repository.dart",
+        "sha256":  "2c9b040e29cc8492434c56773255320cdbc4c5e261c7a315bd880194e4b29249"
+    },
+    {
+        "path":  "apps/superadmin/lib/features/safety\\data\\child_safety_response_decoder.dart",
+        "sha256":  "9ebff8dcd7f7280572d92411d2b659f37e9c4913fa88966a5d29e72955eec69c"
+    },
+    {
+        "path":  "apps/superadmin/lib/features/safety\\domain\\child_safety_repository.dart",
+        "sha256":  "a5f67350dc1dea0f49fc804aff1127de2b4c8d0e1b3c8e312807ad6029205873"
+    },
+    {
+        "path":  "apps/superadmin/lib/features/safety\\domain\\child_safety_contract.dart",
+        "sha256":  "d83700899eb0139e18671a5a3ec90a08fd55c7fa4e38df33bf336b51d6e7a2b1"
+    },
+    {
+        "path":  "apps/superadmin/lib/features/safety\\domain\\child_safety.dart",
+        "sha256":  "79b2f68ddc829fed9779c87fb46f0b3fbafbf52179a3301260f17d3fc1a8b4a3"
+    }
+]

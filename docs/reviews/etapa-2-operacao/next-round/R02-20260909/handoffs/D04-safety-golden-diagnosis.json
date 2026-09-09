@@ -1,0 +1,53 @@
+{
+    "source":  "b943a5feb golden; a0be1abeb shared status; D04-safety-golden-final.log; read-only pixel comparison",
+    "generated_at":  "2026-09-09T14:59:00-03:00",
+    "status":  "baseline-mismatch; no-new-code; held-golden",
+    "total_difference_pixels":  35525,
+    "shell_difference_pixels":  3630,
+    "shell_difference_bbox":  [
+                                  39,
+                                  784,
+                                  253,
+                                  818
+                              ],
+    "card_difference_pixels":  31895,
+    "card_difference_counts":  [
+                                   10633,
+                                   10521,
+                                   10741
+                               ],
+    "toolbar_difference_pixels":  0,
+    "create_card_difference_pixels":  0,
+    "card_exterior_difference_pixels":  0,
+    "header_offset":  [
+                          0,
+                          2
+                      ],
+    "header_residual_difference_pixels":  [
+                                              0,
+                                              0,
+                                              0
+                                          ],
+    "body_offset":  [
+                        0,
+                        4
+                    ],
+    "body_residual_difference_pixels":  [
+                                            0,
+                                            0,
+                                            0
+                                        ],
+    "status_offset":  [
+                          -24,
+                          2
+                      ],
+    "status_residual_difference_pixels":  [
+                                              2,
+                                              0,
+                                              2
+                                          ],
+    "explanation":  "Golden predates shared status minimum touch target48 introduced by a0be1abeb. Current header height48 replaces prior intrinsic text height44: header content shifts2 and body4. Status dot retains24 visually but gains48 hit box. Shell difference only Coelo Principal entry. No regression attributable to Wrap demonstrated.",
+    "manifest_sha256":  "811a7734570897811b263eb87682e27105beeb9b15210019135d1492aab35027",
+    "checked_dart_files":  17,
+    "changed_dart_files":  0
+}

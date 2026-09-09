@@ -1,0 +1,157 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub test/features/safety/data/child_safet ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/child_safety_response_decoder_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/child_safety_response_decoder_test.dart: unknown lifecycle never grants an active authorization
+00:00 +0 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/child_safety_response_decoder_test.dart: unknown lifecycle never grants an active authorization [E]
+  Expected: not PickupAuthorizationLifecycleStatus:<PickupAuthorizationLifecycleStatus.active>
+    Actual: PickupAuthorizationLifecycleStatus:<PickupAuthorizationLifecycleStatus.active>
+  
+  package:matcher                                                         expect
+  package:flutter_test/src/widget_tester.dart 473:18                      expect
+  test\features\safety\data\child_safety_response_decoder_test.dart 14:5  main.<fn>
+  
+00:00 +0 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/child_safety_response_decoder_test.dart: unmatched authorization context is not attributed to another unit
+00:00 +0 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/child_safety_response_decoder_test.dart: unmatched authorization context is not attributed to another unit [E]
+  Expected: empty
+    Actual: 'Unidade A'
+  
+  package:matcher                                                         expect
+  package:flutter_test/src/widget_tester.dart 473:18                      expect
+  test\features\safety\data\child_safety_response_decoder_test.dart 23:5  main.<fn>
+  
+00:00 +0 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/child_safety_response_decoder_test.dart: inactive request retains its distinct lifecycle
+00:00 +0 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/child_safety_response_decoder_test.dart: inactive request retains its distinct lifecycle [E]
+  Expected: 'Inativa'
+    Actual: 'Revogada'
+     Which: is different.
+            Expected: Inativa
+              Actual: Revogada
+                      ^
+             Differ at offset 0
+  
+  package:matcher                                                         expect
+  package:flutter_test/src/widget_tester.dart 473:18                      expect
+  test\features\safety\data\child_safety_response_decoder_test.dart 31:5  main.<fn>
+  
+00:00 +0 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: table renders authoritative count without loading authorization details
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: '1'
+  Actual: '0'
+   Which: is different.
+          Expected: 1
+            Actual: 0
+                    ^
+           Differ at offset 0
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart:25:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart line 25
+The test description was:
+  table renders authoritative count without loading authorization details
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:02 +0 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: table renders authoritative count without loading authorization details [E]
+  Test failed. See exception logs above.
+  The test description was: table renders authoritative count without loading authorization details
+  
+00:02 +0 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: detail discards prior child when route child changes
+00:02 +1 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: detail removes cached private content after authorization is lost
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Sem permissão": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart:53:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart line 53
+The test description was:
+  detail removes cached private content after authorization is lost
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:02 +1 -5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: detail removes cached private content after authorization is lost [E]
+  Test failed. See exception logs above.
+  The test description was: detail removes cached private content after authorization is lost
+  
+00:02 +1 -5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: edit rejects a nonpending authorization before enabling continuation
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Não foi possível carregar o contexto
+solicitado.": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart:61:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart line 61
+The test description was:
+  edit rejects a nonpending authorization before enabling continuation
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:03 +1 -6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: edit rejects a nonpending authorization before enabling continuation [E]
+  Test failed. See exception logs above.
+  The test description was: edit rejects a nonpending authorization before enabling continuation
+  
+00:03 +1 -6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: edit preserves the authorized child and person identity
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: false
+  Actual: <true>
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart:72:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart line 72
+The test description was:
+  edit preserves the authorized child and person identity
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:05 +1 -7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: edit preserves the authorized child and person identity [E]
+  Test failed. See exception logs above.
+  The test description was: edit preserves the authorized child and person identity
+  
+00:05 +1 -7: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/child_safety_response_decoder_test.dart: inactive request retains its distinct lifecycle
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/child_safety_response_decoder_test.dart: unknown lifecycle never grants an active authorization
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/data/child_safety_response_decoder_test.dart: unmatched authorization context is not attributed to another unit
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: detail removes cached private content after authorization is lost
+  ... and 3 more
