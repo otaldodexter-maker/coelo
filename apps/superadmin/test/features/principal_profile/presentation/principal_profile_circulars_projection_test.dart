@@ -111,6 +111,54 @@ void main() {
 
     expect(find.text('Contexto não autorizado'), findsOneWidget);
   });
+
+  testWidgets('an open circular preview survives a rebuild of the hosting route', (tester) async {
+    // At large widths tapping a circular opens a preview dialog. The Circulares
+    // tab closes that preview when `onOpen` changes, reading it as a changed
+    // context. The route builder creates a fresh closure on every build, so any
+    // rebuild above the Perfil -- and hosted in the Superadmin shell there are
+    // many -- closed the dialog under the reader's hands.
+    // physicalSize plus devicePixelRatio, not setSurfaceSize: the preview
+    // decides by MediaQuery.sizeOf, which follows the view.
+    tester.view.physicalSize = const Size(1440, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final repository = _StubCircularRepository(items: [summary('circular-1', 'Reunião de pais')]);
+    final opened = <String>[];
+    Widget routeWith(ValueChanged<String> onOpenCircular) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: PrincipalProfileRoutePage(
+        runtimeContext: context,
+        circularRepository: repository,
+        onOpenCircular: onOpenCircular,
+        onOpenAgenda: () {},
+      ),
+    );
+
+    await tester.pumpWidget(routeWith(opened.add));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Circulares'));
+    await tester.tap(find.text('Circulares'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Reunião de pais'));
+    await tester.pumpAndSettle();
+    expect(opened, isEmpty, reason: 'at this width the tap opens the preview, it does not navigate');
+    expect(find.byKey(const Key('principal-circular-preview-dialog')), findsOneWidget);
+
+    // A rebuild carrying a brand new closure, exactly what the route builder
+    // hands down on every frame it rebuilds.
+    await tester.pumpWidget(routeWith((id) => opened.add(id)));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('principal-circular-preview-dialog')),
+      findsOneWidget,
+      reason: 'nothing about the context changed, so the preview must stay open',
+    );
+  });
 }
 
 final class _StubCircularRepository implements CircularRepository {
