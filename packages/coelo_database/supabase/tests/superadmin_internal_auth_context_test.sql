@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(30);
+select plan(36);
 
 select ok(to_regprocedure('public.superadmin_auth_bootstrap_context()') is not null
   and to_regprocedure('public.superadmin_auth_resolve_institution_context(uuid)') is not null
@@ -117,6 +117,11 @@ values
    now(),now(),'aal1',now()+interval '1 hour'),
   ('20000000-0000-4000-8000-000000000002','10000000-0000-4000-8000-000000000002',
    now(),now(),'aal1',now()+interval '1 hour');
+-- These existing fixtures represent validated password sessions, not recovery.
+insert into auth.mfa_amr_claims(id,session_id,created_at,updated_at,authentication_method)
+values
+  (gen_random_uuid(),'20000000-0000-4000-8000-000000000001',now(),now(),'password'),
+  (gen_random_uuid(),'20000000-0000-4000-8000-000000000002',now(),now(),'password');
 insert into app_private.superadmin_internal_identities(id)
 values('30000000-0000-4000-8000-000000000002');
 insert into app_private.superadmin_internal_auth_links(id,internal_identity_id,auth_user_id)
@@ -376,5 +381,109 @@ select ok((select snapshot.row_payload->>'actor_kind'='auth_session'
   join app_private.audit_export_snapshot_rows snapshot on snapshot.export_job_id=job.id
   join auth_v3_target target on target.id=snapshot.audit_log_id),
   'audit export renders auth_session without identity, role or session hash');
+-- source: local-auth-recovery-boundary-receipt.md; proposed-password-session-context.sql
+-- status: proposed-not-executed
+-- generated_at: 2026-09-09
+-- Insert immediately before finish() in superadmin_internal_auth_context_test.sql;
+-- increase plan(30) to plan(36). Existing valid sessions ...001 and ...002 also
+-- need provider-owned password AMR fixture rows after their INSERT statement.
+-- This SQL covers authorization; provider recovery/refresh remain real HTTP tests.
+
+select set_config('request.jwt.claim.sub','',true);
+insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,
+  raw_app_meta_data,raw_user_meta_data)
+values('10000000-0000-4000-8000-000000000005','authenticated','authenticated',
+  'synthetic-password-session@invalid.test',now(),now(),now(),'{}','{}');
+insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after)
+select session_id,'10000000-0000-4000-8000-000000000005',
+  now(),now(),'aal1',now()+interval '1 hour'
+from (values
+  ('20000000-0000-4000-8000-000000000005'::uuid),
+  ('20000000-0000-4000-8000-000000000006'::uuid),
+  ('20000000-0000-4000-8000-000000000007'::uuid)
+) sessions(session_id);
+insert into auth.mfa_amr_claims(id,session_id,created_at,updated_at,authentication_method)
+values
+  (gen_random_uuid(),'20000000-0000-4000-8000-000000000005',now(),now(),'password'),
+  (gen_random_uuid(),'20000000-0000-4000-8000-000000000006',now(),now(),'otp');
+insert into app_private.superadmin_internal_identities(id)
+values('30000000-0000-4000-8000-000000000005');
+insert into app_private.superadmin_internal_auth_links(id,internal_identity_id,auth_user_id)
+values('40000000-0000-4000-8000-000000000005',
+  '30000000-0000-4000-8000-000000000005','10000000-0000-4000-8000-000000000005');
+insert into app_private.superadmin_internal_memberships(
+  internal_identity_id,platform_role_id,scope_kind,status)
+select '30000000-0000-4000-8000-000000000005',id,'platform','active'
+from public.platform_roles where code='operations' and status='active';
+
+select set_config('request.jwt.claims',jsonb_build_object(
+  'sub','10000000-0000-4000-8000-000000000005',
+  'session_id','20000000-0000-4000-8000-000000000005',
+  'aal','aal1','role','authenticated')::text,true);
+set local role authenticated;
+insert into auth_test_responses values(101,public.superadmin_auth_bootstrap_context());
+reset role;
+select ok((select body->>'ok'='true'
+  and body#>>'{data,platform_role_code}'='operations'
+  and body#>'{data,permission_codes}' ? 'platform.read'
+  from auth_test_responses where sequence_number=101),
+  'password AMR in the current provider session permits the active operations context');
+
+select set_config('request.jwt.claims',jsonb_build_object(
+  'sub','10000000-0000-4000-8000-000000000005',
+  'session_id','20000000-0000-4000-8000-000000000006',
+  'aal','aal1','role','authenticated')::text,true);
+set local role authenticated;
+insert into auth_test_responses values(102,public.superadmin_auth_bootstrap_context());
+reset role;
+select ok((select body->>'ok'='false' and body->'data'='null'::jsonb
+  and body#>>'{error,code}'='SAI_SESSION_INVALID'
+  from auth_test_responses where sequence_number=102),
+  'OTP-only session is denied even when the same user has a different password session');
+
+select set_config('request.jwt.claims',jsonb_build_object(
+  'sub','10000000-0000-4000-8000-000000000005',
+  'session_id','20000000-0000-4000-8000-000000000007',
+  'aal','aal1','role','authenticated')::text,true);
+set local role authenticated;
+insert into auth_test_responses values(103,public.superadmin_auth_bootstrap_context());
+reset role;
+select ok((select body->>'ok'='false' and body->'data'='null'::jsonb
+  and body#>>'{error,code}'='SAI_SESSION_INVALID'
+  from auth_test_responses where sequence_number=103),
+  'valid session without provider AMR is denied without productive context');
+
+update auth.users set raw_user_meta_data='{"authentication_method":"password","password_authenticated":true}'::jsonb
+where id='10000000-0000-4000-8000-000000000005';
+select set_config('request.jwt.claims',jsonb_build_object(
+  'sub','10000000-0000-4000-8000-000000000005',
+  'session_id','20000000-0000-4000-8000-000000000006',
+  'aal','aal1','role','authenticated',
+  'amr',jsonb_build_array(jsonb_build_object('method','password')),
+  'user_metadata',jsonb_build_object('authentication_method','password','password_authenticated',true)
+)::text,true);
+set local role authenticated;
+insert into auth_test_responses values(104,public.superadmin_auth_bootstrap_context());
+reset role;
+select ok((select body->>'ok'='false' and body->'data'='null'::jsonb
+  and body#>>'{error,code}'='SAI_SESSION_INVALID'
+  from auth_test_responses where sequence_number=104),
+  'claimed password AMR and mutable user metadata cannot override provider OTP-only session');
+
+select ok((select count(*)=3 and bool_and(app_private.audit_verify_entry(id))
+  from audit.audit_logs
+  where correlation_id in(select (body#>>'{error,correlation_id}')::uuid
+    from auth_test_responses where sequence_number in(102,103,104))
+    and outcome='denied' and reason_code='SAI_SESSION_INVALID'
+    and action_code='superadmin.auth.bootstrap'),
+  'password-session denials append three correlated verified minimized audit records');
+
+set local role authenticated;
+select throws_ok($$insert into auth.mfa_amr_claims(
+  id,session_id,created_at,updated_at,authentication_method)
+values(gen_random_uuid(),'20000000-0000-4000-8000-000000000006',now(),now(),'password')$$,
+  '42501',null,'the client role cannot mint a provider password AMR claim');
+reset role;
+
 select * from finish();
 rollback;
