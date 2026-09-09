@@ -12,6 +12,8 @@ import 'package:coelo_superadmin/features/principal_happens/domain/principal_hap
 import 'package:coelo_superadmin/features/principal_happens/presentation/principal_happens_preview_page.dart';
 import 'package:coelo_superadmin/features/principal_happens_publication/domain/happens_publication.dart';
 import 'package:coelo_superadmin/features/principal_happens_publication/presentation/principal_happens_publication_page.dart';
+import 'package:coelo_superadmin/features/principal_now_publication/domain/now_publication.dart';
+import 'package:coelo_superadmin/features/principal_now_publication/presentation/principal_now_publication_page.dart';
 import 'package:coelo_superadmin/features/principal_shared/domain/principal_runtime_context.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -179,6 +181,46 @@ void main() {
       // e o teste deve ser removido junto com a regra.
     },
   );
+  testWidgets(
+    'DEFEITO: o mesmo beco existe em Publicar no Agora, e não só no Acontece',
+    (tester) async {
+      final session = SuperadminSession()..signInForTesting();
+      final router = createSuperadminRouter(
+        session: session,
+        login: unavailableSuperadminLogin,
+        logout: unavailableSuperadminLogout,
+        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+        principalRuntimeContextRepository: const _InstitutionScopedContext(),
+        nowPublicationRepository: _StubNowPublicationRepository(),
+        onThemeModeChanged: (_) {},
+      );
+      addTearDown(router.dispose);
+      addTearDown(session.dispose);
+
+      router.go(SuperadminRoutes.principalNowPublication);
+      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+      await tester.pumpAndSettle();
+
+      // O repositório FOI fornecido. O que barra é a mesma exigência de unidade
+      // e turma não nulas, e a resposta é a mesma tela de indisponibilidade.
+      expect(find.byType(PrincipalNowPublicationPage), findsNothing);
+      final screens = tester.widgetList<SuperadminErrorScreen>(
+        find.byType(SuperadminErrorScreen),
+      );
+      expect(screens, hasLength(1));
+      expect(
+        screens.single.kind,
+        SuperadminErrorKind.unavailable,
+        reason: 'defeito observado: publicar no Agora repete o beco do Acontece '
+            'para o ator de escopo institucional',
+      );
+
+      // Consequência de produto: a ação central do dock, "Publicar no Agora",
+      // leva esse ator à tela de aplicativo quebrado. Duas rotas de publicação
+      // do Principal com a mesma causa e a mesma resposta — é a superfície que
+      // está errada, não um descuido pontual de uma tela.
+    },
+  );
 }
 
 final class _EmptyFeedRepository implements PrincipalHappensFeedRepository {
@@ -239,4 +281,12 @@ final class _InstitutionScopedContext implements PrincipalRuntimeContextReposito
       scopeKind: 'institution',
     ),
   ];
+}
+
+final class _StubNowPublicationRepository implements NowPublicationRepository {
+  @override
+  Future<NowPublicationDraft?> loadDraft(NowPublicationContext context) async => null;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
