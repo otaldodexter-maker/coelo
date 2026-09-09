@@ -677,9 +677,18 @@ final class _IdentitySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scopes = domain == AccessProfileDomain.platform
-        ? const [AccessProfileScope.platform, AccessProfileScope.institution]
-        : const [AccessProfileScope.institution, AccessProfileScope.unit, AccessProfileScope.group];
+    final scopes = switch (domain) {
+      AccessProfileDomain.platform => const [
+        AccessProfileScope.platform,
+        AccessProfileScope.institution,
+      ],
+      AccessProfileDomain.institution => const [
+        AccessProfileScope.institution,
+        AccessProfileScope.unit,
+        AccessProfileScope.group,
+      ],
+      AccessProfileDomain.principal => const [AccessProfileScope.group],
+    };
     return _FormSurface(
       title: 'Perfil e escopo',
       description:
