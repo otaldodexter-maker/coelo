@@ -1,0 +1,513 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-09T14:11:56-03:00",
+  "timezone": "America/Sao_Paulo",
+  "snapshot_head": "647c20b453222aef58027028e4367de954145f20",
+  "snapshot_head_scope": "Tested code snapshot. Later fixture-only correction ff8bfb728a040912a551b615cb6f0d9d2a1597d3 is documented as unexecuted and is not included in passing SQL evidence.",
+  "scope": "R02 D03 focal evidence available before the 16:30 BRT consolidation cut",
+  "counting_rules": {
+    "unit": "unique test case within its current focal campaign",
+    "red_green_reruns_are_not_added": true,
+    "analyzers_and_static_scans_are_not_flutter_tests": true,
+    "infrastructure_tests_are_not_product_acceptance_tests": true,
+    "planned_sql_assertions_are_not_executed_tests": true,
+    "historical_47_case_attendance_run_is_excluded": true,
+    "acceptance_inference": "None. Counts do not certify all criteria of an action or FE/BE/E2E completion."
+  },
+  "source_notes": [
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/students.md",
+      "sha256": "73F4320F2E721E3AA2B5AEE6BFD49A4E169B6CE0568B4587DA46E7B42D0950B8"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/attendance.md",
+      "sha256": "73D7C2D1212B38BF633D37A3F2061D4F87DC69FCC72D5C502DAB5D0FAAB53BC1"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/attendance-export.md",
+      "sha256": "E956C387E63604801962C99B9480650F5F5E2DF8CB75ECD5BF9C69D9DA3486E0"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/daily-routine.md",
+      "sha256": "2877BC2062B79BABA5314D6F49BE906ECDB4C411CE4B5380E82E810F3B602DD7"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-replay-profile.md",
+      "sha256": "172AC7973453B9A0954893B947CFAB964947B62E694BA0FA1CB08621DC1D976E"
+    }
+  ],
+  "summary": {
+    "flutter": {
+      "reported_unique_cases": 55,
+      "case_ids_recovered_verbatim_from_raw_test_logs": 39,
+      "additional_cases_described_by_summary_or_note": 6,
+      "case_ids_named_from_reviewed_source_only": 10,
+      "case_ids_not_recoverable": 0,
+      "failed_current_cases": 0
+    },
+    "infrastructure": {
+      "pester_unique_cases": 24,
+      "failed": 0,
+      "blocked": 0,
+      "skipped": 0,
+      "not_run": 0,
+      "static_gate_assertions_passed": 15
+    },
+    "sql": {
+      "child_tap_assertions_planned": 45,
+      "child_tap_assertions_executed": 21,
+      "child_tap_assertions_passed": 21,
+      "child_tap_assertions_failed": 0,
+      "child_tap_assertions_blocked_not_reached": 24,
+      "nominal_child_replay_attempts": 1,
+      "nominal_child_replay_green": 0
+    },
+    "memory": {
+      "result": "no-op",
+      "durable_rules_added": 0
+    }
+  },
+  "flutter_campaigns": [
+    {
+      "id": "flutter.daily-routine.directory-controller",
+      "action_ids": ["daily-routine.list"],
+      "status": "pass",
+      "unique_cases": 11,
+      "case_id_completeness": "names complete from note and reviewed source; original raw test log is missing",
+      "recovered_case_ids": [
+        "unexpected decoding errors become a safe failure state"
+      ],
+      "source_declared_case_ids": [
+        "starts loading with no entries exposed",
+        "loading a new request clears previously loaded entries fail closed",
+        "failure and unauthorized never retain entries",
+        "empty and no-results are distinct server-result states",
+        "blank filters do not turn an empty directory into no-results",
+        "stale response cannot replace a newer authorized result",
+        "structural filter is no-results: active",
+        "structural filter is no-results: institution-a",
+        "structural filter is no-results: unit-a",
+        "structural filter is no-results: group-a"
+      ],
+      "case_name_source": "apps/superadmin/test/features/daily_routine/routine_directory_controller_test.dart at c440199bbadcd2b5aebfeea8e44f8f378443078b; declaration names are not a recovered execution transcript",
+      "unrecovered_case_id_count": 0,
+      "evidence": [
+        {
+          "kind": "flutter_test_green",
+          "path": null,
+          "sha256": null,
+          "availability": "missing",
+          "result": "11 pass / 0 fail",
+          "note": "The note records the command and result, but the controller 11-case raw log was not preserved."
+        },
+        {
+          "kind": "flutter_analyze",
+          "path": null,
+          "sha256": null,
+          "availability": "session-transcript-only",
+          "result": "No issues found"
+        }
+      ],
+      "deduplication": "The new decoding case is included in the 11-case file result; its earlier RED is not added."
+    },
+    {
+      "id": "flutter.daily-routine.application-editor",
+      "action_ids": ["daily-routine.create", "daily-routine.edit", "daily-routine.apply"],
+      "status": "pass-union",
+      "unique_cases": 17,
+      "case_id_completeness": "complete",
+      "case_ids": [
+        "distinct equal repositories still replace the editor context",
+        "does not surface application creation without an authorized context",
+        "fails closed when an application load returns another id",
+        "fails closed when applying a model returned for another id",
+        "ignores a late application load after the editor context changes",
+        "new application save unlocks after the repository returns its created id",
+        "new model save unlocks after the repository returns its created id",
+        "persists the newly selected inheritance mode",
+        "rejects a mismatched id returned while editing application",
+        "rejects a mismatched id returned while editing model",
+        "rejects an empty id returned while creating application",
+        "rejects an empty id returned while creating model",
+        "rejects invalid start time before saving an application",
+        "rejects inverted validity before saving an application",
+        "rejects an invalid draft before changing inheritance mode",
+        "renders scheduled fields and never exposes raw scope identifiers",
+        "reverts a customized application through the repository"
+      ],
+      "evidence": [
+        {
+          "kind": "flutter_test_green_full",
+          "path": "C:/Users/adrie/AppData/Local/Temp/coelo-d03-daily-routine-application-validation-full.log",
+          "sha256": "CBB8982B6215968F19F5B1E4DEC2F0F451036CBA50F77DCE623BA509A2A4945A",
+          "result": "16 pass / 0 fail"
+        },
+        {
+          "kind": "flutter_test_green_focal",
+          "path": "C:/Users/adrie/AppData/Local/Temp/coelo-d03-daily-routine-inheritance-validation-green.log",
+          "sha256": "43C53294380589151AB5F487AC0B3759C4C33DBAFFBA9268593D7887589074B9",
+          "result": "2 pass / 0 fail; one overlaps the 16-case run and one is new"
+        },
+        {
+          "kind": "flutter_analyze",
+          "path": "C:/Users/adrie/AppData/Local/Temp/coelo-d03-daily-routine-inheritance-validation-analyze.log",
+          "sha256": "0990AE3902068D7B1823E54DCFFE4F0FEB45261F3E8EB2388846FA36A1E824DE",
+          "result": "No issues found"
+        }
+      ],
+      "red_evidence": [
+        {
+          "path": "C:/Users/adrie/AppData/Local/Temp/coelo-d03-daily-routine-empty-id-red.log",
+          "sha256": "D5CDD9B2F51A8D3A061A770F916194CAA4E093F2D939071AB37F1E7EF0201BE4",
+          "result": "0 pass / 2 fail"
+        },
+        {
+          "path": "C:/Users/adrie/AppData/Local/Temp/coelo-d03-daily-routine-application-validation-red.log",
+          "sha256": "1006E97ADCA267BC294E9B0D6C3D4C262B363986D9CB63A3766573A3915C68CA",
+          "result": "0 pass / 2 fail"
+        },
+        {
+          "path": "C:/Users/adrie/AppData/Local/Temp/coelo-d03-daily-routine-inheritance-validation-red.log",
+          "sha256": "7E39C2543412625D3E6A9EE3DDED040DEC339A61CBE4FC11DD28641BCB6783F6",
+          "result": "0 pass / 1 fail"
+        }
+      ],
+      "deduplication": "The older 14-case editor runs are subsets of the 16-case run. The current union is 16 plus the new inheritance-negative case, not 14+16+2. No single 17-case full run was executed."
+    },
+    {
+      "id": "flutter.attendance.correction",
+      "action_ids": ["attendance.correct"],
+      "status": "pass",
+      "unique_cases": 7,
+      "case_id_completeness": "complete",
+      "case_ids": [
+        "completed empty call does not expose participant correction",
+        "correction applies to the participant selected in the dialog",
+        "correction dialog does not use a removed call page context",
+        "correction dialog does not write through a replacement repository",
+        "correction fields stay locked while the command is in flight",
+        "correction requires a reason and preserves the draft",
+        "failed correction keeps its draft open and retries successfully"
+      ],
+      "evidence": [
+        {
+          "kind": "flutter_test_green",
+          "path": "C:/Users/adrie/AppData/Local/Temp/d03-attendance-correction-required-reason-regression.log",
+          "sha256": "BA9B573F82EE6EB11F682F9F330795B8EDAA97020054D5C6F6E54B8D82112071",
+          "result": "7 pass / 0 fail"
+        },
+        {
+          "kind": "flutter_test_green_focal",
+          "path": "C:/Users/adrie/AppData/Local/Temp/d03-attendance-correction-required-reason-green.log",
+          "sha256": "2EB194482235DD7DD4571C3BC3973AA793BFEE2DD6D4CE697482F0EE5043D69A",
+          "result": "1 pass / 0 fail after the final semantic assertion was added; overlaps the seven-case campaign and does not add a case"
+        },
+        {
+          "kind": "flutter_analyze",
+          "path": "C:/Users/adrie/AppData/Local/Temp/d03-attendance-correction-required-reason-analyze.log",
+          "sha256": "14CA337A541222740667AEAC33AB48BC7391A898BE62649C81998AA6E0D9F7D4",
+          "result": "No issues found"
+        }
+      ],
+      "deduplication": "The earlier 6-case correction regression and all one-case reruns are subsets of the final 7-case regression. The invalid popup and TextFormField harness attempts are excluded."
+    },
+    {
+      "id": "flutter.attendance.dashboard-clock",
+      "action_ids": ["attendance.dashboard"],
+      "status": "pass",
+      "unique_cases": 1,
+      "case_id_completeness": "complete",
+      "case_ids": [
+        "dashboard uses the supplied civil date for its period and picker limit"
+      ],
+      "evidence": [
+        {
+          "kind": "flutter_test_green",
+          "path": "C:/Users/adrie/AppData/Local/Temp/d03-attendance-dashboard-clock-green.log",
+          "sha256": "495125FD1A726F989AA48211C0813A2874DC9C8C110A6C89B5E1FEC48AD6CAEC",
+          "result": "1 pass / 0 fail"
+        },
+        {
+          "kind": "flutter_analyze",
+          "path": "C:/Users/adrie/AppData/Local/Temp/d03-attendance-dashboard-clock-analyze.log",
+          "sha256": "5E13AC301D0BC7E12517ECB893607A1D8CE43B63A1CFA058135326C121FBBD6D",
+          "result": "No issues found"
+        }
+      ]
+    },
+    {
+      "id": "flutter.attendance.finish",
+      "action_ids": ["attendance.finish"],
+      "status": "pass",
+      "unique_cases": 3,
+      "case_id_completeness": "complete",
+      "case_ids": [
+        "call page ignores an older command response after an A to B swap",
+        "call page rejects a command response bound to another call",
+        "completion stays disabled while its command is in flight"
+      ],
+      "evidence": [
+        {
+          "kind": "flutter_test_green",
+          "path": "C:/Users/adrie/AppData/Local/Temp/d03-attendance-finish-pending-regression.log",
+          "sha256": "9BCFB739B08CE977CAA6D9AE4860EED9083C18BDD0C73CCA7E7BB9FD24ED5153",
+          "result": "3 pass / 0 fail"
+        },
+        {
+          "kind": "flutter_analyze",
+          "path": "C:/Users/adrie/AppData/Local/Temp/d03-attendance-finish-pending-analyze.log",
+          "sha256": "9BC5CBDC25C970A08FCAD06D07F0CF5BBCC695D8D92343F24EF3B516EC9D1E1A",
+          "result": "No issues found"
+        }
+      ],
+      "deduplication": "The one-case GREEN is included in the final three-case campaign."
+    },
+    {
+      "id": "flutter.attendance.create",
+      "action_ids": ["attendance.create"],
+      "status": "pass",
+      "unique_cases": 5,
+      "case_id_completeness": "complete",
+      "case_ids": [
+        "new call ignores completion from repository A after a swap to B",
+        "new call keeps the form and exposes retryable command failure",
+        "new call locks its context while submission is in flight",
+        "new call prevents duplicate submission and ignores completion after dispose",
+        "new call rejects a created call outside the submitted context"
+      ],
+      "evidence": [
+        {
+          "kind": "flutter_test_green",
+          "path": "C:/Users/adrie/AppData/Local/Temp/d03-attendance-create-lock-regression.log",
+          "sha256": "A1D8816902A1200C3F1671C9E92BB8083A5EF3E33141DFC258630CA0A5008BFF",
+          "result": "5 pass / 0 fail"
+        },
+        {
+          "kind": "flutter_analyze",
+          "path": "C:/Users/adrie/AppData/Local/Temp/d03-attendance-create-lock-analyze.log",
+          "sha256": "A4FA0DCAE84757E43ED25CBC2C7E1AB94AC4F08463BED040CA1272608276F12B",
+          "result": "No issues found"
+        }
+      ],
+      "deduplication": "The one-case GREEN is included in the final five-case campaign."
+    },
+    {
+      "id": "flutter.attendance.export-deferred",
+      "action_ids": ["attendance.export"],
+      "status": "pass",
+      "unique_cases": 5,
+      "case_id_completeness": "complete",
+      "case_ids": [
+        "dashboard adapter rejects broad assignment export before the request RPC",
+        "dashboard exports are informative only at 375.0px",
+        "dashboard exports are informative only at 768.0px",
+        "dashboard exports are informative only at 1024.0px",
+        "dashboard exports are informative only at 1440.0px"
+      ],
+      "evidence": [
+        {
+          "kind": "flutter_test_green",
+          "path": "C:/Users/adrie/AppData/Local/Temp/d03-attendance-export-five-focals.log",
+          "sha256": "4991EF72EF68B628D2B36534DCDE9CBC6C85591AC7720D922ADCCD2B16EBC854",
+          "result": "5 pass / 0 fail"
+        },
+        {
+          "kind": "static_scan",
+          "path": "C:/Users/adrie/AppData/Local/Temp/d03-attendance-export-static.log",
+          "sha256": "DD6E1DCD97BABF463E921AC68B2E3D4E0BC3BCD1E5BF40EB9A0DC198C41D7702",
+          "result": "No real export request, poll, download, file or job call found in the UI surface"
+        }
+      ],
+      "deduplication": "Four viewports and one adapter negative are five cases for one deferred action, not five actions. The 07/09 historical evidence is not added."
+    },
+    {
+      "id": "flutter.students.child-directory-composition",
+      "action_ids": ["students.list"],
+      "status": "pass-union",
+      "unique_cases": 6,
+      "case_id_completeness": "one exact raw-log ID plus five summarized case descriptions",
+      "case_ids": [
+        "authorized list above tracking",
+        "unchanged without dependency injection",
+        "revocation clears child names",
+        "real /students route consumes the read and redirects and clears on sign out",
+        "375 px with 200 percent text has no overflow",
+        "students route discards a pending page after authenticated context changes"
+      ],
+      "evidence": [
+        {
+          "kind": "validation_summary",
+          "path": "C:/Users/adrie/AppData/Local/Temp/e2-r02-d03-students-list-validation.txt",
+          "sha256": "495D279AE9072C9B929321F2A949C002EBF0360CA58740436FFDF2A6DD7D4AF1",
+          "result": "5 pass / 0 fail"
+        },
+        {
+          "kind": "flutter_test_green_real_gesture",
+          "path": "C:/Users/adrie/AppData/Local/Temp/coelo-d03-students-context-switch-real-gesture.log",
+          "sha256": "C5F2E228CC786935C1A5CBDE27C4CF41F1FDC42A049F924B45BDD2F07C3B5BA9",
+          "result": "1 pass / 0 fail"
+        },
+        {
+          "kind": "flutter_analyze",
+          "path": "C:/Users/adrie/AppData/Local/Temp/coelo-d03-students-context-switch-review-analyze.log",
+          "sha256": "3202BFBAF81CA3D194E2DE68D2AD113D145DC42C09A6CCC38266218A87340D38",
+          "result": "No issues found before the fixture and gesture-only test edits; both later variants compiled and passed"
+        }
+      ],
+      "deduplication": "The review GREEN, Owner fixture rerun and real-gesture rerun execute the same sixth case. They count once. The current six-case union was not rerun as one full file."
+    }
+  ],
+  "infrastructure_campaigns": [
+    {
+      "id": "infra.child-directory-concurrency-structure",
+      "status": "pass",
+      "unique_cases": 8,
+      "case_ids": [
+        "exists and parses without errors",
+        "requires the owned disposable project and isolated identity",
+        "coordinates independent sessions through observed database locks",
+        "covers revocation after the first authorization read",
+        "renames the third limit-plus-one row and checks the returned order and cursor",
+        "forces wall-clock expiry during audit and verifies rollback",
+        "bounds waits and cleans every process without reading credentials",
+        "keeps a durable plan that marks runtime as not executed"
+      ],
+      "evidence": [{
+        "kind": "nunit_xml",
+        "path": "C:/Users/adrie/AppData/Local/Temp/d03-child-directory-concurrency-structural.xml",
+        "sha256": "945309DD4B53B00E95DA06A17F910BC10A580F9CA1C1850777B82FC5AC06736F",
+        "result": "P8/F0/B0/S0/U0; runtime SQL not executed"
+      }],
+      "product_acceptance_credit": 0,
+      "deduplication": "Only the final eight-case structural run counts; earlier revisions are not added. This does not prove the three SQL interleavings."
+    },
+    {
+      "id": "infra.child-directory-envelope-profile",
+      "status": "pass",
+      "unique_cases": 10,
+      "case_ids": [
+        "selects Auth45, CHILD1, one local bridge and two inherited preflights",
+        "rejects an earlier target",
+        "rejects a canonical migration with the local bridge version",
+        "rejects a reparse point in the profile path",
+        "rejects changed bytes for descriptor",
+        "rejects changed bytes for manifest",
+        "rejects changed bytes for child",
+        "rejects changed bytes for bridge",
+        "rejects changed bytes for approvedSource",
+        "rejects changed bytes for sourceNote"
+      ],
+      "evidence": [
+        {
+          "kind": "nunit_xml",
+          "path": "C:/Users/adrie/AppData/Local/Temp/d03-child-directory-envelope-tests.xml",
+          "sha256": "8312388952FA684FE94499B3746ECA77C2034343DD40FD7B654F93F4D6D14F3E",
+          "result": "P10/F0/B0/S0/U0"
+        }
+      ],
+      "product_acceptance_credit": 0
+    },
+    {
+      "id": "infra.safe-replay-runner-regression",
+      "status": "pass",
+      "unique_cases": 6,
+      "case_ids": [
+        "accepts canonical migrations between the labels bridge and audit production",
+        "parses without errors",
+        "disables CLI agent autodetection for every npx Supabase invocation",
+        "forwards the reviewed additional migration allowlist to replay preparation",
+        "keeps generated replay ownership, reparse and residual-resource cleanup gates",
+        "validates additions before start without exposing migrations to automatic startup replay"
+      ],
+      "evidence": [
+        {
+          "kind": "nunit_xml",
+          "path": "C:/Users/adrie/AppData/Local/Temp/d03-runner-regression.xml",
+          "sha256": "168DB3CCA362C5F244DE80D5137FFB7412761B0B97BE3E21F346A725477B0377",
+          "result": "P6/F0/B0/S0/U0"
+        }
+      ],
+      "product_acceptance_credit": 0,
+      "note": "These are runner infrastructure checks, not six CHILD cases."
+    },
+    {
+      "id": "infra.child-static-gate",
+      "status": "pass-reported",
+      "unique_assertions": 15,
+      "evidence": [
+        {
+          "path": null,
+          "sha256": null,
+          "availability": "note-only",
+          "result": "Static gate 15 revalidated after the TAP complement"
+        }
+      ],
+      "product_acceptance_credit": 0
+    }
+  ],
+  "sql": {
+    "id": "sql.child-directory-tap",
+    "status": "partial-blocked-not-green",
+    "planned_assertions": 45,
+    "composition": {
+      "original_assertions": 35,
+      "new_assertions": 10
+    },
+    "migrations_applied": 49,
+    "executed_assertions": 21,
+    "passed_assertions": 21,
+    "failed_assertions": 0,
+    "blocked_not_reached_assertions": 24,
+    "skipped_assertions": 0,
+    "unknown_assertions": 0,
+    "process_exit_code": 1,
+    "tap_plan_found": false,
+    "nominal_replay_attempts": 1,
+    "green_nominal_replays": 0,
+    "evidence": [
+      {
+        "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-replay-profile.md",
+        "sha256": "172AC7973453B9A0954893B947CFAB964947B62E694BA0FA1CB08621DC1D976E"
+      },
+      {
+        "path": "C:/Users/adrie/AppData/Local/Temp/d03-child-envelope-replay.log",
+        "sha256": "78E1322A9A5E00D3FF2197BDE62101C2F6C2CF3DA14A6DBA1E20AFD0520BF055",
+        "result": "49 migrations applied; P21/F0/B24/S0/U0; exit 1; no TAP plan; not GREEN"
+      }
+    ],
+    "blocker": "The synthetic membership revocation fixture did not increment membership.version, so Auth039 stopped the TAP after 21 passing assertions. The migration and replay profile were unchanged; cleanup completed.",
+    "deduplication": "The 21 partial passes must not be added to a future rerun of the same 45-assertion plan.",
+    "excluded": "The earlier FoundationOnly run failed before CHILD on the missing chat_attachment_metadata dependency. It executed zero CHILD assertions and is not added to this nominal attempt."
+  },
+  "sql_concurrency": {
+    "id": "sql.child-directory-concurrency",
+    "status": "prepared-not-executed",
+    "planned_scenarios": 3,
+    "executed_scenarios": 0,
+    "passed_scenarios": 0,
+    "failed_scenarios": 0,
+    "blocked_scenarios": 3,
+    "blocker": "Requires reviewed harness, nominal CHILD TAP green, serialized runner integration and next D00 local replay window."
+  },
+  "memory": {
+    "status": "no-op",
+    "sources": [
+      "students.md",
+      "attendance.md",
+      "attendance-export.md",
+      "child-replay-profile.md"
+    ],
+    "durable_knowledge_changes": 0,
+    "note": "The cited notes report no new approved durable product rule."
+  },
+  "excluded_or_not_summed": [
+    "Attendance 47/47 was an earlier broad run before later focal cases and is not part of the current unique total.",
+    "Daily Routine editor 14-case runs are subsets of the later 16-case run.",
+    "Daily Routine editor current 17 is a union of the 16-case full log and one new inheritance-negative case, with the inheritance-success case overlapping.",
+    "Attendance correction 6-case regression is a subset of the final 7-case regression.",
+    "Students initial 5 plus the A-to-B case produce 6 unique cases; fixture and real-gesture reruns do not increase the count.",
+    "RED runs and harness-only failures establish causality but do not add passing cases.",
+    "Analyzer, formatter, static scan, Pester infrastructure and planned SQL counts are kept outside the Flutter total.",
+    "No count in this ledger establishes complete FE, Backend or E2E coverage for an action."
+  ]
+}
