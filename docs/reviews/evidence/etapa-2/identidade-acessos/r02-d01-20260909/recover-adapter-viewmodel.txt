@@ -1,0 +1,19 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub --concurrency=1 test/features/auth/do ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_password_recovery_action_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_password_recovery_action_test.dart: forwards the email to Coelo auth and maps success
+00:00 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_password_recovery_action_test.dart: maps a safe recovery failure from Coelo auth
+00:00 +2: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/view_models/password_recovery_view_model_test.dart
+00:04 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/view_models/password_recovery_view_model_test.dart: starts idle without retaining an email
+00:04 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/view_models/password_recovery_view_model_test.dart: normalizes the email and exposes loading before success
+00:04 +4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/view_models/password_recovery_view_model_test.dart: keeps the form visible after a safe initial failure
+00:04 +5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/view_models/password_recovery_view_model_test.dart: maps unexpected exceptions to a generic message
+00:04 +6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/view_models/password_recovery_view_model_test.dart: ignores a concurrent request
+00:04 +7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/view_models/password_recovery_view_model_test.dart: resends to the stored email and preserves success on failure
+00:04 +8: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/presentation/view_models/password_recovery_view_model_test.dart: can be disposed while a request is pending
+00:04 +9: All tests passed!
