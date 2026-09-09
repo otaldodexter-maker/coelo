@@ -144,6 +144,8 @@ import '../../features/notices/domain/notice_repository.dart'
 import '../../features/notices/data/development_notice_repository.dart';
 import '../../features/notices/presentation/notice_directory_page.dart';
 import '../../features/notices/presentation/notice_form_page.dart';
+import '../../features/principal_chat/presentation/principal_chat_page.dart';
+import '../../features/principal_chat/presentation/principal_chat_page.dart';
 import '../../features/principal_circulars/domain/principal_happens_mixed_feed.dart';
 import '../../features/plans/data/fake_plan_catalog_repository.dart';
 import '../../features/plans/domain/plan_catalog_repository.dart';
@@ -710,10 +712,17 @@ GoRouter createSuperadminRouter({
           onOpenNow: () => context.pushNamed(SuperadminRoutes.devPrincipalNowName),
           onPublishNow: () => context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName),
           onCreatePost: () => context.goNamed(SuperadminRoutes.devPrincipalHappensPublishName),
-          onOpenMessages: () => context.goNamed(
-            SuperadminRoutes.devConversationsName,
-            queryParameters: const {'from': 'principal'},
-          ),
+          onOpenMessages: () =>
+              context.goNamed(SuperadminRoutes.devPrincipalConversationsName),
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.devPrincipalConversations,
+        name: SuperadminRoutes.devPrincipalConversationsName,
+        builder: (context, state) => PrincipalChatPage(
+          chatRepository: developmentChatRepository,
+          onBack: () => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
+          onOpenProfile: () => context.goNamed(SuperadminRoutes.devPrincipalProfileName),
         ),
       ),
       GoRoute(
@@ -831,10 +840,8 @@ GoRouter createSuperadminRouter({
                   onCreatePost: () => context.goNamed(SuperadminRoutes.principalHappensPublishName),
                   onOpenNow: () => context.pushNamed(SuperadminRoutes.principalNowName),
                   onPublishNow: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
-                  onOpenMessages: () => context.goNamed(
-                    SuperadminRoutes.conversationsName,
-                    queryParameters: const {'from': 'principal'},
-                  ),
+                  onOpenMessages: () =>
+                      context.goNamed(SuperadminRoutes.principalConversationsName),
                 );
               },
             ),
@@ -995,6 +1002,25 @@ GoRouter createSuperadminRouter({
               repository: principalRuntimeContextRepository,
               builder: (context, _) => _unavailableCompositionRootRoute(context),
             ),
+          ),
+          // Chat contextual do Coelo (Principal): composicao propria da familia
+          // Principal sobre o ChatRepository compartilhado. Substitui o desvio
+          // para a pagina administrativa, onde `?from=principal` so trocava o
+          // botao voltar. Falha fechada quando a composicao nao injeta um
+          // repository produtivo, em vez de exibir uma superficie sem backend
+          // autorizado. Declarada dentro da ShellRoute para que o shell/menu
+          // hospedeiro seja preservado, como as demais rotas Principal.
+          GoRoute(
+            path: SuperadminRoutes.principalConversations,
+            name: SuperadminRoutes.principalConversationsName,
+            builder: (context, state) => chatRepository is UnavailableChatRepository
+                ? _unavailableCompositionRootRoute(context)
+                : PrincipalChatPage(
+                    chatRepository: chatRepository,
+                    embedded: true,
+                    onBack: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                    onOpenProfile: () => context.goNamed(SuperadminRoutes.principalProfileName),
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.login,
@@ -5537,10 +5563,7 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
     case 'principal-now-publish':
       context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName);
     case 'principal-chat':
-      context.goNamed(
-        SuperadminRoutes.devConversationsName,
-        queryParameters: const {'from': 'principal'},
-      );
+      context.goNamed(SuperadminRoutes.devPrincipalConversationsName);
     case 'principal-profile':
       context.goNamed(SuperadminRoutes.devPrincipalProfileName);
   }

@@ -203,6 +203,8 @@ abstract final class SuperadminRoutes {
   static const principalHappensPublishName = 'principal-happens-publish';
   static const principalForYou = '/principal-for-you';
   static const principalForYouName = 'principal-for-you';
+  static const principalConversations = '/principal-conversations';
+  static const principalConversationsName = 'principal-conversations';
   static const principalMoments = '/principal-moments';
   static const principalMomentsName = 'principal-moments';
   static const principalMomentsPublish = '/principal-moments/publish';
@@ -415,6 +417,8 @@ abstract final class SuperadminRoutes {
   static const devPrincipalHappensName = 'dev-principal-happens';
   static const devPrincipalForYou = '/dev/principal-for-you';
   static const devPrincipalForYouName = 'dev-principal-for-you';
+  static const devPrincipalConversations = '/dev/principal-conversations';
+  static const devPrincipalConversationsName = 'dev-principal-conversations';
   static const devPrincipalHappensPublish = '/dev/principal-happens/publish';
   static const devPrincipalHappensPublishName = 'dev-principal-happens-publish';
   static const devPrincipalMoments = '/dev/principal-moments';
