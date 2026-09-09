@@ -1407,6 +1407,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       for (final question in _flattenQuestions(section.questions)) {
         if (question.galleryLimitsIssue case final issue?) return issue;
         if (question.textLimitsIssue case final issue?) return issue;
+        if (question.numericLimitsIssue case final issue?) return issue;
         if (question.dateLimitsIssue case final issue?) return issue;
       }
     }
@@ -2228,6 +2229,18 @@ final class _EditorQuestionDraft {
     return null;
   }
 
+  /// Gallery and dates already refuse an inverted range. Numeric limits did
+  /// not, so an author could save minimum above maximum and leave a question
+  /// that no answer can satisfy, with nothing said.
+  String? get numericLimitsIssue {
+    if (!FormNumericLimits.isNumeric(kind)) return null;
+    final low = FormNumericLimits.parse(kind, minimum.text);
+    final high = FormNumericLimits.parse(kind, maximum.text);
+    if (low == null || high == null) return null;
+    if (low > high) return 'O valor mínimo deve ser menor ou igual ao máximo.';
+    return null;
+  }
+
   String? get textLimitsIssue {
     if (kind != FormItemKind.shortText) return null;
     final declared = maxLength.text.trim();
@@ -2715,6 +2728,15 @@ final class _QuestionCardState extends State<_QuestionCard> {
       ],
       if (_isNumericKind(widget.question.kind)) ...[
         const SizedBox(height: CoeloSpacing.space3),
+        if (widget.question.numericLimitsIssue case final issue?) ...[
+          Text(
+            issue,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
+          ),
+          const SizedBox(height: CoeloSpacing.space2),
+        ],
         LayoutBuilder(
           builder: (context, constraints) {
             final minimum = CoeloFormTextField(
@@ -2722,14 +2744,24 @@ final class _QuestionCardState extends State<_QuestionCard> {
               labelText: widget.question.kind == FormItemKind.money ? 'Valor mínimo' : 'Mínimo',
               prefixIcon: Icons.vertical_align_bottom_rounded,
               keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
-              onChanged: (_) => widget.onChanged(),
+              // Rebuild so the inverted-range message appears while typing,
+              // like the gallery bounds already do.
+              onChanged: (_) {
+                setState(() {});
+                widget.onChanged();
+              },
             );
             final maximum = CoeloFormTextField(
               controller: widget.question.maximum,
               labelText: widget.question.kind == FormItemKind.money ? 'Valor máximo' : 'Máximo',
               prefixIcon: Icons.vertical_align_top_rounded,
               keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
-              onChanged: (_) => widget.onChanged(),
+              // Rebuild so the inverted-range message appears while typing,
+              // like the gallery bounds already do.
+              onChanged: (_) {
+                setState(() {});
+                widget.onChanged();
+              },
             );
             if (constraints.maxWidth < 520) {
               return Column(

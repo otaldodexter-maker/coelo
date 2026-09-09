@@ -385,6 +385,54 @@ void main() {
 
   // copy() passou a carregar maxLength junto dos demais controladores; sem este
   // teste a duplicacao perderia o limite em silencio.
+  // Galeria e datas ja recusam intervalo invertido. Os limites numericos nao
+  // recusavam, entao o autor podia gravar minimo 100 e maximo 10 e tornar a
+  // pergunta impossivel de responder, sem nenhum aviso.
+  for (final (kind, minimum, maximum) in <(FormItemKind, String, String)>[
+    (FormItemKind.integer, '100', '10'),
+    (FormItemKind.decimal, '10,5', '10,4'),
+    (FormItemKind.money, '10,50', '10,00'),
+  ]) {
+    testWidgets('${kind.name} refuses an inverted range instead of saving it', (tester) async {
+      final api = numericApi(kind);
+      await open(tester, api);
+      final label = kind == FormItemKind.money ? 'Valor mínimo' : 'Mínimo';
+      final upper = kind == FormItemKind.money ? 'Valor máximo' : 'Máximo';
+      await tester.enterText(find.widgetWithText(TextFormField, label).first, minimum);
+      await tester.enterText(find.widgetWithText(TextFormField, upper).first, maximum);
+      await tester.pump(const Duration(milliseconds: 800));
+      await tester.pumpAndSettle();
+
+      expect(api.commands, isEmpty);
+      expect(find.text('O valor mínimo deve ser menor ou igual ao máximo.'), findsWidgets);
+    });
+  }
+
+  testWidgets('an equal minimum and maximum is a valid single accepted value', (tester) async {
+    final api = numericApi(FormItemKind.integer);
+    await open(tester, api);
+    await tester.enterText(find.widgetWithText(TextFormField, 'Mínimo').first, '7');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Máximo').first, '7');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+
+    final config = api.commands.last.payload.sections.single.items.single.config;
+    expect(config.minValue, 7);
+    expect(config.maxValue, 7);
+  });
+
+  testWidgets('only one declared bound never counts as inverted', (tester) async {
+    final api = numericApi(FormItemKind.integer);
+    await open(tester, api);
+    await tester.enterText(find.widgetWithText(TextFormField, 'Máximo').first, '10');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+
+    final config = api.commands.last.payload.sections.single.items.single.config;
+    expect(config.minValue, isNull);
+    expect(config.maxValue, 10);
+  });
+
   testWidgets('duplicating a question keeps its authored limits', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 1400));
     addTearDown(() => tester.binding.setSurfaceSize(null));
