@@ -12,7 +12,12 @@ final class DevelopmentChatRepository implements ChatRepository {
   final List<ChatConversationSummary> _conversations = [];
   final Map<String, List<ChatMessage>> _threads = {};
   final Map<String, ChatMessage> _sendReceipts = {};
+  final Map<String, ChatMessage> _commandReceipts = {};
+  final Set<String> _revoked = {};
   var _nextMessage = 100;
+
+  /// Mirrors the server's edit window so the fixture refuses the same cases.
+  static const _editWindow = Duration(minutes: 15);
 
   @override
   Future<int> fetchUnreadTotal() async =>
@@ -94,6 +99,8 @@ final class DevelopmentChatRepository implements ChatRepository {
       sentAt: _now().toUtc(),
       isMine: true,
       kind: 'text',
+      canManage: true,
+      receipt: const ChatMessageReceipt(isMine: true, recipientCount: 2),
     );
     _threads[command.conversationId]!.insert(0, sent);
     final current = _conversations[conversationIndex];
@@ -108,10 +115,86 @@ final class DevelopmentChatRepository implements ChatRepository {
   }
 
   @override
+  Future<ChatMessage> editMessage(ChatEditMessageCommand command) async {
+    final replay = _commandReceipts[command.idempotencyKey];
+    if (replay != null) return replay;
+    final thread = _threads[command.conversationId];
+    final conversationIndex = _conversations.indexWhere(
+      (item) => item.id == command.conversationId,
+    );
+    if (thread == null || conversationIndex < 0) throw const ChatUnauthorizedException();
+    if (_conversations[conversationIndex].isReadOnly) {
+      throw const ChatConflictException(ChatConflictReason.readOnly);
+    }
+    final index = thread.indexWhere((message) => message.id == command.messageId);
+    if (index < 0) throw const ChatUnauthorizedException();
+    final target = thread[index];
+    // Authorship is the server's answer in production; the deterministic
+    // fixture mirrors the same refusal instead of trusting the caller's id.
+    if (!target.canManage) throw const ChatUnauthorizedException();
+    if (_revoked.contains(target.id)) {
+      throw const ChatConflictException(ChatConflictReason.alreadyRevoked);
+    }
+    if (_now().toUtc().difference(target.sentAt) > _editWindow) {
+      throw const ChatConflictException(ChatConflictReason.editWindowClosed);
+    }
+    final edited = _copyMessage(target, body: command.body.trim(), editedAt: _now().toUtc());
+    thread[index] = edited;
+    if (index == 0) {
+      _conversations[conversationIndex] = _copyConversation(
+        _conversations[conversationIndex],
+        preview: edited.body,
+      );
+    }
+    _commandReceipts[command.idempotencyKey] = edited;
+    return edited;
+  }
+
+  @override
+  Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) async {
+    final thread = _threads[command.conversationId];
+    final conversationIndex = _conversations.indexWhere(
+      (item) => item.id == command.conversationId,
+    );
+    if (thread == null || conversationIndex < 0) throw const ChatUnauthorizedException();
+    final index = thread.indexWhere((message) => message.id == command.messageId);
+    if (index < 0) {
+      // Already gone from the thread: only a prior revocation explains it.
+      if (_revoked.contains(command.messageId)) {
+        throw const ChatConflictException(ChatConflictReason.alreadyRevoked);
+      }
+      throw const ChatUnauthorizedException();
+    }
+    final target = thread[index];
+    if (!target.canManage) throw const ChatUnauthorizedException();
+    final revokedAt = _now().toUtc();
+    thread.removeAt(index);
+    _revoked.add(target.id);
+    final latest = thread.firstOrNull;
+    _conversations[conversationIndex] = _copyConversation(
+      _conversations[conversationIndex],
+      preview: latest?.body ?? '',
+      updatedAt: latest?.sentAt,
+    );
+    return ChatMessageRevocation(messageId: target.id, revokedAt: revokedAt);
+  }
+
+  @override
   Future<void> markRead({required String conversationId, required String upToMessageId}) async {
     final index = _conversations.indexWhere((item) => item.id == conversationId);
-    if (index < 0 || !_threads[conversationId]!.any((message) => message.id == upToMessageId)) {
+    final thread = _threads[conversationId];
+    if (index < 0 || thread == null || !thread.any((message) => message.id == upToMessageId)) {
       throw const ChatUnauthorizedException();
+    }
+    final cutoff = thread.firstWhere((message) => message.id == upToMessageId).sentAt;
+    final readAt = _now().toUtc();
+    for (var position = 0; position < thread.length; position++) {
+      final message = thread[position];
+      if (message.isMine || message.sentAt.isAfter(cutoff)) continue;
+      thread[position] = _copyMessage(
+        message,
+        receipt: ChatMessageReceipt(isMine: false, deliveredAt: readAt, readAt: readAt),
+      );
     }
     _conversations[index] = _copyConversation(_conversations[index], unreadCount: 0);
   }
@@ -395,6 +478,25 @@ ChatConversationSummary _copyConversation(
   isReadOnly: source.isReadOnly,
 );
 
+ChatMessage _copyMessage(
+  ChatMessage source, {
+  String? body,
+  DateTime? editedAt,
+  ChatMessageReceipt? receipt,
+}) => ChatMessage(
+  id: source.id,
+  conversationId: source.conversationId,
+  body: body ?? source.body,
+  authorName: source.authorName,
+  sentAt: source.sentAt,
+  isMine: source.isMine,
+  kind: source.kind,
+  attachments: source.attachments,
+  receipt: receipt ?? source.receipt,
+  editedAt: editedAt ?? source.editedAt,
+  canManage: source.canManage,
+);
+
 ChatMessage _message({
   required String id,
   required String conversationId,
@@ -409,4 +511,7 @@ ChatMessage _message({
   sentAt: sentAt,
   isMine: false,
   kind: 'text',
+  // Seeded inbound messages start unread so the `/dev` composition exercises
+  // the receipt projection instead of always rendering an already-read thread.
+  receipt: const ChatMessageReceipt(isMine: false),
 );
