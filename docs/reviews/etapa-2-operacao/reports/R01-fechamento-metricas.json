@@ -1,6 +1,6 @@
 {
   "source": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-c00\\docs\\reviews\\etapa-2-operacao\\reports\\R01-checkpoint-1740-metricas.json",
-  "status": "accepted-conservative-partial-audit; not-implementation-percent",
+  "status": "historical-partial-audit; approval-percentages-use-current-policy",
   "generated_at": "2026-09-09T08:40:54.506791-03:00",
   "baseline_sha256": "08874ffaa2df5a9a51e1b9e8b06fa70e3cc3f7882906bbbd6120d393b2118190",
   "sources": {
@@ -2509,5 +2509,14 @@
     "FE": "Todos os critérios próprios do cliente; pode independer de backend.",
     "BE": "Todos provedores e critérios de autorização/dados próprios da ação.",
     "E2E": "UI normal, backend real, persistência/reload, negativas aplicáveis."
+  },
+  "current_percentage_policy": {
+    "source": "Owner correction09/09",
+    "at": "2026-09-09T09:24:09-03:00",
+    "label": "Aprovado nos aceites",
+    "numerator": "Active action_ids with all applicable criteria of layer approved",
+    "denominator": "All active action_ids applicable to layer",
+    "partial_audit_counts_are_approval": false,
+    "current_dashboard": "R01-painel-por-tela.json"
   }
 }

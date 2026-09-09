@@ -154,7 +154,7 @@ Em 09/09, America/Sao_Paulo: 05:30 preparar fechamento seguro; até 06:00 commit
 C00 acompanha C01/C02/C03 por ferramentas nativas; C06 acompanha C04/C05/C07 e repassa este reforço uma vez pelo seu mecanismo nativo, registrando envio e ack no próprio handoff. Apenas C00 escreve rastreadores, assignments, reservas e integração. Confirme esta instrução no próximo handoff material, sem parar para confirmação.
 
 
-## Padrão de acompanhamento aprovado pelo Owner — 09/09/2026
+## Padrão anterior de acompanhamento — superado pela correção de aprovação abaixo
 
 O painel por tela deve separar seis medições: FE examinado, BE examinado, integração exercitada, FE concluído, BE concluído e E2E concluído. A unidade é `action_id`, não caso de teste, tela aberta, commit ou conversa. Uma ação examinada tem pelo menos um critério nominal auditado; pode conter falha ou ausência. Não apresentar esse percentual como implementação pronta.
 
@@ -165,3 +165,12 @@ Mostrar numerador, denominador, data, IDs/fontes e faltas por tela/ação. Exame
 Gerador C00: `rtk proxy python docs/reviews/etapa-2-operacao/build-stage2-dashboard.py --write`. Consome inventário, ownership e métricas com evidência; não promove estados. Antes de rodar após nova entrega, C00 reconcilia esses registros canônicos. Executor somente propõe delta no handoff.
 
 Nomenclatura: E2 é Etapa2; R01 é rodada1; C00 identifica a conversa coordenadora e C01–C07 as conversas da rodada. Esses apelidos não substituem os IDs reais das sessões e não são porcentagens ou módulos do produto.
+
+
+## Regra vigente: percentual de aprovação — 09/09/2026
+
+O Owner corrigiu a medida: 100% exige aprovação nos testes/aceites, não apenas exame. O painel usa **FE aprovado nos aceites**, **BE aprovado nos aceites** e **Integração E2E aprovada**. Cada action_id ativo só entra no numerador quando todos os critérios aplicáveis daquela camada estão comprovados como aprovados. O denominador são as ações ativas aplicáveis à camada, com adiadas, gates formais e N/A separados.
+
+Aprovação da camada e conclusão da camada são a mesma medição, evitando colunas duplicadas. FE não exige conclusão do backend; BE não exige UI; E2E exige cadeia real, persistência/reload e negativas. Revisões estáticas, testes parciais aprovados, falhas e critérios sem teste permanecem evidências, mas não aprovam a ação completa. Não calcular percentual de casos de teste sem um plano completo e reconciliado que defina seu denominador.
+
+As contagens históricas de exame permanecem preservadas como histórico, sem serem reutilizadas como percentual de aprovação. O painel por frente e por tela deve ser regenerado nos três rastreadores após atualização canônica das evidências. Esta regra prevalece sobre o padrão anterior de seis colunas.

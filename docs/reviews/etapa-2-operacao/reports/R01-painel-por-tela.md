@@ -2,63 +2,73 @@
 title: "Painel por tela — Etapa 2"
 source: "inventario-etapa-2.json; assignments/ownership.json; reports/R01-fechamento-metricas.json"
 status: "derived-measurement; no-new-certification"
-generated_at: "2026-09-09T09:03:41-03:00"
+generated_at: "2026-09-09T09:24:09-03:00"
 ---
 
 # Painel por tela da Etapa 2
 
-Cálculo conferido em **2026-09-09T09:03:41-03:00** a partir de IDs únicos e evidências de R01. Sem novos testes ou certificações nesta apresentação. [IDs, denominadores e faltas por ação](R01-painel-por-tela.json).
+Cálculo conferido em **2026-09-09T09:24:09-03:00** a partir de IDs únicos e evidências de R01. Sem novos testes ou certificações nesta apresentação. [IDs, denominadores e faltas por ação](R01-painel-por-tela.json).
 
-**Examinado = pelo menos um critério revisado ou testado**, inclusive com falha; não significa todos os testes executados. O BE inclui análise estática e20ações com SQL local dentro das63 examinadas. **Integração exercitada** conta tentativas registradas pela UI normal com backend real, mesmo se falharem; não é merge de Git. No registro atual,0/187. Ausência de registro não prova ausência de código ou que ninguém nunca abriu a tela.
+**Regra corrigida pelo Owner em 09/09: percentual = ações aprovadas nos aceites / ações ativas aplicáveis.** Uma ação só entra no numerador quando todos os seus critérios aplicáveis daquela camada têm evidência de aprovação. 100% significa aprovação de todas as ações do recorte; falha, revisão estática isolada, teste apenas parcial ou falta de evidência não aprovam a ação. Resultados parciais continuam registrados como evidência, sem aumentar esse percentual. Não há percentual de casos de teste aprovados: não existe um plano global de testes com denominador completo que permita calculá-lo.
 
-**FE concluído** = todos os critérios próprios do cliente. **BE concluído** = todos os critérios e provedores próprios do backend. **E2E concluído** = UI normal + backend real + persistência/reload + negativas aplicáveis. E2E é o nome da cadeia completa, não um segundo nome para concluir uma camada isolada.
+**FE aprovado** = todos os critérios próprios do cliente comprovados; independe da conclusão do backend. **BE aprovado** = todos os critérios e provedores próprios do backend comprovados; independe da UI. **E2E aprovado** = UI normal + backend real + persistência/reload + negativas aplicáveis comprovados. Essas aprovações correspondem à conclusão da respectiva camada; não duplicamos colunas com o mesmo cálculo.
 
-¹ Colunas de conclusão mostram apenas ações **ativas**: FE0/194, BE0/187, E2E0/187. A auditoria mantém os denominadores totais FE219 eBE212 para comparação com o fechamento. Há22adiadas e3gates formais separados;7açõesN/A ao backend. As únicas2certificações FE históricas são a indisponibilidade de `profile-files.import/export`, ambas adiadas; não aumentam a conclusão ativa. N/A não é0%; Adiado não é concluído.
+Os percentuais atuais usam somente ações **ativas**: FE **0/194 — 0%**, BE **0/187 — 0%**, E2E **0/187 — 0%**. Isso significa que a aprovação completa das ações ativas ainda não está registrada; não significa que todos os testes falharam ou que nada foi implementado. As contagens antigas de revisão (198 ações FE e63 BE) ficam históricas e não representam aprovação. Há22adiadas e3gates formais separados;7açõesN/A ao backend. As únicas2certificações FE históricas são a indisponibilidade de `profile-files.import/export`, ambas adiadas; não aumentam a aprovação ativa. N/A não é0%; Adiado não é concluído.
 
 Uma linha agrega uma família de telas/ações. São **38 famílias e219ações/superfícies**, não38testes. O detalhe de cada ação, inclusive o que falta, está no [painel completo](R01-painel-por-tela.md) e na matriz oficial abaixo. Os contadores não medem percentual de código incorporado em Git: commits selecionados/publicação estão nos manifestos de integração; WIP/candidatos preservados podem ainda estar fora de dev.
 
-## Exame e conclusão por tela
+## Aprovação por frente
 
-| Tela / módulo | FE examinado | BE examinado | Integração exercitada | FE concluído¹ | BE concluído¹ | E2E concluído¹ |
-| --- | --- | --- | --- | --- | --- | --- |
-| Entrada e recuperação | 4/5 — **80,0%** | 0/5 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Navegação e contexto | 1/5 — **20,0%** | N/A | N/A | 0/5 — **0,0%** | N/A | N/A |
-| Instituições | 13/13 — **100,0%** | 6/13 — **46,2%** | 0/11 — **0,0%** | 0/11 — **0,0%** | 0/11 — **0,0%** | 0/11 — **0,0%** |
-| Unidades | 13/13 — **100,0%** | 5/13 — **38,5%** | 0/10 — **0,0%** | 0/10 — **0,0%** | 0/10 — **0,0%** | 0/10 — **0,0%** |
-| Turmas | 7/7 — **100,0%** | 4/7 — **57,1%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Pessoas | 5/5 — **100,0%** | 4/5 — **80,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Perfis de acesso | 5/6 — **83,3%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Modelos de acesso | 6/6 — **100,0%** | 3/6 — **50,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Convites | 5/5 — **100,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Atividades | 7/7 — **100,0%** | 5/7 — **71,4%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
-| Avaliações | 5/5 — **100,0%** | 5/5 — **100,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Alunos | 5/5 — **100,0%** | 1/5 — **20,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Assiduidade | 6/6 — **100,0%** | 0/6 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Rotina diária | 5/5 — **100,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Agenda | 3/7 — **42,9%** | 1/7 — **14,3%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
-| Chat | 7/7 — **100,0%** | 1/7 — **14,3%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
-| Avisos / Comunicados | 6/6 — **100,0%** | 1/6 — **16,7%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Formulários — editor | 5/7 — **71,4%** | 3/7 — **42,9%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
-| Formulários — respostas | 6/6 — **100,0%** | 5/6 — **83,3%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Formulários — arquivos | 5/5 — **100,0%** | 5/5 — **100,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Acontece | 4/4 — **100,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Agora | 4/4 — **100,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Momentos | 4/4 — **100,0%** | 1/4 — **25,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Principal — Para Você e perfil | 3/3 — **100,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
-| Segurança infantil | 4/5 — **80,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Perfis de cuidado | 4/4 — **100,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Medicação | 3/5 — **60,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Importações gerais | 7/7 — **100,0%** | 0/7 — **0,0%** | Adiado | Adiado | Adiado | Adiado |
-| Arquivos de perfil | 6/6 — **100,0%** | 0/6 — **0,0%** | Adiado | Adiado | Adiado | Adiado |
-| Auditoria | 4/4 — **100,0%** | 4/4 — **100,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
-| Suporte | 6/6 — **100,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Minha conta | 3/6 — **50,0%** | 0/4 — **0,0%** | 0/3 — **0,0%** | 0/5 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
-| Catálogo | 3/4 — **75,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Planos | 4/5 — **80,0%** | 5/5 — **100,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Cardápios | 6/6 — **100,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Usuários internos | 4/5 — **80,0%** | 0/5 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Páginas de erro | 6/6 — **100,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Locais | 4/4 — **100,0%** | 4/4 — **100,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Frente | FE aprovado nos aceites | BE aprovado nos aceites | Integração E2E aprovada |
+| --- | --- | --- | --- |
+| C01 | 0/41 — **0,0%** | 0/34 — **0,0%** | 0/34 — **0,0%** |
+| C02 | 0/32 — **0,0%** | 0/32 — **0,0%** | 0/32 — **0,0%** |
+| C03 | 0/53 — **0,0%** | 0/53 — **0,0%** | 0/53 — **0,0%** |
+| C04 | 0/40 — **0,0%** | 0/40 — **0,0%** | 0/40 — **0,0%** |
+| C05 | 0/28 — **0,0%** | 0/28 — **0,0%** | 0/28 — **0,0%** |
+
+## Aprovação por tela
+
+| Tela / módulo | FE aprovado nos aceites | BE aprovado nos aceites | Integração E2E aprovada |
+| --- | --- | --- | --- |
+| Entrada e recuperação | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Navegação e contexto | 0/5 — **0,0%** | N/A | N/A |
+| Instituições | 0/11 — **0,0%** | 0/11 — **0,0%** | 0/11 — **0,0%** |
+| Unidades | 0/10 — **0,0%** | 0/10 — **0,0%** | 0/10 — **0,0%** |
+| Turmas | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Pessoas | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Perfis de acesso | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Modelos de acesso | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Convites | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Atividades | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
+| Avaliações | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Alunos | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Assiduidade | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Rotina diária | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Agenda | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
+| Chat | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
+| Avisos / Comunicados | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Formulários — editor | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
+| Formulários — respostas | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Formulários — arquivos | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Acontece | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Agora | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Momentos | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Principal — Para Você e perfil | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
+| Segurança infantil | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Perfis de cuidado | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Medicação | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Importações gerais | Adiado | Adiado | Adiado |
+| Arquivos de perfil | Adiado | Adiado | Adiado |
+| Auditoria | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
+| Suporte | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Minha conta | 0/5 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
+| Catálogo | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Planos | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Cardápios | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Usuários internos | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Páginas de erro | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Locais | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
 
 ## O que falta em cada tela
 
@@ -105,11 +115,11 @@ Uma linha agrega uma família de telas/ações. São **38 famílias e219ações/
 
 ## Todas as219ações/superfícies
 
-Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a1/1na presença de alguma auditoria, não100%dos critérios; por isso o detalhe usa texto para evitar essa confusão. Fontes e datas estão no JSON correspondente e na matriz de pendências.
+Revisões parciais aparecem somente como contexto textual. A coluna de aprovação é independente e exige todos os aceites aplicáveis. Fontes e datas estão no JSON correspondente e na matriz de pendências.
 
 ### Entrada e recuperação
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Auth / Login (`auth.login`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Conferir regressão visual, foco, rotas e lifecycle da ação; reutilizar guards já integrados. C01I017 corrigiu Error nas fronteiras; preservar demais aceites visuais/lifecycle e prova real, sem reimplementar o corretivo. | Provar a operação nominal no provedor: sessão/revogação e, para recuperar/reset, SMTP, redirect, token e senha. Respeitar AAL1 do MVP. I021 não finalizada: WIP27f7bbab contém rascunho Pester; qualificação SQL/COMMIT e bridge não implementadas. Personas remotas e cenários A/B ainda exigem pacote nominal autorizado. |
 | Auth / Recuperar senha (`auth.recover`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Conferir regressão visual, foco, rotas e lifecycle da ação; reutilizar guards já integrados. | Provar a operação nominal no provedor: sessão/revogação e, para recuperar/reset, SMTP, redirect, token e senha. Respeitar AAL1 do MVP. I021 não finalizada: WIP27f7bbab contém rascunho Pester; qualificação SQL/COMMIT e bridge não implementadas. Personas remotas e cenários A/B ainda exigem pacote nominal autorizado. |
@@ -119,7 +129,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Navegação e contexto
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Shell / Carregamento (`shell.load`) | Ativa | Sim, parcial | N/A | Pendente | N/A | N/A | Revalidar o aceite específico desta ação: Loading/sucesso/erro sem vazamento, 375–1440 e 200%. R01/16h: Regressão focal passa; conjunto ampliado C00 teve165PASS/4falhas estáticas anteriores. | Sem endpoint ou tabela próprios exigidos; depende transversalmente da sessão/contexto. I021 não finalizada: WIP27f7bbab contém rascunho Pester; qualificação SQL/COMMIT e bridge não implementadas. Personas remotas e cenários A/B ainda exigem pacote nominal autorizado. |
 | Shell / Navegação (`shell.navigate`) | Ativa | Sem registro nominal | N/A | Pendente | N/A | N/A | Revalidar o aceite específico desta ação: Menu/link direto/voltar/avançar/teclado com rota correta. | Sem endpoint ou tabela próprios exigidos; depende transversalmente da sessão/contexto. |
@@ -129,7 +139,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Instituições
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Instituições / Diretório (`institutions.list`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Loading/empty/error/unauthorized, Cards/tabela e goldens exatos. R01/16h: 18form/7Locais/9brand/4fences relatados; conjunto410PASS/8goldenFAIL. R17 retirou causa atribuída apenas ao footer: cabeçalho, cartão criar ausente e fixtures/paginação divergem; precisa revisão nominal. UnitDetail depende wiring C00. | Conferir contrato interno nominal da ação, RLS, conflitos/auditoria e reload. Mídia usa Gateway e R2 privado. R01/16h: Editar/status, cópia e agenda Locais receberam nomes locais I008; criação20260908031000 já candidata. Sem replay/apply. Não destruir activity_locations nem criar catálogo paralelo. |
 | Instituições / Filtros (`institutions.filter`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Busca/filtros/tabs, rascunho, limpar/aplicar, teclado e 200%. | Conferir contrato interno nominal da ação, RLS, conflitos/auditoria e reload. Mídia usa Gateway e R2 privado. |
@@ -147,7 +157,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Unidades
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Unidades / Diretório (`units.list`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Diretório canônico, Cards/tabela, 375–1440, 200%, teclado; depois gateway nominal por realm e tenant A/B. R01/16h: 18form/7Locais/9brand/4fences relatados; conjunto410PASS/8goldenFAIL. R17 retirou causa atribuída apenas ao footer: cabeçalho, cartão criar ausente e fixtures/paginação divergem; precisa revisão nominal. UnitDetail depende wiring C00. C04mediu composição Unavailable; status viaja no save genérico sem transição própria. Mapa/cópia/agenda ainda parciais. | Conferir gateway nominal por ação para ator interno039, hierarquia, persistência, auditoria e negativas reais. R01/16h: Editar/status, cópia e agenda Locais receberam nomes locais I008; criação20260908031000 já candidata. Sem replay/apply. Não destruir activity_locations nem criar catálogo paralelo. Quinze RPCs ausentes no recorte Units informado pela medição C04, não apenas sete. Revisão/composição e qualificação de provedores pendentes. |
 | Unidades / Filtrar (`units.filter`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Buscar/limpar/status/sem resultados/reload, foco e prova remota autorizada. C04mediu composição Unavailable; status viaja no save genérico sem transição própria. Mapa/cópia/agenda ainda parciais. | Conferir gateway nominal por ação para ator interno039, hierarquia, persistência, auditoria e negativas reais. Quinze RPCs ausentes no recorte Units informado pela medição C04, não apenas sete. Revisão/composição e qualificação de provedores pendentes. |
@@ -165,7 +175,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Turmas
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Turmas / Diretório (`groups.list`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Cards/tabela e estados locais verdes; depois gateway nominal por realm, negativos e tenant A/B. R01/16h: 18form/7Locais/9brand/4fences relatados; conjunto410PASS/8goldenFAIL. R17 retirou causa atribuída apenas ao footer: cabeçalho, cartão criar ausente e fixtures/paginação divergem; precisa revisão nominal. UnitDetail depende wiring C00. Diretório recebe Unavailable; ausência honesta de localização não satisfaz groups.location. GroupDirectorySaveResult pode transformar1success em5 e ignorar skipped; sobrescrita da seleção de membros ainda demanda correção. | Conferir gateway nominal interno da ação e hierarquia/tenant. Provar membros, conflitos e reload conforme o comando. R01/16h: Editar/status, cópia e agenda Locais receberam nomes locais I008; criação20260908031000 já candidata. Sem replay/apply. Não destruir activity_locations nem criar catálogo paralelo. Provedores/composição de Grupos continuam incompletos; cliente não autoriza mutação. |
 | Criar Turma (`groups.create`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Criar/validar/salvar local provado; não declarar CRUD produtivo/remoto. Diretório recebe Unavailable; ausência honesta de localização não satisfaz groups.location. GroupDirectorySaveResult pode transformar1success em5 e ignorar skipped; sobrescrita da seleção de membros ainda demanda correção. | Conferir gateway nominal interno da ação e hierarquia/tenant. Provar membros, conflitos e reload conforme o comando. Provedores/composição de Grupos continuam incompletos; cliente não autoriza mutação. |
@@ -177,7 +187,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Pessoas
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Pessoas / Diretório (`people.list`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Cards/tabela/tabs/filtros/estados, 375–1440 e goldens. Quatro filtros (Atividade/UF/Cidade/Bairro) ainda sem encaminhamento servidor; create/edit bloqueados; links apresentam duas listas para leitura de um tipo. Avatar348f81ab retido por mounted após await. | Provar contrato interno da ação, vínculos/hierarquia, RLS, auditoria, persistência e runtime reais. |
 | Criar Pessoa (`people.create`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Criar/validar/falhar, 200%, teclado e baseline administrativa. Quatro filtros (Atividade/UF/Cidade/Bairro) ainda sem encaminhamento servidor; create/edit bloqueados; links apresentam duas listas para leitura de um tipo. Avatar348f81ab retido por mounted após await. | Provar contrato interno da ação, vínculos/hierarquia, RLS, auditoria, persistência e runtime reais. |
@@ -187,7 +197,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Perfis de acesso
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Perfis de acesso / Lista (`access-profiles.list`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Conferir UI/contrato específico da ação e evidência visual restante; atribuição não deve ser inferida da listagem. | Resolver ACL42501 wrapper invoker→helper e decisão específica sobre definições globais sem uso institucional; não diagnosticar cinco bugs de paginação. |
 | Criar perfil de acesso (`access-profiles.create`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Conferir UI/contrato específico da ação e evidência visual restante; atribuição não deve ser inferida da listagem. | Conferir reader/detail e comando interno próprios, receipts e capability. Não herdar conclusão dos Modelos. |
@@ -198,7 +208,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Modelos de acesso
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Modelos de acesso / Lista (`access-models.list`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Conferir cobertura visual e composição da ação; preservar consumers e epochs implementados. | Runtime Flutter/HTTP, cobertura restante por escopo e pacote produtivo; não repetir correção pré-lookup. |
 | Modelos de acesso / Filtrar (`access-models.filter`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Conferir cobertura visual e composição da ação; preservar consumers e epochs implementados. | Filtros/paginação com runtime HTTP e escopo real; reusar reader corrigido. |
@@ -209,7 +219,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Convites
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Convites / Lista (`invites.list`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Loading/empty/error, filtros, 375–1440 e 200%. | Conferir a implementação e fechar o aceite backend desta ação: Listagem autorizada, filtros server-side e paginação; acesso negado; tenant A/B; SQL/ID/filtro adulterado; minimização e ausência de vazamento. |
 | Criar Convite (`invites.create`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Formulário, validação, indisponível/erro e sem sucesso falso. | Conferir a implementação e fechar o aceite backend desta ação: Sucesso persistido; token único não persistido em claro; sem capability/AAL2; tenant A/B; target/profile/ID adulterado; idempotência, reload e auditoria. |
@@ -219,7 +229,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Atividades
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Atividades / Diretório (`activities.list`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Fechar runtime HTTP/UI e visuais, filtros/paginação/reload. Adapter já está integrado. | Provar runtime real e pacote produtivo; não repetir correção da auditoria v1 já validada. |
 | Criar Atividade / Wizard (`activities.create`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Seis etapas/goldens; depois replay pgTAP, erro antes do command e E2E remoto. | Conferir contrato específico detalhe/comando/avaliação, runtime e persistência. Reusar a fundação v2 existente. Revisão C00 I013: reautorizar depois da espera advisory e usar relógio real antes do replay/receipt; corretivo nominal requerido.42asserts preparados não cobrem revogação durante espera. Replay local I01846/46 já integrado258593e4. Continua aberta a prova com duas conexões reais de revogação/expiração durante espera; não inferir dessa execução. |
@@ -231,7 +241,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Avaliações
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Avaliações / Lançamento (`assessments.entry`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Conferir páginas, estados e goldens restantes da ação; manter guards de fechamento integrados. Configuração de avaliação ainda tem fronteira de save limitada a Exception conforme RED aberto C03r33. | Comparar RPCs consumidos pelo adapter com v2 existente, compatibilidade039, replay e runtime nominal. Não implementar backend do zero por diagnóstico antigo. |
 | Avaliações / Diário (`assessments.gradebook`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Conferir páginas, estados e goldens restantes da ação; manter guards de fechamento integrados. Configuração de avaliação ainda tem fronteira de save limitada a Exception conforme RED aberto C03r33. | Comparar RPCs consumidos pelo adapter com v2 existente, compatibilidade039, replay e runtime nominal. Não implementar backend do zero por diagnóstico antigo. |
@@ -241,7 +251,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Alunos
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Alunos / Acompanhamento (`students.list`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: 22 testes passam em 375–1440, 200%, teclado, offline/unavailable e sem ação falsa; gerenciamento e E2E continuam separados. | Leitura CHILD precisa replay nominal; comandos de vínculo/transferência/edição/revogação exigem seus contratos aprovados. |
 | Alunos / Vincular (`students.link`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Vínculo permitido/negado/erro e reload conforme contrato. Quatro ações não implementadas no recorte C04 final. Permanecem ativas no MVP; adiamento não autorizado pelo Owner. | Leitura CHILD precisa replay nominal; comandos de vínculo/transferência/edição/revogação exigem seus contratos aprovados. |
@@ -251,7 +261,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Assiduidade
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Assiduidade / Dashboard (`attendance.dashboard`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Estados, clock determinístico e dois goldens reais; ainda exigir backend, remoto, tenant A/B e E2E. | Resolver contrato interno específico OQ040/spec048, capability, escopo/DTO e cutover; legado people-based não prova backend039. Depois runtime/reload. |
 | Assiduidade / Nova chamada (`attendance.create`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Criar/cancelar/falhar, contexto correto e foco. | Resolver contrato interno específico OQ040/spec048, capability, escopo/DTO e cutover; legado people-based não prova backend039. Depois runtime/reload. |
@@ -262,7 +272,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Rotina diária
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Rotina diária / Diretório (`daily-routine.list`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Diretório/estados/filtros e matriz visual local provados; backend, remoto e E2E permanecem abertos. Erro inesperado no diretório ainda relatado como RED aberto C03r33. | Materializar reader ou comando nominal interno039 aplicável, revisão/publicação, autorização e reload; não confundir propostaREAD01 com migration. |
 | Criar Rotina (`daily-routine.create`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Criar/validar/falhar local e baseline de formulário; ainda exigir command autorizado, reload remoto e E2E. | Materializar reader ou comando nominal interno039 aplicável, revisão/publicação, autorização e reload; não confundir propostaREAD01 com migration. |
@@ -272,7 +282,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Agenda
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Agenda / Calendário (`agenda.view`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Conferir composição da ação e quatro diferenças golden do view preservado antes de reintegrar; manter reader/controller existentes. Agenda b049b163 permanece WIP preservado; separar rotas existentes e lacunas por ação, sem integrar automaticamente a view READ039 nem certificar seus goldens. | Compatibilizar principal interno039 e executar replay nominal/readers ou comando conforme ação; provar atomicidade, recibos e reload. Entrega por canais de notificação fica fora da spec050. |
 | Agenda / Criar evento (`agenda.create`) | Ativa | Sem registro nominal | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Conferir composição da ação e quatro diferenças golden do view preservado antes de reintegrar; manter reader/controller existentes. Agenda b049b163 permanece WIP preservado; separar rotas existentes e lacunas por ação, sem integrar automaticamente a view READ039 nem certificar seus goldens. | Compatibilizar principal interno039 e executar replay nominal/readers ou comando conforme ação; provar atomicidade, recibos e reload. Entrega por canais de notificação fica fora da spec050. |
@@ -284,7 +294,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Chat
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Chat / Conversas (`chat.list`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Loading/empty/error, 375–1440/200%; não inventar Página X/Y sem contrato remoto. | Fechar RPCs e catálogo/gatewayM03, proveniência/autorização atual, limite de lote decidido, R2 real e negativas/reload; Stream não obrigatório no Chat. |
 | Chat / Abrir conversa (`chat.open`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Abrir/voltar/foco e ordem local verdes; membership revogada, link adulterado e reload remoto continuam abertos. | Fechar RPCs e catálogo/gatewayM03, proveniência/autorização atual, limite de lote decidido, R2 real e negativas/reload; Stream não obrigatório no Chat. |
@@ -296,7 +306,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Avisos / Comunicados
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Avisos / Diretório (`notices.list`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Evidência local em `notice_directory_page_test.dart` e `notice_directory_golden_test.dart`; ainda exigir repository produtivo, autorização, remoto e E2E para `verified`. Falhas visuais de aceitação C07/6Notices-Happens continuam sem prova de fechamento no baseline conjunto; preservadas sem aprovação de golden. | Resolver N01/notice_events e materialização de audiência antes de ativar; replay do pacote, auditoria, sessão/escopo e reload reais. |
 | Criar Aviso (`notices.create`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Criar/validar/falhar e baseline administrativa. Falhas visuais de aceitação C07/6Notices-Happens continuam sem prova de fechamento no baseline conjunto; preservadas sem aprovação de golden. | Resolver N01/notice_events e materialização de audiência antes de ativar; replay do pacote, auditoria, sessão/escopo e reload reais. |
@@ -307,7 +317,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Formulários — editor
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Formulários / Diretório (`forms.list`) | Ativa | Sem registro nominal | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Provar /forms com stack real, paginação/reload/negativas; /dev/forms preserva fixtures. | Conferir compatibilidade da derivação e pacote nominal produtivo; reusar prova117 local sem tratá-la como deploy. |
 | Criar Formulário (`forms.create`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Conferir composição produtiva/DI e aceite da ação; preservar autosave/branching. Delta f84d1dd7 fora de dev tem falha duplicate-dependent a reproduzir. Quatro RED numéricos relatados na r48: editor money10,50 vira10.5 em vez de1050; respostas integer11/max10, decimal10.5/max10 e money1100/max1000 aceitas. Falta controle maxLength no editor. | Executar pacote nominal F-AUTHOR e guards preparados; depois autorização, persistência e reload. Não repetir reader FREAD117 já comprovado localmente. |
@@ -319,7 +329,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Formulários — respostas
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Respostas / Monitor (`forms.monitor`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Conferir monitor completo e gate visual operacional; preservar contratos reais. | I01070 PASS local encerra a espera desse replay específico. Hierarchy/people não implementados; provedor remoto e cadeia real ainda abertos. |
 | Responder Formulário (`forms.respond`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Conferir restante do fluxo respondente real, incluindo ramos/validação; não refazer autosave e navegação. R01/16h: Falta corrigir revisão de enviada: UI/double esperavam draft, SQL preserva submitted; edição não deve gravar no clique inicial. Resposta civil/texto f002fb2a preservada como WIP; últimos ajustes UTC sem teste final. Limites numéricos ainda aceitam valores acima do máximo no repro C02r48. | Provar fonte autorizada, occurrence/participation, segredo anônimo quando aplicável, persistência e reload da ação. R01/16h: C00 confirmou que form_mutate_response valida obrigatórios apenas em p_submit, após substituir respostas; edição submitted precisa negativa e correção forward-only I008, ainda não implementada. |
@@ -330,7 +340,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Formulários — arquivos
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Arquivos de Formulários / Upload (`forms.upload`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: R2 privado, autorização, retomada remota e E2E pendentes. | Não registrar handlerread como upload implementado; legacyStorage permanece dependência concreta. I021 de mídia question-image não implementada: migration/processor/adapter final ausentes. Núcleo upload/reader existente é reaproveitável; consumidor real, negativas e limpeza física/órfãos continuam abertos. |
 | Arquivos de Formulários / Resolver (`forms.resolve-file`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Resolução autorizada/assinada e E2E pendentes. | I01382 SQLintegrado/localPASS; cliente/handler/DI aindaemfila, semprodução. Sessão de mídia deveinvalidar e renovar no segundo login; IDsform_assets mantidos. R2real/reload/negativas/E2E eupload/cutover aindaabertos. I021 de mídia question-image não implementada: migration/processor/adapter final ausentes. Núcleo upload/reader existente é reaproveitável; consumidor real, negativas e limpeza física/órfãos continuam abertos. |
@@ -340,7 +350,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Acontece
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Acontece / Feed (`acontece.feed`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Evidência local em testes/goldens 375–1440, light/dark, 200%, hover, foco e galeria; ainda exigir composição produtiva e E2E para `verified`. R01/16h: 907PASS/61goldenFAIL no executor; sem integração desses lotes ou certificação por delegate. | Gateway/catálogo, sessão/audiência reais, publicação/remoção, R2 master e Stream somente por métrica; negativos/reload. R01/16h: Chat staging/send depende extensão tipada do catálogo e RPC; seis arquivos handler concedidos I007. Feed Moments candidato nominal liberado; root produtivo ainda C00. |
 | Acontece / Criar (`acontece.create`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Criar/validar/falhar, audiência clara e mídia protegida. | Gateway/catálogo, sessão/audiência reais, publicação/remoção, R2 master e Stream somente por métrica; negativos/reload. |
@@ -349,7 +359,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Agora
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Agora / Visualizar (`agora.view`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Evidência local em 375/768/1024/1440, light/dark, 200%, foco, hover, teclado e callbacks honestos; ainda exigir deep link/remoto/E2E para `verified`. R01/16h: 907PASS/61goldenFAIL no executor; sem integração desses lotes ou certificação por delegate. | Provar publicação, recibos e mídia R2 master; StreamHOT até24h quando necessário, encoding/fallback/remoção somente da cópiaHOT; autorização e reload. R01/16h: Chat staging/send depende extensão tipada do catálogo e RPC; seis arquivos handler concedidos I007. Feed Moments candidato nominal liberado; root produtivo ainda C00. |
 | Agora / Criar (`agora.create`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Criar/validar/falhar e mídia protegida. | Provar publicação, recibos e mídia R2 master; StreamHOT até24h quando necessário, encoding/fallback/remoção somente da cópiaHOT; autorização e reload. |
@@ -358,7 +368,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Momentos
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Momentos / Visualizar (`momentos.view`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Abrir/fechar/deep link, foco, 375–1440 e 200%; ainda exigir composição produtiva e E2E para `verified`. C05/r7 relata rota produtiva sempre indisponível e ausência de adapter de feed na sua baseline; reconciliar composição C00 e aceites próprios de cliente. E2E é medição separada. R01/16h: 907PASS/61goldenFAIL no executor; sem integração desses lotes ou certificação por delegate. | Provar composição, R2 progressivo, Stream somente por demanda medida, publicação/remoção, autorização e reload. C05/r7 não encontrou RPC de feed nas fontes inspecionadas; propõe list_visible_moments com cursor e negativas. Candidato requer reconciliação de todas as fontes/identidade vigente e reserva; não declarar backend ausente globalmente só por esta busca. R01/16h: Chat staging/send depende extensão tipada do catálogo e RPC; seis arquivos handler concedidos I007. Feed Moments candidato nominal liberado; root produtivo ainda C00. |
 | Momentos / Criar (`momentos.create`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Criar/validar/falhar com mídia protegida. Consumidor Momentos ainda pode reter cinco originais de25MB; purga/buffer é dívida da frente, não apenas dependência C00. | Provar composição, R2 progressivo, Stream somente por demanda medida, publicação/remoção, autorização e reload. |
@@ -367,7 +377,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Principal — Para Você e perfil
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Principal / Para Você (`principal.for-you`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Concluir aceites das rotas existentes no Superadmin. Não criar apps/principal. Circulares não possui IDs próprios neste inventário: cruzar subtelas com principal_profile e fontes aprovadas antes de declarar cobertura integral. C05/r7 relata rota real sempre indisponível na baseline do executor; existe projeção pura de Comunicacoes, sem repository produtivo. Composição C00 e adapter do consumidor pendentes. R01/16h: Composição produtiva continua ausente/indisponível no corte; profile_about existe em Activities, mas não está ligado ao Perfil Principal. Não afirmar que não há contrato em lugar algum. | Conferir repository/capability/audiência da ação, R2 privado onde há mídia, persistência e reload. |
 | Principal / Perfil-circulares (`principal.profile-view`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Concluir aceites das rotas existentes no Superadmin. Não criar apps/principal. Circulares não possui IDs próprios neste inventário: cruzar subtelas com principal_profile e fontes aprovadas antes de declarar cobertura integral. C05/r7 relata rota real indisponível e dados de preview. ID cobre aba Circulares do Perfil; não fecha diretório/compositor/detalhe/edição em /circulars. Reconciliar lacuna de inventário antes de certificação, sem criar IDs silenciosamente. R01/16h: Composição produtiva continua ausente/indisponível no corte; profile_about existe em Activities, mas não está ligado ao Perfil Principal. Não afirmar que não há contrato em lugar algum. | Conferir repository/capability/audiência da ação, R2 privado onde há mídia, persistência e reload. Contrato de perfil produtivo não localizado por C05 nas fontes inspecionadas; cruzar PRDs/specs/evidências antes de pedir nova regra. Permissões/repository/persistência permanecem abertos. |
@@ -375,7 +385,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Segurança infantil
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Segurança infantil / Lista (`child-safety.list`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Lista/empty/error/unauthorized, 375–1440 e 200%. R01/16h: 55PASS/1goldenFAIL(2,47%,35525px) no executor;13 focais passam, sem aprovação visual nem integração. C00 ainda precisa revisar/integrar pré-requisitos da cadeia; não aplicar somente dois commits finais nem refazer como ausente. | Conferir a implementação e fechar o aceite backend desta ação: Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
 | Segurança infantil / Criança (`child-safety.child`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Abrir/not-found/unauthorized e sem dado de outra criança. R01/16h: 55PASS/1goldenFAIL(2,47%,35525px) no executor;13 focais passam, sem aprovação visual nem integração. C00 ainda precisa revisar/integrar pré-requisitos da cadeia; não aplicar somente dois commits finais nem refazer como ausente. | Conferir a implementação e fechar o aceite backend desta ação: Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
@@ -385,7 +395,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Perfis de cuidado
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Perfis de cuidado / Lista (`health-care.list`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Conferir quatro categorias golden e superfícies aprovadas; não recriar detalhe legado removido por inferência. | Decisões clínicas específicas, gateway/RLS/retencão e mídia; persistência/reload reais ainda abertos. C02r48 mantém qualificação care049, permissões internas e evidências reais abertas; correções locais existentes não certificam CRUD completo. |
 | Criar perfil de cuidado (`health-care.create`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revisar/integrar lote e provar comportamento/visuais completos; preservação de dirty e callbacks locais não certifica fluxo real. | Decisões clínicas específicas, gateway/RLS/retencão e mídia; persistência/reload reais ainda abertos. C02r48 mantém qualificação care049, permissões internas e evidências reais abertas; correções locais existentes não certificam CRUD completo. |
@@ -394,7 +404,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Medicação
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Medicação / Lista (`medication.list`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Conferir visuais/estados restantes mantendo guards já implementados. | Resolver decisões clínicas específicas, contrato nominal, RLS, retenção e evidência; executar persistência/reload e negativas. C02r48 mantém qualificação care049, permissões internas e evidências reais abertas; correções locais existentes não certificam CRUD completo. |
 | Medicação / Criar (`medication.create`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | 39/39funcionais locais; fixturecontext válida não elimina1teste/4comparaçõesgoldenFAIL. | Resolver decisões clínicas específicas, contrato nominal, RLS, retenção e evidência; executar persistência/reload e negativas. C02r48 mantém qualificação care049, permissões internas e evidências reais abertas; correções locais existentes não certificam CRUD completo. |
@@ -404,7 +414,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Importações gerais
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Importações / Hub (`imports.list`) | Adiada | Sim, parcial | Sem registro nominal | Pendente | Adiada | Adiada | Conferir botão visível e mensagem de indisponibilidade; nenhuma chamada de arquivo/job. Não implementar a operação real nesta rodada. R01/16h: 13 testes imports relatados; focais C00 passam no conjunto165PASS/4falhas estáticas alheias. Export/import real continua pós-MVP; goldens antigos divergentes não aprovados. | Operação real fora do MVP. Preservar legado sem executar, remover ou habilitar jobs. |
 | Importações / Nova (`imports.create`) | Adiada | Sim, parcial | Sem registro nominal | Pendente | Adiada | Adiada | Conferir botão visível e mensagem de indisponibilidade; nenhuma chamada de arquivo/job. Não implementar a operação real nesta rodada. R01/16h: 13 testes imports relatados; focais C00 passam no conjunto165PASS/4falhas estáticas alheias. Export/import real continua pós-MVP; goldens antigos divergentes não aprovados. | Operação real fora do MVP. Preservar legado sem executar, remover ou habilitar jobs. |
@@ -416,7 +426,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Arquivos de perfil
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Arquivos de perfil / Importar (`profile-files.import`) | Adiada | Sim, parcial | Sem registro nominal | Concluído (indisponibilidade adiada) | Adiada | Adiada | Verificado o aceite de adiamento: botão/menu visível, feedback Indisponível nesta etapa e ausência de callback/picker/job/persistência na composição normal.24/24 C00; analyzer3limpo. Não certifica operação real. | Operação real fora do MVP. Preservar legado sem executar, remover ou habilitar jobs. R01/16h: Continuam adiadas, sem job/RPC/persistência; visibilidade honesta é critério do cliente. |
 | Arquivos de perfil / Preview (`profile-files.preview`) | Adiada | Sim, parcial | Sem registro nominal | Pendente | Adiada | Adiada | Entrada comum de arquivos corrigida e testada24/24 C00. Sem promoção nominal de preview/confirm/status/download nesta revisão; operação real continua adiada. | Operação real fora do MVP. Preservar legado sem executar, remover ou habilitar jobs. R01/16h: Continuam adiadas, sem job/RPC/persistência; visibilidade honesta é critério do cliente. |
@@ -427,7 +437,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Auditoria
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Auditoria / Lista (`audit.list`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Lista/empty/error/paginação, 375–1440 e 200%. R01/16h: C03r11:50 testes funcionais passam;6 goldens divergem4,86–14,84%;2 cenários auth_session passam. DTO minimiza dados; não significa fluxo remoto pronto. | Conferir transição dos wrappers audit_*_for_superadmin ainda people-based para principal039; sanitização server-side, runtime e reload. R01/16h: Helper legado current_person_id ainda impede afirmar cutover interno; export permanece adiada e sem efeitos. C00 confirmou estático: readersPeople sem039/session, NULLlimit e exportSQLcliente aindaexposto; candidato localI014C03 autorizado20260908230039, semruntime/remoto. Adapterdeferido nãofechaRPCdireta. Audit8b4dfb6a+89949f30 ainda candidato: I019 falhou antes do SQL, I020 não iniciada e lease devolvida sem consumo. Runtime0/145; nova lease necessária. |
 | Auditoria / Filtrar (`audit.filter`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Busca/filtros/picker canônico/limpar/sem resultados. R01/16h: C03r11:50 testes funcionais passam;6 goldens divergem4,86–14,84%;2 cenários auth_session passam. DTO minimiza dados; não significa fluxo remoto pronto. | Conferir transição dos wrappers audit_*_for_superadmin ainda people-based para principal039; sanitização server-side, runtime e reload. R01/16h: Helper legado current_person_id ainda impede afirmar cutover interno; export permanece adiada e sem efeitos. C00 confirmou estático: readersPeople sem039/session, NULLlimit e exportSQLcliente aindaexposto; candidato localI014C03 autorizado20260908230039, semruntime/remoto. Adapterdeferido nãofechaRPCdireta. Audit8b4dfb6a+89949f30 ainda candidato: I019 falhou antes do SQL, I020 não iniciada e lease devolvida sem consumo. Runtime0/145; nova lease necessária. |
@@ -436,7 +446,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Suporte
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Suporte / Criar (`support.create`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Criar/validar/falhar sem sucesso falso, 375–1440. | Conferir OQ028 de status, contrato interno e persistência dos comandos específicos. |
 | Suporte / Tabela (`support.table`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Lista/empty/error/paginação, 100–200% e visual. | Conferir OQ028 de status, contrato interno e persistência dos comandos específicos. |
@@ -447,7 +457,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Minha conta
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Conta / Perfil (`account.profile`) | Ativa | Sem registro nominal | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Integrar perfil/autorização/mídia, executar cross-tenant, remoto e goldens. | Conferir a implementação e fechar o aceite backend desta ação: Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
 | Conta / Configurações (`account.settings`) | Ativa | Sim, parcial | N/A | Pendente | N/A | N/A | Fechar visual/acessibilidade e lifecycle restantes; preservar persistência local implementada. | Preferência local do cliente; nenhuma tabela, RPC ou persistência remota pertence a esta ação. |
@@ -458,7 +468,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Catálogo
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Catálogo / Lista (`catalog.list`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Host/estado/fallback e relatório correspondente ao snapshot. R01/16h: C03r12:host6+rotas4 e ferramentas59 passam; sync acusa14 fingerprints divergentes. Não regenerar hashes para ocultar falha; revisão do Catálogo fora do app permitida somente como dependência. | Conferir a implementação e fechar o aceite backend desta ação: Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. R01/16h: N/A proposto pelo executor é específico de Supabase. Hosting/CSP/acesso/publicação ainda exigem avaliação do provedor; denominador BE212 preservado até reconciliação. |
 | Catálogo / Validar (`catalog.validate`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: 23 testes do sincronizador, índice e fronteiras verdes; diagnóstico restante identificado sem ser ocultado. R01/16h: C03r12:host6+rotas4 e ferramentas59 passam; sync acusa14 fingerprints divergentes. Não regenerar hashes para ocultar falha; revisão do Catálogo fora do app permitida somente como dependência. | Conferir a implementação e fechar o aceite backend desta ação: RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. R01/16h: N/A proposto pelo executor é específico de Supabase. Hosting/CSP/acesso/publicação ainda exigem avaliação do provedor; denominador BE212 preservado até reconciliação. |
@@ -467,7 +477,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Planos
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Planos / Diretório (`plans.list`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar ação aprovada e visual; não ampliar para cobrança automática ou atribuição inferida. Erro inesperado no diretório continua critério aberto C03r33. | Resolver conflito específico de principal People da051 versus interno039; reader/command nominal e runtime. Não exigir aprovação geral do catálogo já aprovado. |
 | Criar Plano (`plans.create`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar ação aprovada e visual; não ampliar para cobrança automática ou atribuição inferida. Erro inesperado no diretório continua critério aberto C03r33. | Resolver conflito específico de principal People da051 versus interno039; reader/command nominal e runtime. Não exigir aprovação geral do catálogo já aprovado. |
@@ -477,7 +487,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Cardápios
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Cardápios / Diretório (`meal-plans.list`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Conferir UI/negativas visuais restantes da ação preservando versão, estado publicado e retry implementados. | Conferir autoridade do legado versus039, persistência/reload reais, resposta perdida e mídia R2 por finalidade. |
 | Criar Cardápio (`meal-plans.create`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Conferir UI/negativas visuais restantes da ação preservando versão, estado publicado e retry implementados. | Conferir autoridade do legado versus039, persistência/reload reais, resposta perdida e mídia R2 por finalidade. |
@@ -488,7 +498,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Usuários internos
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Usuários internos / Lista (`internal-users.list`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Executar Flutter→HTTP real e fechar visuais/paginação/PII restantes; não implementar READ novamente. | Provar runtime e pacote produtivo compatível; READ local não certifica create/edit/suspend. |
 | Criar usuário interno (`internal-users.create`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Criar/convidar/negar/falhar com capability e AAL conforme ADR 0019. | Conferir contrato nominal específico do comando, Auth interno, capability, concorrência e auditoria; executar runtime e reload. |
@@ -498,7 +508,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Páginas de erro
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Erros / 403 (`errors.403`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Rota direta, sem dado prévio, teclado e visual aprovado. | Conferir a implementação e fechar o aceite backend desta ação: Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
 | Erros / 404 (`errors.404`) | Ativa | Sim, parcial | Sem registro nominal | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Rota inexistente, voltar/início, foco e 200%. | Conferir a implementação e fechar o aceite backend desta ação: Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
@@ -509,7 +519,7 @@ Cada ação possui critério próprio. Nos IDs individuais, “Sim” equivale a
 
 ### Locais
 
-| Tela / ação | Escopo | FE examinado | BE examinado | FE concluído | BE concluído | Integração real / E2E | Falta no cliente | Falta no backend |
+| Tela / ação | Escopo | Revisão FE (não é aprovação) | Revisão BE (não é aprovação) | FE aprovado | BE aprovado | Integração real / E2E | Falta no cliente | Falta no backend |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Locais / Diretório (`locations.list`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Conectar DI/rota ao contrato nominal depois dos gates; reusar reader/painéis. R01/16h: 18form/7Locais/9brand/4fences relatados; conjunto410PASS/8goldenFAIL. R17 retirou causa atribuída apenas ao footer: cabeçalho, cartão criar ausente e fixtures/paginação divergem; precisa revisão nominal. UnitDetail depende wiring C00. PróximoC00: rotas/DI, hints separados create/update/status/copy/schedule eURL apóscópia; visuais/aceite específico aindaabertos. Pacote seletivo Locais já integrado no histórico; ligação de superfície/router e capacidades por ação continuam pendentes. Agenda semanal não equivale a reservas datadas; não ampliar autorização do cliente por canCreate. | Revisar snapshot remoto nominal e compatibilidade de helpers; executar script estático diretamente e depois replay SQL nominal. Não atualizar pins para mascarar drift. C04/r14 retirou risco AAL2 do helper central pela corretiva20260901200206; fixture Owner-only e replay do catálogo permanecem necessários. Não equivale a runtime remoto verificado. R01/16h: Editar/status, cópia e agenda Locais receberam nomes locais I008; criação20260908031000 já candidata. Sem replay/apply. Não destruir activity_locations nem criar catálogo paralelo. Cadeia de provedores/SQL candidato requer revisão e runtime nominal; perfil de capacidade precisa backend real. |
 | Local / Criar e editar (`locations.create-edit`) | Ativa | Sim, parcial | Sim, parcial | Pendente | Pendente | Não exercitada / não concluída | Revalidar o aceite específico desta ação: Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. R01/16h: 18form/7Locais/9brand/4fences relatados; conjunto410PASS/8goldenFAIL. R17 retirou causa atribuída apenas ao footer: cabeçalho, cartão criar ausente e fixtures/paginação divergem; precisa revisão nominal. UnitDetail depende wiring C00. PróximoC00: rotas/DI, hints separados create/update/status/copy/schedule eURL apóscópia; visuais/aceite específico aindaabertos. Pacote seletivo Locais já integrado no histórico; ligação de superfície/router e capacidades por ação continuam pendentes. Agenda semanal não equivale a reservas datadas; não ampliar autorização do cliente por canCreate. | Revisar snapshot remoto nominal e compatibilidade de helpers; executar script estático diretamente e depois replay SQL nominal. Não atualizar pins para mascarar drift. C04/r14 retirou risco AAL2 do helper central: corretiva20260901200206 aceita AAL1. Preservar preflight de capabilities locations.read/create Owner-only; candidato não as semeia. Edição/status propostos aguardam reserva nominal e replay, sem apagar catálogo para satisfazer preflight. R01/16h: Editar/status, cópia e agenda Locais receberam nomes locais I008; criação20260908031000 já candidata. Sem replay/apply. Não destruir activity_locations nem criar catálogo paralelo. Cadeia de provedores/SQL candidato requer revisão e runtime nominal; perfil de capacidade precisa backend real. |

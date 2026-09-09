@@ -3258,12 +3258,18 @@
   },
   "operational_precedence": "closure, tracker_sync and current_shared_file_reservations supersede all timestamped historical checkpoint/reservation fields; no old R01 instruction is executable",
   "measurement_dashboard": {
-    "at": "2026-09-09T09:06:23-03:00",
+    "at": "2026-09-09T09:24:09-03:00",
     "path": "reports/R01-painel-por-tela.md",
     "data": "reports/R01-painel-por-tela.json",
     "generator": "build-stage2-dashboard.py",
     "new_certifications": false,
-    "measurement_unit": "action_id; any named criterion examined, not all tests; completion separately"
+    "measurement_unit": "action_id; any named criterion examined, not all tests; completion separately",
+    "percentage_rule": "approval of all layer criteria per active action; no partial-audit percentage",
+    "labels": [
+      "FE aprovado nos aceites",
+      "BE aprovado nos aceites",
+      "Integração E2E aprovada"
+    ]
   },
   "original_checkout_reconciliation": {
     "status": "Owner scope answer pending",
@@ -3283,5 +3289,22 @@
     "native_status": "idle",
     "last_completed_at": "2026-09-09T08:55:26-03:00",
     "role": "preservation only; no product percentage change"
+  },
+  "current_approval": {
+    "at": "2026-09-09T09:24:09-03:00",
+    "frontend": {
+      "approved": 0,
+      "applicable_active": 194
+    },
+    "backend": {
+      "approved": 0,
+      "applicable_active": 187
+    },
+    "e2e": {
+      "approved": 0,
+      "applicable_active": 187
+    },
+    "no_new_tests": true,
+    "no_implementation_downgrade": true
   }
 }

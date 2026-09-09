@@ -25,64 +25,76 @@ Sincronizados **C01r51, C02r48, C03r33, C04r61, C05final, C06r53 e C07r12**. Fon
 
 - **219 ações**:194 ativas (189mvp+5shellcliente),22adiadas e3gates formais. Backend212 aplicáveis/7não aplicáveis; E2E187 ativas. IDs são ações, não quantidades de testes.
 - **Conclusão FE2/219**, exclusivamente `profile-files.import` e `profile-files.export`, ambas adiadas com indisponibilidade honesta; **FE ativa0/194**, **BE0/212**, **E2E0/187**. Nenhuma promoção nesta consolidação. Zero certificado não significa zero implementado.
-- Cobertura de auditoria parcial, IDs/critérios/fontes e comparação por conversa: [métricas do fechamento](etapa-2-operacao/reports/R01-fechamento-metricas.json). Auditoria inclui falhas e análise estática; não é percentual de implementação.
+- **Percentual vigente: aprovação nos aceites**, conforme correção do Owner em09/09. A ação só conta após aprovação de todos os critérios aplicáveis da camada. [Painel corrigido por frente e tela](etapa-2-operacao/reports/R01-painel-por-tela.md). Contagens de auditoria parcial permanecem apenas históricas, sem compor esse percentual.
 - `pending-verification` preserva implementação existente. FE/BE podem concluir seus critérios próprios separadamente; E2E requer UI normal+backendreal+persistência/reload+negativas. Fixtures e `/dev` não certificam E2E.
 - [Relatório e fila retida](etapa-2-operacao/reports/R01-fechamento-20260909.md):33commits de executores integrados seletivamente nesta manhã e1correção de teste C00; candidatos/WIP permanecem preservados com motivo. Sem deploy/aplicação remota; localhost encerrado.
 - Janela Owner termina16/09/2026 12:20 BRT. ETA total permanece desconhecida: provedores/composição, mídia e critérios reais ainda determinam o término. Nenhuma nova atribuição R02 antes do alinhamento solicitado.
 
 <!-- stage2-dashboard:start -->
-## Painel por tela — exame e conclusão separados
+## Painel por tela — aprovação nos aceites
 
-Cálculo conferido em **2026-09-09T09:03:41-03:00** a partir de IDs únicos e evidências de R01. Sem novos testes ou certificações nesta apresentação. [IDs, denominadores e faltas por ação](etapa-2-operacao/reports/R01-painel-por-tela.json).
+Cálculo conferido em **2026-09-09T09:24:09-03:00** a partir de IDs únicos e evidências de R01. Sem novos testes ou certificações nesta apresentação. [IDs, denominadores e faltas por ação](etapa-2-operacao/reports/R01-painel-por-tela.json).
 
-**Examinado = pelo menos um critério revisado ou testado**, inclusive com falha; não significa todos os testes executados. O BE inclui análise estática e20ações com SQL local dentro das63 examinadas. **Integração exercitada** conta tentativas registradas pela UI normal com backend real, mesmo se falharem; não é merge de Git. No registro atual,0/187. Ausência de registro não prova ausência de código ou que ninguém nunca abriu a tela.
+**Regra corrigida pelo Owner em 09/09: percentual = ações aprovadas nos aceites / ações ativas aplicáveis.** Uma ação só entra no numerador quando todos os seus critérios aplicáveis daquela camada têm evidência de aprovação. 100% significa aprovação de todas as ações do recorte; falha, revisão estática isolada, teste apenas parcial ou falta de evidência não aprovam a ação. Resultados parciais continuam registrados como evidência, sem aumentar esse percentual. Não há percentual de casos de teste aprovados: não existe um plano global de testes com denominador completo que permita calculá-lo.
 
-**FE concluído** = todos os critérios próprios do cliente. **BE concluído** = todos os critérios e provedores próprios do backend. **E2E concluído** = UI normal + backend real + persistência/reload + negativas aplicáveis. E2E é o nome da cadeia completa, não um segundo nome para concluir uma camada isolada.
+**FE aprovado** = todos os critérios próprios do cliente comprovados; independe da conclusão do backend. **BE aprovado** = todos os critérios e provedores próprios do backend comprovados; independe da UI. **E2E aprovado** = UI normal + backend real + persistência/reload + negativas aplicáveis comprovados. Essas aprovações correspondem à conclusão da respectiva camada; não duplicamos colunas com o mesmo cálculo.
 
-¹ Colunas de conclusão mostram apenas ações **ativas**: FE0/194, BE0/187, E2E0/187. A auditoria mantém os denominadores totais FE219 eBE212 para comparação com o fechamento. Há22adiadas e3gates formais separados;7açõesN/A ao backend. As únicas2certificações FE históricas são a indisponibilidade de `profile-files.import/export`, ambas adiadas; não aumentam a conclusão ativa. N/A não é0%; Adiado não é concluído.
+Os percentuais atuais usam somente ações **ativas**: FE **0/194 — 0%**, BE **0/187 — 0%**, E2E **0/187 — 0%**. Isso significa que a aprovação completa das ações ativas ainda não está registrada; não significa que todos os testes falharam ou que nada foi implementado. As contagens antigas de revisão (198 ações FE e63 BE) ficam históricas e não representam aprovação. Há22adiadas e3gates formais separados;7açõesN/A ao backend. As únicas2certificações FE históricas são a indisponibilidade de `profile-files.import/export`, ambas adiadas; não aumentam a aprovação ativa. N/A não é0%; Adiado não é concluído.
 
 Uma linha agrega uma família de telas/ações. São **38 famílias e219ações/superfícies**, não38testes. O detalhe de cada ação, inclusive o que falta, está no [painel completo](etapa-2-operacao/reports/R01-painel-por-tela.md) e na matriz oficial abaixo. Os contadores não medem percentual de código incorporado em Git: commits selecionados/publicação estão nos manifestos de integração; WIP/candidatos preservados podem ainda estar fora de dev.
 
-| Tela / módulo | FE examinado | BE examinado | Integração exercitada | FE concluído¹ | BE concluído¹ | E2E concluído¹ |
-| --- | --- | --- | --- | --- | --- | --- |
-| Entrada e recuperação | 4/5 — **80,0%** | 0/5 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Navegação e contexto | 1/5 — **20,0%** | N/A | N/A | 0/5 — **0,0%** | N/A | N/A |
-| Instituições | 13/13 — **100,0%** | 6/13 — **46,2%** | 0/11 — **0,0%** | 0/11 — **0,0%** | 0/11 — **0,0%** | 0/11 — **0,0%** |
-| Unidades | 13/13 — **100,0%** | 5/13 — **38,5%** | 0/10 — **0,0%** | 0/10 — **0,0%** | 0/10 — **0,0%** | 0/10 — **0,0%** |
-| Turmas | 7/7 — **100,0%** | 4/7 — **57,1%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Pessoas | 5/5 — **100,0%** | 4/5 — **80,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Perfis de acesso | 5/6 — **83,3%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Modelos de acesso | 6/6 — **100,0%** | 3/6 — **50,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Convites | 5/5 — **100,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Atividades | 7/7 — **100,0%** | 5/7 — **71,4%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
-| Avaliações | 5/5 — **100,0%** | 5/5 — **100,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Alunos | 5/5 — **100,0%** | 1/5 — **20,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Assiduidade | 6/6 — **100,0%** | 0/6 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Rotina diária | 5/5 — **100,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Agenda | 3/7 — **42,9%** | 1/7 — **14,3%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
-| Chat | 7/7 — **100,0%** | 1/7 — **14,3%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
-| Avisos / Comunicados | 6/6 — **100,0%** | 1/6 — **16,7%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Formulários — editor | 5/7 — **71,4%** | 3/7 — **42,9%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
-| Formulários — respostas | 6/6 — **100,0%** | 5/6 — **83,3%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Formulários — arquivos | 5/5 — **100,0%** | 5/5 — **100,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Acontece | 4/4 — **100,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Agora | 4/4 — **100,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Momentos | 4/4 — **100,0%** | 1/4 — **25,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Principal — Para Você e perfil | 3/3 — **100,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
-| Segurança infantil | 4/5 — **80,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Perfis de cuidado | 4/4 — **100,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Medicação | 3/5 — **60,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Importações gerais | 7/7 — **100,0%** | 0/7 — **0,0%** | Adiado | Adiado | Adiado | Adiado |
-| Arquivos de perfil | 6/6 — **100,0%** | 0/6 — **0,0%** | Adiado | Adiado | Adiado | Adiado |
-| Auditoria | 4/4 — **100,0%** | 4/4 — **100,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
-| Suporte | 6/6 — **100,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Minha conta | 3/6 — **50,0%** | 0/4 — **0,0%** | 0/3 — **0,0%** | 0/5 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
-| Catálogo | 3/4 — **75,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Planos | 4/5 — **80,0%** | 5/5 — **100,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Cardápios | 6/6 — **100,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Usuários internos | 4/5 — **80,0%** | 0/5 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Páginas de erro | 6/6 — **100,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Locais | 4/4 — **100,0%** | 4/4 — **100,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+### Aprovação por frente
+
+| Frente | FE aprovado nos aceites | BE aprovado nos aceites | Integração E2E aprovada |
+| --- | --- | --- | --- |
+| C01 | 0/41 — **0,0%** | 0/34 — **0,0%** | 0/34 — **0,0%** |
+| C02 | 0/32 — **0,0%** | 0/32 — **0,0%** | 0/32 — **0,0%** |
+| C03 | 0/53 — **0,0%** | 0/53 — **0,0%** | 0/53 — **0,0%** |
+| C04 | 0/40 — **0,0%** | 0/40 — **0,0%** | 0/40 — **0,0%** |
+| C05 | 0/28 — **0,0%** | 0/28 — **0,0%** | 0/28 — **0,0%** |
+
+### Aprovação por tela
+
+| Tela / módulo | FE aprovado nos aceites | BE aprovado nos aceites | Integração E2E aprovada |
+| --- | --- | --- | --- |
+| Entrada e recuperação | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Navegação e contexto | 0/5 — **0,0%** | N/A | N/A |
+| Instituições | 0/11 — **0,0%** | 0/11 — **0,0%** | 0/11 — **0,0%** |
+| Unidades | 0/10 — **0,0%** | 0/10 — **0,0%** | 0/10 — **0,0%** |
+| Turmas | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Pessoas | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Perfis de acesso | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Modelos de acesso | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Convites | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Atividades | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
+| Avaliações | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Alunos | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Assiduidade | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Rotina diária | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Agenda | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
+| Chat | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
+| Avisos / Comunicados | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Formulários — editor | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
+| Formulários — respostas | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Formulários — arquivos | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Acontece | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Agora | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Momentos | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Principal — Para Você e perfil | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
+| Segurança infantil | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Perfis de cuidado | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Medicação | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Importações gerais | Adiado | Adiado | Adiado |
+| Arquivos de perfil | Adiado | Adiado | Adiado |
+| Auditoria | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
+| Suporte | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Minha conta | 0/5 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
+| Catálogo | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Planos | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Cardápios | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Usuários internos | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Páginas de erro | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Locais | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
 
 ### Entregas parciais e trabalho restante
 
