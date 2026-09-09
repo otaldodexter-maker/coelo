@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -47,6 +48,13 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
   var _loading = true;
   var _responseVersion = 0;
   var _generation = 0;
+
+  /// Aviso do hospedeiro que sobrevive a releitura.
+  ///
+  /// Um conflito de versao troca o leitor inteiro por um recarregado, entao a
+  /// explicacao nao pode morar dentro do leitor: quem responde precisa
+  /// continuar vendo por que a resposta anterior nao valeu.
+  String? _conflictNotice;
 
   @override
   void initState() {
@@ -129,6 +137,16 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
           _error = error;
           _loading = false;
         });
+      }
+      rethrow;
+    } on CircularVersionConflict {
+      // A resposta ficou obsoleta: releitura autorizada em vez de manter em
+      // tela um conteudo e uma versao que o servidor ja recusou.
+      if (mounted && generation == _generation) {
+        _conflictNotice =
+            'Esta circular foi atualizada enquanto você respondia. '
+            'Confira o conteúdo recarregado e responda novamente.';
+        unawaited(_load());
       }
       rethrow;
     }
@@ -234,7 +252,7 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
         ),
       );
     }
-    return PrincipalCircularReader(
+    final reader = PrincipalCircularReader(
       key: ValueKey(_generation),
       detail: _detail!,
       initialAnswers: _detail!.initialAnswers,
@@ -242,6 +260,24 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
       mediaRepository: widget.mediaRepository,
       embedded: widget.embedded,
     );
+    if (_conflictNotice case final notice?) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            key: const Key('circular-response-conflict-notice'),
+            color: Theme.of(context).colorScheme.errorContainer,
+            padding: const EdgeInsets.all(CoeloSpacing.space3),
+            child: Text(
+              notice,
+              style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
+            ),
+          ),
+          Expanded(child: reader),
+        ],
+      );
+    }
+    return reader;
   }
 }
 
