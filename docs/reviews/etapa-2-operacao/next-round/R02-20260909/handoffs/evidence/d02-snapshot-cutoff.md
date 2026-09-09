@@ -1,19 +1,22 @@
 ---
-title: "D02 — snapshot de corte em preparação"
+title: "D02 — reporte do corte de 16:30"
 source: "prompts/D02.md; escopo.json canônico; handoff D02 r29; assignment D00 r35; commits e provas locais"
-status: "draft-before-1630"
+status: "reported; consolidation-only-until-1715"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
 
-Última apuração: 16:25 BRT. Não é reporte futuro executado nem fechamento.
+Reporte do corte materializado às 16:32 BRT. O snapshot estava publicado
+antes do corte; uma falha de quoting impediu a primeira atualização de status.
+Após 16:30, somente correções concretas da consolidação até 17:15.
 Rodada E2-R02-20260909, executor D02, thread
 `01a086d7-ffa5-7593-99e7-0c2729e0ce59`, root GPT-6 (variante/esforço não
 expostos), três filhos gpt-5.6-sol médio. Worktree
 `C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d02-estrutura`, branch
 `codex/e2-r02-d02-estrutura`, baseline
 `56eb3f19de23e364ea5f7e4f73a6fbd9a851e230`. HEAD/remoto apurados antes desta atualização documental:
-d5e87e1da92de998233f176e01d2b29d138d2a8f, iguais. Diff rastreado e staged
+42a3647504eaae3ff00dd090fe107b96665fcc02, iguais em consulta local e
+ls-remote de 16:27:54 BRT. Diff rastreado e staged
 vazios; stash vazio. Os 23 auxiliares locais constam de
 [d02-retained-local-files.json](d02-retained-local-files.json).
 A integração em dev pertence exclusivamente ao D00.
@@ -93,7 +96,15 @@ fechando as retenções conhecidas do painel r30. Isso não injeta o painel nem 
 contratos de Group/Activity. Readers atuais não fornecem binding canônico
 suficiente, e save+reserva exige transação backend única.
 
-Às16:30 será emitido o reporte datado; depois, somente correções concretas
-da consolidação até17:15. Sem retomada noturna ou no dia seguinte.
+Reporte do corte emitido. Somente correções concretas da consolidação
+até 17:15. Sem retomada noturna ou no dia seguinte.
 Todos os filhos terminaram suas subtarefas e liberaram arquivos/runners
 nesta apuração; podem receber apenas causas concretas ainda dentro do corte.
+
+Atualização D00 r36: painel 4ac/9cad/d2f integrado como
+2252d508/c8edcd3f/c1b2a076, com retenções r30 fechadas. Continua sem
+consumidor real. Próxima integração concreta: cd03b9e30 (seção de Locais nos
+formulários), 1345af29f (quatro rotas e composição) e 42ad0467 (segunda
+ativação da cópia), ainda sem equivalentes em dev na apuração de 16:28.
+Estimativa restante não fechada: depende de conflitos reais da base central
+e de contratos nominais de bindings, mídia e pacote remoto.
