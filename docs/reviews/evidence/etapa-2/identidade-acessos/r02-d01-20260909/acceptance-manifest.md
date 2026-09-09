@@ -18,7 +18,7 @@ Ambiente local Windows, Flutter3.44.2/Dart3.12.2, execução Flutter serializada
 dentro da frente D01. Registros de D00 na base integrada são recibos distintos;
 não aumentam os testes únicos desta campanha.
 
-## Plano e execução até 15:42 BRT
+## Plano e execução até 15:48 BRT
 
 | Grupo de casos únicos | P | F | B | S | U | Recibo |
 |---|---:|---:|---:|---:|---:|---|
@@ -36,8 +36,8 @@ não aumentam os testes únicos desta campanha.
 | Corrida de escrita/remoção e recuperação após erro |2|0|0|0|0|`recovery-cold-storage-green.txt`|
 | Gateway: replay/seed/erros síncrono e assíncrono de limpeza |5|0|0|0|0|`recovery-persistence-gateway-review.md` e logs referenciados|
 | Retry após falha transitória de purge |1|0|0|0|0|`recovery-persistence-retry-green.txt`, novo ID apenas|
-| Cold restart após falha de storage: confinamento cliente + servidor |0|1|0|0|0|RED diagnóstico em `recovery-persistence-cold-failure-red.txt`; prova corretiva real pendente|
-| **Total do plano local153** |**152**|**1**|**0**|**0**|**0**|Sem somar variantes/reruns|
+| Cold restart após falha de storage: confinamento cliente + servidor |1|0|0|0|0|`integrated-auth-boundary-46-pass.log`; SDK/scope/rota/RPC/logout reais, D00r18|
+| **Total do plano local153** |**153**|**0**|**0**|**0**|**0**|Sem somar variantes/reruns|
 
 Resultado histórico de motion e erros iniciais de compilação do harness estão
 preservados nos logs; asserções corrigidas e mesmo ID final PASS, sem somar
@@ -45,8 +45,8 @@ tentativas. As três falhas visuais anteriores de Login foram resolvidas por
 geometria do componente. Os onze PNGs aprovados permanecem inalterados.
 Executado153/153 neste checkpoint; bloqueados0 e não executados0 permanecem
 explícitos. Estes números não são avanço FE/BE/E2E nem porcentagem de produto.
-Taxa aprovada152/153=99,35%; falha1/153=0,65%; execução do plano
-153/153=100% e aprovação152/153=99,35%. A espera de fixture foi resolvida pelo ciclo assíncrono real
+Taxa aprovada153/153=100%; falha0/153=0%; execução do plano
+153/153=100% e aprovação153/153=100%. A espera de fixture foi resolvida pelo ciclo assíncrono real
 de criação/dispose do SDK; a expectativa incorreta de mensagem foi corrigida
 para o feedback específico do contrato. Resultados intermediários estão
 preservados e pertencem aos mesmos dois IDs finais verdes.
@@ -171,3 +171,10 @@ Recibo D00 assignment r14/session29307, migration8500 integrada36e8e4c0b:48migra
 ## Reconciliação B4 — 15:42 BRT
 
 Os quatro IDs browser passaram na aba própria829820445 e builddebug estático do mesmo harness, após release D00r15. Recibo browser-b4-static-receipt.md: credencialinválida, persistênciaoff/on comreload, saída+reload. Plano cliente atual P152/F1/B0/S0/U0. A falha restante é o discriminante coldstorage, que depende da campanha real corretiva; não foi apagada pela aprovação browser. Proposta de aceite FE3/4 (login/recover/logout), resetpendente; centralD00 ainda precisa reconciliar essa proposta. BE0/4 e E2E0/4 permanecem. Servidor e aba próprios encerrados, porta8921zero.
+## Gate integrado real fechado — 15:48 BRT
+
+D00r18/session78850 exit0: **P46/F0/B0/S0/U0**,36TAP+9HTTP+1cold composto.49SQLaplicadas até173100, candidate368c0add1 integrado9e7e23f18. Logcopiado sanitizado/LF em integrated-auth-boundary-46-pass.log, SHA256E2255866F0A43E0F1C0E98D7C0AD1A5B0DCDBE3BC9B46001816565BD6E038A51. D00confirmoucleanupzero pelo wrapper e inventárioindependente. Resultados100%aprovados/executados nesta campanha46; não somar ao plano153 como novosIDs, pois cold1 écompartilhado e rerunTAPnãoétesteextra.
+
+O antigo35P1F10B foi substituído pelo mesmo universo46 com o successor. Motivo auditado corrigido e verificado também no resolver; nenhum filtro enfraquecido. Coldstoragefalho agora foi negado por backend real, com SDK reinicializado, scope/rota reais e logout. O diagnóstico antigo permanece evidência histórica opt-in, não falha atual do payload corrigido.
+
+Plano cliente153 agora153PASS/0FAIL/0BLOCKED/0SKIP/0UNEXECUTED. Proposta de reconciliação FE4/4 (login/recover/reset/logout); D00 escritorcentral incorpora matrizes. **BE0/4 e E2E0/4 no critério remoto permanecem**: os46 comprovam integração local real, sem certificar ambienteprodução/SMTPrealremoto. Próximo gate independente é transporteCLI/ledger do pacotev2; qualquer revisão dos delimitadoresSQLexige nova prova do payload final, sem repetir46enquanto fonte ficarigual.
