@@ -67,6 +67,7 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
   Object? _threadError;
   var _sending = false;
   var _loadingMore = false;
+  var _loadingOlder = false;
   String? _pendingIdempotencyKey;
   String? _pendingBody;
 
@@ -95,6 +96,7 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
     _threadError = null;
     _sending = false;
     _loadingMore = false;
+    _loadingOlder = false;
     _pendingIdempotencyKey = null;
     _pendingBody = null;
     _inboxState = const ChatInboxState.loading();
@@ -176,6 +178,48 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
       }
     } finally {
       if (mounted) setState(() => _loadingMore = false);
+    }
+  }
+
+  /// A thread chega mais nova primeiro; a continuação acrescenta as antigas ao
+  /// fim da lista, que é o topo visual por causa do `reverse: true`.
+  Future<void> _loadOlderMessages() async {
+    final conversation = _selected;
+    final current = _thread;
+    final cursor = current?.nextCursor;
+    if (conversation == null || current == null || cursor == null || _loadingOlder) return;
+    final generation = _threadGeneration;
+    final requested = _repository;
+    setState(() => _loadingOlder = true);
+    try {
+      final older = await requested.fetchThread(
+        ChatThreadQuery(
+          conversationId: conversation.id,
+          cursor: cursor,
+          pageSize: _pageSize,
+        ),
+      );
+      if (!_isCurrentThread(generation, requested, conversation.id)) return;
+      setState(
+        () => _thread = ChatThreadPage(
+          items: [...current.items, ...older.items],
+          nextCursor: older.nextCursor,
+          totalCount: older.totalCount,
+          hasMore: older.hasMore,
+        ),
+      );
+    } on ChatUnauthorizedException catch (error) {
+      if (_isCurrentThread(generation, requested, conversation.id)) _denyAccess(error);
+    } on ChatOfflineException {
+      if (_isCurrentThread(generation, requested, conversation.id)) {
+        _notify('Sem conexão. Não foi possível carregar mensagens anteriores.');
+      }
+    } catch (_) {
+      if (_isCurrentThread(generation, requested, conversation.id)) {
+        _notify('Não foi possível carregar mensagens anteriores.');
+      }
+    } finally {
+      if (mounted) setState(() => _loadingOlder = false);
     }
   }
 
@@ -292,6 +336,7 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
       _threadError = null;
       _sending = false;
       _loadingMore = false;
+      _loadingOlder = false;
       _pendingIdempotencyKey = null;
       _pendingBody = null;
       _inboxState = ChatInboxState.unauthorized(error);
@@ -595,15 +640,36 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
         ),
       );
     }
+    final canLoadOlder = thread.nextCursor != null;
     return ListView.builder(
       key: const Key('principal-chat-thread-list'),
       reverse: true,
       padding: const EdgeInsets.all(CoeloSpacing.space3),
-      itemCount: thread.items.length,
-      itemBuilder: (context, index) => _PrincipalMessageBubble(
-        key: ValueKey('principal-chat-message-${thread.items[index].id}'),
-        message: thread.items[index],
-      ),
+      itemCount: thread.items.length + (canLoadOlder ? 1 : 0),
+      itemBuilder: (context, index) {
+        if (index == thread.items.length) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
+            child: Center(
+              child: _loadingOlder
+                  ? const SizedBox(
+                      width: CoeloSize.iconSm,
+                      height: CoeloSize.iconSm,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : TextButton(
+                      key: const Key('principal-chat-load-older'),
+                      onPressed: _loadOlderMessages,
+                      child: const Text('Carregar mensagens anteriores'),
+                    ),
+            ),
+          );
+        }
+        return _PrincipalMessageBubble(
+          key: ValueKey('principal-chat-message-${thread.items[index].id}'),
+          message: thread.items[index],
+        );
+      },
     );
   }
 
