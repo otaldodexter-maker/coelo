@@ -81,6 +81,18 @@ void main() {
     }
   });
 
+  test('unexpected decoding errors become a safe failure state', () async {
+    final controller = RoutineDirectoryController(
+      FakeRoutineRepository(pageLoader: (_) async => _decodeRoutinePage()),
+    );
+    addTearDown(controller.dispose);
+
+    await controller.load();
+
+    expect(controller.state.status, RoutineDirectoryStatus.failure);
+    expect(controller.state.page, isNull);
+  });
+
   test('empty and no-results are distinct server-result states', () async {
     final controller = RoutineDirectoryController(
       FakeRoutineRepository(pageLoader: (_) async => page(const [])),
@@ -149,4 +161,9 @@ void main() {
       },
     );
   }
+}
+
+RoutineDirectoryPage _decodeRoutinePage() {
+  final row = <String, Object?>{'page': 'invalid'};
+  return row['page']! as RoutineDirectoryPage;
 }
