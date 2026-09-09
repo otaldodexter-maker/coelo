@@ -1,0 +1,43 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_cold_reload_test.dart
+00:00 +0: cold reload storage failure: retained recovery never gains normal context
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: {
+            'bootstrapCalls': 0,
+            'authenticated': false,
+            'hasContext': false,
+            'route': '/reset-password'
+          }
+  Actual: {'bootstrapCalls': 1, 'authenticated': true, 'hasContext': true, 'route': '/'}
+   Which: at location ['bootstrapCalls'] is <1> instead of <0>
+A persisted recovery after failed purge must not become productive auth after cold restart.
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_cold_reload_test.dart:125:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_cold_reload_test.dart line 125
+The test description was:
+  cold reload storage failure: retained recovery never gains normal context
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:18 +0 -1: cold reload storage failure: retained recovery never gains normal context [E]
+  Test failed. See exception logs above.
+  The test description was: cold reload storage failure: retained recovery never gains normal context
+
+Warning: At least one test in this suite creates an HttpClient. When running a test suite that uses
+TestWidgetsFlutterBinding, all HTTP requests will return status code 400, and no network request
+will actually be made. Any test expecting a real network connection and status code will fail.
+To test code that needs an HttpClient, provide your own HttpClient implementation to the code under
+test, so that your test can consistently provide a testable response to the code under test.
+00:19 +0 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/apps/superadmin/test/features/auth/domain/coelo_auth_recovery_cold_reload_test.dart: cold reload storage failure: retained recovery never gains normal context

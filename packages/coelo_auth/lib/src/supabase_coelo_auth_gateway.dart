@@ -227,6 +227,10 @@ final class _SupabaseAuthApi implements CoeloSupabaseAuthApi {
       Future<void>.sync(
         () => _sessionPersistence.setPersistenceEnabled(value: false),
       ).catchError((Object _, StackTrace stack) {
+        if (_persistenceDisabledForRecoverySessionId == sessionId) {
+          // A later event may retry a transient failure for this session.
+          _persistenceDisabledForRecoverySessionId = null;
+        }
         if (!_disposed) {
           _states.addError(
             StateError('Recovery persistence cleanup failed.'),
