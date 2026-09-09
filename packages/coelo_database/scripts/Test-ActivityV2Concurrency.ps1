@@ -26,7 +26,7 @@ if ($LASTEXITCODE -ne 0 -or $running.Count -ne 1 -or $running[0].Trim() -ne 'tru
   throw 'Activity v2 concurrency database container is unavailable'
 }
 
-function Start-IsolatedPsql([string]$Sql) {
+function Start-IsolatedPsql([string]$Sql, [switch]$KeepInputOpen) {
   $startInfo = [Diagnostics.ProcessStartInfo]::new()
   $startInfo.FileName = $dockerPath
   $startInfo.Arguments = "exec -i $containerName psql --no-psqlrc --set ON_ERROR_STOP=1 --tuples-only --no-align --username postgres --dbname postgres"
@@ -44,8 +44,9 @@ function Start-IsolatedPsql([string]$Sql) {
     $process.Dispose()
     throw 'Activity v2 concurrency could not start an isolated SQL session'
   }
-  $process.StandardInput.Write($Sql)
-  $process.StandardInput.Close()
+  $process.StandardInput.WriteLine($Sql)
+  $process.StandardInput.Flush()
+  if (-not $KeepInputOpen) { $process.StandardInput.Close() }
   $processes.Add($process)
   return $process
 }
@@ -99,7 +100,9 @@ from public.platform_roles where code='owner';
 insert into public.platform_role_permissions(role_id,permission_id,effect,status)
 select role_record.id,permission_record.id,'allow','active'
 from public.platform_roles role_record cross join public.platform_permissions permission_record
-where role_record.code='owner' and permission_record.code in('activities.manage','activities.link_units')
+where role_record.code='owner' and permission_record.code in(
+ 'activities.manage','activities.link_units','activities.link_groups',
+ 'activities.assign_people','activities.manage_permissions')
 on conflict(role_id,permission_id) do update set effect='allow',status='active',revoked_at=null;
 select set_config('request.jwt.claims',jsonb_build_object(
  'sub','8c100000-0000-4000-8000-000000000101',
@@ -183,6 +186,121 @@ select jsonb_build_object(
 "@
 }
 
+function Read-IsolatedJson([string]$Sql) {
+  return Get-JsonResult (Complete-IsolatedPsql (Start-IsolatedPsql $Sql)).Output
+}
+
+function Wait-IsolatedCondition([string]$Sql, [string]$Failure) {
+  $timer = [Diagnostics.Stopwatch]::StartNew()
+  do {
+    if ((Read-IsolatedJson $Sql).ready -eq $true) { return }
+    Start-Sleep -Milliseconds 100
+  } while ($timer.ElapsedMilliseconds -lt 10000)
+  throw $Failure
+}
+
+function Test-AggregateAuthorizationAfterLock(
+  [ValidateSet('expiry','revocation')][string]$Scenario,
+  [guid]$RequestId
+) {
+  $holderName = "d02_holder_$Scenario"
+  $callerName = "d02_caller_$Scenario"
+  $lockKey = "pg_catalog.hashtextextended('$RequestId'::text,0)"
+  $holder = Start-IsolatedPsql -KeepInputOpen -Sql @"
+set application_name='$holderName';
+select pg_advisory_lock($lockKey);
+"@
+  Wait-IsolatedCondition @"
+select jsonb_build_object('ready',exists(
+ select 1 from pg_locks l join pg_stat_activity a on a.pid=l.pid
+ where a.application_name='$holderName' and l.locktype='advisory' and l.granted
+))::text;
+"@ 'Aggregate authorization holder did not acquire the advisory lock'
+
+  # Set expiry BEFORE starting B. Its transaction begins while the session is
+  # valid; only the wall clock advances while it waits (the row is not edited).
+  if ($Scenario -eq 'expiry') {
+    $null = Complete-IsolatedPsql (Start-IsolatedPsql @'
+update auth.sessions set not_after=clock_timestamp()+interval '6 seconds'
+where id='8c100000-0000-4000-8000-000000000201';
+'@)
+  }
+  $caller = Start-IsolatedPsql @"
+set application_name='$callerName';
+set role authenticated;
+set statement_timeout='25s';
+set lock_timeout='20s';
+with configured as materialized (
+ select set_config('request.jwt.claims','$claims',false)
+)
+select public.superadmin_activity_save_v2(
+ '$RequestId','8c100000-0000-4000-8000-000000000701',2,false,
+ jsonb_build_object(
+  'institution_id','8c100000-0000-4000-8000-000000000010',
+  'definition',jsonb_build_object('name','Must not persist','description','Synthetic lock test',
+    'taxonomy_id',null,'icon_key','activity','initials','NA'),
+  'unit_ids',jsonb_build_array('8c100000-0000-4000-8000-000000000011'),
+  'group_ids','[]'::jsonb,'group_participation','{}'::jsonb,
+  'participants','[]'::jsonb,'professional_assignments','[]'::jsonb,
+  'capability_policies','{"attendance":null,"chat":null,"happens":null,"moments":null,"now":null}'::jsonb,
+  'group_capability_settings','[]'::jsonb,'professional_capability_actions','[]'::jsonb
+ ))::text from configured;
+"@
+  Wait-IsolatedCondition @"
+select jsonb_build_object('ready',exists(
+ select 1 from pg_stat_activity b join pg_stat_activity a
+ on a.pid=any(pg_blocking_pids(b.pid))
+ where b.application_name='$callerName' and a.application_name='$holderName'
+))::text;
+"@ 'Aggregate authorization caller never waited on the held advisory lock'
+
+  if ($Scenario -eq 'expiry') {
+    Wait-IsolatedCondition @'
+select jsonb_build_object('ready',not_after<=clock_timestamp())::text
+from auth.sessions where id='8c100000-0000-4000-8000-000000000201';
+'@ 'Synthetic auth session did not expire during the confirmed lock wait'
+    $expectedCode = 'SAI_SESSION_INVALID'
+  }
+  else {
+    $null = Complete-IsolatedPsql (Start-IsolatedPsql @'
+update app_private.superadmin_internal_memberships
+set status='revoked',revoked_at=clock_timestamp()
+where id='8c100000-0000-4000-8000-000000000501';
+'@)
+    $expectedCode = 'SAI_MEMBERSHIP_REVOKED'
+  }
+  $holder.StandardInput.WriteLine("select pg_advisory_unlock($lockKey);")
+  $holder.StandardInput.Close()
+  $null = Complete-IsolatedPsql $holder
+  $response = Get-JsonResult (Complete-IsolatedPsql $caller).Output
+  if ($response.ok -ne $false -or $response.error.code -ne $expectedCode) {
+    throw "Aggregate $Scenario after confirmed lock wait did not return $expectedCode"
+  }
+  $correlation = [guid]$response.error.correlation_id
+  $proof = Read-IsolatedJson @"
+select jsonb_build_object(
+ 'version',(select management_version from public.activity_definitions
+   where id='8c100000-0000-4000-8000-000000000701'),
+ 'receipts',(select count(*) from app_private.superadmin_internal_activity_save_receipts
+   where request_id='$RequestId'),
+ 'successes',(select count(*) from audit.audit_logs where correlation_id='$correlation' and outcome='success'),
+ 'denials',(select count(*) from audit.audit_logs where correlation_id='$correlation'
+   and outcome='denied' and reason_code='$expectedCode' and action_code='activity.save')
+)::text;
+"@
+  if ($proof.version -ne 2 -or $proof.receipts -ne 0 -or
+      $proof.successes -ne 0 -or $proof.denials -ne 1) {
+    throw "Aggregate $Scenario denial violated durable invariants"
+  }
+  if ($Scenario -eq 'expiry') {
+    $null = Complete-IsolatedPsql (Start-IsolatedPsql @'
+update auth.sessions set not_after=clock_timestamp()+interval '1 hour'
+where id='8c100000-0000-4000-8000-000000000201';
+'@)
+  }
+  "Activity aggregate $Scenario passed: confirmed advisory wait, $expectedCode, no save receipt or version change, one denial audit."
+}
+
 try {
   $setupProcess = Start-IsolatedPsql $fixtureSql
   $setupResult = Complete-IsolatedPsql $setupProcess
@@ -221,6 +339,8 @@ try {
       [int64]$verification.denial_audit_count -ne 1) {
     throw 'Activity v2 concurrency durable invariants failed'
   }
+  Test-AggregateAuthorizationAfterLock 'expiry' '8c100000-0000-4000-8000-000000000803'
+  Test-AggregateAuthorizationAfterLock 'revocation' '8c100000-0000-4000-8000-000000000804'
 }
 finally {
   foreach ($process in $processes) {
