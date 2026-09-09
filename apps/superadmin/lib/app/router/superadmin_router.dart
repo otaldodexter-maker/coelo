@@ -936,7 +936,13 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.principalNow,
             name: SuperadminRoutes.principalNowName,
-            builder: (context, state) => PrincipalRuntimeContextRoute(
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, _) => PrincipalRuntimeContextRoute(
+              // Uma leitura obtida sob a autorizacao anterior nao pode
+              // sobreviver a revisao dela: o Agora rele como Acontece e
+              // Momentos ja fazem.
+              key: ValueKey('principal-now-${session.authorizationInvalidationRevision}'),
               repository: principalRuntimeContextRepository,
               builder: (context, runtimeContext) {
                 final repository = principalNowFeedRepository;
@@ -954,6 +960,7 @@ GoRouter createSuperadminRouter({
                   onCreate: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
                 );
               },
+            ),
             ),
           ),
           GoRoute(
