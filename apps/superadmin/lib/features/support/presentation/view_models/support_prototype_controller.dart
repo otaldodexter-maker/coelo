@@ -180,6 +180,7 @@ final class SupportPrototypeController extends ChangeNotifier {
   bool changeStatus(String ticketId, SupportTicketStatus status) {
     final ticket = _ticketById(ticketId);
     if (ticket == null ||
+        ticket.status == status ||
         (status == SupportTicketStatus.inProgress && ticket.assigneeIds.isEmpty)) {
       return false;
     }
