@@ -2001,3 +2001,53 @@ morta, **presa em teste** (`ea80c0fab`). **Sete dos nove eram invisíveis em lot
 Nenhum processo, nenhum subagente vivo (os oito terminaram e reportaram), nenhum
 agendamento, **nenhuma mutação remota**, nenhuma worktree criada. Não integrou
 `dev` nem commitou nele: toda medição foi leitura pura.
+
+---
+
+# ESTADO DA ENTREGA ÀS 16:23 — entregue, NÃO confirmado
+
+O contrato exige distinguir **recebido, aceito e integrado**. Registro o estado
+real, sem arredondar:
+
+| Estado | Situação |
+| --- | --- |
+| **Publicado por L00** | **SIM** — consolidado e handoff na branch, push verificado |
+| **Recebido por D00** | **NÃO CONFIRMADO** — sem ACK, sem evidência de leitura |
+| **Aceito por D00** | não |
+| **Integrado em `dev`** | não |
+
+## Evidência de que D00 ainda NÃO incorporou a entrega
+
+D00 está **ativo**: escreveu `registro.json` às **16:22**, um minuto antes desta
+verificação, e `dev` tem commits até 16:03.
+
+**Mas o `registro.json` que ele acabou de escrever ainda carrega os SHAs
+defasados das quatro frentes Claude** — L01 em `251a7ec95`, L02 em `65e5c4b5b`,
+L03 em `9c6042732` e L00 em `088f8c586` — e status igualmente antigos, com L01 e
+L02 ainda marcados `activity-observed-identity-pending` embora as duas tenham se
+identificado horas atrás.
+
+**Conclusão factual: a entrega foi publicada, mas não há sinal de que tenha sido
+lida.** Não afirmo que D00 a ignorou — afirmo que **não tenho confirmação**, e
+que o artefato que ele mantém não reflete o estado real das branches.
+
+## Limitação estrutural, declarada desde a revisão 1
+
+**Não existe canal nativo de L00 para D00.** D00 roda no Codex; a ponte
+`ListAgents`/`SendMessage` alcança apenas sessões Claude. A comunicação com D00
+acontece por arquivo nos caminhos registrados **e pelo Owner como portador**.
+Registrei essa limitação na abertura do turno e ela permaneceu verdadeira até o
+fim.
+
+## O que precisa acontecer para a entrega chegar
+
+1. **D00 abrir `handoffs/L00.md`** na worktree de L00 — o arquivo abre com o
+   caminho do consolidado, os **SHAs finais para integrar** e o aviso de não usar
+   os `headSha` do registro.
+2. **D00 corrigir os quatro `headSha`** em `registro.json`. Ele é o único
+   escritor daquele arquivo; **eu não o alterei**.
+3. **D00 integrar pelas pontas reais** — `3697dd49e`, `9144f4efb`, `b209b4e0f`.
+
+Enquanto isso não ocorrer, o trabalho está **preservado e publicado**, mas
+**não entregue no sentido forte**. Publicar não é o mesmo que ser lido, e é a
+mesma distinção que apliquei o dia inteiro entre rota existente e acesso normal.
