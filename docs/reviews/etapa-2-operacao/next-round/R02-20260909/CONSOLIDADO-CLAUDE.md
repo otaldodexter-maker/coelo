@@ -994,3 +994,57 @@ Os testes que L01 prendeu documentam o defeito do feed misto e **continuam
 válidos contra dev** — não devem ser apagados como obsoletos. Integrar a
 composition root de L03 fecha duas das três telas; `principalMoments` exige a
 cadeia de L01.
+
+## RISCO DE INTEGRAÇÃO SILENCIOSO — um conflito que NÃO pode ser resolvido por lado
+
+L01 analisou os dois conflitos dele e um deles apaga função real se D00 resolver
+no automático. **É o item mais acionável deste consolidado.**
+
+**`principal_moments_publication_route.dart` EXIGE UNIÃO DOS DOIS LADOS.** São
+mudanças diferentes no mesmo arquivo: `dev` acrescentou `embedded` e o repasse;
+L01 acrescentou a porta `mediaPicker` com o seletor padrão. **Resolver por
+"ficar com um dos lados" apaga função.** Ficando só com `dev`, a rota produtiva
+de publicar Momentos **volta a não conseguir publicar nada**, porque o controller
+exige ao menos uma mídia e não haverá porta de seleção — que é exatamente o
+defeito que esta rodada corrigiu. As duas mudanças não se tocam; a união é
+trivial. **Se for resolvido no automático, o risco é real e silencioso.**
+
+**`principal_now_preview_page.dart` é benigno.** Os dois lados fizeram a mesma
+coisa — flag `embedded` mais o helper que evita reaplicar os insets do
+hospedeiro. Equivalentes. Recomendação de L01: **ficar com o lado de `dev`** e,
+se for barato, reaproveitar os comentários que documentam a decisão do Owner.
+
+## Convergência independente sobre o efeito do movimento
+
+L01 chegou por leitura direta de `origin/dev` à mesma conclusão que eu havia
+chegado por conta própria, e as duas análises batem: **nenhum defeito foi
+corrigido pelo movimento, e nenhum teste precisa ser invertido.**
+
+Em `dev`, depois da hospedagem: o builder de `/principal-happens` continua
+passando `feedRepository` e `data: PrincipalHappensPreviewData.empty` **sem**
+`mixedFeedRepository`; o carrossel Agora continua alimentado pelo fixture vazio;
+as quatro guardas de nulo de publicar no Acontece continuam, e a mesma no Agora;
+`onClose` e `onOpenHappens` continuam `goNamed` em vez de `pop`; e
+`/principal-moments` continua devolvendo `_unavailableCompositionRootRoute` direto.
+
+**Achado colateral que L01 passou a L03:** em `dev`, `/principal-profile` também
+resolve **incondicionalmente** para a composição indisponível, no mesmo formato
+de `/principal-moments`. Se L03 considerava a rota fora do fail-closed, o estado
+integrado não reflete isso.
+
+## Estado das propostas de hunks: PARCIALMENTE superadas
+
+L01 marcou no próprio arquivo, para não virar retrabalho. **Superado:** mover as
+rotas e passar `embedded`. **NÃO superado:** toda a cadeia de injeção — em `dev`
+o router ainda não usa `principalMixedFeedRepository`,
+`PrincipalMomentsFeedRepository` **não existe** na composição, e
+`CircularMediaRepository` não é injetado. **As três injeções continuam
+necessárias e nenhuma foi feita.**
+
+### A frase que resume, e é de L01
+
+**A hospedagem resolveu o encaixe visual e não resolveu o acesso ao dado.**
+Depois do movimento, `/principal-moments` continua sem saída, o Acontece continua
+sem a projeção de Circulares que virou subaceite obrigatório de `acontece.feed`,
+e as duas rotas de publicação continuam com o beco do ator institucional.
+**O movimento era necessário e não era suficiente.**
