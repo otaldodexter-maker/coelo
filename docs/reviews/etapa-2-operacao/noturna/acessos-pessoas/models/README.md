@@ -53,6 +53,13 @@ O rollback por falha tardia e a negativa concorrente de recibo ainda não estão
 provados. A revisão independente focal não encontrou bloqueante em montagem,
 labels, ACLs, assinatura e política AAL1; não cobriu concorrência.
 
+`build_rollback_test.py` gera `ap_models_nominal_rollback_test.sql` do hash exato
+do pacote. Os seis critérios preparados provocam exceção depois do postflight e
+conferem ausência de receipts/helpers/permissões e preservação de corpos,
+assinaturas, owners, grants e constraints. Parse estático:20 statements;
+runtime **U6**, aguardando próximo slot local. O teste usa a subtransação do
+pgTAP para exercer falha tardia, sem executar COMMIT/ROLLBACK dentro dela.
+
 Próximos gates: rollback negativo do pacote e recibo após espera de lock;
 revisão coordenada;
 autorização nominal de produção; aplicação serializada; provas HTTP/UI normais

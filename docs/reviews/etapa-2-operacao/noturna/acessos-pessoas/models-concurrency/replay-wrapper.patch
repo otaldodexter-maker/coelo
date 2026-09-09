@@ -1,0 +1,57 @@
+--- a/packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1
++++ b/packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1
+@@ -33,7 +33,9 @@
+ 
+   [switch]$RunActivityV2Concurrency,
+ 
+-  [switch]$RunLocationReservationsAuditAuthorization
++  [switch]$RunLocationReservationsAuditAuthorization,
++
++  [switch]$RunModelReceiptConcurrency
+ )
+ 
+ $ErrorActionPreference = 'Stop'
+@@ -166,6 +168,15 @@
+     $RunChildDirectoryHttp -or $RunActivityV2Concurrency -or $RunLint)) {
+   throw 'Location reservation audit proof requires exact LocationReservationsV1 target without other modes or additions'
+ }
++if ($RunModelReceiptConcurrency -and (
++    -not $AuthOnly -or $TargetVersion -cne '20260901200206' -or
++    $FoundationOnly -or $NominalProfile -or $AdditionalMigration.Count -gt 0 -or
++    $RunAuthLifecycle -or $RunAuthRecoveryBoundary -or $AssertAuthRecoveryConfined -or
++    $RunR02AuthProofConcurrency -or $RunChildDirectoryConcurrency -or
++    $RunChildDirectoryHttp -or $RunChildRemotePackage -or $RunActivityV2Concurrency -or
++    $RunLocationReservationsAuditAuthorization -or $RunLint)) {
++  throw 'Model receipt concurrency requires exact AuthOnly target without additions or other modes'
++}
+ if ($NominalProfile) {
+   if ($FoundationOnly -or $AuthOnly -or $AdditionalMigration.Count -gt 0 -or
+       $RunAuthLifecycle -or
+@@ -291,6 +302,17 @@
+     $resolvedTestPaths[0] -ine $expectedReservationTap)) {
+   throw 'Location reservation audit proof requires exactly the nominal reservation TAP'
+ }
++$modelReceiptRunner = Join-Path $repositoryRoot 'docs\reviews\etapa-2-operacao\noturna\acessos-pessoas\models-concurrency\Test-ModelReceiptConcurrency.ps1'
++if ($RunModelReceiptConcurrency) {
++  $expectedModelsTap = Join-Path $canonicalTestsRoot 'ap_models_nominal_package_test.sql'
++  if ($resolvedTestPaths.Count -ne 1 -or $resolvedTestPaths[0] -ine $expectedModelsTap) {
++    throw 'Model receipt concurrency requires exactly the nominal Models package TAP'
++  }
++  Assert-NoReparseAncestors $modelReceiptRunner
++  if (-not (Test-Path -LiteralPath $modelReceiptRunner -PathType Leaf)) {
++    throw 'Model receipt concurrency runner is missing'
++  }
++}
+ Assert-NoReparseAncestors $tempRoot
+ if ($projectRoot -eq $repositoryFull -or
+     $projectRoot.StartsWith($repositoryFull.TrimEnd('\') + '\', [StringComparison]::OrdinalIgnoreCase)) {
+@@ -421,6 +443,9 @@
+     & npx.cmd --yes $cliPackage --agent no test db --local @resolvedTestPaths --workdir $projectRoot
+     if ($LASTEXITCODE -ne 0) { throw "safe local pgTAP failed with exit code $LASTEXITCODE" }
+   }
++  if ($RunModelReceiptConcurrency) {
++    & $modelReceiptRunner -ProjectRoot $projectRoot -ProjectId $projectId
++  }
+   if ($RunChildRemotePackage) {
+     & (Join-Path $scriptRoot 'Test-ChildRemotePackage.ps1') `
+       -ProjectRoot $projectRoot `
