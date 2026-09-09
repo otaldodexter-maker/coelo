@@ -223,9 +223,22 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
                         icon: const Icon(Icons.edit_rounded),
                         label: const Text('Editar local'),
                       ),
+                  // A denial is an answer, not a hiccup. Pressing again puts the
+                  // same question to the same server and gets the same refusal
+                  // back, so the control did nothing except suggest the actor
+                  // was one press away from getting in. The directory of this
+                  // very feature has never offered retry on a denial.
+                  //
+                  // Disabled rather than removed: the shared footer asserts at
+                  // least one continuation action, and on a denial there is no
+                  // copy and no edit to keep it company. Removing this one would
+                  // mean changing a widget shared with every other form, which
+                  // is a larger decision than this defect deserves.
                   OutlinedButton.icon(
                     key: const Key('location-detail-reload'),
-                    onPressed: _controller.state == LocationReadState.loading
+                    onPressed:
+                        _controller.state == LocationReadState.loading ||
+                            _controller.state == LocationReadState.denied
                         ? null
                         : () => unawaited(_controller.load()),
                     icon: const Icon(Icons.refresh_rounded),
