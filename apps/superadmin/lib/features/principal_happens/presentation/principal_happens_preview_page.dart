@@ -203,6 +203,7 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
   /// autorizada, e o feed e relido em vez de ser corrigido em memoria.
   Future<void> _withdrawPost(PrincipalPostPreviewItem post) async {
     final source = widget.feedRepository;
+    final scope = widget.feedScope;
     final postId = post.postId;
     final expectedVersion = post.managementVersion;
     if (source is! PrincipalHappensPostWithdrawal ||
@@ -212,6 +213,15 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
       return;
     }
     final repository = source as PrincipalHappensPostWithdrawal;
+    // A publicação, a versão e a autorização vieram desta leitura do feed. Se o
+    // contexto trocar enquanto a confirmação está aberta, essa tripla passa a
+    // pertencer a outro escopo e não pode ser reaproveitada.
+    final requestAtOpen = _feedRequest;
+    bool stillTheSameFeed() =>
+        mounted &&
+        _feedRequest == requestAtOpen &&
+        identical(widget.feedRepository, source) &&
+        widget.feedScope == scope;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -235,25 +245,25 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
         ],
       ),
     );
-    if (confirmed != true || !mounted) return;
+    if (confirmed != true || !stillTheSameFeed()) return;
     setState(() => _withdrawingPostId = postId);
     try {
       await repository.withdrawPost(postId: postId, expectedVersion: expectedVersion);
-      if (!mounted) return;
+      if (!stillTheSameFeed()) return;
       setState(() => _withdrawingPostId = null);
       _notify('Publicação retirada do feed.');
       await _loadFeed();
     } on PrincipalHappensFeedUnauthorized {
-      if (!mounted) return;
+      if (!stillTheSameFeed()) return;
       setState(() => _withdrawingPostId = null);
       _notify('Você não tem permissão para retirar esta publicação.');
     } on PrincipalHappensWithdrawalConflict {
-      if (!mounted) return;
+      if (!stillTheSameFeed()) return;
       setState(() => _withdrawingPostId = null);
       _notify('A publicação mudou desde a última leitura. Feed atualizado.');
       await _loadFeed();
     } on Object {
-      if (!mounted) return;
+      if (!stillTheSameFeed()) return;
       setState(() => _withdrawingPostId = null);
       _notify('Não foi possível retirar agora. Tente novamente.');
     }

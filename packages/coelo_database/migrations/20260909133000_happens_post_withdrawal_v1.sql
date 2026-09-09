@@ -10,6 +10,15 @@
 --
 -- Forward-only. `list_visible_happens_posts` muda o tipo de retorno, entao
 -- precisa de drop + create; os grants originais sao reaplicados no fim.
+--
+-- Revisao apos revisao do coordenador, antes de qualquer aplicacao:
+--  * a versao esperada e obrigatoria. Comparar com `<>` deixava um
+--    `p_expected_version` nulo devolver NULL e escapar da guarda, dispensando o
+--    lock otimista sem dizer. Agora nulo e conflito, e a comparacao usa
+--    `is distinct from`.
+--  * `can_withdraw` confere tambem a capacidade `happens.posts.remove` no
+--    escopo, e nao so a autoria. Sem isso o feed oferecia ao autor uma acao que
+--    o servidor negaria logo em seguida.
 
 alter table public.posts
   add column if not exists withdrawn_at timestamptz,
@@ -82,7 +91,7 @@ begin
     );
   end if;
 
-  if target.management_version<>p_expected_version then
+  if p_expected_version is null or target.management_version is distinct from p_expected_version then
     raise serialization_failure using message='expected_version_conflict';
   end if;
 
@@ -205,7 +214,9 @@ begin
     caption:=visible_post.caption;
     published_at:=visible_post.resolved_published_at;
     management_version:=visible_post.resolved_version;
-    can_withdraw:=visible_post.author_person_id=actor.person_id;
+    can_withdraw:=visible_post.author_person_id=actor.person_id
+      and app_private.has_institution_permission(
+        p_institution_id,'happens.posts.remove',p_unit_id,p_group_id,false);
     media:=media_items;
     return next;
   end loop;

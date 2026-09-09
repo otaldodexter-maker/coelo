@@ -139,6 +139,38 @@ void main() {
     expect(repository.loads, 2);
   });
 
+  testWidgets('switching context while the confirmation is open never withdraws', (tester) async {
+    final first = _WithdrawalRepository([post()]);
+    final second = _WithdrawalRepository([post(postId: 'post-9', version: 1)]);
+    await tester.binding.setSurfaceSize(const Size(768, 1024));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    Widget host(PrincipalHappensFeedRepository repository, String institutionId) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: PrincipalHappensPreviewPage(
+        feedRepository: repository,
+        feedScope: PrincipalHappensFeedScope(institutionId: institutionId),
+      ),
+    );
+
+    await tester.pumpWidget(host(first, 'institution-1'));
+    await tester.pumpAndSettle();
+    await openMenu(tester);
+    await tester.tap(find.byKey(const Key('principal-happens-withdraw-label')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('principal-happens-withdraw-dialog')), findsOneWidget);
+
+    // O contexto troca embaixo do diálogo: outra instituição, outro repositório.
+    await tester.pumpWidget(host(second, 'institution-2'));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('principal-happens-withdraw-confirm')));
+    await tester.pumpAndSettle();
+
+    expect(first.withdrawals, isEmpty, reason: 'the stale repository is never called');
+    expect(second.withdrawals, isEmpty, reason: 'the new context never inherits the decision');
+    expect(find.text('Publicação retirada do feed.'), findsNothing);
+  });
+
   testWidgets('a transport failure reports honestly and keeps the post', (tester) async {
     final repository = _WithdrawalRepository([post()])
       ..failure = const PrincipalHappensFeedUnavailable();

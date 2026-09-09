@@ -14,6 +14,10 @@
 --
 -- Forward-only. Corpo copiado fielmente do original; as unicas diferencas sao o
 -- predicado de retirada e os dois campos novos no payload de post.
+--
+-- `can_withdraw` confere autoria E a capacidade `happens.posts.remove` no
+-- escopo, igual ao feed direto: oferecer a acao a quem o servidor negaria seria
+-- uma promessa falsa na interface.
 
 create or replace function public.list_visible_happens_feed(
   p_institution_id uuid,p_unit_id uuid,p_group_id uuid,p_activity_id uuid,p_before_at timestamptz,p_before_type text,p_before_id uuid,p_limit integer default 20
@@ -27,7 +31,7 @@ begin
   return query
   with authorized_items as (
     select 'post'::text as kind,post.id,coalesce(post.published_at,post.publish_at) as at,
-      jsonb_build_object('author_name',person.display_name,'author_initials',upper(left(person.display_name,1)),'context_label',coalesce(g.name,u.name,i.public_name),'caption',post.caption,'management_version',post.management_version,'can_withdraw',post.author_person_id=actor.person_id,'media',app_private.circular_feed_post_media(post.id,actor.person_id)) as body
+      jsonb_build_object('author_name',person.display_name,'author_initials',upper(left(person.display_name,1)),'context_label',coalesce(g.name,u.name,i.public_name),'caption',post.caption,'management_version',post.management_version,'can_withdraw',post.author_person_id=actor.person_id and app_private.has_institution_permission(p_institution_id,'happens.posts.remove',p_unit_id,p_group_id,false),'media',app_private.circular_feed_post_media(post.id,actor.person_id)) as body
     from public.posts post join public.people person on person.id=post.author_person_id join public.institutions i on i.id=post.institution_id
     left join public.units u on u.id=post.unit_id left join public.groups g on g.id=post.group_id
     where post.institution_id=p_institution_id

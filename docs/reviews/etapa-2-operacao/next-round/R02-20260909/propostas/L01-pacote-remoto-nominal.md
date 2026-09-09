@@ -25,7 +25,7 @@ Todos são **forward-only** e nenhum edita migration existente.
 
 | # | Arquivo | Ação | SHA |
 | --- | --- | --- | --- |
-| 1 | `packages/coelo_database/migrations/20260909130000_moments_feed_and_withdrawal_v1.sql` | `momentos.view` e `momentos.remove` | `e02b5f1b` |
+| 1 | `packages/coelo_database/migrations/20260909136000_moments_feed_and_withdrawal_v1.sql` | `momentos.view` e `momentos.remove` | `e02b5f1b`, renomeado depois |
 | 2 | `packages/coelo_database/migrations/20260909131000_now_publication_expiry_transition_v1.sql` | `agora.expire` | `c8f8f379` |
 | 3 | `packages/coelo_database/migrations/20260909132000_circulars_media_private_r2_v1.sql` | Circulares em R2 privado (ADR 0032) | `9a3fb6b5` |
 | 4 | `packages/coelo_database/migrations/20260909133000_happens_post_withdrawal_v1.sql` | `acontece.remove` | `8b83784e` |
