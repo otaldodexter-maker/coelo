@@ -145,8 +145,11 @@ final class PrincipalForYouPreviewData {
 
   /// Production hub scaffolding for `principal.for-you`.
   ///
-  /// Carries only the server-authorized context; editorial fixtures stay out of
-  /// a real route. Highlights arrive from the Communications projection.
+  /// Carries the server-authorized context and the approved shortcuts; editorial
+  /// fixtures stay out of a real route. Highlights arrive from the Communications
+  /// projection. The shortcuts are navigation affordances, not content: the
+  /// canonical source requires that missing editorial content never removes the
+  /// shortcuts and the useful context from the hub.
   static PrincipalForYouPreviewData contextual({
     required String id,
     required String label,
@@ -156,7 +159,7 @@ final class PrincipalForYouPreviewData {
     String? group,
   }) => PrincipalForYouPreviewData(
     highlights: const [],
-    shortcuts: const [],
+    shortcuts: approvedShortcuts,
     editorialItems: const [],
     dayItems: const [],
     contexts: [
@@ -171,6 +174,16 @@ final class PrincipalForYouPreviewData {
       ),
     ],
   );
+
+  /// The six essential shortcuts of the approved hub composition.
+  static const approvedShortcuts = [
+    PrincipalForYouShortcut('Agenda', 'calendar'),
+    PrincipalForYouShortcut('Atividades', 'activities'),
+    PrincipalForYouShortcut('Mensagens', 'messages'),
+    PrincipalForYouShortcut('Cardápio', 'meals'),
+    PrincipalForYouShortcut('Desempenho', 'performance'),
+    PrincipalForYouShortcut('Saúde', 'health'),
+  ];
 
   static List<PrincipalForYouHighlight> orderHighlights(Iterable<PrincipalForYouHighlight> items) {
     final ordered = items.toList()..sort((a, b) => a.priority.compareTo(b.priority));

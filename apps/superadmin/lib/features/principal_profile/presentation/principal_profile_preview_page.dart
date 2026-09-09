@@ -33,6 +33,8 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
     this.onOpenMessages,
     this.circularRepository,
     this.circularScope,
+    this.happensTab,
+    this.momentsTab,
     this.onOpenCircular,
     this.data = PrincipalProfilePreviewData.horizon,
     this.showPreviewFeeds = true,
@@ -74,6 +76,13 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
   final ProfileAboutPage? aboutPage;
   final CircularRepository? circularRepository;
   final CircularScope? circularScope;
+
+  /// Authorized projections for the Acontece and Momentos tabs.
+  ///
+  /// A production composition root supplies them; when absent the tabs show a
+  /// pending state rather than the local preview fixtures.
+  final Widget? happensTab;
+  final Widget? momentsTab;
   final ValueChanged<String>? onOpenCircular;
 
   @override
@@ -221,6 +230,8 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
         onOpenAboutMap: widget.onOpenAboutMap,
         circularRepository: widget.circularRepository,
         circularScope: widget.circularScope,
+        happensTab: widget.happensTab,
+        momentsTab: widget.momentsTab,
         onOpenCircular: widget.onOpenCircular,
       ),
     ],
@@ -912,6 +923,8 @@ final class _TabContent extends StatelessWidget {
     required this.onOpenAboutMap,
     required this.circularRepository,
     required this.circularScope,
+    required this.happensTab,
+    required this.momentsTab,
     required this.onOpenCircular,
   });
 
@@ -921,26 +934,35 @@ final class _TabContent extends StatelessWidget {
   final VoidCallback? onOpenAboutMap;
   final CircularRepository? circularRepository;
   final CircularScope? circularScope;
+
+  /// Authorized projections for the Acontece and Momentos tabs.
+  ///
+  /// A production composition root supplies them; when absent the tabs show a
+  /// pending state rather than the local preview fixtures.
+  final Widget? happensTab;
+  final Widget? momentsTab;
   final ValueChanged<String>? onOpenCircular;
 
   @override
   Widget build(BuildContext context) => switch (tab) {
-    _ProfileTab.happens => showPreviewFeeds
-        ? const _ProfileHappensFeed()
-        : const _PlaceholderContent(
-            key: Key('principal-profile-happens-pending'),
+    _ProfileTab.happens => happensTab ??
+        (showPreviewFeeds
+            ? const _ProfileHappensFeed()
+            : const _PlaceholderContent(
+              key: Key('principal-profile-happens-pending'),
             icon: Icons.article_outlined,
             title: 'Acontece ainda não disponível aqui',
-            message: 'A projeção autorizada de publicações ainda não foi ligada a este perfil.',
-          ),
-    _ProfileTab.moments => showPreviewFeeds
-        ? const _ProfileMomentsFeed()
-        : const _PlaceholderContent(
-            key: Key('principal-profile-moments-pending'),
+              message: 'A projeção autorizada de publicações ainda não foi ligada a este perfil.',
+            )),
+    _ProfileTab.moments => momentsTab ??
+        (showPreviewFeeds
+            ? const _ProfileMomentsFeed()
+            : const _PlaceholderContent(
+              key: Key('principal-profile-moments-pending'),
             icon: Icons.play_circle_outline_rounded,
             title: 'Momentos ainda não disponível aqui',
-            message: 'A projeção autorizada de Momentos ainda não foi ligada a este perfil.',
-          ),
+              message: 'A projeção autorizada de Momentos ainda não foi ligada a este perfil.',
+            )),
     _ProfileTab.circulars =>
       circularRepository == null || circularScope == null
           ? const _PlaceholderContent(
