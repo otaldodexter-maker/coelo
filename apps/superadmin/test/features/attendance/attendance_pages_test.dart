@@ -211,6 +211,49 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('new call locks its context while submission is in flight', (tester) async {
+    final repository = FakeAttendanceRepository.seeded()..createGate = Completer<void>();
+    addTearDown(repository.dispose);
+    var cancelled = false;
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceNewCallPage(
+          repository: repository,
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onCancel: () => cancelled = true,
+          onCreated: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Chamada'));
+    await tester.pump();
+
+    expect(repository.createCallCount, 1);
+    expect(
+      tester.widget<OutlinedButton>(find.byKey(const Key('attendance-date-picker'))).onPressed,
+      isNull,
+    );
+    expect(
+      tester
+          .widgetList<CoeloAdminSingleSelectField<String>>(
+            find.byType(CoeloAdminSingleSelectField<String>),
+          )
+          .every((field) => !field.enabled),
+      isTrue,
+    );
+    expect(
+      tester.widget<TextButton>(find.byKey(const Key('attendance-context-cancel'))).onPressed,
+      isNull,
+    );
+    expect(cancelled, isFalse);
+
+    repository.createGate!.complete();
+    await tester.pumpAndSettle();
+  });
+
   testWidgets('new call ignores completion from repository A after a swap to B', (tester) async {
     final repositoryA = FakeAttendanceRepository.seeded()..createGate = Completer<void>();
     final repositoryB = FakeAttendanceRepository.seeded();

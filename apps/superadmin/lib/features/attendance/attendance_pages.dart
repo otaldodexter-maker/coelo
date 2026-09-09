@@ -218,8 +218,9 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                                   focusNode: _dateFocusNode,
                                   onPressed:
                                       widget.permissions.canCreate(
-                                        backendCanManage: _options!.canManage,
-                                      )
+                                            backendCanManage: _options!.canManage,
+                                          ) &&
+                                          !_submitting
                                       ? _pickDate
                                       : null,
                                   icon: const Icon(Icons.calendar_today_outlined),
@@ -239,6 +240,7 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                                       .map((item) => item.id)
                                       .toList(growable: false),
                                   optionLabel: (id) => _labelFor(_institutions, id),
+                                  enabled: !_submitting,
                                   onChanged: _selectInstitution,
                                   prefixIcon: Icons.account_balance_outlined,
                                 ),
@@ -248,6 +250,7 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                                   value: _unit!,
                                   options: _units.map((item) => item.id).toList(growable: false),
                                   optionLabel: (id) => _labelFor(_units, id),
+                                  enabled: !_submitting,
                                   onChanged: _selectUnit,
                                   prefixIcon: Icons.apartment_outlined,
                                 ),
@@ -257,6 +260,7 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                                   value: _group!,
                                   options: _groups.map((item) => item.id).toList(growable: false),
                                   optionLabel: (id) => _labelFor(_groups, id),
+                                  enabled: !_submitting,
                                   onChanged: _selectGroup,
                                   prefixIcon: Icons.groups_outlined,
                                 ),
@@ -268,6 +272,7 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                                       ? const ['group']
                                       : const ['group', 'activity'],
                                   optionLabel: (value) => value == 'group' ? 'Turma' : 'Atividade',
+                                  enabled: !_submitting,
                                   onChanged: (value) => setState(() {
                                     _context = value;
                                     if (value == 'activity') {
@@ -285,6 +290,7 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                                         .map((item) => item.id)
                                         .toList(growable: false),
                                     optionLabel: (id) => _labelFor(_activities, id),
+                                    enabled: !_submitting,
                                     onChanged: (value) => setState(() => _activity = value),
                                     prefixIcon: Icons.local_activity_outlined,
                                   ),
@@ -311,7 +317,7 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                       surfaceKey: const Key('attendance-context-footer'),
                       tertiaryAction: TextButton(
                         key: const Key('attendance-context-cancel'),
-                        onPressed: widget.onCancel,
+                        onPressed: _submitting ? null : widget.onCancel,
                         child: const Text('Cancelar'),
                       ),
                       continuationActions: [

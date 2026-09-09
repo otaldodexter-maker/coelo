@@ -133,3 +133,36 @@ concluído.
 
 Trata-se de avanço FE local de `attendance.finish`; persistência real,
 autorização, cancelamento decisório e E2E não são promovidos por este caso.
+
+## Contexto durante criação — `attendance.create`
+
+Durante `createCall`, apenas a ação principal bloqueava. Data, instituição,
+unidade, turma, contexto/atividade e `Cancelar` continuavam habilitados, permitindo
+que a tela mostrasse uma intenção diferente do draft em envio ou saísse durante
+o comando. Esses controles agora usam o `_submitting` existente; o guard de
+duplicidade e a invalidação por dispose/troca de repository foram preservados.
+
+- RED: 0/1; o seletor de data ainda possuía callback durante a Future.
+- GREEN focal intermediário: 1/1 aprovado, não somado ao conjunto final.
+- Conjunto final: 5/5 casos únicos aprovados: bloqueio do contexto, duplo envio
+  e dispose, troca A→B, falha recuperável e recibo fora do contexto solicitado.
+- Análise estática dos dois arquivos: 0 issues.
+- Log RED `C:/Users/adrie/AppData/Local/Temp/d03-attendance-create-lock-red.log`
+  — SHA-256 `DDF96F5569A41A634665A66F4C3C02C15E95856A2302551DB2A59388206A5355`.
+- Log GREEN `C:/Users/adrie/AppData/Local/Temp/d03-attendance-create-lock-green.log`
+  — SHA-256 `7086EA8A0C99CDB0846689847D2E9F5904F11D40DF98C5B03B297D45A9D5FCFA`.
+- Log do conjunto final `C:/Users/adrie/AppData/Local/Temp/d03-attendance-create-lock-regression.log`
+  — SHA-256 `A1D8816902A1200C3F1671C9E92BB8083A5EF3E33141DFC258630CA0A5008BFF`.
+- Log do analyzer `C:/Users/adrie/AppData/Local/Temp/d03-attendance-create-lock-analyze.log`
+  — SHA-256 `A4FA0DCAE84757E43ED25CBC2C7E1AB94AC4F08463BED040CA1272608276F12B`.
+
+## Triagem de `attendance.mark`
+
+Na base atual, a marcação individual e em lote já deriva `writable` do estado
+global `_commandInFlight`; botões de estado, salvar, sentimento e mutações de
+outros participantes ficam desabilitados durante o comando. `_applyCall` impede
+duplicidade, valida o `callId` da resposta, descarta resposta obsoleta após A→B
+e conserva o snapshot/rascunho quando ocorre erro. Os casos existentes cobrem
+todos os estados, toque, estilos de foco/hover, lote e undo. Não foi identificado
+outro defeito FE executável sem repetir provas; persistência, reload remoto,
+tenant A/B e negações reais permanecem bloqueados pelo contrato backend aberto.
