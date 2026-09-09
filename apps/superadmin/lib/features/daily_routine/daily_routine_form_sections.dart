@@ -625,8 +625,8 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     children: [
       Text('Resumo do lancamento', style: Theme.of(context).textTheme.titleLarge),
       const SizedBox(height: CoeloSpacing.space4),
-      Text('Data: ${launch.serviceDate.toLocal()}'),
-      Text('Status: ${launch.status.name}'),
+      Text('Data: ${routineCivilDate(launch.serviceDate.toLocal())}'),
+      Text('Status: ${routineStatusLabel(launch.status.name)}'),
       Text('Versao esperada: ${launch.expectedVersion}'),
     ],
   );

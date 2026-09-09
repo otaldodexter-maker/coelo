@@ -520,17 +520,7 @@ final class _RoutineStatusIndicator extends StatelessWidget {
         theme.extension<CoeloStatusColors>() ??
         (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
     final normalized = status.trim().toLowerCase();
-    final label = switch (normalized) {
-      'active' || 'ativo' => 'Ativo',
-      'published' || 'publicado' => 'Publicado',
-      'draft' || 'rascunho' => 'Rascunho',
-      'in_review' || 'em revisao' => 'Em revisão',
-      'inactive' || 'inativo' => 'Inativo',
-      'archived' || 'arquivado' => 'Arquivado',
-      'corrected' || 'corrigido' => 'Corrigido',
-      'cancelled' || 'cancelado' => 'Cancelado',
-      _ => status,
-    };
+    final label = routineStatusLabel(status);
     final colors = switch (normalized) {
       'active' ||
       'ativo' ||
