@@ -64,3 +64,18 @@ auditoria e negativas para essas quatro ações. A rota de gestão permanece
 honestamente indisponível.
 
 Conhecimento: `no-op`; nenhuma regra durável nova foi aprovada.
+
+## Prova focal de troca autenticada A → B
+
+O caso focal adicional autentica dois contextos institucionais distintos com o
+papel `owner` e as permissões `platform.read` e `people.read`, coerentes com o
+contrato CHILD. Depois de abrir uma paginação de A com o cursor
+`('aluna a', context_id_A)`, a reautorização em B inicia nova leitura com
+`institution_id: null` e cursor nulo, pois o backend deriva o escopo do ator.
+A página de B permanece renderizada quando a resposta pendente de A chega.
+
+O teste focal terminou com 1/1 caso aprovado e o analyzer do arquivo não
+encontrou issues. A paginação foi disparada pelo callback já exposto no
+`FilledButton`, porque o botão fica fora da área visível do harness largo; esta
+prova cobre o ciclo de request, invalidação e descarte tardio, mas não certifica
+o gesto de toque nem interação visual da paginação.

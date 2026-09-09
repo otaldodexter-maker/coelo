@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_api/children.dart';
 import 'package:coelo_superadmin/app/router/superadmin_router.dart';
 import 'package:coelo_superadmin/app/router/superadmin_routes.dart';
@@ -5,6 +7,7 @@ import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
+import 'package:coelo_superadmin/features/auth/domain/superadmin_auth_context.dart';
 import 'package:coelo_superadmin/features/children/presentation/child_directory_panel.dart';
 import 'package:coelo_superadmin/features/student_tracking/domain/student_tracking.dart';
 import 'package:coelo_superadmin/features/student_tracking/presentation/student_tracking_page.dart';
@@ -14,6 +17,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _institutionId = '10000000-0000-0000-0000-000000000001';
+const _institutionBId = '10000000-0000-0000-0000-000000000002';
+const _contextAId = '20000000-0000-0000-0000-000000000001';
+const _contextBId = '20000000-0000-0000-0000-000000000002';
+
+const _contextA = SuperadminAuthContext(
+  platformRoleCode: 'owner',
+  scopeKind: SuperadminAuthScopeKind.institution,
+  scopeInstitutionId: _institutionId,
+  permissionCodes: {'platform.read', 'people.read'},
+  aal: 'aal1',
+);
+
+const _contextB = SuperadminAuthContext(
+  platformRoleCode: 'owner',
+  scopeKind: SuperadminAuthScopeKind.institution,
+  scopeInstitutionId: _institutionBId,
+  permissionCodes: {'platform.read', 'people.read'},
+  aal: 'aal1',
+);
 
 final class _RecordingChildRead {
   final requests = <ChildDirectoryRequest>[];
@@ -31,6 +53,18 @@ final class _RecordingChildRead {
         ),
       ],
     );
+  }
+}
+
+final class _PendingChildRead {
+  final requests = <ChildDirectoryRequest>[];
+  final responses = <Completer<ChildDirectoryPage>>[];
+
+  Future<ChildDirectoryPage> call(ChildDirectoryRequest request) {
+    requests.add(request);
+    final response = Completer<ChildDirectoryPage>();
+    responses.add(response);
+    return response.future;
   }
 }
 
@@ -148,6 +182,60 @@ void main() {
     expect(find.text('Sintética Um'), findsNothing);
   });
 
+  testWidgets('students route discards a pending page after authenticated context changes', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1440, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final read = _PendingChildRead();
+    final session = SuperadminSession()
+      ..authorize(_contextA, sessionId: '40000000-0000-0000-0000-000000000001');
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      childDirectoryRead: read.call,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    router.go(SuperadminRoutes.students);
+    await tester.pump();
+    expect(read.requests, hasLength(1));
+    expect(read.requests.single.institutionId, isNull);
+    expect(read.requests.single.after, isNull);
+
+    read.responses.single.complete(
+      _page(_institutionId, _contextAId, 'Aluna A', withNextPage: true),
+    );
+    await tester.pump();
+    final nextPage = find.byKey(const Key('child-directory-next'));
+    tester.widget<FilledButton>(nextPage).onPressed!();
+    await tester.pump();
+    expect(read.requests, hasLength(2));
+    expect(read.requests[1].after?.name, 'aluna a');
+    expect(read.requests[1].after?.contextId, _contextAId);
+
+    session.authorize(_contextB, sessionId: '40000000-0000-0000-0000-000000000002');
+    await tester.pump();
+    expect(read.requests, hasLength(3));
+    expect(read.requests.last.institutionId, isNull);
+    expect(read.requests.last.after, isNull);
+
+    read.responses.last.complete(_page(_institutionBId, _contextBId, 'Aluna B'));
+    await tester.pump();
+    expect(find.text('Aluna B'), findsOneWidget);
+
+    read.responses[1].complete(_page(_institutionId, _contextAId, 'Aluna A tardia'));
+    await tester.pump();
+    expect(find.text('Aluna B'), findsOneWidget);
+    expect(find.text('Aluna A tardia'), findsNothing);
+  });
+
   testWidgets('embedded child list has no overflow at 375 and 200 percent text', (tester) async {
     tester.view.physicalSize = const Size(375, 812);
     tester.view.devicePixelRatio = 1;
@@ -176,3 +264,23 @@ void main() {
 }
 
 Widget _app(Widget child) => MaterialApp(theme: CoeloTheme.light, home: child);
+
+ChildDirectoryPage _page(
+  String institutionId,
+  String contextId,
+  String personName, {
+  bool withNextPage = false,
+}) => ChildDirectoryPage(
+  items: [
+    ChildDirectoryItem(
+      contextId: contextId,
+      personId: '30000000-0000-0000-0000-000000000001',
+      personName: personName,
+      institutionId: institutionId,
+      institutionName: 'Instituição sintética',
+    ),
+  ],
+  nextCursor: withNextPage
+      ? ChildDirectoryCursor(name: personName.toLowerCase(), contextId: contextId)
+      : null,
+);
