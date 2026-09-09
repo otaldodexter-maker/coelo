@@ -134,6 +134,7 @@ returns jsonb language sql immutable as $$
     'first_occurrence',jsonb_build_object('starts_at',p_start,'ends_at',p_end),
     'recurrence',jsonb_build_object('kind','once'),'conflict_justification',p_reason)
 $$;
+grant execute on function pg_temp.reservation_payload(text,text,text) to authenticated;
 create temporary table reservation_results(label text primary key,body jsonb);
 grant select,insert on reservation_results to authenticated;
 
