@@ -1,6 +1,6 @@
 ---
 source: "AGENTS.md; 20260901170731_access_profile_models_crud_and_catalog.sql; 20260908182839_access_profile_models_aal1_phase_policy.sql"
-status: "runtime-not-executed; hypothesis-awaiting-local-slot"
+status: "runtime-unexecuted; local-attempt-blocked-before-sql"
 generated_at: "2026-09-09"
 ---
 
@@ -65,9 +65,28 @@ base historica devolver receipts nas negativas, o RED esperado e P4/F8. Se
 falhar antes de observar os locks, registrar erro de runner/base, nao RED do
 produto. Parse PowerShell e `-DescribeOnly` aprovados; SQL P0/F0/U12 nesta revisao.
 
+## Tentativa local 19:07-19:10 BRT
+
+Slot nominal liberado pelo pai apos reserva coordenada. A chamada real pelo
+wrapper, via `Invoke-ReceiptProof.ps1`, bloqueou na primeira inspecao Docker
+`ps -a`, antes de criar a stack, instalar a base ou executar TAP. Apos mais de
+dois minutos sem resposta, foram encerrados somente os subprocessos docker
+proprios PID31728 (inspecao inicial) e PID24448 (verificacao de cleanup). O
+wrapper terminou com `cannot inspect Docker containers` e erro agregado de
+cleanup incompleto. Isso e falha de infraestrutura, nao RED do produto.
+
+`red-replay.txt` e `attempt-01.json` preservam a tentativa. Concorrencia12:
+P0/F0/B0/S0/U12; instalacao TAP8: P0/F0/B0/S0/U8. Nenhuma correcao SQL foi
+produzida sem RED. Conferencia final19:10 BRT: pasta temporaria inexistente,
+mutex `Local\CoeloSafeSupabaseReplay` adquirivel/liberado e PIDs9500/31728/24448
+ausentes. Nenhuma criacao de recurso Docker chegou a ser comandada, mas a
+ausencia de containers/volumes/networks nao foi certificada porque Docker nao
+respondeu. Nao houve retry; pai assumiu o diagnostico compartilhado.
+
 ## Proximo passo recuperavel
 
-1. Pai confirma slot e executa a prova na base nominal local, preservando log.
+1. Pai confirma recuperacao Docker e novo slot antes de executar a prova na
+   base nominal local, preservando o log da tentativa01.
 2. Se RED demonstrar causa, adicionar reautorizacao nos quatro ramos de replay,
    usando dominio ja resolvido pelo writer e mesma acao (`create` na duplicacao).
    Preparar SQL forward-only com guarda de assinatura, ACL e hash do corpo.

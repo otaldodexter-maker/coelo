@@ -1,6 +1,6 @@
 ---
 source: "../manifest-after.json; ../handoff.md; packages/coelo_database/replay/profiles/ChildDirectoryEnvelope"
-status: "proposal-dry-run-pass; not-integrated; sql-not-executed"
+status: "materialized-own-branch-under-r7-reservation; sql-not-executed"
 generated_at: "2026-09-09"
 ---
 
@@ -10,6 +10,13 @@ Escopo: `apps/superadmin -> Acessos -> Seguranca infantil -> diretorio/detalhe`
 (`child-safety.list`, `child-safety.child`; dependencia de
 `child-safety.create`). Este filho preparou somente a selecao local do replay.
 O pai conserva SQL/Safety Dart, integracao, commits e coordenacao do slot.
+
+Checkpoint posterior: coordenacao.json r7 concedeu os hunks na branch do grupo.
+Pai aplicou o patch e materializou os dois arquivos de perfil nos destinos
+abaixo, sem tocar dev/router/migrations aplicadas. A tentativa concorrente de
+Modelos encontrou Docker sem resposta antes de SQL; Safety ainda não iniciou
+replay. O dry-run7P abaixo é a prova anterior de preparação, não certificação
+do banco nem recibo de integração em dev.
 
 `profile.json` e `Resolve-SafetyInternalReads53.ps1` destinam-se a
 `packages/coelo_database/replay/profiles/SafetyInternalReads53/`.
