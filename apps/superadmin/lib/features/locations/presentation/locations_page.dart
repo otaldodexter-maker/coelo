@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
 import '../../auth/domain/logout_action.dart';
+import '../domain/location_capabilities.dart';
 import '../domain/location_catalog_reader.dart';
 import '../domain/location_catalog_writer.dart';
 import '../domain/location_selection_source.dart';
@@ -38,6 +39,7 @@ final class LocationsPage extends StatefulWidget {
     this.writer = const UnavailableLocationCatalogWriter(),
     this.canCreate = false,
     this.canManage,
+    this.capabilities,
     this.requestIdFactory,
     super.key,
   });
@@ -67,12 +69,21 @@ final class LocationsPage extends StatefulWidget {
 
   /// Whether this actor may edit, change status, copy or schedule.
   ///
-  /// Null falls back to [canCreate]. Today the catalog grants every location
-  /// capability to the same role, so the actor who may create is the actor who
-  /// may manage. This is a hint for what to draw and never an authorization:
-  /// the server checks each capability on its own, and a refusal is shown as a
-  /// refusal. Pass it explicitly once the grants stop moving together.
+  /// Null falls back to [canCreate]. This is the coarse pair the catalog was
+  /// born with, kept because callers still pass it; [capabilities] is what to
+  /// pass once the grants stop moving together.
   final bool? canManage;
+
+  /// The four writes, granted one at a time.
+  ///
+  /// Null derives them from [canCreate] and [canManage] exactly as before, so a
+  /// caller that has not been updated behaves to the pixel as it did. Passing
+  /// this wins over both flags.
+  ///
+  /// Still only a render gate: the server authorizes each command on its own,
+  /// and a location the actor may not touch comes back as a refusal whatever
+  /// this says.
+  final LocationCapabilities? capabilities;
 
   final String Function()? requestIdFactory;
 
@@ -86,7 +97,12 @@ final class _LocationsPageState extends State<LocationsPage> {
   LocationCatalogEntry? _editing;
   bool _bringing = false;
 
-  bool get _canManage => widget.canManage ?? widget.canCreate;
+  LocationCapabilities get _can =>
+      widget.capabilities ??
+      LocationCapabilities.fromLegacyFlags(
+        canCreate: widget.canCreate,
+        canManage: widget.canManage,
+      );
 
   @override
   void initState() {
@@ -153,17 +169,19 @@ final class _LocationsPageState extends State<LocationsPage> {
     // a read surface and adding an action to it would change every screen that
     // renders it.
     final editing = _editing;
+    final can = _can;
     final canCreate =
-        widget.canCreate &&
+        can.create &&
         widget.sessionAvailable &&
         !_creating &&
         !_bringing &&
         editing == null &&
         selected == null;
     // Bringing one down lands on a new location, so it must not compete with a
-    // form or a detail already on screen.
+    // form or a detail already on screen. It is a copy, and asks for exactly
+    // that grant rather than for management in general.
     final canBring =
-        _canManage &&
+        can.copy &&
         widget.sessionAvailable &&
         !_creating &&
         !_bringing &&
@@ -208,7 +226,9 @@ final class _LocationsPageState extends State<LocationsPage> {
                 // The create form keeps the key it has always had; an edit gets
                 // its own so switching between two locations rebuilds the state
                 // instead of carrying the previous one's text along.
-                key: editing == null ? const Key('locations-form') : Key('locations-form-${editing.id}'),
+                key: editing == null
+                    ? const Key('locations-form')
+                    : Key('locations-form-${editing.id}'),
                 scope: widget.scope,
                 initial: editing,
                 writer: widget.writer,
@@ -238,11 +258,14 @@ final class _LocationsPageState extends State<LocationsPage> {
                 reader: widget.reader,
                 sessionAvailable: widget.sessionAvailable,
                 contextRevision: widget.contextRevision,
-                writer: _canManage ? widget.writer : null,
-                onEdit: _canManage ? (item) => setState(() => _editing = item) : null,
+                // A panel with no granted write must not hold a writer, so that
+                // a bug cannot turn into a request.
+                writer: can.writesAnything ? widget.writer : null,
+                capabilities: can,
+                onEdit: can.update ? (item) => setState(() => _editing = item) : null,
                 // A copy is a different location, so the page opens it rather
                 // than leaving the actor looking at the one they duplicated.
-                onCopied: _canManage ? _open : null,
+                onCopied: can.copy ? _open : null,
                 onBack: _close,
               ),
       ),
