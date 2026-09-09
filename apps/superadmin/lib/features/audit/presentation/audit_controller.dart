@@ -159,7 +159,7 @@ final class AuditDirectoryController extends ChangeNotifier {
     } on AuditNotFoundException {
       if (generation != _detailGeneration) return;
       _detail = const AuditDetailSnapshot(AuditDetailLoadState.notFound);
-    } on Exception {
+    } on Object {
       if (generation != _detailGeneration) return;
       _detail = const AuditDetailSnapshot(AuditDetailLoadState.failure);
     }
@@ -236,7 +236,7 @@ final class AuditDirectoryController extends ChangeNotifier {
     } on AuditNotFoundException {
       if (generation != _pageGeneration) return;
       _snapshot = _errorSnapshot(AuditLoadState.notFound);
-    } on Exception {
+    } on Object {
       if (generation != _pageGeneration) return;
       _snapshot = _errorSnapshot(AuditLoadState.failure);
     }

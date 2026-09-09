@@ -187,6 +187,22 @@ void main() {
     expect(controller.detail.state, AuditDetailLoadState.notFound);
   });
 
+  test('maps unexpected decoding Errors to safe read failures', () async {
+    final repository = _Repository()..pageError = _auditDecodingError();
+    final controller = AuditDirectoryController(repository: repository);
+    addTearDown(controller.dispose);
+
+    await controller.load();
+    expect(controller.snapshot.state, AuditLoadState.failure);
+    expect(controller.snapshot.events, isEmpty);
+
+    repository.pageError = null;
+    repository.detailError = _auditDecodingError();
+    await controller.loadDetail('event-1');
+    expect(controller.detail.state, AuditDetailLoadState.failure);
+    expect(controller.detail.value, isNull);
+  });
+
   test('loads detail on demand and starts export through repository', () async {
     final repository = _Repository()..detailResult = _detail('event-1');
     final controller = AuditDirectoryController(
@@ -319,6 +335,15 @@ AuditEvent _event(String id) => AuditEvent(
   context: const AuditContext(kind: 'global'),
   occurredAt: DateTime.utc(2026, 8, 11),
 );
+
+Object _auditDecodingError() {
+  try {
+    final row = <String, Object?>{'id': 42};
+    return row['id']! as String;
+  } catch (error) {
+    return error;
+  }
+}
 
 AuditEventDetail _detail(String id) => AuditEventDetail(
   event: _event(id),
