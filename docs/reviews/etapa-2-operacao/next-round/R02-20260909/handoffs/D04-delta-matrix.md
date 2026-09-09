@@ -7,10 +7,10 @@ timezone: "America/Sao_Paulo"
 
 # Delta nominal D04 para o escritor central
 
-Base56eb3f19, revisão3 de16:04 BRT; HEAD publicado4bfbbddfe. App único: apps/superadmin.
+Base56eb3f19, revisão4 do corte16:30 BRT; HEAD publicado1ac0a364a. App único: apps/superadmin.
 Menu Acessos para todas as linhas exceto invites.*, em Comunicação.
 As provas locais não encerram FE/BE/E2E de nenhum dos31IDs ativos.
-Patches de rotas são propostas não aplicadas, sem reserva D00.
+ReservasD00r4 aplicadas em ef1927f2d/1ac0a364a; integração central pendente.
 
 | action_id | Subtela/estado; delta local | Primeiro critério aberto |
 | --- | --- | --- |
@@ -30,10 +30,10 @@ Patches de rotas são propostas não aplicadas, sem reserva D00.
 | access-models.create | Principal mapeia group para child_context; menu limitado | Composição e persistência real |
 | access-models.detail | Capabilities não viram contagem de vínculos | Runtime autorizado e visual |
 | access-models.edit | Escopo Principal e contagem corrigidos | Persistência/recarga real por ator |
-| access-models.duplicate | Adapter corrigido; rota proposta separada | Reserva D00 para callback/rota e teste de composição |
+| access-models.duplicate | Rota autorizada/callback em1ac0a364a;4P | Quatro casos restantes da consolidação; runtime real |
 | invites.list | Debounce invalida retorno anterior;negação de leitura descarta comandos/overlays | Runtime do diretório com persona qualificada |
 | invites.create | Wizard invalida contexto e preserva seleção | Persona/SMTP e envio real nominal |
-| invites.detail | Link HTTPS/origem/token restritos | Reserva D00 para allowCommands da rota normal |
+| invites.detail | Link HTTPS/origem/token restritos | Flag normal aplicadaef1927f2d e5P; runtime real |
 | invites.resend | Receipt tardio após negação descartado;callback antigo não reenvia | Composição normal e envio nominal autorizado |
 | invites.revoke | Comando existente; nenhuma mutação remota | Composição normal, revogação e recarga reais |
 | child-safety.list | Candidato held-golden adc902eaf: epochs/count;SQLv2 candidato48141c195 U43;adapter963796ddf 34P inativo | Revisar golden;replay/decisão nominal SQL interno;FEv2 não ativado |
@@ -47,7 +47,7 @@ Patches de rotas são propostas não aplicadas, sem reserva D00.
 | profile-files.status | Adiado; sem implementação real | Decisão pós-MVP |
 | profile-files.export | Adiado; certificado FE anterior preservado | Decisão pós-MVP |
 | profile-files.download | Adiado; sem implementação real | Decisão pós-MVP |
-| internal-users.list | Parser rejeita status desconhecido; navegação proposta | Reserva D00 para entrada normal e runtime |
+| internal-users.list | Parser estrito; navegação normalef1927f2d,17+4P | Integração central da navegação e runtime real |
 | internal-users.create | Receipt impede duplicação;catálogo real ausente não usa instituições fictícias | Contrato nominal de criação/convite |
 | internal-users.edit | Negação limpa editor;receipt protegido;catálogo ausente preserva escopo;capturas375/1440 | Rota normal de escrita bloqueada |
 | internal-users.suspend | Confirmação honesta, releitura e negações comprovadas localmente | Rota normal read-only e prova real |
