@@ -309,6 +309,19 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
       await _loadInbox(silent: true);
     } on ChatUnauthorizedException catch (error) {
       if (_isCurrentSend(generation, requested, conversation.id)) _denyAccess(error);
+    } on ChatConflictException {
+      if (_isCurrentSend(generation, requested, conversation.id)) {
+        // A conversa recusou por estado próprio, não por acesso. O instantâneo
+        // local está velho: sem reler, o composer continuaria oferecido e a
+        // mesma intenção seria repetida contra uma conversa que nunca vai
+        // aceitá-la. A recarga silenciosa traz `isReadOnly` do servidor e a
+        // affordance some sozinha, sem trocar a inbox por painel de carga e
+        // sem derrubar a sessão.
+        _pendingIdempotencyKey = null;
+        _pendingBody = null;
+        _notify('A conversa não aceita novas mensagens. A tela foi atualizada.');
+        await _loadInbox(silent: true);
+      }
     } on ChatOfflineException {
       if (_isCurrentSend(generation, requested, conversation.id)) {
         _notify('Sem conexão. A mensagem não foi enviada.');
