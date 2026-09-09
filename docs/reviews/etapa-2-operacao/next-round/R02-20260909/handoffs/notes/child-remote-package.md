@@ -56,7 +56,7 @@ então observado.
 Pacote composto canônico: `child-remote-package.sql`, UTF-8 sem BOM, somente LF,
 22.264 bytes, SHA-256
 `1193649F37C15EAA964A7486B83014806BC76C70AB4BD04537908CB57EE198E6`.
-Esse é o hash nominal para revisão e eventual autorização. Como o arquivo já
+Esse é o hash da composição SQL para revisão local. Para o transporte MCP proposto em r12, o hash nominal é o do payload sem wrapper definido abaixo; não enviar esta composição com COMMIT ao endpoint. Como o arquivo já
 está em LF sob `text=auto`, o mesmo fluxo de bytes entra no Git blob; o object ID
 Git calculado com e sem filtros coincide em
 `04c0d410e7b5a851548b3661b9715cff2edbdeb8`.
@@ -147,3 +147,67 @@ Casos sem ator ou dado de teste aprovado ficam bloqueados e não podem ser
 inferidos do catálogo nem substituídos por fixtures em produção. Catálogo verde
 não promove Backend ou E2E sozinho; chamada local, rota Flutter e documentação
 também não certificam o ambiente remoto.
+
+## Transporte e ledger concretos — proposta D00 r12
+
+Transporte proposto: uma única chamada à ferramenta instalada
+`mcp__codex_apps__supabase_apply_migration`. Parâmetros nominais:
+
+- `project_id`: `evvbomzejfijozbtgvpt`;
+- `name`: `r02_d03_child_directory_envelope_read01`;
+- `query`: conteúdo UTF-8/LF integral de `child-remote-apply-migration.sql`,
+  22.249 bytes, SHA-256
+  `AC7B83B22042B710D6E86FF8F9B54AF4D089CC6278831D4D8C9BAEC7B87AEF39`.
+
+Esse segundo artefato deriva exclusivamente da retirada do `begin;` e do
+`commit;` externos da composição SHA `1193649F...98E6`. Nenhuma instrução
+interna, pin, preflight, corpo ou postflight muda. A transação pertence ao
+endpoint; não usar o arquivo com COMMIT explícito dentro de `apply_migration`,
+nem fracionar a chamada. Nenhum dos dois artefatos foi executado nesta forma.
+
+O código oficial do MCP encaminha `name` e `query` para
+`POST /v1/projects/{ref}/database/migrations`; a API documenta o registro da
+migration e rollback das mudanças em caso de falha. Este é o contrato de
+transporte proposto, ainda sem prova de aplicação neste projeto. Fontes
+consultadas em 09/09/2026:
+[código do MCP](https://github.com/supabase/mcp/blob/main/packages/mcp-server-supabase/src/platform/api-platform.ts),
+[endpoint](https://supabase.com/docs/reference/api/v1-apply-a-migration) e
+[comportamento de migrations](https://supabase.com/docs/guides/integrations/supabase-for-platforms).
+Não atribuir ao replay psql local uma prova da Management API.
+
+Antes da chamada autorizada, D00/executor serial deve preservar
+`list_migrations` do projeto e uma leitura somente de metadata do ledger.
+Se o nome nominal já existir, ou os pins/ausência do gateway divergirem,
+interromper para reconciliar; não tentar reaplicar. O MCP disponível não aceita
+`version`; por isso não é correto declarar que criará a versão canônica
+`20260908051500`. O resultado remoto deve ser mapeado pelo nome nominal e pela
+versão realmente adicionada, mantendo a proveniência das duas fontes e do
+postflight no recibo D00. Não inserir manualmente nem reparar o ledger para
+simular a versão local.
+
+Após resposta de sucesso, repetir `list_migrations` e exigir uma única entrada
+nova com o nome nominal. Conferir metadata do registro e preservar o digest
+separado dos statements armazenados, sem confundi-lo com o hash do payload
+transmitido: o provedor pode segmentar os statements. Consulta read-only
+proposta, sujeita à conferência prévia das colunas de catálogo:
+
+```sql
+select version, name, cardinality(statements) as statement_count,
+       md5(array_to_string(statements, E'\n')) as stored_statements_md5
+from supabase_migrations.schema_migrations
+where name = 'r02_d03_child_directory_envelope_read01'
+order by version;
+```
+
+O recibo deve reunir: projeto, nome, versão real, timestamp, commit do pacote,
+SHA-256 do payload normalizado, digest/contagem dos statements retornados,
+resultado da ferramenta e postflight de catálogo/ACL. O ledger não substitui a
+conferência dos corpos e privilégios resultantes.
+
+Se houver timeout, desconexão ou resposta ambígua, não repetir a mutação.
+Primeiro ler ledger e catálogo para distinguir não aplicado, aplicado e estado
+inconsistente. Se houver DDL sem recibo de ledger, ou ledger sem metadata
+esperada, registrar bloqueio e preparar reconciliação nominal forward-only;
+nenhum repair, delete de histórico ou segunda aplicação fica autorizado por
+este documento. O novo transporte/payload exige revisão D00 e autorização
+nominal própria; o recibo do pacote anterior não a presume.
