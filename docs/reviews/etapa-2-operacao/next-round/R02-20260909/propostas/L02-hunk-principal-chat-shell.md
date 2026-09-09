@@ -176,3 +176,171 @@ integrada — isso exigiria materializar a base conjunta, que é do integrador. 
 de leitura. **Depois do merge, os arquivos a reexecutar são
 `principal_chat_route_test.dart`, `chat_unread_badge_wiring_test.dart` e `chat_routes_test.dart`**:
 são os que afirmam exatamente os pontos 2, 5 e 6 e, se a resolução perder algum deles, eles falham.
+
+---
+
+# Apêndice — blocos prontos para colar (contra `origin/dev` `d7ce6976`)
+
+Nada aqui é descrição: são os trechos finais, já reindentados para o lugar onde entram.
+Linhas citadas são as de `dev` lidas com `git show`, sem merge.
+
+## 1. `superadmin_routes.dart` — 4 constantes
+
+Somam, não conflitam. Junto das demais `principal*`:
+
+```dart
+  static const principalConversations = '/principal-conversations';
+  static const principalConversationsName = 'principal-conversations';
+```
+
+e junto das `devPrincipal*`:
+
+```dart
+  static const devPrincipalConversations = '/dev/principal-conversations';
+  static const devPrincipalConversationsName = 'dev-principal-conversations';
+```
+
+## 2. `superadmin_router.dart` — import
+
+```dart
+import '../../features/principal_chat/presentation/principal_chat_page.dart';
+```
+
+## 3. Rota de produção — **dentro** da lista `routes:` do `ShellRoute`
+
+Indentação de 10 espaços, igual às irmãs a partir da linha 788 de `dev`:
+
+```dart
+          GoRoute(
+            path: SuperadminRoutes.principalConversations,
+            name: SuperadminRoutes.principalConversationsName,
+            builder: (context, state) => chatRepository is UnavailableChatRepository
+                ? _unavailableCompositionRootRoute(context)
+                : PrincipalChatPage(
+                    chatRepository: chatRepository,
+                    embedded: true,
+                    onBack: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                    onOpenProfile: () => context.goNamed(SuperadminRoutes.principalProfileName),
+                  ),
+          ),
+```
+
+## 4. Rota `/dev` — mesma lista
+
+```dart
+          GoRoute(
+            path: SuperadminRoutes.devPrincipalConversations,
+            name: SuperadminRoutes.devPrincipalConversationsName,
+            builder: (context, state) => PrincipalChatPage(
+              chatRepository: developmentChatRepository,
+              embedded: true,
+              onBack: () => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
+              onOpenProfile: () => context.goNamed(SuperadminRoutes.devPrincipalProfileName),
+            ),
+          ),
+```
+
+## 5. Os três destinos — trocas exatas
+
+**`dev` linha 697-700** (`/dev/principal-happens`), de:
+
+```dart
+          onOpenMessages: () => context.goNamed(
+            SuperadminRoutes.devConversationsName,
+            queryParameters: const {'from': 'principal'},
+          ),
+```
+
+para:
+
+```dart
+          onOpenMessages: () =>
+              context.goNamed(SuperadminRoutes.devPrincipalConversationsName),
+```
+
+**`dev` linha 808-811** (`/principal-happens`, produção), de:
+
+```dart
+                  onOpenMessages: () => context.goNamed(
+                    SuperadminRoutes.conversationsName,
+                    queryParameters: const {'from': 'principal'},
+                  ),
+```
+
+para:
+
+```dart
+                  onOpenMessages: () =>
+                      context.goNamed(SuperadminRoutes.principalConversationsName),
+```
+
+**`dev` linha 5465-5469** (despacho do menu de desenvolvimento), de:
+
+```dart
+    case 'principal-chat':
+      context.goNamed(
+        SuperadminRoutes.devConversationsName,
+        queryParameters: const {'from': 'principal'},
+      );
+```
+
+para:
+
+```dart
+    case 'principal-chat':
+      context.goNamed(SuperadminRoutes.devPrincipalConversationsName);
+```
+
+## 6. Badge de não lidas — 3 inserções
+
+Em `operationalPage` (composição `/dev`, `dev` linha ~452), junto de `activityController`:
+
+```dart
+    chatUnreadCountLoader: developmentChatRepository.fetchUnreadTotal,
+```
+
+Em `productionOperationalPage` (`dev` linha ~467), junto de `activityController`:
+
+```dart
+    // O launcher só afirma contagem quando existe repositório autorizado.
+    // `UnavailableChatRepository.fetchUnreadTotal` devolve 0, e um zero
+    // silencioso é indistinguível de "não há não lidas": passar null faz o
+    // launcher não afirmar nada em vez de afirmar algo falso.
+    chatUnreadCountLoader: chatRepository is UnavailableChatRepository
+        ? null
+        : chatRepository.fetchUnreadTotal,
+```
+
+Em `SuperadminShell.host` (`dev` linha ~760), logo depois de `onDestinationSelected`:
+
+```dart
+                  // Mesma regra do shell de produção: sem repositório
+                  // autorizado o launcher não afirma contagem alguma.
+                  chatUnreadCountLoader: developmentPreview
+                      ? developmentChatRepository.fetchUnreadTotal
+                      : chatRepository is UnavailableChatRepository
+                      ? null
+                      : chatRepository.fetchUnreadTotal,
+```
+
+**A guarda `is UnavailableChatRepository` não é opcional.** Sem ela o shell chama o repositório
+fail-closed, cujo `fetchUnreadTotal` devolve `0`, e o launcher passa a afirmar "não há não lidas"
+quando na verdade não sabe.
+
+## 7. Preview `/dev/conversations` — dependências de mídia
+
+No builder de `SuperadminChatPage` daquela rota, junto de `chatRepository`:
+
+```dart
+                mediaReader: mediaReader,
+                mediaSession: mediaSession,
+```
+
+## Os quatro perigos, e o que os pega
+
+| Perigo | Teste que falha se acontecer |
+| --- | --- |
+| Rota nova ficar **fora** do `ShellRoute` | `principal_chat_route_test.dart` |
+| Algum dos 3 destinos não ser trocado | `chat_routes_test.dart`, `principal_chat_route_test.dart` |
+| Guarda do badge perdida | `chat_unread_badge_wiring_test.dart` |
+| Mídia da preview perdida | `chat_unread_badge_wiring_test.dart` |
